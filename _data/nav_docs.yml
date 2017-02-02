@@ -1,0 +1,11 @@
+- title: Grouping 1
+  items:
+  - id: hello-world
+
+# n title:, 1 items: per title:, n id: per items:
+# - title: A
+#   items:
+#   - id: B
+#   - id: C
+# - title: D
+#   - id: E
