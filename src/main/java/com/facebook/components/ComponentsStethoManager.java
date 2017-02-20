@@ -29,7 +29,7 @@ class ComponentsStethoManager {
       new YogaValue(YogaConstants.UNDEFINED, YogaUnit.AUTO);
   private static final YogaValue YOGA_VALUE_ZERO = new YogaValue(0, YogaUnit.POINT);
   private final static YogaEdge[] edges = YogaEdge.values();
-  private final SimpleArrayMap<String, Map<String, String>> mOverrides =
+  private final SimpleArrayMap<String, SimpleArrayMap<String, String>> mOverrides =
       new SimpleArrayMap<>();
   private final SimpleArrayMap<String, StethoInternalNode> mStethoInternalNodes =
       new SimpleArrayMap<>();
@@ -178,8 +178,10 @@ class ComponentsStethoManager {
 
     final String nodeKey = getGlobalKey(node);
     if (mOverrides.containsKey(nodeKey)) {
-      for (Map.Entry<String, String> entry : mOverrides.get(nodeKey).entrySet()) {
-        attributes.store(entry.getKey(), entry.getValue());
+      SimpleArrayMap<String, String> styles =  mOverrides.get(nodeKey);
+      for (int i = 0, size = styles.size(); i < size; i++) {
+        final String key = styles.keyAt(i);
+        attributes.store(key, styles.get(key));
       }
     }
 
@@ -192,10 +194,10 @@ class ComponentsStethoManager {
       return;
     }
 
-    final Map<String, String> styles = mOverrides.get(nodeKey);
-    for (Map.Entry<String, String> entry : mOverrides.get(nodeKey).entrySet()) {
-      final String key = entry.getKey();
-      final String value = entry.getValue();
+    final SimpleArrayMap<String, String> styles = mOverrides.get(nodeKey);
+    for (int i = 0, size = styles.size(); i < size; i++) {
+      final String key = styles.keyAt(i);
+      final String value = styles.get(key);
 
       try {
         if (key.equals("direction")) {
@@ -425,7 +427,17 @@ class ComponentsStethoManager {
   }
 
   public void setStyleOverrides(InternalNode element, Map<String, String> overrides) {
-    mOverrides.put(getGlobalKey(element), overrides);
+    final String key = getGlobalKey(element);
+
+    SimpleArrayMap<String, String> styles = mOverrides.get(key);
+    if (styles == null) {
+      styles = new SimpleArrayMap<>();
+      mOverrides.put(key, styles);
+    }
+
+    for (Map.Entry<String, String> entry : overrides.entrySet()) {
+      styles.put(entry.getKey(), entry.getValue());
+    }
   }
 
   private static String yogaValueToString(YogaValue v) {
