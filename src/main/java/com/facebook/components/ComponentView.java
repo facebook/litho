@@ -28,6 +28,8 @@ public class ComponentView extends ComponentHost {
   private boolean mIsAttached;
   private final Rect mPreviousMountBounds = new Rect();
 
+  private boolean mForceLayout;
+
   private final AccessibilityManager mAccessibilityManager;
 
   private final AccessibilityStateChangeListenerCompat mAccessibilityStateChangeListener =
@@ -83,6 +85,11 @@ public class ComponentView extends ComponentHost {
         performLayoutOnChildrenIfNecessary((ComponentHost) child);
       }
     }
+  }
+
+  void forceRelayout() {
+    mForceLayout = true;
+    requestLayout();
   }
 
   public void startTemporaryDetach() {
@@ -156,7 +163,9 @@ public class ComponentView extends ComponentHost {
     }
 
     if (mComponent != null) {
-      mComponent.measure(widthMeasureSpec, heightMeasureSpec, sLayoutSize);
+      boolean forceRelayout = mForceLayout;
+      mForceLayout = false;
+      mComponent.measure(widthMeasureSpec, heightMeasureSpec, sLayoutSize, forceRelayout);
 
       width = sLayoutSize[0];
       height = sLayoutSize[1];

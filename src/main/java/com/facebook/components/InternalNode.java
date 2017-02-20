@@ -24,8 +24,8 @@ import android.text.TextUtils;
 import android.util.SparseArray;
 
 import com.facebook.R;
+import com.facebook.components.config.ComponentsConfiguration;
 import com.facebook.components.reference.ColorDrawableReference;
-import com.facebook.components.reference.DrawableReference;
 import com.facebook.components.reference.Reference;
 import com.facebook.components.reference.ResourceDrawableReference;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -1294,6 +1294,12 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public ComponentLayout build() {
+    if (ComponentsConfiguration.IS_INTERNAL_BUILD &&
+        mComponentContext != null &&
+        mComponentContext.getStethoManager() != null) {
+      mComponentContext.getStethoManager().applyOverrides(this);
+    }
+
     return this;
   }
 

@@ -16,9 +16,10 @@ public final class InternalNodeDescriptor
 
   @Override
   protected String onGetNodeName(InternalNode element) {
-    return element.getComponent() == null
+    final Component component = element.getComponent();
+    return component == null
         ? Container.class.getName()
-        : element.getComponent().getLifecycle().getClass().getName();
+        :component.getLifecycle().getClass().getName();
   }
 
   @Override
@@ -48,8 +49,24 @@ public final class InternalNodeDescriptor
     element.getContext().getStethoManager().getAttributes(element, attributes);
   }
 
+  @Override
+  protected void onSetAttributesAsText(InternalNode element, String text) {
+    final ComponentContext context = element.getContext();
+
+    context.getStethoManager().setStyleOverrides(element, parseSetAttributesAsTextArg(text));
+
+    final ComponentTree componentTree = element.getContext().getComponentTree();
+    final ComponentView componentView =
+        componentTree == null ? null : componentTree.getComponentView();
+
+    if (componentView != null) {
+      componentView.forceRelayout();
+    }
+  }
+
   private InternalNode parent(InternalNode node) {
-    return node.getParent() != null ? node.getParent() : node.getNestedTreeHolder();
+    final InternalNode parent = node.getParent();
+    return parent != null ? parent : node.getNestedTreeHolder();
   }
 
   private int getXFromRoot(InternalNode node) {
