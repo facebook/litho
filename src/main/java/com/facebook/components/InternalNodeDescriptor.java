@@ -7,6 +7,7 @@ import android.view.View;
 
 import com.facebook.stetho.common.Accumulator;
 import com.facebook.stetho.inspector.elements.AbstractChainedDescriptor;
+import com.facebook.stetho.inspector.elements.AttributeAccumulator;
 import com.facebook.stetho.inspector.elements.android.HighlightableDescriptor;
 
 public final class InternalNodeDescriptor
@@ -40,6 +41,11 @@ public final class InternalNodeDescriptor
     final int y = getYFromRoot(element);
     bounds.set(x, y, x + element.getWidth(), y + element.getHeight());
     return element.getContext().getComponentTree().getComponentView();
+  }
+
+  @Override
+  protected void onGetAttributes(InternalNode element, AttributeAccumulator attributes) {
+    element.getContext().getStethoManager().getAttributes(element, attributes);
   }
 
   private InternalNode parent(InternalNode node) {
