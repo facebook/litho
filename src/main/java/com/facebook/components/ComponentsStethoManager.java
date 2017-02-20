@@ -164,7 +164,7 @@ class ComponentsStethoManager {
       }
     }
 
-    final String nodeKey = node.getComponent().getGlobalKey();
+    final String nodeKey = getGlobalKey(node);
     if (mOverrides.containsKey(nodeKey)) {
       for (Map.Entry<String, String> entry : mOverrides.get(nodeKey).entrySet()) {
         attributes.store(entry.getKey(), entry.getValue());
@@ -175,11 +175,7 @@ class ComponentsStethoManager {
   }
 
   void applyOverrides(InternalNode node) {
-    if (node.getComponent() == null) {
-      return;
-    }
-
-    final String nodeKey = node.getComponent().getGlobalKey();
+    final String nodeKey = getGlobalKey(node);
     if (!mOverrides.containsKey(nodeKey)) {
       return;
     }
@@ -383,10 +379,7 @@ class ComponentsStethoManager {
   }
 
   public void setStyleOverrides(InternalNode element, Map<String, String> overrides) {
-    if (element.getComponent() == null) {
-      return;
-    }
-    mOverrides.put(element.getComponent().getGlobalKey(), overrides);
+    mOverrides.put(getGlobalKey(element), overrides);
   }
 
   private static String yogaValueToString(YogaValue v) {
@@ -419,13 +412,31 @@ class ComponentsStethoManager {
     return new YogaValue(parseFloat(s), POINT);
   }
 
+  private String getGlobalKey(InternalNode node) {
+    if (node.getComponent() != null) {
+      return node.getComponent().getGlobalKey();
+    }
+
+    // This is a container. Try to construct a at least semi stable id by concatenating
+    // the depth of this node with the sibling position.
+    int parentCount = 0;
+    InternalNode parent = node.getParent();
+    while (parent != null) {
+      parent = parent.getParent();
+      parentCount++;
+    }
+
+    final int childIndex = node.getParent() == null ? 0 : node.getParent().getChildIndex(node);
+    return parentCount + "." + childIndex;
+  }
+
   public StethoInternalNode getStethoInternalNode(InternalNode node) {
     StethoInternalNode stethoInternalNode =
-        mStethoInternalNodes.get(node.getComponent().getGlobalKey());
+        mStethoInternalNodes.get(getGlobalKey(node));
     if (stethoInternalNode == null) {
       stethoInternalNode = new StethoInternalNode();
       stethoInternalNode.node = node;
-      mStethoInternalNodes.put(node.getComponent().getGlobalKey(), stethoInternalNode);
+      mStethoInternalNodes.put(getGlobalKey(node), stethoInternalNode);
     } else {
       stethoInternalNode.node = node;
     }

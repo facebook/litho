@@ -1277,6 +1277,15 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return (InternalNode) mYogaNode.getChildAt(index).getData();
   }
 
+  int getChildIndex(InternalNode child) {
+    for (int i = 0, count = mYogaNode.getChildCount(); i < count; i++) {
+      if (mYogaNode.getChildAt(i) == child.mYogaNode) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
   InternalNode getParent() {
     if (mYogaNode == null || mYogaNode.getParent() == null) {
       return null;

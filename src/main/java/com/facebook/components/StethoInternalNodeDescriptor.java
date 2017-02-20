@@ -46,7 +46,13 @@ public final class StethoInternalNodeDescriptor
     final int x = getXFromRoot(element.node);
     final int y = getYFromRoot(element.node);
     bounds.set(x, y, x + element.node.getWidth(), y + element.node.getHeight());
-    return element.node.getContext().getComponentTree().getComponentView();
+
+    if (element.node.getContext() != null &&
+        element.node.getContext().getComponentTree() != null) {
+      return element.node.getContext().getComponentTree().getComponentView();
+    } else {
+      return null;
+    }
   }
 
   @Override
