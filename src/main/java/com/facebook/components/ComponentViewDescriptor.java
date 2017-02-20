@@ -102,7 +102,10 @@ public final class ComponentViewDescriptor
     final LayoutState layoutState = component == null ? null : component.getMainThreadLayoutState();
     final InternalNode root = layoutState == null ? null : layoutState.getLayoutRoot();
     if (root != null) {
-      children.store(root);
+      final StethoInternalNode stethoInternalNode = component.getContext()
+          .getStethoManager()
+          .getStethoInternalNode(root);
+      children.store(stethoInternalNode);
     }
   }
 

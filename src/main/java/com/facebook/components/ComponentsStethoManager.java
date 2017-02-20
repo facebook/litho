@@ -31,6 +31,8 @@ class ComponentsStethoManager {
   private final static YogaEdge[] edges = YogaEdge.values();
   private final SimpleArrayMap<String, Map<String, String>> mOverrides =
       new SimpleArrayMap<>();
+  private final SimpleArrayMap<String, StethoInternalNode> mStethoInternalNodes =
+      new SimpleArrayMap<>();
 
   private static String toCSSString(String str) {
     final StringBuilder builder = new StringBuilder(str.length());
@@ -408,5 +410,18 @@ class ComponentsStethoManager {
     }
 
     return new YogaValue(parseFloat(s), POINT);
+  }
+
+  public StethoInternalNode getStethoInternalNode(InternalNode node) {
+    StethoInternalNode stethoInternalNode =
+        mStethoInternalNodes.get(node.getComponent().getGlobalKey());
+    if (stethoInternalNode == null) {
+      stethoInternalNode = new StethoInternalNode();
+      stethoInternalNode.node = node;
+      mStethoInternalNodes.put(node.getComponent().getGlobalKey(), stethoInternalNode);
+    } else {
+      stethoInternalNode.node = node;
+    }
+    return stethoInternalNode;
   }
 }
