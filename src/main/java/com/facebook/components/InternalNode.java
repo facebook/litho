@@ -140,6 +140,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private boolean mDuplicateParentState;
   private boolean mIsNestedTreeHolder;
   private InternalNode mNestedTree;
+  private InternalNode mNestedTreeHolder;
   private long mPrivateFlags;
 
   private Reference<? extends Drawable> mBackground;
@@ -1354,11 +1355,16 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return mNestedTree;
   }
 
+  InternalNode getNestedTreeHolder() {
+    return mNestedTreeHolder;
+  }
+
   /**
    * Set the nested tree before measuring it in order to transfer over important information
    * such as layout direction needed during measurement.
    */
   void setNestedTree(InternalNode nestedTree) {
+    nestedTree.mNestedTreeHolder = this;
     mNestedTree = nestedTree;
   }
 
@@ -1612,6 +1618,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     mResources = null;
     mComponent = null;
     mNestedTree = null;
+    mNestedTreeHolder = null;
 
     if (mNodeInfo != null) {
       mNodeInfo.release();

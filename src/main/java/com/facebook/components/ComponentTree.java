@@ -161,7 +161,7 @@ public class ComponentTree {
         : builderStateHandler;
   }
 
-  protected LayoutState getMainThreadLayoutState() {
+  LayoutState getMainThreadLayoutState() {
     return mMainThreadLayoutState;
   }
 

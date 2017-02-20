@@ -97,6 +97,13 @@ public final class ComponentViewDescriptor
     // here as we don't want to render children of ComponentView and instead want to render
     // the component hierarchy. View children of ComponentView are of type ComponentHost which is
     // an implementation detail of the Components framework.
+
+    final ComponentTree component = element.getComponent();
+    final LayoutState layoutState = component == null ? null : component.getMainThreadLayoutState();
+    final InternalNode root = layoutState == null ? null : layoutState.getLayoutRoot();
+    if (root != null) {
+      children.store(root);
+    }
   }
 
   @Override

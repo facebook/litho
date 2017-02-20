@@ -912,8 +912,10 @@ class LayoutState {
     }
     ComponentsSystrace.endSection();
 
-    releaseNodeTree(root, false /* isNestedTree */);
-    layoutState.mLayoutRoot = null;
+    if (!ComponentsConfiguration.IS_INTERNAL_BUILD && layoutState.mLayoutRoot != null) {
+      releaseNodeTree(layoutState.mLayoutRoot, false /* isNestedTree */);
+      layoutState.mLayoutRoot = null;
+    }
 
     if (ThreadUtils.isMainThread() && ComponentsConfiguration.shouldGenerateDisplayLists) {
       collectDisplayLists(layoutState);
@@ -1539,6 +1541,11 @@ class LayoutState {
       }
 
       ComponentsPools.release(this);
+
+      if (mLayoutRoot != null) {
+        releaseNodeTree(mLayoutRoot, false /* isNestedTree */);
+        mLayoutRoot = null;
+      }
     }
   }
 
@@ -1574,6 +1581,10 @@ class LayoutState {
     final StateHandler stateHandler = mStateHandler;
     mStateHandler = null;
     return stateHandler;
+  }
+
+  InternalNode getLayoutRoot() {
+    return mLayoutRoot;
   }
 
   // If the layout root is a nested tree holder node, it gets skipped immediately while

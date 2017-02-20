@@ -192,6 +192,10 @@ public class ComponentContext extends ContextWrapper {
     mLocalScope = componentScope;
   }
 
+  ComponentTree getComponentTree() {
+    return mComponentTree;
+  }
+
   protected void setTreeProps(TreeProps treeProps) {
     mTreeProps = treeProps;
   }
