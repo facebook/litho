@@ -470,22 +470,21 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
     return new YogaValue(parseFloat(s), POINT);
   }
 
-  private String getGlobalKey(InternalNode node) {
-    if (node.getComponent() != null) {
-      return node.getComponent().getGlobalKey();
-    }
+  private static InternalNode parent(InternalNode node) {
+    final InternalNode parent = node.getParent();
+    return parent != null ? parent : node.getNestedTreeHolder();
+  }
 
-    // This is a container. Try to construct a at least semi stable id by concatenating
-    // the depth of this node with the sibling position.
-    int parentCount = 0;
-    InternalNode parent = node.getParent();
-    while (parent != null) {
-      parent = parent.getParent();
-      parentCount++;
+  private static String getGlobalKey(InternalNode node) {
+    final InternalNode parent = parent(node);
+    final Component component = node.getComponent();
+    if (parent != null) {
+      return getGlobalKey(parent) + "." + (component == null ?
+          parent.getChildIndex(node) :
+          component.getGlobalKey());
+    } else {
+      return component == null ? "root" : component.getGlobalKey();
     }
-
-    final int childIndex = node.getParent() == null ? 0 : node.getParent().getChildIndex(node);
-    return parentCount + "." + childIndex;
   }
 
   public StethoInternalNode getStethoInternalNode(InternalNode node) {
