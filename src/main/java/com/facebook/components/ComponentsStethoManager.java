@@ -4,6 +4,7 @@ package com.facebook.components;
 
 import java.util.Map;
 
+import android.support.annotation.Nullable;
 import android.support.v4.util.SimpleArrayMap;
 
 import com.facebook.stetho.inspector.elements.AttributeAccumulator;
@@ -20,7 +21,6 @@ import com.facebook.yoga.YogaValue;
 
 import static com.facebook.yoga.YogaUnit.PERCENT;
 import static com.facebook.yoga.YogaUnit.POINT;
-import static java.lang.Float.parseFloat;
 
 class ComponentsStethoManager {
   private static final YogaValue YOGA_VALUE_UNDEFINED =
@@ -60,6 +60,18 @@ class ComponentsStethoManager {
       builder.setCharAt(i, newChar);
     }
     return builder.toString();
+  }
+
+  static float parseFloat(@Nullable String s) {
+    if (s == null) {
+      return 0;
+    }
+
+    try {
+      return Float.parseFloat(s);
+    } catch (NumberFormatException e) {
+      return 0;
+    }
   }
 
   void getAttributes(InternalNode node, AttributeAccumulator attributes) {
@@ -185,44 +197,51 @@ class ComponentsStethoManager {
       final String key = entry.getKey();
       final String value = entry.getValue();
 
-      if (key.equals("direction")) {
-        node.layoutDirection(YogaDirection.valueOf(toEnumString(value)));
-      }
+      try {
+        if (key.equals("direction")) {
+          node.layoutDirection(YogaDirection.valueOf(toEnumString(value)));
+        }
 
-      if (key.equals("flex-direction")) {
-        node.direction(YogaFlexDirection.valueOf(toEnumString(value)));
-      }
+        if (key.equals("flex-direction")) {
+          node.direction(YogaFlexDirection.valueOf(toEnumString(value)));
+        }
 
-      if (key.equals("justify-content")) {
-        node.justifyContent(YogaJustify.valueOf(toEnumString(value)));
-      }
+        if (key.equals("justify-content")) {
+          node.justifyContent(YogaJustify.valueOf(toEnumString(value)));
+        }
 
-      if (key.equals("align-items")) {
-        node.alignItems(YogaAlign.valueOf(toEnumString(value)));
-      }
+        if (key.equals("align-items")) {
+          node.alignItems(YogaAlign.valueOf(toEnumString(value)));
+        }
 
-      if (key.equals("align-self")) {
-        node.alignSelf(YogaAlign.valueOf(toEnumString(value)));
-      }
+        if (key.equals("align-self")) {
+          node.alignSelf(YogaAlign.valueOf(toEnumString(value)));
+        }
 
-      if (key.equals("align-content")) {
-        node.alignContent(YogaAlign.valueOf(toEnumString(value)));
-      }
+        if (key.equals("align-content")) {
+          node.alignContent(YogaAlign.valueOf(toEnumString(value)));
+        }
 
-      if (key.equals("position")) {
-        node.positionType(YogaPositionType.valueOf(toEnumString(value)));
-      }
+        if (key.equals("position")) {
+          node.positionType(YogaPositionType.valueOf(toEnumString(value)));
+        }
 
-      if (key.equals("flex-grow")) {
-        node.flexGrow(parseFloat(value));
-      }
+        if (key.equals("flex-grow")) {
+          node.flexGrow(parseFloat(value));
+        }
 
-      if (key.equals("flex-shrink")) {
-        node.flexShrink(parseFloat(value));
+        if (key.equals("flex-shrink")) {
+          node.flexShrink(parseFloat(value));
+        }
+      } catch (IllegalArgumentException ignored) {
+        // ignore errors when the user suplied an invalid enum value
       }
 
       if (key.equals("flex-basis")) {
         final YogaValue flexBasis = yogaValueFromString(value);
+        if (flexBasis == null) {
+          continue;
+        }
         switch (flexBasis.unit) {
           case UNDEFINED:
           case POINT:
@@ -239,6 +258,9 @@ class ComponentsStethoManager {
 
       if (key.equals("width")) {
         final YogaValue width = yogaValueFromString(value);
+        if (width == null) {
+          continue;
+        }
         switch (width.unit) {
           case UNDEFINED:
           case POINT:
@@ -255,6 +277,9 @@ class ComponentsStethoManager {
 
       if (key.equals("min-width")) {
         final YogaValue minWidth = yogaValueFromString(value);
+        if (minWidth == null) {
+          continue;
+        }
         switch (minWidth.unit) {
           case UNDEFINED:
           case POINT:
@@ -268,6 +293,9 @@ class ComponentsStethoManager {
 
       if (key.equals("max-width")) {
         final YogaValue maxWidth = yogaValueFromString(value);
+        if (maxWidth == null) {
+          continue;
+        }
         switch (maxWidth.unit) {
           case UNDEFINED:
           case POINT:
@@ -281,6 +309,9 @@ class ComponentsStethoManager {
 
       if (key.equals("height")) {
         final YogaValue height = yogaValueFromString(value);
+        if (height == null) {
+          continue;
+        }
         switch (height.unit) {
           case UNDEFINED:
           case POINT:
@@ -297,6 +328,9 @@ class ComponentsStethoManager {
 
       if (key.equals("min-height")) {
         final YogaValue minHeight = yogaValueFromString(value);
+        if (minHeight == null) {
+          continue;
+        }
         switch (minHeight.unit) {
           case UNDEFINED:
           case POINT:
@@ -310,6 +344,9 @@ class ComponentsStethoManager {
 
       if (key.equals("max-height")) {
         final YogaValue maxHeight = yogaValueFromString(value);
+        if (maxHeight == null) {
+          continue;
+        }
         switch (maxHeight.unit) {
           case UNDEFINED:
           case POINT:
@@ -324,6 +361,9 @@ class ComponentsStethoManager {
       for (YogaEdge edge : edges) {
         if (key.equals("margin-" + toCSSString(edge))) {
           final YogaValue margin = yogaValueFromString(value);
+          if (margin == null) {
+            continue;
+          }
           switch (margin.unit) {
             case UNDEFINED:
             case POINT:
@@ -342,6 +382,9 @@ class ComponentsStethoManager {
       for (YogaEdge edge : edges) {
         if (key.equals("padding-" + toCSSString(edge))) {
           final YogaValue padding = yogaValueFromString(value);
+          if (padding == null) {
+            continue;
+          }
           switch (padding.unit) {
             case UNDEFINED:
             case POINT:
@@ -357,6 +400,9 @@ class ComponentsStethoManager {
       for (YogaEdge edge : edges) {
         if (key.equals( "position-" + toCSSString(edge))) {
           final YogaValue position = yogaValueFromString(value);
+          if (position == null) {
+            continue;
+          }
           switch (position.unit) {
             case UNDEFINED:
             case POINT:
