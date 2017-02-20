@@ -53,15 +53,20 @@ public final class StethoInternalNodeDescriptor
   }
 
   @Override
-  protected void onSetAttributesAsText(StethoInternalNode element, String text) {
+  protected void onSetAttributesAsText(final StethoInternalNode element, String text) {
     final ComponentContext context = element.node.getContext();
-
-    context.getStethoManager().setStyleOverrides(element.node, parseSetAttributesAsTextArg(text));
-
     final ComponentTree componentTree = context.getComponentTree();
     final ComponentView view = componentTree == null ? null : componentTree.getComponentView();
 
     if (view != null) {
+      final ComponentsStethoManager stethoManager = context.getStethoManager();
+      stethoManager.setStyleOverrides(element.node, parseSetAttributesAsTextArg(text));
+      stethoManager.getAttributes(element.node, new AttributeAccumulator() {
+            @Override
+            public void store(String name, String value) {
+              getHost().onAttributeModified(element, name, value);
+            }
+          });
       view.forceRelayout();
     }
   }
