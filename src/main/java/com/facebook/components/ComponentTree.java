@@ -27,6 +27,8 @@ import android.support.annotation.VisibleForTesting;
 import android.view.View;
 import android.view.ViewParent;
 
+import com.facebook.components.config.ComponentsConfiguration;
+
 import static com.facebook.components.ComponentLifecycle.StateUpdate;
 import static com.facebook.components.ComponentsLogger.ACTION_SUCCESS;
 import static com.facebook.components.ComponentsLogger.EVENT_LAYOUT_CALCULATE;
@@ -143,6 +145,10 @@ public class ComponentTree {
 
   protected ComponentTree(Builder builder) {
     mContext = ComponentContext.withComponentTree(builder.context, this);
+    if (ComponentsConfiguration.IS_INTERNAL_BUILD) {
+      mContext.setStethoManager(new ComponentsStethoManager());
+    }
+
     mRoot = builder.root;
 
     mIncrementalMountEnabled = builder.incrementalMountEnabled;
