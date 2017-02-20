@@ -1303,10 +1303,12 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public ComponentLayout build() {
-    if (ComponentsConfiguration.IS_INTERNAL_BUILD &&
-        mComponentContext != null &&
-        mComponentContext.getStethoManager() != null) {
-      mComponentContext.getStethoManager().applyOverrides(this);
+    final ComponentTree tree = mComponentContext == null
+        ? null
+        : mComponentContext.getComponentTree();
+    final ComponentsStethoManager stethoManager = tree == null ? null : tree.getStethoManager();
+    if (stethoManager != null) {
+      stethoManager.applyOverrides(this);
     }
 
     return this;

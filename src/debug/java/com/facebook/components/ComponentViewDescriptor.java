@@ -102,13 +102,12 @@ public final class ComponentViewDescriptor
     final LayoutState layoutState = component == null ? null : component.getMainThreadLayoutState();
     final InternalNode root = layoutState == null ? null : layoutState.getLayoutRoot();
     if (root != null) {
-      final ComponentContext context = component.getContext();
       final ComponentsStethoManagerImpl stethoManager =
-          (ComponentsStethoManagerImpl) context.getStethoManager();
+          (ComponentsStethoManagerImpl) component.getStethoManager();
       if (stethoManager == null) {
         // Stetho has not been attached previously in this session. Create a stetho manager
         // and re-render the tree using that manager before exposing children nodes to stetho.
-        context.setStethoManager(new ComponentsStethoManagerImpl());
+        component.setStethoManager(new ComponentsStethoManagerImpl());
         element.forceRelayout();
       } else {
         final StethoInternalNode stethoInternalNode = stethoManager.getStethoInternalNode(root);

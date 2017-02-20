@@ -63,6 +63,7 @@ public class ComponentTree {
   private static final int SCHEDULE_NONE = 0;
   private static final int SCHEDULE_LAYOUT_ASYNC = 1;
   private static final int SCHEDULE_LAYOUT_SYNC = 2;
+  private ComponentsStethoManager mStethoManager;
 
   @IntDef({SCHEDULE_NONE, SCHEDULE_LAYOUT_ASYNC, SCHEDULE_LAYOUT_SYNC})
   @Retention(RetentionPolicy.SOURCE)
@@ -1158,6 +1159,14 @@ public class ComponentTree {
           diffingEnabled,
           diffNode);
     }
+  }
+
+  ComponentsStethoManager getStethoManager() {
+    return mStethoManager;
+  }
+
+  void setStethoManager(ComponentsStethoManager stethoManager) {
+    mStethoManager = stethoManager;
   }
 
   /**

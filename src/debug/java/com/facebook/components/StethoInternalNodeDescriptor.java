@@ -27,8 +27,11 @@ public final class StethoInternalNodeDescriptor
 
   @Override
   protected void onGetChildren(StethoInternalNode element, Accumulator<Object> children) {
-    final ComponentsStethoManagerImpl stethoManager =
-        (ComponentsStethoManagerImpl) element.node.getContext().getStethoManager();
+    final ComponentsStethoManagerImpl stethoManager = getStethoManager(element);
+    if (stethoManager == null) {
+      return;
+    }
+
     for (int i = 0, count = element.node.getChildCount(); i < count; i++) {
       children.store(stethoManager.getStethoInternalNode(element.node.getChildAt(i)));
     }
@@ -57,8 +60,11 @@ public final class StethoInternalNodeDescriptor
 
   @Override
   protected void onGetAttributes(StethoInternalNode element, AttributeAccumulator attributes) {
-    final ComponentsStethoManagerImpl stethoManager =
-        (ComponentsStethoManagerImpl) element.node.getContext().getStethoManager();
+    final ComponentsStethoManagerImpl stethoManager = getStethoManager(element);
+    if (stethoManager == null) {
+      return;
+    }
+
     stethoManager.getAttributes(element.node, attributes);
   }
 
@@ -110,8 +116,7 @@ public final class StethoInternalNodeDescriptor
     final ComponentView view = componentTree == null ? null : componentTree.getComponentView();
 
     if (view != null) {
-      final ComponentsStethoManagerImpl stethoManager =
-          (ComponentsStethoManagerImpl) context.getStethoManager();
+      final ComponentsStethoManagerImpl stethoManager = getStethoManager(element);
       stethoManager.setStyleOverrides(element.node, parseSetAttributesAsTextArg(text));
       stethoManager.getAttributes(element.node, new AttributeAccumulator() {
             @Override
@@ -121,6 +126,14 @@ public final class StethoInternalNodeDescriptor
           });
       view.forceRelayout();
     }
+  }
+
+  private ComponentsStethoManagerImpl getStethoManager(StethoInternalNode element) {
+    final ComponentContext context = element.node.getContext();
+    final ComponentTree componentTree = context == null ? null : context.getComponentTree();
+    return componentTree == null
+        ? null :
+        (ComponentsStethoManagerImpl) componentTree.getStethoManager();
   }
 
   private InternalNode parent(InternalNode node) {

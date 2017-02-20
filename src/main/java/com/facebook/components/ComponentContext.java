@@ -33,7 +33,6 @@ public class ComponentContext extends ContextWrapper {
   private @ThreadConfined(ThreadConfined.ANY) TreeProps mTreeProps;
 
   private @ThreadConfined(ThreadConfined.ANY) ComponentTree mComponentTree;
-  private @ThreadConfined(ThreadConfined.ANY) ComponentsStethoManager mStethoManager;
 
   // Used to hold styling information applied to components
   private @ThreadConfined(ThreadConfined.ANY) @StyleRes int mDefStyleRes = 0;
@@ -86,7 +85,6 @@ public class ComponentContext extends ContextWrapper {
       mHeightSpec = componentContext.mHeightSpec;
       mComponentScope = componentContext.mComponentScope;
       mComponentTree = componentContext.mComponentTree;
-      mStethoManager = componentContext.mStethoManager;
     } else {
       mResourceCache = ResourceCache.getLatest(context.getResources().getConfiguration());
     }
@@ -189,14 +187,6 @@ public class ComponentContext extends ContextWrapper {
 
   void setLocalScope(Component<?> componentScope) {
     mLocalScope = componentScope;
-  }
-
-  ComponentsStethoManager getStethoManager() {
-    return mStethoManager;
-  }
-
-  void setStethoManager(ComponentsStethoManager stethoManager) {
-    mStethoManager = stethoManager;
   }
 
   ComponentTree getComponentTree() {
