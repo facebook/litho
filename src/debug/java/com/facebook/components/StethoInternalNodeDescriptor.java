@@ -125,6 +125,15 @@ public final class StethoInternalNodeDescriptor
             }
           });
       view.forceRelayout();
+
+      final ComponentsLogger logger = context.getLogger();
+      if (logger != null) {
+        logger.eventStart(ComponentsLogger.EVENT_STETHO_UPDATE_COMPONENT, element);
+        logger.eventEnd(
+            ComponentsLogger.EVENT_STETHO_UPDATE_COMPONENT,
+            element,
+            ComponentsLogger.ACTION_SUCCESS);
+      }
     }
   }
 
