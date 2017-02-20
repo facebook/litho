@@ -11,7 +11,6 @@ import android.support.annotation.StyleRes;
 
 import com.facebook.R;
 import com.facebook.infer.annotation.ThreadConfined;
-import com.facebook.yoga.CSSLayoutContext;
 
 /**
  * A Context subclass for use within the Components framework. Contains extra bookkeeping
@@ -20,8 +19,6 @@ import com.facebook.yoga.CSSLayoutContext;
 public class ComponentContext extends ContextWrapper {
 
   static final InternalNode NULL_LAYOUT = new NoOpInternalNode();
-
-  final CSSLayoutContext mCssLayoutContext = new CSSLayoutContext();
 
   private final String mLogTag;
   private final ComponentsLogger mLogger;
