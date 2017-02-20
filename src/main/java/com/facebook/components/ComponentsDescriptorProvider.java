@@ -9,6 +9,6 @@ public final class ComponentsDescriptorProvider implements DescriptorProvider {
 
   @Override
   public void registerDescriptor(DescriptorRegistrar registrar) {
-
+    registrar.registerDescriptor(ComponentView.class, new ComponentViewDescriptor());
   }
 }
