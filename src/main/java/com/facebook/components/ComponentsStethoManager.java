@@ -164,6 +164,13 @@ class ComponentsStethoManager {
       }
     }
 
+    final String nodeKey = node.getComponent().getGlobalKey();
+    if (mOverrides.containsKey(nodeKey)) {
+      for (Map.Entry<String, String> entry : mOverrides.get(nodeKey).entrySet()) {
+        attributes.store(entry.getKey(), entry.getValue());
+      }
+    }
+
     ComponentsPools.release(defaults);
   }
 
