@@ -2,6 +2,7 @@
 
 package com.facebook.components;
 
+import java.lang.reflect.Field;
 import java.util.Map;
 
 import android.graphics.Rect;
@@ -10,6 +11,7 @@ import android.view.View;
 import com.facebook.stetho.common.Accumulator;
 import com.facebook.stetho.inspector.elements.AbstractChainedDescriptor;
 import com.facebook.stetho.inspector.elements.AttributeAccumulator;
+import com.facebook.stetho.inspector.elements.StyleAccumulator;
 import com.facebook.stetho.inspector.elements.android.HighlightableDescriptor;
 
 public final class StethoInternalNodeDescriptor
@@ -50,6 +52,47 @@ public final class StethoInternalNodeDescriptor
   @Override
   protected void onGetAttributes(StethoInternalNode element, AttributeAccumulator attributes) {
     element.node.getContext().getStethoManager().getAttributes(element.node, attributes);
+  }
+
+  @Override
+  protected void onGetStyles(StethoInternalNode element, StyleAccumulator accumulator) {
+    if (element.node.getComponent() == null ||
+        element.node.getComponent().getStateContainer() == null) {
+      return;
+    }
+
+    final Component component = element.node.getComponent();
+    final ComponentLifecycle.StateContainer stateContainer = component.getStateContainer();
+    final Field[] propFields = component.getClass().getDeclaredFields();
+    final Field[] stateFields = stateContainer.getClass().getDeclaredFields();
+
+    for (Field field : propFields) {
+      try {
+        field.setAccessible(true);
+        final Object value = field.get(component);
+        if (value != stateContainer && !(value instanceof ComponentLifecycle)) {
+          accumulator.store(
+              "props",
+              field.getName(),
+              value == null ? "null" : value.toString(),
+              false);
+        }
+      } catch (IllegalAccessException ignored) {}
+    }
+
+    for (Field field : stateFields) {
+      try {
+        field.setAccessible(true);
+        final Object value = field.get(stateContainer);
+        if (!(value instanceof ComponentLifecycle)) {
+          accumulator.store(
+              "state",
+              field.getName(),
+              value == null ? "null" : value.toString(),
+              false);
+        }
+      } catch (IllegalAccessException ignored) {}
+    }
   }
 
   @Override
