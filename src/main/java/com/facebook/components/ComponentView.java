@@ -1,0 +1,335 @@
+// Copyright 2004-present Facebook. All Rights Reserved.
+
+package com.facebook.components;
+
+import java.util.Deque;
+
+import android.content.Context;
+import android.graphics.Rect;
+import android.support.annotation.VisibleForTesting;
+import android.support.v4.view.accessibility.AccessibilityManagerCompat;
+import android.support.v4.view.accessibility.AccessibilityManagerCompat.AccessibilityStateChangeListenerCompat;
+import android.util.AttributeSet;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityManager;
+
+import com.facebook.proguard.annotations.DoNotStrip;
+
+import static android.content.Context.ACCESSIBILITY_SERVICE;
+import static com.facebook.components.AccessibilityUtils.isAccessibilityEnabled;
+
+/**
+ * A {@link ViewGroup} that can host the mounted state of a {@link Component}.
+ */
+public class ComponentView extends ComponentHost {
+  private ComponentTree mComponent;
+  private final MountState mMountState;
+  private boolean mIsAttached;
+  private final Rect mPreviousMountBounds = new Rect();
+
+  private final AccessibilityManager mAccessibilityManager;
+
+  private final AccessibilityStateChangeListenerCompat mAccessibilityStateChangeListener =
+      new AccessibilityStateChangeListenerCompat() {
+        @Override
+        public void onAccessibilityStateChanged(boolean enabled) {
+          refreshAccessibilityDelegatesIfNeeded(enabled);
+
+          requestLayout();
+        }
+      };
+
+  private static final int[] sLayoutSize = new int[2];
+
+  // Keep ComponentTree when detached from this view in case the ComponentTree is shared between
+  // sticky header and RecyclerView's binder
+  // TODO T14859077 Replace with proper solution
+  private ComponentTree mTemporaryDetachedComponent;
+
+  public ComponentView(Context context) {
+    this(context, null);
+  }
+
+  public ComponentView(Context context, AttributeSet attrs) {
+    this(new ComponentContext(context), attrs);
+  }
+
+  public ComponentView(ComponentContext context) {
+    this(context, null);
+  }
+
+  public ComponentView(ComponentContext context, AttributeSet attrs) {
+    super(context, attrs);
+
+    mMountState = new MountState(this);
+    mAccessibilityManager = (AccessibilityManager) context.getSystemService(ACCESSIBILITY_SERVICE);
+  }
+
+  private static void performLayoutOnChildrenIfNecessary(ComponentHost host) {
+    for (int i = 0, count = host.getChildCount(); i < count; i++) {
+      final View child = host.getChildAt(i);
+
+      if (child.isLayoutRequested()) {
+        // The hosting view doesn't allow children to change sizes dynamically as
+        // this would conflict with the component's own layout calculations.
+        child.measure(
+            MeasureSpec.makeMeasureSpec(child.getWidth(), MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(child.getHeight(), MeasureSpec.EXACTLY));
+        child.layout(child.getLeft(), child.getTop(), child.getRight(), child.getBottom());
+      }
+
+      if (child instanceof ComponentHost) {
+        performLayoutOnChildrenIfNecessary((ComponentHost) child);
+      }
+    }
+  }
+
+  public void startTemporaryDetach() {
+    mTemporaryDetachedComponent = mComponent;
+  }
+
+  @Override
+  protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+    onAttach();
+  }
+
+  @Override
+  protected void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+    onDetach();
+  }
+
+  @Override
+  public void onStartTemporaryDetach() {
+    super.onStartTemporaryDetach();
+    onDetach();
+  }
+
+  @Override
+  public void onFinishTemporaryDetach() {
+    super.onFinishTemporaryDetach();
+    onAttach();
+  }
+
+  private void onAttach() {
+    if (!mIsAttached) {
+      mIsAttached = true;
+
+      if (mComponent != null) {
+        mComponent.attach();
+      }
+
+      refreshAccessibilityDelegatesIfNeeded(isAccessibilityEnabled(getContext()));
+
+      AccessibilityManagerCompat.addAccessibilityStateChangeListener(
+          mAccessibilityManager,
+          mAccessibilityStateChangeListener);
+    }
+  }
+
+  private void onDetach() {
+    if (mIsAttached) {
+      mIsAttached = false;
+
+      if (mComponent != null) {
+        mMountState.detach();
+
+        mComponent.detach();
+      }
+
+      AccessibilityManagerCompat.removeAccessibilityStateChangeListener(
+          mAccessibilityManager,
+          mAccessibilityStateChangeListener);
+    }
+  }
+
+  @Override
+  protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    int width = MeasureSpec.getSize(widthMeasureSpec);
+    int height = MeasureSpec.getSize(heightMeasureSpec);
+
+    if (mTemporaryDetachedComponent != null && mComponent == null) {
+      setComponent(mTemporaryDetachedComponent);
+      mTemporaryDetachedComponent = null;
+    }
+
+    if (mComponent != null) {
+      mComponent.measure(widthMeasureSpec, heightMeasureSpec, sLayoutSize);
+
+      width = sLayoutSize[0];
+      height = sLayoutSize[1];
+    }
+
+    setMeasuredDimension(width, height);
+  }
+
+  @Override
+  protected void performLayout(boolean changed, int left, int top, int right, int bottom) {
+
+    if (mComponent != null) {
+      boolean wasMountTriggered = mComponent.layout();
+
+      if (!wasMountTriggered || shouldAlwaysLayoutChildren()) {
+        // If the layout() call on the component didn't trigger a mount step,
+        // we might need to perform an inner layout traversal on children that
+        // requested it as certain complex child views (e.g. ViewPager,
+        // RecyclerView, etc) rely on that.
+        performLayoutOnChildrenIfNecessary(this);
+      }
+    }
+  }
+
+  /**
+   * CONSULT THE COMPONENTS TEAM BEFORE USING THIS.
+   *
+   * Indicates if the children of this view should be laid regardless to a mount step being
+   * triggered on layout. This step can be important when some of the children in the hierarchy
+   * are changed (e.g. resized) but the parent wasn't.
+   *
+   * Since the framework doesn't expect its children to resize after being mounted, this should be
+   * used only for extreme cases where the underline views are complex and need this behavior.
+   * The {@link com.facebook.feedplugins.video.RichVideoAttachmentView}, used in
+   * OlderRichVideoAttachmentComponentSpec is
+   * the only view that currently needs this. Once it fixed - this method should be removed.
+   *
+   * @return boolean Returns true if the children of this view should be laid out even when a mount
+   *    step was not needed.
+   */
+  protected boolean shouldAlwaysLayoutChildren() {
+    return false;
+  }
+
+  @Override
+  protected boolean shouldRequestLayout() {
+    // Don't bubble up layout requests while mounting.
+    if (mComponent != null && mComponent.isMounting()) {
+      return false;
+    }
+
+    return super.shouldRequestLayout();
+  }
+
+  public ComponentTree getComponent() {
+    return mComponent;
+  }
+
+  public void setComponent(ComponentTree component) {
+    mTemporaryDetachedComponent = null;
+    if (mComponent == component) {
+      if (mIsAttached) {
+        rebind();
+      }
+      return;
+    }
+    setMountStateDirty();
+
+    if (mComponent != null) {
+      if (mIsAttached) {
+        mComponent.detach();
+      }
+
+      mComponent.clearComponentView();
+    }
+
+    mComponent = component;
+
+    if (mComponent != null) {
+      mComponent.setComponentView(this);
+
+      if (mIsAttached) {
+        mComponent.attach();
+      }
+    }
+  }
+
+  public void rebind() {
+    mMountState.rebind();
+  }
+
+  /**
+   * To be called this when the ComponentView is about to become inactive. This means that either
+   * the view is about to be recycled or moved off-screen.
+   */
+  public void unbind() {
+    mMountState.unbind();
+  }
+
+  /**
+   * Called from the ComponentTree when a new view want to use the same ComponentTree.
+   */
+  void clearComponentTree() {
+    if (mIsAttached) {
+      throw new IllegalStateException("Trying to clear the ComponentTree while attached.");
+    }
+
+    mComponent = null;
+  }
+
+  public void performIncrementalMount(Rect visibleRect) {
+    if (mComponent == null) {
+      return;
+    }
+
+    if (mComponent.isIncrementalMountEnabled()) {
+      mComponent.mountComponent(visibleRect);
+    } else {
+      throw new IllegalStateException("To perform incremental mounting, you need first to enable" +
+          " it when creating the ComponentTree.");
+    }
+  }
+
+  public void performIncrementalMount() {
+    if (mComponent == null) {
+      return;
+    }
+
+    if (mComponent.isIncrementalMountEnabled()) {
+      mComponent.incrementalMountComponent();
+    } else {
+      throw new IllegalStateException("To perform incremental mounting, you need first to enable" +
+          " it when creating the ComponentTree.");
+    }
+  }
+
+  public boolean isIncrementalMountEnabled() {
+    return (mComponent != null && mComponent.isIncrementalMountEnabled());
+  }
+
+  public void release() {
+    if (mComponent != null) {
+      mComponent.release();
+      mComponent = null;
+    }
+  }
+
+  void mount(LayoutState layoutState, Rect currentVisibleArea) {
+    if (currentVisibleArea == null) {
+      mPreviousMountBounds.setEmpty();
+    } else {
+      mPreviousMountBounds.set(currentVisibleArea);
+    }
+
+    mMountState.mount(layoutState, currentVisibleArea);
+  }
+
+  public Rect getPreviousMountBounds() {
+    return mPreviousMountBounds;
+  }
+
+  void setMountStateDirty() {
+    mMountState.setDirty();
+    mPreviousMountBounds.setEmpty();
+  }
+
+  boolean isMountStateDirty() {
+    return mMountState.isDirty();
+  }
+
+  @DoNotStrip
+  @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+  Deque<TestItem> findTestItems(String testKey) {
+    return mMountState.findTestItems(testKey);
+  }
+}
