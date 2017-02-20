@@ -145,10 +145,6 @@ public class ComponentTree {
 
   protected ComponentTree(Builder builder) {
     mContext = ComponentContext.withComponentTree(builder.context, this);
-    if (ComponentsConfiguration.IS_INTERNAL_BUILD) {
-      mContext.setStethoManager(new ComponentsStethoManager());
-    }
-
     mRoot = builder.root;
 
     mIncrementalMountEnabled = builder.incrementalMountEnabled;

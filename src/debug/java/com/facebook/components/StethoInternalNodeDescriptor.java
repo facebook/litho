@@ -3,7 +3,6 @@
 package com.facebook.components;
 
 import java.lang.reflect.Field;
-import java.util.Map;
 
 import android.graphics.Rect;
 import android.view.View;
@@ -28,7 +27,8 @@ public final class StethoInternalNodeDescriptor
 
   @Override
   protected void onGetChildren(StethoInternalNode element, Accumulator<Object> children) {
-    final ComponentsStethoManager stethoManager = element.node.getContext().getStethoManager();
+    final ComponentsStethoManagerImpl stethoManager =
+        (ComponentsStethoManagerImpl) element.node.getContext().getStethoManager();
     for (int i = 0, count = element.node.getChildCount(); i < count; i++) {
       children.store(stethoManager.getStethoInternalNode(element.node.getChildAt(i)));
     }
@@ -57,7 +57,9 @@ public final class StethoInternalNodeDescriptor
 
   @Override
   protected void onGetAttributes(StethoInternalNode element, AttributeAccumulator attributes) {
-    element.node.getContext().getStethoManager().getAttributes(element.node, attributes);
+    final ComponentsStethoManagerImpl stethoManager =
+        (ComponentsStethoManagerImpl) element.node.getContext().getStethoManager();
+    stethoManager.getAttributes(element.node, attributes);
   }
 
   @Override
@@ -108,7 +110,8 @@ public final class StethoInternalNodeDescriptor
     final ComponentView view = componentTree == null ? null : componentTree.getComponentView();
 
     if (view != null) {
-      final ComponentsStethoManager stethoManager = context.getStethoManager();
+      final ComponentsStethoManagerImpl stethoManager =
+          (ComponentsStethoManagerImpl) context.getStethoManager();
       stethoManager.setStyleOverrides(element.node, parseSetAttributesAsTextArg(text));
       stethoManager.getAttributes(element.node, new AttributeAccumulator() {
             @Override
