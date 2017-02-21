@@ -1255,7 +1255,27 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   void calculateLayout(float width, float height) {
+    final ComponentTree tree = mComponentContext == null
+        ? null
+        : mComponentContext.getComponentTree();
+    final ComponentsStethoManager stethoManager = tree == null ? null : tree.getStethoManager();
+    if (stethoManager != null) {
+      applyOverridesRecursive(stethoManager, this);
+    }
+
     mYogaNode.calculateLayout(width, height);
+  }
+
+  private static void applyOverridesRecursive(
+      ComponentsStethoManager stethoManager,
+      InternalNode node) {
+    stethoManager.applyOverrides(node);
+    for (int i = 0, count = node.getChildCount(); i < count; i++) {
+      applyOverridesRecursive(stethoManager, node.getChildAt(i));
+    }
+    if (node.hasNestedTree()) {
+      applyOverridesRecursive(stethoManager, node.getNestedTree());
+    }
   }
 
   void calculateLayout() {
@@ -1303,14 +1323,6 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public ComponentLayout build() {
-    final ComponentTree tree = mComponentContext == null
-        ? null
-        : mComponentContext.getComponentTree();
-    final ComponentsStethoManager stethoManager = tree == null ? null : tree.getStethoManager();
-    if (stethoManager != null) {
-      stethoManager.applyOverrides(this);
-    }
-
     return this;
   }
 
