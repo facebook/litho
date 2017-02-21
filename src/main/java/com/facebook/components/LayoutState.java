@@ -1298,8 +1298,19 @@ class LayoutState {
   }
 
   boolean isCompatibleSpec(int widthSpec, int heightSpec) {
-    return (SizeSpec.getMode(widthSpec) == UNSPECIFIED || mWidthSpec == widthSpec) &&
-        (SizeSpec.getMode(heightSpec) == UNSPECIFIED || mHeightSpec == heightSpec);
+    final boolean widthIsCompatible =
+        MeasureComparisonUtils.isMeasureSpecCompatible(
+            mWidthSpec,
+            widthSpec,
+            mWidth);
+
+    final boolean heightIsCompatible =
+        MeasureComparisonUtils.isMeasureSpecCompatible(
+            mHeightSpec,
+            heightSpec,
+            mHeight);
+
+    return widthIsCompatible && heightIsCompatible;
   }
 
   boolean isCompatibleAccessibility() {
