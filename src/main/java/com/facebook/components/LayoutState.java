@@ -100,7 +100,6 @@ class LayoutState {
         }
       };
 
-  private static final float DELTA = 0.5f;
   private static final int[] DRAWABLE_STATE_ENABLED = new int[]{android.R.attr.state_enabled};
   private static final int[] DRAWABLE_STATE_NOT_ENABLED = new int[]{};
 
@@ -1615,86 +1614,20 @@ class LayoutState {
       int newHeightSpec,
       float oldMeasuredWidth,
       float oldMeasuredHeight) {
-    final boolean hasSameWidthSpec = newWidthSpec == oldWidthSpec;
-    final boolean hasSameHeightSpec = newHeightSpec == oldHeightSpec;
-
-    final int newWidthSpecMode = SizeSpec.getMode(newWidthSpec);
-    final int newHeightSpecMode = SizeSpec.getMode(newHeightSpec);
-    final int oldWidthSpecMode = SizeSpec.getMode(oldWidthSpec);
-    final int oldHeightSpecMode = SizeSpec.getMode(oldHeightSpec);
-    final int newWidthSpecSize = SizeSpec.getSize(newWidthSpec);
-    final int newHeightSpecSize = SizeSpec.getSize(newHeightSpec);
-    final int oldWidthSpecSize = SizeSpec.getSize(oldWidthSpec);
-    final int oldHeightSpecSize = SizeSpec.getSize(oldHeightSpec);
-
     final boolean widthIsCompatible =
-        hasSameWidthSpec ||
-            newSizeIsExactAndMatchesOldMeasuredSize(
-                newWidthSpecMode,
-                newWidthSpecSize,
-                oldMeasuredWidth) ||
-            oldSizeIsUnspecifiedAndStillFits(
-                oldWidthSpecMode,
-                newWidthSpecMode,
-                newWidthSpecSize,
-                oldMeasuredWidth) ||
-            newMeasureSizeIsStricterAndStillValid(
-                oldWidthSpecMode,
-                newWidthSpecMode,
-                oldWidthSpecSize,
-                newWidthSpecSize,
-                oldMeasuredWidth);
+        MeasureComparisonUtils.isMeasureSpecCompatible(
+            oldWidthSpec,
+            newWidthSpec,
+            (int) oldMeasuredWidth);
 
     final boolean heightIsCompatible =
-        hasSameHeightSpec ||
-            newSizeIsExactAndMatchesOldMeasuredSize(
-                newHeightSpecMode,
-                newHeightSpecSize,
-                oldMeasuredHeight) ||
-            oldSizeIsUnspecifiedAndStillFits(
-                oldHeightSpecMode,
-                newHeightSpecMode,
-                newHeightSpecSize,
-                oldMeasuredHeight) ||
-            newMeasureSizeIsStricterAndStillValid(
-                oldHeightSpecMode,
-                newHeightSpecMode,
-                oldHeightSpecSize,
-                newHeightSpecSize,
-                oldMeasuredHeight);
-
+        MeasureComparisonUtils.isMeasureSpecCompatible(
+            oldHeightSpec,
+            newHeightSpec,
+            (int) oldMeasuredHeight);
     return  widthIsCompatible && heightIsCompatible;
   }
 
-  private static boolean newSizeIsExactAndMatchesOldMeasuredSize(
-      int newSizeSpecMode,
-      int newSizeSpecSize,
-      float oldMeasuredSize) {
-    return (newSizeSpecMode == EXACTLY) &&
-            (Math.abs(newSizeSpecSize - oldMeasuredSize) < DELTA);
-  }
-
-  private static boolean oldSizeIsUnspecifiedAndStillFits(
-      int oldSizeSpecMode,
-      int newSizeSpecMode,
-      int newSizeSpecSize,
-      float oldMeasuredSize) {
-    return newSizeSpecMode == AT_MOST &&
-        oldSizeSpecMode == UNSPECIFIED &&
-        newSizeSpecSize >= oldMeasuredSize;
-  }
-
-  private static boolean newMeasureSizeIsStricterAndStillValid(
-      int oldSizeSpecMode,
-      int newSizeSpecMode,
-      int oldSizeSpecSize,
-      int newSizeSpecSize,
-      float oldMeasuredSize) {
-    return oldSizeSpecMode == AT_MOST &&
-        newSizeSpecMode == AT_MOST &&
-        oldSizeSpecSize > newSizeSpecSize &&
-        oldMeasuredSize <= newSizeSpecSize;
-  }
 
   /**
    * Returns true if this is the root node (which always generates a matching layout
