@@ -476,14 +476,15 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
   }
 
   private static String getGlobalKey(InternalNode node) {
-    final InternalNode parent = parent(node);
-    final Component component = node.getComponent();
+    final InternalNode parent = node.getParent();
+    final InternalNode nestedTreeHolder = node.getNestedTreeHolder();
+
     if (parent != null) {
-      return getGlobalKey(parent) + "." + (component == null ?
-          parent.getChildIndex(node) :
-          component.getGlobalKey());
+      return getGlobalKey(parent) + "." + parent.getChildIndex(node);
+    } else if (nestedTreeHolder != null) {
+      return "nested";
     } else {
-      return component == null ? "root" : component.getGlobalKey();
+      return "root";
     }
   }
 
