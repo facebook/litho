@@ -12,6 +12,8 @@ import android.support.annotation.VisibleForTesting;
 import android.view.View;
 import android.view.animation.Interpolator;
 
+import com.facebook.components.Transition.TransitionListener;
+
 import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
 
 /**
@@ -20,10 +22,6 @@ import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
  */
 @TargetApi(ICE_CREAM_SANDWICH)
 class TransitionAnimator {
-
-  interface TransitionAnimatorListener {
-    void onTransitionAnimatorEnd();
-  }
 
   private static final int DURATION = 1 << 0;
   private static final int START_DELAY = 1 << 1;
@@ -38,7 +36,7 @@ class TransitionAnimator {
   // This is not exact but an approximation used to compute the remaining startDelay.
   private long mStartTime;
   private long mPlayedTime;
-  private TransitionAnimatorListener mListener;
+  private TransitionListener mListener;
 
   TransitionAnimator() {
     mAnimator = new ObjectAnimator();
@@ -46,7 +44,7 @@ class TransitionAnimator {
       @Override
       public void onAnimationEnd(Animator animation) {
         if (mListener != null) {
-          mListener.onTransitionAnimatorEnd();
+          mListener.onTransitionEnd();
         }
       }
     });
@@ -74,7 +72,7 @@ class TransitionAnimator {
     mStartDelay = delay;
   }
 
-  void setListener(TransitionAnimatorListener listener) {
+  void setListener(TransitionListener listener) {
     mListener = listener;
   }
 
@@ -123,15 +121,15 @@ class TransitionAnimator {
   }
 
   void stop() {
+    if (!mAnimator.isRunning()) {
+      throw new IllegalStateException("stop() called but the Animator wasn't running.");
+    }
+
     mPlayedTime = mAnimator.getCurrentPlayTime();
     // Don't trigger end Listeners when the animation is manually interrupted.
     mAnimator.removeAllListeners();
     mAnimator.removeAllUpdateListeners();
     mAnimator.end();
     mAnimator.setTarget(null);
-  }
-
-  boolean isRunning() {
-    return mAnimator.isRunning();
   }
 }

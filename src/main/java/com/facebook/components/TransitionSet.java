@@ -16,6 +16,7 @@ public class TransitionSet extends Transition {
   final private List<Transition> mTransitions;
 
   TransitionSet(Transition... transitions) {
+    super(null, TransitionType.UNDEFINED);
     mTransitions = Arrays.asList(transitions);
   }
 
