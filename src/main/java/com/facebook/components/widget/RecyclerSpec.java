@@ -35,7 +35,7 @@ class RecyclerSpec {
   @PropDefault static final int scrollBarStyle = View.SCROLLBARS_INSIDE_OVERLAY;
   @PropDefault static final boolean hasFixedSize = true;
   @PropDefault static final ItemAnimator itemAnimator =
-      new DefaultItemAnimator();
+      new IncrementalMountDefaultItemAnimator();
   @PropDefault static final int recyclerViewId = View.NO_ID;
 
   @OnMeasure
