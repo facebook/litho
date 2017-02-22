@@ -339,7 +339,11 @@ class EditTextSpec {
       boolean editable,
       int selection) {
 
-    editText.setText(text);
+    // If it's the same text, don't set it again so that the caret won't move to the beginning or
+    // end of the string. Only looking at String instances in order to avoid span comparisons.
+    if (!(text instanceof String) || !text.equals(editText.getText().toString())) {
+      editText.setText(text);
+    }
     editText.setHint(hint);
     editText.setEllipsize(ellipsize);
     editText.setMinLines(minLines);
