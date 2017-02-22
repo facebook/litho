@@ -2,7 +2,11 @@
 
 package com.facebook.components;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 import android.annotation.TargetApi;
+import android.support.annotation.IntDef;
 import android.view.View;
 
 import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
@@ -13,6 +17,14 @@ import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
  */
 @TargetApi(ICE_CREAM_SANDWICH)
 class TransitionManager {
+
+  @IntDef({KeyStatus.APPEARED, KeyStatus.UNCHANGED, KeyStatus.DISAPPEARED})
+  @Retention(RetentionPolicy.SOURCE)
+  @interface KeyStatus {
+    int APPEARED = 0;
+    int UNCHANGED = 1;
+    int DISAPPEARED = 2;
+  }
 
   TransitionManager() {
   }
