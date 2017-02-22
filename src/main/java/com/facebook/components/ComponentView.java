@@ -336,6 +336,10 @@ public class ComponentView extends ComponentHost {
     return mMountState.isDirty();
   }
 
+  MountState getMountState() {
+    return mMountState;
+  }
+
   @DoNotStrip
   @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
   Deque<TestItem> findTestItems(String testKey) {

@@ -42,6 +42,24 @@ public final class StethoInternalNodeDescriptor
         children.store(stethoManager.getStethoInternalNode(nestedTree.getChildAt(i)));
       }
     }
+
+    final ComponentContext context = element.node.getContext();
+    final ComponentTree tree = context == null ? null : context.getComponentTree();
+    final ComponentView view = tree == null ? null : tree.getComponentView();
+    final MountState mountState = view == null ? null : view.getMountState();
+
+    if (mountState != null) {
+      for (int i = 0, count = mountState.getItemCount(); i < count; i++) {
+        final MountItem mountItem = mountState.getItemAt(i);
+        final Component component = mountItem.getComponent();
+
+        if (component != null &&
+            component == element.node.getComponent() &&
+            Component.isMountSpec(component)) {
+          children.store(mountItem.getContent());
+        }
+      }
+    }
   }
 
   @Override

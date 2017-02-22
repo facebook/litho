@@ -1487,7 +1487,11 @@ class MountState {
     mMountStats.unmountedCount++;
   }
 
-  private MountItem getItemAt(int i) {
+  int getItemCount() {
+    return mIndexToItemMap.size();
+  }
+
+  MountItem getItemAt(int i) {
     return mIndexToItemMap.get(mLayoutOutputsIds[i]);
   }
 
