@@ -47,7 +47,7 @@ class SnapRecyclerSpec {
   protected static void onBoundsDefined(
       ComponentContext context,
       ComponentLayout layout,
-      @Prop RecyclerComponentBinder binder) {
+      @Prop Binder<RecyclerView> binder) {
     binder.setSize(
         layout.getWidth(),
         layout.getHeight());
@@ -65,7 +65,7 @@ class SnapRecyclerSpec {
   protected static void onMount(
       ComponentContext c,
       SnapRecyclerView snapRecyclerView,
-      @Prop RecyclerComponentBinder binder,
+      @Prop Binder<RecyclerView> binder,
       @Prop(optional = true) boolean hasFixedSize,
       @Prop(optional = true) boolean clipToPadding,
       @Prop(optional = true) int scrollBarStyle) {
@@ -81,7 +81,7 @@ class SnapRecyclerSpec {
       ComponentContext context,
       SnapRecyclerView snapRecyclerView,
       @Prop(optional = true) ItemAnimator itemAnimator,
-      @Prop RecyclerComponentBinder binder,
+      @Prop Binder<RecyclerView> binder,
       @Prop SnapRecyclerView.SnapDelegate snapDelegate,
       @Prop(optional =  true) final RecyclerEventsController recyclerEventsController,
       @Prop(optional = true) RecyclerView.ItemDecoration itemDecoration,
@@ -112,7 +112,7 @@ class SnapRecyclerSpec {
   protected static void onUnbind(
       ComponentContext context,
       SnapRecyclerView snapRecyclerView,
-      @Prop RecyclerComponentBinder binder,
+      @Prop Binder<RecyclerView> binder,
       @Prop(optional =  true) RecyclerEventsController recyclerEventsController,
       @Prop(optional = true) RecyclerView.ItemDecoration itemDecoration,
       @Prop(optional = true) RecyclerView.OnScrollListener onScrollListener,
@@ -139,13 +139,13 @@ class SnapRecyclerSpec {
   protected static void onUnmount(
       ComponentContext context,
       SnapRecyclerView snapRecyclerView,
-      @Prop RecyclerComponentBinder binder) {
+      @Prop Binder<RecyclerView> binder) {
     binder.unmount(snapRecyclerView);
   }
 
   @ShouldUpdate(onMount = true)
   protected static boolean shouldUpdate(
-      Diff<RecyclerComponentBinder> binder,
+      Diff<Binder<RecyclerView>> binder,
       Diff<Boolean> hasFixedSize,
       Diff<Boolean> clipToPadding,
       Diff<Integer> scrollBarStyle) {

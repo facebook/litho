@@ -114,12 +114,12 @@ public abstract class RecyclerComponentBinder<L extends RecyclerView.LayoutManag
 
   // TODO(12986103): Remove onBoundsDefined once the experiment proved to be ok.
   @Override
-  protected void onBoundsDefined() {
+  public void onBoundsDefined() {
     updateRange(0, getCount(), URFLAG_REFRESH_IN_RANGE | URFLAG_RELEASE_OUTSIDE_RANGE);
   }
 
   @Override
-  protected void onMount(RecyclerView recyclerView) {
+  public void onMount(RecyclerView recyclerView) {
     mRecyclerView = recyclerView;
 
     if (recyclerView.getLayoutManager() == null) {
@@ -136,15 +136,15 @@ public abstract class RecyclerComponentBinder<L extends RecyclerView.LayoutManag
   }
 
   @Override
-  protected void onBind(RecyclerView recyclerView) {
+  public void onBind(RecyclerView recyclerView) {
   }
 
   @Override
-  protected void onUnbind(RecyclerView recyclerView) {
+  public void onUnbind(RecyclerView recyclerView) {
   }
 
   @Override
-  protected void onUnmount(RecyclerView recyclerView) {
+  public void onUnmount(RecyclerView recyclerView) {
     mRecyclerView.clearOnScrollListeners();
     mRecyclerView.setLayoutManager(null);
     mRecyclerView.setAdapter(null);

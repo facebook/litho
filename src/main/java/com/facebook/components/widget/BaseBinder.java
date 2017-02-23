@@ -26,7 +26,7 @@ import static com.facebook.components.ThreadUtils.assertMainThread;
 
 public abstract class BaseBinder<
     V extends ViewGroup,
-    R extends WorkingRangeController> extends Binder<V> {
+    R extends WorkingRangeController> implements Binder<V> {
 
   private static final Pools.SynchronizedPool<List> sListPool =
       new Pools.SynchronizedPool<>(8);
@@ -57,6 +57,7 @@ public abstract class BaseBinder<
   private int mContentHeightSpec = SizeSpec.makeSizeSpec(0, UNSPECIFIED);
   private Listener mListener;
   private R mRangeController;
+  private V mView;
 
   public BaseBinder(Context context, R rangeController) {
     this(context, null, rangeController);
@@ -405,6 +406,68 @@ public abstract class BaseBinder<
   }
 
   /**
+   * Call this method before the {@link View} is mounted, i.e. within
+   * {@link com.facebook.components.ComponentLifecycle#onMount(Context, Object, Component)}
+   */
+  @Override
+  public final void mount(V view) {
+    assertMainThread();
+
+    if (mView != null) {
+      // If this binder is being mounted on a new view before it was unmounted from the previous
+      // one, then unmount now.
+      onUnmount(mView);
+    }
+
+    mView = view;
+
+    onMount(mView);
+  }
+
+  /**
+   * Bind this {@link Binder} to a {@link View}. Remember to call
+   * {@link #notifyDataSetChanged()} when your {@link Component}s are
+   * ready to be used.
+   */
+  @Override
+  public final void bind(V view) {
+    assertMainThread();
+
+    if (mView != view) {
+      unbind(mView);
+      unmount(mView);
+      mView = null;
+      mount(view);
+    }
+
+    onBind(mView);
+  }
+
+  @Override
+  public final void unbind(V view) {
+    assertMainThread();
+    if (view != mView) {
+      return;
+    }
+
+    onUnbind(mView);
+  }
+
+  @Override
+  public final void unmount(V view) {
+    assertMainThread();
+
+    if (view != mView) {
+      // This binder has already been mounted on another view.
+      return;
+    }
+
+    onUnmount(mView);
+
+    mView = null;
+  }
+
+  /**
    * Returns the height of the {@link View} corresponding to the binder.
    */
   public int getHeight() {
@@ -441,6 +504,11 @@ public abstract class BaseBinder<
     }
   }
 
+  @Override
+  public boolean isIncrementalMountEnabled() {
+    return false;
+  }
+
   protected int getInitializeStartPosition() {
     return 0;
   }
@@ -463,10 +531,14 @@ public abstract class BaseBinder<
   protected abstract int getCount();
 
   @Override
-  protected void onBoundsDefined() {
+  public void onBoundsDefined() {
     updateRange(0, getCount(), URFLAG_REFRESH_IN_RANGE);
   }
 
+  @Override
+  public boolean isAsyncLayoutEnabled() {
+    return false;
+  }
 
   /**
    * Returns the width spec to be used for the component in the

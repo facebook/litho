@@ -101,14 +101,14 @@ public abstract class PagerBinder extends BaseBinder<
 
   // TODO(12986103): Remove onBoundsDefined once the experiment proved to be ok.
   @Override
-  protected void onBoundsDefined() {
+  public void onBoundsDefined() {
     getRangeController().notifyOnPageSelected(
         mCurrentItem,
         URFLAG_REFRESH_IN_RANGE | URFLAG_RELEASE_OUTSIDE_RANGE);
   }
 
   @Override
-  protected void onMount(ViewPager viewPager) {
+  public void onMount(ViewPager viewPager) {
     mViewPager = viewPager;
 
     viewPager.setOnPageChangeListener(mOnPageChangeListener);
@@ -118,15 +118,15 @@ public abstract class PagerBinder extends BaseBinder<
   }
 
   @Override
-  protected void onBind(ViewPager viewPager) {
+  public void onBind(ViewPager viewPager) {
   }
 
   @Override
-  protected void onUnbind(ViewPager viewPager) {
+  public void onUnbind(ViewPager viewPager) {
   }
 
   @Override
-  protected void onUnmount(ViewPager viewPager) {
+  public void onUnmount(ViewPager viewPager) {
     mViewPager.setOnPageChangeListener(null);
     mViewPager.setAdapter(null);
     mViewPager = null;
