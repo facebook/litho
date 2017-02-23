@@ -69,10 +69,15 @@ class SnapRecyclerSpec {
       @Prop Binder<RecyclerView> binder,
       @Prop(optional = true) boolean hasFixedSize,
       @Prop(optional = true) boolean clipToPadding,
-      @Prop(optional = true) int scrollBarStyle) {
+      @Prop(optional = true) int scrollBarStyle,
+      @Prop(optional = true) RecyclerView.ItemDecoration itemDecoration) {
     snapRecyclerView.setHasFixedSize(hasFixedSize);
     snapRecyclerView.setClipToPadding(clipToPadding);
     snapRecyclerView.setScrollBarStyle(scrollBarStyle);
+
+    if (itemDecoration != null) {
+      snapRecyclerView.addItemDecoration(itemDecoration);
+    }
 
     binder.mount(snapRecyclerView);
   }
@@ -85,16 +90,11 @@ class SnapRecyclerSpec {
       @Prop Binder<RecyclerView> binder,
       @Prop SnapRecyclerView.SnapDelegate snapDelegate,
       @Prop(optional =  true) final RecyclerEventsController recyclerEventsController,
-      @Prop(optional = true) RecyclerView.ItemDecoration itemDecoration,
       @Prop(optional = true) RecyclerView.OnScrollListener onScrollListener,
       Output<ItemAnimator> oldAnimator) {
     oldAnimator.set(snapRecyclerView.getItemAnimator());
     if (itemAnimator != RecyclerSpec.itemAnimator) {
       snapRecyclerView.setItemAnimator(itemAnimator);
-    }
-
-    if (itemDecoration != null) {
-      snapRecyclerView.addItemDecoration(itemDecoration);
     }
 
     if (onScrollListener != null) {
@@ -115,7 +115,6 @@ class SnapRecyclerSpec {
       SnapRecyclerView snapRecyclerView,
       @Prop Binder<RecyclerView> binder,
       @Prop(optional =  true) RecyclerEventsController recyclerEventsController,
-      @Prop(optional = true) RecyclerView.ItemDecoration itemDecoration,
       @Prop(optional = true) RecyclerView.OnScrollListener onScrollListener,
       @FromBind ItemAnimator oldAnimator) {
     snapRecyclerView.setItemAnimator(oldAnimator);
@@ -124,10 +123,6 @@ class SnapRecyclerSpec {
 
     if (recyclerEventsController != null) {
       recyclerEventsController.setRecyclerView(null);
-    }
-
-    if (itemDecoration != null) {
-      snapRecyclerView.removeItemDecoration(itemDecoration);
     }
 
     if (onScrollListener != null) {
@@ -140,8 +135,13 @@ class SnapRecyclerSpec {
   protected static void onUnmount(
       ComponentContext context,
       SnapRecyclerView snapRecyclerView,
-      @Prop Binder<RecyclerView> binder) {
+      @Prop Binder<RecyclerView> binder,
+      @Prop(optional = true) RecyclerView.ItemDecoration itemDecoration) {
     binder.unmount(snapRecyclerView);
+
+    if (itemDecoration != null) {
+      snapRecyclerView.removeItemDecoration(itemDecoration);
+    }
   }
 
   @ShouldUpdate(onMount = true)
@@ -149,7 +149,8 @@ class SnapRecyclerSpec {
       Diff<Binder<RecyclerView>> binder,
       Diff<Boolean> hasFixedSize,
       Diff<Boolean> clipToPadding,
-      Diff<Integer> scrollBarStyle) {
+      Diff<Integer> scrollBarStyle,
+      Diff<RecyclerView.ItemDecoration> itemDecoration) {
     if (binder.getPrevious() != binder.getNext()) {
       return true;
     }
@@ -166,6 +167,11 @@ class SnapRecyclerSpec {
       return true;
     }
 
-    return false;
+    final RecyclerView.ItemDecoration previous = itemDecoration.getPrevious();
+    final RecyclerView.ItemDecoration next = itemDecoration.getNext();
+    final boolean itemDecorationIsEqual =
+        (previous == null) ? (next == null) : previous.equals(next);
+
+    return !itemDecorationIsEqual;
   }
 }

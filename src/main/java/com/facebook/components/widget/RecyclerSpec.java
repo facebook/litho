@@ -4,7 +4,6 @@ package com.facebook.components.widget;
 
 import android.support.annotation.IdRes;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ItemAnimator;
 import android.view.View;
@@ -87,6 +86,7 @@ class RecyclerSpec {
       @Prop(optional = true) boolean hasFixedSize,
       @Prop(optional = true) boolean clipToPadding,
       @Prop(optional = true) int scrollBarStyle,
+      @Prop(optional = true) RecyclerView.ItemDecoration itemDecoration,
       @Prop(optional = true) @IdRes int recyclerViewId) {
     final RecyclerView recyclerView = recyclerViewWrapper.getRecyclerView();
 
@@ -101,6 +101,10 @@ class RecyclerSpec {
     // TODO (t14949498) determine if this is necessary
     recyclerView.setId(recyclerViewId);
 
+    if (itemDecoration != null) {
+      recyclerView.addItemDecoration(itemDecoration);
+    }
+
     binder.mount(recyclerView);
   }
 
@@ -111,7 +115,6 @@ class RecyclerSpec {
       @Prop(optional = true) ItemAnimator itemAnimator,
       @Prop Binder<RecyclerView> binder,
       @Prop(optional = true) final RecyclerEventsController recyclerEventsController,
-      @Prop(optional = true) RecyclerView.ItemDecoration itemDecoration,
       @Prop(optional = true) RecyclerView.OnScrollListener onScrollListener,
       @Prop(optional = true) boolean isRefreshing,
       @FromPrepare OnRefreshListener onRefreshListener,
@@ -134,10 +137,6 @@ class RecyclerSpec {
       recyclerView.setItemAnimator(itemAnimator);
     }
 
-    if (itemDecoration != null) {
-      recyclerView.addItemDecoration(itemDecoration);
-    }
-
     if (onScrollListener != null) {
       recyclerView.addOnScrollListener(onScrollListener);
     }
@@ -155,7 +154,6 @@ class RecyclerSpec {
       RecyclerViewWrapper recyclerViewWrapper,
       @Prop Binder<RecyclerView> binder,
       @Prop(optional =  true) RecyclerEventsController recyclerEventsController,
-      @Prop(optional = true) RecyclerView.ItemDecoration itemDecoration,
       @Prop(optional = true) RecyclerView.OnScrollListener onScrollListener,
       @FromBind ItemAnimator oldAnimator) {
     final RecyclerView recyclerView = recyclerViewWrapper.getRecyclerView();
@@ -174,9 +172,6 @@ class RecyclerSpec {
       recyclerEventsController.setRecyclerView(null);
     }
 
-    if (itemDecoration != null) {
-      recyclerView.removeItemDecoration(itemDecoration);
-    }
 
     if (onScrollListener != null) {
       recyclerView.removeOnScrollListener(onScrollListener);
@@ -189,7 +184,8 @@ class RecyclerSpec {
   static void onUnmount(
       ComponentContext context,
       RecyclerViewWrapper recyclerViewWrapper,
-      @Prop Binder<RecyclerView> binder) {
+      @Prop Binder<RecyclerView> binder,
+      @Prop(optional = true) RecyclerView.ItemDecoration itemDecoration) {
     final RecyclerView recyclerView = recyclerViewWrapper.getRecyclerView();
 
     if (recyclerView == null) {
@@ -199,6 +195,11 @@ class RecyclerSpec {
     }
 
     recyclerView.setId(RecyclerSpec.recyclerViewId);
+
+    if (itemDecoration != null) {
+      recyclerView.removeItemDecoration(itemDecoration);
+    }
+
     binder.unmount(recyclerView);
   }
 
@@ -207,7 +208,8 @@ class RecyclerSpec {
       Diff<Binder<RecyclerView>> binder,
       Diff<Boolean> hasFixedSize,
       Diff<Boolean> clipToPadding,
-      Diff<Integer> scrollBarStyle) {
+      Diff<Integer> scrollBarStyle,
+      Diff<RecyclerView.ItemDecoration> itemDecoration) {
     if (binder.getPrevious() != binder.getNext()) {
       return true;
     }
@@ -224,6 +226,11 @@ class RecyclerSpec {
       return true;
     }
 
-    return false;
+    final RecyclerView.ItemDecoration previous = itemDecoration.getPrevious();
+    final RecyclerView.ItemDecoration next = itemDecoration.getNext();
+    final boolean itemDecorationIsEqual =
+        (previous == null) ? (next == null) : previous.equals(next);
+
+    return !itemDecorationIsEqual;
   }
 }
