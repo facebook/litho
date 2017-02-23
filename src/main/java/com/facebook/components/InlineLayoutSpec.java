@@ -18,10 +18,8 @@ public abstract class InlineLayoutSpec extends Component implements Cloneable {
     }
   }
 
-  private static final ComponentLifecycle sLifecycle = new Lifecycle();
-
   public InlineLayoutSpec() {
-    super(sLifecycle);
+    super(new Lifecycle());
   }
 
   @Override
