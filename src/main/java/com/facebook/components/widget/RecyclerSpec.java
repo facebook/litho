@@ -146,6 +146,11 @@ class RecyclerSpec {
     if (recyclerEventsController != null) {
       recyclerEventsController.setRecyclerView(recyclerView);
     }
+
+    if (recyclerViewWrapper.hasBeenDetachedFromWindow()) {
+      recyclerView.requestLayout();
+      recyclerViewWrapper.setHasBeenDetachedFromWindow(false);
+    }
   }
 
   @OnUnbind
