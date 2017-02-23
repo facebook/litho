@@ -51,7 +51,7 @@ public final class StethoInternalNodeDescriptor
     if (mountState != null) {
       for (int i = 0, count = mountState.getItemCount(); i < count; i++) {
         final MountItem mountItem = mountState.getItemAt(i);
-        final Component component = mountItem.getComponent();
+        final Component component = mountItem == null ? null : mountItem.getComponent();
 
         if (component != null &&
             component == element.node.getComponent() &&
