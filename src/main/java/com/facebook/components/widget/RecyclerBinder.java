@@ -34,7 +34,7 @@ import static com.facebook.components.MeasureComparisonUtils.isMeasureSpecCompat
  * and attaching them to a {@link RecyclerSpec}.
  */
 @ThreadSafe
-public class RecyclerBinder {
+public class RecyclerBinder implements Binder<RecyclerView> {
 
   private static final int UNINITIALIZED = -1;
   private static final Size sDummySize = new Size();
@@ -313,8 +313,19 @@ public class RecyclerBinder {
    * TODO 16212132 remove getComponentAt from binder
    */
   @Nullable
+  @Override
   public final synchronized ComponentTree getComponentAt(int position) {
     return mComponentTreeHolders.get(position).getComponentTree();
+  }
+
+  @Override
+  public void bind(RecyclerView view) {
+    // Nothing to do here.
+  }
+
+  @Override
+  public void unbind(RecyclerView view) {
+    // Nothing to do here.
   }
 
   /**
@@ -334,7 +345,8 @@ public class RecyclerBinder {
    * @param widthSpec the widthSpec to be used to measure the RecyclerView.
    * @param heightSpec the heightSpec to be used to measure the RecyclerView.
    */
-  public synchronized void onMeasure(Size outSize, int widthSpec, int heightSpec) {
+  @Override
+  public synchronized void measure(Size outSize, int widthSpec, int heightSpec) {
     final int scrollDirection = mLayoutInfo.getScrollDirection();
 
     switch (scrollDirection) {
@@ -485,11 +497,12 @@ public class RecyclerBinder {
    * children layouts if the measures provided here are not compatible with the ones receive in
    * onMeasure.
    */
-  public synchronized void onBoundsDefined(int width, int height) {
-    if (mLastWidthSpec == UNINITIALIZED || !isCompatibleSize(
+  @Override
+  public synchronized void setSize(int width, int height) {
+      if (mLastWidthSpec == UNINITIALIZED || !isCompatibleSize(
         SizeSpec.makeSizeSpec(width, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(height, SizeSpec.EXACTLY))) {
-      onMeasure(
+      measure(
           sDummySize,
           SizeSpec.makeSizeSpec(width, SizeSpec.EXACTLY),
           SizeSpec.makeSizeSpec(height, SizeSpec.EXACTLY));
@@ -503,7 +516,8 @@ public class RecyclerBinder {
    * @param view the {@link RecyclerView} being mounted.
    */
   @UiThread
-  public void onMount(RecyclerView view) {
+  @Override
+  public void mount(RecyclerView view) {
     ThreadUtils.assertMainThread();
 
     if (mMountedView == view) {
@@ -511,7 +525,7 @@ public class RecyclerBinder {
     }
 
     if (mMountedView != null) {
-      onUnmount(mMountedView);
+      unmount(mMountedView);
     }
 
     mMountedView = view;
@@ -532,7 +546,8 @@ public class RecyclerBinder {
    * @param view the {@link RecyclerView} being unmounted.
    */
   @UiThread
-  public void onUnmount(RecyclerView view) {
+  @Override
+  public void unmount(RecyclerView view) {
     ThreadUtils.assertMainThread();
     if (mMountedView != view) {
       throw new IllegalStateException("Unmounting a view that is not associated with this Binder");

@@ -26,7 +26,7 @@ import static com.facebook.components.ThreadUtils.assertMainThread;
 
 public abstract class BaseBinder<
     V extends ViewGroup,
-    R extends WorkingRangeController> implements Binder<V> {
+    R extends WorkingRangeController> implements Binder<V>, BinderOperations<V> {
 
   private static final Pools.SynchronizedPool<List> sListPool =
       new Pools.SynchronizedPool<>(8);
@@ -76,6 +76,11 @@ public abstract class BaseBinder<
           "Binder's elements in the Main Thread you shouldn't set the MainLooper here but" +
           "override isAsyncLayoutEnabled() and return false.");
     }
+  }
+
+  // Empty implementation. BaseBinder doesn't support measuring.
+  @Override
+  public void measure(Size outSize, int widthSpec, int heightSpec) {
   }
 
   @Override
