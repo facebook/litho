@@ -44,8 +44,9 @@ class RecyclerSpec {
       ComponentLayout layout,
       int widthSpec,
       int heightSpec,
-      Size measureOutput) {
-    throw new IllegalStateException("Recycler must have sizes spec set");
+      Size measureOutput,
+      @Prop Binder<RecyclerView> binder) {
+    binder.measure(measureOutput, widthSpec, heightSpec);
   }
 
   @OnBoundsDefined
