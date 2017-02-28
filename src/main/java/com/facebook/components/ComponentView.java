@@ -27,6 +27,7 @@ public class ComponentView extends ComponentHost {
   private final MountState mMountState;
   private boolean mIsAttached;
   private final Rect mPreviousMountBounds = new Rect();
+  private boolean mHasBeenMeasured;
 
   private boolean mForceLayout;
 
@@ -152,6 +153,14 @@ public class ComponentView extends ComponentHost {
     }
   }
 
+  final boolean hasBeenMeasured() {
+    return mHasBeenMeasured;
+  }
+
+  protected final void setHasBeenMeasured(boolean hasBeenMeasured) {
+    mHasBeenMeasured = hasBeenMeasured;
+  }
+
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     int width = MeasureSpec.getSize(widthMeasureSpec);
@@ -171,6 +180,7 @@ public class ComponentView extends ComponentHost {
       height = sLayoutSize[1];
     }
 
+    setHasBeenMeasured(true);
     setMeasuredDimension(width, height);
   }
 
