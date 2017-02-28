@@ -245,15 +245,13 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
           continue;
         }
         switch (flexBasis.unit) {
+          case AUTO:
           case UNDEFINED:
           case POINT:
             node.flexBasisPx(FastMath.round(flexBasis.value));
             break;
-          case AUTO:
-            // TODO
-            break;
           case PERCENT:
-            // TODO
+            node.flexBasisPercent(FastMath.round(flexBasis.value));
             break;
         }
       }
@@ -264,15 +262,13 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
           continue;
         }
         switch (width.unit) {
+          case AUTO:
           case UNDEFINED:
           case POINT:
             node.widthPx(FastMath.round(width.value));
             break;
-          case AUTO:
-            // TODO
-            break;
           case PERCENT:
-            // TODO
+            node.widthPercent(FastMath.round(width.value));
             break;
         }
       }
@@ -288,7 +284,7 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
             node.minWidthPx(FastMath.round(minWidth.value));
             break;
           case PERCENT:
-            // TODO
+            node.minWidthPercent(FastMath.round(minWidth.value));
             break;
         }
       }
@@ -304,7 +300,7 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
             node.maxWidthPx(FastMath.round(maxWidth.value));
             break;
           case PERCENT:
-            // TODO
+            node.maxWidthPercent(FastMath.round(maxWidth.value));
             break;
         }
       }
@@ -315,15 +311,13 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
           continue;
         }
         switch (height.unit) {
+          case AUTO:
           case UNDEFINED:
           case POINT:
             node.heightPx(FastMath.round(height.value));
             break;
-          case AUTO:
-            // TODO
-            break;
           case PERCENT:
-            // TODO
+            node.heightPercent(FastMath.round(height.value));
             break;
         }
       }
@@ -339,7 +333,7 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
             node.minHeightPx(FastMath.round(minHeight.value));
             break;
           case PERCENT:
-            // TODO
+            node.minHeightPercent(FastMath.round(minHeight.value));
             break;
         }
       }
@@ -355,7 +349,7 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
             node.maxHeightPx(FastMath.round(maxHeight.value));
             break;
           case PERCENT:
-            // TODO
+            node.maxHeightPercent(FastMath.round(maxHeight.value));
             break;
         }
       }
@@ -372,10 +366,10 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
               node.marginPx(edge, FastMath.round(margin.value));
               break;
             case AUTO:
-              // TODO
+              node.marginAuto(edge);
               break;
             case PERCENT:
-              // TODO
+              node.marginPercent(edge, FastMath.round(margin.value));
               break;
           }
         }
@@ -393,7 +387,7 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
               node.paddingPx(edge, FastMath.round(padding.value));
               break;
             case PERCENT:
-              // TODO
+              node.paddingPercent(edge, FastMath.round(padding.value));
               break;
           }
         }
@@ -411,7 +405,7 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
               node.positionPx(edge, FastMath.round(position.value));
               break;
             case PERCENT:
-              // TODO
+              node.positionPercent(edge, FastMath.round(position.value));
               break;
           }
         }
@@ -468,11 +462,6 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
     }
 
     return new YogaValue(parseFloat(s), POINT);
-  }
-
-  private static InternalNode parent(InternalNode node) {
-    final InternalNode parent = node.getParent();
-    return parent != null ? parent : node.getNestedTreeHolder();
   }
 
   private static String getGlobalKey(InternalNode node) {
