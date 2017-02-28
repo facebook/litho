@@ -32,6 +32,7 @@ import com.facebook.components.reference.ResourceDrawableReference;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
+import com.facebook.yoga.YogaDisplay;
 import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
 import com.facebook.yoga.YogaDirection;
@@ -130,6 +131,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private static final long PFLAG_TRANSITION_KEY_IS_SET = 1L << 27;
   // When this flag is set, border color was explicitly set on this node.
   private static final long PFLAG_BORDER_COLOR_IS_SET = 1L << 28;
+  // When this flag is set, display was explicitly set on this node.
+  private static final long PFLAG_DISPLAY_IS_SET = 1L << 29;
 
   private final ResourceResolver mResourceResolver = new ResourceResolver();
 
@@ -892,6 +895,13 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     } else {
       throw new IllegalStateException("Aspect ration requires using YogaNode not YogaNodeDEPRECATED");
     }
+  }
+
+  @Override
+  public InternalNode display(YogaDisplay display) {
+    mPrivateFlags |= PFLAG_DISPLAY_IS_SET;
+    mYogaNode.setDisplay(display);
+    return this;
   }
 
   private boolean shouldApplyTouchExpansion() {

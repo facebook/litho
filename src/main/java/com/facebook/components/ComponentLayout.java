@@ -13,6 +13,7 @@ import android.support.annotation.StringRes;
 import android.util.SparseArray;
 
 import com.facebook.yoga.YogaAlign;
+import com.facebook.yoga.YogaDisplay;
 import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
 import com.facebook.yoga.YogaDirection;
@@ -161,6 +162,7 @@ public interface ComponentLayout {
     Builder maxHeightPercent(float percent);
 
     Builder aspectRatio(float aspectRatio);
+    Builder display(YogaDisplay display);
 
     Builder touchExpansionPx(YogaEdge edge, @Px int value);
     Builder touchExpansionAttr(
@@ -323,6 +325,7 @@ public interface ComponentLayout {
     ContainerBuilder maxHeightPercent(float percent);
 
     ContainerBuilder aspectRatio(float aspectRatio);
+    ContainerBuilder display(YogaDisplay display);
 
     ContainerBuilder touchExpansionPx(YogaEdge edge, @Px int value);
     ContainerBuilder touchExpansionAttr(

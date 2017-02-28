@@ -16,6 +16,7 @@ import android.util.SparseArray;
 
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
+import com.facebook.yoga.YogaDisplay;
 import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
 import com.facebook.yoga.YogaDirection;
@@ -656,6 +657,11 @@ class NoOpInternalNode extends InternalNode {
 
   @Override
   public InternalNode transitionKey(String key) {
+    return this;
+  }
+
+  @Override
+  public InternalNode display(YogaDisplay display) {
     return this;
   }
 
