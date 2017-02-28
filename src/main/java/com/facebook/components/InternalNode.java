@@ -497,6 +497,13 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public InternalNode marginAuto(YogaEdge edge) {
+    mPrivateFlags |= PFLAG_MARGIN_IS_SET;
+    mYogaNode.setMarginAuto(edge);
+    return this;
+  }
+
+  @Override
   public InternalNode marginAttr(
       YogaEdge edge,
       @AttrRes int resId,
