@@ -883,8 +883,29 @@ class LayoutState {
         heightSpec,
         previousDiffTreeRoot);
 
-    layoutState.mWidth = root.getWidth();
-    layoutState.mHeight = root.getHeight();
+    switch (SizeSpec.getMode(widthSpec)) {
+      case SizeSpec.EXACTLY:
+        layoutState.mWidth = SizeSpec.getSize(widthSpec);
+        break;
+      case SizeSpec.AT_MOST:
+        layoutState.mWidth = Math.min(root.getWidth(), SizeSpec.getSize(widthSpec));
+        break;
+      case SizeSpec.UNSPECIFIED:
+        layoutState.mWidth = root.getWidth();
+        break;
+    }
+
+    switch (SizeSpec.getMode(heightSpec)) {
+      case SizeSpec.EXACTLY:
+        layoutState.mHeight = SizeSpec.getSize(heightSpec);
+        break;
+      case SizeSpec.AT_MOST:
+        layoutState.mHeight = Math.min(root.getHeight(), SizeSpec.getSize(heightSpec));
+        break;
+      case SizeSpec.UNSPECIFIED:
+        layoutState.mHeight = root.getHeight();
+        break;
+    }
 
     layoutState.mLayoutStateOutputIdCalculator.clear();
 
@@ -1133,7 +1154,13 @@ class LayoutState {
           String.valueOf(previousDiffTreeRoot != null));
     }
 
-    root.calculateLayout();
+    root.calculateLayout(
+        SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED
+            ? YogaConstants.UNDEFINED
+            : SizeSpec.getSize(widthSpec),
+        SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED
+            ? YogaConstants.UNDEFINED
+            : SizeSpec.getSize(heightSpec));
 
     if (logger != null) {
       logger.eventEnd(EVENT_CSS_LAYOUT, component, ACTION_SUCCESS);
