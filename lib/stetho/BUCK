@@ -1,0 +1,17 @@
+include_defs("//COMPONENTS_DEFS")
+
+prebuilt_jar(
+    name = "stetho-jar",
+    binary_jar = "stetho.jar",
+)
+
+java_library(
+    name = "stetho",
+    exported_deps = [
+        ":stetho-jar",
+        COMPONENTS_COMMONS_CLI_TARGET,
+    ],
+    visibility = [
+        COMPONENTS_VISIBILITY,
+    ],
+)

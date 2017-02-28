@@ -1,0 +1,9 @@
+include_defs("//COMPONENTS_DEFS")
+
+prebuilt_jar(
+    name = "yoga",
+    binary_jar = "yoga.jar",
+    visibility = [
+        COMPONENTS_VISIBILITY,
+    ],
+)

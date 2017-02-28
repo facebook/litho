@@ -1,0 +1,377 @@
+// Copyright 2004-present Facebook. All Rights Reserved.
+
+package com.facebook.components;
+
+import android.graphics.drawable.Drawable;
+import android.support.annotation.AttrRes;
+import android.support.annotation.ColorInt;
+import android.support.annotation.DimenRes;
+import android.support.annotation.Dimension;
+import android.support.annotation.DrawableRes;
+import android.support.annotation.Px;
+import android.support.annotation.StringRes;
+import android.util.SparseArray;
+
+import com.facebook.yoga.YogaAlign;
+import com.facebook.yoga.YogaFlexDirection;
+import com.facebook.yoga.YogaJustify;
+import com.facebook.yoga.YogaDirection;
+import com.facebook.yoga.YogaPositionType;
+import com.facebook.yoga.YogaWrap;
+import com.facebook.yoga.YogaEdge;
+
+import com.facebook.components.annotations.ImportantForAccessibility;
+import com.facebook.components.reference.Reference;
+
+import static android.support.annotation.Dimension.DP;
+
+/**
+ * Represents a {@link Component}'s computed layout state. The computed bounds will be
+ * used by the framework to define the size and position of the component's mounted
+ * {@link android.view.View}s and {@link android.graphics.drawable.Drawable}s returned.
+ * by {@link ComponentLifecycle#mount(ComponentContext, Object, Component)}.
+ *
+ * @see ComponentLifecycle#createLayout(ComponentContext, Component, boolean)
+ * @see ComponentLifecycle#mount(ComponentContext, Object, Component)
+ */
+public interface ComponentLayout {
+
+  @Px
+  int getX();
+  @Px
+  int getY();
+
+  @Px
+  int getWidth();
+  @Px
+  int getHeight();
+
+  @Px
+  int getPaddingTop();
+  @Px
+  int getPaddingRight();
+  @Px
+  int getPaddingBottom();
+  @Px
+  int getPaddingLeft();
+
+  YogaDirection getResolvedLayoutDirection();
+
+  interface Builder {
+    Builder layoutDirection(YogaDirection direction);
+    Builder alignSelf(YogaAlign alignSelf);
+    Builder positionType(YogaPositionType positionType);
+    Builder flex(float flex);
+    Builder flexGrow(float flexGrow);
+    Builder flexShrink(float flexShrink);
+    Builder flexBasisPx(@Px int flexBasis);
+    Builder flexBasisAttr(@AttrRes int resId, @DimenRes int defaultResId);
+    Builder flexBasisAttr(@AttrRes int resId);
+    Builder flexBasisRes(@DimenRes int resId);
+    Builder flexBasisDip(@Dimension(unit = DP) int flexBasis);
+
+    Builder importantForAccessibility(@ImportantForAccessibility int importantForAccessibility);
+    Builder duplicateParentState(boolean duplicateParentState);
+
+    Builder marginPx(YogaEdge edge, @Px int margin);
+    Builder marginAttr(
+        YogaEdge edge,
+        @AttrRes int resId,
+        @DimenRes int defaultResId);
+    Builder marginAttr(
+        YogaEdge edge,
+        @AttrRes int resId);
+    Builder marginRes(YogaEdge edge, @DimenRes int resId);
+    Builder marginDip(YogaEdge edge, @Dimension(unit = DP) int margin);
+
+    Builder paddingPx(YogaEdge edge, @Px int padding);
+    Builder paddingAttr(
+        YogaEdge edge,
+        @AttrRes int resId,
+        @DimenRes int defaultResId);
+    Builder paddingAttr(
+        YogaEdge edge,
+        @AttrRes int resId);
+    Builder paddingRes(YogaEdge edge, @DimenRes int resId);
+    Builder paddingDip(YogaEdge edge, @Dimension(unit = DP) int padding);
+
+    Builder borderWidthPx(YogaEdge edge, @Px int borderWidth);
+    Builder borderWidthAttr(
+        YogaEdge edge,
+        @AttrRes int resId,
+        @DimenRes int defaultResId);
+    Builder borderWidthAttr(
+        YogaEdge edge,
+        @AttrRes int resId);
+    Builder borderWidthRes(YogaEdge edge, @DimenRes int resId);
+    Builder borderWidthDip(YogaEdge edge, @Dimension(unit = DP) int borderWidth);
+    Builder borderColor(@ColorInt int borderColor);
+
+    Builder positionPx(YogaEdge edge, @Px int value);
+    Builder positionAttr(YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId);
+    Builder positionAttr(YogaEdge edge, @AttrRes int resId);
+    Builder positionRes(YogaEdge edge, @DimenRes int resId);
+    Builder positionDip(YogaEdge edge, @Dimension(unit = DP) int value);
+
+    Builder widthPx(@Px int width);
+    Builder widthAttr(@AttrRes int resId, @DimenRes int defaultResId);
+    Builder widthAttr(@AttrRes int resId);
+    Builder widthRes(@DimenRes int resId);
+    Builder widthDip(@Dimension(unit = DP) int width);
+
+    Builder minWidthPx(@Px int minWidth);
+    Builder minWidthAttr(@AttrRes int resId, @DimenRes int defaultResId);
+    Builder minWidthAttr(@AttrRes int resId);
+    Builder minWidthRes(@DimenRes int resId);
+    Builder minWidthDip(@Dimension(unit = DP) int minWidth);
+
+    Builder maxWidthPx(@Px int maxWidth);
+    Builder maxWidthAttr(@AttrRes int resId, @DimenRes int defaultResId);
+    Builder maxWidthAttr(@AttrRes int resId);
+    Builder maxWidthRes(@DimenRes int resId);
+    Builder maxWidthDip(@Dimension(unit = DP) int maxWidth);
+
+    Builder heightPx(@Px int height);
+    Builder heightAttr(@AttrRes int resId, @DimenRes int defaultResId);
+    Builder heightAttr(@AttrRes int resId);
+    Builder heightRes(@DimenRes int resId);
+    Builder heightDip(@Dimension(unit = DP) int height);
+
+    Builder minHeightPx(@Px int minHeight);
+    Builder minHeightAttr(@AttrRes int resId, @DimenRes int defaultResId);
+    Builder minHeightAttr(@AttrRes int resId);
+    Builder minHeightRes(@DimenRes int resId);
+    Builder minHeightDip(@Dimension(unit = DP) int minHeight);
+
+    Builder maxHeightPx(@Px int maxHeight);
+    Builder maxHeightAttr(@AttrRes int resId, @DimenRes int defaultResId);
+    Builder maxHeightAttr(@AttrRes int resId);
+    Builder maxHeightRes(@DimenRes int resId);
+    Builder maxHeightDip(@Dimension(unit = DP) int maxHeight);
+
+    Builder aspectRatio(float aspectRatio);
+
+    Builder touchExpansionPx(YogaEdge edge, @Px int value);
+    Builder touchExpansionAttr(
+        YogaEdge edge,
+        @AttrRes int resId,
+        @DimenRes int defaultResId);
+    Builder touchExpansionAttr(YogaEdge edge, @AttrRes int resId);
+    Builder touchExpansionRes(YogaEdge edge, @DimenRes int resId);
+    Builder touchExpansionDip(YogaEdge edge, @Dimension(unit = DP) int value);
+
+    Builder background(Reference<? extends Drawable> background);
+    Builder background(Reference.Builder<? extends Drawable> backgroundBuilder);
+    Builder backgroundAttr(@AttrRes int resId, @DrawableRes int defaultResId);
+    Builder backgroundAttr(@AttrRes int resId);
+    Builder backgroundRes(@DrawableRes int resId);
+    Builder backgroundColor(@ColorInt int backgroundColor);
+
+    Builder foreground(Reference<? extends Drawable> foreground);
+    Builder foreground(Reference.Builder<? extends Drawable> foregroundBuilder);
+    Builder foregroundAttr(@AttrRes int resId, @DrawableRes int defaultResId);
+    Builder foregroundAttr(@AttrRes int resId);
+    Builder foregroundRes(@DrawableRes int resId);
+    Builder foregroundColor(@ColorInt int foregroundColor);
+
+    Builder wrapInView();
+    Builder clickHandler(EventHandler<ClickEvent> clickHandler);
+    Builder longClickHandler(EventHandler<LongClickEvent> clickHandler);
+    Builder touchHandler(EventHandler<TouchEvent> touchHandler);
+    Builder focusable(boolean isFocusable);
+    Builder visibleHandler(EventHandler<VisibleEvent> visibleHandler);
+    Builder focusedHandler(EventHandler<FocusedVisibleEvent> focusedHandler);
+    Builder fullImpressionHandler(EventHandler<FullImpressionVisibleEvent> fullImpressionHandler);
+    Builder invisibleHandler(EventHandler<InvisibleEvent> invisibleHandler);
+    Builder contentDescription(CharSequence contentDescription);
+    Builder contentDescription(@StringRes int stringId);
+    Builder contentDescription(@StringRes int stringId, Object... formatArgs);
+    Builder viewTag(Object viewTag);
+    Builder viewTags(SparseArray<Object> viewTags);
+    Builder transitionKey(String key);
+    Builder testKey(String testKey);
+    Builder dispatchPopulateAccessibilityEventHandler(
+        EventHandler<DispatchPopulateAccessibilityEventEvent>
+            dispatchPopulateAccessibilityEventHandler);
+    Builder onInitializeAccessibilityEventHandler(
+        EventHandler<OnInitializeAccessibilityEventEvent> onInitializeAccessibilityEventHandler);
+    Builder onInitializeAccessibilityNodeInfoHandler(
+        EventHandler<OnInitializeAccessibilityNodeInfoEvent>
+            onInitializeAccessibilityNodeInfoHandler);
+    Builder onPopulateAccessibilityEventHandler(
+        EventHandler<OnPopulateAccessibilityEventEvent> onPopulateAccessibilityEventHandler);
+    Builder onRequestSendAccessibilityEventHandler(
+        EventHandler<OnRequestSendAccessibilityEventEvent>
+            onRequestSendAccessibilityEventHandler);
+    Builder performAccessibilityActionHandler(
+        EventHandler<PerformAccessibilityActionEvent>
+            performAccessibilityActionHandler);
+    Builder sendAccessibilityEventHandler(
+    EventHandler<SendAccessibilityEventEvent> sendAccessibilityEventHandler);
+    Builder sendAccessibilityEventUncheckedHandler(
+        EventHandler<SendAccessibilityEventUncheckedEvent> sendAccessibilityEventUncheckedHandler);
+
+    ComponentLayout build();
+  }
+
+  interface ContainerBuilder extends Builder {
+    ContainerBuilder layoutDirection(YogaDirection direction);
+    ContainerBuilder alignSelf(YogaAlign alignSelf);
+    ContainerBuilder positionType(YogaPositionType positionType);
+    ContainerBuilder flex(float flex);
+    ContainerBuilder flexGrow(float flexGrow);
+    ContainerBuilder flexShrink(float flexShrink);
+    ContainerBuilder flexBasisPx(@Px int flexBasis);
+    ContainerBuilder flexBasisAttr(@AttrRes int resId, @DimenRes int defaultResId);
+    ContainerBuilder flexBasisAttr(@AttrRes int resId);
+    ContainerBuilder flexBasisRes(@DimenRes int resId);
+    ContainerBuilder flexBasisDip(@Dimension(unit = DP) int flexBasis);
+
+    ContainerBuilder importantForAccessibility(
+        @ImportantForAccessibility int importantForAccessibility
+    );
+
+    ContainerBuilder duplicateParentState(boolean duplicateParentState);
+
+    ContainerBuilder marginPx(YogaEdge edge, @Px int margin);
+    ContainerBuilder marginAttr(
+        YogaEdge edge,
+        @AttrRes int resId,
+        @DimenRes int defaultResId);
+    ContainerBuilder marginAttr(
+        YogaEdge edge,
+        @AttrRes int resId);
+    ContainerBuilder marginRes(YogaEdge edge, @DimenRes int resId);
+    ContainerBuilder marginDip(YogaEdge edge, @Dimension(unit = DP) int margin);
+
+    ContainerBuilder paddingPx(YogaEdge edge, @Px int padding);
+    ContainerBuilder paddingAttr(
+        YogaEdge edge,
+        @AttrRes int resId,
+        @DimenRes int defaultResId);
+    ContainerBuilder paddingAttr(
+        YogaEdge edge,
+        @AttrRes int resId);
+    ContainerBuilder paddingRes(YogaEdge edge, @DimenRes int resId);
+    ContainerBuilder paddingDip(YogaEdge edge, @Dimension(unit = DP) int padding);
+
+    ContainerBuilder positionPx(YogaEdge edge, @Px int position);
+    ContainerBuilder positionAttr(
+        YogaEdge edge,
+        @AttrRes int resId,
+        @DimenRes int defaultResId);
+    ContainerBuilder positionAttr(YogaEdge edge, @AttrRes int resId);
+    ContainerBuilder positionRes(YogaEdge edge, @DimenRes int resId);
+    ContainerBuilder positionDip(YogaEdge edge, @Dimension(unit = DP) int position);
+
+    ContainerBuilder widthPx(@Px int width);
+    ContainerBuilder widthAttr(@AttrRes int resId, @DimenRes int defaultResId);
+    ContainerBuilder widthAttr(@AttrRes int resId);
+    ContainerBuilder widthRes(@DimenRes int resId);
+    ContainerBuilder widthDip(@Dimension(unit = DP) int width);
+
+    ContainerBuilder minWidthPx(@Px int minWidth);
+    ContainerBuilder minWidthAttr(@AttrRes int resId, @DimenRes int defaultResId);
+    ContainerBuilder minWidthAttr(@AttrRes int resId);
+    ContainerBuilder minWidthRes(@DimenRes int resId);
+    ContainerBuilder minWidthDip(@Dimension(unit = DP) int minWidth);
+
+    ContainerBuilder maxWidthPx(@Px int maxWidth);
+    ContainerBuilder maxWidthAttr(@AttrRes int resId, @DimenRes int defaultResId);
+    ContainerBuilder maxWidthAttr(@AttrRes int resId);
+    ContainerBuilder maxWidthRes(@DimenRes int resId);
+    ContainerBuilder maxWidthDip(@Dimension(unit = DP) int maxWidth);
+
+    ContainerBuilder heightPx(@Px int height);
+    ContainerBuilder heightAttr(@AttrRes int resId, @DimenRes int defaultResId);
+    ContainerBuilder heightAttr(@AttrRes int resId);
+    ContainerBuilder heightRes(@DimenRes int resId);
+    ContainerBuilder heightDip(@Dimension(unit = DP) int height);
+
+    ContainerBuilder minHeightPx(@Px int minHeight);
+    ContainerBuilder minHeightAttr(@AttrRes int resId, @DimenRes int defaultResId);
+    ContainerBuilder minHeightAttr(@AttrRes int resId);
+    ContainerBuilder minHeightRes(@DimenRes int resId);
+    ContainerBuilder minHeightDip(@Dimension(unit = DP) int minHeight);
+
+    ContainerBuilder maxHeightPx(@Px int maxHeight);
+    ContainerBuilder maxHeightAttr(@AttrRes int resId, @DimenRes int defaultResId);
+    ContainerBuilder maxHeightAttr(@AttrRes int resId);
+    ContainerBuilder maxHeightRes(@DimenRes int resId);
+    ContainerBuilder maxHeightDip(@Dimension(unit = DP) int maxHeight);
+
+    ContainerBuilder aspectRatio(float aspectRatio);
+
+    ContainerBuilder touchExpansionPx(YogaEdge edge, @Px int value);
+    ContainerBuilder touchExpansionAttr(
+        YogaEdge edge,
+        @AttrRes int resId,
+        @DimenRes int defaultResId);
+    ContainerBuilder touchExpansionAttr(YogaEdge edge, @AttrRes int resId);
+    ContainerBuilder touchExpansionRes(YogaEdge edge, @DimenRes int resId);
+    ContainerBuilder touchExpansionDip(
+        YogaEdge edge,
+        @Dimension(unit = DP) int value);
+
+    ContainerBuilder wrap(YogaWrap wrap);
+    ContainerBuilder direction(YogaFlexDirection direction);
+    ContainerBuilder justifyContent(YogaJustify justifyContent);
+    ContainerBuilder alignItems(YogaAlign alignItems);
+    ContainerBuilder alignContent(YogaAlign alignContent);
+    ContainerBuilder child(ComponentLayout child);
+    ContainerBuilder child(ComponentLayout.Builder childBuilder);
+    ContainerBuilder child(Component<?> component);
+    ContainerBuilder child(Component.Builder<?> componentBuilder);
+
+    ContainerBuilder background(Reference<? extends Drawable> background);
+    ContainerBuilder background(Reference.Builder<? extends Drawable> backgroundBuilder);
+    ContainerBuilder backgroundAttr(@AttrRes int resId, @DrawableRes int defaultResId);
+    ContainerBuilder backgroundAttr(@AttrRes int resId);
+    ContainerBuilder backgroundRes(@DrawableRes int resId);
+    ContainerBuilder backgroundColor(@ColorInt int backgroundColor);
+
+    ContainerBuilder foreground(Reference<? extends Drawable> foreground);
+    ContainerBuilder foreground(Reference.Builder<? extends Drawable> foregroundBuilder);
+    ContainerBuilder foregroundAttr(@AttrRes int resId, @DrawableRes int defaultResId);
+    ContainerBuilder foregroundAttr(@AttrRes int resId);
+    ContainerBuilder foregroundRes(@DrawableRes int resId);
+    ContainerBuilder foregroundColor(@ColorInt int foregroundColor);
+
+    ContainerBuilder wrapInView();
+    ContainerBuilder clickHandler(EventHandler<ClickEvent> clickHandler);
+    ContainerBuilder longClickHandler(EventHandler<LongClickEvent> clickHandler);
+    ContainerBuilder touchHandler(EventHandler<TouchEvent> touchHandler);
+    ContainerBuilder focusable(boolean isFocusable);
+    ContainerBuilder visibleHandler(EventHandler<VisibleEvent> visibleHandler);
+    ContainerBuilder focusedHandler(EventHandler<FocusedVisibleEvent> focusedHandler);
+    ContainerBuilder fullImpressionHandler(
+        EventHandler<FullImpressionVisibleEvent> fullImpressionHandler);
+    ContainerBuilder invisibleHandler(EventHandler<InvisibleEvent> invisibleHandler);
+    ContainerBuilder contentDescription(CharSequence contentDescription);
+    ContainerBuilder contentDescription(@StringRes int stringId);
+    ContainerBuilder viewTag(Object viewTag);
+    ContainerBuilder viewTags(SparseArray<Object> viewTags);
+    ContainerBuilder transitionKey(String key);
+    ContainerBuilder dispatchPopulateAccessibilityEventHandler(
+        EventHandler<DispatchPopulateAccessibilityEventEvent>
+            dispatchPopulateAccessibilityEventHandler);
+    ContainerBuilder onInitializeAccessibilityEventHandler(
+        EventHandler<OnInitializeAccessibilityEventEvent> onInitializeAccessibilityEventHandler);
+    ContainerBuilder onInitializeAccessibilityNodeInfoHandler(
+        EventHandler<OnInitializeAccessibilityNodeInfoEvent>
+            onInitializeAccessibilityNodeInfoHandler);
+    ContainerBuilder onPopulateAccessibilityEventHandler(
+        EventHandler<OnPopulateAccessibilityEventEvent> onPopulateAccessibilityEventHandler);
+    ContainerBuilder onRequestSendAccessibilityEventHandler(
+        EventHandler<OnRequestSendAccessibilityEventEvent>
+            onRequestSendAccessibilityEventHandler);
+    ContainerBuilder performAccessibilityActionHandler(
+        EventHandler<PerformAccessibilityActionEvent>
+            performAccessibilityActionHandler);
+    ContainerBuilder sendAccessibilityEventHandler(
+        EventHandler<SendAccessibilityEventEvent> sendAccessibilityEventHandler);
+    ContainerBuilder sendAccessibilityEventUncheckedHandler(
+        EventHandler<SendAccessibilityEventUncheckedEvent> sendAccessibilityEventUncheckedHandler);
+    ContainerBuilder testKey(String testKey);
+  }
+}

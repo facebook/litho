@@ -1,0 +1,16 @@
+include_defs("//COMPONENTS_DEFS")
+
+prebuilt_jar(
+    name = "relayout-jar",
+    binary_jar = "relayout.jar",
+)
+
+java_library(
+    name = "relayout",
+    exported_deps = [
+        ":relayout-jar",
+    ],
+    visibility = [
+        COMPONENTS_VISIBILITY,
+    ],
+)

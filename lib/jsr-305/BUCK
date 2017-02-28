@@ -1,0 +1,16 @@
+include_defs("//COMPONENTS_DEFS")
+
+prebuilt_jar(
+    name = "jsr305-jar",
+    binary_jar = "jsr305.jar",
+)
+
+java_library(
+    name = "jsr-305",
+    exported_deps = [
+        ":jsr305-jar",
+    ],
+    visibility = [
+        COMPONENTS_VISIBILITY,
+    ],
+)

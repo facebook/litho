@@ -1,0 +1,22 @@
+include_defs("//COMPONENTS_DEFS")
+
+prebuilt_jar(
+    name = "android-support-jar",
+    binary_jar = "android-support-v4.jar",
+)
+
+prebuilt_jar(
+    name = "android-support-annotations-jar",
+    binary_jar = "android-support-annotations.jar",
+)
+
+java_library(
+    name = "android-support",
+    exported_deps = [
+        ":android-support-annotations-jar",
+        ":android-support-jar",
+    ],
+    visibility = [
+        COMPONENTS_VISIBILITY,
+    ],
+)

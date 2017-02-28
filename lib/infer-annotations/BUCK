@@ -1,0 +1,16 @@
+include_defs("//COMPONENTS_DEFS")
+
+prebuilt_jar(
+    name = "infer-annotations-jar",
+    binary_jar = "infer-annotations-3.0.jar",
+)
+
+java_library(
+    name = "infer-annotations",
+    exported_deps = [
+        ":infer-annotations-jar",
+    ],
+    visibility = [
+        COMPONENTS_VISIBILITY,
+    ],
+)

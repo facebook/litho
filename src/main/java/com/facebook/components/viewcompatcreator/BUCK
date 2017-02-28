@@ -1,0 +1,7 @@
+android_library(
+    name = "viewcompatcreator",
+    srcs = glob(["**/*.java"]),
+    visibility = [
+        "PUBLIC",
+    ],
+)

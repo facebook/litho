@@ -1,0 +1,18 @@
+- title: Docs
+  href: /docs/
+  category: docs
+
+- title: Top Level
+  href: /top-level-example.html
+  category: top-level
+
+- title: Blog
+  href: /blog/
+  category: blog
+
+- title: Facebook
+  href: http://www.facebook.com/
+  category: external
+
+# Use external for external links not associated with the paths of the current site.
+# If a category is external, site urls, for example, are not prepended to the href, etc.

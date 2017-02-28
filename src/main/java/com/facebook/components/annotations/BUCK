@@ -1,0 +1,12 @@
+include_defs("//COMPONENTS_DEFS")
+
+java_library(
+    name = "annotations",
+    srcs = glob(["*.java"]),
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        COMPONENTS_ANDROIDSUPPORT_TARGET,
+    ],
+)

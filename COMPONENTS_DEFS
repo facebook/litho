@@ -1,0 +1,30 @@
+COMPONENTS_ROOT = '//'
+COMPONENTS_VISIBILITY = 'PUBLIC'
+
+def make_dep_path(pth):
+  return COMPONENTS_ROOT + pth
+
+# Java source
+COMPONENTS_JAVA_TARGET              = make_dep_path('src/main/java/com/facebook/components:components')
+COMPONENTS_DEBUG_JAVA_TARGET        = make_dep_path('src/debug/java/com/facebook/components:components')
+COMPONENTS_ANNOTATIONS_TARGET       = make_dep_path('src/main/java/com/facebook/components/annotations:annotations')
+COMPONENTS_CONFIG_TARGET            = make_dep_path('src/main/java/com/facebook/components/config:config')
+COMPONENTS_DISPLAYLISTSUBS_TARGET   = make_dep_path('src/main/java/com/facebook/components/displaylist/stubs:stubs')
+COMPONENTS_VIEWCOMPATCREATOR_TARGET = make_dep_path('src/main/java/com/facebook/components/viewcompatcreator:viewcompatcreator')
+
+# Java source with local upstream
+COMPONENTS_PROGUARDANNOTATIONS_TARGET = make_dep_path('src/main/java/com/facebook/proguard/annotations:annotations')
+
+# Resources
+COMPONENTS_RES_TARGET               = make_dep_path(':res')
+
+# Libraries
+COMPONENTS_INFERANNOTATIONS_TARGET = make_dep_path('lib/infer-annotations:infer-annotations')
+COMPONENTS_JSR_TARGET              = make_dep_path('lib/jsr-305:jsr-305')
+COMPONENTS_ANDROIDSUPPORT_TARGET   = make_dep_path('lib/android-support:android-support')
+COMPONENTS_YOGA_TARGET             = make_dep_path('lib/yoga:yoga')
+COMPONENTS_BUILD_CONFIG_TARGET     = make_dep_path(':build_config')
+COMPONENTS_CSSLAYOUT_TARGET        = make_dep_path('lib/CSSLayoutDEPRECATED-TOREMOVE:CSSLayoutDEPRECATED')
+COMPONENTS_RELAYOUT_TARGET         = make_dep_path('lib/relayout-TOREMOVE:relayout')
+COMPONENTS_STETHO_TARGET           = make_dep_path('lib/stetho:stetho')
+COMPONENTS_COMMONS_CLI_TARGET      = make_dep_path('lib/commons-cli:commons-cli')

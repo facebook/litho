@@ -1,0 +1,23 @@
+android_library(
+    name = "widget",
+    srcs = glob(["*.java"]),
+    tests = [
+        "//instrumentation_tests/com/facebook/components/widget:widget",
+        "//javatests/com/facebook/components/widget:widget",
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        "//java/com/facebook/components:components_oss",
+        "//java/com/facebook/components/utils:utils",
+        "//java/com/facebook/widget/accessibility/delegates:delegates",
+        "//java/com/facebook/widget/snaprecyclerview:snaprecyclerview",
+        "//libraries/components:res",
+        "//libraries/textlayoutbuilder/library/src/main/java/com/facebook/fbui/textlayoutbuilder:textlayoutbuilder",
+        "//libraries/textlayoutbuilder/library/src/main/java/com/facebook/fbui/textlayoutbuilder/util:util",
+        "//third-party/android/support/v4:lib-support-v4",
+        "//third-party/android/support/v7/recyclerview:recyclerview",
+        "//third-party/java/jsr-305:jsr-305",
+    ],
+)

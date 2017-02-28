@@ -1,0 +1,13 @@
+.DS_Store
+
+# Jekyll
+_site/
+Gemfile.lock
+
+# Buck files
+/buck-cache/
+/buck-out/
+/.buckconfig.local
+/.buckd
+/gentest/test.html
+.buckversion
