@@ -4,6 +4,7 @@ package com.facebook.components;
 
 import javax.annotation.Nullable;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -158,6 +159,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private Spacing mTouchExpansion;
   private Spacing mNestedTreePadding;
   private Spacing mNestedTreeBorderWidth;
+  private boolean[] mIsPaddingPercent;
 
   private float mResolvedTouchExpansionLeft = YogaConstants.UNDEFINED;
   private float mResolvedTouchExpansionRight = YogaConstants.UNDEFINED;
@@ -440,6 +442,13 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public InternalNode flexBasisPercent(float percent) {
+    mPrivateFlags |= PFLAG_FLEX_BASIS_IS_SET;
+    mYogaNode.setFlexBasisPercent(percent);
+    return this;
+  }
+
+  @Override
   public InternalNode flexBasisAttr(@AttrRes int resId, @DimenRes int defaultResId) {
     return flexBasisPx(mResourceResolver.resolveDimenOffsetAttr(resId, defaultResId));
   }
@@ -481,6 +490,13 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public InternalNode marginPercent(YogaEdge edge, float percent) {
+    mPrivateFlags |= PFLAG_MARGIN_IS_SET;
+    mYogaNode.setMarginPercent(edge, percent);
+    return this;
+  }
+
+  @Override
   public InternalNode marginAttr(
       YogaEdge edge,
       @AttrRes int resId,
@@ -515,8 +531,27 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       }
 
       mNestedTreePadding.set(edge.intValue(), padding);
+      setIsPaddingPercent(edge, false);
     } else {
       mYogaNode.setPadding(edge, padding);
+    }
+
+    return this;
+  }
+
+  @Override
+  public InternalNode paddingPercent(YogaEdge edge, float percent) {
+    mPrivateFlags |= PFLAG_PADDING_IS_SET;
+
+    if (mIsNestedTreeHolder) {
+      if (mNestedTreePadding == null) {
+        mNestedTreePadding = ComponentsPools.acquireSpacing();
+      }
+
+      mNestedTreePadding.set(edge.intValue(), percent);
+      setIsPaddingPercent(edge, true);
+    } else {
+      mYogaNode.setPaddingPercent(edge, percent);
     }
 
     return this;
@@ -606,6 +641,13 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public InternalNode positionPercent(YogaEdge edge, float percent) {
+    mPrivateFlags |= PFLAG_POSITION_IS_SET;
+    mYogaNode.setPositionPercent(edge, percent);
+    return this;
+  }
+
+  @Override
   public InternalNode positionAttr(
       YogaEdge edge,
       @AttrRes int resId,
@@ -638,6 +680,13 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public InternalNode widthPercent(float percent) {
+    mPrivateFlags |= PFLAG_WIDTH_IS_SET;
+    mYogaNode.setWidthPercent(percent);
+    return this;
+  }
+
+  @Override
   public InternalNode widthRes(@DimenRes int resId) {
     return widthPx(mResourceResolver.resolveDimenSizeRes(resId));
   }
@@ -661,6 +710,13 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   public InternalNode minWidthPx(@Px int minWidth) {
     mPrivateFlags |= PFLAG_MIN_WIDTH_IS_SET;
     mYogaNode.setMinWidth(minWidth);
+    return this;
+  }
+
+  @Override
+  public InternalNode minWidthPercent(float percent) {
+    mPrivateFlags |= PFLAG_MIN_WIDTH_IS_SET;
+    mYogaNode.setMinWidthPercent(percent);
     return this;
   }
 
@@ -692,6 +748,13 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public InternalNode maxWidthPercent(float percent) {
+    mPrivateFlags |= PFLAG_MAX_WIDTH_IS_SET;
+    mYogaNode.setMaxWidthPercent(percent);
+    return this;
+  }
+
+  @Override
   public InternalNode maxWidthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
     return maxWidthPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
   }
@@ -715,6 +778,13 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   public InternalNode heightPx(@Px int height) {
     mPrivateFlags |= PFLAG_HEIGHT_IS_SET;
     mYogaNode.setHeight(height);
+    return this;
+  }
+
+  @Override
+  public InternalNode heightPercent(float percent) {
+    mPrivateFlags |= PFLAG_HEIGHT_IS_SET;
+    mYogaNode.setHeightPercent(percent);
     return this;
   }
 
@@ -746,6 +816,13 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public InternalNode minHeightPercent(float percent) {
+    mPrivateFlags |= PFLAG_MIN_HEIGHT_IS_SET;
+    mYogaNode.setMinHeightPercent(percent);
+    return this;
+  }
+
+  @Override
   public InternalNode minHeightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
     return minHeightPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
   }
@@ -769,6 +846,13 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   public InternalNode maxHeightPx(@Px int maxHeight) {
     mPrivateFlags |= PFLAG_MAX_HEIGHT_IS_SET;
     mYogaNode.setMaxHeight(maxHeight);
+    return this;
+  }
+
+  @Override
+  public InternalNode maxHeightPercent(float percent) {
+    mPrivateFlags |= PFLAG_MAX_HEIGHT_IS_SET;
+    mYogaNode.setMaxHeightPercent(percent);
     return this;
   }
 
@@ -1453,15 +1537,59 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       final YogaNodeAPI yogaNode = node.mYogaNode;
 
       node.mPrivateFlags |= PFLAG_PADDING_IS_SET;
-      yogaNode.setPadding(LEFT, mNestedTreePadding.getRaw(Spacing.LEFT));
-      yogaNode.setPadding(TOP, mNestedTreePadding.getRaw(Spacing.TOP));
-      yogaNode.setPadding(RIGHT, mNestedTreePadding.getRaw(Spacing.RIGHT));
-      yogaNode.setPadding(BOTTOM, mNestedTreePadding.getRaw(Spacing.BOTTOM));
-      yogaNode.setPadding(VERTICAL, mNestedTreePadding.getRaw(Spacing.VERTICAL));
-      yogaNode.setPadding(HORIZONTAL, mNestedTreePadding.getRaw(Spacing.HORIZONTAL));
-      yogaNode.setPadding(START, mNestedTreePadding.getRaw(Spacing.START));
-      yogaNode.setPadding(END, mNestedTreePadding.getRaw(Spacing.END));
-      yogaNode.setPadding(ALL, mNestedTreePadding.getRaw(Spacing.ALL));
+      if (isPaddingPercent(LEFT)) {
+        yogaNode.setPaddingPercent(LEFT, mNestedTreePadding.getRaw(Spacing.LEFT));
+      } else {
+        yogaNode.setPadding(LEFT, mNestedTreePadding.getRaw(Spacing.LEFT));
+      }
+
+      if (isPaddingPercent(TOP)) {
+        yogaNode.setPaddingPercent(TOP, mNestedTreePadding.getRaw(Spacing.TOP));
+      } else {
+        yogaNode.setPadding(TOP, mNestedTreePadding.getRaw(Spacing.TOP));
+      }
+
+      if (isPaddingPercent(RIGHT)) {
+        yogaNode.setPaddingPercent(RIGHT, mNestedTreePadding.getRaw(Spacing.RIGHT));
+      } else {
+        yogaNode.setPadding(RIGHT, mNestedTreePadding.getRaw(Spacing.RIGHT));
+      }
+
+      if (isPaddingPercent(BOTTOM)) {
+        yogaNode.setPaddingPercent(BOTTOM, mNestedTreePadding.getRaw(Spacing.BOTTOM));
+      } else {
+        yogaNode.setPadding(BOTTOM, mNestedTreePadding.getRaw(Spacing.BOTTOM));
+      }
+
+      if (isPaddingPercent(VERTICAL)) {
+        yogaNode.setPaddingPercent(VERTICAL, mNestedTreePadding.getRaw(Spacing.VERTICAL));
+      } else {
+        yogaNode.setPadding(VERTICAL, mNestedTreePadding.getRaw(Spacing.VERTICAL));
+      }
+
+      if (isPaddingPercent(HORIZONTAL)) {
+        yogaNode.setPaddingPercent(HORIZONTAL, mNestedTreePadding.getRaw(Spacing.HORIZONTAL));
+      } else {
+        yogaNode.setPadding(HORIZONTAL, mNestedTreePadding.getRaw(Spacing.HORIZONTAL));
+      }
+
+      if (isPaddingPercent(START)) {
+        yogaNode.setPaddingPercent(START, mNestedTreePadding.getRaw(Spacing.START));
+      } else {
+        yogaNode.setPadding(START, mNestedTreePadding.getRaw(Spacing.START));
+      }
+
+      if (isPaddingPercent(END)) {
+        yogaNode.setPaddingPercent(END, mNestedTreePadding.getRaw(Spacing.END));
+      } else {
+        yogaNode.setPadding(END, mNestedTreePadding.getRaw(Spacing.END));
+      }
+
+      if (isPaddingPercent(ALL)) {
+        yogaNode.setPaddingPercent(ALL, mNestedTreePadding.getRaw(Spacing.ALL));
+      } else {
+        yogaNode.setPadding(ALL, mNestedTreePadding.getRaw(Spacing.ALL));
+      }
     }
 
     if ((mPrivateFlags & PFLAG_BORDER_WIDTH_IS_SET) != 0L) {
@@ -1665,6 +1793,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     mPrivateFlags = 0L;
     mTransitionKey = null;
     mBorderColor = Color.TRANSPARENT;
+    mIsPaddingPercent = null;
 
     if (mTouchExpansion != null) {
       ComponentsPools.release(mTouchExpansion);
@@ -1729,6 +1858,19 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     list.add(item);
 
     return list;
+  }
+
+  private void setIsPaddingPercent(YogaEdge edge, boolean isPaddingPercent) {
+    if (mIsPaddingPercent == null && isPaddingPercent) {
+      mIsPaddingPercent = new boolean[Spacing.ALL + 1];
+    }
+    if (mIsPaddingPercent != null) {
+      mIsPaddingPercent[edge.intValue()] = isPaddingPercent;
+    }
+  }
+
+  private boolean isPaddingPercent(YogaEdge edge) {
+    return (mIsPaddingPercent == null) ? false : mIsPaddingPercent[edge.intValue()];
   }
 
   /**

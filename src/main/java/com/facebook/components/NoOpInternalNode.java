@@ -194,6 +194,11 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
+  public InternalNode flexBasisPercent(float percent) {
+    return this;
+  }
+
+  @Override
   public InternalNode importantForAccessibility(int importantForAccessibility) {
     return this;
   }
@@ -232,6 +237,11 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
+  public InternalNode marginPercent(YogaEdge edge, float percent) {
+    return this;
+  }
+
+  @Override
   public InternalNode paddingPx(YogaEdge edge, @Px int padding) {
     return this;
   }
@@ -256,6 +266,11 @@ class NoOpInternalNode extends InternalNode {
 
   @Override
   public InternalNode paddingDip(YogaEdge edge, @Dimension(unit = DP) int padding) {
+    return this;
+  }
+
+  @Override
+  public InternalNode paddingPercent(YogaEdge edge, float percent) {
     return this;
   }
 
@@ -315,6 +330,11 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
+  public InternalNode positionPercent(YogaEdge edge, float percent) {
+    return this;
+  }
+
+  @Override
   public InternalNode widthPx(@Px int width) {
     return this;
   }
@@ -336,6 +356,11 @@ class NoOpInternalNode extends InternalNode {
 
   @Override
   public InternalNode widthDip(@Dimension(unit = DP) int width) {
+    return this;
+  }
+
+  @Override
+  public InternalNode widthPercent(float percent) {
     return this;
   }
 
@@ -365,6 +390,11 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
+  public InternalNode minWidthPercent(float percent) {
+    return this;
+  }
+
+  @Override
   public InternalNode maxWidthPx(@Px int maxWidth) {
     return this;
   }
@@ -386,6 +416,11 @@ class NoOpInternalNode extends InternalNode {
 
   @Override
   public InternalNode maxWidthDip(@Dimension(unit = DP) int maxWidth) {
+    return this;
+  }
+
+  @Override
+  public InternalNode maxWidthPercent(float percent) {
     return this;
   }
 
@@ -415,6 +450,11 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
+  public InternalNode heightPercent(float percent) {
+    return this;
+  }
+
+  @Override
   public InternalNode minHeightPx(@Px int minHeight) {
     return this;
   }
@@ -440,6 +480,11 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
+  public InternalNode minHeightPercent(float percent) {
+    return this;
+  }
+
+  @Override
   public InternalNode maxHeightPx(@Px int maxHeight) {
     return this;
   }
@@ -461,6 +506,11 @@ class NoOpInternalNode extends InternalNode {
 
   @Override
   public InternalNode maxHeightDip(@Dimension(unit = DP) int maxHeight) {
+    return this;
+  }
+
+  @Override
+  public InternalNode maxHeightPercent(float percent) {
     return this;
   }
 

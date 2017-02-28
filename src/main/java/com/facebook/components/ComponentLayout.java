@@ -69,6 +69,7 @@ public interface ComponentLayout {
     Builder flexBasisAttr(@AttrRes int resId);
     Builder flexBasisRes(@DimenRes int resId);
     Builder flexBasisDip(@Dimension(unit = DP) int flexBasis);
+    Builder flexBasisPercent(float percent);
 
     Builder importantForAccessibility(@ImportantForAccessibility int importantForAccessibility);
     Builder duplicateParentState(boolean duplicateParentState);
@@ -83,6 +84,7 @@ public interface ComponentLayout {
         @AttrRes int resId);
     Builder marginRes(YogaEdge edge, @DimenRes int resId);
     Builder marginDip(YogaEdge edge, @Dimension(unit = DP) int margin);
+    Builder marginPercent(YogaEdge edge, float percent);
 
     Builder paddingPx(YogaEdge edge, @Px int padding);
     Builder paddingAttr(
@@ -94,6 +96,7 @@ public interface ComponentLayout {
         @AttrRes int resId);
     Builder paddingRes(YogaEdge edge, @DimenRes int resId);
     Builder paddingDip(YogaEdge edge, @Dimension(unit = DP) int padding);
+    Builder paddingPercent(YogaEdge edge, float percent);
 
     Builder borderWidthPx(YogaEdge edge, @Px int borderWidth);
     Builder borderWidthAttr(
@@ -112,42 +115,49 @@ public interface ComponentLayout {
     Builder positionAttr(YogaEdge edge, @AttrRes int resId);
     Builder positionRes(YogaEdge edge, @DimenRes int resId);
     Builder positionDip(YogaEdge edge, @Dimension(unit = DP) int value);
+    Builder positionPercent(YogaEdge edge, float percent);
 
     Builder widthPx(@Px int width);
     Builder widthAttr(@AttrRes int resId, @DimenRes int defaultResId);
     Builder widthAttr(@AttrRes int resId);
     Builder widthRes(@DimenRes int resId);
     Builder widthDip(@Dimension(unit = DP) int width);
+    Builder widthPercent(float percent);
 
     Builder minWidthPx(@Px int minWidth);
     Builder minWidthAttr(@AttrRes int resId, @DimenRes int defaultResId);
     Builder minWidthAttr(@AttrRes int resId);
     Builder minWidthRes(@DimenRes int resId);
     Builder minWidthDip(@Dimension(unit = DP) int minWidth);
+    Builder minWidthPercent(float percent);
 
     Builder maxWidthPx(@Px int maxWidth);
     Builder maxWidthAttr(@AttrRes int resId, @DimenRes int defaultResId);
     Builder maxWidthAttr(@AttrRes int resId);
     Builder maxWidthRes(@DimenRes int resId);
     Builder maxWidthDip(@Dimension(unit = DP) int maxWidth);
+    Builder maxWidthPercent(float percent);
 
     Builder heightPx(@Px int height);
     Builder heightAttr(@AttrRes int resId, @DimenRes int defaultResId);
     Builder heightAttr(@AttrRes int resId);
     Builder heightRes(@DimenRes int resId);
     Builder heightDip(@Dimension(unit = DP) int height);
+    Builder heightPercent(float percent);
 
     Builder minHeightPx(@Px int minHeight);
     Builder minHeightAttr(@AttrRes int resId, @DimenRes int defaultResId);
     Builder minHeightAttr(@AttrRes int resId);
     Builder minHeightRes(@DimenRes int resId);
     Builder minHeightDip(@Dimension(unit = DP) int minHeight);
+    Builder minHeightPercent(float percent);
 
     Builder maxHeightPx(@Px int maxHeight);
     Builder maxHeightAttr(@AttrRes int resId, @DimenRes int defaultResId);
     Builder maxHeightAttr(@AttrRes int resId);
     Builder maxHeightRes(@DimenRes int resId);
     Builder maxHeightDip(@Dimension(unit = DP) int maxHeight);
+    Builder maxHeightPercent(float percent);
 
     Builder aspectRatio(float aspectRatio);
 
@@ -226,6 +236,7 @@ public interface ComponentLayout {
     ContainerBuilder flexBasisAttr(@AttrRes int resId);
     ContainerBuilder flexBasisRes(@DimenRes int resId);
     ContainerBuilder flexBasisDip(@Dimension(unit = DP) int flexBasis);
+    ContainerBuilder flexBasisPercent(float percent);
 
     ContainerBuilder importantForAccessibility(
         @ImportantForAccessibility int importantForAccessibility
@@ -243,6 +254,7 @@ public interface ComponentLayout {
         @AttrRes int resId);
     ContainerBuilder marginRes(YogaEdge edge, @DimenRes int resId);
     ContainerBuilder marginDip(YogaEdge edge, @Dimension(unit = DP) int margin);
+    ContainerBuilder marginPercent(YogaEdge edge, float percent);
 
     ContainerBuilder paddingPx(YogaEdge edge, @Px int padding);
     ContainerBuilder paddingAttr(
@@ -254,6 +266,7 @@ public interface ComponentLayout {
         @AttrRes int resId);
     ContainerBuilder paddingRes(YogaEdge edge, @DimenRes int resId);
     ContainerBuilder paddingDip(YogaEdge edge, @Dimension(unit = DP) int padding);
+    ContainerBuilder paddingPercent(YogaEdge edge, float percent);
 
     ContainerBuilder positionPx(YogaEdge edge, @Px int position);
     ContainerBuilder positionAttr(
@@ -263,42 +276,49 @@ public interface ComponentLayout {
     ContainerBuilder positionAttr(YogaEdge edge, @AttrRes int resId);
     ContainerBuilder positionRes(YogaEdge edge, @DimenRes int resId);
     ContainerBuilder positionDip(YogaEdge edge, @Dimension(unit = DP) int position);
+    ContainerBuilder positionPercent(YogaEdge edge, float percent);
 
     ContainerBuilder widthPx(@Px int width);
     ContainerBuilder widthAttr(@AttrRes int resId, @DimenRes int defaultResId);
     ContainerBuilder widthAttr(@AttrRes int resId);
     ContainerBuilder widthRes(@DimenRes int resId);
     ContainerBuilder widthDip(@Dimension(unit = DP) int width);
+    ContainerBuilder widthPercent(float percent);
 
     ContainerBuilder minWidthPx(@Px int minWidth);
     ContainerBuilder minWidthAttr(@AttrRes int resId, @DimenRes int defaultResId);
     ContainerBuilder minWidthAttr(@AttrRes int resId);
     ContainerBuilder minWidthRes(@DimenRes int resId);
     ContainerBuilder minWidthDip(@Dimension(unit = DP) int minWidth);
+    ContainerBuilder minWidthPercent(float percent);
 
     ContainerBuilder maxWidthPx(@Px int maxWidth);
     ContainerBuilder maxWidthAttr(@AttrRes int resId, @DimenRes int defaultResId);
     ContainerBuilder maxWidthAttr(@AttrRes int resId);
     ContainerBuilder maxWidthRes(@DimenRes int resId);
     ContainerBuilder maxWidthDip(@Dimension(unit = DP) int maxWidth);
+    ContainerBuilder maxWidthPercent(float percent);
 
     ContainerBuilder heightPx(@Px int height);
     ContainerBuilder heightAttr(@AttrRes int resId, @DimenRes int defaultResId);
     ContainerBuilder heightAttr(@AttrRes int resId);
     ContainerBuilder heightRes(@DimenRes int resId);
     ContainerBuilder heightDip(@Dimension(unit = DP) int height);
+    ContainerBuilder heightPercent(float percent);
 
     ContainerBuilder minHeightPx(@Px int minHeight);
     ContainerBuilder minHeightAttr(@AttrRes int resId, @DimenRes int defaultResId);
     ContainerBuilder minHeightAttr(@AttrRes int resId);
     ContainerBuilder minHeightRes(@DimenRes int resId);
     ContainerBuilder minHeightDip(@Dimension(unit = DP) int minHeight);
+    ContainerBuilder minHeightPercent(float percent);
 
     ContainerBuilder maxHeightPx(@Px int maxHeight);
     ContainerBuilder maxHeightAttr(@AttrRes int resId, @DimenRes int defaultResId);
     ContainerBuilder maxHeightAttr(@AttrRes int resId);
     ContainerBuilder maxHeightRes(@DimenRes int resId);
     ContainerBuilder maxHeightDip(@Dimension(unit = DP) int maxHeight);
+    ContainerBuilder maxHeightPercent(float percent);
 
     ContainerBuilder aspectRatio(float aspectRatio);
 
