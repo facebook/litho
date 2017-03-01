@@ -154,7 +154,18 @@ class MountState {
       logger.eventStart(EVENT_MOUNT, componentTree);
     }
 
-    transitionsOnMountStart(layoutState);
+    prepareTransitionManager(layoutState);
+    if (mTransitionManager != null) {
+      if (mIsDirty) {
+        mTransitionManager.onNewTransitionContext(layoutState.getTransitionContext());
+      }
+
+      mTransitionManager.onMountStart();
+      recordMountedItemsWithTransitionKeys(
+          mTransitionManager,
+          mIndexToItemMap,
+          true /* isPreMount */);
+    }
 
     if (mIsDirty) {
       suppressInvalidationsOnHosts(true);
@@ -225,7 +236,13 @@ class MountState {
 
     processVisibilityOutputs(layoutState, localVisibleRect);
 
-    transitionsOnMountEnd();
+    if (mTransitionManager != null) {
+      recordMountedItemsWithTransitionKeys(
+          mTransitionManager,
+          mIndexToItemMap,
+          false /* isPreMount */);
+      mTransitionManager.processTransitions();
+    }
 
     processTestOutputs(layoutState);
 
@@ -1749,7 +1766,7 @@ class MountState {
     return true;
   }
 
-  private void transitionsOnMountStart(LayoutState layoutState) {
+  private void prepareTransitionManager(LayoutState layoutState) {
     if (layoutState.hasTransitionContext() && mTransitionManager == null) {
       mTransitionManager = ComponentsPools.acquireTransitionManager();
     } else if (!layoutState.hasTransitionContext() && mTransitionManager != null) {
@@ -1758,22 +1775,24 @@ class MountState {
     }
   }
 
-  private void transitionsOnMountEnd() {
-    if (mTransitionManager != null) {
-      for (int i = 0, size = mIndexToItemMap.size(); i < size; i++) {
-        final MountItem item = mIndexToItemMap.valueAt(i);
-        final ViewNodeInfo viewNodeInfo = item.getViewNodeInfo();
+  private static void recordMountedItemsWithTransitionKeys(
+      TransitionManager transitionManager,
+      LongSparseArray<MountItem> indexToItemMap,
+      boolean isPreMount) {
+    for (int i = 0, size = indexToItemMap.size(); i < size; i++) {
+      final MountItem item = indexToItemMap.valueAt(i);
+      final ViewNodeInfo viewNodeInfo = item.getViewNodeInfo();
+      final String transitionKey = viewNodeInfo != null
+          ? viewNodeInfo.getTransitionKey()
+          : null;
 
-        if (viewNodeInfo != null) {
-          final String animationKey = viewNodeInfo.getTransitionKey();
-
-          if (animationKey != null) {
-            mTransitionManager.onMountEndItems(animationKey, (View) item.getContent());
-          }
+      if (transitionKey != null) {
+        if (isPreMount) {
+          transitionManager.onPreMountItem(transitionKey, (View) item.getContent());
+        } else {
+          transitionManager.onPostMountItem(transitionKey, (View) item.getContent());
         }
       }
-
-      mTransitionManager.processTransitions();
     }
   }
 
