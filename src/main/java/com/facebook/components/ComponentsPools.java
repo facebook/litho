@@ -23,6 +23,7 @@ import android.util.SparseArray;
 
 import com.facebook.components.config.ComponentsConfiguration;
 import com.facebook.components.displaylist.DisplayList;
+import com.facebook.yoga.YogaConfig;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaExperimentalFeature;
 import com.facebook.yoga.YogaNode;
@@ -40,6 +41,8 @@ import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUT
  * this we will tend to expand all buffers to the largest size needed.
  */
 public class ComponentsPools {
+
+  private static YogaConfig sYogaConfig;
 
   private static final int SCRAP_ARRAY_INITIAL_SIZE = 4;
 
@@ -175,13 +178,16 @@ public class ComponentsPools {
         } catch (UnsatisfiedLinkError ule) {
           // Fallback to yoga Node when ReNode is not availiable
           sShouldUseRelayout = false;
-          YogaNode.setExperimentalFeatureEnabled(YogaExperimentalFeature.ROUNDING, true);
           node = new YogaNode();
         }
 
       } else if (sShouldUseCSSNodeJNI) {
-        YogaNode.setExperimentalFeatureEnabled(YogaExperimentalFeature.ROUNDING, true);
-        node = new YogaNode();
+        if (sYogaConfig == null) {
+          sYogaConfig = new YogaConfig();
+          sYogaConfig.setExperimentalFeatureEnabled(YogaExperimentalFeature.ROUNDING, true);
+        }
+
+        node = new YogaNode(sYogaConfig);
       } else {
         node = new CSSNodeDEPRECATED();
       }
