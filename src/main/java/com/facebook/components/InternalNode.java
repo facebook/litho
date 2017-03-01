@@ -373,7 +373,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
-  public InternalNode direction(YogaFlexDirection direction) {
+  public InternalNode flexDirection(YogaFlexDirection direction) {
     mYogaNode.setFlexDirection(direction);
     return this;
   }
@@ -1737,7 +1737,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       } else if (attr == R.styleable.ComponentLayout_android_contentDescription) {
         contentDescription(a.getString(attr));
       } else if (attr == R.styleable.ComponentLayout_flex_direction) {
-        direction(YogaFlexDirection.fromInt(a.getInteger(attr, 0)));
+        flexDirection(YogaFlexDirection.fromInt(a.getInteger(attr, 0)));
       } else if (attr == R.styleable.ComponentLayout_flex_wrap) {
         wrap(YogaWrap.fromInt(a.getInteger(attr, 0)));
       } else if (attr == R.styleable.ComponentLayout_flex_justifyContent) {

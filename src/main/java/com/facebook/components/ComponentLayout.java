@@ -339,7 +339,7 @@ public interface ComponentLayout {
         @Dimension(unit = DP) int value);
 
     ContainerBuilder wrap(YogaWrap wrap);
-    ContainerBuilder direction(YogaFlexDirection direction);
+    ContainerBuilder flexDirection(YogaFlexDirection direction);
     ContainerBuilder justifyContent(YogaJustify justifyContent);
     ContainerBuilder alignItems(YogaAlign alignItems);
     ContainerBuilder alignContent(YogaAlign alignContent);

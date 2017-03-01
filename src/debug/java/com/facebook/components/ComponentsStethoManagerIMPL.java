@@ -210,7 +210,7 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
         }
 
         if (key.equals("flex-direction")) {
-          node.direction(YogaFlexDirection.valueOf(toEnumString(value)));
+          node.flexDirection(YogaFlexDirection.valueOf(toEnumString(value)));
         }
 
         if (key.equals("justify-content")) {
