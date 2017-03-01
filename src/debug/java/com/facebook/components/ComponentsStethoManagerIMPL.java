@@ -11,7 +11,6 @@ import com.facebook.stetho.inspector.elements.AttributeAccumulator;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
-import com.facebook.yoga.YogaDisplay;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
@@ -105,10 +104,6 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
 
     if (yogaNode.getPositionType() != defaults.getPositionType()) {
       attributes.store("position", toCSSString(yogaNode.getPositionType()));
-    }
-
-    if (yogaNode.getDisplay() != defaults.getDisplay()) {
-      attributes.store("display", toCSSString(yogaNode.getDisplay()));
     }
 
     if (yogaNode.getFlexGrow() != defaults.getFlexGrow()) {
@@ -231,10 +226,6 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
 
         if (key.equals("position")) {
           node.positionType(YogaPositionType.valueOf(toEnumString(value)));
-        }
-
-        if (key.equals("display")) {
-          node.display(YogaDisplay.valueOf(toEnumString(value)));
         }
 
         if (key.equals("flex-grow")) {
