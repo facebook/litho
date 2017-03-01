@@ -27,7 +27,7 @@ import android.support.annotation.VisibleForTesting;
 import android.view.View;
 import android.view.ViewParent;
 
-import com.facebook.components.config.ComponentsConfiguration;
+import com.facebook.infer.annotation.ReturnsOwnership;
 
 import static com.facebook.components.ComponentLifecycle.StateUpdate;
 import static com.facebook.components.ComponentsLogger.ACTION_SUCCESS;
@@ -179,6 +179,7 @@ public class ComponentTree {
    * awkward contract is necessary to ensure thread-safety.
    */
   @CheckReturnValue
+  @ReturnsOwnership
   private LayoutState setBestMainThreadLayoutAndReturnOldLayout() {
     assertHoldsLock(this);
 
