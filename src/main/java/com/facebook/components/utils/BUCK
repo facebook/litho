@@ -1,0 +1,15 @@
+android_library(
+    name = "utils",
+    srcs = glob(["*.java"]),
+    tests = [
+        "//javatests/com/facebook/components/utils:utils",
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        "//libraries/components:components",
+        "//third-party/android/support/v7/recyclerview:recyclerview",
+        "//third-party/java/jsr-305:jsr-305",
+    ],
+)
