@@ -27,6 +27,7 @@ public class ComponentView extends ComponentHost {
   private final MountState mMountState;
   private boolean mIsAttached;
   private final Rect mPreviousMountBounds = new Rect();
+  private final Rect mLayoutBounds = new Rect();
 
   private boolean mForceLayout;
 
@@ -179,6 +180,14 @@ public class ComponentView extends ComponentHost {
 
     if (mComponent != null) {
       boolean wasMountTriggered = mComponent.layout();
+
+      mLayoutBounds.set(left, top, right, bottom);
+
+      if (!wasMountTriggered
+          && isIncrementalMountEnabled()
+          && !mLayoutBounds.equals(mPreviousMountBounds)) {
+        performIncrementalMount();
+      }
 
       if (!wasMountTriggered || shouldAlwaysLayoutChildren()) {
         // If the layout() call on the component didn't trigger a mount step,
