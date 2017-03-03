@@ -185,6 +185,12 @@ public class ViewCompatComponent<V extends View> extends ComponentLifecycle {
     }
 
     @Override
+    public Builder<V> key(String key) {
+      super.setKey(key);
+      return this;
+    }
+
+    @Override
     public Component<ViewCompatComponent<V>> build() {
       if (mImpl.mViewBinder == null) {
         throw new IllegalStateException(
