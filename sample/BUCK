@@ -1,0 +1,18 @@
+android_binary(
+    name = "sample",
+    keystore = ":debug_keystore",
+    manifest = "src/main/AndroidManifest.xml",
+    deps = [
+        "//java/com/facebook/samples/components:components",
+    ],
+)
+
+keystore(
+    name = "debug_keystore",
+    properties = "debug.keystore.properties",
+    store = "debug.keystore",
+)
+
+project_config(
+    src_target = ":sample",
+)

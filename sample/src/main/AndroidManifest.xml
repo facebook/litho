@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2004-present Facebook. All Rights Reserved. -->
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.facebook.samples.components">
+
+  <variable name="app_package_name" value="com.facebook.samples.components"/>
+  <variable name="applicationId" value="com.facebook.samples.components" />
+  <variable name="app_label" value="Components Sample App" />
+
+  <uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+  <uses-sdk
+      android:minSdkVersion="15"
+      android:targetSdkVersion="19"
+      />
+
+  <application
+      android:name=".ComponentsSampleApplication"
+      android:label="@string/app_name"
+      android:icon="@drawable/ic_launcher"
+      android:allowBackup="false"
+      android:theme="@style/NoTitleBarWhiteBG">
+    <activity android:name=".DemoListActivity">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN"/>
+        <category android:name="android.intent.category.LAUNCHER"/>
+      </intent-filter>
+    </activity>
+
+    <activity android:name=".DemoActivity"></activity>
+  </application>
+
+
+</manifest>
