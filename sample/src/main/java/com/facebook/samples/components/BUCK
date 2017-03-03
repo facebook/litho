@@ -1,0 +1,26 @@
+include_defs("//java/com/facebook/components/DEFS")
+
+components_android_library(
+    name = "components",
+    srcs = glob(["**/*.java"]),
+    components_resources = [
+        "//libraries/components/sample:res",
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        "//java/com/facebook/components/fresco:fresco",
+        "//java/com/facebook/debug/tracer:tracer",
+        "//libraries/components/src/main/java/com/facebook/components/utils:utils",
+        "//libraries/components/src/main/java/com/facebook/components/widget:widget",
+        "//libraries/fresco/drawee-backends/drawee-pipeline/src/main/java/com/facebook/drawee/backends/pipeline:pipeline",
+        "//libraries/fresco/drawee/src/main/java/com/facebook/drawee/controller:controller",
+        "//libraries/fresco/drawee/src/main/java/com/facebook/drawee/interfaces:interfaces",
+        "//libraries/soloader/java/com/facebook/soloader:soloader",
+        "//third-party/android/support/v4:lib-support-v4",
+        "//third-party/android/support/v7/appcompat-orig:appcompat",
+        "//third-party/android/support/v7/recyclerview:recyclerview",
+        "//third-party/java/jsr-305:jsr-305",
+    ],
+)

@@ -3,7 +3,7 @@ android_binary(
     keystore = ":debug_keystore",
     manifest = "src/main/AndroidManifest.xml",
     deps = [
-        "//java/com/facebook/samples/components:components",
+        "//libraries/components/sample/src/main/java/com/facebook/samples/components:components",
     ],
 )
 
