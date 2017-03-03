@@ -93,9 +93,7 @@ class SnapRecyclerSpec {
       @Prop(optional = true) RecyclerView.OnScrollListener onScrollListener,
       Output<ItemAnimator> oldAnimator) {
     oldAnimator.set(snapRecyclerView.getItemAnimator());
-    if (itemAnimator != RecyclerSpec.itemAnimator) {
-      snapRecyclerView.setItemAnimator(itemAnimator);
-    }
+    snapRecyclerView.setItemAnimator(itemAnimator);
 
     if (onScrollListener != null) {
       snapRecyclerView.addOnScrollListener(onScrollListener);

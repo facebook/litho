@@ -4,6 +4,7 @@ package com.facebook.components.widget;
 
 import android.support.annotation.IdRes;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ItemAnimator;
 import android.view.View;
@@ -33,8 +34,7 @@ import com.facebook.components.annotations.ShouldUpdate;
 class RecyclerSpec {
   @PropDefault static final int scrollBarStyle = View.SCROLLBARS_INSIDE_OVERLAY;
   @PropDefault static final boolean hasFixedSize = true;
-  @PropDefault static final ItemAnimator itemAnimator =
-      new IncrementalMountDefaultItemAnimator();
+  @PropDefault static final ItemAnimator itemAnimator = new NoUpdateItemAnimator();
   @PropDefault static final int recyclerViewId = View.NO_ID;
 
   @OnMeasure
@@ -135,6 +135,8 @@ class RecyclerSpec {
     oldAnimator.set(recyclerView.getItemAnimator());
     if (itemAnimator != RecyclerSpec.itemAnimator) {
       recyclerView.setItemAnimator(itemAnimator);
+    } else {
+      recyclerView.setItemAnimator(new NoUpdateItemAnimator());
     }
 
     if (onScrollListener != null) {
@@ -237,5 +239,12 @@ class RecyclerSpec {
         (previous == null) ? (next == null) : previous.equals(next);
 
     return !itemDecorationIsEqual;
+  }
+
+  public static class NoUpdateItemAnimator extends DefaultItemAnimator {
+    public NoUpdateItemAnimator() {
+      super();
+      setSupportsChangeAnimations(false);
+    }
   }
 }
