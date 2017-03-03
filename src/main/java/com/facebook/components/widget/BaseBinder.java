@@ -18,6 +18,7 @@ import com.facebook.components.ComponentView;
 import com.facebook.components.config.ComponentsConfiguration;
 import com.facebook.components.Size;
 import com.facebook.components.SizeSpec;
+import com.facebook.infer.annotation.ThreadSafe;
 
 import static com.facebook.components.SizeSpec.EXACTLY;
 import static com.facebook.components.SizeSpec.UNSPECIFIED;
@@ -773,6 +774,8 @@ public abstract class BaseBinder<
     return list;
   }
 
+  // t16407516: Infer does yet understand when a method takes ownership.
+  @ThreadSafe(enableChecks = false)
   private static void releaseList(List<?> list) {
     list.clear();
     sListPool.release(list);

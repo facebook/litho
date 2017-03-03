@@ -18,6 +18,7 @@ android_library(
         "//libraries/textlayoutbuilder/library/src/main/java/com/facebook/fbui/textlayoutbuilder/util:util",
         "//third-party/android/support/v4:lib-support-v4",
         "//third-party/android/support/v7/recyclerview:recyclerview",
+        "//third-party/java/infer-annotations:infer-annotations",
         "//third-party/java/jsr-305:jsr-305",
     ],
 )
