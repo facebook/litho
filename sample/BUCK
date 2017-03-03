@@ -7,6 +7,15 @@ android_binary(
     ],
 )
 
+android_resource(
+    name = "res",
+    package = "com.facebook.samples.components",
+    res = "src/main/res",
+    visibility = [
+        "PUBLIC",
+    ],
+)
+
 keystore(
     name = "debug_keystore",
     properties = "debug.keystore.properties",
