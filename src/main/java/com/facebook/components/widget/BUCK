@@ -10,7 +10,6 @@ android_library(
     ],
     deps = [
         "//java/com/facebook/components:components_oss",
-        "//java/com/facebook/widget/snaprecyclerview:snaprecyclerview",
         "//libraries/components:res",
         "//libraries/components/src/main/java/com/facebook/components/utils:utils",
         "//libraries/components/src/main/java/com/facebook/components/widget/accessibility:accessibility",
