@@ -101,8 +101,12 @@ class TransitionManager implements TransitionKeySetListener {
       final @KeyStatus Integer status = mKeysStatus.valueAt(i);
 
       if (mPostMountKeys.remove(key)) {
-        // 1.1 Unchanged keys.
-        mKeysStatus.put(key, KeyStatus.UNCHANGED);
+        // 1.1 Unchanged or Re-Appearing keys.
+        if (status == KeyStatus.DISAPPEARED) {
+          mKeysStatus.put(key, KeyStatus.APPEARED);
+        } else {
+          mKeysStatus.put(key, KeyStatus.UNCHANGED);
+        }
       } else if (status != KeyStatus.DISAPPEARED) {
         // 1.2 Disappeared keys.
         mKeysStatus.put(key, KeyStatus.DISAPPEARED);
