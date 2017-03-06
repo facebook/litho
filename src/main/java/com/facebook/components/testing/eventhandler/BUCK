@@ -1,0 +1,11 @@
+android_library(
+    name = "eventhandler",
+    srcs = glob(["*.java"]),
+    visibility = [
+        "//javatests/...",
+    ],
+    deps = [
+        "//libraries/components/src/main/java/com/facebook/components:components",
+        "//third-party/java/mockito:mockito",
+    ],
+)
