@@ -11,7 +11,6 @@ components_android_library(
     ],
     deps = [
         "//java/com/facebook/components/fresco:fresco",
-        "//java/com/facebook/debug/tracer:tracer",
         "//libraries/components/src/main/java/com/facebook/components/utils:utils",
         "//libraries/components/src/main/java/com/facebook/components/widget:widget",
         "//libraries/fresco/drawee-backends/drawee-pipeline/src/main/java/com/facebook/drawee/backends/pipeline:pipeline",

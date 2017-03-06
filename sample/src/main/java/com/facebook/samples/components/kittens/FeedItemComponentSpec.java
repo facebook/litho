@@ -11,7 +11,6 @@ import com.facebook.components.annotations.LayoutSpec;
 import com.facebook.components.annotations.OnCreateLayout;
 import com.facebook.components.annotations.Prop;
 import com.facebook.components.widget.Card;
-import com.facebook.debug.tracer.Tracer;
 
 import static com.facebook.yoga.YogaEdge.HORIZONTAL;
 import static com.facebook.yoga.YogaEdge.VERTICAL;
@@ -26,7 +25,6 @@ public class FeedItemComponentSpec {
       ComponentContext c,
       @Prop final DataModel item,
       @Prop final int index) {
-    Tracer.startTracer("FeedItemComponent.onCreateLayout");
     try {
       final Component content = new InlineLayoutSpec() {
         @Override
@@ -88,7 +86,6 @@ public class FeedItemComponentSpec {
                   .content(content))
           .build();
     } finally {
-      Tracer.stopTracer();
     }
   }
 }
