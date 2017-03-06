@@ -1,0 +1,20 @@
+include_defs("//COMPONENTS_DEFS")
+
+java_library(
+    name = "model",
+    srcs = glob(["*.java"]),
+    exported_deps = [
+        make_dep_path("src/main/java/com/facebook/components/annotations:annotations"),
+    ],
+    tests = [
+        "//javatests/com/facebook/components/specmodels/model:model",
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        make_dep_path("src/main/java/com/facebook/components/javapoet:javapoet"),
+        COMPONENTS_FBCORE_TARGET,
+        COMPONENTS_JSR_TARGET,
+    ],
+)

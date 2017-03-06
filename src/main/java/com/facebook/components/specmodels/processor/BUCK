@@ -1,0 +1,19 @@
+include_defs("//COMPONENTS_DEFS")
+
+java_library(
+    name = "processor",
+    srcs = glob(["*.java"]),
+    tests = [
+        "//javatests/com/facebook/components/specmodels/processor:processor",
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        make_dep_path("src/main/java/com/facebook/components/javapoet:javapoet"),
+        make_dep_path("src/main/java/com/facebook/components/specmodels/model:model"),
+        make_dep_path("src/main/java/com/facebook/components/annotations:annotations"),
+        COMPONENTS_FBCORE_TARGET,
+        COMPONENTS_JSR_TARGET,
+    ],
+)

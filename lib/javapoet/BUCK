@@ -1,0 +1,10 @@
+prebuilt_jar(
+    name = "javapoet",
+    binary_jar = "javapoet-1.2.0.jar",
+    source_jar = "javapoet-1.2.0-sources.jar",
+    visibility = ["PUBLIC"],
+)
+
+project_config(
+    src_target = ":javapoet",
+)

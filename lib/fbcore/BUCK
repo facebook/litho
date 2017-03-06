@@ -1,0 +1,11 @@
+android_prebuilt_aar(
+    name = "fbcore",
+    aar = ":fbcore-aar",
+    visibility = ["PUBLIC"],
+)
+
+remote_file(
+    name = "fbcore-aar",
+    sha1 = "d9ea35752271fcc7674f4e1dd399600dfeca075b",
+    url = "mvn:com.facebook.fresco:fbcore:aar:1.1.0",
+)

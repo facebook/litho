@@ -1,0 +1,12 @@
+include_defs("//COMPONENTS_DEFS")
+
+java_library(
+    name = "javapoet",
+    srcs = glob(["*.java"]),
+    exported_deps = [
+        COMPONENTS_JAVAPOET_TARGET,
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+)

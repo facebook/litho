@@ -28,3 +28,5 @@ COMPONENTS_CSSLAYOUT_TARGET        = make_dep_path('lib/CSSLayoutDEPRECATED-TORE
 COMPONENTS_RELAYOUT_TARGET         = make_dep_path('lib/relayout-TOREMOVE:relayout')
 COMPONENTS_STETHO_TARGET           = make_dep_path('lib/stetho:stetho')
 COMPONENTS_COMMONS_CLI_TARGET      = make_dep_path('lib/commons-cli:commons-cli')
+COMPONENTS_JAVAPOET_TARGET         = make_dep_path('lib/javapoet:javapoet')
+COMPONENTS_FBCORE_TARGET           = make_dep_path('lib/fbcore:fbcore')
