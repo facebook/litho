@@ -1,0 +1,9 @@
+include_defs("//COMPONENTS_DEFS")
+
+android_prebuilt_aar(
+    name = "textlayoutbuilder",
+    aar = "textlayoutbuilder-1.0.0.aar",
+    visibility = [
+        COMPONENTS_VISIBILITY,
+    ],
+)

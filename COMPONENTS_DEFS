@@ -4,13 +4,17 @@ COMPONENTS_VISIBILITY = 'PUBLIC'
 def make_dep_path(pth):
   return COMPONENTS_ROOT + pth
 
+COMPONENTS_ROOT_TARGET = make_dep_path(":components")
+
 # Java source
-COMPONENTS_JAVA_TARGET              = make_dep_path('src/main/java/com/facebook/components:components')
-COMPONENTS_DEBUG_JAVA_TARGET        = make_dep_path('src/debug/java/com/facebook/components:components')
-COMPONENTS_ANNOTATIONS_TARGET       = make_dep_path('src/main/java/com/facebook/components/annotations:annotations')
-COMPONENTS_CONFIG_TARGET            = make_dep_path('src/main/java/com/facebook/components/config:config')
-COMPONENTS_DISPLAYLISTSUBS_TARGET   = make_dep_path('src/main/java/com/facebook/components/displaylist/stubs:stubs')
-COMPONENTS_VIEWCOMPATCREATOR_TARGET = make_dep_path('src/main/java/com/facebook/components/viewcompatcreator:viewcompatcreator')
+COMPONENTS_JAVA_TARGET                   = make_dep_path('src/main/java/com/facebook/components:components')
+COMPONENTS_DEBUG_JAVA_TARGET             = make_dep_path('src/debug/java/com/facebook/components:components')
+COMPONENTS_ANNOTATIONS_TARGET            = make_dep_path('src/main/java/com/facebook/components/annotations:annotations')
+COMPONENTS_CONFIG_TARGET                 = make_dep_path('src/main/java/com/facebook/components/config:config')
+COMPONENTS_DISPLAYLISTSUBS_TARGET        = make_dep_path('src/main/java/com/facebook/components/displaylist/stubs:stubs')
+COMPONENTS_VIEWCOMPATCREATOR_TARGET      = make_dep_path('src/main/java/com/facebook/components/viewcompatcreator:viewcompatcreator')
+COMPONENTS_UTILS_TARGET                  = make_dep_path('src/main/java/com/facebook/components/utils:utils')
+COMPONENTS_WIDGET_ACCESSIBILITIES_TARGET = make_dep_path('src/main/java/com/facebook/components/widget/accessibility:accessibility')
 
 # Java source with local upstream
 COMPONENTS_PROGUARDANNOTATIONS_TARGET = make_dep_path('src/main/java/com/facebook/proguard/annotations:annotations')
@@ -19,14 +23,25 @@ COMPONENTS_PROGUARDANNOTATIONS_TARGET = make_dep_path('src/main/java/com/faceboo
 COMPONENTS_RES_TARGET               = make_dep_path(':res')
 
 # Libraries
-COMPONENTS_INFERANNOTATIONS_TARGET = make_dep_path('lib/infer-annotations:infer-annotations')
-COMPONENTS_JSR_TARGET              = make_dep_path('lib/jsr-305:jsr-305')
-COMPONENTS_ANDROIDSUPPORT_TARGET   = make_dep_path('lib/android-support:android-support')
-COMPONENTS_YOGA_TARGET             = make_dep_path('lib/yoga:yoga')
-COMPONENTS_BUILD_CONFIG_TARGET     = make_dep_path(':build_config')
-COMPONENTS_CSSLAYOUT_TARGET        = make_dep_path('lib/CSSLayoutDEPRECATED-TOREMOVE:CSSLayoutDEPRECATED')
-COMPONENTS_RELAYOUT_TARGET         = make_dep_path('lib/relayout-TOREMOVE:relayout')
-COMPONENTS_STETHO_TARGET           = make_dep_path('lib/stetho:stetho')
-COMPONENTS_COMMONS_CLI_TARGET      = make_dep_path('lib/commons-cli:commons-cli')
-COMPONENTS_JAVAPOET_TARGET         = make_dep_path('lib/javapoet:javapoet')
-COMPONENTS_FBCORE_TARGET           = make_dep_path('lib/fbcore:fbcore')
+COMPONENTS_INFERANNOTATIONS_TARGET            = make_dep_path('lib/infer-annotations:infer-annotations')
+COMPONENTS_JSR_TARGET                         = make_dep_path('lib/jsr-305:jsr-305')
+COMPONENTS_ANDROIDSUPPORT_TARGET              = make_dep_path('lib/android-support:android-support')
+COMPONENTS_ANDROIDSUPPORT_RECYCLERVIEW_TARGET = make_dep_path('lib/android-support:android-support-recyclerview')
+COMPONENTS_YOGA_TARGET                        = make_dep_path('lib/yoga:yoga')
+COMPONENTS_BUILD_CONFIG_TARGET                = make_dep_path(':build_config')
+COMPONENTS_CSSLAYOUT_TARGET                   = make_dep_path('lib/CSSLayoutDEPRECATED-TOREMOVE:CSSLayoutDEPRECATED')
+COMPONENTS_RELAYOUT_TARGET                    = make_dep_path('lib/relayout-TOREMOVE:relayout')
+COMPONENTS_STETHO_TARGET                      = make_dep_path('lib/stetho:stetho')
+COMPONENTS_COMMONS_CLI_TARGET                 = make_dep_path('lib/commons-cli:commons-cli')
+COMPONENTS_TEXTLAYOUTBUILDER_TARGET           = make_dep_path('lib/textlayoutbuilder:textlayoutbuilder')
+COMPONENTS_JAVAPOET_TARGET                    = make_dep_path('lib/javapoet:javapoet')
+COMPONENTS_FBCORE_TARGET                      = make_dep_path('lib/fbcore:fbcore')
+
+# Annotation processors
+COMPONENTS_PROCESSOR_TARGET = make_dep_path('src/main/java/com/facebook/components/processor:processor')
+
+# Other targets
+COMPONENTS_OSS_TARGET = make_dep_path(":components")
+
+# Targets that sometimes exist and sometimes don't
+COMPONENTS_TEXTLAYOUTBUILDER_UTILS_TARGET = []

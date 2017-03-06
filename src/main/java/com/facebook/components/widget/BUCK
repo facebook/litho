@@ -1,6 +1,11 @@
+include_defs("//COMPONENTS_DEFS")
+
 android_library(
     name = "widget",
     srcs = glob(["*.java"]),
+    plugins = [
+        COMPONENTS_PROCESSOR_TARGET,
+    ],
     tests = [
         "//instrumentation_tests/com/facebook/components/widget:widget",
         "//javatests/com/facebook/components/widget:widget",
@@ -8,16 +13,16 @@ android_library(
     visibility = [
         "PUBLIC",
     ],
-    deps = [
-        "//java/com/facebook/components:components_oss",
-        "//libraries/components:res",
-        "//libraries/components/src/main/java/com/facebook/components/utils:utils",
-        "//libraries/components/src/main/java/com/facebook/components/widget/accessibility:accessibility",
-        "//libraries/textlayoutbuilder/library/src/main/java/com/facebook/fbui/textlayoutbuilder:textlayoutbuilder",
-        "//libraries/textlayoutbuilder/library/src/main/java/com/facebook/fbui/textlayoutbuilder/util:util",
-        "//third-party/android/support/v4:lib-support-v4",
-        "//third-party/android/support/v7/recyclerview:recyclerview",
-        "//third-party/java/infer-annotations:infer-annotations",
-        "//third-party/java/jsr-305:jsr-305",
-    ],
+    deps =
+        COMPONENTS_TEXTLAYOUTBUILDER_UTILS_TARGET + [
+            COMPONENTS_WIDGET_ACCESSIBILITIES_TARGET,
+            COMPONENTS_UTILS_TARGET,
+            COMPONENTS_RES_TARGET,
+            COMPONENTS_TEXTLAYOUTBUILDER_TARGET,
+            COMPONENTS_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
+            COMPONENTS_ANDROIDSUPPORT_TARGET,
+            COMPONENTS_JSR_TARGET,
+            COMPONENTS_OSS_TARGET,
+            COMPONENTS_INFERANNOTATIONS_TARGET,
+        ],
 )

@@ -10,11 +10,26 @@ prebuilt_jar(
     binary_jar = "android-support-annotations.jar",
 )
 
+prebuilt_jar(
+    name = "android-support-recyclerview-jar",
+    binary_jar = "android-support-v7-recyclerview.jar",
+)
+
 java_library(
     name = "android-support",
     exported_deps = [
         ":android-support-annotations-jar",
         ":android-support-jar",
+    ],
+    visibility = [
+        COMPONENTS_VISIBILITY,
+    ],
+)
+
+java_library(
+    name = "android-support-recyclerview",
+    exported_deps = [
+        ":android-support-recyclerview-jar",
     ],
     visibility = [
         COMPONENTS_VISIBILITY,

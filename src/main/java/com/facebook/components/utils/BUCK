@@ -1,3 +1,5 @@
+include_defs("//COMPONENTS_DEFS")
+
 android_library(
     name = "utils",
     srcs = glob(["*.java"]),
@@ -8,8 +10,8 @@ android_library(
         "PUBLIC",
     ],
     deps = [
-        "//libraries/components:components",
-        "//third-party/android/support/v7/recyclerview:recyclerview",
-        "//third-party/java/jsr-305:jsr-305",
+        COMPONENTS_ROOT_TARGET,
+        COMPONENTS_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
+        COMPONENTS_JSR_TARGET,
     ],
 )
