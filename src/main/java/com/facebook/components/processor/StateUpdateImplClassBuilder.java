@@ -29,6 +29,7 @@ public class StateUpdateImplClassBuilder {
   private static final String STATE_UPDATE_NEW_COMPONENT_NAME = "newComponent";
   private static final String STATE_UPDATE_IMPL_NAME_SUFFIX = "StateUpdate";
   private static final String STATE_UPDATE_METHOD_NAME = "updateState";
+  private static final String STATE_UPDATE_IS_LAZY_METHOD_NAME = "isLazyStateUpdate";
 
   private String mTarget;
   private String mStateUpdateClassName;
@@ -236,6 +237,15 @@ public class StateUpdateImplClassBuilder {
     }
 
     stateUpdateClassBuilder.addMethod(updateStateMethodBuilder.build());
+
+    final MethodSpec.Builder isLazyStateStateUpdateMethodBuilder =
+        MethodSpec.methodBuilder(STATE_UPDATE_IS_LAZY_METHOD_NAME)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(TypeName.BOOLEAN)
+            .addStatement("return false");
+
+    stateUpdateClassBuilder.addMethod(isLazyStateStateUpdateMethodBuilder.build());
+
     return stateUpdateClassBuilder.build();
   }
 

@@ -23,6 +23,7 @@ class OnLazyStateUpdateMethodSpecBuilder {
   private static final String STATE_CONTAINER_PARAM_NAME = "stateContainer";
   private static final String STATE_UPDATE_IMPL_NAME_SUFFIX = "StateUpdate";
   private static final String STATE_UPDATE_VALUE_PARAM = "lazyUpdateValue";
+  private static final String STATE_UPDATE_IS_LAZY_METHOD_NAME = "isLazyStateUpdate";
 
   private TypeName mContextClass;
   private ClassName mComponentClass;
@@ -122,9 +123,16 @@ class OnLazyStateUpdateMethodSpecBuilder {
             "." + mStateName +
             " = " + mStateName + ".get()");
 
+    final MethodSpec.Builder isLazyStateUpdate =
+        MethodSpec.methodBuilder(STATE_UPDATE_IS_LAZY_METHOD_NAME)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(TypeName.BOOLEAN)
+            .addStatement("return true");
+
     final TypeSpec.Builder stateBuilderImpl = TypeSpec.anonymousClassBuilder("")
         .addSuperinterface(mStateUpdateType)
-        .addMethod(stateUpdate.build());
+        .addMethod(stateUpdate.build())
+        .addMethod(isLazyStateUpdate.build());
 
     builder.addStatement(
         "$T _stateUpdate = $L",
