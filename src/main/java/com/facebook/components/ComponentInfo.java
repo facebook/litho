@@ -17,7 +17,8 @@ import android.support.v4.util.Pools.Pool;
  */
 public class ComponentInfo {
 
-  private static final Pool<Builder> sBuilderPool = new Pools.SynchronizedPool<>(4);
+  private static final Pool<Builder> sBuilderPool = new Pools.SynchronizedPool<>(2);
+  private static final Pool<ComponentInfo> sComponentInfoPool = new Pools.SynchronizedPool<>(8);
 
   private Component mComponent;
   private boolean mIsSticky;
@@ -32,10 +33,10 @@ public class ComponentInfo {
     return builder;
   }
 
-  private ComponentInfo(Builder builder) {
-    mComponent = builder.mComponent;
-    mIsSticky = builder.mIsSticky;
-    mSpanSize = builder.mSpanSize;
+  private ComponentInfo() {
+    mComponent = null;
+    mIsSticky = false;
+    mSpanSize = 1;
   }
 
   public Component getComponent() {
@@ -54,6 +55,13 @@ public class ComponentInfo {
     mComponent = null;
     mIsSticky = false;
     mSpanSize = 1;
+    sComponentInfoPool.release(this);
+  }
+
+  private void init(Builder builder) {
+    mComponent = builder.mComponent;
+    mIsSticky = builder.mIsSticky;
+    mSpanSize = builder.mSpanSize;
   }
 
   public static class Builder {
@@ -84,14 +92,22 @@ public class ComponentInfo {
     }
 
     public ComponentInfo build() {
-      ComponentInfo componentInfo = new ComponentInfo(this);
+      ComponentInfo componentInfo = sComponentInfoPool.acquire();
+      if (componentInfo == null) {
+        componentInfo = new ComponentInfo();
+      }
+      componentInfo.init(this);
 
+      release();
+
+      return componentInfo;
+    }
+
+    private void release() {
       mComponent = null;
       mIsSticky = false;
       mSpanSize = 1;
       sBuilderPool.release(this);
-
-      return componentInfo;
     }
   }
 }

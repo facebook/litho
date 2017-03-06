@@ -105,6 +105,10 @@ public class ComponentTreeHolder {
     }
   }
 
+  synchronized int getSpanSize() {
+    return mComponentInfo.getSpanSize();
+  }
+
   synchronized boolean isTreeValid() {
     return mIsTreeValid;
   }

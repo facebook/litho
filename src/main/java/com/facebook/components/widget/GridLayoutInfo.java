@@ -86,4 +86,9 @@ public class GridLayoutInfo implements LayoutInfo {
         return SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
     }
   }
+
+  @Override
+  public int getSpanCount() {
+    return mGridLayoutManager.getSpanCount();
+  }
 }

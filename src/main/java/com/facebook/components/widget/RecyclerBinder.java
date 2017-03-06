@@ -28,6 +28,8 @@ import com.facebook.components.SizeSpec;
 import com.facebook.components.ThreadUtils;
 import com.facebook.components.utils.IncrementalMountUtils;
 
+import static android.support.v7.widget.OrientationHelper.HORIZONTAL;
+import static android.support.v7.widget.OrientationHelper.VERTICAL;
 import static com.facebook.components.MeasureComparisonUtils.isMeasureSpecCompatible;
 
 /**
@@ -193,8 +195,9 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     final int childrenWidthSpec, childrenHeightSpec;
     synchronized (this) {
       mComponentTreeHolders.add(position, holder);
-      childrenWidthSpec = mChildrenWidthSpec;
-      childrenHeightSpec = mChildrenHeightSpec;
+
+      childrenWidthSpec = getActualChildrenWidthSpec(holder);
+      childrenHeightSpec = getActualChildrenHeightSpec(holder);
 
       if (mIsMeasured.get()) {
         if (mRange == null) {
@@ -202,8 +205,8 @@ public class RecyclerBinder implements Binder<RecyclerView> {
               mMeasuredSize.width,
               mMeasuredSize.height,
               position,
-              mChildrenWidthSpec,
-              mChildrenHeightSpec,
+              childrenWidthSpec,
+              childrenHeightSpec,
               mLayoutInfo.getScrollDirection());
 
           computeLayout = false;
@@ -240,11 +243,13 @@ public class RecyclerBinder implements Binder<RecyclerView> {
       holder = mComponentTreeHolders.get(position);
       shouldComputeLayout = mRange != null && position >= mCurrentFirstVisiblePosition &&
           position < mCurrentFirstVisiblePosition + mRange.estimatedViewportCount;
-      childrenWidthSpec = mChildrenWidthSpec;
-      childrenHeightSpec = mChildrenHeightSpec;
+
+      holder.setComponentInfo(componentInfo);
+
+      childrenWidthSpec = getActualChildrenWidthSpec(holder);
+      childrenHeightSpec = getActualChildrenHeightSpec(holder);
     }
 
-    holder.setComponentInfo(componentInfo);
     // If we are updating an item that is currently visible we need to calculate a layout
     // synchronously.
     if (shouldComputeLayout) {
@@ -279,8 +284,8 @@ public class RecyclerBinder implements Binder<RecyclerView> {
           toPosition >= mCurrentFirstVisiblePosition &&
           toPosition <= mCurrentFirstVisiblePosition + mRangeSize;
 
-      childrenWidthSpec = mChildrenWidthSpec;
-      childrenHeightSpec = mChildrenHeightSpec;
+      childrenWidthSpec = getActualChildrenWidthSpec(holder);
+      childrenHeightSpec = getActualChildrenHeightSpec(holder);
     }
     final boolean isTreeValid = holder.isTreeValid();
 
@@ -404,18 +409,19 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     mLastWidthSpec = widthSpec;
     mLastHeightSpec = heightSpec;
 
+    // Width and Height specs here are all for span size 1
     mChildrenWidthSpec = mLayoutInfo.getChildWidthSpec(widthSpec);
     mChildrenHeightSpec = mLayoutInfo.getChildHeightSpec(heightSpec);
 
     // We now need to compute the size of the non scrolling side. We try to do this by using the
     // calculated range (if we have one) or computing one.
-    if (mRange == null) {
+    if (mRange == null && mCurrentFirstVisiblePosition < mComponentTreeHolders.size()) {
       initRange(
           SizeSpec.getSize(widthSpec),
           SizeSpec.getSize(heightSpec),
           mCurrentFirstVisiblePosition,
-          mChildrenWidthSpec,
-          mChildrenHeightSpec,
+          getActualChildrenWidthSpec(mComponentTreeHolders.get(mCurrentFirstVisiblePosition)),
+          getActualChildrenHeightSpec(mComponentTreeHolders.get(mCurrentFirstVisiblePosition)),
           scrollDirection);
     }
 
@@ -621,7 +627,7 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     // TODO 16212153 optimize computeRange loop.
     for (int i = 0; i < treeHoldersSize; i++) {
       final ComponentTreeHolder holder;
-      final int childWidthSpec, childHeightSpec;
+      final int childrenWidthSpec, childrenHeightSpec;
 
       synchronized (this) {
         // Someone modified the ComponentsTreeHolders while we were computing this range. We
@@ -631,18 +637,32 @@ public class RecyclerBinder implements Binder<RecyclerView> {
         }
 
         holder = mComponentTreeHolders.get(i);
-        childHeightSpec = mChildrenHeightSpec;
-        childWidthSpec = mChildrenWidthSpec;
+        childrenWidthSpec = getActualChildrenWidthSpec(holder);
+        childrenHeightSpec = getActualChildrenHeightSpec(holder);
       }
 
       if (i >= rangeStart && i <= rangeEnd) {
         if (!holder.isTreeValid()) {
-          holder.computeLayoutAsync(mComponentContext, childWidthSpec, childHeightSpec);
+          holder.computeLayoutAsync(mComponentContext, childrenWidthSpec, childrenHeightSpec);
         }
       } else if (holder.isTreeValid()) {
         holder.acquireStateHandlerAndReleaseTree();
       }
     }
+  }
+
+  @GuardedBy("this")
+  private int getActualChildrenWidthSpec(final ComponentTreeHolder treeHolder) {
+    return mLayoutInfo.getScrollDirection() == HORIZONTAL ?
+        mChildrenWidthSpec :
+        mChildrenWidthSpec * treeHolder.getSpanSize();
+  }
+
+  @GuardedBy("this")
+  private int getActualChildrenHeightSpec(final ComponentTreeHolder treeHolder) {
+    return mLayoutInfo.getScrollDirection() == VERTICAL ?
+        mChildrenHeightSpec :
+        mChildrenHeightSpec * treeHolder.getSpanSize();
   }
 
   private class RangeScrollListener extends RecyclerView.OnScrollListener {
@@ -695,10 +715,11 @@ public class RecyclerBinder implements Binder<RecyclerView> {
       // We can ignore the synchronization here. We'll only add to this from the UiThread.
       // This read only happens on the UiThread as well and we are never writing this here.
       final ComponentTreeHolder componentTreeHolder = mComponentTreeHolders.get(position);
-
+      final int childrenWidthSpec = getActualChildrenWidthSpec(componentTreeHolder);
+      final int childrenHeightSpec = getActualChildrenHeightSpec(componentTreeHolder);
       if (!componentTreeHolder.isTreeValid()) {
         componentTreeHolder
-            .computeLayoutSync(mComponentContext, mChildrenWidthSpec, mChildrenHeightSpec, null);
+            .computeLayoutSync(mComponentContext, childrenWidthSpec, childrenHeightSpec, null);
       }
 
       componentView.setComponent(componentTreeHolder.getComponentTree());
