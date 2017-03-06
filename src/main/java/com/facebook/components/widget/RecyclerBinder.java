@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.support.annotation.UiThread;
 import android.support.annotation.VisibleForTesting;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.LayoutManager;
@@ -49,6 +50,7 @@ public class RecyclerBinder implements Binder<RecyclerView> {
   private final ComponentContext mComponentContext;
   private final RangeScrollListener mRangeScrollListener = new RangeScrollListener();
   private final LayoutHandlerFactory mLayoutHandlerFactory;
+  private final GridSpanSizeLookup mGridSpanSizeLookup = new GridSpanSizeLookup();
 
   // Data structure to be used to hold Components and ComponentTreeHolders before adding them to
   // the RecyclerView. This happens in the case of inserting something inside the current working
@@ -540,6 +542,9 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     view.setLayoutManager(mLayoutInfo.getLayoutManager());
     view.setAdapter(mInternalAdapter);
     view.addOnScrollListener(mRangeScrollListener);
+    if (mLayoutInfo.getSpanCount() > 1) {
+      ((GridLayoutManager) mLayoutInfo.getLayoutManager()).setSpanSizeLookup(mGridSpanSizeLookup);
+    }
     if (mCurrentFirstVisiblePosition != RecyclerView.NO_POSITION &&
         mCurrentFirstVisiblePosition > 0) {
       view.scrollToPosition(mCurrentFirstVisiblePosition);
@@ -567,6 +572,9 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     view.removeOnScrollListener(mRangeScrollListener);
     view.setAdapter(null);
     view.setLayoutManager(null);
+    if (mLayoutInfo.getSpanCount() > 1) {
+      ((GridLayoutManager) mLayoutInfo.getLayoutManager()).setSpanSizeLookup(null);
+    }
   }
 
   @GuardedBy("this")
@@ -730,6 +738,16 @@ public class RecyclerBinder implements Binder<RecyclerView> {
       // We can ignore the synchronization here. We'll only add to this from the UiThread.
       // This read only happens on the UiThread as well and we are never writing this here.
       return mComponentTreeHolders.size();
+    }
+  }
+
+  private class GridSpanSizeLookup extends GridLayoutManager.SpanSizeLookup {
+
+    @SuppressWarnings("InvalidAccessToGuardedField")
+    @Override
+    public int getSpanSize(int position) {
+      // Synchronization is ignored here because this is accessed from the UiThread by the framework
+      return mComponentTreeHolders.get(position).getSpanSize();
     }
   }
 }
