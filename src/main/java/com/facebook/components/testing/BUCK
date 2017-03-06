@@ -1,0 +1,18 @@
+android_library(
+    name = "testing",
+    srcs = glob(["*.java"]),
+    provided_deps = [
+        "//third-party/java/robolectric3/robolectric:robolectric",
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        "//libraries/components:components",
+        "//libraries/components:res",
+        "//libraries/components/src/main/java/com/facebook/components:components",
+        "//libraries/components/src/main/java/com/facebook/components/widget:widget",
+        "//third-party/java/jsr-305:jsr-305",
+        "//third-party/java/powermock/reflect:reflect",
+    ],
+)
