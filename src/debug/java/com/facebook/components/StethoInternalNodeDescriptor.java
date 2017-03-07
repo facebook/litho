@@ -9,7 +9,6 @@ import android.view.View;
 
 import com.facebook.stetho.common.Accumulator;
 import com.facebook.stetho.inspector.elements.AbstractChainedDescriptor;
-import com.facebook.stetho.inspector.elements.AttributeAccumulator;
 import com.facebook.stetho.inspector.elements.StyleAccumulator;
 import com.facebook.stetho.inspector.elements.StyleRuleNameAccumulator;
 import com.facebook.stetho.inspector.elements.android.HighlightableDescriptor;
@@ -78,19 +77,10 @@ public final class StethoInternalNodeDescriptor
   }
 
   @Override
-  protected void onGetAttributes(StethoInternalNode element, AttributeAccumulator attributes) {
-    final ComponentsStethoManagerImpl stethoManager = getStethoManager(element);
-    if (stethoManager == null) {
-      return;
-    }
-
-    stethoManager.getAttributes(element.node, attributes);
-  }
-
-  @Override
   protected void onGetStyleRuleNames(
       StethoInternalNode element,
       StyleRuleNameAccumulator accumulator) {
+    accumulator.store("layout", true);
     accumulator.store("props", false);
     accumulator.store("state", false);
   }
@@ -100,12 +90,13 @@ public final class StethoInternalNodeDescriptor
       StethoInternalNode element,
       String ruleName,
       StyleAccumulator accumulator) {
-    if (element.node.getComponent() == null ||
-        element.node.getComponent().getStateContainer() == null) {
+
+    final Component component = element.node.getComponent();
+    if (component == null) {
       return;
     }
 
-    final Component component = element.node.getComponent();
+    final ComponentsStethoManagerImpl stethoManager = getStethoManager(element);
     final ComponentLifecycle.StateContainer stateContainer = component.getStateContainer();
 
     if ("props".equals(ruleName)) {
@@ -121,7 +112,7 @@ public final class StethoInternalNodeDescriptor
           }
         } catch (IllegalAccessException ignored) {}
       }
-    } else if ("state".equals(ruleName)) {
+    } else if ("state".equals(ruleName) && stateContainer != null) {
       for (Field field : stateContainer.getClass().getDeclaredFields()) {
         try {
           field.setAccessible(true);
@@ -134,34 +125,38 @@ public final class StethoInternalNodeDescriptor
           }
         } catch (IllegalAccessException ignored) {}
       }
+    } else if ("layout".equals(ruleName) && stethoManager != null) {
+      stethoManager.getStyles(element.node, accumulator);
     }
   }
 
-  @Override
-  protected void onSetAttributesAsText(final StethoInternalNode element, String text) {
-    final ComponentContext context = element.node.getContext();
-    final ComponentTree componentTree = context.getComponentTree();
-    final ComponentView view = componentTree == null ? null : componentTree.getComponentView();
-
-    if (view != null) {
+  protected void onSetStyle(
+      StethoInternalNode element,
+      String ruleName,
+      String name,
+      String value) {
+    if ("layout".equals(ruleName)) {
+      final ComponentContext context = element.node.getContext();
+      final ComponentTree componentTree = context.getComponentTree();
+      final ComponentView view = componentTree == null ? null : componentTree.getComponentView();
       final ComponentsStethoManagerImpl stethoManager = getStethoManager(element);
-      stethoManager.setStyleOverrides(element.node, parseSetAttributesAsTextArg(text));
-      stethoManager.getAttributes(element.node, new AttributeAccumulator() {
-            @Override
-            public void store(String name, String value) {
-              getHost().onAttributeModified(element, name, value);
-            }
-          });
-      view.forceRelayout();
 
-      final ComponentsLogger logger = context.getLogger();
-      if (logger != null) {
-        logger.eventStart(ComponentsLogger.EVENT_STETHO_UPDATE_COMPONENT, element);
-        logger.eventEnd(
-            ComponentsLogger.EVENT_STETHO_UPDATE_COMPONENT,
-            element,
-            ComponentsLogger.ACTION_SUCCESS);
+      if (view != null && stethoManager != null) {
+        stethoManager.setStyleOverride(element.node, name, value);
+        view.forceRelayout();
+        logStyleUpdate(element, context);
       }
+    }
+  }
+
+  private void logStyleUpdate(StethoInternalNode element, ComponentContext context) {
+    final ComponentsLogger logger = context.getLogger();
+    if (logger != null) {
+      logger.eventStart(ComponentsLogger.EVENT_STETHO_UPDATE_COMPONENT, element);
+      logger.eventEnd(
+          ComponentsLogger.EVENT_STETHO_UPDATE_COMPONENT,
+          element,
+          ComponentsLogger.ACTION_SUCCESS);
     }
   }
 

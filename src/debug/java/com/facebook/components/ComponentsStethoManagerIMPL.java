@@ -7,7 +7,7 @@ import java.util.Map;
 import android.support.annotation.Nullable;
 import android.support.v4.util.SimpleArrayMap;
 
-import com.facebook.stetho.inspector.elements.AttributeAccumulator;
+import com.facebook.stetho.inspector.elements.StyleAccumulator;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
@@ -74,105 +74,105 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
     }
   }
 
-  void getAttributes(InternalNode node, AttributeAccumulator attributes) {
+  void getStyles(InternalNode node, StyleAccumulator accumulator) {
     final YogaNodeAPI yogaNode = node.mYogaNode;
     final YogaNodeAPI defaults = ComponentsPools.acquireYogaNode();
 
     if (yogaNode.getStyleDirection() != defaults.getStyleDirection()) {
-      attributes.store("direction", toCSSString(yogaNode.getStyleDirection()));
+      accumulator.store("direction", toCSSString(yogaNode.getStyleDirection()), false);
     }
 
     if (yogaNode.getFlexDirection() != defaults.getFlexDirection()) {
-      attributes.store("flex-direction", toCSSString(yogaNode.getFlexDirection()));
+      accumulator.store("flex-direction", toCSSString(yogaNode.getFlexDirection()), false);
     }
 
     if (yogaNode.getJustifyContent() != defaults.getJustifyContent()) {
-      attributes.store("justify-content", toCSSString(yogaNode.getJustifyContent()));
+      accumulator.store("justify-content", toCSSString(yogaNode.getJustifyContent()), false);
     }
 
     if (yogaNode.getAlignItems() != defaults.getAlignItems()) {
-      attributes.store("align-items", toCSSString(yogaNode.getAlignItems()));
+      accumulator.store("align-items", toCSSString(yogaNode.getAlignItems()), false);
     }
 
     if (yogaNode.getAlignSelf() != defaults.getAlignSelf()) {
-      attributes.store("align-self", toCSSString(yogaNode.getAlignSelf()));
+      accumulator.store("align-self", toCSSString(yogaNode.getAlignSelf()), false);
     }
 
     if (yogaNode.getAlignContent() != defaults.getAlignContent()) {
-      attributes.store("align-content", toCSSString(yogaNode.getAlignContent()));
+      accumulator.store("align-content", toCSSString(yogaNode.getAlignContent()), false);
     }
 
     if (yogaNode.getPositionType() != defaults.getPositionType()) {
-      attributes.store("position", toCSSString(yogaNode.getPositionType()));
+      accumulator.store("position", toCSSString(yogaNode.getPositionType()), false);
     }
 
     if (yogaNode.getFlexGrow() != defaults.getFlexGrow()) {
-      attributes.store("flex-grow", Float.toString(yogaNode.getFlexGrow()));
+      accumulator.store("flex-grow", Float.toString(yogaNode.getFlexGrow()), false);
     }
 
     if (yogaNode.getFlexShrink() != defaults.getFlexShrink()) {
-      attributes.store("flex-shrink", Float.toString(yogaNode.getFlexShrink()));
+      accumulator.store("flex-shrink", Float.toString(yogaNode.getFlexShrink()), false);
     }
 
     if (!yogaNode.getFlexBasis().equals(defaults.getFlexBasis())) {
-      attributes.store("flex-basis", yogaValueToString(yogaNode.getFlexBasis()));
+      accumulator.store("flex-basis", yogaValueToString(yogaNode.getFlexBasis()), false);
     }
 
     if (!yogaNode.getWidth().equals(defaults.getWidth())) {
-      attributes.store("width", yogaValueToString(yogaNode.getWidth()));
+      accumulator.store("width", yogaValueToString(yogaNode.getWidth()), false);
     }
 
     if (!yogaNode.getMinWidth().equals(defaults.getMinWidth())) {
-      attributes.store("min-width", yogaValueToString(yogaNode.getMinWidth()));
+      accumulator.store("min-width", yogaValueToString(yogaNode.getMinWidth()), false);
     }
 
     if (!yogaNode.getMaxWidth().equals(defaults.getMaxWidth())) {
-      attributes.store("max-width", yogaValueToString(yogaNode.getMaxWidth()));
+      accumulator.store("max-width", yogaValueToString(yogaNode.getMaxWidth()), false);
     }
 
     if (!yogaNode.getHeight().equals(defaults.getHeight())) {
-      attributes.store("height", yogaValueToString(yogaNode.getHeight()));
+      accumulator.store("height", yogaValueToString(yogaNode.getHeight()), false);
     }
 
     if (!yogaNode.getMinHeight().equals(defaults.getMinHeight())) {
-      attributes.store("min-height", yogaValueToString(yogaNode.getMinHeight()));
+      accumulator.store("min-height", yogaValueToString(yogaNode.getMinHeight()), false);
     }
 
     if (!yogaNode.getMaxHeight().equals(defaults.getMaxHeight())) {
-      attributes.store("max-height", yogaValueToString(yogaNode.getMaxHeight()));
+      accumulator.store("max-height", yogaValueToString(yogaNode.getMaxHeight()), false);
     }
 
     for (YogaEdge edge : edges) {
       if (!yogaNode.getMargin(edge).equals(defaults.getMargin(edge)) &&
           !yogaNode.getMargin(edge).equals(YOGA_VALUE_ZERO)) {
-        attributes.store(
+        accumulator.store(
             "margin-" + toCSSString(edge),
-            yogaValueToString(yogaNode.getMargin(edge)));
+            yogaValueToString(yogaNode.getMargin(edge)), false);
       }
     }
 
     for (YogaEdge edge : edges) {
       if (!yogaNode.getPadding(edge).equals(defaults.getPadding(edge)) &&
           !yogaNode.getPadding(edge).equals(YOGA_VALUE_ZERO)) {
-        attributes.store(
+        accumulator.store(
             "padding-" + toCSSString(edge),
-            yogaValueToString(yogaNode.getPadding(edge)));
+            yogaValueToString(yogaNode.getPadding(edge)), false);
       }
     }
 
     for (YogaEdge edge : edges) {
       if (!yogaNode.getPosition(edge).equals(defaults.getPosition(edge)) &&
           !yogaNode.getPosition(edge).equals(YOGA_VALUE_ZERO)) {
-        attributes.store(
+        accumulator.store(
             "position-" + toCSSString(edge),
-            yogaValueToString(yogaNode.getPosition(edge)));
+            yogaValueToString(yogaNode.getPosition(edge)), false);
       }
     }
 
     for (YogaEdge edge : edges) {
       if (Float.compare(yogaNode.getBorder(edge), defaults.getBorder(edge)) != 0 &&
           Float.compare(yogaNode.getBorder(edge), 0) != 0) {
-        attributes.store("border-" + toCSSString(edge), Float.toString(yogaNode.getBorder(edge)));
+        accumulator.store("border-" + toCSSString(edge), Float.toString(yogaNode.getBorder(edge)), false);
       }
     }
 
@@ -181,7 +181,7 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
       SimpleArrayMap<String, String> styles =  mOverrides.get(nodeKey);
       for (int i = 0, size = styles.size(); i < size; i++) {
         final String key = styles.keyAt(i);
-        attributes.store(key, styles.get(key));
+        accumulator.store(key, styles.get(key), false);
       }
     }
 
@@ -420,18 +420,16 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
     }
   }
 
-  public void setStyleOverrides(InternalNode element, Map<String, String> overrides) {
-    final String key = getGlobalKey(element);
+  public void setStyleOverride(InternalNode element, String key, String value) {
+    final String globalKey = getGlobalKey(element);
 
-    SimpleArrayMap<String, String> styles = mOverrides.get(key);
+    SimpleArrayMap<String, String> styles = mOverrides.get(globalKey);
     if (styles == null) {
       styles = new SimpleArrayMap<>();
-      mOverrides.put(key, styles);
+      mOverrides.put(globalKey, styles);
     }
 
-    for (Map.Entry<String, String> entry : overrides.entrySet()) {
-      styles.put(entry.getKey(), entry.getValue());
-    }
+    styles.put(key, value);
   }
 
   private static String yogaValueToString(YogaValue v) {
