@@ -55,9 +55,7 @@ import static com.facebook.components.ComponentsLogger.PARAM_TREE_DIFF_ENABLED;
 import static com.facebook.components.MountItem.FLAG_DUPLICATE_PARENT_STATE;
 import static com.facebook.components.MountState.ROOT_HOST_ID;
 import static com.facebook.components.NodeInfo.FOCUS_SET_TRUE;
-import static com.facebook.components.SizeSpec.AT_MOST;
 import static com.facebook.components.SizeSpec.EXACTLY;
-import static com.facebook.components.SizeSpec.UNSPECIFIED;
 
 /**
  * The main role of {@link LayoutState} is to hold the output of layout calculation. This includes
@@ -252,7 +250,7 @@ class LayoutState {
       final ViewNodeInfo viewNodeInfo = ViewNodeInfo.acquire();
       viewNodeInfo.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
       viewNodeInfo.setLayoutDirection(node.getResolvedLayoutDirection());
-      viewNodeInfo.setExpandedTouchBounds(node);
+      viewNodeInfo.setExpandedTouchBounds(node, l, t, r, b);
       layoutOutput.setViewNodeInfo(viewNodeInfo);
       viewNodeInfo.release();
     } else {

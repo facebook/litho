@@ -84,7 +84,7 @@ class ViewNodeInfo {
     return mLayoutDirection;
   }
 
-  void setExpandedTouchBounds(InternalNode node) {
+  void setExpandedTouchBounds(InternalNode node, int l, int t, int r, int b) {
     if (!node.hasTouchExpansion()) {
       return;
     }
@@ -105,17 +105,12 @@ class ViewNodeInfo {
           "ViewNodeInfo.");
     }
 
-    final int mountBoundsLeft = node.getX();
-    final int mountBoundsTop = node.getY();
-    final int mountBoundsRight = mountBoundsLeft + node.getWidth();
-    final int mountBoundsBottom = mountBoundsTop + node.getHeight();
-
     mExpandedTouchBounds = ComponentsPools.acquireRect();
     mExpandedTouchBounds.set(
-        mountBoundsLeft - touchExpansionLeft,
-        mountBoundsTop - touchExpansionTop,
-        mountBoundsRight + touchExpansionRight,
-        mountBoundsBottom + touchExpansionBottom);
+        l - touchExpansionLeft,
+        t - touchExpansionTop,
+        r + touchExpansionRight,
+        b + touchExpansionBottom);
   }
 
   Rect getExpandedTouchBounds() {
