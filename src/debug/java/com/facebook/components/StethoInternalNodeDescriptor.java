@@ -103,12 +103,14 @@ public final class StethoInternalNodeDescriptor
       for (Field field : component.getClass().getDeclaredFields()) {
         try {
           field.setAccessible(true);
-          final Object value = field.get(component);
-          if (value != stateContainer && !(value instanceof ComponentLifecycle)) {
-            accumulator.store(
-                field.getName(),
-                value == null ? "null" : value.toString(),
-                false);
+          if (isPrimitiveField(field)) {
+            final Object value = field.get(component);
+            if (value != stateContainer && !(value instanceof ComponentLifecycle)) {
+              accumulator.store(
+                  field.getName(),
+                  value == null ? "null" : value.toString(),
+                  false);
+            }
           }
         } catch (IllegalAccessException ignored) {}
       }
@@ -116,18 +118,25 @@ public final class StethoInternalNodeDescriptor
       for (Field field : stateContainer.getClass().getDeclaredFields()) {
         try {
           field.setAccessible(true);
-          final Object value = field.get(stateContainer);
-          if (!(value instanceof ComponentLifecycle)) {
-            accumulator.store(
-                field.getName(),
-                value == null ? "null" : value.toString(),
-                false);
+          if (isPrimitiveField(field)) {
+            final Object value = field.get(stateContainer);
+            if (!(value instanceof ComponentLifecycle)) {
+              accumulator.store(
+                  field.getName(),
+                  value == null ? "null" : value.toString(),
+                  false);
+            }
           }
         } catch (IllegalAccessException ignored) {}
       }
     } else if ("layout".equals(ruleName) && stethoManager != null) {
       stethoManager.getStyles(element, accumulator);
     }
+  }
+
+  private static boolean isPrimitiveField(Field field) {
+    return field.getType().isPrimitive() ||
+        field.getType().isAssignableFrom(CharSequence.class);
   }
 
   protected void onSetStyle(
