@@ -71,56 +71,106 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
     }
   }
 
+  private static void storeEnum(
+      StyleAccumulator accumulator,
+      SimpleArrayMap<String, String> overrides,
+      String key,
+      Object value) {
+    if (overrides.containsKey(key)) {
+      accumulator.store(key, overrides.get(key), false);
+    } else {
+      accumulator.store(key, toCSSString(value), false);
+    }
+  }
+
+  private static void storeFloat(
+      StyleAccumulator accumulator,
+      SimpleArrayMap<String, String> overrides,
+      String key,
+      float value) {
+    if (overrides.containsKey(key)) {
+      accumulator.store(key, overrides.get(key), false);
+    } else {
+      accumulator.store(key, Float.toString(value), false);
+    }
+  }
+
+  private static void storeYogaValue(
+      StyleAccumulator accumulator,
+      SimpleArrayMap<String, String> overrides,
+      String key,
+      YogaValue value) {
+    if (overrides.containsKey(key)) {
+      accumulator.store(key, overrides.get(key), false);
+    } else {
+      final String valueString;
+      switch (value.unit) {
+        case UNDEFINED:
+          valueString = "undefined";
+          break;
+        case POINT:
+          valueString = Float.toString(value.value);
+          break;
+        case PERCENT:
+          valueString = value.value + "%";
+          break;
+        case AUTO:
+          valueString = "auto";
+          break;
+        default:
+          throw new IllegalStateException();
+      }
+      accumulator.store(key, valueString, false);
+    }
+  }
+
   void getStyles(InternalNode node, StyleAccumulator accumulator) {
     final YogaNodeAPI yogaNode = node.mYogaNode;
     final YogaNodeAPI defaults = ComponentsPools.acquireYogaNode();
 
-    accumulator.store("direction", toCSSString(yogaNode.getStyleDirection()), false);
-    accumulator.store("flex-direction", toCSSString(yogaNode.getFlexDirection()), false);
-    accumulator.store("justify-content", toCSSString(yogaNode.getJustifyContent()), false);
-    accumulator.store("align-items", toCSSString(yogaNode.getAlignItems()), false);
-    accumulator.store("align-self", toCSSString(yogaNode.getAlignSelf()), false);
-    accumulator.store("align-content", toCSSString(yogaNode.getAlignContent()), false);
-    accumulator.store("position", toCSSString(yogaNode.getPositionType()), false);
-    accumulator.store("flex-grow", Float.toString(yogaNode.getFlexGrow()), false);
-    accumulator.store("flex-shrink", Float.toString(yogaNode.getFlexShrink()), false);
-    accumulator.store("flex-basis", yogaValueToString(yogaNode.getFlexBasis()), false);
-    accumulator.store("width", yogaValueToString(yogaNode.getWidth()), false);
-    accumulator.store("min-width", yogaValueToString(yogaNode.getMinWidth()), false);
-    accumulator.store("max-width", yogaValueToString(yogaNode.getMaxWidth()), false);
-    accumulator.store("height", yogaValueToString(yogaNode.getHeight()), false);
-    accumulator.store("min-height", yogaValueToString(yogaNode.getMinHeight()), false);
-    accumulator.store("max-height", yogaValueToString(yogaNode.getMaxHeight()), false);
+    final String globalKey = getGlobalKey(node);
+    SimpleArrayMap<String, String> overrides = mOverrides.get(globalKey);
+    if (overrides == null) {
+      overrides = new SimpleArrayMap<>();
+      mOverrides.put(globalKey, overrides);
+    }
+
+    storeEnum(accumulator, overrides, "direction", yogaNode.getStyleDirection());
+    storeEnum(accumulator, overrides, "flex-direction", yogaNode.getFlexDirection());
+    storeEnum(accumulator, overrides, "justify-content", yogaNode.getJustifyContent());
+    storeEnum(accumulator, overrides, "align-items", yogaNode.getAlignItems());
+    storeEnum(accumulator, overrides, "align-self", yogaNode.getAlignSelf());
+    storeEnum(accumulator, overrides, "align-content", yogaNode.getAlignContent());
+    storeEnum(accumulator, overrides, "position", yogaNode.getPositionType());
+    storeFloat(accumulator, overrides, "flex-grow", yogaNode.getFlexGrow());
+    storeFloat(accumulator, overrides, "flex-shrink", yogaNode.getFlexShrink());
+    storeYogaValue(accumulator, overrides, "flex-basis", yogaNode.getFlexBasis());
+
+    storeYogaValue(accumulator, overrides, "width", yogaNode.getWidth());
+    storeYogaValue(accumulator, overrides, "min-width", yogaNode.getMinWidth());
+    storeYogaValue(accumulator, overrides, "max-width", yogaNode.getMaxWidth());
+    storeYogaValue(accumulator, overrides, "height", yogaNode.getHeight());
+    storeYogaValue(accumulator, overrides, "min-height", yogaNode.getMinHeight());
+    storeYogaValue(accumulator, overrides, "max-height", yogaNode.getMaxHeight());
 
     for (YogaEdge edge : edges) {
-      accumulator.store(
-          "margin-" + toCSSString(edge),
-          yogaValueToString(yogaNode.getMargin(edge)), false);
+      final String key = "margin-" + toCSSString(edge);
+      storeYogaValue(accumulator, overrides, key, yogaNode.getMargin(edge));
     }
 
     for (YogaEdge edge : edges) {
-      accumulator.store(
-          "padding-" + toCSSString(edge),
-          yogaValueToString(yogaNode.getPadding(edge)), false);
+      final String key = "padding-" + toCSSString(edge);
+      storeYogaValue(accumulator, overrides, key, yogaNode.getPadding(edge));
     }
 
     for (YogaEdge edge : edges) {
-      accumulator.store(
-          "position-" + toCSSString(edge),
-          yogaValueToString(yogaNode.getPosition(edge)), false);
+      final String key = "position-" + toCSSString(edge);
+      storeYogaValue(accumulator, overrides, key, yogaNode.getPosition(edge));
     }
 
     for (YogaEdge edge : edges) {
-      accumulator.store("border-" + toCSSString(edge), Float.toString(yogaNode.getBorder(edge)), false);
-    }
-
-    final String nodeKey = getGlobalKey(node);
-    if (mOverrides.containsKey(nodeKey)) {
-      SimpleArrayMap<String, String> styles =  mOverrides.get(nodeKey);
-      for (int i = 0, size = styles.size(); i < size; i++) {
-        final String key = styles.keyAt(i);
-        accumulator.store(key, styles.get(key), false);
-      }
+      final String key = "border-" + toCSSString(edge);
+      storeFloat(accumulator, overrides, key, yogaNode.getBorder(edge));
     }
 
     ComponentsPools.release(defaults);
@@ -368,16 +418,6 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
     }
 
     styles.put(key, value);
-  }
-
-  private static String yogaValueToString(YogaValue v) {
-    switch (v.unit) {
-      case UNDEFINED: return "undefined";
-      case POINT: return Float.toString(v.value);
-      case PERCENT: return v.value + "%";
-      case AUTO: return "auto";
-      default: throw new IllegalStateException();
-    }
   }
 
   private static YogaValue yogaValueFromString(String s) {
