@@ -7,6 +7,8 @@ import java.lang.reflect.Field;
 import android.graphics.Rect;
 import android.view.View;
 
+import com.facebook.components.annotations.Prop;
+import com.facebook.components.annotations.State;
 import com.facebook.stetho.common.Accumulator;
 import com.facebook.stetho.inspector.elements.AbstractChainedDescriptor;
 import com.facebook.stetho.inspector.elements.StyleAccumulator;
@@ -103,7 +105,7 @@ public final class StethoInternalNodeDescriptor
       for (Field field : component.getClass().getDeclaredFields()) {
         try {
           field.setAccessible(true);
-          if (isPrimitiveField(field)) {
+          if (isPrimitiveField(field) && field.getAnnotation(Prop.class) != null) {
             final Object value = field.get(component);
             if (value != stateContainer && !(value instanceof ComponentLifecycle)) {
               accumulator.store(
@@ -118,7 +120,7 @@ public final class StethoInternalNodeDescriptor
       for (Field field : stateContainer.getClass().getDeclaredFields()) {
         try {
           field.setAccessible(true);
-          if (isPrimitiveField(field)) {
+          if (isPrimitiveField(field) && field.getAnnotation(State.class) != null) {
             final Object value = field.get(stateContainer);
             if (!(value instanceof ComponentLifecycle)) {
               accumulator.store(
