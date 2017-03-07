@@ -32,6 +32,8 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
       new SimpleArrayMap<>();
   private final SimpleArrayMap<String, SimpleArrayMap<String, String>> mPropOverrides =
       new SimpleArrayMap<>();
+  private final SimpleArrayMap<String, SimpleArrayMap<String, String>> mStateOverrides =
+      new SimpleArrayMap<>();
   private final SimpleArrayMap<String, StethoInternalNode> mStethoInternalNodes =
       new SimpleArrayMap<>();
 
@@ -414,36 +416,52 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
       if (component != null) {
         final SimpleArrayMap<String, String> props = mPropOverrides.get(nodeKey);
         for (int i = 0, size = props.size(); i < size; i++) {
-          try {
-            final String key = props.keyAt(i);
-            final String value = props.get(key);
-            final Field field = component.getClass().getDeclaredField(key);
-            final Class type = field.getType();
-            field.setAccessible(true);
-
-            if (type.equals(short.class)) {
-              field.set(component, Short.parseShort(value));
-            } else if (type.equals(int.class)) {
-              field.set(component, Integer.parseInt(value));
-            } else if (type.equals(long.class)) {
-              field.set(component, Long.parseLong(value));
-            } else if (type.equals(float.class)) {
-              field.set(component, Float.parseFloat(value));
-            } else if (type.equals(double.class)) {
-              field.set(component, Double.parseDouble(value));
-            } else if (type.equals(boolean.class)) {
-              field.set(component, Boolean.parseBoolean(value));
-            } else if (type.equals(byte.class)) {
-              field.set(component, Byte.parseByte(value));
-            } else if (type.equals(char.class)) {
-              field.set(component, value.charAt(0));
-            } else if (type.isAssignableFrom(CharSequence.class)) {
-              field.set(component, value);
-            }
-          } catch (Exception ignored) {}
+          final String key = props.keyAt(i);
+          applyReflectiveOverride(component, key, props.get(key));
         }
       }
     }
+
+    if (mStateOverrides.containsKey(nodeKey)) {
+      final Component component = node.getComponent();
+      final ComponentLifecycle.StateContainer stateContainer =
+          component == null ? null : component.getStateContainer();
+      if (stateContainer != null) {
+        final SimpleArrayMap<String, String> state = mStateOverrides.get(nodeKey);
+        for (int i = 0, size = state.size(); i < size; i++) {
+          final String key = state.keyAt(i);
+          applyReflectiveOverride(stateContainer, key, state.get(key));
+        }
+      }
+    }
+  }
+
+  private void applyReflectiveOverride(Object o, String key, String value) {
+    try {
+      final Field field = o.getClass().getDeclaredField(key);
+      final Class type = field.getType();
+      field.setAccessible(true);
+
+      if (type.equals(short.class)) {
+        field.set(o, Short.parseShort(value));
+      } else if (type.equals(int.class)) {
+        field.set(o, Integer.parseInt(value));
+      } else if (type.equals(long.class)) {
+        field.set(o, Long.parseLong(value));
+      } else if (type.equals(float.class)) {
+        field.set(o, Float.parseFloat(value));
+      } else if (type.equals(double.class)) {
+        field.set(o, Double.parseDouble(value));
+      } else if (type.equals(boolean.class)) {
+        field.set(o, Boolean.parseBoolean(value));
+      } else if (type.equals(byte.class)) {
+        field.set(o, Byte.parseByte(value));
+      } else if (type.equals(char.class)) {
+        field.set(o, value.charAt(0));
+      } else if (type.isAssignableFrom(CharSequence.class)) {
+        field.set(o, value);
+      }
+    } catch (Exception ignored) {}
   }
 
   public void setStyleOverride(StethoInternalNode stethoNode, String key, String value) {
@@ -461,6 +479,16 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
     if (props == null) {
       props = new SimpleArrayMap<>();
       mPropOverrides.put(element.key, props);
+    }
+
+    props.put(key, value);
+  }
+
+  public void setStateOverride(StethoInternalNode element, String key, String value) {
+    SimpleArrayMap<String, String> props = mStateOverrides.get(element.key);
+    if (props == null) {
+      props = new SimpleArrayMap<>();
+      mStateOverrides.put(element.key, props);
     }
 
     props.put(key, value);

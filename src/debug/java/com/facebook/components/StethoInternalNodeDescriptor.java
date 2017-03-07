@@ -82,7 +82,7 @@ public final class StethoInternalNodeDescriptor
   protected void onGetStyleRuleNames(
       StethoInternalNode element,
       StyleRuleNameAccumulator accumulator) {
-    accumulator.store("state", false);
+    accumulator.store("state", true);
     accumulator.store("props", true);
     accumulator.store("layout", true);
   }
@@ -161,6 +161,10 @@ public final class StethoInternalNodeDescriptor
       logStyleUpdate(element, context);
     } else if ("props".equals(ruleName)) {
       stethoManager.setPropOverride(element, name, value);
+      view.forceRelayout();
+      logStyleUpdate(element, context);
+    } else if ("state".equals(ruleName)) {
+      stethoManager.setStateOverride(element, name, value);
       view.forceRelayout();
       logStyleUpdate(element, context);
     }
