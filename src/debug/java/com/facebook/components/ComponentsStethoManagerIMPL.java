@@ -2,8 +2,6 @@
 
 package com.facebook.components;
 
-import java.util.Map;
-
 import android.support.annotation.Nullable;
 import android.support.v4.util.SimpleArrayMap;
 
@@ -416,15 +414,18 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
   }
 
   public StethoInternalNode getStethoInternalNode(InternalNode node) {
+    final String globalKey = getGlobalKey(node);
     StethoInternalNode stethoInternalNode =
-        mStethoInternalNodes.get(getGlobalKey(node));
+        mStethoInternalNodes.get(globalKey);
+
     if (stethoInternalNode == null) {
       stethoInternalNode = new StethoInternalNode();
       stethoInternalNode.node = node;
-      mStethoInternalNodes.put(getGlobalKey(node), stethoInternalNode);
+      mStethoInternalNodes.put(globalKey, stethoInternalNode);
     } else {
       stethoInternalNode.node = node;
     }
+
     return stethoInternalNode;
   }
 }
