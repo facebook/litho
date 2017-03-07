@@ -8,5 +8,6 @@ package com.facebook.components;
  * a mapping of component keys to wrappers stored in the ComponentsStethoManager.
  */
 class StethoInternalNode {
+  String key;
   InternalNode node;
 }

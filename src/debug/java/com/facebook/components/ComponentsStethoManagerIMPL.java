@@ -124,15 +124,14 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
     }
   }
 
-  void getStyles(InternalNode node, StyleAccumulator accumulator) {
-    final YogaNodeAPI yogaNode = node.mYogaNode;
+  void getStyles(StethoInternalNode stethoNode, StyleAccumulator accumulator) {
+    final YogaNodeAPI yogaNode = stethoNode.node.mYogaNode;
     final YogaNodeAPI defaults = ComponentsPools.acquireYogaNode();
 
-    final String globalKey = getGlobalKey(node);
-    SimpleArrayMap<String, String> overrides = mOverrides.get(globalKey);
+    SimpleArrayMap<String, String> overrides = mOverrides.get(stethoNode.key);
     if (overrides == null) {
       overrides = new SimpleArrayMap<>();
-      mOverrides.put(globalKey, overrides);
+      mOverrides.put(stethoNode.key, overrides);
     }
 
     storeEnum(accumulator, overrides, "direction", yogaNode.getStyleDirection());
@@ -408,13 +407,11 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
     }
   }
 
-  public void setStyleOverride(InternalNode element, String key, String value) {
-    final String globalKey = getGlobalKey(element);
-
-    SimpleArrayMap<String, String> styles = mOverrides.get(globalKey);
+  public void setStyleOverride(StethoInternalNode stethoNode, String key, String value) {
+    SimpleArrayMap<String, String> styles = mOverrides.get(stethoNode.key);
     if (styles == null) {
       styles = new SimpleArrayMap<>();
-      mOverrides.put(globalKey, styles);
+      mOverrides.put(stethoNode.key, styles);
     }
 
     styles.put(key, value);
@@ -460,11 +457,11 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
 
     if (stethoInternalNode == null) {
       stethoInternalNode = new StethoInternalNode();
-      stethoInternalNode.node = node;
       mStethoInternalNodes.put(globalKey, stethoInternalNode);
-    } else {
-      stethoInternalNode.node = node;
     }
+
+    stethoInternalNode.key = globalKey;
+    stethoInternalNode.node = node;
 
     return stethoInternalNode;
   }

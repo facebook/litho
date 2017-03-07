@@ -126,7 +126,7 @@ public final class StethoInternalNodeDescriptor
         } catch (IllegalAccessException ignored) {}
       }
     } else if ("layout".equals(ruleName) && stethoManager != null) {
-      stethoManager.getStyles(element.node, accumulator);
+      stethoManager.getStyles(element, accumulator);
     }
   }
 
@@ -142,7 +142,7 @@ public final class StethoInternalNodeDescriptor
       final ComponentsStethoManagerImpl stethoManager = getStethoManager(element);
 
       if (view != null && stethoManager != null) {
-        stethoManager.setStyleOverride(element.node, name, value);
+        stethoManager.setStyleOverride(element, name, value);
         view.forceRelayout();
         logStyleUpdate(element, context);
       }
