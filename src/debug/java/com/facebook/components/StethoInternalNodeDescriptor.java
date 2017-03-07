@@ -11,6 +11,7 @@ import com.facebook.stetho.common.Accumulator;
 import com.facebook.stetho.inspector.elements.AbstractChainedDescriptor;
 import com.facebook.stetho.inspector.elements.AttributeAccumulator;
 import com.facebook.stetho.inspector.elements.StyleAccumulator;
+import com.facebook.stetho.inspector.elements.StyleRuleNameAccumulator;
 import com.facebook.stetho.inspector.elements.android.HighlightableDescriptor;
 
 public final class StethoInternalNodeDescriptor
@@ -87,7 +88,18 @@ public final class StethoInternalNodeDescriptor
   }
 
   @Override
-  protected void onGetStyles(StethoInternalNode element, StyleAccumulator accumulator) {
+  protected void onGetStyleRuleNames(
+      StethoInternalNode element,
+      StyleRuleNameAccumulator accumulator) {
+    accumulator.store("props", false);
+    accumulator.store("state", false);
+  }
+
+  @Override
+  protected void onGetStyles(
+      StethoInternalNode element,
+      String ruleName,
+      StyleAccumulator accumulator) {
     if (element.node.getComponent() == null ||
         element.node.getComponent().getStateContainer() == null) {
       return;
@@ -95,35 +107,33 @@ public final class StethoInternalNodeDescriptor
 
     final Component component = element.node.getComponent();
     final ComponentLifecycle.StateContainer stateContainer = component.getStateContainer();
-    final Field[] propFields = component.getClass().getDeclaredFields();
-    final Field[] stateFields = stateContainer.getClass().getDeclaredFields();
 
-    for (Field field : propFields) {
-      try {
-        field.setAccessible(true);
-        final Object value = field.get(component);
-        if (value != stateContainer && !(value instanceof ComponentLifecycle)) {
-          accumulator.store(
-              "props",
-              field.getName(),
-              value == null ? "null" : value.toString(),
-              false);
-        }
-      } catch (IllegalAccessException ignored) {}
-    }
-
-    for (Field field : stateFields) {
-      try {
-        field.setAccessible(true);
-        final Object value = field.get(stateContainer);
-        if (!(value instanceof ComponentLifecycle)) {
-          accumulator.store(
-              "state",
-              field.getName(),
-              value == null ? "null" : value.toString(),
-              false);
-        }
-      } catch (IllegalAccessException ignored) {}
+    if ("props".equals(ruleName)) {
+      for (Field field : component.getClass().getDeclaredFields()) {
+        try {
+          field.setAccessible(true);
+          final Object value = field.get(component);
+          if (value != stateContainer && !(value instanceof ComponentLifecycle)) {
+            accumulator.store(
+                field.getName(),
+                value == null ? "null" : value.toString(),
+                false);
+          }
+        } catch (IllegalAccessException ignored) {}
+      }
+    } else if ("state".equals(ruleName)) {
+      for (Field field : stateContainer.getClass().getDeclaredFields()) {
+        try {
+          field.setAccessible(true);
+          final Object value = field.get(stateContainer);
+          if (!(value instanceof ComponentLifecycle)) {
+            accumulator.store(
+                field.getName(),
+                value == null ? "null" : value.toString(),
+                false);
+          }
+        } catch (IllegalAccessException ignored) {}
+      }
     }
   }
 

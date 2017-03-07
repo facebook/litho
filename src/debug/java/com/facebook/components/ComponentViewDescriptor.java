@@ -12,6 +12,7 @@ import com.facebook.stetho.inspector.elements.ComputedStyleAccumulator;
 import com.facebook.stetho.inspector.elements.Descriptor;
 import com.facebook.stetho.inspector.elements.NodeType;
 import com.facebook.stetho.inspector.elements.StyleAccumulator;
+import com.facebook.stetho.inspector.elements.StyleRuleNameAccumulator;
 import com.facebook.stetho.inspector.elements.android.HighlightableDescriptor;
 
 /**
@@ -82,8 +83,18 @@ public final class ComponentViewDescriptor
   }
 
   @Override
-  public void getStyles(ComponentView element, StyleAccumulator styles) {
-    mSuper.getStyles(element, styles);
+  public void getStyleRuleNames(ComponentView element, StyleRuleNameAccumulator accumulator) {
+    mSuper.getStyleRuleNames(element, accumulator);
+  }
+
+  @Override
+  public void getStyles(ComponentView element, String ruleName, StyleAccumulator accumulator) {
+    mSuper.getStyles(element, ruleName, accumulator);
+  }
+
+  @Override
+  public void setStyle(ComponentView element, String ruleName, String name, String value) {
+    mSuper.setStyle(element, ruleName, name, value);
   }
 
   @Override
