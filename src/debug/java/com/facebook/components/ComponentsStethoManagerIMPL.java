@@ -2,6 +2,8 @@
 
 package com.facebook.components;
 
+import java.lang.reflect.Field;
+
 import android.support.annotation.Nullable;
 import android.support.v4.util.SimpleArrayMap;
 
@@ -26,7 +28,9 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
   private static final YogaValue YOGA_VALUE_AUTO =
       new YogaValue(YogaConstants.UNDEFINED, YogaUnit.AUTO);
   private final static YogaEdge[] edges = YogaEdge.values();
-  private final SimpleArrayMap<String, SimpleArrayMap<String, String>> mOverrides =
+  private final SimpleArrayMap<String, SimpleArrayMap<String, String>> mStyleOverrides =
+      new SimpleArrayMap<>();
+  private final SimpleArrayMap<String, SimpleArrayMap<String, String>> mPropOverrides =
       new SimpleArrayMap<>();
   private final SimpleArrayMap<String, StethoInternalNode> mStethoInternalNodes =
       new SimpleArrayMap<>();
@@ -128,10 +132,10 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
     final YogaNodeAPI yogaNode = stethoNode.node.mYogaNode;
     final YogaNodeAPI defaults = ComponentsPools.acquireYogaNode();
 
-    SimpleArrayMap<String, String> overrides = mOverrides.get(stethoNode.key);
+    SimpleArrayMap<String, String> overrides = mStyleOverrides.get(stethoNode.key);
     if (overrides == null) {
       overrides = new SimpleArrayMap<>();
-      mOverrides.put(stethoNode.key, overrides);
+      mStyleOverrides.put(stethoNode.key, overrides);
     }
 
     storeEnum(accumulator, overrides, "direction", yogaNode.getStyleDirection());
@@ -177,244 +181,289 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
 
   public void applyOverrides(InternalNode node) {
     final String nodeKey = getGlobalKey(node);
-    if (!mOverrides.containsKey(nodeKey)) {
-      return;
+
+    if (mStyleOverrides.containsKey(nodeKey)) {
+      final SimpleArrayMap<String, String> styles = mStyleOverrides.get(nodeKey);
+      for (int i = 0, size = styles.size(); i < size; i++) {
+        final String key = styles.keyAt(i);
+        final String value = styles.get(key);
+
+        try {
+          if (key.equals("direction")) {
+            node.layoutDirection(YogaDirection.valueOf(toEnumString(value)));
+          }
+
+          if (key.equals("flex-direction")) {
+            node.flexDirection(YogaFlexDirection.valueOf(toEnumString(value)));
+          }
+
+          if (key.equals("justify-content")) {
+            node.justifyContent(YogaJustify.valueOf(toEnumString(value)));
+          }
+
+          if (key.equals("align-items")) {
+            node.alignItems(YogaAlign.valueOf(toEnumString(value)));
+          }
+
+          if (key.equals("align-self")) {
+            node.alignSelf(YogaAlign.valueOf(toEnumString(value)));
+          }
+
+          if (key.equals("align-content")) {
+            node.alignContent(YogaAlign.valueOf(toEnumString(value)));
+          }
+
+          if (key.equals("position")) {
+            node.positionType(YogaPositionType.valueOf(toEnumString(value)));
+          }
+
+          if (key.equals("flex-grow")) {
+            node.flexGrow(parseFloat(value));
+          }
+
+          if (key.equals("flex-shrink")) {
+            node.flexShrink(parseFloat(value));
+          }
+        } catch (IllegalArgumentException ignored) {
+          // ignore errors when the user suplied an invalid enum value
+        }
+
+        if (key.equals("flex-basis")) {
+          final YogaValue flexBasis = yogaValueFromString(value);
+          if (flexBasis == null) {
+            continue;
+          }
+          switch (flexBasis.unit) {
+            case AUTO:
+            case UNDEFINED:
+            case POINT:
+              node.flexBasisPx(FastMath.round(flexBasis.value));
+              break;
+            case PERCENT:
+              node.flexBasisPercent(FastMath.round(flexBasis.value));
+              break;
+          }
+        }
+
+        if (key.equals("width")) {
+          final YogaValue width = yogaValueFromString(value);
+          if (width == null) {
+            continue;
+          }
+          switch (width.unit) {
+            case AUTO:
+            case UNDEFINED:
+            case POINT:
+              node.widthPx(FastMath.round(width.value));
+              break;
+            case PERCENT:
+              node.widthPercent(FastMath.round(width.value));
+              break;
+          }
+        }
+
+        if (key.equals("min-width")) {
+          final YogaValue minWidth = yogaValueFromString(value);
+          if (minWidth == null) {
+            continue;
+          }
+          switch (minWidth.unit) {
+            case UNDEFINED:
+            case POINT:
+              node.minWidthPx(FastMath.round(minWidth.value));
+              break;
+            case PERCENT:
+              node.minWidthPercent(FastMath.round(minWidth.value));
+              break;
+          }
+        }
+
+        if (key.equals("max-width")) {
+          final YogaValue maxWidth = yogaValueFromString(value);
+          if (maxWidth == null) {
+            continue;
+          }
+          switch (maxWidth.unit) {
+            case UNDEFINED:
+            case POINT:
+              node.maxWidthPx(FastMath.round(maxWidth.value));
+              break;
+            case PERCENT:
+              node.maxWidthPercent(FastMath.round(maxWidth.value));
+              break;
+          }
+        }
+
+        if (key.equals("height")) {
+          final YogaValue height = yogaValueFromString(value);
+          if (height == null) {
+            continue;
+          }
+          switch (height.unit) {
+            case AUTO:
+            case UNDEFINED:
+            case POINT:
+              node.heightPx(FastMath.round(height.value));
+              break;
+            case PERCENT:
+              node.heightPercent(FastMath.round(height.value));
+              break;
+          }
+        }
+
+        if (key.equals("min-height")) {
+          final YogaValue minHeight = yogaValueFromString(value);
+          if (minHeight == null) {
+            continue;
+          }
+          switch (minHeight.unit) {
+            case UNDEFINED:
+            case POINT:
+              node.minHeightPx(FastMath.round(minHeight.value));
+              break;
+            case PERCENT:
+              node.minHeightPercent(FastMath.round(minHeight.value));
+              break;
+          }
+        }
+
+        if (key.equals("max-height")) {
+          final YogaValue maxHeight = yogaValueFromString(value);
+          if (maxHeight == null) {
+            continue;
+          }
+          switch (maxHeight.unit) {
+            case UNDEFINED:
+            case POINT:
+              node.maxHeightPx(FastMath.round(maxHeight.value));
+              break;
+            case PERCENT:
+              node.maxHeightPercent(FastMath.round(maxHeight.value));
+              break;
+          }
+        }
+
+        for (YogaEdge edge : edges) {
+          if (key.equals("margin-" + toCSSString(edge))) {
+            final YogaValue margin = yogaValueFromString(value);
+            if (margin == null) {
+              continue;
+            }
+            switch (margin.unit) {
+              case UNDEFINED:
+              case POINT:
+                node.marginPx(edge, FastMath.round(margin.value));
+                break;
+              case AUTO:
+                node.marginAuto(edge);
+                break;
+              case PERCENT:
+                node.marginPercent(edge, FastMath.round(margin.value));
+                break;
+            }
+          }
+        }
+
+        for (YogaEdge edge : edges) {
+          if (key.equals("padding-" + toCSSString(edge))) {
+            final YogaValue padding = yogaValueFromString(value);
+            if (padding == null) {
+              continue;
+            }
+            switch (padding.unit) {
+              case UNDEFINED:
+              case POINT:
+                node.paddingPx(edge, FastMath.round(padding.value));
+                break;
+              case PERCENT:
+                node.paddingPercent(edge, FastMath.round(padding.value));
+                break;
+            }
+          }
+        }
+
+        for (YogaEdge edge : edges) {
+          if (key.equals("position-" + toCSSString(edge))) {
+            final YogaValue position = yogaValueFromString(value);
+            if (position == null) {
+              continue;
+            }
+            switch (position.unit) {
+              case UNDEFINED:
+              case POINT:
+                node.positionPx(edge, FastMath.round(position.value));
+                break;
+              case PERCENT:
+                node.positionPercent(edge, FastMath.round(position.value));
+                break;
+            }
+          }
+        }
+
+        for (YogaEdge edge : edges) {
+          if (key.equals("border-" + toCSSString(edge))) {
+            final float border = parseFloat(value);
+            node.borderWidthPx(edge, FastMath.round(border));
+          }
+        }
+      }
     }
 
-    final SimpleArrayMap<String, String> styles = mOverrides.get(nodeKey);
-    for (int i = 0, size = styles.size(); i < size; i++) {
-      final String key = styles.keyAt(i);
-      final String value = styles.get(key);
+    if (mPropOverrides.containsKey(nodeKey)) {
+      final Component component = node.getComponent();
+      if (component != null) {
+        final SimpleArrayMap<String, String> props = mPropOverrides.get(nodeKey);
+        for (int i = 0, size = props.size(); i < size; i++) {
+          try {
+            final String key = props.keyAt(i);
+            final String value = props.get(key);
+            final Field field = component.getClass().getDeclaredField(key);
+            final Class type = field.getType();
+            field.setAccessible(true);
 
-      try {
-        if (key.equals("direction")) {
-          node.layoutDirection(YogaDirection.valueOf(toEnumString(value)));
-        }
-
-        if (key.equals("flex-direction")) {
-          node.flexDirection(YogaFlexDirection.valueOf(toEnumString(value)));
-        }
-
-        if (key.equals("justify-content")) {
-          node.justifyContent(YogaJustify.valueOf(toEnumString(value)));
-        }
-
-        if (key.equals("align-items")) {
-          node.alignItems(YogaAlign.valueOf(toEnumString(value)));
-        }
-
-        if (key.equals("align-self")) {
-          node.alignSelf(YogaAlign.valueOf(toEnumString(value)));
-        }
-
-        if (key.equals("align-content")) {
-          node.alignContent(YogaAlign.valueOf(toEnumString(value)));
-        }
-
-        if (key.equals("position")) {
-          node.positionType(YogaPositionType.valueOf(toEnumString(value)));
-        }
-
-        if (key.equals("flex-grow")) {
-          node.flexGrow(parseFloat(value));
-        }
-
-        if (key.equals("flex-shrink")) {
-          node.flexShrink(parseFloat(value));
-        }
-      } catch (IllegalArgumentException ignored) {
-        // ignore errors when the user suplied an invalid enum value
-      }
-
-      if (key.equals("flex-basis")) {
-        final YogaValue flexBasis = yogaValueFromString(value);
-        if (flexBasis == null) {
-          continue;
-        }
-        switch (flexBasis.unit) {
-          case AUTO:
-          case UNDEFINED:
-          case POINT:
-            node.flexBasisPx(FastMath.round(flexBasis.value));
-            break;
-          case PERCENT:
-            node.flexBasisPercent(FastMath.round(flexBasis.value));
-            break;
-        }
-      }
-
-      if (key.equals("width")) {
-        final YogaValue width = yogaValueFromString(value);
-        if (width == null) {
-          continue;
-        }
-        switch (width.unit) {
-          case AUTO:
-          case UNDEFINED:
-          case POINT:
-            node.widthPx(FastMath.round(width.value));
-            break;
-          case PERCENT:
-            node.widthPercent(FastMath.round(width.value));
-            break;
-        }
-      }
-
-      if (key.equals("min-width")) {
-        final YogaValue minWidth = yogaValueFromString(value);
-        if (minWidth == null) {
-          continue;
-        }
-        switch (minWidth.unit) {
-          case UNDEFINED:
-          case POINT:
-            node.minWidthPx(FastMath.round(minWidth.value));
-            break;
-          case PERCENT:
-            node.minWidthPercent(FastMath.round(minWidth.value));
-            break;
-        }
-      }
-
-      if (key.equals("max-width")) {
-        final YogaValue maxWidth = yogaValueFromString(value);
-        if (maxWidth == null) {
-          continue;
-        }
-        switch (maxWidth.unit) {
-          case UNDEFINED:
-          case POINT:
-            node.maxWidthPx(FastMath.round(maxWidth.value));
-            break;
-          case PERCENT:
-            node.maxWidthPercent(FastMath.round(maxWidth.value));
-            break;
-        }
-      }
-
-      if (key.equals("height")) {
-        final YogaValue height = yogaValueFromString(value);
-        if (height == null) {
-          continue;
-        }
-        switch (height.unit) {
-          case AUTO:
-          case UNDEFINED:
-          case POINT:
-            node.heightPx(FastMath.round(height.value));
-            break;
-          case PERCENT:
-            node.heightPercent(FastMath.round(height.value));
-            break;
-        }
-      }
-
-      if (key.equals("min-height")) {
-        final YogaValue minHeight = yogaValueFromString(value);
-        if (minHeight == null) {
-          continue;
-        }
-        switch (minHeight.unit) {
-          case UNDEFINED:
-          case POINT:
-            node.minHeightPx(FastMath.round(minHeight.value));
-            break;
-          case PERCENT:
-            node.minHeightPercent(FastMath.round(minHeight.value));
-            break;
-        }
-      }
-
-      if (key.equals("max-height")) {
-        final YogaValue maxHeight = yogaValueFromString(value);
-        if (maxHeight == null) {
-          continue;
-        }
-        switch (maxHeight.unit) {
-          case UNDEFINED:
-          case POINT:
-            node.maxHeightPx(FastMath.round(maxHeight.value));
-            break;
-          case PERCENT:
-            node.maxHeightPercent(FastMath.round(maxHeight.value));
-            break;
-        }
-      }
-
-      for (YogaEdge edge : edges) {
-        if (key.equals("margin-" + toCSSString(edge))) {
-          final YogaValue margin = yogaValueFromString(value);
-          if (margin == null) {
-            continue;
-          }
-          switch (margin.unit) {
-            case UNDEFINED:
-            case POINT:
-              node.marginPx(edge, FastMath.round(margin.value));
-              break;
-            case AUTO:
-              node.marginAuto(edge);
-              break;
-            case PERCENT:
-              node.marginPercent(edge, FastMath.round(margin.value));
-              break;
-          }
-        }
-      }
-
-      for (YogaEdge edge : edges) {
-        if (key.equals("padding-" + toCSSString(edge))) {
-          final YogaValue padding = yogaValueFromString(value);
-          if (padding == null) {
-            continue;
-          }
-          switch (padding.unit) {
-            case UNDEFINED:
-            case POINT:
-              node.paddingPx(edge, FastMath.round(padding.value));
-              break;
-            case PERCENT:
-              node.paddingPercent(edge, FastMath.round(padding.value));
-              break;
-          }
-        }
-      }
-
-      for (YogaEdge edge : edges) {
-        if (key.equals( "position-" + toCSSString(edge))) {
-          final YogaValue position = yogaValueFromString(value);
-          if (position == null) {
-            continue;
-          }
-          switch (position.unit) {
-            case UNDEFINED:
-            case POINT:
-              node.positionPx(edge, FastMath.round(position.value));
-              break;
-            case PERCENT:
-              node.positionPercent(edge, FastMath.round(position.value));
-              break;
-          }
-        }
-      }
-
-      for (YogaEdge edge : edges) {
-        if (key.equals("border-" + toCSSString(edge))) {
-          final float border = parseFloat(value);
-          node.borderWidthPx(edge, FastMath.round(border));
+            if (type.equals(short.class)) {
+              field.set(component, Short.parseShort(value));
+            } else if (type.equals(int.class)) {
+              field.set(component, Integer.parseInt(value));
+            } else if (type.equals(long.class)) {
+              field.set(component, Long.parseLong(value));
+            } else if (type.equals(float.class)) {
+              field.set(component, Float.parseFloat(value));
+            } else if (type.equals(double.class)) {
+              field.set(component, Double.parseDouble(value));
+            } else if (type.equals(boolean.class)) {
+              field.set(component, Boolean.parseBoolean(value));
+            } else if (type.equals(byte.class)) {
+              field.set(component, Byte.parseByte(value));
+            } else if (type.equals(char.class)) {
+              field.set(component, value.charAt(0));
+            } else if (type.isAssignableFrom(CharSequence.class)) {
+              field.set(component, value);
+            }
+          } catch (Exception ignored) {}
         }
       }
     }
   }
 
   public void setStyleOverride(StethoInternalNode stethoNode, String key, String value) {
-    SimpleArrayMap<String, String> styles = mOverrides.get(stethoNode.key);
+    SimpleArrayMap<String, String> styles = mStyleOverrides.get(stethoNode.key);
     if (styles == null) {
       styles = new SimpleArrayMap<>();
-      mOverrides.put(stethoNode.key, styles);
+      mStyleOverrides.put(stethoNode.key, styles);
     }
 
     styles.put(key, value);
+  }
+
+  public void setPropOverride(StethoInternalNode element, String key, String value) {
+    SimpleArrayMap<String, String> props = mPropOverrides.get(element.key);
+    if (props == null) {
+      props = new SimpleArrayMap<>();
+      mPropOverrides.put(element.key, props);
+    }
+
+    props.put(key, value);
   }
 
   private static YogaValue yogaValueFromString(String s) {

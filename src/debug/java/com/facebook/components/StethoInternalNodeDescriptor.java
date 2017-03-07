@@ -81,7 +81,7 @@ public final class StethoInternalNodeDescriptor
       StethoInternalNode element,
       StyleRuleNameAccumulator accumulator) {
     accumulator.store("state", false);
-    accumulator.store("props", false);
+    accumulator.store("props", true);
     accumulator.store("layout", true);
   }
 
@@ -144,17 +144,23 @@ public final class StethoInternalNodeDescriptor
       String ruleName,
       String name,
       String value) {
-    if ("layout".equals(ruleName)) {
-      final ComponentContext context = element.node.getContext();
-      final ComponentTree componentTree = context.getComponentTree();
-      final ComponentView view = componentTree == null ? null : componentTree.getComponentView();
-      final ComponentsStethoManagerImpl stethoManager = getStethoManager(element);
+    final ComponentContext context = element.node.getContext();
+    final ComponentTree componentTree = context.getComponentTree();
+    final ComponentView view = componentTree == null ? null : componentTree.getComponentView();
+    final ComponentsStethoManagerImpl stethoManager = getStethoManager(element);
 
-      if (view != null && stethoManager != null) {
-        stethoManager.setStyleOverride(element, name, value);
-        view.forceRelayout();
-        logStyleUpdate(element, context);
-      }
+    if (view == null || stethoManager == null) {
+      return;
+    }
+
+    if ("layout".equals(ruleName)) {
+      stethoManager.setStyleOverride(element, name, value);
+      view.forceRelayout();
+      logStyleUpdate(element, context);
+    } else if ("props".equals(ruleName)) {
+      stethoManager.setPropOverride(element, name, value);
+      view.forceRelayout();
+      logStyleUpdate(element, context);
     }
   }
 
