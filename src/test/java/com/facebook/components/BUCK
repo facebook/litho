@@ -1,0 +1,7 @@
+android_resource(
+    name = "res",
+    res = "res",
+    visibility = [
+        "//javatests/com/facebook/components/...",
+    ],
+)

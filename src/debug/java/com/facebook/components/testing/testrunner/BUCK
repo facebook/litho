@@ -1,0 +1,5 @@
+standard_android_library(
+    deps = [
+        "//third-party/java/robolectric3/robolectric:robolectric",
+    ],
+)
