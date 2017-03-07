@@ -5,7 +5,7 @@ package com.facebook.components.annotations;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-@Retention(RetentionPolicy.CLASS)
+@Retention(RetentionPolicy.RUNTIME)
 public @interface Prop {
 
   boolean optional() default false;
