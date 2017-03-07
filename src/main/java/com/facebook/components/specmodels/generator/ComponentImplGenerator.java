@@ -11,6 +11,8 @@ import java.util.Locale;
 
 import com.facebook.common.internal.ImmutableList;
 import com.facebook.components.annotations.Param;
+import com.facebook.components.annotations.Prop;
+import com.facebook.components.annotations.State;
 import com.facebook.components.specmodels.model.EventDeclarationModel;
 import com.facebook.components.specmodels.model.InterStageInputParamModel;
 import com.facebook.components.specmodels.model.MethodParamModel;
@@ -99,7 +101,7 @@ public class ComponentImplGenerator {
     for (StateParamModel stateValue : specModel.getStateValues()) {
       stateContainerImplClassBuilder.addField(FieldSpec.builder(
           stateValue.getType(),
-          stateValue.getName()).build());
+          stateValue.getName()).addAnnotation(State.class).build());
     }
 
     return stateContainerImplClassBuilder.build();
@@ -132,8 +134,8 @@ public class ComponentImplGenerator {
     final ImmutableList<PropModel> props = specModel.getProps();
 
     for (PropModel prop : props) {
-      final FieldSpec.Builder fieldBuilder =
-          FieldSpec.builder(prop.getType(), prop.getName());
+      final FieldSpec.Builder fieldBuilder = FieldSpec.builder(prop.getType(), prop.getName())
+          .addAnnotation(Prop.class);
       if (prop.hasDefault(specModel.getPropDefaults())) {
         fieldBuilder.initializer("$L.$L", specModel.getSpecName(), prop.getName());
       }

@@ -1765,7 +1765,7 @@ public class Stages {
 
     for (String stateName : mStateMap.keySet()) {
       VariableElement v = mStateMap.get(stateName);
-      stateContainerImplClassBuilder.addField(getPropFieldSpec(v));
+      stateContainerImplClassBuilder.addField(getPropFieldSpec(v, true));
     }
 
     writeInnerTypeSpec(stateContainerImplClassBuilder.build());
@@ -2058,7 +2058,7 @@ public class Stages {
       TypeSpec.Builder implClassBuilder,
       ClassName eventHandlerClassName) {
     for (VariableElement v : mImplMembers.values()) {
-      implClassBuilder.addField(getPropFieldSpec(v));
+      implClassBuilder.addField(getPropFieldSpec(v, false));
     }
 
     if (mExtraStateMembers != null) {
@@ -2077,7 +2077,7 @@ public class Stages {
     }
   }
 
-  private FieldSpec getPropFieldSpec(VariableElement v) {
+  private FieldSpec getPropFieldSpec(VariableElement v, boolean isStateProp) {
     final TypeMirror variableType = v.asType();
     TypeMirror wrappingTypeMirror = Utils.getGenericTypeArgument(
         variableType,
@@ -2091,6 +2091,14 @@ public class Stages {
     final FieldSpec.Builder fieldBuilder = FieldSpec.builder(
         variableClassName,
         v.getSimpleName().toString());
+
+    if (!isInterStageComponentVariable(v)) {
+      if (isStateProp) {
+        fieldBuilder.addAnnotation(State.class);
+      } else {
+        fieldBuilder.addAnnotation(Prop.class);
+      }
+    }
 
     final boolean hasDefaultValue = hasDefaultValue(v);
 
