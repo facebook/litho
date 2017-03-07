@@ -27,7 +27,6 @@ import com.facebook.yoga.YogaConfig;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaExperimentalFeature;
 import com.facebook.yoga.YogaNode;
-import com.facebook.yoga.ReNode;
 import com.facebook.yoga.YogaNodeAPI;
 import com.facebook.yoga.CSSNodeDEPRECATED;
 import com.facebook.yoga.Spacing;
@@ -143,13 +142,12 @@ public class ComponentsPools {
   static boolean sIsManualCallbacks;
 
   /**
-   * Local cache of ComponentsConfiguration.shouldUseCSSNodeJNI and
-   * ComponentsConfiguration.sShouldUseRelayout which ensures the value is only
-   * read once. Once any InternalNode uses any of CSSNodeDEPRECATED, ReNode or
+   * Local cache of ComponentsConfiguration.shouldUseCSSNodeJNI which ensures
+   * the value is only read once.
+   * Once any InternalNode uses any of CSSNodeDEPRECATED or
    * YogaNode all future InternalNodes must do the same as to not mix and match.
    */
   private static Boolean sShouldUseCSSNodeJNI = null;
-  private static Boolean sShouldUseRelayout = null;
 
   static LayoutState acquireLayoutState(ComponentContext context) {
     LayoutState state = sLayoutStatePool.acquire();
@@ -168,25 +166,11 @@ public class ComponentsPools {
         sShouldUseCSSNodeJNI = ComponentsConfiguration.shouldUseCSSNodeJNI;
       }
 
-      if (sShouldUseRelayout == null) {
-        sShouldUseRelayout = ComponentsConfiguration.shouldUseRelayout;
-      }
-
-      if (sShouldUseRelayout) {
-        try {
-          node = new ReNode();
-        } catch (UnsatisfiedLinkError ule) {
-          // Fallback to yoga Node when ReNode is not availiable
-          sShouldUseRelayout = false;
-          node = new YogaNode();
-        }
-
-      } else if (sShouldUseCSSNodeJNI) {
+      if (sShouldUseCSSNodeJNI) {
         if (sYogaConfig == null) {
           sYogaConfig = new YogaConfig();
           sYogaConfig.setExperimentalFeatureEnabled(YogaExperimentalFeature.ROUNDING, true);
         }
-
         node = new YogaNode(sYogaConfig);
       } else {
         node = new CSSNodeDEPRECATED();

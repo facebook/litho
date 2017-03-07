@@ -30,7 +30,6 @@ COMPONENTS_ANDROIDSUPPORT_RECYCLERVIEW_TARGET = make_dep_path('lib/android-suppo
 COMPONENTS_YOGA_TARGET                        = make_dep_path('lib/yoga:yoga')
 COMPONENTS_BUILD_CONFIG_TARGET                = make_dep_path(':build_config')
 COMPONENTS_CSSLAYOUT_TARGET                   = make_dep_path('lib/CSSLayoutDEPRECATED-TOREMOVE:CSSLayoutDEPRECATED')
-COMPONENTS_RELAYOUT_TARGET                    = make_dep_path('lib/relayout-TOREMOVE:relayout')
 COMPONENTS_STETHO_TARGET                      = make_dep_path('lib/stetho:stetho')
 COMPONENTS_COMMONS_CLI_TARGET                 = make_dep_path('lib/commons-cli:commons-cli')
 COMPONENTS_TEXTLAYOUTBUILDER_TARGET           = make_dep_path('lib/textlayoutbuilder:textlayoutbuilder')

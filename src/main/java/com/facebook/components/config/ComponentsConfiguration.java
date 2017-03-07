@@ -47,11 +47,6 @@ public class ComponentsConfiguration {
    */
   public static boolean shouldUseCSSNodeJNI = true;
 
-  /**
-   * Indicates whether InternalNode should use YogaNode or ReNode
-   */
-  public static boolean shouldUseRelayout = false;
-
   /*
    * Use the new bootstrap ranges code instead of initializing all the items when the binder view
    * is measured (t12986103).
