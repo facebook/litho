@@ -80,9 +80,9 @@ public final class StethoInternalNodeDescriptor
   protected void onGetStyleRuleNames(
       StethoInternalNode element,
       StyleRuleNameAccumulator accumulator) {
-    accumulator.store("layout", true);
-    accumulator.store("props", false);
     accumulator.store("state", false);
+    accumulator.store("props", false);
+    accumulator.store("layout", true);
   }
 
   @Override
