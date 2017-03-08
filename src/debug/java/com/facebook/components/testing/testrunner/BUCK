@@ -1,4 +1,9 @@
-standard_android_library(
+android_library(
+    name = "testrunner",
+    srcs = glob(["*.java"]),
+    visibility = [
+        "PUBLIC",
+    ],
     deps = [
         "//third-party/java/robolectric3/robolectric:robolectric",
     ],

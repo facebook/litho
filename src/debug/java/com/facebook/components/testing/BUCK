@@ -1,6 +1,11 @@
-standard_android_library(
+android_library(
+    name = "testing",
+    srcs = glob(["*.java"]),
     provided_deps = [
         "//third-party/java/robolectric3/robolectric:robolectric",
+    ],
+    visibility = [
+        "PUBLIC",
     ],
     deps = [
         "//libraries/components:components",
