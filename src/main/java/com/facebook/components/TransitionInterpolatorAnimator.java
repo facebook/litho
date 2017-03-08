@@ -2,6 +2,8 @@
 
 package com.facebook.components;
 
+import java.util.List;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
@@ -12,7 +14,9 @@ import android.support.annotation.VisibleForTesting;
 import android.view.View;
 import android.view.animation.Interpolator;
 
+import com.facebook.components.Transition.TransitionAnimator;
 import com.facebook.components.Transition.TransitionListener;
+import com.facebook.components.TransitionProperties.PropertyChangeHolder;
 
 import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
 
@@ -21,7 +25,8 @@ import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
  * Android {@link ObjectAnimator}.
  */
 @TargetApi(ICE_CREAM_SANDWICH)
-class TransitionAnimator {
+public class TransitionInterpolatorAnimator
+    implements TransitionAnimator<TransitionInterpolatorAnimator> {
 
   private static final int DURATION = 1 << 0;
   private static final int START_DELAY = 1 << 1;
@@ -38,7 +43,11 @@ class TransitionAnimator {
   private long mPlayedTime;
   private TransitionListener mListener;
 
-  TransitionAnimator() {
+  public static TransitionInterpolatorAnimator.Builder create() {
+    return new Builder();
+  }
+
+  TransitionInterpolatorAnimator() {
     mAnimator = new ObjectAnimator();
     mAnimator.addListener(new AnimatorListenerAdapter() {
       @Override
@@ -51,7 +60,7 @@ class TransitionAnimator {
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-  TransitionAnimator(ObjectAnimator objectAnimator, long startTime, long playedTime) {
+  TransitionInterpolatorAnimator(ObjectAnimator objectAnimator, long startTime, long playedTime) {
     mAnimator = objectAnimator;
     mStartTime = startTime;
     mPlayedTime = playedTime;
@@ -72,23 +81,26 @@ class TransitionAnimator {
     mStartDelay = delay;
   }
 
-  void setListener(TransitionListener listener) {
+  @Override
+  public void setListener(TransitionListener listener) {
     mListener = listener;
   }
 
-  void restoreState(TransitionAnimator transitionAnimator) {
-    mStartTime = transitionAnimator.mStartTime;
-    mPlayedTime = transitionAnimator.mPlayedTime;
+  @Override
+  public void restoreState(TransitionInterpolatorAnimator interpolatorAnimator) {
+    mStartTime = interpolatorAnimator.mStartTime;
+    mPlayedTime = interpolatorAnimator.mPlayedTime;
   }
 
-  void start(View targetView, PropertyValuesHolder[] propertyValuesHolders) {
+  @Override
+  public void start(View targetView, List<PropertyChangeHolder> propertyChangeHolders) {
     if (mListener == null) {
-      throw new IllegalStateException("TransitionAnimator should have a listener set before " +
-          "start() is called in order to callback the TransitionManager at the end of the " +
-          "animation.");
+      throw new IllegalStateException("TransitionInterpolatorAnimator should have a listener " +
+          "set before start() is called in order to callback the TransitionManager at the " +
+          "end of the animation.");
     }
 
-    mAnimator.setValues(propertyValuesHolders);
+    mAnimator.setValues(createPropertyValuesHoldersFrom(propertyChangeHolders));
 
     if ((mSetFlags & DURATION) != 0) {
       mAnimator.setDuration(mDuration);
@@ -120,7 +132,8 @@ class TransitionAnimator {
     }
   }
 
-  void stop() {
+  @Override
+  public TransitionInterpolatorAnimator stop() {
     if (!mAnimator.isRunning()) {
       throw new IllegalStateException("stop() called but the Animator wasn't running.");
     }
@@ -131,5 +144,77 @@ class TransitionAnimator {
     mAnimator.removeAllUpdateListeners();
     mAnimator.end();
     mAnimator.setTarget(null);
+
+    return this;
+  }
+
+  @Override
+  public TransitionAnimator clone() {
+    final TransitionInterpolatorAnimator a = new TransitionInterpolatorAnimator();
+    a.mSetFlags = mSetFlags;
+    a.mDuration = mDuration;
+    a.mStartDelay = mStartDelay;
+    a.mInterpolator = mInterpolator;
+    a.mStartTime = mStartTime;
+    a.mPlayedTime = mPlayedTime;
+    a.mListener = mListener;
+
+    return a;
+  }
+
+  private static PropertyValuesHolder[] createPropertyValuesHoldersFrom(
+      List<PropertyChangeHolder> propertyChangeHolders) {
+    final int propertyChangesSize = propertyChangeHolders.size();
+    final PropertyValuesHolder[] propertyValuesHolders =
+        new PropertyValuesHolder[propertyChangesSize];
+
+    for (int i = 0; i < propertyChangesSize; i++) {
+      PropertyChangeHolder changeHolder = propertyChangeHolders.get(i);
+      propertyValuesHolders[i] = PropertyValuesHolder.ofFloat(
+          TransitionProperties.getViewPropertyFrom(changeHolder.propertyType),
+          changeHolder.start,
+          changeHolder.end);
+    }
+
+    return propertyValuesHolders;
+  }
+
+  public static class Builder {
+
+    final TransitionInterpolatorAnimator mAnimator;
+
+    Builder() {
+      mAnimator = new TransitionInterpolatorAnimator();
+    }
+
+    /**
+     * Interpolator used for this TransitionInterpolatorAnimator.
+     * If not set, an {@link AccelerateDecelerateInterpolator} will be used.
+     */
+    public Builder interpolator(Interpolator interpolator) {
+      mAnimator.setInterpolator(interpolator);
+      return this;
+    }
+
+    /**
+     * Duration used for this TransitionInterpolatorAnimator.
+     * If not set, the value of 300ms will be used.
+     */
+    public Builder duration(int duration) {
+      mAnimator.setDuration(duration);
+      return this;
+    }
+
+    /**
+     * StartDelay used for this TransitionInterpolatorAnimator.
+     */
+    public Builder startDelay(int delay) {
+      mAnimator.setStartDelay(delay);
+      return this;
+    }
+
+    public TransitionAnimator build() {
+      return mAnimator;
+    }
   }
 }

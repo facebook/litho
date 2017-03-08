@@ -8,7 +8,8 @@ import android.view.View;
 
 import com.facebook.components.Transition.TransitionListener;
 import com.facebook.components.TransitionManager.KeyStatus;
-import com.facebook.components.ValuesHolder.ValueType;
+import com.facebook.components.TransitionProperties.PropertySetHolder;
+import com.facebook.components.TransitionProperties.PropertyType;
 
 import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
 import static com.facebook.components.Transition.TransitionType.APPEAR;
@@ -34,17 +35,17 @@ class TransitionKeySet implements TransitionListener {
   private SimpleArrayMap<Integer, Transition> mDisappearTransitions;
   private SimpleArrayMap<Integer, Transition> mRunningTransitionsPointer;
   // Values of the item to transition, at the beginning of the mount process.
-  private ValuesHolder mStartValues;
+  private PropertySetHolder mStartValues;
   // Values of the item to transition, at the end of the mount process.
-  private ValuesHolder mEndValues;
+  private PropertySetHolder mEndValues;
   // Combined start values from all the appear transitions.
-  private ValuesHolder mLocalStartValues;
+  private PropertySetHolder mLocalStartValues;
   // Combined end values from all the disappear transitions.
-  private ValuesHolder mLocalEndValues;
+  private PropertySetHolder mLocalEndValues;
   // Intermediate values of an item in case it was interrupted before the end of its transition.
-  private ValuesHolder mInterruptedValues;
+  private PropertySetHolder mInterruptedValues;
   // Cumulative ValuesFlag to track across all the transitions for a given key.
-  private @ValueType int mTrackedValuesFlag;
+  private @PropertyType int mTrackedValuesFlag;
   private View mTargetView;
   private TransitionKeySetListener mTransitionEndListener;
   private int mAnimationRunningCounter = 0;
@@ -69,7 +70,7 @@ class TransitionKeySet implements TransitionListener {
         if (mLocalStartValues == null) {
           mLocalStartValues = transition.getLocalValues();
         } else {
-          mLocalStartValues.addValues(transition.getLocalValues());
+          mLocalStartValues.addProperties(transition.getLocalValues());
         }
 
         tmpPointer = mAppearTransition;
@@ -91,7 +92,7 @@ class TransitionKeySet implements TransitionListener {
         if (mLocalEndValues == null) {
           mLocalEndValues = transition.getLocalValues();
         } else {
-          mLocalEndValues.addValues(transition.getLocalValues());
+          mLocalEndValues.addProperties(transition.getLocalValues());
         }
 
         tmpPointer = mDisappearTransitions;
@@ -111,7 +112,7 @@ class TransitionKeySet implements TransitionListener {
       return;
     }
 
-    mStartValues = new ValuesHolder().recordValues(mTrackedValuesFlag, view);
+    mStartValues = TransitionProperties.createPropertySetHolder(mTrackedValuesFlag, view);
   }
 
   void recordEndValues(View view) {
@@ -119,7 +120,7 @@ class TransitionKeySet implements TransitionListener {
       return;
     }
 
-    mEndValues = new ValuesHolder().recordValues(mTrackedValuesFlag, view);
+    mEndValues = TransitionProperties.createPropertySetHolder(mTrackedValuesFlag, view);
   }
 
   /**
@@ -140,7 +141,8 @@ class TransitionKeySet implements TransitionListener {
   }
 
   void stop() {
-    mInterruptedValues = new ValuesHolder().recordValues(mTrackedValuesFlag, mTargetView);
+    mInterruptedValues =
+        TransitionProperties.createPropertySetHolder(mTrackedValuesFlag, mTargetView);
     for (int i = 0, size = mRunningTransitionsPointer.size(); i < size; i++) {
       // When appearing, the startValues are null and needs to be "corrected".
       Transition t = mRunningTransitionsPointer.valueAt(i);
@@ -162,11 +164,9 @@ class TransitionKeySet implements TransitionListener {
       TransitionKeySet oldTransition,
       int newKeyStatus,
       TransitionKeySetListener listener) {
-    final boolean hasSameEndValues = mEndValues.equals(oldTransition.mEndValues);
-
     switch (newKeyStatus) {
       case KeyStatus.UNCHANGED:
-        if (hasSameEndValues) {
+        if (mEndValues.equals(oldTransition.mEndValues)) {
           mStartValues = oldTransition.mStartValues;
           if (oldTransition.wasRunningAppearTransition()) {
             return start(KeyStatus.APPEARED, listener, oldTransition.mAppearTransition);
