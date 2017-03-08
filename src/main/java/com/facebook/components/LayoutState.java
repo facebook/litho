@@ -1575,12 +1575,14 @@ class LayoutState {
         mTransitionContext = null;
       }
 
-      ComponentsPools.release(this);
-
+      // This should only ever be true in non-release builds as we need this for Stetho integration.
+      // In release builds the node tree is released in calculateLayout().
       if (mLayoutRoot != null) {
         releaseNodeTree(mLayoutRoot, false /* isNestedTree */);
         mLayoutRoot = null;
       }
+
+      ComponentsPools.release(this);
     }
   }
 
