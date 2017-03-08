@@ -5,6 +5,7 @@ package com.facebook.components.specmodels.model;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
+import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.TypeName;
 
 /**
@@ -23,9 +24,14 @@ public interface MethodParamModel {
   String getName();
 
   /**
-   * @return all annotations that are on the param.
+   * @return all components library annotations that are on the param.
    */
   List<Annotation> getAnnotations();
+
+  /**
+   * @return all non-library annotations that are on the param.
+   */
+  List<AnnotationSpec> getExternalAnnotations();
 
   /**
    * @return the object that this model represents.

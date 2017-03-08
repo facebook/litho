@@ -11,6 +11,7 @@ import com.facebook.components.annotations.Prop;
 import com.facebook.components.annotations.State;
 import com.facebook.components.annotations.TreeProp;
 
+import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.TypeName;
 
 /**
@@ -27,9 +28,10 @@ public final class MethodParamModelFactory {
       TypeName type,
       String name,
       List<Annotation> annotations,
+      List<AnnotationSpec> externalAnnotations,
       Object representedObject) {
     final SimpleMethodParamModel simpleMethodParamModel =
-        new SimpleMethodParamModel(type, name, annotations, representedObject);
+        new SimpleMethodParamModel(type, name, annotations, externalAnnotations, representedObject);
     for (Annotation annotation : annotations) {
       if (annotation instanceof Prop) {
         return new PropModel(

@@ -10,6 +10,7 @@ import java.util.List;
 import com.facebook.common.internal.ImmutableList;
 import com.facebook.components.annotations.ResType;
 
+import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.TypeName;
 
 /**
@@ -43,6 +44,11 @@ public class PropModel implements MethodParamModel {
   @Override
   public List<Annotation> getAnnotations() {
     return mParamModel.getAnnotations();
+  }
+
+  @Override
+  public List<AnnotationSpec> getExternalAnnotations() {
+    return mParamModel.getExternalAnnotations();
   }
 
   @Override

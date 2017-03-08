@@ -8,6 +8,7 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Set;
 
+import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.TypeName;
 
 /**
@@ -35,6 +36,11 @@ public class TreePropModel implements MethodParamModel {
   @Override
   public List<Annotation> getAnnotations() {
     return mParamModel.getAnnotations();
+  }
+
+  @Override
+  public List<AnnotationSpec> getExternalAnnotations() {
+    return mParamModel.getExternalAnnotations();
   }
 
   @Override

@@ -7,6 +7,7 @@ import javax.annotation.concurrent.Immutable;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
+import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.TypeName;
 
 /**
@@ -33,6 +34,11 @@ public class InterStageInputParamModel implements MethodParamModel {
   @Override
   public List<Annotation> getAnnotations() {
     return mParamModel.getAnnotations();
+  }
+
+  @Override
+  public List<AnnotationSpec> getExternalAnnotations() {
+    return mParamModel.getExternalAnnotations();
   }
 
   @Override
