@@ -106,6 +106,11 @@ public interface SpecModel {
   TypeName getUpdateStateInterface();
 
   /**
+   * @return true if the generated class supports styling, false otherwise.
+   */
+  boolean isStylingSupported();
+
+  /**
    * @return true if this component is able to measure itself using specific size constraints,
    * false otherwise.
    */

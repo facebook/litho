@@ -160,6 +160,11 @@ public final class SpecModelImpl implements SpecModel {
   }
 
   @Override
+  public boolean isStylingSupported() {
+    throw new RuntimeException("Don't delegate to this method!");
+  }
+
+  @Override
   public boolean canMeasure() {
     throw new RuntimeException("Don't delegate to this method!");
   }
@@ -177,7 +182,7 @@ public final class SpecModelImpl implements SpecModel {
 
   @Override
   public Object getRepresentedObject() {
-    return null;
+    return mRepresentedObject;
   }
 
   private static String getSpecName(String qualifiedSpecClassName) {

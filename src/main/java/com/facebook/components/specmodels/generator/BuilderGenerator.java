@@ -31,7 +31,7 @@ public class BuilderGenerator {
 
     dataHolder.addMethod(generateCreateBuilderMethodWithStyle(specModel));
     dataHolder.addMethod(generateCreateBuilderMethod(specModel));
-    dataHolder.addTypeSpecDataHolder(generateFactoryMethod(specModel, isStyleable, contextClass));
+    dataHolder.addTypeSpecDataHolder(generateFactoryMethod(specModel));
 
     return dataHolder.build();
   }
@@ -61,10 +61,7 @@ public class BuilderGenerator {
         .build();
   }
 
-  static TypeSpecDataHolder generateFactoryMethod(
-      SpecModel specModel,
-      boolean isStyleable,
-      ClassName contextClass) {
+  static TypeSpecDataHolder generateFactoryMethod(SpecModel specModel) {
     final String implClassName = ComponentImplGenerator.getImplClassName(specModel);
     final String implParamName = ComponentImplGenerator.getImplInstanceName(specModel);
     final ClassName stateClass = ClassName.bestGuess(implClassName);
@@ -79,13 +76,13 @@ public class BuilderGenerator {
     final MethodSpec.Builder factoryMethod = MethodSpec.methodBuilder(getFactoryMethodName())
         .addModifiers(Modifier.PRIVATE)
         .returns(BUILDER_CLASS_NAME)
-        .addParameter(contextClass, "context")
+        .addParameter(specModel.getContextClass(), "context")
         .addStatement("$T builder = $L.acquire()", BUILDER_CLASS_NAME, BUILDER_POOL_FIELD)
         .beginControlFlow("if (builder == null)")
         .addStatement("builder = new $T()", BUILDER_CLASS_NAME)
         .endControlFlow();
 
-    if (isStyleable) {
+    if (specModel.isStylingSupported()) {
       factoryMethod
           .addParameter(int.class, "defStyleAttr")
           .addParameter(int.class, "defStyleRes")

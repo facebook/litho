@@ -136,6 +136,11 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
+  public boolean isStylingSupported() {
+    return true;
+  }
+
+  @Override
   public boolean canMeasure() {
     return mCanMeasure;
   }
