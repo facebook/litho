@@ -25,8 +25,6 @@ public abstract class Reference<L> {
 
   private final ReferenceLifecycle<L> mLifecycle;
 
-  private L mPreAcquiredReference;
-
   protected Reference(ReferenceLifecycle<L> lifecycle) {
     mLifecycle = lifecycle;
   }
@@ -40,11 +38,6 @@ public abstract class Reference<L> {
   public static <T> T acquire(
       ComponentContext context,
       Reference<T> reference) {
-    final T preAcquiredReference = reference.mPreAcquiredReference;
-    if (preAcquiredReference != null) {
-      return preAcquiredReference;
-    }
-
     return reference.mLifecycle.onAcquire(context, reference);
   }
 
@@ -57,24 +50,10 @@ public abstract class Reference<L> {
       ComponentContext context,
       T value,
       Reference<T> reference) {
-    if (ComponentsConfiguration.preAcquireReferences) {
-      return;
-    }
-
     reference.mLifecycle.onRelease(context, value, reference);
   }
 
   public abstract String getSimpleName();
-
-  /**
-   * Sets an object that has been pre-acquired. This means that it will live in memory and will be
-   * used when {@link #acquire(ComponentContext, Reference)} is called, but will not be released
-   * when {@link #release(ComponentContext, Object, Reference)} is called. This is equivalent to
-   * not using references at all, and is experimental.
-   */
-  public void setPreAcquiredReference(L preAcquiredReference) {
-    mPreAcquiredReference = preAcquiredReference;
-  }
 
   /**
    * Checks whether acquiring object from two references will produce the same result.

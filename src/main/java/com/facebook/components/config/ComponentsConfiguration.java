@@ -52,16 +52,4 @@ public class ComponentsConfiguration {
    * is measured (t12986103).
    */
   public static boolean bootstrapBinderItems = false;
-
-  /**
-   * Indicates whether we should clear the ComponentContext of a component before saving it as
-   * the current state value info in the StateHandler.
-   */
-  public static boolean clearContextForStateHandler = false;
-
-  /**
-   * Indicates whether Reference objects should be acquired and released on demand, or pre-acquired
-   * and kept in memory.
-   */
-  public static boolean preAcquireReferences = false;
 }

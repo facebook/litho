@@ -174,9 +174,6 @@ public class BorderColorDrawableReference extends ReferenceLifecycle<Drawable> {
     @Override
     public Reference<Drawable> build() {
       BorderColorDrawableReference.State state = mState;
-      if (ComponentsConfiguration.preAcquireReferences) {
-        state.setPreAcquiredReference(Reference.acquire(mContext, state));
-      }
 
       release();
 

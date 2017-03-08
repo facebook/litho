@@ -178,9 +178,6 @@ public final class ColorDrawableReference extends ReferenceLifecycle<Drawable> {
     @Override
     public Reference<Drawable> build() {
       State state = mState;
-      if (ComponentsConfiguration.preAcquireReferences) {
-        state.setPreAcquiredReference(Reference.acquire(mContext, state));
-      }
 
       release();
 

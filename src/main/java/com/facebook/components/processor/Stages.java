@@ -2933,21 +2933,7 @@ public class Stages {
     }
 
     buildMethodBuilder
-        .addStatement(
-            "$L " + implInstanceName + " = " + implMemberInstanceName ,
-            implClassName);
-
-    if (!hasKeySetter) {
-      buildMethodBuilder
-          .beginControlFlow("if ($T.preAcquireReferences)", ClassNames.COMPONENTS_CONFIGURATION)
-          .addStatement(
-              implInstanceName + ".setPreAcquiredReference($T.acquire(" +
-                  contextMemberInstanceName + ", " + implInstanceName + "))",
-              ClassNames.REFERENCE)
-          .endControlFlow();
-    }
-
-    buildMethodBuilder
+        .addStatement("$L " + implInstanceName + " = " + implMemberInstanceName, implClassName)
         .addStatement("release()")
         .addStatement("return " + implInstanceName);
 
