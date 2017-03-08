@@ -23,6 +23,7 @@ import android.util.SparseArray;
 
 import com.facebook.components.config.ComponentsConfiguration;
 import com.facebook.components.displaylist.DisplayList;
+import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.yoga.YogaConfig;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaExperimentalFeature;
@@ -424,98 +425,119 @@ public class ComponentsPools {
     return treeProps;
   }
 
+  //TODO t16407516 shb: change all "enableChecks = false" here to @TakesOwnership
+  @ThreadSafe(enableChecks = false)
   public static void release(TreeProps treeProps) {
     treeProps.reset();
     sTreePropsMapPool.release(treeProps);
   }
 
+  @ThreadSafe(enableChecks = false)
   static void release(TransitionManager transitionManager) {
     transitionManager.reset();
     sTransitionManagerPool.release(transitionManager);
   }
 
+  @ThreadSafe(enableChecks = false)
   static void release(TransitionContext transitionContext) {
     transitionContext.reset();
     sTransitionContextPool.release(transitionContext);
   }
 
+  @ThreadSafe(enableChecks = false)
   static void release(ComponentTree.Builder componentTreeBuilder) {
     componentTreeBuilder.release();
     sComponentTreeBuilderPool.release(componentTreeBuilder);
   }
 
+  @ThreadSafe(enableChecks = false)
   static void release(StateHandler stateHandler) {
     stateHandler.release();
     sStateHandlerPool.release(stateHandler);
   }
 
+  @ThreadSafe(enableChecks = false)
   static void release(LayoutState state) {
     sLayoutStatePool.release(state);
   }
 
+  @ThreadSafe(enableChecks = false)
   static void release(YogaNodeAPI node) {
     node.reset();
     sYogaNodePool.release(node);
   }
 
+  @ThreadSafe(enableChecks = false)
   static void release(InternalNode node) {
     node.release();
     sInternalNodePool.release(node);
   }
 
+  @ThreadSafe(enableChecks = false)
   static void release(NodeInfo nodeInfo) {
     sNodeInfoPool.release(nodeInfo);
   }
 
+  @ThreadSafe(enableChecks = false)
   static void release(ViewNodeInfo viewNodeInfo) {
     sViewNodeInfoPool.release(viewNodeInfo);
   }
 
+  @ThreadSafe(enableChecks = false)
   static void release(Context context, MountItem item) {
     item.release(context);
     sMountItemPool.release(item);
   }
 
+  @ThreadSafe(enableChecks = false)
   static void release(LayoutOutput output) {
     output.release();
     sLayoutOutputPool.release(output);
   }
 
+  @ThreadSafe(enableChecks = false)
   static void release(VisibilityOutput output) {
     output.release();
     sVisibilityOutputPool.release(output);
   }
 
+  @ThreadSafe(enableChecks = false)
   static void release(VisibilityItem item) {
     item.release();
     sVisibilityItemPool.release(item);
   }
 
+  @ThreadSafe(enableChecks = false)
   static void release(TestOutput testOutput) {
     testOutput.release();
     sTestOutputPool.release(testOutput);
   }
 
+  @ThreadSafe(enableChecks = false)
   static void release(TestItem testItem) {
     testItem.release();
     sTestItemPool.release(testItem);
   }
 
+  @ThreadSafe(enableChecks = false)
   static void release(DiffNode node) {
     node.release();
     sDiffNodePool.release(node);
   }
 
+  @ThreadSafe(enableChecks = false)
   static void release(Output output) {
     output.release();
     sOutputPool.release(output);
   }
 
+  @ThreadSafe(enableChecks = false)
   static void release(Diff diff) {
     diff.release();
     sDiffPool.release(diff);
   }
 
+  @ThreadSafe(enableChecks = false)
   static void release(Context context, ComponentLifecycle lifecycle, Object mountContent) {
 
     if (context instanceof ComponentContext) {
@@ -570,6 +592,7 @@ public class ComponentsPools {
     return sparseArray;
   }
 
+  @ThreadSafe(enableChecks = false)
   static void releaseScrapMountItemsArray(SparseArrayCompat<MountItem> sparseArray) {
     sMountItemScrapArrayPool.release(sparseArray);
   }
@@ -583,6 +606,7 @@ public class ComponentsPools {
     return sparseArray;
   }
 
+  @ThreadSafe(enableChecks = false)
   static void releaseScrapTouchablesArray(SparseArrayCompat<Touchable> sparseArray) {
     sTouchableScrapArrayPool.release(sparseArray);
   }
@@ -596,6 +620,7 @@ public class ComponentsPools {
     return rect;
   }
 
+  @ThreadSafe(enableChecks = false)
   static void releaseRectF(RectF rect) {
     rect.setEmpty();
     sRectFPool.release(rect);
@@ -610,6 +635,7 @@ public class ComponentsPools {
     return rect;
   }
 
+  @ThreadSafe(enableChecks = false)
   static void release(Rect rect) {
     rect.setEmpty();
     sRectPool.release(rect);
@@ -624,6 +650,7 @@ public class ComponentsPools {
     return spacing;
   }
 
+  @ThreadSafe(enableChecks = false)
   static void release(Spacing spacing) {
     spacing.reset();
     sSpacingPool.release(spacing);
@@ -773,6 +800,7 @@ public class ComponentsPools {
     return displayListDrawable;
   }
 
+  @ThreadSafe(enableChecks = false)
   public static void release(DisplayListDrawable displayListDrawable) {
     displayListDrawable.release();
     sDisplayListDrawablePool.release(displayListDrawable);
@@ -790,6 +818,7 @@ public class ComponentsPools {
     return drawable;
   }
 
+  @ThreadSafe(enableChecks = false)
   public static void release(BorderColorDrawable borderColorDrawable) {
     sBorderColorDrawablePool.release(borderColorDrawable);
   }
