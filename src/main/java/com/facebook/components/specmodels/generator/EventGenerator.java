@@ -76,8 +76,7 @@ public class EventGenerator {
                     specModel.getComponentName(),
                     ComponentImplGenerator.getImplClassName(specModel),
                     scopeMethodName,
-                    ComponentImplGenerator.getEventHandlerInstanceName(
-                        eventDeclaration.name.simpleName()))
+                    ComponentImplGenerator.getEventHandlerInstanceName(eventDeclaration.name))
                 .build())
         .build();
   }

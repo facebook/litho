@@ -178,16 +178,17 @@ public class ComponentImplGenerator {
       typeSpecDataHolder.addField(
           FieldSpec.builder(
               ClassNames.EVENT_HANDLER,
-              getEventHandlerInstanceName(eventDeclaration.name.simpleName()))
+              getEventHandlerInstanceName(eventDeclaration.name))
               .build());
     }
 
     return typeSpecDataHolder.build();
   }
 
-  static String getEventHandlerInstanceName(String eventHandlerClassName) {
-    return eventHandlerClassName.substring(0, 1).toLowerCase(Locale.ROOT) +
-        eventHandlerClassName.substring(1) +
+  static String getEventHandlerInstanceName(ClassName eventHandlerClassName) {
+    final String eventHandlerName = eventHandlerClassName.simpleName();
+    return eventHandlerName.substring(0, 1).toLowerCase(Locale.ROOT) +
+        eventHandlerName.substring(1) +
         "Handler";
   }
 
