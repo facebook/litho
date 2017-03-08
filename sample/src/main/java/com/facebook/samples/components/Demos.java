@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.facebook.samples.components.kittens.KittensRootComponent;
-import com.facebook.samples.components.plaground.PlaygroundComponent;
+import com.facebook.samples.components.playground.PlaygroundComponent;
 
 /**
  * The list of Components demos -- Add your demos below!
