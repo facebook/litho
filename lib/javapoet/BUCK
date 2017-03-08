@@ -1,10 +1,15 @@
+include_defs("//COMPONENTS_DEFS")
+
 prebuilt_jar(
     name = "javapoet",
-    binary_jar = "javapoet-1.2.0.jar",
-    source_jar = "javapoet-1.2.0-sources.jar",
-    visibility = ["PUBLIC"],
+    binary_jar = ":javapoet.jar",
+    visibility = [
+        COMPONENTS_VISIBILITY,
+    ],
 )
 
-project_config(
-    src_target = ":javapoet",
+remote_file(
+    name = "javapoet.jar",
+    sha1 = "2229f5de3e511d034cb4a20c67fd96bec214ef17",
+    url = "mvn:com.squareup:javapoet:jar:1.0.0",
 )
