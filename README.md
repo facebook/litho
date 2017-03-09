@@ -6,3 +6,10 @@ Components is a powerful framework that enables Android developers to write effi
 ## Contributing
 
 Please see [CONTRIBUTING.md](CONTRIBUTING.md) for information on contributing to Components.
+
+## Sample
+
+To build and run (on an attached device/emulator) the sample app, execute
+
+    $ buck fetch sample
+    $ buck install -r sample

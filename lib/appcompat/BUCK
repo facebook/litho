@@ -1,0 +1,9 @@
+include_defs("//COMPONENTS_DEFS")
+
+android_prebuilt_aar(
+    name = "appcompat",
+    aar = "appcompat-v7-23.1.1.aar",
+    visibility = [
+        COMPONENTS_VISIBILITY,
+    ],
+)

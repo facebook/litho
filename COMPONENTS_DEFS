@@ -16,6 +16,7 @@ COMPONENTS_DISPLAYLISTSUBS_TARGET          = make_dep_path('src/main/java/com/fa
 COMPONENTS_VIEWCOMPATCREATOR_TARGET        = make_dep_path('src/main/java/com/facebook/components/viewcompatcreator:viewcompatcreator')
 COMPONENTS_UTILS_TARGET                    = make_dep_path('src/main/java/com/facebook/components/utils:utils')
 COMPONENTS_WIDGET_ACCESSIBILITIES_TARGET   = make_dep_path('src/main/java/com/facebook/components/widget/accessibility:accessibility')
+COMPONENTS_WIDGET_TARGET                   = make_dep_path('src/main/java/com/facebook/components/widget:widget')
 COMPONENTS_COMPONENTS_FRESCO_TARGET        = make_dep_path('src/main/java/com/facebook/components/fresco:fresco')
 COMPONENTS_COMPONENTS_FRESCO_COMMON_TARGET = make_dep_path('src/main/java/com/facebook/components/fresco/common:common')
 
@@ -30,6 +31,7 @@ COMPONENTS_INFERANNOTATIONS_TARGET            = make_dep_path('lib/infer-annotat
 COMPONENTS_JSR_TARGET                         = make_dep_path('lib/jsr-305:jsr-305')
 COMPONENTS_ANDROIDSUPPORT_TARGET              = make_dep_path('lib/android-support:android-support')
 COMPONENTS_ANDROIDSUPPORT_RECYCLERVIEW_TARGET = make_dep_path('lib/android-support:android-support-recyclerview')
+COMPONENTS_ANDROIDSUPPORT_APPCOMPAT_TARGET    = make_dep_path("lib/appcompat:appcompat")
 COMPONENTS_YOGA_TARGET                        = make_dep_path('lib/yoga:yoga')
 COMPONENTS_BUILD_CONFIG_TARGET                = make_dep_path(':build_config')
 COMPONENTS_CSSLAYOUT_TARGET                   = make_dep_path('lib/CSSLayoutDEPRECATED-TOREMOVE:CSSLayoutDEPRECATED')
@@ -38,9 +40,17 @@ COMPONENTS_COMMONS_CLI_TARGET                 = make_dep_path('lib/commons-cli:c
 COMPONENTS_TEXTLAYOUTBUILDER_TARGET           = make_dep_path('lib/textlayoutbuilder:textlayoutbuilder')
 COMPONENTS_JAVAPOET_TARGET                    = make_dep_path('lib/javapoet:javapoet')
 COMPONENTS_FBCORE_TARGET                      = make_dep_path('lib/fbcore:fbcore')
+COMPONENTS_SOLOADER_TARGET                    = make_dep_path('lib/soloader:soloader')
+
+# Fresco
+COMPONENTS_FRESCO_TARGET            = make_dep_path('lib/fresco:fresco')
 
 # Annotation processors
 COMPONENTS_PROCESSOR_TARGET = make_dep_path('src/main/java/com/facebook/components/processor:processor')
+
+#Sample app
+COMPONENTS_SAMPLE_JAVA = make_dep_path('sample/src/main/java/com/facebook/samples/components:components')
+COMPONENTS_SAMPLE_RES  = make_dep_path('sample:res')
 
 # Other targets
 COMPONENTS_OSS_TARGET = make_dep_path(":components")
@@ -52,3 +62,6 @@ COMPONENTS_FRESCO_TARGETS = [
     make_dep_path('lib/fresco:fresco-drawee'),
     make_dep_path('lib/fresco:fresco'),
 ]
+COMPONENTS_FRESCO_PIPELINE_TARGET         = [make_dep_path('lib/fresco:imagepipeline')]
+COMPONENTS_FRESCO_CONTROLLER_TARGET       = []
+COMPONENTS_FRESCO_INTERFACES_TARGET       = []

@@ -6,6 +6,9 @@ android_library(
         ["*.java"],
         excludes = ["common/**/*"],
     ),
+    plugins = [
+        COMPONENTS_PROCESSOR_TARGET,
+    ],
     visibility = [
         "PUBLIC",
     ],

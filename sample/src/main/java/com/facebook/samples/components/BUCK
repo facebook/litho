@@ -1,25 +1,29 @@
-include_defs("//java/com/facebook/components/DEFS")
+include_defs("//COMPONENTS_DEFS")
 
-components_android_library(
+android_library(
     name = "components",
     srcs = glob(["**/*.java"]),
-    components_resources = [
-        "//libraries/components/sample:res",
+    plugins = [
+        COMPONENTS_PROCESSOR_TARGET,
     ],
     visibility = [
         "PUBLIC",
     ],
-    deps = [
-        "//java/com/facebook/components/fresco:fresco",
-        "//libraries/components/src/main/java/com/facebook/components/utils:utils",
-        "//libraries/components/src/main/java/com/facebook/components/widget:widget",
-        "//libraries/fresco/drawee-backends/drawee-pipeline/src/main/java/com/facebook/drawee/backends/pipeline:pipeline",
-        "//libraries/fresco/drawee/src/main/java/com/facebook/drawee/controller:controller",
-        "//libraries/fresco/drawee/src/main/java/com/facebook/drawee/interfaces:interfaces",
-        "//libraries/soloader/java/com/facebook/soloader:soloader",
-        "//third-party/android/support/v4:lib-support-v4",
-        "//third-party/android/support/v7/appcompat-orig:appcompat",
-        "//third-party/android/support/v7/recyclerview:recyclerview",
-        "//third-party/java/jsr-305:jsr-305",
-    ],
+    deps =
+        COMPONENTS_FRESCO_PIPELINE_TARGET +
+        COMPONENTS_FRESCO_CONTROLLER_TARGET +
+        COMPONENTS_FRESCO_INTERFACES_TARGET +
+        COMPONENTS_FRESCO_TARGETS + [
+            COMPONENTS_OSS_TARGET,
+            COMPONENTS_COMPONENTS_FRESCO_TARGET,
+            COMPONENTS_RES_TARGET,
+            COMPONENTS_UTILS_TARGET,
+            COMPONENTS_WIDGET_TARGET,
+            COMPONENTS_SAMPLE_RES,
+            COMPONENTS_SOLOADER_TARGET,
+            COMPONENTS_ANDROIDSUPPORT_TARGET,
+            COMPONENTS_ANDROIDSUPPORT_APPCOMPAT_TARGET,
+            COMPONENTS_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
+            COMPONENTS_JSR_TARGET,
+        ],
 )
