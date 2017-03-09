@@ -1,0 +1,25 @@
+include_defs("//COMPONENTS_DEFS")
+
+android_prebuilt_aar(
+    name = "fresco",
+    aar = ":fresco-binary-aar",
+    visibility = [COMPONENTS_VISIBILITY],
+)
+
+remote_file(
+    name = "fresco-binary-aar",
+    sha1 = "52485ba511d98cf7d46e287aaa0e0360a1c5a1b1",
+    url = "mvn:com.facebook.fresco:fresco:aar:1.1.0",
+)
+
+android_prebuilt_aar(
+    name = "fresco-drawee",
+    aar = ":drawee-binary-aar",
+    visibility = [COMPONENTS_VISIBILITY],
+)
+
+remote_file(
+    name = "drawee-binary-aar",
+    sha1 = "31706533dce4370a6cda9f2147566cc420514cb1",
+    url = "mvn:com.facebook.fresco:drawee:aar:1.1.0",
+)

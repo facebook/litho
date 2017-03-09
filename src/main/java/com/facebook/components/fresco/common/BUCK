@@ -1,0 +1,16 @@
+include_defs("//COMPONENTS_DEFS")
+
+android_library(
+    name = "common",
+    srcs = glob(["*.java"]),
+    tests = [
+        "//javatests/com/facebook/components/fresco/common:common",
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps =
+        COMPONENTS_FRESCO_TARGETS + [
+            COMPONENTS_OSS_TARGET,
+        ],
+)

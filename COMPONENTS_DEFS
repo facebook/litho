@@ -1,4 +1,5 @@
 COMPONENTS_ROOT = '//'
+
 COMPONENTS_VISIBILITY = 'PUBLIC'
 
 def make_dep_path(pth):
@@ -7,14 +8,16 @@ def make_dep_path(pth):
 COMPONENTS_ROOT_TARGET = make_dep_path(":components")
 
 # Java source
-COMPONENTS_JAVA_TARGET                   = make_dep_path('src/main/java/com/facebook/components:components')
-COMPONENTS_DEBUG_JAVA_TARGET             = make_dep_path('src/debug/java/com/facebook/components:components')
-COMPONENTS_ANNOTATIONS_TARGET            = make_dep_path('src/main/java/com/facebook/components/annotations:annotations')
-COMPONENTS_CONFIG_TARGET                 = make_dep_path('src/main/java/com/facebook/components/config:config')
-COMPONENTS_DISPLAYLISTSUBS_TARGET        = make_dep_path('src/main/java/com/facebook/components/displaylist/stubs:stubs')
-COMPONENTS_VIEWCOMPATCREATOR_TARGET      = make_dep_path('src/main/java/com/facebook/components/viewcompatcreator:viewcompatcreator')
-COMPONENTS_UTILS_TARGET                  = make_dep_path('src/main/java/com/facebook/components/utils:utils')
-COMPONENTS_WIDGET_ACCESSIBILITIES_TARGET = make_dep_path('src/main/java/com/facebook/components/widget/accessibility:accessibility')
+COMPONENTS_JAVA_TARGET                     = make_dep_path('src/main/java/com/facebook/components:components')
+COMPONENTS_DEBUG_JAVA_TARGET               = make_dep_path('src/debug/java/com/facebook/components:components')
+COMPONENTS_ANNOTATIONS_TARGET              = make_dep_path('src/main/java/com/facebook/components/annotations:annotations')
+COMPONENTS_CONFIG_TARGET                   = make_dep_path('src/main/java/com/facebook/components/config:config')
+COMPONENTS_DISPLAYLISTSUBS_TARGET          = make_dep_path('src/main/java/com/facebook/components/displaylist/stubs:stubs')
+COMPONENTS_VIEWCOMPATCREATOR_TARGET        = make_dep_path('src/main/java/com/facebook/components/viewcompatcreator:viewcompatcreator')
+COMPONENTS_UTILS_TARGET                    = make_dep_path('src/main/java/com/facebook/components/utils:utils')
+COMPONENTS_WIDGET_ACCESSIBILITIES_TARGET   = make_dep_path('src/main/java/com/facebook/components/widget/accessibility:accessibility')
+COMPONENTS_COMPONENTS_FRESCO_TARGET        = make_dep_path('src/main/java/com/facebook/components/fresco:fresco')
+COMPONENTS_COMPONENTS_FRESCO_COMMON_TARGET = make_dep_path('src/main/java/com/facebook/components/fresco/common:common')
 
 # Java source with local upstream
 COMPONENTS_PROGUARDANNOTATIONS_TARGET = make_dep_path('src/main/java/com/facebook/proguard/annotations:annotations')
@@ -44,3 +47,8 @@ COMPONENTS_OSS_TARGET = make_dep_path(":components")
 
 # Targets that sometimes exist and sometimes don't
 COMPONENTS_TEXTLAYOUTBUILDER_UTILS_TARGET = []
+COMPONENTS_FRESCO_TARGETS = [
+    make_dep_path('lib/fbcore:fbcore'),
+    make_dep_path('lib/fresco:fresco-drawee'),
+    make_dep_path('lib/fresco:fresco'),
+]
