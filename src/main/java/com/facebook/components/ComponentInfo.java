@@ -4,6 +4,7 @@ package com.facebook.components;
 
 import android.support.v4.util.Pools;
 import android.support.v4.util.Pools.Pool;
+import android.support.v4.util.SimpleArrayMap;
 
 /**
  * Keeps the {@link Component} and its information that will allow the framework
@@ -23,6 +24,8 @@ public class ComponentInfo {
   private Component mComponent;
   private boolean mIsSticky;
   private int mSpanSize;
+
+  private SimpleArrayMap<String, Object> mCustomAttributes;
 
   public static Builder create() {
     Builder builder = sBuilderPool.acquire();
@@ -51,6 +54,10 @@ public class ComponentInfo {
     return mSpanSize;
   }
 
+  public Object getCustomAttribute(String key) {
+    return mCustomAttributes == null ? null : mCustomAttributes.get(key);
+  }
+
   public void release() {
     mComponent = null;
     mIsSticky = false;
@@ -62,6 +69,7 @@ public class ComponentInfo {
     mComponent = builder.mComponent;
     mIsSticky = builder.mIsSticky;
     mSpanSize = builder.mSpanSize;
+    mCustomAttributes = builder.mCustomAttributes;
   }
 
   public static class Builder {
@@ -69,6 +77,7 @@ public class ComponentInfo {
     private Component mComponent;
     private boolean mIsSticky;
     private int mSpanSize;
+    private SimpleArrayMap<String, Object> mCustomAttributes;
 
     private Builder() {
       mComponent = null;
@@ -91,6 +100,15 @@ public class ComponentInfo {
       return this;
     }
 
+    public Builder customAttribute(String key, Object value) {
+      if (mCustomAttributes == null) {
+        mCustomAttributes = new SimpleArrayMap<>();
+      }
+      mCustomAttributes.put(key, value);
+
+      return this;
+    }
+
     public ComponentInfo build() {
       ComponentInfo componentInfo = sComponentInfoPool.acquire();
       if (componentInfo == null) {
@@ -105,6 +123,7 @@ public class ComponentInfo {
 
     private void release() {
       mComponent = null;
+      mCustomAttributes = null;
       mIsSticky = false;
       mSpanSize = 1;
       sBuilderPool.release(this);
