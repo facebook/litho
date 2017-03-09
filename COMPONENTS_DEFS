@@ -41,6 +41,7 @@ COMPONENTS_TEXTLAYOUTBUILDER_TARGET           = make_dep_path('lib/textlayoutbui
 COMPONENTS_JAVAPOET_TARGET                    = make_dep_path('lib/javapoet:javapoet')
 COMPONENTS_FBCORE_TARGET                      = make_dep_path('lib/fbcore:fbcore')
 COMPONENTS_SOLOADER_TARGET                    = make_dep_path('lib/soloader:soloader')
+COMPONENTS_ASSERTJ_TARGET                     = make_dep_path('lib/assertj:assertj')
 
 # Fresco
 COMPONENTS_FRESCO_TARGET                      = make_dep_path('lib/fresco:fresco')
@@ -50,7 +51,7 @@ COMPONENTS_JUNIT_TARGET                       = make_dep_path('lib/junit:junit')
 # Annotation processors
 COMPONENTS_PROCESSOR_TARGET = make_dep_path('src/main/java/com/facebook/components/processor:processor')
 
-#Sample app
+# Sample app
 COMPONENTS_SAMPLE_JAVA = make_dep_path('sample/src/main/java/com/facebook/samples/components:components')
 COMPONENTS_SAMPLE_RES  = make_dep_path('sample:res')
 
