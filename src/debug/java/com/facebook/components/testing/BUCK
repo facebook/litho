@@ -13,8 +13,8 @@ android_library(
         COMPONENTS_JAVA_TARGET,
         COMPONENTS_RES_TARGET,
         COMPONENTS_JSR_TARGET,
-        "//libraries/components/src/main/java/com/facebook/components/widget:widget",
-        "//libraries/fresco/drawee/src/main/java/com/facebook/drawee/drawable:drawable",
-        "//third-party/java/powermock/reflect:reflect",
+        COMPONENTS_FRESCO_TARGET,
+        COMPONENTS_POWERMOCK_REFLECT_TARGET,
+        make_dep_path("src/main/java/com/facebook/components/widget:widget"),
     ],
 )

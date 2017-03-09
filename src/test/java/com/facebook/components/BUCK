@@ -2,6 +2,8 @@ include_defs("//COMPONENTS_DEFS")
 
 OSS_TESTS = [
     "FastMathTest.java",
+    "LayoutOutputTest.java",
+    "TestItemTest.java",
 ]
 
 oss_components_robolectric_test(
@@ -14,6 +16,13 @@ oss_components_robolectric_test(
     deps = [
         COMPONENTS_JAVA_TARGET,
         COMPONENTS_JUNIT_TARGET,
+        COMPONENTS_ASSERTJ_TARGET,
+        COMPONENTS_MOCKITO_TARGET,
+        COMPONENTS_POWERMOCK_REFLECT_TARGET,
+        COMPONENTS_SOLOADER_TARGET,
+        make_dep_path("src/main/java/com/facebook/components/widget:widget"),
+        make_dep_path("src/test/java/com/facebook/components:res"),
+        make_dep_path("src/debug/java/com/facebook/components/testing:testing"),
         make_dep_path("src/debug/java/com/facebook/components/testing/testrunner:testrunner"),
     ],
 )
@@ -29,18 +38,16 @@ components_robolectric_test(
         COMPONENTS_ROBOLECTRIC_TARGET,
     ],
     deps = [
-        "//libraries/components/src/debug/java/com/facebook/components/testing:testing",
-        "//libraries/components/src/debug/java/com/facebook/components/testing/testrunner:testrunner",
-        "//libraries/components/src/main/java/com/facebook/components:components",
-        "//libraries/components/src/main/java/com/facebook/components/widget:widget",
-        "//libraries/components/src/test/java/com/facebook/components:res",
-        "//third-party/java/assertj:assertj-core",
-        "//third-party/java/mockito:mockito",
-        "//third-party/java/powermock/reflect:reflect",
+        make_dep_path("src/main/java/com/facebook/components/widget:widget"),
+        make_dep_path("src/debug/java/com/facebook/components/testing:testing"),
+        make_dep_path("src/debug/java/com/facebook/components/testing/testrunner:testrunner"),
+        make_dep_path("src/test/java/com/facebook/components:res"),
+        COMPONENTS_ASSERTJ_TARGET,
+        COMPONENTS_MOCKITO_TARGET,
         COMPONENTS_ROBOLECTRIC_TARGET,
         COMPONENTS_JAVA_TARGET,
         COMPONENTS_JUNIT_TARGET,
-        make_dep_path("src/debug/java/com/facebook/components/testing/testrunner:testrunner"),
+        COMPONENTS_POWERMOCK_REFLECT_TARGET,
     ],
 )
 
