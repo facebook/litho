@@ -38,6 +38,22 @@ public class TransitionProperties {
     int TRANSLATION_Y = 1 << 2;
   }
 
+  static void applyProperty(@PropertyType int propertyType, float value, View view) {
+    switch (propertyType) {
+      case ALPHA:
+        view.setAlpha(value);
+        break;
+
+      case TRANSLATION_X:
+        view.setTranslationX(value);
+        break;
+
+      case TRANSLATION_Y:
+        view.setTranslationY(value);
+        break;
+    }
+  }
+
   static PropertySetHolder createPropertySetHolder(int trackedPropertyFlags, View view) {
     return new PropertySetHolder().recordProperties(trackedPropertyFlags, view);
   }
@@ -60,19 +76,27 @@ public class TransitionProperties {
           start.mAlpha,
           end.mAlpha));
     }
-    if (has(trackedPropertyFlags, TRANSLATION_X)
-        && start.mTranslationX != end.mTranslationX) {
-      propertiesChangeHolder.add(PropertyChangeHolder.create(
-          TRANSLATION_X,
-          start.mTranslationX,
-          end.mTranslationX));
+    if (has(trackedPropertyFlags, TRANSLATION_X)) {
+      final float startTranslationX = (start.hasLocation() && end.hasLocation())
+          ? (start.mLocation[0] - end.mLocation[0])
+          : start.mTranslationX;
+      if (startTranslationX != end.mTranslationX) {
+        propertiesChangeHolder.add(PropertyChangeHolder.create(
+            TRANSLATION_X,
+            startTranslationX,
+            end.mTranslationX));
+      }
     }
-    if (has(trackedPropertyFlags, TRANSLATION_Y)
-        && start.mTranslationY != end.mTranslationY) {
-      propertiesChangeHolder.add(PropertyChangeHolder.create(
-          TRANSLATION_Y,
-          start.mTranslationY,
-          end.mTranslationY));
+    if (has(trackedPropertyFlags, TRANSLATION_Y)) {
+      final float startTranslationY = (start.hasLocation() && end.hasLocation())
+          ? (start.mLocation[1] - end.mLocation[1])
+          : start.mTranslationY;
+      if (startTranslationY != end.mTranslationY) {
+        propertiesChangeHolder.add(PropertyChangeHolder.create(
+            TRANSLATION_Y,
+            startTranslationY,
+            end.mTranslationY));
+      }
     }
 
     return propertiesChangeHolder;
@@ -104,10 +128,14 @@ public class TransitionProperties {
 
   public static class PropertySetHolder {
 
+    private static final int UNDEFINED = Integer.MIN_VALUE;
+
     private @PropertyType int mPropertyFlags = NONE;
     private float mAlpha;
     private float mTranslationX;
     private float mTranslationY;
+    // Location of the target View relative to the hosting ComponentView.
+    private int[] mLocation = {UNDEFINED, UNDEFINED};
 
     void set(@PropertyType int propertyType, float value) {
       if (Integer.bitCount(propertyType) != 1) {
@@ -160,6 +188,10 @@ public class TransitionProperties {
       return TransitionProperties.has(mPropertyFlags, propertyType);
     }
 
+    boolean hasLocation() {
+      return (mLocation[0] != UNDEFINED);
+    }
+
     @Override
     public boolean equals(Object o) {
       if (this == o) {
@@ -175,7 +207,9 @@ public class TransitionProperties {
       if (mPropertyFlags == v.mPropertyFlags
           && mAlpha == v.mAlpha
           && mTranslationX == v.mTranslationX
-          && mTranslationY == v.mTranslationY) {
+          && mTranslationY == v.mTranslationY
+          && mLocation[0] == v.mLocation[0]
+          && mLocation[1] == v.mLocation[1]) {
         return true;
       }
 
@@ -190,6 +224,8 @@ public class TransitionProperties {
       result = 31 * result + Float.floatToIntBits(mAlpha);
       result = 31 * result + Float.floatToIntBits(mTranslationX);
       result = 31 * result + Float.floatToIntBits(mTranslationY);
+      result = 31 * result + mLocation[0];
+      result = 31 * result + mLocation[1];
 
       return result;
     }
@@ -229,11 +265,13 @@ public class TransitionProperties {
       if (TransitionProperties.has(propertyFlags, ALPHA)) {
         set(ALPHA, view.getAlpha());
       }
-      if (TransitionProperties.has(propertyFlags, TRANSLATION_X)) {
+      if (TransitionProperties.has(propertyFlags, TRANSLATION_X)
+          || TransitionProperties.has(propertyFlags, TRANSLATION_Y)) {
         set(TRANSLATION_X, view.getTranslationX());
-      }
-      if (TransitionProperties.has(propertyFlags, TRANSLATION_Y)) {
         set(TRANSLATION_Y, view.getTranslationY());
+
+        mLocation[0] = mLocation[1] = 0;
+        getLocationInComponentView(view, mLocation);
       }
 
       return this;
@@ -241,14 +279,25 @@ public class TransitionProperties {
 
     void applyProperties(View view) {
       if (has(ALPHA)) {
-        view.setAlpha(mAlpha);
+        applyProperty(ALPHA, mAlpha, view);
       }
       if (has(TRANSLATION_X)) {
-        view.setTranslationX(mTranslationX);
+        applyProperty(TRANSLATION_X, mTranslationX, view);
       }
       if (has(TRANSLATION_Y)) {
-        view.setTranslationY(mTranslationY);
+        applyProperty(TRANSLATION_Y, mTranslationY, view);
       }
+    }
+
+    private static void getLocationInComponentView(View view, int[] outLocation) {
+      if (view.getParent() == null || !(view.getParent() instanceof ComponentHost)) {
+        return;
+      }
+
+      outLocation[0] += view.getX();
+      outLocation[1] += view.getY();
+
+      getLocationInComponentView((View) view.getParent(), outLocation);
     }
   }
 
