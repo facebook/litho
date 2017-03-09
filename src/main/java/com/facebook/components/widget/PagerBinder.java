@@ -83,7 +83,7 @@ public abstract class PagerBinder extends BaseBinder<
   protected int getWidthSpec(int position) {
     int widthSpec = super.getWidthSpec(position);
     int width = (int) (SizeSpec.getSize(widthSpec) * mPageWidth);
-    
+
     return SizeSpec.makeSizeSpec(width, SizeSpec.getMode(widthSpec));
   }
 
@@ -127,9 +127,11 @@ public abstract class PagerBinder extends BaseBinder<
 
   @Override
   public void onUnmount(ViewPager viewPager) {
-    mViewPager.setOnPageChangeListener(null);
-    mViewPager.setAdapter(null);
-    mViewPager = null;
+    if (mViewPager != null) { // Temporary workaround for misuse of this class; see #16387087
+      mViewPager.setOnPageChangeListener(null);
+      mViewPager.setAdapter(null);
+      mViewPager = null;
+    }
   }
 
   @Override
