@@ -1,3 +1,21 @@
+components_robolectric_test(
+    name = "components",
+    srcs = glob([
+        "*Test.java",
+    ]),
+    contacts = ["oncall+components_for_android@xmail.facebook.com"],
+    deps = [
+        "//libraries/components/src/debug/java/com/facebook/components/testing:testing",
+        "//libraries/components/src/debug/java/com/facebook/components/testing/testrunner:testrunner",
+        "//libraries/components/src/main/java/com/facebook/components:components",
+        "//libraries/components/src/test/java/com/facebook/components:res",
+        "//third-party/java/assertj:assertj-core",
+        "//third-party/java/junit:junit",
+        "//third-party/java/mockito:mockito",
+        "//third-party/java/robolectric3/robolectric:robolectric",
+    ],
+)
+
 android_resource(
     name = "res",
     res = "res",
