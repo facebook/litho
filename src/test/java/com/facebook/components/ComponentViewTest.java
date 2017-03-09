@@ -1,0 +1,100 @@
+// Copyright 2004-present Facebook. All Rights Reserved.
+
+package com.facebook.components;
+
+import android.view.View;
+
+import com.facebook.components.testing.testrunner.ComponentsTestRunner;
+import com.facebook.components.testing.TestDrawableComponent;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.reflect.Whitebox;
+import org.robolectric.RuntimeEnvironment;
+import org.robolectric.Shadows;
+import org.robolectric.shadows.ShadowView;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+@RunWith(ComponentsTestRunner.class)
+public class ComponentViewTest {
+  private ComponentView mComponentView;
+
+  @Before
+  public void setup() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return TestDrawableComponent.create(c)
+            .withLayout()
+            .widthPx(100)
+            .heightPx(100)
+            .build();
+      }
+    };
+
+    final ComponentContext c = new ComponentContext(RuntimeEnvironment.application);
+    final ComponentTree componentTree = ComponentTree.create(c, component)
+            .build();
+
+    mComponentView = new ComponentView(RuntimeEnvironment.application);
+    mComponentView.setComponent(componentTree);
+  }
+
+  @Test
+  public void measureBeforeBeingAttached() {
+    mComponentView.measure(
+        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+    mComponentView.layout(
+        0,
+        0,
+        mComponentView.getMeasuredWidth(),
+        mComponentView.getMeasuredHeight());
+
+    // View got measured.
+    assertTrue(mComponentView.getMeasuredHeight() != 0 && mComponentView.getMeasuredWidth() != 0);
+
+    // Attaching will automatically mount since we already have a layout fitting our size.
+    ShadowView shadow = Shadows.shadowOf(mComponentView);
+    shadow.callOnAttachedToWindow();
+
+    assertEquals(2, getInternalMountItems(mComponentView).length);
+  }
+
+  private static long[] getInternalMountItems(ComponentView componentView) {
+    MountState mountState = Whitebox.getInternalState(componentView, "mMountState");
+    return Whitebox.getInternalState(mountState, "mLayoutOutputsIds");
+  }
+
+  @Test
+  public void testNullComponentViewDimensions() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return null;
+      }
+    };
+
+    ComponentView nullComponentView = new ComponentView(RuntimeEnvironment.application);
+    nullComponentView.setComponent(
+        ComponentTree.create(
+            new ComponentContext(RuntimeEnvironment.application),
+            component)
+        .build());
+
+    nullComponentView.measure(
+        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+    nullComponentView.layout(
+        0,
+        0,
+        nullComponentView.getMeasuredWidth(),
+        nullComponentView.getMeasuredHeight());
+
+    assertTrue(nullComponentView.getMeasuredHeight() == 0
+        && nullComponentView.getMeasuredWidth() == 0);
+  }
+}

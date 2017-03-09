@@ -12,6 +12,7 @@ components_robolectric_test(
         "//libraries/components/src/test/java/com/facebook/components:res",
         "//third-party/java/assertj:assertj-core",
         "//third-party/java/mockito:mockito",
+        "//third-party/java/powermock/reflect:reflect",
         "//third-party/java/robolectric3/robolectric:robolectric",
     ],
 )
