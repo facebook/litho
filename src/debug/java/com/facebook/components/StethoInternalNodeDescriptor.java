@@ -102,6 +102,10 @@ public final class StethoInternalNodeDescriptor
     accumulator.store("state", true);
     accumulator.store("props", true);
     accumulator.store("layout", true);
+
+    // This method is called once a node is inspected and not during tree creation like many of the
+    // other lifecycle methods.
+    logInspected(element, element.node.getContext());
   }
 
   @Override
@@ -193,6 +197,17 @@ public final class StethoInternalNodeDescriptor
       logger.eventStart(ComponentsLogger.EVENT_STETHO_UPDATE_COMPONENT, element);
       logger.eventEnd(
           ComponentsLogger.EVENT_STETHO_UPDATE_COMPONENT,
+          element,
+          ComponentsLogger.ACTION_SUCCESS);
+    }
+  }
+
+  private void logInspected(StethoInternalNode element, ComponentContext context) {
+    final ComponentsLogger logger = context.getLogger();
+    if (logger != null) {
+      logger.eventStart(ComponentsLogger.EVENT_STETHO_INSPECT_COMPONENT, element);
+      logger.eventEnd(
+          ComponentsLogger.EVENT_STETHO_INSPECT_COMPONENT,
           element,
           ComponentsLogger.ACTION_SUCCESS);
     }
