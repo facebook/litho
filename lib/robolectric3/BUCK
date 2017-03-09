@@ -12,6 +12,7 @@ java_library(
         make_dep_path("lib/bcprov-jdk16:bcprov-jdk16"),
         make_dep_path("lib/junit:junit"),
         make_dep_path("lib/sqlite:sqlite"),
+        make_dep_path("lib/vtd-xml:vtd-xml"),
     ],
     visibility = ["PUBLIC"],
 )
