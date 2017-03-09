@@ -43,7 +43,8 @@ COMPONENTS_FBCORE_TARGET                      = make_dep_path('lib/fbcore:fbcore
 COMPONENTS_SOLOADER_TARGET                    = make_dep_path('lib/soloader:soloader')
 
 # Fresco
-COMPONENTS_FRESCO_TARGET            = make_dep_path('lib/fresco:fresco')
+COMPONENTS_FRESCO_TARGET                      = make_dep_path('lib/fresco:fresco')
+COMPONENTS_ROBOLECTRIC_TARGET                 = make_dep_path('lib/robolectric3:robolectric3')
 
 # Annotation processors
 COMPONENTS_PROCESSOR_TARGET = make_dep_path('src/main/java/com/facebook/components/processor:processor')

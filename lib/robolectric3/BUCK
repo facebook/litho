@@ -1,0 +1,10 @@
+prebuilt_jar(
+    name = "robolectric3",
+    binary_jar = ":robolectric3-jar",
+)
+
+remote_file(
+    name = "robolectric3-jar",
+    sha1 = "f888cea3bc1a24110e315eb9827ab593610ea62f",
+    url = "mvn:org.robolectric:robolectric:3.0",
+)
