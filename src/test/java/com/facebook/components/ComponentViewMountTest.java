@@ -43,7 +43,9 @@ public class ComponentViewMountTest {
       }
     };
 
-    mComponentTree = ComponentTree.create(mContext, mComponent).build();
+    mComponentTree = ComponentTree.create(mContext, mComponent)
+        .incrementalMount(false)
+        .build();
     mComponentTree.setSizeSpec(
         SizeSpec.makeSizeSpec(100, EXACTLY),
         SizeSpec.makeSizeSpec(100, EXACTLY));
@@ -78,6 +80,7 @@ public class ComponentViewMountTest {
   @Test
   public void testSetComponentTwiceWithResetAndAttachRequestsLayout() {
     ComponentTree ct = ComponentTree.create(mContext, mComponent)
+        .incrementalMount(false)
         .build();
     ct.setSizeSpec(100, 100);
 
@@ -130,7 +133,9 @@ public class ComponentViewMountTest {
     assertEquals(1, mComponentView.getRequestLayoutInvocationCount());
 
     ComponentTree newComponentTree =
-        ComponentTree.create(mContext, mComponent).build();
+        ComponentTree.create(mContext, mComponent)
+            .incrementalMount(false)
+            .build();
     newComponentTree.setSizeSpec(
         SizeSpec.makeSizeSpec(100, EXACTLY),
         SizeSpec.makeSizeSpec(100, EXACTLY));

@@ -1190,7 +1190,7 @@ public class ComponentTree {
     private Component<?> root;
 
     // optional
-    private boolean incrementalMountEnabled;
+    private boolean incrementalMountEnabled = true;
     private boolean isLayoutDiffingEnabled;
     private LayoutHandler layoutThreadHandler;
     private Object layoutLock;
@@ -1213,7 +1213,7 @@ public class ComponentTree {
       context = null;
       root = null;
 
-      incrementalMountEnabled = false;
+      incrementalMountEnabled = true;
       isLayoutDiffingEnabled = false;
       layoutThreadHandler = null;
       layoutLock = null;
@@ -1222,8 +1222,11 @@ public class ComponentTree {
     }
 
     /**
-     * Whether or not to enable the incremental mount optimization. False by default.
+     * Whether or not to enable the incremental mount optimization. True by default.
      * In order to use incremental mount you should disable mount diffing.
+     *
+     * @Deprecated We will remove this option soon, please consider turning it on (which is on by
+     * default)
      */
     public Builder incrementalMount(boolean isEnabled) {
       incrementalMountEnabled = isEnabled;

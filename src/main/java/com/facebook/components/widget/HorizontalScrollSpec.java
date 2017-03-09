@@ -72,9 +72,7 @@ class HorizontalScrollSpec {
       @Prop Component<?> contentProps,
       Output<ComponentTree> contentComponent) {
     contentComponent.set(
-        ComponentTree.create(context, contentProps)
-            .incrementalMount(true)
-            .build());
+        ComponentTree.create(context, contentProps).build());
   }
 
   @OnMeasure

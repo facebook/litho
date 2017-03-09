@@ -58,8 +58,8 @@ public class ComponentTreeTest {
   @Before
   public void setup() throws Exception {
     mContext = new ComponentContext(RuntimeEnvironment.application);
-     mComponent = TestDrawableComponent.create(mContext)
-         .build();
+    mComponent = TestDrawableComponent.create(mContext)
+        .build();
 
     mLayoutThreadShadowLooper = Shadows.shadowOf(
         (Looper) Whitebox.invokeMethod(
@@ -137,7 +137,9 @@ public class ComponentTreeTest {
   @Test
   public void testCreate() {
     ComponentTree componentTree =
-        ComponentTree.create(mContext, mComponent).build();
+        ComponentTree.create(mContext, mComponent)
+            .incrementalMount(false)
+            .build();
 
     creationCommonChecks(componentTree);
 
@@ -151,7 +153,9 @@ public class ComponentTreeTest {
   @Test
   public void testSetSizeSpec() {
     ComponentTree componentTree =
-        ComponentTree.create(mContext, mComponent).build();
+        ComponentTree.create(mContext, mComponent)
+            .incrementalMount(false)
+            .build();
     componentTree.setSizeSpec(WIDTH_SPEC, HEIGHT_SPEC);
 
     // Since this happens post creation, it's not in general safe to update the main thread layout
@@ -162,7 +166,9 @@ public class ComponentTreeTest {
   @Test
   public void testSetSizeSpecAsync() {
     ComponentTree componentTree =
-        ComponentTree.create(mContext, mComponent).build();
+        ComponentTree.create(mContext, mComponent)
+            .incrementalMount(false)
+            .build();
     componentTree.setSizeSpecAsync(WIDTH_SPEC, HEIGHT_SPEC);
 
     // Only fields changed but no layout is done yet.
@@ -188,7 +194,9 @@ public class ComponentTreeTest {
   @Test
   public void testSetSizeSpecAsyncThenSyncBeforeRunningTask() {
     ComponentTree componentTree =
-        ComponentTree.create(mContext, mComponent).build();
+        ComponentTree.create(mContext, mComponent)
+            .incrementalMount(false)
+            .build();
 
     componentTree.setSizeSpecAsync(WIDTH_SPEC, HEIGHT_SPEC);
     componentTree.setSizeSpec(WIDTH_SPEC_2, HEIGHT_SPEC_2);
@@ -207,7 +215,9 @@ public class ComponentTreeTest {
   @Test
   public void testSetSizeSpecAsyncThenSyncAfterRunningTask() {
     ComponentTree componentTree =
-        ComponentTree.create(mContext, mComponent).build();
+        ComponentTree.create(mContext, mComponent)
+            .incrementalMount(false)
+            .build();
     componentTree.setSizeSpecAsync(WIDTH_SPEC, HEIGHT_SPEC);
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
@@ -226,7 +236,9 @@ public class ComponentTreeTest {
   @Test
   public void testSetSizeSpecWithOutput() {
     ComponentTree componentTree =
-        ComponentTree.create(mContext, mComponent).build();
+        ComponentTree.create(mContext, mComponent)
+            .incrementalMount(false)
+            .build();
 
     Size size = new Size();
 
@@ -243,7 +255,9 @@ public class ComponentTreeTest {
   @Test
   public void testSetCompatibleSizeSpec() {
     ComponentTree componentTree =
-        ComponentTree.create(mContext, mComponent).build();
+        ComponentTree.create(mContext, mComponent)
+            .incrementalMount(false)
+            .build();
 
     Size size = new Size();
 
@@ -272,7 +286,9 @@ public class ComponentTreeTest {
   @Test
   public void testSetCompatibleSizeSpecWithDifferentRoot() {
     ComponentTree componentTree =
-        ComponentTree.create(mContext, mComponent).build();
+        ComponentTree.create(mContext, mComponent)
+            .incrementalMount(false)
+            .build();
 
     Size size = new Size();
 
@@ -299,10 +315,12 @@ public class ComponentTreeTest {
   @Test
   public void testSetInput() {
     Component component = TestLayoutComponent.create(mContext)
-            .build();
+        .build();
 
     ComponentTree componentTree =
-        ComponentTree.create(mContext, component).build();
+        ComponentTree.create(mContext, component)
+            .incrementalMount(false)
+            .build();
 
     componentTree.setRoot(mComponent);
 
@@ -324,6 +342,7 @@ public class ComponentTreeTest {
     ComponentTree componentTree1 = ComponentTree.create(
         mContext,
         component1)
+        .incrementalMount(false)
         .build();
 
     Component component2 = TestDrawableComponent.create(mContext)
@@ -331,6 +350,7 @@ public class ComponentTreeTest {
     ComponentTree componentTree2 = ComponentTree.create(
         mContext,
         component2)
+        .incrementalMount(false)
         .build();
 
     Assert.assertNull(getComponentView(componentTree1));
@@ -355,6 +375,7 @@ public class ComponentTreeTest {
     ComponentTree componentTree = ComponentTree.create(
         mContext,
         component)
+        .incrementalMount(false)
         .build();
 
     ComponentView componentView = new ComponentView(mContext);
@@ -375,6 +396,7 @@ public class ComponentTreeTest {
     ComponentTree componentTree = ComponentTree.create(
         mContext,
         component)
+        .incrementalMount(false)
         .build();
 
     // Attach first view.
@@ -399,6 +421,7 @@ public class ComponentTreeTest {
     ComponentTree componentTree = ComponentTree.create(
         mContext,
         component)
+        .incrementalMount(false)
         .build();
 
     // Attach first view.

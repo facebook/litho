@@ -44,7 +44,9 @@ public class LifecycleMethodsTest {
     mComponent = mLifecycle.create(10);
 
     final ComponentContext c = new ComponentContext(RuntimeEnvironment.application);
-    mComponentTree = ComponentTree.create(c, mComponent).build();
+    mComponentTree = ComponentTree.create(c, mComponent)
+        .incrementalMount(false)
+        .build();
     mComponentView.setComponent(mComponentTree);
   }
 
@@ -280,7 +282,7 @@ public class LifecycleMethodsTest {
 
       assertTrue(
           mComponent.getCurrentStep() == LifecycleStep.ON_BIND ||
-          mComponent.getCurrentStep() == LifecycleStep.ON_UNBIND);
+              mComponent.getCurrentStep() == LifecycleStep.ON_UNBIND);
     }
 
     @Override

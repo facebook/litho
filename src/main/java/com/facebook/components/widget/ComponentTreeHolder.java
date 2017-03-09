@@ -138,7 +138,6 @@ public class ComponentTreeHolder {
           .layoutDiffing(true)
           .layoutThreadHandler(mLayoutHandler)
           .stateHandler(mStateHandler)
-          .incrementalMount(true)
           .build();
     }
   }

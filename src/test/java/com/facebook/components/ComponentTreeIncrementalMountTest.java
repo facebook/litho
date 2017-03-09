@@ -41,7 +41,6 @@ public class ComponentTreeIncrementalMountTest {
         TestDrawableComponent.create(context)
             .color(Color.BLACK)
             .build())
-        .incrementalMount(true)
         .build();
 
     mComponentView = mock(TestComponentView.class);

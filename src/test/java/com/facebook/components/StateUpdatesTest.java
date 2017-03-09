@@ -75,7 +75,7 @@ public class StateUpdatesTest {
     }
   }
 
-   static class TestComponent<L extends ComponentLifecycle>
+  static class TestComponent<L extends ComponentLifecycle>
       extends Component<L> implements Cloneable {
 
     private TestStateContainer mStateContainer;
@@ -147,7 +147,9 @@ public class StateUpdatesTest {
             "getDefaultLayoutThreadLooper"));
     mTestComponent = new TestComponent(mLifecycle);
 
-    mComponentTree = ComponentTree.create(mContext, mTestComponent).build();
+    mComponentTree = ComponentTree.create(mContext, mTestComponent)
+        .incrementalMount(false)
+        .build();
     final ComponentView componentView = new ComponentView(mContext);
     componentView.setComponent(mComponentTree);
     componentView.onAttachedToWindow();
@@ -167,7 +169,9 @@ public class StateUpdatesTest {
             .build();
       }
     };
-    final ComponentTree componentTree = ComponentTree.create(mContext, component).build();
+    final ComponentTree componentTree = ComponentTree.create(mContext, component)
+        .incrementalMount(false)
+        .build();
     final ComponentView componentView = new ComponentView(mContext);
     componentView.setComponent(componentTree);
     componentView.onAttachedToWindow();
@@ -183,14 +187,16 @@ public class StateUpdatesTest {
         return Container.create(c)
             .child(
                 Container.create(c)
-                  .child(child1))
+                    .child(child1))
             .child(
                 Container.create(c)
-                  .child(child1))
+                    .child(child1))
             .build();
       }
     };
-    final ComponentTree componentTree = ComponentTree.create(mContext, component).build();
+    final ComponentTree componentTree = ComponentTree.create(mContext, component)
+        .incrementalMount(false)
+        .build();
     final ComponentView componentView = new ComponentView(mContext);
     componentView.setComponent(componentTree);
     componentView.onAttachedToWindow();

@@ -37,7 +37,8 @@ public class ComponentViewTest {
 
     final ComponentContext c = new ComponentContext(RuntimeEnvironment.application);
     final ComponentTree componentTree = ComponentTree.create(c, component)
-            .build();
+        .incrementalMount(false)
+        .build();
 
     mComponentView = new ComponentView(RuntimeEnvironment.application);
     mComponentView.setComponent(componentTree);
@@ -83,7 +84,8 @@ public class ComponentViewTest {
         ComponentTree.create(
             new ComponentContext(RuntimeEnvironment.application),
             component)
-        .build());
+            .incrementalMount(false)
+            .build());
 
     nullComponentView.measure(
         View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),

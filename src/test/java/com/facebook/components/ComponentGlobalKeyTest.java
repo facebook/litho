@@ -52,7 +52,9 @@ public class ComponentGlobalKeyTest {
         .create(mContext)
         .build();
     System.out.println(component.getLifecycle().getId());
-    ComponentTree componentTree = ComponentTree.create(mContext, component).build();
+    ComponentTree componentTree = ComponentTree.create(mContext, component)
+        .incrementalMount(false)
+        .build();
     ComponentView componentView = getComponentView(componentTree);
 
     Assert.assertEquals(
@@ -67,7 +69,9 @@ public class ComponentGlobalKeyTest {
         .key("someKey")
         .build();
     System.out.println(component.getLifecycle().getId());
-    ComponentTree componentTree = ComponentTree.create(mContext, component).build();
+    ComponentTree componentTree = ComponentTree.create(mContext, component)
+        .incrementalMount(false)
+        .build();
     ComponentView componentView = getComponentView(componentTree);
 
     Assert.assertEquals(
@@ -82,7 +86,9 @@ public class ComponentGlobalKeyTest {
     int layoutSpecId = component.getLifecycle().getId();
     int nestedLayoutSpecId = layoutSpecId - 1;
 
-    ComponentTree componentTree = ComponentTree.create(mContext, component).build();
+    ComponentTree componentTree = ComponentTree.create(mContext, component)
+        .incrementalMount(false)
+        .build();
     ComponentView componentView = getComponentView(componentTree);
 
     // Text

@@ -254,7 +254,9 @@ public class MountStateRemountInPlaceTest {
                 .child(firstComponent)
                 .build();
           }
-        }).build(),
+        })
+            .incrementalMount(false)
+            .build(),
         makeMeasureSpec(100, AT_MOST),
         makeMeasureSpec(100, AT_MOST));
 
@@ -298,7 +300,9 @@ public class MountStateRemountInPlaceTest {
                 .child(firstComponent)
                 .build();
           }
-        }).build(),
+        })
+            .incrementalMount(false)
+            .build(),
         makeMeasureSpec(100, EXACTLY),
         makeMeasureSpec(100, EXACTLY));
 
@@ -342,7 +346,9 @@ public class MountStateRemountInPlaceTest {
                 .child(firstComponent)
                 .build();
           }
-        }).build(),
+        })
+            .incrementalMount(false)
+            .build(),
         makeMeasureSpec(100, EXACTLY),
         makeMeasureSpec(100, EXACTLY));
 
@@ -489,7 +495,9 @@ public class MountStateRemountInPlaceTest {
                 .child(secondComponent)
                 .build();
           }
-        }).build();
+        })
+        .incrementalMount(false)
+        .build();
     secondTree.setSizeSpec(100, 100);
 
     final TestComponent thirdComponent =
@@ -522,7 +530,7 @@ public class MountStateRemountInPlaceTest {
             true,
             false,
             false)
-        .build();
+            .build();
 
     final ComponentView firstComponentView = ComponentTestHelper.mountComponent(
         mContext,
@@ -547,7 +555,7 @@ public class MountStateRemountInPlaceTest {
             true,
             false,
             false)
-        .build();
+            .build();
 
     final ComponentTree secondTree = ComponentTree.create(
         mContext,
@@ -558,7 +566,9 @@ public class MountStateRemountInPlaceTest {
                 .child(secondComponent)
                 .build();
           }
-        }).build();
+        })
+        .incrementalMount(false)
+        .build();
     secondTree.setSizeSpec(100, 100);
 
     ComponentTestHelper.mountComponent(firstComponentView, secondTree);
@@ -591,16 +601,16 @@ public class MountStateRemountInPlaceTest {
                         Text.create(c).text("test")))
             .child(
                 Container.create(c)
-                  .clickHandler(c.newEventHandler(2))
-                  .child(
-                      Text.create(c).text("test2"))
-                  .child(
-                    Container.create(c)
-                      .clickHandler(c.newEventHandler(1))
-                      .child(
-                          firstComponent)
-                      .child(
-                          SolidColor.create(c).color(Color.GREEN))))
+                    .clickHandler(c.newEventHandler(2))
+                    .child(
+                        Text.create(c).text("test2"))
+                    .child(
+                        Container.create(c)
+                            .clickHandler(c.newEventHandler(1))
+                            .child(
+                                firstComponent)
+                            .child(
+                                SolidColor.create(c).color(Color.GREEN))))
             .build();
       }
     };
@@ -631,6 +641,7 @@ public class MountStateRemountInPlaceTest {
     };
 
     ComponentTree tree = ComponentTree.create(mContext, firstLayout)
+        .incrementalMount(false)
         .build();
     ComponentView cv = new ComponentView(mContext);
     ComponentTestHelper.mountComponent(cv, tree);
