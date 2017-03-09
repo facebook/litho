@@ -37,6 +37,7 @@ We use GitHub issues to track public bugs.  When you report an issue the more in
     ```java (or xml)
     your code here
     ```(terminating backticks)
+    ```
 
 ### Security bugs
 
