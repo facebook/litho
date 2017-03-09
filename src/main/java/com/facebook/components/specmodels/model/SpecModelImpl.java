@@ -186,19 +186,16 @@ public final class SpecModelImpl implements SpecModel {
   }
 
   private static String getSpecName(String qualifiedSpecClassName) {
-    // TODO t15596656 improve validation
     return qualifiedSpecClassName.substring(qualifiedSpecClassName.lastIndexOf('.') + 1);
   }
 
   private static TypeName getComponentTypeName(String qualifiedSpecClassName) {
-    // TODO t15596656 improve validation
     final String qualifiedComponentClassName =
         qualifiedSpecClassName.substring(0, qualifiedSpecClassName.length() - SPEC_SUFFIX.length());
     return ClassName.bestGuess(qualifiedComponentClassName);
   }
 
   private static String getComponentName(String qualifiedSpecClassName) {
-    // TODO t15596656 improve validation
     final String specName = getSpecName(qualifiedSpecClassName);
     return specName.substring(0, specName.length() - SPEC_SUFFIX.length());
   }

@@ -12,6 +12,7 @@ public class SpecModelValidation {
 
   public static List<SpecModelValidationError> validateSpecModel(SpecModel specModel) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
+    validationErrors.addAll(validateName(specModel));
     validationErrors.addAll(StateValidation.validate(specModel));
     validationErrors.addAll(EventDeclarationValidation.validate(specModel));
     validationErrors.addAll(TreePropValidation.validate(specModel));
@@ -23,6 +24,20 @@ public class SpecModelValidation {
     validationErrors.addAll(validateSpecModel(specModel));
     validationErrors.addAll(PureRenderValidation.validate(specModel));
     validationErrors.addAll(DelegateMethodValidation.validateLayoutSpecModel(specModel));
+    return validationErrors;
+  }
+
+  static List<SpecModelValidationError> validateName(SpecModel specModel) {
+    List<SpecModelValidationError> validationErrors = new ArrayList<>();
+    if (!specModel.getSpecName().endsWith("Spec")) {
+      validationErrors.add(
+          new SpecModelValidationError(
+              specModel.getRepresentedObject(),
+              "You must suffix the class name of your spec with \"Spec\" e.g. a " +
+                  "\"MyComponentSpec\" class name generates a component named " +
+                  "\"MyComponent\"."));
+    }
+
     return validationErrors;
   }
 }
