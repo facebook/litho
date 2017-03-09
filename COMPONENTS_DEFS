@@ -42,6 +42,7 @@ COMPONENTS_JAVAPOET_TARGET                    = make_dep_path('lib/javapoet:java
 COMPONENTS_FBCORE_TARGET                      = make_dep_path('lib/fbcore:fbcore')
 COMPONENTS_SOLOADER_TARGET                    = make_dep_path('lib/soloader:soloader')
 COMPONENTS_ASSERTJ_TARGET                     = make_dep_path('lib/assertj:assertj')
+COMPONENTS_MOCKITO_TARGET                     = make_dep_path('lib/mockito:mockito')
 
 # Fresco
 COMPONENTS_FRESCO_TARGET                      = make_dep_path('lib/fresco:fresco')
