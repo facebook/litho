@@ -67,6 +67,14 @@ public class EventValidation {
     }
 
     for (EventMethodModel eventMethod : eventMethods) {
+      if (!specModel.hasInjectedDependencies() &&
+          !eventMethod.modifiers.contains(Modifier.STATIC)) {
+        validationErrors.add(
+            new SpecModelValidationError(
+                eventMethod.representedObject,
+                "Methods in a spec that doesn't have dependency injection must be static."));
+      }
+
       if (!eventMethod.returnType.equals(eventMethod.eventType.returnType)) {
         validationErrors.add(
             new SpecModelValidationError(

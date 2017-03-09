@@ -22,17 +22,20 @@ public final class UpdateStateMethodModel {
   public final CharSequence name;
   public final TypeName returnType;
   public final ImmutableList<MethodParamModel> methodParams;
+  public final Object representedObject;
 
   public UpdateStateMethodModel(
       Annotation annotation,
       ImmutableList<Modifier> modifiers,
       CharSequence name,
       TypeName returnType,
-      ImmutableList<MethodParamModel> methodParams) {
+      ImmutableList<MethodParamModel> methodParams,
+      Object representedObject) {
     this.annotation = annotation;
     this.modifiers = modifiers;
     this.name = name;
     this.returnType = returnType;
     this.methodParams = methodParams;
+    this.representedObject = representedObject;
   }
 }

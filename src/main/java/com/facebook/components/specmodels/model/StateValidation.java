@@ -2,6 +2,8 @@
 
 package com.facebook.components.specmodels.model;
 
+import javax.lang.model.element.Modifier;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,6 +87,14 @@ public class StateValidation {
       SpecModel specModel,
       UpdateStateMethodModel updateStateMethodModel) {
     final List<SpecModelValidationError> validationErrors = new ArrayList<>();
+
+    if (!specModel.hasInjectedDependencies() &&
+        !updateStateMethodModel.modifiers.contains(Modifier.STATIC)) {
+      validationErrors.add(
+          new SpecModelValidationError(
+              updateStateMethodModel.representedObject,
+              "Methods in a spec that doesn't have dependency injection must be static."));
+    }
 
     for (MethodParamModel methodParam : updateStateMethodModel.methodParams) {
       if (MethodParamModelUtils.isAnnotatedWith(methodParam, Param.class)) {

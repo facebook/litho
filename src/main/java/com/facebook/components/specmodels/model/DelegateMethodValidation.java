@@ -1,6 +1,8 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 package com.facebook.components.specmodels.model;
 
+import javax.lang.model.element.Modifier;
+
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +60,16 @@ public class DelegateMethodValidation {
       SpecModel specModel,
       Map<Class<? extends Annotation>, DelegateMethodDescription> delegateMethodDescriptions) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
+
+    for (DelegateMethodModel delegateMethod : specModel.getDelegateMethods()) {
+      if (!specModel.hasInjectedDependencies() &&
+          !delegateMethod.modifiers.contains(Modifier.STATIC)) {
+        validationErrors.add(
+            new SpecModelValidationError(
+                delegateMethod.representedObject,
+                "Methods in a spec that doesn't have dependency injection must be static."));
+      }
+    }
 
     for (Map.Entry<Class<? extends Annotation>, DelegateMethodDescription> entry :
         delegateMethodDescriptions.entrySet()) {
