@@ -7,6 +7,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
+import com.facebook.components.specmodels.generator.BuilderGenerator;
 import com.facebook.components.specmodels.generator.CanMeasureGenerator;
 import com.facebook.components.specmodels.generator.ComponentImplGenerator;
 import com.facebook.components.specmodels.generator.DelegateMethodGenerator;
@@ -121,6 +122,7 @@ public class ComponentsProcessor extends AbstractComponentsProcessor {
     if (specModel != null) {
       EventGenerator.generate(specModel).addToTypeSpec(specHelper.getTypeSpec());
       StateGenerator.generate(specModel).addToTypeSpec(specHelper.getTypeSpec());
+      BuilderGenerator.generate(specModel).addToTypeSpec(specHelper.getTypeSpec());
     } else {
       stages.generateOnLoadStyle();
       stages.generateOnEventHandlers(ClassNames.COMPONENT, ClassNames.COMPONENT_CONTEXT);
@@ -145,10 +147,9 @@ public class ComponentsProcessor extends AbstractComponentsProcessor {
           ClassNames.COMPONENT,
           ClassNames.COMPONENT_STATE_UPDATE,
           ClassNames.STATE_CONTAINER_COMPONENT);
+      stages.generateComponentBuilder(
+          Stages.StaticFlag.STATIC,
+          ClassName.bestGuess(stages.getSimpleClassName()));
     }
-
-    stages.generateComponentBuilder(
-        Stages.StaticFlag.STATIC,
-        ClassName.bestGuess(stages.getSimpleClassName()));
   }
 }
