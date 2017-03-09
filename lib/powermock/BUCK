@@ -1,0 +1,18 @@
+java_library(
+    name = "powermock-reflect",
+    exported_deps = [
+        ":powermock-reflect-prebuilt",
+    ],
+    visibility = ["PUBLIC"],
+)
+
+prebuilt_jar(
+    name = "powermock-reflect-prebuilt",
+    binary_jar = ":powermock-reflect.jar",
+)
+
+remote_file(
+    name = "powermock-reflect.jar",
+    sha1 = "962751c056e0d56edf1d419985e6d8032328555b",
+    url = "mvn:org.powermock:powermock-reflect:jar:1.5.6",
+)
