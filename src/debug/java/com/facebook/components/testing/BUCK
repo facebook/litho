@@ -1,18 +1,20 @@
+include_defs("//COMPONENTS_DEFS")
+
 android_library(
     name = "testing",
     srcs = glob(["*.java"]),
     provided_deps = [
-        "//third-party/java/robolectric3/robolectric:robolectric",
+        COMPONENTS_ROBOLECTRIC_TARGET,
     ],
     visibility = [
         "PUBLIC",
     ],
     deps = [
-        "//libraries/components:components",
-        "//libraries/components:res",
+        COMPONENTS_JAVA_TARGET,
+        COMPONENTS_RES_TARGET,
+        COMPONENTS_JSR_TARGET,
         "//libraries/components/src/main/java/com/facebook/components/widget:widget",
         "//libraries/fresco/drawee/src/main/java/com/facebook/drawee/drawable:drawable",
-        "//third-party/java/jsr-305:jsr-305",
         "//third-party/java/powermock/reflect:reflect",
     ],
 )

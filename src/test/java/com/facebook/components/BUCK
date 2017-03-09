@@ -1,11 +1,33 @@
 include_defs("//COMPONENTS_DEFS")
 
+OSS_TESTS = [
+    "FastMathTest.java",
+]
+
+oss_components_robolectric_test(
+    name = "oss_components",
+    srcs = OSS_TESTS,
+    contacts = ["oncall+components_for_android@xmail.facebook.com"],
+    provided_deps = [
+        COMPONENTS_ROBOLECTRIC_TARGET,
+    ],
+    deps = [
+        COMPONENTS_JAVA_TARGET,
+        COMPONENTS_JUNIT_TARGET,
+        make_dep_path("src/debug/java/com/facebook/components/testing/testrunner:testrunner"),
+    ],
+)
+
 components_robolectric_test(
     name = "components",
-    srcs = glob([
-        "*Test.java",
-    ]),
+    srcs = glob(
+        ["*Test.java"],
+        excludes = OSS_TESTS,
+    ),
     contacts = ["oncall+components_for_android@xmail.facebook.com"],
+    provided_deps = [
+        COMPONENTS_ROBOLECTRIC_TARGET,
+    ],
     deps = [
         "//libraries/components/src/debug/java/com/facebook/components/testing:testing",
         "//libraries/components/src/debug/java/com/facebook/components/testing/testrunner:testrunner",
@@ -16,11 +38,15 @@ components_robolectric_test(
         "//third-party/java/mockito:mockito",
         "//third-party/java/powermock/reflect:reflect",
         COMPONENTS_ROBOLECTRIC_TARGET,
+        COMPONENTS_JAVA_TARGET,
+        COMPONENTS_JUNIT_TARGET,
+        make_dep_path("src/debug/java/com/facebook/components/testing/testrunner:testrunner"),
     ],
 )
 
 android_resource(
     name = "res",
+    package = "com.facebook",
     res = "res",
     visibility = [
         "//javatests/com/facebook/components/...",

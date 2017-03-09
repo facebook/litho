@@ -1,3 +1,5 @@
+include_defs("//COMPONENTS_DEFS")
+
 android_library(
     name = "testrunner",
     srcs = glob(["*.java"]),
@@ -5,6 +7,6 @@ android_library(
         "PUBLIC",
     ],
     deps = [
-        "//third-party/java/robolectric3/robolectric:robolectric",
+        COMPONENTS_ROBOLECTRIC_TARGET,
     ],
 )
