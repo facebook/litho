@@ -29,6 +29,7 @@ import com.facebook.components.displaylist.DisplayList;
 import com.facebook.components.displaylist.DisplayListException;
 import com.facebook.components.reference.BorderColorDrawableReference;
 import com.facebook.components.reference.Reference;
+import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -1520,6 +1521,7 @@ class LayoutState {
    * See {@link LayoutState#acquireRef} Call this when you are done using the reference to the
    * LayoutState.
    */
+  @ThreadSafe(enableChecks = false)
   void releaseRef() {
     int count = mReferenceCount.decrementAndGet();
     if (count < 0) {
