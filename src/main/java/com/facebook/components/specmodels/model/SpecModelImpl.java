@@ -229,24 +229,7 @@ public final class SpecModelImpl implements SpecModel {
       }
     }
 
-    if (!validateProps(props)) {
-      // TODO t15596656 somehow we want to complain in this situation.
-    }
-
     return ImmutableList.copyOf(new ArrayList<>(props));
-  }
-
-  private static boolean validateProps(Set<PropModel> props) {
-    for (PropModel prop : props) {
-      for (PropModel otherProp : props) {
-        if (otherProp.getName().equals(prop.getName()) && !otherProp.equals(prop)) {
-          // Defined two props with the same name but they are not equal.
-          return false;
-        }
-      }
-    }
-
-    return true;
   }
 
   private static ImmutableList<StateParamModel> getStateValues(

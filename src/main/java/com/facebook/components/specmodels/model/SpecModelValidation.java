@@ -13,6 +13,7 @@ public class SpecModelValidation {
   public static List<SpecModelValidationError> validateSpecModel(SpecModel specModel) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
     validationErrors.addAll(validateName(specModel));
+    validationErrors.addAll(PropValidation.validate(specModel));
     validationErrors.addAll(StateValidation.validate(specModel));
     validationErrors.addAll(EventValidation.validate(specModel));
     validationErrors.addAll(TreePropValidation.validate(specModel));
