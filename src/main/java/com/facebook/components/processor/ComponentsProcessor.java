@@ -15,6 +15,7 @@ import com.facebook.components.specmodels.generator.EventGenerator;
 import com.facebook.components.specmodels.generator.PreambleGenerator;
 import com.facebook.components.specmodels.generator.PureRenderGenerator;
 import com.facebook.components.specmodels.generator.StateGenerator;
+import com.facebook.components.specmodels.generator.TreePropGenerator;
 import com.facebook.components.specmodels.model.ClassNames;
 import com.facebook.components.specmodels.model.DependencyInjectionGenerator;
 import com.facebook.components.specmodels.model.LayoutSpecDelegateMethodDescriptions;
@@ -50,7 +51,8 @@ public class ComponentsProcessor extends AbstractComponentsProcessor {
     layoutSpecHelper.getTypeSpec().addModifiers(Modifier.FINAL);
     ComponentImplGenerator.generate(layoutSpecHelper.getSpecModel())
         .addToTypeSpec(layoutSpecHelper.getTypeSpec());
-    layoutSpecHelper.generateTreePropsMethods();
+    TreePropGenerator.generate(layoutSpecHelper.getSpecModel())
+        .addToTypeSpec(layoutSpecHelper.getTypeSpec());
     DelegateMethodGenerator.generateDelegates(
         layoutSpecHelper.getSpecModel(),
         LayoutSpecDelegateMethodDescriptions.DELEGATE_METHODS_MAP)
