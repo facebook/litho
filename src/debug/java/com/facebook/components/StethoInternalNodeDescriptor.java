@@ -84,7 +84,15 @@ public final class StethoInternalNodeDescriptor
       int x,
       int y,
       Rect bounds) {
-    return element;
+    final HitTestAccumulator hitTestAccumulator = new HitTestAccumulator(bounds, x, y);
+    getChildren(element, hitTestAccumulator);
+
+    final Object childElement = hitTestAccumulator.getElement();
+    if (childElement != null) {
+      return childElement;
+    } else {
+      return element;
+    }
   }
 
   @Override
