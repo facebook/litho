@@ -6,6 +6,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 
@@ -20,9 +21,11 @@ import com.facebook.components.annotations.Param;
 import com.facebook.components.annotations.Prop;
 import com.facebook.components.annotations.State;
 import com.facebook.components.annotations.TreeProp;
+import com.facebook.components.specmodels.model.EventDeclarationModel;
 import com.facebook.components.specmodels.model.EventMethodModel;
 import com.facebook.components.specmodels.model.MethodParamModel;
 
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 
 import static com.facebook.components.specmodels.processor.MethodExtractorUtils.getMethodParams;
@@ -65,18 +68,26 @@ public class EventMethodExtractor {
                 executableElement,
                 getPermittedMethodParamAnnotations(permittedInterStageInputAnnotations));
 
-        final EventMethodModel delegateMethod =
+        final DeclaredType eventClassDeclaredType = ProcessorUtils.getAnnotationParameter(
+            elements,
+            executableElement,
+            OnEvent.class,
+            "value");
+        final Element eventClass = eventClassDeclaredType.asElement();
+
+        final EventMethodModel eventMethod =
             new EventMethodModel(
-                TypeName.get((TypeMirror) ProcessorUtils.getAnnotationParameter(
-                    elements,
-                    executableElement,
-                    OnEvent.class,
-                    "value")),
+                new EventDeclarationModel(
+                    ClassName.bestGuess(eventClass.toString()),
+                    EventDeclarationsExtractor.getReturnType(elements, eventClass),
+                    EventDeclarationsExtractor.getFields(eventClass),
+                    eventClass),
                 ImmutableList.copyOf(new ArrayList<>(executableElement.getModifiers())),
                 executableElement.getSimpleName(),
                 TypeName.get(executableElement.getReturnType()),
-                ImmutableList.copyOf(methodParams));
-        delegateMethods.add(delegateMethod);
+                ImmutableList.copyOf(methodParams),
+                executableElement);
+        delegateMethods.add(eventMethod);
       }
     }
 

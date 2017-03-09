@@ -224,9 +224,9 @@ public class EventGenerator {
 
       methodBuilder.addStatement(
           "$T $L = ($T) $L",
-          eventMethodModel.eventType,
+          eventMethodModel.eventType.name,
           eventVariableName,
-          eventMethodModel.eventType,
+          eventMethodModel.eventType.name,
           "eventState");
 
       final CodeBlock.Builder eventHandlerParams = CodeBlock.builder()
@@ -287,7 +287,7 @@ public class EventGenerator {
         .addParameter(paramClass, "c")
         .returns(ParameterizedTypeName.get(
             ClassNames.EVENT_HANDLER,
-            eventMethodModel.eventType));
+            eventMethodModel.eventType.name));
 
     final CodeBlock.Builder paramsBlock = CodeBlock.builder();
 

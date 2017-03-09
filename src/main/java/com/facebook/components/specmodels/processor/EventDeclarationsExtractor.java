@@ -57,7 +57,7 @@ public class EventDeclarationsExtractor {
   }
 
   @Nullable
-  private static TypeName getReturnType(Elements elements, Element typeElement) {
+  static TypeName getReturnType(Elements elements, Element typeElement) {
     TypeMirror typeMirror = ProcessorUtils.getAnnotationParameter(
         elements,
         typeElement,
@@ -67,7 +67,7 @@ public class EventDeclarationsExtractor {
     return typeMirror != null ? TypeName.get(typeMirror) : null;
   }
 
-  private static ImmutableList<EventDeclarationModel.FieldModel> getFields(Element element) {
+  static ImmutableList<EventDeclarationModel.FieldModel> getFields(Element element) {
     final List<EventDeclarationModel.FieldModel> fieldModels = new ArrayList<>();
     for (Element enclosedElement : element.getEnclosedElements()) {
       if (enclosedElement.getKind().equals(ElementKind.FIELD)) {
