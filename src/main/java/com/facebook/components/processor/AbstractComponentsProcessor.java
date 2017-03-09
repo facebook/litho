@@ -41,10 +41,20 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
         Closeable closeable = null;
         final TypeElement typeElement = (TypeElement) element;
         if (element.getAnnotation(LayoutSpec.class) != null) {
+          processingEnv.getMessager().printMessage(
+              Diagnostic.Kind.NOTE,
+              "annotation_processor_invoked",
+              element);
+
           final LayoutSpecHelper layoutSpecHelper = createLayoutSpecHelper(typeElement);
           closeable = layoutSpecHelper;
           generate(layoutSpecHelper);
         } else if (element.getAnnotation(MountSpec.class) != null) {
+          processingEnv.getMessager().printMessage(
+              Diagnostic.Kind.NOTE,
+              "annotation_processor_invoked",
+              element);
+
           final MountSpecHelper mountSpecHelper =
               new MountSpecHelper(processingEnv, (TypeElement) element);
           closeable = mountSpecHelper;
