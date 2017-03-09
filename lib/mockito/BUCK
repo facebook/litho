@@ -1,7 +1,10 @@
+include_defs("//COMPONENTS_DEFS")
+
 java_library(
     name = "mockito",
     exported_deps = [
         ":mockito-core-prebuilt",
+        make_dep_path("lib/objenesis:objenesis"),
     ],
     visibility = ["PUBLIC"],
 )

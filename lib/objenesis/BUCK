@@ -1,0 +1,20 @@
+include_defs("//COMPONENTS_DEFS")
+
+java_library(
+    name = "objenesis",
+    exported_deps = [
+        ":objenesis-prebuilt",
+    ],
+    visibility = ["PUBLIC"],
+)
+
+prebuilt_jar(
+    name = "objenesis-prebuilt",
+    binary_jar = ":objenesis.jar",
+)
+
+remote_file(
+    name = "objenesis.jar",
+    sha1 = "9b473564e792c2bdf1449da1f0b1b5bff9805704",
+    url = "mvn:org.objenesis:objenesis:jar:1.0",
+)
