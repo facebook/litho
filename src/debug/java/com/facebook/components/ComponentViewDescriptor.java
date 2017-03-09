@@ -131,4 +131,9 @@ public final class ComponentViewDescriptor
   public View getViewAndBoundsForHighlighting(ComponentView element, Rect bounds) {
     return element;
   }
+
+  @Override
+  public Object getElementToHighlightAtPosition(ComponentView element, int x, int y, Rect bounds) {
+    return element;
+  }
 }

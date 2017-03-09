@@ -79,6 +79,15 @@ public final class StethoInternalNodeDescriptor
   }
 
   @Override
+  public Object getElementToHighlightAtPosition(
+      StethoInternalNode element,
+      int x,
+      int y,
+      Rect bounds) {
+    return element;
+  }
+
+  @Override
   protected void onGetStyleRuleNames(
       StethoInternalNode element,
       StyleRuleNameAccumulator accumulator) {
