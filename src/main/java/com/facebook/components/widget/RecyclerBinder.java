@@ -67,6 +67,7 @@ public class RecyclerBinder implements Binder<RecyclerView> {
   private Size mMeasuredSize;
   private RecyclerView mMountedView;
   private int mCurrentFirstVisiblePosition;
+  private int mCurrentLastVisiblePosition;
   private RangeCalculationResult mRange;
 
   public RecyclerBinder(
@@ -103,7 +104,7 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     mRangeRatio = rangeRatio;
     mLayoutInfo = layoutInfo;
     mLayoutHandlerFactory = layoutHandlerFactory;
-    mCurrentFirstVisiblePosition = 0;
+    mCurrentFirstVisiblePosition = mCurrentLastVisiblePosition = 0;
   }
 
   /**
@@ -226,7 +227,7 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     }
     mInternalAdapter.notifyItemInserted(position);
 
-    computeRange();
+    computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
   }
 
   /**
@@ -259,7 +260,7 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     }
 
     mInternalAdapter.notifyItemChanged(position);
-    computeRange();
+    computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
   }
 
   /**
@@ -298,7 +299,7 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     }
 
     mInternalAdapter.notifyItemMoved(fromPosition, toPosition);
-    computeRange();
+    computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
   }
 
   /**
@@ -313,7 +314,7 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     }
     mInternalAdapter.notifyItemRemoved(position);
     holder.release();
-    computeRange();
+    computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
   }
 
   /**
@@ -457,7 +458,7 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     mIsMeasured.set(true);
 
     if (mRange != null) {
-      computeRange();
+      computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
     }
   }
 
@@ -487,11 +488,13 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     final ComponentTreeHolder holder = mComponentTreeHolders.get(nextIndexToPrepare);
     holder.computeLayoutSync(mComponentContext, childrenWidthSpec, childrenHeightSpec, size);
 
-    final int rangeSize = mLayoutInfo.approximateRangeSize(
-        size.width,
-        size.height,
-        width,
-        height);
+    final int rangeSize = Math.max(
+        mLayoutInfo.approximateRangeSize(
+            size.width,
+            size.height,
+            width,
+            height),
+        1);
 
     mRange = new RangeCalculationResult();
     mRange.measuredSize = scrollDirection == OrientationHelper.HORIZONTAL
@@ -611,24 +614,24 @@ public class RecyclerBinder implements Binder<RecyclerView> {
   @VisibleForTesting
   void onNewVisibleRange(int firstVisiblePosition, int lastVisiblePosition) {
     mCurrentFirstVisiblePosition = firstVisiblePosition;
-
-    computeRange();
+    mCurrentLastVisiblePosition = lastVisiblePosition;
+    computeRange(firstVisiblePosition, lastVisiblePosition);
   }
 
-  private void computeRange() {
+  private void computeRange(int firstVisible, int lastVisible) {
     final int rangeSize;
     final int rangeStart;
     final int rangeEnd;
     final int treeHoldersSize;
 
     synchronized (this) {
-      if (!mIsMeasured.get() || mRange.estimatedViewportCount < 0) {
+      if (!mIsMeasured.get() || mRange == null) {
         return;
       }
 
-      rangeSize = (mRange != null) ? mRange.estimatedViewportCount : -1;
-      rangeStart = mCurrentFirstVisiblePosition - (int) (rangeSize * mRangeRatio);
-      rangeEnd = mCurrentFirstVisiblePosition + rangeSize + (int) (rangeSize * mRangeRatio);
+      rangeSize = Math.max(mRange.estimatedViewportCount, lastVisible - firstVisible);
+      rangeStart = firstVisible - (int) (rangeSize * mRangeRatio);
+      rangeEnd = firstVisible + rangeSize + (int) (rangeSize * mRangeRatio);
       treeHoldersSize = mComponentTreeHolders.size();
     }
 
@@ -682,8 +685,8 @@ public class RecyclerBinder implements Binder<RecyclerView> {
 
       final int firstVisiblePosition = mLayoutInfo.findFirstVisiblePosition();
       final int lastVisiblePosition = mLayoutInfo.findLastVisiblePosition();
-      if (firstVisiblePosition != mCurrentFirstVisiblePosition) {
-
+      if (firstVisiblePosition != mCurrentFirstVisiblePosition
+          || lastVisiblePosition != mCurrentLastVisiblePosition) {
         onNewVisibleRange(firstVisiblePosition, lastVisiblePosition);
       }
     }
