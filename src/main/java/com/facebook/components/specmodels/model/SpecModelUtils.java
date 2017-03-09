@@ -5,6 +5,8 @@ package com.facebook.components.specmodels.model;
 import javax.annotation.Nullable;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.squareup.javapoet.ParameterizedTypeName;
 
@@ -50,6 +52,21 @@ public class SpecModelUtils {
     }
 
     return null;
+  }
+
+  public static List<DelegateMethodModel> getMethodModelsWithAnnotation(
+      SpecModel specModel,
+      Class<? extends Annotation> annotationClass) {
+    final List<DelegateMethodModel> methodModels = new ArrayList<>();
+    for (DelegateMethodModel delegateMethodModel : specModel.getDelegateMethods()) {
+      for (Annotation annotation : delegateMethodModel.annotations) {
+        if (annotation.annotationType().equals(annotationClass)) {
+          methodModels.add(delegateMethodModel);
+        }
+      }
+    }
+
+    return methodModels;
   }
 
   public static boolean isPropOutput(SpecModel specModel, MethodParamModel methodParamModel) {
