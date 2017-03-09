@@ -192,7 +192,7 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     final ComponentTreeHolder holder = ComponentTreeHolder.acquire(
         componentInfo,
         mLayoutHandlerFactory != null ?
-            mLayoutHandlerFactory.createLayoutCalculationHandler() :
+            mLayoutHandlerFactory.createLayoutCalculationHandler(componentInfo) :
             null);
     final boolean computeLayout;
     final int childrenWidthSpec, childrenHeightSpec;

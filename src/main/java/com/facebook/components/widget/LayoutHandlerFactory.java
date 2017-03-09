@@ -4,6 +4,7 @@ package com.facebook.components.widget;
 
 import javax.annotation.Nullable;
 
+import com.facebook.components.ComponentInfo;
 import com.facebook.components.LayoutHandler;
 
 /**
@@ -15,5 +16,5 @@ public interface LayoutHandlerFactory {
    * the {@link RecyclerSpec}.
    */
   @Nullable
-  LayoutHandler createLayoutCalculationHandler();
+  LayoutHandler createLayoutCalculationHandler(ComponentInfo componentInfo);
 }
