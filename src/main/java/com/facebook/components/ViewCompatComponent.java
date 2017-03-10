@@ -113,9 +113,17 @@ public class ViewCompatComponent<V extends View> extends ComponentLifecycle {
     toMeasure.setLayoutParams(layoutParams);
 
     viewBinder.bind(toMeasure);
-    toMeasure.measure(widthSpec, heightSpec);
-    size.width = toMeasure.getMeasuredWidth();
-    size.height = toMeasure.getMeasuredHeight();
+
+    if (toMeasure.getVisibility() == View.GONE) {
+      // No need to measure the view if binding it caused its visibility to become GONE.
+      size.width = 0;
+      size.height = 0;
+    } else {
+      toMeasure.measure(widthSpec, heightSpec);
+      size.width = toMeasure.getMeasuredWidth();
+      size.height = toMeasure.getMeasuredHeight();
+    }
+
     viewBinder.unbind(toMeasure);
 
     ComponentsPools.release(c, this, toMeasure);
