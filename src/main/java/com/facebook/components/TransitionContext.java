@@ -2,6 +2,8 @@
 
 package com.facebook.components;
 
+import java.util.HashSet;
+
 import android.support.v4.util.SimpleArrayMap;
 
 /**
@@ -10,8 +12,12 @@ import android.support.v4.util.SimpleArrayMap;
  */
 class TransitionContext {
 
+  // User defined transitions
   private final SimpleArrayMap<String, TransitionKeySet> mKeyToTransitionKeySets =
       new SimpleArrayMap<>();
+
+  // Transition keys of given layout tree
+  private final HashSet<String> mTransitionKeys = new HashSet<>(8);
 
   void add(Transition transition) {
     if (transition instanceof TransitionSet) {
@@ -39,5 +45,14 @@ class TransitionContext {
 
   void reset() {
     mKeyToTransitionKeySets.clear();
+    mTransitionKeys.clear();
+  }
+
+  void addTransitionKey(String transitionKey) {
+    mTransitionKeys.add(transitionKey);
+  }
+
+  boolean containsTransitionKey(String transitionKey) {
+    return mTransitionKeys.contains(transitionKey);
   }
 }

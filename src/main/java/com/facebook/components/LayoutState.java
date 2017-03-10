@@ -583,16 +583,20 @@ class LayoutState {
     }
 
     // 5. Extract the Transitions.
-    if (SDK_INT >= ICE_CREAM_SANDWICH && component != null) {
-      Transition transition = component.getLifecycle().onLayoutTransition(
-          layoutState.mContext,
-          component);
+    if (SDK_INT >= ICE_CREAM_SANDWICH) {
+      if (node.getTransitionKey() != null) {
+        layoutState
+            .getOrCreateTransitionContext()
+            .addTransitionKey(node.getTransitionKey());
+      }
+      if (component != null) {
+        Transition transition = component.getLifecycle().onLayoutTransition(
+            layoutState.mContext,
+            component);
 
-      if (transition != null) {
-        if (layoutState.mTransitionContext == null) {
-          layoutState.mTransitionContext = ComponentsPools.acquireTransitionContext();
+        if (transition != null) {
+          layoutState.getOrCreateTransitionContext().add(transition);
         }
-        layoutState.mTransitionContext.add(transition);
       }
     }
 
@@ -1699,8 +1703,14 @@ class LayoutState {
 
   private static void addMountableOutput(LayoutState layoutState, LayoutOutput layoutOutput) {
     layoutState.mMountableOutputs.add(layoutOutput);
-
     layoutState.mMountableOutputTops.add(layoutOutput);
     layoutState.mMountableOutputBottoms.add(layoutOutput);
+  }
+
+  private TransitionContext getOrCreateTransitionContext() {
+    if (mTransitionContext == null) {
+      mTransitionContext = ComponentsPools.acquireTransitionContext();
+    }
+    return mTransitionContext;
   }
 }
