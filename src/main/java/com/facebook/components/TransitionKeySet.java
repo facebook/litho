@@ -25,7 +25,9 @@ import static com.facebook.components.Transition.TransitionType.DISAPPEAR;
 class TransitionKeySet implements TransitionListener {
 
   interface TransitionKeySetListener {
-    void onTransitionKeySetEnd(String key);
+    void onTransitionKeySetStart(String key, View view);
+    void onTransitionKeySetStop(String key, View view);
+    void onTransitionKeySetEnd(String key, View view);
   }
 
   private final String mKey;
@@ -149,6 +151,10 @@ class TransitionKeySet implements TransitionListener {
       t.stop();
     }
 
+    if (mRunningTransitionsPointer.size() > 0) {
+      mTransitionEndListener.onTransitionKeySetStop(mKey, mTargetView);
+    }
+
     mAnimationRunningCounter = 0;
   }
 
@@ -194,7 +200,7 @@ class TransitionKeySet implements TransitionListener {
   @Override
   public void onTransitionEnd() {
     if (--mAnimationRunningCounter == 0) {
-      mTransitionEndListener.onTransitionKeySetEnd(mKey);
+      mTransitionEndListener.onTransitionKeySetEnd(mKey, mTargetView);
     } else if (mAnimationRunningCounter < 0) {
       throw new IllegalStateException("Wrong number of TransitionEnd received.");
     }
@@ -255,7 +261,10 @@ class TransitionKeySet implements TransitionListener {
         mAnimationRunningCounter++;
       }
 
-      return true;
+      if (mRunningTransitionsPointer.size() > 0) {
+        mTransitionEndListener.onTransitionKeySetStart(mKey, mTargetView);
+        return true;
+      }
     }
 
     return false;

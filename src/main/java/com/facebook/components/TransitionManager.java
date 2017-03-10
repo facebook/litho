@@ -10,6 +10,7 @@ import android.annotation.TargetApi;
 import android.support.annotation.IntDef;
 import android.support.v4.util.SimpleArrayMap;
 import android.view.View;
+import android.view.ViewParent;
 
 import com.facebook.components.TransitionKeySet.TransitionKeySetListener;
 
@@ -154,7 +155,18 @@ class TransitionManager implements TransitionKeySetListener {
   }
 
   @Override
-  public void onTransitionKeySetEnd(String key) {
+  public void onTransitionKeySetStart(String key, View view) {
+    recursivelySetChildClipping(view, false);
+  }
+
+  @Override
+  public void onTransitionKeySetStop(String key, View view) {
+    recursivelySetChildClipping(view, true);
+  }
+
+  @Override
+  public void onTransitionKeySetEnd(String key, View view) {
+    recursivelySetChildClipping(view, true);
     mRunningTransitions.remove(key);
   }
 
@@ -163,5 +175,20 @@ class TransitionManager implements TransitionKeySetListener {
     mKeysStatus.clear();
     mTransitions.clear();
     mRunningTransitions.clear();
+  }
+
+  /**
+   * Set the clipChildren properties to all Views in the same tree branch from the given one, up to
+   * the top ComponentView.
+   */
+  private void recursivelySetChildClipping(View view, boolean clipChildren) {
+    if (view instanceof ComponentHost) {
+      ((ComponentHost) view).setClipChildren(clipChildren);
+    }
+
+    final ViewParent parent = view.getParent();
+    if (parent instanceof ComponentHost) {
+      recursivelySetChildClipping((View) parent, clipChildren);
+    }
   }
 }
