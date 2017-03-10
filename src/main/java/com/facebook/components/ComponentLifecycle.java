@@ -194,9 +194,6 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     final boolean deferNestedTreeResolution =
         Component.isNestedTree(component) && !resolveNestedTree;
 
-    final Component<?> previousComponentScope = context.getLocalScope();
-    context.setLocalScope(component);
-
     final TreeProps parentTreeProps = context.getTreeProps();
     populateTreeProps(component, parentTreeProps);
     context.setTreeProps(getTreePropsForChildren(context, component, parentTreeProps));
@@ -217,8 +214,6 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     }
 
     ComponentsSystrace.endSection();
-
-    context.setLocalScope(previousComponentScope);
 
     if (node == null) {
       return ComponentContext.NULL_LAYOUT;

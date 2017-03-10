@@ -25,7 +25,6 @@ public class ComponentContext extends ContextWrapper {
   private final StateHandler mStateHandler;
 
   // Hold a reference to the component which scope we are currently within.
-  private @ThreadConfined(ThreadConfined.ANY) Component<?> mLocalScope;
   private @ThreadConfined(ThreadConfined.ANY) Component<?> mComponentScope;
   private @ThreadConfined(ThreadConfined.ANY) ResourceCache mResourceCache;
   private @ThreadConfined(ThreadConfined.ANY) int mWidthSpec;
@@ -78,7 +77,6 @@ public class ComponentContext extends ContextWrapper {
     final boolean transferStateHandler = (componentContext != null && stateHandler == null);
 
     if (componentContext != null) {
-      mLocalScope = componentContext.mLocalScope;
       mTreeProps = componentContext.mTreeProps;
       mResourceCache = componentContext.mResourceCache;
       mWidthSpec = componentContext.mWidthSpec;
@@ -181,14 +179,6 @@ public class ComponentContext extends ContextWrapper {
     return mLogger;
   }
 
-  Component<?> getLocalScope() {
-    return mLocalScope;
-  }
-
-  void setLocalScope(Component<?> componentScope) {
-    mLocalScope = componentScope;
-  }
-
   ComponentTree getComponentTree() {
     return mComponentTree;
   }
@@ -206,11 +196,11 @@ public class ComponentContext extends ContextWrapper {
   }
 
   EventHandler newEventHandler(int id) {
-    return new EventHandler(mLocalScope, id);
+    return new EventHandler(mComponentScope, id);
   }
 
   <E> EventHandler<E> newEventHandler(int id, Object[] params) {
-    return new EventHandler<E>(mLocalScope, id, params);
+    return new EventHandler<E>(mComponentScope, id, params);
   }
 
   ComponentLayout.ContainerBuilder newLayoutBuilder(ComponentContext c) {
