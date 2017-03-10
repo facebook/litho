@@ -8,5 +8,7 @@ android_library(
     ],
     deps = [
         COMPONENTS_SOLOADER_TARGET,
+        COMPONENTS_OSS_TARGET,
+        COMPONENTS_WIDGET_TARGET,
     ],
 )
