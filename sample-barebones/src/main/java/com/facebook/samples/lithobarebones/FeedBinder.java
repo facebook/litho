@@ -2,6 +2,7 @@
 
 package com.facebook.samples.lithobarebones;
 
+import android.graphics.Color;
 import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 
@@ -23,6 +24,8 @@ public class FeedBinder extends LinearComponentBinder {
   @Override
   public Component<?> createComponent(ComponentContext c, int position) {
     return FeedItem.create(c)
+        .color(position % 2 == 0 ? Color.WHITE : Color.LTGRAY)
+        .message("Hello, world!")
         .build();
   }
 }
