@@ -2,6 +2,7 @@
 
 package com.facebook.components;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,6 +19,14 @@ public class TransitionSet extends Transition {
   TransitionSet(Transition... transitions) {
     super(null, TransitionType.UNDEFINED);
     mTransitions = Arrays.asList(transitions);
+  }
+
+  TransitionSet(Transition.Builder... transitionBuilders) {
+    super(null, TransitionType.UNDEFINED);
+    mTransitions = new ArrayList<>();
+    for (int i = 0, size = transitionBuilders.length; i < size; i++) {
+      mTransitions.add(transitionBuilders[i].build());
+    }
   }
 
   int size() {

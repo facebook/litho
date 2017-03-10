@@ -92,6 +92,14 @@ public class Transition {
     return new TransitionSet(transitions);
   }
 
+  public static TransitionSet createSet(Transition.Builder ... transitionBuilders) {
+    if (transitionBuilders == null || transitionBuilders.length == 0) {
+      throw new IllegalArgumentException("You need to define at least a transition within a Set");
+    }
+
+    return new TransitionSet(transitionBuilders);
+  }
+
   String getKey() {
     return mKey;
   }
