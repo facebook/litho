@@ -1,0 +1,12 @@
+include_defs("//COMPONENTS_DEFS")
+
+android_library(
+    name = "lithobarebones",
+    srcs = glob(["**/*.java"]),
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        COMPONENTS_SOLOADER_TARGET,
+    ],
+)
