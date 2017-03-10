@@ -3,12 +3,15 @@ include_defs("//COMPONENTS_DEFS")
 android_library(
     name = "lithobarebones",
     srcs = glob(["**/*.java"]),
+    plugins = [
+        COMPONENTS_PROCESSOR_TARGET,
+    ],
     visibility = [
         "PUBLIC",
     ],
     deps = [
-        COMPONENTS_SOLOADER_TARGET,
         COMPONENTS_OSS_TARGET,
         COMPONENTS_WIDGET_TARGET,
+        COMPONENTS_SOLOADER_TARGET,
     ],
 )
