@@ -5,9 +5,10 @@ package com.facebook.samples.lithobarebones;
 import android.app.Activity;
 import android.os.Bundle;
 
-import com.facebook.components.ComponentView;
 import com.facebook.components.ComponentContext;
 import com.facebook.components.ComponentTree;
+import com.facebook.components.ComponentView;
+import com.facebook.components.widget.Recycler;
 import com.facebook.components.widget.Text;
 
 public class SampleActivity extends Activity {
@@ -20,7 +21,8 @@ public class SampleActivity extends Activity {
 
     final ComponentTree componentTree = ComponentTree.create(
         context,
-        FeedItem.create(context))
+        Recycler.create(context)
+                    .binder(new FeedBinder(context)))
             .build();
 
     componentView.setComponent(componentTree);
