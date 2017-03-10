@@ -78,6 +78,21 @@ class ComponentHostUtils {
   }
 
   /**
+   * Remove the item at given {@param index}. The item is removed from {@param scrapItems} if the
+   * item exists there at given index, otherwise it is removed from {@param items}.
+   */
+  static <T> void removeItem(
+      int index,
+      SparseArrayCompat<T> items,
+      SparseArrayCompat<T> scrapItems) {
+    if (existsScrapItemAt(index, scrapItems)) {
+      scrapItems.remove(index);
+    } else {
+      items.remove(index);
+    }
+  }
+
+  /**
    * Mounts a drawable into a view.
    * @param view view into which the drawable should be mounted
    * @param drawable drawable to be mounted
@@ -159,5 +174,21 @@ class ComponentHostUtils {
     if (mountItem.isAccessible()) {
       mountItem.getHost().invalidateAccessibilityState();
     }
+  }
+
+  /**
+   * Check whether {@param targetHost} is an ancestor of given {@param host} in the layout tree
+   */
+  static boolean hasAncestorHost(ComponentHost host, ComponentHost targetHost) {
+    if (host == null) {
+      return false;
+    }
+    if (host == targetHost) {
+      return true;
+    }
+    if (!(host.getParent() instanceof ComponentHost)) {
+      return false;
+    }
+    return hasAncestorHost((ComponentHost) host.getParent(), targetHost);
   }
 }

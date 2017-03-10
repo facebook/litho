@@ -132,6 +132,11 @@ public class ComponentHost extends ViewGroup {
     maybeInvalidateAccessibilityState(mountItem);
   }
 
+  void unmount(MountItem item) {
+    final int index = mMountItems.keyAt(mMountItems.indexOfValue(item));
+    unmount(index, item);
+  }
+
   /**
    * Unmounts the given {@link MountItem} with unique index.
    * @param index index of the {@link MountItem}. Guaranteed to be the same index as was passed for
@@ -144,24 +149,12 @@ public class ComponentHost extends ViewGroup {
       unmountDrawable(index, mountItem);
     } else if (content instanceof View) {
       unmountView((View) content);
-
-      if (ComponentHostUtils.existsScrapItemAt(index, mScrapViewMountItemsArray)) {
-        mScrapViewMountItemsArray.remove(index);
-      } else {
-        mViewMountItems.remove(index);
-      }
-
+      ComponentHostUtils.removeItem(index, mViewMountItems, mScrapViewMountItemsArray);
       maybeUnregisterTouchExpansion(index, mountItem);
     }
 
-    if (ComponentHostUtils.existsScrapItemAt(index, mScrapMountItemsArray)) {
-      mScrapMountItemsArray.remove(index);
-    } else {
-      mMountItems.remove(index);
-    }
-
+    ComponentHostUtils.removeItem(index, mMountItems, mScrapMountItemsArray);
     releaseScrapDataStructuresIfNeeded();
-
     maybeInvalidateAccessibilityState(mountItem);
   }
 
