@@ -2,6 +2,7 @@ android_library(
     name = "eventhandler",
     srcs = glob(["*.java"]),
     visibility = [
+        "//instrumentation_tests/...",
         "//javatests/...",
     ],
     deps = [
