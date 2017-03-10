@@ -2,6 +2,7 @@
 
 package com.facebook.components;
 
+import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadSafe;
 
 /**
@@ -18,6 +19,7 @@ public class Output<T> {
     mT = t;
   }
 
+  @ReturnsOwnership
   public T get() {
     return mT;
   }
