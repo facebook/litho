@@ -116,11 +116,9 @@ class RecyclerSpec {
       @Prop Binder<RecyclerView> binder,
       @Prop(optional = true) final RecyclerEventsController recyclerEventsController,
       @Prop(optional = true) RecyclerView.OnScrollListener onScrollListener,
-      @Prop(optional = true) boolean isRefreshing,
       @FromPrepare OnRefreshListener onRefreshListener,
       Output<ItemAnimator> oldAnimator) {
 
-    recyclerViewWrapper.setRefreshing(isRefreshing);
     recyclerViewWrapper.setEnabled(onRefreshListener != null);
     recyclerViewWrapper.setOnRefreshListener(onRefreshListener);
 
@@ -146,7 +144,7 @@ class RecyclerSpec {
     binder.bind(recyclerView);
 
     if (recyclerEventsController != null) {
-      recyclerEventsController.setRecyclerView(recyclerView);
+      recyclerEventsController.setRecyclerViewWrapper(recyclerViewWrapper);
     }
 
     if (recyclerViewWrapper.hasBeenDetachedFromWindow()) {
@@ -176,7 +174,7 @@ class RecyclerSpec {
     binder.unbind(recyclerView);
 
     if (recyclerEventsController != null) {
-      recyclerEventsController.setRecyclerView(null);
+      recyclerEventsController.setRecyclerViewWrapper(null);
     }
 
 

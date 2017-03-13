@@ -10,7 +10,7 @@ import android.support.v7.widget.RecyclerView;
  */
 public class RecyclerEventsController {
 
-  private RecyclerView mRecyclerView;
+  private RecyclerViewWrapper mRecyclerViewWrapper;
 
   /**
    * Send the Recycler a request to scroll the content to the first item in the binder.
@@ -25,16 +25,22 @@ public class RecyclerEventsController {
    * @param animated if animated is set to true the scroll will happen with an animation.
    */
   public void requestScrollToPosition(int position, boolean animated) {
-    if (mRecyclerView != null) {
+    if (mRecyclerViewWrapper != null) {
       if (animated) {
-        mRecyclerView.smoothScrollToPosition(position);
+        mRecyclerViewWrapper.getRecyclerView().smoothScrollToPosition(position);
       } else {
-        mRecyclerView.scrollToPosition(position);
+        mRecyclerViewWrapper.getRecyclerView().scrollToPosition(position);
       }
     }
   }
 
-  void setRecyclerView(RecyclerView recyclerView) {
-    mRecyclerView = recyclerView;
+  public void clearRefreshing() {
+    if (mRecyclerViewWrapper != null) {
+      mRecyclerViewWrapper.setRefreshing(false);
+    }
+  }
+
+  void setRecyclerViewWrapper(RecyclerViewWrapper recyclerViewWrapper) {
+    mRecyclerViewWrapper = recyclerViewWrapper;
   }
 }
