@@ -25,14 +25,20 @@ import com.squareup.javapoet.TypeSpec;
  */
 @Immutable
 public class TypeSpecDataHolder {
+  private final ImmutableList<JavadocSpec> javadocSpecs;
   private final ImmutableList<FieldSpec> fieldSpecs;
   private final ImmutableList<MethodSpec> methodSpecs;
   private final ImmutableList<TypeSpec> typeSpecs;
 
   private TypeSpecDataHolder(TypeSpecDataHolder.Builder builder) {
+    this.javadocSpecs = ImmutableList.copyOf(builder.javadocSpecs);
     this.fieldSpecs = ImmutableList.copyOf(builder.fieldSpecs);
     this.methodSpecs = ImmutableList.copyOf(builder.methodSpecs);
     this.typeSpecs = ImmutableList.copyOf(builder.typeSpecs);
+  }
+
+  public ImmutableList<JavadocSpec> getJavadocSpecs() {
+    return javadocSpecs;
   }
 
   public ImmutableList<FieldSpec> getFieldSpecs() {
@@ -52,17 +58,33 @@ public class TypeSpecDataHolder {
   }
 
   public void addToTypeSpec(TypeSpec.Builder typeSpec) {
+    for (JavadocSpec javadocSpec : javadocSpecs) {
+      typeSpec.addJavadoc(javadocSpec.format, javadocSpec.args);
+    }
     typeSpec.addFields(fieldSpecs);
     typeSpec.addMethods(methodSpecs);
     typeSpec.addTypes(typeSpecs);
   }
 
   public static final class Builder {
+    private final List<JavadocSpec> javadocSpecs = new ArrayList<>();
     private final List<FieldSpec> fieldSpecs = new ArrayList<>();
     private final List<MethodSpec> methodSpecs = new ArrayList<>();
     private final List<TypeSpec> typeSpecs = new ArrayList<>();
 
     private Builder() {
+    }
+
+    public TypeSpecDataHolder.Builder addJavadoc(JavadocSpec javadocSpec) {
+      javadocSpecs.add(javadocSpec);
+      return this;
+    }
+
+    public TypeSpecDataHolder.Builder addJavadocs(Iterable<JavadocSpec> javadocSpecs) {
+      for (JavadocSpec javadocSpec : javadocSpecs) {
+        addJavadoc(javadocSpec);
+      }
+      return this;
     }
 
     public TypeSpecDataHolder.Builder addFields(Iterable<FieldSpec> fieldSpecs) {
@@ -110,6 +132,7 @@ public class TypeSpecDataHolder {
     }
 
     public TypeSpecDataHolder.Builder addTypeSpecDataHolder(TypeSpecDataHolder typeSpecDataHolder) {
+      addJavadocs(typeSpecDataHolder.javadocSpecs);
       addFields(typeSpecDataHolder.fieldSpecs);
       addMethods(typeSpecDataHolder.methodSpecs);
       addTypes(typeSpecDataHolder.typeSpecs);
@@ -118,6 +141,16 @@ public class TypeSpecDataHolder {
 
     public TypeSpecDataHolder build() {
       return new TypeSpecDataHolder(this);
+    }
+  }
+
+  public static class JavadocSpec {
+    public final String format;
+    public final Object[] args;
+
+    public JavadocSpec(String format, Object... args) {
+      this.format = format;
+      this.args = args;
     }
   }
 }
