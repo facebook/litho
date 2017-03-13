@@ -57,6 +57,8 @@ public class LayoutSpecModelFactory {
         ImmutableList.copyOf(TypeVariablesExtractor.getTypeVariables(element)),
         ImmutableList.copyOf(PropDefaultsExtractor.getPropDefaults(element)),
         EventDeclarationsExtractor.getEventDeclarations(elements, element),
+        JavadocExtractor.getClassJavadoc(elements, element),
+        JavadocExtractor.getPropJavadocs(elements, element),
         dependencyInjectionGenerator,
         element.getAnnotation(LayoutSpec.class).isPureRender(),
         element);

@@ -86,6 +86,16 @@ public interface SpecModel {
   ImmutableList<EventDeclarationModel> getEventDeclarations();
 
   /**
+   * @return the javadoc for this spec.
+   */
+  String getClassJavadoc();
+
+  /**
+   * @return the javadoc for the props defined by the spec.
+   */
+  ImmutableList<PropJavadocModel> getPropJavadocs();
+
+  /**
    * @return the {@link ClassName} of the context that is used in the generated class.
    */
   ClassName getContextClass();

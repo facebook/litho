@@ -26,6 +26,8 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
       ImmutableList<TypeVariableName> typeVariables,
       ImmutableList<PropDefaultModel> propDefaults,
       ImmutableList<EventDeclarationModel> eventDeclarations,
+      String classJavadoc,
+      ImmutableList<PropJavadocModel> propJavadocs,
       DependencyInjectionGenerator dependencyInjectionGenerator,
       boolean isPureRender,
       Object representedObject) {
@@ -38,6 +40,8 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
             .typeVariables(typeVariables)
             .propDefaults(propDefaults)
             .eventDeclarations(eventDeclarations)
+            .classJavadoc(classJavadoc)
+            .propJavadocs(propJavadocs)
             .dependencyInjectionGenerator(dependencyInjectionGenerator)
             .representedObject(representedObject)
             .build();
@@ -113,6 +117,16 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
   @Override
   public ImmutableList<EventDeclarationModel> getEventDeclarations() {
     return mSpecModel.getEventDeclarations();
+  }
+
+  @Override
+  public String getClassJavadoc() {
+    return mSpecModel.getClassJavadoc();
+  }
+
+  @Override
+  public ImmutableList<PropJavadocModel> getPropJavadocs() {
+    return mSpecModel.getPropJavadocs();
   }
 
   @Override

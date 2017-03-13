@@ -36,6 +36,8 @@ public final class SpecModelImpl implements SpecModel {
   private final ImmutableList<InterStageInputParamModel> mInterStageInputs;
   private final ImmutableList<TreePropModel> mTreeProps;
   private final ImmutableList<EventDeclarationModel> mEventDeclarations;
+  private final String mClassJavadoc;
+  private final ImmutableList<PropJavadocModel> mPropJavadocs;
   private final boolean mHasInjectedDependencies;
   @Nullable private final DependencyInjectionGenerator mDependencyInjectionGenerator;
   private final Object mRepresentedObject;
@@ -48,6 +50,8 @@ public final class SpecModelImpl implements SpecModel {
       ImmutableList<TypeVariableName> typeVariables,
       ImmutableList<PropDefaultModel> propDefaults,
       ImmutableList<EventDeclarationModel> eventDeclarations,
+      String classJavadoc,
+      ImmutableList<PropJavadocModel> propJavadocs,
       @Nullable DependencyInjectionGenerator dependencyInjectionGenerator,
       Object representedObject) {
     mSpecName = getSpecName(qualifiedSpecClassName);
@@ -64,6 +68,8 @@ public final class SpecModelImpl implements SpecModel {
     mInterStageInputs = getInterStageInputs(delegateMethods, eventMethods, updateStateMethods);
     mTreeProps = getTreeProps(delegateMethods, eventMethods, updateStateMethods);
     mEventDeclarations = eventDeclarations;
+    mClassJavadoc = classJavadoc;
+    mPropJavadocs = propJavadocs;
     mHasInjectedDependencies = dependencyInjectionGenerator != null;
     mDependencyInjectionGenerator = dependencyInjectionGenerator;
     mRepresentedObject = representedObject;
@@ -137,6 +143,16 @@ public final class SpecModelImpl implements SpecModel {
   @Override
   public ImmutableList<EventDeclarationModel> getEventDeclarations() {
     return mEventDeclarations;
+  }
+
+  @Override
+  public String getClassJavadoc() {
+    return mClassJavadoc;
+  }
+
+  @Override
+  public ImmutableList<PropJavadocModel> getPropJavadocs() {
+    return mPropJavadocs;
   }
 
   @Override
@@ -340,6 +356,8 @@ public final class SpecModelImpl implements SpecModel {
     private ImmutableList<TypeVariableName> mTypeVariableNames;
     private ImmutableList<PropDefaultModel> mPropDefaultModels;
     private ImmutableList<EventDeclarationModel> mEventDeclarations;
+    private String mClassJavadoc;
+    private ImmutableList<PropJavadocModel> mPropJavadocs;
     @Nullable private DependencyInjectionGenerator mDependencyInjectionGenerator;
     private Object mRepresentedObject;
 
@@ -382,6 +400,16 @@ public final class SpecModelImpl implements SpecModel {
       return this;
     }
 
+    public Builder classJavadoc(String classJavadoc) {
+      mClassJavadoc = classJavadoc;
+      return this;
+    }
+
+    public Builder propJavadocs(ImmutableList<PropJavadocModel> propJavadocs) {
+      mPropJavadocs = propJavadocs;
+      return this;
+    }
+
     public Builder dependencyInjectionGenerator(
         @Nullable DependencyInjectionGenerator dependencyInjectionGenerator) {
       mDependencyInjectionGenerator = dependencyInjectionGenerator;
@@ -405,6 +433,8 @@ public final class SpecModelImpl implements SpecModel {
           mTypeVariableNames,
           mPropDefaultModels,
           mEventDeclarations,
+          mClassJavadoc,
+          mPropJavadocs,
           mDependencyInjectionGenerator,
           mRepresentedObject);
     }
