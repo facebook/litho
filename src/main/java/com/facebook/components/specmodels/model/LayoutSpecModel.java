@@ -2,11 +2,23 @@
 
 package com.facebook.components.specmodels.model;
 
+import javax.lang.model.element.Modifier;
+
 import java.util.List;
 
 import com.facebook.common.internal.ImmutableList;
 import com.facebook.components.annotations.OnCreateLayoutWithSizeSpec;
-import com.facebook.components.specmodels.generator.LayoutSpecGenerator;
+import com.facebook.components.specmodels.generator.BuilderGenerator;
+import com.facebook.components.specmodels.generator.CanMeasureGenerator;
+import com.facebook.components.specmodels.generator.ComponentImplGenerator;
+import com.facebook.components.specmodels.generator.DelegateMethodGenerator;
+import com.facebook.components.specmodels.generator.EventGenerator;
+import com.facebook.components.specmodels.generator.JavadocGenerator;
+import com.facebook.components.specmodels.generator.PreambleGenerator;
+import com.facebook.components.specmodels.generator.PureRenderGenerator;
+import com.facebook.components.specmodels.generator.StateGenerator;
+import com.facebook.components.specmodels.generator.TreePropGenerator;
+import com.facebook.components.specmodels.generator.TypeSpecDataHolder;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
@@ -192,7 +204,37 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
 
   @Override
   public TypeSpec generate() {
-    return LayoutSpecGenerator.generate(this);
+    final TypeSpec.Builder typeSpec =
+        TypeSpec.classBuilder(getComponentName())
+            .superclass(ClassNames.COMPONENT_LIFECYCLE)
+            .addTypeVariables(getTypeVariables())
+            .addModifiers(Modifier.FINAL);
+
+    if (isPublic()) {
+      typeSpec.addModifiers(Modifier.PUBLIC);
+    }
+
+    if (hasInjectedDependencies()) {
+      getDependencyInjectionHelper().generate(this).addToTypeSpec(typeSpec);
+    }
+
+    TypeSpecDataHolder.newBuilder()
+        .addTypeSpecDataHolder(JavadocGenerator.generate(this))
+        .addTypeSpecDataHolder(PreambleGenerator.generate(this))
+        .addTypeSpecDataHolder(ComponentImplGenerator.generate(this))
+        .addTypeSpecDataHolder(TreePropGenerator.generate(this))
+        .addTypeSpecDataHolder(DelegateMethodGenerator.generateDelegates(
+            this,
+            LayoutSpecDelegateMethodDescriptions.DELEGATE_METHODS_MAP))
+        .addTypeSpecDataHolder(CanMeasureGenerator.generate(this))
+        .addTypeSpecDataHolder(PureRenderGenerator.generate(this))
+        .addTypeSpecDataHolder(EventGenerator.generate(this))
+        .addTypeSpecDataHolder(StateGenerator.generate(this))
+        .addTypeSpecDataHolder(BuilderGenerator.generate(this))
+        .build()
+        .addToTypeSpec(typeSpec);
+
+    return typeSpec.build();
   }
 
   @Override
