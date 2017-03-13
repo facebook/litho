@@ -11,6 +11,7 @@ import java.util.List;
 
 import com.facebook.common.internal.ImmutableList;
 
+import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
@@ -27,12 +28,14 @@ import com.squareup.javapoet.TypeSpec;
 @Immutable
 public class TypeSpecDataHolder {
   private final ImmutableList<JavadocSpec> javadocSpecs;
+  private final ImmutableList<AnnotationSpec> annotationSpecs;
   private final ImmutableList<FieldSpec> fieldSpecs;
   private final ImmutableList<MethodSpec> methodSpecs;
   private final ImmutableList<TypeSpec> typeSpecs;
 
   private TypeSpecDataHolder(TypeSpecDataHolder.Builder builder) {
     this.javadocSpecs = ImmutableList.copyOf(builder.javadocSpecs);
+    this.annotationSpecs = ImmutableList.copyOf(builder.annotationSpecs);
     this.fieldSpecs = ImmutableList.copyOf(builder.fieldSpecs);
     this.methodSpecs = ImmutableList.copyOf(builder.methodSpecs);
     this.typeSpecs = ImmutableList.copyOf(builder.typeSpecs);
@@ -40,6 +43,10 @@ public class TypeSpecDataHolder {
 
   public ImmutableList<JavadocSpec> getJavadocSpecs() {
     return javadocSpecs;
+  }
+
+  public ImmutableList<AnnotationSpec> getAnnotationSpecs() {
+    return annotationSpecs;
   }
 
   public ImmutableList<FieldSpec> getFieldSpecs() {
@@ -62,6 +69,7 @@ public class TypeSpecDataHolder {
     for (JavadocSpec javadocSpec : javadocSpecs) {
       typeSpec.addJavadoc(javadocSpec.format, javadocSpec.args);
     }
+    typeSpec.addAnnotations(annotationSpecs);
     typeSpec.addFields(fieldSpecs);
     typeSpec.addMethods(methodSpecs);
     typeSpec.addTypes(typeSpecs);
@@ -69,6 +77,7 @@ public class TypeSpecDataHolder {
 
   public static final class Builder {
     private final List<JavadocSpec> javadocSpecs = new ArrayList<>();
+    private final List<AnnotationSpec> annotationSpecs = new ArrayList<>();
     private final List<FieldSpec> fieldSpecs = new ArrayList<>();
     private final List<MethodSpec> methodSpecs = new ArrayList<>();
     private final List<TypeSpec> typeSpecs = new ArrayList<>();
@@ -84,6 +93,18 @@ public class TypeSpecDataHolder {
     public TypeSpecDataHolder.Builder addJavadocs(Iterable<JavadocSpec> javadocSpecs) {
       for (JavadocSpec javadocSpec : javadocSpecs) {
         addJavadoc(javadocSpec);
+      }
+      return this;
+    }
+
+    public TypeSpecDataHolder.Builder addAnnotation(AnnotationSpec annotationSpec) {
+      annotationSpecs.add(annotationSpec);
+      return this;
+    }
+
+    public TypeSpecDataHolder.Builder addAnnotations(Iterable<AnnotationSpec> annotationSpecs) {
+      for (AnnotationSpec annotationSpec : annotationSpecs) {
+        addAnnotation(annotationSpec);
       }
       return this;
     }
@@ -134,6 +155,7 @@ public class TypeSpecDataHolder {
 
     public TypeSpecDataHolder.Builder addTypeSpecDataHolder(TypeSpecDataHolder typeSpecDataHolder) {
       addJavadocs(typeSpecDataHolder.javadocSpecs);
+      addAnnotations(typeSpecDataHolder.annotationSpecs);
       addFields(typeSpecDataHolder.fieldSpecs);
       addMethods(typeSpecDataHolder.methodSpecs);
       addTypes(typeSpecDataHolder.typeSpecs);
