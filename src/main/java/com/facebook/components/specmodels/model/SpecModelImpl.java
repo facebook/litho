@@ -191,11 +191,6 @@ public final class SpecModelImpl implements SpecModel {
   }
 
   @Override
-  public boolean canMeasure() {
-    throw new RuntimeException("Don't delegate to this method!");
-  }
-
-  @Override
   public boolean hasInjectedDependencies() {
     return mHasInjectedDependencies;
   }

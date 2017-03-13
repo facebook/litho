@@ -10,6 +10,7 @@ import java.lang.annotation.Annotation;
 import com.facebook.common.internal.ImmutableList;
 
 import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 
 /**
@@ -42,6 +43,7 @@ public final class DelegateMethodDescription {
   public final String name;
   public final ImmutableList<TypeName> definedParameterTypes;
   public final ImmutableList<OptionalParameterType> optionalParameterTypes;
+  public final ImmutableList<MethodSpec> extraMethods;
   public final ImmutableList<TypeName> exceptions;
 
   private DelegateMethodDescription(Builder builder) {
@@ -51,6 +53,7 @@ public final class DelegateMethodDescription {
     name = builder.name;
     definedParameterTypes = builder.definedParameterTypes;
     optionalParameterTypes = builder.optionalParameterTypes;
+    extraMethods = builder.extraMethods;
     exceptions = builder.exceptions;
   }
 
@@ -65,6 +68,7 @@ public final class DelegateMethodDescription {
     private String name;
     private ImmutableList<TypeName> definedParameterTypes;
     private ImmutableList<OptionalParameterType> optionalParameterTypes;
+    private ImmutableList<MethodSpec> extraMethods;
     private ImmutableList<TypeName> exceptions;
 
     private Builder() {
@@ -98,6 +102,14 @@ public final class DelegateMethodDescription {
     public Builder optionalParameterTypes(
         ImmutableList<OptionalParameterType> optionalParameterTypes) {
       this.optionalParameterTypes = optionalParameterTypes;
+      return this;
+    }
+
+    /**
+     * A list of extra methods that should be generate when this method description is used.
+     */
+    public Builder extraMethods(ImmutableList<MethodSpec> extraMethods) {
+      this.extraMethods = extraMethods;
       return this;
     }
 
@@ -138,6 +150,10 @@ public final class DelegateMethodDescription {
 
       if (definedParameterTypes == null) {
         definedParameterTypes = ImmutableList.of();
+      }
+
+      if (extraMethods == null) {
+        extraMethods = ImmutableList.of();
       }
 
       if (exceptions == null) {

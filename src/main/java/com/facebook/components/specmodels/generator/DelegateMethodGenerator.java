@@ -42,11 +42,16 @@ public class DelegateMethodGenerator {
     for (DelegateMethodModel delegateMethodModel : specModel.getDelegateMethods()) {
       for (Annotation annotation : delegateMethodModel.annotations) {
         if (delegateMethodsMap.containsKey(annotation.annotationType())) {
+          final DelegateMethodDescription delegateMethodDescription =
+              delegateMethodsMap.get(annotation.annotationType());
           typeSpecDataHolder.addMethod(
               generateDelegate(
                   specModel,
-                  delegateMethodsMap.get(annotation.annotationType()),
+                  delegateMethodDescription,
                   delegateMethodModel));
+          for (MethodSpec methodSpec : delegateMethodDescription.extraMethods) {
+            typeSpecDataHolder.addMethod(methodSpec);
+          }
           break;
         }
       }

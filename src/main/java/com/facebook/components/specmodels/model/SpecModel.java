@@ -129,12 +129,6 @@ public interface SpecModel {
   boolean isStylingSupported();
 
   /**
-   * @return true if this component is able to measure itself using specific size constraints,
-   * false otherwise.
-   */
-  boolean canMeasure();
-
-  /**
    * @return whether this spec uses dependency injection.
    */
   boolean hasInjectedDependencies();

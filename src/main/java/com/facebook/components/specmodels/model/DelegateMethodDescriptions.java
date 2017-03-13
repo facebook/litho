@@ -17,6 +17,7 @@ import com.facebook.components.annotations.OnLayoutTransition;
 import com.facebook.components.annotations.OnLoadStyle;
 
 import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 
 import static com.facebook.components.specmodels.model.DelegateMethodDescription.OptionalParameterType.INTER_STAGE_OUTPUT;
@@ -63,6 +64,13 @@ public final class DelegateMethodDescriptions {
           .definedParameterTypes(
               ImmutableList.of(ClassNames.COMPONENT_CONTEXT, TypeName.INT, TypeName.INT))
           .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE, INTER_STAGE_OUTPUT))
+          .extraMethods(
+              ImmutableList.of(MethodSpec.methodBuilder("canMeasure")
+                  .addAnnotation(Override.class)
+                  .addModifiers(Modifier.PROTECTED)
+                  .returns(TypeName.BOOLEAN)
+                  .addStatement("return true")
+                  .build()))
           .build();
 
   public static final DelegateMethodDescription ON_CREATE_INITIAL_STATE =

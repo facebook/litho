@@ -9,7 +9,6 @@ import java.util.List;
 import com.facebook.common.internal.ImmutableList;
 import com.facebook.components.annotations.OnCreateLayoutWithSizeSpec;
 import com.facebook.components.specmodels.generator.BuilderGenerator;
-import com.facebook.components.specmodels.generator.CanMeasureGenerator;
 import com.facebook.components.specmodels.generator.ComponentImplGenerator;
 import com.facebook.components.specmodels.generator.DelegateMethodGenerator;
 import com.facebook.components.specmodels.generator.EventGenerator;
@@ -31,7 +30,6 @@ import com.squareup.javapoet.TypeVariableName;
  */
 public class LayoutSpecModel implements SpecModel, HasPureRender {
   private final SpecModelImpl mSpecModel;
-  private final boolean mCanMeasure;
   private final boolean mIsPureRender;
 
   public LayoutSpecModel(
@@ -63,7 +61,6 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
             .dependencyInjectionGenerator(dependencyInjectionHelper)
             .representedObject(representedObject)
             .build();
-    mCanMeasure = canMeasure(mSpecModel);
     mIsPureRender = isPureRender;
   }
 
@@ -178,11 +175,6 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
-  public boolean canMeasure() {
-    return mCanMeasure;
-  }
-
-  @Override
   public boolean hasInjectedDependencies() {
     return mSpecModel.hasInjectedDependencies();
   }
@@ -227,7 +219,6 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
         .addTypeSpecDataHolder(DelegateMethodGenerator.generateDelegates(
             this,
             DelegateMethodDescriptions.LAYOUT_SPEC_DELEGATE_METHODS_MAP))
-        .addTypeSpecDataHolder(CanMeasureGenerator.generate(this))
         .addTypeSpecDataHolder(PureRenderGenerator.generate(this))
         .addTypeSpecDataHolder(EventGenerator.generate(this))
         .addTypeSpecDataHolder(StateGenerator.generate(this))
@@ -241,11 +232,5 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
   @Override
   public boolean isPureRender() {
     return mIsPureRender;
-  }
-
-  private static boolean canMeasure(SpecModel specModel) {
-    return SpecModelUtils.getMethodModelWithAnnotation(
-        specModel,
-        OnCreateLayoutWithSizeSpec.class) != null;
   }
 }
