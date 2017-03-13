@@ -2,11 +2,15 @@
 
 package com.facebook.components.specmodels.model;
 
+import java.util.List;
+
 import com.facebook.common.internal.ImmutableList;
 import com.facebook.components.annotations.OnCreateLayoutWithSizeSpec;
+import com.facebook.components.specmodels.generator.LayoutSpecGenerator;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 
 /**
@@ -179,6 +183,16 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
   @Override
   public Object getRepresentedObject() {
     return mSpecModel.getRepresentedObject();
+  }
+
+  @Override
+  public List<SpecModelValidationError> validate() {
+    return SpecModelValidation.validateLayoutSpecModel(this);
+  }
+
+  @Override
+  public TypeSpec generate() {
+    return LayoutSpecGenerator.generate(this);
   }
 
   @Override

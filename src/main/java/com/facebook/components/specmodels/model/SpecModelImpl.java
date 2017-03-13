@@ -7,12 +7,14 @@ import javax.annotation.concurrent.Immutable;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.facebook.common.internal.ImmutableList;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 
 /**
@@ -207,6 +209,16 @@ public final class SpecModelImpl implements SpecModel {
   @Override
   public Object getRepresentedObject() {
     return mRepresentedObject;
+  }
+
+  @Override
+  public List<SpecModelValidationError> validate() {
+    throw new RuntimeException("Don't delegate to this method!");
+  }
+
+  @Override
+  public TypeSpec generate() {
+    throw new RuntimeException("Don't delegate to this method!");
   }
 
   private static String getSpecName(String qualifiedSpecClassName) {
