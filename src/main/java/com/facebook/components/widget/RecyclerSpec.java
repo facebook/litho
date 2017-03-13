@@ -60,7 +60,7 @@ class RecyclerSpec {
 
   @OnCreateMountContent
   static RecyclerViewWrapper onCreateMountContent(ComponentContext c) {
-    return new RecyclerViewWrapper(c);
+    return new RecyclerViewWrapper(c, new RecyclerView(c));
   }
 
   @OnPrepare

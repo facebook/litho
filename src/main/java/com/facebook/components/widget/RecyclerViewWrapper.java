@@ -19,24 +19,18 @@ import com.facebook.components.ComponentView;
  */
 public class RecyclerViewWrapper extends SwipeRefreshLayout {
 
-  private ComponentView mStickyHeader;
-  private RecyclerView mRecyclerView;
+  private final ComponentView mStickyHeader;
+  private final RecyclerView mRecyclerView;
   /**
    * Indicates whether {@link RecyclerView} has been detached. In such case we need to make sure
    * to relayout its children eventually.
    */
   private boolean mHasBeenDetachedFromWindow = false;
 
-  public RecyclerViewWrapper(Context context) {
+  public RecyclerViewWrapper(Context context, RecyclerView recyclerView) {
     super(context);
 
-    mRecyclerView = new RecyclerView(context) {
-      @Override
-      protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        mHasBeenDetachedFromWindow = true;
-      }
-    };
+    mRecyclerView = recyclerView;
 
     // We need to draw first visible item on top of other children to support sticky headers
     mRecyclerView.setChildDrawingOrderCallback(new RecyclerView.ChildDrawingOrderCallback() {
@@ -114,6 +108,12 @@ public class RecyclerViewWrapper extends SwipeRefreshLayout {
       return (RecyclerViewWrapper) recyclerView.getParent();
     }
     return null;
+  }
+
+  @Override
+  protected void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+    mHasBeenDetachedFromWindow = true;
   }
 
   /**
