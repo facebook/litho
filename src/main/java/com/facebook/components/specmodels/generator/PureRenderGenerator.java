@@ -105,7 +105,7 @@ public class PureRenderGenerator {
         DELEGATE_FIELD_NAME +
             (!specModel.hasInjectedDependencies() ?
                 "" :
-                specModel.getDependencyInjectionGenerator()
+                specModel.getDependencyInjectionHelper()
                     .getSourceDelegateAccessorMethod(specModel)),
         methodModel.name,
         delegateParameters.build());

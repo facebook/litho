@@ -93,7 +93,7 @@ public class DelegateMethodGenerator {
     final String sourceDelegateAccessor = DELEGATE_FIELD_NAME +
         (!specModel.hasInjectedDependencies() ?
             "" :
-            specModel.getDependencyInjectionGenerator().getSourceDelegateAccessorMethod(specModel));
+            specModel.getDependencyInjectionHelper().getSourceDelegateAccessorMethod(specModel));
     if (methodDescription.returnType.equals(TypeName.VOID)) {
       delegation.add("$L.$L(\n", sourceDelegateAccessor, delegateMethod.name);
     } else {

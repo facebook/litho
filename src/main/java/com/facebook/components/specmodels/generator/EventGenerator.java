@@ -152,7 +152,7 @@ public class EventGenerator {
 
     final String sourceDelegateAccessor = DELEGATE_FIELD_NAME +
         (specModel.hasInjectedDependencies() ?
-            specModel.getDependencyInjectionGenerator().getSourceDelegateAccessorMethod(specModel) :
+            specModel.getDependencyInjectionHelper().getSourceDelegateAccessorMethod(specModel) :
             "");
     if (eventMethodModel.returnType.equals(TypeName.VOID)) {
       delegation.add("$L.$L(\n", sourceDelegateAccessor, eventMethodModel.name);

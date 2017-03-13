@@ -243,7 +243,7 @@ public class StateGenerator {
 
     final String target = !specModel.hasInjectedDependencies() ?
         SPEC_INSTANCE_NAME + "." + DELEGATE_FIELD_NAME :
-        DELEGATE_FIELD_NAME + specModel.getDependencyInjectionGenerator().getSourceDelegateAccessorMethod(specModel);
+        DELEGATE_FIELD_NAME + specModel.getDependencyInjectionHelper().getSourceDelegateAccessorMethod(specModel);
 
     // Call the spec's update method.
     updateStateMethodBuilder.addStatement(

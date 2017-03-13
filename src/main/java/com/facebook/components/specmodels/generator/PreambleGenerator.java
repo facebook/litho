@@ -35,7 +35,7 @@ public class PreambleGenerator {
   static TypeSpecDataHolder generateSourceDelegate(SpecModel specModel) {
     final TypeName delegateTypeName =
         specModel.hasInjectedDependencies() ?
-            specModel.getDependencyInjectionGenerator().getSourceDelegateTypeName(specModel) :
+            specModel.getDependencyInjectionHelper().getSourceDelegateTypeName(specModel) :
             specModel.getSpecTypeName();
 
     final FieldSpec.Builder builder =
@@ -57,7 +57,7 @@ public class PreambleGenerator {
     final TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
     if (specModel.hasInjectedDependencies()) {
       typeSpecDataHolder.addMethod(
-          specModel.getDependencyInjectionGenerator().generateConstructor(specModel));
+          specModel.getDependencyInjectionHelper().generateConstructor(specModel));
     } else {
       typeSpecDataHolder.addMethod(
           MethodSpec.constructorBuilder()

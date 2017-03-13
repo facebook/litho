@@ -15,7 +15,7 @@ import com.facebook.components.annotations.FromCreateLayout;
 import com.facebook.components.annotations.LayoutSpec;
 import com.facebook.components.annotations.OnCreateTreeProp;
 import com.facebook.components.annotations.ShouldUpdate;
-import com.facebook.components.specmodels.model.DependencyInjectionGenerator;
+import com.facebook.components.specmodels.model.DependencyInjectionHelper;
 import com.facebook.components.specmodels.model.LayoutSpecDelegateMethodDescriptions;
 import com.facebook.components.specmodels.model.LayoutSpecModel;
 
@@ -37,12 +37,12 @@ public class LayoutSpecModelFactory {
 
   /**
    * Create a {@link LayoutSpecModel} from the given {@link TypeElement} and an optional
-   * {@link DependencyInjectionGenerator}.
+   * {@link DependencyInjectionHelper}.
    */
   public static LayoutSpecModel create(
       Elements elements,
       TypeElement element,
-      @Nullable DependencyInjectionGenerator dependencyInjectionGenerator) {
+      @Nullable DependencyInjectionHelper dependencyInjectionHelper) {
     return new LayoutSpecModel(
         element.getQualifiedName().toString(),
         DelegateMethodExtractor.getDelegateMethods(
@@ -59,7 +59,7 @@ public class LayoutSpecModelFactory {
         EventDeclarationsExtractor.getEventDeclarations(elements, element),
         JavadocExtractor.getClassJavadoc(elements, element),
         JavadocExtractor.getPropJavadocs(elements, element),
-        dependencyInjectionGenerator,
+        dependencyInjectionHelper,
         element.getAnnotation(LayoutSpec.class).isPureRender(),
         element);
   }

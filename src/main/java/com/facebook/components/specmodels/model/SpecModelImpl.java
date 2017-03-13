@@ -39,7 +39,7 @@ public final class SpecModelImpl implements SpecModel {
   private final String mClassJavadoc;
   private final ImmutableList<PropJavadocModel> mPropJavadocs;
   private final boolean mHasInjectedDependencies;
-  @Nullable private final DependencyInjectionGenerator mDependencyInjectionGenerator;
+  @Nullable private final DependencyInjectionHelper mDependencyInjectionHelper;
   private final Object mRepresentedObject;
 
   private SpecModelImpl(
@@ -52,7 +52,7 @@ public final class SpecModelImpl implements SpecModel {
       ImmutableList<EventDeclarationModel> eventDeclarations,
       String classJavadoc,
       ImmutableList<PropJavadocModel> propJavadocs,
-      @Nullable DependencyInjectionGenerator dependencyInjectionGenerator,
+      @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       Object representedObject) {
     mSpecName = getSpecName(qualifiedSpecClassName);
     mSpecTypeName = ClassName.bestGuess(qualifiedSpecClassName);
@@ -70,8 +70,8 @@ public final class SpecModelImpl implements SpecModel {
     mEventDeclarations = eventDeclarations;
     mClassJavadoc = classJavadoc;
     mPropJavadocs = propJavadocs;
-    mHasInjectedDependencies = dependencyInjectionGenerator != null;
-    mDependencyInjectionGenerator = dependencyInjectionGenerator;
+    mHasInjectedDependencies = dependencyInjectionHelper != null;
+    mDependencyInjectionHelper = dependencyInjectionHelper;
     mRepresentedObject = representedObject;
   }
 
@@ -192,8 +192,8 @@ public final class SpecModelImpl implements SpecModel {
 
   @Nullable
   @Override
-  public DependencyInjectionGenerator getDependencyInjectionGenerator() {
-    return mDependencyInjectionGenerator;
+  public DependencyInjectionHelper getDependencyInjectionHelper() {
+    return mDependencyInjectionHelper;
   }
 
   @Override
@@ -358,7 +358,7 @@ public final class SpecModelImpl implements SpecModel {
     private ImmutableList<EventDeclarationModel> mEventDeclarations;
     private String mClassJavadoc;
     private ImmutableList<PropJavadocModel> mPropJavadocs;
-    @Nullable private DependencyInjectionGenerator mDependencyInjectionGenerator;
+    @Nullable private DependencyInjectionHelper mDependencyInjectionHelper;
     private Object mRepresentedObject;
 
     private Builder() {
@@ -411,8 +411,8 @@ public final class SpecModelImpl implements SpecModel {
     }
 
     public Builder dependencyInjectionGenerator(
-        @Nullable DependencyInjectionGenerator dependencyInjectionGenerator) {
-      mDependencyInjectionGenerator = dependencyInjectionGenerator;
+        @Nullable DependencyInjectionHelper dependencyInjectionHelper) {
+      mDependencyInjectionHelper = dependencyInjectionHelper;
       return this;
     }
 
@@ -435,7 +435,7 @@ public final class SpecModelImpl implements SpecModel {
           mEventDeclarations,
           mClassJavadoc,
           mPropJavadocs,
-          mDependencyInjectionGenerator,
+          mDependencyInjectionHelper,
           mRepresentedObject);
     }
 

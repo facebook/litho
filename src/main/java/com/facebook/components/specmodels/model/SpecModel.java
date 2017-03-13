@@ -136,7 +136,7 @@ public interface SpecModel {
    * that should be used to generate the correct methods for dependency injection to work for
    * this component.
    */
-  DependencyInjectionGenerator getDependencyInjectionGenerator();
+  DependencyInjectionHelper getDependencyInjectionHelper();
 
   /**
    * @return the element that this model represents.

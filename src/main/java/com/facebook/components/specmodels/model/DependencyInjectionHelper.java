@@ -10,7 +10,7 @@ import com.squareup.javapoet.TypeSpec;
  * An interface for generating certain methods that are required in order for Dependency
  * Injection to work.
  */
-public interface DependencyInjectionGenerator {
+public interface DependencyInjectionHelper {
 
   /**
    * Generate the source delegate that should be used for the given {@link SpecModel}

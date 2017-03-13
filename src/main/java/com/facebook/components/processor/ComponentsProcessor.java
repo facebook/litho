@@ -18,7 +18,7 @@ import com.facebook.components.specmodels.generator.PureRenderGenerator;
 import com.facebook.components.specmodels.generator.StateGenerator;
 import com.facebook.components.specmodels.generator.TreePropGenerator;
 import com.facebook.components.specmodels.model.ClassNames;
-import com.facebook.components.specmodels.model.DependencyInjectionGenerator;
+import com.facebook.components.specmodels.model.DependencyInjectionHelper;
 import com.facebook.components.specmodels.model.LayoutSpecDelegateMethodDescriptions;
 import com.facebook.components.specmodels.model.LayoutSpecModel;
 import com.facebook.components.specmodels.model.SpecModel;
@@ -110,7 +110,7 @@ public class ComponentsProcessor extends AbstractComponentsProcessor {
   }
 
   @Override
-  protected DependencyInjectionGenerator getDependencyInjectionGenerator(TypeElement typeElement) {
+  protected DependencyInjectionHelper getDependencyInjectionGenerator(TypeElement typeElement) {
     return null;
   }
 

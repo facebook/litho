@@ -95,7 +95,7 @@ public class TreePropGenerator {
           DELEGATE_FIELD_NAME +
               (!specModel.hasInjectedDependencies() ?
                   "" :
-                  specModel.getDependencyInjectionGenerator()
+                  specModel.getDependencyInjectionHelper()
                       .getSourceDelegateAccessorMethod(specModel)),
           onCreateTreePropsMethod.name)
           .indent()

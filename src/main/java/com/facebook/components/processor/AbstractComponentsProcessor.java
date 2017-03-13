@@ -21,7 +21,7 @@ import com.facebook.components.annotations.LayoutSpec;
 import com.facebook.components.annotations.MountSpec;
 import com.facebook.components.annotations.ReferenceSpec;
 import com.facebook.components.specmodels.model.ClassNames;
-import com.facebook.components.specmodels.model.DependencyInjectionGenerator;
+import com.facebook.components.specmodels.model.DependencyInjectionHelper;
 import com.facebook.components.specmodels.model.LayoutSpecModel;
 import com.facebook.components.specmodels.model.SpecModelValidation;
 import com.facebook.components.specmodels.model.SpecModelValidationError;
@@ -101,7 +101,7 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
 
   abstract protected void generate(MountSpecHelper mountSpecHelper);
 
-  abstract protected DependencyInjectionGenerator getDependencyInjectionGenerator(
+  abstract protected DependencyInjectionHelper getDependencyInjectionGenerator(
       TypeElement typeElement);
 
   private LayoutSpecHelper createLayoutSpecHelper(TypeElement typeElement) {

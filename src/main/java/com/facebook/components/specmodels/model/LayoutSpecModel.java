@@ -28,7 +28,7 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
       ImmutableList<EventDeclarationModel> eventDeclarations,
       String classJavadoc,
       ImmutableList<PropJavadocModel> propJavadocs,
-      DependencyInjectionGenerator dependencyInjectionGenerator,
+      DependencyInjectionHelper dependencyInjectionHelper,
       boolean isPureRender,
       Object representedObject) {
     mSpecModel =
@@ -42,7 +42,7 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
             .eventDeclarations(eventDeclarations)
             .classJavadoc(classJavadoc)
             .propJavadocs(propJavadocs)
-            .dependencyInjectionGenerator(dependencyInjectionGenerator)
+            .dependencyInjectionGenerator(dependencyInjectionHelper)
             .representedObject(representedObject)
             .build();
     mCanMeasure = canMeasure(mSpecModel);
@@ -165,8 +165,8 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
-  public DependencyInjectionGenerator getDependencyInjectionGenerator() {
-    return mSpecModel.getDependencyInjectionGenerator();
+  public DependencyInjectionHelper getDependencyInjectionHelper() {
+    return mSpecModel.getDependencyInjectionHelper();
   }
 
   @Override
