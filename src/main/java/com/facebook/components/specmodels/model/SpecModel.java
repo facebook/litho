@@ -96,6 +96,11 @@ public interface SpecModel {
   ImmutableList<PropJavadocModel> getPropJavadocs();
 
   /**
+   * @return whether the generated class should be public or not.
+   */
+  boolean isPublic();
+
+  /**
    * @return the {@link ClassName} of the context that is used in the generated class.
    */
   ClassName getContextClass();

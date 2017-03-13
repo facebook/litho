@@ -38,6 +38,7 @@ public final class SpecModelImpl implements SpecModel {
   private final ImmutableList<EventDeclarationModel> mEventDeclarations;
   private final String mClassJavadoc;
   private final ImmutableList<PropJavadocModel> mPropJavadocs;
+  private final boolean mIsPublic;
   private final boolean mHasInjectedDependencies;
   @Nullable private final DependencyInjectionHelper mDependencyInjectionHelper;
   private final Object mRepresentedObject;
@@ -52,6 +53,7 @@ public final class SpecModelImpl implements SpecModel {
       ImmutableList<EventDeclarationModel> eventDeclarations,
       String classJavadoc,
       ImmutableList<PropJavadocModel> propJavadocs,
+      boolean isPublic,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       Object representedObject) {
     mSpecName = getSpecName(qualifiedSpecClassName);
@@ -70,6 +72,7 @@ public final class SpecModelImpl implements SpecModel {
     mEventDeclarations = eventDeclarations;
     mClassJavadoc = classJavadoc;
     mPropJavadocs = propJavadocs;
+    mIsPublic = isPublic;
     mHasInjectedDependencies = dependencyInjectionHelper != null;
     mDependencyInjectionHelper = dependencyInjectionHelper;
     mRepresentedObject = representedObject;
@@ -153,6 +156,11 @@ public final class SpecModelImpl implements SpecModel {
   @Override
   public ImmutableList<PropJavadocModel> getPropJavadocs() {
     return mPropJavadocs;
+  }
+
+  @Override
+  public boolean isPublic() {
+    return mIsPublic;
   }
 
   @Override
@@ -358,6 +366,7 @@ public final class SpecModelImpl implements SpecModel {
     private ImmutableList<EventDeclarationModel> mEventDeclarations;
     private String mClassJavadoc;
     private ImmutableList<PropJavadocModel> mPropJavadocs;
+    private boolean mIsPublic;
     @Nullable private DependencyInjectionHelper mDependencyInjectionHelper;
     private Object mRepresentedObject;
 
@@ -410,6 +419,11 @@ public final class SpecModelImpl implements SpecModel {
       return this;
     }
 
+    public Builder isPublic(boolean isPublic) {
+      mIsPublic = isPublic;
+      return this;
+    }
+
     public Builder dependencyInjectionGenerator(
         @Nullable DependencyInjectionHelper dependencyInjectionHelper) {
       mDependencyInjectionHelper = dependencyInjectionHelper;
@@ -435,6 +449,7 @@ public final class SpecModelImpl implements SpecModel {
           mEventDeclarations,
           mClassJavadoc,
           mPropJavadocs,
+          mIsPublic,
           mDependencyInjectionHelper,
           mRepresentedObject);
     }

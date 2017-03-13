@@ -59,6 +59,7 @@ public class LayoutSpecModelFactory {
         EventDeclarationsExtractor.getEventDeclarations(elements, element),
         JavadocExtractor.getClassJavadoc(elements, element),
         JavadocExtractor.getPropJavadocs(elements, element),
+        element.getAnnotation(LayoutSpec.class).isPublic(),
         dependencyInjectionHelper,
         element.getAnnotation(LayoutSpec.class).isPureRender(),
         element);

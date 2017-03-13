@@ -28,6 +28,7 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
       ImmutableList<EventDeclarationModel> eventDeclarations,
       String classJavadoc,
       ImmutableList<PropJavadocModel> propJavadocs,
+      boolean isPublic,
       DependencyInjectionHelper dependencyInjectionHelper,
       boolean isPureRender,
       Object representedObject) {
@@ -42,6 +43,7 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
             .eventDeclarations(eventDeclarations)
             .classJavadoc(classJavadoc)
             .propJavadocs(propJavadocs)
+            .isPublic(isPublic)
             .dependencyInjectionGenerator(dependencyInjectionHelper)
             .representedObject(representedObject)
             .build();
@@ -127,6 +129,11 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
   @Override
   public ImmutableList<PropJavadocModel> getPropJavadocs() {
     return mSpecModel.getPropJavadocs();
+  }
+
+  @Override
+  public boolean isPublic() {
+    return mSpecModel.isPublic();
   }
 
   @Override
