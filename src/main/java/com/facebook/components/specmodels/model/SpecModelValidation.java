@@ -12,6 +12,9 @@ public class SpecModelValidation {
 
   public static List<SpecModelValidationError> validateSpecModel(SpecModel specModel) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
+    if (specModel.hasInjectedDependencies()) {
+      validationErrors.addAll(specModel.getDependencyInjectionHelper().validate(specModel));
+    }
     validationErrors.addAll(validateName(specModel));
     validationErrors.addAll(PropValidation.validate(specModel));
     validationErrors.addAll(StateValidation.validate(specModel));

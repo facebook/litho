@@ -6,7 +6,7 @@ public class SpecModelValidationError {
   public final Object element;
   public final String message;
 
-  SpecModelValidationError(Object element, String message) {
+  public SpecModelValidationError(Object element, String message) {
     this.element = element;
     this.message = message;
   }
