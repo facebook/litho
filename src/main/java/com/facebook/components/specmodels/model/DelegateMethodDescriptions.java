@@ -19,7 +19,7 @@ import com.facebook.components.annotations.OnLoadStyle;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.TypeName;
 
-import static com.facebook.components.specmodels.model.DelegateMethodDescription.OptionalParameterType.OUTPUT;
+import static com.facebook.components.specmodels.model.DelegateMethodDescription.OptionalParameterType.INTER_STAGE_OUTPUT;
 import static com.facebook.components.specmodels.model.DelegateMethodDescription.OptionalParameterType.PROP;
 import static com.facebook.components.specmodels.model.DelegateMethodDescription.OptionalParameterType.PROP_OUTPUT;
 import static com.facebook.components.specmodels.model.DelegateMethodDescription.OptionalParameterType.STATE;
@@ -51,7 +51,7 @@ public final class DelegateMethodDescriptions {
           .returnType(ClassNames.COMPONENT_LAYOUT)
           .name("onCreateLayout")
           .definedParameterTypes(ImmutableList.<TypeName>of(ClassNames.COMPONENT_CONTEXT))
-          .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE, OUTPUT))
+          .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE, INTER_STAGE_OUTPUT))
           .build();
 
   public static final DelegateMethodDescription ON_CREATE_LAYOUT_WITH_SIZE_SPEC =
@@ -62,7 +62,7 @@ public final class DelegateMethodDescriptions {
           .name("onCreateLayoutWithSizeSpec")
           .definedParameterTypes(
               ImmutableList.of(ClassNames.COMPONENT_CONTEXT, TypeName.INT, TypeName.INT))
-          .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE, OUTPUT))
+          .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE, INTER_STAGE_OUTPUT))
           .build();
 
   public static final DelegateMethodDescription ON_CREATE_INITIAL_STATE =

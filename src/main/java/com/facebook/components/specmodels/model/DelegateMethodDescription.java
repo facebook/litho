@@ -30,7 +30,7 @@ public final class DelegateMethodDescription {
     TREE_PROP,
     STATE,
     PARAM,
-    OUTPUT,
+    INTER_STAGE_OUTPUT,
     PROP_OUTPUT,
     STATE_OUTPUT,
     STATE_VALUE,

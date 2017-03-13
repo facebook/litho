@@ -157,7 +157,7 @@ public class DelegateMethodValidation {
         return MethodParamModelUtils.isAnnotatedWith(methodParamModel, State.class);
       case PARAM:
         return MethodParamModelUtils.isAnnotatedWith(methodParamModel, Param.class);
-      case OUTPUT:
+      case INTER_STAGE_OUTPUT:
         return methodParamModel.getType() instanceof ParameterizedTypeName &&
             ((ParameterizedTypeName) methodParamModel.getType()).rawType.equals(ClassNames.OUTPUT);
       case PROP_OUTPUT:
@@ -194,7 +194,7 @@ public class DelegateMethodValidation {
         return "@State T someStateName";
       case PARAM:
         return "@Param T someParamName";
-      case OUTPUT:
+      case INTER_STAGE_OUTPUT:
         return "Output<T> someOutputName";
       case PROP_OUTPUT:
         return "Output<T> propName, where a prop with type T and name propName is " +
