@@ -1,13 +1,16 @@
 include_defs("//COMPONENTS_DEFS")
 
 java_library(
-    name = "model",
-    srcs = glob(["*.java"]),
+    name = "specmodels",
+    srcs = glob(
+        ["**/*.java"],
+        excludes = glob(["processor/*.java"]),
+    ),
     exported_deps = [
         make_dep_path("src/main/java/com/facebook/components/annotations:annotations"),
     ],
     tests = [
-        "//javatests/com/facebook/components/specmodels/model:model",
+        "//javatests/com/facebook/components/specmodels:specmodels",
     ],
     visibility = [
         "PUBLIC",

@@ -22,8 +22,7 @@ java_library(
     ],
     deps = [
         make_dep_path("src/main/java/com/facebook/components/javapoet:javapoet"),
-        make_dep_path("src/main/java/com/facebook/components/specmodels/generator:generator"),
-        make_dep_path("src/main/java/com/facebook/components/specmodels/model:model"),
+        make_dep_path("src/main/java/com/facebook/components/specmodels:specmodels"),
         make_dep_path("src/main/java/com/facebook/components/specmodels/processor:processor"),
         make_dep_path("src/main/java/com/facebook/components/annotations:annotations"),
         COMPONENTS_FBCORE_TARGET,
