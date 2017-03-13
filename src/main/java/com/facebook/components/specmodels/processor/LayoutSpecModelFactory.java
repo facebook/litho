@@ -16,7 +16,7 @@ import com.facebook.components.annotations.LayoutSpec;
 import com.facebook.components.annotations.OnCreateTreeProp;
 import com.facebook.components.annotations.ShouldUpdate;
 import com.facebook.components.specmodels.model.DependencyInjectionHelper;
-import com.facebook.components.specmodels.model.LayoutSpecDelegateMethodDescriptions;
+import com.facebook.components.specmodels.model.DelegateMethodDescriptions;
 import com.facebook.components.specmodels.model.LayoutSpecModel;
 
 /**
@@ -30,7 +30,7 @@ public class LayoutSpecModelFactory {
   static {
     INTER_STAGE_INPUT_ANNOTATIONS.add(FromCreateLayout.class);
     DELEGATE_METHOD_ANNOTATIONS.addAll(
-        LayoutSpecDelegateMethodDescriptions.DELEGATE_METHODS_MAP.keySet());
+        DelegateMethodDescriptions.LAYOUT_SPEC_DELEGATE_METHODS_MAP.keySet());
     DELEGATE_METHOD_ANNOTATIONS.add(OnCreateTreeProp.class);
     DELEGATE_METHOD_ANNOTATIONS.add(ShouldUpdate.class);
   }

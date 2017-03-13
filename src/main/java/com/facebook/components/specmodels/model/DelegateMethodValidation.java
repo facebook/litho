@@ -30,7 +30,7 @@ public class DelegateMethodValidation {
       LayoutSpecModel specModel) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
     validationErrors.addAll(
-        validateMethods(specModel, LayoutSpecDelegateMethodDescriptions.DELEGATE_METHODS_MAP));
+        validateMethods(specModel, DelegateMethodDescriptions.LAYOUT_SPEC_DELEGATE_METHODS_MAP));
 
     final DelegateMethodModel onCreateLayoutModel =
         SpecModelUtils.getMethodModelWithAnnotation(specModel, OnCreateLayout.class);

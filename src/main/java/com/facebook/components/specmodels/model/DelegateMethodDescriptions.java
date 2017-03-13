@@ -27,10 +27,9 @@ import static com.facebook.components.specmodels.model.DelegateMethodDescription
 import static com.facebook.components.specmodels.model.DelegateMethodDescription.OptionalParameterType.TREE_PROP;
 
 /**
- * Descriptions of delegate methods that are valid for
- * {@link com.facebook.components.annotations.LayoutSpec}s.
+ * Descriptions of delegate methods.
  */
-public final class LayoutSpecDelegateMethodDescriptions {
+public final class DelegateMethodDescriptions {
   public static final DelegateMethodDescription ON_LOAD_STYLE =
       DelegateMethodDescription.newBuilder()
           .annotations(ImmutableList.of(
@@ -87,7 +86,7 @@ public final class LayoutSpecDelegateMethodDescriptions {
           .build();
 
   public static final Map<Class<? extends Annotation>, DelegateMethodDescription>
-      DELEGATE_METHODS_MAP =
+      LAYOUT_SPEC_DELEGATE_METHODS_MAP =
           new TreeMap<>(new Comparator<Class<? extends Annotation>>() {
             @Override
             public int compare(
@@ -97,10 +96,11 @@ public final class LayoutSpecDelegateMethodDescriptions {
           });
 
   static {
-    DELEGATE_METHODS_MAP.put(OnLoadStyle.class, ON_LOAD_STYLE);
-    DELEGATE_METHODS_MAP.put(OnCreateLayout.class, ON_CREATE_LAYOUT);
-    DELEGATE_METHODS_MAP.put(OnCreateLayoutWithSizeSpec.class, ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
-    DELEGATE_METHODS_MAP.put(OnCreateInitialState.class, ON_CREATE_INITIAL_STATE);
-    DELEGATE_METHODS_MAP.put(OnLayoutTransition.class, ON_LAYOUT_TRANSITION);
+    LAYOUT_SPEC_DELEGATE_METHODS_MAP.put(OnLoadStyle.class, ON_LOAD_STYLE);
+    LAYOUT_SPEC_DELEGATE_METHODS_MAP.put(OnCreateLayout.class, ON_CREATE_LAYOUT);
+    LAYOUT_SPEC_DELEGATE_METHODS_MAP.put(
+        OnCreateLayoutWithSizeSpec.class, ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
+    LAYOUT_SPEC_DELEGATE_METHODS_MAP.put(OnCreateInitialState.class, ON_CREATE_INITIAL_STATE);
+    LAYOUT_SPEC_DELEGATE_METHODS_MAP.put(OnLayoutTransition.class, ON_LAYOUT_TRANSITION);
   }
 }

@@ -226,7 +226,7 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
         .addTypeSpecDataHolder(TreePropGenerator.generate(this))
         .addTypeSpecDataHolder(DelegateMethodGenerator.generateDelegates(
             this,
-            LayoutSpecDelegateMethodDescriptions.DELEGATE_METHODS_MAP))
+            DelegateMethodDescriptions.LAYOUT_SPEC_DELEGATE_METHODS_MAP))
         .addTypeSpecDataHolder(CanMeasureGenerator.generate(this))
         .addTypeSpecDataHolder(PureRenderGenerator.generate(this))
         .addTypeSpecDataHolder(EventGenerator.generate(this))
