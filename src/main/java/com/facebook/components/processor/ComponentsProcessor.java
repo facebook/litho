@@ -7,21 +7,8 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
-import com.facebook.components.specmodels.generator.BuilderGenerator;
-import com.facebook.components.specmodels.generator.CanMeasureGenerator;
-import com.facebook.components.specmodels.generator.ComponentImplGenerator;
-import com.facebook.components.specmodels.generator.DelegateMethodGenerator;
-import com.facebook.components.specmodels.generator.EventGenerator;
-import com.facebook.components.specmodels.generator.JavadocGenerator;
-import com.facebook.components.specmodels.generator.PreambleGenerator;
-import com.facebook.components.specmodels.generator.PureRenderGenerator;
-import com.facebook.components.specmodels.generator.StateGenerator;
-import com.facebook.components.specmodels.generator.TreePropGenerator;
 import com.facebook.components.specmodels.model.ClassNames;
 import com.facebook.components.specmodels.model.DependencyInjectionHelper;
-import com.facebook.components.specmodels.model.LayoutSpecDelegateMethodDescriptions;
-import com.facebook.components.specmodels.model.LayoutSpecModel;
-import com.facebook.components.specmodels.model.SpecModel;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
@@ -45,30 +32,6 @@ public class ComponentsProcessor extends AbstractComponentsProcessor {
         TypeName.get(referenceSpecHelper.getReferenceType()));
 
     referenceSpecHelper.generateShouldUpdate();
-  }
-
-  @Override
-  public void generate(LayoutSpecHelper layoutSpecHelper) {
-    layoutSpecHelper.getTypeSpec().addModifiers(Modifier.FINAL);
-    JavadocGenerator.generate(layoutSpecHelper.getSpecModel())
-        .addToTypeSpec(layoutSpecHelper.getTypeSpec());
-    ComponentImplGenerator.generate(layoutSpecHelper.getSpecModel())
-        .addToTypeSpec(layoutSpecHelper.getTypeSpec());
-    TreePropGenerator.generate(layoutSpecHelper.getSpecModel())
-        .addToTypeSpec(layoutSpecHelper.getTypeSpec());
-    DelegateMethodGenerator.generateDelegates(
-        layoutSpecHelper.getSpecModel(),
-        LayoutSpecDelegateMethodDescriptions.DELEGATE_METHODS_MAP)
-        .addToTypeSpec(layoutSpecHelper.getTypeSpec());
-    CanMeasureGenerator.generate(layoutSpecHelper.getSpecModel())
-        .addToTypeSpec(layoutSpecHelper.getTypeSpec());
-
-    PureRenderGenerator.generate((LayoutSpecModel) layoutSpecHelper.getSpecModel())
-        .addToTypeSpec(layoutSpecHelper.getTypeSpec());
-
-    PreambleGenerator.generate(layoutSpecHelper.getSpecModel())
-        .addToTypeSpec(layoutSpecHelper.getTypeSpec());
-    generatePostamble(layoutSpecHelper);
   }
 
   /**
@@ -123,38 +86,31 @@ public class ComponentsProcessor extends AbstractComponentsProcessor {
   private static void generatePostamble(SpecHelper specHelper) {
     Stages stages = specHelper.getStages();
 
-    SpecModel specModel = specHelper.getSpecModel();
-    if (specModel != null) {
-      EventGenerator.generate(specModel).addToTypeSpec(specHelper.getTypeSpec());
-      StateGenerator.generate(specModel).addToTypeSpec(specHelper.getTypeSpec());
-      BuilderGenerator.generate(specModel).addToTypeSpec(specHelper.getTypeSpec());
-    } else {
-      stages.generateOnLoadStyle();
-      stages.generateOnEventHandlers(ClassNames.COMPONENT, ClassNames.COMPONENT_CONTEXT);
-      stages.generateEventHandlerFactories(
-          ClassNames.COMPONENT_CONTEXT,
-          ClassNames.COMPONENT);
-      stages.generateDispatchOnEvent(ClassNames.COMPONENT_CONTEXT);
+    stages.generateOnLoadStyle();
+    stages.generateOnEventHandlers(ClassNames.COMPONENT, ClassNames.COMPONENT_CONTEXT);
+    stages.generateEventHandlerFactories(
+        ClassNames.COMPONENT_CONTEXT,
+        ClassNames.COMPONENT);
+    stages.generateDispatchOnEvent(ClassNames.COMPONENT_CONTEXT);
 
-      stages.generateTransferState(
-          ClassNames.COMPONENT_CONTEXT,
-          ClassNames.COMPONENT,
-          ClassNames.STATE_CONTAINER_COMPONENT);
-      stages.generateHasState();
-      stages.generateOnStateUpdateMethods(
-          ClassNames.COMPONENT_CONTEXT,
-          ClassNames.COMPONENT,
-          ClassNames.STATE_CONTAINER_COMPONENT,
-          ClassNames.COMPONENT_STATE_UPDATE,
-          Stages.StaticFlag.STATIC);
-      stages.generateLazyStateUpdateMethods(
-          ClassNames.COMPONENT_CONTEXT,
-          ClassNames.COMPONENT,
-          ClassNames.COMPONENT_STATE_UPDATE,
-          ClassNames.STATE_CONTAINER_COMPONENT);
-      stages.generateComponentBuilder(
-          Stages.StaticFlag.STATIC,
-          ClassName.bestGuess(stages.getSimpleClassName()));
-    }
+    stages.generateTransferState(
+        ClassNames.COMPONENT_CONTEXT,
+        ClassNames.COMPONENT,
+        ClassNames.STATE_CONTAINER_COMPONENT);
+    stages.generateHasState();
+    stages.generateOnStateUpdateMethods(
+        ClassNames.COMPONENT_CONTEXT,
+        ClassNames.COMPONENT,
+        ClassNames.STATE_CONTAINER_COMPONENT,
+        ClassNames.COMPONENT_STATE_UPDATE,
+        Stages.StaticFlag.STATIC);
+    stages.generateLazyStateUpdateMethods(
+        ClassNames.COMPONENT_CONTEXT,
+        ClassNames.COMPONENT,
+        ClassNames.COMPONENT_STATE_UPDATE,
+        ClassNames.STATE_CONTAINER_COMPONENT);
+    stages.generateComponentBuilder(
+        Stages.StaticFlag.STATIC,
+        ClassName.bestGuess(stages.getSimpleClassName()));
   }
 }

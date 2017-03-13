@@ -207,8 +207,7 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
     final TypeSpec.Builder typeSpec =
         TypeSpec.classBuilder(getComponentName())
             .superclass(ClassNames.COMPONENT_LIFECYCLE)
-            .addTypeVariables(getTypeVariables())
-            .addModifiers(Modifier.FINAL);
+            .addTypeVariables(getTypeVariables());
 
     if (isPublic()) {
       typeSpec.addModifiers(Modifier.PUBLIC);
@@ -216,6 +215,8 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
 
     if (hasInjectedDependencies()) {
       getDependencyInjectionHelper().generate(this).addToTypeSpec(typeSpec);
+    } else {
+      typeSpec.addModifiers(Modifier.FINAL);
     }
 
     TypeSpecDataHolder.newBuilder()

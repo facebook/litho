@@ -11,6 +11,7 @@ import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 
 import java.io.Closeable;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -22,10 +23,11 @@ import com.facebook.components.annotations.MountSpec;
 import com.facebook.components.annotations.ReferenceSpec;
 import com.facebook.components.specmodels.model.ClassNames;
 import com.facebook.components.specmodels.model.DependencyInjectionHelper;
-import com.facebook.components.specmodels.model.LayoutSpecModel;
-import com.facebook.components.specmodels.model.SpecModelValidation;
+import com.facebook.components.specmodels.model.SpecModel;
 import com.facebook.components.specmodels.model.SpecModelValidationError;
 import com.facebook.components.specmodels.processor.LayoutSpecModelFactory;
+
+import com.squareup.javapoet.JavaFile;
 
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public abstract class AbstractComponentsProcessor extends AbstractProcessor {
@@ -39,6 +41,7 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
     for (Element element : roundEnv.getRootElements()) {
       try {
         Closeable closeable = null;
+        SpecModel specModel = null;
         final TypeElement typeElement = (TypeElement) element;
         if (element.getAnnotation(LayoutSpec.class) != null) {
           processingEnv.getMessager().printMessage(
@@ -46,9 +49,10 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
               "annotation_processor_invoked",
               element);
 
-          final LayoutSpecHelper layoutSpecHelper = createLayoutSpecHelper(typeElement);
-          closeable = layoutSpecHelper;
-          generate(layoutSpecHelper);
+          specModel = LayoutSpecModelFactory.create(
+              processingEnv.getElementUtils(),
+              typeElement,
+              getDependencyInjectionGenerator(typeElement));
         } else if (element.getAnnotation(MountSpec.class) != null) {
           processingEnv.getMessager().printMessage(
               Diagnostic.Kind.NOTE,
@@ -67,6 +71,11 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
               element.getAnnotation(ReferenceSpec.class).value());
           closeable = referenceSpecHelper;
           generate(referenceSpecHelper);
+        }
+
+        if (specModel != null) {
+          validate(specModel);
+          generate(specModel);
         }
 
         if (closeable != null) {
@@ -97,35 +106,35 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
 
   abstract protected void generate(ReferenceSpecHelper referenceSpecHelper);
 
-  abstract protected void generate(LayoutSpecHelper layoutSpecHelper);
-
   abstract protected void generate(MountSpecHelper mountSpecHelper);
 
   abstract protected DependencyInjectionHelper getDependencyInjectionGenerator(
       TypeElement typeElement);
 
-  private LayoutSpecHelper createLayoutSpecHelper(TypeElement typeElement) {
-    final LayoutSpecModel layoutSpecModel =
-        LayoutSpecModelFactory.create(
-            processingEnv.getElementUtils(),
-            typeElement,
-            getDependencyInjectionGenerator(typeElement));
+  void validate(SpecModel specModel) {
+    List<SpecModelValidationError> validationErrors = specModel.validate();
 
-    List<SpecModelValidationError> validationErrors =
-        SpecModelValidation.validateLayoutSpecModel(layoutSpecModel);
-
-    if (!validationErrors.isEmpty()) {
-      final List<PrintableException> printableExceptions = new ArrayList<>();
-      for (SpecModelValidationError validationError : validationErrors) {
-        printableExceptions.add(
-            new ComponentsProcessingException(
-                (Element) validationError.element,
-                validationError.message));
-      }
-
-      throw new MultiPrintableException(printableExceptions);
+    if (validationErrors.isEmpty()) {
+      return;
     }
 
-    return new LayoutSpecHelper(processingEnv, typeElement, layoutSpecModel);
+    final List<PrintableException> printableExceptions = new ArrayList<>();
+    for (SpecModelValidationError validationError : validationErrors) {
+      printableExceptions.add(
+          new ComponentsProcessingException(
+              (Element) validationError.element,
+              validationError.message));
+    }
+
+    throw new MultiPrintableException(printableExceptions);
+  }
+
+  void generate(SpecModel specModel) throws IOException {
+    JavaFile.builder(
+        Utils.getPackageName(specModel.getComponentTypeName().toString()), specModel.generate())
+        .skipJavaLangImports(true)
+        .addFileComment("Copyright 2004-present Facebook. All Rights Reserved.")
+        .build()
+        .writeTo(processingEnv.getFiler());
   }
 }
