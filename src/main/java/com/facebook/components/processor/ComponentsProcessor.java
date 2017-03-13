@@ -12,6 +12,7 @@ import com.facebook.components.specmodels.generator.CanMeasureGenerator;
 import com.facebook.components.specmodels.generator.ComponentImplGenerator;
 import com.facebook.components.specmodels.generator.DelegateMethodGenerator;
 import com.facebook.components.specmodels.generator.EventGenerator;
+import com.facebook.components.specmodels.generator.JavadocGenerator;
 import com.facebook.components.specmodels.generator.PreambleGenerator;
 import com.facebook.components.specmodels.generator.PureRenderGenerator;
 import com.facebook.components.specmodels.generator.StateGenerator;
@@ -49,6 +50,8 @@ public class ComponentsProcessor extends AbstractComponentsProcessor {
   @Override
   public void generate(LayoutSpecHelper layoutSpecHelper) {
     layoutSpecHelper.getTypeSpec().addModifiers(Modifier.FINAL);
+    JavadocGenerator.generate(layoutSpecHelper.getSpecModel())
+        .addToTypeSpec(layoutSpecHelper.getTypeSpec());
     ComponentImplGenerator.generate(layoutSpecHelper.getSpecModel())
         .addToTypeSpec(layoutSpecHelper.getTypeSpec());
     TreePropGenerator.generate(layoutSpecHelper.getSpecModel())

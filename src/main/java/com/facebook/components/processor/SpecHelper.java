@@ -84,28 +84,30 @@ public abstract class SpecHelper implements Closeable {
     }
 
     Map<String, String> propJavadocs = null;
-    String javadoc = mProcessingEnv.getElementUtils().getDocComment(mSpecElement);
-    if (javadoc != null && !javadoc.isEmpty()) {
-      // Javadoc returns a space at the start of every line.
-      String javadocContents = JAVADOC_SANITIZER.matcher(javadoc).replaceAll("");
+    if (specModel == null) {
+      String javadoc = mProcessingEnv.getElementUtils().getDocComment(mSpecElement);
+      if (javadoc != null && !javadoc.isEmpty()) {
+        // Javadoc returns a space at the start of every line.
+        String javadocContents = JAVADOC_SANITIZER.matcher(javadoc).replaceAll("");
 
-      // Splitting the javadoc with "@prop ".
-      String[] keyValuePropJavadocs = javadocContents.split("@prop ");
-      propJavadocs = new HashMap<>(keyValuePropJavadocs.length);
+        // Splitting the javadoc with "@prop ".
+        String[] keyValuePropJavadocs = javadocContents.split("@prop ");
+        propJavadocs = new HashMap<>(keyValuePropJavadocs.length);
 
-      for (int i = 1; i < keyValuePropJavadocs.length; i++) {
-        // Each prop comment line look like:
-        // @prop propName comment for the prop.
-        String propJavadoc[] = keyValuePropJavadocs[i].split(" ", 2);
-        if (propJavadoc.length == 2) {
-          propJavadocs.put(propJavadoc[0], propJavadoc[1].trim());
+        for (int i = 1; i < keyValuePropJavadocs.length; i++) {
+          // Each prop comment line look like:
+          // @prop propName comment for the prop.
+          String propJavadoc[] = keyValuePropJavadocs[i].split(" ", 2);
+          if (propJavadoc.length == 2) {
+            propJavadocs.put(propJavadoc[0], propJavadoc[1].trim());
+          }
         }
-      }
 
-      // The first portion is the class documentation.
-      mTypeSpec
-        .addJavadoc(keyValuePropJavadocs[0])
-        .addJavadoc("<p>\n");
+        // The first portion is the class documentation.
+        mTypeSpec
+            .addJavadoc(keyValuePropJavadocs[0])
+            .addJavadoc("<p>\n");
+      }
     }
 
     mStages = new Stages(
@@ -123,7 +125,9 @@ public abstract class SpecHelper implements Closeable {
 
     validate();
 
-    mStages.generateJavadoc();
+    if (mSpecModel == null) {
+      mStages.generateJavadoc();
+    }
   }
 
   protected abstract void validate();

@@ -11,6 +11,7 @@ import java.util.List;
 
 import com.facebook.common.internal.ImmutableList;
 
+import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
@@ -151,6 +152,14 @@ public class TypeSpecDataHolder {
     public JavadocSpec(String format, Object... args) {
       this.format = format;
       this.args = args;
+    }
+
+    @Override
+    public String toString() {
+      return CodeBlock.builder()
+          .add(format, args)
+          .build()
+          .toString();
     }
   }
 }
