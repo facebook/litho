@@ -46,15 +46,20 @@ public class TestItem {
 
   @VisibleForTesting
   public String getTextContent() {
-    final TextContent textContent =
-        ComponentHostUtils.extractTextContent(Collections.singletonList(mContent));
-    final List<CharSequence> textItems = textContent.getTextItems();
+    final List<CharSequence> textItems = getTextItems();
     final StringBuilder sb = new StringBuilder();
     for (int i = 0, size = textItems.size(); i < size; i++) {
       sb.append(textItems.get(i));
     }
 
     return sb.toString();
+  }
+
+  public List<CharSequence> getTextItems() {
+    return
+        ComponentHostUtils
+            .extractTextContent(Collections.singletonList(mContent))
+            .getTextItems();
   }
 
   void setHost(ComponentHost host) {
