@@ -9,6 +9,7 @@ import javax.lang.model.element.TypeElement;
 
 import com.facebook.components.specmodels.generator.EventGenerator;
 import com.facebook.components.specmodels.generator.JavadocGenerator;
+import com.facebook.components.specmodels.generator.PreambleGenerator;
 import com.facebook.components.specmodels.model.ClassNames;
 import com.facebook.components.specmodels.model.DependencyInjectionHelper;
 import com.facebook.components.specmodels.model.SpecModel;
@@ -47,7 +48,8 @@ public class ComponentsProcessor extends AbstractComponentsProcessor {
     mountSpecHelper.getTypeSpec().addModifiers(Modifier.FINAL);
     JavadocGenerator.generate(mountSpecHelper.getSpecModel())
         .addToTypeSpec(mountSpecHelper.getTypeSpec());
-    generatePreamble(mountSpecHelper.getStages());
+    PreambleGenerator.generate(mountSpecHelper.getSpecModel())
+        .addToTypeSpec(mountSpecHelper.getTypeSpec());
 
     if (isPureRender) {
       mountSpecHelper.getStages().generateIsPureRender();
