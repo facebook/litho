@@ -36,6 +36,7 @@ public class StateGenerator {
   private static final String STATE_UPDATE_NEW_COMPONENT_NAME = "newComponent";
   private static final String STATE_UPDATE_METHOD_NAME = "updateState";
   private static final String LAZY_STATE_UPDATE_VALUE_PARAM = "lazyUpdateValue";
+  private static final String STATE_UPDATE_IS_LAZY_METHOD_NAME = "isLazyStateUpdate";
 
   private StateGenerator() {
   }
@@ -267,6 +268,11 @@ public class StateGenerator {
         .addType(stateUpdateClassBuilder
             .addMethod(constructor.build())
             .addMethod(updateStateMethodBuilder.build())
+            .addMethod(MethodSpec.methodBuilder(STATE_UPDATE_IS_LAZY_METHOD_NAME)
+                .addModifiers(Modifier.PUBLIC)
+                .returns(TypeName.BOOLEAN)
+                .addStatement("return false")
+                .build())
             .build())
         .build();
   }
@@ -335,7 +341,12 @@ public class StateGenerator {
 
     final TypeSpec.Builder stateBuilderImpl = TypeSpec.anonymousClassBuilder("")
         .addSuperinterface(specModel.getUpdateStateInterface())
-        .addMethod(stateUpdate.build());
+        .addMethod(stateUpdate.build())
+        .addMethod(MethodSpec.methodBuilder(STATE_UPDATE_IS_LAZY_METHOD_NAME)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(TypeName.BOOLEAN)
+            .addStatement("return true")
+            .build());
 
     builder.addStatement(
         "$T _stateUpdate = $L",
