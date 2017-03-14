@@ -13,6 +13,7 @@ import com.facebook.components.specmodels.generator.EventGenerator;
 import com.facebook.components.specmodels.generator.JavadocGenerator;
 import com.facebook.components.specmodels.generator.PreambleGenerator;
 import com.facebook.components.specmodels.generator.StateGenerator;
+import com.facebook.components.specmodels.generator.TreePropGenerator;
 import com.facebook.components.specmodels.model.DependencyInjectionHelper;
 import com.facebook.components.specmodels.model.SpecModel;
 
@@ -63,7 +64,7 @@ public class ComponentsProcessor extends AbstractComponentsProcessor {
       }
     }
 
-    mountSpecHelper.generateTreePropsMethods();
+    TreePropGenerator.generate(specModel).addToTypeSpec(typeSpec);
     mountSpecHelper.generateOnPrepare();
     mountSpecHelper.generateOnMeasure();
     mountSpecHelper.generateOnMeasureBaseline();
