@@ -10,12 +10,14 @@ import javax.lang.model.element.TypeElement;
 import com.facebook.components.specmodels.generator.EventGenerator;
 import com.facebook.components.specmodels.generator.JavadocGenerator;
 import com.facebook.components.specmodels.generator.PreambleGenerator;
+import com.facebook.components.specmodels.generator.StateGenerator;
 import com.facebook.components.specmodels.model.ClassNames;
 import com.facebook.components.specmodels.model.DependencyInjectionHelper;
 import com.facebook.components.specmodels.model.SpecModel;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
 
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class ComponentsProcessor extends AbstractComponentsProcessor {
@@ -44,6 +46,8 @@ public class ComponentsProcessor extends AbstractComponentsProcessor {
   @Override
   protected void generate(MountSpecHelper mountSpecHelper) {
     final boolean isPureRender = mountSpecHelper.isPureRender();
+    final SpecModel specModel = mountSpecHelper.getSpecModel();
+    final TypeSpec.Builder typeSpec = mountSpecHelper.getTypeSpec();
 
     mountSpecHelper.getTypeSpec().addModifiers(Modifier.FINAL);
     JavadocGenerator.generate(mountSpecHelper.getSpecModel())
@@ -75,7 +79,15 @@ public class ComponentsProcessor extends AbstractComponentsProcessor {
     mountSpecHelper.generateShouldUseDisplayList();
     mountSpecHelper.generateCreateInitialState();
 
-    generatePostamble(mountSpecHelper);
+    final Stages stages = mountSpecHelper.getStages();
+    stages.generateOnLoadStyle();
+
+    EventGenerator.generate(specModel).addToTypeSpec(typeSpec);
+    StateGenerator.generate(specModel).addToTypeSpec(typeSpec);
+
+    stages.generateComponentBuilder(
+        Stages.StaticFlag.STATIC,
+        ClassName.bestGuess(stages.getSimpleClassName()));
   }
 
   @Override
@@ -87,33 +99,5 @@ public class ComponentsProcessor extends AbstractComponentsProcessor {
     stages.generateSourceDelegate(true);
     stages.generateConstructor();
     stages.generateGetter(/*isStatic*/ true);
-  }
-
-  private static void generatePostamble(SpecHelper specHelper) {
-    Stages stages = specHelper.getStages();
-    stages.generateOnLoadStyle();
-
-    final SpecModel specModel = specHelper.getSpecModel();
-    EventGenerator.generate(specModel).addToTypeSpec(specHelper.getTypeSpec());
-
-    stages.generateTransferState(
-        ClassNames.COMPONENT_CONTEXT,
-        ClassNames.COMPONENT,
-        ClassNames.STATE_CONTAINER_COMPONENT);
-    stages.generateHasState();
-    stages.generateOnStateUpdateMethods(
-        ClassNames.COMPONENT_CONTEXT,
-        ClassNames.COMPONENT,
-        ClassNames.STATE_CONTAINER_COMPONENT,
-        ClassNames.COMPONENT_STATE_UPDATE,
-        Stages.StaticFlag.STATIC);
-    stages.generateLazyStateUpdateMethods(
-        ClassNames.COMPONENT_CONTEXT,
-        ClassNames.COMPONENT,
-        ClassNames.COMPONENT_STATE_UPDATE,
-        ClassNames.STATE_CONTAINER_COMPONENT);
-    stages.generateComponentBuilder(
-        Stages.StaticFlag.STATIC,
-        ClassName.bestGuess(stages.getSimpleClassName()));
   }
 }
