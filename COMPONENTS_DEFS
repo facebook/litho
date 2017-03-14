@@ -83,6 +83,7 @@ def oss_components_robolectric_test(name, *args, **kwargs):
     """Tests that can successfully run from the library root folder."""
     extra_vm_args = [
         '-Drobolectric.dependency.dir=lib/android-all',
+        '-Dcom.facebook.components.is_oss=true',
     ]
     kwargs['vm_args'] = extra_vm_args
     robolectric_test(name=name, *args, **kwargs)
