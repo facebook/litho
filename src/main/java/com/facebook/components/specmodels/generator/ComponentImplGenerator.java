@@ -241,6 +241,10 @@ public class ComponentImplGenerator {
       equalsBuilder.addCode(getCompareStatement(specModel, implInstanceName, state));
     }
 
+    for (TreePropModel treeProp : specModel.getTreeProps()) {
+      equalsBuilder.addCode(getCompareStatement(specModel, implInstanceName, treeProp));
+    }
+
     equalsBuilder.addStatement("return true");
 
     return equalsBuilder.build();
