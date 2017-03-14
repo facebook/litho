@@ -52,7 +52,17 @@ class TransitionContext {
     mTransitionKeys.add(transitionKey);
   }
 
-  boolean containsTransitionKey(String transitionKey) {
-    return mTransitionKeys.contains(transitionKey);
+  /**
+   * @return Whether item with the given {@param transitionKey} is being removed from layout tree.
+   */
+  boolean isDisappearingKey(String transitionKey) {
+    if (transitionKey == null) {
+      return false;
+    }
+    final TransitionKeySet transitionKeySet = mKeyToTransitionKeySets.get(transitionKey);
+    if (transitionKeySet == null || !transitionKeySet.hasDisappearingTransitions()) {
+      return false;
+    }
+    return !mTransitionKeys.contains(transitionKey);
   }
 }

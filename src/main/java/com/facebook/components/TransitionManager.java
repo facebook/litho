@@ -5,6 +5,7 @@ package com.facebook.components;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.HashSet;
+import java.util.List;
 
 import android.annotation.TargetApi;
 import android.support.annotation.IntDef;
@@ -112,12 +113,11 @@ class TransitionManager implements TransitionKeySetListener {
         // 1.2 Disappeared keys.
         mKeysStatus.put(key, KeyStatus.DISAPPEARED);
       } else {
-        // TODO: If we have a running disappear transition, we might want to keep the key to
-        //       continue the animation.
-        mKeysStatus.removeAt(i);
+        // NOTE: If we have a running disappear transition, we keep the key to continue the
+        // animation.
       }
     }
-    // 1.2 Appeared keys.
+    // 1.3 Appeared keys.
     for (String newKey : mPostMountKeys) {
       mKeysStatus.put(newKey, KeyStatus.APPEARED);
     }
@@ -171,7 +171,24 @@ class TransitionManager implements TransitionKeySetListener {
   @Override
   public void onTransitionKeySetEnd(String key, View view) {
     recursivelySetChildClipping(view, true);
-    mRunningTransitions.remove(key);
+    removeRunningTransition(key);
+  }
+
+  private TransitionKeySet removeRunningTransition(String key) {
+    final TransitionKeySet runningTransition = mRunningTransitions.remove(key);
+    if (runningTransition != null && runningTransition.wasRunningDisappearTransition()) {
+      // The item with given key has completely disappeared, so we can remove it from KeysStatus
+      mKeysStatus.remove(key);
+    }
+
+    return runningTransition;
+  }
+
+  void cleanupDisappearingTransitions(List<String> transitionKeys) {
+    for (int i = 0, size = transitionKeys.size(); i < size; i++) {
+      final TransitionKeySet transitionKeySet = removeRunningTransition(transitionKeys.get(i));
+      transitionKeySet.cleanupAfterDisappear();
+    }
   }
 
   void reset() {

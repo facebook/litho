@@ -687,6 +687,21 @@ class MountState {
   }
 
   /**
+   * Determine whether to apply disappear animation to the given {@link MountItem}
+   */
+  private static boolean isItemDisappearing(
+      MountItem mountItem,
+      TransitionContext transitionContext) {
+    if (mountItem == null
+        || mountItem.getViewNodeInfo() == null
+        || transitionContext == null) {
+      return false;
+    }
+
+    return transitionContext.isDisappearingKey(mountItem.getViewNodeInfo().getTransitionKey());
+  }
+
+  /**
    * Go over all the mounted items from the leaves to the root and unmount only the items that are
    * not present in the new LayoutOutputs.
    * If an item is still present but in a new position move the item inside its host.
@@ -705,12 +720,28 @@ class MountState {
     // all its mounted children.
     for (int i = 0; i < mLayoutOutputsIds.length; i++) {
       final int newPosition = newLayoutState.getLayoutOutputPositionForId(mLayoutOutputsIds[i]);
+      final MountItem oldItem = getItemAt(i);
+
+      if (isItemDisappearing(oldItem, newLayoutState.getTransitionContext())) {
+
+        startUnmountDisappearingItem(i, oldItem.getViewNodeInfo().getTransitionKey());
+
+        final int lastDescendantOfItem = findLastDescendantOfItem(i, oldItem);
+        // Disassociate disappearing items from current mounted items. The layout tree will not
+        // contain disappearing items anymore, however they are kept separately in their hosts.
+        removeDisappearingItemMappings(i, lastDescendantOfItem);
+
+        // Skip this disappearing item and all its descendants. Do not unmount or move them yet.
+        // We will unmount them after animation is completed.
+        i = lastDescendantOfItem;
+        continue;
+      }
+
       if (newPosition == -1) {
         unmountItem(mContext, i, mHostsByMarker);
         mPrepareMountStats.unmountedCount++;
       } else {
         final long newHostMarker = newLayoutState.getMountableOutputAt(newPosition).getHostMarker();
-        final MountItem oldItem = getItemAt(i);
 
         if (oldItem == null) {
           // This was previously unmounted.
@@ -734,6 +765,38 @@ class MountState {
     }
 
     return mPrepareMountStats;
+  }
+
+  private void removeDisappearingItemMappings(int fromIndex, int toIndex) {
+    for (int i = fromIndex; i <= toIndex; i++) {
+      final MountItem item = getItemAt(i);
+
+      // We do not need this mapping for disappearing items.
+      mIndexToItemMap.remove(mLayoutOutputsIds[i]);
+
+      // Likewise we no longer need host mapping for disappearing items.
+      if (isHostSpec(item.getComponent())) {
+        mHostsByMarker
+            .removeAt(mHostsByMarker.indexOfValue((ComponentHost) item.getContent()));
+      }
+    }
+  }
+
+  /**
+   * Find the index of last descendant of given {@link MountItem}
+   */
+  private int findLastDescendantOfItem(int disappearingItemIndex, MountItem item) {
+    for (int i = disappearingItemIndex + 1; i < mLayoutOutputsIds.length; i++) {
+      if (!ComponentHostUtils.hasAncestorHost(
+             getItemAt(i).getHost(),
+             (ComponentHost) item.getContent())) {
+        // No need to go further as the items that have common ancestor hosts are co-located.
+        // This is the first non-descendant of given MountItem, therefore last descendant is the
+        // item before.
+        return i - 1;
+      }
+    }
+    return mLayoutOutputsIds.length - 1;
   }
 
   private void updateMountedContent(
@@ -1434,6 +1497,41 @@ class MountState {
     }
   }
 
+  private void unmountDisappearingItemChild(ComponentContext context, MountItem item) {
+
+    final Object content = item.getContent();
+
+    // Recursively unmount mounted children items.
+    if (content instanceof ComponentHost) {
+      final ComponentHost host = (ComponentHost) content;
+
+      for (int i = host.getMountItemCount() - 1; i >= 0; i--) {
+        final MountItem mountItem = host.getMountItemAt(i);
+        unmountDisappearingItemChild(context, mountItem);
+      }
+
+      if (host.getMountItemCount() > 0) {
+        throw new IllegalStateException("Recursively unmounting items from a ComponentHost, left" +
+            " some items behind maybe because not tracked by its MountState");
+      }
+    }
+
+    final ComponentHost host = item.getHost();
+    host.unmount(item);
+
+    unsetViewAttributes(item);
+
+    unbindAndUnmountLifecycle(context, item);
+
+    if (item.getComponent().getLifecycle().canMountIncrementally()) {
+      final int index = mCanMountIncrementallyMountItems.indexOfValue(item);
+      if (index > 0) {
+        mCanMountIncrementallyMountItems.removeAt(index);
+      }
+    }
+    ComponentsPools.release(context, item);
+  }
+
   private void unmountItem(
       ComponentContext context,
       int index,
@@ -1482,9 +1580,32 @@ class MountState {
     final Component<?> component = item.getComponent();
 
     if (isHostSpec(component)) {
-      hostsByMarker.removeAt(hostsByMarker.indexOfValue((ComponentHost) content));
+      final ComponentHost componentHost = (ComponentHost) content;
+      hostsByMarker.removeAt(hostsByMarker.indexOfValue(componentHost));
+      // We need to make sure to remove any disappearing items and clean up their state if we
+      // are unmounting its host.
+      if (componentHost.hasDisappearingItems()) {
+        mTransitionManager.cleanupDisappearingTransitions(componentHost.getDisappearingItemKeys());
+      }
     }
 
+    unbindAndUnmountLifecycle(context, item);
+
+    mIndexToItemMap.remove(mLayoutOutputsIds[index]);
+    if (component.getLifecycle().canMountIncrementally()) {
+      mCanMountIncrementallyMountItems.delete(index);
+    }
+
+    ComponentsPools.release(context, item);
+
+    mMountStats.unmountedCount++;
+  }
+
+  private void unbindAndUnmountLifecycle(
+      ComponentContext context,
+      MountItem item) {
+    final Component component = item.getComponent();
+    final Object content = item.getContent();
     final ComponentLifecycle lifecycle = component.getLifecycle();
 
     // Call the component's unmount() method.
@@ -1493,15 +1614,56 @@ class MountState {
       item.setIsBound(false);
     }
     lifecycle.unmount(context, content, component);
+  }
 
-    mIndexToItemMap.remove(mLayoutOutputsIds[index]);
-    if (lifecycle.canMountIncrementally()) {
-      mCanMountIncrementallyMountItems.delete(index);
+  private void startUnmountDisappearingItem(int index, String key) {
+    final MountItem item = getItemAt(index);
+
+    if (item == null) {
+      throw new RuntimeException("Item at index=" + index +" does not exist");
     }
 
-    ComponentsPools.release(context, item);
+    if (!(item.getContent() instanceof ComponentHost)) {
+      throw new RuntimeException("Only host components can be used as disappearing items");
+    }
 
-    mMountStats.unmountedCount++;
+    final ComponentHost host = item.getHost();
+    host.startUnmountDisappearingItem(index, item);
+    mTransitionManager.getTransitionKeySet(key).setTransitionCleanupListener(
+        new TransitionKeySet.TransitionCleanupListener() {
+          @Override
+          public void onTransitionCleanup() {
+            endUnmountDisappearingItem(mContext, item);
+          }
+        });
+  }
+
+  private void endUnmountDisappearingItem(ComponentContext context, MountItem item) {
+    final ComponentHost content = (ComponentHost) item.getContent();
+
+    // Unmount descendant items in reverse order.
+    for (int i = content.getMountItemCount() - 1; i >= 0; i--) {
+      final MountItem mountItem = content.getMountItemAt(i);
+      unmountDisappearingItemChild(context, mountItem);
+    }
+
+    if (content.getMountItemCount() > 0) {
+      throw new IllegalStateException("Recursively unmounting items from a ComponentHost, left" +
+          " some items behind maybe because not tracked by its MountState");
+    }
+    final ComponentHost host = item.getHost();
+    host.unmountDisappearingItem(item);
+    unsetViewAttributes(item);
+
+    unbindAndUnmountLifecycle(context, item);
+
+    if (item.getComponent().getLifecycle().canMountIncrementally()) {
+      final int index = mCanMountIncrementallyMountItems.indexOfValue(item);
+      if (index > 0) {
+        mCanMountIncrementallyMountItems.removeAt(index);
+      }
+    }
+    ComponentsPools.release(context, item);
   }
 
   int getItemCount() {

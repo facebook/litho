@@ -30,6 +30,13 @@ class TransitionKeySet implements TransitionListener {
     void onTransitionKeySetEnd(String key, View view);
   }
 
+  /**
+   * Callback to clean up the object state associated with this transition when it is finished
+   */
+  interface TransitionCleanupListener {
+    void onTransitionCleanup();
+  }
+
   private final String mKey;
 
   private SimpleArrayMap<Integer, Transition> mAppearTransition;
@@ -49,7 +56,8 @@ class TransitionKeySet implements TransitionListener {
   // Cumulative ValuesFlag to track across all the transitions for a given key.
   private @PropertyType int mTrackedValuesFlag;
   private View mTargetView;
-  private TransitionKeySetListener mTransitionEndListener;
+  private TransitionKeySetListener mTransitionKeySetListener;
+  private TransitionCleanupListener mTransitionCleanupListener;
   private int mAnimationRunningCounter = 0;
 
   TransitionKeySet(String key) {
@@ -152,10 +160,18 @@ class TransitionKeySet implements TransitionListener {
     }
 
     if (mRunningTransitionsPointer.size() > 0) {
-      mTransitionEndListener.onTransitionKeySetStop(mKey, mTargetView);
+      mTransitionKeySetListener.onTransitionKeySetStop(mKey, mTargetView);
     }
 
     mAnimationRunningCounter = 0;
+  }
+
+  /**
+   * For disappear transitions we need to reset the state of the view from animation end state
+   * to its initial state so that it can be safely used for further recycling.
+   */
+  private void resetViewPropertiesAfterDisappear() {
+    mStartValues.applyProperties(mTargetView);
   }
 
   /**
@@ -200,7 +216,13 @@ class TransitionKeySet implements TransitionListener {
   @Override
   public void onTransitionEnd() {
     if (--mAnimationRunningCounter == 0) {
-      mTransitionEndListener.onTransitionKeySetEnd(mKey, mTargetView);
+      mTransitionKeySetListener.onTransitionKeySetEnd(mKey, mTargetView);
+      if (mTransitionCleanupListener != null) {
+        mTransitionCleanupListener.onTransitionCleanup();
+      }
+      if (wasRunningDisappearTransition()) {
+        resetViewPropertiesAfterDisappear();
+      }
     } else if (mAnimationRunningCounter < 0) {
       throw new IllegalStateException("Wrong number of TransitionEnd received.");
     }
@@ -224,7 +246,7 @@ class TransitionKeySet implements TransitionListener {
       return false;
     }
 
-    mTransitionEndListener = listener;
+    mTransitionKeySetListener = listener;
     mRunningTransitionsPointer = null;
     mAnimationRunningCounter = 0;
 
@@ -243,7 +265,7 @@ class TransitionKeySet implements TransitionListener {
 
       case KeyStatus.DISAPPEARED:
         if (hasDisappearingTransitions()) {
-          // TODO implementation.
+          mRunningTransitionsPointer = mDisappearTransitions;
         }
         break;
     }
@@ -262,7 +284,7 @@ class TransitionKeySet implements TransitionListener {
       }
 
       if (mRunningTransitionsPointer.size() > 0) {
-        mTransitionEndListener.onTransitionKeySetStart(mKey, mTargetView);
+        mTransitionKeySetListener.onTransitionKeySetStart(mKey, mTargetView);
         return true;
       }
     }
@@ -284,7 +306,7 @@ class TransitionKeySet implements TransitionListener {
     return (mChangeTransitions != null && !mChangeTransitions.isEmpty());
   }
 
-  private boolean hasDisappearingTransitions() {
+  boolean hasDisappearingTransitions() {
     return (mDisappearTransitions != null && !mDisappearTransitions.isEmpty());
   }
 
@@ -294,5 +316,20 @@ class TransitionKeySet implements TransitionListener {
 
   private boolean wasRunningChangeTransition() {
     return (mRunningTransitionsPointer == mChangeTransitions);
+  }
+
+  boolean wasRunningDisappearTransition() {
+    return (mRunningTransitionsPointer == mDisappearTransitions);
+  }
+
+  void setTransitionCleanupListener(TransitionCleanupListener listener) {
+    mTransitionCleanupListener = listener;
+  }
+
+  void cleanupAfterDisappear() {
+    if (mTransitionCleanupListener != null) {
+      mTransitionCleanupListener.onTransitionCleanup();
+    }
+    resetViewPropertiesAfterDisappear();
   }
 }

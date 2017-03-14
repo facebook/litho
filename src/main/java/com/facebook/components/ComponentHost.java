@@ -185,6 +185,22 @@ public class ComponentHost extends ViewGroup {
     maybeInvalidateAccessibilityState(disappearingItem);
   }
 
+  boolean hasDisappearingItems() {
+    return mDisappearingItems.size() > 0;
+  }
+
+  List<String> getDisappearingItemKeys() {
+    if (!hasDisappearingItems()) {
+      return null;
+    }
+    final List<String> keys = new ArrayList<>();
+    for (int i = 0, size = mDisappearingItems.size(); i < size; i++) {
+      keys.add(mDisappearingItems.valueAt(i).getViewNodeInfo().getTransitionKey());
+    }
+
+    return keys;
+  }
+
   private void maybeMoveTouchExpansionIndexes(MountItem item, int oldIndex, int newIndex) {
     final ViewNodeInfo viewNodeInfo = item.getViewNodeInfo();
     if (viewNodeInfo == null) {
