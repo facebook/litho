@@ -31,6 +31,13 @@ public class SpecModelValidation {
     return validationErrors;
   }
 
+  public static List<SpecModelValidationError> validateMountSpecModel(MountSpecModel specModel) {
+    List<SpecModelValidationError> validationErrors = new ArrayList<>();
+    validationErrors.addAll(validateSpecModel(specModel));
+    validationErrors.addAll(PureRenderValidation.validate(specModel));
+    return validationErrors;
+  }
+
   static List<SpecModelValidationError> validateName(SpecModel specModel) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
     if (!specModel.getSpecName().endsWith("Spec")) {

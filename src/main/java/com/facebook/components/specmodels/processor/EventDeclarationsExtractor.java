@@ -33,9 +33,10 @@ public class EventDeclarationsExtractor {
 
   public static ImmutableList<EventDeclarationModel> getEventDeclarations(
       Elements elements,
-      TypeElement element) {
+      TypeElement element,
+      Class<?> annotationType) {
     final List<AnnotationValue> eventTypes =
-        ProcessorUtils.getAnnotationParameter(elements, element, LayoutSpec.class, "events");
+        ProcessorUtils.getAnnotationParameter(elements, element, annotationType, "events");
 
     final List<EventDeclarationModel> eventDeclarations;
     if (eventTypes != null) {

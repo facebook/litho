@@ -35,6 +35,7 @@ import com.facebook.components.annotations.OnUnbind;
 import com.facebook.components.annotations.OnUnmount;
 import com.facebook.components.annotations.ShouldUpdate;
 import com.facebook.components.specmodels.model.ClassNames;
+import com.facebook.components.specmodels.model.SpecModel;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
@@ -71,7 +72,10 @@ public class MountSpecHelper extends ComponentSpecHelper {
       FromBind.class,
   };
 
-  public MountSpecHelper(ProcessingEnvironment processingEnv, TypeElement specElement) {
+  public MountSpecHelper(
+      ProcessingEnvironment processingEnv,
+      TypeElement specElement,
+      SpecModel specModel) {
     super(
         processingEnv,
         specElement,
@@ -79,7 +83,7 @@ public class MountSpecHelper extends ComponentSpecHelper {
         specElement.getAnnotation(MountSpec.class).isPublic(),
         STAGE_ANNOTATIONS,
         INTER_STAGE_INPUT_ANNOTATIONS,
-        null);
+        specModel);
   }
 
   @Override

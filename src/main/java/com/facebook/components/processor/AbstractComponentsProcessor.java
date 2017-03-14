@@ -23,9 +23,11 @@ import com.facebook.components.annotations.MountSpec;
 import com.facebook.components.annotations.ReferenceSpec;
 import com.facebook.components.specmodels.model.ClassNames;
 import com.facebook.components.specmodels.model.DependencyInjectionHelper;
+import com.facebook.components.specmodels.model.MountSpecModel;
 import com.facebook.components.specmodels.model.SpecModel;
 import com.facebook.components.specmodels.model.SpecModelValidationError;
 import com.facebook.components.specmodels.processor.LayoutSpecModelFactory;
+import com.facebook.components.specmodels.processor.MountSpecModelFactory;
 
 import com.squareup.javapoet.JavaFile;
 
@@ -59,8 +61,15 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
               "annotation_processor_invoked",
               element);
 
+          final MountSpecModel mountSpecModel =
+              MountSpecModelFactory.create(
+                  processingEnv.getElementUtils(),
+                  (TypeElement) element,
+                  getDependencyInjectionGenerator((TypeElement) element));
+          validate(mountSpecModel);
+
           final MountSpecHelper mountSpecHelper =
-              new MountSpecHelper(processingEnv, (TypeElement) element);
+              new MountSpecHelper(processingEnv, (TypeElement) element, mountSpecModel);
           closeable = mountSpecHelper;
           generate(mountSpecHelper);
         } else if (element.getAnnotation(ReferenceSpec.class) != null) {

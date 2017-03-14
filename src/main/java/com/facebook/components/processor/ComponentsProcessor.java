@@ -7,6 +7,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
+import com.facebook.components.specmodels.generator.JavadocGenerator;
 import com.facebook.components.specmodels.model.ClassNames;
 import com.facebook.components.specmodels.model.DependencyInjectionHelper;
 
@@ -42,6 +43,8 @@ public class ComponentsProcessor extends AbstractComponentsProcessor {
     final boolean isPureRender = mountSpecHelper.isPureRender();
 
     mountSpecHelper.getTypeSpec().addModifiers(Modifier.FINAL);
+    JavadocGenerator.generate(mountSpecHelper.getSpecModel())
+        .addToTypeSpec(mountSpecHelper.getTypeSpec());
     generatePreamble(mountSpecHelper.getStages());
 
     if (isPureRender) {

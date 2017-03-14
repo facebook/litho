@@ -11,39 +11,39 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.facebook.common.internal.ImmutableList;
-import com.facebook.components.annotations.FromCreateLayout;
-import com.facebook.components.annotations.LayoutSpec;
+import com.facebook.components.annotations.FromMeasure;
+import com.facebook.components.annotations.MountSpec;
 import com.facebook.components.annotations.OnCreateTreeProp;
 import com.facebook.components.annotations.ShouldUpdate;
-import com.facebook.components.specmodels.model.DependencyInjectionHelper;
 import com.facebook.components.specmodels.model.DelegateMethodDescriptions;
-import com.facebook.components.specmodels.model.LayoutSpecModel;
+import com.facebook.components.specmodels.model.DependencyInjectionHelper;
+import com.facebook.components.specmodels.model.MountSpecModel;
 
 /**
- * Factory for creating {@link LayoutSpecModel}s.
+ * Factory for creating {@link MountSpecModel}s.
  */
-public class LayoutSpecModelFactory {
+public class MountSpecModelFactory {
   private static final List<Class<? extends Annotation>> INTER_STAGE_INPUT_ANNOTATIONS =
       new ArrayList<>();
   private static final List<Class<? extends Annotation>> DELEGATE_METHOD_ANNOTATIONS =
       new ArrayList<>();
   static {
-    INTER_STAGE_INPUT_ANNOTATIONS.add(FromCreateLayout.class);
+    INTER_STAGE_INPUT_ANNOTATIONS.add(FromMeasure.class);
     DELEGATE_METHOD_ANNOTATIONS.addAll(
-        DelegateMethodDescriptions.LAYOUT_SPEC_DELEGATE_METHODS_MAP.keySet());
+        DelegateMethodDescriptions.MOUNT_SPEC_DELEGATE_METHODS_MAP.keySet());
     DELEGATE_METHOD_ANNOTATIONS.add(OnCreateTreeProp.class);
     DELEGATE_METHOD_ANNOTATIONS.add(ShouldUpdate.class);
   }
 
   /**
-   * Create a {@link LayoutSpecModel} from the given {@link TypeElement} and an optional
+   * Create a {@link MountSpecModel} from the given {@link TypeElement} and an optional
    * {@link DependencyInjectionHelper}.
    */
-  public static LayoutSpecModel create(
+  public static MountSpecModel create(
       Elements elements,
       TypeElement element,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper) {
-    return new LayoutSpecModel(
+    return new MountSpecModel(
         element.getQualifiedName().toString(),
         DelegateMethodExtractor.getDelegateMethods(
             element,
@@ -56,12 +56,12 @@ public class LayoutSpecModelFactory {
             INTER_STAGE_INPUT_ANNOTATIONS),
         ImmutableList.copyOf(TypeVariablesExtractor.getTypeVariables(element)),
         ImmutableList.copyOf(PropDefaultsExtractor.getPropDefaults(element)),
-        EventDeclarationsExtractor.getEventDeclarations(elements, element, LayoutSpec.class),
+        EventDeclarationsExtractor.getEventDeclarations(elements, element, MountSpec.class),
         JavadocExtractor.getClassJavadoc(elements, element),
         JavadocExtractor.getPropJavadocs(elements, element),
-        element.getAnnotation(LayoutSpec.class).isPublic(),
+        element.getAnnotation(MountSpec.class).isPublic(),
         dependencyInjectionHelper,
-        element.getAnnotation(LayoutSpec.class).isPureRender(),
+        element.getAnnotation(MountSpec.class).isPureRender(),
         element);
   }
 }
