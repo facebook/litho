@@ -7,11 +7,11 @@ category: tutorial
 
 ## Feed Me!
 
-Feeds in Litho are based upon the `Recycler` component.  This component is similar, conceptually, to the Android `RecyclerView`.  However, with Litho, all the layout is performed in a separate thread, giving a substantial performance boost.  In this tutorial, we'll write a `Binder` that provides component to a `Recycler`, in the same way an `LayoutMangager` and `Adapter` combination provides `View`s to a `RecyclerView`.
+Feeds in Litho are based upon the `Recycler` component.  This component is similar, conceptually, to the Android `RecyclerView`.  However, with Litho, all the layout is performed in a separate thread, giving a substantial performance boost.  In this tutorial, we'll use a `RecyclerBinder` that provides component to a `Recycler`, in the same way an `LayoutMangager` and `Adapter` combination provides `View`s to a `RecyclerView`.
 
 <!--truncate-->
 
-The first thing we need to do is add the android support recyclerview to the libs, much as we did for soloader in the first tutorial:
+The first thing we need to do is add the android support recyclerview to the libs, much as we did for SoLoader in the first tutorial:
 
 ``` python
 java_library(
@@ -27,49 +27,36 @@ prebuilt_jar(
 )
 ```
 
-Then, add it as a dependency of `/src/main/java/com/company/tutorial:tutorial`.  This is required for our `Binder`, which we shall name `FeedBinder` and define as follows.
+Then, add it as a dependency of `/src/main/java/com/company/tutorial:tutorial`.  Now we will construct a `RecyclerBinder` and attach it to a `Recycler`.  A `RecyclerBinder` takes a component context, a range ratio and a layout info as constructor parameters.  For this example, simply set the range ratio to 4, and construct a `LinearLayoutInfo` for the layout info.  For more information see the detailed docs.
+
+Adding a `Recycler` component to the component tree is as simple as any other component, and setting the binder is straightforward.
 
 ``` java
-package com.company.tutorial;
+final RecyclerBinder recyclerBinder = new RecyclerBinder(
+    context,
+    4.0f,
+    new LinearLayoutInfo(this, OrientationHelper.VERTICAL, false));
 
-import android.content.Context;
-import android.support.v7.widget.LinearLayoutManager;
+final ComponentTree componentTree = ComponentTree.create(
+    context,
+    Recycler.create(context)
+        .binder(recyclerBinder))
+    .build();
+```
 
-import com.facebook.litho.Component;
-import com.facebook.litho.ComponentContext;
-import com.facebook.litho.widget.LinearComponentBinder;
+Now we need to populate the binder.  For this, we will define a helper function in `SampleActivity`.  Binders take `ComponentInfo` classes that describe the components to be rendered by the `Recycler`.  In this case, we want a simple `ComponentInfo` that simply presents our `FeedItem` component.
 
-public class FeedBinder extends LinearComponentBinder {
-
-    FeedBinder(Context c) {
-        super(c, new LinearLayoutManager(c));
-    }
-
-    @Override
-    protected int getCount() {
-        return 32;
-    }
-
-    @Override
-    public Component<?> createComponent(ComponentContext c, int position) {
-        return FeedItem.create(c)
-                .build();
-    }
+``` java
+private void addContent(RecyclerBinder recyclerBinder, ComponentContext context) {
+  for (int i = 0; i < 32; i++) {
+    ComponentInfo.Builder componentInfoBuilder = ComponentInfo.create();
+    componentInfoBuilder.component(FeedItem.create(context).build());
+    recyclerBinder.insertItemAt(i, componentInfoBuilder.build());
+  }
 }
 ```
 
-The above code is mostly self explanatory.  Refer to the docs if you want a more in-depth explanation of how binders work.
-
-A binder is added to a `Recycler` very simply.  Just add this to the activity:
-
-``` java
-final ComponentTree componentTree = ComponentTree.create(context,
-        Recycler.create(context)
-                .binder(new FeedBinder(context)))
-        .build();
-```
-
-It's that simple.  Running the app gives a scrollable list of 32 "Hello World" compoennts:
+It's that simple.  Call `addContent` somewhere in the main activity `onCreate` and running the app gives a scrollable list of 32 "Hello World" components:
 
 <img src="/static/images/barebones3.png" style="width: 300px;">
 

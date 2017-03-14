@@ -7,7 +7,7 @@ category: tutorial
 
 ## Properties
 
-Feeds are no good if they only contain repetitive copies of a single component.  In this tutorial, we will look at _properties_: attributes you can set on components you define in order to change their behaviour or appearance.
+Feeds are no good if they only contain repetitive copies of a single component.  In this tutorial, we will look at _properties_: attributes you can set on components you define in order to change their behavior or appearance.
 
 <!--truncate-->
 
@@ -34,16 +34,20 @@ static ComponentLayout onCreateLayout(
 The magic is in the `@Prop` annotations and the annotation processor.  The processor produces methods on the builder that correspond to the properties in a smart way.  Thus, we simply change the binder's construction of the component to
 
 ``` java
-@Override
-public Component<?> createComponent(ComponentContext c, int position) {
-  return FeedItem.create(c)
-      .color(position % 2 == 0 ? Color.WHITE : Color.LTGRAY)
-      .message("Hello, world!")
-      .build();
+private void addContent(RecyclerBinder recyclerBinder, ComponentContext context) {
+  for (int i = 0; i < 32; i++) {
+    ComponentInfo.Builder componentInfoBuilder = ComponentInfo.create();
+    componentInfoBuilder.component(
+        FeedItem.create(context)
+            .color(i % 2 == 0 ? Color.WHITE : Color.LTGRAY)
+            .message("Hello, world!")
+            .build());
+    recyclerBinder.insertItemAt(i, componentInfoBuilder.build());
+  }
 }
 ```
 
-This gives
+The only change is in lines 5 to 8.  This gives
 
 <img src="/static/images/barebones4.png" style="width: 300px;">
 
