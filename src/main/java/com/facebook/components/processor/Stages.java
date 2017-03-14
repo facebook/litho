@@ -2619,55 +2619,6 @@ public class Stages {
     return annotations;
   }
 
-  public void generateComponentBuilder(
-      StaticFlag isStatic,
-      TypeName genericType) {
-    generateBuilder(
-        isStatic,
-        StyleableFlag.STYLEABLE,
-        ClassNames.COMPONENT,
-        genericType,
-        INNER_IMPL_BUILDER_CLASS_NAME,
-        new TypeName[]{genericType},
-        ClassNames.COMPONENT_CONTEXT,
-        ClassNames.EVENT_HANDLER,
-        ClassNames.COMPONENT,
-        true,
-        false);
-
-    generateBuilderPool(
-        ClassName.bestGuess(INNER_IMPL_BUILDER_CLASS_NAME),
-        "m" + INNER_IMPL_BUILDER_CLASS_NAME + "Pool",
-        mTypeVariables.isEmpty() || isStatic == StaticFlag.STATIC
-            ? StaticFlag.STATIC
-            : StaticFlag.NOT_STATIC,
-        StyleableFlag.STYLEABLE,
-        ClassNames.COMPONENT_CONTEXT);
-
-    final String implClassName = getImplClassName();
-
-    writeMethodSpec(MethodSpec.methodBuilder("create")
-        .addModifiers(Modifier.PUBLIC)
-        .returns(ClassName.bestGuess(INNER_IMPL_BUILDER_CLASS_NAME))
-        .addParameter(ClassNames.COMPONENT_CONTEXT, "context")
-        .addParameter(int.class, "defStyleAttr")
-        .addParameter(int.class, "defStyleRes")
-        .addStatement(
-            "return new$L(context, defStyleAttr, defStyleRes, new $T())",
-            INNER_IMPL_BUILDER_CLASS_NAME,
-            ClassName.bestGuess(implClassName))
-        .addModifiers(isStatic == StaticFlag.STATIC ? Modifier.STATIC : Modifier.FINAL)
-        .build());
-
-    writeMethodSpec(MethodSpec.methodBuilder("create")
-        .addModifiers(Modifier.PUBLIC)
-        .returns(ClassName.bestGuess(INNER_IMPL_BUILDER_CLASS_NAME))
-        .addParameter(ClassNames.COMPONENT_CONTEXT, "context")
-        .addStatement("return create(context, 0, 0)")
-        .addModifiers(isStatic == StaticFlag.STATIC ? Modifier.STATIC : Modifier.FINAL)
-        .build());
-  }
-
   public void generateReferenceBuilder(StaticFlag isStatic, TypeName genericType) {
     generateBuilder(
         isStatic,

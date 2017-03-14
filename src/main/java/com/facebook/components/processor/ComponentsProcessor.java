@@ -7,6 +7,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
+import com.facebook.components.specmodels.generator.BuilderGenerator;
 import com.facebook.components.specmodels.generator.EventGenerator;
 import com.facebook.components.specmodels.generator.JavadocGenerator;
 import com.facebook.components.specmodels.generator.PreambleGenerator;
@@ -84,10 +85,7 @@ public class ComponentsProcessor extends AbstractComponentsProcessor {
 
     EventGenerator.generate(specModel).addToTypeSpec(typeSpec);
     StateGenerator.generate(specModel).addToTypeSpec(typeSpec);
-
-    stages.generateComponentBuilder(
-        Stages.StaticFlag.STATIC,
-        ClassName.bestGuess(stages.getSimpleClassName()));
+    BuilderGenerator.generate(specModel).addToTypeSpec(typeSpec);
   }
 
   @Override
