@@ -66,7 +66,8 @@ public class EventMethodExtractor {
         final List<MethodParamModel> methodParams =
             getMethodParams(
                 executableElement,
-                getPermittedMethodParamAnnotations(permittedInterStageInputAnnotations));
+                getPermittedMethodParamAnnotations(permittedInterStageInputAnnotations),
+                permittedInterStageInputAnnotations);
 
         final DeclaredType eventClassDeclaredType = ProcessorUtils.getAnnotationParameter(
             elements,

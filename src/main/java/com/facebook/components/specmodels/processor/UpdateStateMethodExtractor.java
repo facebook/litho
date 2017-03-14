@@ -58,7 +58,8 @@ public class UpdateStateMethodExtractor {
         final List<MethodParamModel> methodParams =
             getMethodParams(
                 executableElement,
-                getPermittedMethodParamAnnotations(permittedInterStageInputAnnotations));
+                getPermittedMethodParamAnnotations(permittedInterStageInputAnnotations),
+                permittedInterStageInputAnnotations);
 
         final UpdateStateMethodModel delegateMethod =
             new UpdateStateMethodModel(

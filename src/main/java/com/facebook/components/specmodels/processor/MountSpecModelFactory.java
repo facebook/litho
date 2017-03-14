@@ -11,7 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.facebook.common.internal.ImmutableList;
+import com.facebook.components.annotations.FromBind;
+import com.facebook.components.annotations.FromBoundsDefined;
 import com.facebook.components.annotations.FromMeasure;
+import com.facebook.components.annotations.FromMeasureBaseline;
+import com.facebook.components.annotations.FromPrepare;
 import com.facebook.components.annotations.MountSpec;
 import com.facebook.components.annotations.OnCreateTreeProp;
 import com.facebook.components.annotations.ShouldUpdate;
@@ -28,7 +32,11 @@ public class MountSpecModelFactory {
   private static final List<Class<? extends Annotation>> DELEGATE_METHOD_ANNOTATIONS =
       new ArrayList<>();
   static {
+    INTER_STAGE_INPUT_ANNOTATIONS.add(FromPrepare.class);
+    INTER_STAGE_INPUT_ANNOTATIONS.add(FromMeasureBaseline.class);
     INTER_STAGE_INPUT_ANNOTATIONS.add(FromMeasure.class);
+    INTER_STAGE_INPUT_ANNOTATIONS.add(FromBoundsDefined.class);
+    INTER_STAGE_INPUT_ANNOTATIONS.add(FromBind.class);
     DELEGATE_METHOD_ANNOTATIONS.addAll(
         DelegateMethodDescriptions.MOUNT_SPEC_DELEGATE_METHODS_MAP.keySet());
     DELEGATE_METHOD_ANNOTATIONS.add(OnCreateTreeProp.class);

@@ -30,7 +30,8 @@ public class MethodExtractorUtils {
    */
   static List<MethodParamModel> getMethodParams(
       ExecutableElement method,
-      List<Class<? extends Annotation>> permittedAnnotations) {
+      List<Class<? extends Annotation>> permittedAnnotations,
+      List<Class<? extends Annotation>> permittedInterStageInputAnnotations) {
     final List<MethodParamModel> methodParams = new ArrayList<>();
     for (VariableElement param : method.getParameters()) {
       methodParams.add(
@@ -39,6 +40,7 @@ public class MethodExtractorUtils {
               param.getSimpleName().toString(),
               getLibraryAnnotations(param, permittedAnnotations),
               getExternalAnnotations(param),
+              permittedInterStageInputAnnotations,
               param));
     }
 

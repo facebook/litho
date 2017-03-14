@@ -8,15 +8,14 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
 import com.facebook.components.specmodels.generator.BuilderGenerator;
+import com.facebook.components.specmodels.generator.ComponentImplGenerator;
 import com.facebook.components.specmodels.generator.EventGenerator;
 import com.facebook.components.specmodels.generator.JavadocGenerator;
 import com.facebook.components.specmodels.generator.PreambleGenerator;
 import com.facebook.components.specmodels.generator.StateGenerator;
-import com.facebook.components.specmodels.model.ClassNames;
 import com.facebook.components.specmodels.model.DependencyInjectionHelper;
 import com.facebook.components.specmodels.model.SpecModel;
 
-import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
@@ -64,7 +63,6 @@ public class ComponentsProcessor extends AbstractComponentsProcessor {
       }
     }
 
-    mountSpecHelper.getStages().generateComponentImplClass(Stages.StaticFlag.STATIC);
     mountSpecHelper.generateTreePropsMethods();
     mountSpecHelper.generateOnPrepare();
     mountSpecHelper.generateOnMeasure();
@@ -83,6 +81,7 @@ public class ComponentsProcessor extends AbstractComponentsProcessor {
     final Stages stages = mountSpecHelper.getStages();
     stages.generateOnLoadStyle();
 
+    ComponentImplGenerator.generate(specModel).addToTypeSpec(typeSpec);
     EventGenerator.generate(specModel).addToTypeSpec(typeSpec);
     StateGenerator.generate(specModel).addToTypeSpec(typeSpec);
     BuilderGenerator.generate(specModel).addToTypeSpec(typeSpec);

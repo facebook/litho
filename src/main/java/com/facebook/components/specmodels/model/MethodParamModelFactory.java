@@ -6,8 +6,6 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.facebook.components.annotations.FromCreateLayout;
-import com.facebook.components.annotations.FromMeasure;
 import com.facebook.components.annotations.Prop;
 import com.facebook.components.annotations.State;
 import com.facebook.components.annotations.TreeProp;
@@ -19,18 +17,13 @@ import com.squareup.javapoet.TypeName;
  * Factory for creating {@link MethodParamModel}s.
  */
 public final class MethodParamModelFactory {
-  private static final List<Class<? extends Annotation>> INTER_STAGE_INPUT_ANNOTATIONS =
-      new ArrayList<>();
-  static {
-    INTER_STAGE_INPUT_ANNOTATIONS.add(FromCreateLayout.class);
-    INTER_STAGE_INPUT_ANNOTATIONS.add(FromMeasure.class);
-  }
 
   public static MethodParamModel create(
       TypeName type,
       String name,
       List<Annotation> annotations,
       List<AnnotationSpec> externalAnnotations,
+      List<Class<? extends Annotation>> permittedInterStateInputAnnotations,
       Object representedObject) {
     final SimpleMethodParamModel simpleMethodParamModel =
         new SimpleMethodParamModel(type, name, annotations, externalAnnotations, representedObject);
@@ -50,7 +43,7 @@ public final class MethodParamModelFactory {
         return new TreePropModel(simpleMethodParamModel);
       }
 
-      if (INTER_STAGE_INPUT_ANNOTATIONS.contains(annotation.annotationType())) {
+      if (permittedInterStateInputAnnotations.contains(annotation.annotationType())) {
         return new InterStageInputParamModel(simpleMethodParamModel);
       }
     }

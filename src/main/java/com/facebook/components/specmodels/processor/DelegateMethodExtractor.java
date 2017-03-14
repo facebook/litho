@@ -57,7 +57,8 @@ public class DelegateMethodExtractor {
         final List<MethodParamModel> methodParams =
             getMethodParams(
                 executableElement,
-                getPermittedMethodParamAnnotations(permittedInterStageInputAnnotations));
+                getPermittedMethodParamAnnotations(permittedInterStageInputAnnotations),
+                permittedInterStageInputAnnotations);
 
         final DelegateMethodModel delegateMethod =
             new DelegateMethodModel(
