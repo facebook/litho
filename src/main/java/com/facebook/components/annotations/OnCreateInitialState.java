@@ -28,7 +28,7 @@ import java.lang.annotation.RetentionPolicy;
  * }
  * </pre>
  */
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.RUNTIME)
 public @interface OnCreateInitialState {
 
 }

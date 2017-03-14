@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.facebook.components.annotations.FromCreateLayout;
+import com.facebook.components.annotations.FromMeasure;
 import com.facebook.components.annotations.Prop;
 import com.facebook.components.annotations.State;
 import com.facebook.components.annotations.TreeProp;
@@ -22,6 +23,7 @@ public final class MethodParamModelFactory {
       new ArrayList<>();
   static {
     INTER_STAGE_INPUT_ANNOTATIONS.add(FromCreateLayout.class);
+    INTER_STAGE_INPUT_ANNOTATIONS.add(FromMeasure.class);
   }
 
   public static MethodParamModel create(
