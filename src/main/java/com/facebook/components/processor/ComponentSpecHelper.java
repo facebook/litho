@@ -73,10 +73,6 @@ public abstract class ComponentSpecHelper extends SpecHelper {
     mStages.generateTreePropsMethods(ClassNames.COMPONENT_CONTEXT, ClassNames.COMPONENT);
   }
 
-  public void generateEvents() {
-    mStages.generateComponentEvents();
-  }
-
   @Override
   protected boolean isStateSupported() {
     return true;

@@ -7,9 +7,11 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
+import com.facebook.components.specmodels.generator.EventGenerator;
 import com.facebook.components.specmodels.generator.JavadocGenerator;
 import com.facebook.components.specmodels.model.ClassNames;
 import com.facebook.components.specmodels.model.DependencyInjectionHelper;
+import com.facebook.components.specmodels.model.SpecModel;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
@@ -68,7 +70,6 @@ public class ComponentsProcessor extends AbstractComponentsProcessor {
     mountSpecHelper.generateOnUnmount();
     mountSpecHelper.generateAccessibilityMethods();
     mountSpecHelper.generateCanMountIncrementally();
-    mountSpecHelper.generateEvents();
     mountSpecHelper.generateShouldUseDisplayList();
     mountSpecHelper.generateCreateInitialState();
 
@@ -88,13 +89,10 @@ public class ComponentsProcessor extends AbstractComponentsProcessor {
 
   private static void generatePostamble(SpecHelper specHelper) {
     Stages stages = specHelper.getStages();
-
     stages.generateOnLoadStyle();
-    stages.generateOnEventHandlers(ClassNames.COMPONENT, ClassNames.COMPONENT_CONTEXT);
-    stages.generateEventHandlerFactories(
-        ClassNames.COMPONENT_CONTEXT,
-        ClassNames.COMPONENT);
-    stages.generateDispatchOnEvent(ClassNames.COMPONENT_CONTEXT);
+
+    final SpecModel specModel = specHelper.getSpecModel();
+    EventGenerator.generate(specModel).addToTypeSpec(specHelper.getTypeSpec());
 
     stages.generateTransferState(
         ClassNames.COMPONENT_CONTEXT,

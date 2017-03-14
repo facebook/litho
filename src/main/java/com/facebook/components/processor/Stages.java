@@ -2364,21 +2364,6 @@ public class Stages {
     return variableElement.getAnnotation(State.class) != null;
   }
 
-  /**
-   * Generates events specified with @Event annotation.
-   */
-  public void generateComponentEvents() {
-    validateEventDeclarations();
-    for (TypeElement event : mEventDeclarations) {
-      generateEvent(
-          event,
-          ClassNames.EVENT_HANDLER,
-          ClassNames.COMPONENT_LIFECYCLE,
-          ClassNames.COMPONENT_CONTEXT,
-          "getComponentScope");
-    }
-  }
-
   public void generateListEvents() {
     for (TypeElement event : mEventDeclarations) {
       generateEvent(
