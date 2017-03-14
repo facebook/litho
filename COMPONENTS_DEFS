@@ -44,6 +44,7 @@ COMPONENTS_SOLOADER_TARGET                    = make_dep_path('lib/soloader:solo
 COMPONENTS_ASSERTJ_TARGET                     = make_dep_path('lib/assertj:assertj')
 COMPONENTS_MOCKITO_TARGET                     = make_dep_path('lib/mockito:mockito')
 COMPONENTS_POWERMOCK_REFLECT_TARGET           = make_dep_path('lib/powermock:powermock-reflect')
+COMPONENTS_POWERMOCK_MOCKITO_TARGET           = make_dep_path('lib/powermock:powermock-mockito')
 
 # Fresco
 COMPONENTS_FRESCO_TARGET                      = make_dep_path('lib/fresco:fresco')
