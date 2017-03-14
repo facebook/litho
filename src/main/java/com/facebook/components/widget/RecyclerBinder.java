@@ -462,6 +462,13 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     }
   }
 
+  /**
+   * Gets the number of items in this binder.
+   */
+  public int getItemCount() {
+    return mInternalAdapter.getItemCount();
+  }
+
   @GuardedBy("this")
   private void invalidateLayoutData() {
     mRange = null;
