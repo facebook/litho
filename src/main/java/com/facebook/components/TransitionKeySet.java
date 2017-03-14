@@ -147,7 +147,7 @@ class TransitionKeySet implements TransitionListener {
       mEndValues = mLocalEndValues;
     }
 
-    return start(keyStatus, listener, null);
+    return start(keyStatus, listener, null, null);
   }
 
   void stop() {
@@ -186,14 +186,15 @@ class TransitionKeySet implements TransitionListener {
       TransitionKeySet oldTransition,
       int newKeyStatus,
       TransitionKeySetListener listener) {
+
     switch (newKeyStatus) {
       case KeyStatus.UNCHANGED:
         if (mEndValues.equals(oldTransition.mEndValues)) {
           mStartValues = oldTransition.mStartValues;
           if (oldTransition.wasRunningAppearTransition()) {
-            return start(KeyStatus.APPEARED, listener, oldTransition.mAppearTransition);
+            return resume(KeyStatus.APPEARED, listener, oldTransition.mAppearTransition);
           } else if (oldTransition.wasRunningChangeTransition()) {
-            return start(KeyStatus.UNCHANGED, listener, oldTransition.mChangeTransitions);
+            return resume(KeyStatus.UNCHANGED, listener, oldTransition.mChangeTransitions);
           } else {
             throw new IllegalStateException("Trying to resume a transition with an invalid state.");
           }
@@ -201,13 +202,39 @@ class TransitionKeySet implements TransitionListener {
 
         // Different endValues, run a new change transition using the Values where the previous
         // one was interrupted.
-        mStartValues = oldTransition.mInterruptedValues;
-        return start(KeyStatus.UNCHANGED, listener);
+        return restart(KeyStatus.UNCHANGED, listener, oldTransition.mInterruptedValues);
 
       case KeyStatus.DISAPPEARED:
-        // TODO: 1) An appearing or change transition was stopped and the key now disappeared.
-        //       2) Can a disappearing transition be resumed? Depends if we retain the key or not.
-        return false;
+        if (oldTransition.wasRunningDisappearTransition()) {
+          // Was disappearing, continue disappearing animation.
+          mStartValues = oldTransition.mStartValues;
+          mEndValues = mLocalEndValues;
+          setTargetView(oldTransition.mTargetView);
+          setTransitionCleanupListener(oldTransition.mTransitionCleanupListener);
+          if (oldTransition.mEndValues.equals(mLocalEndValues)) {
+            return resume(KeyStatus.DISAPPEARED, listener, oldTransition.mDisappearTransitions);
+          } else {
+            return restart(KeyStatus.DISAPPEARED, listener, oldTransition.mInterruptedValues);
+          }
+        } else if (oldTransition.wasRunningAppearTransition()) {
+          // Was appearing now disappearing.
+          mStartValues = oldTransition.mEndValues;
+          mEndValues = mLocalEndValues;
+          return restart(KeyStatus.DISAPPEARED, listener, oldTransition.mInterruptedValues);
+        } else {
+          throw new IllegalStateException("Trying to resume a transition with an invalid state.");
+        }
+
+      case KeyStatus.APPEARED:
+        // If we are resuming from disappear transition to appear transition,
+        // we need to make sure to clean up the state of the current transition
+        // before it is implicitly de-referenced.
+        if (oldTransition.wasRunningDisappearTransition()) {
+          oldTransition.cleanupAfterDisappear();
+        }
+
+        // Was disappearing and now re-appearing.
+        return restart(KeyStatus.APPEARED, listener, oldTransition.mInterruptedValues);
     }
 
     return false;
@@ -229,19 +256,53 @@ class TransitionKeySet implements TransitionListener {
   }
 
   /**
-   * Start a transitions for a key given its keyStatus. If you stopped half way through previous
-   * transitions for this key, you can pass them as an argument and the new transitions will resume
-   * from where the old one stopped.
+   * Restart transition from the given interrupted values.
+   *
+   * @param keyStatus the status of the key to be animated.
+   * @param listener listener to be notified when the set of transitions finished.
+   * @param interruptedValues interrupted values from previous transition if any to be used
+   *                          instead of start values.
+   * @return true if we started any transition.
+   */
+  private boolean restart(
+      @KeyStatus int keyStatus,
+      TransitionKeySetListener listener,
+      PropertySetHolder interruptedValues) {
+    return start(keyStatus, listener, null, interruptedValues);
+  }
+
+  /**
+   * Resume transition from previous one.
    *
    * @param keyStatus the status of the key to be animated.
    * @param listener listener to be notified when the set of transitions finished.
    * @param oldRunningTransitions previous running transitions to recover from their state.
    * @return true if we started any transition.
    */
-  private boolean start(
+  private boolean resume(
       @KeyStatus int keyStatus,
       TransitionKeySetListener listener,
       SimpleArrayMap<Integer, ? extends Transition> oldRunningTransitions) {
+    return start(keyStatus, listener, oldRunningTransitions, null);
+  }
+
+  /**
+   * Start transitions for a key given its keyStatus. If you stopped half way through previous
+   * transitions for this key, you can pass them as an argument and the new transitions will resume
+   * from where the old one stopped.
+   *
+   * @param keyStatus the status of the key to be animated.
+   * @param listener listener to be notified when the set of transitions finished.
+   * @param oldRunningTransitions previous running transitions to recover from their state.
+   * @param interruptedValues interrupted values from previous transition if any to be used
+   *                          instead of start values.
+   * @return true if we started any transition.
+   */
+  private boolean start(
+      @KeyStatus int keyStatus,
+      TransitionKeySetListener listener,
+      SimpleArrayMap<Integer, ? extends Transition> oldRunningTransitions,
+      PropertySetHolder interruptedValues) {
     if (oldRunningTransitions == null && areStartEndValuesEqual()) {
       return false;
     }
@@ -279,7 +340,10 @@ class TransitionKeySet implements TransitionListener {
           t.restoreState(oldRunningTransitions.get(valueFlags));
         }
 
-        t.start(mTargetView, mStartValues, mEndValues);
+        t.start(
+            mTargetView,
+            interruptedValues == null ? mStartValues : interruptedValues,
+            mEndValues);
         mAnimationRunningCounter++;
       }
 
