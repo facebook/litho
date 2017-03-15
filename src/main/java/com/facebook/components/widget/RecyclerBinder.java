@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.support.annotation.UiThread;
 import android.support.annotation.VisibleForTesting;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
@@ -23,6 +24,7 @@ import com.facebook.components.ComponentContext;
 import com.facebook.components.ComponentInfo;
 import com.facebook.components.ComponentTree;
 import com.facebook.components.ComponentView;
+import com.facebook.components.EventHandler;
 import com.facebook.components.MeasureComparisonUtils;
 import com.facebook.components.Size;
 import com.facebook.components.SizeSpec;
@@ -59,6 +61,15 @@ public class RecyclerBinder implements Binder<RecyclerView> {
   private final List<ComponentTreeHolder> mPendingComponentTreeHolders;
   private final float mRangeRatio;
   private final AtomicBoolean mIsMeasured = new AtomicBoolean(false);
+  private final AtomicBoolean mRequiresRemeasure = new AtomicBoolean(false);
+  private final Runnable mRemeasureRunnable = new Runnable() {
+    @Override
+    public void run() {
+      if (mReMeasureEventEventHandler != null) {
+        mReMeasureEventEventHandler.dispatchEvent(new ReMeasureEvent());
+      }
+    }
+  };
 
   private int mLastWidthSpec = UNINITIALIZED;
   private int mLastHeightSpec = UNINITIALIZED;
@@ -69,6 +80,7 @@ public class RecyclerBinder implements Binder<RecyclerView> {
   private int mCurrentFirstVisiblePosition;
   private int mCurrentLastVisiblePosition;
   private RangeCalculationResult mRange;
+  private EventHandler<ReMeasureEvent> mReMeasureEventEventHandler;
 
   public RecyclerBinder(
       ComponentContext componentContext,
@@ -136,7 +148,7 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     // If the binder has not been measured yet we simply fall back on the sync implementation as
     // nothing will really happen until we compute the first range.
     if (!mIsMeasured.get()) {
-      insertItemAt(position, componentInfo);
+      (position, componentInfo);
       return;
     }
 
@@ -186,7 +198,7 @@ public class RecyclerBinder implements Binder<RecyclerView> {
    * layout is immediately computed on the] UiThread.
    */
   @UiThread
-  public final void insertItemAt(int position, ComponentInfo componentInfo) {
+  public final void insertItemAtinsertItemAt(int position, ComponentInfo componentInfo) {
     ThreadUtils.assertMainThread();
 
     final ComponentTreeHolder holder = ComponentTreeHolder.acquire(
@@ -203,7 +215,9 @@ public class RecyclerBinder implements Binder<RecyclerView> {
       childrenHeightSpec = getActualChildrenHeightSpec(holder);
 
       if (mIsMeasured.get()) {
-        if (mRange == null) {
+        // If the Binder requires a remeasure we don't need to init the range here as it will
+        // be initialized in measure again.
+        if (mRange == null && ! mRequiresRemeasure.get()) {
           initRange(
               mMeasuredSize.width,
               mMeasuredSize.height,
@@ -212,6 +226,9 @@ public class RecyclerBinder implements Binder<RecyclerView> {
               childrenHeightSpec,
               mLayoutInfo.getScrollDirection());
 
+          computeLayout = false;
+        } else if (mRequiresRemeasure.get()) {
+          requestUpdate();
           computeLayout = false;
         } else {
           computeLayout = position >= mCurrentFirstVisiblePosition &&
@@ -228,6 +245,11 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     mInternalAdapter.notifyItemInserted(position);
 
     computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+  }
+
+  private void requestUpdate() {
+    mMountedView.removeCallbacks(mRemeasureRunnable);
+    ViewCompat.postOnAnimation(mMountedView, mRemeasureRunnable);
   }
 
   /**
@@ -353,9 +375,14 @@ public class RecyclerBinder implements Binder<RecyclerView> {
    * @param outSize will be populated with the measured dimensions for this Binder.
    * @param widthSpec the widthSpec to be used to measure the RecyclerView.
    * @param heightSpec the heightSpec to be used to measure the RecyclerView.
+   * @param reMeasureEventHandler the EventHandler to invoke in order to trigger a re-measure.
    */
   @Override
-  public synchronized void measure(Size outSize, int widthSpec, int heightSpec) {
+  public synchronized void measure(
+      Size outSize,
+      int widthSpec,
+      int heightSpec,
+      EventHandler<ReMeasureEvent> reMeasureEventHandler) {
     final int scrollDirection = mLayoutInfo.getScrollDirection();
 
     switch (scrollDirection) {
@@ -379,7 +406,7 @@ public class RecyclerBinder implements Binder<RecyclerView> {
                 " either OrientationHelper.HORIZONTAL or OrientationHelper.VERTICAL");
     }
 
-    if (mLastWidthSpec != UNINITIALIZED) {
+    if (mLastWidthSpec != UNINITIALIZED && !mRequiresRemeasure.get()) {
       switch (scrollDirection) {
         case OrientationHelper.VERTICAL:
           if (MeasureComparisonUtils.isMeasureSpecCompatible(
@@ -430,26 +457,41 @@ public class RecyclerBinder implements Binder<RecyclerView> {
 
     // At this point we might still not have a range. In this situation we should return the best
     // size we can detect from the size spec and update it when the first item comes in.
-    // TODO 16207395.
     switch (scrollDirection) {
       case OrientationHelper.VERTICAL:
-        if (mRange != null
+        if (SizeSpec.getMode(widthSpec) == SizeSpec.EXACTLY) {
+          outSize.width = SizeSpec.getSize(widthSpec);
+          mReMeasureEventEventHandler = null;
+          mRequiresRemeasure.set(false);
+        } else if (mRange != null
             && (SizeSpec.getMode(widthSpec) == SizeSpec.AT_MOST
             || SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED)) {
           outSize.width = mRange.measuredSize;
+          mReMeasureEventEventHandler = null;
+          mRequiresRemeasure.set(false);
         } else {
-          outSize.width = SizeSpec.getSize(widthSpec);
+          outSize.width = 0;
+          mRequiresRemeasure.set(true);
+          mReMeasureEventEventHandler = reMeasureEventHandler;
         }
         outSize.height = SizeSpec.getSize(heightSpec);
         break;
       case OrientationHelper.HORIZONTAL:
         outSize.width = SizeSpec.getSize(widthSpec);
-        if (mRange != null
+        if (SizeSpec.getMode(heightSpec) == SizeSpec.EXACTLY) {
+          outSize.height = SizeSpec.getSize(heightSpec);
+          mReMeasureEventEventHandler = null;
+          mRequiresRemeasure.set(false);
+        } else if (mRange != null
             && (SizeSpec.getMode(heightSpec) == SizeSpec.AT_MOST
             || SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED)) {
           outSize.height = mRange.measuredSize;
+          mReMeasureEventEventHandler = null;
+          mRequiresRemeasure.set(false);
         } else {
-          outSize.height = SizeSpec.getSize(heightSpec);
+          outSize.height = 0;
+          mRequiresRemeasure.set(true);
+          mReMeasureEventEventHandler = reMeasureEventHandler;
         }
         break;
     }
@@ -524,7 +566,8 @@ public class RecyclerBinder implements Binder<RecyclerView> {
       measure(
           sDummySize,
           SizeSpec.makeSizeSpec(width, SizeSpec.EXACTLY),
-          SizeSpec.makeSizeSpec(height, SizeSpec.EXACTLY));
+          SizeSpec.makeSizeSpec(height, SizeSpec.EXACTLY),
+          null);
     }
   }
 

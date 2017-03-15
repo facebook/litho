@@ -21,11 +21,13 @@ import com.facebook.components.annotations.MountSpec;
 import com.facebook.components.annotations.OnBind;
 import com.facebook.components.annotations.OnBoundsDefined;
 import com.facebook.components.annotations.OnCreateMountContent;
+import com.facebook.components.annotations.OnEvent;
 import com.facebook.components.annotations.OnMeasure;
 import com.facebook.components.annotations.OnMount;
 import com.facebook.components.annotations.OnPrepare;
 import com.facebook.components.annotations.OnUnbind;
 import com.facebook.components.annotations.OnUnmount;
+import com.facebook.components.annotations.OnUpdateState;
 import com.facebook.components.annotations.Prop;
 import com.facebook.components.annotations.PropDefault;
 import com.facebook.components.annotations.ShouldUpdate;
@@ -45,7 +47,7 @@ class RecyclerSpec {
       int heightSpec,
       Size measureOutput,
       @Prop Binder<RecyclerView> binder) {
-    binder.measure(measureOutput, widthSpec, heightSpec);
+    binder.measure(measureOutput, widthSpec, heightSpec, Recycler.onRemeasure(context));
   }
 
   @OnBoundsDefined
@@ -244,5 +246,15 @@ class RecyclerSpec {
       super();
       setSupportsChangeAnimations(false);
     }
+  }
+
+  @OnEvent(ReMeasureEvent.class)
+  protected static void onRemeasure(ComponentContext c) {
+    Recycler.onUpdateMeasure(c);
+  }
+
+  @OnUpdateState
+  protected static void onUpdateMeasure() {
+
   }
 }

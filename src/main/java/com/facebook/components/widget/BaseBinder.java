@@ -15,6 +15,7 @@ import com.facebook.components.Component;
 import com.facebook.components.ComponentContext;
 import com.facebook.components.ComponentTree;
 import com.facebook.components.ComponentView;
+import com.facebook.components.EventHandler;
 import com.facebook.components.config.ComponentsConfiguration;
 import com.facebook.components.Size;
 import com.facebook.components.SizeSpec;
@@ -80,7 +81,11 @@ public abstract class BaseBinder<
   }
 
   @Override
-  public void measure(Size outSize, int widthSpec, int heightSpec) {
+  public void measure(
+      Size outSize,
+      int widthSpec,
+      int heightSpec,
+      EventHandler<ReMeasureEvent> reMeasureEventHandler) {
     throw new IllegalStateException("Recycler must have sizes spec set " +
         "when using the old binder implementation.");
   }
