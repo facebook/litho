@@ -1,6 +1,6 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-package com.facebook.samples.components.kittens;
+package com.facebook.samples.components.lithography;
 
 import com.facebook.components.ComponentLayout;
 import com.facebook.components.ComponentContext;
@@ -14,7 +14,8 @@ import com.facebook.drawee.interfaces.DraweeController;
 
 @LayoutSpec
 public class SingleImageComponentSpec {
-  @PropDefault protected static final float aspectRatio = 1f;
+  @PropDefault
+  protected static final float aspectRatio = 1f;
 
   @OnCreateLayout
   static ComponentLayout onCreateLayout(
