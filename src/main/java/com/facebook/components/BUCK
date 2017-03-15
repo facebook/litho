@@ -4,8 +4,9 @@ android_library(
     name = "components",
     srcs = glob([
         "*.java",
-        "reference/*.java",
+        "dataflow/*.java",
         "displaylist/*.java",
+        "reference/*.java",
     ]),
     exported_deps = [
         COMPONENTS_ANDROIDSUPPORT_TARGET,
