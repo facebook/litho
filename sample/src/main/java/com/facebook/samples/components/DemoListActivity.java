@@ -17,6 +17,9 @@ public class DemoListActivity extends AppCompatActivity {
 
     final ComponentView componentView = new ComponentView(this);
     final ComponentContext context = new ComponentContext(this);
+
+    Demos.initialize(context);
+
     componentView.setComponent(
         ComponentTree.create(context, DemoListComponent.create(context))
             .incrementalMount(false)

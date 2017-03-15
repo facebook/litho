@@ -2,9 +2,10 @@
 
 package com.facebook.samples.components;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.Map;
+import java.util.LinkedHashMap;
 
+import com.facebook.components.Component;
 import com.facebook.components.ComponentContext;
 import com.facebook.components.ComponentInfo;
 import com.facebook.components.widget.RecyclerBinder;
@@ -16,21 +17,27 @@ import com.facebook.samples.components.playground.PlaygroundComponent;
  */
 public final class Demos {
 
+  private static Map<String, Component<?>> demoModels;
+
   private Demos() {
   }
 
-  private static List<DemoModel> getAll() {
-    return Arrays.asList(
-        new DemoModel("Kittens App", KittensRootComponent.class),
-        new DemoModel("Playground", PlaygroundComponent.class));
+  public static void initialize(ComponentContext c) {
+    demoModels = new LinkedHashMap<>();
+    demoModels.put("Kittens App", KittensRootComponent.create(c).build());
+    demoModels.put("Playground", PlaygroundComponent.create(c).build());
+  }
+
+  public static Component<?> getComponent(String name) {
+    return demoModels.get(name);
   }
 
   public static void addAllToBinder(RecyclerBinder recyclerBinder, ComponentContext c) {
-    for (DemoModel demoModel : getAll()) {
+    for (String name : demoModels.keySet()) {
       ComponentInfo.Builder componentInfoBuilder = ComponentInfo.create();
       componentInfoBuilder.component(
           DemoListItemComponent.create(c)
-                  .item(demoModel)
+                  .name(name)
                   .build());
       recyclerBinder.insertItemAt(recyclerBinder.getItemCount(), componentInfoBuilder.build());
     }

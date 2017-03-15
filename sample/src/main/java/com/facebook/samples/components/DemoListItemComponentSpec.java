@@ -24,12 +24,12 @@ public class DemoListItemComponentSpec {
   @OnCreateLayout
   static ComponentLayout onCreateLayout(
       ComponentContext c,
-      @Prop final DemoModel item) {
+      @Prop final String name) {
     return Container.create(c)
         .paddingDip(ALL, 16)
         .child(
             Text.create(c)
-                .text(item.name)
+                .text(name)
                 .textSizeSp(18)
                 .build())
         .clickHandler(DemoListItemComponent.onClick(c))
@@ -40,9 +40,9 @@ public class DemoListItemComponentSpec {
   static void onClick(
       ComponentContext c,
       @FromEvent View view,
-      @Prop final DemoModel item) {
+      @Prop final String name) {
     final Intent intent = new Intent(c, DemoActivity.class);
-    intent.putExtra("demoClass", item.componentClass);
+    intent.putExtra("demoName", name);
     c.startActivity(intent);
   }
 }

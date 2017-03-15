@@ -21,19 +21,12 @@ public class DemoActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
 
     final ComponentContext context = new ComponentContext(this);
-    final Class<? extends ComponentLifecycle> cls =
-        (Class<? extends ComponentLifecycle>) getIntent().getSerializableExtra("demoClass");
-    Component.Builder builder = null;
-    try {
-      final Method createMethod = cls.getMethod("create", ComponentContext.class);
-      builder = (Component.Builder) createMethod.invoke(null, context);
-    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-      throw new RuntimeException(e);
-    }
+    final String demoName = (String) getIntent().getSerializableExtra("demoName");
+    final Component<?> component = Demos.getComponent(demoName);
 
     final ComponentView componentView = new ComponentView(this);
     componentView.setComponent(
-        ComponentTree.create(context, builder)
+        ComponentTree.create(context, component)
             .incrementalMount(false)
             .build());
     setContentView(componentView);
