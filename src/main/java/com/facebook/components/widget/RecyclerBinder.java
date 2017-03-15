@@ -148,7 +148,7 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     // If the binder has not been measured yet we simply fall back on the sync implementation as
     // nothing will really happen until we compute the first range.
     if (!mIsMeasured.get()) {
-      (position, componentInfo);
+      insertItemAt(position, componentInfo);
       return;
     }
 
@@ -198,7 +198,7 @@ public class RecyclerBinder implements Binder<RecyclerView> {
    * layout is immediately computed on the] UiThread.
    */
   @UiThread
-  public final void insertItemAtinsertItemAt(int position, ComponentInfo componentInfo) {
+  public final void insertItemAt(int position, ComponentInfo componentInfo) {
     ThreadUtils.assertMainThread();
 
     final ComponentTreeHolder holder = ComponentTreeHolder.acquire(
@@ -751,14 +751,17 @@ public class RecyclerBinder implements Binder<RecyclerView> {
         case OrientationHelper.VERTICAL:
             componentView.setLayoutParams(
             new RecyclerView.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
+                SizeSpec.getSize(
+                    mLayoutInfo.getChildWidthSpec(mLayoutInfo.getChildWidthSpec(mLastWidthSpec))),
                 ViewGroup.LayoutParams.WRAP_CONTENT));
             break;
         default:
           componentView.setLayoutParams(
               new RecyclerView.LayoutParams(
                   ViewGroup.LayoutParams.WRAP_CONTENT,
-                  ViewGroup.LayoutParams.MATCH_PARENT));
+                  SizeSpec.getSize(
+                      mLayoutInfo
+                          .getChildHeightSpec(mLayoutInfo.getChildWidthSpec(mLastHeightSpec)))));
       }
     }
   }
