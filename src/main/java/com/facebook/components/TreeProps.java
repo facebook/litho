@@ -14,13 +14,13 @@ import com.facebook.infer.annotation.ThreadConfined;
 @ThreadConfined(ThreadConfined.ANY)
 public class TreeProps {
 
-  private final SimpleArrayMap<String, Object> mMap = new SimpleArrayMap<>();
+  private final SimpleArrayMap<Class, Object> mMap = new SimpleArrayMap<>();
 
-  public void put(String key, Object value) {
+  public void put(Class key, Object value) {
     mMap.put(key, value);
   }
 
-  public <T> T get(String key) {
+  public <T> T get(Class key) {
     return (T) mMap.get(key);
   }
 

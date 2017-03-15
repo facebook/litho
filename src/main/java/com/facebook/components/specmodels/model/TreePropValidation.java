@@ -2,7 +2,6 @@
 
 package com.facebook.components.specmodels.model;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,21 +17,22 @@ class TreePropValidation {
     final List<DelegateMethodModel> onCreateTreePropMethods =
         SpecModelUtils.getMethodModelsWithAnnotation(specModel, OnCreateTreeProp.class);
     for (DelegateMethodModel onCreateTreePropMethod : onCreateTreePropMethods) {
-      for (Annotation annotation : onCreateTreePropMethod.annotations) {
-        if (annotation.annotationType().equals(OnCreateTreeProp.class) &&
-            ((OnCreateTreeProp) annotation).name().isEmpty()) {
-          validationErrors.add(
-              new SpecModelValidationError(
-                  onCreateTreePropMethod.representedObject,
-                  "@OnCreateTreeProp must define a valid name."));
-        }
-      }
-
       if (onCreateTreePropMethod.returnType.equals(TypeName.VOID)) {
         validationErrors.add(
             new SpecModelValidationError(
                 onCreateTreePropMethod.representedObject,
                 "@OnCreateTreeProp methods cannot return void."));
+      }
+
+      if (onCreateTreePropMethod.returnType.isPrimitive() ||
+          onCreateTreePropMethod.returnType.toString().startsWith("java.lang.") ||
+          onCreateTreePropMethod.returnType.toString().startsWith("java.util.")) {
+        validationErrors.add(
+            new SpecModelValidationError(
+                onCreateTreePropMethod.representedObject,
+                "Returning a common JAVA class or a primitive is against the design" +
+                    "of tree props, as they will be keyed on their specific types. Consider " +
+                    "creating your own wrapper classes instead."));
       }
 
       if (onCreateTreePropMethod.methodParams.isEmpty() ||

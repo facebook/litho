@@ -35,9 +35,7 @@ public class PopulateTreePropsMethodBuilder {
             lifecycleImplClass,
             "_abstractImpl");
     for (Parameter treeProp : treeProps) {
-      // A unique key to identify the TreeProp based on its type and name.
-      String key = treeProp.type + "~" + treeProp.name;
-      builder.addStatement("_impl.$L = treeProps.get($S)", treeProp.name, key);
+      builder.addStatement("_impl.$L = treeProps.get($L.class)", treeProp.name, treeProp.type);
     }
 
     return builder.build();

@@ -52,9 +52,10 @@ public class TreePropGenerator {
             ComponentImplGenerator.getImplClassName(specModel));
 
     for (TreePropModel treeProp : specModel.getTreeProps()) {
-      // A unique key to identify the TreeProp based on its type and name.
-      final String key = treeProp.getType() + "~" + treeProp.getName();
-      method.addStatement("_impl.$L = treeProps.get($S)", treeProp.getName(), key);
+      method.addStatement(
+          "_impl.$L = treeProps.get($L.class)",
+          treeProp.getName(),
+          treeProp.getType());
     }
 
     return TypeSpecDataHolder.newBuilder().addMethod(method.build()).build();
@@ -67,6 +68,12 @@ public class TreePropGenerator {
     if (onCreateTreePropsMethods.isEmpty()) {
       return TypeSpecDataHolder.newBuilder().build();
     }
+
+    final String delegateName = DELEGATE_FIELD_NAME +
+        (!specModel.hasInjectedDependencies() ?
+            "" :
+            specModel.getDependencyInjectionHelper()
+                .getSourceDelegateAccessorMethod(specModel));
 
     final MethodSpec.Builder builder = MethodSpec.methodBuilder("getTreePropsForChildren")
         .addAnnotation(Override.class)
@@ -86,18 +93,12 @@ public class TreePropGenerator {
 
     for (DelegateMethodModel onCreateTreePropsMethod : onCreateTreePropsMethods) {
       final CodeBlock.Builder block = CodeBlock.builder();
-      // A unique key to identify the TreeProp based on its type and name.
-      final String key = onCreateTreePropsMethod.returnType + "~" +
-          ((OnCreateTreeProp) onCreateTreePropsMethod.annotations.get(0)).name();
-      block.add(
-          "childTreeProps.put($S, $L.$L(\n",
-          key,
-          DELEGATE_FIELD_NAME +
-              (!specModel.hasInjectedDependencies() ?
-                  "" :
-                  specModel.getDependencyInjectionHelper()
-                      .getSourceDelegateAccessorMethod(specModel)),
-          onCreateTreePropsMethod.name)
+      block
+          .add(
+              "childTreeProps.put($L.class, $L.$L(\n",
+              onCreateTreePropsMethod.returnType,
+              delegateName,
+              onCreateTreePropsMethod.name)
           .indent()
           .indent();
 

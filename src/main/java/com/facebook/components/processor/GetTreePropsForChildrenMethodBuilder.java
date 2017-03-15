@@ -22,7 +22,6 @@ class GetTreePropsForChildrenMethodBuilder {
   static class CreateTreePropMethodData {
     String name;
     TypeName returnType;
-    String treePropName;
     List<Parameter> parameters = new ArrayList<>();
   }
 
@@ -53,9 +52,12 @@ class GetTreePropsForChildrenMethodBuilder {
 
     for (CreateTreePropMethodData method : createTreePropMethods) {
       CodeBlock.Builder block = CodeBlock.builder();
-      // A unique key to identify the TreeProp based on its type and name.
-      String key = method.returnType.toString() + "~" + method.treePropName;
-      block.add("childTreeProps.put($S, $L.$L(\n", key, delegateName, method.name)
+      block
+          .add(
+          "childTreeProps.put($L.class, $L.$L(\n",
+          method.returnType,
+          delegateName,
+          method.name)
           .indent()
           .indent();
       List<Parameter> parameters = method.parameters;

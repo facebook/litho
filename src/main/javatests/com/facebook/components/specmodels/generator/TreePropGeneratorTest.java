@@ -47,10 +47,6 @@ public class TreePropGeneratorTest {
             return OnCreateTreeProp.class;
           }
 
-          @Override
-          public String name() {
-            return "treeProp";
-          }
         }),
         ImmutableList.of(Modifier.PROTECTED),
         "onCreateTreeProp",
@@ -63,13 +59,13 @@ public class TreePropGeneratorTest {
                 new ArrayList<AnnotationSpec>(),
                 null),
             MethodParamModelFactory.create(
-                TypeName.BOOLEAN,
+                TypeName.BOXED_BOOLEAN,
                 "prop",
                 ImmutableList.of(createAnnotation(Prop.class)),
                 new ArrayList<AnnotationSpec>(),
                 null),
             MethodParamModelFactory.create(
-                TypeName.INT,
+                TypeName.BOXED_INT,
                 "state",
                 ImmutableList.of(createAnnotation(State.class)),
                 new ArrayList<AnnotationSpec>(),
@@ -103,7 +99,7 @@ public class TreePropGeneratorTest {
             "    return;\n" +
             "  }\n" +
             "  final TestImpl _impl = (TestImpl) _abstractImpl;\n" +
-            "  _impl.treeProp = treeProps.get(\"int~treeProp\");\n" +
+            "  _impl.treeProp = treeProps.get(java.class.Integer.class);\n" +
             "}\n");
 
     assertThat(typeSpecDataHolder.getMethodSpecs().get(1).toString()).isEqualTo(
@@ -111,7 +107,7 @@ public class TreePropGeneratorTest {
         "protected com.facebook.components.TreeProps getTreePropsForChildren(com.facebook.components.ComponentContext c, com.facebook.components.Component _abstractImpl, com.facebook.components.TreeProps parentTreeProps) {\n" +
         "  final TestImpl _impl = (TestImpl) _abstractImpl;\n" +
         "  final com.facebook.components.TreeProps childTreeProps = com.facebook.components.TreeProps.copy(parentTreeProps);\n" +
-        "  childTreeProps.put(\"boolean~treeProp\", mSpec.onCreateTreeProp(\n" +
+        "  childTreeProps.put(java.class.Boolean.class, mSpec.onCreateTreeProp(\n" +
         "      (com.facebook.components.ComponentContext) c,\n" +
         "      (boolean) _impl.prop,\n" +
         "      (int) _impl.state));\n" +

@@ -2260,7 +2260,6 @@ public class Stages {
     for (ExecutableElement executable : mOnCreateTreePropsMethods) {
       final CreateTreePropMethodData method = new CreateTreePropMethodData();
       method.parameters = getParams(executable);
-      method.treePropName = executable.getAnnotation(OnCreateTreeProp.class).name();
       method.returnType = ClassName.get(executable.getReturnType());
       method.name = executable.getSimpleName().toString();
       builder.createTreePropMethods.add(method);
@@ -2271,18 +2270,12 @@ public class Stages {
 
   private void verifyOnCreateTreePropsForChildren(ClassName contextClassName) {
     for (ExecutableElement method : mOnCreateTreePropsMethods) {
-      String name = method.getAnnotation(OnCreateTreeProp.class).name();
-
-      if (name.equals("")) {
-        throw new ComponentsProcessingException(
-            method,
-            "OnCreateTreeProp must have a name.");
-      }
-
       if (method.getReturnType().getKind().equals(TypeKind.VOID)) {
         throw new ComponentsProcessingException(
             method,
-            "OnCreateTreeProp with name " + name + "cannot have a void return type");
+            "@OnCreateTreeProp annotated method" +
+                method.getSimpleName() +
+                "cannot have a void return type");
       }
 
       final List<? extends VariableElement> params = method.getParameters();

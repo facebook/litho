@@ -385,7 +385,7 @@ public final class ComponentTestHelper {
    * Sets a TreeProp that will be visible to all Components which are created from
    * the given Context (unless a child overwrites its).
    */
-  public static void setTreeProp(ComponentContext context, String name, Object prop) {
+  public static void setTreeProp(ComponentContext context, Class propClass, Object prop) {
     TreeProps treeProps;
     try {
       treeProps = Whitebox.invokeMethod(context, "getTreeProps");
@@ -396,13 +396,6 @@ public final class ComponentTestHelper {
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
-
-    /*
-     * Generates a key similar to the annotation processor. See PopulateTreePropsMethodBuilder.
-     * The classname of an object's mock will have additional stuff after "$$"
-     * which needs to be stripped.
-     */
-    String key = prop.getClass().getName().split("[$]{2}")[0] + "~" + name;
-    treeProps.put(key, prop);
+    treeProps.put(propClass, prop);
   }
 }
