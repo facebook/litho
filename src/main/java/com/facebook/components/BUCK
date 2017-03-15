@@ -18,6 +18,9 @@ android_library(
     provided_deps = [
         COMPONENTS_DISPLAYLISTSUBS_TARGET,
     ],
+    tests = [
+        COMPONENTS_TEST_TARGET,
+    ],
     visibility = [
         COMPONENTS_VISIBILITY,
     ],
