@@ -2,13 +2,17 @@
 
 package com.facebook.samples.components;
 
+import android.support.v7.widget.OrientationHelper;
+
 import java.util.Map;
 import java.util.LinkedHashMap;
 
 import com.facebook.components.Component;
 import com.facebook.components.ComponentContext;
 import com.facebook.components.ComponentInfo;
+import com.facebook.components.widget.LinearLayoutInfo;
 import com.facebook.components.widget.RecyclerBinder;
+import com.facebook.samples.components.kittens.DataModel;
 import com.facebook.samples.components.kittens.KittensRootComponent;
 import com.facebook.samples.components.playground.PlaygroundComponent;
 
@@ -23,8 +27,17 @@ public final class Demos {
   }
 
   public static void initialize(ComponentContext c) {
+    final RecyclerBinder recyclerBinder = new RecyclerBinder(
+            c,
+            4.0f,
+            new LinearLayoutInfo(c, OrientationHelper.VERTICAL, false));
+    DataModel.populateBinderWithSampleData(recyclerBinder, c);
     demoModels = new LinkedHashMap<>();
-    demoModels.put("Kittens App", KittensRootComponent.create(c).build());
+    demoModels.put(
+        "Kittens App",
+        KittensRootComponent.create(c)
+            .recyclerBinder(recyclerBinder)
+            .build());
     demoModels.put("Playground", PlaygroundComponent.create(c).build());
   }
 

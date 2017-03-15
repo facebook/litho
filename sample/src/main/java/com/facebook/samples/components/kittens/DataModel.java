@@ -2,6 +2,10 @@
 
 package com.facebook.samples.components.kittens;
 
+import com.facebook.components.ComponentContext;
+import com.facebook.components.ComponentInfo;
+import com.facebook.components.widget.RecyclerBinder;
+
 public class DataModel {
 
   public final String title;
@@ -14,7 +18,7 @@ public class DataModel {
     this.images = images;
   }
 
-  public static DataModel[] SampleData() {
+  private static DataModel[] SampleData() {
     return new DataModel[] {
       new DataModel(
           "One kitty",
@@ -38,15 +42,22 @@ public class DataModel {
           "http://thepandorasociety.com/wp-content/uploads/2015/04/PT7-2.jpg",
           "http://thepandorasociety.com/wp-content/uploads/2015/04/PT7-2.jpg",
           "http://thepandorasociety.com/wp-content/uploads/2015/04/PT7-2.jpg"
-      ), new DataModel(
-          "Five kitties",
-          "I don't think it is physically possible to have more kitties",
-          "http://thepandorasociety.com/wp-content/uploads/2015/04/PT7-2.jpg",
-          "http://thepandorasociety.com/wp-content/uploads/2015/04/PT7-2.jpg",
-          "http://thepandorasociety.com/wp-content/uploads/2015/04/PT7-2.jpg",
-          "http://thepandorasociety.com/wp-content/uploads/2015/04/PT7-2.jpg",
-          "http://thepandorasociety.com/wp-content/uploads/2015/04/PT7-2.jpg"
       )
     };
+  }
+
+  public static void populateBinderWithSampleData(
+          RecyclerBinder recyclerBinder,
+          ComponentContext c) {
+    final DataModel[] dataModels = SampleData();
+    for (int i = 0; i < dataModels.length; i++) {
+      ComponentInfo.Builder componentInfoBuilder = ComponentInfo.create();
+      componentInfoBuilder.component(
+          FeedItemComponent.create(c)
+              .item(dataModels[i])
+              .index(i)
+              .build());
+      recyclerBinder.insertItemAt(recyclerBinder.getItemCount(), componentInfoBuilder.build());
+    }
   }
 }

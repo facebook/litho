@@ -62,12 +62,7 @@ public class FeedItemComponentSpec {
                     .aspectRatio(1)
                     .build();
           } else {
-            content =
-                ImagePagerComponent.create(c)
-                    .images(item.images)
-                    .withLayout()
-                    .aspectRatio(1)
-                    .build();
+            throw new RuntimeException("Too many images in item.");
           }
 
           return Container.create(c)
