@@ -46,21 +46,11 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
         SpecModel specModel = null;
         final TypeElement typeElement = (TypeElement) element;
         if (element.getAnnotation(LayoutSpec.class) != null) {
-          processingEnv.getMessager().printMessage(
-              Diagnostic.Kind.NOTE,
-              "annotation_processor_invoked",
-              element);
-
           specModel = LayoutSpecModelFactory.create(
               processingEnv.getElementUtils(),
               typeElement,
               getDependencyInjectionGenerator(typeElement));
         } else if (element.getAnnotation(MountSpec.class) != null) {
-          processingEnv.getMessager().printMessage(
-              Diagnostic.Kind.NOTE,
-              "annotation_processor_invoked",
-              element);
-
           final MountSpecModel mountSpecModel =
               MountSpecModelFactory.create(
                   processingEnv.getElementUtils(),
