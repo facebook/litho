@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import com.facebook.components.Component;
 import com.facebook.components.ComponentContext;
 import com.facebook.components.ComponentTree;
-import com.facebook.components.EventHandler;
 import com.facebook.components.Size;
 
 import static com.facebook.components.ThreadUtils.assertMainThread;
@@ -34,11 +33,7 @@ public interface Binder<V extends ViewGroup> {
   /**
    * Measure the content of this Binder. Call this method from the Component's onMeasure.
    */
-  void measure(
-      Size outSize,
-      int widthSpec,
-      int heightSpec,
-      EventHandler<ReMeasureEvent> reMeasureEventHandler);
+  void measure(Size outSize, int widthSpec, int heightSpec);
 
   /**
    * Returns the component at the given position in the binder.
