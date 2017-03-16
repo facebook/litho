@@ -1,0 +1,44 @@
+YOGA_ROOT = '//lib/yoga/...'
+JAVA_TARGET = '//lib/yoga/java:java'
+INFER_ANNOTATIONS_TARGET = '//lib/infer-annotations:infer-annotations'
+JSR_305_TARGET = '//lib/jsr-305:jsr-305'
+JUNIT_TARGET = '//lib/junit:junit'
+PROGRUARD_ANNOTATIONS_TARGET = '//lib/yoga/java/proguard-annotations/src/main/java/com/facebook/proguard/annotations:annotations'
+SOLOADER_TARGET = '//lib/yoga/lib/soloader:soloader'
+GTEST_TARGET = '//lib/yoga/lib/gtest:gtest'
+JNI_TARGET = '//lib/yoga/lib/jni:jni'
+FBJNI_TARGET = '//lib/yoga/lib/fb:fbjni'
+APPCOMPAT_TARGET = '//lib/yoga/lib/appcompat:appcompat'
+ANDROID_SUPPORT_TARGET = '//lib/yoga/lib/android-support:android-support'
+ANDROID_TARGET = '//lib/yoga/android:android'
+ANDROID_JAVA_TARGET = '//lib/yoga/android/src/main/java/com/facebook/yoga/android:android'
+ANDROID_RES_TARGET = '//lib/yoga/android:res'
+ANDROID_SAMPLE_JAVA_TARGET = '//lib/yoga/android/sample/java/com/facebook/samples/yoga:yoga'
+ANDROID_SAMPLE_RES_TARGET = '//lib/yoga/android/sample:res'
+
+THIS_IS_FBOBJC = False
+
+CXX_LIBRARY_WHITELIST = [
+  '//lib/yoga:yoga',
+  '//lib/yoga/lib/fb:fbjni',
+  '//lib/yoga/java:jni',
+]
+
+BASE_COMPILER_FLAGS = [
+  '-fno-omit-frame-pointer',
+  '-fexceptions',
+  '-Wall',
+  '-Werror',
+  '-O3',
+]
+
+def yoga_dep(dep):
+  if dep.startswith(":") or dep.startswith("/"):
+    return '//lib/yoga' + dep
+  else:
+    return '//lib/yoga/' + dep
+
+with allow_unsafe_import():
+  import os.path
+def isdir(filename):
+  return os.path.isdir(filename)
