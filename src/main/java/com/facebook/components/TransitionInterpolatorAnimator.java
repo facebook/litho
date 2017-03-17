@@ -87,9 +87,10 @@ public class TransitionInterpolatorAnimator
   }
 
   @Override
-  public void restoreState(TransitionInterpolatorAnimator interpolatorAnimator) {
+  public boolean restoreState(TransitionInterpolatorAnimator interpolatorAnimator) {
     mStartTime = interpolatorAnimator.mStartTime;
     mPlayedTime = interpolatorAnimator.mPlayedTime;
+    return true;
   }
 
   @Override

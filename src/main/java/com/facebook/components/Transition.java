@@ -30,11 +30,17 @@ public class Transition {
     void onTransitionEnd();
   }
 
-  interface TransitionAnimator<T> extends Cloneable {
+  interface TransitionAnimator<T extends TransitionAnimator<? super T>> extends Cloneable {
     void setListener(TransitionListener listener);
     void start(View targetView, List<PropertyChangeHolder> propertyChangeHolders);
     T stop();
-    void restoreState(T savedBundle);
+    /**
+     * Restore state from previous transition. If this type of animator cannot restore its state it
+     * should return false.
+     *
+     * @return whether this animator can restore state.
+     */
+    boolean restoreState(T savedBundle);
     TransitionAnimator clone();
   }
 
@@ -134,8 +140,8 @@ public class Transition {
     mAnimator.stop();
   }
 
-  void restoreState(Transition transition) {
-    mAnimator.restoreState(transition.mAnimator);
+  boolean restoreState(Transition transition) {
+    return mAnimator.restoreState(transition.mAnimator);
   }
 
   void setListener(TransitionListener listener) {
