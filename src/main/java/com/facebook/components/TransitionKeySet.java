@@ -187,32 +187,30 @@ class TransitionKeySet implements TransitionListener {
       int newKeyStatus,
       TransitionKeySetListener listener) {
 
+    SimpleArrayMap<Integer, ? extends Transition> oldTransitionToResumeFrom = null;
+    @KeyStatus int keyStatusToResume = KeyStatus.UNCHANGED;
+
     switch (newKeyStatus) {
       case KeyStatus.UNCHANGED:
         if (mEndValues.equals(oldTransition.mEndValues)) {
           mStartValues = oldTransition.mStartValues;
           if (oldTransition.wasRunningAppearTransition()) {
-            return start(
-                KeyStatus.APPEARED,
-                listener,
-                oldTransition.mRunningTransitionsPointer,
-                oldTransition.mInterruptedValues);
+            keyStatusToResume = KeyStatus.APPEARED;
           } else if (oldTransition.wasRunningChangeTransition()) {
-            return start(
-                KeyStatus.UNCHANGED,
-                listener,
-                oldTransition.mRunningTransitionsPointer,
-                oldTransition.mInterruptedValues);
+            keyStatusToResume = KeyStatus.UNCHANGED;
           } else {
             throw new IllegalStateException("Trying to resume a transition with an invalid state.");
           }
+          oldTransitionToResumeFrom = oldTransition.mRunningTransitionsPointer;
+        } else {
+          // For different endValues do not resume from old transition, but start new one using
+          // the values where the previous one was interrupted.
+          keyStatusToResume = KeyStatus.UNCHANGED;
         }
-
-        // Different endValues, run a new change transition using the Values where the previous
-        // one was interrupted.
-        return start(KeyStatus.UNCHANGED, listener, null, oldTransition.mInterruptedValues);
+        break;
 
       case KeyStatus.DISAPPEARED:
+        keyStatusToResume = KeyStatus.DISAPPEARED;
         if (oldTransition.wasRunningDisappearTransition()) {
           // Was disappearing, continue disappearing animation.
           mStartValues = oldTransition.mStartValues;
@@ -220,36 +218,34 @@ class TransitionKeySet implements TransitionListener {
           setTargetView(oldTransition.mTargetView);
           setTransitionCleanupListener(oldTransition.mTransitionCleanupListener);
           if (oldTransition.mEndValues.equals(mLocalEndValues)) {
-            return start(
-                KeyStatus.DISAPPEARED,
-                listener,
-                oldTransition.mRunningTransitionsPointer,
-                oldTransition.mInterruptedValues);
-          } else {
-            return start(KeyStatus.DISAPPEARED, listener, null, oldTransition.mInterruptedValues);
+            oldTransitionToResumeFrom = oldTransition.mRunningTransitionsPointer;
           }
         } else if (oldTransition.wasRunningAppearTransition()) {
           // Was appearing now disappearing.
           mStartValues = oldTransition.mEndValues;
           mEndValues = mLocalEndValues;
-          return start(KeyStatus.DISAPPEARED, listener, null, oldTransition.mInterruptedValues);
         } else {
           throw new IllegalStateException("Trying to resume a transition with an invalid state.");
         }
+        break;
 
       case KeyStatus.APPEARED:
-        // If we are resuming from disappear transition to appear transition,
-        // we need to make sure to clean up the state of the current transition
-        // before it is implicitly de-referenced.
+        // If we are resuming from disappear transition to appear transition, we need to make sure
+        // to clean up the state of the current transition before it is implicitly de-referenced.
         if (oldTransition.wasRunningDisappearTransition()) {
           oldTransition.cleanupAfterDisappear();
         }
 
         // Was disappearing and now re-appearing.
-        return start(KeyStatus.APPEARED, listener, null, oldTransition.mInterruptedValues);
+        keyStatusToResume = KeyStatus.APPEARED;
+        break;
     }
 
-    return false;
+    return start(
+        keyStatusToResume,
+        listener,
+        oldTransitionToResumeFrom,
+        oldTransition != null ? oldTransition.mInterruptedValues : null);
   }
 
   @Override
