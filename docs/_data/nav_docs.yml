@@ -1,11 +1,15 @@
 - title: Grouping 1
   items:
   - id: hello-world
-
-# n title:, 1 items: per title:, n id: per items:
-# - title: A
-#   items:
-#   - id: B
-#   - id: C
-# - title: D
-#   - id: E
+- title: Getting Started
+- title: Introducing Components
+- title: Quick Start
+- title: Handling Events
+- title: Compatibility
+- title: Testing
+- title: RecyclerComponent
+- title: Widgets
+- title: Advanced Guides
+- title: Best Practices
+- title: Tools
+- title: Contributing
