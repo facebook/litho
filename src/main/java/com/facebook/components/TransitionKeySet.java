@@ -211,10 +211,10 @@ class TransitionKeySet implements TransitionListener {
 
       case KeyStatus.DISAPPEARED:
         keyStatusToResume = KeyStatus.DISAPPEARED;
+        mEndValues = mLocalEndValues;
         if (oldTransition.wasRunningDisappearTransition()) {
           // Was disappearing, continue disappearing animation.
           mStartValues = oldTransition.mStartValues;
-          mEndValues = mLocalEndValues;
           setTargetView(oldTransition.mTargetView);
           setTransitionCleanupListener(oldTransition.mTransitionCleanupListener);
           if (oldTransition.mEndValues.equals(mLocalEndValues)) {
@@ -223,7 +223,8 @@ class TransitionKeySet implements TransitionListener {
         } else if (oldTransition.wasRunningAppearTransition()) {
           // Was appearing now disappearing.
           mStartValues = oldTransition.mEndValues;
-          mEndValues = mLocalEndValues;
+        } else if (oldTransition.wasRunningChangeTransition()) {
+          mStartValues = oldTransition.mStartValues;
         } else {
           throw new IllegalStateException("Trying to resume a transition with an invalid state.");
         }
