@@ -4,7 +4,13 @@
       <div id="inner">
         <h2 id="project_tagline">{{ site.tagline }}</h2>
         <section id="intro">
-          <p>{% if page.excerpt %}{{ page.excerpt | strip_html }}{% else %}{{ site.description }}{% endif %}</p>
+            {% if page.excerpt %}
+              <p>{{ page.excerpt | strip_html }}</p>
+            {% else %}
+              <p>
+                {{ site.description }}
+              </p>
+            {% endif %}
         </section>
         <div id="promo" class="section promoSection">
           {% for promo in site.data.promo %}
@@ -13,9 +19,6 @@
             </div>
           {% endfor %}
         </div>
-      </div>
-      <div class="projectLogo">
-        <img src="{{ '/static/logo.svg' | relative_url }}"  alt="{{ site.title }}">
       </div>
     </div>
   </div>

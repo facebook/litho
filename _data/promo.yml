@@ -1,28 +1,15 @@
 # This file determines the list of promotional elements added to the header of \
-# your site's homepage. Full list of plugins are shown
+# your site's homepage.
 
-- type: button
-  href: docs/hello-world.html
-  text: Hello World Button
-
-- type: github_star
-
-- type: github_watch
-
-- type: like_button
-
-- type: google_share
-
-- type: twitter_follow
-  href: FbOpenSource
-
-- type: twitter_share
-
+## prepend
+# - type: plugin_row
+#   children:
+# to get a row of buttons
 - type: plugin_row
   children:
   - type: button
-    href: docs/hello-world.html
-    text: Hello World
+    href: docs/hello-world
+    text: Get Started
   - type: button
-    href: https://example.com
-    text: Another Button
+    href: tutorial
+    text: Tutorial

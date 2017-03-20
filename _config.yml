@@ -1,9 +1,9 @@
 # Site settings
 permalink: /blog/:year/:month/:day/:title.html
 title: Litho
-tagline: This is a brief one-liner about the project
+tagline: Litho
 description: >
-  This is a longer description of the project, a bit of a sales-pitch with a bit of technical information included.
+  A declarative framework for building efficient UIs on Android.
 fbappid: "1615782811974223"
 gacode: "UA-12345-6"
 logo: /static/logo.svg
@@ -20,7 +20,7 @@ baseurl: ""
 # This was also be set to the right thing automatically for local development
 # https://github.com/blog/2277-what-s-new-in-github-pages-with-jekyll-3-3
 # http://jekyllrb.com/news/2016/10/06/jekyll-3-3-is-here/
-url: "http://example.com"
+url: "http://fblitho.com"
 
 # Note: There are new filters in Jekyll 3.3 to help with absolute and relative urls
 # absolute_url
@@ -31,23 +31,23 @@ url: "http://example.com"
 # https://github.com/blog/2277-what-s-new-in-github-pages-with-jekyll-3-3
 
 # The GitHub repo for your project
-ghrepo: "facebookincubator/c4a"
+ghrepo: "facebookincubator/litho"
 
 # Use these color settings to determine your colour scheme for the site.
 color:
   # primary should be a vivid color that reflects the project's brand
-  primary: "#3b5998"
+  primary: "#FFFFFF"
   # secondary should be a subtle light or dark color used on page backgrounds
-  secondary: "#f9f9f9"
+  secondary: "#FFFFFF"
   # Use the following to specify whether the previous two colours are 'light'
   # or 'dark' and therefore what colors can be overlaid on them
-  primary-overlay: "dark"
+  primary-overlay: "light"
   secondary-overlay: "light"
 
 #Uncomment this if you want to enable Algolia doc search with your own values
-#searchconfig:
-#  apikey: ""
-#  indexname: ""
+searchconfig:
+  apikey: "48f81041f782ed6463719d8d98c94f38"
+  indexname: "yoga"
 
 # Blog posts are built into Jekyll by default, with the `_posts` directory.
 # Here you can specify other types of documentation. The names here are `docs`

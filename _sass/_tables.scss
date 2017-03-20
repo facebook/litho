@@ -1,9 +1,14 @@
 table {
   background: $lightergrey;
   border: 1px solid $lightgrey;
+  position: relative;
+  margin: 10px auto;
+  padding: 0;
+  width: 100%;
+  height: auto;
   border-collapse: collapse;
-  display:table;
-  margin: 20px 0;
+  text-align: center;
+  table-layout: fixed;
 
   thead {
     border-bottom: 1px solid $lightgrey;
@@ -13,7 +18,7 @@ table {
     display: table-row-group;
   }
   tr {
-    display: table-row;
+    display: table-row;;
     &:nth-of-type(odd) {
       background: $greyish;
     }
@@ -25,6 +30,7 @@ table {
       line-height: 1.3em;
       padding: 10px;
       text-align: left;
+      vertical-align: top;
 
       &:last-of-type {
         border-right: 0;
