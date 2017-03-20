@@ -1,6 +1,7 @@
 COMPONENTS_ROOT = '//'
 
 COMPONENTS_VISIBILITY = 'PUBLIC'
+COMPONENTS_IS_OSS_BUILD = True
 
 def make_dep_path(pth):
   return COMPONENTS_ROOT + pth
@@ -34,7 +35,7 @@ COMPONENTS_INFERANNOTATIONS_TARGET            = make_dep_path('lib/infer-annotat
 COMPONENTS_JSR_TARGET                         = make_dep_path('lib/jsr-305:jsr-305')
 COMPONENTS_ANDROIDSUPPORT_TARGET              = make_dep_path('lib/android-support:android-support')
 COMPONENTS_ANDROIDSUPPORT_RECYCLERVIEW_TARGET = make_dep_path('lib/android-support:android-support-recyclerview')
-COMPONENTS_ANDROIDSUPPORT_APPCOMPAT_TARGET    = make_dep_path("lib/appcompat:appcompat")
+COMPONENTS_ANDROIDSUPPORT_APPCOMPAT_TARGET    = make_dep_path('lib/appcompat:appcompat')
 COMPONENTS_YOGA_TARGET                        = make_dep_path('lib/yoga:yoga')
 COMPONENTS_BUILD_CONFIG_TARGET                = make_dep_path(':build_config')
 COMPONENTS_CSSLAYOUT_TARGET                   = make_dep_path('lib/CSSLayoutDEPRECATED-TOREMOVE:CSSLayoutDEPRECATED')
