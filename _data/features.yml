@@ -1,0 +1,24 @@
+# Add features here if you are using:
+#   {% include content/gridblocks.html data_source=site.data.features align="center" %}
+# in index.md
+#
+- title: React's Programming Model
+  text: |
+        A simple, unidirectional data flow that is much simpler to reason about.
+  image: images/landing-page-react.svg
+- title: Flatter View Hierarchies
+  text: |
+        Only leaf components generate views/drawables.
+  image: images/landing-page-leaf.svg
+  imagefirst: yes
+  alternateBackground: yes
+- title: Thread-safe Layout System
+  text: |
+        Perform component construction, data binding, and sizing off the main thread.
+  image: images/landing-page-threading.svg
+- title: Efficient Memory Footprint
+  text: |
+        Built-in view/drawable recycling
+  image: images/landing-page-efficient.svg
+  imagefirst: yes
+  alternateBackground: yes
