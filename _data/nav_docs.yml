@@ -10,6 +10,8 @@
 - title: Widgets
 - title: Advanced Guides
 - title: Best Practices
+  items:
+  - id: code-style
 - title: Tools
 - title: Contributing
   items:
