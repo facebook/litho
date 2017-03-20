@@ -35,7 +35,7 @@ oss_components_robolectric_test(
 components_robolectric_test(
     name = "components",
     srcs = glob(
-        ["**/*.java"],
+        ["*Test.java"],
         excludes = OSS_TESTS,
     ),
     contacts = ["oncall+components_for_android@xmail.facebook.com"],
