@@ -50,6 +50,7 @@ COMPONENTS_MOCKITO_TARGET                     = make_dep_path('lib/mockito:mocki
 COMPONENTS_POWERMOCK_REFLECT_TARGET           = make_dep_path('lib/powermock:powermock-reflect')
 COMPONENTS_POWERMOCK_MOCKITO_TARGET           = make_dep_path('lib/powermock:powermock-mockito')
 COMPONENTS_JNI_TARGET                         = make_dep_path('lib/jni-hack:jni-hack')
+COMPONENTS_FBJNI_TARGET                       = make_dep_path('lib/fb:jni')
 
 # Fresco
 COMPONENTS_FRESCO_TARGET                      = make_dep_path('lib/fresco:fresco')
