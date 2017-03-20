@@ -14,7 +14,7 @@ import static junit.framework.Assert.assertEquals;
 
 @RunWith(ComponentsTestRunner.class)
 public class LayoutStateEventHandlerTest {
-  private static final int UNSPECIFIED_SIZE_SPEC = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
+  private int mUnspecifiedSizeSpec = 0; //SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
 
   private Component mRootComponent;
   private Component mNestedComponent;
@@ -29,6 +29,7 @@ public class LayoutStateEventHandlerTest {
 
   @Before
   public void setup() {
+    mUnspecifiedSizeSpec = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
     mRootComponent = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
@@ -59,8 +60,8 @@ public class LayoutStateEventHandlerTest {
         new ComponentContext(RuntimeEnvironment.application),
         mRootComponent,
         -1,
-        UNSPECIFIED_SIZE_SPEC,
-        UNSPECIFIED_SIZE_SPEC,
+        mUnspecifiedSizeSpec,
+        mUnspecifiedSizeSpec,
         false,
         null);
   }

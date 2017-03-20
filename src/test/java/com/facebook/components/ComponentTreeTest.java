@@ -28,21 +28,15 @@ import static org.junit.Assert.fail;
 
 @RunWith(ComponentsTestRunner.class)
 public class ComponentTreeTest {
-  private static final int WIDTH_SPEC = makeSizeSpec(39, EXACTLY);
-  private static final int WIDTH_SPEC_2 = makeSizeSpec(40, EXACTLY);
-  private static final int HEIGHT_SPEC = makeSizeSpec(41, EXACTLY);
-  private static final int HEIGHT_SPEC_2 = makeSizeSpec(42, EXACTLY);
-  private static final int LIFECYCLE_TEST_ID = 1;
+
+  private int mWidthSpec;
+  private int mWidthSpec2;
+  private int mHeightSpec;
+  private int mHeightSpec2;
 
   private Component mComponent;
   private ShadowLooper mLayoutThreadShadowLooper;
   private ComponentContext mContext;
-  private final ComponentLifecycle mLifecycle = new ComponentLifecycle() {
-    @Override
-    int getId() {
-      return LIFECYCLE_TEST_ID;
-    }
-  };
 
   private static class TestComponent<L extends ComponentLifecycle> extends Component<L> {
     public TestComponent(L component) {
@@ -65,6 +59,11 @@ public class ComponentTreeTest {
         (Looper) Whitebox.invokeMethod(
             ComponentTree.class,
             "getDefaultLayoutThreadLooper"));
+
+    mWidthSpec = makeSizeSpec(39, EXACTLY);
+    mWidthSpec2 = makeSizeSpec(40, EXACTLY);
+    mHeightSpec = makeSizeSpec(41, EXACTLY);
+    mHeightSpec2 = makeSizeSpec(42, EXACTLY);
   }
 
   private void creationCommonChecks(ComponentTree componentTree) {
@@ -88,8 +87,8 @@ public class ComponentTreeTest {
     postSizeSpecChecks(
         componentTree,
         layoutStateVariableName,
-        WIDTH_SPEC,
-        HEIGHT_SPEC);
+        mWidthSpec,
+        mHeightSpec);
   }
 
   private void postSizeSpecChecks(
@@ -156,7 +155,7 @@ public class ComponentTreeTest {
         ComponentTree.create(mContext, mComponent)
             .incrementalMount(false)
             .build();
-    componentTree.setSizeSpec(WIDTH_SPEC, HEIGHT_SPEC);
+    componentTree.setSizeSpec(mWidthSpec, mHeightSpec);
 
     // Since this happens post creation, it's not in general safe to update the main thread layout
     // state synchronously, so the result should be in the background layout state
@@ -169,16 +168,16 @@ public class ComponentTreeTest {
         ComponentTree.create(mContext, mComponent)
             .incrementalMount(false)
             .build();
-    componentTree.setSizeSpecAsync(WIDTH_SPEC, HEIGHT_SPEC);
+    componentTree.setSizeSpecAsync(mWidthSpec, mHeightSpec);
 
     // Only fields changed but no layout is done yet.
 
     Assert.assertTrue(componentTreeHasSizeSpec(componentTree));
     assertEquals(
-        WIDTH_SPEC,
+        mWidthSpec,
         Whitebox.getInternalState(componentTree, "mWidthSpec"));
     assertEquals(
-        HEIGHT_SPEC,
+        mHeightSpec,
         Whitebox.getInternalState(componentTree, "mHeightSpec"));
     Assert.assertNull(Whitebox.getInternalState(componentTree, "mMainThreadLayoutState"));
     Assert.assertNull(Whitebox.getInternalState(componentTree, "mBackgroundLayoutState"));
@@ -198,8 +197,8 @@ public class ComponentTreeTest {
             .incrementalMount(false)
             .build();
 
-    componentTree.setSizeSpecAsync(WIDTH_SPEC, HEIGHT_SPEC);
-    componentTree.setSizeSpec(WIDTH_SPEC_2, HEIGHT_SPEC_2);
+    componentTree.setSizeSpecAsync(mWidthSpec, mHeightSpec);
+    componentTree.setSizeSpec(mWidthSpec2, mHeightSpec2);
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
@@ -208,8 +207,8 @@ public class ComponentTreeTest {
     postSizeSpecChecks(
         componentTree,
         "mBackgroundLayoutState",
-        WIDTH_SPEC_2,
-        HEIGHT_SPEC_2);
+        mWidthSpec2,
+        mHeightSpec2);
   }
 
   @Test
@@ -218,19 +217,19 @@ public class ComponentTreeTest {
         ComponentTree.create(mContext, mComponent)
             .incrementalMount(false)
             .build();
-    componentTree.setSizeSpecAsync(WIDTH_SPEC, HEIGHT_SPEC);
+    componentTree.setSizeSpecAsync(mWidthSpec, mHeightSpec);
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
-    componentTree.setSizeSpec(WIDTH_SPEC_2, HEIGHT_SPEC_2);
+    componentTree.setSizeSpec(mWidthSpec2, mHeightSpec2);
 
     // Since this happens post creation, it's not in general safe to update the main thread layout
     // state synchronously, so the result should be in the background layout state
     postSizeSpecChecks(
         componentTree,
         "mBackgroundLayoutState",
-        WIDTH_SPEC_2,
-        HEIGHT_SPEC_2);
+        mWidthSpec2,
+        mHeightSpec2);
   }
 
   @Test
@@ -242,10 +241,10 @@ public class ComponentTreeTest {
 
     Size size = new Size();
 
-    componentTree.setSizeSpec(WIDTH_SPEC, HEIGHT_SPEC, size);
+    componentTree.setSizeSpec(mWidthSpec, mHeightSpec, size);
 
-    assertEquals(SizeSpec.getSize(WIDTH_SPEC), size.width, 0.0);
-    assertEquals(SizeSpec.getSize(HEIGHT_SPEC), size.height, 0.0);
+    assertEquals(SizeSpec.getSize(mWidthSpec), size.width, 0.0);
+    assertEquals(SizeSpec.getSize(mHeightSpec), size.height, 0.0);
 
     // Since this happens post creation, it's not in general safe to update the main thread layout
     // state synchronously, so the result should be in the background layout state
@@ -328,7 +327,7 @@ public class ComponentTreeTest {
     Assert.assertNull(Whitebox.getInternalState(componentTree, "mMainThreadLayoutState"));
     Assert.assertNull(Whitebox.getInternalState(componentTree, "mBackgroundLayoutState"));
 
-    componentTree.setSizeSpec(WIDTH_SPEC, HEIGHT_SPEC);
+    componentTree.setSizeSpec(mWidthSpec, mHeightSpec);
 
     // Since this happens post creation, it's not in general safe to update the main thread layout
     // state synchronously, so the result should be in the background layout state
