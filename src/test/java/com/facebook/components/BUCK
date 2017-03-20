@@ -2,10 +2,12 @@ include_defs("//COMPONENTS_DEFS")
 
 OSS_TESTS = [
     "ComponentTreeTest.java",
+    "DuplicateParentStateTest.java",
     "FastMathTest.java",
     "LayoutOutputTest.java",
     "LayoutStateEventHandlerTest.java",
     "LayoutStateSpecTest.java",
+    "StateUpdatesTest.java",
     "TestItemTest.java",
 ]
 

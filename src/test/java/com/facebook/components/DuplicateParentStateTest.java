@@ -7,6 +7,7 @@ import android.graphics.Color;
 import com.facebook.components.testing.testrunner.ComponentsTestRunner;
 import com.facebook.components.testing.TestDrawableComponent;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
@@ -18,7 +19,12 @@ import static junit.framework.Assert.assertTrue;
 @RunWith(ComponentsTestRunner.class)
 public class DuplicateParentStateTest {
 
-  private static final int UNSPECIFIED_SIZE_SPEC = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
+  private int mUnspecifiedSizeSpec;
+
+  @Before
+  public void setUp() throws Exception {
+    mUnspecifiedSizeSpec = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
+  }
 
   @Test
   public void testDuplicateParentStateAvoidedIfRedundant() {
@@ -73,8 +79,8 @@ public class DuplicateParentStateTest {
         new ComponentContext(RuntimeEnvironment.application),
         component,
         -1,
-        UNSPECIFIED_SIZE_SPEC,
-        UNSPECIFIED_SIZE_SPEC,
+        mUnspecifiedSizeSpec,
+        mUnspecifiedSizeSpec,
         false,
         null);
 

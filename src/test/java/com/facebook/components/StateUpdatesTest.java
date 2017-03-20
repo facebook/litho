@@ -30,10 +30,10 @@ import static junit.framework.Assert.assertNull;
 @RunWith(ComponentsTestRunner.class)
 public class StateUpdatesTest {
   private static final int LIFECYCLE_TEST_ID = 1;
-
   private static final int INITIAL_COUNT_STATE_VALUE = 4;
-  private static final int WIDTH_SPEC = makeSizeSpec(39, EXACTLY);
-  private static final int HEIGHT_SPEC = makeSizeSpec(41, EXACTLY);
+
+  private int mWidthSpec;
+  private int mHeightSpec;
 
   private final ComponentLifecycle mLifecycle = new ComponentLifecycle() {
     @Override
@@ -140,6 +140,8 @@ public class StateUpdatesTest {
   @Before
   public void setup() throws Exception {
     mContext = new ComponentContext(RuntimeEnvironment.application);
+    mWidthSpec = makeSizeSpec(39, EXACTLY);
+    mHeightSpec = makeSizeSpec(41, EXACTLY);
 
     mLayoutThreadShadowLooper = Shadows.shadowOf(
         (Looper) Whitebox.invokeMethod(
@@ -261,7 +263,7 @@ public class StateUpdatesTest {
   public void testTransferState() {
     mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate());
     mLayoutThreadShadowLooper.runOneTask();
-    mComponentTree.setSizeSpec(WIDTH_SPEC, HEIGHT_SPEC);
+    mComponentTree.setSizeSpec(mWidthSpec, mHeightSpec);
     assertEquals(
         INITIAL_COUNT_STATE_VALUE + 1,
         mTestComponent.getComponentForStateUpdate().getCount());
