@@ -829,6 +829,10 @@ public class ComponentTree {
       if (rootDidntChange && sizeSpecsAreCompatible) {
         // The spec and the root haven't changed. Either we have a layout already, or we're
         // currently computing one on another thread.
+        if (output != null) {
+          output.height = mostRecentLayoutState.getHeight();
+          output.width = mostRecentLayoutState.getWidth();
+        }
         return;
       }
 
@@ -878,6 +882,12 @@ public class ComponentTree {
 
       // Check if we already have a compatible layout.
       if (hasCompatibleComponentAndSpec()) {
+        if (output != null) {
+          final LayoutState mostRecentLayoutState =
+              mBackgroundLayoutState != null ? mBackgroundLayoutState : mMainThreadLayoutState;
+          output.width = mostRecentLayoutState.getWidth();
+          output.height = mostRecentLayoutState.getHeight();
+        }
         return;
       }
 
