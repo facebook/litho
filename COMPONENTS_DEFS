@@ -93,4 +93,10 @@ def oss_components_robolectric_test(name, *args, **kwargs):
         '-Dcom.facebook.components.is_oss=true',
     ]
     kwargs['vm_args'] = extra_vm_args
+    kwargs['use_cxx_libraries'] = True
+    kwargs['cxx_library_whitelist'] = [
+        '//lib/yoga:yoga',
+        '//lib/yogajni:jni',
+        '//lib/fb:jni',
+    ]
     robolectric_test(name=name, *args, **kwargs)
