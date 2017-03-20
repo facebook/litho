@@ -1,6 +1,6 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-package com.facebook.samples.components;
+package com.facebook.samples.litho;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;

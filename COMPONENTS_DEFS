@@ -58,7 +58,7 @@ COMPONENTS_JUNIT_TARGET                       = make_dep_path('lib/junit:junit')
 COMPONENTS_PROCESSOR_TARGET = make_dep_path('src/main/java/com/facebook/components/processor:processor')
 
 # Sample app
-COMPONENTS_SAMPLE_JAVA = make_dep_path('sample/src/main/java/com/facebook/samples/components:components')
+COMPONENTS_SAMPLE_JAVA = make_dep_path('sample/src/main/java/com/facebook/samples/litho:litho')
 COMPONENTS_SAMPLE_BAREBONES_JAVA = make_dep_path('sample-barebones/src/main/java/com/facebook/samples/lithobarebones:lithobarebones')
 COMPONENTS_SAMPLE_RES  = make_dep_path('sample:res')
 

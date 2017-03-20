@@ -1,6 +1,6 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-package com.facebook.samples.components.playground;
+package com.facebook.samples.litho.playground;
 
 import android.graphics.Color;
 

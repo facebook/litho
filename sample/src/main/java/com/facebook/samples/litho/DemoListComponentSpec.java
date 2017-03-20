@@ -1,24 +1,30 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-package com.facebook.samples.components.lithography;
+package com.facebook.samples.litho;
 
-import com.facebook.components.ComponentLayout;
+import android.support.v7.widget.OrientationHelper;
+
 import com.facebook.components.ComponentContext;
+import com.facebook.components.ComponentLayout;
 import com.facebook.components.annotations.LayoutSpec;
 import com.facebook.components.annotations.OnCreateLayout;
-import com.facebook.components.annotations.Prop;
+import com.facebook.components.widget.LinearLayoutInfo;
 import com.facebook.components.widget.Recycler;
 import com.facebook.components.widget.RecyclerBinder;
 
 @LayoutSpec
-public class LithographyRootComponentSpec {
+public class DemoListComponentSpec {
 
   private static final String MAIN_SCREEN = "main_screen";
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
-      ComponentContext c,
-      @Prop final RecyclerBinder recyclerBinder) {
+  static ComponentLayout onCreateLayout(ComponentContext c) {
+    final RecyclerBinder recyclerBinder = new RecyclerBinder(
+        c,
+        4.0f,
+        new LinearLayoutInfo(c, OrientationHelper.VERTICAL, false));
+
+    Demos.addAllToBinder(recyclerBinder, c);
 
     return Recycler.create(c)
         .binder(recyclerBinder)

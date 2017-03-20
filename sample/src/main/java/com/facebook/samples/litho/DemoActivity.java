@@ -1,6 +1,6 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-package com.facebook.samples.components;
+package com.facebook.samples.litho;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

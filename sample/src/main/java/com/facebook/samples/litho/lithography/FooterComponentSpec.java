@@ -1,6 +1,6 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-package com.facebook.samples.components.lithography;
+package com.facebook.samples.litho.lithography;
 
 import com.facebook.components.ComponentLayout;
 import com.facebook.components.ComponentContext;

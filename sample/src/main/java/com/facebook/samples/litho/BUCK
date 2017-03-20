@@ -1,7 +1,7 @@
 include_defs("//COMPONENTS_DEFS")
 
 android_library(
-    name = "components",
+    name = "litho",
     srcs = glob(["**/*.java"]),
     plugins = [
         COMPONENTS_PROCESSOR_TARGET,

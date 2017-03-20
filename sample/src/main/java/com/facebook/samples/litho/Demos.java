@@ -1,6 +1,6 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-package com.facebook.samples.components;
+package com.facebook.samples.litho;
 
 import android.support.v7.widget.OrientationHelper;
 
@@ -12,12 +12,12 @@ import com.facebook.components.ComponentContext;
 import com.facebook.components.ComponentInfo;
 import com.facebook.components.widget.LinearLayoutInfo;
 import com.facebook.components.widget.RecyclerBinder;
-import com.facebook.samples.components.lithography.DataModel;
-import com.facebook.samples.components.lithography.LithographyRootComponent;
-import com.facebook.samples.components.playground.PlaygroundComponent;
+import com.facebook.samples.litho.lithography.DataModel;
+import com.facebook.samples.litho.lithography.LithographyRootComponent;
+import com.facebook.samples.litho.playground.PlaygroundComponent;
 
 /**
- * The list of Components demos -- Add your demos below!
+ * The list of Litho demos -- Add your demos below!
  */
 public final class Demos {
 

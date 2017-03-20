@@ -1,14 +1,13 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-package com.facebook.samples.components;
+package com.facebook.samples.litho;
 
 import android.app.Application;
 
-import com.facebook.components.ComponentsSystrace;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.soloader.SoLoader;
 
-public class ComponentsSampleApplication extends Application {
+public class LithoSampleApplication extends Application {
 
   @Override
   public void onCreate() {
