@@ -13,3 +13,6 @@
 - title: Best Practices
 - title: Tools
 - title: Contributing
+  items:
+  - id: contributing
+  - id: repo-structure

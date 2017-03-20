@@ -44,6 +44,9 @@ blockquote {
 h1, h2, h3, h4 {
   font-family: $header-font-family;
   font-weight: 900;
+  code {
+    font-size: 100%!important;
+  }
 }
 
 .navPusher {
