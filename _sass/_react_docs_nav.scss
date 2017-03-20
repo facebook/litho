@@ -131,9 +131,8 @@ nav.toc {
       h3 {
         background: $sidenav-overlay;
         color: $sidenav-text;
-        cursor: pointer;
-        font-size: 14px;
-        font-weight: 400;
+        font-size: 16px;
+        font-weight: 600;
         line-height: 1.2em;
         padding: 10px;
         transition: color 0.2s;
@@ -149,13 +148,6 @@ nav.toc {
           transition: color 0.2s;
         }
 
-        &:hover {
-          color: $primary-bg;
-
-          i:not(:empty) {
-            color: $primary-bg;
-          }
-        }
       }
 
       &.navGroupActive {
@@ -169,8 +161,8 @@ nav.toc {
         }
 
         h3 {
-          background: $primary-bg;
-          color: $primary-overlay;
+          background: $sidenav-active;
+          color: $docs-nav-title-header;
 
           i {
             display: none;
@@ -200,12 +192,11 @@ nav.toc {
 
           &:hover,
           &:focus {
-            color: $primary-bg;
+            color: $primary-link-color;
           }
 
           &.navItemActive {
-            color: $primary-bg;
-            font-weight: 900;
+            color: $primary-link-color;
           }
         }
       }

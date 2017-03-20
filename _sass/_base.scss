@@ -23,16 +23,16 @@ article {
 }
 
 a {
-  border-bottom: 1px dotted $primary-bg;
+  border-bottom: 1px dotted $primary-link-color;
   color: $text;
   text-decoration: none;
-  -webkit-transition: background 0.3s, color 0.3s;
-  transition: background 0.3s, color 0.3s;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
 }
 
 blockquote {
   padding: 15px 30px 15px 15px;
-  margin: 20px 0 0 10px;
+  margin: 20px 0 15px 10px;
   background-color: rgba(204, 122, 111, 0.1);
   border-left: 10px solid rgba(191, 87, 73, 0.2);
 }
@@ -44,9 +44,6 @@ blockquote {
 h1, h2, h3, h4 {
   font-family: $header-font-family;
   font-weight: 900;
-  code {
-    font-size: 100%!important;
-  }
 }
 
 .navPusher {
@@ -60,9 +57,10 @@ h1, h2, h3, h4 {
 .homeContainer {
   background: $primary-bg;
   color: $primary-overlay;
+  text-align: center;
 
   a {
-    color: $primary-overlay;
+    color: $primary-link-color;
   }
 
   .homeSplashFade {
@@ -70,8 +68,8 @@ h1, h2, h3, h4 {
   }
 
   .homeWrapper {
-    padding: 2em 10px;
-    text-align: left;
+    padding: 3em 10px;
+    text-align: center;
 
       .wrapper {
         margin: 0px auto;
@@ -99,6 +97,7 @@ h1, h2, h3, h4 {
         font-size: 200%;
         letter-spacing: -0.04em;
         line-height: 1em;
+        color: $homeContainer-text-color;
       }
   }
 }
@@ -119,7 +118,29 @@ h1, h2, h3, h4 {
 }
 
 section#intro {
-  margin: 40px 0;
+  margin: 10px 0;
+  color: $primary-overlay-special;
+
+  p {
+    line-height: 1.5;
+    padding-bottom: 20px;
+  }
+
+  ul {
+    list-style: disc;
+  }
+
+  ol, ul {
+    padding-left: 24px;
+    li {
+      padding-bottom: 8px;
+      padding-left: 6px;
+    }
+  }
+
+  strong, b {
+    font-weight: bold;
+  }
 }
 
 .fbossFontLight {
@@ -156,11 +177,11 @@ section#intro {
       }
     }
 
-    a {
+    :not(.gist-meta) > a {
       &:hover,
       &:focus {
         background: $primary-bg;
-        color: $primary-overlay;
+        color: $primary-link-hover-color;
       }
     }
 
@@ -188,7 +209,6 @@ section#intro {
 
       & {
         border-bottom: 1px solid darken($primary-bg, 10%);
-        color: darken($primary-bg, 10%);
         font-size: 22px;
         padding: 10px 0;
       }
@@ -212,6 +232,11 @@ section#intro {
       font-size: 130%;
       line-height: 1.2em;
       padding: 1em 0 0.8em;
+    }
+
+    code {
+      color: $primary-overlay-special;
+      display: inline-block;
     }
 
     p {
@@ -245,12 +270,12 @@ section#intro {
         margin-top: 30px;
       }
 
-      a {
-        color: $primary-bg;
+      :not(.gist-meta) > a {
+        color: $primary-link-color;
 
         &:hover,
         &:focus {
-          color: #fff;
+          color: $primary-link-hover-color;
         }
       }
 
@@ -262,6 +287,11 @@ section#intro {
       h3 {
         border-bottom: 1px solid $primary-bg;
         font-size: 110%;
+      }
+
+      h4 {
+        border-bottom: 1px solid $primary-bg;
+        font-size: 90%;
       }
 
       ol {
@@ -282,7 +312,7 @@ section#intro {
         }
 
         .post-meta {
-          color: $primary-bg;
+          color: $primary-link-color;
           font-family: $header-font-family;
           text-align: center;
         }
@@ -309,14 +339,14 @@ section#intro {
           text-align: right;
         }
 
-        a {
+        :not(.gist-meta) > a {
           border: none;
-          color: $primary-overlay;
+          color: $primary-link-color;
           display: block;
           padding: 4px 12px;
 
           &:hover {
-            background-color: $secondary-bg;
+            background-color: $primary-link-hover-color;
             color: $text;
           }
 
@@ -369,6 +399,7 @@ section#intro {
 
   h2#project_tagline {
     font-size: 250%;
+    color: $primary-overlay-special;
   }
 
   .projectLogo {
@@ -386,12 +417,17 @@ section#intro {
   .mainContainer {
     .mainWrapper {
       .post {
+
         h2 {
           font-size: 180%;
         }
 
         h3 {
           font-size: 120%;
+        }
+
+        h4 {
+          font-size: 100%;
         }
 
         .docPagination {
@@ -413,12 +449,6 @@ section#intro {
   .homeContainer {
     .homeWrapper {
       position: relative;
-
-      #inner {
-        box-sizing: border-box;
-        max-width: 600px;
-        padding-right: 40px;
-      }
 
       .projectLogo {
         align-items: center;
@@ -447,6 +477,18 @@ section#intro {
         box-sizing: border-box;
         display: block;
 
+        ul#markdown-toc {
+          font-size: 14px;
+          list-style-type:none;
+          display: block;
+          li {
+            text-align: right;
+            width: 30%;
+            float: left;
+            margin-bottom: -1px;
+          }
+        }
+
         .post-header {
           h1 {
             font-size: 250%;
@@ -467,9 +509,6 @@ section#intro {
 @media only screen and (min-width: 1200px) {
   .homeContainer {
     .homeWrapper {
-      #inner {
-        max-width: 750px;
-      }
     }
   }
 
@@ -481,11 +520,6 @@ section#intro {
 @media only screen and (min-width: 1500px) {
   .homeContainer {
     .homeWrapper {
-      #inner {
-        max-width: 1100px;
-        padding-bottom: 40px;
-        padding-top: 40px;
-      }
     }
   }
 
