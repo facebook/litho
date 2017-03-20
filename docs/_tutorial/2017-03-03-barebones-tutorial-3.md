@@ -34,8 +34,7 @@ public class FeedItemSpec {
         .child(
             Text.create(c)
                 .text("Hello World")
-                .textSizeSp(40)
-                .build())
+                .textSizeSp(40))
         .build();
   }
 }

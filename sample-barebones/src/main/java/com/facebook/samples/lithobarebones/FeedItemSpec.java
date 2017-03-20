@@ -26,8 +26,7 @@ public class FeedItemSpec {
         .child(
             Text.create(c)
                 .text(message)
-                .textSizeSp(40)
-                .build())
+                .textSizeSp(40))
         .build();
   }
 }
