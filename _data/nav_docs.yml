@@ -3,6 +3,8 @@
   - id: hello-world
 - title: Introducing Components
 - title: Quick Start
+  items:
+  - id: props
 - title: Handling Events
 - title: Compatibility
 - title: Testing
