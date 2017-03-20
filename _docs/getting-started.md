@@ -1,9 +1,15 @@
 ---
-docid: hello-world
-title: Hello, World!
+docid: getting-started
+title: Getting Started
 layout: docs
-permalink: /docs/hello-world.html
+permalink: /docs/getting-started.html
 ---
+
+## Installing Litho
+
+ADD INSTALLATION INSTRUCTIONS HERE
+
+## Verifying Installation with Hello World
 
 Hello, World in Litho is relatively simple.  A full walkthrough, including setting up libraries and annotation processors required for full functionality can be found [here](/tutorial/).
 

@@ -1,9 +1,8 @@
-- title: Getting Started
+- title: The Basics
   items:
-  - id: hello-world
-- title: Introducing Components
-- title: Quick Start
-  items:
+  - id: getting-started
+  - id: tutorial
+  - id: components
   - id: props
 - title: Handling Events
 - title: Compatibility
