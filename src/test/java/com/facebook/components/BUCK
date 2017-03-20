@@ -12,6 +12,7 @@ OSS_TESTS = [
 ]
 
 POWERMOCK_OSS_TESTS = [
+    "TreeDiffingTest.java",
 ]
 
 oss_components_robolectric_test(
