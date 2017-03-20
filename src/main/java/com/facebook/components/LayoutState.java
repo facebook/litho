@@ -244,8 +244,6 @@ class LayoutState {
     // Moreover, if the component mounts a view, then we apply padding to the view itself later on.
     // Otherwise, apply the padding to the bounds of the layout output.
     if (isMountViewSpec) {
-      // TODO(14743707): Add support for non ComponentHost views, we should be able
-      // to override accessibility methods on mounted views
       layoutOutput.setNodeInfo(node.getNodeInfo());
       // Acquire a ViewNodeInfo, set it up and release it after passing it to the LayoutOutput.
       final ViewNodeInfo viewNodeInfo = ViewNodeInfo.acquire();
