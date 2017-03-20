@@ -13,6 +13,10 @@ OSS_TESTS = [
 
 POWERMOCK_OSS_TESTS = [
     "TreeDiffingTest.java",
+    "LayoutStateRecyclingTest.java",
+    "LayoutStateCalculateVisibilityOutputsTest.java",
+    "LayoutStateCalculateTest.java",
+    "LayoutDirectionTest.java",
 ]
 
 oss_components_robolectric_test(
@@ -24,6 +28,7 @@ oss_components_robolectric_test(
         COMPONENTS_ROBOLECTRIC_TARGET,
     ],
     deps = [
+        ":testutil",
         COMPONENTS_JAVA_TARGET,
         COMPONENTS_JUNIT_TARGET,
         COMPONENTS_ASSERTJ_TARGET,
@@ -50,6 +55,7 @@ components_robolectric_test(
         COMPONENTS_ROBOLECTRIC_TARGET,
     ],
     deps = [
+        ":testutil",
         make_dep_path("src/main/java/com/facebook/components/widget:widget"),
         make_dep_path("src/debug/java/com/facebook/components/testing:testing"),
         make_dep_path("src/debug/java/com/facebook/components/testing/testrunner:testrunner"),
@@ -70,5 +76,17 @@ android_resource(
     res = "res",
     visibility = [
         "//javatests/com/facebook/components/...",
+    ],
+)
+
+android_library(
+    name = "testutil",
+    srcs = [
+        "LayoutDirectionViewGroupShadow.java",
+        "LayoutDirectionViewShadow.java",
+    ],
+    deps = [
+        COMPONENTS_JAVA_TARGET,
+        COMPONENTS_ROBOLECTRIC_TARGET,
     ],
 )
