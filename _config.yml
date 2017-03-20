@@ -1,6 +1,6 @@
 # Site settings
 permalink: /blog/:year/:month/:day/:title.html
-title: ProjectName
+title: Litho
 tagline: This is a brief one-liner about the project
 description: >
   This is a longer description of the project, a bit of a sales-pitch with a bit of technical information included.
@@ -31,7 +31,7 @@ url: "http://example.com"
 # https://github.com/blog/2277-what-s-new-in-github-pages-with-jekyll-3-3
 
 # The GitHub repo for your project
-ghrepo: "facebook/Site-Templates"
+ghrepo: "facebookincubator/c4a"
 
 # Use these color settings to determine your colour scheme for the site.
 color:
@@ -61,6 +61,9 @@ collections:
   top-level:
     output: true
     permalink: :name.html
+  tutorial:
+    output: true
+    permalink: /tutorial/:name/
 
 # DO NOT ADJUST BELOW THIS LINE UNLESS YOU KNOW WHAT YOU ARE CHANGING
 

@@ -20,15 +20,21 @@
             {% assign groupitems = include.navdata %}
             {% include nav/collection_nav_group.html %}
           {% else %}
-          {% for group in include.navdata %}
-            {% assign grouptitle = group.title %}
-            {% for item in group.items %}
-              {% if item.id == page.docid %}
-              {% assign currentgroup = group %}
-              {% endif %}
+            {% if include.type == "tutorial" %}
+              {% assign grouptitle = "Tutorials" %}
+              {% assign groupitems = include.navdata %}
+              {% include nav/collection_nav_group.html %}
+            {% else %}
+            {% for group in include.navdata %}
+              {% assign grouptitle = group.title %}
+              {% for item in group.items %}
+                {% if item.id == page.docid %}
+                {% assign currentgroup = group %}
+                {% endif %}
+              {% endfor %}
+              {% include nav/collection_nav_group.html %}
             {% endfor %}
-            {% include nav/collection_nav_group.html %}
-          {% endfor %}
+            {% endif %}
           {% endif %}
         </div>
       </section>
