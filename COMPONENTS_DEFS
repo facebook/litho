@@ -86,8 +86,14 @@ def components_robolectric_test(name, *args, **kwargs):
     pass
 
 
-def oss_components_robolectric_test(name, *args, **kwargs):
+def oss_components_robolectric_test(
+    name,
+    srcs,
+    powermock_srcs=None,
+    *args,
+    **kwargs):
     """Tests that can successfully run from the library root folder."""
+    powermock_srcs = powermock_srcs or []
     extra_vm_args = [
         '-Drobolectric.dependency.dir=lib/android-all',
         '-Dcom.facebook.components.is_oss=true',
@@ -99,4 +105,20 @@ def oss_components_robolectric_test(name, *args, **kwargs):
         '//lib/yogajni:jni',
         '//lib/fb:jni',
     ]
-    robolectric_test(name=name, *args, **kwargs)
+
+    # Run normal tests first, excluding powermock
+    robolectric_test(
+        name=name,
+        srcs=glob(srcs, excludes=powermock_srcs),
+        *args,
+        **kwargs)
+
+    # Now run the powermock tests in series as they require a separate class
+    # loader to not conflict with Yoga.
+    for src in powermock_srcs:
+      pname = name + '_powermock_' + src.replace(".java", "").replace("/", "_")
+      robolectric_test(
+          name=pname,
+          srcs=[src],
+          *args,
+          **kwargs)
