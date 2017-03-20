@@ -96,6 +96,11 @@ public final class GraphBinding implements DataFlowBinding {
       for (int i = 0; i < mFromNodes.size(); i++) {
         final ValueNode fromNode = mFromNodes.get(i);
         final ValueNode toNode = mToNodes.get(i);
+        final ValueNode currentToNodeInput = toNode.getInput();
+
+        if (currentToNodeInput != null) {
+          unbindNodes(currentToNodeInput, toNode);
+        }
 
         fromNode.addOutput(toNode);
         toNode.setInput(fromNode);
@@ -107,9 +112,16 @@ public final class GraphBinding implements DataFlowBinding {
         final ValueNode fromNode = mFromNodes.get(i);
         final ValueNode toNode = mToNodes.get(i);
 
-        fromNode.removeOutput(toNode);
-        toNode.setInput(null);
+        // Nodes may have already been re-bound
+        if (toNode.getInput() == fromNode) {
+          unbindNodes(fromNode, toNode);
+        }
       }
+    }
+
+    private static void unbindNodes(ValueNode fromNode, ValueNode toNode) {
+      fromNode.removeOutput(toNode);
+      toNode.setInput(null);
     }
   }
 }

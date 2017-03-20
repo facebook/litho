@@ -100,6 +100,36 @@ public class DataFlowGraphTest {
     assertEquals(40f, dest3.getValue());
   }
 
+  @Test
+  public void testRebindNode() {
+    SettableNode source = new SettableNode();
+    SimpleNode middle = new SimpleNode();
+    OutputOnlyNode destination = new OutputOnlyNode(123);
+
+    GraphBinding binding = GraphBinding.create(mDataFlowGraph);
+    binding.addBinding(source, middle);
+    binding.addBinding(middle, destination);
+    binding.activate();
+
+    mTestTimingSource.step(1);
+
+    assertEquals(0f, destination.getValue());
+
+    SettableNode newSource = new SettableNode();
+    GraphBinding secondBinding = GraphBinding.create(mDataFlowGraph);
+    secondBinding.addBinding(newSource, destination);
+    secondBinding.activate();
+
+    mTestTimingSource.step(1);
+
+    assertEquals(0f, destination.getValue());
+
+    newSource.setValue(11);
+    mTestTimingSource.step(1);
+
+    assertEquals(11f, destination.getValue());
+  }
+
   @Test(expected = DetectedCycleException.class)
   public void testSimpleCycle() {
     SimpleNode node1 = new SimpleNode();
