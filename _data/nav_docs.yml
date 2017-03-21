@@ -4,6 +4,7 @@
   - id: tutorial
   - id: components
   - id: props
+  - id: state
 - title: Handling Events
 - title: Compatibility
 - title: Testing
