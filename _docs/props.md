@@ -5,7 +5,7 @@ layout: docs
 permalink: /docs/props.html
 ---
 
-Components use an unidirectional data flow with immutable inputs. Following the name established by React, the inputs that a `Component` takes are known as *props*.
+Components use a unidirectional data flow with immutable inputs. Following the name established by React, the inputs that a `Component` takes are known as *props*.
 
 ## Defining and using Props
 The props for a given `Component` are the union of all arguments annotated with `@Prop` in your spec methods. You can access the value of the props in all the methods that declare it as an `@Prop` parameter. 
