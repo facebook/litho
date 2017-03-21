@@ -18,12 +18,12 @@
 
 .homeContainer {
   .button {
-    border-color: $homeContainer-button-color;
+    border-color: $primary-overlay;
     border-width: 1px;
-    color: $homeContainer-button-color;
+    color: $primary-overlay;
 
     &:hover {
-      background: $homeContainer-button-color;
+      background: $primary-overlay;
       color: $primary-bg;
     }
   }

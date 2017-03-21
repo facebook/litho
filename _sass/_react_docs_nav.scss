@@ -161,8 +161,8 @@ nav.toc {
         }
 
         h3 {
-          background: $sidenav-active;
-          color: $docs-nav-title-header;
+          background: $primary-bg;
+          color: $primary-overlay;
 
           i {
             display: none;
@@ -192,11 +192,11 @@ nav.toc {
 
           &:hover,
           &:focus {
-            color: $primary-link-color;
+            color: $primary-bg;
           }
 
           &.navItemActive {
-            color: $primary-link-color;
+            color: $primary-bg;
           }
         }
       }
