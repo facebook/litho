@@ -1,9 +1,9 @@
-- title: Grouping 1
+- title: The Basics
   items:
-  - id: hello-world
-- title: Getting Started
-- title: Introducing Components
-- title: Quick Start
+  - id: getting-started
+  - id: tutorial
+  - id: components
+  - id: props
 - title: Handling Events
 - title: Compatibility
 - title: Testing
@@ -13,5 +13,10 @@
 - title: Widgets
 - title: Advanced Guides
 - title: Best Practices
+  items:
+  - id: code-style
 - title: Tools
 - title: Contributing
+  items:
+  - id: contributing
+  - id: repo-structure
