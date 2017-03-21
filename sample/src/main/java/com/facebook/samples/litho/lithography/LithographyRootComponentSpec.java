@@ -9,6 +9,7 @@ import com.facebook.components.annotations.OnCreateLayout;
 import com.facebook.components.annotations.Prop;
 import com.facebook.components.widget.Recycler;
 import com.facebook.components.widget.RecyclerBinder;
+import com.facebook.yoga.YogaEdge;
 
 @LayoutSpec
 public class LithographyRootComponentSpec {
@@ -23,6 +24,7 @@ public class LithographyRootComponentSpec {
     return Recycler.create(c)
         .binder(recyclerBinder)
         .withLayout()
+        .paddingDip(YogaEdge.TOP, 8)
         .testKey(MAIN_SCREEN)
         .build();
   }

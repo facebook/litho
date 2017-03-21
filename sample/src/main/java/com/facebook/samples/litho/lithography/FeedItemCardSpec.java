@@ -19,7 +19,7 @@ public class FeedItemCardSpec {
   @OnCreateLayout
   static ComponentLayout onCreateLayout(
       ComponentContext c,
-      @Prop final DataModel item) {
+      @Prop final Artist artist) {
     return Container.create(c)
         .paddingDip(VERTICAL, 8)
         .paddingDip(HORIZONTAL, 16)
@@ -27,7 +27,7 @@ public class FeedItemCardSpec {
             Card.create(c)
                 .content(
                     FeedItemComponent.create(c)
-                        .item(item)))
+                        .artist(artist)))
         .build();
   }
 }
