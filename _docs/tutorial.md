@@ -216,12 +216,12 @@ Let us dive in and build this component.  In Litho, these are defined by _Spec_ 
 
 ``` java
 import android.graphics.Color;
-import com.facebook.components.ComponentContext;
-import com.facebook.components.ComponentLayout;
-import com.facebook.components.Container;
-import com.facebook.components.annotations.LayoutSpec;
-import com.facebook.components.annotations.OnCreateLayout;
-import com.facebook.components.widget.Text;
+import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentLayout;
+import com.facebook.litho.Container;
+import com.facebook.litho.annotations.LayoutSpec;
+import com.facebook.litho.annotations.OnCreateLayout;
+import com.facebook.litho.widget.Text;
 import static com.facebook.yoga.YogaEdge.ALL;
 
 @LayoutSpec
@@ -241,7 +241,7 @@ public class FeedItemSpec {
 }
 ```
 
-Some of this is familiar.  We see the `Text` component from before.  However, now we are passing it as a "child" property of a `Container`.  You can think `Container`s like `<div>`s in HTML.  Its a wrapper, usually simply used for collating things together (and some background styling).  In fact, since components uses [Yoga](https://facebook.github.io/yoga/), you can add flexbox attributes to layout the children of a `Container`.  Here, we simply set the padding and background color.
+Some of this is familiar.  We see the `Text` component from before.  However, now we are passing it as a "child" property of a `Container`.  You can think `Container`s like `<div>`s in HTML.  Its a wrapper, usually simply used for collating things together (and some background styling).  In fact, since Litho uses [Yoga](https://facebook.github.io/yoga/), you can add flexbox attributes to layout the children of a `Container`.  Here, we simply set the padding and background color.
 
 How do we use this component?  Its rather simple.  In the `SampleActivity`, simply change the `ComponentTree` definition to
 
