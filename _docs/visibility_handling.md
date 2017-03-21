@@ -7,7 +7,7 @@ permalink: /docs/visibility-handling.html
 
 ### Types of Visibility Range ###
 
-The framework currently supports three types of Visibility Event:
+The framework currently supports four types of Visibility Event:
 
 - Visible Event: this event is triggered when at least one pixel of the Component is visible. 
 
