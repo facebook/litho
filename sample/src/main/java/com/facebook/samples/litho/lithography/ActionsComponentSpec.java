@@ -2,8 +2,6 @@
 
 package com.facebook.samples.litho.lithography;
 
-import android.R;
-
 import com.facebook.components.ComponentContext;
 import com.facebook.components.ComponentLayout;
 import com.facebook.components.Container;
@@ -12,6 +10,8 @@ import com.facebook.components.annotations.OnCreateLayout;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaPositionType;
+
+import static android.R.drawable.ic_menu_search;
 
 @LayoutSpec
 public class ActionsComponentSpec {
@@ -25,13 +25,9 @@ public class ActionsComponentSpec {
         .positionDip(YogaEdge.TOP, 4)
         .paddingDip(YogaEdge.ALL, 2)
         .flexDirection(YogaFlexDirection.ROW)
+        .child(FavouriteButton.create(c))
         .child(Container.create(c)
-            .backgroundRes(R.drawable.star_off)
-            .marginDip(YogaEdge.RIGHT, 2)
-            .widthDip(32)
-            .heightDip(32))
-        .child(Container.create(c)
-            .backgroundRes(R.drawable.ic_menu_search)
+            .backgroundRes(ic_menu_search)
             .widthDip(32)
             .heightDip(32))
         .build();

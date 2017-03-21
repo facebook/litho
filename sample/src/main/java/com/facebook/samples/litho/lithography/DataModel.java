@@ -93,9 +93,9 @@ public class DataModel {
     for (int i = 0; i < dataModels.length; i++) {
       ComponentInfo.Builder componentInfoBuilder = ComponentInfo.create();
       componentInfoBuilder.component(
-          FeedItemComponent.create(c)
+          FeedItemCard.create(c)
               .item(dataModels[i])
-              .index(i)
+              .key(dataModels[i].title)
               .build());
       recyclerBinder.insertItemAt(recyclerBinder.getItemCount(), componentInfoBuilder.build());
     }

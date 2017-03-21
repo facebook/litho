@@ -23,44 +23,22 @@ public class FeedItemComponentSpec {
   @OnCreateLayout
   static ComponentLayout onCreateLayout(
       ComponentContext c,
-      @Prop final DataModel item,
-      @Prop final int index) {
-    try {
-      final Component content = new InlineLayoutSpec() {
-        @Override
-        public String getSimpleName() {
-          return "FeedItemComponent";
-        }
-
-        @Override
-        public ComponentLayout onCreateLayout(ComponentContext c) {
-          return Container.create(c)
-              .child(
-                  Container.create(c)
-                      .child(
-                          SingleImageComponent.create(c)
-                              .image(item.images[0])
-                              .aspectRatio(2f))
-                      .child(
-                          TitleComponent.create(c)
-                              .title(item.title))
-                      .child(
-                          ActionsComponent.create(c)))
-              .child(
-                  FooterComponent.create(c)
-                      .text(item.description))
-              .build();
-        }
-      };
-
-      return Container.create(c)
-          .paddingDip(VERTICAL, 8)
-          .paddingDip(HORIZONTAL, 16)
-          .child(
-              Card.create(c)
-                  .content(content))
-          .build();
-    } finally {
-    }
+      @Prop final DataModel item) {
+    return Container.create(c)
+        .child(
+            Container.create(c)
+                .child(
+                    SingleImageComponent.create(c)
+                        .image(item.images[0])
+                        .aspectRatio(2f))
+                .child(
+                    TitleComponent.create(c)
+                        .title(item.title))
+                .child(
+                    ActionsComponent.create(c)))
+        .child(
+            FooterComponent.create(c)
+                .text(item.description))
+        .build();
   }
 }
