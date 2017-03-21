@@ -198,6 +198,10 @@ section#intro {
       line-height: 1em;
       padding: 1.4em 0 1em;
       text-align: left;
+
+      code {
+        font-size: 250%;
+      }
     }
 
     h2 {
@@ -220,18 +224,30 @@ section#intro {
         margin-bottom: 20px;
         padding: 10px 0;
       }
+
+      code {
+        font-size: 200%;
+      }
     }
 
     h3 {
       font-size: 150%;
       line-height: 1.2em;
       padding: 1em 0 0.8em;
+
+      code {
+        font-size: 100%;
+      }
     }
 
     h4 {
       font-size: 130%;
       line-height: 1.2em;
       padding: 1em 0 0.8em;
+
+      code {
+        font-size: 100%;
+      }
     }
 
     code {
