@@ -11,7 +11,7 @@ ADD INSTALLATION INSTRUCTIONS HERE
 
 ## Verifying Installation with Hello World
 
-Hello, World in Litho is relatively simple.  A full walkthrough, including setting up libraries and annotation processors required for full functionality can be found [here](/tutorial/).
+Hello, World in Litho is relatively simple.  A full walkthrough, including setting up libraries and annotation processors required for full functionality can be found [here](/docs/tutorial.html/).
 
 However, as a taster, this is a simple "Hello, World!" activity using components.  It constructs a `ComponentContext`, a `ComponentView` and a `ComponentTree`, and displays a text box to the screen.
 
