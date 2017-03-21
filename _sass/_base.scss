@@ -23,7 +23,7 @@ article {
 }
 
 a {
-  border-bottom: 1px dotted $primary-link-color;
+  border-bottom: 1px dotted $primary-bg;
   color: $text;
   text-decoration: none;
   -webkit-transition: all 0.3s;
@@ -55,12 +55,12 @@ h1, h2, h3, h4 {
 }
 
 .homeContainer {
-  background: $primary-bg;
+  background: $secondary-bg;
   color: $primary-overlay;
   text-align: center;
 
   a {
-    color: $primary-link-color;
+    color: $primary-overlay;
   }
 
   .homeSplashFade {
@@ -97,7 +97,6 @@ h1, h2, h3, h4 {
         font-size: 200%;
         letter-spacing: -0.04em;
         line-height: 1em;
-        color: $homeContainer-text-color;
       }
   }
 }
@@ -181,7 +180,7 @@ section#intro {
       &:hover,
       &:focus {
         background: $primary-bg;
-        color: $primary-link-hover-color;
+        color: $primary-overlay;
       }
     }
 
@@ -213,6 +212,7 @@ section#intro {
 
       & {
         border-bottom: 1px solid darken($primary-bg, 10%);
+        color: darken($primary-bg, 10%);
         font-size: 22px;
         padding: 10px 0;
       }
@@ -287,11 +287,11 @@ section#intro {
       }
 
       :not(.gist-meta) > a {
-        color: $primary-link-color;
+        color: $primary-overlay;
 
         &:hover,
         &:focus {
-          color: $primary-link-hover-color;
+          color: $secondary-bg;
         }
       }
 
@@ -328,7 +328,7 @@ section#intro {
         }
 
         .post-meta {
-          color: $primary-link-color;
+          color: $primary-bg;
           font-family: $header-font-family;
           text-align: center;
         }
@@ -357,12 +357,12 @@ section#intro {
 
         :not(.gist-meta) > a {
           border: none;
-          color: $primary-link-color;
+          color: $primary-overlay;
           display: block;
           padding: 4px 12px;
 
           &:hover {
-            background-color: $primary-link-hover-color;
+            background-color: $secondary-bg;
             color: $text;
           }
 

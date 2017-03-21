@@ -7,6 +7,7 @@
 - title: Handling Events
   items:
   - id: accessibility-handling
+  - id: visibility-handling
 - title: Compatibility
 - title: Testing
 - title: RecyclerComponent
