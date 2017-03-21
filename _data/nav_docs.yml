@@ -5,7 +5,8 @@
   - id: components
   - id: props
 - title: Handling Events
-  items: 
+  items:
+  - id: accessibility-handling
   - id: visibility-handling
 - title: Compatibility
 - title: Testing
