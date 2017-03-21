@@ -1,12 +1,12 @@
 .footerContainer {
   background: $secondary-bg;
-  color: $primary-footer-color;
+  color: $primary-bg;
   overflow: hidden;
   padding: 0 10px;
   text-align: left;
 
   .footerWrapper {
-    border-top: 1px solid $primary-footer-color;
+    border-top: 1px solid $primary-bg;
     padding: 0;
 
     .footerBlocks {
@@ -50,7 +50,7 @@
         width: 31px;
 
         path {
-          fill: $primary-footer-color;
+          fill: $primary-bg;
         }
 
         .middleRing {

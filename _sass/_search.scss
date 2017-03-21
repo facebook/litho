@@ -8,7 +8,7 @@ input[type="search"] {
   position: relative;
 
   &::before {
-    border: 3px solid $search-magnifier-color;
+    border: 3px solid $primary-overlay-special;
     border-radius: 50%;
     content: " ";
     display: block;
@@ -21,7 +21,7 @@ input[type="search"] {
   }
 
   &::after {
-    background: $search-magnifier-color;
+    background: $primary-overlay-special;
     content: " ";
     height: 7px;
     left: 24px;
@@ -42,18 +42,18 @@ input[type="search"] {
     right: 0 !important;
 
     .algolia-docsearch-suggestion--category-header {
-      background: $search-suggestion-color;
+      background: $primary-overlay-special;
       color: $primary-bg;
 
       .algolia-docsearch-suggestion--highlight {
         background-color: $primary-bg;
-        color: $search-suggestion-color;
+        color: $primary-overlay-special;
       }
     }
 
     .algolia-docsearch-suggestion--title .algolia-docsearch-suggestion--highlight,
     .algolia-docsearch-suggestion--subcategory-column .algolia-docsearch-suggestion--highlight {
-        color: $search-suggestion-color;
+        color: $primary-overlay-special;
     }
 
     .algolia-docsearch-suggestion__secondary,
@@ -68,16 +68,16 @@ input#search_input {
   font-size: 14px;
   line-height: 20px;
   border-radius: 20px;
-  background-color: rgba($search-box-color, 0.25);
+  background-color: rgba($primary-overlay-special, 0.25);
   border: none;
-  color: rgba($search-box-color, 0);
+  color: rgba($primary-overlay-special, 0);
   outline: none;
   position: relative;
   transition: background-color .2s cubic-bezier(0.68, -0.55, 0.265, 1.55), width .2s cubic-bezier(0.68, -0.55, 0.265, 1.55), color .2s ease;
   width: 200px;
 
   &:focus, &:active {
-    background-color: $search-box-color;
+    background-color: $secondary-bg;
     color: $text;
     width: 240px;
   }
@@ -102,7 +102,7 @@ input#search_input {
     font-size: 14px;
     line-height: 20px;
     border-radius: 20px;
-    background-color: rgba($search-box-color, 0.25);
+    background-color: rgba($primary-overlay-special, 0.25);
     border: none;
     color: $text;
     outline: none;
@@ -111,8 +111,8 @@ input#search_input {
     width: 100%;
 
     &:focus, &:active {
-      background-color: $search-box-color;
-      color: $search-box-color;
+      background-color: $primary-bg;
+      color: $primary-overlay;
     }
   }
 
