@@ -208,7 +208,7 @@ And that is it!  Running this app should get you something much like this
 
 Not pretty, but this is certainly a start!
 
-## 3. A Fist Component
+## 3. A First Component
 
 The end goal of this tutorial is some sort of simple, scrollable feed.  This feed will just say "Hello World" a whole lot of times.  In this tutorial, we'll look at defining one of the elements (the "Hello World"s) that appear in the feed.  Naturally, in full scale applications, elements will be substantially more complicated components.
 
