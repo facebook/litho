@@ -372,4 +372,4 @@ You can specify more options to the `@Prop` annotation.  For example, consider t
 
 This tells the annotation processor to construct a number of functions, such as `shadowRadiusPx`, `shadowRadiusDip`, `shadowRadiusSp` as well as `shadowRadiusRes`.  For more information, see the full documentation.
 
-This concludes the bare bones tutorial, and the code for the finished product can be found [here](https://github.com/facebook/c4a/blob/master/sample-barebones/).  For more in-depth code, check out the [sample](https://github.com/facebook/c4a/blob/master/sample/), as well as the documentation elsewhere on this website.
+This concludes the bare bones tutorial, and the code for the finished product can be found [here](https://github.com/{{site.ghrepo}}/c4a/blob/master/sample-barebones/).  For more in-depth code, check out the [sample](https://github.com/{{site.ghrepo}}/c4a/blob/master/sample/), as well as the documentation elsewhere on this website.
