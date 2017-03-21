@@ -11,19 +11,19 @@ ADD INSTALLATION INSTRUCTIONS HERE
 
 ## Verifying Installation with Hello World
 
-Hello, World in Litho is relatively simple.  A full walkthrough, including setting up libraries and annotation processors required for full functionality can be found [here](/tutorial/).
+Hello, World in Litho is relatively simple.  A full walkthrough, including setting up libraries and annotation processors required for full functionality can be found [here](/docs/tutorial.html/).
 
-However, as a taster, this is a simple "Hello, World!" activity using components.  It constructs a `ComponentContext`, a `ComponentView` and a `ComponentTree`, and displays a text box to the screen.
+However, as a taster, this is a simple "Hello, World!" activity using Litho.  It constructs a `ComponentContext`, a `ComponentView` and a `ComponentTree`, and displays a text box to the screen.
 
 ``` java
 import android.app.Activity;
 import android.os.Bundle;
 
-import com.facebook.components.ComponentContext;
-import com.facebook.components.ComponentInfo;
-import com.facebook.components.ComponentTree;
-import com.facebook.components.ComponentView;
-import com.facebook.components.widget.Text;
+import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentInfo;
+import com.facebook.litho.ComponentTree;
+import com.facebook.litho.ComponentView;
+import com.facebook.litho.widget.Text;
 
 public class SampleActivity extends Activity {
 
