@@ -5,9 +5,9 @@ layout: docs
 permalink: /docs/tutorial.html
 ---
 
-## Getting an app off the ground
+## 1. Getting an app off the ground
 
-In this, the first of five basic parts of this tutorial in using Litho, we'll build a very simple app.  This app will be built with [buck][buck], and use the [SoLoader][SoLoader] library.  Apart from that, though, it won't do anything.  The purpose of this tutorial is to set the stage for when we add Litho code, so that we don't have to clutter up with unrelated fluff.
+In this, the first of five basic parts of this tutorial in using Litho, we'll build a very simple app.  This app will be built with [buck](https://buckbuild.com), and use the [SoLoader](https://github.com/facebook/SoLoader) library.  Apart from that, though, it won't do anything.  The purpose of this tutorial is to set the stage for when we add Litho code, so that we don't have to clutter up with unrelated fluff.
 
 **Requirements:** Buck set up with Android SDK.
 
@@ -53,7 +53,7 @@ keystore(
 )
 ```
 
-Look [here][debug_keystore] for instructions on creating a debug keystore, and [here][debug.keystore.properties] for a `debug.keystore.properties` file.
+Look [here](https://coderwall.com/p/r09hoq/android-generate-release-debug-keystores) for instructions on creating a debug keystore, and [here](https://github.com/{{ site.ghrepo }}/blob/master/sample/debug.keystore.properties) for a `debug.keystore.properties` file.
 
 Now, we need some java (we referred to it in `deps` above).  In `src/main/java/com/company/tutorial` add the `BUCK` file:
 
@@ -101,7 +101,7 @@ public class SampleActivity extends Activity {
 }
 ```
 
-Note the `SoLoader.init` in the application.  SoLoader is a library for loading native libraries, and their dependencies.  Since Litho uses [Yoga][yoga] for layout (which has native dependencies), we need SoLoader.  This init step needs to be called before almost anything else, so we don't try reference unloaded libraries.
+Note the `SoLoader.init` in the application.  SoLoader is a library for loading native libraries, and their dependencies.  Since Litho uses [Yoga](https://facebook.github.io/yoga/) for layout (which has native dependencies), we need SoLoader.  This init step needs to be called before almost anything else, so we don't try reference unloaded libraries.
 
 Finally, add a target in `/lib/BUCK` to actually download SoLoader
 
@@ -121,14 +121,7 @@ remote_file(
 
 Now we can build and test on an emulator with `buck fetch :sample-barebones` and `buck install -r :sample-barebones`.  With any luck, this should show a blank app!
 
-
-[debug_keystore]: https://coderwall.com/p/r09hoq/android-generate-release-debug-keystores
-[debug.keystore.properties]: https://github.com/{{ site.ghrepo }}/blob/master/sample/debug.keystore.properties
-[buck]: https://buckbuild.com
-[yoga]: https://facebook.github.io/yoga/
-[SoLoader]: https://github.com/facebook/SoLoader
-
-## Hello Litho World
+## 2. Hello Litho World
 
 In this part, we'll introduce Litho in a very basic way to our app.  We'll use a predefined Litho `Text` widget to display "Hello World" on the screen.  Along the way, we'll learn about the building blocks of Litho: components, the component tree, `ComponentView` and setting properties on components.
 
@@ -150,7 +143,7 @@ remote_file(
 
 Then add `'/lib:litho'` to the `deps` of `src/main/java/com/company/tutorial:tutorial`.  Note that it is a dependency of the java library, and not a root dependency of the project.
 
-User interfaces in Litho are defined in terms of components.  You will write _component specs_ which define the component, what properties it has, how it renders etc.  These specs may be written in terms of other components.  For example a `ForumPost` component might have a `Text` component for the user name, another `Text` for the message and an `Image` for the user avatar.  Litho provides a number of useful, reusable components, such as `Text` and `Image` for you to build on.  Take a look [here][components_widgets] for a full list.
+User interfaces in Litho are defined in terms of components.  You will write _component specs_ which define the component, what properties it has, how it renders etc.  These specs may be written in terms of other components.  For example a `ForumPost` component might have a `Text` component for the user name, another `Text` for the message and an `Image` for the user avatar.  Litho provides a number of useful, reusable components, such as `Text` and `Image` for you to build on.  Take a look [here](https://github.com/{{ site.ghrepo }}/tree/master/src/main/java/com/facebook/components/widget) for a full list.
 
 For this example, we'll just add a single `Text` component to the app.  In your `SampleActivity`, now override the constructor.  In this we will set up the content view of this activity.  Let's dive right in
 
@@ -215,16 +208,7 @@ And that is it!  Running this app should get you something much like this
 
 Not pretty, but this is certainly a start!
 
-[components_widgets]: https://github.com/{{ site.ghrepo }}/tree/master/src/main/java/com/facebook/components/widget
-
----
-title: Barebones Tutorial Part 3/5
-layout: tutorial_post
-author: rspencer
-category: tutorial
----
-
-## A Fist Component
+## 3. A Fist Component
 
 The end goal of this tutorial is some sort of simple, scrollable feed.  This feed will just say "Hello World" a whole lot of times.  In this tutorial, we'll look at defining one of the elements (the "Hello World"s) that appear in the feed.  Naturally, in full scale applications, elements will be substantially more complicated components.
 
@@ -257,7 +241,7 @@ public class FeedItemSpec {
 }
 ```
 
-Some of this is familiar.  We see the `Text` component from before.  However, now we are passing it as a "child" property of a `Container`.  You can think `Container`s like `<div>`s in HTML.  Its a wrapper, usually simply used for collating things together (and some background styling).  In fact, since components uses [Yoga][yoga], you can add flexbox attributes to layout the children of a `Container`.  Here, we simply set the padding and background color.
+Some of this is familiar.  We see the `Text` component from before.  However, now we are passing it as a "child" property of a `Container`.  You can think `Container`s like `<div>`s in HTML.  Its a wrapper, usually simply used for collating things together (and some background styling).  In fact, since components uses [Yoga](https://facebook.github.io/yoga/), you can add flexbox attributes to layout the children of a `Container`.  Here, we simply set the padding and background color.
 
 How do we use this component?  Its rather simple.  In the `SampleActivity`, simply change the `ComponentTree` definition to
 
@@ -284,65 +268,7 @@ But that's as simple as it is.  Run and you should see
 
 <img src="/static/images/barebones2.png" style="width: 300px;">
 
-[yoga]: https://facebook.github.io/yoga/
-
-## Properties
-
-Feeds are no good if they only contain repetitive copies of a single component.  In this part, we will look at _properties_: attributes you can set on components you define in order to change their behavior or appearance.
-
-Adding properties to a component is very simple.  Properties are simply parameters to methods of the specification, annotated with the `@Prop` annotation.  Lets add some properties to our `FeedItem` that will change the appearance of the component.  We'll add a `message` and `color` property.
-
-``` java
-@OnCreateLayout
-static ComponentLayout onCreateLayout(
-    ComponentContext c,
-    @Prop int color,
-    @Prop String message) {
-  return Container.create(c)
-      .paddingDip(ALL, 16)
-      .backgroundColor(color)
-      .child(
-          Text.create(c)
-              .text(message)
-              .textSizeSp(40))
-      .build();
-}
-```
-
-The magic is in the `@Prop` annotations and the annotation processor.  The processor produces methods on the builder that correspond to the properties in a smart way.  Thus, we simply change the binder's construction of the component to
-
-``` java
-private void addContent(RecyclerBinder recyclerBinder, ComponentContext context) {
-  for (int i = 0; i < 32; i++) {
-    ComponentInfo.Builder componentInfoBuilder = ComponentInfo.create();
-    componentInfoBuilder.component(
-        FeedItem.create(context)
-            .color(i % 2 == 0 ? Color.WHITE : Color.LTGRAY)
-            .message("Hello, world!")
-            .build());
-    recyclerBinder.insertItemAt(i, componentInfoBuilder.build());
-  }
-}
-```
-
-The only change is in lines 5 to 8.  This gives
-
-<img src="/static/images/barebones4.png" style="width: 300px;">
-
-You can specify more options to the `@Prop` annotation.  For example, consider the property
-
-``` java
-@Prop(optional = true, resType = ResType.DIMEN_OFFSET) int shadowRadius,
-```
-
-This tells the annotation processor to construct a number of functions, such as `shadowRadiusPx`, `shadowRadiusDip`, `shadowRadiusSp` as well as `shadowRadiusRes`.  For more information, see the full documentation.
-
-This concludes the bare bones tutorial, and the code for the finished product can be found [here][barebones-sample].  For more in-depth code, check out the [sample][sample], as well as the documentation elsewhere on this website.
-
-[sample]: https://github.com/facebookincubator/c4a/blob/master/sample/
-[barebones-sample]: https://github.com/facebookincubator/c4a/blob/master/sample-barebones/
-
-## Feed Me!
+## 4. Feed Me!
 
 Feeds in Litho are based upon the `Recycler` component.  This component is similar, conceptually, to the Android `RecyclerView`.  However, with Litho, all the layout is performed in a separate thread, giving a substantial performance boost.  In this part, we'll use a `RecyclerBinder` that provides component to a `Recycler`, in the same way an `LayoutMangager` and `Adapter` combination provides `View`s to a `RecyclerView`.
 
@@ -394,3 +320,57 @@ private void addContent(RecyclerBinder recyclerBinder, ComponentContext context)
 It's that simple.  Call `addContent` somewhere in the main activity `onCreate` and running the app gives a scrollable list of 32 "Hello World" components:
 
 <img src="/static/images/barebones3.png" style="width: 300px;">
+
+## 5. Properties
+
+Feeds are no good if they only contain repetitive copies of a single component.  In this part, we will look at _properties_: attributes you can set on components you define in order to change their behavior or appearance.
+
+Adding properties to a component is very simple.  Properties are simply parameters to methods of the specification, annotated with the `@Prop` annotation.  Lets add some properties to our `FeedItem` that will change the appearance of the component.  We'll add a `message` and `color` property.
+
+``` java
+@OnCreateLayout
+static ComponentLayout onCreateLayout(
+    ComponentContext c,
+    @Prop int color,
+    @Prop String message) {
+  return Container.create(c)
+      .paddingDip(ALL, 16)
+      .backgroundColor(color)
+      .child(
+          Text.create(c)
+              .text(message)
+              .textSizeSp(40))
+      .build();
+}
+```
+
+The magic is in the `@Prop` annotations and the annotation processor.  The processor produces methods on the builder that correspond to the properties in a smart way.  Thus, we simply change the binder's construction of the component to
+
+``` java
+private void addContent(RecyclerBinder recyclerBinder, ComponentContext context) {
+  for (int i = 0; i < 32; i++) {
+    ComponentInfo.Builder componentInfoBuilder = ComponentInfo.create();
+    componentInfoBuilder.component(
+        FeedItem.create(context)
+            .color(i % 2 == 0 ? Color.WHITE : Color.LTGRAY)
+            .message("Hello, world!")
+            .build());
+    recyclerBinder.insertItemAt(i, componentInfoBuilder.build());
+  }
+}
+```
+
+The only change is in lines 5 to 8.  This gives
+
+<img src="/static/images/barebones4.png" style="width: 300px;">
+
+You can specify more options to the `@Prop` annotation.  For example, consider the property
+
+``` java
+@Prop(optional = true, resType = ResType.DIMEN_OFFSET) int shadowRadius,
+```
+
+This tells the annotation processor to construct a number of functions, such as `shadowRadiusPx`, `shadowRadiusDip`, `shadowRadiusSp` as well as `shadowRadiusRes`.  For more information, see the full documentation.
+
+This concludes the bare bones tutorial, and the code for the finished product can be found [here](https://github.com/facebookincubator/c4a/blob/master/sample-barebones/).  For more in-depth code, check out the [sample](https://github.com/facebookincubator/c4a/blob/master/sample/), as well as the documentation elsewhere on this website.
+
