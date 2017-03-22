@@ -2,7 +2,7 @@
 docid: repo-structure
 title: Repository Structure
 layout: docs
-permalink: /docs/repo-structure.html
+permalink: /docs/repo-structure
 ---
 
 This is a quick breakdown of what is where in the repository.
