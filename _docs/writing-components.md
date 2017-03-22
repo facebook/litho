@@ -3,6 +3,7 @@ docid: writing-components
 title: Writing Components
 layout: docs
 permalink: /docs/writing-components
+---
 
 ## Component Specs
 A component *spec* generates the actual component class that you'll use in your UI. There are two types of component specs:
