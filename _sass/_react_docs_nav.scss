@@ -162,7 +162,7 @@ nav.toc {
 
         h3 {
           background: $primary-bg;
-          color: $primary-overlay;
+          color: $primary-overlay-special;
 
           i {
             display: none;
@@ -192,11 +192,11 @@ nav.toc {
 
           &:hover,
           &:focus {
-            color: $primary-bg;
+            color: darken($primary-bg, 20%);
           }
 
           &.navItemActive {
-            color: $primary-bg;
+            color: darken($primary-bg, 30%);
           }
         }
       }
