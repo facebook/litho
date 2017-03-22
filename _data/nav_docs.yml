@@ -5,6 +5,9 @@
   - id: components
   - id: props
   - id: state
+- title: Concepts
+  items:
+  - id: writing-components
 - title: Handling Events
   items:
   - id: accessibility-handling
