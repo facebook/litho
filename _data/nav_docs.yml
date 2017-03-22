@@ -2,11 +2,11 @@
   items:
   - id: intro
   - id: motivation
-- title: The Basics
+- title: Quick Start
   items:
-  - id: installation
+  - id: getting-started
   - id: writing-components
-  - id: using-components 
+  - id: using-components
   - id: codegen
   - id: tutorial
 - title: Reference
