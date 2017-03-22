@@ -19,10 +19,7 @@
     }
 
     .pluginRowBlock {
-      display: flex;
-      flex-flow: wrap;
-      margin: 0 -2px;
-
+      display: inline-flex;
       .pluginWrapper {
         padding: 0 2px;
       }

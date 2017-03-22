@@ -67,34 +67,38 @@ h1, h2, h3, h4 {
 
   .homeWrapper {
     padding: 3em 10px;
+      text-align: center;
+    .wrapper {
+      margin: 0px auto;
+      max-width: $content-width;
+      padding: 0 20px;
+    }
 
-      .wrapper {
-        margin: 0px auto;
-        max-width: $content-width;
-        padding: 0 20px;
-      }
+    .inner {
+    }
 
-      .projectLogo {
-        img {
-          height: 100px;
-          margin-bottom: 0px;
-        }
+    .projectLogo {
+      img {
+        height: 100px;
+        margin-bottom: 0px;
       }
+    }
 
-      h1#project_title {
-        font-family: $header-font-family;
-        font-size: 300%;
-        letter-spacing: -0.08em;
-        line-height: 1em;
-        margin-bottom: 80px;
-      }
+    h1#project_title {
+      font-family: $header-font-family;
+      font-size: 300%;
+      letter-spacing: -0.08em;
+      line-height: 1em;
+      margin-bottom: 80px;
+    }
 
-      h2#project_tagline {
-        font-family: $header-font-family;
-        font-size: 200%;
-        letter-spacing: -0.04em;
-        line-height: 1em;
-      }
+    h2#project_tagline {
+      font-family: $header-font-family;
+      font-size: 200%;
+      letter-spacing: -0.04em;
+      line-height: 1em;
+      color: $primary-overlay-special;
+    }
   }
 }
 
@@ -127,7 +131,8 @@ section#intro {
   }
 
   ol, ul {
-    padding-left: 24px;
+    display: inline-block;
+    text-align: left;
     li {
       padding-bottom: 8px;
       padding-left: 6px;
