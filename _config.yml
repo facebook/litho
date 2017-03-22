@@ -1,9 +1,9 @@
 # Site settings
 permalink: /blog/:year/:month/:day/:title.html
 title: Litho
-tagline: Litho
-description: >
-  A declarative framework for building efficient UIs on Android.
+tagline: A declarative UI framework for Android
+#description: >
+#  Add description here
 fbappid: "1615782811974223"
 gacode: "UA-44373548-28"
 logo: /static/logo.svg
