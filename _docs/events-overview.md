@@ -2,5 +2,5 @@
 docid: events-overview 
 title: Overview
 layout: docs
-permalink: /docs/events-overview.html
+permalink: /docs/events-overview
 ---

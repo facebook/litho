@@ -16,7 +16,7 @@ This directory holds the Jekyll files for the GitHub pages you are now reading.
 A number of external libraries can be found in this sub-folder.  Roughly, they can be split into two categories
 
  * **Fetched libraries**:  These libraries are hosted on jCenter.  The corresponding sub-folder of `/lib/` will only contain a `BUCK` file, with the command to fetch the library.
- * **Bundled libraries**:  These libraries are included in their completeness.  This is the [proper buck way of doing things](https://buckbuild.com/command/fetch.html).  However, they vastly increase the size of the repository and are thus only included when absolutely necessary.
+ * **Bundled libraries**:  These libraries are included in their completeness.  This is the [proper buck way of doing things](https://buckbuild.com/command/fetch).  However, they vastly increase the size of the repository and are thus only included when absolutely necessary.
 
 ### `/sample-barebones/`
 

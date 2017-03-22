@@ -2,5 +2,5 @@
 docid: ide
 title: IDE Support
 layout: docs
-permalink: /docs/ide.html
+permalink: /docs/ide
 ---

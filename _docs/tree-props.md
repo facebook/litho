@@ -2,5 +2,5 @@
 docid: tree-props 
 title: TreeProps
 layout: docs
-permalink: /docs/tree-props.html
+permalink: /docs/tree-props
 ---
