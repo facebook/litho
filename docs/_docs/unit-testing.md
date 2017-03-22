@@ -12,7 +12,7 @@ AssertJ methods. They are available as:
   or Components.
 - `ComponentViewAssert` for assertions against mounted Components.
 
-Under the hood, these asserts are implemented through these helpers,
+Under the hood, these asserts are implemented through the following helpers,
 that are also available in case that more complicated use cases need
 to be reconstructed:
 
@@ -20,7 +20,7 @@ to be reconstructed:
   created and mounted in a similar way to how they are in real apps.
 - `ComponentQueries`: Utility class to query the state of components.
 
-To demonstrate the usage of these classes, below is an example of a component
+To demonstrate the usage of those classes, below is an example of a component
 that displays a like icon and a short description.
 
 ```java
@@ -62,9 +62,9 @@ For our test, we want to verify the rendering of the text and the icon.
 ## Setup
 
 The Components testing framework provides a JUnit
-[`@Rule`](https://github.com/junit-team/junit4/wiki/Rules)]] which
+[`@Rule`](https://github.com/junit-team/junit4/wiki/Rules)] which
 sets up overrides for
-[Styleables](https://developer.android.com/reference/android/R.styleable.html)]]
+[Styleables](https://developer.android.com/reference/android/R.styleable.html)]
 and allows easy access to a `ComponentContext`.
 
 ```java
