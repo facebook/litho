@@ -2,7 +2,7 @@
 docid: visibility-handling
 title: Visibility Handling
 layout: docs
-permalink: /docs/visibility-handling.html
+permalink: /docs/visibility-handling
 ---
 
 ### Types of Visibility Range ###

@@ -2,7 +2,7 @@
 docid: getting-started
 title: Getting Started
 layout: docs
-permalink: /docs/getting-started.html
+permalink: /docs/getting-started
 ---
 
 ## Adding Litho to your Project
@@ -12,7 +12,6 @@ You can include Litho to your Android project via Gradle by adding the following
 ```java 
 dependencies { 
   // ...
-
   // Litho
   compile 'com.facebook.litho:litho:1.0.0' 
 } 

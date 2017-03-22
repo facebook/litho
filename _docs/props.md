@@ -2,7 +2,7 @@
 docid: props
 title: Props
 layout: docs
-permalink: /docs/props.html
+permalink: /docs/props
 ---
 
 Components use a unidirectional data flow with immutable inputs. Following the name established by React, the inputs that a `Component` takes are known as *props*.

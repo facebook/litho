@@ -23,8 +23,7 @@ article {
 }
 
 a {
-  border-bottom: 1px dotted $primary-bg;
-  color: $text;
+  color: $link;
   text-decoration: none;
   -webkit-transition: all 0.3s;
   transition: all 0.3s;
@@ -55,9 +54,8 @@ h1, h2, h3, h4 {
 }
 
 .homeContainer {
-  background: $secondary-bg;
+  background: $primary-bg;
   color: $primary-overlay;
-  text-align: center;
 
   a {
     color: $primary-overlay;
@@ -69,7 +67,6 @@ h1, h2, h3, h4 {
 
   .homeWrapper {
     padding: 3em 10px;
-    text-align: center;
 
       .wrapper {
         margin: 0px auto;
@@ -179,8 +176,7 @@ section#intro {
     :not(.gist-meta) > a {
       &:hover,
       &:focus {
-        background: $primary-bg;
-        color: $primary-overlay;
+        text-decoration: underline;
       }
     }
 
@@ -211,8 +207,8 @@ section#intro {
       text-align: left;
 
       & {
-        border-bottom: 1px solid darken($primary-bg, 10%);
-        color: darken($primary-bg, 10%);
+        border-bottom: 1px solid darken($primary-bg, 30%);
+        color: darken($primary-bg, 30%);
         font-size: 22px;
         padding: 10px 0;
       }
@@ -287,26 +283,24 @@ section#intro {
       }
 
       :not(.gist-meta) > a {
-        color: $primary-overlay;
 
         &:hover,
         &:focus {
-          color: $secondary-bg;
         }
       }
 
       h2 {
-        border-bottom: 4px solid $primary-bg;
+        border-bottom: 4px solid darken($primary-bg, 30%);
         font-size: 130%;
       }
 
       h3 {
-        border-bottom: 1px solid $primary-bg;
+        border-bottom: 1px solid darken($primary-bg, 30%);
         font-size: 110%;
       }
 
       h4 {
-        border-bottom: 1px solid $primary-bg;
+        border-bottom: 1px solid darken($primary-bg, 30%);
         font-size: 90%;
       }
 

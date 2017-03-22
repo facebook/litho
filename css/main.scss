@@ -61,7 +61,7 @@ $gridBlockWrapper-background: #f9f9f9;
 $gridBlockWrapper-alternate-background: #e9e9e9;
 
 // Code block colors
-$code-background: #e5e5e5;
+$code-background: #f3f3f3;
 $code-gutter-color: #000000;
 $code-text-general: #000000;
 
@@ -77,11 +77,12 @@ $primary-overlay-special:   lighten($primary-bg, 30%);
 
 // $secondary-bg overlays
 {% if site.color.secondary-overlay == 'light' %}
-$text:              #393939;
+$text:              #494949;
 $sidenav:           darken($secondary-bg, 20%);
 $sidenav-text:      $text;
 $sidenav-overlay:   darken($sidenav, 10%);
 $sidenav-active:    lighten($sidenav, 10%);
+$link:              darken($primary-bg, 40%);
 {% else %}
 $text:              #fff;
 $sidenav:           lighten($secondary-bg, 20%);
