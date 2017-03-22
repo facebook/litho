@@ -82,6 +82,7 @@ $sidenav:           darken($secondary-bg, 20%);
 $sidenav-text:      $text;
 $sidenav-overlay:   darken($sidenav, 10%);
 $sidenav-active:    lighten($sidenav, 10%);
+$link:              darken($primary-bg, 40%);
 {% else %}
 $text:              #fff;
 $sidenav:           lighten($secondary-bg, 20%);

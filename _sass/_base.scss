@@ -23,8 +23,7 @@ article {
 }
 
 a {
-  border-bottom: 1px dotted $primary-bg;
-  color: $text;
+  color: $link;
   text-decoration: none;
   -webkit-transition: all 0.3s;
   transition: all 0.3s;
@@ -179,8 +178,7 @@ section#intro {
     :not(.gist-meta) > a {
       &:hover,
       &:focus {
-        background: $primary-bg;
-        color: $primary-overlay;
+        text-decoration: underline;
       }
     }
 
@@ -287,11 +285,9 @@ section#intro {
       }
 
       :not(.gist-meta) > a {
-        color: $primary-overlay;
 
         &:hover,
         &:focus {
-          color: $secondary-bg;
         }
       }
 
