@@ -2,7 +2,7 @@
 docid: contributing
 title: Contributing
 layout: docs
-permalink: /docs/contributing.html
+permalink: /docs/contributing
 ---
 
 The Facebook Litho team would love to have your contributions.

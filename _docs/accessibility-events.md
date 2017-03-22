@@ -2,7 +2,7 @@
 docid: accessibility-handling
 title: Accessibility Handling
 layout: docs
-permalink: /docs/accessibility-handling.html
+permalink: /docs/accessibility-handling
 ---
 
 All components support a set of events corresponding to [`AccessibilityDelegateCompat`](https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html)'s methods. These events have attributes for each parameter of the corresponding `AccessibilityDelegateCompat` method *and* an additional parameter of type `AccessibilityDelegateCompat` called `superDelegate` which allows you to explicitly call `View`'s default implementation of accessibility methods where necessary. The supported events are:
