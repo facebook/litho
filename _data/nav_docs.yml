@@ -53,6 +53,15 @@
   - id: debugging
   - id: ide
 - title: Widgets
+  items:
+  - id: widgets-card
+  - id: widgets-edittext
+  - id: widgets-horizontalscroll
+  - id: widgets-image
+  - id: widgets-progress
+  - id: widgets-recycler
+  - id: widgets-solidcolor
+  - id: widgets-text
 - title: Contributing
   items:
   - id: contributing
