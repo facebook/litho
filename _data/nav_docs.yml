@@ -22,6 +22,8 @@
   - id: accessibility
 - title: Testing
 - title: RecyclerComponent
+  items:
+  - id: recycler-component
 - title: Widgets
 - title: Advanced Guides
 - title: Best Practices
