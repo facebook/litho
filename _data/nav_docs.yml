@@ -17,6 +17,8 @@
   - id: accessibility-handling
   - id: visibility-handling
 - title: Compatibility
+  items:
+  - id: Accessibility
 - title: Testing
 - title: RecyclerComponent
 - title: Widgets
