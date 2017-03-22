@@ -36,7 +36,7 @@ ghrepo: "facebook/litho"
 # Use these color settings to determine your colour scheme for the site.
 color:
   # primary should be a vivid color that reflects the project's brand
-  primary: "#add8e6"
+  primary: "#dfdfdf"
   # secondary should be a subtle light or dark color used on page backgrounds
   secondary: "#FFFFFF"
   # Use the following to specify whether the previous two colours are 'light'

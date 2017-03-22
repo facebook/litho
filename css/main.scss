@@ -89,6 +89,7 @@ $sidenav:           lighten($secondary-bg, 20%);
 $sidenav-text:      $text;
 $sidenav-overlay:   lighten($sidenav, 10%);
 $sidenav-active:    darken($sidenav, 10%);
+$link:              lighten($primary-bg, 40%);
 {% endif %}
 
 $header-height: 40px;
