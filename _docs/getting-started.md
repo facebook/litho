@@ -1,63 +1,14 @@
 ---
 docid: getting-started
 title: Getting Started
-layout: docs
+layout: docs-getting-started
 permalink: /docs/getting-started
 ---
 
-## Adding Litho to your Project
+{% capture gradle %}{% include_relative getting-started/gradle.md %}{% endcapture %}
+{% capture buck %}{% include_relative getting-started/buck.md %}{% endcapture %}
+{% capture testing %}{% include_relative getting-started/testing.md %}{% endcapture %}
 
-You can include Litho to your Android project via Gradle by adding the following to your `build.gradle` file:
-
-```java 
-dependencies { 
-  // ...
-  // Litho
-  compile 'com.facebook.litho:litho:1.0.0' 
-} 
-```
-
-## Testing your Installation
-
-You can test your install by adding a view created with Litho to an activity.
-
-First, initialize `SoLoader`. Litho has a dependency on [SoLoader](https://github.com/facebook/SoLoader) to help load native libraries provided by the underlying layout engine, [Yoga](https://facebook.github.io/yoga/). Your `Application` class is a good place to do this:
-
-```java
-[MyApplication.java]
-public class MyApplication extends Application {
-  @Override
-  public void onCreate() {
-    super.onCreate();
-    SoLoader.init(this, false);
-  }
-}
-```
-
-Then, add a predefined Litho `Text` widget to an activity that displays "Hello World!":
-
-```java
-[MyActivity.java]
-public class MyActivity extends Activity {
-  @Override
-  public void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-
-    final ComponentView componentView = new ComponentView(this);
-    final ComponentContext context = new ComponentContext(this);
-
-    final Component text = Text.create(context)
-        .text("Hello, World!")
-        .build();
-    final ComponentTree componentTree = ComponentTree.create(context, text).build();
-
-    componentView.setComponent(componentTree);
-
-    setContentView(componentView);
-  }
-}
-```
-
-> Select `com.facebook.litho.widget.Text` when prompted, as the class to import for `Text`.
-
-Run the app, you should see "Hello World!" displayed on the screen.
+{{gradle | markdownify }}
+{{buck | markdownify }}
+{{testing | markdownify }}
