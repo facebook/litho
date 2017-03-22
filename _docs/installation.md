@@ -1,11 +1,9 @@
 ---
-docid: getting-started
-title: Getting Started
+docid: installation
+title: Installing Litho
 layout: docs
 permalink: /docs/getting-started
 ---
-
-## Installing Litho
 
 ADD INSTALLATION INSTRUCTIONS HERE
 
