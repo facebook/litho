@@ -8,8 +8,11 @@
 - type: plugin_row
   children:
   - type: button
-    href: docs/hello-world
+    href: /docs/getting-started
     text: Get Started
   - type: button
-    href: tutorial
+    href: /docs/tutorial
     text: Tutorial
+  - type: button
+    href: /docs/intro
+    text: Learn More
