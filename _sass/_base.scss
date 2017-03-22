@@ -211,8 +211,8 @@ section#intro {
       text-align: left;
 
       & {
-        border-bottom: 1px solid darken($primary-bg, 10%);
-        color: darken($primary-bg, 10%);
+        border-bottom: 1px solid darken($primary-bg, 30%);
+        color: darken($primary-bg, 30%);
         font-size: 22px;
         padding: 10px 0;
       }
@@ -296,17 +296,17 @@ section#intro {
       }
 
       h2 {
-        border-bottom: 4px solid $primary-bg;
+        border-bottom: 4px solid darken($primary-bg, 30%);
         font-size: 130%;
       }
 
       h3 {
-        border-bottom: 1px solid $primary-bg;
+        border-bottom: 1px solid darken($primary-bg, 30%);
         font-size: 110%;
       }
 
       h4 {
-        border-bottom: 1px solid $primary-bg;
+        border-bottom: 1px solid darken($primary-bg, 30%);
         font-size: 90%;
       }
 
