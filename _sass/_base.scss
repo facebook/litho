@@ -67,6 +67,7 @@ h1, h2, h3, h4 {
 
   .homeWrapper {
     padding: 3em 10px;
+      text-align: center;
 
     .wrapper {
       margin: 0px auto;
@@ -128,8 +129,13 @@ section#intro {
   }
 
   ol, ul {
+<<<<<<< da49e50dfee4c6acfa2cb05aff58256f21e214d3
     padding-left: 24px;
 
+=======
+    display: inline-block;
+    text-align: left;
+>>>>>>> Update and streamline the landing page (#38)
     li {
       padding-bottom: 8px;
       padding-left: 6px;
