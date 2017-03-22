@@ -2,7 +2,7 @@
 docid: code-style
 title: Code Style 
 layout: docs
-permalink: /docs/code-style.html
+permalink: /docs/code-style
 ---
 
 #### Guidelines: ####

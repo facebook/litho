@@ -2,7 +2,7 @@
 docid: tutorial
 title: Tutorial
 layout: docs
-permalink: /docs/tutorial.html
+permalink: /docs/tutorial
 ---
 
 ## 1. Getting an app off the ground
