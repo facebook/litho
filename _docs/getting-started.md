@@ -5,28 +5,45 @@ layout: docs
 permalink: /docs/getting-started.html
 ---
 
-## Installing Litho
+## Adding Litho to your Project
 
-ADD INSTALLATION INSTRUCTIONS HERE
+You can include Litho to your Android project via Gradle by adding the following to your `build.gradle` file:
 
-## Verifying Installation with Hello World
+```java 
+dependencies { 
+  // ...
 
-Hello, World in Litho is relatively simple.  A full walkthrough, including setting up libraries and annotation processors required for full functionality can be found [here](/docs/tutorial.html/).
+  // SoLoader dependency
+  compile 'com.facebook.soloader:soloader:0.1.0+'
+  // Litho
+  compile 'com.facebook.litho:litho:1.0.0' 
+} 
+```
 
-However, as a taster, this is a simple "Hello, World!" activity using Litho.  It constructs a `ComponentContext`, a `ComponentView` and a `ComponentTree`, and displays a text box to the screen.
+Litho has a dependency on [SoLoader](https://github.com/facebook/SoLoader) to help load native libraries provided by the underlying layout engine, [Yoga](https://facebook.github.io/yoga/).
 
-``` java
-import android.app.Activity;
-import android.os.Bundle;
+## Testing your Installation
 
-import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentInfo;
-import com.facebook.litho.ComponentTree;
-import com.facebook.litho.ComponentView;
-import com.facebook.litho.widget.Text;
+You can test your install by adding a view created with Litho to an activity.
 
-public class SampleActivity extends Activity {
+First, initialize `SoLoader`. Your `Application` class is a good place to do this:
 
+```java
+[MyApplication.java]
+public class MyApplication extends Application {
+  @Override
+  public void onCreate() {
+    super.onCreate();
+    SoLoader.init(this, false);
+  }
+}
+```
+
+Then, add a predefined Litho `Text` widget to an activity that displays "Hello World!":
+
+```java
+[MyActivity.java]
+public class MyActivity extends Activity {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -45,3 +62,5 @@ public class SampleActivity extends Activity {
   }
 }
 ```
+
+Run the app, you should see "Hello World!" displayed on the screen.
