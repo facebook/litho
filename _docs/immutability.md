@@ -2,5 +2,5 @@
 docid: immutability
 title: Immutability
 layout: docs
-permalink: /docs/immutability.html
+permalink: /docs/immutability
 ---

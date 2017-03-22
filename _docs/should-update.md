@@ -2,5 +2,5 @@
 docid: should-update
 title: ShouldUpdate
 layout: docs
-permalink: /docs/should-update.html
+permalink: /docs/should-update
 ---

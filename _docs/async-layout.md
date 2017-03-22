@@ -2,5 +2,5 @@
 docid: async-layout
 title: AsyncLayout
 layout: docs
-permalink: /docs/async-layout.html
+permalink: /docs/async-layout
 ---

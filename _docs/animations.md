@@ -2,5 +2,5 @@
 docid: animations 
 title: Animations
 layout: docs
-permalink: /docs/animations.html
+permalink: /docs/animations
 ---
