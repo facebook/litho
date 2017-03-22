@@ -1,6 +1,6 @@
 ---
-docid: installation
-title: Installing Litho
+docid: getting-started
+title: Getting Started
 layout: docs
 permalink: /docs/getting-started
 ---
