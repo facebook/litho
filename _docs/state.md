@@ -2,7 +2,7 @@
 docid: state
 title: State
 layout: docs
-permalink: /docs/state.html
+permalink: /docs/state
 ---
 
 A Litho component can also contain two types of data:

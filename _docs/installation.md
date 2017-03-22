@@ -2,7 +2,7 @@
 docid: installation
 title: Installing Litho
 layout: docs
-permalink: /docs/getting-started.html
+permalink: /docs/getting-started
 ---
 
 ADD INSTALLATION INSTRUCTIONS HERE
