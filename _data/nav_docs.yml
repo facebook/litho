@@ -7,6 +7,10 @@
   - id: tutorial
   - id: components
   - id: props
+- title: Concepts
+  items:
+  - id: writing-components
+  - id: using-components
   - id: state
 - title: Handling Events
   items:
