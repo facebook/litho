@@ -7,7 +7,7 @@ permalink: /docs/layout-specs
 
 A *layout spec* is the logical equivalent of a composite view on Android. It simply groups existing components together in an immutable layout tree.
 
-Implementing a layout spec is very simple: you only need to write one method annotated with `@OnCreateLayout` which returns an immutable tree of `ComponentLayout` objects. 
+Implementing a layout spec is very simple: you only need to write one method annotated with `@OnCreateLayout` which returns an immutable tree of `ComponentLayout` objects.
 
 Let's start with a simple example:
 
@@ -15,7 +15,7 @@ Let's start with a simple example:
 @LayoutSpec
 public class MyComponentSpec {
   @OnCreateLayout
-  ComponentLayout onCreateLayout(
+  protected ComponentLayout onCreateLayout(
       ComponentContext c,
       @Prop Uri imageUri,
       @Prop String title) {
