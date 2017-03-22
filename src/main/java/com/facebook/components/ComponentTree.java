@@ -633,6 +633,10 @@ public class ComponentTree {
   }
 
   synchronized void updateStateLazy(String componentKey, StateUpdate stateUpdate) {
+    if (mRoot == null) {
+      return;
+    }
+
     mStateHandler.queueStateUpdate(componentKey, stateUpdate);
   }
 
