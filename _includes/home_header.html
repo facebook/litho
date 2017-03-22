@@ -2,8 +2,7 @@
   <div class="homeSplashFade">
     <div id="home_wrap" class="wrapper homeWrapper">
       <div id="inner">
-        <h2 id="project_tagline">{{ site.tagline }}</h2>
-        <section id="intro">
+        <h2 id="project_tagline">{{ site.tagline }}</h2> <section id="intro">
             {% if page.excerpt %}
               <p>{{ page.excerpt | strip_html }}</p>
             {% else %}
@@ -11,6 +10,11 @@
                 {{ site.description }}
               </p>
             {% endif %}
+            <ul>
+              <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit</li>
+              <li>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</li>
+              <li>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris</li>
+            </ul>
         </section>
         <div id="promo" class="section promoSection">
           {% for promo in site.data.promo %}
@@ -19,6 +23,9 @@
             </div>
           {% endfor %}
         </div>
+      </div>
+      <div class="projectLogo">
+        <img src="{{ '/static/og_image.png' | relative_url }}" alt="{{ site.title }}">
       </div>
     </div>
   </div>

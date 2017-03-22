@@ -54,9 +54,8 @@ h1, h2, h3, h4 {
 }
 
 .homeContainer {
-  background: $secondary-bg;
+  background: $primary-bg;
   color: $primary-overlay;
-  text-align: center;
 
   a {
     color: $primary-overlay;
@@ -68,7 +67,6 @@ h1, h2, h3, h4 {
 
   .homeWrapper {
     padding: 3em 10px;
-    text-align: center;
 
       .wrapper {
         margin: 0px auto;
