@@ -1,4 +1,4 @@
-# Contributing to Components for Android
+# Contributing to Litho
 
 We want to make contributing to this project as easy and transparent as possible.
 
@@ -51,4 +51,4 @@ Most importantly, be consistent with existing code.  Look around the codebase an
 
 ## License
 
-By contributing to Components, you agree that your contributions will be licensed under its BSD license.
+By contributing to Litho, you agree that your contributions will be licensed under its BSD license.
