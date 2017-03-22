@@ -2,6 +2,7 @@
   items:
   - id: intro
   - id: motivation
+  - id: uses
 - title: Quick Start
   items:
   - id: getting-started
