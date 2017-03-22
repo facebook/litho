@@ -4,6 +4,9 @@
   - id: tutorial
   - id: components
   - id: props
+- title: Concepts
+  items:
+  - id: writing-components
 - title: Handling Events
   items:
   - id: accessibility-handling
