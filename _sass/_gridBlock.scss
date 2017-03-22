@@ -11,7 +11,7 @@
   padding: 0 10px;
   padding-top: 100px;
   padding-bottom: 50px;
-  max-width: 1200px;
+  max-width: 1400px;
 
   h3 {
     width: 100%;
@@ -79,9 +79,17 @@
 
 .imageAlignSide .blockContent {
 	flex: 1 1;
-
   p {
     padding: 0;
+    font-size: 130%;
+    font-weight: normal;
+  }
+
+  .blockText {
+
+  }
+
+  .blockCode {
   }
 }
 
