@@ -292,17 +292,17 @@ section#intro {
       }
 
       h2 {
-        border-bottom: 4px solid darken($primary-bg, 30%);
+        padding-top: 30px;
         font-size: 130%;
       }
 
       h3 {
-        border-bottom: 1px solid darken($primary-bg, 30%);
+        border-bottom: 1px solid lighten($primary-bg, 80%);
         font-size: 110%;
       }
 
       h4 {
-        border-bottom: 1px solid darken($primary-bg, 30%);
+        border-bottom: 1px solid lighten($primary-bg, 90%);
         font-size: 90%;
       }
 
@@ -431,7 +431,7 @@ section#intro {
       .post {
 
         h2 {
-          font-size: 180%;
+          font-size: 150%;
         }
 
         h3 {
