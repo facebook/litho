@@ -1,54 +1,145 @@
-# Contributing to Litho
+This provides guidance on how to contribute various content to `fblitho.com`.
 
-We want to make contributing to this project as easy and transparent as possible.
+## Getting started
 
-## Our Development Process
+You should only have to do these one time.
 
-We develop on a private branch internally at Facebook. We regularly update this github project with the changes from the internal repo. External pull requests are cherry-picked into our repo and then pushed back out.
+- Rename this file to `CONTRIBUTING.md`.
+- Rename `EXAMPLE-README-FOR-RUNNING-DOCS.md` to `README.md` (replacing the existing `README.md` that came with the template).
+- Rename `EXAMPLE-LICENSE` to `LICENSE`.
+- Review the [template information](./TEMPLATE-INFORMATION.md).
+- Review `./_config.yml`.
+- Make sure you update `title`, `description`, `tagline` and `gacode` (Google Analytics) in `./_config.yml`.
 
-## Pull Requests
+## Basic Structure
 
-We actively welcome your pull requests!
+Most content is written in markdown. You name the file `something.md`, then have a header that looks like this:
 
-1. Fork the repo and create your branch from master.
-2. If you've added code that should be tested, add tests.
-3. If you've changed APIs, update the documentation (under `/docs`)
-4. Ensure the test suite passes.
-5. If you haven't already, complete the Contributor License Agreement ("CLA").
-6. We will review your code and merge it
+```
+---
+docid: getting-started
+title: Getting started with ProjectName
+layout: docs
+permalink: /docs/getting-started.html
+---
+```
 
-## Contributor License Agreement ("CLA")
+Customize these values for each document, blog post, etc.
 
-In order to accept your pull request, we need you to submit a CLA. You only need to do this once to work on any of Facebook's open source projects.
+> The filename of the `.md` file doesn't actually matter; what is important is the `docid` being unique and the `permalink` correct and unique too).
 
-Complete your CLA here: [https://code.facebook.com/cla](https://code.facebook.com/cla).
+## Landing page
 
-## Issues
+Modify `index.md` with your new or updated content.
 
-We use GitHub issues to track public bugs.  When you report an issue the more information the better. Here are some things that will help you get an answer faster:
+If you want a `GridBlock` as part of your content, you can do so directly with HTML:
 
- * A title as well as a body for the issue
- * A screenshot or video of the problem
- * Logcat output, if your app is crashing
- * A snippet of the code in question
- * Place code in blocks so that it reads like code:
+```
+<div class="gridBlock">
+  <div class="blockElement twoByGridBlock alignLeft">
+    <div class="blockContent">
+      <h3>Your Features</h3>
+      <ul>
+        <li>The <a href="http://example.org/">Example</a></li>
+        <li><a href="http://example.com">Another Example</a></li>
+      </ul>
+    </div>
+  </div>
 
-    ```
-    ```java (or xml)
-    your code here
-    ```(terminating backticks)
-    ```
+  <div class="blockElement twoByGridBlock alignLeft">
+    <div class="blockContent">
+      <h3>More information</h3>
+      <p>
+         Stuff here
+      </p>
+    </div>
+  </div>
+</div>
+```
 
-### Security bugs
+or with a combination of changing `./_data/features.yml` and adding some Liquid to `index.md`, such as:
 
-Facebook has a [bounty program](https://www.facebook.com/whitehat/) for the safe disclosure of security bugs. In those cases, please go through the process outlined on that page and do not file a public issue.
+```
+{% include content/gridblocks.html data_source=site.data.features imagealign="bottom"%}
+```
 
-## Coding Style
+## Blog
 
-Please use 2 spaces for indentation rather than tabs.  Use [Egyptian](https://lehacker.com/wp-content/uploads/2017/01/egyptian-brackets-programming-jargon.jpg) (K&R) braces and limit lines to 100 characters each.
+To modify a blog post, edit the appopriate markdown file in `./_posts/`.
 
-Most importantly, be consistent with existing code.  Look around the codebase and match the style.
+Adding a new blog post is a four-step process.
 
-## License
+> Some posts have a `permalink` and `comments` in the blog post YAML header. You will not need these for new blog posts. These are an artifact of migrating the blog from Wordpress to gh-pages.
 
-By contributing to Litho, you agree that your contributions will be licensed under its BSD license.
+1. Create your blog post in `./_posts/` in markdown (file extension `.md` or `.markdown`). See current posts in that folder or `./doc-type-examples/2016-04-07-blog-post-example.md` for an example of the YAML format. **If the `./_posts` directory does not exist, create it**.
+  - You can add a `<!--truncate-->` tag in the middle of your post such that you show only the excerpt above that tag in the main `/blog` index on your page.
+1. If you have not authored a blog post before, modify the `./_data/authors.yml` file with the `author` id you used in your blog post, along with your full name and Facebook ID to get your profile picture.
+1. [Run the site locally](./README.md) to test your changes. It will be at `http://127.0.0.1/blog/your-new-blog-post-title.html`
+1. Push your changes to GitHub.
+
+## Docs
+
+To modify docs, edit the appropriate markdown file in `./_docs/`.
+
+To add docs to the site....
+
+1. Add your markdown file to the `./_docs/` folder. See `./doc-type-examples/docs-hello-world.md` for an example of the YAML header format. **If the `./_docs/` directory does not exist, create it**.
+  - You can use folders in the `./_docs/` directory to organize your content if you want.
+1. Update `_data/nav_docs.yml` to add your new document to the navigation bar. Use the `docid` you put in your doc markdown in as the `id` in the `_data/nav_docs.yml` file.
+1. [Run the site locally](./README.md) to test your changes. It will be at `http://127.0.0.1/docs/your-new-doc-permalink.html`
+1. Push your changes to GitHub.
+
+## Header Bar
+
+To modify the header bar, change `./_data/nav.yml`.
+
+## Top Level Page
+
+To modify a top-level page, edit the appropriate markdown file in `./top-level/`
+
+If you want a top-level page (e.g., http://your-site.com/top-level.html) -- not in `/blog/` or `/docs/`....
+
+1. Create a markdown file in the root `./top-level/`. See `./doc-type-examples/top-level-example.md` for more information.
+1. If you want a visible link to that file, update `_data/nav.yml` to add a link to your new top-level document in the header bar.
+
+   > This is not necessary if you just want to have a page that is linked to from another page, but not exposed as direct link to the user.
+
+1. [Run the site locally](./README.md) to test your changes. It will be at `http://127.0.0.1/your-top-level-page-permalink.html`
+1. Push your changes to GitHub.
+
+## Utilize `capture` and `markdownify`
+
+If you want to use raw HTML but have some markdown-like content within it, you can do it through
+`capture` and `markdownify`.
+
+e.g.
+
+```
+{% capture landing-page-sample %}{% include_relative landing-page-sample.md %}{% endcapture %}
+
+<div class="gridBlock alternateColor">
+  <div class="blockElement twobyGridBlock imageAlignSide">
+    <div class="blockContent">
+      <div class="blockText">
+        <p>
+          XXXXXXXXXXXXXXX
+        </p>
+      </div>
+    </div>
+    <div class="blockContent">
+      <div class="blockCode">
+        {{ landing-page-sample | markdownify }}
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+This allows you to combine the best of full control with the simplicity of markdown.
+
+## Other Changes
+
+- CSS: `./css/main.css` or `./_sass/*.scss`.
+- Images: `./static/images/[docs | posts]/....`
+- Main Blog post HTML: `./_includes/post.html`
+- Main Docs HTML: `./_includes/doc.html`
