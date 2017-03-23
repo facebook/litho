@@ -72,7 +72,7 @@ $primary-overlay:           darken($primary-bg, 70%);
 $primary-overlay-special:   darken($primary-bg, 40%);
 {% else %}
 $primary-overlay:           #fff;
-$primary-overlay-special:   lighten($primary-bg, 30%);
+$primary-overlay-special:   lighten($primary-bg, 80%);
 {% endif %}
 
 // $secondary-bg overlays
