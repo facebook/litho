@@ -11,8 +11,8 @@
     href: /docs/getting-started
     text: Get Started
   - type: button
-    href: /docs/tutorial
-    text: Tutorial
-  - type: button
     href: /docs/intro
     text: Learn More
+  - type: button
+    href: /docs/tutorial
+    text: Tutorial
