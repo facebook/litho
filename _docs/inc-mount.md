@@ -11,7 +11,7 @@ The Components framework can transparently spread the cost of mounting component
 
 With incremental mount enabled (which it is by default), the `ComponentView` will only mount enough content to fill its visible region and unmount (and recycle) components that are no longer visible.
 
-![MacDown Screenshot](/static/images/incremental-mount.png)
+![Incremental Mount Diagram](/static/images/incremental-mount.png)
 
 If you are using Components' [async RecyclerView](/docs/recycler-component) support, the framework will seamlessly perform incremental mount.
 
