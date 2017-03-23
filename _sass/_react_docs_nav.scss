@@ -189,7 +189,8 @@ nav.toc {
           }
 
           &.navItemActive {
-            color: darken($primary-bg, 30%);
+            font-weight: 600;
+            color: $primary-bg;
           }
         }
       }
