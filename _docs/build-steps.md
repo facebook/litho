@@ -5,7 +5,7 @@ layout: docs
 permalink: /docs/build-and-codegen
 ---
 
-As explained in [WritingComponents](/docs/writing-components), Litho relies on code generation in order to create *Components* from *Component Specs*. This process utilises intermediate *ComponentSpec* representations called *SpecModels*, which are immutable java objects. 
+As explained in [Writing Components](/docs/writing-components), Litho relies on code generation in order to create *Components* from *Component Specs*. This process utilises intermediate *ComponentSpec* representations called *SpecModels*, which are immutable java objects. 
 
 Code generation comprises three main steps: 
 
