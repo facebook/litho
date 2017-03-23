@@ -1,4 +1,4 @@
-This provides guidance on how to contribute various content to `your-site`.
+This provides guidance on how to contribute various content to `fblitho.com`.
 
 ## Getting started
 
@@ -106,6 +106,36 @@ If you want a top-level page (e.g., http://your-site.com/top-level.html) -- not 
 
 1. [Run the site locally](./README.md) to test your changes. It will be at `http://127.0.0.1/your-top-level-page-permalink.html`
 1. Push your changes to GitHub.
+
+## Utilize `capture` and `markdownify`
+
+If you want to use raw HTML but have some markdown-like content within it, you can do it through
+`capture` and `markdownify`.
+
+e.g.
+
+```
+{% capture landing-page-sample %}{% include_relative landing-page-sample.md %}{% endcapture %}
+
+<div class="gridBlock alternateColor">
+  <div class="blockElement twobyGridBlock imageAlignSide">
+    <div class="blockContent">
+      <div class="blockText">
+        <p>
+          XXXXXXXXXXXXXXX
+        </p>
+      </div>
+    </div>
+    <div class="blockContent">
+      <div class="blockCode">
+        {{ landing-page-sample | markdownify }}
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+This allows you to combine the best of full control with the simplicity of markdown.
 
 ## Other Changes
 
