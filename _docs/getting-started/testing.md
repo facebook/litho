@@ -41,6 +41,6 @@ public class MyActivity extends Activity {
 }
 ```
 
-> Select `com.facebook.litho.widget.Text` when prompted, as the class to import for `Text`.
+> The class `Text` lives in the package `com.facebook.litho.widget`.  All other classes in the above are from `com.facebook.litho`.
 
 Run the app, you should see "Hello World!" displayed on the screen.

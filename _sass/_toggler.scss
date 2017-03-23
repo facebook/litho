@@ -8,14 +8,14 @@
   display: inline-block;
   padding: 10px 5px;
   margin: 2px;
-  border: 1px solid $primary-overlay !important;
+  border: 1px solid $primary-bg !important;
   border-radius: 3px;
   text-decoration: none !important;
-  color: $primary-overlay !important;
+  color: $primary-bg !important;
   font-weight: 900;
   &:hover {
-    background: $primary-overlay !important;
-    color: $primary-bg !important;
+    background: $primary-bg !important;
+    color: #fff !important;
   }
 }
 
@@ -34,8 +34,8 @@
 
 .display-configuration-gradle .toggler .button-gradle,
 .display-configuration-buck .toggler .button-buck {
-  background: $primary-overlay !important;
-  color: $primary-bg !important;
+  background: darken($primary-bg, 10%) !important;
+  color: #fff !important;
 }
 block {
   display: none;
