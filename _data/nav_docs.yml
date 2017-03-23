@@ -40,7 +40,7 @@
   - id: tree-props
   - id: should-update
   - id: async-layout
-  - id: incremental-mount
+  - id: inc-mount
   - id: adv-recycling
   - id: recycler-component
 - title: Best Practices
