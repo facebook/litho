@@ -8,6 +8,7 @@ You can include Litho to your Android project via Gradle by adding the following
 dependencies {
   // ...
   // Litho
-  compile 'com.facebook.litho:litho:1.0.0'
+  compile 'com.facebook.litho:litho:0.1.0'
+  compile 'com.facebook.litho:litho-widget:0.1.0'
 }
 ```
