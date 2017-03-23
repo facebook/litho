@@ -1,14 +1,15 @@
-- title: Introducing Litho
-  items:
-  - id: intro
-  - id: motivation
-  - id: uses
 - title: Quick Start
   items:
   - id: getting-started
   - id: tutorial
   - id: writing-components
   - id: using-components
+  - id: codegen
+- title: Introducing Litho
+  items:
+  - id: intro
+  - id: motivation
+  - id: uses
 - title: Reference
   items:
   - id: layout-specs
