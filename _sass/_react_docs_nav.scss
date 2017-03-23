@@ -189,12 +189,8 @@ nav.toc {
           }
 
           &.navItemActive {
-            background-color: $primary-overlay-special;
-            border-top-right-radius: 10em;
-            border-bottom-right-radius: 10em;
-            font-weight: normal;
+            font-weight: 600;
             color: $primary-bg;
-            width: 100%;
           }
         }
       }
