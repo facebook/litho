@@ -9,7 +9,6 @@
   - id: tutorial
   - id: writing-components
   - id: using-components
-  - id: codegen
 - title: Reference
   items:
   - id: layout-specs
@@ -17,7 +16,6 @@
   - id: props
   - id: state
   - id: flexbox
-  - id: animations
 - title: Handling Events
   items:
   - id: events-overview
@@ -43,6 +41,7 @@
   - id: inc-mount
   - id: adv-recycling
   - id: recycler-component
+  - id: codegen
 - title: Best Practices
   items:
   - id: code-style

@@ -29,7 +29,7 @@ For example, accessibility for `Text` is specified using the following method:
 
 ```java
 @OnPopulateAccessibilityNode
-protected static void onPopulateAccessibilityNode(
+static void onPopulateAccessibilityNode(
     AccessibilityNodeInfoCompat accessibilityNode,
     @Prop CharSequence text) {
   accessibilityNode.setText(text);
