@@ -19,64 +19,51 @@ The framework currently supports four types of Visibility Event:
 
 ### Usage ###
 
-Visibility Ranges require incremental mount [TODO: add a link here] to be enabled on the relevant Component. 
+Visibility Ranges require [incremental mount](/docs/inc-mount) to be enabled on the relevant Component. 
 
 To register visibility event handlers for a component, the workflow is the same as the one used for setting any event handler. Here is an example:
 
 ```java
 @LayoutSpec
-public class MyLayoutSpec {
+class MyLayoutSpec {
 
   @OnCreateLayout
-  public ComponentLayout onCreateLayout(
-      ComponentContext c) {
-    final ComponentLayout title =
-        Text.create(c)
-            .text("This is MY layout spec")
-            .withLayout()
-            .visibleHandler(MyLayoutSpec.onTitleVisible(c))
-            .invisibleHandler(MyLayoutSpec.onTitleInvisible(c))
-            .build();
-
-    final String contentString = getRandomInt() % 2 == 0 ?
-        "Great layout spec" :
-        "Bad layout spec";
-       
+  static ComponentLayout onCreateLayout(ComponentContext c) {
     return Container.create(c)
         .direction(FlexDirection.COLUMN)
         .alignItems(Align.STRETCH)
-        .child(title)
-        .child(
-            Text.create(c)
-                .text(contentString)
-                .withLayout()
-                .focusedHandler(MyLayoutSpec.onContentFocused(c, contentString))
-                .fullImpressionHandler(MyLayoutSpec.onContentFullImpression(c)))
+        .child(Text.create(c)
+            .text("This is MY layout spec")
+            .withLayout()
+            .visibleHandler(MyLayoutSpec.onTitleVisible(c))
+            .invisibleHandler(MyLayoutSpec.onTitleInvisible(c)))
+        .focusedHandler(MyLayoutSpec.onComponentFocused(c, "someStringParam"))
+        .fullImpressionHandler(MyLayoutSpec.onComponentFullImpression(c)))
         .build();
   }
 
   @OnEvent(VisibleEvent.class)
-  public void onTitleVisible(ComponentContext c) {
+  static void onTitleVisible(ComponentContext c) {
     Log.d("VisibilityRanges", "The title entered the Visible Range");
   }
 
   @OnEvent(InvisibleEvent.class)
-  public void onTitleInvisible(ComponentContext c) {
+  static void onTitleInvisible(ComponentContext c) {
     Log.d("VisibilityRanges", "The title is no longer visible");
   }
 
   @OnEvent(FocusedVisibleEvent.class)
-  public void onContentFocused(
+  static void onComponentFocused(
       ComponentContext c, 
-      @Param String contentString) {
+      @Param String stringParam) {
     Log.d(
       "VisibilityRanges",
-      "The content that entered the Focused Range has value: " + contentString);
+      "The component is focused with param: " + contentString);
   }
 
   @OnEvent(FullImpressionVisibleEvent.class)
-  public void onContentFullImpression(ComponentContext c) {
-    Log.d("VisibilityRanges", "The content entered the Full Impression Range");
+  static void onComponentFullImpression(ComponentContext c) {
+    Log.d("VisibilityRanges", "The component has logged a full impression");
   }
 };
 ```
