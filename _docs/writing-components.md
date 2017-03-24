@@ -17,7 +17,7 @@ For now, let's just have a look at the overall structure of a *layout spec*:
 @LayoutSpec
 public class MyComponentSpec {
   @OnCreateLayout
-  protected static ComponentLayout onCreateLayout(
+  static ComponentLayout onCreateLayout(
       ComponentContext c,
       @Prop String title,
       @Prop Uri imageUri) {

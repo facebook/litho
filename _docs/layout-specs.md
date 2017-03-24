@@ -15,7 +15,7 @@ Let's start with a simple example:
 @LayoutSpec
 public class MyComponentSpec {
   @OnCreateLayout
-  ComponentLayout onCreateLayout(
+  static ComponentLayout onCreateLayout(
       ComponentContext c,
       @Prop Uri imageUri,
       @Prop String title) {

@@ -18,14 +18,14 @@ Take the following `Component` spec, for example:
 @MountSpec
 class MyComponentSpec {
   @OnPrepare
-  protected static void onPrepare(
+  static void onPrepare(
       ComponentContext c,
       @Prop(optional = true) String prop1) {
     ...
   }
 
   @OnMount
-  protected static SomeDrawable onMount(
+  static SomeDrawable onMount(
       ComponentContext c,
       SomeDrawable convertDrawable,
       @Prop(optional = true) String prop1,
@@ -81,7 +81,7 @@ Let's consider a simple example:
 @LayoutSpec
 public class MyComponentSpec {
   @OnCreateLayout
-  protected static ComponentLayout onCreateLayout(
+  static ComponentLayout onCreateLayout(
       LayoutContext context,
       @Prop CharSequence someString,
       @Prop int someSize,
@@ -108,7 +108,7 @@ The framework allows you to annotate props with resource types so that your comp
 @LayoutSpec
 public class MyComponentSpec {
   @OnCreateLayout
-  protected static ComponentLayout onCreateLayout(
+  static ComponentLayout onCreateLayout(
       LayoutContext context,
       @Prop(resType = ResType.STRING) CharSequence someString,
       @Prop(resType = ResType.DIMEN_SIZE) int someSize,

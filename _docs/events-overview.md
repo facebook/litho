@@ -29,7 +29,7 @@ The //dispatch// method takes an `EventHandler` as the first argument followed b
 public class ColorComponentSpec {
   ...
   @OnMount
-  protected ColorDrawable onMount(
+  static ColorDrawable onMount(
       Context c,
       ColorDrawable convertDrawable,
       @Prop EventHandler colorChangedHandler,
@@ -61,7 +61,7 @@ For example, here's how a //layout spec// component would define a handler for t
 public class MyComponentSpec {
 
   @OnCreateLayout
-  protected ComponentLayout onCreateLayout(
+  static ComponentLayout onCreateLayout(
       LayoutContext c,
       @Prop String someColor) {
 
@@ -77,7 +77,7 @@ public class MyComponentSpec {
   }
 
   @OnEvent(ColorChangedEvent.class)
-  protected void onColorChanged(
+  static void onColorChanged(
       ComponentContext c,
       @FromEvent int color,
       @Prop String someProp) {
@@ -95,7 +95,7 @@ As you can see, `@OnEvent` callbacks have access to all component props just lik
 public class FacePileComponentSpec {
 
   @OnCreateLayout
-  protected ComponentLayout onCreateLayout(
+  static ComponentLayout onCreateLayout(
       LayoutContext c,
       @Prop Uri[] faces) {
 
@@ -112,7 +112,7 @@ public class FacePileComponentSpec {
   }
 
   @OnEvent(ClickEvent.class)
-  protected void onFaceClicked(
+  static void onFaceClicked(
       ComponentContext c,
       @Param Uri face) {
     Log.d("FacePileComponent", "Face clicked: " + face);
