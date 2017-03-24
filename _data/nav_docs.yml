@@ -45,10 +45,7 @@
   - id: codegen
 - title: Best Practices
   items:
-  - id: code-style
-  - id: state-vs-props
-  - id: composition
-  - id: immutability
+  - id: best-practices
 - title: Tools
   items:
   - id: debugging
