@@ -17,7 +17,6 @@
   - id: props
   - id: state
   - id: flexbox
-  - id: animations
 - title: Handling Events
   items:
   - id: events-overview
