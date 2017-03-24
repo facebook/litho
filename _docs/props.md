@@ -72,6 +72,64 @@ public class MyComponentSpec {
 }
 ```
 
+## Resource Types
+When creating layouts, it's very common to use values from Android's resource system such as dimensions, colors, strings, etc. The Components framework provides convenient ways to set prop values from Android resources using annotations.
+
+Let's consider a simple example:
+
+```java
+@LayoutSpec
+public class MyComponentSpec {
+  @OnCreateLayout
+  protected static ComponentLayout onCreateLayout(
+      LayoutContext context,
+      @Prop CharSequence someString,
+      @Prop int someSize,
+      @Prop int someColor) {
+    ...
+  }
+}
+```
+
+In the example above, `MyComponent` has props that are expected to take a color integer (`someColor`), a pixel dimension (`someSize`), and a string (`someString`) as value. Very often, you'll want to set the value of these props using resource values:
+
+```java
+Resources res = context.getResources();
+
+MyComponent.create(c)
+    .someString(res.getString(R.string.my_string))
+    .someSize(res.getDimensionPixelSize(R.dimen.my_dimen))
+    .someColor(res.getColor(R.color.my_color))
+```
+
+The framework allows you to annotate props with resource types so that your component builder has convenience methods to use resource values directly.
+
+```java
+@LayoutSpec
+public class MyComponentSpec {
+  @OnCreateLayout
+  protected static ComponentLayout onCreateLayout(
+      LayoutContext context,
+      @Prop(resType = ResType.STRING) CharSequence someString,
+      @Prop(resType = ResType.DIMEN_SIZE) int someSize,
+      @Prop(resType = ResType.COLOR) int someColor) {
+    ...
+  }
+}
+```
+
+With the changes above, `MyComponent`'s builder will contain //Res//, //Attr//, //Dip//, and //Px// methods for the annotated props according to their resource types. So you'll be able to do the following:
+
+```java
+MyComponent.create(c)
+    .someStringRes(R.string.my_string)
+    .someSizePx(10)
+    .someSizeDip(10)
+    .someColorAttr(android.R.attr.textColorTertiary)
+```
+
+Other supported resource types are `ResType.STRING_ARRAY`, `ResType.INT`, `ResType.INT_ARRAY`, `ResType.BOOL`, `ResType.COLOR`, `ResType.DIMEN_OFFSET`, `ResType.FLOAT`, and `ResType.DRAWABLE`.
+
 ## Immutability
 The props of a Component are read-only. The Component's parent passes down values for the props when it creates the Component and they cannot change throughout the lifecycle of the Component. If the props values must be updated, the parent has to create a new Component and pass down new values for the props.
 The props objects should be made immutable. Due to background layout, props may be accessed on multiple threads. Props immutability ensures that no thread safety issues enter into your component hierarchy.
