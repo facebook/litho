@@ -37,7 +37,7 @@ public class CheckboxSpec {
   }	
   
   @OnEvent(ClickEvent.class)
-  void onClickedText(
+  static void onClickedText(
   	ComponentContext c,
   	@State boolean isChecked) {
   		...
@@ -93,7 +93,7 @@ Here's how you would define a state update method for the checkbox:
 public class CheckboxSpec {		
 
    @OnUpdateState
-	void updateCheckboxState(
+	static void updateCheckboxState(
 	    StateValue<Boolean> isChecked) {
 	    isChecked.set(!isChecked.get());
 	}
@@ -104,7 +104,7 @@ If you want to bundle multiple state updates in a single method, you would just 
 
 ``` java
 @OnUpdateState
-void updateMultipleStates(
+static void updateMultipleStates(
     StateValue<Boolean> stateOne,
 	 StateValue<String> stateTwo,
 	 @Param int someParam) {
@@ -147,7 +147,7 @@ public class CheckboxSpec {
   }
   
   @OnEvent(ClickEvent.class)
-  void onCheckboxClicked(
+  static void onCheckboxClicked(
   	ComponentContext c) {
   		Checkbox.updateCheckboxAsync(c);
   		// Checkbox.updateCheckbox(c); for a sync update 
@@ -215,7 +215,7 @@ static ComponentLayout onCreateLayout(
 }
 
 @OnCreateInitialState
-void onCreateInitialState(Output<String> foo) {
+static void onCreateInitialState(Output<String> foo) {
   foo.set("first foo");
 }
 ```

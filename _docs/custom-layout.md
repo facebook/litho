@@ -50,7 +50,7 @@ In the following example, a `Text` component is measured to check if the given t
 public class MyComponentSpec {
 
   @OnCreateLayoutWithSizeSpec
-  protected static ComponentLayout onCreateLayoutWithSizeSpec(
+  static ComponentLayout onCreateLayoutWithSizeSpec(
       ComponentContext c,
       int widthSpec,
       int heightSpec,
