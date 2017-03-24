@@ -26,8 +26,8 @@
   - id: visibility-handling
 - title: Compatibility
   items:
-  - id: styles-and-resources
-  - id: compat-accessibility
+  - id: styles
+  - id: accessibility
   - id: rtl
 - title: Testing
   items:
