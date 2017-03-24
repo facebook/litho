@@ -16,7 +16,8 @@
   - id: mount-specs
   - id: props
   - id: state
-  - id: flexbox
+  - id: layout
+  - id: recycler-component
 - title: Handling Events
   items:
   - id: events-overview
@@ -41,7 +42,6 @@
   - id: async-layout
   - id: inc-mount
   - id: adv-recycling
-  - id: recycler-component
   - id: codegen
 - title: Best Practices
   items:
