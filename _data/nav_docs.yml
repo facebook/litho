@@ -39,10 +39,7 @@
   - id: custom-layout
   - id: tree-props
   - id: should-update
-  - id: async-layout
   - id: inc-mount
-  - id: adv-recycling
-  - id: codegen
 - title: Best Practices
   items:
   - id: best-practices
@@ -64,3 +61,4 @@
   items:
   - id: contributing
   - id: repo-structure
+  - id: architecture
