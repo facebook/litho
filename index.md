@@ -11,7 +11,7 @@ id: home
     <div class="blockContent">
       <div class="blockText">
         <p>
-          Components for Android takes inspiration from proven technologies at Facebook, such as <a href="https://facebook.github.io/react">React</a> and <a href="http://componentkit.org">ComponentKit</a>, to provide a powerful framework that enables Android developers to write efficient UI code by default through a simple annotation-based Java API.
+          Litho takes inspiration from proven technologies at Facebook, such as <a href="https://facebook.github.io/react">React</a> and <a href="http://componentkit.org">ComponentKit</a>, to provide a powerful framework that enables Android developers to write efficient UI code by default through a simple annotation-based Java API.
         </p>
       </div>
     </div>
