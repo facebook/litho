@@ -17,6 +17,18 @@ remote_file(
     url = "mvn:com.facebook.litho:litho:aar:0.1.0",
 )
 
+prebuilt_jar(
+    name = "litho-annotation",
+    binary_jar = ":litho-annotation.jar",
+    visibility = ["PUBLIC"],
+)
+
+remote_file(
+    name = "litho-annotation.jar",
+    sha1 = "sha1here",
+    url = "mvn:com.facebook.litho:litho-annotation:jar:0.1.0",
+)
+
 android_prebuilt_aar(
     name = "litho-widget",
     aar = ":litho-widget.aar",
@@ -30,13 +42,19 @@ remote_file(
 )
 
 android_library(
-  ...
-  # Your target here
-  ...
-  deps = [
-    ':litho',
-    ':litho-widget',
     ...
-  ]
+    # Your target here
+    ...
+    annotation_processor_deps = [
+        ":litho-annotation",
+    ],
+    annotation_processors = [
+        "com.facebook.components.processor.ComponentsProcessor",
+    ],
+    deps = [
+        ':litho',
+        ':litho-widget',
+        ...
+    ]
 )
 ```
