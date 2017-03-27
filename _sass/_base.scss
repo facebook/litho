@@ -259,7 +259,7 @@ section#intro {
     }
 
     code {
-      color: $primary-overlay-special;
+      color: darken($primary-overlay-special,50%);
       display: inline-block;
     }
 
