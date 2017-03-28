@@ -9,12 +9,30 @@ include_defs("//COMPONENTS_DEFS")
 
 android_library(
     name = "widget",
+    exported_deps = [
+        COMPONENTS_TEXTLAYOUTBUILDER_TARGET,
+        ":widget-bare",
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+)
+
+android_library(
+    name = "widget-bare",
     srcs = glob(["*.java"]),
     plugins = [
         COMPONENTS_PROCESSOR_TARGET,
     ],
     provided_deps = [
+        COMPONENTS_ANDROIDSUPPORT_TARGET,
+        COMPONENTS_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
         COMPONENTS_YOGA_TARGET,
+        COMPONENTS_OSS_TARGET,
+        COMPONENTS_UTILS_TARGET,
+        COMPONENTS_INFERANNOTATIONS_TARGET,
+        COMPONENTS_JSR_TARGET,
+        COMPONENTS_TEXTLAYOUTBUILDER_TARGET,
     ],
     tests = [
         "//instrumentation_tests/com/facebook/components/widget:widget",
@@ -26,13 +44,6 @@ android_library(
     deps =
         COMPONENTS_TEXTLAYOUTBUILDER_UTILS_TARGET + [
             COMPONENTS_WIDGET_ACCESSIBILITIES_TARGET,
-            COMPONENTS_UTILS_TARGET,
             COMPONENTS_RES_TARGET,
-            COMPONENTS_TEXTLAYOUTBUILDER_TARGET,
-            COMPONENTS_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
-            COMPONENTS_ANDROIDSUPPORT_TARGET,
-            COMPONENTS_JSR_TARGET,
-            COMPONENTS_OSS_TARGET,
-            COMPONENTS_INFERANNOTATIONS_TARGET,
         ],
 )

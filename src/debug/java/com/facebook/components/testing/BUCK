@@ -24,6 +24,6 @@ android_library(
         COMPONENTS_FRESCO_TARGET,
         COMPONENTS_POWERMOCK_REFLECT_TARGET,
         COMPONENTS_YOGA_TARGET,
-        make_dep_path("src/main/java/com/facebook/components/widget:widget"),
+        COMPONENTS_WIDGET_TARGET,
     ],
 )
