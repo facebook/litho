@@ -1,8 +1,7 @@
 include_defs("//COMPONENTS_DEFS")
 
-android_aar(
+java_binary(
     name = "litho-widget",
-    manifest_skeleton = "src/main/AndroidManifest.xml",
     visibility = [
         "PUBLIC",
     ],
