@@ -27,11 +27,10 @@ public class ComponentInfo {
 
   private static final Pool<Builder> sBuilderPool = new Pools.SynchronizedPool<>(2);
   private static final Pool<ComponentInfo> sComponentInfoPool = new Pools.SynchronizedPool<>(8);
+  private static final String IS_STICKY = "is_sticky";
+  private static final String SPAN_SIZE = "span_size";
 
   private Component mComponent;
-  private boolean mIsSticky;
-  private int mSpanSize;
-
   private SimpleArrayMap<String, Object> mCustomAttributes;
 
   public static Builder create() {
@@ -45,8 +44,6 @@ public class ComponentInfo {
 
   private ComponentInfo() {
     mComponent = null;
-    mIsSticky = false;
-    mSpanSize = 1;
   }
 
   public Component getComponent() {
@@ -54,11 +51,19 @@ public class ComponentInfo {
   }
 
   public boolean isSticky() {
-    return mIsSticky;
+    if (mCustomAttributes == null || !mCustomAttributes.containsKey(IS_STICKY)) {
+      return false;
+    }
+
+    return (boolean) mCustomAttributes.get(IS_STICKY);
   }
 
   public int getSpanSize() {
-    return mSpanSize;
+    if (mCustomAttributes == null || !mCustomAttributes.containsKey(SPAN_SIZE)) {
+      return 1;
+    }
+
+    return (int) mCustomAttributes.get(SPAN_SIZE);
   }
 
   public Object getCustomAttribute(String key) {
@@ -67,29 +72,22 @@ public class ComponentInfo {
 
   public void release() {
     mComponent = null;
-    mIsSticky = false;
-    mSpanSize = 1;
+    mCustomAttributes = null;
     sComponentInfoPool.release(this);
   }
 
   private void init(Builder builder) {
     mComponent = builder.mComponent;
-    mIsSticky = builder.mIsSticky;
-    mSpanSize = builder.mSpanSize;
     mCustomAttributes = builder.mCustomAttributes;
   }
 
   public static class Builder {
 
     private Component mComponent;
-    private boolean mIsSticky;
-    private int mSpanSize;
     private SimpleArrayMap<String, Object> mCustomAttributes;
 
     private Builder() {
       mComponent = null;
-      mIsSticky = false;
-      mSpanSize = 1;
     }
 
     public Builder component(Component component) {
@@ -98,13 +96,11 @@ public class ComponentInfo {
     }
 
     public Builder isSticky(boolean isSticky) {
-      mIsSticky = isSticky;
-      return this;
+      return customAttribute(IS_STICKY, isSticky);
     }
 
     public Builder spanSize(int spanSize) {
-      mSpanSize = spanSize;
-      return this;
+      return customAttribute(SPAN_SIZE, spanSize);
     }
 
     public Builder customAttribute(String key, Object value) {
@@ -131,8 +127,6 @@ public class ComponentInfo {
     private void release() {
       mComponent = null;
       mCustomAttributes = null;
-      mIsSticky = false;
-      mSpanSize = 1;
       sBuilderPool.release(this);
     }
   }
