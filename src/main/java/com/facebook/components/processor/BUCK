@@ -1,0 +1,37 @@
+# Copyright (c) 2014-present, Facebook, Inc.
+# All rights reserved.
+#
+# This source code is licensed under the BSD-style license found in the
+# LICENSE file in the root directory of this source tree. An additional grant
+# of patent rights can be found in the PATENTS file in the same directory.
+
+include_defs("//COMPONENTS_DEFS")
+
+java_annotation_processor(
+    name = "processor",
+    processor_class = "com.facebook.components.processor.ComponentsProcessor",
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        ":processor-lib",
+    ],
+)
+
+java_library(
+    name = "processor-lib",
+    srcs = glob(["*.java"]),
+    tests = [
+        "//javatests/com/facebook/components/processor:processor",
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        make_dep_path("src/main/java/com/facebook/components/javapoet:javapoet"),
+        make_dep_path("src/main/java/com/facebook/components/specmodels:specmodels"),
+        make_dep_path("src/main/java/com/facebook/components/specmodels/processor:processor"),
+        make_dep_path("src/main/java/com/facebook/components/annotations:annotations"),
+        COMPONENTS_FBCORE_TARGET,
+    ],
+)

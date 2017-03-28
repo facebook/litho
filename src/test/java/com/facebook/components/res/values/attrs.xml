@@ -1,0 +1,20 @@
+<resources>
+
+<!--
+  Copyright (c) 2014-present, Facebook, Inc.
+  All rights reserved.
+
+  This source code is licensed under the BSD-style license found in the
+  LICENSE file in the root directory of this source tree. An additional grant
+  of patent rights can be found in the PATENTS file in the same directory.
+-->
+
+    <declare-styleable name="TestTheme">
+        <attr name="testAttrDimen" format="reference" />
+        <attr name="testAttrLargeText" format="reference" />
+        <attr name="testAttrLargePadding" format="reference" />
+        <attr name="testAttrDrawable" format="reference" />
+        <attr name="undefinedAttrDimen" format="reference" />
+        <attr name="undefinedAttrDrawable" format="reference" />
+    </declare-styleable>
+</resources>

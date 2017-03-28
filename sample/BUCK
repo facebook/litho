@@ -1,0 +1,30 @@
+include_defs("//COMPONENTS_DEFS")
+
+android_binary(
+    name = "sample",
+    keystore = ":debug_keystore",
+    manifest = "src/main/AndroidManifest.xml",
+    deps = [
+        COMPONENTS_SAMPLE_JAVA,
+        COMPONENTS_YOGAPREBUILT_TARGET,
+    ],
+)
+
+android_resource(
+    name = "res",
+    package = "com.facebook.samples.litho",
+    res = "src/main/res",
+    visibility = [
+        "PUBLIC",
+    ],
+)
+
+keystore(
+    name = "debug_keystore",
+    properties = "debug.keystore.properties",
+    store = "debug.keystore",
+)
+
+project_config(
+    src_target = ":sample",
+)

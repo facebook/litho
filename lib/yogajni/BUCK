@@ -1,0 +1,47 @@
+# Copyright (c) 2014-present, Facebook, Inc.
+# All rights reserved.
+#
+# This source code is licensed under the BSD-style license found in the
+# LICENSE file in the root directory of this source tree. An additional grant
+# of patent rights can be found in the PATENTS file in the same directory.
+
+include_defs("//COMPONENTS_DEFS")
+
+# This target is only used in open source and will break the monobuild
+# because we cannot define `soname` multiple times.
+if COMPONENTS_IS_OSS_BUILD:
+  cxx_library(
+      name = "yoga",
+      srcs = glob(["yoga/*.c"]),
+      compiler_flags = [
+          "-fno-omit-frame-pointer",
+          "-fexceptions",
+          "-Wall",
+          "-Werror",
+          "-std=c99",
+          "-O3",
+      ],
+      exported_headers = glob(["yoga/*.h"]),
+      force_static = True,
+      header_namespace = "",
+  )
+
+  cxx_library(
+    name = 'jni',
+    soname = 'libyoga.$(ext)',
+    srcs = glob(['jni/*.cpp']),
+    header_namespace = '',
+    compiler_flags = [
+      '-fno-omit-frame-pointer',
+      '-fexceptions',
+      '-Wall',
+      '-Werror',
+      '-O3',
+      '-std=c++11',
+    ],
+    deps = [
+      ":yoga",
+      COMPONENTS_FBJNI_TARGET,
+    ],
+    visibility = [COMPONENTS_VISIBILITY],
+  )

@@ -1,0 +1,50 @@
+# Copyright (c) 2014-present, Facebook, Inc.
+# All rights reserved.
+#
+# This source code is licensed under the BSD-style license found in the
+# LICENSE file in the root directory of this source tree. An additional grant
+# of patent rights can be found in the PATENTS file in the same directory.
+
+include_defs("//COMPONENTS_DEFS")
+
+android_prebuilt_aar(
+    name = "android-support-jar",
+    aar = "support-v4-24.1.1.aar",
+)
+
+prebuilt_jar(
+    name = "android-support-annotations-jar",
+    binary_jar = "android-support-annotations.jar",
+)
+
+android_prebuilt_aar(
+    name = "android-support-recyclerview-aar",
+    aar = "recyclerview-v7-24.2.1.aar",
+)
+
+android_prebuilt_aar(
+    name = "android-support-vector-aar",
+    aar = "support-vector-drawable-24.1.1.aar",
+)
+
+java_library(
+    name = "android-support",
+    exported_deps = [
+        ":android-support-annotations-jar",
+        ":android-support-jar",
+        ":android-support-vector-aar",
+    ],
+    visibility = [
+        COMPONENTS_VISIBILITY,
+    ],
+)
+
+android_library(
+    name = "android-support-recyclerview",
+    exported_deps = [
+        ":android-support-recyclerview-aar",
+    ],
+    visibility = [
+        COMPONENTS_VISIBILITY,
+    ],
+)

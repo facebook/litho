@@ -1,0 +1,41 @@
+# Copyright (c) 2014-present, Facebook, Inc.
+# All rights reserved.
+#
+# This source code is licensed under the BSD-style license found in the
+# LICENSE file in the root directory of this source tree. An additional grant
+# of patent rights can be found in the PATENTS file in the same directory.
+
+include_defs("//COMPONENTS_DEFS")
+
+android_library(
+    name = "components",
+    srcs = glob([
+        "*.java",
+        "dataflow/**/*.java",
+        "displaylist/*.java",
+        "reference/*.java",
+    ]),
+    exported_deps = [
+        COMPONENTS_ANNOTATIONS_TARGET,
+        COMPONENTS_CONFIG_TARGET,
+        COMPONENTS_CSSLAYOUT_TARGET,
+        COMPONENTS_PROGUARDANNOTATIONS_TARGET,
+    ],
+    provided_deps = [
+        COMPONENTS_ANDROIDSUPPORT_TARGET,
+        COMPONENTS_DISPLAYLISTSUBS_TARGET,
+        COMPONENTS_YOGA_TARGET,
+        COMPONENTS_JSR_TARGET,
+    ],
+    tests = [
+        COMPONENTS_TEST_TARGET,
+    ],
+    visibility = [
+        COMPONENTS_VISIBILITY,
+    ],
+    deps = [
+        COMPONENTS_INFERANNOTATIONS_TARGET,
+        COMPONENTS_RES_TARGET,
+        COMPONENTS_VIEWCOMPATCREATOR_TARGET,
+    ],
+)

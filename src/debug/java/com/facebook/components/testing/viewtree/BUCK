@@ -1,0 +1,26 @@
+include_defs("//COMPONENTS_DEFS")
+
+android_library(
+    name = "viewtree",
+    srcs = glob(["*.java"]),
+    exported_deps = [
+        COMPONENTS_ASSERTJ_TARGET,
+    ],
+    provided_deps = [
+        COMPONENTS_ROBOLECTRIC_TARGET,
+    ],
+    tests = [
+        make_dep_path("src/test/java/com/facebook/components/testing/viewtree:viewtree"),
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        COMPONENTS_DIFFUTILS_TARGET,
+        COMPONENTS_GUAVA_TARGET,
+        COMPONENTS_JAVA_TARGET,
+        COMPONENTS_JSR_TARGET,
+        COMPONENTS_JUNIT_TARGET,
+        make_dep_path("src/debug/java/com/facebook/components/testing:testing"),
+    ],
+)

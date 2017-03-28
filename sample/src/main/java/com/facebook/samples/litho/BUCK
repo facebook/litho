@@ -1,0 +1,34 @@
+include_defs("//COMPONENTS_DEFS")
+
+android_library(
+    name = "litho",
+    srcs = glob(["**/*.java"]),
+    annotation_processor_deps = [
+        COMPONENTS_PROCESSOR_LIB_TARGET,
+    ],
+    annotation_processors = [
+        "com.facebook.components.processor.ComponentsProcessor",
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps =
+        COMPONENTS_FRESCO_PIPELINE_TARGET +
+        COMPONENTS_FRESCO_CONTROLLER_TARGET +
+        COMPONENTS_FRESCO_INTERFACES_TARGET +
+        COMPONENTS_FRESCO_TARGETS + [
+            COMPONENTS_ROOT_TARGET,
+            COMPONENTS_STETHO_TARGET,
+            COMPONENTS_COMPONENTS_FRESCO_TARGET,
+            COMPONENTS_RES_TARGET,
+            COMPONENTS_UTILS_TARGET,
+            COMPONENTS_WIDGET_TARGET,
+            COMPONENTS_SAMPLE_RES,
+            COMPONENTS_SOLOADER_TARGET,
+            COMPONENTS_ANDROIDSUPPORT_TARGET,
+            COMPONENTS_ANDROIDSUPPORT_APPCOMPAT_TARGET,
+            COMPONENTS_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
+            COMPONENTS_JSR_TARGET,
+            COMPONENTS_YOGAPREBUILT_TARGET,
+        ],
+)

@@ -1,0 +1,122 @@
+COMPONENTS_ROOT = '//'
+
+COMPONENTS_VISIBILITY = 'PUBLIC'
+COMPONENTS_IS_OSS_BUILD = True
+
+def make_dep_path(pth):
+  return COMPONENTS_ROOT + pth
+
+COMPONENTS_ROOT_TARGET = make_dep_path(":components")
+
+# Java source
+COMPONENTS_JAVA_TARGET                     = make_dep_path('src/main/java/com/facebook/components:components')
+COMPONENTS_DEBUG_JAVA_TARGET               = make_dep_path('src/debug/java/com/facebook/components:components')
+COMPONENTS_ANNOTATIONS_TARGET              = make_dep_path('src/main/java/com/facebook/components/annotations:annotations')
+COMPONENTS_CONFIG_TARGET                   = make_dep_path('src/main/java/com/facebook/components/config:config')
+COMPONENTS_DISPLAYLISTSUBS_TARGET          = make_dep_path('src/main/java/com/facebook/components/displaylist/stubs:stubs')
+COMPONENTS_VIEWCOMPATCREATOR_TARGET        = make_dep_path('src/main/java/com/facebook/components/viewcompatcreator:viewcompatcreator')
+COMPONENTS_UTILS_TARGET                    = make_dep_path('src/main/java/com/facebook/components/utils:utils')
+COMPONENTS_WIDGET_ACCESSIBILITIES_TARGET   = make_dep_path('src/main/java/com/facebook/components/widget/accessibility:accessibility')
+COMPONENTS_WIDGET_TARGET                   = make_dep_path('src/main/java/com/facebook/components/widget:widget')
+COMPONENTS_COMPONENTS_FRESCO_TARGET        = make_dep_path('src/main/java/com/facebook/components/fresco:fresco')
+COMPONENTS_COMPONENTS_FRESCO_COMMON_TARGET = make_dep_path('src/main/java/com/facebook/components/fresco/common:common')
+
+# Test source
+COMPONENTS_TEST_TARGET                     = make_dep_path('src/test/java/com/facebook/components:components')
+
+# Java source with local upstream
+COMPONENTS_PROGUARDANNOTATIONS_TARGET = make_dep_path('src/main/java/com/facebook/proguard/annotations:annotations')
+
+# Resources
+COMPONENTS_RES_TARGET               = make_dep_path(':res')
+
+# Libraries
+COMPONENTS_INFERANNOTATIONS_TARGET            = make_dep_path('lib/infer-annotations:infer-annotations')
+COMPONENTS_JSR_TARGET                         = make_dep_path('lib/jsr-305:jsr-305')
+COMPONENTS_ANDROIDSUPPORT_TARGET              = make_dep_path('lib/android-support:android-support')
+COMPONENTS_ANDROIDSUPPORT_RECYCLERVIEW_TARGET = make_dep_path('lib/android-support:android-support-recyclerview')
+COMPONENTS_ANDROIDSUPPORT_APPCOMPAT_TARGET    = make_dep_path('lib/appcompat:appcompat')
+COMPONENTS_YOGA_TARGET                        = make_dep_path('lib/yoga:yoga')
+COMPONENTS_YOGAPREBUILT_TARGET                = make_dep_path('lib/yoga:yoga-prebuilt')
+COMPONENTS_BUILD_CONFIG_TARGET                = make_dep_path(':build_config')
+COMPONENTS_CSSLAYOUT_TARGET                   = make_dep_path('lib/CSSLayoutDEPRECATED-TOREMOVE:CSSLayoutDEPRECATED')
+COMPONENTS_STETHO_TARGET                      = make_dep_path('lib/stetho:stetho')
+COMPONENTS_COMMONS_CLI_TARGET                 = make_dep_path('lib/commons-cli:commons-cli')
+COMPONENTS_TEXTLAYOUTBUILDER_TARGET           = make_dep_path('lib/textlayoutbuilder:textlayoutbuilder')
+COMPONENTS_JAVAPOET_TARGET                    = make_dep_path('lib/javapoet:javapoet')
+COMPONENTS_FBCORE_TARGET                      = make_dep_path('lib/fbcore:fbcore')
+COMPONENTS_SOLOADER_TARGET                    = make_dep_path('lib/soloader:soloader')
+COMPONENTS_ASSERTJ_TARGET                     = make_dep_path('lib/assertj:assertj')
+COMPONENTS_MOCKITO_TARGET                     = make_dep_path('lib/mockito:mockito')
+COMPONENTS_POWERMOCK_REFLECT_TARGET           = make_dep_path('lib/powermock:powermock-reflect')
+COMPONENTS_POWERMOCK_MOCKITO_TARGET           = make_dep_path('lib/powermock:powermock-mockito')
+COMPONENTS_JNI_TARGET                         = make_dep_path('lib/jni-hack:jni-hack')
+COMPONENTS_FBJNI_TARGET                       = make_dep_path('lib/fb:jni')
+COMPONENTS_GUAVA_TARGET                       = make_dep_path('lib/guava:guava')
+COMPONENTS_DIFFUTILS_TARGET                   = make_dep_path('lib/diff-utils:diff-utils')
+
+# Fresco
+COMPONENTS_FRESCO_TARGET                      = make_dep_path('lib/fresco:fresco')
+COMPONENTS_ROBOLECTRIC_TARGET                 = make_dep_path('lib/robolectric3:robolectric3')
+COMPONENTS_JUNIT_TARGET                       = make_dep_path('lib/junit:junit')
+
+# Annotation processors
+COMPONENTS_PROCESSOR_TARGET = make_dep_path('src/main/java/com/facebook/components/processor:processor')
+COMPONENTS_PROCESSOR_LIB_TARGET = make_dep_path('src/main/java/com/facebook/components/processor:processor-lib')
+
+# Sample app
+COMPONENTS_SAMPLE_JAVA = make_dep_path('sample/src/main/java/com/facebook/samples/litho:litho')
+COMPONENTS_SAMPLE_BAREBONES_JAVA = make_dep_path('sample-barebones/src/main/java/com/facebook/samples/lithobarebones:lithobarebones')
+COMPONENTS_SAMPLE_RES  = make_dep_path('sample:res')
+
+# Other targets
+COMPONENTS_OSS_TARGET = make_dep_path(":components")
+
+# Targets that sometimes exist and sometimes don't
+COMPONENTS_TEXTLAYOUTBUILDER_UTILS_TARGET = []
+COMPONENTS_FRESCO_TARGETS = [
+    make_dep_path('lib/fbcore:fbcore'),
+    make_dep_path('lib/fresco:fresco-drawee'),
+    make_dep_path('lib/fresco:fresco'),
+]
+COMPONENTS_FRESCO_PIPELINE_TARGET         = [make_dep_path('lib/fresco:imagepipeline')]
+COMPONENTS_FRESCO_CONTROLLER_TARGET       = []
+COMPONENTS_FRESCO_INTERFACES_TARGET       = []
+
+
+def components_robolectric_test(
+    name,
+    srcs,
+    powermock_srcs=None,
+    *args,
+    **kwargs):
+    """Tests that can successfully run from the library root folder."""
+    powermock_srcs = powermock_srcs or []
+    extra_vm_args = [
+        '-Drobolectric.dependency.dir=lib/android-all',
+        '-Dcom.facebook.components.is_oss=true',
+    ]
+    kwargs['vm_args'] = extra_vm_args
+    kwargs['use_cxx_libraries'] = True
+    kwargs['cxx_library_whitelist'] = [
+        '//lib/yoga:yoga',
+        '//lib/yogajni:jni',
+        '//lib/fb:jni',
+    ]
+
+    # Run normal tests first, excluding powermock
+    robolectric_test(
+        name=name,
+        srcs=glob(srcs, excludes=powermock_srcs),
+        *args,
+        **kwargs)
+
+    # Now run the powermock tests in series as they require a separate class
+    # loader to not conflict with Yoga.
+    for src in powermock_srcs:
+      pname = name + '_powermock_' + src.replace(".java", "").replace("/", "_")
+      robolectric_test(
+          name=pname,
+          srcs=[src],
+          *args,
+          **kwargs)

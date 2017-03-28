@@ -1,0 +1,76 @@
+# Copyright (c) 2014-present, Facebook, Inc.
+# All rights reserved.
+#
+# This source code is licensed under the BSD-style license found in the
+# LICENSE file in the root directory of this source tree. An additional grant
+# of patent rights can be found in the PATENTS file in the same directory.
+
+include_defs("//COMPONENTS_DEFS")
+
+components_robolectric_test(
+    name = "components",
+    srcs = glob([
+        "*Test.java",
+        "reference/*Test.java",
+    ]),
+    contacts = ["oncall+components_for_android@xmail.facebook.com"],
+    powermock_srcs = [
+        "ComponentLifecycleTest.java",
+        "ComponentTreeMountTest.java",
+        "LayoutDirectionTest.java",
+        "LayoutStateCalculateTest.java",
+        "LayoutStateCalculateVisibilityOutputsTest.java",
+        "LayoutStateRecyclingTest.java",
+        "TreeDiffingTest.java",
+    ],
+    provided_deps = [
+        COMPONENTS_ROBOLECTRIC_TARGET,
+    ],
+    deps = [
+        ":testutil",
+        COMPONENTS_ANDROIDSUPPORT_TARGET,
+        COMPONENTS_JAVA_TARGET,
+        COMPONENTS_JUNIT_TARGET,
+        COMPONENTS_ASSERTJ_TARGET,
+        COMPONENTS_MOCKITO_TARGET,
+        COMPONENTS_POWERMOCK_REFLECT_TARGET,
+        COMPONENTS_SOLOADER_TARGET,
+        COMPONENTS_POWERMOCK_MOCKITO_TARGET,
+        COMPONENTS_YOGA_TARGET,
+        make_dep_path("src/main/java/com/facebook/components/widget:widget"),
+        make_dep_path("src/main/java/com/facebook/components/viewcompatcreator:viewcompatcreator"),
+        make_dep_path("src/test/java/com/facebook/components:res"),
+        make_dep_path("src/debug/java/com/facebook/components/testing:testing"),
+        make_dep_path("src/debug/java/com/facebook/components/testing/assertj:assertj"),
+        make_dep_path("src/debug/java/com/facebook/components/testing/testrunner:testrunner"),
+    ],
+)
+
+android_resource(
+    name = "res",
+    package = "com.facebook",
+    res = "res",
+    visibility = [
+        make_dep_path("src/test/..."),
+        "//javatests/com/facebook/components/...",
+    ],
+)
+
+android_library(
+    name = "testutil",
+    srcs = [
+        "ColorDrawableShadow.java",
+        "LayoutDirectionViewGroupShadow.java",
+        "LayoutDirectionViewShadow.java",
+        "TouchExpansionTestInternalNode.java",
+    ],
+    visibility = [
+        make_dep_path("src/test/java/com/facebook/components/..."),
+    ],
+    deps = [
+        COMPONENTS_ANDROIDSUPPORT_TARGET,
+        COMPONENTS_JAVA_TARGET,
+        COMPONENTS_ROBOLECTRIC_TARGET,
+        COMPONENTS_YOGA_TARGET,
+    ],
+)

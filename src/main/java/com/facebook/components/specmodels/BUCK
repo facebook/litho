@@ -1,0 +1,30 @@
+# Copyright (c) 2014-present, Facebook, Inc.
+# All rights reserved.
+#
+# This source code is licensed under the BSD-style license found in the
+# LICENSE file in the root directory of this source tree. An additional grant
+# of patent rights can be found in the PATENTS file in the same directory.
+
+include_defs("//COMPONENTS_DEFS")
+
+java_library(
+    name = "specmodels",
+    srcs = glob(
+        ["**/*.java"],
+        excludes = glob(["processor/*.java"]),
+    ),
+    exported_deps = [
+        make_dep_path("src/main/java/com/facebook/components/annotations:annotations"),
+    ],
+    tests = [
+        "//javatests/com/facebook/components/specmodels:specmodels",
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        make_dep_path("src/main/java/com/facebook/components/javapoet:javapoet"),
+        COMPONENTS_FBCORE_TARGET,
+        COMPONENTS_JSR_TARGET,
+    ],
+)

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  Copyright (c) 2014-present, Facebook, Inc.
+  All rights reserved.
+
+  This source code is licensed under the BSD-style license found in the
+  LICENSE file in the root directory of this source tree. An additional grant
+  of patent rights can be found in the PATENTS file in the same directory.
+-->
+
+<resources>
+
+  <declare-styleable name="ComponentLayout">
+    <attr name="flex_direction" />
+    <attr name="flex_layoutDirection" />
+    <attr name="flex_justifyContent" />
+    <attr name="flex_alignItems" />
+    <attr name="flex_alignSelf" />
+    <attr name="flex_positionType" />
+    <attr name="flex_wrap" />
+    <attr name="flex_left" />
+    <attr name="flex_top" />
+    <attr name="flex_right" />
+    <attr name="flex_bottom" />
+    <attr name="flex" />
+
+    <attr name="android:layout_width" />
+    <attr name="android:layout_height" />
+    <attr name="android:padding" />
+    <attr name="android:paddingLeft" />
+    <attr name="android:paddingTop" />
+    <attr name="android:paddingRight" />
+    <attr name="android:paddingBottom" />
+    <attr name="android:paddingStart" />
+    <attr name="android:paddingEnd" />
+    <attr name="android:layout_margin" />
+    <attr name="android:layout_marginLeft" />
+    <attr name="android:layout_marginTop" />
+    <attr name="android:layout_marginRight" />
+    <attr name="android:layout_marginBottom" />
+    <attr name="android:layout_marginStart" />
+    <attr name="android:layout_marginEnd" />
+    <attr name="android:contentDescription" />
+    <attr name="android:background" />
+    <attr name="android:foreground" />
+    <attr name="android:importantForAccessibility" />
+    <attr name="android:duplicateParentState" />
+  </declare-styleable>
+
+</resources>
