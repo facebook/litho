@@ -264,7 +264,7 @@ public class ComponentTree {
     // We defer until measure if we don't yet have a width/height
     int viewWidth = mComponentView.getMeasuredWidth();
     int viewHeight = mComponentView.getMeasuredHeight();
-    if (viewWidth == 0 || viewHeight == 0) {
+    if (viewWidth == 0 && viewHeight == 0) {
       // The host view has not been measured yet.
       return;
     }
@@ -309,7 +309,7 @@ public class ComponentTree {
     // We defer until measure if we don't yet have a width/height
     int viewWidth = mComponentView.getMeasuredWidth();
     int viewHeight = mComponentView.getMeasuredHeight();
-    if (viewWidth == 0 || viewHeight == 0) {
+    if (viewWidth == 0 && viewHeight == 0) {
       // The host view has not been measured yet.
       return;
     }
