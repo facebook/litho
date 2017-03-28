@@ -1,0 +1,11 @@
+include_defs("//COMPONENTS_DEFS")
+
+java_binary(
+    name = "litho-processor",
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/processor:processor-lib-bare"),
+    ],
+)
