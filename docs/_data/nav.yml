@@ -1,0 +1,14 @@
+- title: Docs
+  href: /docs/
+  category: docs
+
+- title: Tutorial
+  href: /docs/tutorial
+  category: tutorial
+
+- title: Github
+  href: http://github.com/facebook/litho
+  category: external
+
+# Use external for external links not associated with the paths of the current site.
+# If a category is external, site urls, for example, are not prepended to the href, etc.

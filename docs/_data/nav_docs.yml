@@ -1,0 +1,63 @@
+- title: Introducing Litho
+  items:
+  - id: intro
+  - id: motivation
+  - id: uses
+- title: Quick Start
+  items:
+  - id: getting-started
+  - id: tutorial
+  - id: writing-components
+  - id: using-components
+- title: Reference
+  items:
+  - id: layout-specs
+  - id: mount-specs
+  - id: props
+  - id: state
+  - id: layout
+  - id: recycler-component
+- title: Handling Events
+  items:
+  - id: events-overview
+  - id: accessibility-handling
+  - id: events-touch-handling
+  - id: visibility-handling
+- title: Compatibility
+  items:
+  - id: styles
+  - id: accessibility
+  - id: rtl
+- title: Testing
+  items:
+  - id: unit-testing
+  - id: e2e-testing
+  - id: events-testing
+- title: Advanced Guides
+  items:
+  - id: custom-layout
+  - id: tree-props
+  - id: should-update
+  - id: inc-mount
+- title: Best Practices
+  items:
+  - id: best-practices
+- title: Tools
+  items:
+  - id: debugging
+  - id: ide
+- title: Widgets
+  items:
+  - id: widgets-card
+  - id: widgets-edittext
+  - id: widgets-horizontalscroll
+  - id: widgets-image
+  - id: widgets-progress
+  - id: widgets-recycler
+  - id: widgets-solidcolor
+  - id: widgets-text
+- title: Contributing
+  items:
+  - id: contributing
+  - id: repo-structure
+  - id: architecture
