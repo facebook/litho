@@ -9,7 +9,6 @@
   - id: tutorial
   - id: writing-components
   - id: using-components
-  - id: codegen
 - title: Reference
   items:
   - id: layout-specs

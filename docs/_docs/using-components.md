@@ -29,3 +29,4 @@ IMPORTANT: The ComponentView from this example, if directly used in your view hi
 
 For more information about performing layout off the main thread, see TODO get correct link for this: [[ components-for-android/async-layout | Async Layout ]].
 
+components.md 
