@@ -1146,3 +1146,4 @@ public class ComponentTree {
     }
   }
 
+  protected LayoutState calculateLayoutState(

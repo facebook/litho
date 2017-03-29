@@ -173,3 +173,9 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
       return;
     }
 
+    mFailureReference = failureReference;
+    mFailure = Reference.acquire(mContext, failureReference);
+
+    mGenericDraweeHierarchy.setFailureImage(
+        DrawableUtils.cloneDrawable(mFailure),
+        scaleType != null ? scaleType : DEFAULT_SCALE_TYPE);
