@@ -58,3 +58,6 @@ typedef YG_ENUM_BEGIN(YGEdge) {
 } YG_ENUM_END(YGEdge);
 
 #define YGExperimentalFeatureCount 3
+typedef YG_ENUM_BEGIN(YGExperimentalFeature) {
+  YGExperimentalFeatureRounding,
+  YGExperimentalFeatureWebFlexBasis,
