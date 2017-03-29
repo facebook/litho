@@ -23,3 +23,5 @@ public class TestComponentTree extends ComponentTree {
 
   public static Builder create(ComponentContext context, Component<?> root) {
     return new Builder(context, root);
+  }
+

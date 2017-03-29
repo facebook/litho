@@ -206,3 +206,21 @@ public class ViewCompatComponent<V extends View> extends ComponentLifecycle {
     }
 
     @Override
+    public Component<ViewCompatComponent<V>> build() {
+      if (mImpl.mViewBinder == null) {
+        throw new IllegalStateException(
+            "To create a ViewCompatComponent you must provide a ViewBinder.");
+      }
+      ViewCompatComponentImpl impl = mImpl;
+      release();
+      return impl;
+    }
+
+    @Override
+    protected void release() {
+      super.release();
+      mImpl = null;
+      sBuilderPool.release(this);
+    }
+  }
+}
