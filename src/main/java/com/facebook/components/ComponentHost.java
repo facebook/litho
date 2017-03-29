@@ -758,3 +758,12 @@ public class ComponentHost extends ViewGroup {
   }
 
   @Override
+  public Object getTag() {
+    if (mViewTag != null) {
+      return mViewTag;
+    }
+
+    return super.getTag();
+  }
+
+  @Override
