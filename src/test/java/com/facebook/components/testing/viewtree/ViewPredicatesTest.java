@@ -88,3 +88,4 @@ public class ViewPredicatesTest {
 
   @Test
   public void testHasVisibleText() throws Exception {
+    final Predicate<View> hasHello = ViewPredicates.hasVisibleText("Hello");
