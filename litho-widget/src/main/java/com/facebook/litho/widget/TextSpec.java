@@ -332,3 +332,17 @@ class TextSpec {
       layoutBuilder.setShouldCacheLayout(false);
     }
 
+    final @TextLayoutBuilder.MeasureMode int textMeasureMode;
+    switch (SizeSpec.getMode(widthSpec)) {
+      case UNSPECIFIED:
+        textMeasureMode = TextLayoutBuilder.MEASURE_MODE_UNSPECIFIED;
+        break;
+      case EXACTLY:
+        textMeasureMode = TextLayoutBuilder.MEASURE_MODE_EXACTLY;
+        break;
+      case AT_MOST:
+        textMeasureMode = TextLayoutBuilder.MEASURE_MODE_AT_MOST;
+        break;
+      default:
+        throw new IllegalStateException("Unexpected size mode: " + SizeSpec.getMode(widthSpec));
+    }
