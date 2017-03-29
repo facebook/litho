@@ -340,3 +340,6 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
    * @param selectionEnd
    */
   private void setSelection(int selectionStart, int selectionEnd) {
+    if (Color.alpha(mHighlightColor) == 0 ||
+        (mSelectionStart == selectionStart && mSelectionEnd == selectionEnd)) {
+      return;
