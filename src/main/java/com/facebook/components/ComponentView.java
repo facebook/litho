@@ -235,3 +235,4 @@ public class ComponentView extends ComponentHost {
   protected boolean shouldRequestLayout() {
     // Don't bubble up layout requests while mounting.
     if (mComponent != null && mComponent.isMounting()) {
+      return false;

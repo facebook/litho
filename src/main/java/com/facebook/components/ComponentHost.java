@@ -103,3 +103,8 @@ public class ComponentHost extends ViewGroup {
     mComponentAccessibilityDelegate = new ComponentAccessibilityDelegate(this);
     refreshAccessibilityDelegatesIfNeeded(isAccessibilityEnabled(context));
   }
+
+  /**
+   * Sets the parent host marker for this host.
+   * @param parentHostMarker marker that indicates which {@link ComponentHost} hosts this host.
+   */
