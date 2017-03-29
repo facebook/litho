@@ -2167,3 +2167,103 @@ public class LayoutStateCalculateTest {
   }
 
   @Test
+  public void testLayoutOutputForRootNestedTreeComponentWithPercentParentSizeDefined() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            .alignItems(YogaAlign.FLEX_START)
+            .widthPx(100)
+            .heightPx(100)
+            .child(
+                TestSizeDependentComponent.create(c)
+                    .withLayout().flexShrink(0)
+                    .widthPercent(50)
+                    .heightPercent(50)
+                    .backgroundColor(0xFFFF0000))
+            .build();
+      }
+    };
+
+    LayoutState layoutState = calculateLayoutState(
+        RuntimeEnvironment.application,
+        component,
+        -1,
+        SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED),
+        SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED));
+
+    Rect mountBounds = new Rect();
+    layoutState.getMountableOutputAt(0).getMountBounds(mountBounds);
+    assertEquals(new Rect(0, 0, 100, 100), mountBounds);
+
+    assertTrue(getComponentAt(layoutState, 1) instanceof DrawableComponent);
+    layoutState.getMountableOutputAt(1).getMountBounds(mountBounds);
+    assertEquals(new Rect(0, 0, 50, 50), mountBounds);
+  }
+
+  @Test
+  public void testLayoutOutputForRootNestedTreeComponentWithPercent() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            .alignItems(YogaAlign.FLEX_START)
+            .child(
+                TestSizeDependentComponent.create(c)
+                    .setFixSizes(true)
+                    .withLayout().flexShrink(0)
+                    .widthPercent(50)
+                    .heightPercent(50)
+                    .backgroundColor(0xFFFF0000))
+            .build();
+      }
+    };
+
+    LayoutState layoutState = calculateLayoutState(
+        RuntimeEnvironment.application,
+        component,
+        -1,
+        SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED),
+        SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED));
+
+    Rect mountBounds = new Rect();
+    layoutState.getMountableOutputAt(0).getMountBounds(mountBounds);
+    assertEquals(new Rect(0, 0, 60, 86), mountBounds);
+
+    assertTrue(getComponentAt(layoutState, 1) instanceof DrawableComponent);
+    layoutState.getMountableOutputAt(1).getMountBounds(mountBounds);
+    assertEquals(new Rect(0, 0, 60, 86), mountBounds);
+  }
+
+  @Test
+  public void testLayoutOutputForRootNestedTreeComponentWithPercentPadding() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            .alignItems(YogaAlign.FLEX_START)
+            .widthPx(50)
+            .heightPx(50)
+            .child(
+                TestSizeDependentComponent.create(c)
+                    .setFixSizes(true)
+                    .withLayout().flexShrink(0)
+                    .paddingPercent(YogaEdge.ALL, 10)
+                    .backgroundColor(0xFFFF0000))
+            .build();
+      }
+    };
+
+    InternalNode root = LayoutState.createAndMeasureTreeForComponent(
+        new ComponentContext(RuntimeEnvironment.application),
+        component,
+        SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED),
+        SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED));
+
+    assertEquals(5, root.getChildAt(0).getNestedTree().getPaddingLeft());
+    assertEquals(5, root.getChildAt(0).getNestedTree().getPaddingTop());
+    assertEquals(5, root.getChildAt(0).getNestedTree().getPaddingRight());
+    assertEquals(5, root.getChildAt(0).getNestedTree().getPaddingBottom());
+  }
+
+  @Test
