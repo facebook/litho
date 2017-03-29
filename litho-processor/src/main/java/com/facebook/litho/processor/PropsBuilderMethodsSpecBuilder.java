@@ -336,3 +336,12 @@ class PropsBuilderMethodsSpecBuilder {
 
     builder.addStatement("return this");
 
+    return builder;
+  }
+
+  private MethodSpec builder(
+      String name,
+      List<ParameterSpec> parameters,
+      String statement,
+      Object ...formatObjects) {
+    return getMethodSpecBuilder(name, parameters, statement, formatObjects).build();
