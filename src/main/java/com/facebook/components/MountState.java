@@ -316,3 +316,4 @@ class MountState {
           visibilityItem.setVisibleEdges(visibilityOutputBounds, sTempRect);
 
           if (visibilityItem.isInFullImpressionRange()) {
+            EventDispatcherUtils.dispatchOnFullImpression(fullImpressionHandler);

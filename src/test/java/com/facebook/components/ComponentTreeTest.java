@@ -461,3 +461,4 @@ public class ComponentTreeTest {
   private static ComponentTree getComponentTree(ComponentView componentView) {
     return Whitebox.getInternalState(componentView, "mComponent");
   }
+
