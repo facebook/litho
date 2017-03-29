@@ -706,3 +706,4 @@ public class Stages {
     if (mOnEventMethods != null) {
       mStages.addAll(mOnEventMethods);
     }
+    mStages.addAll(mOnCreateTreePropsMethods);
