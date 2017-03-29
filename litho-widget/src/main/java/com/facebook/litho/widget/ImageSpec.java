@@ -34,3 +34,6 @@ import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.ShouldUpdate;
+import com.facebook.components.reference.Reference;
+import com.facebook.components.reference.ResourceDrawableReference;
+import com.facebook.components.utils.MeasureUtils;
