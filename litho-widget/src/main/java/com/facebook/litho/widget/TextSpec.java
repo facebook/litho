@@ -465,3 +465,5 @@ class TextSpec {
                 "so that double measurement is not necessary.");
           }
 
+      textLayout.set(
+          createTextLayout(
