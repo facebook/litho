@@ -346,3 +346,4 @@ class TextSpec {
       default:
         throw new IllegalStateException("Unexpected size mode: " + SizeSpec.getMode(widthSpec));
     }
+

@@ -340,3 +340,5 @@ public class ComponentLifecycleTest {
     Whitebox.setInternalState(mInput, "mLifecycle", componentLifecycle);
 
     return componentLifecycle;
+  }
+
