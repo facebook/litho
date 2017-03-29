@@ -1832,3 +1832,5 @@ class MountState {
       component.getLifecycle().bind(
           mContext,
           content,
+          component);
+      mountItem.setIsBound(true);
