@@ -134,3 +134,5 @@ class MountState {
 
     mIsDirty = true;
     mPreviousLocalVisibleRect.setEmpty();
+  }
+

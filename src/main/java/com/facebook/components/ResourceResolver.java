@@ -279,3 +279,4 @@ public class ResourceResolver {
     }
   }
 
+  protected final int resolveColorAttr(@AttrRes int attrResId, @ColorRes int defResId) {

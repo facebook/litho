@@ -134,3 +134,5 @@ public class ComponentTreeTest {
 
     Assert.assertNull(nullLayoutState);
     Assert.assertTrue(
+        layoutState.isCompatibleComponentAndSpec(
+            mComponent.getId(),
