@@ -118,3 +118,9 @@ public abstract class SpecHelper implements Closeable {
       }
     }
 
+    mStages = new Stages(
+        processingEnv,
+        specElement,
+        mQualifiedClassName,
+        stageAnnotations,
+        interStageInputAnnotations,
