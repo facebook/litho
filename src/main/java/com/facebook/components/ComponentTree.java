@@ -198,3 +198,4 @@ public class ComponentTree {
     } else if (isCompatibleSpec(mBackgroundLayoutState, mWidthSpec, mHeightSpec)
         || !isCompatibleSpec(mMainThreadLayoutState, mWidthSpec, mHeightSpec)) {
       // If mMainThreadLayoutState isn't a perfect match, we'll prefer
+      // mBackgroundLayoutState since it will have the more recent create.
