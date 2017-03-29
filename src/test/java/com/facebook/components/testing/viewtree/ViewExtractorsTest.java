@@ -29,3 +29,4 @@ public class ViewExtractorsTest {
   private TextView mGoneTextView;
   private ImageView mImageView;
   private ImageView mGoneImageView;
+  private Drawable mLithoDrawable;

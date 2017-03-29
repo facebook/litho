@@ -43,3 +43,4 @@ if COMPONENTS_IS_OSS_BUILD:
       ":yoga",
       COMPONENTS_FBJNI_TARGET,
     ],
+    visibility = [COMPONENTS_VISIBILITY],

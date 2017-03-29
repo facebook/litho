@@ -48,3 +48,6 @@ import static org.mockito.Mockito.when;
 /**
  * Tests for {@link RecyclerBinder}
  */
+@RunWith(ComponentsTestRunner.class)
+@PrepareForTest(ComponentTreeHolder.class)
+@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
