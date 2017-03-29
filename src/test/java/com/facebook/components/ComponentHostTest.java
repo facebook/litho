@@ -743,3 +743,4 @@ public class ComponentHostTest {
     final MountItem viewMountItem = new MountItem();
     final ViewNodeInfo viewNodeInfo = ViewNodeInfo.acquire();
     viewNodeInfo.setLayoutDirection(YogaDirection.LTR);
+
