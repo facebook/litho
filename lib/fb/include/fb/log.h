@@ -236,3 +236,6 @@ int __android_log_print(int prio, const char *tag, const char *fmt, ...)
  * It is NOT stripped from release builds.  Note that the condition test
  * is -inverted- from the normal assert() semantics.
  */
+#define FBLOG_ALWAYS_FATAL_IF(cond, ...)                                   \
+  ((CONDITION(cond)) ? ((void)fb_printAssert(#cond, LOG_TAG, __VA_ARGS__)) \
+                     : (void)0)
