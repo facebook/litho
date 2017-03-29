@@ -204,3 +204,11 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
             hasTextMatchingPredicate(new Predicate<String>() {
           @Override
           public boolean apply(@Nullable final String input) {
+            final int maxEditDistance = Math.max(3, text.length() / 4);
+            return LevenshteinDistance.getLevenshteinDistance(text, input, maxEditDistance)
+                <= maxEditDistance;
+          }
+        })),
+        ViewPredicates.isVisible());
+  }
+
