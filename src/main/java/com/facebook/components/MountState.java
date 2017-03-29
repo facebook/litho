@@ -825,3 +825,4 @@ class MountState {
     lifecycle.mount(component.getScopedContext(), previousContent, component);
   }
 
+  private void mountLayoutOutput(int index, LayoutOutput layoutOutput, LayoutState layoutState) {
