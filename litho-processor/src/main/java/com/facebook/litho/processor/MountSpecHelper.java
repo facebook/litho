@@ -500,3 +500,4 @@ public class MountSpecHelper extends ComponentSpecHelper {
   }
 
   private void generateOnPopulateAccessibilityNode(ExecutableElement onPopulateAccessibilityNode) {
+    final MethodDescription methodDescription = new MethodDescription();
