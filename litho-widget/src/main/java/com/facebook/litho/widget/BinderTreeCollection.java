@@ -109,3 +109,4 @@ class BinderTreeCollection {
    * shifted left.
    * @param position the position at which the new item is inserted
    * @param item the new item
+   */

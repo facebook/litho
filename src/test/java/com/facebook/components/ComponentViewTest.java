@@ -73,3 +73,6 @@ public class ComponentViewTest {
     ShadowView shadow = Shadows.shadowOf(mComponentView);
     shadow.callOnAttachedToWindow();
 
+    assertEquals(2, getInternalMountItems(mComponentView).length);
+  }
+

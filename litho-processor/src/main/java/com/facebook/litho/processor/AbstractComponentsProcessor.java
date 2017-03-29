@@ -49,3 +49,5 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
     for (Element element : roundEnv.getRootElements()) {
       try {
         Closeable closeable = null;
+        SpecModel specModel = null;
+        final TypeElement typeElement = (TypeElement) element;
