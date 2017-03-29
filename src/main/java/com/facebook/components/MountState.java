@@ -901,3 +901,6 @@ class MountState {
       LayoutOutput layoutOutput) {
 
     final MountItem item = ComponentsPools.acquireMountItem(
+          component,
+          host,
+          content,

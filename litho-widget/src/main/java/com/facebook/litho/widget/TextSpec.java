@@ -577,3 +577,4 @@ class TextSpec {
   }
 
   @OnPopulateExtraAccessibilityNode
+  static void onPopulateExtraAccessibilityNode(
