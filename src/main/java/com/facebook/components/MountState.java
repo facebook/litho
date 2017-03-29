@@ -763,3 +763,4 @@ class MountState {
           // If a MountItem for this id exists and the hostMarker has not changed but its position
           // in the outputs array has changed we need to update the position in the Host to ensure
           // the z-ordering.
+          oldItem.getHost().moveItem(oldItem, i, newPosition);
