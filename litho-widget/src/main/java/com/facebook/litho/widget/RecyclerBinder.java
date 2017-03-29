@@ -502,3 +502,58 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     return mInternalAdapter.getItemCount();
   }
 
+  @GuardedBy("this")
+  private void invalidateLayoutData() {
+    mRange = null;
+    for (int i = 0, size = mComponentTreeHolders.size(); i < size; i++) {
+      mComponentTreeHolders.get(i).invalidateTree();
+    }
+  }
+
+  @GuardedBy("this")
+  private void initRange(
+      int width,
+      int height,
+      int rangeStart,
+      int childrenWidthSpec,
+      int childrenHeightSpec,
+      int scrollDirection) {
+    int nextIndexToPrepare = rangeStart;
+
+    if (nextIndexToPrepare >= mComponentTreeHolders.size()) {
+      return;
+    }
+
+    final Size size = new Size();
+    final ComponentTreeHolder holder = mComponentTreeHolders.get(nextIndexToPrepare);
+    holder.computeLayoutSync(mComponentContext, childrenWidthSpec, childrenHeightSpec, size);
+
+    final int rangeSize = Math.max(
+        mLayoutInfo.approximateRangeSize(
+            size.width,
+            size.height,
+            width,
+            height),
+        1);
+
+    mRange = new RangeCalculationResult();
+    mRange.measuredSize = scrollDirection == OrientationHelper.HORIZONTAL
+        ? size.height
+        : size.width;
+    mRange.estimatedViewportCount = rangeSize;
+  }
+
+  /**
+   * This should be called when the owner {@link Component}'s onBoundsDefined is called. It will
+   * inform the binder of the final measured size. The binder might decide to re-compute its
+   * children layouts if the measures provided here are not compatible with the ones receive in
+   * onMeasure.
+   */
+  @Override
+  public synchronized void setSize(int width, int height) {
+    if (mLastWidthSpec == UNINITIALIZED || !isCompatibleSize(
+        SizeSpec.makeSizeSpec(width, SizeSpec.EXACTLY),
+        SizeSpec.makeSizeSpec(height, SizeSpec.EXACTLY))) {
+      measure(
+          sDummySize,
+          SizeSpec.makeSizeSpec(width, SizeSpec.EXACTLY),
