@@ -105,3 +105,5 @@ public abstract class ComponentLifecycle implements EventDispatcher {
       int outputWidth = 0;
       int outputHeight = 0;
 
+      if (Component.isNestedTree(component)) {
+        final InternalNode nestedTree = LayoutState.resolveNestedTree(node, widthSpec, heightSpec);
