@@ -87,3 +87,4 @@ public abstract class BaseBinder<
   }
 
   @Override
+  public void measure(Size outSize, int widthSpec, int heightSpec) {

@@ -40,3 +40,4 @@ public interface Binder<V extends ViewGroup> {
   /**
    * Measure the content of this Binder. Call this method from the Component's onMeasure.
    */
+  void measure(Size outSize, int widthSpec, int heightSpec);

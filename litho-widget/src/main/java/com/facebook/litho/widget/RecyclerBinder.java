@@ -228,3 +228,4 @@ public class RecyclerBinder implements Binder<RecyclerView> {
       childrenHeightSpec = getActualChildrenHeightSpec(holder);
 
       if (mIsMeasured.get()) {
+        if (mRange == null) {

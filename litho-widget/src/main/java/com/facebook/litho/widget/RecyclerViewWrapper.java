@@ -141,3 +141,16 @@ public class RecyclerViewWrapper extends SwipeRefreshLayout {
   void setHasBeenDetachedFromWindow(boolean hasBeenDetachedFromWindow) {
     mHasBeenDetachedFromWindow = hasBeenDetachedFromWindow;
   }
+
+  @Override
+  public void requestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+    super.requestDisallowInterceptTouchEvent(disallowIntercept);
+
+    // SwipeRefreshLayout can ignore this request if nested scrolling is disabled on the child,
+    // but it fails to delegate the request up to the parents.
+    // This fixes a bug that can cause parents to improperly intercept scroll events from
+    // nested recyclers.
+    if (getParent() != null && !isNestedScrollingEnabled()) {
+      getParent().requestDisallowInterceptTouchEvent(disallowIntercept);
+    }
+  }
