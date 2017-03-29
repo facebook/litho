@@ -70,3 +70,4 @@ public final class DrawableMatrix extends Matrix {
       return null;
     }
 
+    final DrawableMatrix result = new DrawableMatrix();

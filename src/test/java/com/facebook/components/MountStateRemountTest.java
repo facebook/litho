@@ -20,3 +20,4 @@ import com.facebook.components.testing.testrunner.ComponentsTestRunner;
 import com.facebook.components.testing.TestComponent;
 import com.facebook.components.testing.TestDrawableComponent;
 import com.facebook.components.testing.TestViewComponent;
+

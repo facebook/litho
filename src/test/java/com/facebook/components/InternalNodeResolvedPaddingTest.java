@@ -21,3 +21,8 @@ import org.robolectric.RuntimeEnvironment;
 import static junit.framework.Assert.assertEquals;
 
 @RunWith(ComponentsTestRunner.class)
+public class InternalNodeResolvedPaddingTest {
+  private InternalNode mInternalNode;
+
+  @Before
+  public void setup() {

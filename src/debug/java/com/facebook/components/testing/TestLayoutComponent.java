@@ -22,3 +22,5 @@ import com.facebook.components.ComponentLifecycle;
 import com.facebook.components.Container;
 import com.facebook.components.ComponentContext;
 import com.facebook.components.Layout;
+
+public class TestLayoutComponent extends ComponentLifecycle {

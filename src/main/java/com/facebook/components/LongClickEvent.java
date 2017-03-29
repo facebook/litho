@@ -36,3 +36,7 @@ import com.facebook.litho.annotations.Event;
  * }
  * </pre>
  */
+@Event(returnType = boolean.class)
+public class LongClickEvent {
+  public View view;
+}

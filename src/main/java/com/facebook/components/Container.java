@@ -18,3 +18,8 @@ import android.support.annotation.StyleRes;
  *
  * @see ComponentContext
  * @see ComponentContext#newLayoutBuilder(Component)
+ */
+public final class Container {
+  private Container() {
+  }
+

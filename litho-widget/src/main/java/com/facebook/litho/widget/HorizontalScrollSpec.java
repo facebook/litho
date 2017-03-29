@@ -12,3 +12,6 @@ package com.facebook.litho.widget;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.v4.util.Pools.SynchronizedPool;
+import android.widget.HorizontalScrollView;
+
+import com.facebook.R;

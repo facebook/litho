@@ -15,3 +15,4 @@ import android.graphics.drawable.ColorDrawable;
 import com.facebook.components.testing.ComponentTestHelper;
 import com.facebook.components.testing.testrunner.ComponentsTestRunner;
 import com.facebook.components.testing.TestDrawableComponent;
+
