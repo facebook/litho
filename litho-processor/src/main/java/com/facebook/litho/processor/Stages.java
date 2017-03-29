@@ -2741,3 +2741,4 @@ public class Stages {
     final List<String> requiredPropNames = new ArrayList<>();
     int numRequiredProps = 0;
     for (VariableElement v : mProps) {
+      if (!v.getAnnotation(Prop.class).optional()) {
