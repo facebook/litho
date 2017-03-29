@@ -127,3 +127,4 @@ class ImageSpec {
       @Prop(optional = true) ScaleType scaleType,
       Output<DrawableMatrix> drawableMatrix,
       Output<Integer> drawableWidth,
+      Output<Integer> drawableHeight) {

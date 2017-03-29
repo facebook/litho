@@ -811,3 +811,4 @@ class MountState {
       LayoutOutput layoutOutput,
       Component previousComponent) {
     final Component<?> component = layoutOutput.getComponent();
+    if (isHostSpec(component)) {
