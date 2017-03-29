@@ -282,3 +282,7 @@ public interface ComponentLayout {
         YogaEdge edge,
         @AttrRes int resId,
         @DimenRes int defaultResId);
+    ContainerBuilder positionAttr(YogaEdge edge, @AttrRes int resId);
+    ContainerBuilder positionRes(YogaEdge edge, @DimenRes int resId);
+    ContainerBuilder positionDip(YogaEdge edge, @Dimension(unit = DP) int position);
+    ContainerBuilder positionPercent(YogaEdge edge, float percent);
