@@ -281,3 +281,4 @@ public final class ComponentTestHelper {
       Component.Builder component,
       int widthSpec,
       int heightSpec) {
+    return getSubComponents(getContext(component), component.build(), widthSpec, heightSpec);
