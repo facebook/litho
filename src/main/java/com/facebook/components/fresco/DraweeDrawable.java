@@ -34,3 +34,4 @@ public class DraweeDrawable<DH extends DraweeHierarchy>
     implements ImageContent, Touchable {
 
   private final Drawable mNoOpDrawable = new NoOpDrawable();
+

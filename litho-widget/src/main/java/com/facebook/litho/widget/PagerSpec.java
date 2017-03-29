@@ -35,3 +35,4 @@ class PagerSpec {
 
   @OnMeasure
   static void onMeasure(
+      ComponentContext context,
