@@ -400,3 +400,4 @@ public class RecyclerBinderTest {
     int rangeTotal = RANGE_SIZE + (int) (RANGE_SIZE * RANGE_RATIO);
 
     for (int i = 0; i < RANGE_SIZE; i++) {
+      componentTreeHolder = mHoldersForComponents.get(components.get(i).getComponent());
