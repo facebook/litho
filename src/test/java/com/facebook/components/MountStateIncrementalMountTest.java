@@ -491,3 +491,46 @@ public class MountStateIncrementalMountTest {
     final ComponentView componentView = ComponentTestHelper.mountComponent(
         TestViewComponent.create(testComponentContext));
 
+    // Can't verify directly as the object will have changed by the time we get the chance to
+    // verify it.
+    doAnswer(
+        new Answer<Object>() {
+          @Override
+          public Object answer(InvocationOnMock invocation) throws Throwable {
+            Rect rect = (Rect) invocation.getArguments()[0];
+            if (!rect.equals(new Rect(10, 5, 15, 20))) {
+              fail();
+            }
+            return null;
+          }
+        }).when(childView1).performIncrementalMount(any(Rect.class));
+
+    doAnswer(
+        new Answer<Object>() {
+          @Override
+          public Object answer(InvocationOnMock invocation) throws Throwable {
+            Rect rect = (Rect) invocation.getArguments()[0];
+            if (!rect.equals(new Rect(5, 5, 30, 30))) {
+              fail();
+            }
+            return null;
+          }
+        }).when(childView2).performIncrementalMount(any(Rect.class));
+
+    doAnswer(
+        new Answer<Object>() {
+          @Override
+          public Object answer(InvocationOnMock invocation) throws Throwable {
+            Rect rect = (Rect) invocation.getArguments()[0];
+            if (!rect.equals(new Rect(0, 0, 10, 5))) {
+              fail();
+            }
+            return null;
+          }
+        }).when(childView3).performIncrementalMount(any(Rect.class));
+
+    componentView.getComponent().mountComponent(new Rect(15, 15, 40, 40));
+
+    verify(childView1).performIncrementalMount(any(Rect.class));
+    verify(childView2).performIncrementalMount(any(Rect.class));
+    verify(childView3).performIncrementalMount(any(Rect.class));
