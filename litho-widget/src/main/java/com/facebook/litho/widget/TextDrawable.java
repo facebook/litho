@@ -351,3 +351,15 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
     if (mHighlightPaint == null) {
       mHighlightPaint = new Paint();
       mHighlightPaint.setColor(mHighlightColor);
+    } else {
+      mHighlightPaint.setColor(mHighlightColor);
+    }
+
+    mSelectionPathNeedsUpdate = true;
+    invalidateSelf();
+  }
+
+  private void clearSelection() {
+    setSelection(0, 0);
+  }
+
