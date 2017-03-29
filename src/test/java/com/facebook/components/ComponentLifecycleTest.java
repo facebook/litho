@@ -66,3 +66,6 @@ public class ComponentLifecycleTest {
   private Component mInput;
   private ComponentContext mContext;
   private Component mComponentWithNullLayout;
+
+  @Before
+  public void setUp() {

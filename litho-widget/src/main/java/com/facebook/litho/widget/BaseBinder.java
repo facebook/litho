@@ -294,3 +294,4 @@ public abstract class BaseBinder<
         mComponentTrees.removeShiftingLeft(fromPosition);
 
       } else if (!isFromInRange && isToInRange) {
+        final ComponentTree componentTree = buildComponentTree(component);

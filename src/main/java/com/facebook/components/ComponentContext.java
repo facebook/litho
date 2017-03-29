@@ -84,3 +84,4 @@ public class ComponentContext extends ContextWrapper {
     final boolean transferStateHandler = (componentContext != null && stateHandler == null);
 
     if (componentContext != null) {
+      mTreeProps = componentContext.mTreeProps;
