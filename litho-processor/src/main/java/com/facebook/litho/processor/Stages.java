@@ -2325,3 +2325,6 @@ public class Stages {
                 ClassName.bestGuess(getSimpleClassName())),
             "impl")
         .addStatement(
+            "$L " + implInstanceName + " = ($L) impl",
+            implClassName,
+            implClassName);
