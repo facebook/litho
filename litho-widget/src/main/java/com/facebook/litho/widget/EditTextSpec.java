@@ -373,3 +373,4 @@ class EditTextSpec {
     if (selection > -1) {
       editText.setSelection(selection);
     }
+
