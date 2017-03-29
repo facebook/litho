@@ -297,3 +297,5 @@ public class MountSpecHelper extends ComponentSpecHelper {
       mTypeSpec.addMethod(new IsMountSizeDependentMethodSpecBuilder().build());
     }
 
+    mStages.generateDelegate(
+        methodDescription,

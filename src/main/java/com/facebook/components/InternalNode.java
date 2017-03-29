@@ -493,3 +493,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   public InternalNode marginPx(YogaEdge edge, @Px int margin) {
     mPrivateFlags |= PFLAG_MARGIN_IS_SET;
     mYogaNode.setMargin(edge, margin);
+    return this;
+  }
+
+  @Override
