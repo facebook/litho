@@ -1734,3 +1734,4 @@ public class Stages {
       implClassBuilder.addMethod(makeShallowCopy);
     }
 
+    writeInnerTypeSpec(implClassBuilder.build());
