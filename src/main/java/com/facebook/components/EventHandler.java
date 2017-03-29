@@ -21,3 +21,5 @@ public class EventHandler<E> {
 
   public EventHandler(HasEventDispatcher hasEventDispatcher, int id, Object[] params) {
     this.mHasEventDispatcher = hasEventDispatcher;
+    this.id = id;
+    this.params = params;
