@@ -1085,3 +1085,5 @@ class MountState {
       unsetImportantForAccessibility(view);
     }
 
+    unsetAccessibilityDelegate(view);
+
