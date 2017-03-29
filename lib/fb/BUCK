@@ -27,3 +27,4 @@ if COMPONENTS_IS_OSS_BUILD:
       ('include', 'jni/*.h'),
     ]),
     deps = [
+      COMPONENTS_JNI_TARGET,

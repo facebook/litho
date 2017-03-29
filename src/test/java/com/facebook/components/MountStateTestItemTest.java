@@ -20,3 +20,35 @@ import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
 import static com.facebook.litho.testing.assertj.ComponentViewAssert.times;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+
+@RunWith(ComponentsTestRunner.class)
+public class MountStateTestItemTest {
+
+  private static final String TEST_ID_1 = "test_id_1";
+  private static final String TEST_ID_2 = "test_id_2";
+  private static final String TEST_ID_3 = "test_id_3";
+  private static final String MY_TEST_STRING_1 = "My test string";
+  private static final String MY_TEST_STRING_2 = "My second test string";
+
+  private ComponentContext mContext;
+
+  @Before
+  public void setup() {
+    mContext = new ComponentContext(RuntimeEnvironment.application);
+    ComponentsConfiguration.isEndToEndTestRun = true;
+  }
+
+  @After
+  public void teardown() {
+    ComponentsConfiguration.isEndToEndTestRun = false;
+  }
+
+  @Test
+  public void testInnerComponentHostViewTags() {
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {

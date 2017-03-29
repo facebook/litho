@@ -102,3 +102,4 @@ public class SizeSpec {
    * @param mode the mode of the size specification
    * @return the size specification based on size and mode
    */
+  public static int makeSizeSpec(int size, @MeasureSpecMode int mode) {

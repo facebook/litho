@@ -11,3 +11,19 @@ include_defs("//COMPONENTS_DEFS")
 # because we cannot define `soname` multiple times.
 if COMPONENTS_IS_OSS_BUILD:
   cxx_library(
+      name = "yoga",
+      srcs = glob(["yoga/*.c"]),
+      compiler_flags = [
+          "-fno-omit-frame-pointer",
+          "-fexceptions",
+          "-Wall",
+          "-Werror",
+          "-std=c99",
+          "-O3",
+      ],
+      exported_headers = glob(["yoga/*.h"]),
+      force_static = True,
+      header_namespace = "",
+  )
+
+  cxx_library(

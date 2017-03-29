@@ -34,3 +34,5 @@ import static android.os.Build.VERSION_CODES.LOLLIPOP;
 import static org.junit.Assert.assertEquals;
 
 @Config(
+    manifest = Config.NONE,
+    sdk = LOLLIPOP,

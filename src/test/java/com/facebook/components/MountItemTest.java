@@ -23,3 +23,4 @@ import org.robolectric.RuntimeEnvironment;
 import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
 import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES;
+import static org.assertj.core.api.Assertions.assertThat;

@@ -25,3 +25,4 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests {@link EditText} component.
  */
 
+@RunWith(ComponentsTestRunner.class)
