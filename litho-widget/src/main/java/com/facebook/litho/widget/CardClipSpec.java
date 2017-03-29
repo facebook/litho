@@ -20,3 +20,4 @@ import com.facebook.litho.annotations.ResType;
  * A component that is paints rounded edges to mimic a clipping operation on the
  * component being rendered below it. Used in {@link CardSpec}.
  */
+@MountSpec(isPureRender = true)

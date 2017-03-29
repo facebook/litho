@@ -9,3 +9,4 @@
 
 package com.facebook.components.fresco;
 
+import android.graphics.ColorFilter;
