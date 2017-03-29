@@ -2154,3 +2154,5 @@ public class Stages {
             .addParameter(comparedInstancesClassName, "previous")
             .addParameter(comparedInstancesClassName, "next");
 
+    final List<? extends VariableElement> shouldUpdateParams = shouldUpdateElement.getParameters();
+    final int shouldUpdateParamSize = shouldUpdateParams.size();
