@@ -192,3 +192,6 @@ class RecyclerSpec {
     if (recyclerEventsController != null) {
       recyclerEventsController.setRecyclerViewWrapper(null);
     }
+
+
+    if (onScrollListener != null) {
