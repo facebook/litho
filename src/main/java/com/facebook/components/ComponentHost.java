@@ -299,3 +299,21 @@ public class ComponentHost extends ViewGroup {
   }
 
   /**
+   * Hosts are guaranteed to have only one accessible component
+   * in them due to the way the view hierarchy is constructed in {@link LayoutState}.
+   * There might be other non-accessible components in the same hosts such as
+   * a background/foreground component though. This is why this method iterates over
+   * all mount items in order to find the accessible one.
+   */
+  MountItem getAccessibleMountItem() {
+    for (int i = 0; i < getMountItemCount(); i++) {
+      MountItem item = getMountItemAt(i);
+      if (item.isAccessible()) {
+        return item;
+      }
+    }
+
+    return null;
+  }
+
+  /**
