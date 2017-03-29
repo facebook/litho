@@ -406,3 +406,9 @@ class MountState {
     }
   }
 
+  private void clearVisibilityItems() {
+    for (int i = mVisibilityIdToItemMap.size() - 1; i >= 0; i--) {
+      final VisibilityItem visibilityItem = mVisibilityIdToItemMap.valueAt(i);
+      final EventHandler invisibleHandler = visibilityItem.getInvisibleHandler();
+
+      if (invisibleHandler != null) {
