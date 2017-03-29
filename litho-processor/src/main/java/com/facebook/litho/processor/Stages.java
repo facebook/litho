@@ -493,3 +493,4 @@ public class Stages {
                   "State is not supported in this kind of Spec.");
             }
 
+            if (!isFromProp && !isFromState && !isOutput && !isFromTreeProp) {
