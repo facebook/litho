@@ -658,3 +658,8 @@ public class ComponentsPools {
   }
 
   @ThreadSafe(enableChecks = false)
+  static void release(Spacing spacing) {
+    spacing.reset();
+    sSpacingPool.release(spacing);
+  }
+
