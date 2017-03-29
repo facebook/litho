@@ -571,3 +571,9 @@ class TextSpec {
 
   @GetExtraAccessibilityNodesCount
   static int getExtraAccessibilityNodesCount(
+      @Prop(optional = true, resType = BOOL) boolean accessibleClickableSpans,
+      @FromBoundsDefined ClickableSpan[] clickableSpans) {
+    return (accessibleClickableSpans && clickableSpans != null) ? clickableSpans.length : 0;
+  }
+
+  @OnPopulateExtraAccessibilityNode
