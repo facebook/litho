@@ -157,3 +157,16 @@ public class ViewPredicatesTest {
     final Drawable black2 = new ColorDrawable(Color.BLACK);
     final Drawable white = new ColorDrawable(Color.WHITE);
     final Predicate<View> hasDrawable = ViewPredicates.hasDrawable(black1);
+
+    mImageView.setImageDrawable(black1);
+    assertThat(hasDrawable.apply(mImageView)).isTrue();
+
+    mImageView.setImageDrawable(black2);
+    assertThat(hasDrawable.apply(mImageView)).isTrue();
+
+    mImageView.setImageDrawable(white);
+    assertThat(hasDrawable.apply(mImageView)).isFalse();
+  }
+
+  @Test
+  public void testHasVisibleDrawable() {
