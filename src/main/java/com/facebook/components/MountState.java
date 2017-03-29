@@ -870,3 +870,4 @@ class MountState {
 
     // 5. Notify the component that mounting has completed
     lifecycle.bind(component.getScopedContext(), content, component);
+    item.setIsBound(true);
