@@ -1081,3 +1081,7 @@ class MountState {
     // Reset setFocusable flag.
     unsetFocusable(view, item);
 
+    if (item.getImportantForAccessibility() != IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
+      unsetImportantForAccessibility(view);
+    }
+

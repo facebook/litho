@@ -666,3 +666,4 @@ class LayoutState {
       layoutState.mTestOutputs.add(testOutput);
     }
 
+    // All children for the given host have been added, restore the previous
