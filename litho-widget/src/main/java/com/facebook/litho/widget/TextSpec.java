@@ -393,3 +393,4 @@ class TextSpec {
     layoutBuilder.setIncludeFontPadding(shouldIncludeFontPadding);
     layoutBuilder.setTextSpacingExtra(extraSpacing);
     layoutBuilder.setTextSpacingMultiplier(spacingMultiplier);
+    layoutBuilder.setAlignment(textAlignment);

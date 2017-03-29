@@ -571,3 +571,26 @@ public class Stages {
     }
   }
 
+  private boolean hasSameAnnotations(VariableElement v1, VariableElement v2) {
+    final List<? extends AnnotationMirror> v1Annotations = v1.getAnnotationMirrors();
+    final List<? extends AnnotationMirror> v2Annotations = v2.getAnnotationMirrors();
+
+    if (v1Annotations.size() != v2Annotations.size()) {
+      return false;
+    }
+
+    final int count = v1Annotations.size();
+    for (int i = 0; i < count; i++) {
+      final AnnotationMirror a1 = v1Annotations.get(i);
+      final AnnotationMirror a2 = v2Annotations.get(i);
+
+      // Some object in this hierarchy don't implement equals correctly.
+      // They do however produce very nice strings representations which we can compare instead.
+      if (!a1.toString().equals(a2.toString())) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
