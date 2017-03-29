@@ -215,3 +215,12 @@ public class ComponentHost extends ViewGroup {
     }
 
     final Rect expandedTouchBounds = viewNodeInfo.getExpandedTouchBounds();
+    if (expandedTouchBounds == null || mTouchExpansionDelegate == null) {
+      return;
+    }
+
+    mTouchExpansionDelegate.moveTouchExpansionIndexes(
+        oldIndex,
+        newIndex);
+  }
+

@@ -546,3 +546,5 @@ public class LayoutStateCalculateTest {
 
     // Check all the Components match the right LayoutOutput positions.
     // Tree One.
+    assertTrue(isHostComponent(getComponentAt(layoutState, 0)));
+    assertTrue(isHostComponent(getComponentAt(layoutState, 1)));
