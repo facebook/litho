@@ -264,3 +264,4 @@ class EditTextSpec {
       @Prop(optional = true) boolean editable,
       @Prop(optional = true) int selection) {
     editTextView.setEventHandler(
+        com.facebook.litho.widget.EditText.getTextChangedEventHandler(c));
