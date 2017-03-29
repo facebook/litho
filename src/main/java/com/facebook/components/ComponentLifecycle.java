@@ -131,3 +131,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
               size,
               component);
 
+          if (size.width < 0 || size.height < 0) {
