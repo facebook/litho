@@ -66,3 +66,7 @@ public class ComponentInfo {
     return (int) mCustomAttributes.get(SPAN_SIZE);
   }
 
+  public Object getCustomAttribute(String key) {
+    return mCustomAttributes == null ? null : mCustomAttributes.get(key);
+  }
+

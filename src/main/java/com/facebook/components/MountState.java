@@ -119,3 +119,4 @@ class MountState {
     // The mount item representing the top-level ComponentView which
     // is always automatically mounted.
     mRootHostMountItem = ComponentsPools.acquireRootHostMountItem(
+        HostComponent.create(),
