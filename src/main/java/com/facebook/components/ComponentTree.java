@@ -53,3 +53,8 @@ import static com.facebook.litho.ThreadUtils.isMainThread;
  * ComponentTree is responsible for refreshing the mounted state of a component with new props.
  *
  * The usual use case for {@link ComponentTree} is:
+ * <code>
+ * ComponentTree component = ComponentTree.create(context, MyComponent.create());
+ * myHostView.setRoot(component);
+ * <code/>
+ */

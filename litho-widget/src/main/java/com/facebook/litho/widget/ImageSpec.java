@@ -53,3 +53,5 @@ class ImageSpec {
   static void onLoadStyle(
       ComponentContext c,
       Output<Reference<Drawable>> src,
+      Output<ScaleType> scaleType) {
+

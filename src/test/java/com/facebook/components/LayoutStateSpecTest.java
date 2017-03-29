@@ -54,3 +54,4 @@ public class LayoutStateSpecTest {
 
   @Test
   public void testIncompatibleInput() {
+    assertFalse(mLayoutState.isCompatibleComponentAndSpec(
