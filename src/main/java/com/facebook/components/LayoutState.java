@@ -1465,3 +1465,9 @@ class LayoutState {
       int widthSpec,
       int heightSpec) {
     return mComponent.getId() == componentId && isCompatibleSpec(widthSpec, heightSpec);
+  }
+
+  boolean isCompatibleSize(int width, int height) {
+    return mWidth == width && mHeight == height;
+  }
+
