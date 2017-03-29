@@ -81,3 +81,4 @@ class MountState {
   // and populated during test runs.
   private final Map<String, Deque<TestItem>> mTestItemMap;
 
+  private long[] mLayoutOutputsIds;
