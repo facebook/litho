@@ -135,3 +135,4 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
       mGenericDraweeHierarchy.setRetryImage(null);
       return;
     }
+
