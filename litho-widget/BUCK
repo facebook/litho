@@ -10,3 +10,10 @@ include_defs("//COMPONENTS_DEFS")
 android_aar(
     name = "litho-widget",
     manifest_skeleton = "src/main/AndroidManifest.xml",
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        make_dep_path("litho-widget/src/main/java/com/facebook/litho/widget:widget-bare"),
+    ],
+)

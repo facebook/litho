@@ -12,3 +12,5 @@ package com.facebook.litho.reference;
 import android.graphics.drawable.Drawable;
 import android.support.v4.util.Pools;
 
+import com.facebook.litho.ComponentContext;
+import com.facebook.litho.config.ComponentsConfiguration;

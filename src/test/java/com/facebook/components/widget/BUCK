@@ -27,3 +27,4 @@ components_robolectric_test(
         COMPONENTS_SOLOADER_TARGET,
         COMPONENTS_ANDROIDSUPPORT_TARGET,
         COMPONENTS_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
+        make_dep_path("litho-widget/src/main/java/com/facebook/litho/widget:widget"),

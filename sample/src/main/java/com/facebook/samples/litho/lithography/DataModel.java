@@ -93,3 +93,14 @@ public class DataModel {
         )
     };
   }
+
+  public static void populateBinderWithSampleData(
+      RecyclerBinder recyclerBinder,
+      ComponentContext c) {
+    final Datum[] dataModels = SampleData();
+    for (Datum datum : dataModels) {
+      ComponentInfo.Builder componentInfoBuilder = ComponentInfo.create();
+      componentInfoBuilder.component(datum.createComponent(c));
+      recyclerBinder.insertItemAt(recyclerBinder.getItemCount(), componentInfoBuilder.build());
+    }
+  }

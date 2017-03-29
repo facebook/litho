@@ -34,3 +34,4 @@ public class ComponentsTestRunner extends RobolectricTestRunner {
     INTERNAL, OSS;
 
     static ProjectEnvironment detectFromSystemProperties() {
+      final String property = System.getProperty("com.facebook.litho.is_oss");

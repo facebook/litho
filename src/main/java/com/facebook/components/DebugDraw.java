@@ -19,3 +19,5 @@ import android.view.View;
 
 import com.facebook.litho.config.ComponentsConfiguration;
 
+import static com.facebook.litho.Component.isHostSpec;
+import static com.facebook.litho.Component.isMountViewSpec;

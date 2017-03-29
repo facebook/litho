@@ -33,3 +33,10 @@ public class FooterComponentSpec {
       ComponentContext c,
       @Prop(resType = STRING) String text) {
     return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        .paddingDip(YogaEdge.ALL, 8)
+        .child(
+            Text.create(c)
+                .text(text)
+                .textSizeDip(14)
+                .textColor(GRAY)
+                .textStyle(ITALIC))
