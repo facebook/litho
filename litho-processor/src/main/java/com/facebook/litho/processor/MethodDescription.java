@@ -23,3 +23,4 @@ import com.squareup.javapoet.TypeName;
 public class MethodDescription {
   public Class[] annotations;
   public Modifier accessType;
+  public TypeName returnType;

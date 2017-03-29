@@ -62,3 +62,4 @@ public class BaseBinderTest {
     mItems.add("7");
     mItems.add("8");
 
+    Context context = RuntimeEnvironment.application;

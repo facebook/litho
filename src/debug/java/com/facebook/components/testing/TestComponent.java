@@ -147,3 +147,4 @@ public abstract class TestComponent<L extends ComponentLifecycle> extends Compon
     mOnUnbindCalled = false;
     mOnUnmountCalled = false;
   }
+}

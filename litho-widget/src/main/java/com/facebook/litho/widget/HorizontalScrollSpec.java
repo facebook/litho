@@ -58,3 +58,4 @@ class HorizontalScrollSpec {
       ComponentContext c,
       Output<Boolean> scrollbarEnabled) {
 
+    final TypedArray a = c.obtainStyledAttributes(

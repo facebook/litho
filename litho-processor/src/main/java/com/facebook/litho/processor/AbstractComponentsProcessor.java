@@ -64,3 +64,4 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
                   getDependencyInjectionGenerator((TypeElement) element));
           validate(mountSpecModel);
 
+          final MountSpecHelper mountSpecHelper =
