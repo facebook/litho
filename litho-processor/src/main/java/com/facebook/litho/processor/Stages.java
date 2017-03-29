@@ -346,3 +346,7 @@ public class Stages {
 
     final List<? extends VariableElement> parameters = delegateMethod.getParameters();
 
+    if (parameters.size() < ON_STYLE_PROPS) {
+      throw new ComponentsProcessingException(
+          delegateMethod,
+          "The @OnLoadStyle method should have an ComponentContext" +
