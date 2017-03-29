@@ -55,3 +55,9 @@ class MountItem {
         mountItem.getDisplayListDrawable());
   }
 
+  void init(
+      Component<?> component,
+      ComponentHost host,
+      Object content,
+      LayoutOutput layoutOutput,
+      DisplayListDrawable displayListDrawable) {
