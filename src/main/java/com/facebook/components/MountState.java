@@ -717,3 +717,4 @@ class MountState {
    */
   private PrepareMountStats unmountOrMoveOldItems(LayoutState newLayoutState) {
     mPrepareMountStats.reset();
+
