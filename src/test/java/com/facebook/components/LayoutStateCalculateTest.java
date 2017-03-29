@@ -414,3 +414,5 @@ public class LayoutStateCalculateTest {
     boolean foregroundHasOwnOutput = Build.VERSION.SDK_INT < Build.VERSION_CODES.M;
 
     // Check total layout outputs.
+    assertEquals(
+        foregroundHasOwnOutput ? 12 : 11,
