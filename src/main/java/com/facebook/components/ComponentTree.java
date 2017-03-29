@@ -10,3 +10,5 @@
 package com.facebook.litho;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.concurrent.GuardedBy;
+
