@@ -345,3 +345,4 @@ public class BaseBinderTest {
         "text");
   }
 
+  private static class MyTestComponentBinder extends BaseBinder<
