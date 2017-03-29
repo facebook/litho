@@ -1401,3 +1401,4 @@ class LayoutState {
               layoutNode.getChildAt(i),
               diffNode.getChildAt(i));
       shouldUpdate |= shouldUpdateChild;
+    }

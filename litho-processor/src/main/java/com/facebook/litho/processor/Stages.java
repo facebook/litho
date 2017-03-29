@@ -2186,3 +2186,4 @@ public class Stages {
       }
 
       final TypeMirror innerType = Utils.getGenericTypeArgument(
+          variableElementType,
