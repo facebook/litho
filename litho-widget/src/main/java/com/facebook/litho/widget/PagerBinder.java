@@ -276,3 +276,4 @@ public abstract class PagerBinder extends BaseBinder<
   }
 
   private static class InternalOnPageChangeListener implements ViewPager.OnPageChangeListener {
+    private final PagerBinder mBinder;
