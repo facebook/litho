@@ -1160,3 +1160,7 @@ public class Stages {
   public void generateOnEventHandlers(ClassName componentClassName, ClassName contextClassName) {
     for (ExecutableElement element : mOnEventMethods) {
       generateOnEventHandler(element, contextClassName);
+    }
+  }
+
+  /**
