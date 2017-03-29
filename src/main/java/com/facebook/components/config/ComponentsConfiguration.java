@@ -14,3 +14,4 @@ import android.os.Build;
 import com.facebook.litho.BuildConfig;
 
 /**
+ * Configuration for the Components library.
