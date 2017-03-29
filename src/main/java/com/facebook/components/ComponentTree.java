@@ -1278,3 +1278,14 @@ public class ComponentTree {
     }
 
     /**
+     * Specify the looper to use for running layouts on. Note that in rare cases
+     * layout must run on the UI thread. For example, if you rotate the screen,
+     * we must measure on the UI thread. If you don't specify a Looper here, the
+     * Components default Looper will be used.
+     */
+    public Builder layoutThreadHandler(LayoutHandler handler) {
+      layoutThreadHandler = handler;
+      return this;
+    }
+
+    /**

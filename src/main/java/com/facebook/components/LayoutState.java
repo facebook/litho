@@ -703,3 +703,6 @@ class LayoutState {
   }
 
   private static LayoutOutput addDrawableComponent(
+      InternalNode node,
+      LayoutState layoutState,
+      LayoutOutput recycle,
