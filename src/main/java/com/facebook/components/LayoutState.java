@@ -1621,3 +1621,13 @@ class LayoutState {
     mReferenceCount.set(1);
   }
 
+  /**
+   * Returns the state handler instance currently held by LayoutState and nulls it afterwards.
+   * @return the state handler
+   */
+  StateHandler consumeStateHandler() {
+    final StateHandler stateHandler = mStateHandler;
+    mStateHandler = null;
+    return stateHandler;
+  }
+
