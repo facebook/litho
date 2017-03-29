@@ -84,3 +84,5 @@ public class GridComponentBinderTest {
   public void testMatchingWidthSpec() {
     setupBinder(GridLayoutManager.VERTICAL);
 
+    mRecyclerView.layout(0, 0, GRID_WIDTH, 2000);
+

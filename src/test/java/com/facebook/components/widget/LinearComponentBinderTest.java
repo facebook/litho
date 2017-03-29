@@ -78,3 +78,6 @@ public class LinearComponentBinderTest {
   private void performNotifyDataSetChanged() throws Exception {
     mBinder.notifyDataSetChanged();
     mLayoutThreadShadowLooper.runOneTask();
+
+    // Only loads enough items to fill the viewport.
+    Assert.assertEquals(6, mBinder.getComponentCount());

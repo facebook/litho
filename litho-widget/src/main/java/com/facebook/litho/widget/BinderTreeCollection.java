@@ -202,3 +202,6 @@ class BinderTreeCollection {
     // contained in the collection.
     if (mItems.size() == 0 || getFirstPosition() + size() - 1 < positionStart - shiftByAmount ||
         positionEnd < getFirstPosition()) {
+      return;
+    }
+

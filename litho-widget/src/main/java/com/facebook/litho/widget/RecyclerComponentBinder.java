@@ -112,3 +112,12 @@ public abstract class RecyclerComponentBinder<L extends RecyclerView.LayoutManag
    * Returns true if this binder publishes a unique <code>long</code> value that can act as a key
    * for the component at a given position in the data set. If that component is relocated in the
    * data set, the ID returned for that component should be the same.
+   *
+   * @return true if this binder's component have stable IDs
+   */
+  public final boolean hasStableIds() {
+    return mAdapter.hasStableIds();
+  }
+
+  // TODO(12986103): Remove onBoundsDefined once the experiment proved to be ok.
+  @Override
