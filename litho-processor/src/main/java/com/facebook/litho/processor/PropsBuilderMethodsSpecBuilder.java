@@ -315,3 +315,11 @@ class PropsBuilderMethodsSpecBuilder {
   }
 
   private MethodSpec.Builder getMethodSpecBuilder(
+      String name,
+      List<ParameterSpec> parameters,
+      String statement,
+      Object ...formatObjects) {
+    final MethodSpec.Builder builder =
+        MethodSpec.methodBuilder(name)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(mBuilderClass)
