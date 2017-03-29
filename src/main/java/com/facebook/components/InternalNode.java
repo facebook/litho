@@ -597,3 +597,42 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public InternalNode borderWidthPx(YogaEdge edge, @Px int borderWidth) {
+    mPrivateFlags |= PFLAG_BORDER_WIDTH_IS_SET;
+
+    if (mIsNestedTreeHolder) {
+      if (mNestedTreeBorderWidth == null) {
+        mNestedTreeBorderWidth = ComponentsPools.acquireSpacing();
+      }
+
+      mNestedTreeBorderWidth.set(edge.intValue(), borderWidth);
+    } else {
+      mYogaNode.setBorder(edge, borderWidth);
+    }
+
+    return this;
+  }
+
+  @Override
+  public InternalNode borderWidthAttr(
+      YogaEdge edge,
+      @AttrRes int resId,
+      @DimenRes int defaultResId) {
+    return borderWidthPx(edge, mResourceResolver.resolveDimenOffsetAttr(resId, defaultResId));
+  }
+
+  @Override
+  public InternalNode borderWidthAttr(
+      YogaEdge edge,
+      @AttrRes int resId) {
+    return borderWidthAttr(edge, resId, 0);
+  }
+
+  @Override
+  public InternalNode borderWidthRes(YogaEdge edge, @DimenRes int resId) {
+    return borderWidthPx(edge, mResourceResolver.resolveDimenOffsetRes(resId));
+  }
+
+  @Override
+  public InternalNode borderWidthDip(
+      YogaEdge edge,
