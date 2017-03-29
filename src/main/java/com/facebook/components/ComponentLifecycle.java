@@ -389,3 +389,17 @@ public abstract class ComponentLifecycle implements EventDispatcher {
   }
 
   /**
+   * Whether this drawable mount spec should cache its drawing in a display list.
+   */
+  protected boolean shouldUseDisplayList() {
+    return false;
+  }
+
+  /**
+   * Create the object that will be mounted in the {@link ComponentView}.
+   *
+   * @param context The {@link ComponentContext} to be used to create the content.
+   * @return an Object that can be mounted for this component.
+   */
+  protected Object onCreateMountContent(ComponentContext context) {
+    throw new RuntimeException(
