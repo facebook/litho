@@ -2727,3 +2727,6 @@ public class Stages {
     initMethodSpec
         .addStatement(implMemberInstanceName + " = " + implInstanceName)
         .addStatement(contextMemberInstanceName + " = context");
+
+    final TypeSpec.Builder propsBuilderClassBuilder = TypeSpec
+        .classBuilder(builderClassName)
