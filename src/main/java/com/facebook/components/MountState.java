@@ -927,3 +927,4 @@ class MountState {
     final ComponentLifecycle lifecycle = component.getLifecycle();
 
     if (isHostSpec(component)) {
+      return host.recycleHost();

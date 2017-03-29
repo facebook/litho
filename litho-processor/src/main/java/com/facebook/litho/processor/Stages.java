@@ -1281,3 +1281,7 @@ public class Stages {
       ClassName contextClassName,
       ClassName componentClassName) {
     for (ExecutableElement element : mOnEventMethods) {
+      generateEventHandlerFactory(
+          element,
+          contextClassName,
+          componentClassName);
