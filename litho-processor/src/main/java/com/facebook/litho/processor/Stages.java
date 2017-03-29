@@ -1094,3 +1094,12 @@ public class Stages {
       Map<String, String> parameterTranslation,
       ClassName propsClass) {
 
+    final Visibility visibility;
+    if (Arrays.asList(from.accessType).contains(Modifier.PRIVATE)) {
+      visibility = Visibility.PRIVATE;
+    } else if (Arrays.asList(from.accessType).contains(Modifier.PROTECTED)) {
+      visibility = Visibility.PROTECTED;
+    } else if (Arrays.asList(from.accessType).contains(Modifier.PUBLIC)) {
+      visibility = Visibility.PUBLIC;
+    } else {
+      visibility = Visibility.PACKAGE;
