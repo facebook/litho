@@ -328,3 +328,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     // do nothing, by default
   }
 
+  protected void onLoadStyle(ComponentContext c, Component<?> component) {
