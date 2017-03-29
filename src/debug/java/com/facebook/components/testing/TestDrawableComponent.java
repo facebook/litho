@@ -366,3 +366,4 @@ public class TestDrawableComponent extends ComponentLifecycle {
       return this;
     }
   }
+}
