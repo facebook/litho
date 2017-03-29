@@ -35,3 +35,10 @@ import com.facebook.yoga.YogaNodeAPI;
 
 import static android.support.annotation.Dimension.DP;
 
+/**
+ * Class representing an empty InternalNode with a null ComponentLayout. All methods
+ * have been overridden so no actions are performed, and no exceptions are thrown.
+ */
+class NoOpInternalNode extends InternalNode {
+
+  @Override

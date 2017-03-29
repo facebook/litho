@@ -87,3 +87,6 @@ public class ComponentLifecycleTest {
 
     mockStatic(LayoutState.class);
     mContext = new ComponentContext(RuntimeEnvironment.application);
+    mComponentWithNullLayout = new InlineLayoutSpec() {
+      @Override protected ComponentLayout onCreateLayout(ComponentContext c) { return null; }
+    };
