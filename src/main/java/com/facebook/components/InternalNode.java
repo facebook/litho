@@ -1522,3 +1522,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       node.mBackground = mBackground;
     }
     if ((mPrivateFlags & PFLAG_FOREGROUND_IS_SET) != 0L) {
+      node.mForeground = mForeground;
+    }
+    if (mForceViewWrapping) {
+      node.mForceViewWrapping = true;
+    }
