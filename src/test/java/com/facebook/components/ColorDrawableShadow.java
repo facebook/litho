@@ -19,3 +19,29 @@ import static org.robolectric.internal.Shadow.directlyOn;
  */
 @Implements(value = ColorDrawable.class, inheritImplementationMethods = true)
 public class ColorDrawableShadow extends ShadowDrawable {
+
+  @RealObject private ColorDrawable mRealColorDrawable;
+
+  private int mAlpha;
+
+  @Implementation
+  public void draw(Canvas canvas) {
+    canvas.drawColor(mRealColorDrawable.getColor());
+  }
+
+  @Implementation
+  public void setColorFilter(ColorFilter colorFilter) {
+    directlyOn(mRealColorDrawable, ColorDrawable.class).setColorFilter(colorFilter);
+  }
+
+  @Implementation
+  public void setAlpha(int alpha) {
+    mAlpha = alpha;
+    directlyOn(mRealColorDrawable, ColorDrawable.class).setAlpha(alpha);
+  }
+
+  @Implementation
+  public int getAlpha() {
+    return mAlpha;
+  }
+}

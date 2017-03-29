@@ -16,3 +16,4 @@ import com.google.common.collect.ImmutableList;
  * This is a helper class to allow asserting on view trees and recursively
  * verify predicates on its nodes within the narrow abilities that
  * Robolectric affords us.
+ */
