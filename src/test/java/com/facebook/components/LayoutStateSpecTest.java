@@ -34,3 +34,4 @@ public class LayoutStateSpecTest {
 
   @Before
   public void setup() {
+    mContext = new ComponentContext(RuntimeEnvironment.application);

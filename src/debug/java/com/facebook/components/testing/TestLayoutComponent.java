@@ -113,3 +113,16 @@ public class TestLayoutComponent extends ComponentLifecycle {
   public MountType getMountType() {
     return MountType.NONE;
   }
+
+  public static Builder create(
+      ComponentContext context,
+      @AttrRes int defStyleAttr,
+      @StyleRes int defStyleRes) {
+    return create(context, defStyleAttr, defStyleRes, true, true, false, false);
+  }
+
+  public static Builder create(
+      ComponentContext context,
+      @AttrRes int defStyleAttr,
+      @StyleRes int defStyleRes,
+      boolean callsShouldUpdateOnMount,

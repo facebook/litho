@@ -64,3 +64,6 @@ public class MountStateIncrementalMountTest {
     mContext = new ComponentContext(RuntimeEnvironment.application, "tag", mComponentsLogger);
   }
 
+  /**
+   * Tests incremental mount behaviour of a vertical stack of components with a View mount type.
+   */

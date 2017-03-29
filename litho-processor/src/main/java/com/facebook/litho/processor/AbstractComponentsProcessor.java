@@ -41,3 +41,4 @@ import com.squareup.javapoet.JavaFile;
 public abstract class AbstractComponentsProcessor extends AbstractProcessor {
 
   @Override
+  public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {

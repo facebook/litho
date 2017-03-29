@@ -412,3 +412,15 @@ public class LayoutDirectionTest {
         10);
 
     drawable = componentView.getDrawables().get(0);
+    assertEquals(new Rect(20, 0, 30, 10), drawable.getBounds());
+  }
+
+  /**
+   * Tests to make sure the layout direction set on the component tree is correctly propagated to
+   * mounted views.
+   */
+  @Test
+  public void testLayoutDirectionPropagation() {
+    final TestComponent child = TestViewComponent.create(mContext)
+        .build();
+
