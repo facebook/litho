@@ -872,3 +872,19 @@ class MountState {
     lifecycle.bind(component.getScopedContext(), content, component);
     item.setIsBound(true);
 
+    // 6. Apply the bounds to the Mount content now. It's important to do so after bind as calling
+    // bind might have triggered a layout request within a View.
+    layoutOutput.getMountBounds(sTempRect);
+    applyBoundsToMountContent(
+        content,
+        sTempRect.left,
+        sTempRect.top,
+        sTempRect.right,
+        sTempRect.bottom,
+        true /* force */);
+
+    if (item.getDisplayListDrawable() != null) {
+      item.getDisplayListDrawable().suppressInvalidations(false);
+    }
+
+    // 6. Update the mount stats
