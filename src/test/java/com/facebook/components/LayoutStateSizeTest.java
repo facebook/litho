@@ -21,3 +21,4 @@ import org.robolectric.RuntimeEnvironment;
 import static junit.framework.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+@RunWith(ComponentsTestRunner.class)

@@ -40,3 +40,4 @@ public class LayoutStateEventHandlerTest {
 
   @Before
   public void setup() {
+    mUnspecifiedSizeSpec = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);

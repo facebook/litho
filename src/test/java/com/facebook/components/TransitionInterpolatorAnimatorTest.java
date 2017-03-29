@@ -42,3 +42,9 @@ public class TransitionInterpolatorAnimatorTest {
   @Before
   public void setUp() {
     mAnimator = new ObjectAnimator();
+    mListenerAdapter = new AnimatorListenerAdapter() {
+      @Override
+      public void onAnimationEnd(Animator animation) {
+      }
+    };
+    mAnimator.addListener(mListenerAdapter);

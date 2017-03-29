@@ -62,3 +62,21 @@ public class MountStateTestItemTest {
                 .child(
                     TestDrawableComponent.create(c)
                         .withLayout().flexShrink(0)
+                        .testKey(TEST_ID_2))
+                .build();
+          }
+        });
+
+    ComponentViewAssert.assertThat(componentView)
+        .containsTestKey(TEST_ID_1)
+        .containsTestKey(TEST_ID_2)
+        .doesNotContainTestKey(TEST_ID_3);
+  }
+
+  @Test
+  public void testMultipleIdenticalInnerComponentHostViewTags() {
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
