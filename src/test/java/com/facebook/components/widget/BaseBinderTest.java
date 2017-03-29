@@ -74,3 +74,11 @@ public class BaseBinderTest {
 
     mLayoutThreadShadowLooper = Shadows.shadowOf(
         (Looper) Whitebox.invokeMethod(
+            ComponentTree.class,
+            "getDefaultLayoutThreadLooper"));
+  }
+
+  @Test
+  public void testNotifyDataSetChanged() {
+    Assert.assertEquals(0, mBinder.getComponentCount());
+

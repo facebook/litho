@@ -109,3 +109,5 @@ public class MountStateRemountTest {
    */
   @Test
   public void testRemountDifferentMountType() throws IllegalAccessException, NoSuchFieldException {
+    clearPool("sLayoutOutputPool");
+    clearPool("sViewNodeInfoPool");

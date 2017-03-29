@@ -56,3 +56,4 @@ import static com.facebook.litho.ThreadUtils.assertMainThread;
  * Encapsulates the mounted state of a {@link Component}. Provides APIs to update state
  * by recycling existing UI elements e.g. {@link Drawable}s.
  *
+ * @see #mount(LayoutState, Rect)
