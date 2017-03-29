@@ -486,3 +486,6 @@ public class ComponentTree {
       toRelease = setBestMainThreadLayoutAndReturnOldLayout();
 
       if (forceLayout || !isCompatibleComponentAndSpec(mMainThreadLayoutState)) {
+        // Neither layout was compatible and we have to perform a layout.
+        // Since outputs get set on the same object during the lifecycle calls,
+        // we need to copy it in order to use it concurrently.

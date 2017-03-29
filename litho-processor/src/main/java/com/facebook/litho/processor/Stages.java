@@ -426,3 +426,7 @@ public class Stages {
       final ExecutableElement stage = Utils.getAnnotatedMethod(
           mSourceElement,
           stageAnnotation);
+      if (stage == null) {
+        continue;
+      }
+
