@@ -201,3 +201,8 @@ public class LifecycleMethodsTest {
       mSize = size;
     }
 
+    @Override
+    public String getSimpleName() {
+      return "LifecycleMethodsInstance";
+    }
+

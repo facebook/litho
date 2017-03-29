@@ -63,3 +63,5 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
       mComponent.setKey(key);
     }
 
+    public abstract Component.Builder<L> key(String key);
+
