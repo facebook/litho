@@ -311,3 +311,4 @@ class TransitionKeySet implements TransitionListener {
 
       case KeyStatus.DISAPPEARED:
         if (hasDisappearingTransitions()) {
+          mRunningTransitionsPointer = mDisappearTransitions;
