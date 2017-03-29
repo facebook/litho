@@ -33,3 +33,4 @@ import static junit.framework.Assert.assertNull;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.fail;
 
+@RunWith(ComponentsTestRunner.class)

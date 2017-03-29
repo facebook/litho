@@ -12,3 +12,4 @@ import org.robolectric.RuntimeEnvironment;
 public class ViewTreeUtil {
 
   /** @return the resource name or "<undefined>" */
+  public static String getResourceName(final int resourceId) {
