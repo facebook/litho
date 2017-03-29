@@ -483,3 +483,8 @@ public abstract class ComponentLifecycle implements EventDispatcher {
    */
   protected int getExtraAccessibilityNodeAt(int x, int y, Component<?> component) {
     return ExploreByTouchHelper.INVALID_ID;
+  }
+
+  /**
+   * The number of extra accessibility nodes that this component wishes to provides to the
+   * accessibility system.
