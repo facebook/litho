@@ -530,3 +530,4 @@ class TextSpec {
       TextDrawable textDrawable,
       @Prop(resType = ResType.STRING) CharSequence text,
       @Prop(optional = true, resType = ResType.COLOR) int textColor,
+      @Prop(optional = true, resType = ResType.COLOR) int highlightColor,
