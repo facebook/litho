@@ -966,3 +966,4 @@ public class ComponentTree {
     if (layoutStateUpdated) {
       postBackgroundLayoutStateUpdated();
     }
+

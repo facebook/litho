@@ -260,3 +260,4 @@ class MountState {
     if (logger != null) {
       final String logTag = componentTree.getContext().getLogTag();
       logMountEnd(logger, logTag, componentTree, mMountStats);
+    }
