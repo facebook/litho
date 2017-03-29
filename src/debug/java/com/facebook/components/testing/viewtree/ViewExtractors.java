@@ -120,3 +120,9 @@ final class ViewExtractors {
   private static String getDrawableString(ImageView input) {
     Drawable drawable = input.getDrawable();
     return String.valueOf(drawable);
+  }
+
+  private static String getVisibilityString(int visibility) {
+    return visibility == View.VISIBLE ? "visible" : "not visible";
+  }
+}
