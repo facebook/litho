@@ -233,3 +233,4 @@ class EditTextSpec {
     return new EditTextTextTextChangedEventHandler(c);
   }
 
+  @OnMount
