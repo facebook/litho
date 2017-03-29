@@ -92,3 +92,11 @@ public class BaseBinderTest {
     mBinder.mount(mView);
   }
 
+  private void performNotifyDataSetChanged() {
+    mBinder.notifyDataSetChanged();
+    mLayoutThreadShadowLooper.runOneTask();
+    Assert.assertEquals(mItems.size(), mBinder.getComponentCount());
+  }
+
+  @Test
+  public void testNotifyItemChanged() {

@@ -57,3 +57,4 @@ public class ComponentTreeTest {
   }
 
   @Before
+  public void setup() throws Exception {

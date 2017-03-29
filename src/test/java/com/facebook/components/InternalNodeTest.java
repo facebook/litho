@@ -64,3 +64,10 @@ public class InternalNodeTest {
   @Test
   public void testLayoutDirectionFlag() {
     mNode.layoutDirection(YogaDirection.INHERIT);
+    assertTrue(isFlagSet(mNode, "PFLAG_LAYOUT_DIRECTION_IS_SET"));
+    clearFlag(mNode, "PFLAG_LAYOUT_DIRECTION_IS_SET");
+    assertEmptyFlags(mNode);
+  }
+
+  @Test
+  public void testAlignSelfFlag() {

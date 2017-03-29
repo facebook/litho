@@ -132,3 +132,17 @@ public class TestSizeDependentComponent extends ComponentLifecycle {
 
     private void init(ComponentContext context, State state) {
       super.init(context, 0, 0, state);
+      mState = state;
+    }
+
+    public Builder setFixSizes(boolean hasFixSizes) {
+      mState.hasFixedSizes = hasFixSizes;
+      return this;
+    }
+
+    public Builder setDelegate(boolean isDelegate) {
+      mState.isDelegate = isDelegate;
+      return this;
+    }
+
+    @Override
