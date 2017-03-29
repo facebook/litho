@@ -161,3 +161,4 @@ public final class ColorDrawableReference extends ReferenceLifecycle<Drawable> {
       mState.mColor = color;
       return this;
     }
+
