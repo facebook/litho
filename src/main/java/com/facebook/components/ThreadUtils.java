@@ -51,3 +51,4 @@ public class ThreadUtils {
       throw new IllegalStateException("This method should be called outside the lock.");
     }
   }
+}

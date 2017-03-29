@@ -138,3 +138,4 @@ class LayoutState {
 
   private int mCurrentLevel = 0;
 
+  // Holds the current host marker in the layout tree.
