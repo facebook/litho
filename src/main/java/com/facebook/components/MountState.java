@@ -1270,3 +1270,6 @@ class MountState {
 
   private static void setViewTags(View view, SparseArray<Object> viewTags) {
     if (viewTags == null) {
+      return;
+    }
+
