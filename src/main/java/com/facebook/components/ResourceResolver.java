@@ -200,3 +200,5 @@ public class ResourceResolver {
       }
 
       float result = mResources.getDimension(resId);
+      mResourceCache.put(resId, result);
+

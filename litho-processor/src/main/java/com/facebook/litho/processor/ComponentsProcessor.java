@@ -76,3 +76,7 @@ public class ComponentsProcessor extends AbstractComponentsProcessor {
     BuilderGenerator.generate(specModel).addToTypeSpec(typeSpec);
   }
 
+  @Override
+  protected DependencyInjectionHelper getDependencyInjectionGenerator(TypeElement typeElement) {
+    return null;
+  }
