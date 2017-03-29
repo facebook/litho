@@ -186,3 +186,4 @@ public class ComponentTree {
    * awkward contract is necessary to ensure thread-safety.
    */
   @CheckReturnValue
+  @ReturnsOwnership

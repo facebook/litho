@@ -178,3 +178,4 @@ public abstract class BaseBinder<
         if (isInRange(position) ||
             position == mComponentTrees.getFirstPosition() + mComponentTrees.size()) {
 
+          final ComponentTree componentTree = buildComponentTree(component);
