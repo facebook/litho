@@ -65,3 +65,5 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
     // if a ColorDrawable in Gingerbread is being drawn because it doesn't
     // respect its bounds.
     mShouldClipRect = (mMatrix != null && mMatrix.shouldClipRect()) ||
+        (Build.VERSION.SDK_INT < HONEYCOMB && mDrawable instanceof ColorDrawable) ||
+        (mDrawable instanceof InsetDrawable);
