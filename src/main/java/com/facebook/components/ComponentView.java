@@ -356,3 +356,4 @@ public class ComponentView extends ComponentHost {
   boolean isMountStateDirty() {
     return mMountState.isDirty();
   }
+
