@@ -1025,3 +1025,45 @@ class LayoutState {
             final NodeInfo nodeInfo = clickableOutput.getNodeInfo();
 
             if (nodeInfo.hasTouchEventHandlers() || nodeInfo.getFocusState() == FOCUS_SET_TRUE) {
+              isStateEnabled = true;
+            }
+          }
+
+          if (isStateEnabled) {
+            drawable.setState(DRAWABLE_STATE_ENABLED);
+          } else {
+            drawable.setState(DRAWABLE_STATE_NOT_ENABLED);
+          }
+
+          lifecycle.mount(
+              context,
+              drawable,
+              component);
+          lifecycle.bind(context, drawable, component);
+
+          output.getMountBounds(rect);
+          drawable.setBounds(0, 0, rect.width(), rect.height());
+
+          try {
+            final Canvas canvas = displayList.start(rect.width(), rect.height());
+            drawable.draw(canvas);
+
+            displayList.end(canvas);
+            displayList.setBounds(rect.left, rect.top, rect.right, rect.bottom);
+
+            output.setDisplayList(displayList);
+          } catch (DisplayListException e) {
+            // Display list creation failed. Make sure the DisplayList for this output is set
+            // to null.
+            output.setDisplayList(null);
+          }
+
+          lifecycle.unbind(context, drawable, component);
+          lifecycle.unmount(context, drawable, component);
+          ComponentsPools.release(context, lifecycle, drawable);
+        }
+      }
+    }
+  }
+
+  private static LayoutOutput findInteractiveRoot(LayoutState layoutState, LayoutOutput output) {

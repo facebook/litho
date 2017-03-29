@@ -1830,3 +1830,7 @@ public class Stages {
       ClassName componentClassName,
       ClassName stateContainerClassName) {
     if (!mStateMap.isEmpty()) {
+      MethodSpec methodSpec = new TransferStateSpecBuilder()
+          .contextClassName(contextClassName)
+          .componentClassName(componentClassName)
+          .componentImplClassName(getImplClassName())
