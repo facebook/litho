@@ -425,3 +425,4 @@ public class RecyclerBinderTest {
 
   @Test
   public void testRangeBiggerThanContent() {
+    final List<ComponentInfo> components = new ArrayList<>();
