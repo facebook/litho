@@ -2412,3 +2412,4 @@ public class Stages {
     methodDescription.annotations = new Class[] {};
     methodDescription.accessType = Modifier.STATIC;
     methodDescription.name = "dispatch" + eventName;
+    methodDescription.parameterTypes = new TypeName[] { ClassName.bestGuess(mQualifiedClassName) };
