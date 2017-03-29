@@ -54,3 +54,4 @@ public interface ClassNames {
 
   ClassName COMPONENT_CONTEXT = ClassName.bestGuess("com.facebook.litho.ComponentContext");
   ClassName COMPONENT_LAYOUT = ClassName.bestGuess("com.facebook.litho.ComponentLayout");
+  ClassName COMPONENT_LAYOUT_BUILDER =
