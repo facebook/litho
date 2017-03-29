@@ -655,3 +655,4 @@ class TextSpec {
     }
 
     return INVALID_ID;
+  }
