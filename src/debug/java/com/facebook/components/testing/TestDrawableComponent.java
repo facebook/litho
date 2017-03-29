@@ -123,3 +123,5 @@ public class TestDrawableComponent extends ComponentLifecycle {
   @Override
   protected void onMount(ComponentContext c, Object convertDrawable, Component _stateObject) {
     State state = (State) _stateObject;
+    ((ColorDrawable) convertDrawable).setColor(state.color);
+

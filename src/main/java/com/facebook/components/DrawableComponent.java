@@ -73,3 +73,15 @@ class DrawableComponent<T extends Drawable> extends ComponentLifecycle {
     final MatrixDrawable matrixDrawable = (MatrixDrawable) mountedContent;
     Reference.release(context, matrixDrawable.getMountedDrawable(), state.getDrawable());
     matrixDrawable.unmount();
+  }
+
+  @Override
+  protected boolean isPureRender() {
+    return true;
+  }
+
+  @Override
+  public MountType getMountType() {
+    return MountType.DRAWABLE;
+  }
+

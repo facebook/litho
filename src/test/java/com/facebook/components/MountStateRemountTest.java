@@ -90,3 +90,4 @@ public class MountStateRemountTest {
     final MountState mountState = Whitebox.getInternalState(componentView,"mMountState");
     final LongSparseArray<MountItem> indexToItemMap =
         Whitebox.getInternalState(mountState,"mIndexToItemMap");
+
