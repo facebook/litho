@@ -191,3 +191,4 @@ class MountItem {
     // Component hosts are recycled within other hosts instead of the global pool.
     if (!(mContent instanceof ComponentHost)) {
       ComponentsPools.release(context, mComponent.getLifecycle(), mContent);
+    }
