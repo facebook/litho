@@ -506,3 +506,6 @@ public class MountStateRemountInPlaceTest {
                 .child(secondComponent)
                 .build();
           }
+        })
+        .incrementalMount(false)
+        .build();

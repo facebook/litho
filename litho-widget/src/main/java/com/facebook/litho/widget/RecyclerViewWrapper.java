@@ -133,3 +133,11 @@ public class RecyclerViewWrapper extends SwipeRefreshLayout {
     }
     return super.isLayoutRequested();
   }
+
+  boolean hasBeenDetachedFromWindow() {
+    return mHasBeenDetachedFromWindow;
+  }
+
+  void setHasBeenDetachedFromWindow(boolean hasBeenDetachedFromWindow) {
+    mHasBeenDetachedFromWindow = hasBeenDetachedFromWindow;
+  }
