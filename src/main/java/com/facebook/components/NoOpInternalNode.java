@@ -273,3 +273,7 @@ class NoOpInternalNode extends InternalNode {
 
   @Override
   public InternalNode paddingAttr(YogaEdge edge, @AttrRes int resId) {
+    return this;
+  }
+
+  @Override
