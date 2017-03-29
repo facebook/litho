@@ -258,3 +258,7 @@ JniException::~JniException() {
 
 local_ref<JThrowable> JniException::getThrowable() const noexcept {
   return make_local(throwable_);
+}
+
+// TODO 6900503: consider making this thread-safe.
+void JniException::populateWhat() const noexcept {
