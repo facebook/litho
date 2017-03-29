@@ -511,3 +511,7 @@ class MountState {
     updateBoundsForMountedLayoutOutput(layoutOutput, currentMountItem);
 
     maybeInvalidateAccessibilityState(currentMountItem);
+    if (currentMountItem.getContent() instanceof Drawable) {
+      maybeSetDrawableState(
+          currentMountItem.getHost(),
+          (Drawable) currentMountItem.getContent(),

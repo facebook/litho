@@ -633,3 +633,9 @@ public class MountSpecHelper extends ComponentSpecHelper {
     return MountSpec.class;
   }
 
+  public void generateShouldUseDisplayList() {
+    if (!mSpecElement.getAnnotation(MountSpec.class).shouldUseDisplayList()) {
+      return;
+    }
+
+    final ExecutableElement onCreateMountContent = Utils.getAnnotatedMethod(
