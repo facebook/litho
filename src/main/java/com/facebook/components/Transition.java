@@ -147,3 +147,5 @@ public class Transition {
     mAnimator.stop();
   }
 
+  boolean restoreState(Transition transition) {
+    return mAnimator.restoreState(transition.mAnimator);

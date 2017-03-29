@@ -161,3 +161,7 @@ class TransitionManager implements TransitionKeySetListener {
     }
   }
 
+  TransitionKeySet getTransitionKeySet(String key) {
+    return mTransitions.get(key);
+  }
+
