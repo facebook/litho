@@ -114,3 +114,4 @@ public class MountSpecHelper extends ComponentSpecHelper {
   /**
    * Generate an onPrepare implementation that delegates to the @OnPrepare-annotated method.
    */
+  public void generateOnPrepare() {
