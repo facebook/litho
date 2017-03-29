@@ -2443,3 +2443,5 @@ public class Stages {
       ClassName eventHandlerClassName,
       ClassName lifecycleClassName) {
     final List<? extends VariableElement> parameters = Utils.getEnclosedFields(element);
+    final MethodSpec.Builder methodBuilder =
+        MethodSpec.methodBuilder(fixedMethod.name);
