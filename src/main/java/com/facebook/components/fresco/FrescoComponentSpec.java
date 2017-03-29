@@ -9,3 +9,4 @@
 
 package com.facebook.litho.fresco;
 
+import android.graphics.ColorFilter;
