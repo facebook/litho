@@ -145,3 +145,13 @@ public class LinearComponentBinderTest {
   @Test
   public void testWorkingRangesTrimmedBothEnds() throws Exception {
     setupBinder();
+
+    mBinder.getRangeController().notifyOnScroll(3, 4);
+
+    Assert.assertEquals(mItems.size(), mBinder.getComponentCount());
+
+    for (int i = 0; i < 9; i++) {
+      Assert.assertEquals(mItems.get(i), getAdapterInputStringAtPosition(i));
+    }
+  }
+

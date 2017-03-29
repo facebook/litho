@@ -90,3 +90,24 @@ public class LayoutStateCalculateVisibilityOutputsTest {
             .child(
                 TestDrawableComponent.create(c)
                     .withLayout().flexShrink(0)
+                    .fullImpressionHandler(c.newEventHandler(3)))
+            .child(TestDrawableComponent.create(c))
+            .build();
+      }
+    };
+
+    LayoutState layoutState = calculateLayoutState(
+        RuntimeEnvironment.application,
+        component,
+        -1,
+        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
+        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
+
+    assertEquals(2, layoutState.getVisibilityOutputCount());
+  }
+
+  @Test
+  public void testNoUnnecessaryVisibilityOutputsWithFocused() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {

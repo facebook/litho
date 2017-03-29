@@ -284,3 +284,24 @@ public class BaseBinderTest {
   @Test
   public void testNotifyItemRangeRemovedBeforeFirstPosition() {
     mount();
+
+    mBinder.updateRange(
+        3,
+        4,
+        BaseBinder.URFLAG_REFRESH_IN_RANGE | BaseBinder.URFLAG_RELEASE_OUTSIDE_RANGE);
+
+    int positionStart = 1;
+    int itemCount = 2;
+    mItems.subList(positionStart, positionStart + itemCount).clear();
+
+    mBinder.notifyItemRangeRemoved(positionStart, itemCount);
+    mLayoutThreadShadowLooper.runOneTask();
+
+    Assert.assertEquals(4, mBinder.getComponentCount());
+    Assert.assertEquals("3", getAdapterInputStringAtPosition(1));
+    Assert.assertEquals("4", getAdapterInputStringAtPosition(2));
+    Assert.assertEquals("5", getAdapterInputStringAtPosition(3));
+    Assert.assertEquals("6", getAdapterInputStringAtPosition(4));
+  }
+
+  @Test
