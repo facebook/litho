@@ -31,3 +31,11 @@ public class TestComponentTree extends ComponentTree {
 
   public List<Component> getSubComponents() {
     final List<Component> subComponents = new ArrayList<>();
+    extractSubComponents(getMainThreadLayoutState().getDiffTree(), subComponents);
+
+    return subComponents;
+  }
+
+  @Override
+  protected LayoutState calculateLayoutState(
+      @Nullable Object lock,

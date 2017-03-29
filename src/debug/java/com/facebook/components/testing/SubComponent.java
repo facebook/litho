@@ -30,3 +30,4 @@ public class SubComponent {
   private Component<?> mComponent;
 
   private SubComponent(Class<? extends ComponentLifecycle> componentType, Component<?> component) {
+    mComponentType = componentType;
