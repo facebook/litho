@@ -34,3 +34,4 @@ import com.facebook.litho.annotations.ShouldUpdate;
 class PagerSpec {
 
   @OnMeasure
+  static void onMeasure(
