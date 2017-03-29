@@ -427,3 +427,4 @@ class EditTextSpec {
         @Override
         public void afterTextChanged(Editable s) {
           if (mEventHandler != null) {
+            com.facebook.litho.widget.EditText.dispatchTextChangedEvent(
