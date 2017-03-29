@@ -1472,3 +1472,5 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   void setComponent(Component component) {
     mComponent = component;
+  }
+
