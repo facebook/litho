@@ -466,3 +466,4 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     // TODO 16207395.
     switch (scrollDirection) {
       case OrientationHelper.VERTICAL:
+        if (mRange != null
