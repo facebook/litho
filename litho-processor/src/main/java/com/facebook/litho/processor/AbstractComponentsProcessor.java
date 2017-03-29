@@ -93,3 +93,7 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
     return false;
   }
 
+  @Override
+  public Set<String> getSupportedAnnotationTypes() {
+    return new HashSet<>(Arrays.asList(
+        ClassNames.LAYOUT_SPEC.toString(),
