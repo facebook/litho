@@ -728,3 +728,10 @@ public class ComponentsPools {
     }
   }
 
+  /**
+   * Call from tests to clear external references.
+   */
+  public static void clearAll() {
+    sMountContentPoolsByContext.clear();
+  }
+
