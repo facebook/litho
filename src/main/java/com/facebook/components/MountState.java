@@ -1037,3 +1037,4 @@ class MountState {
     }
   }
 
+  private static void unsetViewAttributes(MountItem item) {
