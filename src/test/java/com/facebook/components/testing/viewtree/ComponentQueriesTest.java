@@ -3,3 +3,4 @@
 package com.facebook.components.testing.viewtree;
 
 import com.facebook.components.ComponentContext;
+import com.facebook.components.ComponentView;

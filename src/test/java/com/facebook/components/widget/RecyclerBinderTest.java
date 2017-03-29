@@ -20,3 +20,4 @@ import com.facebook.components.ComponentTree;
 import com.facebook.components.LayoutHandler;
 import com.facebook.components.Size;
 import com.facebook.components.SizeSpec;
+import com.facebook.components.testing.testrunner.ComponentsTestRunner;
