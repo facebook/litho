@@ -829,3 +829,4 @@ public class Stages {
 
   /**
    * Get the annotation, if any, present on a parameter. Annotations are restricted to our whitelist
+   * of parameter annotations: e.g. {@link Prop}, {@link State} etc)
