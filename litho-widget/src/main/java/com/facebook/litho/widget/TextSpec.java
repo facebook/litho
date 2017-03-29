@@ -155,3 +155,5 @@ class TextSpec {
         }
       } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 &&
           attr == R.styleable.Text_android_textAlignment) {
+        textAlignment.set(ALIGNMENT[a.getInteger(attr, 0)]);
+      } else if (attr == R.styleable.Text_android_includeFontPadding) {
