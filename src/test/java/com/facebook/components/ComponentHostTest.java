@@ -261,3 +261,14 @@ public class ComponentHostTest {
   }
 
   @Test
+  public void testMoveTouchExpansionItem() {
+    View view = mock(View.class);
+    when(view.getContext()).thenReturn(RuntimeEnvironment.application);
+
+    MountItem mountItem = mountTouchExpansionItem(0, view);
+    mHost.moveItem(mountItem, 0, 1);
+
+    unmount(1, mountItem);
+  }
+
+  @Test

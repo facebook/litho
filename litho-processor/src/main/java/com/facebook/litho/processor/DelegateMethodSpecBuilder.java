@@ -251,3 +251,8 @@ class DelegateMethodSpecBuilder {
   }
 
   private CodeBlock getMatchingInput(Parameter output) {
+    final String translatedName = mParameterTranslation != null ?
+        mParameterTranslation.get(output.name) :
+        null;
+    final String parameterName = translatedName != null ? translatedName : output.name;
+
