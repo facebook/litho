@@ -897,3 +897,4 @@ class MountState {
       int index,
       Component<?> component,
       Object content,
+      ComponentHost host,
