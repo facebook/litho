@@ -16,3 +16,4 @@ import com.facebook.litho.ComponentView;
 import com.facebook.litho.testing.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 
+import org.junit.Before;

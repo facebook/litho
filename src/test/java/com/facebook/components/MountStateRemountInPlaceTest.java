@@ -447,3 +447,11 @@ public class MountStateRemountInPlaceTest {
           }
         });
 
+    assertTrue(firstComponent.wasOnMountCalled());
+    assertTrue(firstComponent.wasOnBindCalled());
+    assertFalse(firstComponent.wasOnUnmountCalled());
+
+    final TestComponent secondComponent =
+        TestDrawableComponent.create(mContext)
+            .color(Color.WHITE)
+            .build();

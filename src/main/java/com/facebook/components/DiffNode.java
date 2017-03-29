@@ -141,3 +141,4 @@ class DiffNode implements Cloneable {
     mHost = host;
   }
 
+  void release() {

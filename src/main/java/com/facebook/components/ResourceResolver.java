@@ -109,3 +109,6 @@ public class ResourceResolver {
       return result;
     }
 
+    return 0;
+  }
+
