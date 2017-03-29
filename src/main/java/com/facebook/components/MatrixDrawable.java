@@ -142,3 +142,29 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
       return;
     }
 
+    final Rect bounds = getBounds();
+
+    if (mMatrix != null) {
+      final int saveCount = canvas.save();
+
+      if (mShouldClipRect) {
+        canvas.clipRect(bounds);
+      }
+
+      canvas.translate(bounds.left, bounds.top);
+      canvas.concat(mMatrix);
+
+      mDrawable.draw(canvas);
+
+      canvas.restoreToCount(saveCount);
+    } else {
+      if (mShouldClipRect) {
+        canvas.save();
+        canvas.clipRect(bounds);
+      }
+
+      mDrawable.draw(canvas);
+
+      if (mShouldClipRect) {
+        canvas.restore();
+      }
