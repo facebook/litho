@@ -62,3 +62,30 @@ public class StateUpdatesTestHelper {
       ComponentContext context,
       Component component,
       StateUpdater stateUpdater,
+      ShadowLooper layoutThreadShadowLooper,
+      boolean incrementalMountEnabled) throws Exception {
+    return getViewAfterStateUpdate(
+        context,
+        component,
+        stateUpdater,
+        new ShadowLooper[]{layoutThreadShadowLooper},
+        incrementalMountEnabled);
+  }
+
+  /**
+   *  Call a state update as specified in {@link StateUpdater#performStateUpdate(ComponentContext)}
+   *   on the component and return the updated view with the option to incrementally mount.
+   * @param context context
+   * @param component the component to update
+   * @param stateUpdater implementation of {@link StateUpdater} that triggers the state update
+   * @param loopers shadow loopers to post messages to the main thread, run in the same order they
+   * are specified
+   * @param incrementalMountEnabled whether or not to enable incremental mount for the component
+   * @return the updated ComponentView after the state update was applied
+   */
+  public static ComponentView getViewAfterStateUpdate(
+      ComponentContext context,
+      Component component,
+      StateUpdater stateUpdater,
+      ShadowLooper[] loopers,
+      boolean incrementalMountEnabled) throws Exception {
