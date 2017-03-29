@@ -184,3 +184,4 @@ public class ComponentTreeTest {
         mWidthSpec,
         Whitebox.getInternalState(componentTree, "mWidthSpec"));
     assertEquals(
+        mHeightSpec,
