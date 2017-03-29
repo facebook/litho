@@ -206,3 +206,29 @@ public class LifecycleMethodsTest {
       return "LifecycleMethodsInstance";
     }
 
+    LifecycleStep getCurrentStep() {
+      return mCurrentStep;
+    }
+
+    void setCurrentStep(LifecycleStep currentStep) {
+      switch (currentStep) {
+        case ON_CREATE_LAYOUT:
+          assertEquals(LifecycleStep.ON_UNMOUNT, mCurrentStep);
+          break;
+
+        case ON_PREPARE:
+          assertEquals(LifecycleStep.ON_CREATE_LAYOUT, mCurrentStep);
+          break;
+
+        case ON_MEASURE:
+          assertTrue(
+              mCurrentStep == LifecycleStep.ON_PREPARE ||
+              mCurrentStep == LifecycleStep.ON_MEASURE);
+          break;
+
+        case ON_BOUNDS_DEFINED:
+          assertTrue(
+              mCurrentStep == LifecycleStep.ON_PREPARE ||
+              mCurrentStep == LifecycleStep.ON_MEASURE);
+          break;
+
