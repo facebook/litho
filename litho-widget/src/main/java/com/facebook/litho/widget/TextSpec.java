@@ -74,3 +74,4 @@ class TextSpec {
   private static final TruncateAt[] TRUNCATE_AT = TruncateAt.values();
 
   private static final Typeface DEFAULT_TYPEFACE = Typeface.DEFAULT;
+  private static final int DEFAULT_COLOR = 0;
