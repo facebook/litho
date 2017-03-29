@@ -179,3 +179,4 @@ class ImageSpec {
     mountedDrawable.bind(drawableWidth, drawableHeight);
   }
 
+  @OnUnmount
