@@ -1118,3 +1118,4 @@ public class ComponentTree {
   private static boolean isCompatibleComponentAndSize(
       LayoutState layoutState, int componentId, int width, int height) {
     return layoutState != null
+        && layoutState.isComponentId(componentId)
