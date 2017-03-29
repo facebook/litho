@@ -949,3 +949,6 @@ class LayoutState {
       collectDisplayLists(layoutState);
     }
 
+    return layoutState;
+  }
+
