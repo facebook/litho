@@ -170,3 +170,5 @@ public class ResourceResolver {
       int result = mResources.getDimensionPixelSize(resId);
       mResourceCache.put(resId, result);
 
+      return result;
+    }

@@ -153,3 +153,20 @@ public interface ComponentLayout {
     Builder heightDip(@Dimension(unit = DP) int height);
     Builder heightPercent(float percent);
 
+    Builder minHeightPx(@Px int minHeight);
+    Builder minHeightAttr(@AttrRes int resId, @DimenRes int defaultResId);
+    Builder minHeightAttr(@AttrRes int resId);
+    Builder minHeightRes(@DimenRes int resId);
+    Builder minHeightDip(@Dimension(unit = DP) int minHeight);
+    Builder minHeightPercent(float percent);
+
+    Builder maxHeightPx(@Px int maxHeight);
+    Builder maxHeightAttr(@AttrRes int resId, @DimenRes int defaultResId);
+    Builder maxHeightAttr(@AttrRes int resId);
+    Builder maxHeightRes(@DimenRes int resId);
+    Builder maxHeightDip(@Dimension(unit = DP) int maxHeight);
+    Builder maxHeightPercent(float percent);
+
+    Builder aspectRatio(float aspectRatio);
+
+    Builder touchExpansionPx(YogaEdge edge, @Px int value);

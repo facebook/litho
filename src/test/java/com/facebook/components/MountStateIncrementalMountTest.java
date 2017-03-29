@@ -341,3 +341,4 @@ public class MountStateIncrementalMountTest {
             return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .flexDirection(COLUMN)
                 .child(
+                    Layout.create(c, child1).flexShrink(0)
