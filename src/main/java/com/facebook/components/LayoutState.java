@@ -788,3 +788,4 @@ class LayoutState {
     return drawableLayoutOutput;
   }
 
+  static void releaseNodeTree(InternalNode node, boolean isNestedTree) {

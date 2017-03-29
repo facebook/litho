@@ -1419,3 +1419,4 @@ class MountState {
     }
   }
 
+  private static void setViewLayoutDirection(View view, ViewNodeInfo viewNodeInfo) {
