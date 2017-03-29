@@ -278,3 +278,4 @@ public interface ComponentLayout {
     ContainerBuilder paddingPercent(YogaEdge edge, float percent);
 
     ContainerBuilder positionPx(YogaEdge edge, @Px int position);
+    ContainerBuilder positionAttr(
