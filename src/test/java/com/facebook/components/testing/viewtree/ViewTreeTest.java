@@ -93,3 +93,8 @@ public class ViewTreeTest {
 
       @Override
       public String apply(@Nullable final View input) {
+        return String.valueOf(input.hashCode());
+      }
+    })).isEqualTo(expected);
+  }
+
