@@ -168,3 +168,153 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
       if (mShouldClipRect) {
         canvas.restore();
       }
+    }
+  }
+
+  @Override
+  public void setChangingConfigurations(int configs) {
+    if (mDrawable == null) {
+      return;
+    }
+    mDrawable.setChangingConfigurations(configs);
+  }
+
+  @Override
+  public int getChangingConfigurations() {
+    return mDrawable == null ? UNSET : mDrawable.getChangingConfigurations();
+  }
+
+  @Override
+  public void setDither(boolean dither) {
+    if (mDrawable == null) {
+      return;
+    }
+    mDrawable.setDither(dither);
+  }
+
+  @Override
+  public void setFilterBitmap(boolean filter) {
+    if (mDrawable == null) {
+      return;
+    }
+    mDrawable.setFilterBitmap(filter);
+  }
+
+  @Override
+  public void setAlpha(int alpha) {
+    if (mDrawable == null) {
+      return;
+    }
+    mDrawable.setAlpha(alpha);
+  }
+
+  @Override
+  public void setColorFilter(ColorFilter cf) {
+    if (mDrawable == null) {
+      return;
+    }
+    mDrawable.setColorFilter(cf);
+  }
+
+  @Override
+  public boolean isStateful() {
+    return mDrawable != null && mDrawable.isStateful();
+  }
+
+  @Override
+  public boolean setState(final int[] stateSet) {
+    return mDrawable != null && mDrawable.setState(stateSet);
+  }
+
+  @Override
+  public int[] getState() {
+    return mDrawable == null ? null : mDrawable.getState();
+  }
+
+  @Override
+  public Drawable getCurrent() {
+    return mDrawable == null ? null : mDrawable.getCurrent();
+  }
+
+  @Override
+  public boolean setVisible(boolean visible, boolean restart) {
+    return super.setVisible(visible, restart) ||
+        (mDrawable != null && mDrawable.setVisible(visible, restart));
+  }
+
+  @Override
+  public int getOpacity() {
+    return mDrawable == null ? UNSET : mDrawable.getOpacity();
+  }
+
+  @Override
+  public Region getTransparentRegion() {
+    return mDrawable == null ? null : mDrawable.getTransparentRegion();
+  }
+
+  @Override
+  public int getIntrinsicWidth() {
+    return mDrawable == null ? UNSET : mDrawable.getIntrinsicWidth();
+  }
+
+  @Override
+  public int getIntrinsicHeight() {
+    return mDrawable == null ? UNSET : mDrawable.getIntrinsicHeight();
+  }
+
+  @Override
+  public int getMinimumWidth() {
+    return mDrawable == null ? UNSET : mDrawable.getMinimumWidth();
+  }
+
+  @Override
+  public int getMinimumHeight() {
+    return mDrawable == null ? UNSET : mDrawable.getMinimumHeight();
+  }
+
+  @Override
+  public boolean getPadding(Rect padding) {
+    return mDrawable != null && mDrawable.getPadding(padding);
+  }
+
+  @Override
+  protected boolean onLevelChange(int level) {
+    return mDrawable != null && mDrawable.setLevel(level);
+  }
+
+  @Override
+  public void invalidateDrawable(Drawable who) {
+    invalidateSelf();
+  }
+
+  @Override
+  public void scheduleDrawable(Drawable who, Runnable what, long when) {
+    scheduleSelf(what, when);
+  }
+
+  @Override
+  public void unscheduleDrawable(Drawable who, Runnable what) {
+    unscheduleSelf(what);
+  }
+
+  @Override
+  @TargetApi(LOLLIPOP)
+  public boolean onTouchEvent(MotionEvent event, View host) {
+    final Rect bounds = getBounds();
+    final int x = (int) event.getX() - bounds.left;
+    final int y = (int) event.getY() - bounds.top;
+
+    mDrawable.setHotspot(x, y);
+
+    return false;
+  }
+
+  @Override
+  public boolean shouldHandleTouchEvent(MotionEvent event) {
+    return Build.VERSION.SDK_INT >= LOLLIPOP &&
+        mDrawable != null &&
+        mDrawable instanceof RippleDrawable &&
+        event.getActionMasked() == MotionEvent.ACTION_DOWN &&
+        getBounds().contains((int) event.getX(), (int) event.getY());
+  }
+}
