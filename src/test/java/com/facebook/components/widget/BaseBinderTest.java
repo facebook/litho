@@ -350,3 +350,4 @@ public class BaseBinderTest {
         MyTestComponentBinder.MyTestWorkingRangeController> {
 
     private ViewGroup mView;
+    private final List<String> mItems;

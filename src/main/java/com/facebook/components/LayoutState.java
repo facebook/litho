@@ -110,3 +110,4 @@ class LayoutState {
   private static final int[] DRAWABLE_STATE_NOT_ENABLED = new int[]{};
 
   private ComponentContext mContext;
+  private TransitionContext mTransitionContext;

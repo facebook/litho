@@ -174,3 +174,13 @@ public class BinderTreeCollectionTest {
     assertEquals(treeAtPosition4, mBinderTreeCollection.get(5));
     assertEquals(treeAtPosition5, mBinderTreeCollection.get(6));
     assertEquals(treeAtPosition7, mBinderTreeCollection.get(7));
+  }
+
+  @Test
+  public void testRemoveRange() {
+    int originalSize = mBinderTreeCollection.size();
+    int removePositionStart = 2;
+    int removeItemCount = 3;
+
+    ComponentTree treeAtPosition1 = mBinderTreeCollection.get(1);
+    ComponentTree treeAtPosition5 = mBinderTreeCollection.get(5);
