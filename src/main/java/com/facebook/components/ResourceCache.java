@@ -33,3 +33,4 @@ class ResourceCache {
     }
   };
 
+  private ResourceCache(Configuration configuration) {

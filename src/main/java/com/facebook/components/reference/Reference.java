@@ -14,3 +14,4 @@ import com.facebook.components.config.ComponentsConfiguration;
 import com.facebook.components.ResourceResolver;
 
 /**
+ * Represents a unique instance of a reference that is driven by its matching
