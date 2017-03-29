@@ -49,3 +49,4 @@ final class ViewExtractors {
     }
   };
 
+  public static final Function<View, String> GET_DRAWABLE_FUNCTION = new Function<View, String>() {

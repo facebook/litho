@@ -83,3 +83,4 @@ public final class ViewTree {
   }
 
   private String makeString(Function<View, String> extraTextFunction, View view, int depth) {
+    final StringBuilder builder = new StringBuilder();

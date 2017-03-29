@@ -82,3 +82,4 @@ public class ViewTreeTest {
 
   @Test
   public void testGenerateString() {
+    final String expected =
