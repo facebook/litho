@@ -54,3 +54,4 @@ class PagerSpec {
         layout.getHeight());
   }
 
+  @OnCreateMountContent

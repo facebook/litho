@@ -512,3 +512,5 @@ public class TreeDiffingTest {
     ComponentTree componentTree = ComponentTree.create(mContext, firstComponent)
         .incrementalMount(false)
         .build();
+    LayoutState state = componentTree.calculateLayoutState(
+        null,
