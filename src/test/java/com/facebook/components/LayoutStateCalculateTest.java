@@ -2139,3 +2139,30 @@ public class LayoutStateCalculateTest {
     // Testing that is not throwing an exception.
   }
 
+  @Test
+  public void testLayoutOutputForRootNestedTreeComponentWithAspectRatio() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            .child(
+                TestSizeDependentComponent.create(c)
+                    .withLayout().flexShrink(0)
+                    .widthPx(100)
+                    .aspectRatio(1))
+            .build();
+      }
+    };
+
+    LayoutState layoutState = calculateLayoutState(
+        RuntimeEnvironment.application,
+        component,
+        -1,
+        SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED),
+        SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED));
+
+    Rect mountBounds = new Rect();
+    layoutState.getMountableOutputAt(0).getMountBounds(mountBounds);
+    assertEquals(new Rect(0, 0, 100, 100), mountBounds);
+  }
+
