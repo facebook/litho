@@ -1199,3 +1199,6 @@ class LayoutState {
       if (nestedTree != null) {
         if (nestedTree != NULL_LAYOUT) {
           releaseNodeTree(nestedTree, true /* isNestedTree */);
+        }
+
+        nestedTree = null;
