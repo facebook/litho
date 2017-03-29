@@ -204,3 +204,4 @@ void translatePendingCppExceptionToJavaException() noexcept {
       current = JCppSystemErrorException::create(ex);
     } catch(const std::runtime_error& ex) {
       current = JRuntimeException::create(ex.what());
+    } catch(const std::exception& ex) {
