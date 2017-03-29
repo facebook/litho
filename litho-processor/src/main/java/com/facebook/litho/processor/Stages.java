@@ -188,3 +188,4 @@ public class Stages {
     mSourceElement = sourceElement;
     mQualifiedClassName = qualifiedClassName;
     mStageAnnotations = stageAnnotations;
+    mInterStagePropAnnotations = interStagePropAnnotations;
