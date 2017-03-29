@@ -92,3 +92,5 @@ class ProgressSpec {
       @Prop(optional = true, resType = ResType.COLOR) int color,
       @FromPrepare Reference<Drawable> resolvedIndeterminateDrawable) {
 
+    if (resolvedIndeterminateDrawable != null) {
+      progressBar.setIndeterminateDrawable(Reference.acquire(c, resolvedIndeterminateDrawable));
