@@ -11,3 +11,5 @@ package com.facebook.components.config;
 
 import android.os.Build;
 
+import com.facebook.components.BuildConfig;
+
