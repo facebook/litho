@@ -2408,3 +2408,4 @@ public class Stages {
         .build());
 
     // Override the method that the component will call to fire the event.
+    final MethodDescription methodDescription = new MethodDescription();
