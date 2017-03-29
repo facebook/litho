@@ -215,3 +215,7 @@ class MountItem {
     mIsBound = false;
     mImportantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_AUTO;
   }
+
+  static boolean isDuplicateParentState(int flags) {
+    return (flags & FLAG_DUPLICATE_PARENT_STATE) == FLAG_DUPLICATE_PARENT_STATE;
+  }

@@ -320,3 +320,6 @@ public class ComponentView extends ComponentHost {
     } else {
       throw new IllegalStateException("To perform incremental mounting, you need first to enable" +
           " it when creating the ComponentTree.");
+    }
+  }
+

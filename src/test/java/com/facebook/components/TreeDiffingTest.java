@@ -644,3 +644,5 @@ public class TreeDiffingTest {
             .child(
                 TestDrawableComponent.create(c)
                     .withLayout().flexShrink(0)
+                    .backgroundColor(Color.BLACK))
+            .child(
