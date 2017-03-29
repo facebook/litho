@@ -358,3 +358,4 @@ public final class ComponentTestHelper {
    * Mounts the component & triggers the visibility event. Requires that the component supports
    * incremental mounting.
    *
+   * {@link com.facebook.litho.VisibleEvent}
