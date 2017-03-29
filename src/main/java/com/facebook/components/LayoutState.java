@@ -1270,3 +1270,5 @@ class LayoutState {
     final int previousWidthSpec = c.getWidthSpec();
     final int previousHeightSpec = c.getHeightSpec();
 
+    final boolean hasNestedTreeHolder = nestedTreeHolder != null;
+
