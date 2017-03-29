@@ -519,3 +519,13 @@ class MountState {
           currentMountItem.getNodeInfo());
     }
 
+    if (currentMountItem.getDisplayListDrawable() != null) {
+      currentMountItem.getDisplayListDrawable().suppressInvalidations(false);
+    }
+
+    return shouldUpdate;
+  }
+
+  private static boolean shouldUpdateMountItem(
+      LayoutOutput layoutOutput,
+      MountItem currentMountItem,
