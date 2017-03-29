@@ -58,3 +58,5 @@ public abstract class Reference<L> {
       T value,
       Reference<T> reference) {
     reference.mLifecycle.onRelease(context, value, reference);
+  }
+

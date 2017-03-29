@@ -19,3 +19,7 @@ import java.util.List;
 class DiffNode implements Cloneable {
 
   static final int UNSPECIFIED = -1;
+
+  private LayoutOutput mContent;
+  private LayoutOutput mBackground;
+  private LayoutOutput mForeground;

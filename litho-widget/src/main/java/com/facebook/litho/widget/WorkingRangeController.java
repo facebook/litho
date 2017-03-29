@@ -19,3 +19,4 @@ public abstract class WorkingRangeController {
   private BaseBinder mBinder;
 
   /**
+   * Sets the {@link Binder} that the range controller is associated with.

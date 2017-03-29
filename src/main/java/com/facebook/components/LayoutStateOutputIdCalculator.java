@@ -45,3 +45,13 @@ class LayoutStateOutputIdCalculator {
     // the depth of this output in the view hierarchy and an incremental sequence number for
     // LayoutOutputs that have all the other parameters in common.
     long baseLayoutId = LayoutStateOutputIdCalculator.calculateLayoutOutputBaseId(
+        layoutOutput,
+        level,
+        type);
+    int sequence;
+    if (previousId > 0 && getLevelFromId(previousId) == level) {
+      sequence = getSequenceFromId(previousId);
+    } else {
+      sequence = -1;
+    }
+
