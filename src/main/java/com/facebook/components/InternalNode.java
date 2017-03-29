@@ -154,3 +154,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private Reference<? extends Drawable> mBackground;
   private Reference<? extends Drawable> mForeground;
   private int mBorderColor = Color.TRANSPARENT;
+
