@@ -13,3 +13,5 @@ import android.view.View;
 
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.components.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.widget.CardClip;
+import com.facebook.litho.widget.Text;

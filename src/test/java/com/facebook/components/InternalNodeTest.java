@@ -13,3 +13,4 @@ import android.graphics.Color;
 import android.support.v4.view.ViewCompat;
 
 import com.facebook.components.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.widget.Text;

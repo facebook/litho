@@ -17,3 +17,4 @@ import android.util.SparseArray;
 import android.view.accessibility.AccessibilityManager;
 
 import com.facebook.components.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.widget.Text;

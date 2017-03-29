@@ -11,3 +11,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.facebook.samples.litho">
 
+  <variable name="app_package_name" value="com.facebook.samples.litho"/>
+  <variable name="applicationId" value="com.facebook.samples.litho" />
+  <variable name="app_label" value="Litho Sample App" />
