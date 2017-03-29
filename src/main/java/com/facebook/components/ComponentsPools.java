@@ -243,3 +243,13 @@ public class ComponentsPools {
     return item;
   }
 
+  static MountItem acquireMountItem(
+      Component<?> component,
+      ComponentHost host,
+      Object content,
+      LayoutOutput layoutOutput) {
+    MountItem item = sMountItemPool.acquire();
+    if (item == null) {
+      item = new MountItem();
+    }
+
