@@ -158,3 +158,6 @@ class ImageSpec {
 
   @OnCreateMountContent
   static MatrixDrawable onCreateMountContent(ComponentContext c) {
+    return new MatrixDrawable();
+  }
+
