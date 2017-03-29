@@ -113,3 +113,5 @@ final class ViewPredicates {
           return true;
         }
 
+        if (input instanceof ComponentHost) {
+          return ComponentQueries.matchesPattern((ComponentHost) input, pattern);
