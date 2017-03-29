@@ -1039,3 +1039,4 @@ public class ComponentTree {
    * release yourself.
    */
   public void release() {
+    LayoutState mainThreadLayoutState;
