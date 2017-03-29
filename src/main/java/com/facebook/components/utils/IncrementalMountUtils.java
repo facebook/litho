@@ -18,3 +18,20 @@ import android.view.ViewGroup;
 import com.facebook.litho.ComponentView;
 
 import static com.facebook.litho.ThreadUtils.assertMainThread;
+
+/**
+ * Provides methods for enabling incremental mount.
+ */
+public class IncrementalMountUtils {
+
+  /**
+   * A view that wraps a child view and that provides a wrapped view to be incrementally mounted.
+   */
+  public interface WrapperView {
+
+    /**
+     * @return A child view that will be incrementally mounted.
+     */
+    View getWrappedView();
+  }
+
