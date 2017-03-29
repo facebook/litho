@@ -22,33 +22,48 @@ import com.facebook.stetho.inspector.elements.StyleAccumulator;
 import com.facebook.stetho.inspector.elements.StyleRuleNameAccumulator;
 import com.facebook.stetho.inspector.elements.android.HighlightableDescriptor;
 
-public final class StethoInternalNodeDescriptor
-    extends AbstractChainedDescriptor<StethoInternalNode>
-    implements HighlightableDescriptor<StethoInternalNode> {
+public final class ComponentStethoNodeDescriptor
+    extends AbstractChainedDescriptor<ComponentStethoNode>
+    implements HighlightableDescriptor<ComponentStethoNode> {
 
   @Override
-  protected String onGetNodeName(StethoInternalNode element) {
-    final Component component = element.node.getRootComponent();
-    return component == null
-        ? Container.class.getName()
-        : component.getLifecycle().getClass().getName();
+  protected String onGetNodeName(ComponentStethoNode element) {
+    if (element.node.getComponents().isEmpty()) {
+      return Container.class.getName();
+    }
+
+    return element.node
+        .getComponents()
+        .get(element.componentIndex)
+        .getLifecycle()
+        .getClass()
+        .getName();
   }
 
   @Override
-  protected void onGetChildren(StethoInternalNode element, Accumulator<Object> children) {
+  protected void onGetChildren(ComponentStethoNode element, Accumulator<Object> children) {
     final ComponentsStethoManagerImpl stethoManager = getStethoManager(element);
     if (stethoManager == null) {
       return;
     }
 
+    if (element.componentIndex > 0) {
+      final int wrappedComponentIndex = element.componentIndex - 1;
+      children.store(stethoManager.getComponentsStethoNode(element.node, wrappedComponentIndex));
+      return;
+    }
+
     for (int i = 0, count = element.node.getChildCount(); i < count; i++) {
-      children.store(stethoManager.getStethoInternalNode(element.node.getChildAt(i)));
+      final InternalNode childNode = element.node.getChildAt(i);
+      final int outerWrapperComponentIndex = childNode.getComponents().size() - 1;
+      children.store(stethoManager.getComponentsStethoNode(childNode, outerWrapperComponentIndex));
     }
 
     if (element.node.hasNestedTree()) {
       final InternalNode nestedTree = element.node.getNestedTree();
       for (int i = 0, count = nestedTree.getChildCount(); i < count; i++) {
-        children.store(stethoManager.getStethoInternalNode(nestedTree.getChildAt(i)));
+        final InternalNode childNode = nestedTree.getChildAt(i);
+        children.store(stethoManager.getComponentsStethoNode(childNode, childNode.getComponents().size() - 1));
       }
     }
 
@@ -72,7 +87,7 @@ public final class StethoInternalNodeDescriptor
   }
 
   @Override
-  public View getViewAndBoundsForHighlighting(StethoInternalNode element, Rect bounds) {
+  public View getViewAndBoundsForHighlighting(ComponentStethoNode element, Rect bounds) {
     final int x = getXFromRoot(element.node);
     final int y = getYFromRoot(element.node);
     bounds.set(x, y, x + element.node.getWidth(), y + element.node.getHeight());
@@ -87,7 +102,7 @@ public final class StethoInternalNodeDescriptor
 
   @Override
   public Object getElementToHighlightAtPosition(
-      StethoInternalNode element,
+      ComponentStethoNode element,
       int x,
       int y,
       Rect bounds) {
@@ -104,11 +119,17 @@ public final class StethoInternalNodeDescriptor
 
   @Override
   protected void onGetStyleRuleNames(
-      StethoInternalNode element,
+      ComponentStethoNode element,
       StyleRuleNameAccumulator accumulator) {
-    accumulator.store("state", true);
-    accumulator.store("props", true);
-    accumulator.store("layout", true);
+
+    // We currently have no way of overriding props / state of non-root components
+    accumulator.store("state", element.componentIndex == 0);
+    accumulator.store("props", element.componentIndex == 0);
+
+    // Only the root component has actual layout info
+    if (element.componentIndex == 0) {
+      accumulator.store("layout", true);
+    }
 
     // This method is called once a node is inspected and not during tree creation like many of the
     // other lifecycle methods.
@@ -117,11 +138,11 @@ public final class StethoInternalNodeDescriptor
 
   @Override
   protected void onGetStyles(
-      StethoInternalNode element,
+      ComponentStethoNode element,
       String ruleName,
       StyleAccumulator accumulator) {
 
-    final Component component = element.node.getRootComponent();
+    final Component component = element.node.getComponents().get(element.componentIndex);
     if (component == null) {
       return;
     }
@@ -170,7 +191,7 @@ public final class StethoInternalNodeDescriptor
   }
 
   protected void onSetStyle(
-      StethoInternalNode element,
+      ComponentStethoNode element,
       String ruleName,
       String name,
       String value) {
@@ -198,7 +219,7 @@ public final class StethoInternalNodeDescriptor
     }
   }
 
-  private void logStyleUpdate(StethoInternalNode element, ComponentContext context) {
+  private void logStyleUpdate(ComponentStethoNode element, ComponentContext context) {
     final ComponentsLogger logger = context.getLogger();
     if (logger != null) {
       logger.eventStart(ComponentsLogger.EVENT_STETHO_UPDATE_COMPONENT, element);
@@ -209,7 +230,7 @@ public final class StethoInternalNodeDescriptor
     }
   }
 
-  private void logInspected(StethoInternalNode element, ComponentContext context) {
+  private void logInspected(ComponentStethoNode element, ComponentContext context) {
     final ComponentsLogger logger = context.getLogger();
     if (logger != null) {
       logger.eventStart(ComponentsLogger.EVENT_STETHO_INSPECT_COMPONENT, element);
@@ -220,7 +241,7 @@ public final class StethoInternalNodeDescriptor
     }
   }
 
-  private ComponentsStethoManagerImpl getStethoManager(StethoInternalNode element) {
+  private ComponentsStethoManagerImpl getStethoManager(ComponentStethoNode element) {
     final ComponentContext context = element.node.getContext();
     final ComponentTree componentTree = context == null ? null : context.getComponentTree();
     return componentTree == null

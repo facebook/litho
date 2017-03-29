@@ -41,7 +41,7 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
       new SimpleArrayMap<>();
   private final SimpleArrayMap<String, SimpleArrayMap<String, String>> mStateOverrides =
       new SimpleArrayMap<>();
-  private final SimpleArrayMap<String, StethoInternalNode> mStethoInternalNodes =
+  private final SimpleArrayMap<String, ComponentStethoNode> mComponentsStethoNodes =
       new SimpleArrayMap<>();
 
   private static String toCSSString(String str) {
@@ -137,7 +137,7 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
     }
   }
 
-  void getStyles(StethoInternalNode stethoNode, StyleAccumulator accumulator) {
+  void getStyles(ComponentStethoNode stethoNode, StyleAccumulator accumulator) {
     final YogaNodeAPI yogaNode = stethoNode.node.mYogaNode;
     final YogaNodeAPI defaults = ComponentsPools.acquireYogaNode();
 
@@ -189,7 +189,7 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
   }
 
   public void applyOverrides(InternalNode node) {
-    final String nodeKey = getGlobalKey(node);
+    final String nodeKey = getGlobalKey(node, 0); // We only override the root
 
     if (mStyleOverrides.containsKey(nodeKey)) {
       final SimpleArrayMap<String, String> styles = mStyleOverrides.get(nodeKey);
@@ -471,7 +471,7 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
     } catch (Exception ignored) {}
   }
 
-  public void setStyleOverride(StethoInternalNode stethoNode, String key, String value) {
+  public void setStyleOverride(ComponentStethoNode stethoNode, String key, String value) {
     SimpleArrayMap<String, String> styles = mStyleOverrides.get(stethoNode.key);
     if (styles == null) {
       styles = new SimpleArrayMap<>();
@@ -481,7 +481,7 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
     styles.put(key, value);
   }
 
-  public void setPropOverride(StethoInternalNode element, String key, String value) {
+  public void setPropOverride(ComponentStethoNode element, String key, String value) {
     SimpleArrayMap<String, String> props = mPropOverrides.get(element.key);
     if (props == null) {
       props = new SimpleArrayMap<>();
@@ -491,7 +491,7 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
     props.put(key, value);
   }
 
-  public void setStateOverride(StethoInternalNode element, String key, String value) {
+  public void setStateOverride(ComponentStethoNode element, String key, String value) {
     SimpleArrayMap<String, String> props = mStateOverrides.get(element.key);
     if (props == null) {
       props = new SimpleArrayMap<>();
@@ -521,32 +521,36 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
     return new YogaValue(parseFloat(s), POINT);
   }
 
-  private static String getGlobalKey(InternalNode node) {
+  private static String getGlobalKey(InternalNode node, int componentIndex) {
     final InternalNode parent = node.getParent();
     final InternalNode nestedTreeHolder = node.getNestedTreeHolder();
 
+    String key;
     if (parent != null) {
-      return getGlobalKey(parent) + "." + parent.getChildIndex(node);
+      key = getGlobalKey(parent, 0) + "." + parent.getChildIndex(node);
     } else if (nestedTreeHolder != null) {
-      return "nested";
+      key = "nested";
     } else {
-      return "root";
+      key = "root";
     }
+
+    return key + "(" + componentIndex + ")";
   }
 
-  public StethoInternalNode getStethoInternalNode(InternalNode node) {
-    final String globalKey = getGlobalKey(node);
-    StethoInternalNode stethoInternalNode =
-        mStethoInternalNodes.get(globalKey);
+  public ComponentStethoNode getComponentsStethoNode(InternalNode node, int componentIndex) {
+    final String globalKey = getGlobalKey(node, componentIndex);
+    ComponentStethoNode componentStethoNode =
+        mComponentsStethoNodes.get(globalKey);
 
-    if (stethoInternalNode == null) {
-      stethoInternalNode = new StethoInternalNode();
-      mStethoInternalNodes.put(globalKey, stethoInternalNode);
+    if (componentStethoNode == null) {
+      componentStethoNode = new ComponentStethoNode();
+      mComponentsStethoNodes.put(globalKey, componentStethoNode);
     }
 
-    stethoInternalNode.key = globalKey;
-    stethoInternalNode.node = node;
+    componentStethoNode.key = globalKey;
+    componentStethoNode.node = node;
+    componentStethoNode.componentIndex = componentIndex;
 
-    return stethoInternalNode;
+    return componentStethoNode;
   }
 }

@@ -10,11 +10,11 @@
 package com.facebook.litho;
 
 /**
- * This class is only needed until support for stable ids is implemented in stetho. Currently
- * stetho uses object instances as ids so we expose a wrapper to stetho as our stable "id". We keep
- * a mapping of component keys to wrappers stored in the ComponentsStethoManager.
+ * Represents a component in the stetho node hierarchy. We need the backing InternalNode and the
+ * reference to which component in the components list this object represents.
  */
-class StethoInternalNode {
+class ComponentStethoNode {
   String key;
   InternalNode node;
+  int componentIndex;
 }

@@ -17,6 +17,6 @@ public final class ComponentsDescriptorProvider implements DescriptorProvider {
   @Override
   public void registerDescriptor(DescriptorRegistrar registrar) {
     registrar.registerDescriptor(ComponentView.class, new ComponentViewDescriptor());
-    registrar.registerDescriptor(StethoInternalNode.class, new StethoInternalNodeDescriptor());
+    registrar.registerDescriptor(ComponentStethoNode.class, new ComponentStethoNodeDescriptor());
   }
 }

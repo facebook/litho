@@ -30,8 +30,8 @@ class HitTestAccumulator implements Accumulator<Object> {
 
   @Override
   public void store(Object obj) {
-    if (obj instanceof StethoInternalNode) {
-      final StethoInternalNode stethoNode = (StethoInternalNode) obj;
+    if (obj instanceof ComponentStethoNode) {
+      final ComponentStethoNode stethoNode = (ComponentStethoNode) obj;
       mHitTestRect.set(
           stethoNode.node.getX(),
           stethoNode.node.getY(),

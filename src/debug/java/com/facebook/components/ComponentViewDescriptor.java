@@ -128,8 +128,10 @@ public final class ComponentViewDescriptor
         component.setStethoManager(new ComponentsStethoManagerImpl());
         element.forceRelayout();
       } else {
-        final StethoInternalNode stethoInternalNode = stethoManager.getStethoInternalNode(root);
-        children.store(stethoInternalNode);
+        final int outerWrapperComponentIndex = root.getComponents().size() - 1;
+        final ComponentStethoNode componentStethoNode =
+            stethoManager.getComponentsStethoNode(root, outerWrapperComponentIndex);
+        children.store(componentStethoNode);
       }
     }
   }
