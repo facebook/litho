@@ -241,3 +241,4 @@ class MountState {
       mPreviousLocalVisibleRect.set(localVisibleRect);
     }
 
+    processVisibilityOutputs(layoutState, localVisibleRect);
