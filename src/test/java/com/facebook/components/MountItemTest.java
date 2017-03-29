@@ -47,3 +47,5 @@ public class MountItemTest {
   private NodeInfo mNodeInfo;
 
   @Before
+  public void setup() throws Exception {
+    mContext = new ComponentContext(RuntimeEnvironment.application);

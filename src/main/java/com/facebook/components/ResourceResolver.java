@@ -193,3 +193,4 @@ public class ResourceResolver {
   }
 
   protected final float resolveFloatRes(@DimenRes int resId) {
+    if (resId != 0) {
