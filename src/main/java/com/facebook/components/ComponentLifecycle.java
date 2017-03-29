@@ -425,3 +425,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
    * @param mountedContent The {@link Drawable} or {@link View} mounted by this component.
    * @param component The {@link Component} for this component.
    */
+  protected void onUnmount(ComponentContext c, Object mountedContent, Component<?> component) {
