@@ -471,3 +471,6 @@ public class Stages {
             // stages, but for now we disallow it.
 
             // Enforce #1 and #2
+            if ((getInterStagePropAnnotation(v) == null ||
+                Utils.getGenericTypeArgument(existingType.asType(), ClassNames.OUTPUT) == null) &&
+                Utils.getGenericTypeArgument(existingType.asType(), ClassNames.DIFF) == null) {
