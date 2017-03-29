@@ -162,3 +162,4 @@ public class Stages {
 
   // List of methods annotated with @OnUpdateState.
   private final List<ExecutableElement> mOnUpdateStateMethods;
+

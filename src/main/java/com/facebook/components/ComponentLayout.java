@@ -350,3 +350,4 @@ public interface ComponentLayout {
     ContainerBuilder child(ComponentLayout child);
     ContainerBuilder child(ComponentLayout.Builder childBuilder);
     ContainerBuilder child(Component<?> component);
+    ContainerBuilder child(Component.Builder<?> componentBuilder);
