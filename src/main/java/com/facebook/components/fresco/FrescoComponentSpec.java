@@ -68,3 +68,4 @@ class FrescoComponentSpec {
       int heightSpec,
       Size size,
       @Prop(optional = true, resType = ResType.FLOAT) float aspectRatio) {
+    MeasureUtils.measureWithAspectRatio(widthSpec, heightSpec, aspectRatio, size);
