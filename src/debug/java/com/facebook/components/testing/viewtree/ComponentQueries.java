@@ -110,3 +110,4 @@ class ComponentQueries {
    * @param host the component host
    * @param predicate the predicate
    * @return true if the ComponentHost satisfies the condition.
+   */
