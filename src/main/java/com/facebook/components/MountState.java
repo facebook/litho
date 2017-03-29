@@ -1810,3 +1810,19 @@ class MountState {
     }
   }
 
+  /**
+   * This is called when the {@link MountItem}s mounted on this {@link MountState} need to be
+   * re-bound with the same component. The common case here is a detach/attach happens on the
+   * {@link ComponentView} that owns the MountState.
+   */
+  void rebind() {
+    if (mLayoutOutputsIds == null) {
+      return;
+    }
+
+    for (int i = 0, size = mLayoutOutputsIds.length; i < size; i++) {
+      final MountItem mountItem = getItemAt(i);
+      if (mountItem == null || mountItem.isBound()) {
+        continue;
+      }
+

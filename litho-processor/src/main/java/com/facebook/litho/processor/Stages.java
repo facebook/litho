@@ -2364,3 +2364,8 @@ public class Stages {
     return variableElement.getAnnotation(State.class) != null;
   }
 
+  public void generateListEvents() {
+    for (TypeElement event : mEventDeclarations) {
+      generateEvent(
+          event,
+          ClassNames.EVENT_HANDLER,
