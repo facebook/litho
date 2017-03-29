@@ -177,3 +177,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     onBind(c, mountedContent, component);
   }
 
+  void unbind(ComponentContext c, Object mountedContent, Component<?> component) {
