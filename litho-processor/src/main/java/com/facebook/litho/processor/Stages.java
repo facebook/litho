@@ -1476,3 +1476,4 @@ public class Stages {
         .lifecycleImplClass(mSimpleClassName)
         .stateUpdateClassName(getStateUpdateClassName(element));
 
+    for (VariableElement e : updateMethodParamElements) {
