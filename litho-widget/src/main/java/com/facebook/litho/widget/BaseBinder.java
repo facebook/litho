@@ -171,3 +171,4 @@ public abstract class BaseBinder<
 
     if (shouldInsertItem) {
       Component component = createComponent(mContext, position);
+
