@@ -84,3 +84,4 @@ public class ComponentInfo {
   public static class Builder {
 
     private Component mComponent;
+    private SimpleArrayMap<String, Object> mCustomAttributes;

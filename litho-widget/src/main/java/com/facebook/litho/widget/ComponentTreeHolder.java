@@ -48,3 +48,32 @@ public class ComponentTreeHolder {
       componentTreeHolder = new ComponentTreeHolder();
     }
     componentTreeHolder.mComponentInfo = componentInfo;
+    componentTreeHolder.mLayoutHandler = layoutHandler;
+    return componentTreeHolder;
+  }
+
+  synchronized void acquireStateHandlerAndReleaseTree() {
+    acquireStateHandler();
+    releaseTree();
+  }
+
+  synchronized void invalidateTree() {
+    mIsTreeValid = false;
+  }
+
+  synchronized void clearStateHandler() {
+    mStateHandler = null;
+  }
+
+  void computeLayoutSync(
+      ComponentContext context,
+      int widthSpec,
+      int heightSpec,
+      Size size) {
+    final ComponentTree componentTree;
+    final Component component;
+
+    synchronized (this) {
+      ensureComponentTree(context);
+
+      componentTree = mComponentTree;

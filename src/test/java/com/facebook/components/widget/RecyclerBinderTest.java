@@ -82,3 +82,27 @@ public class RecyclerBinderTest {
     PowerMockito.when(ComponentTreeHolder.acquire(
         any(ComponentInfo.class),
         any(LayoutHandler.class)))
+        .thenAnswer(mComponentTreeHolderAnswer);
+    mLayoutInfo = mock(LayoutInfo.class);
+    setupBaseLayoutInfoMock();
+
+    mRecyclerBinder = new RecyclerBinder(mComponentContext, RANGE_RATIO, mLayoutInfo);
+  }
+
+  private void setupBaseLayoutInfoMock() {
+    Mockito.when(mLayoutInfo.getScrollDirection()).thenReturn(OrientationHelper.VERTICAL);
+
+    Mockito.when(mLayoutInfo.getLayoutManager())
+        .thenReturn(new LinearLayoutManager(mComponentContext));
+
+    Mockito.when(mLayoutInfo.approximateRangeSize(anyInt(), anyInt(), anyInt(), anyInt()))
+        .thenReturn(RANGE_SIZE);
+
+    Mockito.when(mLayoutInfo.getChildHeightSpec(anyInt()))
+        .thenReturn(SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
+    Mockito.when(mLayoutInfo.getChildWidthSpec(anyInt()))
+        .thenReturn(SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
+  }
+
+  @Test
+  public void testComponentTreeHolderCreation() {
