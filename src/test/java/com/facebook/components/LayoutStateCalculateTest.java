@@ -1108,3 +1108,5 @@ public class LayoutStateCalculateTest {
     assertEquals(hostMarkerRoot, layoutState.getMountableOutputAt(4).getHostMarker());
   }
 
+  @Test
+  public void testLayoutOutputsForComponentWithBackgrounds() {

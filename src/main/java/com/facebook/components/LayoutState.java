@@ -542,3 +542,4 @@ class LayoutState {
             : null;
 
         final LayoutOutput backgroundOutput = addDrawableComponent(
+            node,
