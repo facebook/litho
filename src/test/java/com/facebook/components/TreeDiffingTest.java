@@ -843,3 +843,4 @@ public class TreeDiffingTest {
 
   @Test
   public void testDiffTreeUsedIfMeasureSpecsAreSame() {
+    final TestComponent component = TestDrawableComponent.create(mContext)
