@@ -37,3 +37,4 @@ public class StateUpdateImplClassBuilder {
   private static final String STATE_UPDATE_IMPL_NAME_SUFFIX = "StateUpdate";
   private static final String STATE_UPDATE_METHOD_NAME = "updateState";
   private static final String STATE_UPDATE_IS_LAZY_METHOD_NAME = "isLazyStateUpdate";
+

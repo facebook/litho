@@ -32,3 +32,25 @@ class OnStateUpdateMethodSpecBuilder {
   private final List<Parameter> mUpdateParams = new ArrayList<>();
   private final List<String> mTypeParameters = new ArrayList<>();
   private String mStateUpdateClassName;
+  private boolean mIsAsync;
+
+  OnStateUpdateMethodSpecBuilder updateMethodName(String updateMethodName) {
+    this.mUpdateMethodName = updateMethodName;
+    return this;
+  }
+
+  OnStateUpdateMethodSpecBuilder contextClass(TypeName contextClass) {
+    this.mContextClass = contextClass;
+    return this;
+  }
+
+  OnStateUpdateMethodSpecBuilder updateMethodParams(List<Parameter> eventParams) {
+    this.mUpdateParams.addAll(eventParams);
+    return this;
+  }
+
+  OnStateUpdateMethodSpecBuilder updateMethodParam(Parameter eventParam) {
+    this.mUpdateParams.add(eventParam);
+    return this;
+  }
+

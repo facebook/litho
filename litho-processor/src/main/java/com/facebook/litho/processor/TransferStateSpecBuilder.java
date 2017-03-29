@@ -32,3 +32,7 @@ class TransferStateSpecBuilder {
     return this;
   }
 
+  TransferStateSpecBuilder stateParameters(Set<String> stateParameters) {
+    if (stateParameters != null) {
+      mStateParameters = stateParameters;
+    }
