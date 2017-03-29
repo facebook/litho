@@ -78,3 +78,4 @@ class FBEXPORT JniException : public std::exception {
   void setJavaException() const noexcept;
 
  private:
+  global_ref<JThrowable> throwable_;

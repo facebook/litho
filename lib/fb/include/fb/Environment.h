@@ -45,3 +45,9 @@ struct Environment {
  *    (More detail at https://groups.google.com/forum/#!topic/android-ndk/2H8z5grNqjo)
  *    ThreadScope won't do a detach if the thread was already attached before the guard is
  *    instantiated, but there's probably some usage that could trip this up.
+ *  - Newly attached C++ threads only get the bootstrap class loader -- i.e. java language
+ *    classes, not any of our application's classes. This will be different behavior than threads
+ *    that were initiated on the Java side. A workaround is to pass a global reference for a
+ *    class or instance to the new thread; this bypasses the need for the class loader.
+ *    (See http://docs.oracle.com/javase/7/docs/technotes/guides/jni/spec/invocation.html#attach_current_thread)
+ *    If you need access to the application's classes, you can use ThreadScope::WithClassLoader.
