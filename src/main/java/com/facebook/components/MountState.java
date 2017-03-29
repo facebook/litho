@@ -1406,3 +1406,8 @@ class MountState {
   private static void unsetViewForeground(View view, ViewNodeInfo viewNodeInfo) {
     final Reference<Drawable> foregroundReference = viewNodeInfo.getForeground();
     if (foregroundReference != null) {
+      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+        throw new IllegalStateException("MountState has a ViewNodeInfo with foreground however " +
+            "the current Android version doesn't support foreground on Views");
+      }
+
