@@ -167,3 +167,9 @@ class LayoutOutput implements Cloneable {
     mViewNodeInfo = viewNodeInfo.acquireRef();
   }
 
+  boolean hasViewNodeInfo() {
+    return (mViewNodeInfo != null);
+  }
+
+  ViewNodeInfo getViewNodeInfo() {
+    return mViewNodeInfo;

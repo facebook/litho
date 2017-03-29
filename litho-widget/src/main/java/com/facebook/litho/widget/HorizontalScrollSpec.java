@@ -126,3 +126,4 @@ class HorizontalScrollSpec {
   static void onBoundsDefined(
       ComponentContext context,
       ComponentLayout layout,
+      @FromPrepare ComponentTree contentComponent,

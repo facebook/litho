@@ -319,3 +319,8 @@ public class BaseBinderTest {
     mBinder.setIncrementalMountEnabled(false);
     performNotifyDataSetChanged();
 
+    for (int i = 0, count = mBinder.getComponentCount(); i < count; i++) {
+      assertFalse(mBinder.getComponentAt(i).isIncrementalMountEnabled());
+    }
+  }
+
