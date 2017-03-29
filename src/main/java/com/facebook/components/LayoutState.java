@@ -1580,3 +1580,4 @@ class LayoutState {
         mDiffTreeRoot = null;
       }
       mLayoutStateOutputIdCalculator.clear();
+
