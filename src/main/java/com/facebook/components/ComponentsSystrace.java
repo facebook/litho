@@ -39,3 +39,4 @@ public class ComponentsSystrace {
     sInstance = instance;
   }
 
+  public static void beginSection(String name) {

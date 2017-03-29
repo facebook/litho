@@ -40,3 +40,5 @@ import com.facebook.litho.utils.MeasureUtils;
 
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 
+/**
+ * A component that is able to display drawable resources. It takes a drawable
