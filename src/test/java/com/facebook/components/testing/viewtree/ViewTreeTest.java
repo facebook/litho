@@ -105,3 +105,6 @@ public class ViewTreeTest {
   }
 
   private static String removePrefix(final String string, final String prefix) {
+    return string.startsWith(prefix) ? string.substring(prefix.length()) : string;
+  }
+}
