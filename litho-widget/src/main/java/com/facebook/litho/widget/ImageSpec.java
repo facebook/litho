@@ -95,3 +95,4 @@ class ImageSpec {
         size.height = 0;
         return;
       }
+

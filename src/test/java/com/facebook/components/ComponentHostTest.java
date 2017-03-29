@@ -696,3 +696,6 @@ public class ComponentHostTest {
     assertEquals(1, mHost.getChildCount());
 
     assertNull(mHost.recycleHost());
+
+    when(view.getParent()).thenReturn(mHost);
+
