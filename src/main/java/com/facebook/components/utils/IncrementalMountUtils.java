@@ -35,3 +35,5 @@ public class IncrementalMountUtils {
     View getWrappedView();
   }
 
+  private static final Pools.SynchronizedPool<Rect> sRectPool =
+      new Pools.SynchronizedPool<>(10);

@@ -378,3 +378,12 @@ public class ComponentTree {
     ComponentsPools.release(currentVisibleArea);
   }
 
+  private boolean getVisibleRect(Rect visibleBounds) {
+    assertMainThread();
+
+    getLocationAndBoundsOnScreen(mComponentView, sCurrentLocation, visibleBounds);
+
+    final ViewParent viewParent = mComponentView.getParent();
+    if (viewParent instanceof View) {
+      View parent = (View) viewParent;
+      getLocationAndBoundsOnScreen(parent, sParentLocation, sParentBounds);
