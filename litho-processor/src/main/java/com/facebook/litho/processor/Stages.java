@@ -2108,3 +2108,14 @@ public class Stages {
     }
 
     final boolean hasDefaultValue = hasDefaultValue(v);
+
+    if (hasDefaultValue) {
+      fieldBuilder.initializer(
+          "$L.$L",
+          mSourceElement.getSimpleName().toString(),
+          v.getSimpleName().toString());
+    }
+
+    return fieldBuilder.build();
+  }
+
