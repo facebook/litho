@@ -406,3 +406,4 @@ public class ComponentTreeTest {
         .build();
 
     // Attach first view.
+    ComponentView componentView1 = new ComponentView(mContext);

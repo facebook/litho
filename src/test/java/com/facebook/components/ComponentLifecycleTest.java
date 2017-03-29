@@ -302,3 +302,5 @@ public class ComponentLifecycleTest {
 
     long output = measureFunction.measure(mNode.mYogaNode, 0, EXACTLY, 0, EXACTLY);
 
+    assertThat(YogaMeasureOutput.getWidth(output)).isEqualTo(A_WIDTH);
+    assertThat(YogaMeasureOutput.getHeight(output)).isEqualTo(A_HEIGHT);
