@@ -386,3 +386,7 @@ public abstract class BaseBinder<
         }
       }
 
+      for (int i = 0, size = treesToRelease.size(); i < size; i++) {
+        treesToRelease.get(i).release();
+      }
+      releaseList(treesToRelease);
