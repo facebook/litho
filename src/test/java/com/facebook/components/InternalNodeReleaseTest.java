@@ -98,3 +98,6 @@ public class InternalNodeReleaseTest {
             new ComponentContext(RuntimeEnvironment.application),
             RuntimeEnvironment.application.getResources()),
         0);
+    mInternalNode.release();
+  }
+}

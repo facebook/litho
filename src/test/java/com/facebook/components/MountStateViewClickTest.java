@@ -109,3 +109,12 @@ public class MountStateViewClickTest {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
             return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                .longClickHandler(c.newEventHandler(1))
+                .child(TestDrawableComponent.create(c))
+                .build();
+          }
+        });
+
+    assertEquals(0, componentView.getChildCount());
+    assertTrue(componentView.isLongClickable());
+  }

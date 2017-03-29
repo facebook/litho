@@ -76,3 +76,6 @@ public class ComponentView extends ComponentHost {
   }
 
   private static void performLayoutOnChildrenIfNecessary(ComponentHost host) {
+    for (int i = 0, count = host.getChildCount(); i < count; i++) {
+      final View child = host.getChildAt(i);
+

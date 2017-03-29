@@ -144,3 +144,9 @@ public class LifecycleMethodsTest {
       LifecycleMethodsInstance instance = (LifecycleMethodsInstance) component;
       instance.setCurrentStep(LifecycleStep.ON_MOUNT);
       final LifecycleMethodsDrawable d = (LifecycleMethodsDrawable) convertContent;
+
+      d.setComponent(instance);
+    }
+
+    @Override
+    protected void onUnmount(

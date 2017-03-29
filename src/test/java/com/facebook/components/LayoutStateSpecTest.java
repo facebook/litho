@@ -42,3 +42,4 @@ public class LayoutStateSpecTest {
     Whitebox.setInternalState(mComponent, "mId", COMPONENT_ID);
 
     mLayoutState = new LayoutState();
+    Whitebox.setInternalState(mLayoutState, "mComponent", mComponent);

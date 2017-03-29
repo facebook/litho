@@ -72,3 +72,9 @@ public class LayoutStateCalculateTest {
   @Rule
   public PowerMockRule mPowerMockRule = new PowerMockRule();
 
+  @Before
+  public void setup() throws Exception {
+  }
+
+  @Test
+  public void testNoUnnecessaryLayoutOutputsForLayoutSpecs() {
