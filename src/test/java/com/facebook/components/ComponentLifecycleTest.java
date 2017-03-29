@@ -65,3 +65,4 @@ public class ComponentLifecycleTest {
   private DiffNode mDiffNode;
   private Component mInput;
   private ComponentContext mContext;
+  private Component mComponentWithNullLayout;
