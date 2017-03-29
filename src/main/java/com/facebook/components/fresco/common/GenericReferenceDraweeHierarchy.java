@@ -315,3 +315,7 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
     mGenericDraweeHierarchy.setActualImageColorFilter(colorfilter);
   }
 
+  public void setFadeDuration(int durationMs) {
+    mGenericDraweeHierarchy.setFadeDuration(durationMs);
+  }
+
