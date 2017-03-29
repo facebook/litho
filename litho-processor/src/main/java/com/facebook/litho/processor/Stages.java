@@ -2389,3 +2389,21 @@ public class Stages {
       String scopeMethodName) {
     final String eventName = eventDeclaration.getSimpleName().toString();
 
+    writeMethodSpec(MethodSpec.methodBuilder("get" + eventName + "Handler")
+        .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+        .returns(eventHandlerClassName)
+        .addParameter(contextClassName, "context")
+        .addCode(
+            CodeBlock.builder()
+                .beginControlFlow("if (context.$L() == null)", scopeMethodName)
+                .addStatement("return null")
+                .endControlFlow()
+                .build())
+        .addStatement(
+            "return (($L.$T) context.$L()).$L",
+            getSimpleClassName(),
+            ClassName.bestGuess(getImplClassName()),
+            scopeMethodName,
+            getEventHandlerInstanceName(eventName))
+        .build());
+
