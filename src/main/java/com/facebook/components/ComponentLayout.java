@@ -116,3 +116,4 @@ public interface ComponentLayout {
         @AttrRes int resId);
     Builder borderWidthRes(YogaEdge edge, @DimenRes int resId);
     Builder borderWidthDip(YogaEdge edge, @Dimension(unit = DP) int borderWidth);
+    Builder borderColor(@ColorInt int borderColor);
