@@ -69,3 +69,5 @@ public class RecyclerViewWrapper extends SwipeRefreshLayout {
 
   public ComponentView getStickyHeader() {
     return mStickyHeader;
+  }
+

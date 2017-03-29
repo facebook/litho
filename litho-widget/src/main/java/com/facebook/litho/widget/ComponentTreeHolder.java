@@ -43,3 +43,7 @@ public class ComponentTreeHolder {
   private LayoutHandler mLayoutHandler;
 
   static ComponentTreeHolder acquire(ComponentInfo componentInfo, LayoutHandler layoutHandler) {
+    ComponentTreeHolder componentTreeHolder = sComponentTreeHoldersPool.acquire();
+    if (componentTreeHolder == null) {
+      componentTreeHolder = new ComponentTreeHolder();
+    }

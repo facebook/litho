@@ -100,3 +100,4 @@ class MountState {
   private TransitionManager mTransitionManager;
   private int mPreviousTopsIndex;
   private int mPreviousBottomsIndex;
+  private int mLastMountedComponentTreeId;

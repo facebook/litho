@@ -31,3 +31,5 @@ public class ComponentInfo {
   private static final String SPAN_SIZE = "span_size";
 
   private Component mComponent;
+  private SimpleArrayMap<String, Object> mCustomAttributes;
+
