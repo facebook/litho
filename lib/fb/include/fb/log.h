@@ -319,3 +319,4 @@ FBEXPORT void setLogHandler(LogHandler logHandler);
 FBEXPORT int fb_printLog(int prio, const char* tag, const char* fmt, ...)
 #if defined(__GNUC__)
     __attribute__((format(printf, 3, 4)))
+#endif
