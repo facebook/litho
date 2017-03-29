@@ -86,3 +86,5 @@ public class MountSpecHelper extends ComponentSpecHelper {
     super(
         processingEnv,
         specElement,
+        specElement.getAnnotation(MountSpec.class).value(),
+        specElement.getAnnotation(MountSpec.class).isPublic(),
