@@ -531,3 +531,8 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
         true,
         state.getDiffTree());
+
+    assertOutputsState(secondState, LayoutOutput.STATE_UPDATED);
+
+    LayoutState thirdState = componentTree.calculateLayoutState(
+        null,

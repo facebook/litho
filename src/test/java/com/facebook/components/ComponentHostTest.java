@@ -700,3 +700,4 @@ public class ComponentHostTest {
     when(view.getParent()).thenReturn(mHost);
 
     mHost.mount(0, mountItem, new Rect());
+    assertNull(mHost.recycleHost());
