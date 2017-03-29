@@ -766,3 +766,5 @@ public class RecyclerBinder implements Binder<RecyclerView> {
       // We can ignore the synchronization here. We'll only add to this from the UiThread.
       // This read only happens on the UiThread as well and we are never writing this here.
       final ComponentTreeHolder componentTreeHolder = mComponentTreeHolders.get(position);
+      final int childrenWidthSpec = getActualChildrenWidthSpec(componentTreeHolder);
+      final int childrenHeightSpec = getActualChildrenHeightSpec(componentTreeHolder);
