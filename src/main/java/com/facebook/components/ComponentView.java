@@ -315,3 +315,4 @@ public class ComponentView extends ComponentHost {
       return;
     }
 
+    if (mComponent.isIncrementalMountEnabled()) {

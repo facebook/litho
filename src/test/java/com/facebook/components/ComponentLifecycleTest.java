@@ -51,3 +51,4 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
     YogaNodeAPI.class})
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
 @RunWith(ComponentsTestRunner.class)
+public class ComponentLifecycleTest {
