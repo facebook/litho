@@ -171,3 +171,10 @@ public class MountItemTest {
         mNodeInfo,
         null,
         null,
+        mFlags,
+        IMPORTANT_FOR_ACCESSIBILITY_NO);
+
+    assertThat(mountItem.isAccessible()).isFalse();
+  }
+
+  @Test
