@@ -27,3 +27,10 @@ namespace facebook {
 #define FBUNREACHABLE() facebook::assertInternal("This code should be unreachable (%s:%d)", __FILE__, __LINE__)
 
 FBEXPORT void assertInternal(const char* formatstr, ...) __attribute__((noreturn));
+
+// This allows storing the assert message before the current process terminates due to a crash
+typedef void (*AssertHandler)(const char* message);
+void setAssertHandler(AssertHandler assertHandler);
+
+} // namespace facebook
+#endif // FBASSERT_H
