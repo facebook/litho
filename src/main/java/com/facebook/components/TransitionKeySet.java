@@ -214,3 +214,4 @@ class TransitionKeySet implements TransitionListener {
           // the values where the previous one was interrupted.
           keyStatusToResume = KeyStatus.UNCHANGED;
         }
+        break;
