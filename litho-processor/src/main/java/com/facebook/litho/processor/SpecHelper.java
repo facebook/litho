@@ -158,3 +158,11 @@ public abstract class SpecHelper implements Closeable {
 
   protected abstract Class getSpecAnnotationClass();
 
+  public Stages getStages() {
+    return mStages;
+  }
+
+  public TypeSpec.Builder getTypeSpec() {
+    return mTypeSpec;
+  }
+
