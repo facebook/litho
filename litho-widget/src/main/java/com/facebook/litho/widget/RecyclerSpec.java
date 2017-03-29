@@ -158,3 +158,7 @@ class RecyclerSpec {
     }
 
     binder.bind(recyclerView);
+
+    if (recyclerEventsController != null) {
+      recyclerEventsController.setRecyclerViewWrapper(recyclerViewWrapper);
+    }

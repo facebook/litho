@@ -240,3 +240,40 @@ public class RecyclerBinderTest {
   }
 
   @Test
+  public void testMountWithStaleView() {
+    RecyclerView recyclerView = mock(RecyclerView.class);
+    mRecyclerBinder.mount(recyclerView);
+
+    verify(recyclerView).setLayoutManager(mLayoutInfo.getLayoutManager());
+    verify(recyclerView).setAdapter(any(RecyclerView.Adapter.class));
+    verify(recyclerView).addOnScrollListener(any(OnScrollListener.class));
+
+    RecyclerView secondRecyclerView = mock(RecyclerView.class);
+    mRecyclerBinder.mount(secondRecyclerView);
+
+    verify(recyclerView).setLayoutManager(null);
+    verify(recyclerView).setAdapter(null);
+    verify(recyclerView).removeOnScrollListener(any(OnScrollListener.class));
+
+    verify(secondRecyclerView).setLayoutManager(mLayoutInfo.getLayoutManager());
+    verify(secondRecyclerView).setAdapter(any(RecyclerView.Adapter.class));
+    verify(secondRecyclerView).addOnScrollListener(any(OnScrollListener.class));
+  }
+
+  @Test
+  public void testUnmount() {
+    RecyclerView recyclerView = mock(RecyclerView.class);
+    mRecyclerBinder.mount(recyclerView);
+
+    verify(recyclerView).setLayoutManager(mLayoutInfo.getLayoutManager());
+    verify(recyclerView).setAdapter(any(RecyclerView.Adapter.class));
+    verify(recyclerView).addOnScrollListener(any(OnScrollListener.class));
+
+    mRecyclerBinder.unmount(recyclerView);
+
+    verify(recyclerView).setLayoutManager(null);
+    verify(recyclerView).setAdapter(null);
+    verify(recyclerView).removeOnScrollListener(any(OnScrollListener.class));
+  }
+
+  @Test
