@@ -76,3 +76,4 @@ class LayoutStateOutputIdCalculator {
     long layoutOutputId = LayoutStateOutputIdCalculator.calculateId(baseLayoutId, sequence);
     layoutOutput.setId(layoutOutputId);
 
+    mLayoutCurrentSequenceForBaseId.put(baseLayoutId, sequence + 1);

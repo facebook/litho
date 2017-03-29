@@ -43,3 +43,4 @@ public class BinderTreeCollectionTest {
   }
 
   @Test
+  public void testPositionOf() {

@@ -67,3 +67,5 @@ public abstract class BaseBinder<
   private R mRangeController;
   private V mView;
 
+  public BaseBinder(Context context, R rangeController) {
+    this(context, null, rangeController);

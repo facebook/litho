@@ -85,3 +85,4 @@ class DrawableComponent<T extends Drawable> extends ComponentLifecycle {
     return MountType.DRAWABLE;
   }
 
+  public static Component create(Reference<? extends Drawable> drawable) {
