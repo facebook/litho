@@ -264,3 +264,5 @@ local_ref<JThrowable> JniException::getThrowable() const noexcept {
 void JniException::populateWhat() const noexcept {
   ThreadScope ts;
   try {
+    what_ = throwable_->toString();
+    isMessageExtracted_ = true;
