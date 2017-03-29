@@ -17,3 +17,10 @@ import com.facebook.litho.widget.CardClip;
 import com.facebook.litho.widget.Text;
 import com.facebook.components.testing.TestDrawableComponent;
 import com.facebook.components.testing.TestViewComponent;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RuntimeEnvironment;
+

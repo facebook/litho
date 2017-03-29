@@ -49,3 +49,5 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     VIEW,
   }
 
+  public interface StateContainer {}
+

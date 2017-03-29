@@ -19,3 +19,5 @@ import com.squareup.javapoet.TypeName;
  */
 public class SectionClassNames {
 
+  public static final ClassName STATE_CONTAINER_SECTION =
+      ClassName.bestGuess("com.facebook.components.list.SectionLifecycle.StateContainer");
