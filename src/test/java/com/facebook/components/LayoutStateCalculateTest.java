@@ -1395,3 +1395,4 @@ public class LayoutStateCalculateTest {
                     .withLayout().flexShrink(0)
                     .widthDip(30)
                     .heightDip(30))
+            .child(
