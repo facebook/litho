@@ -17,3 +17,5 @@ public class EventHandler<E> {
 
   protected EventHandler(HasEventDispatcher hasEventDispatcher, int id) {
     this(hasEventDispatcher, id, null);
+  }
+
