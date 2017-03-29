@@ -162,3 +162,4 @@ public abstract class RecyclerComponentBinder<L extends RecyclerView.LayoutManag
     return mLayoutManager;
   }
 
+  protected void onScrolled(RecyclerView recyclerView, int dx, int dy) {

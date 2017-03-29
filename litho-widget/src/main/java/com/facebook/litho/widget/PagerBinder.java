@@ -8,3 +8,11 @@
  */
 
 package com.facebook.litho.widget;
+
+import android.content.Context;
+import android.support.v4.util.Pools.SimplePool;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.view.View;
+import android.view.ViewGroup;
+
