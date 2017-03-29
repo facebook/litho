@@ -444,3 +444,4 @@ class LayoutState {
     if (node.hasNewLayout()) {
       node.markLayoutSeen();
     }
+    final Component<?> component = node.getComponent();

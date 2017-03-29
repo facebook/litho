@@ -911,3 +911,7 @@ public class TreeDiffingTest {
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Container.create(c)
             .paddingPx(YogaEdge.ALL, 2)
+            .child(
+                TestSizeDependentComponent.create(c)
+                    .setDelegate(true)
+                    .withLayout()
