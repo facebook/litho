@@ -152,3 +152,4 @@ public interface ComponentLayout {
     Builder heightRes(@DimenRes int resId);
     Builder heightDip(@Dimension(unit = DP) int height);
     Builder heightPercent(float percent);
+

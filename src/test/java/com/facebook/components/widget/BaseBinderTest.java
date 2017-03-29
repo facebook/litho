@@ -420,3 +420,6 @@ public class BaseBinderTest {
       return true;
     }
 
+    public void setIncrementalMountEnabled(boolean incrementalMountEnabled) {
+      mIncrementalMountEnabled = incrementalMountEnabled;
+    }
