@@ -120,3 +120,15 @@ class BinderTreeCollection {
     return mItems.get(position);
   }
 
+  /**
+   * Returns either the position of the component tree passed as parameter or a negative value if
+   * the component tree could not be found in the collection.
+   */
+  int getPositionOf(ComponentTree componentTree) {
+    final int index = mItems.indexOfValue(componentTree);
+
+    if (index < 0) {
+      return index;
+    }
+
+    return mItems.keyAt(index);

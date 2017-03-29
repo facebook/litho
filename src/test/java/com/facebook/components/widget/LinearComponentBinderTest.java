@@ -42,3 +42,12 @@ public class LinearComponentBinderTest {
   private static final int HEIGHT = 300;
 
   private List<Integer> mItems;
+  private MyTestLinearComponentBinder mBinder;
+  private ShadowLooper mLayoutThreadShadowLooper;
+
+  private RecyclerView mView;
+  private LinearLayoutManager mLayoutManager;
+
+  @Before
+  public void setup() throws Exception {
+    mItems = new ArrayList<>();

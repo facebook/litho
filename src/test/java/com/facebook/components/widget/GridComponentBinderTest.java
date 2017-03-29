@@ -52,3 +52,8 @@ public class GridComponentBinderTest {
   private MyTestGridComponentBinder mBinder;
   private RecyclerView mRecyclerView;
 
+  private Context mContext;
+  private GridLayoutManager mGridLayoutManager;
+
+  private ShadowLooper mLayoutThreadShadowLooper;
+
