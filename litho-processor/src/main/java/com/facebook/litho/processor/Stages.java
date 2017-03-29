@@ -1886,3 +1886,19 @@ public class Stages {
             .addModifiers(Modifier.PRIVATE)
             .addStatement("super(get())")
             .addStatement(STATE_CONTAINER_IMPL_MEMBER + " = new $T()", stateContainerImplClass)
+            .build());
+
+    final MethodSpec equalsBuilder = generateEqualsMethodDefinition(false);
+    stateClassBuilder.addMethod(equalsBuilder);
+
+    for (ExecutableElement element : mOnUpdateStateMethods) {
+      final String stateUpdateClassName = getStateUpdateClassName(element);
+      final List<Parameter> parameters = getParamsWithAnnotation(element, Param.class);
+
+      stateClassBuilder.addMethod(
+          new CreateStateUpdateInstanceMethodSpecBuilder()
+              .parameters(parameters)
+              .stateUpdateClass(stateUpdateClassName)
+              .build());
+    }
+
