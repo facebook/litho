@@ -103,3 +103,10 @@ public class SizeSpec {
    * @return the size specification based on size and mode
    */
   public static int makeSizeSpec(int size, @MeasureSpecMode int mode) {
+    return View.MeasureSpec.makeMeasureSpec(size, mode);
+  }
+
+  /**
+   * Extracts the mode from the supplied size specification.
+   *
+   * @param sizeSpec the size specification to extract the mode from

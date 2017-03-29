@@ -31,3 +31,4 @@ public class DrawableReferenceTest {
 
     assertEquals(
         Reference.acquire(
+            context,

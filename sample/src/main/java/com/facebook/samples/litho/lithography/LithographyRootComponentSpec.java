@@ -33,3 +33,4 @@ public class LithographyRootComponentSpec {
 
     return Recycler.create(c)
         .binder(recyclerBinder)
+        .withLayout().flexShrink(0)

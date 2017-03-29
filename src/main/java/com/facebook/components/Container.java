@@ -23,3 +23,12 @@ public final class Container {
   private Container() {
   }
 
+  public static ComponentLayout.ContainerBuilder create(
+      ComponentContext c,
+      @AttrRes int defStyleAttr,
+      @StyleRes int defStyleRes) {
+    return c.newLayoutBuilder(defStyleAttr, defStyleRes);
+  }
+
+  public static ComponentLayout.ContainerBuilder create(ComponentContext c) {
+    return create(c, 0, 0);

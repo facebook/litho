@@ -36,3 +36,6 @@ import static org.junit.Assert.assertEquals;
 @Config(
     manifest = Config.NONE,
     sdk = LOLLIPOP,
+    shadows = {
+        LayoutDirectionViewShadow.class,
+        LayoutDirectionViewGroupShadow.class})

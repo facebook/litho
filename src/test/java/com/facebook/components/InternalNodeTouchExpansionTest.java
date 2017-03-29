@@ -33,3 +33,6 @@ public class InternalNodeTouchExpansionTest {
     mInternalNode.touchHandler(new EventHandler(null, 1));
   }
 
+  private static void setDirection(InternalNode node, YogaDirection direction) {
+    node.layoutDirection(direction);
+    node.calculateLayout();
