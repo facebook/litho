@@ -353,3 +353,63 @@ public class MountStateVisibilityEventsTest {
     Whitebox.setInternalState(layoutState, "mVisibilityOutputs", visibilityOutputs);
 
     mMountState.mount(layoutState, new Rect(LEFT, 7, RIGHT, 12));
+    verify(mockLifecycle1, times(1)).dispatchOnEvent(
+        eq(visibleHandler1),
+        isA(VisibleEvent.class));
+    verify(mockLifecycle2, times(1)).dispatchOnEvent(
+        eq(visibleHandler2),
+        isA(VisibleEvent.class));
+    assertEquals(2, getVisibilityItemMapSize());
+  }
+
+  private int getVisibilityItemMapSize() {
+    return ((LongSparseArray) Whitebox.getInternalState(
+        mMountState,
+        "mVisibilityIdToItemMap")).size();
+  }
+
+  private static void checkNoVisibilityEventsDispatched(ComponentLifecycle lifecycle) {
+    verify(lifecycle, times(0)).dispatchOnEvent(isA(EventHandler.class), isA(VisibleEvent.class));
+    verify(lifecycle, times(0)).dispatchOnEvent(
+        isA(EventHandler.class),
+        isA(FocusedVisibleEvent.class));
+    verify(lifecycle, times(0)).dispatchOnEvent(
+        isA(EventHandler.class),
+        isA(FullImpressionVisibleEvent.class));
+    verify(lifecycle, times(0)).dispatchOnEvent(isA(EventHandler.class), isA(InvisibleEvent.class));
+  }
+
+  private static EventHandler createEventHandler(Component<?> component, int type) {
+    EventHandler handler = new EventHandler(component, type);
+    return handler;
+  }
+
+  private static ComponentLifecycle createLifecycleMock() {
+    ComponentLifecycle mock = mock(ComponentLifecycle.class);
+    doReturn(null).when(mock).dispatchOnEvent(any(EventHandler.class), any());
+
+    return mock;
+  }
+
+  private VisibilityOutput createVisibilityOutput(
+      Component<?> component,
+      Rect bounds,
+      EventHandler visibleHandler,
+      EventHandler focusedHandler,
+      EventHandler fullImpressionHandler,
+      EventHandler invisibleHandler) {
+    VisibilityOutput visibilityOutput = new VisibilityOutput();
+
+    Whitebox.setInternalState(visibilityOutput, "mComponent", component);
+    visibilityOutput.setBounds(bounds);
+    visibilityOutput.setVisibleEventHandler(visibleHandler);
+    visibilityOutput.setFocusedEventHandler(focusedHandler);
+    visibilityOutput.setFullImpressionEventHandler(fullImpressionHandler);
+    visibilityOutput.setInvisibleEventHandler(invisibleHandler);
+
+    mLastVisibilityOutputId += 1;
+    visibilityOutput.setId(mLastVisibilityOutputId);
+
+    return visibilityOutput;
+  }
+}

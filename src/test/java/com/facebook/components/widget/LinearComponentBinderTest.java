@@ -209,3 +209,5 @@ public class LinearComponentBinderTest {
   public static class MyTestLinearComponentBinder extends LinearComponentBinder {
 
     private final List<Integer> mItems;
+
+    public MyTestLinearComponentBinder(Context context, LinearLayoutManager layoutManager,
