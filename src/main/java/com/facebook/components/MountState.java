@@ -748,3 +748,4 @@ class MountState {
         unmountItem(mContext, i, mHostsByMarker);
         mPrepareMountStats.unmountedCount++;
       } else {
+        final long newHostMarker = newLayoutState.getMountableOutputAt(newPosition).getHostMarker();
