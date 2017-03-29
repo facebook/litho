@@ -19,3 +19,5 @@ import com.google.common.base.Predicate;
 class ComponentQueries {
 
   /**
+   * Checks whether the given {@link ComponentHost} has the given text as it's text. It does not
+   * look at the host's children.
