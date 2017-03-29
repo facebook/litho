@@ -63,3 +63,8 @@ public class ProgressSpecTest {
 
   private ComponentView getMountedView() {
     Progress.Builder progress = Progress.create(mContext);
+
+    return ComponentTestHelper.mountComponent(
+        progress);
+  }
+}
