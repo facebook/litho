@@ -281,3 +281,5 @@ class EditTextSpec {
         isSingleLine,
         textColor,
         textColorStateList,
+        hintColor,
+        hintColorStateList,
