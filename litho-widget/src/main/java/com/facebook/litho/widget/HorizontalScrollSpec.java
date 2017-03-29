@@ -241,3 +241,5 @@ class HorizontalScrollSpec {
     Size size = sSizePool.acquire();
     if (size == null) {
       size = new Size();
+    }
+
