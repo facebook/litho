@@ -251,3 +251,7 @@ public abstract class BaseBinder<
           }
         }
       }
+
+      if (componentList != null) {
+        releaseList(componentList);
+      }
