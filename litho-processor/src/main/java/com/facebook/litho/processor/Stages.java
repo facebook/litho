@@ -1666,3 +1666,4 @@ public class Stages {
    * Find variables annotated with {@link PropDefault}
    */
   private void populatePropDefaults() {
+    mPropDefaults = PropDefaultsExtractor.getPropDefaults(mSourceElement);

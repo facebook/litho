@@ -1302,3 +1302,6 @@ class MountState {
           view.setTag(viewTags.keyAt(i), null);
         }
       }
+    }
+  }
+
