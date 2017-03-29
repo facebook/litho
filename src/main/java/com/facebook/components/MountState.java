@@ -104,3 +104,5 @@ class MountState {
 
   private final MountItem mRootHostMountItem;
 
+  public MountState(ComponentView view) {
+    mIndexToItemMap = new LongSparseArray<>();

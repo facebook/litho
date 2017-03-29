@@ -265,3 +265,4 @@ class DelegateMethodSpecBuilder {
     }
 
     for (Parameter parameter : mImplParameters) {
+      if (parameter.name.equals(parameterName)) {
