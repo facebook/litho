@@ -17,3 +17,5 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.ComponentsRule;
 import com.facebook.litho.testing.TestDrawableComponent;
+
+import org.junit.Before;

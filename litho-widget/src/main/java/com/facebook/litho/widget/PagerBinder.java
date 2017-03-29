@@ -26,3 +26,10 @@ import com.facebook.litho.SizeSpec;
 public abstract class PagerBinder extends BaseBinder<
     ViewPager,
     PagerBinder.PagerWorkingRangeController> {
+
+  private static final int ADDITIONAL_ADAPTER_PAGES = 1;
+  private static final float DEFAULT_PAGE_WIDTH = 1f;
+  private static final int DEFAULT_INITIAL_PAGE = 0;
+
+  private final InternalAdapter mAdapter;
+  private final ViewPager.OnPageChangeListener mOnPageChangeListener;

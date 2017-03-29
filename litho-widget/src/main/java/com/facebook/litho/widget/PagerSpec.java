@@ -32,3 +32,5 @@ import com.facebook.litho.annotations.ShouldUpdate;
  */
 @MountSpec(canMountIncrementally = true, isPureRender = true)
 class PagerSpec {
+
+  @OnMeasure
