@@ -1121,3 +1121,5 @@ public class ComponentTree {
         && layoutState.isComponentId(componentId)
         && layoutState.isCompatibleSize(width, height)
         && layoutState.isCompatibleAccessibility();
+  }
+
