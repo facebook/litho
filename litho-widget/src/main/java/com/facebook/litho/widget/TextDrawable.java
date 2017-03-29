@@ -331,3 +331,12 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
 
   private void setSelection(ClickableSpan span) {
     final Spanned text = (Spanned) mText;
+    setSelection(text.getSpanStart(span), text.getSpanEnd(span));
+  }
+
+  /**
+   * Updates selection to [selectionStart, selectionEnd] range.
+   * @param selectionStart
+   * @param selectionEnd
+   */
+  private void setSelection(int selectionStart, int selectionEnd) {
