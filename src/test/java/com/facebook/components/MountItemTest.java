@@ -136,3 +136,5 @@ public class MountItemTest {
   public void testIsAccessibleWithAccessibleComponent() {
     final MountItem mountItem = new MountItem();
 
+    mountItem.init(
+        TestDrawableComponent.create(
