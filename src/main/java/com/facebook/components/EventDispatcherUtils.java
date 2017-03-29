@@ -86,3 +86,6 @@ class EventDispatcherUtils {
       sFullImpressionVisibleEvent = new FullImpressionVisibleEvent();
     }
 
+    final EventDispatcher eventDispatcher =
+        fullImpressionHandler.mHasEventDispatcher.getEventDispatcher();
+    eventDispatcher.dispatchOnEvent(fullImpressionHandler, sFullImpressionVisibleEvent);

@@ -144,3 +144,6 @@ class LayoutState {
 
   private boolean mShouldDuplicateParentState = true;
 
+  private boolean mShouldGenerateDiffTree = false;
+  private int mComponentTreeId = -1;
+
