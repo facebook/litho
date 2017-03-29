@@ -251,3 +251,4 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
     outputSize.height = mLastMeasuredLayout.getHeight();
   }
 
+  protected void copyInterStageImpl(Component<L> component) {
