@@ -146,3 +146,9 @@ public class ComponentHost extends ViewGroup {
     unmount(index, item);
   }
 
+  /**
+   * Unmounts the given {@link MountItem} with unique index.
+   * @param index index of the {@link MountItem}. Guaranteed to be the same index as was passed for
+   * the corresponding {@code mount(index, mountItem)} call.
+   * @param mountItem item to be unmounted from the host.
+   */

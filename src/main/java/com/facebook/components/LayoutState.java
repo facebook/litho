@@ -217,3 +217,4 @@ class LayoutState {
       int importantForAccessibility,
       boolean duplicateParentState) {
     final boolean isMountViewSpec = isMountViewSpec(component);
+
