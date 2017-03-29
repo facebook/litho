@@ -646,3 +646,21 @@ public class MountSpecHelper extends ComponentSpecHelper {
       throw new ComponentsProcessingException(
           mSpecElement,
           "shouldUseDisplayList = true can only be used on MountSpecs that mount a drawable.");
+    }
+
+    final MethodSpec.Builder shouldUseDisplayList =
+        MethodSpec.methodBuilder("shouldUseDisplayList")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(TypeName.BOOLEAN)
+            .addStatement("return true");
+
+    mTypeSpec.addMethod(shouldUseDisplayList.build());
+  }
+
+  public boolean isPureRender() {
+    return mSpecElement.getAnnotation(MountSpec.class).isPureRender();
+  }
+
+  public boolean callsShouldUpdateOnMount() {
+    for (Element enclosedElement : mSpecElement.getEnclosedElements()) {
