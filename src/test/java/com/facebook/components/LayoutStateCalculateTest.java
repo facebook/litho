@@ -916,3 +916,5 @@ public class LayoutStateCalculateTest {
         return Container.create(c)
             .child(
                 Layout.create(c, innerComponent)
+                    .widthPx(100)
+                    .heightPx(100))

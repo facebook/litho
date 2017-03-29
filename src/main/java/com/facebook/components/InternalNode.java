@@ -683,3 +683,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   public InternalNode positionDip(
       YogaEdge edge,
       @Dimension(unit = DP) int position) {
+    return positionPx(edge, mResourceResolver.dipsToPixels(position));
+  }
+
+  @Override
+  public InternalNode widthPx(@Px int width) {
