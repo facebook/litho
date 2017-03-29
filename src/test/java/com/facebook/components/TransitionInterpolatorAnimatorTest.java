@@ -77,3 +77,4 @@ public class TransitionInterpolatorAnimatorTest {
 
     assertEquals(DURATION, mAnimator.getDuration());
     assertEquals(START_DELAY, mAnimator.getStartDelay());
+    assertEquals(mInterpolator, mAnimator.getInterpolator());

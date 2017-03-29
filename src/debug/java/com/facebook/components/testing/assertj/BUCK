@@ -8,3 +8,4 @@ android_library(
     ],
     visibility = [
         "//javatests/...",
+        make_dep_path("src/test/..."),

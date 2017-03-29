@@ -69,3 +69,21 @@ public class TestItem {
             .getTextItems();
   }
 
+  void setHost(ComponentHost host) {
+    mHost = host;
+  }
+
+  void setContent(Object content) {
+    mContent = content;
+  }
+
+  Object getContent() {
+    return mContent;
+  }
+
+  void release() {
+    mTestKey = null;
+    mBounds.setEmpty();
+    mHost = null;
+  }
+}

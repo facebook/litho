@@ -90,3 +90,20 @@ public class MountStateTestItemTest {
                 .child(
                     TestDrawableComponent.create(c)
                         .withLayout().flexShrink(0)
+                        .testKey(TEST_ID_1))
+                .build();
+          }
+        });
+
+    ComponentViewAssert.assertThat(componentView)
+        .containsTestKey(TEST_ID_1, times(2))
+        .doesNotContainTestKey(TEST_ID_2);
+  }
+
+  @Test
+  public void testSkipInvalidTestKeys() {
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
