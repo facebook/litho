@@ -38,3 +38,16 @@ import java.util.Map;
 import java.util.Set;
 
 import com.facebook.common.internal.ImmutableList;
+import com.facebook.litho.annotations.Event;
+import com.facebook.litho.annotations.FromEvent;
+import com.facebook.litho.annotations.OnCreateInitialState;
+import com.facebook.litho.annotations.OnCreateTreeProp;
+import com.facebook.litho.annotations.OnEvent;
+import com.facebook.litho.annotations.OnLoadStyle;
+import com.facebook.litho.annotations.OnUpdateState;
+import com.facebook.litho.annotations.Param;
+import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.annotations.PropDefault;
+import com.facebook.litho.annotations.ResType;
+import com.facebook.litho.annotations.State;
+import com.facebook.litho.annotations.TreeProp;
