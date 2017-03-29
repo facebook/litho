@@ -107,3 +107,4 @@ public class Utils {
     final List<TypeElement> annotatedMethods = new ArrayList<>();
     for (final Element enclosedElement : element.getEnclosedElements()) {
       if (enclosedElement.getKind() == ElementKind.CLASS) {
+        final TypeElement typeElement = (TypeElement) enclosedElement;

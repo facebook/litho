@@ -60,3 +60,4 @@ import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
 import com.facebook.widget.accessibility.delegates.AccessibleClickableSpan;
 
 import static android.support.v4.widget.ExploreByTouchHelper.INVALID_ID;
+import static android.text.Layout.Alignment.ALIGN_NORMAL;

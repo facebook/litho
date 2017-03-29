@@ -297,3 +297,17 @@ public class MountStateRemountInPlaceTest {
   }
 
   @Test
+  public void testMountUnmountWithNoShouldUpdateAndSameMeasures() {
+    final TestComponent firstComponent =
+        TestDrawableComponent.create(mContext, 0, 0, true, true, true, false, false, true)
+            .build();
+
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        new ComponentView(mContext),
+        ComponentTree.create(mContext, new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                .child(firstComponent)
+                .build();
+          }

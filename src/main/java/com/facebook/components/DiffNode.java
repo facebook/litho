@@ -89,3 +89,4 @@ class DiffNode implements Cloneable {
     return mChildren;
   }
 
+  void addChild(DiffNode node) {

@@ -291,3 +291,8 @@ public class TestDrawableComponent extends ComponentLifecycle {
           implementsAccessibility,
           usesDisplayList,
           isMountSizeDependent));
+    }
+
+    @Override
+    public int hashCode() {
+      return super.hashCode() + color;

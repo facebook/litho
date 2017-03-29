@@ -177,3 +177,5 @@ public class TreeDiffingTest {
         YogaConstants.UNDEFINED,
         YogaConstants.UNDEFINED);
 
+    assertTrue(YogaMeasureOutput.getHeight(output) == (int) diffNode.getLastMeasuredHeight());
+    assertTrue(YogaMeasureOutput.getWidth(output) == (int) diffNode.getLastMeasuredWidth());
