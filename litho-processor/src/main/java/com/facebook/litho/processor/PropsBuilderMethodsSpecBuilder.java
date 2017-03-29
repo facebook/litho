@@ -30,3 +30,4 @@ import com.squareup.javapoet.WildcardTypeName;
 class PropsBuilderMethodsSpecBuilder {
   private int mIndex;
   private PropParameter mPropParameter;
+  private String mImplName;

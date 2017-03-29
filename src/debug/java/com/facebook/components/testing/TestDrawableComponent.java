@@ -360,3 +360,8 @@ public class TestDrawableComponent extends ComponentLifecycle {
       mState = null;
       mBuilderPool.release(this);
     }
+
+    public Builder key(String key) {
+      super.setKey(key);
+      return this;
+    }
