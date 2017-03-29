@@ -71,3 +71,4 @@ class PropsBuilderMethodsSpecBuilder {
     switch (mPropParameter.resType) {
       case STRING:
         builders.add(regularBuilder());
+        builders.add(resBuilder(ClassNames.STRING_RES, "resolveString"));
