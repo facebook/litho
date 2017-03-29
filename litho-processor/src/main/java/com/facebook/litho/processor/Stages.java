@@ -1700,3 +1700,4 @@ public class Stages {
         .addStatement(STATE_CONTAINER_IMPL_MEMBER + " = new $T()", stateContainerImplClass);
 
     implClassBuilder.addMethod(constructorBuilder.build());
+
