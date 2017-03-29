@@ -50,3 +50,4 @@ public interface ComponentLayout {
 
   @Px
   int getWidth();
+  @Px

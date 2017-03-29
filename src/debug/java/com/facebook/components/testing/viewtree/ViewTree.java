@@ -57,3 +57,5 @@ public final class ViewTree {
    * @return null if no such view is found, or a list showing the path in the hierarchy to the
    * view for which the predicate holds
    */
+  @Nullable
+  public ImmutableList<View> findChild(
