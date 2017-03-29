@@ -257,3 +257,4 @@ class MountState {
 
     mLastMountedComponentTreeId = componentTreeId;
 
+    if (logger != null) {
