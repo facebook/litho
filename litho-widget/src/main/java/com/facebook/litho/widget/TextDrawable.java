@@ -99,3 +99,4 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
   }
 
   @Override
+  public boolean onTouchEvent(MotionEvent event, View view) {
