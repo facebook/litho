@@ -80,3 +80,6 @@ public final class ComponentTestHelper {
     return mountComponent(context, component, 100, 100);
   }
 
+  /**
+   * Mount a component into a component view.
+   *

@@ -554,3 +554,38 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public InternalNode paddingPercent(YogaEdge edge, float percent) {
+    mPrivateFlags |= PFLAG_PADDING_IS_SET;
+
+    if (mIsNestedTreeHolder) {
+      if (mNestedTreePadding == null) {
+        mNestedTreePadding = ComponentsPools.acquireSpacing();
+      }
+
+      mNestedTreePadding.set(edge.intValue(), percent);
+      setIsPaddingPercent(edge, true);
+    } else {
+      mYogaNode.setPaddingPercent(edge, percent);
+    }
+
+    return this;
+  }
+
+  @Override
+  public InternalNode paddingAttr(
+      YogaEdge edge,
+      @AttrRes int resId,
+      @DimenRes int defaultResId) {
+    return paddingPx(edge, mResourceResolver.resolveDimenOffsetAttr(resId, defaultResId));
+  }
+
+  @Override
+  public InternalNode paddingAttr(
+      YogaEdge edge,
+      @AttrRes int resId) {
+    return paddingAttr(edge, resId, 0);
+  }
+
+  @Override
+  public InternalNode paddingRes(YogaEdge edge, @DimenRes int resId) {
+    return paddingPx(edge, mResourceResolver.resolveDimenOffsetRes(resId));
