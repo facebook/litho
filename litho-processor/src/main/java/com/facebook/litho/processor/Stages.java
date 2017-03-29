@@ -938,3 +938,9 @@ public class Stages {
     mClassTypeSpec.addField(builder.build());
   }
 
+  private MethodSpec generateMakeShallowCopy(ClassName componentClassName, boolean hasDeepCopy) {
+    final List<String> componentsInImpl = findComponentsInImpl(componentClassName);
+    final List<String> interStageComponentVariables = getInterStageVariableNames();
+
+    if (componentsInImpl.isEmpty() &&
+        interStageComponentVariables.isEmpty() &&
