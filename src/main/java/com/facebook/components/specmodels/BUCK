@@ -23,3 +23,6 @@ java_library(
         "PUBLIC",
     ],
     deps = [
+        make_dep_path("src/main/java/com/facebook/components/javapoet:javapoet"),
+        COMPONENTS_FBCORE_TARGET,
+        COMPONENTS_JSR_TARGET,

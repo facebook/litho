@@ -28,3 +28,4 @@ public class SectionClassNames {
   public static final ClassName SECTION_CONTEXT =
       ClassName.bestGuess("com.facebook.litho.list.SectionContext");
   public static final ClassName CHANGESET =
+      ClassName.bestGuess("com.facebook.litho.list.ChangeSet");

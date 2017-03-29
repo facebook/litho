@@ -12,3 +12,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.facebook.litho.R;
+import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentView;
+import com.facebook.litho.testing.ComponentTestHelper;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.widget.Text;
+import com.facebook.litho.ColorDrawableShadow;

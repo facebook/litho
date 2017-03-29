@@ -9,3 +9,8 @@ include_defs("//COMPONENTS_DEFS")
 android_library(
     name = "litho",
     srcs = glob(["**/*.java"]),
+    annotation_processor_deps = [
+        COMPONENTS_PROCESSOR_LIB_TARGET,
+    ],
+    annotation_processors = [
+        "com.facebook.litho.processor.ComponentsProcessor",

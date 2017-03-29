@@ -26,3 +26,4 @@ import static com.facebook.litho.specmodels.generator.GeneratorConstants.SPEC_IN
 
 /**
  * Provides a Builder for generating an implementation of
+ * {@link com.facebook.litho.ComponentLifecycle.StateUpdate}
