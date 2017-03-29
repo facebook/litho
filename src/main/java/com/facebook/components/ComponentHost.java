@@ -445,3 +445,6 @@ public class ComponentHost extends ViewGroup {
   }
 
   /**
+   * Sets view tags on this host.
+   * @param viewTags the map containing the tags by id.
+   */
