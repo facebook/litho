@@ -201,3 +201,5 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     mResourceResolver.init(
         mComponentContext,
         componentContext.getResourceCache());
+  }
+

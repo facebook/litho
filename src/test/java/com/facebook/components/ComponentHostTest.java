@@ -517,3 +517,5 @@ public class ComponentHostTest {
   @Test
   public void testGetChildDrawingOrder() {
     View v1 = new View(mContext);
+    mount(2, v1);
+
