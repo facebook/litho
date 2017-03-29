@@ -1632,3 +1632,4 @@ public class Stages {
       delegateParameters.add(",\n$L", parameters.get(i).getSimpleName());
     }
     delegateParameters.unindent();
+
