@@ -43,3 +43,4 @@ public class TestNullLayoutComponent extends Component {
   public String getSimpleName() {
     return "TestNullLayoutComponent";
   }
+}
