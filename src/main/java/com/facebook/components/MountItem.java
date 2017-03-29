@@ -38,3 +38,8 @@ class MountItem {
   private boolean mIsBound;
   private int mImportantForAccessibility;
   private DisplayListDrawable mDisplayListDrawable;
+
+  // ComponentHost flags defined in the LayoutOutput specifying
+  // the behaviour of this item when mounted.
+  private int mFlags;
+
