@@ -279,3 +279,4 @@ public class ComponentLifecycleTest {
 
   @Test
   public void testMountSpecYogaMeasureOutputNotSet() {
+    ComponentLifecycle componentLifecycle = new TestMountSpecWithEmptyOnMeasure();
