@@ -42,3 +42,5 @@ class ComponentQueries {
    * @param pattern the pattern to match
    * @return true if the host has text matching the pattern.
    */
+  static boolean matchesPattern(final ComponentHost host, final Pattern pattern) {
+    for (final CharSequence foundText : host.getTextContent().getTextItems()) {
