@@ -419,3 +419,5 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
     return this;
   }
 
+  public <V extends View> ViewTreeAssert hasVisible(final Class<V> clazz, final Predicate<V> predicate) {
+    final Predicate<View> conjunction = Predicates.and(
