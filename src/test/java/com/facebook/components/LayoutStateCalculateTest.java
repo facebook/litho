@@ -736,3 +736,4 @@ public class LayoutStateCalculateTest {
     LayoutState sameComponentLayoutState = calculateLayoutState(
         RuntimeEnvironment.application,
         component2,
+        -1,
