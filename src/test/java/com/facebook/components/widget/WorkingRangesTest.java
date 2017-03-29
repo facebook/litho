@@ -589,3 +589,4 @@ public class WorkingRangesTest {
     }
 
     @Override
+    public void onUnmount(ViewGroup view) {

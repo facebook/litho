@@ -114,3 +114,20 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
         true,
         null);
+
+    // Check diff tree is not null and consistent.
+    DiffNode node = layoutState.getDiffTree();
+    assertNotNull(node);
+    assertEquals(countNodes(node), 4);
+  }
+
+  private static int countNodes(DiffNode node) {
+    int sum = 1;
+    for (int i = 0; i < node.getChildCount(); i++) {
+      sum += countNodes(node.getChildAt(i));
+    }
+
+    return sum;
+  }
+
+  private InternalNode createInternalNodeForMeasurableComponent(Component component) {

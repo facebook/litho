@@ -122,3 +122,15 @@ class LayoutStateOutputIdCalculator {
    * {@link LayoutStateOutputIdCalculator#calculateLayoutOutputBaseId(LayoutOutput, int, int)} and
    * on a sequence number. The sequence number must be guaranteed to be unique for LayoutOutputs
    * with the same baseId.
+   */
+  static long calculateId(long baseId, int sequence) {
+    if (sequence < 0 || sequence > MAX_SEQUENCE) {
+      throw new IllegalArgumentException("Sequence must be non-negative and no greater than " +
+          MAX_SEQUENCE + " actual sequence "+sequence);
+    }
+
+    return baseId | sequence;
+  }
+
+  /**
+   * Calculates an id for a {@link LayoutOutput}. See

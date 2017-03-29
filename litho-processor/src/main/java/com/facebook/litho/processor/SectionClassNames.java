@@ -34,3 +34,4 @@ public class SectionClassNames {
       ClassName.bestGuess("com.facebook.litho.list.SectionLifecycle.StateUpdate");
   public static final ClassName LOADING_EVENT_HANDLER =
       ClassName.bestGuess("com.facebook.litho.list.LoadingEvent");
+  public static final ClassName CHILDREN =

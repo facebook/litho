@@ -48,3 +48,4 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 
+public class MountSpecHelper extends ComponentSpecHelper {
