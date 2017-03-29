@@ -214,3 +214,5 @@ public class MountStateIncrementalMountTest {
     verifyLoggingAndResetLogger(1, 0);
 
     componentView.getComponent().mountComponent(new Rect(5, 0, 15, 10));
+    assertTrue(child1.isMounted());
+    assertTrue(child2.isMounted());
