@@ -866,3 +866,4 @@ class MountState {
     }
 
     // 4. Mount the content into the selected host.
+    final MountItem item = mountContent(index, component, content, host, layoutOutput);
