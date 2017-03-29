@@ -774,3 +774,35 @@ class MountState {
     return mPrepareMountStats;
   }
 
+  private void removeDisappearingItemMappings(int fromIndex, int toIndex) {
+    for (int i = fromIndex; i <= toIndex; i++) {
+      final MountItem item = getItemAt(i);
+
+      // We do not need this mapping for disappearing items.
+      mIndexToItemMap.remove(mLayoutOutputsIds[i]);
+
+      // Likewise we no longer need host mapping for disappearing items.
+      if (isHostSpec(item.getComponent())) {
+        mHostsByMarker
+            .removeAt(mHostsByMarker.indexOfValue((ComponentHost) item.getContent()));
+      }
+    }
+  }
+
+  /**
+   * Find the index of last descendant of given {@link MountItem}
+   */
+  private int findLastDescendantOfItem(int disappearingItemIndex, MountItem item) {
+    for (int i = disappearingItemIndex + 1; i < mLayoutOutputsIds.length; i++) {
+      if (!ComponentHostUtils.hasAncestorHost(
+             getItemAt(i).getHost(),
+             (ComponentHost) item.getContent())) {
+        // No need to go further as the items that have common ancestor hosts are co-located.
+        // This is the first non-descendant of given MountItem, therefore last descendant is the
+        // item before.
+        return i - 1;
+      }
+    }
+    return mLayoutOutputsIds.length - 1;
+  }
+
