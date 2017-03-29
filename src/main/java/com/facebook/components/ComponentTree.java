@@ -359,3 +359,4 @@ public class ComponentTree {
     return false;
   }
 
+  void incrementalMountComponent() {
