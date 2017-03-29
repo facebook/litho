@@ -639,3 +639,7 @@ public class TreeDiffingTest {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            .backgroundColor(Color.RED)
+            .foregroundRes(android.R.drawable.btn_default)
+            .child(
+                TestDrawableComponent.create(c)

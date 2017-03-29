@@ -195,3 +195,5 @@ public class ComponentTree {
     boolean isMainThreadLayoutBest;
     if (isCompatibleComponentAndSpec(mMainThreadLayoutState)) {
       isMainThreadLayoutBest = true;
+    } else if (isCompatibleSpec(mBackgroundLayoutState, mWidthSpec, mHeightSpec)
+        || !isCompatibleSpec(mMainThreadLayoutState, mWidthSpec, mHeightSpec)) {
