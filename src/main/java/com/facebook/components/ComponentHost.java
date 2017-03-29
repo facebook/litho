@@ -350,3 +350,4 @@ public class ComponentHost extends ViewGroup {
    */
   @Override
   public CharSequence getContentDescription() {
+    return mContentDescription;
