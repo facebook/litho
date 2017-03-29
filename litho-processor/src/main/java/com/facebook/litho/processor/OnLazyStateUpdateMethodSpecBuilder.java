@@ -11,3 +11,5 @@ package com.facebook.components.processor;
 
 import javax.lang.model.element.Modifier;
 
+import com.facebook.components.specmodels.model.ClassNames;
+

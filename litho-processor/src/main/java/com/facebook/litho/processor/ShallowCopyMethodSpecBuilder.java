@@ -43,3 +43,8 @@ class ShallowCopyMethodSpecBuilder {
     return this;
   }
 
+  ShallowCopyMethodSpecBuilder interStageVariables(List<String> interStageVariables) {
+    mInterStageVariables = interStageVariables;
+    return this;
+  }
+
