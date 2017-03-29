@@ -357,3 +357,7 @@ public class ComponentView extends ComponentHost {
     return mMountState.isDirty();
   }
 
+  MountState getMountState() {
+    return mMountState;
+  }
+
