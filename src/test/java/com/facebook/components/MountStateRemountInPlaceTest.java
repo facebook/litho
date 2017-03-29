@@ -653,3 +653,8 @@ public class MountStateRemountInPlaceTest {
 
     ComponentTree tree = ComponentTree.create(mContext, firstLayout)
         .incrementalMount(false)
+        .build();
+    ComponentView cv = new ComponentView(mContext);
+    ComponentTestHelper.mountComponent(cv, tree);
+    tree.setRoot(secondLayout);
+

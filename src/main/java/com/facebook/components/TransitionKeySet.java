@@ -341,3 +341,24 @@ class TransitionKeySet implements TransitionListener {
 
       if (mRunningTransitionsPointer.size() > 0) {
         mTransitionKeySetListener.onTransitionKeySetStart(mKey, mTargetView);
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private boolean areStartEndValuesEqual() {
+    return (mStartValues != null)
+        ? mStartValues.equals(mEndValues)
+        : mEndValues == null;
+  }
+
+  private boolean hasAppearingTransitions() {
+    return (mAppearTransition != null && !mAppearTransition.isEmpty());
+  }
+
+  private boolean hasChangingTransitions() {
+    return (mChangeTransitions != null && !mChangeTransitions.isEmpty());
+  }
+
