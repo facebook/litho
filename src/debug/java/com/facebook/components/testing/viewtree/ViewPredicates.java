@@ -216,3 +216,5 @@ final class ViewPredicates {
       return shadowCanvas2.getDescription();
     } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
       throw new RuntimeException(e);
+    }
+  }
