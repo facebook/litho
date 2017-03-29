@@ -797,3 +797,6 @@ public class ComponentTree {
 
     synchronized (this) {
 
+      final Map<String, List<StateUpdate>> pendingStateUpdates =
+          mStateHandler.getPendingStateUpdates();
+      if (pendingStateUpdates != null && pendingStateUpdates.size() > 0 && root != null) {
