@@ -26,3 +26,5 @@ public class ThreadUtils {
 
   public static void assertMainThread() {
     if (!ComponentsConfiguration.IS_INTERNAL_BUILD || ComponentsConfiguration.isEndToEndTestRun) {
+      return;
+    } else if (!isMainThread()) {

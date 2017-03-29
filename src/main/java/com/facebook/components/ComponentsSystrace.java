@@ -54,3 +54,4 @@ public class ComponentsSystrace {
           sInstance = new DefaultComponentsSystrace();
         }
       }
+    }
