@@ -11,3 +11,6 @@ package com.facebook.litho;
 
 import com.facebook.infer.annotation.ThreadConfined;
 
+/**
+ * Public API for MeasureOutput.
+ */

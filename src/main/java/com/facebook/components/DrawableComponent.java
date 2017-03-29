@@ -48,3 +48,4 @@ class DrawableComponent<T extends Drawable> extends ComponentLifecycle {
       Component component) {
     MatrixDrawable drawable = (MatrixDrawable) content;
     final State<T> state = (State) component;
+

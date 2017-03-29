@@ -39,3 +39,16 @@ public class MountStateViewClickTest {
 
   @Test
   public void testInnerComponentHostClickable() {
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                .child(
+                    Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                        .clickHandler(c.newEventHandler(1))
+                        .child(TestViewComponent.create(c)))
+                .build();
+          }
+        });

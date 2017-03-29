@@ -55,3 +55,17 @@ public abstract class ComponentLifecycle implements EventDispatcher {
 
   public interface StateContainer {}
 
+  private static final YogaBaselineFunction sBaselineFunction = new YogaBaselineFunction() {
+    public float baseline(YogaNodeAPI cssNode, float width, float height) {
+      final InternalNode node = (InternalNode) cssNode.getData();
+      return node.getComponent()
+          .getLifecycle()
+          .onMeasureBaseline(node.getContext(), (int) width, (int) height);
+    }
+  };
+
+  private static final YogaMeasureFunction sMeasureFunction = new YogaMeasureFunction() {
+
+    private final Pools.SynchronizedPool<Size> mSizePool =
+        new Pools.SynchronizedPool<>(2);
+

@@ -20,3 +20,7 @@ import android.view.ViewGroup;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentView;
 
+import static android.view.ViewGroup.LayoutParams;
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+

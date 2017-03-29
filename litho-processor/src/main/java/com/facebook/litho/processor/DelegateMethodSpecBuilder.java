@@ -31,3 +31,15 @@ class DelegateMethodSpecBuilder {
   private String mImplClassName;
   private TypeName mAbstractImplType;
   private List<Parameter> mImplParameters = new ArrayList<>();
+  private List<TypeName> mCheckedExceptions = new ArrayList<>();
+  private boolean mOverridesSuper;
+  private Visibility mVisibility = Visibility.PACKAGE;
+
+  private String mFromName;
+  private TypeName mFromReturnType = TypeName.VOID;
+  private List<Parameter> mFromParams = new ArrayList<>();
+
+  private String mTarget;
+  private String mToName;
+  private TypeName mToReturnType = TypeName.VOID;
+  private List<Parameter> mToParams = new ArrayList<>();
