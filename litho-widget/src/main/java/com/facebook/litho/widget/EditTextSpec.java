@@ -380,3 +380,6 @@ class EditTextSpec {
       editText.setTextColor(textColorStateList);
     }
 
+    if (hintColor != 0) {
+      editText.setHintTextColor(hintColor);
+    } else {
