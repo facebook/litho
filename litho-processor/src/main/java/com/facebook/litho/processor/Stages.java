@@ -3030,3 +3030,11 @@ public class Stages {
     return mSimpleClassName;
   }
 
+  public String getSourceDelegateAccessorName() {
+    return mSourceDelegateAccessorName;
+  }
+
+  public void setSourceDelegateAccessorName(String sourceDelegateAccessorName) {
+    mSourceDelegateAccessorName = sourceDelegateAccessorName;
+  }
+
