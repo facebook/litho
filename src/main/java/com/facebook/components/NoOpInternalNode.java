@@ -86,3 +86,8 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Px
+  @Override
+  public int getPaddingRight() {
+    return 0;
+  }
+
