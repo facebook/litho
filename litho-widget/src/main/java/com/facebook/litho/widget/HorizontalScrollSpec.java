@@ -41,3 +41,7 @@ import com.facebook.components.Size;
 import static com.facebook.components.SizeSpec.EXACTLY;
 import static com.facebook.components.SizeSpec.UNSPECIFIED;
 
+/**
+ * A component that wraps another component and allow it to be horizontally scrollable. It's
+ * analogous to a {@link android.widget.HorizontalScrollView}.
+ */
