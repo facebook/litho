@@ -172,3 +172,4 @@ public class TreeDiffingTest {
     node.setCachedMeasuresValid(true);
     node.setDiffNode(diffNode);
 
+    long output = measureInternalNode(

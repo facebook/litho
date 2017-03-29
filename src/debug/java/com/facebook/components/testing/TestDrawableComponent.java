@@ -273,3 +273,4 @@ public class TestDrawableComponent extends ComponentLifecycle {
   }
 
   public static class State extends TestComponent<TestDrawableComponent> implements Cloneable {
+    int color = Color.BLACK;

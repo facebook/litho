@@ -182,3 +182,19 @@ public class InternalNodeTest {
   }
 
   @Test
+  public void testMinWidthFlag() {
+    mNode.minWidthPx(4);
+    assertTrue(isFlagSet(mNode, "PFLAG_MIN_WIDTH_IS_SET"));
+    clearFlag(mNode, "PFLAG_MIN_WIDTH_IS_SET");
+    assertEmptyFlags(mNode);
+  }
+
+  @Test
+  public void testMaxWidthFlag() {
+    mNode.maxWidthPx(4);
+    assertTrue(isFlagSet(mNode, "PFLAG_MAX_WIDTH_IS_SET"));
+    clearFlag(mNode, "PFLAG_MAX_WIDTH_IS_SET");
+    assertEmptyFlags(mNode);
+  }
+
+  @Test
