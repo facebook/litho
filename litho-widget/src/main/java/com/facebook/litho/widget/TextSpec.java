@@ -114,3 +114,4 @@ class TextSpec {
 
   @OnLoadStyle
   static void onLoadStyle(
+      ComponentContext c,
