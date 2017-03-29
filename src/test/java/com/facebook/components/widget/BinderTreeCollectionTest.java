@@ -302,3 +302,4 @@ public class BinderTreeCollectionTest {
         shiftBy);
 
     assertEquals(originalSize - 4, mBinderTreeCollection.size());
+    assertEquals(treeAtPosition1, mBinderTreeCollection.get(1));

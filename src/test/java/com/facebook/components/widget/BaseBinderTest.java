@@ -397,3 +397,12 @@ public class BaseBinderTest {
 
     @Override
     public boolean isAsyncLayoutEnabled() {
+      return true;
+    }
+
+    @Override
+    public int getCount() {
+      return mItems.size();
+    }
+
+    @Override

@@ -197,3 +197,58 @@ public abstract class RecyclerComponentBinder<L extends RecyclerView.LayoutManag
       } else {
         componentView.setLayoutParams(new RecyclerView.LayoutParams(width, height));
       }
+      componentView.setComponent(mBinder.getComponentAt(position));
+    }
+
+    @Override
+    public int getItemCount() {
+      return mBinder.getCount();
+    }
+
+    @Override
+    public long getItemId(int position) {
+      return mBinder.getComponentId(position);
+    }
+
+    @Override
+    public void onDataSetChanged() {
+      notifyDataSetChanged();
+    }
+
+    @Override
+    public void onItemInserted(int position) {
+      notifyItemInserted(position);
+    }
+
+    @Override
+    public void onItemRangeInserted(int positionStart, int itemCount) {
+      notifyItemRangeInserted(positionStart, itemCount);
+    }
+
+    @Override
+    public void onItemChanged(int position) {
+      notifyItemChanged(position);
+    }
+
+    @Override
+    public void onItemRangeChanged(int positionStart, int itemCount) {
+      notifyItemRangeChanged(positionStart, itemCount);
+    }
+
+    @Override
+    public void onItemMoved(int fromPosition, int toPosition) {
+      notifyItemMoved(fromPosition, toPosition);
+    }
+
+    @Override
+    public void onItemRemoved(int position) {
+      notifyItemRemoved(position);
+    }
+
+    @Override
+    public void onItemRangeRemoved(int positionStart, int itemCount) {
+      notifyItemRangeRemoved(positionStart, itemCount);
+    }
+  }
+
+  private static class ComponentViewHolder extends RecyclerView.ViewHolder {

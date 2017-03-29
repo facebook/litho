@@ -124,3 +124,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   // When this flag is set, focusedHandler was explicitly set on this node.
   private static final long PFLAG_FOCUSED_HANDLER_IS_SET = 1L << 21;
   // When this flag is set, fullImpressionHandler was explicitly set on this node.
+  private static final long PFLAG_FULL_IMPRESSION_HANDLER_IS_SET = 1L << 22;
