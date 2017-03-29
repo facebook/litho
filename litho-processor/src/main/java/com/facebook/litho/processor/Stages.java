@@ -179,3 +179,6 @@ public class Stages {
       Class<Annotation>[] stageAnnotations,
       Class<Annotation>[] interStagePropAnnotations,
       TypeSpec.Builder typeSpec,
+      List<TypeVariableName> typeVariables,
+      boolean supportState,
+      Map<String, TypeMirror> extraStateMembers,
