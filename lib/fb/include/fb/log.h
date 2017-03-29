@@ -180,3 +180,59 @@ int __android_log_print(int prio, const char *tag, const char *fmt, ...)
 #ifndef FBLOGE_IF
 #define FBLOGE_IF(cond, ...) \
   ((CONDITION(cond)) ? ((void)FBLOG(LOG_ERROR, LOG_TAG, __VA_ARGS__)) : (void)0)
+#endif
+
+// ---------------------------------------------------------------------
+
+/*
+ * Conditional based on whether the current LOG_TAG is enabled at
+ * verbose priority.
+ */
+#ifndef IF_FBLOGV
+#if FBLOG_NDEBUG
+#define IF_FBLOGV() if (false)
+#else
+#define IF_FBLOGV() IF_FBLOG(LOG_VERBOSE, LOG_TAG)
+#endif
+#endif
+
+/*
+ * Conditional based on whether the current LOG_TAG is enabled at
+ * debug priority.
+ */
+#ifndef IF_FBLOGD
+#define IF_FBLOGD() IF_FBLOG(LOG_DEBUG, LOG_TAG)
+#endif
+
+/*
+ * Conditional based on whether the current LOG_TAG is enabled at
+ * info priority.
+ */
+#ifndef IF_FBLOGI
+#define IF_FBLOGI() IF_FBLOG(LOG_INFO, LOG_TAG)
+#endif
+
+/*
+ * Conditional based on whether the current LOG_TAG is enabled at
+ * warn priority.
+ */
+#ifndef IF_FBLOGW
+#define IF_FBLOGW() IF_FBLOG(LOG_WARN, LOG_TAG)
+#endif
+
+/*
+ * Conditional based on whether the current LOG_TAG is enabled at
+ * error priority.
+ */
+#ifndef IF_FBLOGE
+#define IF_FBLOGE() IF_FBLOG(LOG_ERROR, LOG_TAG)
+#endif
+
+// ---------------------------------------------------------------------
+
+/*
+ * Log a fatal error.  If the given condition fails, this stops program
+ * execution like a normal assertion, but also generating the given message.
+ * It is NOT stripped from release builds.  Note that the condition test
+ * is -inverted- from the normal assert() semantics.
+ */
