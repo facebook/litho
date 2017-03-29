@@ -23,3 +23,4 @@ import com.facebook.components.Touchable;
 import com.facebook.components.fresco.common.NoOpDrawable;
 import com.facebook.drawee.drawable.ForwardingDrawable;
 import com.facebook.drawee.interfaces.DraweeController;
+import com.facebook.drawee.interfaces.DraweeHierarchy;

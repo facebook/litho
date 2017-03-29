@@ -114,3 +114,6 @@ public class ResourceResolver {
 
   private final int[] resolveIntArrayRes(@ArrayRes int resId) {
     if (resId != 0) {
+      int[] cached = mResourceCache.get(resId);
+      if (cached != null) {
+        return cached;
