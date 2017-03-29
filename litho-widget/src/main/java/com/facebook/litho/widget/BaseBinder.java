@@ -397,3 +397,8 @@ public abstract class BaseBinder<
     }
   }
 
+  @Override
+  public void setSize(int width, int height) {
+    final int newWidthSpec = SizeSpec.makeSizeSpec(width, EXACTLY);
+    final int newHeightSpec = SizeSpec.makeSizeSpec(height, EXACTLY);
+
