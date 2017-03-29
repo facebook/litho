@@ -1571,3 +1571,4 @@ class LayoutState {
         mTestOutputs.clear();
       }
 
+      mShouldGenerateDiffTree = false;
