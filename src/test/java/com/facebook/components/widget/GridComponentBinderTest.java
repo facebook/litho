@@ -244,3 +244,4 @@ public class GridComponentBinderTest {
     Assert.assertEquals(0, mBinder.getFirstPosition());
   }
 
+  private void setupBinder(int orientation) {
