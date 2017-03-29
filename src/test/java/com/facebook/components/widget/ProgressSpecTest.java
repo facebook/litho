@@ -30,3 +30,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(ComponentsTestRunner.class)
 public class ProgressSpecTest {
+  private ComponentContext mContext;
+
+  @Before
+  public void setup() {
+    mContext = new ComponentContext(RuntimeEnvironment.application);
+  }

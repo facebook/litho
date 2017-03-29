@@ -584,3 +584,4 @@ public class TreeDiffingTest {
             .foregroundRes(android.R.drawable.btn_default)
             .child(TestDrawableComponent.create(c))
             .child(
+                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
