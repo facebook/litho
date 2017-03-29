@@ -16,3 +16,4 @@ android_library(
         COMPONENTS_POWERMOCK_REFLECT_TARGET,
         make_dep_path("src/debug/java/com/facebook/components/testing/viewtree:viewtree"),
         make_dep_path("src/debug/java/com/facebook/components/testing:testing"),
+    ],

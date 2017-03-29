@@ -14,3 +14,7 @@ android_library(
     ],
     annotation_processors = [
         "com.facebook.litho.processor.ComponentsProcessor",
+    ],
+    visibility = [
+        "PUBLIC",
+    ],

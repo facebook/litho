@@ -12,3 +12,7 @@ java_library(
     srcs = glob(["*.java"]),
     provided_deps = [
         COMPONENTS_JAVAPOET_TARGET,
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
