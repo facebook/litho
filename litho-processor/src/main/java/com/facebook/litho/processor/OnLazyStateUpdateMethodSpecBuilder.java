@@ -138,3 +138,5 @@ class OnLazyStateUpdateMethodSpecBuilder {
 
     final TypeSpec.Builder stateBuilderImpl = TypeSpec.anonymousClassBuilder("")
         .addSuperinterface(mStateUpdateType)
+        .addMethod(stateUpdate.build())
+        .addMethod(isLazyStateUpdate.build());

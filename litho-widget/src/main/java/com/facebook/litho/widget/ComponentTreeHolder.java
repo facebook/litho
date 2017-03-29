@@ -42,3 +42,4 @@ public class ComponentTreeHolder {
   private boolean mIsTreeValid;
   private LayoutHandler mLayoutHandler;
 
+  static ComponentTreeHolder acquire(ComponentInfo componentInfo, LayoutHandler layoutHandler) {

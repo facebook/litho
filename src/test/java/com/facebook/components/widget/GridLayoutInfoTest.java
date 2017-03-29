@@ -13,3 +13,10 @@ import android.support.v7.widget.GridLayoutManager;
 
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RuntimeEnvironment;
+
+import static android.support.v7.widget.OrientationHelper.HORIZONTAL;
+import static android.support.v7.widget.OrientationHelper.VERTICAL;
