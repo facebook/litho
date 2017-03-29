@@ -1521,3 +1521,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     if ((mPrivateFlags & PFLAG_BACKGROUND_IS_SET) != 0L) {
       node.mBackground = mBackground;
     }
+    if ((mPrivateFlags & PFLAG_FOREGROUND_IS_SET) != 0L) {
