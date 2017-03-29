@@ -131,3 +131,7 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
       }
     }
 
+    if (retryReference == null) {
+      mGenericDraweeHierarchy.setRetryImage(null);
+      return;
+    }
