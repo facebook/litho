@@ -184,3 +184,5 @@ class EditTextSpec {
       @Prop(optional = true) Typeface typeface,
       @Prop(optional = true) Layout.Alignment textAlignment,
       @Prop(optional = true) int gravity,
+      @Prop(optional = true) boolean editable,
+      @Prop(optional = true) int selection) {
