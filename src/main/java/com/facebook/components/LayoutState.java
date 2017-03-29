@@ -725,3 +725,4 @@ class LayoutState {
         drawableComponent,
         layoutState,
         node,
+        type,

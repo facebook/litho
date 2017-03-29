@@ -1367,3 +1367,6 @@ class MountState {
       setBackgroundCompat(
           view,
           Reference.acquire((ComponentContext) view.getContext(), backgroundReference));
+    }
+  }
+
