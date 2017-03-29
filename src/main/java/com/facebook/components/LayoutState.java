@@ -341,3 +341,6 @@ class LayoutState {
     return output;
   }
 
+  private static boolean isLayoutDirectionRTL(Context context) {
+    ApplicationInfo applicationInfo = context.getApplicationInfo();
+
