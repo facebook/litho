@@ -1481,3 +1481,9 @@ public class Stages {
           new Parameter(ClassName.get(e.asType()), e.getSimpleName().toString()));
 
       List<TypeMirror> genericArgs = getTypeVarArguments(e.asType());
+
+      if (genericArgs != null) {
+        for (TypeMirror genericArg : genericArgs) {
+          builder.typeParameter(genericArg.toString());
+        }
+      }
