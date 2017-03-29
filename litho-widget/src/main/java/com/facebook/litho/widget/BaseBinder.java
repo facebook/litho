@@ -113,3 +113,6 @@ public abstract class BaseBinder<
   }
 
   @Override
+  public final void notifyItemChanged(int position) {
+    assertMainThread();
+
