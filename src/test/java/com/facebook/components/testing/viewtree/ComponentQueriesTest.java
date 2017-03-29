@@ -31,3 +31,8 @@ public class ComponentQueriesTest {
 
   @Test
   public void testNoTextOnComponent() {
+    final ComponentView view = ComponentTestHelper.mountComponent(
+        mContext,
+        Text.create(mContext)
+            .text("goodbye")
+        .build());

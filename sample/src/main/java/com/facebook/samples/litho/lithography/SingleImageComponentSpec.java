@@ -31,3 +31,4 @@ public class SingleImageComponentSpec {
     final DraweeController controller = Fresco.newDraweeControllerBuilder()
         .setUri(image)
         .build();
+    return FrescoComponent.create(c)
