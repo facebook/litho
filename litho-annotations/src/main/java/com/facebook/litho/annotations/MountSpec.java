@@ -54,3 +54,9 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MountSpec {
+  String value() default "";
+
+  /**
+   * Whether the generated class should be public. If not, it will be package-private.
+   */
+  boolean isPublic() default true;

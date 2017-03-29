@@ -463,3 +463,5 @@ public class MountStateIncrementalMountTest {
     componentView.getComponent().mountComponent(new Rect(-10, -10, 10, 10));
     assertEquals(new Rect(0, 0, 10, 10), mountedView.getPreviousIncrementalMountBounds());
 
+    componentView.getComponent().mountComponent(new Rect(80, 80, 120, 120));
+    assertEquals(new Rect(80, 80, 100, 100), mountedView.getPreviousIncrementalMountBounds());
