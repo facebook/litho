@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
@@ -43,7 +42,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link RecyclerBinder}
@@ -98,9 +96,9 @@ public class RecyclerBinderTest {
     Mockito.when(mLayoutInfo.approximateRangeSize(anyInt(), anyInt(), anyInt(), anyInt()))
         .thenReturn(RANGE_SIZE);
 
-    Mockito.when(mLayoutInfo.getChildHeightSpec(anyInt()))
+    Mockito.when(mLayoutInfo.getChildHeightSpec(anyInt(), any(ComponentInfo.class)))
         .thenReturn(SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
-    Mockito.when(mLayoutInfo.getChildWidthSpec(anyInt()))
+    Mockito.when(mLayoutInfo.getChildWidthSpec(anyInt(), any(ComponentInfo.class)))
         .thenReturn(SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
   }
 
@@ -221,21 +219,7 @@ public class RecyclerBinderTest {
 
     verify(recyclerView).setLayoutManager(mLayoutInfo.getLayoutManager());
     verify(recyclerView).setAdapter(any(RecyclerView.Adapter.class));
-    verify(recyclerView).addOnScrollListener(any(OnScrollListener.class));
-  }
-
-  @Test
-  public void testMountGrid() {
-    when(mLayoutInfo.getSpanCount()).thenReturn(2);
-    GridLayoutManager gridLayoutManager = mock(GridLayoutManager.class);
-    when(mLayoutInfo.getLayoutManager()).thenReturn(gridLayoutManager);
-
-    RecyclerView recyclerView = mock(RecyclerView.class);
-    mRecyclerBinder.mount(recyclerView);
-
-    verify(recyclerView).setLayoutManager(mLayoutInfo.getLayoutManager());
-    verify(gridLayoutManager).setSpanSizeLookup(any(GridLayoutManager.SpanSizeLookup.class));
-    verify(recyclerView).setAdapter(any(RecyclerView.Adapter.class));
+    verify(mLayoutInfo).setComponentInfoCollection(mRecyclerBinder);
     verify(recyclerView).addOnScrollListener(any(OnScrollListener.class));
   }
 
@@ -273,27 +257,7 @@ public class RecyclerBinderTest {
 
     verify(recyclerView).setLayoutManager(null);
     verify(recyclerView).setAdapter(null);
-    verify(recyclerView).removeOnScrollListener(any(OnScrollListener.class));
-  }
-
-  @Test
-  public void testUnmountGrid() {
-    when(mLayoutInfo.getSpanCount()).thenReturn(2);
-    GridLayoutManager gridLayoutManager = mock(GridLayoutManager.class);
-    when(mLayoutInfo.getLayoutManager()).thenReturn(gridLayoutManager);
-
-    RecyclerView recyclerView = mock(RecyclerView.class);
-    mRecyclerBinder.mount(recyclerView);
-
-    verify(recyclerView).setLayoutManager(mLayoutInfo.getLayoutManager());
-    verify(gridLayoutManager).setSpanSizeLookup(any(GridLayoutManager.SpanSizeLookup.class));
-    verify(recyclerView).setAdapter(any(RecyclerView.Adapter.class));
-    verify(recyclerView).addOnScrollListener(any(OnScrollListener.class));
-
-    mRecyclerBinder.unmount(recyclerView);
-    verify(recyclerView).setLayoutManager(null);
-    verify(gridLayoutManager).setSpanSizeLookup(null);
-    verify(recyclerView).setAdapter(null);
+    verify(mLayoutInfo).setComponentInfoCollection(null);
     verify(recyclerView).removeOnScrollListener(any(OnScrollListener.class));
   }
 
@@ -333,16 +297,26 @@ public class RecyclerBinderTest {
 
   @Test
   public void testComponentWithDifferentSpanSize() {
-    Mockito.when(mLayoutInfo.getLayoutManager())
-        .thenReturn(new GridLayoutManager(mComponentContext, 2));
     final List<ComponentInfo> components = new ArrayList<>();
     for (int i = 0; i < 100; i++) {
       components.add(ComponentInfo.create()
           .component(mock(Component.class))
           .spanSize((i == 0 || i % 3 == 0) ? 2 : 1)
           .build());
+
       mRecyclerBinder.insertItemAt(i, components.get(i));
     }
+
+    Mockito.when(mLayoutInfo.getChildWidthSpec(anyInt(), any(ComponentInfo.class)))
+        .thenAnswer(new Answer<Integer>() {
+          @Override
+          public Integer answer(InvocationOnMock invocation) throws Throwable {
+            final ComponentInfo componentInfo = (ComponentInfo) invocation.getArguments()[1];
+            final int spanSize = componentInfo.getSpanSize();
+
+            return SizeSpec.makeSizeSpec(100 * spanSize, SizeSpec.EXACTLY);
+          }
+        });
 
     for (int i = 0; i < 100; i++) {
       Assert.assertNotNull(mHoldersForComponents.get(components.get(i).getComponent()));
@@ -864,8 +838,8 @@ public class RecyclerBinderTest {
     }
 
     @Override
-    synchronized int getSpanSize() {
-      return mComponentInfo.getSpanSize();
+    public ComponentInfo getComponentInfo() {
+      return mComponentInfo;
     }
   }
 }

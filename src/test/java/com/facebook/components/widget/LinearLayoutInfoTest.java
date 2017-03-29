@@ -90,10 +90,10 @@ public class LinearLayoutInfoTest {
         false);
     final int sizeSpec = SizeSpec.makeSizeSpec(200, EXACTLY);
 
-    final int heightSpec = linearLayoutInfo.getChildHeightSpec(sizeSpec);
+    final int heightSpec = linearLayoutInfo.getChildHeightSpec(sizeSpec, null);
     assertEquals(heightSpec, SizeSpec.makeSizeSpec(0, UNSPECIFIED));
 
-    final int widthSpec = linearLayoutInfo.getChildWidthSpec(sizeSpec);
+    final int widthSpec = linearLayoutInfo.getChildWidthSpec(sizeSpec, null);
     assertEquals(widthSpec, sizeSpec);
   }
 
@@ -105,10 +105,10 @@ public class LinearLayoutInfoTest {
         false);
     final int sizeSpec = SizeSpec.makeSizeSpec(200, EXACTLY);
 
-    final int heightSpec = linearLayoutInfo.getChildHeightSpec(sizeSpec);
+    final int heightSpec = linearLayoutInfo.getChildHeightSpec(sizeSpec, null);
     assertEquals(heightSpec, sizeSpec);
 
-    final int widthSpec = linearLayoutInfo.getChildWidthSpec(sizeSpec);
+    final int widthSpec = linearLayoutInfo.getChildWidthSpec(sizeSpec, null);
     assertEquals(widthSpec, SizeSpec.makeSizeSpec(0, UNSPECIFIED));
   }
 }

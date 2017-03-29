@@ -11,8 +11,8 @@ package com.facebook.litho.widget;
 
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
-
 import android.support.v7.widget.RecyclerView.LayoutManager;
+import com.facebook.litho.ComponentInfo;
 
 /**
  * An implementation of this interface will provide the {@link RecyclerBinder} with all the
@@ -44,6 +44,11 @@ public interface LayoutInfo {
   LayoutManager getLayoutManager();
 
   /**
+   * @param componentInfoCollection
+   */
+  void setComponentInfoCollection(ComponentInfoCollection componentInfoCollection);
+
+  /**
    * This is called when the {@link RecyclerBinder} needs to calculate a range size.
    * The returned value should be an approximate range size based on the size of the first measured
    * item.
@@ -64,20 +69,21 @@ public interface LayoutInfo {
 
   /**
    * @param widthSpec the widthSpec used to measure the parent {@link RecyclerSpec}.
+   * @param componentInfo retrieve SpanSize of the component if it is a {@link GridLayoutInfo}
    * @return the widthSpec to be used to measure the size of the components within this
    * {@link RecyclerBinder}.
    */
-  int getChildWidthSpec(int widthSpec);
+  int getChildWidthSpec(int widthSpec, ComponentInfo componentInfo);
 
   /**
    * @param heightSpec the heightSpec used to measure the parent {@link RecyclerSpec}.
+   * @param componentInfo retrieve SpanSize of the component if it is a {@link GridLayoutInfo}
    * @return the heightSpec to be used to measure the size of the components within this
    * {@link RecyclerBinder}.
    */
-  int getChildHeightSpec(int heightSpec);
+  int getChildHeightSpec(int heightSpec, ComponentInfo componentInfo);
 
-  /**
-   * @return the number of columns declared. A non-grid layout will return 1
-   */
-  int getSpanCount();
+  interface ComponentInfoCollection {
+    ComponentInfo getComponentInfoAt(int position);
+  }
 }

@@ -14,14 +14,23 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 
+import com.facebook.litho.ComponentInfo;
 import com.facebook.litho.SizeSpec;
+
+import static com.facebook.litho.SizeSpec.EXACTLY;
+import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 
 public class GridLayoutInfo implements LayoutInfo {
 
   private final GridLayoutManager mGridLayoutManager;
+  private final GridSpanSizeLookup mGridSpanSizeLookup;
+
+  private ComponentInfoCollection mComponentInfoCollection;
 
   public GridLayoutInfo(Context context, int spanCount, int orientation, boolean reverseLayout) {
     mGridLayoutManager = new GridLayoutManager(context, spanCount, orientation, reverseLayout);
+    mGridSpanSizeLookup = new GridSpanSizeLookup();
+    mGridLayoutManager.setSpanSizeLookup(mGridSpanSizeLookup);
   }
 
   public GridLayoutInfo(Context context, int spanCount) {
@@ -46,6 +55,11 @@ public class GridLayoutInfo implements LayoutInfo {
   @Override
   public RecyclerView.LayoutManager getLayoutManager() {
     return mGridLayoutManager;
+  }
+
+  @Override
+  public void setComponentInfoCollection(ComponentInfoCollection componentInfoCollection) {
+    mComponentInfoCollection = componentInfoCollection;
   }
 
   @Override
@@ -74,13 +88,15 @@ public class GridLayoutInfo implements LayoutInfo {
    * @return widthSpec of a child that is of span size 1
    */
   @Override
-  public int getChildWidthSpec(int widthSpec) {
+  public int getChildWidthSpec(int widthSpec, ComponentInfo componentInfo) {
     switch (mGridLayoutManager.getOrientation()) {
       case GridLayoutManager.HORIZONTAL:
-        return SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
+        return SizeSpec.makeSizeSpec(0, UNSPECIFIED);
       default:
         final int spanCount = mGridLayoutManager.getSpanCount();
-        return SizeSpec.makeSizeSpec(SizeSpec.getSize(widthSpec) / spanCount, SizeSpec.EXACTLY);
+        final int spanSize = componentInfo.getSpanSize();
+
+        return spanSize * SizeSpec.makeSizeSpec(SizeSpec.getSize(widthSpec) / spanCount, EXACTLY);
     }
   }
 
@@ -89,18 +105,27 @@ public class GridLayoutInfo implements LayoutInfo {
    * @return heightSpec of a child that is of span size 1
    */
   @Override
-  public int getChildHeightSpec(int heightSpec) {
+  public int getChildHeightSpec(int heightSpec, ComponentInfo componentInfo) {
     switch (mGridLayoutManager.getOrientation()) {
       case GridLayoutManager.HORIZONTAL:
         final int spanCount = mGridLayoutManager.getSpanCount();
-        return SizeSpec.makeSizeSpec(SizeSpec.getSize(heightSpec) / spanCount, SizeSpec.EXACTLY);
+        final int spanSize = componentInfo.getSpanSize();
+
+        return spanSize * SizeSpec.makeSizeSpec(SizeSpec.getSize(heightSpec) / spanCount, EXACTLY);
       default:
-        return SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
+        return SizeSpec.makeSizeSpec(0, UNSPECIFIED);
     }
   }
 
-  @Override
-  public int getSpanCount() {
-    return mGridLayoutManager.getSpanCount();
+  private class GridSpanSizeLookup extends GridLayoutManager.SpanSizeLookup {
+
+    @Override
+    public int getSpanSize(int position) {
+      if (mComponentInfoCollection == null) {
+        return 1;
+      }
+
+      return mComponentInfoCollection.getComponentInfoAt(position).getSpanSize();
+    }
   }
 }

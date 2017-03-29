@@ -13,6 +13,7 @@ import android.support.v7.widget.GridLayoutManager;
 
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.ComponentInfo;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,6 +24,8 @@ import static android.support.v7.widget.OrientationHelper.VERTICAL;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(ComponentsTestRunner.class)
 public class GridLayoutInfoTest {
@@ -66,11 +69,14 @@ public class GridLayoutInfoTest {
     final GridLayoutInfo gridLayoutInfo = createGridLayoutInfo(VERTICAL, 3);
     final int sizeSpec = SizeSpec.makeSizeSpec(200, EXACTLY);
 
-    final int heightSpec = gridLayoutInfo.getChildHeightSpec(sizeSpec);
+    final ComponentInfo componentInfo = mock(ComponentInfo.class);
+    when(componentInfo.getSpanSize()).thenReturn(2);
+
+    final int heightSpec = gridLayoutInfo.getChildHeightSpec(sizeSpec, componentInfo);
     assertThat(heightSpec).isEqualTo(SizeSpec.makeSizeSpec(0, UNSPECIFIED));
 
-    final int widthSpec = gridLayoutInfo.getChildWidthSpec(sizeSpec);
-    assertThat(widthSpec).isEqualTo(SizeSpec.makeSizeSpec(200 / 3, EXACTLY));
+    final int widthSpec = gridLayoutInfo.getChildWidthSpec(sizeSpec, componentInfo);
+    assertThat(widthSpec).isEqualTo(2 * SizeSpec.makeSizeSpec(200 / 3, EXACTLY));
   }
 
   @Test
@@ -78,10 +84,13 @@ public class GridLayoutInfoTest {
     final GridLayoutInfo gridLayoutInfo = createGridLayoutInfo(HORIZONTAL, 3);
     final int sizeSpec = SizeSpec.makeSizeSpec(200, EXACTLY);
 
-    final int heightSpec = gridLayoutInfo.getChildHeightSpec(sizeSpec);
-    assertThat(heightSpec).isEqualTo(SizeSpec.makeSizeSpec(200 / 3, EXACTLY));
+    final ComponentInfo componentInfo = mock(ComponentInfo.class);
+    when(componentInfo.getSpanSize()).thenReturn(2);
 
-    final int widthSpec = gridLayoutInfo.getChildWidthSpec(sizeSpec);
+    final int heightSpec = gridLayoutInfo.getChildHeightSpec(sizeSpec, componentInfo);
+    assertThat(heightSpec).isEqualTo(2 * SizeSpec.makeSizeSpec(200 / 3, EXACTLY));
+
+    final int widthSpec = gridLayoutInfo.getChildWidthSpec(sizeSpec, componentInfo);
     assertThat(widthSpec).isEqualTo(SizeSpec.makeSizeSpec(0, UNSPECIFIED));
   }
 

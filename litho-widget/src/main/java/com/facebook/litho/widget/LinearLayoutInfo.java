@@ -13,7 +13,7 @@ import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
-import com.facebook.litho.LayoutHandler;
+import com.facebook.litho.ComponentInfo;
 import com.facebook.litho.SizeSpec;
 
 /**
@@ -49,6 +49,11 @@ public class LinearLayoutInfo implements LayoutInfo {
   }
 
   @Override
+  public void setComponentInfoCollection(ComponentInfoCollection componentInfoCollection) {
+    // Do nothing
+  }
+
+  @Override
   public int approximateRangeSize(
       int firstMeasuredItemWidth,
       int firstMeasuredItemHeight,
@@ -67,7 +72,7 @@ public class LinearLayoutInfo implements LayoutInfo {
   }
 
   @Override
-  public int getChildHeightSpec(int heightSpec) {
+  public int getChildHeightSpec(int heightSpec, ComponentInfo componentInfo) {
     switch (mLinearLayoutManager.getOrientation()) {
       case LinearLayoutManager.HORIZONTAL:
         return heightSpec;
@@ -77,17 +82,12 @@ public class LinearLayoutInfo implements LayoutInfo {
   }
 
   @Override
-  public int getChildWidthSpec(int widthSpec) {
+  public int getChildWidthSpec(int widthSpec, ComponentInfo componentInfo) {
     switch (mLinearLayoutManager.getOrientation()) {
       case LinearLayoutManager.HORIZONTAL:
         return SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
       default:
         return widthSpec;
     }
-  }
-
-  @Override
-  public int getSpanCount() {
-    return 1;
   }
 }

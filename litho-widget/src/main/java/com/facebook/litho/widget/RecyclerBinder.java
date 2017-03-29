@@ -19,7 +19,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.support.annotation.UiThread;
 import android.support.annotation.VisibleForTesting;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.LayoutManager;
@@ -45,7 +44,7 @@ import static com.facebook.litho.MeasureComparisonUtils.isMeasureSpecCompatible;
  * and attaching them to a {@link RecyclerSpec}.
  */
 @ThreadSafe
-public class RecyclerBinder implements Binder<RecyclerView> {
+public class RecyclerBinder implements Binder<RecyclerView>, LayoutInfo.ComponentInfoCollection {
 
   private static final int UNINITIALIZED = -1;
   private static final Size sDummySize = new Size();
@@ -57,7 +56,6 @@ public class RecyclerBinder implements Binder<RecyclerView> {
   private final ComponentContext mComponentContext;
   private final RangeScrollListener mRangeScrollListener = new RangeScrollListener();
   private final LayoutHandlerFactory mLayoutHandlerFactory;
-  private final GridSpanSizeLookup mGridSpanSizeLookup = new GridSpanSizeLookup();
 
   // Data structure to be used to hold Components and ComponentTreeHolders before adding them to
   // the RecyclerView. This happens in the case of inserting something inside the current working
@@ -69,8 +67,6 @@ public class RecyclerBinder implements Binder<RecyclerView> {
 
   private int mLastWidthSpec = UNINITIALIZED;
   private int mLastHeightSpec = UNINITIALIZED;
-  private int mChildrenWidthSpec = UNINITIALIZED;
-  private int mChildrenHeightSpec = UNINITIALIZED;
   private Size mMeasuredSize;
   private RecyclerView mMountedView;
   private int mCurrentFirstVisiblePosition;
@@ -361,6 +357,11 @@ public class RecyclerBinder implements Binder<RecyclerView> {
   }
 
   @Override
+  public final synchronized ComponentInfo getComponentInfoAt(int position) {
+    return mComponentTreeHolders.get(position).getComponentInfo();
+  }
+
+  @Override
   public void bind(RecyclerView view) {
     // Nothing to do here.
   }
@@ -392,14 +393,14 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     final int scrollDirection = mLayoutInfo.getScrollDirection();
 
     switch (scrollDirection) {
-      case OrientationHelper.HORIZONTAL:
+      case HORIZONTAL:
         if (SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED) {
           throw new IllegalStateException(
               "Width mode has to be EXACTLY OR AT MOST for an horizontal scrolling RecyclerView");
         }
         break;
 
-      case OrientationHelper.VERTICAL:
+      case VERTICAL:
         if (SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED) {
           throw new IllegalStateException(
               "Height mode has to be EXACTLY OR AT MOST for a vertical scrolling RecyclerView");
@@ -414,7 +415,7 @@ public class RecyclerBinder implements Binder<RecyclerView> {
 
     if (mLastWidthSpec != UNINITIALIZED) {
       switch (scrollDirection) {
-        case OrientationHelper.VERTICAL:
+        case VERTICAL:
           if (MeasureComparisonUtils.isMeasureSpecCompatible(
               mLastWidthSpec,
               widthSpec,
@@ -445,9 +446,6 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     mLastWidthSpec = widthSpec;
     mLastHeightSpec = heightSpec;
 
-    // Width and Height specs here are all for span size 1
-    mChildrenWidthSpec = mLayoutInfo.getChildWidthSpec(widthSpec);
-    mChildrenHeightSpec = mLayoutInfo.getChildHeightSpec(heightSpec);
 
     // We now need to compute the size of the non scrolling side. We try to do this by using the
     // calculated range (if we have one) or computing one.
@@ -465,7 +463,7 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     // size we can detect from the size spec and update it when the first item comes in.
     // TODO 16207395.
     switch (scrollDirection) {
-      case OrientationHelper.VERTICAL:
+      case VERTICAL:
         if (mRange != null
             && (SizeSpec.getMode(widthSpec) == SizeSpec.AT_MOST
             || SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED)) {
@@ -475,7 +473,7 @@ public class RecyclerBinder implements Binder<RecyclerView> {
         }
         outSize.height = SizeSpec.getSize(heightSpec);
         break;
-      case OrientationHelper.HORIZONTAL:
+      case HORIZONTAL:
         outSize.width = SizeSpec.getSize(widthSpec);
         if (mRange != null
             && (SizeSpec.getMode(heightSpec) == SizeSpec.AT_MOST
@@ -537,9 +535,7 @@ public class RecyclerBinder implements Binder<RecyclerView> {
         1);
 
     mRange = new RangeCalculationResult();
-    mRange.measuredSize = scrollDirection == OrientationHelper.HORIZONTAL
-        ? size.height
-        : size.width;
+    mRange.measuredSize = scrollDirection == HORIZONTAL ? size.height : size.width;
     mRange.estimatedViewportCount = rangeSize;
   }
 
@@ -585,9 +581,9 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     view.setLayoutManager(mLayoutInfo.getLayoutManager());
     view.setAdapter(mInternalAdapter);
     view.addOnScrollListener(mRangeScrollListener);
-    if (mLayoutInfo.getSpanCount() > 1) {
-      ((GridLayoutManager) mLayoutInfo.getLayoutManager()).setSpanSizeLookup(mGridSpanSizeLookup);
-    }
+
+    mLayoutInfo.setComponentInfoCollection(this);
+
     if (mCurrentFirstVisiblePosition != RecyclerView.NO_POSITION &&
         mCurrentFirstVisiblePosition > 0) {
       view.scrollToPosition(mCurrentFirstVisiblePosition);
@@ -615,9 +611,7 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     view.removeOnScrollListener(mRangeScrollListener);
     view.setAdapter(null);
     view.setLayoutManager(null);
-    if (mLayoutInfo.getSpanCount() > 1) {
-      ((GridLayoutManager) mLayoutInfo.getLayoutManager()).setSpanSizeLookup(null);
-    }
+    mLayoutInfo.setComponentInfoCollection(null);
   }
 
   @GuardedBy("this")
@@ -627,12 +621,12 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     if (mLastWidthSpec != UNINITIALIZED) {
 
       switch (scrollDirection) {
-        case OrientationHelper.HORIZONTAL:
+        case HORIZONTAL:
           return isMeasureSpecCompatible(
               mLastHeightSpec,
               heightSpec,
               mMeasuredSize.height);
-        case OrientationHelper.VERTICAL:
+        case VERTICAL:
           return isMeasureSpecCompatible(
               mLastWidthSpec,
               widthSpec,
@@ -704,16 +698,12 @@ public class RecyclerBinder implements Binder<RecyclerView> {
 
   @GuardedBy("this")
   private int getActualChildrenWidthSpec(final ComponentTreeHolder treeHolder) {
-    return mLayoutInfo.getScrollDirection() == HORIZONTAL ?
-        mChildrenWidthSpec :
-        mChildrenWidthSpec * treeHolder.getSpanSize();
+    return mLayoutInfo.getChildWidthSpec(mLastWidthSpec, treeHolder.getComponentInfo());
   }
 
   @GuardedBy("this")
   private int getActualChildrenHeightSpec(final ComponentTreeHolder treeHolder) {
-    return mLayoutInfo.getScrollDirection() == VERTICAL ?
-        mChildrenHeightSpec :
-        mChildrenHeightSpec * treeHolder.getSpanSize();
+    return mLayoutInfo.getChildHeightSpec(mLastHeightSpec, treeHolder.getComponentInfo());
   }
 
   private class RangeScrollListener extends RecyclerView.OnScrollListener {
@@ -739,11 +729,11 @@ public class RecyclerBinder implements Binder<RecyclerView> {
 
       switch (mLayoutInfo.getScrollDirection()) {
         case OrientationHelper.VERTICAL:
-            componentView.setLayoutParams(
-            new RecyclerView.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT));
-            break;
+          componentView.setLayoutParams(
+              new RecyclerView.LayoutParams(
+                  ViewGroup.LayoutParams.MATCH_PARENT,
+                  ViewGroup.LayoutParams.WRAP_CONTENT));
+          break;
         default:
           componentView.setLayoutParams(
               new RecyclerView.LayoutParams(
@@ -781,16 +771,6 @@ public class RecyclerBinder implements Binder<RecyclerView> {
       // We can ignore the synchronization here. We'll only add to this from the UiThread.
       // This read only happens on the UiThread as well and we are never writing this here.
       return mComponentTreeHolders.size();
-    }
-  }
-
-  private class GridSpanSizeLookup extends GridLayoutManager.SpanSizeLookup {
-
-    @SuppressWarnings("InvalidAccessToGuardedField")
-    @Override
-    public int getSpanSize(int position) {
-      // Synchronization is ignored here because this is accessed from the UiThread by the framework
-      return mComponentTreeHolders.get(position).getSpanSize();
     }
   }
 }
