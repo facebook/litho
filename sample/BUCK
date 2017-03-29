@@ -8,6 +8,7 @@ include_defs("//COMPONENTS_DEFS")
 
 android_binary(
     name = "sample",
+    includes_vector_drawables = True,
     keystore = ":debug_keystore",
     manifest = "src/main/AndroidManifest.xml",
     deps = [
