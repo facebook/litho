@@ -619,3 +619,4 @@ class LayoutState {
     layoutState.mCurrentX -= node.getX();
     layoutState.mCurrentY -= node.getY();
 
+    // 6. Add foreground if defined.
