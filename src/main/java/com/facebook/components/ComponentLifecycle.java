@@ -441,3 +441,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
    * This indicates the type of the {@link java.lang.Object} that will be returned by
    * {@link ComponentLifecycle#mount}.
    *
+   * @return one of {@link ComponentLifecycle.MountType}
