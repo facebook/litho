@@ -1259,3 +1259,4 @@ class MountState {
     }
   }
 
+  private static void setViewTag(View view, Object viewTag) {
