@@ -92,3 +92,6 @@ public class StateUpdatesTestHelper {
     // This is for working around component immutability, to be able to retrieve the updated
     // instance of the component.
     Whitebox.invokeMethod(component, "setKey", "bogusKeyForTest");
+    final ComponentTree componentTree = ComponentTree.create(context, component)
+        .incrementalMount(incrementalMountEnabled)
+        .build();
