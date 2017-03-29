@@ -300,3 +300,4 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
     return ((TextView) last).getText().toString();
   }
 
+  private ImmutableList<View> getPathToVisibleMatchingText(final String pattern) {
