@@ -297,3 +297,8 @@ public class ComponentView extends ComponentHost {
     mComponent = null;
   }
 
+  public void performIncrementalMount(Rect visibleRect) {
+    if (mComponent == null) {
+      return;
+    }
+
