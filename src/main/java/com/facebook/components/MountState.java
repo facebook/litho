@@ -910,3 +910,10 @@ class MountState {
     // that sets the root host interactions.
     mIndexToItemMap.put(mLayoutOutputsIds[index], item);
 
+    if (component.getLifecycle().canMountIncrementally()) {
+      mCanMountIncrementallyMountItems.put(index, item);
+    }
+
+    layoutOutput.getMountBounds(sTempRect);
+
+    host.mount(index, item, sTempRect);
