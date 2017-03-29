@@ -754,3 +754,7 @@ public abstract class BaseBinder<
     return isInRange(position, 1);
   }
 
+  private synchronized boolean isInRange(int positionStart, int itemCount) {
+    final int currentStart = mComponentTrees.getFirstPosition();
+    final int currentLast = Math.max(0, currentStart + mComponentTrees.size() - 1);
+    final int positionLast = Math.max(0, positionStart + itemCount - 1);
