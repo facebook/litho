@@ -93,3 +93,7 @@ public abstract class BaseBinder<
   }
 
   @Override
+  public final void notifyDataSetChanged() {
+    assertMainThread();
+
+    if (!hasContentSize()) {
