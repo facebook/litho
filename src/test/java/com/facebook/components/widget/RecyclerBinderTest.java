@@ -867,3 +867,5 @@ public class RecyclerBinderTest {
     synchronized int getSpanSize() {
       return mComponentInfo.getSpanSize();
     }
+  }
+}
