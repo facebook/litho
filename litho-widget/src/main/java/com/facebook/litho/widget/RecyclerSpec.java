@@ -132,3 +132,4 @@ class RecyclerSpec {
       @Prop Binder<RecyclerView> binder,
       @Prop(optional = true) final RecyclerEventsController recyclerEventsController,
       @Prop(optional = true) RecyclerView.OnScrollListener onScrollListener,
+      @FromPrepare OnRefreshListener onRefreshListener,
