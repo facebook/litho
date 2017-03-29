@@ -383,3 +383,6 @@ public class Stages {
         matchesProp = true;
 
         if (!typeUtils.isAssignable(prop.asType(), outputType)) {
+          throw new ComponentsProcessingException(
+              v,
+              "Searching for prop \"" + name + "\" of type " + ClassName.get(outputType) +
