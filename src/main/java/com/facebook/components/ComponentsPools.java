@@ -714,3 +714,7 @@ public class ComponentsPools {
     }
   }
 
+  static void onActivityDestroyed(Activity activity) {
+    sMountContentPoolsByContext.remove(activity);
+
+    // Clear any context wrappers holding a reference to this activity.

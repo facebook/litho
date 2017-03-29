@@ -1055,3 +1055,5 @@ public class ComponentTree {
 
       // TODO t15532529
       mStateHandler = null;
+    }
+
