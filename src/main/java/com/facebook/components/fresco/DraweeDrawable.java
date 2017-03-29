@@ -35,3 +35,4 @@ public class DraweeDrawable<DH extends DraweeHierarchy>
 
   private final Drawable mNoOpDrawable = new NoOpDrawable();
 
+  private final DraweeHolder<DH> mDraweeHolder;
