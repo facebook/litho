@@ -240,3 +240,4 @@ public class ComponentContext extends ContextWrapper {
         component.getScopedContext(),
         component,
         false);
+    component.getScopedContext().setTreeProps(null);
