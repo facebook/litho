@@ -369,3 +369,5 @@ public class Stages {
             parameters.get(i),
             "The @OnLoadStyle method should have only have Output arguments matching " +
                 "component create.");
+      }
+
