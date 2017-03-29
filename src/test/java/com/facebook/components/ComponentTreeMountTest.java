@@ -15,3 +15,4 @@ import android.graphics.drawable.ColorDrawable;
 import com.facebook.litho.testing.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.TestDrawableComponent;
+

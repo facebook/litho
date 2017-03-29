@@ -17,3 +17,6 @@ import com.facebook.litho.config.ComponentsConfiguration;
  * Thread assertion utilities.
  */
 public class ThreadUtils {
+  private ThreadUtils() {
+  }
+

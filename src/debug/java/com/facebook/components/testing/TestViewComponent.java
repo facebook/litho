@@ -24,3 +24,4 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 
+public class TestViewComponent extends ComponentLifecycle {

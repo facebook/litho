@@ -14,3 +14,4 @@ import android.util.TypedValue;
 
 class TypedArrayUtils {
   private static final TypedValue sTmpTypedValue = new TypedValue();
+

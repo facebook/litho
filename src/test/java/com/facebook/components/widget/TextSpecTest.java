@@ -18,3 +18,4 @@ import android.view.View;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.testing.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+

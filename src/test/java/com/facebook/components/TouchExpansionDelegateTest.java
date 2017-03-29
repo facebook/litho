@@ -30,3 +30,89 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(ComponentsTestRunner.class)
+public class TouchExpansionDelegateTest {
+  private TouchExpansionDelegate mTouchDelegate;
+
+  @Before
+  public void setup() {
+    mTouchDelegate = new TouchExpansionDelegate(new ComponentHost(RuntimeEnvironment.application));
+  }
+
+  @Test
+  public void testEmptyOnTouchEvent() {
+    mTouchDelegate.onTouchEvent(
+        MotionEvent.obtain(
+            SystemClock.uptimeMillis(),
+            SystemClock.uptimeMillis(),
+            MotionEvent.ACTION_DOWN,
+            0,
+            0,
+            0));
+  }
+
+  @Test
+  public void testTouchWithinBounds() {
+    final View view = mock(View.class);
+    when(view.getContext()).thenReturn(RuntimeEnvironment.application);
+    when(view.getWidth()).thenReturn(4);
+    when(view.getHeight()).thenReturn(6);
+
+    mTouchDelegate.registerTouchExpansion(0, view, new Rect(0, 0, 10, 10));
+
+    MotionEvent event = MotionEvent.obtain(
+        SystemClock.uptimeMillis(),
+        SystemClock.uptimeMillis(),
+        MotionEvent.ACTION_DOWN,
+        5,
+        5,
+        0);
+
+    mTouchDelegate.onTouchEvent(event);
+
+    verify(view, times(1)).dispatchTouchEvent(event);
+    assertEquals(2f, event.getX());
+    assertEquals(3f, event.getY());
+  }
+
+  @Test
+  public void testTouchOutsideBounds() {
+    final View view = mock(View.class);
+    when(view.getContext()).thenReturn(RuntimeEnvironment.application);
+
+    mTouchDelegate.registerTouchExpansion(0, view, new Rect(0, 0, 10, 10));
+
+    MotionEvent event = MotionEvent.obtain(
+        SystemClock.uptimeMillis(),
+        SystemClock.uptimeMillis(),
+        MotionEvent.ACTION_DOWN,
+        100,
+        100,
+        0);
+
+    mTouchDelegate.onTouchEvent(event);
+
+    verify(view, never()).dispatchTouchEvent(event);
+  }
+
+  @Test
+  public void testUnregister() {
+    final View view = mock(View.class);
+    when(view.getContext()).thenReturn(RuntimeEnvironment.application);
+
+    mTouchDelegate.registerTouchExpansion(0, view, new Rect(0, 0, 10, 10));
+    mTouchDelegate.unregisterTouchExpansion(0);
+
+    MotionEvent event = MotionEvent.obtain(
+        SystemClock.uptimeMillis(),
+        SystemClock.uptimeMillis(),
+        MotionEvent.ACTION_DOWN,
+        5,
+        5,
+        0);
+
+    mTouchDelegate.onTouchEvent(event);
+
+    verify(view, never()).dispatchTouchEvent(event);
+  }
+
+  @Test

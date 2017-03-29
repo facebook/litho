@@ -22,3 +22,8 @@ class OnCreateMountContentMethodBuilder {
   private String mTarget;
   private String mDelegateMethodName;
 
+  OnCreateMountContentMethodBuilder target(String target) {
+    mTarget = target;
+    return this;
+  }
+

@@ -51,3 +51,4 @@ public class ResourceResolver {
     return dipsToPixels((float) dips);
   }
 
+  protected final int sipsToPixels(float dips) {
