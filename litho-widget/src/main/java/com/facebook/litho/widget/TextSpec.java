@@ -564,3 +564,9 @@ class TextSpec {
 
   @OnPopulateAccessibilityNode
   static void onPopulateAccessibilityNode(
+      AccessibilityNodeInfoCompat node,
+      @Prop(resType = STRING) CharSequence text) {
+    node.setText(text);
+  }
+
+  @GetExtraAccessibilityNodesCount
