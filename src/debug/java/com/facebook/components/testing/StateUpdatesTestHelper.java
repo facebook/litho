@@ -40,3 +40,7 @@ public class StateUpdatesTestHelper {
       Component component,
       StateUpdater stateUpdater,
       ShadowLooper layoutThreadShadowLooper) throws Exception {
+    return getViewAfterStateUpdate(
+        context,
+        component,
+        stateUpdater,
