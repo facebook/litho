@@ -1454,3 +1454,5 @@ public class Stages {
         .fromName("do" + capitalize(evenHandlerName))
         .fromParams(fromParams)
         .target(mSourceDelegateAccessorName)
+        .toName(evenHandlerName)
+        .toParams(getParams(element))
