@@ -511,3 +511,9 @@ class TextSpec {
         break;
     }
 
+    if (text instanceof Spanned) {
+      clickableSpans.set(((Spanned) text).getSpans(
+          0,
+          text.length() - 1,
+          ClickableSpan.class));
+    }
