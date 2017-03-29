@@ -1475,3 +1475,5 @@ class LayoutState {
     return mComponent.getId() == componentId;
   }
 
+  int getMountableOutputCount() {
+    return mMountableOutputs.size();
