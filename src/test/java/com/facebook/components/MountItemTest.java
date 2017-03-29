@@ -54,3 +54,6 @@ public class MountItemTest {
     mComponent = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return TestDrawableComponent.create(c).buildWithLayout();
+      }
+    };

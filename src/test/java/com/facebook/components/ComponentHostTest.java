@@ -497,3 +497,20 @@ public class ComponentHostTest {
   public void testGetContentDescriptions() {
     CharSequence hostContentDescription = "hostContentDescription";
     mHost.setContentDescription(hostContentDescription);
+
+    CharSequence drawableContentDescription = "drawableContentDescription";
+    MountItem mountItem0 = mount(0, new ColorDrawable(), 0, drawableContentDescription);
+    CharSequence viewContentDescription = "viewContentDescription";
+    mount(1, mock(View.class), 0, viewContentDescription);
+
+    assertTrue(mHost.getContentDescriptions().contains(hostContentDescription));
+    assertTrue(mHost.getContentDescriptions().contains(drawableContentDescription));
+    assertFalse(mHost.getContentDescriptions().contains(viewContentDescription));
+
+    unmount(0, mountItem0);
+
+    assertTrue(mHost.getContentDescriptions().contains(hostContentDescription));
+    assertFalse(mHost.getContentDescriptions().contains(drawableContentDescription));
+    assertFalse(mHost.getContentDescriptions().contains(viewContentDescription));
+  }
+
