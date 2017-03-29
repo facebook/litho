@@ -33,3 +33,6 @@ public class ComponentStyleTest {
   private int mLargeDimen;
   private ComponentContext mContext;
 
+  @Rule
+  public ComponentsRule mComponentsRule = new ComponentsRule();
+
