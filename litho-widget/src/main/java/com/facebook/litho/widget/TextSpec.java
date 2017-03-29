@@ -442,3 +442,4 @@ class TextSpec {
       @FromMeasure Integer measuredHeight,
       Output<Layout> textLayout,
       Output<Float> textLayoutTranslationY,
+      Output<ClickableSpan[]> clickableSpans) {

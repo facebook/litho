@@ -1343,3 +1343,7 @@ public class LayoutStateCalculateTest {
                             .withLayout()
                             .flex(1)
                             .marginDip(YogaEdge.HORIZONTAL, 10)))
+            .build();
+      }
+    };
+
