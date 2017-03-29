@@ -1147,3 +1147,4 @@ class MountState {
     view.setClickable(true);
   }
 
+  private static void unsetClickHandler(View view) {

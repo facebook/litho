@@ -1813,3 +1813,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       ComponentsPools.release(mTouchExpansion);
       mTouchExpansion = null;
     }
+    if (mNestedTreePadding != null) {
+      ComponentsPools.release(mNestedTreePadding);
+      mNestedTreePadding = null;
+    }
