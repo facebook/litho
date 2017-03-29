@@ -1790,3 +1790,9 @@ class MountState {
         continue;
       }
 
+      final Component component = mountItem.getComponent();
+      component.getLifecycle().unbind(
+          mContext,
+          mountItem.getContent(),
+          component);
+      mountItem.setIsBound(false);
