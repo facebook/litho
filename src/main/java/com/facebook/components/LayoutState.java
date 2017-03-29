@@ -505,3 +505,11 @@ class LayoutState {
       layoutState.mCurrentHostOutputPosition = hostLayoutPosition;
     }
 
+    // We need to take into account flattening when setting duplicate parent state. The parent after
+    // flattening may no longer exist. Therefore the value of duplicate parent state should only be
+    // true if the path between us (inclusive) and our inner/root host (exclusive) all are
+    // duplicate parent state.
+    final boolean shouldDuplicateParentState = layoutState.mShouldDuplicateParentState;
+    layoutState.mShouldDuplicateParentState =
+        needsHostView || (shouldDuplicateParentState && node.isDuplicateParentStateEnabled());
+
