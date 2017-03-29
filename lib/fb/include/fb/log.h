@@ -168,3 +168,14 @@ int __android_log_print(int prio, const char *tag, const char *fmt, ...)
 #ifndef FBLOGW_IF
 #define FBLOGW_IF(cond, ...) \
   ((CONDITION(cond)) ? ((void)FBLOG(LOG_WARN, LOG_TAG, __VA_ARGS__)) : (void)0)
+#endif
+
+/*
+ * Simplified macro to send an error log message using the current LOG_TAG.
+ */
+#ifndef FBLOGE
+#define FBLOGE(...) ((void)FBLOG(LOG_ERROR, LOG_TAG, __VA_ARGS__))
+#endif
+
+#ifndef FBLOGE_IF
+#define FBLOGE_IF(cond, ...) \
