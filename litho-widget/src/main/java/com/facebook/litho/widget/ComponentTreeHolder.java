@@ -84,3 +84,19 @@ public class ComponentTreeHolder {
 
     synchronized (this) {
       if (componentTree == mComponentTree && component == mComponentInfo.getComponent()) {
+        mIsTreeValid = true;
+      }
+    }
+  }
+
+  void computeLayoutAsync(
+      ComponentContext context,
+      int widthSpec,
+      int heightSpec) {
+    final ComponentTree componentTree;
+    final Component component;
+
+    synchronized (this) {
+      ensureComponentTree(context);
+
+      componentTree = mComponentTree;

@@ -525,3 +525,4 @@ public class MountStateRemountInPlaceTest {
     });
 
     ComponentTestHelper.mountComponent(firstComponentView, secondTree);
+
