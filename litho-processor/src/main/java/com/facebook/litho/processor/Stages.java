@@ -2979,3 +2979,6 @@ public class Stages {
         // Validation unnecessary - already handled by validateAnnotatedParameters
         final String name = v.getSimpleName().toString();
         variableNameToElementMap.put(name, v);
+      }
+    }
+
