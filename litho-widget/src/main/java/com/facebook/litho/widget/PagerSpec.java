@@ -50,3 +50,7 @@ class PagerSpec {
       ComponentLayout layout,
       @Prop PagerBinder binder) {
     binder.setSize(
+        layout.getWidth(),
+        layout.getHeight());
+  }
+

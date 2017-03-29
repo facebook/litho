@@ -63,3 +63,4 @@ public abstract class PagerBinder extends BaseBinder<
     mPagerOffscreenLimit = (int) Math.ceil(1 / mPageWidth);
     mAdapter = new InternalAdapter(this, context);
     mOnPageChangeListener = new InternalOnPageChangeListener(this);
+
