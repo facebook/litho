@@ -14,3 +14,4 @@ import android.view.ContextThemeWrapper;
 
 import com.facebook.litho.R;
 import com.facebook.components.reference.Reference;
+import com.facebook.components.testing.testrunner.ComponentsTestRunner;

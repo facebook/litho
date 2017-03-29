@@ -9,3 +9,4 @@ include_defs("//COMPONENTS_DEFS")
 
 android_aar(
     name = "litho-widget",
+    manifest_skeleton = "src/main/AndroidManifest.xml",

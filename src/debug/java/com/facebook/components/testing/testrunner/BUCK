@@ -13,3 +13,7 @@ android_library(
     visibility = [
         "PUBLIC",
     ],
+    deps = [
+        COMPONENTS_ROBOLECTRIC_TARGET,
+    ],
+)

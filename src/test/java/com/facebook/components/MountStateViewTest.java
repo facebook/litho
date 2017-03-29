@@ -14,3 +14,5 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import com.facebook.components.testing.ComponentTestHelper;
+import com.facebook.components.testing.testrunner.ComponentsTestRunner;
+import com.facebook.components.testing.TestViewComponent;

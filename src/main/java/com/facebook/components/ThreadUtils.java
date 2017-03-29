@@ -11,3 +11,5 @@ package com.facebook.components;
 
 import android.os.Looper;
 
+import com.facebook.components.config.ComponentsConfiguration;
+

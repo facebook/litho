@@ -23,3 +23,4 @@ import org.robolectric.RuntimeEnvironment;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
+@RunWith(ComponentsTestRunner.class)

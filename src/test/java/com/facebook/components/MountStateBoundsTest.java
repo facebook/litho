@@ -12,3 +12,7 @@ package com.facebook.components;
 import android.graphics.Rect;
 import android.view.View;
 
+import com.facebook.components.testing.ComponentTestHelper;
+import com.facebook.components.testing.testrunner.ComponentsTestRunner;
+import com.facebook.components.testing.TestDrawableComponent;
+import com.facebook.components.testing.TestViewComponent;

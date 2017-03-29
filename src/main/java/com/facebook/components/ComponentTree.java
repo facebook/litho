@@ -9,3 +9,4 @@
 
 package com.facebook.components;
 
+import javax.annotation.CheckReturnValue;

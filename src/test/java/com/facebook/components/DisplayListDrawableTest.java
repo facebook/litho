@@ -15,3 +15,4 @@ import android.graphics.drawable.Drawable;
 
 import com.facebook.components.displaylist.DisplayList;
 import com.facebook.components.displaylist.DisplayListException;
+import com.facebook.components.testing.testrunner.ComponentsTestRunner;

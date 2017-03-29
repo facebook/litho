@@ -13,3 +13,9 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import com.facebook.components.testing.ComponentTestHelper;
+import com.facebook.components.testing.testrunner.ComponentsTestRunner;
+import com.facebook.components.testing.TestComponent;
+import com.facebook.components.testing.TestDrawableComponent;
+import com.facebook.components.testing.TestViewComponent;
+import com.facebook.yoga.YogaDirection;

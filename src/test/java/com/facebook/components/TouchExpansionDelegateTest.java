@@ -14,3 +14,4 @@ import android.os.SystemClock;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.facebook.components.testing.testrunner.ComponentsTestRunner;

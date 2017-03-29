@@ -9,3 +9,4 @@
 
 package com.facebook.components;
 
+import com.facebook.components.testing.testrunner.ComponentsTestRunner;

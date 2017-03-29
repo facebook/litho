@@ -11,3 +11,6 @@ package com.facebook.components;
 
 import android.content.Context;
 
+import com.facebook.components.testing.testrunner.ComponentsTestRunner;
+import com.facebook.components.testing.TestDrawableComponent;
+
