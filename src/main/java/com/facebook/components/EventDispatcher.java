@@ -10,3 +10,5 @@
 package com.facebook.litho;
 
 /**
+ * A class implementing this interface will expose a method to dispatch an {@link Event} given
+ * an {@link EventHandler}.

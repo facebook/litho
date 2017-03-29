@@ -99,3 +99,8 @@ class ShallowCopyMethodSpecBuilder {
       builder.endControlFlow();
     }
 
+    builder.addStatement("return component");
+
+    return builder.build();
+  }
+}

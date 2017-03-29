@@ -37,3 +37,4 @@ class MountItem {
   private ComponentHost mHost;
   private boolean mIsBound;
   private int mImportantForAccessibility;
+  private DisplayListDrawable mDisplayListDrawable;
