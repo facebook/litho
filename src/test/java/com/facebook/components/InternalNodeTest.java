@@ -289,3 +289,11 @@ public class InternalNodeTest {
             RuntimeEnvironment.application.getResources());
 
     holderNode.calculateLayout();
+    holderNode.copyInto(nestedTree);
+
+    assertFalse(isFlagSet(holderNode, "PFLAG_LAYOUT_DIRECTION_IS_SET"));
+    assertTrue(isFlagSet(nestedTree, "PFLAG_LAYOUT_DIRECTION_IS_SET"));
+  }
+
+  @Test
+  public void testCopyIntoNestedTreeTransferLayoutDirectionIfExplicitlySetOnHolderNode() {

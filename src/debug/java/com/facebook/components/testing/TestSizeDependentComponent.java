@@ -152,3 +152,17 @@ public class TestSizeDependentComponent extends ComponentLifecycle {
     }
 
     @Override
+    public Component<TestSizeDependentComponent> build() {
+      State state = mState;
+      release();
+      return state;
+    }
+
+    @Override
+    protected void release() {
+      super.release();
+      mState = null;
+      sBuilderPool.release(this);
+    }
+  }
+}
