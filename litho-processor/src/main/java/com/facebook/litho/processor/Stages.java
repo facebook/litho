@@ -303,3 +303,12 @@ public class Stages {
               v,
               v.getSimpleName() + " of this type is not a member of " +
                   eventClass);
+        }
+
+        return;
+      }
+
+      existsMap.put(element.getSimpleName().toString(), true);
+    }
+  }
+
