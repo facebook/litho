@@ -33,3 +33,5 @@ public class ViewNodeInfoTest {
 
   @Before
   public void setup() {
+    mViewNodeInfo = ViewNodeInfo.acquire();
+    mLayoutOutput = new LayoutOutput();

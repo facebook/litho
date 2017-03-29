@@ -36,3 +36,11 @@ public class TransitionSet extends Transition {
     }
   }
 
+  int size() {
+    return mTransitions.size();
+  }
+
+  Transition get(int location) {
+    return mTransitions.get(location);
+  }
+}

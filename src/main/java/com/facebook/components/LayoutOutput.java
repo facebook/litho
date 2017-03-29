@@ -42,3 +42,5 @@ class LayoutOutput implements Cloneable {
   @Retention(RetentionPolicy.SOURCE)
   @interface UpdateState {}
 
+  private NodeInfo mNodeInfo;
+  private ViewNodeInfo mViewNodeInfo;

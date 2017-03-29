@@ -122,3 +122,5 @@ class TransitionManager implements TransitionKeySetListener {
       } else {
         // NOTE: If we have a running disappear transition, we keep the key to continue the
         // animation.
+      }
+    }
