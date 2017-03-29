@@ -360,3 +360,10 @@ public abstract class ComponentLifecycle implements EventDispatcher {
   }
 
   /**
+   * Whether this {@link ComponentLifecycle} is able to measure itself according
+   * to specific size constraints.
+   */
+  protected boolean canMeasure() {
+    return false;
+  }
+
