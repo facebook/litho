@@ -1546,3 +1546,4 @@ class LayoutState {
       mCurrentX = 0;
       mCurrentY = 0;
       mCurrentHostMarker = -1;
+      mCurrentHostOutputPosition = -1;
