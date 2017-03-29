@@ -1530,3 +1530,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     if ((mPrivateFlags & PFLAG_VISIBLE_HANDLER_IS_SET) != 0L) {
       node.mVisibleHandler = mVisibleHandler;
     }
+    if ((mPrivateFlags & PFLAG_FOCUSED_HANDLER_IS_SET) != 0L) {
