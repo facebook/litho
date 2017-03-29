@@ -1858,3 +1858,4 @@ public class Stages {
   }
 
   public void generateListComponentImplClass(Stages.StaticFlag isStatic) {
+    generateStateContainerImplClass(isStatic, SectionClassNames.STATE_CONTAINER_SECTION);
