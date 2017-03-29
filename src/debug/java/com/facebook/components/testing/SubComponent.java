@@ -56,3 +56,8 @@ public class SubComponent {
   public int hashCode() {
     return mComponentType.hashCode();
   }
+
+  @Override
+  public String toString() {
+    return mComponentType.toString() + " [" + super.toString() +"]";
+  }

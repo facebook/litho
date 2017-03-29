@@ -87,3 +87,42 @@ public final class MeasureUtils {
       }
       return;
     }
+
+    if (widthMode == EXACTLY) {
+      outputSize.width = widthSize;
+
+      switch (heightMode) {
+        case EXACTLY:
+          outputSize.height = heightSize;
+          return;
+        case AT_MOST:
+          outputSize.height = Math.min(widthSize, heightSize);
+          return;
+        case UNSPECIFIED:
+          outputSize.height = widthSize;
+          return;
+      }
+    } else if (widthMode == AT_MOST) {
+      switch (heightMode) {
+        case EXACTLY:
+          outputSize.height = heightSize;
+          outputSize.width = Math.min(widthSize, heightSize);
+          return;
+        case AT_MOST:
+          // if both are AT_MOST, choose the smaller one to keep width and height equal
+          final int chosenSize = Math.min(widthSize, heightSize);
+          outputSize.width = chosenSize;
+          outputSize.height = chosenSize;
+          return;
+        case UNSPECIFIED:
+          outputSize.width = widthSize;
+          outputSize.height = widthSize;
+          return;
+      }
+    }
+
+    // heightMode is either EXACTLY or AT_MOST, and widthMode is UNSPECIFIED
+    outputSize.height = heightSize;
+    outputSize.width = heightSize;
+  }
+
