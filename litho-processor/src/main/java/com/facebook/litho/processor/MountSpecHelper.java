@@ -473,3 +473,5 @@ public class MountSpecHelper extends ComponentSpecHelper {
           "In order to implement accessibility support for extra nodes, you need to implement " +
           "onPopulateExtraAccessibilityNode() AND getExtraAccessibilityNodeAt AND " +
           "getExtraAccessibilityNodesCount().");
+    }
+
