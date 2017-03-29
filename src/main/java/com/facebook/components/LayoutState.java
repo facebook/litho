@@ -438,3 +438,4 @@ class LayoutState {
    *                       to mDiffTreeRoot.
    */
   private static void collectResults(
+      InternalNode node,
