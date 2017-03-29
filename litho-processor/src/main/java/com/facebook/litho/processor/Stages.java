@@ -729,3 +729,18 @@ public class Stages {
    * Fail if any elements that exist in mPropDefaults do not exist in mProps.
    */
   private void validatePropDefaults() {
+    for (PropDefaultModel propDefault : mPropDefaults) {
+      final ImmutableList<Modifier> modifiers = propDefault.mModifiers;
+      if (!modifiers.contains(Modifier.STATIC)
+          || !modifiers.contains(Modifier.FINAL)
+          || modifiers.contains(Modifier.PRIVATE)) {
+        throw new RuntimeException(
+            "Defaults for props (fields annotated with " + PropDefault.class + ") must be " +
+                "non-private, static, and final. This is not the case for " + propDefault.mName);
+      }
+
+      if (!hasValidNameAndType(propDefault)) {
+        throw new RuntimeException(
+            "Prop defaults (fields annotated with " + PropDefault.class + ") should have the " +
+                "same name and type as the prop that they set the default for. This is not the " +
+                "case for " + propDefault.mName);
