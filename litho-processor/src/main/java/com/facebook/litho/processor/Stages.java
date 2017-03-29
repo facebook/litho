@@ -282,3 +282,4 @@ public class Stages {
         throw new ComponentsProcessingException(
             element,
             "Method " + element.getSimpleName() + " must return " + returnType +
+                ", since that is what " + eventClass + " expects.");
