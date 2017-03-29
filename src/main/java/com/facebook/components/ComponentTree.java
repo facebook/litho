@@ -686,3 +686,9 @@ public class ComponentTree {
 
     setRootAndSizeSpecInternal(
         root,
+        SIZE_UNINITIALIZED,
+        SIZE_UNINITIALIZED,
+        isAsync,
+        null /*output */);
+  }
+
