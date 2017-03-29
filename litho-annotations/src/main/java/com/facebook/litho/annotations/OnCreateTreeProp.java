@@ -31,3 +31,4 @@ import java.lang.annotation.RetentionPolicy;
  *   protected SomeTreePropClass onCreateSomeTreeProp(
  *     ComponentsContext c,
  *     @Prop SomeProp prop) {
+ *    return new SomeTreePropClass(prop.getSomeProperty());

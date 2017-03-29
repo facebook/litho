@@ -106,3 +106,4 @@ public class TreePropGeneratorTest {
             "    return;\n" +
             "  }\n" +
             "  final TestImpl _impl = (TestImpl) _abstractImpl;\n" +
+            "  _impl.treeProp = treeProps.get(java.class.Integer.class);\n" +

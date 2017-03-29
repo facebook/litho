@@ -100,3 +100,9 @@ public class TreePropGenerator {
 
     for (DelegateMethodModel onCreateTreePropsMethod : onCreateTreePropsMethods) {
       final CodeBlock.Builder block = CodeBlock.builder();
+      block
+          .add(
+              "childTreeProps.put($L.class, $L.$L(\n",
+              onCreateTreePropsMethod.returnType,
+              delegateName,
+              onCreateTreePropsMethod.name)
