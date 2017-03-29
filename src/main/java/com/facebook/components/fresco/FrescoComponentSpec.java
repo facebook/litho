@@ -51,3 +51,5 @@ class FrescoComponentSpec {
       DEFAULT_ACTUAL_IMAGE_SCALE_TYPE;
   @PropDefault protected static final int fadeDuration = DEFAULT_FADE_DURATION;
   @PropDefault protected static final ScalingUtils.ScaleType failureImageScaleType =
+      DEFAULT_SCALE_TYPE;
+  @PropDefault protected static final PointF placeholderImageFocusPoint = new PointF(0.5f, 0.5f);

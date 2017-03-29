@@ -239,3 +239,4 @@ public class ComponentTree {
 
     LayoutState toRelease;
     boolean layoutStateUpdated;
+    int componentRootId;
