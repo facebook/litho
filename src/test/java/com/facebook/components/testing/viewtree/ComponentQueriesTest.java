@@ -22,3 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(ComponentsTestRunner.class)
 public class ComponentQueriesTest {
+  private ComponentContext mContext;
+
+  @Before
+  public void setup() {

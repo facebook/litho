@@ -222,3 +222,8 @@ class PropsBuilderMethodsSpecBuilder {
   }
 
   private List<MethodSpec> attrBuilders(ClassName annotationClassName, String resolver) {
+    final List<MethodSpec> builders = new ArrayList<>();
+
+    builders.add(builder(
+        mPropParameter.parameter.name + "Attr",
+        Arrays.asList(
