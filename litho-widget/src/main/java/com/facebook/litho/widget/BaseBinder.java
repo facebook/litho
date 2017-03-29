@@ -402,3 +402,4 @@ public abstract class BaseBinder<
     final int newWidthSpec = SizeSpec.makeSizeSpec(width, EXACTLY);
     final int newHeightSpec = SizeSpec.makeSizeSpec(height, EXACTLY);
 
+    synchronized (this) {
