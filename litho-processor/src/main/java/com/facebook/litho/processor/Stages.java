@@ -2734,3 +2734,4 @@ public class Stages {
         .superclass(
             ParameterizedTypeName.get(
                 ClassName.get(propsClass.packageName(), propsClass.simpleName(), builderClassName),
+                builderGenericTypes))
