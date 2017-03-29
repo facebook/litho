@@ -509,3 +509,8 @@ public class ComponentsPools {
   }
 
   @ThreadSafe(enableChecks = false)
+  static void release(VisibilityItem item) {
+    item.release();
+    sVisibilityItemPool.release(item);
+  }
+
