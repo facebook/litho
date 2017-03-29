@@ -2874,3 +2874,4 @@ public class Stages {
         .addStatement("return " + implInstanceName);
 
     propsBuilderClassBuilder.addMethod(buildMethodBuilder.build());
+
