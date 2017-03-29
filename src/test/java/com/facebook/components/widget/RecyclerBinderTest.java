@@ -393,3 +393,10 @@ public class RecyclerBinderTest {
 
     for (int i = 0; i < 100; i++) {
       Assert.assertNotNull(mHoldersForComponents.get(components.get(i).getComponent()));
+    }
+
+    TestComponentTreeHolder componentTreeHolder;
+
+    int rangeTotal = RANGE_SIZE + (int) (RANGE_SIZE * RANGE_RATIO);
+
+    for (int i = 0; i < RANGE_SIZE; i++) {
