@@ -323,3 +323,4 @@ public final class ComponentTestHelper {
    * Returns the first subComponent of type class.
    *
    * @param component The component builder which to get the subcomponent from
+   * @param componentClass the class type of the requested sub component
