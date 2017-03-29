@@ -602,3 +602,4 @@ public abstract class BaseBinder<
    *              still in range. {@link #URFLAG_RELEASE_OUTSIDE_RANGE} to release existing
    *              componentTrees outside the new range.
    */
+  protected void updateRange(int start, int count, int flags) {
