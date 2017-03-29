@@ -1329,3 +1329,5 @@ class MountState {
     ViewCompat.setImportantForAccessibility(view, IMPORTANT_FOR_ACCESSIBILITY_AUTO);
   }
 
+  private static void setFocusable(View view, @NodeInfo.FocusState short focusState) {
+    if (focusState == NodeInfo.FOCUS_SET_TRUE) {
