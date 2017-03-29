@@ -154,3 +154,6 @@ public final class ColorDrawableReference extends ReferenceLifecycle<Drawable> {
 
       mState = null;
       mContext = null;
+      mBuilderPool.release(this);
+    }
+
