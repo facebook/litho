@@ -80,3 +80,4 @@ class EditTextSpec {
   @PropDefault protected static final float spacingMultiplier = 1.0f;
   @PropDefault protected static final Layout.Alignment textAlignment = ALIGN_NORMAL;
   @PropDefault protected static final int gravity = DEFAULT_GRAVITY;
+  @PropDefault protected static final boolean editable = true;
