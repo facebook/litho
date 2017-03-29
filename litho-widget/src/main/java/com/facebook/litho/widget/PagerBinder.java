@@ -210,3 +210,26 @@ public abstract class PagerBinder extends BaseBinder<
     @Override
     public int getItemPosition(Object object) {
       final ComponentTree component = ((ComponentView) object).getComponent();
+
+      final int position = mBinder.getComponentPosition(component);
+      if (position < 0) {
+        return POSITION_NONE;
+      }
+
+      return position;
+    }
+
+    @Override
+    public CharSequence getPageTitle(int position) {
+      return mBinder.getPageTitle(position);
+    }
+
+    @Override
+    public float getPageWidth(int position) {
+      return mBinder.mPageWidth;
+    }
+
+    @Override
+    public int getCount() {
+      return mBinder.getCount();
+    }
