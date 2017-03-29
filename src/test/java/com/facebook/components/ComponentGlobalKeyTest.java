@@ -63,3 +63,6 @@ public class ComponentGlobalKeyTest {
         .create(mContext)
         .build();
     System.out.println(component.getLifecycle().getId());
+    ComponentTree componentTree = ComponentTree.create(mContext, component)
+        .incrementalMount(false)
+        .build();

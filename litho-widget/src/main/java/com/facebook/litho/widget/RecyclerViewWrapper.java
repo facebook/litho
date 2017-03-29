@@ -35,3 +35,5 @@ public class RecyclerViewWrapper extends SwipeRefreshLayout {
   private boolean mHasBeenDetachedFromWindow = false;
 
   public RecyclerViewWrapper(Context context, RecyclerView recyclerView) {
+    super(context);
+

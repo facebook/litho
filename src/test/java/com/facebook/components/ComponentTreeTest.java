@@ -59,3 +59,5 @@ public class ComponentTreeTest {
   @Before
   public void setup() throws Exception {
     mContext = new ComponentContext(RuntimeEnvironment.application);
+    mComponent = TestDrawableComponent.create(mContext)
+        .build();

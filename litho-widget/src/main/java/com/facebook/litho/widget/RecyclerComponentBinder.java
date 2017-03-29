@@ -59,3 +59,29 @@ public abstract class RecyclerComponentBinder<L extends RecyclerView.LayoutManag
   }
 
   /**
+   * Enables sticky header if the binder implements {@link HasStickyHeader} interface
+   */
+  private void maybeEnableStickyHeader() {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+      // Sticky header needs some APIs like 'setTranslationY()' which are not available Gingerbread
+      // and below
+      return;
+    }
+    if (mRecyclerView == null) {
+      return;
+    }
+    RecyclerViewWrapper recyclerViewWrapper = RecyclerViewWrapper.getParentWrapper(mRecyclerView);
+    if (recyclerViewWrapper == null) {
+      return;
+    }
+    if (this instanceof HasStickyHeader) {
+      RecyclerView.OnScrollListener onScrollListener =
+          new StickyHeaderAwareScrollListener(
+              new ComponentContext(mRecyclerView.getContext()),
+              this,
+              recyclerViewWrapper);
+      mRecyclerView.addOnScrollListener(onScrollListener);
+    }
+  }
+
+  /**
