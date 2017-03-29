@@ -49,3 +49,4 @@ public class BaseBinderTest {
   private ComponentView mComponentView1;
   private ComponentView mComponentView2;
 
+  @Before

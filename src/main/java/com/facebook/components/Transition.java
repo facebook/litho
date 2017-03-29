@@ -113,3 +113,37 @@ public class Transition {
     return new TransitionSet(transitionBuilders);
   }
 
+  String getKey() {
+    return mKey;
+  }
+
+  @TransitionType int getTransitionType() {
+    return mTransitionType;
+  }
+
+  @PropertyType
+  int getValuesFlag() {
+    return mValuesFlag;
+  }
+
+  PropertySetHolder getLocalValues() {
+    return mLocalValues;
+  }
+
+  void start(View view, PropertySetHolder startValues, PropertySetHolder endValues) {
+    mAnimator.start(
+        view,
+        TransitionProperties.createPropertyChangeHolderList(
+            startValues,
+            endValues,
+            getValuesFlag()));
+  }
+
+  /**
+   * Stop the running transition, set the end values to the current target View and save the
+   * animation time to restore it if needed.
+   */
+  void stop() {
+    mAnimator.stop();
+  }
+

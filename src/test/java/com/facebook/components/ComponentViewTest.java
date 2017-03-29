@@ -61,3 +61,5 @@ public class ComponentViewTest {
         View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
         View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
     mComponentView.layout(
+        0,
+        0,

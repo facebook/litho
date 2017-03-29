@@ -92,3 +92,10 @@ public class ComponentViewMountTest {
   public void testSetComponentTwiceWithResetAndAttachRequestsLayout() {
     ComponentTree ct = ComponentTree.create(mContext, mComponent)
         .incrementalMount(false)
+        .build();
+    ct.setSizeSpec(100, 100);
+
+    mComponentView.setComponent(ct);
+    mComponentView.setMeasured(100, 100);
+    mComponentView.onAttachedToWindow();
+

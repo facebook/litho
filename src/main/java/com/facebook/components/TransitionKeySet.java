@@ -155,3 +155,15 @@ class TransitionKeySet implements TransitionListener {
     }
 
     return start(keyStatus, listener, null, null);
+  }
+
+  void stop() {
+    mInterruptedValues =
+        TransitionProperties.createPropertySetHolder(mTrackedValuesFlag, mTargetView);
+    for (int i = 0, size = mRunningTransitionsPointer.size(); i < size; i++) {
+      // When appearing, the startValues are null and needs to be "corrected".
+      Transition t = mRunningTransitionsPointer.valueAt(i);
+      t.stop();
+    }
+
+    if (mRunningTransitionsPointer.size() > 0) {
