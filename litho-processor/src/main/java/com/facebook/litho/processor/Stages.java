@@ -1685,3 +1685,5 @@ public class Stages {
             .addSuperinterface(Cloneable.class);
 
     if (isStatic.equals(Stages.StaticFlag.STATIC)) {
+      implClassBuilder.addModifiers(Modifier.STATIC);
+      implClassBuilder.addTypeVariables(mTypeVariables);
