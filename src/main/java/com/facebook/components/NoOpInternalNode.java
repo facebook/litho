@@ -147,3 +147,7 @@ class NoOpInternalNode extends InternalNode {
 
   @Override
   public InternalNode alignItems(YogaAlign alignItems) {
+    return this;
+  }
+
+  @Override
