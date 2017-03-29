@@ -800,3 +800,10 @@ public class Stages {
             v,
             "Variables that are both prop and output are forbidden.");
       } else if (isAnnotatedParameter || (shouldIncludeOutputs && isInterStageOutput)) {
+        specDefinedParameters.add(v);
+      }
+    }
+
+    return specDefinedParameters;
+  }
+

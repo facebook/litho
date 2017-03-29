@@ -475,3 +475,4 @@ public class ComponentTreeTest {
       throw new IllegalArgumentException("Failed to invoke hasSizeSpec on ComponentTree for: "+e);
     }
   }
+}
