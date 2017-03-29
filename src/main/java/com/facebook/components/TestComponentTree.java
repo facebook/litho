@@ -78,3 +78,4 @@ public class TestComponentTree extends ComponentTree {
 
   public static class Builder extends ComponentTree.Builder {
 
+    private Builder(ComponentContext context, Component<?> root) {

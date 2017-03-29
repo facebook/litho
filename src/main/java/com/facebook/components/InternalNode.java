@@ -1022,3 +1022,5 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   public InternalNode child(Component.Builder<?> child) {
     if (child != null) {
       child(child.build());
+    }
+    return this;
