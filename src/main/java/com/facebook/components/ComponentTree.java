@@ -409,3 +409,5 @@ public class ComponentTree {
   }
 
   void mountComponent(Rect currentVisibleArea) {
+    assertMainThread();
+    mIsMounting = true;
