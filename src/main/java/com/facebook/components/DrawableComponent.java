@@ -49,3 +49,4 @@ class DrawableComponent<T extends Drawable> extends ComponentLifecycle {
     MatrixDrawable drawable = (MatrixDrawable) content;
     final State<T> state = (State) component;
 
+    drawable.mount(Reference.acquire(context, state.getDrawable()));

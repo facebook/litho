@@ -49,3 +49,5 @@ public class ComponentView extends ComponentHost {
         }
       };
 
+  private static final int[] sLayoutSize = new int[2];
+

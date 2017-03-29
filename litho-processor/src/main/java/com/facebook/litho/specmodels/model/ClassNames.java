@@ -21,3 +21,4 @@ public interface ClassNames {
   ClassName VIEW = ClassName.bestGuess("android.view.View");
   ClassName DRAWABLE =
       ClassName.bestGuess("android.graphics.drawable.Drawable");
+

@@ -47,3 +47,4 @@ import static com.facebook.components.SizeSpec.UNSPECIFIED;
  */
 @MountSpec(canMountIncrementally = true)
 class HorizontalScrollSpec {
+
