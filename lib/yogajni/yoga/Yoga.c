@@ -2084,3 +2084,151 @@ static void YGNodelayoutImpl(const YGNodeRef node,
       continue;
     }
     YGResolveDimensions(child);
+    if (performLayout) {
+      // Set the initial position (relative to the parent).
+      const YGDirection childDirection = YGNodeResolveDirection(child, direction);
+      YGNodeSetPosition(child,
+                        childDirection,
+                        availableInnerMainDim,
+                        availableInnerCrossDim,
+                        availableInnerWidth);
+    }
+
+    // Absolute-positioned children don't participate in flex layout. Add them
+    // to a list that we can process later.
+    if (child->style.positionType == YGPositionTypeAbsolute) {
+      // Store a private linked list of absolutely positioned children
+      // so that we can efficiently traverse them later.
+      if (firstAbsoluteChild == NULL) {
+        firstAbsoluteChild = child;
+      }
+      if (currentAbsoluteChild != NULL) {
+        currentAbsoluteChild->nextChild = child;
+      }
+      currentAbsoluteChild = child;
+      child->nextChild = NULL;
+    } else {
+      if (child == singleFlexChild) {
+        child->layout.computedFlexBasisGeneration = gCurrentGenerationCount;
+        child->layout.computedFlexBasis = 0;
+      } else {
+        YGNodeComputeFlexBasisForChild(node,
+                                       child,
+                                       availableInnerWidth,
+                                       widthMeasureMode,
+                                       availableInnerHeight,
+                                       availableInnerWidth,
+                                       availableInnerHeight,
+                                       heightMeasureMode,
+                                       direction,
+                                       config);
+      }
+    }
+
+    totalFlexBasis += child->layout.computedFlexBasis;
+  }
+
+  const bool flexBasisOverflows =
+      measureModeMainDim == YGMeasureModeUndefined ? false : totalFlexBasis > availableInnerMainDim;
+  if (isNodeFlexWrap && flexBasisOverflows && measureModeMainDim == YGMeasureModeAtMost) {
+    measureModeMainDim = YGMeasureModeExactly;
+  }
+
+  // STEP 4: COLLECT FLEX ITEMS INTO FLEX LINES
+
+  // Indexes of children that represent the first and last items in the line.
+  uint32_t startOfLineIndex = 0;
+  uint32_t endOfLineIndex = 0;
+
+  // Number of lines.
+  uint32_t lineCount = 0;
+
+  // Accumulated cross dimensions of all lines so far.
+  float totalLineCrossDim = 0;
+
+  // Max main dimension of all the lines.
+  float maxLineMainDim = 0;
+
+  for (; endOfLineIndex < childCount; lineCount++, startOfLineIndex = endOfLineIndex) {
+    // Number of items on the currently line. May be different than the
+    // difference
+    // between start and end indicates because we skip over absolute-positioned
+    // items.
+    uint32_t itemsOnLine = 0;
+
+    // sizeConsumedOnCurrentLine is accumulation of the dimensions and margin
+    // of all the children on the current line. This will be used in order to
+    // either set the dimensions of the node if none already exist or to compute
+    // the remaining space left for the flexible children.
+    float sizeConsumedOnCurrentLine = 0;
+
+    float totalFlexGrowFactors = 0;
+    float totalFlexShrinkScaledFactors = 0;
+
+    // Maintain a linked list of the child nodes that can shrink and/or grow.
+    YGNodeRef firstRelativeChild = NULL;
+    YGNodeRef currentRelativeChild = NULL;
+
+    // Add items to the current line until it's full or we run out of items.
+    for (uint32_t i = startOfLineIndex; i < childCount; i++, endOfLineIndex++) {
+      const YGNodeRef child = YGNodeListGet(node->children, i);
+      if (child->style.display == YGDisplayNone) {
+        continue;
+      }
+      child->lineIndex = lineCount;
+
+      if (child->style.positionType != YGPositionTypeAbsolute) {
+        const float outerFlexBasis =
+            fmaxf(YGResolveValue(&child->style.minDimensions[dim[mainAxis]], mainAxisParentSize),
+                  child->layout.computedFlexBasis) +
+            YGNodeMarginForAxis(child, mainAxis, availableInnerWidth);
+
+        // If this is a multi-line flow and this item pushes us over the
+        // available size, we've
+        // hit the end of the current line. Break out of the loop and lay out
+        // the current line.
+        if (sizeConsumedOnCurrentLine + outerFlexBasis > availableInnerMainDim && isNodeFlexWrap &&
+            itemsOnLine > 0) {
+          break;
+        }
+
+        sizeConsumedOnCurrentLine += outerFlexBasis;
+        itemsOnLine++;
+
+        if (YGNodeIsFlex(child)) {
+          totalFlexGrowFactors += YGResolveFlexGrow(child);
+
+          // Unlike the grow factor, the shrink factor is scaled relative to the
+          // child
+          // dimension.
+          totalFlexShrinkScaledFactors +=
+              -YGNodeResolveFlexShrink(child) * child->layout.computedFlexBasis;
+        }
+
+        // Store a private linked list of children that need to be layed out.
+        if (firstRelativeChild == NULL) {
+          firstRelativeChild = child;
+        }
+        if (currentRelativeChild != NULL) {
+          currentRelativeChild->nextChild = child;
+        }
+        currentRelativeChild = child;
+        child->nextChild = NULL;
+      }
+    }
+
+    // If we don't need to measure the cross axis, we can skip the entire flex
+    // step.
+    const bool canSkipFlex = !performLayout && measureModeCrossDim == YGMeasureModeExactly;
+
+    // In order to position the elements in the main axis, we have two
+    // controls. The space between the beginning and the first element
+    // and the space between each two elements.
+    float leadingMainDim = 0;
+    float betweenMainDim = 0;
+
+    // STEP 5: RESOLVING FLEXIBLE LENGTHS ON MAIN AXIS
+    // Calculate the remaining available space that needs to be allocated.
+    // If the main dimension size isn't known, it is computed based on
+    // the line length, so there's no more space left to distribute.
+
