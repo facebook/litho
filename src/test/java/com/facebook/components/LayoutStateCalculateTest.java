@@ -467,3 +467,15 @@ public class LayoutStateCalculateTest {
 
     assertEquals(layoutState.getMountableOutputAt(7).getBounds(),layoutState.getMountableOutputAt(8).getBounds());
 
+    ViewNodeInfo viewNodeInfo = layoutState.getMountableOutputAt(10).getViewNodeInfo();
+    assertNotNull(viewNodeInfo);
+    assertTrue(viewNodeInfo.getBackground() != null);
+    if (foregroundHasOwnOutput) {
+      assertTrue(viewNodeInfo.getForeground() == null);
+    } else {
+      assertTrue(viewNodeInfo.getForeground() != null);
+    }
+    assertTrue(viewNodeInfo.getPaddingLeft() == paddingSize);
+    assertTrue(viewNodeInfo.getPaddingTop() == paddingSize);
+    assertTrue(viewNodeInfo.getPaddingRight() == paddingSize);
+    assertTrue(viewNodeInfo.getPaddingBottom() == paddingSize);

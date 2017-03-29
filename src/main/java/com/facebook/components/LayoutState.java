@@ -240,3 +240,12 @@ class LayoutState {
     int r = l + node.getWidth();
     int b = t + node.getHeight();
 
+    final int paddingLeft = useNodePadding ? node.getPaddingLeft() : 0;
+    final int paddingTop = useNodePadding ? node.getPaddingTop() : 0;
+    final int paddingRight = useNodePadding ? node.getPaddingRight() : 0;
+    final int paddingBottom = useNodePadding ? node.getPaddingBottom() : 0;
+
+    // View mount specs are able to set their own attributes when they're mounted.
+    // Non-view specs (drawable and layout) always transfer their view attributes
+    // to their respective hosts.
+    // Moreover, if the component mounts a view, then we apply padding to the view itself later on.
