@@ -213,3 +213,4 @@ void translatePendingCppExceptionToJavaException() noexcept {
     }
     if (previous) {
       current->initCause(previous);
+    }
