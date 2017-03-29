@@ -745,3 +745,5 @@ public abstract class BaseBinder<
 
   private boolean hasContentSize() {
     synchronized (this) {
+      return SizeSpec.getMode(mContentWidthSpec) != UNSPECIFIED
+          && SizeSpec.getMode(mContentHeightSpec) != UNSPECIFIED;
