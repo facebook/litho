@@ -38,3 +38,11 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
     private @AttrRes int mDefStyleAttr;
     private @StyleRes int mDefStyleRes;
     private Component mComponent;
+
+    protected void init(
+        ComponentContext c,
+        @AttrRes int defStyleAttr,
+        @StyleRes int defStyleRes,
+        Component<L> component) {
+      super.init(c, c.getResourceCache());
+

@@ -268,3 +268,9 @@ public class MountStateRemountInPlaceTest {
         })
             .incrementalMount(false)
             .build(),
+        makeMeasureSpec(100, AT_MOST),
+        makeMeasureSpec(100, AT_MOST));
+
+    assertTrue(firstComponent.wasOnMountCalled());
+    assertTrue(firstComponent.wasOnBindCalled());
+    assertFalse(firstComponent.wasOnUnmountCalled());
