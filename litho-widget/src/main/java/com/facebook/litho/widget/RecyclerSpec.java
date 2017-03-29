@@ -128,3 +128,4 @@ class RecyclerSpec {
   protected static void onBind(
       ComponentContext context,
       RecyclerViewWrapper recyclerViewWrapper,
+      @Prop(optional = true) ItemAnimator itemAnimator,
