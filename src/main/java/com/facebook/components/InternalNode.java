@@ -302,3 +302,5 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
         || mInvisibleHandler != null;
   }
 
+  /**
+   * The last value the measure funcion associated with this node {@link Component} returned
