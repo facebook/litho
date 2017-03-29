@@ -110,3 +110,4 @@ public class IncrementalMountUtils {
     rect.set(
         Math.max(0, -left),
         Math.max(0, -top),
+        Math.min(right, scrollingParentWidth) - left,
