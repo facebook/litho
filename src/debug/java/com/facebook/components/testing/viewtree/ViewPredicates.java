@@ -165,3 +165,9 @@ final class ViewPredicates {
       public boolean apply(@Nullable final View input) {
         if (input instanceof ImageView) {
           final Drawable imageDrawable = ((ImageView) input).getDrawable();
+
+          if (drawable instanceof BitmapDrawable && !(imageDrawable instanceof BitmapDrawable)) {
+            return false;
+          }
+        }
+
