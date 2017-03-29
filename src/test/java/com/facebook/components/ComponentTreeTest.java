@@ -153,3 +153,4 @@ public class ComponentTreeTest {
     Assert.assertNull(Whitebox.getInternalState(componentTree, "mMainThreadLayoutState"));
     Assert.assertNull(Whitebox.getInternalState(componentTree, "mBackgroundLayoutState"));
 
+    Assert.assertFalse(componentTreeHasSizeSpec(componentTree));

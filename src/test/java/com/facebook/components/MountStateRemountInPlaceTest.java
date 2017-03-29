@@ -618,3 +618,33 @@ public class MountStateRemountInPlaceTest {
                                 firstComponent)
                             .child(
                                 SolidColor.create(c).color(Color.GREEN))))
+            .build();
+      }
+    };
+
+    final InlineLayoutSpec secondLayout = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c)
+            .child(
+                Container.create(c)
+                    .clickHandler(c.newEventHandler(3))
+                    .child(
+                        Text.create(c).text("test"))
+                    .child(
+                        Container.create(c)
+                            .clickHandler(c.newEventHandler(1))
+                            .child(
+                                firstComponent)
+                            .child(
+                                SolidColor.create(c).color(Color.GREEN))))
+            .child(
+                Container.create(c)
+                    .clickHandler(c.newEventHandler(2))
+                    .child(
+                        Text.create(c).text("test2")))
+            .build();
+      }
+    };
+
+    ComponentTree tree = ComponentTree.create(mContext, firstLayout)

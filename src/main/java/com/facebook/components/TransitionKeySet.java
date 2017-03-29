@@ -281,3 +281,8 @@ class TransitionKeySet implements TransitionListener {
    * @param oldRunningTransitions previous running transitions to recover from their state.
    * @param interruptedValues interrupted values from previous transition if any which might be used
    *                          instead of start values.
+   * @return true if we started any transition.
+   */
+  private boolean start(
+      @KeyStatus int keyStatus,
+      TransitionKeySetListener listener,
