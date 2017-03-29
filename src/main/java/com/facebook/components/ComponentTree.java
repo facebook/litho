@@ -115,3 +115,4 @@ public class ComponentTree {
   @GuardedBy("this")
   private Component<?> mRoot;
 
+  @GuardedBy("this")
