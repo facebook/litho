@@ -246,3 +246,5 @@ public class Stages {
     final int interStagePropIndex = asList(mInterStagePropAnnotations).indexOf(interStageProp);
 
     // Null stage is allowed and indicates prop
+    int stageIndex = -1;
+    if (stage != null) {
