@@ -134,3 +134,5 @@ public class ComponentTree {
   @GuardedBy("this")
   private StateHandler mStateHandler;
 
+  private Object mLayoutLock;
+

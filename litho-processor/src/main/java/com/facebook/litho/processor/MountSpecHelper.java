@@ -133,3 +133,8 @@ public class MountSpecHelper extends ComponentSpecHelper {
         methodDescription,
         onPrepare,
         ClassNames.COMPONENT);
+  }
+
+  /**
+   * Generate an onMeasure implementation that delegates to the @OnCreateLayout-annotated method.
+   */
