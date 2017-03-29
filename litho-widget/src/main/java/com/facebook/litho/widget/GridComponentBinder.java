@@ -70,3 +70,4 @@ public abstract class GridComponentBinder extends RecyclerComponentBinder<
    *                |___|___|
    */
   @Override
+  protected void onScrolled(RecyclerView recyclerView, int dx, int dy) {
