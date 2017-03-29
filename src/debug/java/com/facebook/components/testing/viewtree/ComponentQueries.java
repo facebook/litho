@@ -125,3 +125,5 @@ class ComponentQueries {
       }
     }
 
+    return false;
+  }
