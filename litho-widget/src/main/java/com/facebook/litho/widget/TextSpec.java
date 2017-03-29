@@ -147,3 +147,4 @@ class TextSpec {
       } else if (attr == R.styleable.Text_android_textColor) {
         textColorStateList.set(a.getColorStateList(attr));
       } else if (attr == R.styleable.Text_android_textSize) {
+        textSize.set(a.getDimensionPixelSize(attr, 0));
