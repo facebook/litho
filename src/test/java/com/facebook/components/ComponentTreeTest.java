@@ -370,3 +370,5 @@ public class ComponentTreeTest {
 
     componentView.setComponent(componentTree2);
 
+    Assert.assertNull(getComponentView(componentTree1));
+    Assert.assertNotNull(getComponentView(componentTree2));
