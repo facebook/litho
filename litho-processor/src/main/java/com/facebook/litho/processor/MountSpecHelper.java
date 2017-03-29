@@ -429,3 +429,5 @@ public class MountSpecHelper extends ComponentSpecHelper {
     return MountType.NONE;
   }
 
+  /**
+   * Generate an onPopulateAccessibilityNode implementation that delegates to the
