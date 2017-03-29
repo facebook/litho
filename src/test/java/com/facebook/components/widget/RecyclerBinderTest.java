@@ -836,3 +836,5 @@ public class RecyclerBinderTest {
       mComponentTree = mock(ComponentTree.class);
       mTreeValid = true;
       mLayoutAsyncCalled = true;
+      mChildWidth = SizeSpec.getSize(widthSpec);
+      mChildHeight = SizeSpec.getSize(heightSpec);
