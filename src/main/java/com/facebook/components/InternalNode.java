@@ -1918,3 +1918,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     //   throw new IllegalStateException("You should not set " + errorStr + " to a root layout in "
     //       + node.getComponent().getLifecycle());
     // }
+  }
