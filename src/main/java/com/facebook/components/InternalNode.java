@@ -1468,3 +1468,5 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
             || mYogaNode.getLayoutBorder(TOP) != 0
             || mYogaNode.getLayoutBorder(RIGHT) != 0
             || mYogaNode.getLayoutBorder(BOTTOM) != 0);
+  }
+
