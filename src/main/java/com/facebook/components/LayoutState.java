@@ -532,3 +532,4 @@ class LayoutState {
     }
 
     // 2. Add background if defined.
+    final Reference<? extends Drawable> background = node.getBackground();
