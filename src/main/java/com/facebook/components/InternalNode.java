@@ -348,3 +348,6 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     mDiffNode = diffNode;
   }
 
+  /**
+   * Mark this node as a nested tree root holder.
+   */

@@ -283,3 +283,4 @@ public class ComponentTree {
     }
   }
 
+  void attach() {
