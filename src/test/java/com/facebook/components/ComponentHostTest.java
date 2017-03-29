@@ -519,3 +519,4 @@ public class ComponentHostTest {
     View v1 = new View(mContext);
     mount(2, v1);
 
+    View v2 = new View(mContext);
