@@ -42,3 +42,4 @@ import static android.support.annotation.Dimension.DP;
 class NoOpInternalNode extends InternalNode {
 
   @Override
+  void init(YogaNodeAPI cssNode, ComponentContext componentContext, Resources resources) {}
