@@ -100,3 +100,4 @@ public class ComponentTree {
   // These variables are only accessed from the main thread.
   private boolean mIsMounting;
   private boolean mIncrementalMountEnabled;
+  private boolean mIsLayoutDiffingEnabled;

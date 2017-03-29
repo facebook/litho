@@ -185,3 +185,4 @@ public abstract class PagerBinder extends BaseBinder<
           mBinder.getCurrentItem() == mBinder.mViewPager.getCurrentItem()) {
         throw new IllegalStateException("Null component while initializing a new page.");
       }
+
