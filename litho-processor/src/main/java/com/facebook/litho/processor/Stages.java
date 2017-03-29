@@ -722,3 +722,9 @@ public class Stages {
       }
     }
 
+    return false;
+  }
+
+  /**
+   * Fail if any elements that exist in mPropDefaults do not exist in mProps.
+   */
