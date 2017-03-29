@@ -77,3 +77,9 @@ public class ViewPredicatesTest {
   @Test
   public void testHasText() throws Exception {
     final Predicate<View> hasHello = ViewPredicates.hasText("Hello");
+
+    assertThat(hasHello.apply(mView)).isFalse();
+    assertThat(hasHello.apply(mTextViewWithNull)).isFalse();
+    assertThat(hasHello.apply(mTextViewWithEmptyString)).isFalse();
+    assertThat(hasHello.apply(mTextViewWithHello)).isTrue();
+    assertThat(hasHello.apply(mTextViewWithWorld)).isFalse();
