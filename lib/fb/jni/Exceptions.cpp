@@ -97,3 +97,14 @@ void setJavaExceptionAndAbortOnFailure(alias_ref<JThrowable> throwable) {
   auto env = Environment::current();
   if (throwable) {
     env->Throw(throwable.get());
+  }
+  if (env->ExceptionCheck() != JNI_TRUE) {
+    std::abort();
+  }
+}
+
+}
+
+// Functions that throw C++ exceptions
+
+// TODO(T6618159) Take a stack dump here to save context if it results in a crash when propagated
