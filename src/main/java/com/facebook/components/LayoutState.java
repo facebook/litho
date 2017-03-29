@@ -1635,3 +1635,12 @@ class LayoutState {
     return mLayoutRoot;
   }
 
+  // If the layout root is a nested tree holder node, it gets skipped immediately while
+  // collecting the LayoutOutputs. The nested tree itself effectively becomes the layout
+  // root in this case.
+  private boolean isLayoutRoot(InternalNode node) {
+    return mLayoutRoot.isNestedTreeHolder()
+        ? node == mLayoutRoot.getNestedTree()
+        : node == mLayoutRoot;
+  }
+
