@@ -66,3 +66,10 @@ public class ComponentHost extends ViewGroup {
 
   private final List<ComponentHost> mScrapHosts = new ArrayList<>(3);
   private final ComponentsLogger mLogger;
+
+  private int[] mChildDrawingOrder = new int[0];
+  private boolean mIsChildDrawingOrderDirty;
+
+  private long mParentHostMarker;
+  private boolean mInLayout;
+
