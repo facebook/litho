@@ -188,3 +188,9 @@ class TextSpec {
         minWidth.set(a.getInteger(attr, DEFAULT_MIN_WIDTH));
       } else if (attr == R.styleable.Text_android_maxWidth) {
         maxWidth.set(a.getInteger(attr, DEFAULT_MAX_WIDTH));
+      }
+    }
+
+    a.recycle();
+  }
+
