@@ -92,3 +92,5 @@ public abstract class ComponentLifecycle implements EventDispatcher {
       final InternalNode node = (InternalNode) cssNode.getData();
       final DiffNode diffNode = node.areCachedMeasuresValid() ? node.getDiffNode() : null;
       final Component<?> component = node.getComponent();
+      final int widthSpec;
+      final int heightSpec;
