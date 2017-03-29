@@ -434,3 +434,5 @@ public class ComponentTreeTest {
     ComponentView componentView1 = new ComponentView(mContext);
     componentView1.setComponent(componentTree);
 
+    assertEquals(componentView1, getComponentView(componentTree));
+    assertEquals(componentTree, getComponentTree(componentView1));

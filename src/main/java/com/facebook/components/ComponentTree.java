@@ -470,3 +470,4 @@ public class ComponentTree {
     mComponentView = null;
   }
 
+  void measure(int widthSpec, int heightSpec, int[] measureOutput, boolean forceLayout) {
