@@ -1667,3 +1667,5 @@ public class Stages {
    */
   private void populatePropDefaults() {
     mPropDefaults = PropDefaultsExtractor.getPropDefaults(mSourceElement);
+  }
+
