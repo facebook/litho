@@ -264,3 +264,4 @@ class DelegateMethodSpecBuilder {
       }
     }
 
+    for (Parameter parameter : mImplParameters) {

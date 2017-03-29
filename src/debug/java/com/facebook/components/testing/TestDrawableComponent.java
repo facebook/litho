@@ -315,3 +315,4 @@ public class TestDrawableComponent extends ComponentLifecycle {
   }
 
   public static class Builder
+      extends com.facebook.components.Component.Builder<TestDrawableComponent> {
