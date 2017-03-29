@@ -1421,3 +1421,6 @@ class LayoutState {
     final Component component = layoutNode.getComponent();
     if (component != null) {
       component.copyInterStageImpl(diffNode.getComponent());
+    }
+
+    layoutNode.setCachedMeasuresValid(true);
