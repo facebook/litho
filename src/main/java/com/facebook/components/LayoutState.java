@@ -816,3 +816,5 @@ class LayoutState {
 
   /**
    * If we have an interactive LayoutSpec or a MountSpec Drawable, we need to insert an
+   * HostComponent in the Outputs such as it will be used as a HostView at Mount time. View
+   * MountSpec are not allowed.

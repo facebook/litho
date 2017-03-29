@@ -1681,3 +1681,5 @@ public class Stages {
             .superclass(
                 ParameterizedTypeName.get(
                     ClassNames.COMPONENT,
+                    ClassName.bestGuess(getSimpleClassName())))
+            .addSuperinterface(Cloneable.class);
