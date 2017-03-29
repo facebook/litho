@@ -560,3 +560,10 @@ public abstract class BaseBinder<
    */
   protected int getWidthSpec(int position) {
     return mContentWidthSpec;
+  }
+
+  /**
+   * Returns the height spec to be used for the component in the
+   * given position.
+   */
+  protected int getHeightSpec(int position) {
