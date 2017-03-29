@@ -1449,3 +1449,4 @@ public class Stages {
     writeMethodSpec(new DelegateMethodSpecBuilder()
         .implClassName(getImplClassName())
         .abstractImplType(ClassNames.HAS_EVENT_DISPATCHER_CLASSNAME)
+        .implParameters(mImplParameters)
