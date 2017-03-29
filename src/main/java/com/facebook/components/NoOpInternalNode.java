@@ -667,3 +667,8 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
+  public InternalNode transitionKey(String key) {
+    return this;
+  }
+
+  @Override
