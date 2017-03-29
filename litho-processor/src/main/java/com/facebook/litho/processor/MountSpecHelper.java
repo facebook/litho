@@ -504,3 +504,5 @@ public class MountSpecHelper extends ComponentSpecHelper {
     methodDescription.annotations = new Class[] { Override.class };
     methodDescription.accessType = Modifier.PROTECTED;
     methodDescription.name = "onPopulateAccessibilityNode";
+    methodDescription.returnType = ClassName.VOID;
+    methodDescription.parameterTypes = new TypeName[] {ClassNames.ACCESSIBILITY_NODE};
