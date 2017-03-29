@@ -426,3 +426,4 @@ public class MountStateRemountInPlaceTest {
   }
 
   @Test
+  public void testMountUnmountWithSkipShouldUpdateAndRemount() {
