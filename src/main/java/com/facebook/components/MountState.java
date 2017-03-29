@@ -1504,3 +1504,38 @@ class MountState {
     }
   }
 
+  private void unmountDisappearingItemChild(ComponentContext context, MountItem item) {
+
+    final Object content = item.getContent();
+
+    // Recursively unmount mounted children items.
+    if (content instanceof ComponentHost) {
+      final ComponentHost host = (ComponentHost) content;
+
+      for (int i = host.getMountItemCount() - 1; i >= 0; i--) {
+        final MountItem mountItem = host.getMountItemAt(i);
+        unmountDisappearingItemChild(context, mountItem);
+      }
+
+      if (host.getMountItemCount() > 0) {
+        throw new IllegalStateException("Recursively unmounting items from a ComponentHost, left" +
+            " some items behind maybe because not tracked by its MountState");
+      }
+    }
+
+    final ComponentHost host = item.getHost();
+    host.unmount(item);
+
+    unsetViewAttributes(item);
+
+    unbindAndUnmountLifecycle(context, item);
+
+    if (item.getComponent().getLifecycle().canMountIncrementally()) {
+      final int index = mCanMountIncrementallyMountItems.indexOfValue(item);
+      if (index > 0) {
+        mCanMountIncrementallyMountItems.removeAt(index);
+      }
+    }
+    ComponentsPools.release(context, item);
+  }
+
