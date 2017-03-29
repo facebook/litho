@@ -172,3 +172,36 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   @Override
   public int indexOf(YogaNode child) {
     return mChildren == null ? -1 : mChildren.indexOf(child);
+  }
+
+  private native void jni_YGNodeCalculateLayout(long nativePointer, float width, float height);
+  @Override
+  public void calculateLayout(float width, float height) {
+    jni_YGNodeCalculateLayout(mNativePointer, width, height);
+  }
+
+  private native boolean jni_YGNodeHasNewLayout(long nativePointer);
+  @Override
+  public boolean hasNewLayout() {
+    return jni_YGNodeHasNewLayout(mNativePointer);
+  }
+
+  private native void jni_YGNodeMarkDirty(long nativePointer);
+  @Override
+  public void dirty() {
+    jni_YGNodeMarkDirty(mNativePointer);
+  }
+
+  private native boolean jni_YGNodeIsDirty(long nativePointer);
+  @Override
+  public boolean isDirty() {
+    return jni_YGNodeIsDirty(mNativePointer);
+  }
+
+  private native void jni_YGNodeMarkLayoutSeen(long nativePointer);
+  @Override
+  public void markLayoutSeen() {
+    jni_YGNodeMarkLayoutSeen(mNativePointer);
+  }
+
+  private native void jni_YGNodeCopyStyle(long dstNativePointer, long srcNativePointer);
