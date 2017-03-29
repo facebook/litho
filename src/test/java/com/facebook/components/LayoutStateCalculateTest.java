@@ -1807,3 +1807,7 @@ public class LayoutStateCalculateTest {
     Rect mountBounds = new Rect();
     assertTrue(isHostComponent(getComponentAt(layoutState, 0)));
     layoutState.getMountableOutputAt(0).getMountBounds(mountBounds);
+    assertEquals(new Rect(0, 0, 350, 200), mountBounds);
+  }
+
+  @Test
