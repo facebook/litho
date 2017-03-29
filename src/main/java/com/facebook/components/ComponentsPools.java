@@ -136,3 +136,6 @@ public class ComponentsPools {
   private static final Pools.SynchronizedPool<TreeProps> sTreePropsMapPool =
       new Pools.SynchronizedPool<>(10);
 
+  // Lazily initialized when acquired first time, as this is not a common use case.
+  private static Pools.Pool<BorderColorDrawable> sBorderColorDrawablePool = null;
+
