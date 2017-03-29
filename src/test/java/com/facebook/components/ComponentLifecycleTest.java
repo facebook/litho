@@ -337,3 +337,6 @@ public class ComponentLifecycleTest {
         isMountSpec ? ComponentLifecycle.MountType.DRAWABLE : ComponentLifecycle.MountType.NONE);
     when(mInput.getLifecycle()).thenReturn(componentLifecycle);
 
+    Whitebox.setInternalState(mInput, "mLifecycle", componentLifecycle);
+
+    return componentLifecycle;
