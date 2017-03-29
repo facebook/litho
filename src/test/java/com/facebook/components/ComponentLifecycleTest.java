@@ -227,3 +227,7 @@ public class ComponentLifecycleTest {
         true /* canMeasure */);
     mContext.setWidthSpec(mNestedTreeWidthSpec);
     mContext.setHeightSpec(mNestedTreeHeightSpec);
+    componentLifecycle.createLayout(mContext, mInput, true);
+
+    verify(componentLifecycle).onCreateLayoutWithSizeSpec(
+        mContext,
