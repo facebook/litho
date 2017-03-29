@@ -229,3 +229,9 @@ class LayoutState {
     if (layoutState.mCurrentHostOutputPosition >= 0) {
       final LayoutOutput hostOutput =
           layoutState.mMountableOutputs.get(layoutState.mCurrentHostOutputPosition);
+
+      final Rect hostBounds = hostOutput.getBounds();
+      layoutOutput.setHostTranslationX(hostBounds.left);
+      layoutOutput.setHostTranslationY(hostBounds.top);
+    }
+
