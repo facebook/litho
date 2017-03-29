@@ -191,3 +191,4 @@ public class TestLayoutComponent extends ComponentLifecycle {
   }
 
   public static class Builder
+      extends com.facebook.litho.Component.Builder<TestLayoutComponent> {

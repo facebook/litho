@@ -16,3 +16,7 @@ import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assertions;
 import org.robolectric.RuntimeEnvironment;
 
+import static com.facebook.litho.testing.viewtree.ViewExtractors.GET_TEXT_FUNCTION;
+import static com.facebook.litho.testing.viewtree.ViewPredicates.hasTextMatchingPredicate;
+import static com.facebook.litho.testing.viewtree.ViewPredicates.hasVisibleId;
+import static com.facebook.litho.testing.viewtree.ViewPredicates.isVisible;

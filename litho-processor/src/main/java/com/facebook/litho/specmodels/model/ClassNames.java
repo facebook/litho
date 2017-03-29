@@ -57,3 +57,4 @@ public interface ClassNames {
   ClassName COMPONENT_LAYOUT_BUILDER =
       ClassName.bestGuess("com.facebook.litho.ComponentLayout.Builder");
   ClassName COMPONENT_LAYOUT_CONTAINER_BUILDER =
+      ClassName.bestGuess("com.facebook.litho.ComponentLayout.ContainerBuilder");
