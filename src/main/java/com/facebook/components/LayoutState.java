@@ -1169,3 +1169,7 @@ class LayoutState {
         SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED
             ? YogaConstants.UNDEFINED
             : SizeSpec.getSize(heightSpec));
+
+    if (logger != null) {
+      logger.eventEnd(EVENT_CSS_LAYOUT, component, ACTION_SUCCESS);
+    }
