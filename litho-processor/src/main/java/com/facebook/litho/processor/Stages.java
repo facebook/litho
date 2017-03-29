@@ -133,3 +133,4 @@ public class Stages {
 
   private final TypeElement mSourceElement;
   private final String mQualifiedClassName;
+  private final Class<Annotation>[] mStageAnnotations;
