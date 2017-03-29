@@ -1046,3 +1046,19 @@ public class LayoutStateCalculateTest {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            .child(innerComponent)
+            .build();
+      }
+    };
+
+    calculateLayoutState(
+        RuntimeEnvironment.application,
+        component,
+        -1,
+        SizeSpec.makeSizeSpec(50, SizeSpec.AT_MOST),
+        SizeSpec.makeSizeSpec(50, SizeSpec.AT_MOST));
+
+    assertFalse(innerComponent.wasMeasureCalled());
+  }
+
+  @Test
