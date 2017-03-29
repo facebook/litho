@@ -130,3 +130,8 @@ public class ComponentsPools {
   private static final Pools.SimplePool<TransitionManager> sTransitionManagerPool =
       new Pools.SimplePool<>(2);
 
+  static final Pools.Pool<DisplayListDrawable> sDisplayListDrawablePool =
+      new Pools.SimplePool<>(10);
+
+  private static final Pools.SynchronizedPool<TreeProps> sTreePropsMapPool =
+      new Pools.SynchronizedPool<>(10);
