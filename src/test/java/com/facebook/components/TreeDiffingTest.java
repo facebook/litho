@@ -786,3 +786,6 @@ public class TreeDiffingTest {
     assertEquals(secondState.getMountableOutputAt(3).getUpdateState(), LayoutOutput.STATE_UNKNOWN);
     assertEquals(secondState.getMountableOutputAt(4).getUpdateState(), LayoutOutput.STATE_UNKNOWN);
     assertEquals(secondState.getMountableOutputAt(5).getUpdateState(), LayoutOutput.STATE_UNKNOWN);
+  }
+
+  @Test
