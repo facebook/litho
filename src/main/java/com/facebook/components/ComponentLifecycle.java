@@ -88,3 +88,5 @@ public abstract class ComponentLifecycle implements EventDispatcher {
         float width,
         YogaMeasureMode widthMode,
         float height,
+        YogaMeasureMode heightMode) {
+      final InternalNode node = (InternalNode) cssNode.getData();
