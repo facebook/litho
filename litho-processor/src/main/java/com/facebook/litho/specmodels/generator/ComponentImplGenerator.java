@@ -8,3 +8,12 @@
  */
 
 package com.facebook.litho.specmodels.generator;
+
+import javax.lang.model.element.Modifier;
+
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+import com.facebook.common.internal.ImmutableList;

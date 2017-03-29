@@ -8,3 +8,6 @@
  */
 
 package com.facebook.litho.specmodels.generator;
+
+import javax.lang.model.element.Modifier;
+

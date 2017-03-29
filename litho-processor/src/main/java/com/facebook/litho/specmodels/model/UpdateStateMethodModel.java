@@ -8,3 +8,15 @@
  */
 
 package com.facebook.litho.specmodels.model;
+
+import javax.annotation.concurrent.Immutable;
+import javax.lang.model.element.Modifier;
+
+import java.lang.annotation.Annotation;
+
+import com.facebook.common.internal.ImmutableList;
+
+import com.squareup.javapoet.TypeName;
+
+/**
+ * Model that is an abstract representation of a method annotated with

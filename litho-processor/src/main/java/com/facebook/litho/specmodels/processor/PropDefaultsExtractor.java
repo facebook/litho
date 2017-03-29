@@ -8,3 +8,13 @@
  */
 
 package com.facebook.litho.specmodels.processor;
+
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.facebook.common.internal.ImmutableList;

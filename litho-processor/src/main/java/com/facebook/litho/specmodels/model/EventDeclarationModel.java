@@ -8,3 +8,13 @@
  */
 
 package com.facebook.litho.specmodels.model;
+
+import javax.annotation.concurrent.Immutable;
+
+import com.facebook.common.internal.ImmutableList;
+
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.FieldSpec;
+import com.squareup.javapoet.TypeName;
+
+/**

@@ -8,3 +8,13 @@
  */
 
 package com.facebook.litho.specmodels.model;
+
+import javax.lang.model.element.Modifier;
+
+import java.lang.annotation.Annotation;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.TreeMap;
+
+import com.facebook.common.internal.ImmutableList;

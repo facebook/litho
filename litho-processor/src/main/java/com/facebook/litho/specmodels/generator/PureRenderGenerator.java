@@ -8,3 +8,9 @@
  */
 
 package com.facebook.litho.specmodels.generator;
+
+import javax.annotation.Nullable;
+import javax.lang.model.element.Modifier;
+
+import java.lang.annotation.Annotation;
+

@@ -8,3 +8,15 @@
  */
 
 package com.facebook.litho.specmodels.model;
+
+import java.util.List;
+
+import com.facebook.common.internal.ImmutableList;
+
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.TypeVariableName;
+
+/**
+ * Model that is an abstract representation of a

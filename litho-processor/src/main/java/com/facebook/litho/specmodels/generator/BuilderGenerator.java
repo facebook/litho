@@ -8,3 +8,11 @@
  */
 
 package com.facebook.litho.specmodels.generator;
+
+import javax.lang.model.element.Modifier;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.List;
+

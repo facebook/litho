@@ -8,3 +8,19 @@
  */
 
 package com.facebook.litho.specmodels.model;
+
+import javax.annotation.concurrent.Immutable;
+import javax.lang.model.element.Modifier;
+
+import java.lang.annotation.Annotation;
+
+import com.facebook.common.internal.ImmutableList;
+
+import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.TypeName;
+
+/**
+ * Describes the signature and other feature of a delegate method.
+ *
+ * We use method descriptions to refer to abstract methods defined in

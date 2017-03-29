@@ -8,3 +8,13 @@
  */
 
 package com.facebook.litho.specmodels.processor;
+
+import javax.annotation.Nullable;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Elements;
+
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.facebook.common.internal.ImmutableList;

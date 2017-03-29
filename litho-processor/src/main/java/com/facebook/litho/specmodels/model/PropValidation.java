@@ -8,3 +8,9 @@
  */
 
 package com.facebook.litho.specmodels.model;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import com.facebook.common.internal.ImmutableList;

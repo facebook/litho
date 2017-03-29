@@ -8,3 +8,8 @@
  */
 
 package com.facebook.litho;
+
+import android.content.ContextWrapper;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+

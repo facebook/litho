@@ -8,3 +8,10 @@
  */
 
 package com.facebook.litho.specmodels.model;
+
+import javax.annotation.concurrent.Immutable;
+
+import java.lang.annotation.Annotation;
+import java.util.List;
+
+import com.facebook.common.internal.ImmutableList;

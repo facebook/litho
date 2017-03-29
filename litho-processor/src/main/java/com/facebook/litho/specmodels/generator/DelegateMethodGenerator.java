@@ -8,3 +8,7 @@
  */
 
 package com.facebook.litho.specmodels.generator;
+
+import java.lang.annotation.Annotation;
+import java.util.Map;
+

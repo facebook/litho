@@ -8,3 +8,9 @@
  */
 
 package com.facebook.litho.specmodels.model;
+
+import javax.lang.model.element.Modifier;
+
+import java.util.List;
+
+import com.facebook.common.internal.ImmutableList;

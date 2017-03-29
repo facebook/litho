@@ -8,3 +8,15 @@
  */
 
 package com.facebook.litho.specmodels.model;
+
+import javax.annotation.concurrent.Immutable;
+
+import java.lang.annotation.Annotation;
+import java.util.List;
+import java.util.Set;
+
+import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.TypeName;
+
+/**
+ * Model that is an abstract representation of a

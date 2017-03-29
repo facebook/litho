@@ -8,3 +8,7 @@
  */
 
 package com.facebook.litho;
+
+import android.view.MotionEvent;
+import android.view.View;
+
