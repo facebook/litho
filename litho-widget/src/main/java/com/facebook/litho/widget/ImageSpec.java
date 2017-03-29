@@ -195,3 +195,4 @@ class ImageSpec {
     return (scaleType.getNext() != scaleType.getPrevious()) ||
         Reference.shouldUpdate(src.getNext(), src.getPrevious());
   }
+}

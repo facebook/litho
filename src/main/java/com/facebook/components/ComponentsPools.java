@@ -673,3 +673,4 @@ public class ComponentsPools {
 
     @Override
     public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+      ComponentsPools.onActivityCreated(activity, savedInstanceState);
