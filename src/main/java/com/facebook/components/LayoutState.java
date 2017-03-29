@@ -1197,3 +1197,4 @@ class LayoutState {
         nestedTree.getLastMeasuredWidth(),
         nestedTree.getLastMeasuredHeight())) {
       if (nestedTree != null) {
+        if (nestedTree != NULL_LAYOUT) {
