@@ -153,3 +153,10 @@ public class Utils {
       final TypeElement typeElement = (TypeElement) parameterDeclaredType.asElement();
       if (typeElement.getQualifiedName().toString().equals(outerClass.toString())) {
         final List<? extends TypeMirror> typeArguments = parameterDeclaredType.getTypeArguments();
+        return typeArguments.get(0);
+      }
+    }
+
+    return null;
+  }
+

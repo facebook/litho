@@ -34,3 +34,4 @@ public class Output<T> {
   void release() {
     mT = null;
   }
+}
