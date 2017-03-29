@@ -492,3 +492,4 @@ class LayoutState {
 
     final long currentHostMarker = layoutState.mCurrentHostMarker;
     final int currentHostOutputPosition = layoutState.mCurrentHostOutputPosition;
+
