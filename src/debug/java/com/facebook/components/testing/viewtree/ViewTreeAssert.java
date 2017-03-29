@@ -389,3 +389,4 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
     return this;
   }
 
+  /** Whether there is a visible view in the hierarchy with the given id. */
