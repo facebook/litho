@@ -73,3 +73,5 @@ public class InternalNodeReleaseTest {
         new EventHandler<SendAccessibilityEventUncheckedEvent>(null, 1));
 
     mInternalNode.release();
+    assertDefaultValues(mInternalNode);
+
