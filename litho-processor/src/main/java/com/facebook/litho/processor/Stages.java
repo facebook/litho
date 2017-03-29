@@ -494,3 +494,6 @@ public class Stages {
             }
 
             if (!isFromProp && !isFromState && !isOutput && !isFromTreeProp) {
+              throw new ComponentsProcessingException(
+                  v,
+                  "Inter-stage prop declared without source.");
