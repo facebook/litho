@@ -2909,3 +2909,12 @@ public class Stages {
         .addModifiers(Modifier.PRIVATE)
         .returns(builder)
         .addParameter(contextClass, "context")
+        .addStatement("$T builder = $L.acquire()", builder, poolName)
+        .beginControlFlow("if (builder == null)")
+        .addStatement("builder = new $T()", builder)
+        .endControlFlow();
+
+    if (isStylable == StyleableFlag.STYLEABLE) {
+      factoryMethod
+          .addParameter(int.class, "defStyleAttr")
+          .addParameter(int.class, "defStyleRes")
