@@ -1561,3 +1561,8 @@ public class LayoutStateCalculateTest {
         SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
 
     assertEquals(3, layoutState.getMountableOutputCount());
+    assertTrue(getComponentAt(layoutState, 0) instanceof HostComponent);
+    assertTrue(getComponentAt(layoutState, 1) instanceof HostComponent);
+    assertTrue(getComponentAt(layoutState, 2) instanceof TestDrawableComponent);
+  }
+
