@@ -496,3 +496,14 @@ class TextSpec {
     }
 
     final float textHeight = LayoutMeasureUtil.getHeight(textLayout.get());
+
+    switch (verticalGravity) {
+      case CENTER:
+        textLayoutTranslationY.set((layoutHeight - textHeight) / 2);
+        break;
+
+      case BOTTOM:
+        textLayoutTranslationY.set(layoutHeight - textHeight);
+        break;
+
+      default:
