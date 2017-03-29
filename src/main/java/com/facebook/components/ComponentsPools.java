@@ -469,3 +469,4 @@ public class ComponentsPools {
     sLayoutStatePool.release(state);
   }
 
+  @ThreadSafe(enableChecks = false)
