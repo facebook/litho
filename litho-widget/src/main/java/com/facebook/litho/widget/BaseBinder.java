@@ -371,3 +371,8 @@ public abstract class BaseBinder<
     if (shouldRemoveItems) {
       List<ComponentTree> treesToRelease = acquireList(itemCount);
 
+      synchronized (this) {
+        if (isInRange(positionStart, itemCount)) {
+
+          for (int i = positionStart, size = positionStart + itemCount; i < size; i++) {
+            ComponentTree componentTree = getComponentAt(i);

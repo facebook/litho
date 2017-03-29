@@ -308,3 +308,27 @@ public abstract class PagerBinder extends BaseBinder<
       }
     }
   }
+
+  /**
+   * The default, static WorkingRangeController for the {@link PagerBinder}.
+   * Any custom WorkingRangeControllers for the {@link PagerBinder} must extend this class.
+   */
+  public static class PagerWorkingRangeController extends WorkingRangeController {
+
+    private int mPagerOffscreenLimit;
+
+    public PagerWorkingRangeController() {
+      mPagerOffscreenLimit = (int) Math.ceil(1 / DEFAULT_PAGE_WIDTH);
+    }
+
+    public void setPagerOffscreenLimit(int pagerOffscreenLimit) {
+      mPagerOffscreenLimit = pagerOffscreenLimit;
+    }
+
+    public void notifyOnPageSelected(int currentPosition) {
+      notifyOnPageSelected(currentPosition, URFLAG_RELEASE_OUTSIDE_RANGE);
+    }
+
+    public void notifyOnPageSelected(int currentPosition, int flags) {
+
+      if (currentPosition < 0 || currentPosition >= getBinder().getCount()) {
