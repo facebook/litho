@@ -271,3 +271,10 @@ public class Stages {
           element,
           OnEvent.class,
           "value");
+
+      final TypeMirror returnType = Utils.getAnnotationParameter(
+          mProcessingEnv,
+          eventClass.asElement(),
+          Event.class,
+          "returnType");
+
