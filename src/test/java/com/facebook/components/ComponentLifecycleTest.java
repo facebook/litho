@@ -321,3 +321,6 @@ public class ComponentLifecycleTest {
 
     long output = measureFunction.measure(mNode.mYogaNode, 0, EXACTLY, 0, EXACTLY);
 
+    PowerMockito.verifyStatic();
+    LayoutState.resolveNestedTree(eq(mNode), anyInt(), anyInt());
+

@@ -375,3 +375,6 @@ public class ComponentTree {
       mountComponent(currentVisibleArea);
     }
     // if false: no-op, doesn't have visible area, is not ready or not attached
+    ComponentsPools.release(currentVisibleArea);
+  }
+
