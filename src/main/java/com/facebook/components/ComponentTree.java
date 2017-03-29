@@ -1214,3 +1214,4 @@ public class ComponentTree {
     private boolean incrementalMountEnabled = true;
     private boolean isLayoutDiffingEnabled;
     private LayoutHandler layoutThreadHandler;
+    private Object layoutLock;
