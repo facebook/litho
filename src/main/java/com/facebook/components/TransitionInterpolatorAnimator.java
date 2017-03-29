@@ -94,3 +94,4 @@ public class TransitionInterpolatorAnimator
   }
 
   @Override
+  public boolean restoreState(TransitionInterpolatorAnimator interpolatorAnimator) {

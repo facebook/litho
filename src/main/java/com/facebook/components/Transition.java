@@ -37,3 +37,4 @@ public class Transition {
     void onTransitionEnd();
   }
 
+  interface TransitionAnimator<T extends TransitionAnimator<? super T>> extends Cloneable {

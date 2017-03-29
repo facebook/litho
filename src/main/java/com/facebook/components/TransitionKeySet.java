@@ -37,3 +37,10 @@ class TransitionKeySet implements TransitionListener {
     void onTransitionKeySetEnd(String key, View view);
   }
 
+  /**
+   * Callback to clean up the object state associated with this transition when it is finished
+   */
+  interface TransitionCleanupListener {
+    void onTransitionCleanup();
+  }
+
