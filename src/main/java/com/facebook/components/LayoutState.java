@@ -1684,3 +1684,6 @@ class LayoutState {
    * the node has explicitly been forced to be wrapped in a view.
    */
   private static boolean needsHostView(InternalNode node, LayoutState layoutState) {
+    return layoutState.isLayoutRoot(node)
+        || (!isMountViewSpec(node.getComponent())
+            && (hasViewContent(node, layoutState) || node.isForceViewWrapping()));
