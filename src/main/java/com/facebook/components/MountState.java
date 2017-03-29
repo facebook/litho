@@ -1451,3 +1451,9 @@ class MountState {
       MountItem item,
       Rect itemBounds,
       Rect localVisibleRect) {
+    final Component<?> component = item.getComponent();
+
+    if (!isMountViewSpec(component)) {
+      return;
+    }
+
