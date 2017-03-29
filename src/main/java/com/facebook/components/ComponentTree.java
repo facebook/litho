@@ -1166,3 +1166,5 @@ public class ComponentTree {
             contextWithStateHandler,
             root,
             mId,
+            widthSpec,
+            heightSpec,
