@@ -140,3 +140,95 @@ class TouchExpansionDelegate extends TouchDelegate {
     sInnerTouchDelegateScrapArrayPool.release(sparseArray);
   }
 
+  private static class InnerTouchDelegate {
+
+    private static final Pools.SimplePool<InnerTouchDelegate> sPool =
+        new Pools.SimplePool<>(4);
+
+    private View mDelegateView;
+    private boolean mIsHandlingTouch;
+    private int mSlop;
+
+    private final Rect mDelegateBounds = new Rect();
+    private final Rect mDelegateSlopBounds = new Rect();
+
+    void init(View delegateView, Rect delegateBounds) {
+      mDelegateView = delegateView;
+      mSlop = ViewConfiguration.get(delegateView.getContext()).getScaledTouchSlop();
+
+      mDelegateBounds.set(delegateBounds);
+
+      mDelegateSlopBounds.set(delegateBounds);
+      mDelegateSlopBounds.inset(-mSlop, -mSlop);
+    }
+
+    boolean onTouchEvent(MotionEvent event) {
+      final int x = (int) event.getX();
+      final int y = (int) event.getY();
+
+      boolean shouldDelegateTouchEvent = false;
+      boolean touchWithinViewBounds = true;
+      boolean handled = false;
+
+      switch (event.getAction()) {
+        case MotionEvent.ACTION_DOWN:
+          if (mDelegateBounds.contains(x, y)) {
+            mIsHandlingTouch = true;
+            shouldDelegateTouchEvent = true;
+          }
+          break;
+
+        case MotionEvent.ACTION_UP:
+        case MotionEvent.ACTION_MOVE:
+          shouldDelegateTouchEvent = mIsHandlingTouch;
+          if (mIsHandlingTouch) {
+            if (!mDelegateSlopBounds.contains(x, y)) {
+              touchWithinViewBounds = false;
+            }
+          }
+          break;
+
+        case MotionEvent.ACTION_CANCEL:
+          shouldDelegateTouchEvent = mIsHandlingTouch;
+          mIsHandlingTouch = false;
+          break;
+      }
+
+      if (shouldDelegateTouchEvent) {
+        if (touchWithinViewBounds) {
+          // Offset event coordinates to be inside the target view.
+          event.setLocation(mDelegateView.getWidth() / 2, mDelegateView.getHeight() / 2);
+        } else {
+          // Offset event coordinates to be outside the target view (in case it does
+          // something like tracking pressed state).
+          event.setLocation(-(mSlop * 2), -(mSlop * 2));
+        }
+
+        handled = mDelegateView.dispatchTouchEvent(event);
+      }
+
+      return handled;
+    }
+
+    static InnerTouchDelegate acquire(View delegateView, Rect bounds) {
+      InnerTouchDelegate touchDelegate = sPool.acquire();
+      if (touchDelegate == null) {
+        touchDelegate = new InnerTouchDelegate();
+      }
+
+      touchDelegate.init(delegateView, bounds);
+
+      return touchDelegate;
+    }
+
+    void release() {
+      mDelegateView = null;
+      mDelegateBounds.setEmpty();
+      mDelegateSlopBounds.setEmpty();
+      mIsHandlingTouch = false;
+      mSlop = 0;
+
+      sPool.release(this);
+    }
+  }
+}

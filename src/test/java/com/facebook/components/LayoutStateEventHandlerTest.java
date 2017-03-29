@@ -59,3 +59,8 @@ public class LayoutStateEventHandlerTest {
             .buildWithLayout();
       }
     };
+  }
+
+  @Test
+  public void testNestedEventHandlerInput() {
+    LayoutState.calculate(

@@ -36,3 +36,4 @@ class MountItem {
   private Object mContent;
   private ComponentHost mHost;
   private boolean mIsBound;
+  private int mImportantForAccessibility;
