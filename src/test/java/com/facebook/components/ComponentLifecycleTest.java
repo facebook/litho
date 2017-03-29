@@ -361,3 +361,9 @@ public class ComponentLifecycleTest {
     }
   }
 
+  private class TestMountSpecWithEmptyOnMeasure extends TestBaseComponent {
+
+    @Override
+    public MountType getMountType() {
+      return MountType.DRAWABLE;
+    }
