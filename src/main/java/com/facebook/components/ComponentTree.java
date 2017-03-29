@@ -1226,3 +1226,11 @@ public class ComponentTree {
     }
 
     protected void init(ComponentContext context, Component<?> root) {
+      this.context = context;
+      this.root = root;
+    }
+
+    protected void release() {
+      context = null;
+      root = null;
+
