@@ -868,3 +868,5 @@ public class ComponentHost extends ViewGroup {
     }
 
     for (int i = 0, size = mScrapHosts.size(); i < size; i++) {
+      final View child = mScrapHosts.get(i);
+      mChildDrawingOrder[index++] = indexOfChild(child);
