@@ -702,3 +702,17 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     }
   }
 
+  @GuardedBy("this")
+  private int getActualChildrenWidthSpec(final ComponentTreeHolder treeHolder) {
+    return mLayoutInfo.getScrollDirection() == HORIZONTAL ?
+        mChildrenWidthSpec :
+        mChildrenWidthSpec * treeHolder.getSpanSize();
+  }
+
+  @GuardedBy("this")
+  private int getActualChildrenHeightSpec(final ComponentTreeHolder treeHolder) {
+    return mLayoutInfo.getScrollDirection() == VERTICAL ?
+        mChildrenHeightSpec :
+        mChildrenHeightSpec * treeHolder.getSpanSize();
+  }
+
