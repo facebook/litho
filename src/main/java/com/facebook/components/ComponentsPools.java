@@ -139,3 +139,12 @@ public class ComponentsPools {
   // Lazily initialized when acquired first time, as this is not a common use case.
   private static Pools.Pool<BorderColorDrawable> sBorderColorDrawablePool = null;
 
+  private static PoolsActivityCallback sActivityCallbacks;
+
+  /**
+   * To support Gingerbread (where the registerActivityLifecycleCallbacks API
+   * doesn't exist), we allow apps to explicitly invoke activity callbacks. If
+   * this is enabled we'll throw if we are passed a context for which we have
+   * no record.
+   */
+  static boolean sIsManualCallbacks;

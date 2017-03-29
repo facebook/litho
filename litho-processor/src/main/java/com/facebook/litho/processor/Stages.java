@@ -244,3 +244,4 @@ public class Stages {
       Class<? extends Annotation> interStageProp,
       Class<? extends Annotation> stage) {
     final int interStagePropIndex = asList(mInterStagePropAnnotations).indexOf(interStageProp);
+
