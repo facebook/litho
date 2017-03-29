@@ -150,3 +150,4 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
       Layout layout,
       int userColor,
       ClickableSpan[] clickableSpans) {
+    mount(text, layout, 0, null, userColor, 0, clickableSpans);
