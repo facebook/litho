@@ -120,3 +120,6 @@ public abstract class BaseBinder<
       return;
     }
 
+    if (isInRange(position)) {
+      updateRange(position, 1, URFLAG_REFRESH_IN_RANGE);
+    }
