@@ -806,3 +806,4 @@ class MountState {
     return mLayoutOutputsIds.length - 1;
   }
 
+  private void updateMountedContent(

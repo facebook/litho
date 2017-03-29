@@ -124,3 +124,4 @@ class ImageSpec {
       ComponentContext c,
       ComponentLayout layout,
       @Prop(resType = ResType.DRAWABLE) Reference<Drawable> src,
+      @Prop(optional = true) ScaleType scaleType,
