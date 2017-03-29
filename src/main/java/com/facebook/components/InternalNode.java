@@ -57,3 +57,4 @@ import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
 import static android.support.annotation.Dimension.DP;
+import static com.facebook.litho.ComponentContext.NULL_LAYOUT;

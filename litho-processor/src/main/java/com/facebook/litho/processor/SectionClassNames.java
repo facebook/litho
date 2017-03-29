@@ -33,3 +33,4 @@ public class SectionClassNames {
   public static final ClassName SECTION_STATE_UPDATE =
       ClassName.bestGuess("com.facebook.litho.list.SectionLifecycle.StateUpdate");
   public static final ClassName LOADING_EVENT_HANDLER =
+      ClassName.bestGuess("com.facebook.litho.list.LoadingEvent");

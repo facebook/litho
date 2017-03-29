@@ -62,3 +62,5 @@ public interface ClassNames {
   ClassName COMPONENT = ClassName.bestGuess("com.facebook.litho.Component");
   ClassName COMPONENT_BUILDER = ClassName.bestGuess("com.facebook.litho.Component.Builder");
   ClassName COMPONENT_BUILDER_WITH_LAYOUT =
+      ClassName.bestGuess("com.facebook.litho.Component.BuilderWithLayout");
+  ClassName COMPONENT_LIFECYCLE = ClassName.bestGuess("com.facebook.litho.ComponentLifecycle");
