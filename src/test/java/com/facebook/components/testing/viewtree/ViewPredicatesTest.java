@@ -98,3 +98,9 @@ public class ViewPredicatesTest {
   @Test
   public void testMatchesTextWholeString() throws Exception {
     final Predicate<View> matchesHello = ViewPredicates.matchesText("Hello");
+
+    assertThat(matchesHello.apply(mView)).isFalse();
+    assertThat(matchesHello.apply(mTextViewWithNull)).isFalse();
+    assertThat(matchesHello.apply(mTextViewWithEmptyString)).isFalse();
+    assertThat(matchesHello.apply(mTextViewWithHello)).isTrue();
+    assertThat(matchesHello.apply(mTextViewWithWorld)).isFalse();
