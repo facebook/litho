@@ -60,3 +60,4 @@ class PagerSpec {
   }
 
   @OnMount
+  static void onMount(
