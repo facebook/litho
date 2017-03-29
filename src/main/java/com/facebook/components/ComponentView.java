@@ -30,3 +30,4 @@ import static com.facebook.litho.AccessibilityUtils.isAccessibilityEnabled;
  * A {@link ViewGroup} that can host the mounted state of a {@link Component}.
  */
 public class ComponentView extends ComponentHost {
+  private ComponentTree mComponent;

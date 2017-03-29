@@ -48,3 +48,4 @@ public class TransitionInterpolatorAnimatorTest {
       }
     };
     mAnimator.addListener(mListenerAdapter);
+    mView = new View(RuntimeEnvironment.application);

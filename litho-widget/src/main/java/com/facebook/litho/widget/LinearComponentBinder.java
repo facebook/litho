@@ -36,3 +36,4 @@ public abstract class LinearComponentBinder extends
     super(context, layoutManager, rangeController);
   }
 
+  @Override
