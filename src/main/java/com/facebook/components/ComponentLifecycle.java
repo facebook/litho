@@ -442,3 +442,11 @@ public abstract class ComponentLifecycle implements EventDispatcher {
    * {@link ComponentLifecycle#mount}.
    *
    * @return one of {@link ComponentLifecycle.MountType}
+   */
+  public MountType getMountType() {
+    return MountType.NONE;
+  }
+
+  /**
+   * Populate an accessibility node with information about the component.
+   * @param accessibilityNode node to populate
