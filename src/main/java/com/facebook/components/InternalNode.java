@@ -478,3 +478,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Override
   public InternalNode importantForAccessibility(int importantForAccessibility) {
     mPrivateFlags |= PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET;
+    mImportantForAccessibility = importantForAccessibility;
+    return this;
+  }
+
+  @Override
+  public InternalNode duplicateParentState(boolean duplicateParentState) {
