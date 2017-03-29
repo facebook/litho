@@ -147,3 +147,24 @@ public class LayoutStateCalculateVisibilityOutputsTest {
             .child(
                 TestLayoutComponent.create(c, 0, 0, true, true, false, isDelegate)
                     .withLayout().flexShrink(0)
+                    .visibleHandler(c.newEventHandler(1)))
+            .wrapInView()
+            .build();
+      }
+    };
+
+    LayoutState layoutState = calculateLayoutState(
+        RuntimeEnvironment.application,
+        component,
+        -1,
+        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
+        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
+
+    assertEquals(1, layoutState.getVisibilityOutputCount());
+  }
+
+  @Test
+  public void testLayoutOutputsForDeepLayoutSpecs() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {

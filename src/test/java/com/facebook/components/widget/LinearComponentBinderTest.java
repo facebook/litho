@@ -218,3 +218,13 @@ public class LinearComponentBinderTest {
 
     @Override
     public boolean isAsyncLayoutEnabled() {
+      return true;
+    }
+
+    @Override
+    public int getCount() {
+      return mItems.size();
+    }
+
+    @Override
+    public Component<?> createComponent(ComponentContext c, int position) {
