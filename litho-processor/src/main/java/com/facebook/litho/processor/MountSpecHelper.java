@@ -416,3 +416,8 @@ public class MountSpecHelper extends ComponentSpecHelper {
     while (returnType.getKind() != TypeKind.NONE && returnType.getKind() != TypeKind.VOID) {
       final TypeElement returnElement = (TypeElement) ((DeclaredType) returnType).asElement();
 
+      final TypeName type = ClassName.get(returnElement);
+      if (type.equals(ClassNames.VIEW)) {
+        return MountType.VIEW;
+      } else if (type.equals(ClassNames.DRAWABLE)) {
+        return MountType.DRAWABLE;
