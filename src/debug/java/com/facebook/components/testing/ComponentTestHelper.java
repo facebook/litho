@@ -235,3 +235,13 @@ public final class ComponentTestHelper {
    * Unbinds a component tree from a component view.
    *
    * @param componentView The view to unbind.
+   */
+  public static void unbindComponent(ComponentView componentView) {
+    try {
+      Whitebox.invokeMethod(componentView, "onDetach");
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
