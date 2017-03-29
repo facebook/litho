@@ -113,3 +113,5 @@ public class Stages {
   // with BaseLayoutBuilder.
   private static final String[] RESERVED_PROP_NAMES = new String[] {
       "withLayout",
+      "key",
+      "loadingEventHandler",

@@ -66,3 +66,8 @@ class TestComponentContext extends ComponentContext {
       @StyleRes int defStyleRes) {
     return newLayoutBuilder(component);
   }
+
+  @Override
+  TestComponentContext makeNewCopy() {
+    return new TestComponentContext(this);
+  }
