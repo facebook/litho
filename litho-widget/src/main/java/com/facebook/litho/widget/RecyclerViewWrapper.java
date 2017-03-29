@@ -38,3 +38,11 @@ public class RecyclerViewWrapper extends SwipeRefreshLayout {
     super(context);
 
     mRecyclerView = recyclerView;
+
+    // We need to draw first visible item on top of other children to support sticky headers
+    mRecyclerView.setChildDrawingOrderCallback(new RecyclerView.ChildDrawingOrderCallback() {
+      @Override
+      public int onGetChildDrawingOrder(int childCount, int i) {
+        return childCount - 1 - i;
+      }
+    });

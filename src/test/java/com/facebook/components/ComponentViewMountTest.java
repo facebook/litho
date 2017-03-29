@@ -144,3 +144,6 @@ public class ComponentViewMountTest {
     assertEquals(1, mComponentView.getRequestLayoutInvocationCount());
 
     ComponentTree newComponentTree =
+        ComponentTree.create(mContext, mComponent)
+            .incrementalMount(false)
+            .build();

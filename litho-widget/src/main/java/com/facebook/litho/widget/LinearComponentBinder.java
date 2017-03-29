@@ -104,3 +104,18 @@ public abstract class LinearComponentBinder extends
     // always starts at the first position, there are no items before the viewport.
     return mInitFillMainAxis < recyclerMainAxisSize * viewportsToInit;
   }
+
+  @Override
+  public int findFirstVisibleItemPosition() {
+    return getLayoutManager().findFirstVisibleItemPosition();
+  }
+
+  @Override
+  public int findLastVisibleItemPosition() {
+    return getLayoutManager().findLastVisibleItemPosition();
+  }
+
+  @Override
+  public boolean isSticky(int position) {
+    return false;
+  }
