@@ -41,3 +41,9 @@ android_aar(
 android_resource(
     name = "res",
     package = "com.facebook",
+    res = "src/main/res",
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+    ],
