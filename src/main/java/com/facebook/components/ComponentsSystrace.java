@@ -25,3 +25,4 @@ package com.facebook.litho;
  */
 public class ComponentsSystrace {
 
+  private static volatile Systrace sInstance = null;

@@ -25,3 +25,4 @@ import com.facebook.litho.ComponentView;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
+import com.facebook.infer.annotation.ThreadSafe;
