@@ -98,3 +98,11 @@ public abstract class BaseBinder<
 
     if (!hasContentSize()) {
       return;
+    }
+
+    // TODO(12986103): Once the experiment proved to be ok, remove the updateRange code.
+    if (ComponentsConfiguration.bootstrapBinderItems) {
+      initializeRange(0);
+    } else {
+      updateRange(0, getCount(), URFLAG_REFRESH_IN_RANGE | URFLAG_RELEASE_OUTSIDE_RANGE);
+    }

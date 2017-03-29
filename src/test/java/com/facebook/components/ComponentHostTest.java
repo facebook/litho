@@ -547,3 +547,8 @@ public class ComponentHostTest {
 
     assertEquals(1, mHost.getChildDrawingOrder(mHost.getChildCount(), 0));
     assertEquals(0, mHost.getChildDrawingOrder(mHost.getChildCount(), 1));
+
+    mHost.moveItem(mountItem3, 1, 3);
+
+    assertEquals(0, mHost.getChildDrawingOrder(mHost.getChildCount(), 0));
+    assertEquals(1, mHost.getChildDrawingOrder(mHost.getChildCount(), 1));
