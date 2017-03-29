@@ -28,3 +28,4 @@ import android.os.Message;
 import android.os.Process;
 import android.support.annotation.IntDef;
 import android.support.annotation.Keep;
+import android.support.annotation.NonNull;

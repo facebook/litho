@@ -50,3 +50,19 @@ public class TransitionInterpolatorAnimatorTest {
     mAnimator.addListener(mListenerAdapter);
     mView = new View(RuntimeEnvironment.application);
     mInterpolator = new LinearInterpolator();
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void testStartWithoutListenerThrowException() {
+    final TransitionInterpolatorAnimator
+        animator = new TransitionInterpolatorAnimator(mAnimator, 0, 0);
+    animator.start(mView, PROPERTY_CHANGE_HOLDERS);
+  }
+
+  @Test
+  public void testObjectAnimatorSetOnStart() {
+    final TransitionInterpolatorAnimator
+        transitionAnimator = new TransitionInterpolatorAnimator(mAnimator, 0, 0);
+
+    transitionAnimator.setDuration(DURATION);
+    transitionAnimator.setStartDelay(START_DELAY);

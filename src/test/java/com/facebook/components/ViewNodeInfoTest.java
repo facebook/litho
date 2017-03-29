@@ -28,3 +28,5 @@ import static junit.framework.Assert.fail;
 @RunWith(ComponentsTestRunner.class)
 public class ViewNodeInfoTest {
 
+  private ViewNodeInfo mViewNodeInfo;
+  private LayoutOutput mLayoutOutput;

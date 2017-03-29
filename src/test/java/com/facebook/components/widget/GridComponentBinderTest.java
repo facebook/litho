@@ -25,3 +25,4 @@ import com.facebook.components.SizeSpec;
 import com.facebook.components.config.ComponentsConfiguration;
 import com.facebook.components.testing.testrunner.ComponentsTestRunner;
 import com.facebook.components.testing.TestDrawableComponent;
+

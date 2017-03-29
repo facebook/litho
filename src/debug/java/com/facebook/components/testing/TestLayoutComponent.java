@@ -49,3 +49,6 @@ public class TestLayoutComponent extends ComponentLifecycle {
 
     final TestLayoutComponent lifecycle = new TestLayoutComponent(
         callsShouldUpdateOnMount,
+        isPureRender,
+        hasMountSpecChild,
+        isDelegate);

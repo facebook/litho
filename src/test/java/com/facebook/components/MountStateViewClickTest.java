@@ -33,3 +33,5 @@ public class MountStateViewClickTest {
     mContext = new ComponentContext(RuntimeEnvironment.application);
   }
 
+  @Test
+  public void testInnerComponentHostClickable() {

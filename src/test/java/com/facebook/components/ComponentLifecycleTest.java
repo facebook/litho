@@ -9,3 +9,4 @@
 
 package com.facebook.components;
 
+import android.content.res.Resources;

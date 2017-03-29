@@ -31,3 +31,4 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(ComponentsTestRunner.class)
+public class InternalNodeTest {
