@@ -3071,3 +3071,51 @@ public class Stages {
   private void writeFieldSpec(FieldSpec fieldSpec) {
     mClassTypeSpec.addField(fieldSpec);
   }
+
+  private static List<Parameter> getStateValueParams(ExecutableElement element) {
+    final List<Parameter> params = new ArrayList<>();
+    for (VariableElement v : element.getParameters()) {
+      if (v.getAnnotation(Param.class) == null) {
+        params.add(new Parameter(ClassName.get(v.asType()), v.getSimpleName().toString()));
+      }
+    }
+
+    return params;
+  }
+
+  private static List<Parameter> getParamsWithAnnotation(
+      ExecutableElement e,
+      Class annotationClass) {
+    final List<Parameter> params = new ArrayList<>();
+
+    for (VariableElement v : e.getParameters()) {
+      if (v.getAnnotation(annotationClass) != null) {
+        params.add(new Parameter(ClassName.get(v.asType()), v.getSimpleName().toString()));
+      }
+    }
+
+    return params;
+  }
+
+  public Set<String> getStateParamNames() {
+    return mStateMap.keySet();
+  }
+
+  private String getStateContainerImplClassName() {
+    return getSimpleClassName() + STATE_CONTAINER_IMPL_NAME_SUFFIX;
+  }
+
+  private void addCreateInitialStateDefinedProps(List<VariableElement> stagesProps) {
+    final Set<String> stagesPropNames = new LinkedHashSet<>();
+
+    for (VariableElement v : stagesProps) {
+      stagesPropNames.add(v.getSimpleName().toString());
+    }
+
+    for (VariableElement v : mOnCreateInitialStateDefinedProps) {
+      if (!stagesPropNames.contains(v.getSimpleName().toString())) {
+        stagesPropNames.add(v.getSimpleName().toString());
+        stagesProps.add(v);
+      }
+    }
+  }
