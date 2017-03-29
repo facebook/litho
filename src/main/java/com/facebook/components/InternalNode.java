@@ -417,3 +417,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   public InternalNode positionType(YogaPositionType positionType) {
     mPrivateFlags |= PFLAG_POSITION_TYPE_IS_SET;
     mYogaNode.setPositionType(positionType);
+    return this;
+  }
+
+  @Override
