@@ -570,3 +570,6 @@ public class ComponentTree {
     assertMainThread();
 
     return mountComponentIfDirty();
+  }
+
+  /**
