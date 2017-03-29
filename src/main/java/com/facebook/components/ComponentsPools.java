@@ -482,3 +482,7 @@ public class ComponentsPools {
   }
 
   @ThreadSafe(enableChecks = false)
+  static void release(NodeInfo nodeInfo) {
+    sNodeInfoPool.release(nodeInfo);
+  }
+
