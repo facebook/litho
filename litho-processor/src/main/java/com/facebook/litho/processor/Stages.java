@@ -2627,3 +2627,5 @@ public class Stages {
         genericType,
         INNER_IMPL_BUILDER_CLASS_NAME,
         new TypeName[]{genericType},
+        ClassNames.COMPONENT_CONTEXT,
+        null,
