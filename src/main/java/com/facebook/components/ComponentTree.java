@@ -871,3 +871,7 @@ public class ComponentTree {
     }
   }
 
+  /**
+   * Calculates the layout.
+   * @param output a destination where the size information should be saved
+   */
