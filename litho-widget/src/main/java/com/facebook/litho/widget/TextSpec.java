@@ -105,3 +105,7 @@ class TextSpec {
   @PropDefault protected static final boolean shouldIncludeFontPadding = true;
   @PropDefault protected static final Alignment textAlignment = ALIGN_NORMAL;
 
+  private static final Path sTempPath = new Path();
+  private static final Rect sTempRect = new Rect();
+  private static final RectF sTempRectF = new RectF();
+
