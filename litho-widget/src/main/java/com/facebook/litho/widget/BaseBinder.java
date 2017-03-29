@@ -290,3 +290,7 @@ public abstract class BaseBinder<
         } else if (toPosition > lastPosition && fromPosition < firstPosition) {
           mComponentTrees.shiftAllLeft(1);
         }
+      } else if (isFromInRange && !isToInRange) {
+        mComponentTrees.removeShiftingLeft(fromPosition);
+
+      } else if (!isFromInRange && isToInRange) {
