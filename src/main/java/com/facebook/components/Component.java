@@ -89,3 +89,6 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
   }
 
   private static final AtomicInteger sIdGenerator = new AtomicInteger(0);
+  private int mId = sIdGenerator.getAndIncrement();
+  private String mGlobalKey;
+  private String mKey;
