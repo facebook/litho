@@ -360,3 +360,4 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
    * @return the assertions object
    */
   public ViewTreeAssert doesNotHaveVisibleDrawable(final int resourceId) {
+    doesNotHaveVisibleDrawable(
