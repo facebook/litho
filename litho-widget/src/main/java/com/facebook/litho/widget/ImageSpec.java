@@ -75,3 +75,4 @@ class ImageSpec {
   @OnMeasure
   static void onMeasure(
       ComponentContext c,
+      ComponentLayout layout,
