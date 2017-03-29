@@ -2482,3 +2482,12 @@ public class Stages {
     methodBuilder.addStatement(
         "$T _lifecycle = _eventHandler.mHasEventDispatcher.getEventDispatcher()",
         ClassNames.EVENT_DISPATCHER);
+
+    final TypeName returnType = fixedMethod.returnType;
+    if (returnType != null && !returnType.equals(ClassName.VOID)) {
+      methodBuilder.addStatement(
+          "return ($L) _lifecycle.dispatchOnEvent(_eventHandler, _eventState)", returnType);
+      methodBuilder.returns(returnType);
+    } else {
+      methodBuilder.addStatement("_lifecycle.dispatchOnEvent(_eventHandler, _eventState)");
+    }
