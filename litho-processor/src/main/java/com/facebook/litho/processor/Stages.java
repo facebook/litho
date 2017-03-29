@@ -1354,3 +1354,4 @@ public class Stages {
       if (element.getReturnType().getKind() != VOID) {
         methodBuilder.addStatement(
             "return do$L($L)",
+            capitalize(element.getSimpleName().toString()),
