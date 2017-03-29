@@ -167,3 +167,5 @@ public class ComponentsPools {
     return state;
   }
 
+  static synchronized YogaNodeAPI acquireYogaNode() {
+    YogaNodeAPI node = sYogaNodePool.acquire();

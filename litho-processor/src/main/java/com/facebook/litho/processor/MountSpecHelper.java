@@ -613,3 +613,18 @@ public class MountSpecHelper extends ComponentSpecHelper {
           .build());
   }
 
+  public void generateCanMountIncrementally() {
+    if (!mSpecElement.getAnnotation(MountSpec.class).canMountIncrementally()) {
+      return;
+    }
+
+    final MethodSpec.Builder canMountIncrementally =
+        MethodSpec.methodBuilder("canMountIncrementally")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(TypeName.BOOLEAN)
+            .addStatement("return true");
+
+    mTypeSpec.addMethod(canMountIncrementally.build());
+  }
+
