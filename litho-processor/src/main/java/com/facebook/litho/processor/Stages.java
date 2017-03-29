@@ -1926,3 +1926,21 @@ public class Stages {
         .beginControlFlow("if (other == null || getClass() != other.getClass())")
         .addStatement("return false")
         .endControlFlow()
+        .addStatement(implClassName +
+            " " +
+            implInstanceName +
+            " = (" +
+            implClassName +
+            ") other");
+    if (shouldCheckId) {
+      equalsBuilder
+          .beginControlFlow(
+              "if (this.getId() == " + implInstanceName + ".getId())")
+          .addStatement("return true")
+          .endControlFlow();
+    }
+
+    for (VariableElement v : mImplMembers.values()) {
+      if (!isState(v)) {
+        addCompareStatement(implInstanceName, v, equalsBuilder, false);
+      }
