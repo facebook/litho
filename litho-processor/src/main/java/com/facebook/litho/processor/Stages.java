@@ -2477,3 +2477,5 @@ public class Stages {
     for (VariableElement v : parameters) {
       final String variableName = v.getSimpleName().toString();
       methodBuilder.addStatement("_eventState.$L = $L", variableName, variableName);
+    }
+
