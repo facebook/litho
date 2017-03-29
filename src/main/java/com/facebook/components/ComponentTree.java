@@ -803,3 +803,5 @@ public class ComponentTree {
         root = root.makeShallowCopyWithNewId();
       }
       final boolean rootInitialized = root != null;
+      final boolean widthSpecInitialized = widthSpec != SIZE_UNINITIALIZED;
+      final boolean heightSpecInitialized = heightSpec != SIZE_UNINITIALIZED;
