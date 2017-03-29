@@ -199,3 +199,4 @@ class RecyclerSpec {
     }
 
     recyclerViewWrapper.setOnRefreshListener(null);
+  }

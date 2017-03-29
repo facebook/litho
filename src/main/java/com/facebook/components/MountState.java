@@ -918,3 +918,5 @@ class MountState {
 
     host.mount(index, item, sTempRect);
 
+    setViewAttributes(item);
+
