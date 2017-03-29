@@ -188,3 +188,7 @@ class RecyclerSpec {
     recyclerView.setItemAnimator(oldAnimator);
 
     binder.unbind(recyclerView);
+
+    if (recyclerEventsController != null) {
+      recyclerEventsController.setRecyclerViewWrapper(null);
+    }
