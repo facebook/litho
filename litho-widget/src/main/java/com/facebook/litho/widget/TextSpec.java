@@ -224,3 +224,4 @@ class TextSpec {
       @Prop(optional = true) int textStyle,
       @Prop(optional = true) Typeface typeface,
       @Prop(optional = true) Alignment textAlignment,
+      @Prop(optional = true) boolean glyphWarming,
