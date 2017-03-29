@@ -1659,3 +1659,4 @@ public class Stages {
       methodBuilder.addStatement("releaseOutput($L)", name);
     }
 
+    writeMethodSpec(methodBuilder.build());
