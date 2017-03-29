@@ -557,3 +557,4 @@ public class RecyclerBinder implements Binder<RecyclerView> {
       measure(
           sDummySize,
           SizeSpec.makeSizeSpec(width, SizeSpec.EXACTLY),
+          SizeSpec.makeSizeSpec(height, SizeSpec.EXACTLY));
