@@ -45,3 +45,5 @@ public class MountItemTest {
   private int mFlags;
   private ComponentContext mContext;
   private NodeInfo mNodeInfo;
+
+  @Before
