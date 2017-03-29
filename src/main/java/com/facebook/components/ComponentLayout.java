@@ -208,3 +208,24 @@ public interface ComponentLayout {
     Builder viewTags(SparseArray<Object> viewTags);
     Builder transitionKey(String key);
     Builder testKey(String testKey);
+    Builder dispatchPopulateAccessibilityEventHandler(
+        EventHandler<DispatchPopulateAccessibilityEventEvent>
+            dispatchPopulateAccessibilityEventHandler);
+    Builder onInitializeAccessibilityEventHandler(
+        EventHandler<OnInitializeAccessibilityEventEvent> onInitializeAccessibilityEventHandler);
+    Builder onInitializeAccessibilityNodeInfoHandler(
+        EventHandler<OnInitializeAccessibilityNodeInfoEvent>
+            onInitializeAccessibilityNodeInfoHandler);
+    Builder onPopulateAccessibilityEventHandler(
+        EventHandler<OnPopulateAccessibilityEventEvent> onPopulateAccessibilityEventHandler);
+    Builder onRequestSendAccessibilityEventHandler(
+        EventHandler<OnRequestSendAccessibilityEventEvent>
+            onRequestSendAccessibilityEventHandler);
+    Builder performAccessibilityActionHandler(
+        EventHandler<PerformAccessibilityActionEvent>
+            performAccessibilityActionHandler);
+    Builder sendAccessibilityEventHandler(
+    EventHandler<SendAccessibilityEventEvent> sendAccessibilityEventHandler);
+    Builder sendAccessibilityEventUncheckedHandler(
+        EventHandler<SendAccessibilityEventUncheckedEvent> sendAccessibilityEventUncheckedHandler);
+
