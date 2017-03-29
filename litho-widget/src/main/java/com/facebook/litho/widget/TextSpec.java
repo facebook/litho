@@ -248,3 +248,5 @@ class TextSpec {
         shadowColor,
         isSingleLine,
         text,
+        textColor,
+        textColorStateList,

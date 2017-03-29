@@ -406,3 +406,4 @@ public class Stages {
    *   <li>1. Parameters are consistently typed across stages.</li>
    *   <li>2. Outputs for the same parameter name aren't duplicated.</li>
    *   <li>3. Declared inter-stage prop parameters from previous stages (i.e. not
+   *   {@link Prop}) correspond to outputs from that stage</li>
