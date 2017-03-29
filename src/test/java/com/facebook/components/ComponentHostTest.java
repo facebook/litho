@@ -726,3 +726,4 @@ public class ComponentHostTest {
         content instanceof Drawable ? mDrawableComponent : mViewComponent,
         null,
         content,
+        nodeInfo,

@@ -245,3 +245,4 @@ public class ComponentView extends ComponentHost {
     return mComponent;
   }
 
+  public void setComponent(ComponentTree component) {
