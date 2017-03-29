@@ -1180,3 +1180,5 @@ public class ComponentTree {
           heightSpec,
           diffingEnabled,
           diffNode);
+    }
+  }
