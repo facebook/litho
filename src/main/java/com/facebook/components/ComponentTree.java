@@ -523,3 +523,4 @@ public class ComponentTree {
 
       final StateHandler layoutStateStateHandler =
           localLayoutState.consumeStateHandler();
+      synchronized (this) {
