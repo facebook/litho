@@ -631,3 +631,7 @@ public class Stages {
   private void populateProps() {
     // We use a linked hash map to guarantee iteration order
     final LinkedHashMap<String, VariableElement> variableNameToElementMap = new LinkedHashMap<>();
+
+    for (ExecutableElement stage : mStages) {
+      for (VariableElement v : getProps(stage)) {
+        // Validation unnecessary - already handled by validateAnnotatedParameters
