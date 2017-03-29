@@ -109,3 +109,6 @@ final class ViewPredicates {
     return new Predicate<View>() {
       @Override
       public boolean apply(final View input) {
+        if (pattern.matcher(extractString(input)).find()) {
+          return true;
+        }
