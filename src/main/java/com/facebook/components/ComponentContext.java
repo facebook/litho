@@ -25,3 +25,5 @@ import com.facebook.infer.annotation.ThreadConfined;
  */
 public class ComponentContext extends ContextWrapper {
 
+  static final InternalNode NULL_LAYOUT = new NoOpInternalNode();
+
