@@ -278,3 +278,4 @@ public class Stages {
           Event.class,
           "returnType");
 
+      if (!mProcessingEnv.getTypeUtils().isSameType(element.getReturnType(), returnType)) {
