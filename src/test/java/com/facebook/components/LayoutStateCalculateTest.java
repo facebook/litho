@@ -1650,3 +1650,4 @@ public class LayoutStateCalculateTest {
                     .setFixSizes(true)
                     .setDelegate(false)
                     .withLayout()
+                    .marginPx(YogaEdge.ALL, 11))
