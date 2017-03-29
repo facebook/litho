@@ -1260,3 +1260,11 @@ class MountState {
   }
 
   private static void setViewTag(View view, Object viewTag) {
+    if (view instanceof ComponentHost) {
+      final ComponentHost host = (ComponentHost) view;
+      host.setViewTag(viewTag);
+    } else {
+      view.setTag(viewTag);
+    }
+  }
+
