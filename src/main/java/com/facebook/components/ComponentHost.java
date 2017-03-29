@@ -733,3 +733,5 @@ public class ComponentHost extends ViewGroup {
       ComponentHostUtils.maybeSetDrawableState(
           this,
           (Drawable) mountItem.getContent(),
+          mountItem.getFlags(),
+          mountItem.getNodeInfo());
