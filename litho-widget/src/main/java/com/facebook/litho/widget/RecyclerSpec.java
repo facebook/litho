@@ -221,3 +221,4 @@ class RecyclerSpec {
       recyclerView.removeItemDecoration(itemDecoration);
     }
 
+    binder.unmount(recyclerView);
