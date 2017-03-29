@@ -228,3 +228,4 @@ public class Stages {
 
   private boolean isInterStagePropAnnotationValidInStage(
       Class<? extends Annotation> interStageProp,
+      Class<? extends Annotation> stage) {
