@@ -1752,3 +1752,8 @@ class MountState {
     private PrepareMountStats() {}
 
     private void reset() {
+      unchangedCount = 0;
+      movedCount = 0;
+      unmountedCount = 0;
+    }
+  }
