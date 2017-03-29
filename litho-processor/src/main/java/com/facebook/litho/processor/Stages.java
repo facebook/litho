@@ -555,3 +555,4 @@ public class Stages {
               throw new ComponentsProcessingException(
                   v,
                   "Props may not be declared with the following types:" +
+                      illegalPropTypes);
