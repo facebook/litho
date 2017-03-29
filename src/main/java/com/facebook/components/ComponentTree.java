@@ -899,3 +899,9 @@ public class ComponentTree {
           output.width = mostRecentLayoutState.getWidth();
           output.height = mostRecentLayoutState.getHeight();
         }
+        return;
+      }
+
+      widthSpec = mWidthSpec;
+      heightSpec = mHeightSpec;
+      root = mRoot.makeShallowCopy();

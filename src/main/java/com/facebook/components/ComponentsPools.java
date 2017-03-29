@@ -550,3 +550,7 @@ public class ComponentsPools {
 
     if (context instanceof ComponentContext) {
       context = ((ComponentContext) context).getBaseContext();
+
+      if (context instanceof ComponentContext) {
+        throw new IllegalStateException("Double wrapped ComponentContext.");
+      }
