@@ -1955,3 +1955,109 @@ public class Stages {
     return equalsBuilder.build();
   }
 
+  private static void addCompareStatement(
+      String implInstanceName,
+      VariableElement v,
+      MethodSpec.Builder equalsBuilder,
+      boolean isState) {
+    final TypeMirror variableType = v.asType();
+
+    final TypeMirror outputTypeMirror = Utils.getGenericTypeArgument(
+        variableType,
+        ClassNames.OUTPUT);
+
+    final TypeMirror diffTypeMirror = Utils.getGenericTypeArgument(
+        variableType,
+        ClassNames.DIFF);
+
+    final TypeKind variableKind = diffTypeMirror != null ?
+        diffTypeMirror.getKind() :
+        variableType.getKind();
+
+    String qualifiedName = "";
+    if (variableType instanceof DeclaredType) {
+      final DeclaredType declaredType = (DeclaredType) variableType;
+      qualifiedName = ((TypeElement) declaredType.asElement()).getQualifiedName().toString();
+    }
+
+    final String stateContainerMember = isState ? "." + STATE_CONTAINER_IMPL_MEMBER : "";
+    final CharSequence thisVarName = isState
+        ? STATE_CONTAINER_IMPL_MEMBER + "." + v.getSimpleName()
+        : v.getSimpleName();
+
+    if (outputTypeMirror == null) {
+      if (variableKind == FLOAT) {
+        equalsBuilder
+            .beginControlFlow(
+                "if (Float.compare($L, " + implInstanceName + stateContainerMember + ".$L) != 0)",
+                thisVarName,
+                v.getSimpleName())
+            .addStatement("return false")
+            .endControlFlow();
+      } else if (variableKind == DOUBLE) {
+        equalsBuilder
+            .beginControlFlow(
+                "if (Double.compare($L, " + implInstanceName + stateContainerMember + ".$L) != 0)",
+                thisVarName,
+                v.getSimpleName())
+            .addStatement("return false")
+            .endControlFlow();
+      } else if (variableType.getKind() == ARRAY) {
+        equalsBuilder
+            .beginControlFlow(
+                "if (!Arrays.equals($L, " + implInstanceName + stateContainerMember + ".$L))",
+                thisVarName,
+                v.getSimpleName())
+            .addStatement("return false")
+            .endControlFlow();
+      } else if (variableType.getKind().isPrimitive()) {
+        equalsBuilder
+            .beginControlFlow(
+                "if ($L != " + implInstanceName + stateContainerMember + ".$L)",
+                thisVarName,
+                v.getSimpleName())
+            .addStatement("return false")
+            .endControlFlow();
+      } else if (qualifiedName.equals(ClassNames.REFERENCE)) {
+        equalsBuilder
+            .beginControlFlow(
+                "if (Reference.shouldUpdate($L, " +
+                    implInstanceName +
+                    stateContainerMember +
+                    ".$L))",
+                thisVarName,
+                v.getSimpleName(),
+                v.getSimpleName(),
+                v.getSimpleName(),
+                v.getSimpleName())
+            .addStatement("return false")
+            .endControlFlow();
+      } else {
+        equalsBuilder
+            .beginControlFlow(
+                "if ($L != null ? !$L.equals(" +
+                    implInstanceName +
+                    stateContainerMember +
+                    ".$L) : " +
+                    implInstanceName +
+                    stateContainerMember +
+                    ".$L != null)",
+                thisVarName,
+                thisVarName,
+                v.getSimpleName(),
+                v.getSimpleName())
+            .addStatement("return false")
+            .endControlFlow();
+      }
+    }
+  }
+
+  private boolean isState(VariableElement v) {
+    for (VariableElement find : mStateMap.values()) {
+      if (find.getSimpleName().equals(v.getSimpleName())) {
+        return true;
+      }
+    }
+    return false;
+  }
+
