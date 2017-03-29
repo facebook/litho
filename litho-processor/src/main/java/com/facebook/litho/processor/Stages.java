@@ -219,3 +219,4 @@ public class Stages {
     populateTreeProps();
     if (mSupportState) {
       populateStateMap();
+    }

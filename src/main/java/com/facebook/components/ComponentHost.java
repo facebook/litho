@@ -459,3 +459,4 @@ public class ComponentHost extends ViewGroup {
   void setComponentClickListener(ComponentClickListener listener) {
     mOnClickListener = listener;
     this.setOnClickListener(listener);
+  }
