@@ -38,3 +38,5 @@ class ComponentQueries {
   /**
    * Checks whether the given {@link ComponentHost} matches the given pattern. It does not look at
    * the host's children.
+   * @param host the component host
+   * @param pattern the pattern to match
