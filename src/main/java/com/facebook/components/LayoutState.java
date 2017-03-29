@@ -1499,3 +1499,11 @@ class LayoutState {
     return mVisibilityOutputs.get(index);
   }
 
+  int getTestOutputCount() {
+    return mTestOutputs == null ? 0 : mTestOutputs.size();
+  }
+
+  TestOutput getTestOutputAt(int index) {
+    return mTestOutputs == null ? null : mTestOutputs.get(index);
+  }
+
