@@ -152,3 +152,5 @@ public class PagerBinderTest {
   public void testBinderUpdateWithhalfWidthPageAndPage5() {
     mBinder = new TestPagerComponentBinder(mContext, 0, .5f);
     mBinder.getRangeController().notifyOnPageSelected(5);
+
+    assertNull(mBinder.getComponentAt(0));
