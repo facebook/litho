@@ -289,3 +289,4 @@ class EventDispatcherUtils {
     sPerformAccessibilityActionEvent.args = args;
     sPerformAccessibilityActionEvent.superDelegate = superDelegate;
 
+    final EventDispatcher eventDispatcher = eventHandler.mHasEventDispatcher.getEventDispatcher();

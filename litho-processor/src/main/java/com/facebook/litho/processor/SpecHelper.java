@@ -74,3 +74,20 @@ public abstract class SpecHelper implements Closeable {
       mTypeSpec.addModifiers(Modifier.PUBLIC);
     }
 
+    final List<AnnotationValue> eventTypes =
+        Utils.getAnnotationParameter(
+            mProcessingEnv,
+            mSpecElement,
+            getSpecAnnotationClass(),
+            "events");
+    final List<TypeElement> eventTypesElements;
+    if (eventTypes != null) {
+      eventTypesElements = new ArrayList<>();
+      for (AnnotationValue eventType : eventTypes) {
+        final DeclaredType type = (DeclaredType) eventType.getValue();
+        eventTypesElements.add((TypeElement) type.asElement());
+      }
+    } else {
+      eventTypesElements = Collections.<TypeElement>emptyList();
+    }
+
