@@ -14,7 +14,9 @@ package com.facebook.litho.dataflow;
  */
 public class UnitTestTimingSource implements TimingSource {
 
-  private static final long FRAME_TIME_NANOS = (long) (16 * 1e9);
+  public static int FRAME_TIME_MS = 16;
+
+  private static final long FRAME_TIME_NANOS = (long) (FRAME_TIME_MS * 1e6);
 
   private DataFlowGraph mDataFlowGraph;
   private boolean mIsRunning = false;
