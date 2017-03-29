@@ -348,3 +348,4 @@ public class BaseBinderTest {
   private static class MyTestComponentBinder extends BaseBinder<
         ViewGroup,
         MyTestComponentBinder.MyTestWorkingRangeController> {
+
