@@ -109,3 +109,4 @@ class LayoutState {
   private static final int[] DRAWABLE_STATE_ENABLED = new int[]{android.R.attr.state_enabled};
   private static final int[] DRAWABLE_STATE_NOT_ENABLED = new int[]{};
 
+  private ComponentContext mContext;

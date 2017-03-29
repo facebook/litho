@@ -243,3 +243,5 @@ public class MountStateIncrementalMountTest {
                 .flexDirection(COLUMN)
                 .child(
                     Layout.create(c, child1)
+                        .widthPx(10)
+                        .heightPx(10))
