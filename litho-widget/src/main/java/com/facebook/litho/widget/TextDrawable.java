@@ -78,3 +78,4 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
     canvas.translate(-bounds.left, -bounds.top - mLayoutTranslationY);
   }
 
+  @Override
