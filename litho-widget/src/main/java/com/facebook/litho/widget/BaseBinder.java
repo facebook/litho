@@ -603,3 +603,4 @@ public abstract class BaseBinder<
    *              componentTrees outside the new range.
    */
   protected void updateRange(int start, int count, int flags) {
+    assertDoesntHoldLock(this);
