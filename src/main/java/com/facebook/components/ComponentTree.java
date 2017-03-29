@@ -114,3 +114,4 @@ public class ComponentTree {
   // to keep a reference count or something. :-/
   @GuardedBy("this")
   private Component<?> mRoot;
+

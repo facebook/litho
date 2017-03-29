@@ -205,3 +205,4 @@ public interface ComponentLayout {
     Builder contentDescription(@StringRes int stringId);
     Builder contentDescription(@StringRes int stringId, Object... formatArgs);
     Builder viewTag(Object viewTag);
+    Builder viewTags(SparseArray<Object> viewTags);
