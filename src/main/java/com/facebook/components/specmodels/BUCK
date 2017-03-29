@@ -7,3 +7,9 @@
 
 include_defs("//COMPONENTS_DEFS")
 
+java_library(
+    name = "specmodels",
+    srcs = glob(
+        ["**/*.java"],
+        excludes = glob(["processor/*.java"]),
+    ),

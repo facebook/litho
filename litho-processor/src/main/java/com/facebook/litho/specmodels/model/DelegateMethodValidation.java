@@ -7,3 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+package com.facebook.components.specmodels.model;
+
+import javax.lang.model.element.Modifier;
+
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import com.facebook.common.internal.ImmutableList;

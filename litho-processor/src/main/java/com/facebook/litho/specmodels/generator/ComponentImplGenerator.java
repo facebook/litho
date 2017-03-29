@@ -6,3 +6,14 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+
+package com.facebook.components.specmodels.generator;
+
+import javax.lang.model.element.Modifier;
+
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+import com.facebook.common.internal.ImmutableList;

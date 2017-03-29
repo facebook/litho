@@ -6,3 +6,15 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+
+package com.facebook.components.specmodels.model;
+
+import javax.annotation.concurrent.Immutable;
+import javax.lang.model.element.Modifier;
+
+import com.facebook.common.internal.ImmutableList;
+
+import com.squareup.javapoet.TypeName;
+
+/**
+ * Model that is a simple base representation of a

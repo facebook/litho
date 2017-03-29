@@ -6,3 +6,15 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+
+package com.facebook.components.specmodels.model;
+
+public class SpecModelValidationError {
+  public final Object element;
+  public final String message;
+
+  public SpecModelValidationError(Object element, String message) {
+    this.element = element;
+    this.message = message;
+  }
+}
