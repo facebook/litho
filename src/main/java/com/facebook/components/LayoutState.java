@@ -488,3 +488,5 @@ class LayoutState {
       diffNode = null;
     }
 
+    final boolean needsHostView = needsHostView(node, layoutState);
+
