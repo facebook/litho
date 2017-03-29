@@ -391,3 +391,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Override
   public InternalNode justifyContent(YogaJustify justifyContent) {
     mYogaNode.setJustifyContent(justifyContent);
+    return this;
+  }
+
+  @Override

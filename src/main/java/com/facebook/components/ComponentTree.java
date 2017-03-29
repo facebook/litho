@@ -295,3 +295,6 @@ public class ComponentTree {
     synchronized (this) {
       // We need to track that we are attached regardless...
       mIsAttached = true;
+
+      // ... and then we do state transfer
+      toRelease = setBestMainThreadLayoutAndReturnOldLayout();
