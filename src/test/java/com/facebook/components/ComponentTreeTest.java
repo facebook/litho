@@ -295,3 +295,27 @@ public class ComponentTreeTest {
         ComponentTree.create(mContext, mComponent)
             .incrementalMount(false)
             .build();
+
+    Size size = new Size();
+
+    componentTree.setSizeSpec(
+        SizeSpec.makeSizeSpec(100, AT_MOST),
+        SizeSpec.makeSizeSpec(100, AT_MOST),
+        size);
+
+    assertEquals(100, size.width, 0.0);
+    assertEquals(100, size.height, 0.0);
+
+    LayoutState firstLayoutState = componentTree.getBackgroundLayoutState();
+    assertNotNull(firstLayoutState);
+
+    componentTree.setRootAndSizeSpec(
+        TestDrawableComponent.create(mContext).build(),
+        SizeSpec.makeSizeSpec(100, EXACTLY),
+        SizeSpec.makeSizeSpec(100, EXACTLY),
+        size);
+
+    assertNotEquals(firstLayoutState, componentTree.getBackgroundLayoutState());
+  }
+
+  @Test
