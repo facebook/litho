@@ -524,3 +524,4 @@ public class ComponentHost extends ViewGroup {
         mWasInvalidatedForAccessibilityWhileSuppressed = false;
       }
     }
+  }

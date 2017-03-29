@@ -97,3 +97,4 @@ public class StateUpdatesTestHelper {
         .build();
 
     final ComponentView componentView = new ComponentView(context);
+    ComponentTestHelper.mountComponent(componentView, componentTree);
