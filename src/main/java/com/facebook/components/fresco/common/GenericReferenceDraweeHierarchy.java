@@ -94,3 +94,7 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
       }
     }
 
+    if (placeholderReference == null) {
+      mGenericDraweeHierarchy.setPlaceholderImage(null);
+      return;
+    }
