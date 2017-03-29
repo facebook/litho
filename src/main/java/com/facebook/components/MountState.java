@@ -1003,3 +1003,4 @@ class MountState {
       setTouchHandler(nodeInfo.getTouchHandler(), view);
 
       // 4. Set listeners for AccessibilityDelegate methods
+      setAccessibilityDelegate(view, nodeInfo);
