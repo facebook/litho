@@ -373,3 +373,4 @@ class TextSpec {
     if (textColor != 0) {
       layoutBuilder.setTextColor(textColor);
     } else {
+      layoutBuilder.setTextColor(textColorStateList);
