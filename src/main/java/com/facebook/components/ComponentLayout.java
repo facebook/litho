@@ -402,3 +402,5 @@ public interface ComponentLayout {
     ContainerBuilder sendAccessibilityEventUncheckedHandler(
         EventHandler<SendAccessibilityEventUncheckedEvent> sendAccessibilityEventUncheckedHandler);
     ContainerBuilder testKey(String testKey);
+  }
+}
