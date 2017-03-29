@@ -406,3 +406,5 @@ public class BaseBinderTest {
     }
 
     @Override
+    public Component<?> createComponent(ComponentContext c, int position) {
+      return Text.create(c)

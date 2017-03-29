@@ -101,3 +101,5 @@ private static class State<T extends Drawable> extends Component<DrawableCompone
     implements Cloneable {
 
     Reference<T> mDrawable;
+    int mDrawableWidth;
+    int mDrawableHeight;
