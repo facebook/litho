@@ -181,3 +181,5 @@ class ImageSpec {
 
   @OnUnmount
   static void onUnmount(
+      ComponentContext c,
+      MatrixDrawable convertDrawable,
