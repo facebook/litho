@@ -319,3 +319,4 @@ public final class ComponentTestHelper {
     return subComponents;
   }
 
+  /**
