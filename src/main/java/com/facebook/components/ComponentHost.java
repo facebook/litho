@@ -374,3 +374,12 @@ public class ComponentHost extends ViewGroup {
     }
   }
 
+  @Override
+  public void setTag(int key, Object tag) {
+    super.setTag(key, tag);
+    if (key == R.id.component_node_info && tag != null) {
+      mComponentAccessibilityDelegate.setNodeInfo((NodeInfo) tag);
+      refreshAccessibilityDelegatesIfNeeded(isAccessibilityEnabled(getContext()));
+    }
+  }
+
