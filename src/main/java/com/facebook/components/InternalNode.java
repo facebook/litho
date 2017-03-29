@@ -1778,3 +1778,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
     mResourceResolver.internalRelease();
 
+    mResolvedTouchExpansionLeft = YogaConstants.UNDEFINED;
+    mResolvedTouchExpansionRight = YogaConstants.UNDEFINED;
+    mResolvedX = YogaConstants.UNDEFINED;
+    mResolvedY = YogaConstants.UNDEFINED;
+    mResolvedWidth = YogaConstants.UNDEFINED;
+    mResolvedHeight = YogaConstants.UNDEFINED;
