@@ -598,3 +598,4 @@ class LayoutState {
         Transition transition = component.getLifecycle().onLayoutTransition(
             layoutState.mContext,
             component);
+
