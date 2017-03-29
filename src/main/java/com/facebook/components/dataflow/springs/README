@@ -5,3 +5,8 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
+These files were forked from the facebook/rebound github repository to remove the dependence from
+SpringSystem and to allow the Springs to be driven by the dataflow library.
+
+See https://github.com/facebook/rebound
+

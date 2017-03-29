@@ -6,14 +6,11 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-package com.facebook.components.dataflow;
 
-/**
- * Exception thrown when a node tries to calculate and propagate an illegal value (e.g. NaN).
- */
-public class IllegalValueException extends RuntimeException {
+#pragma once
 
-  public IllegalValueException(String detailMessage) {
-    super(detailMessage);
-  }
-}
+#ifdef __ANDROID__
+#include_next <jni.h>
+#else
+#include "real/jni.h"
+#endif

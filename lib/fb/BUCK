@@ -6,3 +6,5 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 
 include_defs("//COMPONENTS_DEFS")
+
+# This target is only used in open source
