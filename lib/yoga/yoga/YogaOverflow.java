@@ -32,3 +32,4 @@ public enum YogaOverflow {
       case 0: return VISIBLE;
       case 1: return HIDDEN;
       case 2: return SCROLL;
+      default: throw new IllegalArgumentException("Unknown enum value: " + value);

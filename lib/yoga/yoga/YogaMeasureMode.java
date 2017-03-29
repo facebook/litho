@@ -32,3 +32,4 @@ public enum YogaMeasureMode {
       case 0: return UNDEFINED;
       case 1: return EXACTLY;
       case 2: return AT_MOST;
+      default: throw new IllegalArgumentException("Unknown enum value: " + value);
