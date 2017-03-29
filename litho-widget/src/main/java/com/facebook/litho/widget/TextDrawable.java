@@ -30,3 +30,4 @@ import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.facebook.components.TextContent;
