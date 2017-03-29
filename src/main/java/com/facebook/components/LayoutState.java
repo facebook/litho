@@ -1009,3 +1009,4 @@ class LayoutState {
         }
 
         final DisplayList displayList = DisplayList.createDisplayList(
+            lifecycle.getClass().getSimpleName());
