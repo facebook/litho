@@ -471,3 +471,6 @@ public abstract class ComponentLifecycle implements EventDispatcher {
       int componentBoundsX,
       int componentBoundsY,
       Component<?> component) {
+  }
+
+  /**
