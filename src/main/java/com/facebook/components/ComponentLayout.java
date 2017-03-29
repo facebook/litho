@@ -294,3 +294,23 @@ public interface ComponentLayout {
     ContainerBuilder widthDip(@Dimension(unit = DP) int width);
     ContainerBuilder widthPercent(float percent);
 
+    ContainerBuilder minWidthPx(@Px int minWidth);
+    ContainerBuilder minWidthAttr(@AttrRes int resId, @DimenRes int defaultResId);
+    ContainerBuilder minWidthAttr(@AttrRes int resId);
+    ContainerBuilder minWidthRes(@DimenRes int resId);
+    ContainerBuilder minWidthDip(@Dimension(unit = DP) int minWidth);
+    ContainerBuilder minWidthPercent(float percent);
+
+    ContainerBuilder maxWidthPx(@Px int maxWidth);
+    ContainerBuilder maxWidthAttr(@AttrRes int resId, @DimenRes int defaultResId);
+    ContainerBuilder maxWidthAttr(@AttrRes int resId);
+    ContainerBuilder maxWidthRes(@DimenRes int resId);
+    ContainerBuilder maxWidthDip(@Dimension(unit = DP) int maxWidth);
+    ContainerBuilder maxWidthPercent(float percent);
+
+    ContainerBuilder heightPx(@Px int height);
+    ContainerBuilder heightAttr(@AttrRes int resId, @DimenRes int defaultResId);
+    ContainerBuilder heightAttr(@AttrRes int resId);
+    ContainerBuilder heightRes(@DimenRes int resId);
+    ContainerBuilder heightDip(@Dimension(unit = DP) int height);
+    ContainerBuilder heightPercent(float percent);
