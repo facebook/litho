@@ -216,3 +216,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Px
   @Override
   public int getY() {
+    if (YogaConstants.isUndefined(mResolvedY)) {
+      mResolvedY = mYogaNode.getLayoutY();
+    }
+
+    return (int) mResolvedY;

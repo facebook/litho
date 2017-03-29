@@ -202,3 +202,4 @@ public interface ComponentLayout {
     Builder fullImpressionHandler(EventHandler<FullImpressionVisibleEvent> fullImpressionHandler);
     Builder invisibleHandler(EventHandler<InvisibleEvent> invisibleHandler);
     Builder contentDescription(CharSequence contentDescription);
+    Builder contentDescription(@StringRes int stringId);
