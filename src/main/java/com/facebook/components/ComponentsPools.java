@@ -253,3 +253,4 @@ public class ComponentsPools {
       item = new MountItem();
     }
 
+    item.init(component, host, content, layoutOutput, null);
