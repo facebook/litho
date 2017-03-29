@@ -24,3 +24,4 @@ class ComponentQueries {
    * @param host the component host
    * @param predicate the predicate to test
    * @return true if the host has the given text.
+   */
