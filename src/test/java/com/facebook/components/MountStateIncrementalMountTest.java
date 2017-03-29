@@ -56,3 +56,5 @@ public class MountStateIncrementalMountTest {
 
   @Before
   public void setup() {
+    mComponentsLogger = mock(ComponentsLogger.class);
+    mContext = new ComponentContext(RuntimeEnvironment.application, "tag", mComponentsLogger);

@@ -54,3 +54,4 @@ public class InternalNodeReleaseTest {
     mInternalNode.wrapInView();
     mInternalNode.clickHandler(new EventHandler(null, 1));
     mInternalNode.longClickHandler(new EventHandler(null, 1));
+    mInternalNode.touchHandler(new EventHandler(null, 1));

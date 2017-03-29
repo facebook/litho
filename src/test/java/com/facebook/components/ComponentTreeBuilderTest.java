@@ -95,3 +95,28 @@ public class ComponentTreeBuilderTest {
         .build();
 
     mComponentTreeBuilder.init(mContext, root);
+
+    ComponentTree componentTree = mComponentTreeBuilder.build();
+
+    assertSameAsInternalState(componentTree, root, "mRoot");
+    assertDefaults(componentTree);
+  }
+
+  private static void assertSameAsInternalState(
+      ComponentTree componentTree,
+      Object object,
+      String internalName) {
+    assertSame(object, Whitebox.getInternalState(componentTree, internalName));
+  }
+
+  private static void assertEqualToInternalState(
+      ComponentTree componentTree,
+      Object object,
+      String internalName) {
+    assertEquals(object, Whitebox.getInternalState(componentTree, internalName));
+  }
+
+  private static void assertDefaults(ComponentTree componentTree) {
+    assertEqualToInternalState(componentTree, false, "mIsLayoutDiffingEnabled");
+    assertSameAsInternalState(componentTree, null, "mLayoutLock");
+

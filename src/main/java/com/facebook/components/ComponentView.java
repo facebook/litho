@@ -72,3 +72,4 @@ public class ComponentView extends ComponentHost {
     super(context, attrs);
 
     mMountState = new MountState(this);
+    mAccessibilityManager = (AccessibilityManager) context.getSystemService(ACCESSIBILITY_SERVICE);
