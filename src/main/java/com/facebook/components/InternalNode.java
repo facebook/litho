@@ -1765,3 +1765,6 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     }
   }
 
+  /**
+   * Reset all attributes to default values. Intended to facilitate recycling.
+   */
