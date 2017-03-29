@@ -27,3 +27,5 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.components.fresco.common.GenericReferenceDraweeHierarchy;
+import com.facebook.components.reference.Reference;
+import com.facebook.components.utils.MeasureUtils;
