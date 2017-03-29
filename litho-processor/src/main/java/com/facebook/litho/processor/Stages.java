@@ -2193,3 +2193,5 @@ public class Stages {
         throw new ComponentsProcessingException(
             variableElement,
             "Arguments for ShouldUpdate should be of type Diff " + componentMember.asType());
+      }
+
