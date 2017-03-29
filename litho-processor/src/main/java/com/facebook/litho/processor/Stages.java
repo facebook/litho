@@ -415,3 +415,6 @@ public class Stages {
    *   <li>7. Ensure required props don't have default values.</li>
    *   <li>8. Ensure same props are annotated identically</li>
    *   <li>9. Ensure props are of legal types</li>
+   * </ul>
+   */
+  private void validateAnnotatedParameters() {
