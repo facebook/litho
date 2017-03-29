@@ -129,3 +129,7 @@ public class Stages {
       State.class,
   };
 
+  private final ProcessingEnvironment mProcessingEnv;
+
+  private final TypeElement mSourceElement;
+  private final String mQualifiedClassName;
