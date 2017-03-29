@@ -11,3 +11,6 @@ package com.facebook.components;
 
 import com.facebook.infer.annotation.ThreadConfined;
 
+/**
+ * Public API for MeasureOutput.
+ */

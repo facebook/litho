@@ -26,3 +26,6 @@ import com.facebook.components.config.ComponentsConfiguration;
 import com.facebook.components.Size;
 import com.facebook.components.SizeSpec;
 import com.facebook.infer.annotation.ThreadSafe;
+
+import static com.facebook.components.SizeSpec.EXACTLY;
+import static com.facebook.components.SizeSpec.UNSPECIFIED;

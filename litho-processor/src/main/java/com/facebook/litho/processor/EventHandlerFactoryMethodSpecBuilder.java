@@ -27,3 +27,29 @@ class EventHandlerFactoryMethodSpecBuilder {
   private final List<Parameter> mEventParams = new ArrayList<>();
   private TypeName mEventHandlerClassName;
   private final ArrayList<String> mTypeParameters = new ArrayList<>();
+
+  EventHandlerFactoryMethodSpecBuilder eventName(String eventName) {
+    this.mEventName = eventName;
+    return this;
+  }
+
+  EventHandlerFactoryMethodSpecBuilder eventId(int eventId) {
+    this.mEventId = eventId;
+    return this;
+  }
+
+  EventHandlerFactoryMethodSpecBuilder contextClass(TypeName contextClass) {
+    this.mContextClass = contextClass;
+    return this;
+  }
+
+  EventHandlerFactoryMethodSpecBuilder eventParams(List<Parameter> eventParams) {
+    this.mEventParams.addAll(eventParams);
+    return this;
+  }
+
+  EventHandlerFactoryMethodSpecBuilder eventParam(Parameter eventParam) {
+    this.mEventParams.add(eventParam);
+    return this;
+  }
+

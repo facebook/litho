@@ -55,3 +55,8 @@ public @interface LayoutSpec {
    * reused instead of being calculated again.
    */
   boolean isPureRender() default false;
+
+  /**
+   * List of event POJOs this component can dispatch. Used to generate event dispatch methods.
+   */
+  Class<?>[] events() default {};

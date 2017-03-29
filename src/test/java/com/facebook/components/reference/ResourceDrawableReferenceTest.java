@@ -52,3 +52,7 @@ public class ResourceDrawableReferenceTest {
     Reference.release(mContext, drawable1, ref1);
 
     Reference<Drawable> ref2 =
+        ResourceDrawableReference.create(mContext)
+            .resId(R.drawable.background)
+            .build();
+    Drawable drawable2 = Reference.acquire(mContext, ref2);
