@@ -13,3 +13,30 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ComponentView;
+
+import org.powermock.reflect.Whitebox;
+import org.robolectric.shadows.ShadowLooper;
+
+/**
+ * Helper for writing state update unit tests.
+ */
+public class StateUpdatesTestHelper {
+
+  public interface StateUpdater {
+    void performStateUpdate(ComponentContext context);
+  }
+
+  /**
+   * Call a state update as specified in {@link StateUpdater#performStateUpdate(ComponentContext)}
+   *   on the component and return the updated view.
+   * @param context context
+   * @param component the component to update
+   * @param stateUpdater implementation of {@link StateUpdater} that triggers the state update
+   * @param layoutThreadShadowLooper shadow looper to post messages to the main thread
+   * @return the updated ComponentView after the state update was applied
+   */
+  public static ComponentView getViewAfterStateUpdate(
+      ComponentContext context,
+      Component component,
+      StateUpdater stateUpdater,
+      ShadowLooper layoutThreadShadowLooper) throws Exception {

@@ -58,3 +58,13 @@ class EventHandlerFactoryMethodSpecBuilder {
     return this;
   }
 
+  EventHandlerFactoryMethodSpecBuilder typeParameter(String typeParam) {
+    mTypeParameters.add(typeParam);
+    return this;
+  }
+
+  EventHandlerFactoryMethodSpecBuilder typeParameters(List<String> typeParams) {
+    mTypeParameters.addAll(typeParams);
+    return this;
+  }
+
