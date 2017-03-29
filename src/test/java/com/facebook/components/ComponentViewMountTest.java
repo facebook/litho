@@ -101,3 +101,6 @@ public class ComponentViewMountTest {
 
     mComponentView.resetRequestLayoutInvocationCount();
 
+    mComponentView.setComponent(ct);
+    mComponentView.onAttachedToWindow();
+

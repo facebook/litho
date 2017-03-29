@@ -38,3 +38,9 @@ import org.robolectric.shadows.ShadowLooper;
 import static junit.framework.Assert.assertEquals;
 
 @RunWith(ComponentsTestRunner.class)
+public class GridComponentBinderTest {
+
+  private static final int SPAN_COUNT = 2;
+  private static final int GRID_WIDTH = 200;
+  private static final int GRID_HEIGHT = 300;
+

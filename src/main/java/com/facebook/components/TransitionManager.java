@@ -165,3 +165,16 @@ class TransitionManager implements TransitionKeySetListener {
     return mTransitions.get(key);
   }
 
+  @Override
+  public void onTransitionKeySetStart(String key, View view) {
+    recursivelySetChildClipping(view, false);
+  }
+
+  @Override
+  public void onTransitionKeySetStop(String key, View view) {
+    recursivelySetChildClipping(view, true);
+  }
+
+  @Override
+  public void onTransitionKeySetEnd(String key, View view) {
+    recursivelySetChildClipping(view, true);
