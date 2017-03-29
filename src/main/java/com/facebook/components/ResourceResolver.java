@@ -194,3 +194,6 @@ public class ResourceResolver {
 
   protected final float resolveFloatRes(@DimenRes int resId) {
     if (resId != 0) {
+      Float cached = mResourceCache.get(resId);
+      if (cached != null) {
+        return cached;

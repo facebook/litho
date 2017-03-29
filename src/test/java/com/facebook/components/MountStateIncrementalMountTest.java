@@ -336,3 +336,8 @@ public class MountStateIncrementalMountTest {
           protected ComponentLayout onCreateLayout(ComponentContext c) {
             return Container.create(c)
                 .flexDirection(COLUMN)
+                .child(
+                    Layout.create(c, child1)
+                        .widthPx(10)
+                        .heightPx(10)
+                        .clickHandler(c.newEventHandler(1))
