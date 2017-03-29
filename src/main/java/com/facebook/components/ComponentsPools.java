@@ -158,3 +158,5 @@ public class ComponentsPools {
   private static Boolean sShouldUseCSSNodeJNI = null;
 
   static LayoutState acquireLayoutState(ComponentContext context) {
+    LayoutState state = sLayoutStatePool.acquire();
+    if (state == null) {

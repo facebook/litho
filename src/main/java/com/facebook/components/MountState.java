@@ -496,3 +496,4 @@ class MountState {
       setViewAttributes(currentMountItem);
     }
 
+    final Object currentContent = currentMountItem.getContent();
