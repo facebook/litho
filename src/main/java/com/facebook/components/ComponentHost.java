@@ -102,3 +102,4 @@ public class ComponentHost extends ViewGroup {
     mLogger = context.getLogger();
     mComponentAccessibilityDelegate = new ComponentAccessibilityDelegate(this);
     refreshAccessibilityDelegatesIfNeeded(isAccessibilityEnabled(context));
+  }
