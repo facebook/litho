@@ -246,3 +246,4 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
         .overridingErrorMessage(
             "Cannot find text matching \"%s\" in view hierarchy:%n%s",
             pattern,
+            actual.makeString(GET_TEXT_FUNCTION))
