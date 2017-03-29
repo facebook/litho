@@ -1822,3 +1822,4 @@ public class Stages {
     final MethodSpec equalsBuilder = generateEqualsMethodDefinition(false);
     implClassBuilder.addMethod(equalsBuilder);
 
+    writeInnerTypeSpec(implClassBuilder.build());
