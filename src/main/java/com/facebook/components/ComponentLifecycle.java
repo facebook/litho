@@ -288,3 +288,20 @@ public abstract class ComponentLifecycle implements EventDispatcher {
   }
 
   /**
+   * Retrieves all of the tree props used by this Component from the TreeProps map
+   * and sets the tree props as fields on the ComponentImpl.
+   */
+  protected void populateTreeProps(Component<?> component, TreeProps parentTreeProps) {
+  }
+
+  /**
+   * Updates the TreeProps map with outputs from all {@link OnCreateTreeProp} methods.
+   */
+  protected TreeProps getTreePropsForChildren(
+      ComponentContext c,
+      Component<?> component,
+      TreeProps previousTreeProps) {
+    return previousTreeProps;
+  }
+
+  /**
