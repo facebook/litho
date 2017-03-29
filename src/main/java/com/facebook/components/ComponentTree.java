@@ -163,3 +163,4 @@ public class ComponentTree {
 
     if (mLayoutThreadHandler == null) {
       mLayoutThreadHandler = new DefaultLayoutHandler(getDefaultLayoutThreadLooper());
+    }

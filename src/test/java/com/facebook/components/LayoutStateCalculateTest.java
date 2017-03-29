@@ -406,3 +406,10 @@ public class LayoutStateCalculateTest {
         RuntimeEnvironment.application,
         component,
         -1,
+        SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
+        SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY));
+
+    // Account for Android version in the foreground. If >= M the foreground is part of the
+    // ViewLayoutOutput otherwise it has its own LayoutOutput.
+    boolean foregroundHasOwnOutput = Build.VERSION.SDK_INT < Build.VERSION_CODES.M;
+

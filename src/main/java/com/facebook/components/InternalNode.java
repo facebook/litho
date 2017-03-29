@@ -175,3 +175,5 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private float mResolvedWidth = YogaConstants.UNDEFINED;
   private float mResolvedHeight = YogaConstants.UNDEFINED;
 
+  private int mLastWidthSpec = DiffNode.UNSPECIFIED;
+  private int mLastHeightSpec = DiffNode.UNSPECIFIED;
