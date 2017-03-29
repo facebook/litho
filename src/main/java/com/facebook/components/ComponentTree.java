@@ -162,3 +162,4 @@ public class ComponentTree {
     mIsAsyncUpdateStateEnabled = builder.asyncStateUpdates;
 
     if (mLayoutThreadHandler == null) {
+      mLayoutThreadHandler = new DefaultLayoutHandler(getDefaultLayoutThreadLooper());

@@ -518,3 +518,12 @@ public abstract class BaseBinder<
     }
   }
 
+  @Override
+  public boolean isIncrementalMountEnabled() {
+    return false;
+  }
+
+  protected int getInitializeStartPosition() {
+    return 0;
+  }
+
