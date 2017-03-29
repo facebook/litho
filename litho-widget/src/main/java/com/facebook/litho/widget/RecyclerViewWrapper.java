@@ -101,8 +101,8 @@ public class RecyclerViewWrapper extends SwipeRefreshLayout {
       return;
     }
 
-    int stickyHeaderLeft = left + getPaddingLeft();
-    int stickyHeaderTop = top + getPaddingTop();
+    final int stickyHeaderLeft = getPaddingLeft();
+    final int stickyHeaderTop = getPaddingTop();
     mStickyHeader.layout(
         stickyHeaderLeft,
         stickyHeaderTop,
