@@ -64,3 +64,5 @@ import static android.text.Layout.Alignment.ALIGN_NORMAL;
 import static com.facebook.components.SizeSpec.AT_MOST;
 import static com.facebook.components.SizeSpec.EXACTLY;
 import static com.facebook.components.SizeSpec.UNSPECIFIED;
+import static com.facebook.litho.annotations.ResType.BOOL;
+import static com.facebook.litho.annotations.ResType.STRING;

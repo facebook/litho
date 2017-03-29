@@ -132,3 +132,4 @@ public class StateUpdateImplClassBuilder {
 
   /**
    * Set the params of the method annotated with
+   *  {@link com.facebook.litho.annotations.OnUpdateState}
