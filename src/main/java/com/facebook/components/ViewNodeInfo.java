@@ -180,3 +180,5 @@ class ViewNodeInfo {
     }
 
     ComponentsPools.release(this);
+  }
+}
