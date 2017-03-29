@@ -229,3 +229,5 @@ public class Stages {
   private boolean isInterStagePropAnnotationValidInStage(
       Class<? extends Annotation> interStageProp,
       Class<? extends Annotation> stage) {
+    final int interStagePropIndex = asList(mInterStagePropAnnotations).indexOf(interStageProp);
+    final int stageIndex = asList(mStageAnnotations).indexOf(stage);

@@ -49,3 +49,5 @@ import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUT
  */
 public class ComponentsPools {
 
+  private static YogaConfig sYogaConfig;
+

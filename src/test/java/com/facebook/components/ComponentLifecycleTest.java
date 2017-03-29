@@ -324,3 +324,5 @@ public class ComponentLifecycleTest {
     PowerMockito.verifyStatic();
     LayoutState.resolveNestedTree(eq(mNode), anyInt(), anyInt());
 
+    assertThat(YogaMeasureOutput.getWidth(output)).isEqualTo(nestedTreeWidth);
+    assertThat(YogaMeasureOutput.getHeight(output)).isEqualTo(nestedTreeHeight);
