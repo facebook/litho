@@ -117,3 +117,4 @@ public class ComponentViewMountTest {
   }
 
   @Test
+  public void testAttachAndSetComponentRequestsLayout() {

@@ -52,3 +52,7 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
         SpecModel specModel = null;
         final TypeElement typeElement = (TypeElement) element;
         if (element.getAnnotation(LayoutSpec.class) != null) {
+          specModel = LayoutSpecModelFactory.create(
+              processingEnv.getElementUtils(),
+              typeElement,
+              getDependencyInjectionGenerator(typeElement));

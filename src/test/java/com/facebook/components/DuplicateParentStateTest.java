@@ -88,3 +88,5 @@ public class DuplicateParentStateTest {
         -1,
         mUnspecifiedSizeSpec,
         mUnspecifiedSizeSpec,
+        false,
+        null);

@@ -76,3 +76,6 @@ class ViewNodeInfo {
     }
 
     mPadding = ComponentsPools.acquireRect();
+    mPadding.set(l, t, r, b);
+  }
+

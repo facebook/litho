@@ -147,3 +147,4 @@ public class ComponentView extends ComponentHost {
     if (mIsAttached) {
       mIsAttached = false;
 
+      if (mComponent != null) {
