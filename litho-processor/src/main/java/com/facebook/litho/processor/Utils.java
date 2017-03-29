@@ -90,3 +90,17 @@ public class Utils {
     for (final Element enclosedElement : element.getEnclosedElements()) {
       if (enclosedElement.getKind() == ElementKind.METHOD) {
         final ExecutableElement executableElement = (ExecutableElement) enclosedElement;
+        if (executableElement.getAnnotation(annotation) != null) {
+          annotatedMethods.add(executableElement);
+        }
+      }
+    }
+
+    return annotatedMethods;
+  }
+
+  /**
+   * Find inner classes with the given annotation.
+   */
+  public static <A extends Annotation> List<TypeElement> getAnnotatedClasses(
+      TypeElement element, Class<A> annotation) {

@@ -56,3 +56,4 @@ public class MountSpecHelper extends ComponentSpecHelper {
     VIEW,
   }
 
+  private static final Class<Annotation>[] STAGE_ANNOTATIONS = new Class[] {

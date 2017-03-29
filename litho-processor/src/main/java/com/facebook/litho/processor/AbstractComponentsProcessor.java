@@ -87,3 +87,9 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
                 "Please report stack trace to the components team.",
             element);
         e.printStackTrace();
+      }
+    }
+
+    return false;
+  }
+
