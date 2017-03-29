@@ -321,3 +321,5 @@ FBEXPORT int fb_printLog(int prio, const char* tag, const char* fmt, ...)
     __attribute__((format(printf, 3, 4)))
 #endif
     ;
+
+#define fb_vprintLog(prio, cond, tag, fmt...) \
