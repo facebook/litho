@@ -72,3 +72,4 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
       mContext = null;
       mDefStyleAttr = 0;
       mDefStyleRes = 0;
+      mComponent = null;

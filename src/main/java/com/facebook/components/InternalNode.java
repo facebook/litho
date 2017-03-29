@@ -93,3 +93,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private static final long PFLAG_FLEX_SHRINK_IS_SET = 1L << 5;
   // When this flag is set, flex basis was explicitly set on this node.
   private static final long PFLAG_FLEX_BASIS_IS_SET = 1L << 6;
+  // When this flag is set, importantForAccessibility was explicitly set on this node.
