@@ -767,3 +767,7 @@ public class ComponentHostTest {
     private int mInvalidationCount = 0;
     private Rect mInvalidationRect = null;
 
+    public TestableComponentHost(ComponentContext context) {
+      super(context);
+    }
+
