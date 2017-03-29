@@ -223,3 +223,4 @@ public class MountStateVisibilityEventsTest {
     checkNoVisibilityEventsDispatched(mockLifecycle);
     assertEquals(1, getVisibilityItemMapSize());
 
+    mMountState.mount(layoutState, new Rect(LEFT, 0, RIGHT, 5));

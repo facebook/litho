@@ -120,3 +120,14 @@ public class MountStateIncrementalMountTest {
     verifyLoggingAndResetLogger(0, 1);
   }
 
+  @Test
+  public void testIncrementalMountVerticalViewStackScrollDown() {
+    final TestComponent child1 = TestViewComponent.create(mContext)
+        .build();
+    final TestComponent child2 = TestViewComponent.create(mContext)
+        .build();
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
