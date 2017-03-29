@@ -372,3 +372,4 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       ComponentAccessibilityDelegate.super.sendAccessibilityEventUnchecked(host, event);
     }
   }
+}

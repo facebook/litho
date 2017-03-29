@@ -328,3 +328,4 @@ public class ComponentTreeTest {
             .incrementalMount(false)
             .build();
 
+    componentTree.setRoot(mComponent);
