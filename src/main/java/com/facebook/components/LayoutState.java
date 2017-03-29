@@ -431,3 +431,8 @@ class LayoutState {
    * subtree in order to ensure that the MountState will unmount the subtree and mount it again on
    * the correct host.
    * <p/>
+   *
+   * @param node InternalNode to process.
+   * @param layoutState the LayoutState currently operating.
+   * @param parentDiffNode whether this method also populates the diff tree and assigns the root
+   *                       to mDiffTreeRoot.

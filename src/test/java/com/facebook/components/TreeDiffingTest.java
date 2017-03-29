@@ -805,3 +805,4 @@ public class TreeDiffingTest {
     };
 
     LayoutState firstLayoutState = LayoutState.calculate(
+        mContext,
