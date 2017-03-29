@@ -171,3 +171,43 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
+  public InternalNode flexGrow(float flexGrow) {
+    return this;
+  }
+
+  @Override
+  public InternalNode flexShrink(float flexShrink) {
+    return this;
+  }
+
+  @Override
+  public InternalNode flexBasisPx(@Px int flexBasis) {
+    return this;
+  }
+
+  @Override
+  public InternalNode flexBasisAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+    return this;
+  }
+
+  @Override
+  public InternalNode flexBasisAttr(@AttrRes int resId) {
+    return this;
+  }
+
+  @Override
+  public InternalNode flexBasisRes(@DimenRes int resId) {
+    return this;
+  }
+
+  @Override
+  public InternalNode flexBasisDip(@Dimension(unit = DP) int flexBasis) {
+    return this;
+  }
+
+  @Override
+  public InternalNode flexBasisPercent(float percent) {
+    return this;
+  }
+
+  @Override
