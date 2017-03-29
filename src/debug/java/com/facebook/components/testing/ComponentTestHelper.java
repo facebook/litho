@@ -29,3 +29,11 @@ import org.powermock.reflect.Whitebox;
 
 import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.UNSPECIFIED;
+import static android.view.View.MeasureSpec.makeMeasureSpec;
+
+/**
+ * Helper class to simplify testing of components.
+ *
+ * Allows simple and short creation of views that are created and mounted in a similar way to how
+ * they are in real apps.
+ */

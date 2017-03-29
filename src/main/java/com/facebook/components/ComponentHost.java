@@ -330,3 +330,5 @@ public class ComponentHost extends ViewGroup {
   }
 
   /**
+   * @return the text content that is mounted on this host.
+   */
