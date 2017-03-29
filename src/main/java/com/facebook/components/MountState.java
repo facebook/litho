@@ -955,3 +955,8 @@ class MountState {
 
       if (force ||
           view.getLeft() != left ||
+          view.getTop() != top ||
+          view.getRight() != right ||
+          view.getBottom() != bottom) {
+        view.layout(left, top, right, bottom);
+      }
