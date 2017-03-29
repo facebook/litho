@@ -446,3 +446,8 @@ public class ComponentsPools {
   }
 
   @ThreadSafe(enableChecks = false)
+  static void release(TransitionContext transitionContext) {
+    transitionContext.reset();
+    sTransitionContextPool.release(transitionContext);
+  }
+
