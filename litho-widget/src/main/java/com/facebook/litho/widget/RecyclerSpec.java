@@ -133,3 +133,4 @@ class RecyclerSpec {
       @Prop(optional = true) final RecyclerEventsController recyclerEventsController,
       @Prop(optional = true) RecyclerView.OnScrollListener onScrollListener,
       @FromPrepare OnRefreshListener onRefreshListener,
+      Output<ItemAnimator> oldAnimator) {
