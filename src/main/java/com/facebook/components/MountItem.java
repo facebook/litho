@@ -90,3 +90,4 @@ class MountItem {
     mFlags = flags;
     mImportantForAccessibility = importantForAccessibility;
     mDisplayListDrawable = displayListDrawable;
+
