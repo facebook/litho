@@ -200,3 +200,8 @@ public class MountItemTest {
   }
 
   @Test
+  public void testIsAccessibleWithNonAccessibleComponent() {
+    assertThat(mMountItem.isAccessible()).isFalse();
+  }
+
+  @Test
