@@ -310,3 +310,4 @@ public abstract class BaseBinder<
           mComponentTrees.insert(toPosition, componentTree);
         }
 
+        // Both From and To positions are in range.

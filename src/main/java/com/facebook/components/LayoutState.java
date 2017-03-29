@@ -430,3 +430,4 @@ class LayoutState {
    * host type changed compared to the one in the DiffNode we need to refresh the ids for the whole
    * subtree in order to ensure that the MountState will unmount the subtree and mount it again on
    * the correct host.
+   * <p/>
