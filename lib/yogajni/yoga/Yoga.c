@@ -3323,3 +3323,6 @@ void YGConfigSetPointScaleFactor(const YGConfigRef config, const float pixelsInP
     config->pointScaleFactor = 0.0f;
   } else {
     config->pointScaleFactor = 1.0f / pixelsInPoint;
+  }
+}
+
