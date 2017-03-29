@@ -1399,3 +1399,4 @@ public class LayoutStateCalculateTest {
                 TestDrawableComponent.create(c, true, true, true, true, false)
                     .withLayout().flexShrink(0)
                     .flex(1).flexBasisDip(0)
+                    .backgroundColor(Color.RED)
