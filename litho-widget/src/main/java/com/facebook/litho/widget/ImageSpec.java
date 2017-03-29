@@ -163,3 +163,4 @@ class ImageSpec {
 
   @OnMount
   static void onMount(
+      ComponentContext c,
