@@ -2991,3 +2991,4 @@ public class Stages {
 
     List<VariableElement> specDefinedParameters = new ArrayList<>();
 
+    for (ExecutableElement stage : mStages) {
