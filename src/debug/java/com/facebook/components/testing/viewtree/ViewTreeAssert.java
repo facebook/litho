@@ -35,3 +35,13 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
   }
 
   public static ViewTreeAssert assertThat(final ViewTree actual) {
+    return new ViewTreeAssert(actual);
+  }
+
+  /**
+   * Tests if any view in the hierarchy under the root, for which the path is visible, has the
+   * requested piece of text as its text
+   *
+   * @param text the text to search for
+   * @return the assertions object
+   */

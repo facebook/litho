@@ -84,3 +84,36 @@ public final class ViewTree {
 
   private String makeString(Function<View, String> extraTextFunction, View view, int depth) {
     final StringBuilder builder = new StringBuilder();
+    if (depth > 0) {
+      builder.append('\n');
+    }
+    for (int i = 0; i < depth; i++) {
+      builder.append("  ");
+    }
+    builder.append(getViewString(view));
+    String extra = extraTextFunction != null ? extraTextFunction.apply(view) : null;
+    if (extra != null) {
+      builder.append(" (");
+      builder.append(extra);
+      builder.append(")");
+    }
+    if (view instanceof ViewGroup) {
+      ViewGroup viewGroup = (ViewGroup) view;
+      for (int i = 0; i < viewGroup.getChildCount(); i++) {
+        View child = viewGroup.getChildAt(i);
+        builder.append(makeString(extraTextFunction, child, depth + 1));
+      }
+    }
+
+    return builder.toString();
+  }
+
+  private String getViewString(View view) {
+    String string = view.toString();
+    return removePrefix(removePrefix(string, "android.widget."), "android.view.");
+  }
+
+  private static String removePrefix(String string, String prefix) {
+    return string.startsWith(prefix) ? string.substring(prefix.length()) : string;
+  }
+
