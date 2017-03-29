@@ -14,3 +14,5 @@ import android.graphics.drawable.Drawable;
 import android.widget.ImageView.ScaleType;
 
 import com.facebook.R;
+import com.facebook.components.ComponentContext;
+import com.facebook.components.ComponentLayout;
