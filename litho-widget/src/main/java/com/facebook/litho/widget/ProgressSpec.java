@@ -69,3 +69,4 @@ class ProgressSpec {
     }
   }
 
+  @OnMeasure
