@@ -29,3 +29,5 @@ public class TestComponentTree extends ComponentTree {
     super(builder);
   }
 
+  public List<Component> getSubComponents() {
+    final List<Component> subComponents = new ArrayList<>();
