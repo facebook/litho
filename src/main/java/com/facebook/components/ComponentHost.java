@@ -395,3 +395,14 @@ public class ComponentHost extends ViewGroup {
    * @param newIndex The new index of the MountItem.
    */
   void moveItem(MountItem item, int oldIndex, int newIndex) {
+    if (item == null && mScrapMountItemsArray != null) {
+      item = mScrapMountItemsArray.get(oldIndex);
+    }
+
+    if (item == null) {
+      return;
+    }
+    maybeMoveTouchExpansionIndexes(item, oldIndex, newIndex);
+
+    final Object content = item.getContent();
+    if (content instanceof Drawable) {
