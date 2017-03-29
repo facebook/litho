@@ -167,3 +167,4 @@ class ProgressSpec {
       super.setIndeterminateDrawable(d);
     }
   }
+}
