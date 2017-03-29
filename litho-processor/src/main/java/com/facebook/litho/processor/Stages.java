@@ -2675,3 +2675,4 @@ public class Stages {
             ? StaticFlag.STATIC
             : StaticFlag.NOT_STATIC,
         StyleableFlag.NOT_STYLEABLE,
+        SectionClassNames.SECTION_CONTEXT);
