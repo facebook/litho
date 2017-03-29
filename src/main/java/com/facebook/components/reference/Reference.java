@@ -15,3 +15,7 @@ import com.facebook.litho.ResourceResolver;
 
 /**
  * Represents a unique instance of a reference that is driven by its matching
+ * {@link ReferenceLifecycle} subclass. Use {@link Reference#acquire(ComponentContext, Reference)}
+ * to acquire the underlying resource and
+ * {@link Reference#release(ComponentContext, Object, Reference)} to release it when
+ * it's not needed anymore.

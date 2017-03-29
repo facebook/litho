@@ -31,3 +31,4 @@ public class FeedItemComponentSpec {
       @Prop final RecyclerBinder binder) {
     return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
         .child(
+            Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)

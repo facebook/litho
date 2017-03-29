@@ -17,3 +17,4 @@ import java.lang.annotation.RetentionPolicy;
  * something, in the form of either a Drawable or a View.
  * <p>A class that is annotated with {@link MountSpec} must implement a method with the
  * {@link OnMount} annotation. It may also implement methods with the following annotations:
+ * - {@link OnLoadStyle}

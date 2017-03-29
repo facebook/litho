@@ -30,3 +30,7 @@ import com.facebook.litho.annotations.Event;
  * }
  * </pre>
  */
+@Event
+public class ClickEvent {
+  public View view;
+}

@@ -131,3 +131,17 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   @Override
   public int getChildCount() {
     return mChildren == null ? 0 : mChildren.size();
+  }
+
+  @Override
+  public YogaNode getChildAt(int i) {
+    return mChildren.get(i);
+  }
+
+  private native void jni_YGNodeInsertChild(long nativePointer, long childPointer, int index);
+  @Override
+  public void addChildAt(YogaNode child, int i) {
+    if (child.mParent != null) {
+      throw new IllegalStateException("Child already has a parent, it must be removed first.");
+    }
+

@@ -28,3 +28,6 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.Layout;
 
 public class TestLayoutComponent extends ComponentLifecycle {
+  private static final List<TestLayoutComponent> sInstances = new ArrayList<>();
+  private static final Pools.SynchronizedPool<Builder> mBuilderPool =
+      new Pools.SynchronizedPool<>(2);

@@ -36,3 +36,45 @@ import android.view.View;
 
 import com.facebook.yoga.YogaMeasureMode;
 
+/**
+ * A SizeSpec encapsulates the layout requirements passed from parent to child.
+ * Each SizeSpec represents a requirement for either the width or the height.
+ * A SizeSpec is comprised of a size and a mode. There are two possible
+ * modes:
+ * <dl>
+ * <dt>UNSPECIFIED</dt>
+ * <dd>
+ * The parent has not imposed any constraint on the child. It can be whatever size
+ * it wants.
+ * </dd>
+ *
+ * <dt>EXACTLY</dt>
+ * <dd>
+ * The parent has determined an exact size for the child. The child is going to be
+ * given those bounds regardless of how big it wants to be.
+ * </dd>
+ *
+ * SizeSpecs are implemented as ints to reduce object allocation. This class
+ * is provided to pack and unpack the &lt;size, mode&gt; tuple into the int.
+ */
+public class SizeSpec {
+
+  /**
+   * Size specification mode: The parent has not imposed any constraint
+   * on the child. It can be whatever size it wants.
+   */
+  public static final int UNSPECIFIED = View.MeasureSpec.UNSPECIFIED;
+
+  /**
+   * Size specification mode: The parent has determined an exact size
+   * for the child. The child is going to be given those bounds regardless
+   * of how big it wants to be.
+   */
+  public static final int EXACTLY = View.MeasureSpec.EXACTLY;
+
+  /**
+   * Size specification mode: The child can be as large as it wants up
+   * to the specified size.
+   */
+  public static final int AT_MOST = View.MeasureSpec.AT_MOST;
+

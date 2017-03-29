@@ -12,3 +12,5 @@ package com.facebook.litho;
 import android.content.res.TypedArray;
 import android.util.TypedValue;
 
+class TypedArrayUtils {
+  private static final TypedValue sTmpTypedValue = new TypedValue();

@@ -18,3 +18,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.AttrRes;
+import android.support.annotation.StyleRes;
+import android.support.v4.util.Pools;

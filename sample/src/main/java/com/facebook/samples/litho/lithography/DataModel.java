@@ -104,3 +104,4 @@ public class DataModel {
       recyclerBinder.insertItemAt(recyclerBinder.getItemCount(), componentInfoBuilder.build());
     }
   }
+}
