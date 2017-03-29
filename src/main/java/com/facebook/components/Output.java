@@ -26,3 +26,4 @@ public class Output<T> {
     mT = t;
   }
 
+  @ReturnsOwnership
