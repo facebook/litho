@@ -192,3 +192,6 @@ public class ComponentLifecycleTest {
     verify(mNode).setComponent(mInput);
     verify(mNode).setMeasureFunction(any(YogaMeasureFunction.class));
     verify(componentLifecycle).onPrepare(mContext, mInput);
+  }
+
+  @Test

@@ -637,3 +637,4 @@ public abstract class BaseBinder<
 
           if (componentTree == null) {
             // Create a new ComponentTree if we don't have it at the given position.
+            componentTree = buildComponentTree(component);
