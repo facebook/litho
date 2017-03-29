@@ -793,3 +793,4 @@ public class RecyclerBinder implements Binder<RecyclerView> {
       return mComponentTreeHolders.get(position).getSpanSize();
     }
   }
+}
