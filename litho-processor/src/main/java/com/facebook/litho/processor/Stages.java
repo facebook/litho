@@ -1312,3 +1312,4 @@ public class Stages {
 
     methodBuilder.addStatement("int id = eventHandler.id");
     methodBuilder.beginControlFlow("switch($L)", "id");
+
