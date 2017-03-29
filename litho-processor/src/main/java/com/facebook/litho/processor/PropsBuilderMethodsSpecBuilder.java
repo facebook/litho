@@ -77,3 +77,6 @@ class PropsBuilderMethodsSpecBuilder {
             "resolveString",
             TypeName.OBJECT,
             "formatArgs"));
+        builders.addAll(attrBuilders(ClassNames.STRING_RES, "resolveString"));
+        break;
+      case STRING_ARRAY:
