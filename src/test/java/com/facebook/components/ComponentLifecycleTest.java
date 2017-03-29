@@ -277,3 +277,5 @@ public class ComponentLifecycleTest {
     }
   }
 
+  @Test
+  public void testMountSpecYogaMeasureOutputNotSet() {

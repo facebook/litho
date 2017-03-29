@@ -71,3 +71,4 @@ class ProgressSpec {
 
   @OnMeasure
   static void onMeasure(
+      ComponentContext c,
