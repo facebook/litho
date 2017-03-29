@@ -103,7 +103,7 @@ class TransitionManager implements TransitionKeySetListener {
    * Given the previous TransitionManager state and the new map of mounted keys added through
    * {@link #onPostMountItem(String, View)}, process the keys and the related Transitions.
    */
-  void processTransitions() {
+  void processTransitions(boolean animateTransitions) {
     // 1. Define which key appeared, disappeared or was unchanged from the previous state.
     for (int i = mKeysStatus.size() - 1; i >= 0; i--) {
       final String key = mKeysStatus.keyAt(i);
@@ -155,7 +155,7 @@ class TransitionManager implements TransitionKeySetListener {
         continue;
       }
 
-      if (transition.start(keyStatus, this)) {
+      if (animateTransitions && transition.start(keyStatus, this)) {
         mRunningTransitions.put(key, transition);
       }
     }

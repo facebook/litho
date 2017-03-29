@@ -30,6 +30,7 @@ import android.support.annotation.IntDef;
 import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.UiThread;
 import android.support.annotation.VisibleForTesting;
 import android.view.View;
 import android.view.ViewParent;
@@ -99,6 +100,7 @@ public class ComponentTree {
 
   // These variables are only accessed from the main thread.
   private boolean mIsMounting;
+  private boolean mIsFirstMount = true;
   private boolean mIncrementalMountEnabled;
   private boolean mIsLayoutDiffingEnabled;
   private boolean mIsAttached;
@@ -415,6 +417,7 @@ public class ComponentTree {
     mComponentView.mount(mMainThreadLayoutState, currentVisibleArea);
 
     mIsMounting = false;
+    mIsFirstMount = false;
   }
 
   void detach() {
@@ -1189,6 +1192,12 @@ public class ComponentTree {
 
   void setStethoManager(ComponentsStethoManager stethoManager) {
     mStethoManager = stethoManager;
+  }
+
+  @UiThread
+  boolean isFirstMount() {
+    assertMainThread();
+    return mIsFirstMount;
   }
 
   /**
