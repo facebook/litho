@@ -1337,3 +1337,5 @@ public class LayoutStateCalculateTest {
                             .withLayout()
                             .widthDip(30)
                             .heightDip(30)
+                            .contentDescription("This is an image"))
+                    .child(
