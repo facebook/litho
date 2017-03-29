@@ -24,3 +24,4 @@
       />
 
   <application
+      android:name=".LithoSampleApplication"

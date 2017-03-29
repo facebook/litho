@@ -141,3 +141,4 @@ public class StateValidation {
           validationErrors.add(
               new SpecModelValidationError(
                   methodParam.getRepresentedObject(),
+                  "All parameters of type com.facebook.litho.StateValue must define a type " +

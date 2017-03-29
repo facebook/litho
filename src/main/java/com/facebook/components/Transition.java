@@ -29,3 +29,4 @@ import static com.facebook.litho.Transition.TransitionType.UNDEFINED;
 
 /**
  * A Transition is an animation running on a Component or ComponentLayout with the matching
+ * transitionKey {@link com.facebook.litho.ComponentLayout.Builder#transitionKey(String)}.
