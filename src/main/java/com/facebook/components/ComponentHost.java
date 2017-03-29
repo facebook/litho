@@ -114,3 +114,4 @@ public class ComponentHost extends ViewGroup {
 
   /**
    * @return an id indicating which {@link ComponentHost} hosts this host.
+   */

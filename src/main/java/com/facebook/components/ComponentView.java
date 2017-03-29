@@ -232,3 +232,4 @@ public class ComponentView extends ComponentHost {
   }
 
   @Override
+  protected boolean shouldRequestLayout() {

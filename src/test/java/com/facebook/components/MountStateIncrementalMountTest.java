@@ -437,3 +437,13 @@ public class MountStateIncrementalMountTest {
                         .widthPx(10)
                         .heightPx(20)
                         .marginPx(YogaEdge.ALL, 2))
+                .build();
+          }
+        });
+
+    for (int i = 0; i < 20; i++) {
+      componentView.getComponent().mountComponent(new Rect(0, 0, 10, 3 + i));
+      assertEquals(new Rect(0, 0, 8, 1 + i), mountedView.getPreviousIncrementalMountBounds());
+    }
+  }
+
