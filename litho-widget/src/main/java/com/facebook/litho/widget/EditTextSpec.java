@@ -234,3 +234,4 @@ class EditTextSpec {
   }
 
   @OnMount
+  static void onMount(
