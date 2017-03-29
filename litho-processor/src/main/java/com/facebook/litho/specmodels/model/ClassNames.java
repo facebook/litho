@@ -84,3 +84,5 @@ public interface ClassNames {
   ClassName EVENT_DISPATCHER =
       ClassName.bestGuess("com.facebook.litho.EventDispatcher");
   ClassName HAS_EVENT_DISPATCHER_CLASSNAME =
+      ClassName.bestGuess("com.facebook.litho.HasEventDispatcher");
+  ClassName EVENT_HANDLER = ClassName.bestGuess("com.facebook.litho.EventHandler");

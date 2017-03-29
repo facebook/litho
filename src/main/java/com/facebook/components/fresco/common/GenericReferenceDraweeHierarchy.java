@@ -14,3 +14,5 @@ import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 
+import com.facebook.litho.ComponentContext;
+import com.facebook.litho.reference.Reference;
