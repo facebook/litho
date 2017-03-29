@@ -863,3 +863,4 @@ public class ComponentTree {
     if (isAsync && output != null) {
       throw new IllegalArgumentException("The layout can't be calculated asynchronously if" +
           " we need the Size back");
+    } else if (isAsync) {
