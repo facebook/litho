@@ -1164,3 +1164,5 @@ public class Stages {
   }
 
   /**
+   * Generate the static methods of the Component that can be called to update its state.
+   */
