@@ -2667,3 +2667,11 @@ public class Stages {
         SectionClassNames.SECTION,
         true,
         true);
+
+    generateBuilderPool(
+        ClassName.bestGuess(INNER_IMPL_BUILDER_CLASS_NAME),
+        "m" + INNER_IMPL_BUILDER_CLASS_NAME + "Pool",
+        mTypeVariables.isEmpty() || isStatic == StaticFlag.STATIC
+            ? StaticFlag.STATIC
+            : StaticFlag.NOT_STATIC,
+        StyleableFlag.NOT_STYLEABLE,
