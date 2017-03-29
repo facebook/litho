@@ -551,3 +551,4 @@ public class Stages {
                 ClassNames.COMPONENT_BUILDER,
                 ClassNames.COMPONENT_BUILDER_WITH_LAYOUT,
                 ClassNames.REFERENCE_BUILDER);
+            if (illegalPropTypes.contains(typeName)) {
