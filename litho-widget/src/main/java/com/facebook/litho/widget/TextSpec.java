@@ -172,3 +172,11 @@ class TextSpec {
         textStyle.set(a.getInteger(attr, 0));
       } else if (attr == R.styleable.Text_android_lineSpacingMultiplier) {
         spacingMultiplier.set(a.getFloat(attr, 0));
+      } else if (attr == R.styleable.Text_android_shadowDx) {
+        shadowDx.set(a.getFloat(attr, 0));
+      } else if (attr == R.styleable.Text_android_shadowDy) {
+        shadowDy.set(a.getFloat(attr, 0));
+      } else if (attr == R.styleable.Text_android_shadowRadius) {
+        shadowRadius.set(a.getFloat(attr, 0));
+      } else if (attr == R.styleable.Text_android_shadowColor) {
+        shadowColor.set(a.getColor(attr, 0));
