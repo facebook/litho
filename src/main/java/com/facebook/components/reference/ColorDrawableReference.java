@@ -185,3 +185,4 @@ public final class ColorDrawableReference extends ReferenceLifecycle<Drawable> {
     @Override
     public Reference<Drawable> build() {
       State state = mState;
+
