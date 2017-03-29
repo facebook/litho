@@ -77,3 +77,4 @@ public class ComponentTree {
   private @interface PendingLayoutCalculation {}
 
   private static final AtomicInteger sIdGenerator = new AtomicInteger(0);
+  private static final Handler sMainThreadHandler = new ComponentMainThreadHandler();

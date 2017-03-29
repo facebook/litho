@@ -266,3 +266,6 @@ class LayoutState {
       b -= paddingBottom;
     }
 
+    layoutOutput.setBounds(l, t, r, b);
+
+    int flags = 0;
