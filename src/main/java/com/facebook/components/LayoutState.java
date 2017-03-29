@@ -1279,3 +1279,7 @@ class LayoutState {
       c.setTreeProps(nestedTreeHolder.getPendingTreeProps());
     }
 
+    final InternalNode root = createTree(
+        component,
+        c);
+
