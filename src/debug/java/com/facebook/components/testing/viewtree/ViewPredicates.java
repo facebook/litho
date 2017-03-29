@@ -227,3 +227,4 @@ final class ViewPredicates {
       }
     };
   }
+}
