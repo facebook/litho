@@ -304,3 +304,4 @@ class LayoutState {
       handlerComponent = (Component<?>) visibleHandler.mHasEventDispatcher;
     } else if (focusedHandler != null) {
       handlerComponent = (Component<?>) focusedHandler.mHasEventDispatcher;
+    } else if (fullImpressionHandler != null) {
