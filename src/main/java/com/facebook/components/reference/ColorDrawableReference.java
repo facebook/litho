@@ -157,3 +157,7 @@ public final class ColorDrawableReference extends ReferenceLifecycle<Drawable> {
       mBuilderPool.release(this);
     }
 
+    public PropsBuilder color(int color) {
+      mState.mColor = color;
+      return this;
+    }
