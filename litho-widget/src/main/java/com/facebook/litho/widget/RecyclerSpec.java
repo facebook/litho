@@ -124,3 +124,5 @@ class RecyclerSpec {
     binder.mount(recyclerView);
   }
 
+  @OnBind
+  protected static void onBind(
