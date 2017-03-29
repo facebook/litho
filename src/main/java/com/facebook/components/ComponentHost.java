@@ -767,3 +767,4 @@ public class ComponentHost extends ViewGroup {
   }
 
   @Override
+  public Object getTag(int key) {
