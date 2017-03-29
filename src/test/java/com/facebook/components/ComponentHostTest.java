@@ -238,3 +238,26 @@ public class ComponentHostTest {
   }
 
   @Test
+  public void testDrawableStateChangedOnDrawables() {
+    Drawable d1 = mock(ColorDrawable.class);
+    when(d1.getBounds()).thenReturn(new Rect());
+    when(d1.isStateful()).thenReturn(false);
+
+    MountItem mountItem1 = mount(0, d1);
+    verify(d1, never()).setState(any(int[].class));
+
+    unmount(0, mountItem1);
+
+    Drawable d2 = mock(ColorDrawable.class);
+    when(d2.getBounds()).thenReturn(new Rect());
+    when(d2.isStateful()).thenReturn(true);
+
+    mount(0, d2, FLAG_DUPLICATE_PARENT_STATE);
+    verify(d2, times(1)).setState(eq(mHost.getDrawableState()));
+
+    mHost.setSelected(true);
+
+    verify(d2, times(1)).setState(eq(mHost.getDrawableState()));
+  }
+
+  @Test

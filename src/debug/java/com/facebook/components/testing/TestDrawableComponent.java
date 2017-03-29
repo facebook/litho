@@ -277,3 +277,7 @@ public class TestDrawableComponent extends ComponentLifecycle {
     int measuredWidth = -1;
     int measuredHeight = -1;
 
+    private State(
+        boolean callsShouldUpdateOnMount,
+        boolean isPureRender,
+        boolean canMeasure,
