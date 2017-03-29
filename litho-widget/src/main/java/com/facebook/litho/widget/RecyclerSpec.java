@@ -154,3 +154,4 @@ class RecyclerSpec {
     }
 
     if (onScrollListener != null) {
+      recyclerView.addOnScrollListener(onScrollListener);
