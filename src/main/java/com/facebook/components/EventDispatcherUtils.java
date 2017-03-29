@@ -294,3 +294,4 @@ class EventDispatcherUtils {
         eventHandler,
         sPerformAccessibilityActionEvent);
 
+    sPerformAccessibilityActionEvent.host = null;
