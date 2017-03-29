@@ -252,3 +252,7 @@ class PropsBuilderMethodsSpecBuilder {
   }
 
   private MethodSpec dipBuilder() {
+    AnnotationSpec dipAnnotation = AnnotationSpec.builder(ClassNames.DIMENSION)
+        .addMember("unit", "$T.DP", ClassNames.DIMENSION)
+        .build();
+

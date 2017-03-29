@@ -76,3 +76,4 @@ public class ViewExtractorsTest {
   @Test
   public void testGetDrawableOutOfImageView() {
     assertThat(ViewExtractors.GET_DRAWABLE_FUNCTION.apply(mImageView))
+        .contains(mLithoDrawable.toString());
