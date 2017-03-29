@@ -260,3 +260,4 @@ public class ComponentView extends ComponentHost {
         mComponent.detach();
       }
 
+      mComponent.clearComponentView();
