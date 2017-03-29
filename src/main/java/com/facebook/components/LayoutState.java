@@ -1010,3 +1010,14 @@ class LayoutState {
 
         final DisplayList displayList = DisplayList.createDisplayList(
             lifecycle.getClass().getSimpleName());
+
+        if (displayList != null) {
+          Drawable drawable =
+              (Drawable) ComponentsPools.acquireMountContent(context, lifecycle.getId());
+          if (drawable == null) {
+            drawable = (Drawable) lifecycle.createMountContent(context);
+          }
+
+          final LayoutOutput clickableOutput = findInteractiveRoot(layoutState, output);
+          boolean isStateEnabled = false;
+
