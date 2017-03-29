@@ -46,3 +46,6 @@ public class ViewPredicatesTest {
   private ImageView mImageView;
   private ImageView mImageViewWithCustomDrawable;
   private ComponentView mComponentViewWithText;
+
+  @Before
+  public void setUp() {

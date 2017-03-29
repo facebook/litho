@@ -36,3 +36,4 @@ public class ComponentQueriesTest {
         Text.create(mContext)
             .text("goodbye")
         .build());
+
