@@ -904,3 +904,4 @@ class MountState {
           component,
           host,
           content,
+          layoutOutput);
