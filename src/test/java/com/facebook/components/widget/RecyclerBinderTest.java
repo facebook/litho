@@ -432,3 +432,4 @@ public class RecyclerBinderTest {
     }
 
     for (int i = 0; i < 2; i++) {
+      Assert.assertNotNull(mHoldersForComponents.get(components.get(i).getComponent()));
