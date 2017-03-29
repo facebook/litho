@@ -101,3 +101,6 @@ public class MountItemTest {
     assertThat(mMountItem.getComponent()).isSameAs((Component) mComponent);
     assertThat(mMountItem.getHost()).isSameAs(mComponentHost);
     assertThat(mMountItem.getContent()).isSameAs(mContent);
+    assertThat(mMountItem.getNodeInfo().getContentDescription()).isSameAs(mContentDescription);
+    assertThat(mMountItem.getNodeInfo().getClickHandler()).isSameAs(mClickHandler);
+    assertThat(mMountItem.getNodeInfo().getTouchHandler()).isSameAs(mTouchHandler);

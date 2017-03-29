@@ -178,3 +178,7 @@ public class ComponentContext extends ContextWrapper {
         mDefStyleRes);
   }
 
+  public String getLogTag() {
+    return mLogTag;
+  }
+

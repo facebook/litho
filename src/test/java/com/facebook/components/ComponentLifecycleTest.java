@@ -165,3 +165,15 @@ public class ComponentLifecycleTest {
     verify(componentLifecycle).onCreateLayout(mContext, mInput);
     verify(mNode).setComponent(mInput);
     verify(mNode, never()).setMeasureFunction(any(YogaMeasureFunction.class));
+    verify(componentLifecycle).onPrepare(mContext, mInput);
+  }
+
+  @Test
+  public void testCreateLayoutAndResolveNestedTreeWithMountSpecCanMeasure() {
+    ComponentLifecycle componentLifecycle = setUpComponentForCreateLayout(
+        true /* isMountSpec */,
+        true /* canMeasure */);
+    componentLifecycle.createLayout(mContext, mInput, true);
+
+    verify(componentLifecycle).onCreateLayout(mContext, mInput);
+    verify(mNode).setComponent(mInput);
