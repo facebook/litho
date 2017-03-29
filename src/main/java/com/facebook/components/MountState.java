@@ -1613,3 +1613,6 @@ class MountState {
       MountItem item) {
     final Component component = item.getComponent();
     final Object content = item.getContent();
+    final ComponentLifecycle lifecycle = component.getLifecycle();
+
+    // Call the component's unmount() method.
