@@ -31,3 +31,4 @@ public class ComponentContext extends ContextWrapper {
   private final ComponentsLogger mLogger;
   private final StateHandler mStateHandler;
 
+  // Hold a reference to the component which scope we are currently within.
