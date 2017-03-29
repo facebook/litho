@@ -155,3 +155,8 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
 
   public void mount(CharSequence text, Layout layout, int userColor, int highlightColor) {
     mount(text, layout, 0, null, userColor, highlightColor, null);
+  }
+
+  public void mount(
+      CharSequence text,
+      Layout layout,
