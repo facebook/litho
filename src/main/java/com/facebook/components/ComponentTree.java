@@ -714,3 +714,4 @@ public class ComponentTree {
         output /* output */);
   }
 
+  public void setSizeSpecAsync(int widthSpec, int heightSpec) {
