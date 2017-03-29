@@ -211,3 +211,4 @@ public class MountItemTest {
     assertThat(mMountItem.getHost()).isNull();
     assertThat(mMountItem.getContent()).isNull();
     assertThat(mMountItem.getNodeInfo()).isNull();
+    assertThat(mMountItem.getFlags()).isEqualTo(0);
