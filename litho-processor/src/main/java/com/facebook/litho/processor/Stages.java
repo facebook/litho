@@ -2296,3 +2296,13 @@ public class Stages {
     }
   }
 
+  private VariableElement findPropVariableForName(Name variableElementName) {
+    for (VariableElement prop : mProps) {
+      if (prop.getSimpleName().equals(variableElementName)) {
+        return prop;
+      }
+    }
+
+    return null;
+  }
+
