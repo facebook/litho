@@ -825,3 +825,4 @@ public class ComponentsPools {
     return drawable;
   }
 
+  @ThreadSafe(enableChecks = false)
