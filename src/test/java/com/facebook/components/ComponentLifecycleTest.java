@@ -319,3 +319,4 @@ public class ComponentLifecycleTest {
 
     when(LayoutState.resolveNestedTree(eq(mNode), anyInt(), anyInt())).thenReturn(nestedTree);
 
+    long output = measureFunction.measure(mNode.mYogaNode, 0, EXACTLY, 0, EXACTLY);

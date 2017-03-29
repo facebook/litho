@@ -695,3 +695,6 @@ public class Stages {
   private void populateStages() {
     mStages = new ArrayList<>();
     for (Class<Annotation> stageAnnotation : mStageAnnotations) {
+      final ExecutableElement stage = Utils.getAnnotatedMethod(
+          mSourceElement,
+          stageAnnotation);
