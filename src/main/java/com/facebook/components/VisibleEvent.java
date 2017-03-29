@@ -10,3 +10,11 @@
 package com.facebook.litho;
 
 import com.facebook.litho.annotations.Event;
+
+/**
+ * Event triggered when a Component enters the Visible Range. This happens when at least a pixel of
+ * the Component is visible.
+ */
+@Event
+public class VisibleEvent {
+}
