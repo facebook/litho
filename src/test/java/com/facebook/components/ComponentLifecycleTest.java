@@ -233,3 +233,5 @@ public class ComponentLifecycleTest {
         mContext,
         mNestedTreeWidthSpec,
         mNestedTreeHeightSpec,
+        mInput);
+    verify(mNode).setComponent(mInput);
