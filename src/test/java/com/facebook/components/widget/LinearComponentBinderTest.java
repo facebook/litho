@@ -211,3 +211,4 @@ public class LinearComponentBinderTest {
     private final List<Integer> mItems;
 
     public MyTestLinearComponentBinder(Context context, LinearLayoutManager layoutManager,
+        List<Integer> items) {

@@ -342,3 +342,6 @@ public class BaseBinderTest {
   private String getAdapterInputStringAtPosition(int position) {
     return Whitebox.getInternalState(
         Whitebox.getInternalState(mBinder.getComponentAt(position), "mRoot"),
+        "text");
+  }
+
