@@ -511,3 +511,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     return false;
   }
 
+  /**
