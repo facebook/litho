@@ -184,3 +184,16 @@ public abstract class RecyclerComponentBinder<L extends RecyclerView.LayoutManag
     @Override
     public void onBindViewHolder(ComponentViewHolder holder, int position) {
       final ComponentView componentView = (ComponentView) holder.itemView;
+      final LayoutParams lp = componentView.getLayoutParams();
+      final int width = getMode(mBinder.getWidthSpec(position)) == UNSPECIFIED
+          ? WRAP_CONTENT
+          : MATCH_PARENT;
+      final int height = getMode(mBinder.getHeightSpec(position)) == UNSPECIFIED
+          ? WRAP_CONTENT
+          : MATCH_PARENT;
+      if (lp != null) {
+        lp.width = width;
+        lp.height = height;
+      } else {
+        componentView.setLayoutParams(new RecyclerView.LayoutParams(width, height));
+      }

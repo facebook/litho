@@ -43,3 +43,4 @@ class DebugDraw {
   private static Paint sMountBoundsCornerPaint;
 
   static void draw(ComponentHost host, Canvas canvas) {
+    if (ComponentsConfiguration.debugHighlightInteractiveBounds) {
