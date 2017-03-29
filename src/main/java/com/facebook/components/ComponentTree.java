@@ -601,3 +601,28 @@ public class ComponentTree {
         null /* output */);
   }
 
+  public void preAllocateMountContent() {
+    assertMainThread();
+
+    final LayoutState toPrePopulate;
+
+    if (mMainThreadLayoutState != null) {
+      toPrePopulate = mMainThreadLayoutState.acquireRef();
+    } else {
+
+      synchronized (this) {
+        toPrePopulate = mBackgroundLayoutState;
+        if (toPrePopulate == null) {
+          return;
+        }
+        toPrePopulate.acquireRef();
+      }
+    }
+
+    logPreAllocationStart();
+    toPrePopulate.preAllocateMountContent();
+    logPreAllocationFinish();
+
+    toPrePopulate.releaseRef();
+  }
+
