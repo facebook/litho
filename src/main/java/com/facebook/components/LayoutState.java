@@ -1399,3 +1399,4 @@ class LayoutState {
       boolean shouldUpdateChild =
           applyDiffNodeToUnchangedNodes(
               layoutNode.getChildAt(i),
+              diffNode.getChildAt(i));
