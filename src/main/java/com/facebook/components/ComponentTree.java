@@ -1045,3 +1045,4 @@ public class ComponentTree {
       if (mComponentView != null) {
         mComponentView.setComponent(null);
       }
+      mRoot = null;
