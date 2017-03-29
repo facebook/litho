@@ -36,3 +36,8 @@ public class DecadeSeparatorSpec {
                 .heightPx(1)
                 .backgroundColor(0xFFAAAAAA)
                 .flex(1).flexBasisDip(0))
+        .child(
+            Text.create(c)
+            .text(String.valueOf(decade.year))
+            .textSizeDip(14)
+            .textColor(0xFFAAAAAA)

@@ -27,3 +27,9 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeVariableName;
 
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.ABSTRACT_IMPL_PARAM_NAME;
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.DELEGATE_FIELD_NAME;
+import static com.facebook.litho.specmodels.model.ClassNames.EVENT_HANDLER;
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.IMPL_VARIABLE_NAME;
+import static com.facebook.litho.specmodels.model.ClassNames.OBJECT;
+import static com.facebook.litho.specmodels.generator.ComponentImplGenerator.getImplAccessor;

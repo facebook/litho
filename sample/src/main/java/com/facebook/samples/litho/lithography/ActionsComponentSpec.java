@@ -47,3 +47,28 @@ public class ActionsComponentSpec {
         .child(FavouriteButton.create(c))
         .child(
             Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                .backgroundRes(snapToLeft ? ic_media_ff : ic_media_rew)
+                .widthDip(32)
+                .heightDip(32)
+                .clickHandler(ActionsComponent.onClick(c)))
+        .build();
+  }
+
+  @OnUpdateState
+  static void updateState(StateValue<Boolean> snapToLeft) {
+    snapToLeft.set(!snapToLeft.get());
+  }
+
+  @OnEvent(ClickEvent.class)
+  static void onClick(ComponentContext c) {
+    ActionsComponent.updateState(c);
+  }
+
+  @OnLayoutTransition
+  static Transition onLayoutTransition(ComponentContext c) {
+    return Transition.createSet(
+        Transition.create("left_right_slide")
+            .translationX()
+            .build());
+  }
+}

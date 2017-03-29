@@ -27,3 +27,5 @@ public class FeedItemComponentSpec {
   @OnCreateLayout
   static ComponentLayout onCreateLayout(
       ComponentContext c,
+      @Prop final Artist artist,
+      @Prop final RecyclerBinder binder) {

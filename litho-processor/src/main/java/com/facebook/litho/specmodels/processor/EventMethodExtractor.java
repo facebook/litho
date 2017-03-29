@@ -35,3 +35,4 @@ import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 
+import static com.facebook.litho.specmodels.processor.MethodExtractorUtils.getMethodParams;

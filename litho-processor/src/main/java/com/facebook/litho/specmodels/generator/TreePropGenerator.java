@@ -23,3 +23,4 @@ import com.facebook.litho.specmodels.model.TreePropModel;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
 
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.DELEGATE_FIELD_NAME;

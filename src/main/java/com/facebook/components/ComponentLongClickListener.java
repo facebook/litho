@@ -11,3 +11,4 @@ package com.facebook.litho;
 
 import android.view.View;
 
+import static com.facebook.litho.EventDispatcherUtils.dispatchOnLongClick;

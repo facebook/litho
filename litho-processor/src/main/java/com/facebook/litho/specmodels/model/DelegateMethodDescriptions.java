@@ -41,3 +41,9 @@ import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 
+import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.INTER_STAGE_OUTPUT;
+import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.PROP;
+import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.PROP_OUTPUT;
+import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.STATE;
+import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.STATE_OUTPUT;
+import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.TREE_PROP;

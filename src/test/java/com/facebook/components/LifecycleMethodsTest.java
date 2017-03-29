@@ -13,3 +13,5 @@ import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.drawable.Drawable;
 
+import com.facebook.litho.testing.ComponentTestHelper;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;

@@ -41,3 +41,6 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
+import static com.facebook.litho.specmodels.model.ClassNames.COMPONENT;
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.IMPL_CLASS_NAME_SUFFIX;
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_FIELD_NAME;

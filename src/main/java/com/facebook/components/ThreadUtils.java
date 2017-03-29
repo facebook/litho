@@ -11,3 +11,4 @@ package com.facebook.litho;
 
 import android.os.Looper;
 
+import com.facebook.litho.config.ComponentsConfiguration;

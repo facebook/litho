@@ -24,3 +24,4 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.WildcardTypeName;
 
+import static com.facebook.litho.specmodels.model.ClassNames.STATE_VALUE;

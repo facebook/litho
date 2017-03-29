@@ -22,3 +22,5 @@ import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaEdge;
 
 import static android.graphics.Color.GRAY;
+import static android.graphics.Typeface.ITALIC;
+import static com.facebook.litho.annotations.ResType.STRING;
