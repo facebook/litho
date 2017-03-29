@@ -923,3 +923,5 @@ public class ComponentTree {
         previousLayoutState != null ? previousLayoutState.getDiffTree() : null);
 
     if (output != null) {
+      output.width = localLayoutState.getWidth();
+      output.height = localLayoutState.getHeight();
