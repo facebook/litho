@@ -826,3 +826,4 @@ class MountState {
   }
 
   private void mountLayoutOutput(int index, LayoutOutput layoutOutput, LayoutState layoutState) {
+    // 1. Resolve the correct host to mount our content to.
