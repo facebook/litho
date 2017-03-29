@@ -322,3 +322,4 @@ class MountState {
       } else if (visibilityItem != null) {
         // The component is invisible now, but used to be visible.
         if (invisibleHandler != null) {
+          EventDispatcherUtils.dispatchOnInvisible(invisibleHandler);
