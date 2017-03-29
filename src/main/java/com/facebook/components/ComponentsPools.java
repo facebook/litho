@@ -230,3 +230,4 @@ public class ComponentsPools {
 
     final ViewNodeInfo viewNodeInfo = ViewNodeInfo.acquire();
     viewNodeInfo.setLayoutDirection(YogaDirection.INHERIT);
+
