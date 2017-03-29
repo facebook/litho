@@ -256,3 +256,13 @@ public class MountSpecHelper extends ComponentSpecHelper {
                 componentMountType)
             .build());
 
+    mTypeSpec.addMethod(
+        MethodSpec.methodBuilder("poolSize")
+        .addAnnotation(Override.class)
+        .addModifiers(javax.lang.model.element.Modifier.PROTECTED)
+        .returns(TypeName.INT)
+        .addStatement("return "+mSpecElement.getAnnotation(MountSpec.class).poolSize())
+        .build());
+
+    mTypeSpec.addMethod(
+        new OnCreateMountContentMethodBuilder()
