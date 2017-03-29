@@ -2986,3 +2986,4 @@ public class Stages {
   }
 
   private void populateImplParameters() {
+    // We use a linked hash map to guarantee iteration order.
