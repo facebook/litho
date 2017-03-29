@@ -1339,3 +1339,4 @@ public class Stages {
       eventHandlerParams.add("\n($T) eventHandler.params[$L],", contextClassName, i++);
 
       for (VariableElement v : Utils.getParametersWithAnnotation(element, FromEvent.class)) {
+        eventHandlerParams.add(
