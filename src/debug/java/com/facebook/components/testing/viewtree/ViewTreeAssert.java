@@ -447,3 +447,15 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
         (Predicate<View>) predicate);
 
     final ImmutableList<View> path = actual.findChild(
+        conjunction,
+        ViewPredicates.isVisible());
+
+    Assertions.assertThat(path)
+        .overridingErrorMessage(
+            "Found a view for which given predicate is true in view hierarchy:%n%s",
+            actual.makeString(null))
+        .isNull();
+
+    return this;
+  }
+
