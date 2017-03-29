@@ -1558,3 +1558,24 @@ class MountState {
     // sub tree. However, traversing the tree bottom-up, it needs to unmount a node holding that
     // sub tree, that will still have mounted items. (Different sequence number on LayoutOutput id)
     if ((content instanceof ComponentHost) && !(content instanceof ComponentView)) {
+      final ComponentHost host = (ComponentHost) content;
+
+      // Concurrently remove items therefore traverse backwards.
+      for (int i = host.getMountItemCount() - 1; i >= 0; i--) {
+        final MountItem mountItem = host.getMountItemAt(i);
+        final long layoutOutputId = mIndexToItemMap.keyAt(mIndexToItemMap.indexOfValue(mountItem));
+
+        for (int mountIndex = mLayoutOutputsIds.length - 1; mountIndex >= 0; mountIndex--) {
+          if (mLayoutOutputsIds[mountIndex] == layoutOutputId) {
+            unmountItem(context, mountIndex, hostsByMarker);
+            break;
+          }
+        }
+      }
+
+      if (host.getMountItemCount() > 0) {
+        throw new IllegalStateException("Recursively unmounting items from a ComponentHost, left" +
+            " some items behind maybe because not tracked by its MountState");
+      }
+    }
+
