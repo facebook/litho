@@ -32,3 +32,5 @@ public class ComponentsProcessor extends AbstractComponentsProcessor {
   /**
    * Generate the entire source file for the component.
    */
+  @Override
+  protected void generate(MountSpecHelper mountSpecHelper) {

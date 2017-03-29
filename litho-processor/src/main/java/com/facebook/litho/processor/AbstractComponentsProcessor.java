@@ -100,3 +100,4 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
         ClassNames.MOUNT_SPEC.toString()));
   }
 
+  abstract protected void generate(MountSpecHelper mountSpecHelper);
