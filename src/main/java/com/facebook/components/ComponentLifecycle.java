@@ -368,3 +368,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
   }
 
   protected void onMeasure(
+      ComponentContext c,
