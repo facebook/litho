@@ -1004,3 +1004,4 @@ class MountState {
 
       // 4. Set listeners for AccessibilityDelegate methods
       setAccessibilityDelegate(view, nodeInfo);
+
