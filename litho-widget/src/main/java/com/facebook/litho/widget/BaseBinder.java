@@ -133,3 +133,4 @@ public abstract class BaseBinder<
   public void notifyItemRangeChanged(int positionStart, int itemCount) {
     assertMainThread();
 
+    if (!hasContentSize()) {

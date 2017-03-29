@@ -123,3 +123,4 @@ class MountItem {
       if (view.isFocusable()) {
         mFlags |= FLAG_VIEW_FOCUSABLE;
       }
+    }
