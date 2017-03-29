@@ -367,3 +367,9 @@ public class InternalNodeTest {
 
   private static boolean isFlagSet(InternalNode internalNode, String flagName) {
     long flagPosition = Whitebox.getInternalState(InternalNode.class, flagName);
+    long flags = Whitebox.getInternalState(internalNode, "mPrivateFlags");
+
+    return ((flags & flagPosition) != 0);
+  }
+
+  private static void clearFlag(InternalNode internalNode, String flagName) {
