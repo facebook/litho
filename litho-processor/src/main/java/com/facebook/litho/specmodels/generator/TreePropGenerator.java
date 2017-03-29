@@ -76,3 +76,9 @@ public class TreePropGenerator {
       return TypeSpecDataHolder.newBuilder().build();
     }
 
+    final String delegateName = DELEGATE_FIELD_NAME +
+        (!specModel.hasInjectedDependencies() ?
+            "" :
+            specModel.getDependencyInjectionHelper()
+                .getSourceDelegateAccessorMethod(specModel));
+
