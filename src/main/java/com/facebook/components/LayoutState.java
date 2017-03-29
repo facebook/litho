@@ -930,3 +930,4 @@ class LayoutState {
 
     ComponentsSystrace.beginSection("collectResults:" + component.getSimpleName());
     if (logger != null) {
+      logger.eventStart(EVENT_COLLECT_RESULTS, component, PARAM_LOG_TAG, c.getLogTag());
