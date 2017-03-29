@@ -51,3 +51,8 @@ public class ComponentView extends ComponentHost {
 
   private static final int[] sLayoutSize = new int[2];
 
+  // Keep ComponentTree when detached from this view in case the ComponentTree is shared between
+  // sticky header and RecyclerView's binder
+  // TODO T14859077 Replace with proper solution
+  private ComponentTree mTemporaryDetachedComponent;
+

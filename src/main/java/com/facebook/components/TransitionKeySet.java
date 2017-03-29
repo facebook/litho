@@ -154,3 +154,4 @@ class TransitionKeySet implements TransitionListener {
       mEndValues = mLocalEndValues;
     }
 
+    return start(keyStatus, listener, null, null);

@@ -124,3 +124,4 @@ class TransitionManager implements TransitionKeySetListener {
         // animation.
       }
     }
+    // 1.3 Appeared keys.

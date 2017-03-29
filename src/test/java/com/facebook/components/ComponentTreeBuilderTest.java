@@ -120,3 +120,4 @@ public class ComponentTreeBuilderTest {
     assertEqualToInternalState(componentTree, false, "mIsLayoutDiffingEnabled");
     assertSameAsInternalState(componentTree, null, "mLayoutLock");
 
+    assertTrue(componentTree.isIncrementalMountEnabled());
