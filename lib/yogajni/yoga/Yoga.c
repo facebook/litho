@@ -3362,3 +3362,6 @@ static void YGRoundToPixelGrid(const YGNodeRef node, const float pointScaleFacto
   }
   if (adjustedHeight - roundedHeight >= pointScaleFactor / 2.0f) {
     roundedHeight += pointScaleFactor;
+  }
+  node->layout.dimensions[YGDimensionWidth] = roundedWidth;
+  node->layout.dimensions[YGDimensionHeight] = roundedHeight;
