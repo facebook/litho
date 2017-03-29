@@ -351,3 +351,5 @@ public class Stages {
           delegateMethod,
           "The @OnLoadStyle method should have an ComponentContext" +
               "followed by Output parameters matching component create.");
+    }
+
