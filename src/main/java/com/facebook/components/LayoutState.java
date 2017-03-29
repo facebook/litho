@@ -688,3 +688,6 @@ class LayoutState {
       // The root host (ComponentView) always has ID 0 and is unconditionally
       // set as dirty i.e. no need to use shouldComponentUpdate().
       hostOutput.setId(ROOT_HOST_ID);
+
+      // Special case where the host marker of the root host is pointing to itself.
+      hostOutput.setHostMarker(ROOT_HOST_ID);

@@ -1420,3 +1420,15 @@ public class Stages {
         .build());
   }
 
+  private void generateOnEventHandler(
+      ExecutableElement element,
+      ClassName contextClassName) {
+
+    if (element.getParameters().size() == 0 ||
+        !ClassName.get(element.getParameters().get(0).asType()).equals(contextClassName)) {
+      throw new ComponentsProcessingException(
+          element,
+          "The first parameter for an onEvent method should be of type "
+              +contextClassName.toString());
+    }
+
