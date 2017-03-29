@@ -17,3 +17,6 @@ import android.widget.ImageView.ScaleType;
 /**
  * Static class containing a factory method for creating a matrix to apply to a drawable.
  */
+public final class DrawableMatrix extends Matrix {
+
+  private boolean mShouldClipRect;

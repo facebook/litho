@@ -12,3 +12,4 @@
 <resources>
 
   <declare-styleable name="Text">
+    <attr name="android:minLines" />
