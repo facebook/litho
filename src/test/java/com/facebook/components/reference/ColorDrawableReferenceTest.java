@@ -63,3 +63,9 @@ public class ColorDrawableReferenceTest {
     Reference.release(mContext, colorDrawable1, ref1);
 
     Reference<Drawable> ref2 =
+        ColorDrawableReference.create(mContext)
+            .color(Color.RED)
+            .alpha(DEFAULT_ALPHA_VALUE)
+            .build();
+    ColorDrawable colorDrawable2 =
+        (ColorDrawable) Reference.acquire(mContext, ref2);

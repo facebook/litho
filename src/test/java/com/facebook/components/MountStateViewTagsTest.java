@@ -77,3 +77,6 @@ public class MountStateViewTagsTest {
 
   @Test
   public void testRootHostViewTags() {
+    final Object tag = new Object();
+    final SparseArray<Object> tags = new SparseArray<>(1);
+    tags.put(DUMMY_ID, tag);

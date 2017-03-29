@@ -33,3 +33,6 @@ public class LayoutStateSizeTest {
 
   @Before
   public void setup() {
+    mContext = new ComponentContext(RuntimeEnvironment.application);
+    mComponent = TestLayoutComponent.create(mContext)
+        .build();

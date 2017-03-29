@@ -90,3 +90,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     public long measure(
         YogaNodeAPI cssNode,
         float width,
+        YogaMeasureMode widthMode,
