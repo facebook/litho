@@ -2578,3 +2578,5 @@ public class Stages {
         .index(requiredIndex)
         .propParameter(propParameter)
         .implName(getImplMemberInstanceName())
+        .requiredSetName("mRequired")
+        .builderClass(propsBuilderClassName)
