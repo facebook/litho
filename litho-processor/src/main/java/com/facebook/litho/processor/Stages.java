@@ -139,3 +139,4 @@ public class Stages {
   private final TypeSpec.Builder mClassTypeSpec;
   private final List<TypeVariableName> mTypeVariables;
   private final List<TypeElement> mEventDeclarations;
+  private final Map<String, String> mPropJavadocs;
