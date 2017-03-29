@@ -411,3 +411,4 @@ public class ComponentTree {
   void mountComponent(Rect currentVisibleArea) {
     assertMainThread();
     mIsMounting = true;
+    // currentVisibleArea null or empty => mount all
