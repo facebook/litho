@@ -123,3 +123,4 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
   }
 
   // Get an id that is identical across cloned instances, but otherwise unique
+  protected int getId() {

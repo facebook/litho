@@ -322,3 +322,29 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   /**
    * The last value the measure funcion associated with this node {@link Component} returned
    * for the height. This is used together with {@link InternalNode#getLastHeightSpec()}
+   * to implement measure caching.
+   */
+  float getLastMeasuredHeight() {
+    return mLastMeasuredHeight;
+  }
+
+  /**
+   * Sets the last value the measure funcion associated with this node {@link Component} returned
+   * for the height.
+   */
+  void setLastMeasuredHeight(float lastMeasuredHeight) {
+    mLastMeasuredHeight = lastMeasuredHeight;
+  }
+
+  DiffNode getDiffNode() {
+    return mDiffNode;
+  }
+
+  boolean areCachedMeasuresValid() {
+    return mCachedMeasuresValid;
+  }
+
+  void setDiffNode(DiffNode diffNode) {
+    mDiffNode = diffNode;
+  }
+
