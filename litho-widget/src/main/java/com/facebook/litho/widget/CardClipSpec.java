@@ -37,3 +37,5 @@ class CardClipSpec {
 
     cardClipDrawable.setClippingColor(clippingColor);
     cardClipDrawable.setCornerRadius(cornerRadius);
+  }
+}
