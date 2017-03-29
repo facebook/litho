@@ -75,3 +75,5 @@ public abstract class ComponentLifecycle implements EventDispatcher {
         size = new Size();
       }
 
+      size.width = initialValue;
+      size.height = initialValue;

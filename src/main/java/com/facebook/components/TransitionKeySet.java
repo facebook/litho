@@ -65,3 +65,92 @@ class TransitionKeySet implements TransitionListener {
   private View mTargetView;
   private TransitionKeySetListener mTransitionKeySetListener;
   private TransitionCleanupListener mTransitionCleanupListener;
+  private int mAnimationRunningCounter = 0;
+
+  TransitionKeySet(String key) {
+    mKey = key;
+  }
+
+  void setTargetView(View view) {
+    mTargetView = view;
+  }
+
+  void add(Transition transition) {
+    final SimpleArrayMap<Integer, Transition> tmpPointer;
+
+    switch (transition.getTransitionType()) {
+      case APPEAR:
+        if (mAppearTransition == null) {
+          mAppearTransition = new SimpleArrayMap<>();
+        }
+
+        if (mLocalStartValues == null) {
+          mLocalStartValues = transition.getLocalValues();
+        } else {
+          mLocalStartValues.addProperties(transition.getLocalValues());
+        }
+
+        tmpPointer = mAppearTransition;
+        break;
+
+      case CHANGE:
+        if (mChangeTransitions == null) {
+          mChangeTransitions = new SimpleArrayMap<>();
+        }
+
+        tmpPointer = mChangeTransitions;
+        break;
+
+      case DISAPPEAR:
+        if (mDisappearTransitions == null) {
+          mDisappearTransitions = new SimpleArrayMap<>();
+        }
+
+        if (mLocalEndValues == null) {
+          mLocalEndValues = transition.getLocalValues();
+        } else {
+          mLocalEndValues.addProperties(transition.getLocalValues());
+        }
+
+        tmpPointer = mDisappearTransitions;
+        break;
+
+      default:
+        throw new IllegalStateException("Transition type not valid for key: "+transition.getKey());
+    }
+
+    tmpPointer.put(transition.getValuesFlag(), transition);
+    mTrackedValuesFlag |= transition.getValuesFlag();
+    transition.setListener(this);
+  }
+
+  void recordStartValues(View view) {
+    if (view == null) {
+      return;
+    }
+
+    mStartValues = TransitionProperties.createPropertySetHolder(mTrackedValuesFlag, view);
+  }
+
+  void recordEndValues(View view) {
+    if (view == null) {
+      return;
+    }
+
+    mEndValues = TransitionProperties.createPropertySetHolder(mTrackedValuesFlag, view);
+  }
+
+  /**
+   * Start transitions for this key given the key status.
+   *
+   * @param keyStatus
+   * @param listener
+   * @return True if any transition was actually started.
+   */
+  boolean start(@KeyStatus int keyStatus, TransitionKeySetListener listener) {
+    if (keyStatus == KeyStatus.APPEARED) {
+      mStartValues = mLocalStartValues;
+    } else if (keyStatus == KeyStatus.DISAPPEARED) {
+      mEndValues = mLocalEndValues;
+    }
+

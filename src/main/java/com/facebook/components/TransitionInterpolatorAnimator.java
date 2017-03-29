@@ -98,3 +98,131 @@ public class TransitionInterpolatorAnimator
     mStartTime = interpolatorAnimator.mStartTime;
     mPlayedTime = interpolatorAnimator.mPlayedTime;
     return true;
+  }
+
+  @Override
+  public void start(View targetView, List<PropertyChangeHolder> propertyChangeHolders) {
+    if (mListener == null) {
+      throw new IllegalStateException("TransitionInterpolatorAnimator should have a listener " +
+          "set before start() is called in order to callback the TransitionManager at the " +
+          "end of the animation.");
+    }
+
+    mAnimator.setValues(createPropertyValuesHoldersFrom(propertyChangeHolders));
+
+    if ((mSetFlags & DURATION) != 0) {
+      mAnimator.setDuration(mDuration);
+    }
+    if ((mSetFlags & INTERPOLATOR) != 0) {
+      mAnimator.setInterpolator(mInterpolator);
+    }
+    // Set startDelay only if the animator has not being restored from a running animation.
+    if ((mSetFlags & START_DELAY) != 0 && mPlayedTime == 0) {
+      // Adjust the startDelay with the start time of the restored animator.
+      if (mStartTime > 0) {
+        final long waitedTime = SystemClock.uptimeMillis() - mStartTime;
+        mAnimator.setStartDelay(Math.max(0, (mStartDelay - waitedTime)));
+        // Remove startDelay if we are resuming with the animation already running.
+      } else {
+        mAnimator.setStartDelay(mStartDelay);
+      }
+    }
+
+    if (mStartTime == 0) {
+      mStartTime = SystemClock.uptimeMillis();
+    }
+    mAnimator.setTarget(targetView);
+    mAnimator.start();
+
+    // If this transition was already running, fast forward to where we left.
+    if (mPlayedTime > 0) {
+      mAnimator.setCurrentPlayTime(mPlayedTime);
+    }
+  }
+
+  @Override
+  public TransitionInterpolatorAnimator stop() {
+    if (!mAnimator.isRunning()) {
+      throw new IllegalStateException("stop() called but the Animator wasn't running.");
+    }
+
+    mPlayedTime = mAnimator.getCurrentPlayTime();
+    // Don't trigger end Listeners when the animation is manually interrupted.
+    mAnimator.removeAllListeners();
+    mAnimator.removeAllUpdateListeners();
+    mAnimator.end();
+    mAnimator.setTarget(null);
+
+    return this;
+  }
+
+  @Override
+  public TransitionAnimator clone() {
+    final TransitionInterpolatorAnimator a = new TransitionInterpolatorAnimator();
+    a.mSetFlags = mSetFlags;
+    a.mDuration = mDuration;
+    a.mStartDelay = mStartDelay;
+    a.mInterpolator = mInterpolator;
+    a.mStartTime = mStartTime;
+    a.mPlayedTime = mPlayedTime;
+    a.mListener = mListener;
+
+    return a;
+  }
+
+  private static PropertyValuesHolder[] createPropertyValuesHoldersFrom(
+      List<PropertyChangeHolder> propertyChangeHolders) {
+    final int propertyChangesSize = propertyChangeHolders.size();
+    final PropertyValuesHolder[] propertyValuesHolders =
+        new PropertyValuesHolder[propertyChangesSize];
+
+    for (int i = 0; i < propertyChangesSize; i++) {
+      PropertyChangeHolder changeHolder = propertyChangeHolders.get(i);
+      propertyValuesHolders[i] = PropertyValuesHolder.ofFloat(
+          TransitionProperties.getViewPropertyFrom(changeHolder.propertyType),
+          changeHolder.start,
+          changeHolder.end);
+    }
+
+    return propertyValuesHolders;
+  }
+
+  public static class Builder {
+
+    final TransitionInterpolatorAnimator mAnimator;
+
+    Builder() {
+      mAnimator = new TransitionInterpolatorAnimator();
+    }
+
+    /**
+     * Interpolator used for this TransitionInterpolatorAnimator.
+     * If not set, an {@link AccelerateDecelerateInterpolator} will be used.
+     */
+    public Builder interpolator(Interpolator interpolator) {
+      mAnimator.setInterpolator(interpolator);
+      return this;
+    }
+
+    /**
+     * Duration used for this TransitionInterpolatorAnimator.
+     * If not set, the value of 300ms will be used.
+     */
+    public Builder duration(int duration) {
+      mAnimator.setDuration(duration);
+      return this;
+    }
+
+    /**
+     * StartDelay used for this TransitionInterpolatorAnimator.
+     */
+    public Builder startDelay(int delay) {
+      mAnimator.setStartDelay(delay);
+      return this;
+    }
+
+    public TransitionAnimator build() {
+      return mAnimator;
+    }
+  }
+}

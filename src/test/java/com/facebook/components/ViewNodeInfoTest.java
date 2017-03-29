@@ -38,3 +38,6 @@ public class ViewNodeInfoTest {
   }
 
   @Test
+  public void testTouchBoundsNoHostTranslation() {
+    final InternalNode node = new TouchExpansionTestInternalNode();
+

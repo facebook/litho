@@ -59,3 +59,48 @@ public class TestSizeDependentComponent extends ComponentLifecycle {
     return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
         .flexDirection(YogaFlexDirection.COLUMN)
         .paddingPx(YogaEdge.ALL, 5)
+        .child(
+            builder1)
+        .child(
+            builder2)
+        .build();
+  }
+
+  @Override
+  protected boolean canMeasure() {
+    return true;
+  }
+
+  @Override
+  public MountType getMountType() {
+    return MountType.NONE;
+  }
+
+  public static synchronized TestSizeDependentComponent get() {
+    if (sInstance == null) {
+      sInstance = new TestSizeDependentComponent();
+    }
+
+    return sInstance;
+  }
+
+  public static Builder create(ComponentContext context) {
+    Builder builder = sBuilderPool.acquire();
+    if (builder == null) {
+      builder = new Builder();
+    }
+    builder.init(context, new State());
+
+    return builder;
+  }
+
+  public static class State extends Component<TestSizeDependentComponent> implements Cloneable {
+
+    boolean hasFixedSizes;
+    boolean isDelegate;
+
+    private State() {
+      super(get());
+    }
+
+    @Override

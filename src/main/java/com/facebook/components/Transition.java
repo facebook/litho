@@ -48,3 +48,60 @@ public class Transition {
      * @return whether this animator can restore state.
      */
     boolean restoreState(T savedBundle);
+    TransitionAnimator clone();
+  }
+
+  @IntDef({UNDEFINED, APPEAR, CHANGE, DISAPPEAR})
+  @Retention(RetentionPolicy.SOURCE)
+  @interface TransitionType {
+    int UNDEFINED = -1;
+    int APPEAR = 0;
+    int CHANGE = 1;
+    int DISAPPEAR = 2;
+  }
+
+  private final String mKey;
+  private final @TransitionType int mTransitionType;
+  private final PropertySetHolder mLocalValues;
+
+  private TransitionAnimator mAnimator;
+  private @PropertyType int mValuesFlag = PropertyType.NONE;
+
+  @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+  Transition(String key, @TransitionType int transitionType) {
+    this(key, transitionType, null);
+  }
+
+  @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+  private Transition(String key, @TransitionType int transitionType, TransitionAnimator animator) {
+    mKey = key;
+    mTransitionType = transitionType;
+    mAnimator = animator;
+    mLocalValues = (transitionType == APPEAR || transitionType == DISAPPEAR)
+        ? new PropertySetHolder()
+        : null;
+  }
+
+  /**
+   * Create a Transition that will run when the Component/ComponentLayout with the matching
+   * transitionKey will be mounted on screen.
+   */
+  public static Transition.Builder create(String key) {
+    if (TextUtils.isEmpty(key)) {
+      throw new IllegalArgumentException("You need to define a key for an OnAppear transition");
+    }
+
+    return new Builder(key);
+  }
+
+  /**
+   * Create a set of {@link Transition} to be return by the @OnLayoutTransition lifecycle method.
+   */
+  public static TransitionSet createSet(Transition... transitions) {
+    if (transitions == null || transitions.length == 0) {
+      throw new IllegalArgumentException("You need to define at least a transition within a Set");
+    }
+
+    return new TransitionSet(transitions);
+  }
+
