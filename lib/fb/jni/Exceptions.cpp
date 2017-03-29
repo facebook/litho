@@ -266,3 +266,16 @@ void JniException::populateWhat() const noexcept {
   try {
     what_ = throwable_->toString();
     isMessageExtracted_ = true;
+  } catch(...) {
+    what_ = kExceptionMessageFailure_;
+  }
+}
+
+const char* JniException::what() const noexcept {
+  if (!isMessageExtracted_) {
+    populateWhat();
+  }
+  return what_.c_str();
+}
+
+void JniException::setJavaException() const noexcept {
