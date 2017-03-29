@@ -236,3 +236,11 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
   @Nullable
   private ClickableSpan getClickableSpanInCoords(int x, int y) {
     final int line = mLayout.getLineForVertical(y);
+    float start = mLayout.getPrimaryHorizontal(mLayout.getLineStart(line));
+    float end = mLayout.getPrimaryHorizontal(mLayout.getLineVisibleEnd(line));
+    if (start > end) {
+      // In RTL scenario
+      float temp = start;
+      start = end;
+      end = temp;
+    }
