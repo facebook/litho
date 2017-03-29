@@ -1669,3 +1669,11 @@ class LayoutState {
             newWidthSpec,
             (int) oldMeasuredWidth);
 
+    final boolean heightIsCompatible =
+        MeasureComparisonUtils.isMeasureSpecCompatible(
+            oldHeightSpec,
+            newHeightSpec,
+            (int) oldMeasuredHeight);
+    return  widthIsCompatible && heightIsCompatible;
+  }
+
