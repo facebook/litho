@@ -46,3 +46,4 @@ android_library(
             COMPONENTS_WIDGET_ACCESSIBILITIES_TARGET,
             COMPONENTS_RES_TARGET,
         ],
+)

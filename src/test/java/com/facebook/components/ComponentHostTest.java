@@ -736,3 +736,6 @@ public class ComponentHostTest {
         index,
         mountItem,
         content instanceof Drawable ? ((Drawable) content).getBounds() : new Rect());
+    return mountItem;
+  }
+

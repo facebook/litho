@@ -254,3 +254,4 @@ public class ComponentView extends ComponentHost {
       return;
     }
     setMountStateDirty();
+
