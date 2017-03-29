@@ -68,3 +68,7 @@ public class ViewPredicatesTest {
     mImageView.setImageResource(R.drawable.litho);
     mImageViewWithCustomDrawable.setImageResource(R.drawable.custom_drawable);
 
+    final ComponentContext context = new ComponentContext(activity);
+    mComponentViewWithText = ComponentTestHelper.mountComponent(
+        Text.create(context)
+            .text("Hello"));

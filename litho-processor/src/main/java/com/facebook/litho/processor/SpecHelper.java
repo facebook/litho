@@ -131,3 +131,5 @@ public abstract class SpecHelper implements Closeable {
         eventTypesElements,
         propJavadocs);
 
+    validate();
+
