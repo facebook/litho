@@ -932,3 +932,5 @@ public class ComponentTree {
       previousLayoutState = null;
     }
 
+    boolean layoutStateUpdated = false;
+    synchronized (this) {
