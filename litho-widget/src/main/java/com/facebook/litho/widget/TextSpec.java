@@ -275,3 +275,6 @@ class TextSpec {
     if (lineCount < minLines) {
       final TextPaint paint = newLayout.getPaint();
 
+      final int lineHeight =
+          Math.round(paint.getFontMetricsInt(null) * spacingMultiplier + extraSpacing);
+      preferredHeight += lineHeight * (minLines - lineCount);

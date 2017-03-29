@@ -418,3 +418,7 @@ public class Stages {
    * </ul>
    */
   private void validateAnnotatedParameters() {
+    final List<PrintableException> exceptions = new ArrayList<>();
+    final Map<String, VariableElement> variableNameToElementMap = new HashMap<>();
+    final Map<String, Class<? extends Annotation>> outputVariableToStage = new HashMap<>();
+
