@@ -972,3 +972,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       @DimenRes int defaultResId) {
     return touchExpansionPx(
         edge,
+        mResourceResolver.resolveDimenOffsetAttr(resId, defaultResId));
+  }
+
+  @Override
+  public InternalNode touchExpansionAttr(
