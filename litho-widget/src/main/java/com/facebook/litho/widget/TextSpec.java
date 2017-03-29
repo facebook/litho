@@ -467,3 +467,4 @@ class TextSpec {
 
       textLayout.set(
           createTextLayout(
+              SizeSpec.makeSizeSpec((int) layoutWidth, EXACTLY),
