@@ -2211,3 +2211,4 @@ public class Stages {
 
       shouldUpdateComponent
           .addStatement(
+              "$L $L = acquireDiff(previousImpl.$L, nextImpl.$L)",
