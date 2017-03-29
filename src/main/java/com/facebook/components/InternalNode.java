@@ -1527,3 +1527,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     if (mForceViewWrapping) {
       node.mForceViewWrapping = true;
     }
+    if ((mPrivateFlags & PFLAG_VISIBLE_HANDLER_IS_SET) != 0L) {
