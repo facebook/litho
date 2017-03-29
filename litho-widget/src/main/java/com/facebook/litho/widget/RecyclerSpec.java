@@ -10,3 +10,4 @@
 package com.facebook.litho.widget;
 
 import android.graphics.Color;
+import android.support.annotation.IdRes;
