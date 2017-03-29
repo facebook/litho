@@ -1732,3 +1732,5 @@ public class LayoutStateCalculateTest {
                 .setDelegate(false)
                 .build();
 
+        return Layout.create(c, nestedTreeRootComponent).flexShrink(0)
+            .paddingPx(YogaEdge.ALL, 10)
