@@ -865,3 +865,6 @@ public class ComponentHost extends ViewGroup {
     for (int i = 0, size = mDisappearingItems.size(); i < size; i++) {
       final View child = (View) mDisappearingItems.valueAt(i).getContent();
       mChildDrawingOrder[index++] = indexOfChild(child);
+    }
+
+    for (int i = 0, size = mScrapHosts.size(); i < size; i++) {
