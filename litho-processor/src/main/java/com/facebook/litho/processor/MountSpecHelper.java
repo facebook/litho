@@ -375,3 +375,6 @@ public class MountSpecHelper extends ComponentSpecHelper {
     methodDescription.accessType = Modifier.PROTECTED;
     methodDescription.returnType = ClassName.VOID;
     methodDescription.name = "onUnmount";
+    methodDescription.parameterTypes = new TypeName[] {
+        ClassNames.COMPONENT_CONTEXT,
+        ClassName.OBJECT,
