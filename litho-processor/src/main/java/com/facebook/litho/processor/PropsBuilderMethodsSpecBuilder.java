@@ -200,3 +200,4 @@ class PropsBuilderMethodsSpecBuilder {
   private MethodSpec resBuilder(ClassName annotationClassName, String resolver) {
     return builder(
         mPropParameter.parameter.name + "Res",
+        Arrays.asList(parameter(TypeName.INT, "resId", annotation(annotationClassName))),

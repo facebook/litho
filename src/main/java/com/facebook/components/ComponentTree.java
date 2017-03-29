@@ -185,3 +185,4 @@ public class ComponentTree {
    * is a LayoutState that must be released (after the lock is released). This
    * awkward contract is necessary to ensure thread-safety.
    */
+  @CheckReturnValue
