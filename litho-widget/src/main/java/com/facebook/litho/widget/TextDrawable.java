@@ -41,3 +41,4 @@ import static android.view.MotionEvent.ACTION_UP;
 /**
  * A {@link Drawable} for mounting text content from a
  * {@link Component}.
+ *
