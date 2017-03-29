@@ -70,3 +70,8 @@ public class MountSpecHelper extends ComponentSpecHelper {
       GetExtraAccessibilityNodeAt.class,
       OnUnbind.class,
       OnUnmount.class,
+  };
+
+  private static final Class<Annotation>[] INTER_STAGE_INPUT_ANNOTATIONS = new Class[] {
+      FromPrepare.class,
+      FromMeasure.class,

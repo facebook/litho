@@ -125,3 +125,4 @@ public class Utils {
       Class<A> annotation) {
     ExecutableElement annotatedMethod = null;
     for (final Element enclosedElement : element.getEnclosedElements()) {
+      if (enclosedElement.getKind() == ElementKind.METHOD) {

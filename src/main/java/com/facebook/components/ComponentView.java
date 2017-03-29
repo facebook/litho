@@ -208,3 +208,4 @@ public class ComponentView extends ComponentHost {
         // RecyclerView, etc) rely on that.
         performLayoutOnChildrenIfNecessary(this);
       }
+    }
