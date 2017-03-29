@@ -304,3 +304,4 @@ class EditTextSpec {
   }
 
   @OnUnbind
+  static void onUnbind(
