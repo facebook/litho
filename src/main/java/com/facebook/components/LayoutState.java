@@ -1572,3 +1572,4 @@ class LayoutState {
       }
 
       mShouldGenerateDiffTree = false;
+      mAccessibilityManager = null;
