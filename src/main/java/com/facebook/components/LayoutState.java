@@ -763,3 +763,5 @@ class LayoutState {
       long previousId,
       boolean isCachedOutputUpdated) {
 
+    drawableComponent.getLifecycle().onBoundsDefined(
+        layoutState.mContext,
