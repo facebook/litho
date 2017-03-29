@@ -16,7 +16,7 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.robolectric.Robolectric;
 
-import com.facebook.R;
+import com.facebook.litho.R;
 import com.facebook.litho.ComponentContext;
 
 public class ComponentsRule implements TestRule {

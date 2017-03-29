@@ -16,7 +16,7 @@ import android.support.annotation.AttrRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
 
-import com.facebook.R;
+import com.facebook.litho.R;
 import com.facebook.infer.annotation.ThreadConfined;
 
 /**

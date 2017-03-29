@@ -23,7 +23,7 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.widget.EditText;
 
-import com.facebook.R;
+import com.facebook.litho.R;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.EventHandler;

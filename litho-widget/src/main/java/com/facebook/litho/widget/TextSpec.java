@@ -30,7 +30,7 @@ import android.text.TextUtils.TruncateAt;
 import android.text.style.ClickableSpan;
 import android.util.Log;
 
-import com.facebook.R;
+import com.facebook.litho.R;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.ComponentsLogger;

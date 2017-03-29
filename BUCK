@@ -40,7 +40,7 @@ android_aar(
 
 android_resource(
     name = "res",
-    package = "com.facebook",
+    package = "com.facebook.litho",
     res = "src/main/res",
     visibility = [
         "PUBLIC",

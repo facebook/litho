@@ -14,7 +14,7 @@ import android.content.res.TypedArray;
 import android.support.v4.util.Pools.SynchronizedPool;
 import android.widget.HorizontalScrollView;
 
-import com.facebook.R;
+import com.facebook.litho.R;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.Component;
