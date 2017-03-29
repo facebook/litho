@@ -133,3 +133,15 @@ public class StateUpdateImplClassBuilder {
   /**
    * Set the params of the method annotated with
    *  {@link com.facebook.litho.annotations.OnUpdateState}
+   * @param params params
+   */
+  public StateUpdateImplClassBuilder withSpecOnUpdateStateMethodParams(List<Parameter> params) {
+    this.mSpecOnUpdateStateMethodParams.addAll(params);
+    return this;
+  }
+
+  public StateUpdateImplClassBuilder withSpecOnUpdateStateMethodParam(Parameter param) {
+    this.mSpecOnUpdateStateMethodParams.add(param);
+    return this;
+  }
+
