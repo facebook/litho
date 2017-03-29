@@ -174,3 +174,4 @@ public class InternalNodeTest {
   }
 
   @Test
+  public void testWidthFlag() {

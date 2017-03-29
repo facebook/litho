@@ -101,3 +101,18 @@ public class BaseBinderTest {
   @Test
   public void testNotifyItemChanged() {
     mount();
+
+    Assert.assertEquals("6", getAdapterInputStringAtPosition(6));
+    mItems.set(6, "23");
+    // Nothing changed until the notify call
+    Assert.assertEquals("6", getAdapterInputStringAtPosition(6));
+
+    mBinder.notifyItemChanged(6);
+    mLayoutThreadShadowLooper.runOneTask();
+
+    Assert.assertEquals("23", getAdapterInputStringAtPosition(6));
+    Assert.assertEquals(mItems.size(), mBinder.getComponentCount());
+  }
+
+  @Test
+  public void testNotifyItemRangeChanged() {

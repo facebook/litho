@@ -125,3 +125,4 @@ class ViewNodeInfo {
       return null;
     }
 
+    return mExpandedTouchBounds;

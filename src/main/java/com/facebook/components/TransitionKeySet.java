@@ -197,3 +197,8 @@ class TransitionKeySet implements TransitionListener {
     SimpleArrayMap<Integer, ? extends Transition> oldTransitionToResumeFrom = null;
     @KeyStatus int keyStatusToResume = KeyStatus.UNCHANGED;
 
+    switch (newKeyStatus) {
+      case KeyStatus.UNCHANGED:
+        if (mEndValues.equals(oldTransition.mEndValues)) {
+          mStartValues = oldTransition.mStartValues;
+          if (oldTransition.wasRunningAppearTransition()) {

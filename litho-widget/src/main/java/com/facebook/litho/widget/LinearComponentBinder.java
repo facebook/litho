@@ -119,3 +119,4 @@ public abstract class LinearComponentBinder extends
   public boolean isSticky(int position) {
     return false;
   }
+}
