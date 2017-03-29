@@ -70,3 +70,4 @@ public final class MeasureUtils {
    * This will only not guarantee equal width and height if thes Specs use modes and sizes which
    * prevent it.
    */
+  public static void measureWithEqualDimens(int widthSpec, int heightSpec, Size outputSize) {
