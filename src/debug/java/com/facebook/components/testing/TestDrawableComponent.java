@@ -101,3 +101,8 @@ public class TestDrawableComponent extends ComponentLifecycle {
   }
 
   @Override
+  protected boolean implementsAccessibility() {
+    return mImplementsAccessibility;
+  }
+
+  @Override

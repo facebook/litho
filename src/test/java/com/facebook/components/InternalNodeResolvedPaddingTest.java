@@ -97,3 +97,8 @@ public class InternalNodeResolvedPaddingTest {
     mInternalNode.paddingPx(YogaEdge.END, 5);
     mInternalNode.paddingPx(YogaEdge.RIGHT, 10);
     setDirection(mInternalNode, YogaDirection.LTR);
+    assertEquals(5, mInternalNode.getPaddingRight());
+  }
+
+  @Test
+  public void testPaddingRightWithDefinedStartInRtl() {

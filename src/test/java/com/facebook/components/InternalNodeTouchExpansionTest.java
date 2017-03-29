@@ -105,3 +105,8 @@ public class InternalNodeTouchExpansionTest {
   @Test
   public void testTouchExpansionRightWithUndefinedStartEnd() {
     mInternalNode.touchExpansionPx(YogaEdge.RIGHT, 10);
+    assertEquals(10, mInternalNode.getTouchExpansionRight());
+  }
+
+  @Test
+  public void testTouchExpansionRightWithDefinedStart() {

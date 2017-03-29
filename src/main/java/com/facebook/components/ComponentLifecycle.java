@@ -89,3 +89,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     @SuppressWarnings("unchecked")
     public long measure(
         YogaNodeAPI cssNode,
+        float width,

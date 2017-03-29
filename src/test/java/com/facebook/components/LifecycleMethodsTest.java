@@ -96,3 +96,14 @@ public class LifecycleMethodsTest {
 
     @Override
     protected void onPrepare(ComponentContext c, Component<?> component) {
+      LifecycleMethodsInstance instance = (LifecycleMethodsInstance) component;
+      instance.setCurrentStep(LifecycleStep.ON_PREPARE);
+    }
+
+    @Override
+    protected boolean canMeasure() {
+      return true;
+    }
+
+    @Override
+    protected void onMeasure(
