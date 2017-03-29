@@ -8,3 +8,5 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.facebook.litho.R;
+import com.facebook.components.testing.testrunner.ComponentsTestRunner;

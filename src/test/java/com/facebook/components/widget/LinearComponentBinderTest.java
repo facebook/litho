@@ -35,3 +35,4 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowLooper;
 
+@RunWith(ComponentsTestRunner.class)

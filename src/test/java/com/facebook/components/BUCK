@@ -55,3 +55,16 @@ android_resource(
         "//javatests/com/facebook/components/...",
     ],
 )
+
+android_library(
+    name = "testutil",
+    srcs = [
+        "ColorDrawableShadow.java",
+        "LayoutDirectionViewGroupShadow.java",
+        "LayoutDirectionViewShadow.java",
+        "TouchExpansionTestInternalNode.java",
+    ],
+    visibility = [
+        make_dep_path("src/test/java/com/facebook/components/..."),
+    ],
+    deps = [

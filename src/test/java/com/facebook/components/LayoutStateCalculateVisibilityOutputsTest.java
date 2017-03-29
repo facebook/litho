@@ -33,3 +33,6 @@ import static org.junit.Assert.assertEquals;
 @RunWith(ComponentsTestRunner.class)
 public class LayoutStateCalculateVisibilityOutputsTest {
 
+  @Rule
+  public PowerMockRule mPowerMockRule = new PowerMockRule();
+
