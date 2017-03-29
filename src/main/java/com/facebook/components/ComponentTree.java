@@ -991,3 +991,6 @@ public class ComponentTree {
   private void logLayoutCalculationStart(Component<?> root) {
     final ComponentsLogger logger = mContext.getLogger();
     if (logger == null) {
+      return;
+    }
+
