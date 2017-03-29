@@ -297,3 +297,9 @@ class PropsBuilderMethodsSpecBuilder {
       TypeName type,
       String name,
       AnnotationSpec... extraAnnotations) {
+    final ParameterSpec.Builder builder = ParameterSpec.builder(type, name);
+
+    for (ClassName annotation : mPropParameter.annotations) {
+      builder.addAnnotation(annotation);
+    }
+
