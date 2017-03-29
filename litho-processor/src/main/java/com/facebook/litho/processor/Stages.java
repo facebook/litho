@@ -1085,3 +1085,5 @@ public class Stages {
    * @param from description of method signature to be generated
    * @param to method to which to delegate
    * @param propsClass Component / Delegate. The base class of the inner implementation object
+   * @throws java.io.IOException If one of the writer methods throw
+   */
