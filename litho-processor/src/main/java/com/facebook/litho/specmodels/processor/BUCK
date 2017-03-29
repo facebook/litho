@@ -10,3 +10,8 @@ include_defs("//COMPONENTS_DEFS")
 java_library(
     name = "processor",
     srcs = glob(["*.java"]),
+    provided_deps = [
+        COMPONENTS_FBCORE_TARGET,
+        COMPONENTS_JSR_TARGET,
+        COMPONENTS_JAVAPOET_TARGET,
+    ],

@@ -9,3 +9,14 @@ include_defs("//COMPONENTS_DEFS")
 
 android_library(
     name = "widget",
+    exported_deps = [
+        COMPONENTS_TEXTLAYOUTBUILDER_TARGET,
+        ":widget-bare",
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+)
+
+android_library(
+    name = "widget-bare",

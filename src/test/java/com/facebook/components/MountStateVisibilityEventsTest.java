@@ -15,3 +15,6 @@ import java.util.List;
 import android.graphics.Rect;
 import android.support.v4.util.LongSparseArray;
 
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.TestLayoutComponent;
+import com.facebook.litho.testing.TestViewComponent;

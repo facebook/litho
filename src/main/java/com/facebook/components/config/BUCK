@@ -13,3 +13,4 @@ android_library(
     provided_deps = [
         COMPONENTS_BUILD_CONFIG_TARGET,
     ],
+    visibility = ["PUBLIC"],

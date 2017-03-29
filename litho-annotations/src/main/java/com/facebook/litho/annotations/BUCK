@@ -10,3 +10,6 @@ include_defs("//COMPONENTS_DEFS")
 java_library(
     name = "annotations",
     srcs = glob(["*.java"]),
+    provided_deps = [
+        COMPONENTS_ANDROIDSUPPORT_TARGET,
+    ],

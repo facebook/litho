@@ -31,3 +31,4 @@ java_library(
         excludes = glob(["processor/*.java"]),
     ),
     exported_deps = [
+        COMPONENTS_ANNOTATIONS_TARGET,

@@ -94,3 +94,4 @@ def components_robolectric_test(
     powermock_srcs = powermock_srcs or []
     extra_vm_args = [
         '-Drobolectric.dependency.dir=lib/android-all',
+        '-Dcom.facebook.litho.is_oss=true',

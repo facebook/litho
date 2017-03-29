@@ -14,3 +14,4 @@ java_library(
     srcs = glob([
         "src/**/*.java",
     ]),
+    visibility = ["PUBLIC"],
