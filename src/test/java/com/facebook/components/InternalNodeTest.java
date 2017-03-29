@@ -297,3 +297,11 @@ public class InternalNodeTest {
 
   @Test
   public void testCopyIntoNestedTreeTransferLayoutDirectionIfExplicitlySetOnHolderNode() {
+    InternalNode holderNode =
+        ComponentsPools.acquireInternalNode(
+            new ComponentContext(RuntimeEnvironment.application),
+            RuntimeEnvironment.application.getResources());
+    InternalNode nestedTree =
+        ComponentsPools.acquireInternalNode(
+            new ComponentContext(RuntimeEnvironment.application),
+            RuntimeEnvironment.application.getResources());

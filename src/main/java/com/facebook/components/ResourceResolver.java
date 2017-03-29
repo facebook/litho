@@ -97,3 +97,4 @@ public class ResourceResolver {
   }
 
   protected final int resolveIntRes(@IntegerRes int resId) {
+    if (resId != 0) {

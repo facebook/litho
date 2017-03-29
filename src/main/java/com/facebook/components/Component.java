@@ -65,3 +65,10 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
 
     public abstract Component.Builder<L> key(String key);
 
+    @Override
+    protected void release() {
+      super.release();
+
+      mContext = null;
+      mDefStyleAttr = 0;
+      mDefStyleRes = 0;
