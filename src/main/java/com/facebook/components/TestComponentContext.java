@@ -64,3 +64,5 @@ class TestComponentContext extends ComponentContext {
       Component<?> component,
       @AttrRes int defStyleAttr,
       @StyleRes int defStyleRes) {
+    return newLayoutBuilder(component);
+  }

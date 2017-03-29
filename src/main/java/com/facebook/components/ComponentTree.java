@@ -172,3 +172,6 @@ public class ComponentTree {
   }
 
   LayoutState getMainThreadLayoutState() {
+    return mMainThreadLayoutState;
+  }
+
