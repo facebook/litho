@@ -435,3 +435,6 @@ public class LayoutDirectionTest {
         });
 
     final View childView = componentView.getChildAt(0);
+    assertEquals(View.LAYOUT_DIRECTION_RTL, childView.getLayoutDirection());
+  }
+}

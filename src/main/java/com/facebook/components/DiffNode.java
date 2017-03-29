@@ -37,3 +37,4 @@ class DiffNode implements Cloneable {
     mChildren = new ArrayList<>(4);
   }
 
+  int getChildCount() {
