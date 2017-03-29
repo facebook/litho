@@ -910,3 +910,9 @@ public class ComponentHost extends ViewGroup {
         bounds,
         mountItem.getFlags(),
         mountItem.getNodeInfo());
+
+    if (drawable instanceof Touchable) {
+      mTouchables.put(index, (Touchable) drawable);
+    }
+  }
+

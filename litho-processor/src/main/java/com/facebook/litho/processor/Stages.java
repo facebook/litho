@@ -955,3 +955,4 @@ public class Stages {
         .interStageVariables(interStageComponentVariables)
         .implClassName(implClassName)
         .hasDeepCopy(hasDeepCopy)
+        .stateContainerImplClassName(getStateContainerImplClassName())
