@@ -31,3 +31,6 @@ import android.view.ViewGroup;
 import com.facebook.R;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.reference.Reference;
+
+import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+import static android.view.View.MeasureSpec.makeMeasureSpec;

@@ -27,3 +27,4 @@ import static junit.framework.Assert.fail;
  */
 @RunWith(ComponentsTestRunner.class)
 public class ViewNodeInfoTest {
+

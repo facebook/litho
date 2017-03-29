@@ -47,3 +47,4 @@ public class TestDrawableComponent extends ComponentLifecycle {
     for (TestDrawableComponent lifecycle : sInstances) {
       if (lifecycle.mCallsShouldUpdateOnMount == callsShouldUpdateOnMount &&
           lifecycle.mIsPureRender == isPureRender &&
+          lifecycle.mCanMeasure == canMeasure &&

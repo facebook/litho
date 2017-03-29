@@ -40,3 +40,5 @@ public class MountStateBoundsTest {
     mContext = new ComponentContext(RuntimeEnvironment.application);
   }
 
+  @Test
+  public void testMountedDrawableBounds() {

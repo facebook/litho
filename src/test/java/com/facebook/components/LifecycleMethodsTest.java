@@ -61,3 +61,13 @@ public class LifecycleMethodsTest {
   public void testLifecycle() {
     mComponentView.onAttachedToWindow();
     ComponentTestHelper.measureAndLayout(mComponentView);
+
+    assertEquals(LifecycleStep.ON_BIND, mComponent.getCurrentStep());
+
+    mComponentView.onDetachedFromWindow();
+    assertEquals(LifecycleStep.ON_UNBIND, mComponent.getCurrentStep());
+
+    mComponentView.onAttachedToWindow();
+    assertEquals(LifecycleStep.ON_BIND, mComponent.getCurrentStep());
+
+    mComponentTree.setRoot(mLifecycle.create(20));

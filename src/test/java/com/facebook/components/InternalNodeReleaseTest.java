@@ -37,3 +37,9 @@ public class InternalNodeReleaseTest {
     assertNull(node.getNodeInfo());
     assertNull(node.getTouchExpansion());
     assertNull(node.getTestKey());
+  }
+
+  @Test
+  public void testDefaultValues() {
+    assertDefaultValues(mInternalNode);
+

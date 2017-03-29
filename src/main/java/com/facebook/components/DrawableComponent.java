@@ -45,3 +45,4 @@ class DrawableComponent<T extends Drawable> extends ComponentLifecycle {
   protected void onMount(
       ComponentContext context,
       Object content,
+      Component component) {
