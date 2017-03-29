@@ -1062,3 +1062,4 @@ public class LayoutStateCalculateTest {
   }
 
   @Test
+  public void testLayoutOutputsForTwiceNestedComponent() {
