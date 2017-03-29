@@ -2648,3 +2648,5 @@ public class Stages {
         .addParameter(ClassNames.COMPONENT_CONTEXT, "context")
         .addStatement(
             "return new$L(context, new $T())",
+            INNER_IMPL_BUILDER_CLASS_NAME,
+            ClassName.bestGuess(getImplClassName()))
