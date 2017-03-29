@@ -310,3 +310,45 @@ public class MountStateVisibilityEventsTest {
     assertEquals(1, getVisibilityItemMapSize());
 
     mMountState.mount(layoutState, new Rect(LEFT, 10, RIGHT, 15));
+    verify(mockLifecycle1, times(1)).dispatchOnEvent(
+        eq(invisibleHandler1),
+        isA(InvisibleEvent.class));
+    verify(mockLifecycle2, times(1)).dispatchOnEvent(
+        eq(visibleHandler2),
+        isA(VisibleEvent.class));
+    assertEquals(1, getVisibilityItemMapSize());
+  }
+
+  @Test
+  public void testVisibilityEventsMultipleVisible() {
+    ComponentLifecycle mockLifecycle1 = createLifecycleMock();
+    ComponentLifecycle mockLifecycle2 = createLifecycleMock();
+
+    Component<?> content1 = TestViewComponent.create(mContext).build();
+    Component<?> content2 = TestLayoutComponent.create(mContext).build();
+    Whitebox.setInternalState(content1, "mLifecycle", mockLifecycle1);
+    Whitebox.setInternalState(content2, "mLifecycle", mockLifecycle2);
+
+    final EventHandler visibleHandler1 = createEventHandler(content1, VISIBLE);
+    final EventHandler visibleHandler2 = createEventHandler(content2, VISIBLE);
+
+    final List<VisibilityOutput> visibilityOutputs = new ArrayList<>();
+    visibilityOutputs.add(createVisibilityOutput(
+        content1,
+        new Rect(LEFT, 5, RIGHT, 10),
+        visibleHandler1,
+        null,
+        null,
+        null));
+
+    visibilityOutputs.add(createVisibilityOutput(
+        content2,
+        new Rect(LEFT, 10, RIGHT, 15),
+        visibleHandler2,
+        null,
+        null,
+        null));
+
+    final LayoutState layoutState = new LayoutState();
+    Whitebox.setInternalState(layoutState, "mVisibilityOutputs", visibilityOutputs);
+

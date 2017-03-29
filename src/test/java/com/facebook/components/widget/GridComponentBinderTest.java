@@ -304,3 +304,4 @@ public class GridComponentBinderTest {
     public boolean isAsyncLayoutEnabled() {
       return true;
     }
+
