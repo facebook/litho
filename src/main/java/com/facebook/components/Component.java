@@ -255,3 +255,5 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
 
   }
 
+  static boolean isHostSpec(Component<?> component) {
+    return (component != null && component.mLifecycle instanceof HostComponent);
