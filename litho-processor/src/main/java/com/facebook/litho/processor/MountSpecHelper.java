@@ -336,3 +336,6 @@ public class MountSpecHelper extends ComponentSpecHelper {
   }
 
   /**
+   * Generate an onUnbind implementation that delegates to the @OnUnbind-annotated method.
+   */
+  public void generateOnUnbind() {
