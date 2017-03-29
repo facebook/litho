@@ -1489,3 +1489,4 @@ public class LayoutStateCalculateTest {
         -1,
         SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
+
