@@ -346,3 +346,250 @@ class FBEXPORT JThrowable : public JavaClass<JThrowable, JObject, jthrowable> {
   static constexpr const char* kJavaDescriptor = "Ljava/lang/Throwable;";
 
   local_ref<JThrowable> initCause(alias_ref<JThrowable> cause);
+};
+
+namespace detail {
+template<typename Target>
+class ElementProxy {
+ private:
+  Target* target_;
+  size_t idx_;
+
+ public:
+  using T = typename Target::javaentry;
+  ElementProxy(Target* target, size_t idx);
+
+  ElementProxy& operator=(const T& o);
+
+  ElementProxy& operator=(alias_ref<T>& o);
+
+  ElementProxy& operator=(alias_ref<T>&& o);
+
+  ElementProxy& operator=(const ElementProxy& o);
+
+  operator const local_ref<T> () const;
+
+  operator local_ref<T> ();
+};
+}
+
+namespace detail {
+class FBEXPORT JArray : public JavaClass<JArray, JObject, jarray> {
+ public:
+  // This cannot be used in a scope that derives a descriptor (like in a method
+  // signature). Use a more derived type instead (like JArrayInt or
+  // JArrayClass<T>).
+  static constexpr const char* kJavaDescriptor = nullptr;
+  size_t size() const noexcept;
+};
+
+// This is used so that the JArrayClass<T> javaobject extends jni's
+// jobjectArray. This class should not be used directly. A general Object[]
+// should use JArrayClass<jobject>.
+class FBEXPORT JTypeArray : public JavaClass<JTypeArray, JArray, jobjectArray> {
+  // This cannot be used in a scope that derives a descriptor (like in a method
+  // signature).
+  static constexpr const char* kJavaDescriptor = nullptr;
+};
+}
+
+template<typename T>
+class JArrayClass : public JavaClass<JArrayClass<T>, detail::JTypeArray> {
+ public:
+  static_assert(is_plain_jni_reference<T>(), "");
+  // javaentry is the jni type of an entry in the array (i.e. jint).
+  using javaentry = T;
+  // javaobject is the jni type of the array.
+  using javaobject = typename JavaClass<JArrayClass<T>, detail::JTypeArray>::javaobject;
+  static constexpr const char* kJavaDescriptor = nullptr;
+  static std::string get_instantiated_java_descriptor();
+  static std::string get_instantiated_base_name();
+
+  /// Allocate a new array from Java heap, for passing as a JNI parameter or return value.
+  /// NOTE: if using as a return value, you want to call release() instead of get() on the
+  /// smart pointer.
+  static local_ref<javaobject> newArray(size_t count);
+
+  /// Assign an object to the array.
+  /// Typically you will use the shorthand (*ref)[idx]=value;
+  void setElement(size_t idx, const T& value);
+
+  /// Read an object from the array.
+  /// Typically you will use the shorthand
+  ///   T value = (*ref)[idx];
+  /// If you use auto, you'll get an ElementProxy, which may need to be cast.
+  local_ref<T> getElement(size_t idx);
+
+  /// EXPERIMENTAL SUBSCRIPT SUPPORT
+  /// This implementation of [] returns a proxy object which then has a bunch of specializations
+  /// (adopt_local free function, operator= and casting overloads on the ElementProxy) that can
+  /// make code look like it is dealing with a T rather than an obvious proxy. In particular, the
+  /// proxy in this iteration does not read a value and therefore does not create a LocalRef
+  /// until one of these other operators is used. There are certainly holes that you may find
+  /// by using idioms that haven't been tried yet. Consider yourself warned. On the other hand,
+  /// it does make for some idiomatic assignment code; see TestBuildStringArray in fbjni_tests
+  /// for some examples.
+  detail::ElementProxy<JArrayClass> operator[](size_t idx);
+};
+
+template <typename T>
+using jtypeArray = typename JArrayClass<T>::javaobject;
+
+template<typename T>
+local_ref<typename JArrayClass<T>::javaobject> adopt_local_array(jobjectArray ref) {
+  return adopt_local(static_cast<typename JArrayClass<T>::javaobject>(ref));
+}
+
+template<typename Target>
+local_ref<typename Target::javaentry> adopt_local(detail::ElementProxy<Target> elementProxy) {
+  return static_cast<local_ref<typename Target::javaentry>>(elementProxy);
+}
+
+template <typename T, typename PinAlloc>
+class PinnedPrimitiveArray;
+
+template <typename T> class PinnedArrayAlloc;
+template <typename T> class PinnedRegionAlloc;
+template <typename T> class PinnedCriticalAlloc;
+
+/// Wrapper to provide functionality to jarray references.
+/// This is an empty holder by itself. Construct a PinnedPrimitiveArray to actually interact with
+/// the elements of the array.
+template <typename JArrayType>
+class FBEXPORT JPrimitiveArray :
+    public JavaClass<JPrimitiveArray<JArrayType>, detail::JArray, JArrayType> {
+  static_assert(is_jni_primitive_array<JArrayType>(), "");
+ public:
+  static constexpr const char* kJavaDescriptor = nullptr;
+  static std::string get_instantiated_java_descriptor();
+  static std::string get_instantiated_base_name();
+
+  using T = typename jtype_traits<JArrayType>::entry_type;
+
+  static local_ref<JArrayType> newArray(size_t count);
+
+  void getRegion(jsize start, jsize length, T* buf);
+  std::unique_ptr<T[]> getRegion(jsize start, jsize length);
+  void setRegion(jsize start, jsize length, const T* buf);
+
+  /// Returns a view of the underlying array. This will either be a "pinned"
+  /// version of the array (in which case changes to one immediately affect the
+  /// other) or a copy of the array (in which cases changes to the view will take
+  /// affect when destroyed or on calls to release()/commit()).
+  PinnedPrimitiveArray<T, PinnedArrayAlloc<T>> pin();
+
+  /// Returns a view of part of the underlying array. A pinned region is always
+  /// backed by a copy of the region.
+  PinnedPrimitiveArray<T, PinnedRegionAlloc<T>> pinRegion(jsize start, jsize length);
+
+  /// Returns a view of the underlying array like pin(). However, while the pin
+  /// is held, the code is considered within a "critical region". In a critical
+  /// region, native code must not call JNI functions or make any calls that may
+  /// block on other Java threads. These restrictions make it more likely that
+  /// the view will be "pinned" rather than copied (for example, the VM may
+  /// suspend garbage collection within a critical region).
+  PinnedPrimitiveArray<T, PinnedCriticalAlloc<T>> pinCritical();
+
+private:
+  friend class PinnedArrayAlloc<T>;
+  T* getElements(jboolean* isCopy);
+  void releaseElements(T* elements, jint mode);
+};
+
+FBEXPORT local_ref<jbooleanArray> make_boolean_array(jsize size);
+FBEXPORT local_ref<jbyteArray> make_byte_array(jsize size);
+FBEXPORT local_ref<jcharArray> make_char_array(jsize size);
+FBEXPORT local_ref<jshortArray> make_short_array(jsize size);
+FBEXPORT local_ref<jintArray> make_int_array(jsize size);
+FBEXPORT local_ref<jlongArray> make_long_array(jsize size);
+FBEXPORT local_ref<jfloatArray> make_float_array(jsize size);
+FBEXPORT local_ref<jdoubleArray> make_double_array(jsize size);
+
+using JArrayBoolean = JPrimitiveArray<jbooleanArray>;
+using JArrayByte = JPrimitiveArray<jbyteArray>;
+using JArrayChar = JPrimitiveArray<jcharArray>;
+using JArrayShort = JPrimitiveArray<jshortArray>;
+using JArrayInt = JPrimitiveArray<jintArray>;
+using JArrayLong = JPrimitiveArray<jlongArray>;
+using JArrayFloat = JPrimitiveArray<jfloatArray>;
+using JArrayDouble = JPrimitiveArray<jdoubleArray>;
+
+/// RAII class for pinned primitive arrays
+/// This currently only supports read/write access to existing java arrays. You can't create a
+/// primitive array this way yet. This class also pins the entire array into memory during the
+/// lifetime of the PinnedPrimitiveArray. If you need to unpin the array manually, call the
+/// release() or abort() functions. During a long-running block of code, you
+/// should unpin the array as soon as you're done with it, to avoid holding up
+/// the Java garbage collector.
+template <typename T, typename PinAlloc>
+class PinnedPrimitiveArray {
+  public:
+   static_assert(is_jni_primitive<T>::value,
+       "PinnedPrimitiveArray requires primitive jni type.");
+
+   using ArrayType = typename jtype_traits<T>::array_type;
+
+   PinnedPrimitiveArray(PinnedPrimitiveArray&&);
+   PinnedPrimitiveArray(const PinnedPrimitiveArray&) = delete;
+   ~PinnedPrimitiveArray() noexcept;
+
+   PinnedPrimitiveArray& operator=(PinnedPrimitiveArray&&);
+   PinnedPrimitiveArray& operator=(const PinnedPrimitiveArray&) = delete;
+
+   T* get();
+   void release();
+   /// Unpins the array. If the array is a copy, pending changes are discarded.
+   void abort();
+   /// If the array is a copy, copies pending changes to the underlying java array.
+   void commit();
+
+   bool isCopy() const noexcept;
+
+   const T& operator[](size_t index) const;
+   T& operator[](size_t index);
+   size_t size() const noexcept;
+
+  private:
+   alias_ref<ArrayType> array_;
+   size_t start_;
+   T* elements_;
+   jboolean isCopy_;
+   size_t size_;
+
+   void allocate(alias_ref<ArrayType>, jint start, jint length);
+   void releaseImpl(jint mode);
+   void clear() noexcept;
+
+   PinnedPrimitiveArray(alias_ref<ArrayType>, jint start, jint length);
+
+   friend class JPrimitiveArray<typename jtype_traits<T>::array_type>;
+};
+
+#pragma push_macro("PlainJniRefMap")
+#undef PlainJniRefMap
+#define PlainJniRefMap(rtype, jtype) \
+namespace detail { \
+template<> \
+struct RefReprType<jtype> { \
+  using type = rtype; \
+}; \
+}
+
+PlainJniRefMap(JArrayBoolean, jbooleanArray);
+PlainJniRefMap(JArrayByte, jbyteArray);
+PlainJniRefMap(JArrayChar, jcharArray);
+PlainJniRefMap(JArrayShort, jshortArray);
+PlainJniRefMap(JArrayInt, jintArray);
+PlainJniRefMap(JArrayLong, jlongArray);
+PlainJniRefMap(JArrayFloat, jfloatArray);
+PlainJniRefMap(JArrayDouble, jdoubleArray);
+PlainJniRefMap(JObject, jobject);
+PlainJniRefMap(JClass, jclass);
+PlainJniRefMap(JString, jstring);
+PlainJniRefMap(JThrowable, jthrowable);
+
+#pragma pop_macro("PlainJniRefMap")
+
+}}
+
+#include "CoreClasses-inl.h"

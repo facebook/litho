@@ -19,3 +19,4 @@ void initialize_fbjni() {
   HybridDataOnLoad();
   JNativeRunnable::OnLoad();
   ThreadScope::OnLoad();
+}

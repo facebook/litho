@@ -26,3 +26,8 @@ struct Environment {
   // There are subtle issues with calling the next functions directly. It is
   // much better to always use a ThreadScope to manage attaching/detaching for
   // you.
+  FBEXPORT static JNIEnv* ensureCurrentThreadIsAttached();
+  FBEXPORT static void detachCurrentThread();
+};
+
+/**
