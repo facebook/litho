@@ -754,3 +754,4 @@ class MountState {
           // This was previously unmounted.
           mPrepareMountStats.unmountedCount++;
         } else if (oldItem.getHost() != mHostsByMarker.get(newHostMarker)) {
+          // If the id is the same but the parent host is different we simply unmount the item and
