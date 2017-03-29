@@ -64,3 +64,5 @@ public class IncrementalMountUtils {
         }
     };
   }
+
+  private static void maybePerformIncrementalMountOnView(

@@ -457,3 +457,5 @@ public class ComponentHost extends ViewGroup {
    * @param listener The listener to set on this host.
    */
   void setComponentClickListener(ComponentClickListener listener) {
+    mOnClickListener = listener;
+    this.setOnClickListener(listener);
