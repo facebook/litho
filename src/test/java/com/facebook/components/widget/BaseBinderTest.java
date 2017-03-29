@@ -269,3 +269,15 @@ public class BaseBinderTest {
   @Test
   public void testNotifyItemRangeRemoved() {
     mount();
+
+    int positionStart = 3;
+    int itemCount = 3;
+    mItems.subList(positionStart, positionStart + itemCount).clear();
+
+    mBinder.notifyItemRangeRemoved(positionStart, itemCount);
+    mLayoutThreadShadowLooper.runOneTask();
+
+    Assert.assertEquals(6, mBinder.getComponentCount());
+    Assert.assertEquals("7", getAdapterInputStringAtPosition(4));
+  }
+
