@@ -1315,3 +1315,13 @@ public class ComponentTree {
     }
 
     /**
+     * Builds a {@link ComponentTree} using the parameters specified in this builder.
+     */
+    public ComponentTree build() {
+      ComponentTree componentTree = new ComponentTree(this);
+
+      ComponentsPools.release(this);
+
+      return componentTree;
+    }
+  }
