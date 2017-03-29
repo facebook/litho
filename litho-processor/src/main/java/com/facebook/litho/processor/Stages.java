@@ -1269,3 +1269,5 @@ public class Stages {
               param,
               "Type parameter for a parameter of type StateValue should match the type of " +
                   "a parameter with the same name annotated with @State");
+        }
+      }
