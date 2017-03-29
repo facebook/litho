@@ -693,3 +693,5 @@ public class ComponentHostTest {
 
     mHost.unmount(0, mountItem);
     assertNotNull(mHost.recycleHost());
+    assertEquals(1, mHost.getChildCount());
+
