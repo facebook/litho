@@ -45,3 +45,9 @@ class MountItem {
 
   void init(
       Component<?> component,
+      MountItem mountItem,
+      LayoutOutput layoutOutput) {
+    init(
+        component,
+        mountItem.getHost(),
+        mountItem.getContent(),

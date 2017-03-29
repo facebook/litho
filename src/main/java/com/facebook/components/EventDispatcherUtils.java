@@ -24,3 +24,4 @@ import static com.facebook.litho.ThreadUtils.assertMainThread;
  * (click, touch, accessibility, etc.) to {@link EventHandler} instances' {@link Component}s
  */
 class EventDispatcherUtils {
+
