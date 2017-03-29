@@ -41,3 +41,34 @@ public interface Binder<V extends ViewGroup> {
    * Measure the content of this Binder. Call this method from the Component's onMeasure.
    */
   void measure(Size outSize, int widthSpec, int heightSpec);
+
+  /**
+   * Returns the component at the given position in the binder.
+   */
+  ComponentTree getComponentAt(int position);
+
+  /**
+   * Call this method before the {@link View} is mounted, i.e. within
+   * {@link com.facebook.components.ComponentLifecycle#onMount(Context, Object, Component)}
+   */
+  abstract void mount(V view);
+
+  /**
+   * Bind this {@link Binder} to a {@link View}. Remember to call
+   * {@link #notifyDataSetChanged()} when your {@link Component}s are
+   * ready to be used.
+   */
+  abstract void bind(V view);
+
+  /**
+   * Call this method when the view is unbound.
+   * @param view the view being unbound.
+   */
+  abstract void unbind(V view);
+
+  /**
+   * Call this method when the view is unmounted.
+   * @param view the view being unmounted.
+   */
+  abstract void unmount(V view);
+}
