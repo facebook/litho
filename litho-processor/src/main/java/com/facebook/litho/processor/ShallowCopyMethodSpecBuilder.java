@@ -89,3 +89,7 @@ class ShallowCopyMethodSpecBuilder {
       builder.addStatement("component.$L = null", s);
     }
 
+    if (mStateContainerImplClassName != null) {
+      builder.addStatement(
+          "component." + Stages.STATE_CONTAINER_IMPL_MEMBER + " = new $T()",
+          ClassName.bestGuess(mStateContainerImplClassName));

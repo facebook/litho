@@ -19,3 +19,10 @@ import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeVariableName;
+
+/**
+ * Builder for the static state update methods of a Component
+ */
+class OnStateUpdateMethodSpecBuilder {
+  private String mUpdateMethodName;
+  private TypeName mContextClass;

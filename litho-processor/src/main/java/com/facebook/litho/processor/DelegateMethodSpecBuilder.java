@@ -25,3 +25,9 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 
 class DelegateMethodSpecBuilder {
+  private static final String ABSTRACT_IMPL_INSTANCE_NAME = "_abstractImpl";
+  private static final String IMPL_INSTANCE_NAME = "_impl";
+
+  private String mImplClassName;
+  private TypeName mAbstractImplType;
+  private List<Parameter> mImplParameters = new ArrayList<>();
