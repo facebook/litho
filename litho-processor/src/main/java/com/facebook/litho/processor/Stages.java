@@ -2185,3 +2185,4 @@ public class Stages {
             "Arguments for ShouldUpdate should match declared Props");
       }
 
+      final TypeMirror innerType = Utils.getGenericTypeArgument(
