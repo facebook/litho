@@ -695,3 +695,10 @@ public class RecyclerBinder implements Binder<RecyclerView> {
       if (i >= rangeStart && i <= rangeEnd) {
         if (!holder.isTreeValid()) {
           holder.computeLayoutAsync(mComponentContext, childrenWidthSpec, childrenHeightSpec);
+        }
+      } else if (holder.isTreeValid()) {
+        holder.acquireStateHandlerAndReleaseTree();
+      }
+    }
+  }
+
