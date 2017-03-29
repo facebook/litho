@@ -278,3 +278,26 @@ class LayoutState {
     return layoutOutput;
   }
 
+  /**
+   * Acquires a {@link VisibilityOutput} object and computes the bounds for it using the information
+   * stored in the {@link InternalNode}.
+   */
+  private static VisibilityOutput createVisibilityOutput(
+      InternalNode node,
+      LayoutState layoutState) {
+
+    final int l = layoutState.mCurrentX + node.getX();
+    final int t = layoutState.mCurrentY + node.getY();
+    final int r = l + node.getWidth();
+    final int b = t + node.getHeight();
+
+    final EventHandler visibleHandler = node.getVisibleHandler();
+    final EventHandler focusedHandler = node.getFocusedHandler();
+    final EventHandler fullImpressionHandler = node.getFullImpressionHandler();
+    final EventHandler invisibleHandler = node.getInvisibleHandler();
+    final VisibilityOutput visibilityOutput = ComponentsPools.acquireVisibilityOutput();
+    final Component<?> handlerComponent;
+
+    // Get the component from the handler that is not null. If more than one is not null, then
+    // getting the component from any of them works.
+    if (visibleHandler != null) {

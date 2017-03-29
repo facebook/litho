@@ -238,3 +238,4 @@ public abstract class BaseBinder<
         if (positionStart >= mComponentTrees.getFirstPosition() &&
             positionStart <= mComponentTrees.getFirstPosition() + mComponentTrees.size()) {
 
+          for (int i = 0; i < itemCount; i++) {
