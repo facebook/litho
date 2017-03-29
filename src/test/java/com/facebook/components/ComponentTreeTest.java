@@ -172,3 +172,6 @@ public class ComponentTreeTest {
   @Test
   public void testSetSizeSpecAsync() {
     ComponentTree componentTree =
+        ComponentTree.create(mContext, mComponent)
+            .incrementalMount(false)
+            .build();

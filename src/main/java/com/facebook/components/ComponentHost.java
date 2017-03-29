@@ -141,3 +141,8 @@ public class ComponentHost extends ViewGroup {
     maybeInvalidateAccessibilityState(mountItem);
   }
 
+  void unmount(MountItem item) {
+    final int index = mMountItems.keyAt(mMountItems.indexOfValue(item));
+    unmount(index, item);
+  }
+

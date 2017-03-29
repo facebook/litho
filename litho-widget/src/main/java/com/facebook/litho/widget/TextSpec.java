@@ -86,3 +86,7 @@ class TextSpec {
 
   @PropDefault protected static final int minLines = Integer.MIN_VALUE;
   @PropDefault protected static final int maxLines = Integer.MAX_VALUE;
+  @PropDefault protected static final int minEms = DEFAULT_EMS;
+  @PropDefault protected static final int maxEms = DEFAULT_EMS;
+  @PropDefault protected static final int minWidth = DEFAULT_MIN_WIDTH;
+  @PropDefault protected static final int maxWidth = DEFAULT_MAX_WIDTH;
