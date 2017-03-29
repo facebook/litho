@@ -264,3 +264,13 @@ public class ComponentHost extends ViewGroup {
    * @return The host view to be recycled.
    */
   ComponentHost recycleHost() {
+    if (mScrapHosts.size() > 0) {
+      final ComponentHost host = mScrapHosts.remove(0);
+
+      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
+        // We are bringing the re-used host to the front because before API 17, Android doesn't
+        // take into account the children drawing order when dispatching ViewGroup touch events,
+        // but it just traverses its children list backwards.
+        bringChildToFront(host);
+      }
+
