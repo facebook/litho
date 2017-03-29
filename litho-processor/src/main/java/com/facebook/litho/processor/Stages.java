@@ -2802,3 +2802,8 @@ public class Stages {
     int requiredPropIndex = 0;
     for (VariableElement v : mProps) {
       propsBuilderClassBuilder.addMethods(
+          generatePropsBuilderMethods(
+              v,
+              propsBuilderClassName,
+              requiredPropIndex,
+              componentClassName));
