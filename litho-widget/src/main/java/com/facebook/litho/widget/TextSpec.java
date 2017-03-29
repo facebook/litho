@@ -237,3 +237,4 @@ class TextSpec {
       return;
     }
 
+    Layout newLayout = createTextLayout(

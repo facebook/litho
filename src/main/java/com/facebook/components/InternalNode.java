@@ -1065,3 +1065,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   public InternalNode backgroundColor(@ColorInt int backgroundColor) {
     return background(
         ColorDrawableReference.create(mComponentContext)
+            .color(backgroundColor)
+            .build());
+  }
+
+  @Override
