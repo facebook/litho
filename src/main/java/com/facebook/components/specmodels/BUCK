@@ -17,3 +17,4 @@ java_library(
         COMPONENTS_ANNOTATIONS_TARGET,
     ],
     tests = [
+        "//javatests/com/facebook/components/specmodels:specmodels",

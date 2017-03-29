@@ -48,3 +48,5 @@ public class ComponentViewTest {
         .build();
 
     mComponentView = new ComponentView(RuntimeEnvironment.application);
+    mComponentView.setComponent(componentTree);
+  }

@@ -69,3 +69,7 @@ public class MountStateViewTagsTest {
 
     assertEquals(tag1, innerHost1.getTag(DUMMY_ID));
     assertEquals(tag2, innerHost2.getTag(DUMMY_ID));
+  }
+
+  @Test
+  public void testRootHostViewTags() {
