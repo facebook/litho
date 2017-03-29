@@ -2480,3 +2480,5 @@ public class Stages {
     }
 
     methodBuilder.addStatement(
+        "$T _lifecycle = _eventHandler.mHasEventDispatcher.getEventDispatcher()",
+        ClassNames.EVENT_DISPATCHER);
