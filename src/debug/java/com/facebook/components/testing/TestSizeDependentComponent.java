@@ -102,3 +102,8 @@ public class TestSizeDependentComponent extends ComponentLifecycle {
     }
 
     @Override
+    public String getSimpleName() {
+      return "TestSizeDependentComponent";
+    }
+
+    @Override

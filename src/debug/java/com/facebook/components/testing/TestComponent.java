@@ -33,3 +33,8 @@ public abstract class TestComponent<L extends ComponentLifecycle> extends Compon
     super(lifecycle);
   }
 
+  @Override
+  public String getSimpleName() {
+    return "TestComponent";
+  }
+

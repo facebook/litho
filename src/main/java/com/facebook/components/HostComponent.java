@@ -33,3 +33,8 @@ class HostComponent extends ComponentLifecycle {
     State() {
       super(sInstance);
     }
+
+    @Override
+    public String getSimpleName() {
+      return "HostComponent";
+    }

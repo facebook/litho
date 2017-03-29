@@ -29,3 +29,9 @@ public abstract class InlineLayoutSpec extends Component implements Cloneable {
     super(new Lifecycle());
   }
 
+  @Override
+  public String getSimpleName() {
+    // You may want to override this in your inline spec, but it's not required.
+    return "InlineLayout";
+  }
+

@@ -25,3 +25,8 @@ class TestComponent extends Component {
     mWrappedComponent = component;
   }
 
+  @Override
+  public String getSimpleName() {
+    return mWrappedComponent.getSimpleName();
+  }
+
