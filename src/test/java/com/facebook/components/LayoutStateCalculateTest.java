@@ -1097,3 +1097,4 @@ public class LayoutStateCalculateTest {
     long hostMarkerRoot = layoutState.getMountableOutputAt(0).getId();
     long hostMarkerOne = layoutState.getMountableOutputAt(1).getId();
 
+    // First output is the inner host for the click handler
