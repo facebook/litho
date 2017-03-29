@@ -2163,3 +2163,4 @@ public class Stages {
               "$L previousImpl = ($L) previous",
               implClass,
               implClass)
+          .addStatement(
