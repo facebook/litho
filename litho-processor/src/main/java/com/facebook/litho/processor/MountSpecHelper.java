@@ -232,3 +232,5 @@ public class MountSpecHelper extends ComponentSpecHelper {
    * Generate an onCreateMountContent implementation that delegates to the
    * @OnCreateMountContent-annotated method.
    */
+  public void generateOnCreateMountContentAndGetMountType() {
+    final ExecutableElement onCreateMountContent = Utils.getAnnotatedMethod(

@@ -340,3 +340,5 @@ class EventDispatcherUtils {
     sSendAccessibilityEventUncheckedEvent.event = event;
     sSendAccessibilityEventUncheckedEvent.superDelegate = superDelegate;
 
+    final EventDispatcher eventDispatcher = eventHandler.mHasEventDispatcher.getEventDispatcher();
+    eventDispatcher.dispatchOnEvent(eventHandler, sSendAccessibilityEventUncheckedEvent);
