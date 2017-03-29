@@ -61,3 +61,4 @@ public class ComponentTreeTest {
     mContext = new ComponentContext(RuntimeEnvironment.application);
     mComponent = TestDrawableComponent.create(mContext)
         .build();
+
