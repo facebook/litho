@@ -952,3 +952,11 @@ public class ComponentHost extends ViewGroup {
     }
 
     if (mTouchables.get(newIndex) != null) {
+      ensureScrapTouchablesArray();
+
+      ComponentHostUtils.scrapItemAt(newIndex, mTouchables, mScrapTouchables);
+    }
+
+    // Move the MountItem in the new position. If the mount item was a Touchable we need to reflect
+    // this change also in the Touchables SparseArray.
+    ComponentHostUtils.moveItem(oldIndex, newIndex, mDrawableMountItems, mScrapDrawableMountItems);
