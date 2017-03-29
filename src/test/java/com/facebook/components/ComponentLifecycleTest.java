@@ -90,3 +90,5 @@ public class ComponentLifecycleTest {
     mComponentWithNullLayout = new InlineLayoutSpec() {
       @Override protected ComponentLayout onCreateLayout(ComponentContext c) { return null; }
     };
+    mNestedTreeWidthSpec = SizeSpec.makeSizeSpec(400, SizeSpec.EXACTLY);
+    mNestedTreeHeightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
