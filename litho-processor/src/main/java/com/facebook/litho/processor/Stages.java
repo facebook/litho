@@ -1616,3 +1616,9 @@ public class Stages {
       final VariableElement v = parameters.get(i);
       final TypeName typeName = ClassName.get(v.asType());
 
+      methodBuilder.addStatement(
+          "$L $L = ($L) $L",
+          typeName,
+          v.getSimpleName(),
+          typeName,
+          "acquireOutput()");
