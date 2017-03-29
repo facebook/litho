@@ -523,3 +523,6 @@ public class MountSpecHelper extends ComponentSpecHelper {
   private void generateOnPopulateExtraAccessibilityNode(
       ExecutableElement onPopulateExtraAccessibilityNode) {
     final MethodDescription methodDescription = new MethodDescription();
+    methodDescription.annotations = new Class[] { Override.class };
+    methodDescription.accessType = Modifier.PROTECTED;
+    methodDescription.name = "onPopulateExtraAccessibilityNode";
