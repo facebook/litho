@@ -1089,3 +1089,4 @@ class LayoutState {
   }
 
   private static boolean isActivityDestroyed(Activity activity) {
+    if (SDK_INT >= JELLY_BEAN_MR1) {
