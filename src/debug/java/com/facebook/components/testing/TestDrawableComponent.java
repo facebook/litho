@@ -252,3 +252,6 @@ public class TestDrawableComponent extends ComponentLifecycle {
         context,
         0,
         0,
+        callsShouldUpdateOnMount,
+        isPureRender,
+        canMeasure,

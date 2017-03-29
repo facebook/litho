@@ -37,3 +37,4 @@ import static android.support.annotation.Dimension.DP;
  * used by the framework to define the size and position of the component's mounted
  * {@link android.view.View}s and {@link android.graphics.drawable.Drawable}s returned.
  * by {@link ComponentLifecycle#mount(ComponentContext, Object, Component)}.
+ *

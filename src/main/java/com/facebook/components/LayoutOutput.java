@@ -53,3 +53,4 @@ class LayoutOutput implements Cloneable {
   private long mHostMarker;
 
   private int mUpdateState;
+  private int mImportantForAccessibility;
