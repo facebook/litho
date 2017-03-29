@@ -2757,3 +2757,25 @@ public class Stages {
               .addModifiers(Modifier.FINAL);
 
       if (isStatic.equals(StaticFlag.STATIC)) {
+        requiredPropsNamesBuilder.addModifiers(Modifier.STATIC);
+      }
+
+      propsBuilderClassBuilder
+          .addField(requiredPropsNamesBuilder.build())
+          .addField(
+              FieldSpec.builder(
+                  int.class,
+                  REQUIRED_PROPS_COUNT,
+                  Modifier.PRIVATE)
+                  .initializer("$L", numRequiredProps)
+                  .addModifiers(Modifier.STATIC, Modifier.FINAL)
+                  .build())
+          .addField(
+              FieldSpec.builder(
+                  BitSet.class,
+                  "mRequired",
+                  Modifier.PRIVATE)
+                  .initializer("new $T($L)", BitSet.class, REQUIRED_PROPS_COUNT)
+                  .build());
+
+      initMethodSpec.addStatement("mRequired.clear()");
