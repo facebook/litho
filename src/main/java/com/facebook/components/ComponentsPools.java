@@ -390,3 +390,18 @@ public class ComponentsPools {
     return componentTreeBuilder;
   }
 
+  static StateHandler acquireStateHandler(StateHandler fromStateHandler) {
+    StateHandler stateHandler = sStateHandlerPool.acquire();
+    if (stateHandler == null) {
+      stateHandler = new StateHandler();
+    }
+
+    stateHandler.init(fromStateHandler);
+
+    return stateHandler;
+  }
+
+  static StateHandler acquireStateHandler() {
+    return acquireStateHandler(null);
+  }
+
