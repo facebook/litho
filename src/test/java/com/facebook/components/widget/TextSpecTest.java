@@ -73,3 +73,11 @@ public class TextSpecTest {
     Text.create(mContext).build();
   }
 
+  @Test
+  public void testMountableCharSequenceText() {
+    MountableCharSequence mountableCharSequence = mock(MountableCharSequence.class);
+
+    TextDrawable drawable = getMountedDrawableForText(mountableCharSequence);
+    verify(mountableCharSequence).onMount(drawable);
+  }
+
