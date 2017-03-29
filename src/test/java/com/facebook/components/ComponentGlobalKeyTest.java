@@ -66,3 +66,17 @@ public class ComponentGlobalKeyTest {
     ComponentTree componentTree = ComponentTree.create(mContext, component)
         .incrementalMount(false)
         .build();
+    ComponentView componentView = getComponentView(componentTree);
+
+    Assert.assertEquals(
+        componentView.getMountItemAt(0).getComponent().getGlobalKey(),
+        component.getKey());
+  }
+
+  @Test
+  public void testComponentGlobalKeyManualKey() {
+    Component component = TestDrawableComponent
+        .create(mContext)
+        .key("someKey")
+        .build();
+    System.out.println(component.getLifecycle().getId());

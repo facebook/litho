@@ -131,3 +131,10 @@ class DelegateMethodSpecBuilder {
     return this;
   }
 
+  DelegateMethodSpecBuilder stateParams(Set<String> stateParams) {
+    if (stateParams != null) {
+      mStateParamNames = stateParams;
+    }
+    return this;
+  }
+

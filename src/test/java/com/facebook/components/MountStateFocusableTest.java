@@ -48,3 +48,10 @@ public class MountStateFocusableTest {
             return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .child(
                     Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                        .focusable(true)
+                        .child(TestViewComponent.create(c)))
+                .build();
+          }
+        });
+
+    assertEquals(1, componentView.getChildCount());

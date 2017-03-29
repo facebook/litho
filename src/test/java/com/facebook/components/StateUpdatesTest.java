@@ -45,3 +45,44 @@ public class StateUpdatesTest {
 
   private int mWidthSpec;
   private int mHeightSpec;
+
+  private final ComponentLifecycle mLifecycle = new ComponentLifecycle() {
+    @Override
+    int getId() {
+      return LIFECYCLE_TEST_ID;
+    }
+
+    @Override
+    protected boolean hasState() {
+      return true;
+    }
+
+    @Override
+    protected void createInitialState(ComponentContext c, Component component) {
+      TestComponent testComponent = (TestComponent) component;
+      testComponent.mStateContainer.mCount = INITIAL_COUNT_STATE_VALUE;
+    }
+
+    @Override
+    protected void transferState(
+        ComponentContext c,
+        StateContainer stateContainer,
+        Component component) {
+      TestStateContainer stateContainerImpl = (TestStateContainer) stateContainer;
+      TestComponent newTestComponent = (TestComponent) component;
+      newTestComponent.mStateContainer.mCount = stateContainerImpl.mCount;
+    }
+  };
+
+  private static class TestStateUpdate implements StateUpdate {
+
+    @Override
+    public void updateState(StateContainer stateContainer, Component component) {
+      TestStateContainer stateContainerImpl = (TestStateContainer) stateContainer;
+      TestComponent componentImpl = (TestComponent) component;
+      System.out.println("1 " + componentImpl.mStateContainer);
+      System.out.println("2 " + stateContainerImpl);
+      componentImpl.mStateContainer.mCount = stateContainerImpl.mCount + 1;
+    }
+  }
+

@@ -136,3 +136,5 @@ class OnLazyStateUpdateMethodSpecBuilder {
             .returns(TypeName.BOOLEAN)
             .addStatement("return true");
 
+    final TypeSpec.Builder stateBuilderImpl = TypeSpec.anonymousClassBuilder("")
+        .addSuperinterface(mStateUpdateType)
