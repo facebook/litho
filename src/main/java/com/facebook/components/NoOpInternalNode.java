@@ -151,3 +151,9 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
+  public InternalNode alignContent(YogaAlign alignContent) {
+    return this;
+  }
+
+  @Override
+  public InternalNode alignSelf(YogaAlign alignSelf) {
