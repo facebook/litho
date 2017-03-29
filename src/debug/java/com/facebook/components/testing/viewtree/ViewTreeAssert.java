@@ -137,3 +137,5 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
    * @param tagValue the value that the id should have
    * @return the assertions object
    */
+  public ViewTreeAssert hasViewTag(final int tagId, final Object tagValue) {
+    final ImmutableList<View> path = getPathToViewTag(tagId, tagValue);
