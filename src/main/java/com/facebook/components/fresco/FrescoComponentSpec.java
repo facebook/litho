@@ -84,3 +84,8 @@ class FrescoComponentSpec {
   protected static void onMount(
       ComponentContext c,
       DraweeDrawable<GenericReferenceDraweeHierarchy> draweeDrawable,
+      @Prop DraweeController controller,
+      @Prop(optional = true) ScalingUtils.ScaleType actualImageScaleType,
+      @Prop(optional = true) int fadeDuration,
+      @Prop(optional = true, resType = DRAWABLE) Reference<Drawable> failureImage,
+      @Prop(optional = true) ScalingUtils.ScaleType failureImageScaleType,
