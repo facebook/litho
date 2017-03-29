@@ -41,3 +41,5 @@ public class PagerBinderTest {
   @Rule
   public ComponentsRule mComponentsRule = new ComponentsRule();
 
+  @Before
+  public void setup() throws Exception {

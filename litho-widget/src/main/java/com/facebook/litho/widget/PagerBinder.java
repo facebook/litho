@@ -67,3 +67,5 @@ public abstract class PagerBinder extends BaseBinder<
     getRangeController().setPagerOffscreenLimit(mPagerOffscreenLimit);
 
     setListener(mAdapter);
+  }
+
