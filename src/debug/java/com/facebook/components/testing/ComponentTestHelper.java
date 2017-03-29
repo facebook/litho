@@ -100,3 +100,4 @@ public final class ComponentTestHelper {
   /**
    * Mount a component into a component view.
    *
+   * @param context A components context
