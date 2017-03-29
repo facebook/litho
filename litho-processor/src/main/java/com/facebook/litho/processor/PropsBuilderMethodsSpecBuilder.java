@@ -310,3 +310,7 @@ class PropsBuilderMethodsSpecBuilder {
     return builder.build();
   }
 
+  private static AnnotationSpec annotation(ClassName className) {
+    return AnnotationSpec.builder(className).build();
+  }
+
