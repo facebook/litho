@@ -100,3 +100,4 @@ public class ComponentTreeHolder {
       ensureComponentTree(context);
 
       componentTree = mComponentTree;
+      component = mComponentInfo.getComponent();
