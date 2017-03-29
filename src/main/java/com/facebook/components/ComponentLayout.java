@@ -53,3 +53,4 @@ public interface ComponentLayout {
   @Px
   int getHeight();
 
+  @Px

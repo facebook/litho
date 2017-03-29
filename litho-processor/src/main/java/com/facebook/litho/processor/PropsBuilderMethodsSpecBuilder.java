@@ -80,3 +80,4 @@ class PropsBuilderMethodsSpecBuilder {
         builders.addAll(attrBuilders(ClassNames.STRING_RES, "resolveString"));
         break;
       case STRING_ARRAY:
+        builders.add(regularBuilder());
