@@ -506,3 +506,4 @@ public class TreeDiffingTest {
     final Component thirdComponent = TestDrawableComponent.create(mContext)
         .color(Color.WHITE)
         .build();
+

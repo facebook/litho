@@ -82,3 +82,8 @@ public class ComponentHost extends ViewGroup {
 
   private TouchExpansionDelegate mTouchExpansionDelegate;
 
+  public ComponentHost(Context context) {
+    this(context, null);
+  }
+
+  public ComponentHost(Context context, AttributeSet attrs) {
