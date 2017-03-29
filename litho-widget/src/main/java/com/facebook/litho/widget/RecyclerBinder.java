@@ -618,3 +618,63 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     if (mLayoutInfo.getSpanCount() > 1) {
       ((GridLayoutManager) mLayoutInfo.getLayoutManager()).setSpanSizeLookup(null);
     }
+  }
+
+  @GuardedBy("this")
+  private boolean isCompatibleSize(int widthSpec, int heightSpec) {
+    final int scrollDirection = mLayoutInfo.getScrollDirection();
+
+    if (mLastWidthSpec != UNINITIALIZED) {
+
+      switch (scrollDirection) {
+        case OrientationHelper.HORIZONTAL:
+          return isMeasureSpecCompatible(
+              mLastHeightSpec,
+              heightSpec,
+              mMeasuredSize.height);
+        case OrientationHelper.VERTICAL:
+          return isMeasureSpecCompatible(
+              mLastWidthSpec,
+              widthSpec,
+              mMeasuredSize.width);
+      }
+    }
+
+    return false;
+  }
+
+  private static class RangeCalculationResult {
+
+    // The estimated number of items needed to fill the viewport.
+    private int estimatedViewportCount;
+    // The size computed for the first Component.
+    private int measuredSize;
+  }
+
+  @VisibleForTesting
+  void onNewVisibleRange(int firstVisiblePosition, int lastVisiblePosition) {
+    mCurrentFirstVisiblePosition = firstVisiblePosition;
+    mCurrentLastVisiblePosition = lastVisiblePosition;
+    computeRange(firstVisiblePosition, lastVisiblePosition);
+  }
+
+  private void computeRange(int firstVisible, int lastVisible) {
+    final int rangeSize;
+    final int rangeStart;
+    final int rangeEnd;
+    final int treeHoldersSize;
+
+    synchronized (this) {
+      if (!mIsMeasured.get() || mRange == null) {
+        return;
+      }
+
+      rangeSize = Math.max(mRange.estimatedViewportCount, lastVisible - firstVisible);
+      rangeStart = firstVisible - (int) (rangeSize * mRangeRatio);
+      rangeEnd = firstVisible + rangeSize + (int) (rangeSize * mRangeRatio);
+      treeHoldersSize = mComponentTreeHolders.size();
+    }
+
+    // TODO 16212153 optimize computeRange loop.
+    for (int i = 0; i < treeHoldersSize; i++) {
+      final ComponentTreeHolder holder;
