@@ -865,3 +865,4 @@ class LayoutState {
       int componentTreeId,
       int widthSpec,
       int heightSpec,
+      boolean shouldGenerateDiffTree,
