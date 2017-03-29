@@ -497,3 +497,34 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public InternalNode marginPercent(YogaEdge edge, float percent) {
+    mPrivateFlags |= PFLAG_MARGIN_IS_SET;
+    mYogaNode.setMarginPercent(edge, percent);
+    return this;
+  }
+
+  @Override
+  public InternalNode marginAuto(YogaEdge edge) {
+    mPrivateFlags |= PFLAG_MARGIN_IS_SET;
+    mYogaNode.setMarginAuto(edge);
+    return this;
+  }
+
+  @Override
+  public InternalNode marginAttr(
+      YogaEdge edge,
+      @AttrRes int resId,
+      @DimenRes int defaultResId) {
+    return marginPx(edge, mResourceResolver.resolveDimenOffsetAttr(resId, defaultResId));
+  }
+
+  @Override
+  public InternalNode marginAttr(
+      YogaEdge edge,
+      @AttrRes int resId) {
+    return marginAttr(edge, resId, 0);
+  }
+
+  @Override
+  public InternalNode marginRes(YogaEdge edge, @DimenRes int resId) {
+    return marginPx(edge, mResourceResolver.resolveDimenOffsetRes(resId));

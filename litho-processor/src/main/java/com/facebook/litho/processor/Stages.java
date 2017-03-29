@@ -194,3 +194,5 @@ public class Stages {
     mEventDeclarations = eventDeclarations;
     mPropJavadocs = propJavadocs;
 
+    final List<Class<Annotation>> parameterAnnotations = new ArrayList<>();
+    parameterAnnotations.addAll(asList(PROP_ANNOTATIONS));

@@ -961,3 +961,5 @@ public class TreeDiffingTest {
             .child(
                 TestSizeDependentComponent.create(c)
                     .setDelegate(false)
+                    .withLayout().flexShrink(0)
+                    .marginPx(YogaEdge.ALL, 11))
