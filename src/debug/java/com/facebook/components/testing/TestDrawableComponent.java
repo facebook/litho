@@ -226,3 +226,5 @@ public class TestDrawableComponent extends ComponentLifecycle {
       boolean isMountSizeDependent) {
     return newBuilder(
         context,
+        defStyleAttr,
+        defStyleRes,

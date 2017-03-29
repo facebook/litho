@@ -65,3 +65,5 @@ class HorizontalScrollSpec {
     for (int i = 0, size = a.getIndexCount(); i < size; i++) {
       final int attr = a.getIndex(i);
 
+      if (attr == R.styleable.HorizontalScroll_android_scrollbars) {
+        scrollbarEnabled.set(a.getInt(attr, 0) != 0);

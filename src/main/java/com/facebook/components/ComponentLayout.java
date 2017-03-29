@@ -42,3 +42,4 @@ import static android.support.annotation.Dimension.DP;
  * @see ComponentLifecycle#mount(ComponentContext, Object, Component)
  */
 public interface ComponentLayout {
+

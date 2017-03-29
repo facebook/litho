@@ -232,3 +232,14 @@ public class MountStateRemountEventHandlerTest {
 
   @Test
   public void testSetClickHandler() {
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                .child(TestDrawableComponent.create(c))
+                .child(TestDrawableComponent.create(c))
+                .build();
+          }
+        });

@@ -71,3 +71,4 @@ import static com.facebook.litho.SizeSpec.EXACTLY;
  * #collectResults(InternalNode, LayoutState, DiffNode)} which prepares the before-mentioned outputs
  * based on the provided {@link InternalNode} for later use in {@link MountState}.
  */
+class LayoutState {

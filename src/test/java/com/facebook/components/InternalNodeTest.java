@@ -79,3 +79,4 @@ public class InternalNodeTest {
 
   @Test
   public void testPositionTypeFlag() {
+    mNode.positionType(YogaPositionType.ABSOLUTE);

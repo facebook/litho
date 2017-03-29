@@ -60,3 +60,8 @@ class ImageSpec {
     for (int i = 0, size = a.getIndexCount(); i < size; i++) {
       final int attr = a.getIndex(i);
 
+      if (attr == R.styleable.Image_android_src) {
+        src.set(ResourceDrawableReference.create(c)
+            .resId(a.getResourceId(attr, 0))
+            .build());
+      } else if (attr == R.styleable.Image_android_scaleType) {

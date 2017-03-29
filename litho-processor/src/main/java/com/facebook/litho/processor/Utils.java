@@ -84,3 +84,7 @@ public class Utils {
    * Find ExecutableElement (aka methods) children with the given annotation.
    */
   public static <A extends Annotation> List<ExecutableElement> getAnnotatedMethods(
+      TypeElement element,
+      Class<A> annotation) {
+    final List<ExecutableElement> annotatedMethods = new ArrayList<>();
+    for (final Element enclosedElement : element.getEnclosedElements()) {
