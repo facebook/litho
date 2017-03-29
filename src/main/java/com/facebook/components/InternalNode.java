@@ -1893,3 +1893,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   static void assertContextSpecificStyleNotSet(InternalNode node) {
     List<CharSequence> errorTypes = null;
 
+    if ((node.mPrivateFlags & PFLAG_ALIGN_SELF_IS_SET) != 0L) {
