@@ -242,3 +242,4 @@ public class Stages {
 
   private boolean doesInterStagePropAnnotationMatchStage(
       Class<? extends Annotation> interStageProp,
+      Class<? extends Annotation> stage) {
