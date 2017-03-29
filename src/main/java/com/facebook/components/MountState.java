@@ -1541,3 +1541,4 @@ class MountState {
 
   private void unmountItem(
       ComponentContext context,
+      int index,
