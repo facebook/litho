@@ -351,3 +351,4 @@ class EditTextSpec {
     if (!(text instanceof String) || !text.equals(editText.getText().toString())) {
       editText.setText(text);
     }
+    editText.setHint(hint);
