@@ -68,3 +68,5 @@ public class TextSpecTest {
     assertThat(drawable.getClickableSpans()).isNotNull().hasSize(1);
   }
 
+  @Test(expected = IllegalStateException.class)
+  public void testTextIsRequired() throws Exception {
