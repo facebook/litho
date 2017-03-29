@@ -871,3 +871,4 @@ class LayoutState {
     // Detect errors internal to components
     component.markLayoutStarted();
 
+    LayoutState layoutState = ComponentsPools.acquireLayoutState(c);
