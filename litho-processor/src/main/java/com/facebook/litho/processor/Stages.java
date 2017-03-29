@@ -1275,3 +1275,5 @@ public class Stages {
   }
 
   /**
+   * Generate an EventHandler factory methods
+   */
