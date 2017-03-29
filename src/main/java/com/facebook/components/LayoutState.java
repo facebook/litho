@@ -399,3 +399,4 @@ class LayoutState {
     final boolean hasViewTags = (nodeInfo != null && nodeInfo.getViewTags() != null);
     final boolean isFocusableSetTrue =
         (nodeInfo != null && nodeInfo.getFocusState() == FOCUS_SET_TRUE);
+

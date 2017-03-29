@@ -115,3 +115,8 @@ class TextSpec {
   @OnLoadStyle
   static void onLoadStyle(
       ComponentContext c,
+      Output<TruncateAt> ellipsize,
+      Output<Boolean> shouldIncludeFontPadding,
+      Output<Float> spacingMultiplier,
+      Output<Integer> minLines,
+      Output<Integer> maxLines,

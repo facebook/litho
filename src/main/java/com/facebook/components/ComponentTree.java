@@ -109,3 +109,5 @@ public class ComponentTree {
   @GuardedBy("this")
   private boolean mHasViewMeasureSpec;
 
+  // TODO(6606683): Enable recycling of mComponent.
+  // We will need to ensure there are no background threads referencing mComponent. We'll need
