@@ -1304,3 +1304,4 @@ public class Stages {
     final MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder("dispatchOnEvent")
         .addModifiers(Modifier.PUBLIC)
         .addAnnotation(Override.class)
+        .returns(TypeName.OBJECT)
