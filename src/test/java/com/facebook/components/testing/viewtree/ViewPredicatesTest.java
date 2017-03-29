@@ -28,3 +28,7 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
+/**
+ * Tests {@link ViewPredicates}
+ */

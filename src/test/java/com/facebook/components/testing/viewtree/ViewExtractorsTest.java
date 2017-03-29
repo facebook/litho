@@ -51,3 +51,28 @@ public class ViewExtractorsTest {
 
     mGoneImageView = new ImageView(activity);
     mGoneImageView.setImageDrawable(mLithoDrawable);
+    mGoneImageView.setVisibility(View.GONE);
+  }
+
+  @Test
+  public void testGetTextFromTextViewHasTextContent() {
+    assertThat(ViewExtractors.GET_TEXT_FUNCTION.apply(mTextView)).contains("example");
+  }
+
+  @Test
+  public void testGetTextPrintsVisibity() {
+    assertThat(ViewExtractors.GET_TEXT_FUNCTION.apply(mTextView))
+        .contains("view is visible");
+    assertThat(ViewExtractors.GET_TEXT_FUNCTION.apply(mGoneTextView))
+        .contains("view is not visible");
+  }
+
+  @Test
+  public void testViewWithoutText() {
+    assertThat(ViewExtractors.GET_TEXT_FUNCTION.apply(mView))
+        .contains("No text found");
+  }
+
+  @Test
+  public void testGetDrawableOutOfImageView() {
+    assertThat(ViewExtractors.GET_DRAWABLE_FUNCTION.apply(mImageView))

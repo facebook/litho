@@ -21,3 +21,4 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests {@link ComponentQueries}
  */
 @RunWith(ComponentsTestRunner.class)
+public class ComponentQueriesTest {
