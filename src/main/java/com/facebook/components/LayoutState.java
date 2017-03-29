@@ -1682,3 +1682,5 @@ class LayoutState {
    * Returns true if this is the root node (which always generates a matching layout
    * output), if the node has view attributes e.g. tags, content description, etc, or if
    * the node has explicitly been forced to be wrapped in a view.
+   */
+  private static boolean needsHostView(InternalNode node, LayoutState layoutState) {
