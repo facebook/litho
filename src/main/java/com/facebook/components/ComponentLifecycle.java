@@ -96,3 +96,8 @@ public abstract class ComponentLifecycle implements EventDispatcher {
       final int heightSpec;
 
       ComponentsSystrace.beginSection("measure:" + component.getSimpleName());
+      widthSpec = SizeSpec.makeSizeSpecFromCssSpec(width, widthMode);
+      heightSpec = SizeSpec.makeSizeSpecFromCssSpec(height, heightMode);
+
+      node.setLastWidthSpec(widthSpec);
+      node.setLastHeightSpec(heightSpec);
