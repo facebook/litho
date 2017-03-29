@@ -411,3 +411,11 @@ public class MountStateRemountInPlaceTest {
             .color(Color.BLACK)
             .build();
 
+    componentView.getComponent().setRoot(new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c)
+            .child(secondComponent)
+            .build();
+      }
+    });
