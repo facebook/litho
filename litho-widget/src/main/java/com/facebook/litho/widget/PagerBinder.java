@@ -33,3 +33,6 @@ public abstract class PagerBinder extends BaseBinder<
 
   private final InternalAdapter mAdapter;
   private final ViewPager.OnPageChangeListener mOnPageChangeListener;
+
+  private float mPageWidth;
+  private int mPagerOffscreenLimit;

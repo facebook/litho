@@ -510,3 +510,4 @@ public class MountStateRemountInPlaceTest {
     final TestComponent thirdComponent =
         TestDrawableComponent.create(mContext)
             .build();
+
