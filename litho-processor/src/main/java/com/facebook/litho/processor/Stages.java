@@ -3019,3 +3019,10 @@ public class Stages {
     mImplParameters = componentParameters;
   }
 
+  /**
+   * @return The list of {@link Parameter}s that will be part of the inner Impl class.
+   */
+  public List<Parameter> getImplParameters() {
+    return mImplParameters;
+  }
+
