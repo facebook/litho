@@ -497,3 +497,4 @@ public abstract class BaseBinder<
 
   @Override
   public final void release() {
+    List<ComponentTree> componentTreesToRelease;
