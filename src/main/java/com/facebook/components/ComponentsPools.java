@@ -91,3 +91,6 @@ public class ComponentsPools {
   private static Pools.SynchronizedPool<TestOutput> sTestOutputPool = null;
   private static Pools.SynchronizedPool<TestItem> sTestItemPool = null;
 
+  private static final Pools.SynchronizedPool<VisibilityItem> sVisibilityItemPool =
+      new Pools.SynchronizedPool<>(64);
+
