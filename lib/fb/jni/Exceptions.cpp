@@ -66,3 +66,4 @@ class JArrayIndexOutOfBoundsException : public JavaClass<JArrayIndexOutOfBoundsE
     return newInstance(make_jstring(str));
   }
 };
+
