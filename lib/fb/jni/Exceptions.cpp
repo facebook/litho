@@ -79,3 +79,4 @@ class JUnknownCppException : public JavaClass<JUnknownCppException, JThrowable> 
     return newInstance(make_jstring(str));
   }
 };
+
