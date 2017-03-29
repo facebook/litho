@@ -1608,3 +1608,4 @@ public class Stages {
                     ClassNames.COMPONENT,
                     WildcardTypeName.subtypeOf(Object.class)),
                 "_component")
+                .build());
