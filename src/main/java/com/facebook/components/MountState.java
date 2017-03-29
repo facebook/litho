@@ -1057,3 +1057,16 @@ class MountState {
         unsetLongClickHandler(view);
       }
 
+      // Reset the touch handler.
+      if (nodeInfo.getTouchHandler() != null) {
+        unsetTouchHandler(view);
+      }
+
+      // Reset the view tags.
+      unsetViewTag(view);
+      unsetViewTags(view, nodeInfo.getViewTags());
+
+      // Reset content description.
+      if (!TextUtils.isEmpty(nodeInfo.getContentDescription())) {
+        unsetContentDescription(view);
+      }
