@@ -98,3 +98,6 @@ class EventDispatcherUtils {
       sInvisibleEvent = new InvisibleEvent();
     }
 
+    final EventDispatcher eventDispatcher =
+        invisibleHandler.mHasEventDispatcher.getEventDispatcher();
+    eventDispatcher.dispatchOnEvent(invisibleHandler, sInvisibleEvent);

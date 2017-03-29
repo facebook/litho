@@ -64,3 +64,4 @@ class PagerSpec {
       ComponentContext context,
       ViewPager viewPager,
       @Prop PagerBinder binder) {
+    binder.mount(viewPager);
