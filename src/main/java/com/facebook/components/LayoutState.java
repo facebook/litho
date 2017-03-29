@@ -945,3 +945,7 @@ class LayoutState {
       layoutState.mLayoutRoot = null;
     }
 
+    if (ThreadUtils.isMainThread() && ComponentsConfiguration.shouldGenerateDisplayLists) {
+      collectDisplayLists(layoutState);
+    }
+
