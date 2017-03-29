@@ -421,3 +421,4 @@ public abstract class BaseBinder<
 
   /**
    * Call this method before the {@link View} is mounted, i.e. within
+   * {@link com.facebook.litho.ComponentLifecycle#onMount(Context, Object, Component)}
