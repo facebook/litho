@@ -94,3 +94,5 @@ public class ComponentTreeTest {
     postSizeSpecChecks(
         componentTree,
         layoutStateVariableName,
+        mWidthSpec,
+        mHeightSpec);
