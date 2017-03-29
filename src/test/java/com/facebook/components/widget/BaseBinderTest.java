@@ -386,3 +386,4 @@ public class BaseBinderTest {
       if (mView == null) {
         throw new IllegalStateException("onUnmount called before onMount");
       }
+
