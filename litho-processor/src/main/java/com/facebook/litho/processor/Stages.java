@@ -1595,3 +1595,9 @@ public class Stages {
     }
 
     final MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder("onLoadStyle")
+        .addAnnotation(
+            AnnotationSpec
+                .builder(SuppressWarnings.class)
+                .addMember("value", "$S", "unchecked").build())
+        .addAnnotation(Override.class)
+        .addModifiers(Modifier.PROTECTED)
