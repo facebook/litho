@@ -44,3 +44,4 @@ public class ViewPredicatesTest {
   private ImageView mImagelessView;
   private ImageView mOtherImageView;
   private ImageView mImageView;
+  private ImageView mImageViewWithCustomDrawable;
