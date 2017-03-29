@@ -128,3 +128,5 @@ class LayoutState {
   private InternalNode mLayoutRoot;
   private DiffNode mDiffTreeRoot;
   // Reference count will be initialized to 1 in init().
+  private final AtomicInteger mReferenceCount = new AtomicInteger(-1);
+

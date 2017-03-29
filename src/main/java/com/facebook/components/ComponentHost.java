@@ -61,3 +61,4 @@ public class ComponentHost extends ViewGroup {
   private boolean mWasInvalidatedWhileSuppressed;
   private boolean mWasInvalidatedForAccessibilityWhileSuppressed;
   private boolean mSuppressInvalidations;
+
