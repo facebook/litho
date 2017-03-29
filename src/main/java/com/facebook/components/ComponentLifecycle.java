@@ -325,3 +325,6 @@ public abstract class ComponentLifecycle implements EventDispatcher {
   }
 
   protected void onPrepare(ComponentContext c, Component<?> component) {
+    // do nothing, by default
+  }
+
