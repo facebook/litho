@@ -694,3 +694,12 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public InternalNode widthPercent(float percent) {
+    mPrivateFlags |= PFLAG_WIDTH_IS_SET;
+    mYogaNode.setWidthPercent(percent);
+    return this;
+  }
+
+  @Override
+  public InternalNode widthRes(@DimenRes int resId) {
+    return widthPx(mResourceResolver.resolveDimenSizeRes(resId));

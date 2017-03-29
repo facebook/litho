@@ -1063,3 +1063,25 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputsForTwiceNestedComponent() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c)
+            .child(
+                Container.create(c)
+                    .child(
+                        Container.create(c)
+                            .child(TestDrawableComponent.create(c)))
+                .wrapInView())
+            .child(
+                Container.create(c)
+                    .child(
+                        Container.create(c)
+                            .child(TestDrawableComponent.create(c)))
+                    .child(
+                        Container.create(c)
+                            .child(TestDrawableComponent.create(c))))
+            .build();
+      }
+    };
+
