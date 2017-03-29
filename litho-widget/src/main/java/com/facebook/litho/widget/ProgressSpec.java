@@ -36,3 +36,8 @@ import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.reference.Reference;
 import com.facebook.litho.reference.ResourceDrawableReference;
 import com.facebook.litho.utils.MeasureUtils;
+
+/**
+ * Renders an infinitely spinning progress bar.
+ */
+@MountSpec(isPureRender = true)
