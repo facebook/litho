@@ -127,3 +127,5 @@ public class ComponentHost extends ViewGroup {
    * @param bounds the bounds of the item that is to be mounted into the host
    */
   public void mount(int index, MountItem mountItem, Rect bounds) {
+    final Object content = mountItem.getContent();
+    if (content instanceof Drawable) {

@@ -125,3 +125,7 @@ public class Stages {
       Prop.class,
   };
 
+  private static final Class<Annotation>[] STATE_ANNOTATIONS = new Class[] {
+      State.class,
+  };
+
