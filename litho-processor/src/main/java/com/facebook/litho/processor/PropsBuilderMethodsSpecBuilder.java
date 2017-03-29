@@ -190,3 +190,7 @@ class PropsBuilderMethodsSpecBuilder {
   private MethodSpec regularBuilder(AnnotationSpec... extraAnnotations) {
     return builder(
         mPropParameter.parameter.name,
+        Arrays.asList(parameter(
+            mPropParameter.parameter.type,
+            mPropParameter.parameter.name,
+            extraAnnotations)),
