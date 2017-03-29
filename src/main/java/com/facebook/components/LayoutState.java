@@ -1616,3 +1616,4 @@ class LayoutState {
   }
 
   void init(ComponentContext context) {
+    mContext = context;
