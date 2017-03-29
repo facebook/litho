@@ -575,3 +575,12 @@ public class ComponentsPools {
     }
   }
 
+  static boolean canAddMountContentToPool(Context context, ComponentLifecycle lifecycle) {
+    if (lifecycle.poolSize() == 0) {
+      return false;
+    }
+
+    final SparseArray<PoolWithCount> poolsArray =
+        sMountContentPoolsByContext.get(context);
+
+    if (poolsArray == null) {
