@@ -19,3 +19,4 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.support.annotation.UiThread;
 import android.support.annotation.VisibleForTesting;
+import android.support.v7.widget.GridLayoutManager;

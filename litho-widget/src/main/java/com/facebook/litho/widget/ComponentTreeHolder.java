@@ -16,3 +16,4 @@ import android.support.v4.util.Pools;
 
 import com.facebook.components.Component;
 import com.facebook.components.ComponentContext;
+import com.facebook.components.ComponentInfo;

@@ -85,3 +85,8 @@ public class LinearLayoutInfo implements LayoutInfo {
         return widthSpec;
     }
   }
+
+  @Override
+  public int getSpanCount() {
+    return 1;
+  }

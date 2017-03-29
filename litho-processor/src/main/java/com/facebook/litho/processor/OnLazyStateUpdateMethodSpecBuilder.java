@@ -30,3 +30,4 @@ class OnLazyStateUpdateMethodSpecBuilder {
   private static final String STATE_CONTAINER_PARAM_NAME = "stateContainer";
   private static final String STATE_UPDATE_IMPL_NAME_SUFFIX = "StateUpdate";
   private static final String STATE_UPDATE_VALUE_PARAM = "lazyUpdateValue";
+  private static final String STATE_UPDATE_IS_LAZY_METHOD_NAME = "isLazyStateUpdate";
