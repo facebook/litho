@@ -234,3 +234,4 @@ void translatePendingCppExceptionToJavaException() noexcept {
 
 const std::string JniException::kExceptionMessageFailure_ = "Unable to get exception message.";
 
+JniException::JniException() : JniException(JRuntimeException::create()) { }
