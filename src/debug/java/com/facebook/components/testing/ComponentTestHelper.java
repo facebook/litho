@@ -388,3 +388,8 @@ public final class ComponentTestHelper {
 
     return componentView;
   }
+
+  /**
+   * Sets a TreeProp that will be visible to all Components which are created from
+   * the given Context (unless a child overwrites its).
+   */
