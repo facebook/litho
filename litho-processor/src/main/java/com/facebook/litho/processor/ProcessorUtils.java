@@ -8,3 +8,11 @@
  */
 
 package com.facebook.litho.processor;
+
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
+
+import java.util.Map;
+

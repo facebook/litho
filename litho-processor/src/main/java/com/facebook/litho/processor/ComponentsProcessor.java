@@ -30,3 +30,5 @@ import com.squareup.javapoet.TypeSpec;
 public class ComponentsProcessor extends AbstractComponentsProcessor {
 
   /**
+   * Generate the entire source file for the component.
+   */
