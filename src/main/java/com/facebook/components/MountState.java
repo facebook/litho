@@ -1457,3 +1457,16 @@ class MountState {
       return;
     }
 
+    // We can't just use the bounds of the View since we need the bounds relative to the
+    // hosting ComponentView (which is what the localVisibleRect is measured relative to).
+    final View view = (View) item.getContent();
+    final Rect rect = ComponentsPools.acquireRect();
+    rect.set(
+        Math.max(0, localVisibleRect.left - itemBounds.left),
+        Math.max(0, localVisibleRect.top - itemBounds.top),
+        itemBounds.width() - Math.max(0, itemBounds.right - localVisibleRect.right),
+        itemBounds.height() - Math.max(0, itemBounds.bottom - localVisibleRect.bottom));
+
+    mountViewIncrementally(view, rect);
+
+    ComponentsPools.release(rect);
