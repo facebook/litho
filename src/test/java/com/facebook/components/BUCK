@@ -68,3 +68,4 @@ android_library(
         make_dep_path("src/test/java/com/facebook/components/..."),
     ],
     deps = [
+        COMPONENTS_ANDROIDSUPPORT_TARGET,
