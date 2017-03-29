@@ -14,3 +14,7 @@ android_library(
     ],
     annotation_processors = [
         "com.facebook.components.processor.ComponentsProcessor",
+    ],
+    visibility = [
+        "PUBLIC",
+    ],

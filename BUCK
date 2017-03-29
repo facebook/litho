@@ -36,3 +36,4 @@ android_aar(
 )
 
 android_resource(
+    name = "res",
