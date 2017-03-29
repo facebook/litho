@@ -75,3 +75,6 @@ public class ComponentsPools {
   private static final Pools.SynchronizedPool<YogaNodeAPI> sYogaNodePool =
       new Pools.SynchronizedPool<>(256);
 
+  private static final Pools.SynchronizedPool<MountItem> sMountItemPool =
+      new Pools.SynchronizedPool<>(256);
+
