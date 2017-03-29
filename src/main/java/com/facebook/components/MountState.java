@@ -53,3 +53,4 @@ import static com.facebook.litho.ComponentsLogger.PARAM_UPDATED_COUNT;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 
 /**
+ * Encapsulates the mounted state of a {@link Component}. Provides APIs to update state
