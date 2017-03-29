@@ -400,3 +400,5 @@ public class ComponentTreeTest {
         .build();
 
     ComponentTree componentTree = ComponentTree.create(
+        mContext,
+        component)
