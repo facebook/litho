@@ -1302,3 +1302,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return mTransitionKey;
   }
 
+  /**
+   * A unique identifier which may be set for retrieving a component and its bounds when testing.
+   */
+  String getTestKey() {
+    return mTestKey;
+  }
+
