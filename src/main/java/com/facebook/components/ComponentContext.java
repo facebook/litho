@@ -40,3 +40,4 @@ public class ComponentContext extends ContextWrapper {
 
   private @ThreadConfined(ThreadConfined.ANY) ComponentTree mComponentTree;
 
+  // Used to hold styling information applied to components

@@ -247,3 +247,5 @@ public class MountStateIncrementalMountTest {
                         .heightPx(10))
                 .child(
                     Layout.create(c, child2)
+                        .widthPx(10)
+                        .heightPx(10))

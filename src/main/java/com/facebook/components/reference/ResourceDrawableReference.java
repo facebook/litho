@@ -124,3 +124,8 @@ public final class ResourceDrawableReference extends ReferenceLifecycle<Drawable
 
       mState = null;
       mContext = null;
+      mBuilderPool.release(this);
+    }
+
+    public PropsBuilder resId(int resId) {
+      mState.mResId = resId;
