@@ -5,3 +5,21 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
+java_library(
+    name = "assertj",
+    exported_deps = [
+        ":assertj-core-prebuilt",
+    ],
+    visibility = ["PUBLIC"],
+)
+
+prebuilt_jar(
+    name = "assertj-core-prebuilt",
+    binary_jar = ":assertj-core.jar",
+)
+
+remote_file(
+    name = "assertj-core.jar",
+    sha1 = "5db13d0ae30dca5157f0dea60f78640cf039cafe",
+    url = "mvn:org.assertj:assertj-core:jar:1.6.1",
+)

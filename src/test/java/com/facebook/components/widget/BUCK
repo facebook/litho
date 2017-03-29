@@ -5,3 +5,23 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
+include_defs("//COMPONENTS_DEFS")
+
+components_robolectric_test(
+    name = "widget",
+    srcs = glob(["*Test.java"]),
+    contacts = ["oncall+components_for_android@xmail.facebook.com"],
+    powermock_srcs = [
+        "RecyclerBinderTest.java",
+    ],
+    provided_deps = [
+        COMPONENTS_ROBOLECTRIC_TARGET,
+    ],
+    deps = [
+        COMPONENTS_ASSERTJ_TARGET,
+        COMPONENTS_JAVA_TARGET,
+        COMPONENTS_JUNIT_TARGET,
+        COMPONENTS_MOCKITO_TARGET,
+        COMPONENTS_POWERMOCK_REFLECT_TARGET,
+        COMPONENTS_POWERMOCK_MOCKITO_TARGET,
+        COMPONENTS_SOLOADER_TARGET,

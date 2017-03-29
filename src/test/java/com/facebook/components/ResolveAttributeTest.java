@@ -12,3 +12,4 @@ package com.facebook.components;
 import android.graphics.drawable.Drawable;
 import android.view.ContextThemeWrapper;
 
+import com.facebook.litho.R;

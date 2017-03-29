@@ -1,3 +1,12 @@
 [download]
   maven_repo = https://jcenter.bintray.com/
 
+[ndk]
+  ndk_version = 13.1.3345770
+  compiler = clang
+  app_platform = android-21
+  cpu_abis = arm64, armv7, x86, x86_64
+
+[android]
+  target = android-23
+  build_tools_version = 23.0.1

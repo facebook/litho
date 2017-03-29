@@ -1,0 +1,11 @@
+prebuilt_jar(
+    name = "diff-utils",
+    binary_jar = ":diff-utils.jar",
+    visibility = ["PUBLIC"],
+)
+
+remote_file(
+    name = "diff-utils.jar",
+    sha1 = "b716099bab8f2605aa3053824ece28f2b0ad1921",
+    url = "mvn:com.googlecode.java-diff-utils:diffutils:jar:1.2.1",
+)

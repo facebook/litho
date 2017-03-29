@@ -5,3 +5,18 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
+include_defs("//COMPONENTS_DEFS")
+
+prebuilt_jar(
+    name = "vtd-xml",
+    binary_jar = ":vtd-xml.jar",
+    visibility = [
+        COMPONENTS_VISIBILITY,
+    ],
+)
+
+remote_file(
+    name = "vtd-xml.jar",
+    sha1 = "ee5bcf62c1acf76434ee9f1c67a840bafef72a6d",
+    url = "mvn:com.ximpleware:vtd-xml:jar:2.11",
+)

@@ -5,3 +5,86 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
+include_defs("//COMPONENTS_DEFS")
+
+java_library(
+    name = "powermock-reflect",
+    exported_deps = [
+        ":powermock-reflect-prebuilt",
+        make_dep_path("lib/objenesis:objenesis"),
+    ],
+    visibility = ["PUBLIC"],
+)
+
+prebuilt_jar(
+    name = "powermock-reflect-prebuilt",
+    binary_jar = ":powermock-reflect.jar",
+)
+
+remote_file(
+    name = "powermock-reflect.jar",
+    sha1 = "962751c056e0d56edf1d419985e6d8032328555b",
+    url = "mvn:org.powermock:powermock-reflect:jar:1.5.6",
+)
+
+java_library(
+    name = "powermock-mockito",
+    exported_deps = [
+        ":javassist-prebuilt",
+        ":powermock-classloading-xstream-prebuilt",
+        ":powermock-junit-rule-prebuilt",
+        ":powermock-mockito-release-full-prebuilt",
+        ":powermock-reflect",
+        ":xstream-prebuilt",
+    ],
+    visibility = ["PUBLIC"],
+)
+
+prebuilt_jar(
+    name = "powermock-junit-rule-prebuilt",
+    binary_jar = ":powermock-junit-rule.jar",
+)
+
+remote_file(
+    name = "powermock-junit-rule.jar",
+    sha1 = "bc3a2edc6b0dd91ebe570507d4f38c93cd5ed53c",
+    url = "mvn:org.powermock:powermock-module-junit4-rule:jar:1.5.6",
+)
+
+prebuilt_jar(
+    name = "powermock-mockito-release-full-prebuilt",
+    binary_jar = "powermock-mockito-release-full-1.5.6-full.jar",
+)
+
+prebuilt_jar(
+    name = "javassist-prebuilt",
+    binary_jar = ":javassist.jar",
+)
+
+remote_file(
+    name = "javassist.jar",
+    sha1 = "1180a90fbad732b60fb728a6bbe8fcb3151423d7",
+    url = "mvn:org.javassist:javassist:jar:3.18.2-GA",
+)
+
+prebuilt_jar(
+    name = "powermock-classloading-xstream-prebuilt",
+    binary_jar = ":powermock-classloading-xstream.jar",
+)
+
+remote_file(
+    name = "powermock-classloading-xstream.jar",
+    sha1 = "a46b270925c45fb318f31ad2341765f54ff90227",
+    url = "mvn:org.powermock:powermock-classloading-xstream:jar:1.5.6",
+)
+
+prebuilt_jar(
+    name = "xstream-prebuilt",
+    binary_jar = ":xstream.jar",
+)
+
+remote_file(
+    name = "xstream.jar",
+    sha1 = "97e5013f391487cce4de6b0eebcde21549e91872",
+    url = "mvn:com.thoughtworks.xstream:xstream:jar:1.4.2",
+)

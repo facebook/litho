@@ -5,3 +5,65 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
+include_defs("//COMPONENTS_DEFS")
+
+java_library(
+    name = "robolectric3",
+    exported_deps = [
+        ":robolectric3-annotations-prebuilt",
+        ":robolectric3-prebuilt",
+        ":robolectric3-resources-prebuilt",
+        ":robolectric3-utils-prebuilt",
+        make_dep_path("lib/android-all:shadows-prebuilt-core"),
+        make_dep_path("lib/asm:asm"),
+        make_dep_path("lib/bcprov-jdk16:bcprov-jdk16"),
+        make_dep_path("lib/junit:junit"),
+        make_dep_path("lib/sqlite:sqlite"),
+        make_dep_path("lib/vtd-xml:vtd-xml"),
+    ],
+    visibility = ["PUBLIC"],
+)
+
+prebuilt_jar(
+    name = "robolectric3-prebuilt",
+    binary_jar = ":robolectric3.jar",
+)
+
+remote_file(
+    name = "robolectric3.jar",
+    sha1 = "f888cea3bc1a24110e315eb9827ab593610ea62f",
+    url = "mvn:org.robolectric:robolectric:jar:3.0",
+)
+
+prebuilt_jar(
+    name = "robolectric3-annotations-prebuilt",
+    binary_jar = ":robolectric3-annotations.jar",
+)
+
+remote_file(
+    name = "robolectric3-annotations.jar",
+    sha1 = "2a6cfc072d7680694c1ff893c5dc8fec33163110",
+    url = "mvn:org.robolectric:robolectric-annotations:jar:3.0",
+)
+
+prebuilt_jar(
+    name = "robolectric3-resources-prebuilt",
+    binary_jar = ":robolectric3-resources.jar",
+)
+
+remote_file(
+    name = "robolectric3-resources.jar",
+    sha1 = "1ab609054aab67cd13a434567467f4b4774f2465",
+    url = "mvn:org.robolectric:robolectric-resources:jar:3.0",
+)
+
+prebuilt_jar(
+    name = "robolectric3-utils-prebuilt",
+    binary_jar = ":robolectric3-utils.jar",
+)
+
+remote_file(
+    name = "robolectric3-utils.jar",
+    sha1 = "4bcecd8115fe7296088bb1636e6cbd7ae8927392",
+    url = "mvn:org.robolectric:robolectric-utils:jar:3.0",
+)

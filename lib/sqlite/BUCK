@@ -5,3 +5,23 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
+include_defs("//COMPONENTS_DEFS")
+
+java_library(
+    name = "sqlite",
+    exported_deps = [
+        ":sqlite-prebuilt",
+    ],
+    visibility = ["PUBLIC"],
+)
+
+prebuilt_jar(
+    name = "sqlite-prebuilt",
+    binary_jar = ":sqlite.jar",
+)
+
+remote_file(
+    name = "sqlite.jar",
+    sha1 = "d6234e08ff4e1607ff5321da2579571f05ff778d",
+    url = "mvn:com.almworks.sqlite4java:sqlite4java:jar:1.0.392",
+)

@@ -5,3 +5,21 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
+java_library(
+    name = "bcprov-jdk16",
+    exported_deps = [
+        ":bcprov-jdk16-prebuilt",
+    ],
+    visibility = ["PUBLIC"],
+)
+
+prebuilt_jar(
+    name = "bcprov-jdk16-prebuilt",
+    binary_jar = ":bcprov-jdk16.jar",
+)
+
+remote_file(
+    name = "bcprov-jdk16.jar",
+    sha1 = "ce091790943599535cbb4de8ede84535b0c1260c",
+    url = "mvn:org.bouncycastle:bcprov-jdk16:jar:1.46",
+)

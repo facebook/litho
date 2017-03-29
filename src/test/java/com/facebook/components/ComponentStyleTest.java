@@ -11,3 +11,5 @@ package com.facebook.components;
 
 import android.view.ContextThemeWrapper;
 
+import com.facebook.litho.R;
+import com.facebook.components.testing.testrunner.ComponentsTestRunner;

@@ -12,3 +12,5 @@ package com.facebook.components;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.facebook.components.testing.testrunner.ComponentsTestRunner;
+import com.facebook.components.testing.TestLayoutComponent;
