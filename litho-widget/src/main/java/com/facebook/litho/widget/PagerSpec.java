@@ -42,3 +42,6 @@ class PagerSpec {
       Size size) {
     // TODO: t9066805
     throw new IllegalStateException("Pager must have sizes spec set");
+  }
+
+  @OnBoundsDefined
