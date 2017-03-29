@@ -463,3 +463,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
    * @param extraNodeIndex index of extra node
    * @param componentBoundsX left bound of the mounted component
    * @param componentBoundsY top bound of the mounted component
+   * @param component The {@link Component} for this component.
