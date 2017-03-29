@@ -412,3 +412,6 @@ public class ComponentTreeTest {
 
     // Attach second view.
     ComponentView componentView2 = new ComponentView(mContext);
+    componentView2.onAttachedToWindow();
+
+    // Set the component that is already mounted on the first view, on the second attached view.
