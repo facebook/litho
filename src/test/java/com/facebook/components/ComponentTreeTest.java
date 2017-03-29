@@ -403,3 +403,4 @@ public class ComponentTreeTest {
         mContext,
         component)
         .incrementalMount(false)
+        .build();
