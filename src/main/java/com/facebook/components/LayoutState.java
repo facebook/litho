@@ -840,3 +840,7 @@ class LayoutState {
     addMountableOutput(layoutState, hostLayoutOutput);
 
     final int hostOutputPosition = layoutState.mMountableOutputs.size() - 1;
+
+    if (diffNode != null) {
+      diffNode.setHost(hostLayoutOutput);
+    }
