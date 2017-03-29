@@ -466,3 +466,6 @@ public class BinderTreeCollectionTest {
     for (int i = 0; i < items.size() - 1; i++) {
       assertEquals(items.keyAt(i) + 1, items.keyAt(i + 1));
     }
+  }
+
+  private static ComponentTree createNewComponentTree() {

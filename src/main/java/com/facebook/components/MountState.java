@@ -97,3 +97,4 @@ class MountState {
   private final Rect mPreviousLocalVisibleRect = new Rect();
   private final PrepareMountStats mPrepareMountStats = new PrepareMountStats();
   private final MountStats mMountStats = new MountStats();
+  private TransitionManager mTransitionManager;

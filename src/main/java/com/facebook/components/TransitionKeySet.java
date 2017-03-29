@@ -254,3 +254,8 @@ class TransitionKeySet implements TransitionListener {
         listener,
         oldTransitionToResumeFrom,
         oldTransition != null ? oldTransition.mInterruptedValues : null);
+  }
+
+  @Override
+  public void onTransitionEnd() {
+    if (--mAnimationRunningCounter == 0) {
