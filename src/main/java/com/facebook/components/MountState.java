@@ -996,3 +996,8 @@ class MountState {
       // 1. Setup click handler for the component, if applicable.
       setClickHandler(nodeInfo.getClickHandler(), view);
 
+      // 2. Setup long click handler for the component, if applicable.
+      setLongClickHandler(nodeInfo.getLongClickHandler(), view);
+
+      // 3. Setup click handler for the component, if applicable.
+      setTouchHandler(nodeInfo.getTouchHandler(), view);
