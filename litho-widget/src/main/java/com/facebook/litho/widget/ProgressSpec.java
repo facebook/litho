@@ -119,3 +119,4 @@ class ProgressSpec {
       Reference.release(c, progressBar.getIndeterminateDrawable(), resolvedIndeterminateDrawable);
     }
 
+    progressBar.setIndeterminateDrawable(null);
