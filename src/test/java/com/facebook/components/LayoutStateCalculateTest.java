@@ -2370,3 +2370,4 @@ public class LayoutStateCalculateTest {
     ShadowAccessibilityManager manager = Shadows.shadowOf(
         (AccessibilityManager)
             RuntimeEnvironment.application.getSystemService(ACCESSIBILITY_SERVICE));
+    manager.setEnabled(true);
