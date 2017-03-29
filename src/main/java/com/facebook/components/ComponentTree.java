@@ -1208,3 +1208,6 @@ public class ComponentTree {
 
     // required
     private ComponentContext context;
+    private Component<?> root;
+
+    // optional
