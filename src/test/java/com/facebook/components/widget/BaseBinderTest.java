@@ -349,3 +349,4 @@ public class BaseBinderTest {
         ViewGroup,
         MyTestComponentBinder.MyTestWorkingRangeController> {
 
+    private ViewGroup mView;

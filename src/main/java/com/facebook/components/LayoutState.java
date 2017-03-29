@@ -103,3 +103,5 @@ class LayoutState {
               : isHostSpec(lhs.getComponent()) == isHostSpec(rhs.getComponent())
               ? 0
               : isHostSpec(lhs.getComponent()) ? 1 : -1;
+        }
+      };
