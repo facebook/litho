@@ -1332,3 +1332,4 @@ class LayoutState {
     return diffNode;
   }
 
+  boolean isCompatibleSpec(int widthSpec, int heightSpec) {
