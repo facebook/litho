@@ -132,3 +132,6 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   // When this flag is set, border width was explicitly set on this node.
   private static final long PFLAG_BORDER_WIDTH_IS_SET = 1L << 25;
   // When this flag is set, aspectRatio was explicitly set on this node.
+  private static final long PFLAG_ASPECT_RATIO_IS_SET = 1L << 26;
+  // When this flag is set, transitionKey was explicitly set on this node.
+  private static final long PFLAG_TRANSITION_KEY_IS_SET = 1L << 27;

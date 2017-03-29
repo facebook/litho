@@ -96,3 +96,10 @@ public class ComponentTreeTest {
         layoutStateVariableName,
         mWidthSpec,
         mHeightSpec);
+  }
+
+  private void postSizeSpecChecks(
+      ComponentTree componentTree,
+      String layoutStateVariableName,
+      int widthSpec,
+      int heightSpec) {
