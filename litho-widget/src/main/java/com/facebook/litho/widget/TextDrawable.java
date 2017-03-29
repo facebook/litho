@@ -88,3 +88,14 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
     if (mColorStateList != null && mLayout != null) {
       final int previousColor = mLayout.getPaint().getColor();
       final int currentColor = mColorStateList.getColorForState(states, mUserColor);
+
+      if (currentColor != previousColor) {
+        mLayout.getPaint().setColor(currentColor);
+        invalidateSelf();
+      }
+    }
+
+    return super.onStateChange(states);
+  }
+
+  @Override
