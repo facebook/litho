@@ -548,3 +548,5 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       setIsPaddingPercent(edge, false);
     } else {
       mYogaNode.setPadding(edge, padding);
+    }
+
