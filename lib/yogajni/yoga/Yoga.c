@@ -3343,3 +3343,4 @@ static void YGRoundToPixelGrid(const YGNodeRef node, const float pointScaleFacto
   if (fractialLeft >= pointScaleFactor / 2.0f) {
     roundedLeft += pointScaleFactor;
     fractialLeft -= pointScaleFactor;
+  }
