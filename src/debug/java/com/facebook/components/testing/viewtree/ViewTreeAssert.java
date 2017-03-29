@@ -239,3 +239,5 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
    * @param pattern the regular expression to match against
    * @return the assertions object
    */
+  public ViewTreeAssert hasVisibleTextMatching(final String pattern) {
+    final ImmutableList<View> path = getPathToVisibleMatchingText(pattern);
