@@ -639,3 +639,8 @@ public class LayoutStateCalculateTest {
       assertEquals(
           layoutState.getMountableOutputAt(i).getId(),
           sameComponentLayoutState.getMountableOutputAt(i).getId());
+    }
+  }
+
+  @Test
+  public void testLayoutOutputStableIdsForMegaDeepComponent() {

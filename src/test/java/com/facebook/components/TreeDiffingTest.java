@@ -872,3 +872,10 @@ public class TreeDiffingTest {
     final Component secondLayoutComponent = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c)
+            .child(secondComponent)
+            .build();
+      }
+    };
+
+    LayoutState.calculate(

@@ -437,3 +437,4 @@ class LayoutState {
    * @param parentDiffNode whether this method also populates the diff tree and assigns the root
    *                       to mDiffTreeRoot.
    */
+  private static void collectResults(
