@@ -156,3 +156,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private int mBorderColor = Color.TRANSPARENT;
 
   private NodeInfo mNodeInfo;
+  private boolean mForceViewWrapping;

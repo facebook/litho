@@ -197,3 +197,4 @@ public class ResourceResolver {
       Float cached = mResourceCache.get(resId);
       if (cached != null) {
         return cached;
+      }
