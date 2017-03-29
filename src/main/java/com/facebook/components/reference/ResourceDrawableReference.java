@@ -102,3 +102,4 @@ public final class ResourceDrawableReference extends ReferenceLifecycle<Drawable
 
       State state = (State) o;
 
+      return mResId == state.mResId;
