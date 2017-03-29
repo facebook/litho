@@ -402,3 +402,8 @@ class TextSpec {
     sTextLayoutBuilderPool.release(layoutBuilder);
 
     if (glyphWarming && !ComponentsConfiguration.shouldGenerateDisplayLists) {
+      GlyphWarmer.getInstance().warmLayout(newLayout);
+    }
+
+    return newLayout;
+  }
