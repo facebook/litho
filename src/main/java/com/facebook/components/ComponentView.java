@@ -317,3 +317,5 @@ public class ComponentView extends ComponentHost {
 
     if (mComponent.isIncrementalMountEnabled()) {
       mComponent.incrementalMountComponent();
+    } else {
+      throw new IllegalStateException("To perform incremental mounting, you need first to enable" +
