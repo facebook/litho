@@ -395,3 +395,4 @@ public class Stages {
         throw new ComponentsProcessingException(
             v,
             "Output named '" + v.getSimpleName() + "' does not match any prop " +
+                "in the component.");
