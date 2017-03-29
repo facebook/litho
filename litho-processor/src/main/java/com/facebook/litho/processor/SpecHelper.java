@@ -27,3 +27,5 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 
+import com.facebook.litho.specmodels.model.SpecModel;
+import com.facebook.litho.specmodels.processor.TypeVariablesExtractor;
