@@ -243,3 +243,5 @@ public class MountSpecHelper extends ComponentSpecHelper {
       throw new ComponentsProcessingException(
           onCreateMountContent,
           "onCreateMountContent's return type should be either a View or a Drawable subclass");
+    }
+
