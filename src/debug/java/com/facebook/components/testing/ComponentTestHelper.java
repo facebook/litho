@@ -47,3 +47,4 @@ public final class ComponentTestHelper {
    */
   public static ComponentView mountComponent(Component.Builder component) {
     return mountComponent(getContext(component), component.build());
+  }
