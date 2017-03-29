@@ -330,3 +330,14 @@ public final class ComponentTestHelper {
       Component.Builder component,
       Class<T> componentClass) {
     List<SubComponent> subComponents = getSubComponents(component);
+
+    for (SubComponent subComponent : subComponents) {
+      if (subComponent.getComponentType().equals(componentClass)) {
+        return (Component<T>) subComponent.getComponent();
+      }
+    }
+
+    return null;
+  }
+
+  /**

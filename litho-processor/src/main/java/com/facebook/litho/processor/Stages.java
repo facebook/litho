@@ -1547,3 +1547,5 @@ public class Stages {
       ExecutableElement element,
       ClassName componentClassName,
       ClassName stateContainerClassName,
+      ClassName updateStateInterface,
+      StaticFlag staticFlag) {
