@@ -885,3 +885,5 @@ public class LayoutStateCalculateTest {
 
   private static boolean isHostComponent(ComponentLifecycle component) {
     return component instanceof HostComponent;
+  }
+
