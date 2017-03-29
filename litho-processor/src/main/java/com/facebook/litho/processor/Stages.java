@@ -2634,3 +2634,5 @@ public class Stages {
         false);
 
     generateBuilderPool(
+        ClassName.bestGuess(INNER_IMPL_BUILDER_CLASS_NAME),
+        "m" + INNER_IMPL_BUILDER_CLASS_NAME + "Pool",
