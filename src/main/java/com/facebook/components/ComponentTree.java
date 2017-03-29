@@ -663,3 +663,24 @@ public class ComponentTree {
 
     final Component<?> root;
 
+    synchronized (this) {
+      if (mRoot == null) {
+        return;
+      }
+
+      mStateHandler.queueStateUpdate(key, stateUpdate);
+
+      if (mIsMeasuring) {
+        // If the layout calculation was already scheduled to happen synchronously let's just go
+        // with a sync layout calculation.
+        if (mScheduleLayoutAfterMeasure == SCHEDULE_LAYOUT_SYNC) {
+          return;
+        }
+
+        mScheduleLayoutAfterMeasure = isAsync ? SCHEDULE_LAYOUT_ASYNC : SCHEDULE_LAYOUT_SYNC;
+        return;
+      }
+
+      root = mRoot.makeShallowCopy();
+    }
+
