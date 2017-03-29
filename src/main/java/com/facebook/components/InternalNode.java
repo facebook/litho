@@ -1534,3 +1534,5 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       node.mFocusedHandler = mFocusedHandler;
     }
     if ((mPrivateFlags & PFLAG_FULL_IMPRESSION_HANDLER_IS_SET) != 0L) {
+      node.mFullImpressionHandler = mFullImpressionHandler;
+    }
