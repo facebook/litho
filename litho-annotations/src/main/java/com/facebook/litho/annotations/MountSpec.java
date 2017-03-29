@@ -67,3 +67,14 @@ public @interface MountSpec {
    * reused instead of being calculated again.
    */
   boolean isPureRender() default false;
+
+  /**
+   * Whether this mount spec supports incremental mount. This is only applicable to MountSpecs which
+   * mount a View which is or contains a ComponentView.
+   */
+  boolean canMountIncrementally() default false;
+
+  /**
+   * List of event POJOs this component can dispatch. Used to generate event dispatch methods.
+   */
+  Class<?>[] events() default {};

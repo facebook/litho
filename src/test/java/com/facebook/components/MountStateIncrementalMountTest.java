@@ -443,3 +443,5 @@ public class MountStateIncrementalMountTest {
     }
   }
 
+  @Test
+  public void testChildComponentViewIncrementallyMounted() {
