@@ -1411,3 +1411,7 @@ class MountState {
             "the current Android version doesn't support foreground on Views");
       }
 
+      Reference.release(
+          (ComponentContext) view.getContext(),
+          view.getForeground(),
+          foregroundReference);
