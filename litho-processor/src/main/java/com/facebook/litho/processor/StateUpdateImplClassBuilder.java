@@ -125,3 +125,8 @@ public class StateUpdateImplClassBuilder {
     return this;
   }
 
+  public StateUpdateImplClassBuilder withStaticFlag(Stages.StaticFlag staticFlag) {
+    mStaticFlag = staticFlag;
+    return this;
+  }
+
