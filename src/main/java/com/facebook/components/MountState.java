@@ -606,3 +606,6 @@ class MountState {
       return true;
     }
 
+    return currentLifecycle.shouldComponentUpdate(
+        currentComponent,
+        nextComponent);
