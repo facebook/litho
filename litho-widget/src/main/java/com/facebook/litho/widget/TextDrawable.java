@@ -74,3 +74,4 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
     final Rect bounds = getBounds();
 
     canvas.translate(bounds.left, bounds.top + mLayoutTranslationY);
+    mLayout.draw(canvas, getSelectionPath(), mHighlightPaint, 0);
