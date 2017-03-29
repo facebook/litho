@@ -270,3 +270,6 @@ class EditTextSpec {
         editTextView,
         text,
         hint,
+        ellipsize,
+        minLines,
+        maxLines,
