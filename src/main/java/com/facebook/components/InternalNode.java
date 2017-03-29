@@ -1282,3 +1282,5 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Override
   public InternalNode sendAccessibilityEventUncheckedHandler(
       EventHandler<SendAccessibilityEventUncheckedEvent> sendAccessibilityEventUncheckedHandler) {
+    getOrCreateNodeInfo().setSendAccessibilityEventUncheckedHandler(
+        sendAccessibilityEventUncheckedHandler);

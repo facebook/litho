@@ -1070,3 +1070,10 @@ public class ComponentTree {
 
   private boolean isCompatibleComponentAndSpec(LayoutState layoutState) {
     assertHoldsLock(this);
+
+    return mRoot != null && isCompatibleComponentAndSpec(
+        layoutState, mRoot.getId(), mWidthSpec, mHeightSpec);
+  }
+
+  // Either the MainThreadLayout or the BackgroundThreadLayout is compatible with the current state.
+  private boolean hasCompatibleComponentAndSpec() {
