@@ -321,3 +321,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   /**
    * The last value the measure funcion associated with this node {@link Component} returned
+   * for the height. This is used together with {@link InternalNode#getLastHeightSpec()}

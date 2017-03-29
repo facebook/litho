@@ -789,3 +789,4 @@ public class TreeDiffingTest {
   }
 
   @Test
+  public void testDiffTreeUsedIfRootMeasureSpecsAreDifferentButChildHasSame() {
