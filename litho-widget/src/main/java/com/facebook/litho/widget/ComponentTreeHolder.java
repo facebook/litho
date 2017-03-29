@@ -127,3 +127,8 @@ public class ComponentTreeHolder {
   synchronized void setComponentInfo(ComponentInfo componentInfo) {
     invalidateTree();
     mComponentInfo = componentInfo;
+  }
+
+  synchronized void release() {
+    releaseTree();
+    clearStateHandler();

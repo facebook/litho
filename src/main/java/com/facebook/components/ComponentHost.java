@@ -412,3 +412,21 @@ public class ComponentHost extends ViewGroup {
 
       startTemporaryDetach(((View) content));
 
+      if (mViewMountItems.get(newIndex) != null) {
+        ensureScrapViewMountItemsArray();
+
+        ComponentHostUtils.scrapItemAt(newIndex, mViewMountItems, mScrapViewMountItemsArray);
+      }
+
+      ComponentHostUtils.moveItem(oldIndex, newIndex, mViewMountItems, mScrapViewMountItemsArray);
+    }
+
+    if (mMountItems.get(newIndex) != null) {
+      ensureScrapMountItemsArray();
+
+      ComponentHostUtils.scrapItemAt(newIndex, mMountItems, mScrapMountItemsArray);
+    }
+
+    ComponentHostUtils.moveItem(oldIndex, newIndex, mMountItems, mScrapMountItemsArray);
+
+    releaseScrapDataStructuresIfNeeded();
