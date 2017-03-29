@@ -471,3 +471,4 @@ public class RecyclerBinder implements Binder<RecyclerView> {
             || SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED)) {
           outSize.width = mRange.measuredSize;
         } else {
+          outSize.width = SizeSpec.getSize(widthSpec);
