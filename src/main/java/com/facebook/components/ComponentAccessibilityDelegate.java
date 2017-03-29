@@ -67,3 +67,4 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
     if (
       mNodeInfo != null
       && mNodeInfo.getOnInitializeAccessibilityNodeInfoHandler() != null) {
+      EventDispatcherUtils.dispatchOnInitializeAccessibilityNodeInfoEvent(

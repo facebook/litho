@@ -78,3 +78,14 @@ public @interface MountSpec {
    * List of event POJOs this component can dispatch. Used to generate event dispatch methods.
    */
   Class<?>[] events() default {};
+
+  /**
+   * Whether this drawable mount spec should cache its drawing in a display list.
+   */
+  boolean shouldUseDisplayList() default false;
+
+  /**
+   * @return The max number of preallocated Mount objects we want to keep in the pools for this type
+   * of MountSpec
+   */
+  int poolSize() default 15;

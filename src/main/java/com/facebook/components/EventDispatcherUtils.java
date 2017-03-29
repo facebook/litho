@@ -112,3 +112,5 @@ class EventDispatcherUtils {
 
     sLongClickEvent.view = view;
 
+    final EventDispatcher eventDispatcher =
+        longClickHandler.mHasEventDispatcher.getEventDispatcher();
