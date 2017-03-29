@@ -386,3 +386,7 @@ public class ComponentsPools {
     }
 
     componentTreeBuilder.init(c, root);
+
+    return componentTreeBuilder;
+  }
+
