@@ -272,3 +272,7 @@ public class ComponentContext extends ContextWrapper {
     mHeightSpec = heightSpec;
   }
 
+  StateHandler getStateHandler() {
+    return mStateHandler;
+  }
+
