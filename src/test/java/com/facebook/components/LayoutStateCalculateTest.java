@@ -1533,3 +1533,7 @@ public class LayoutStateCalculateTest {
     assertTrue(isHostComponent(getComponentAt(layoutState, 0)));
     assertTrue(getComponentAt(layoutState, 1) instanceof TestDrawableComponent);
 
+    final NodeInfo nodeInfo = layoutState.getMountableOutputAt(0).getNodeInfo();
+    assertNotNull(nodeInfo);
+    assertNotNull(nodeInfo.getLongClickHandler());
+    assertNotNull(nodeInfo.getViewTags());
