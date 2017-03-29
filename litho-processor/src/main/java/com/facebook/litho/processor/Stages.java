@@ -223,3 +223,4 @@ public class Stages {
     validatePropDefaults();
     populateImplMembers();
     populateImplParameters();
+    validateStyleOutputs();
