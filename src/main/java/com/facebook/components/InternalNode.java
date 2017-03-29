@@ -636,3 +636,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Override
   public InternalNode borderWidthDip(
       YogaEdge edge,
+      @Dimension(unit = DP) int borderWidth) {

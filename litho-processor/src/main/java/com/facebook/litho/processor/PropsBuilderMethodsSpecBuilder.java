@@ -293,3 +293,7 @@ class PropsBuilderMethodsSpecBuilder {
     return new TypeName[]{typeParameter};
   }
 
+  private ParameterSpec parameter(
+      TypeName type,
+      String name,
+      AnnotationSpec... extraAnnotations) {
