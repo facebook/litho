@@ -2188,3 +2188,5 @@ public class Stages {
       final TypeMirror innerType = Utils.getGenericTypeArgument(
           variableElementType,
           ClassNames.DIFF);
+
+      if (innerType == null) {
