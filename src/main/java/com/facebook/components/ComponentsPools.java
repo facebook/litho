@@ -485,3 +485,4 @@ public class ComponentsPools {
     sNodeInfoPool.release(nodeInfo);
   }
 
+  @ThreadSafe(enableChecks = false)
