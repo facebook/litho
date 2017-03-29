@@ -838,3 +838,27 @@ public class RecyclerBinderTest {
       mLayoutAsyncCalled = true;
       mChildWidth = SizeSpec.getSize(widthSpec);
       mChildHeight = SizeSpec.getSize(heightSpec);
+    }
+
+    @Override
+    protected void computeLayoutSync(
+        ComponentContext context, int widthSpec, int heightSpec, Size size) {
+      mComponentTree = mock(ComponentTree.class);
+      mTreeValid = true;
+      if (size != null) {
+        size.width = SizeSpec.getSize(widthSpec);
+        size.height = SizeSpec.getSize(heightSpec);
+      }
+
+      mLayoutSyncCalled = true;
+    }
+
+    @Override
+    protected synchronized boolean isTreeValid() {
+      return mTreeValid;
+    }
+
+    @Override
+    protected synchronized ComponentTree getComponentTree() {
+      return mComponentTree;
+    }
