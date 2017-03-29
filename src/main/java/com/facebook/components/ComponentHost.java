@@ -982,3 +982,17 @@ public class ComponentHost extends ViewGroup {
     }
   }
 
+  private static void startTemporaryDetach(View view) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+      // Cancel any pending clicks.
+      view.cancelPendingInputEvents();
+    }
+    // The ComponentHost's parent will send an ACTION_CANCEL if it's going to receive
+    // other motion events for the recycled child.
+    ViewCompat.dispatchStartTemporaryDetach(view);
+  }
+
+  private static void finishTemporaryDetach(View view) {
+    ViewCompat.dispatchFinishTemporaryDetach(view);
+  }
+
