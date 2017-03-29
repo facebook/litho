@@ -765,3 +765,4 @@ class MountState {
           // the z-ordering.
           oldItem.getHost().moveItem(oldItem, i, newPosition);
           mPrepareMountStats.movedCount++;
+        } else {
