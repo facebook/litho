@@ -914,3 +914,4 @@ class LayoutState {
         layoutState.mHeight = root.getHeight();
         break;
     }
+
