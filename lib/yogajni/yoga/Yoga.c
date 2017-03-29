@@ -3328,3 +3328,9 @@ void YGConfigSetPointScaleFactor(const YGConfigRef config, const float pixelsInP
 
 static void YGRoundToPixelGrid(const YGNodeRef node, const float pointScaleFactor) {
   if (pointScaleFactor == 0.0f) {
+    return;
+  }
+  const float nodeLeft = node->layout.position[YGEdgeLeft];
+  const float nodeTop = node->layout.position[YGEdgeTop];
+
+  // To round correctly to the pixel grid, first we calculate left and top coordinates
