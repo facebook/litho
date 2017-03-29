@@ -266,3 +266,6 @@ class DelegateMethodSpecBuilder {
 
     for (Parameter parameter : mImplParameters) {
       if (parameter.name.equals(parameterName)) {
+        final String stateContainerMember = mStateParamNames.contains(parameter.name)
+            ? "." + Stages.STATE_CONTAINER_IMPL_MEMBER
+            : "";

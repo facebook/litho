@@ -200,3 +200,6 @@ public class StateUpdatesTest {
             .child(
                 Container.create(c)
                     .child(child1))
+            .build();
+      }
+    };
