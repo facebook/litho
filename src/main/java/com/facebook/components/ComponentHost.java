@@ -466,3 +466,4 @@ public class ComponentHost extends ViewGroup {
    */
   ComponentClickListener getComponentClickListener() {
     return mOnClickListener;
+  }
