@@ -352,3 +352,6 @@ class EditTextSpec {
       editText.setText(text);
     }
     editText.setHint(hint);
+    editText.setEllipsize(ellipsize);
+    editText.setMinLines(minLines);
+    editText.setMaxLines(maxLines);
