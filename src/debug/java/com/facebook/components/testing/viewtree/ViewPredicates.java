@@ -162,3 +162,4 @@ final class ViewPredicates {
   public static Predicate<View> hasDrawable(final Drawable drawable) {
     return new Predicate<View>() {
       @Override
+      public boolean apply(@Nullable final View input) {
