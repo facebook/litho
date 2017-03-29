@@ -1333,3 +1333,4 @@ public class Stages {
           "eventState");
 
       final CodeBlock.Builder eventHandlerParams = CodeBlock.builder();
+      eventHandlerParams.indent();
