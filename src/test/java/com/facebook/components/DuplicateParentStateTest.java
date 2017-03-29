@@ -93,3 +93,5 @@ public class DuplicateParentStateTest {
 
     assertEquals(12, layoutState.getMountableOutputCount());
 
+    assertTrue(
+        "Clickable root output has duplicate state",

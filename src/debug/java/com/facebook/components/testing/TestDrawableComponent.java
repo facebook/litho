@@ -199,3 +199,4 @@ public class TestDrawableComponent extends ComponentLifecycle {
       @StyleRes int defStyleRes,
       boolean callsShouldUpdateOnMount,
       boolean isPureRender,
+      boolean canMeasure,

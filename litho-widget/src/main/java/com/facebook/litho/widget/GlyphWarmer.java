@@ -22,3 +22,6 @@ import android.text.Layout;
 
 import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
 
+import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
+import static android.os.Process.THREAD_PRIORITY_LOWEST;
+

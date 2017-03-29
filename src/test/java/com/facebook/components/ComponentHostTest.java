@@ -75,3 +75,32 @@ public class ComponentHostTest {
     mHost = new TestableComponentHost(mContext);
 
     mViewGroupHost = HostComponent.create();
+  }
+
+  @Test
+  public void testParentHostMarker() {
+    assertEquals(0, mHost.getParentHostMarker());
+
+    mHost.setParentHostMarker(1);
+    assertEquals(1, mHost.getParentHostMarker());
+  }
+
+  @Test
+  public void testInvalidations() {
+    assertEquals(0, mHost.getInvalidationCount());
+    assertNull(mHost.getInvalidationRect());
+
+    Drawable d1 = new ColorDrawable();
+    d1.setBounds(0, 0, 1, 1);
+
+    MountItem mountItem1 = mount(0, d1);
+    assertEquals(1, mHost.getInvalidationCount());
+    assertEquals(d1.getBounds(), mHost.getInvalidationRect());
+
+    Drawable d2 = new ColorDrawable();
+    d2.setBounds(0, 0, 2, 2);
+
+    MountItem mountItem2 = mount(1, d2);
+    assertEquals(2, mHost.getInvalidationCount());
+    assertEquals(d2.getBounds(), mHost.getInvalidationRect());
+
