@@ -136,3 +136,5 @@ public class IncrementalMountUtils {
   private static void release(Rect rect) {
     rect.setEmpty();
     sRectPool.release(rect);
+  }
+}
