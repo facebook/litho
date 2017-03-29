@@ -528,3 +528,8 @@ public class ComponentsPools {
   }
 
   @ThreadSafe(enableChecks = false)
+  static void release(DiffNode node) {
+    node.release();
+    sDiffNodePool.release(node);
+  }
+
