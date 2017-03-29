@@ -416,3 +416,4 @@ public class LayoutStateCalculateTest {
     // Check total layout outputs.
     assertEquals(
         foregroundHasOwnOutput ? 12 : 11,
+        layoutState.getMountableOutputCount());
