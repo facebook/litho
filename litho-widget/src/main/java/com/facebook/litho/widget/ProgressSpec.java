@@ -47,3 +47,11 @@ class ProgressSpec {
 
   @PropDefault static final int color = Color.TRANSPARENT;
 
+  @OnLoadStyle
+  static void onLoadStyle(
+      ComponentContext c,
+      Output<Reference<Drawable>> indeterminateDrawable) {
+
+    indeterminateDrawable.set(getStyledIndeterminateDrawable(c, 0));
+  }
+
