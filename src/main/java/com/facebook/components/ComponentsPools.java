@@ -453,3 +453,8 @@ public class ComponentsPools {
   }
 
   @ThreadSafe(enableChecks = false)
+  static void release(ComponentTree.Builder componentTreeBuilder) {
+    componentTreeBuilder.release();
+    sComponentTreeBuilderPool.release(componentTreeBuilder);
+  }
+
