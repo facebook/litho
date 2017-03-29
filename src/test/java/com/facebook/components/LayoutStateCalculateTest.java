@@ -1403,3 +1403,7 @@ public class LayoutStateCalculateTest {
                     .marginDip(YogaEdge.HORIZONTAL, 10)
                     .importantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO))
             .child(
+                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    .flexDirection(YogaFlexDirection.ROW)
+                    .alignItems(YogaAlign.CENTER)
+                    .paddingDip(YogaEdge.ALL, 10)
