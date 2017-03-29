@@ -421,3 +421,4 @@ public class ComponentTree {
     assertMainThread();
 
     synchronized (this) {
+      mIsAttached = false;

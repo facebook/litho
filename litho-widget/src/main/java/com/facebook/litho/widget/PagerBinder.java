@@ -336,3 +336,6 @@ public abstract class PagerBinder extends BaseBinder<
       }
 
       // Set range position.
+      final int halfRangeSize = getHalfWorkingRangeSize();
+      final int start = Math.max(0, currentPosition - halfRangeSize);
+      final int end = Math.min(currentPosition + halfRangeSize, getBinder().getCount() - 1);
