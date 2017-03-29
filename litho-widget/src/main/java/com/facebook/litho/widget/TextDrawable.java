@@ -245,3 +245,4 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
       end = temp;
     }
 
+    if (x >= start && x <= end) {
