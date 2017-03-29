@@ -1477,3 +1477,5 @@ class LayoutState {
 
   int getMountableOutputCount() {
     return mMountableOutputs.size();
+  }
+
