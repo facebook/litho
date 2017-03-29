@@ -132,3 +132,4 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
       return true;
     }
 
+    clearSelection();
