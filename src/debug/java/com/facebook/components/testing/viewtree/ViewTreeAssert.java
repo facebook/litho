@@ -55,3 +55,4 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
     return this;
   }
 
+  private String getHasVisibleTextErrorMessage(final String text) {
