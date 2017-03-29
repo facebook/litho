@@ -761,3 +761,13 @@ public class RecyclerBinderTest {
     assertFalse(holderMovedInRange.mDidAcquireStateHandler);
   }
 
+  @Test
+  public void testGetItemCount() {
+    for (int i = 0; i < 100; i++) {
+      assertEquals(i, mRecyclerBinder.getItemCount());
+      mRecyclerBinder.insertItemAt(
+          i,
+          ComponentInfo.create().component(mock(Component.class)).build());
+    }
+  }
+
