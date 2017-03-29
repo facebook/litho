@@ -951,3 +951,4 @@ public class ComponentHost extends ViewGroup {
       ComponentHostUtils.scrapItemAt(newIndex, mDrawableMountItems, mScrapDrawableMountItems);
     }
 
+    if (mTouchables.get(newIndex) != null) {
