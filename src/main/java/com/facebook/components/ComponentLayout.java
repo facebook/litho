@@ -249,3 +249,6 @@ public interface ComponentLayout {
     ContainerBuilder importantForAccessibility(
         @ImportantForAccessibility int importantForAccessibility
     );
+
+    ContainerBuilder duplicateParentState(boolean duplicateParentState);
+
