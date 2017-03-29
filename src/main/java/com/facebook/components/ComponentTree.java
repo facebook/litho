@@ -171,3 +171,4 @@ public class ComponentTree {
         : builderStateHandler;
   }
 
+  LayoutState getMainThreadLayoutState() {
