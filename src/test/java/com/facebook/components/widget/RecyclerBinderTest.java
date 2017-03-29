@@ -448,3 +448,4 @@ public class RecyclerBinderTest {
     assertTrue(componentTreeHolder.mLayoutSyncCalled);
 
     for (int i = 1; i < 2; i++) {
+      componentTreeHolder = mHoldersForComponents.get(components.get(i).getComponent());
