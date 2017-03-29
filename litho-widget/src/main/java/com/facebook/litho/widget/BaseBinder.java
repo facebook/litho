@@ -422,3 +422,63 @@ public abstract class BaseBinder<
   /**
    * Call this method before the {@link View} is mounted, i.e. within
    * {@link com.facebook.litho.ComponentLifecycle#onMount(Context, Object, Component)}
+   */
+  @Override
+  public final void mount(V view) {
+    assertMainThread();
+
+    if (mView != null) {
+      // If this binder is being mounted on a new view before it was unmounted from the previous
+      // one, then unmount now.
+      onUnmount(mView);
+    }
+
+    mView = view;
+
+    onMount(mView);
+  }
+
+  /**
+   * Bind this {@link Binder} to a {@link View}. Remember to call
+   * {@link #notifyDataSetChanged()} when your {@link Component}s are
+   * ready to be used.
+   */
+  @Override
+  public final void bind(V view) {
+    assertMainThread();
+
+    if (mView != view) {
+      unbind(mView);
+      unmount(mView);
+      mView = null;
+      mount(view);
+    }
+
+    onBind(mView);
+  }
+
+  @Override
+  public final void unbind(V view) {
+    assertMainThread();
+    if (view != mView) {
+      return;
+    }
+
+    onUnbind(mView);
+  }
+
+  @Override
+  public final void unmount(V view) {
+    assertMainThread();
+
+    if (view != mView) {
+      // This binder has already been mounted on another view.
+      return;
+    }
+
+    onUnmount(mView);
+
+    mView = null;
+  }
+
+  /**
