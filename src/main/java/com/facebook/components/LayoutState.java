@@ -207,3 +207,6 @@ class LayoutState {
         false /* useNodePadding */,
         IMPORTANT_FOR_ACCESSIBILITY_NO,
         layoutState.mShouldDuplicateParentState);
+  }
+
+  private static LayoutOutput createLayoutOutput(

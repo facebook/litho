@@ -470,3 +470,6 @@ public class TreeDiffingTest {
   @Test
   public void testComponentHostMoveItemPartial() {
     ComponentHost hostHolder = new ComponentHost(mContext);
+    MountItem mountItem = new MountItem();
+    MountItem mountItem1 = new MountItem();
+    MountItem mountItem2 = new MountItem();
