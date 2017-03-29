@@ -265,3 +265,5 @@ public abstract class BaseBinder<
     }
   }
 
+  @Override
+  public void notifyItemMoved(int fromPosition, int toPosition) {

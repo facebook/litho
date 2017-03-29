@@ -305,3 +305,19 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   /**
    * The last value the measure funcion associated with this node {@link Component} returned
    * for the width. This is used together with {@link InternalNode#getLastWidthSpec()}
+   * to implement measure caching.
+   */
+  float getLastMeasuredWidth() {
+    return mLastMeasuredWidth;
+  }
+
+  /**
+   * Sets the last value the measure funcion associated with this node {@link Component} returned
+   * for the width.
+   */
+  void setLastMeasuredWidth(float lastMeasuredWidth) {
+    mLastMeasuredWidth = lastMeasuredWidth;
+  }
+
+  /**
+   * The last value the measure funcion associated with this node {@link Component} returned

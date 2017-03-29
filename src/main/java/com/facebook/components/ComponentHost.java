@@ -278,3 +278,8 @@ public class ComponentHost extends ViewGroup {
       // the flag here is redundant, but future proof.
       mIsChildDrawingOrderDirty = true;
 
+      return host;
+    }
+
+    return null;
+  }
