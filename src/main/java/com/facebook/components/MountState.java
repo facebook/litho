@@ -1623,3 +1623,12 @@ class MountState {
     lifecycle.unmount(context, content, component);
   }
 
+  private void startUnmountDisappearingItem(int index, String key) {
+    final MountItem item = getItemAt(index);
+
+    if (item == null) {
+      throw new RuntimeException("Item at index=" + index +" does not exist");
+    }
+
+    if (!(item.getContent() instanceof ComponentHost)) {
+      throw new RuntimeException("Only host components can be used as disappearing items");
