@@ -933,3 +933,4 @@ class LayoutState {
       logger.eventStart(EVENT_COLLECT_RESULTS, component, PARAM_LOG_TAG, c.getLogTag());
     }
 
+    collectResults(root, layoutState, null);
