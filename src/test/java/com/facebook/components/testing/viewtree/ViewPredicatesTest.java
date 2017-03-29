@@ -45,3 +45,4 @@ public class ViewPredicatesTest {
   private ImageView mOtherImageView;
   private ImageView mImageView;
   private ImageView mImageViewWithCustomDrawable;
+  private ComponentView mComponentViewWithText;

@@ -33,3 +33,6 @@ final class ViewPredicates {
   private ViewPredicates() {}
 
   /**
+   * Returns a predicate that returns true if the applied on view's text is equal to the given
+   * text.
+   * substring.
