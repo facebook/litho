@@ -372,3 +372,19 @@ class LayoutState {
     final boolean implementsAccessibility =
         (nodeInfo != null && nodeInfo.hasAccessibilityHandlers())
         || (component != null && component.getLifecycle().implementsAccessibility());
+
+    final int importantForAccessibility = node.getImportantForAccessibility();
+
+    // A component has accessibility content if:
+    //   1. Accessibility is currently enabled.
+    //   2. Accessibility hasn't been explicitly disabled on it
+    //      i.e. IMPORTANT_FOR_ACCESSIBILITY_NO.
+    //   3. Any of these conditions are true:
+    //      - It implements accessibility support.
+    //      - It has a content description.
+    //      - It has importantForAccessibility set as either IMPORTANT_FOR_ACCESSIBILITY_YES
+    //        or IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS.
+    // IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS should trigger an inner host
+    // so that such flag is applied in the resulting view hierarchy after the component
+    // tree is mounted. Click handling is also considered accessibility content but
+    // this is already covered separately i.e. click handler is not null.
