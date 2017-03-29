@@ -322,3 +322,4 @@ public class MountSpecHelper extends ComponentSpecHelper {
       return;
     }
 
+    final MethodDescription methodDescription = new MethodDescription();

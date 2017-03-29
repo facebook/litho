@@ -72,3 +72,6 @@ public class ComponentsPools {
   private static final Pools.SynchronizedPool<ViewNodeInfo> sViewNodeInfoPool =
       new Pools.SynchronizedPool<>(64);
 
+  private static final Pools.SynchronizedPool<YogaNodeAPI> sYogaNodePool =
+      new Pools.SynchronizedPool<>(256);
+
