@@ -670,3 +670,15 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public InternalNode positionAttr(YogaEdge edge, @AttrRes int resId) {
+    return positionAttr(edge, resId, 0);
+  }
+
+  @Override
+  public InternalNode positionRes(YogaEdge edge, @DimenRes int resId) {
+    return positionPx(edge, mResourceResolver.resolveDimenOffsetRes(resId));
+  }
+
+  @Override
+  public InternalNode positionDip(
+      YogaEdge edge,
