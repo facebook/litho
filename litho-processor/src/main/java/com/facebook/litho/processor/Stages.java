@@ -1307,3 +1307,6 @@ public class Stages {
         .returns(TypeName.OBJECT)
         .addParameter(
             ParameterSpec.builder(ClassNames.EVENT_HANDLER, "eventHandler", Modifier.FINAL).build())
+        .addParameter(
+            ParameterSpec.builder(ClassNames.OBJECT, "eventState", Modifier.FINAL).build());
+
