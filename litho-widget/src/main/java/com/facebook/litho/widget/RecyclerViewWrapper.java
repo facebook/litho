@@ -154,4 +154,10 @@ public class RecyclerViewWrapper extends SwipeRefreshLayout {
       getParent().requestDisallowInterceptTouchEvent(disallowIntercept);
     }
   }
+
+  @Override
+  public void setOnTouchListener(OnTouchListener listener) {
+    // When setting touch handler for RecyclerSpec we want RecyclerView to handle it.
+    mRecyclerView.setOnTouchListener(listener);
+  }
 }
