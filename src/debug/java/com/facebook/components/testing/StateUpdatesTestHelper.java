@@ -111,3 +111,6 @@ public class StateUpdatesTestHelper {
     }
 
     ComponentTestHelper.mountComponent(componentView, componentTree);
+    return componentView;
+  }
+}
