@@ -500,3 +500,16 @@ public class ComponentTree {
 
     if (component != null) {
       // TODO: We should re-use the existing CSSNodeDEPRECATED tree instead of re-creating it.
+      if (mMainThreadLayoutState != null) {
+        // It's beneficial to delete the old layout state before we start creating a new one since
+        // we'll be able to re-use some of the layout nodes.
+        LayoutState localLayoutState;
+        synchronized (this) {
+          localLayoutState = mMainThreadLayoutState;
+          mMainThreadLayoutState = null;
+        }
+        localLayoutState.releaseRef();
+      }
+
+      // We have no layout that matches the given spec, so we need to compute it on the main thread.
+      LayoutState localLayoutState = calculateLayoutState(
