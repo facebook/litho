@@ -1138,3 +1138,7 @@ class MountState {
 
     ComponentClickListener listener = getComponentClickListener(view);
 
+    if (listener == null) {
+      listener = new ComponentClickListener();
+      setComponentClickListener(view, listener);
+    }
