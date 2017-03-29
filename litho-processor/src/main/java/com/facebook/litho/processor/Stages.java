@@ -1692,3 +1692,5 @@ public class Stages {
     implClassBuilder.addField(stateContainerImplClass, STATE_CONTAINER_IMPL_MEMBER);
     implClassBuilder.addMethod(generateStateContainerGetter(ClassNames.STATE_CONTAINER_COMPONENT));
 
+    generateComponentClassProps(implClassBuilder, ClassNames.EVENT_HANDLER);
+
