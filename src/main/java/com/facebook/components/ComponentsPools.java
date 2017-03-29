@@ -22,3 +22,5 @@ import android.content.res.Resources;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.os.Bundle;

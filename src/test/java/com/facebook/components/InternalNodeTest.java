@@ -10,3 +10,5 @@
 package com.facebook.components;
 
 import android.graphics.Color;
+import android.support.v4.view.ViewCompat;
+

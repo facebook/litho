@@ -41,3 +41,6 @@ public class TestSizeDependentComponent extends ComponentLifecycle {
     final ComponentLayout.Builder builder2 = TestViewComponent.create(c, false, true, true, false)
         .withLayout()
         .marginPx(YogaEdge.ALL, 3);
+
+    if (state.hasFixedSizes) {
+      builder1

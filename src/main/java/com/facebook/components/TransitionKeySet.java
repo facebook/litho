@@ -44,3 +44,22 @@ class TransitionKeySet implements TransitionListener {
     void onTransitionCleanup();
   }
 
+  private final String mKey;
+
+  private SimpleArrayMap<Integer, Transition> mAppearTransition;
+  private SimpleArrayMap<Integer, Transition> mChangeTransitions;
+  private SimpleArrayMap<Integer, Transition> mDisappearTransitions;
+  private SimpleArrayMap<Integer, Transition> mRunningTransitionsPointer;
+  // Values of the item to transition, at the beginning of the mount process.
+  private PropertySetHolder mStartValues;
+  // Values of the item to transition, at the end of the mount process.
+  private PropertySetHolder mEndValues;
+  // Combined start values from all the appear transitions.
+  private PropertySetHolder mLocalStartValues;
+  // Combined end values from all the disappear transitions.
+  private PropertySetHolder mLocalEndValues;
+  // Intermediate values of an item in case it was interrupted before the end of its transition.
+  private PropertySetHolder mInterruptedValues;
+  // Cumulative ValuesFlag to track across all the transitions for a given key.
+  private @PropertyType int mTrackedValuesFlag;
+  private View mTargetView;

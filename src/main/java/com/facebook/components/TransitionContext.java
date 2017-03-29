@@ -11,3 +11,11 @@ package com.facebook.components;
 
 import java.util.HashSet;
 
+import android.support.v4.util.SimpleArrayMap;
+
+/**
+ * TransitionContext is unique per LayoutState and contains all the transitions defined
+ * in a component tree.
+ */
+class TransitionContext {
+

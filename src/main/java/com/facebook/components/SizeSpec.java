@@ -159,3 +159,18 @@ public class SizeSpec {
   }
 
   public static int makeSizeSpecFromCssSpec(float cssSize, YogaMeasureMode cssMode) {
+    final int mode;
+    switch (cssMode) {
+      case EXACTLY:
+        mode = SizeSpec.EXACTLY;
+        break;
+
+      case UNDEFINED:
+        mode = SizeSpec.UNSPECIFIED;
+        break;
+
+      case AT_MOST:
+        mode = SizeSpec.AT_MOST;
+        break;
+
+      default:

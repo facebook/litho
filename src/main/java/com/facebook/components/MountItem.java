@@ -24,3 +24,11 @@ import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
  * supported by the framework e.g. {@link Drawable}.
  */
 class MountItem {
+
+  static final int FLAG_DUPLICATE_PARENT_STATE = 1 << 0;
+  static final int FLAG_VIEW_CLICKABLE = 1 << 1;
+  static final int FLAG_VIEW_LONG_CLICKABLE = 1 << 2;
+  static final int FLAG_VIEW_FOCUSABLE = 1 << 3;
+
+  private NodeInfo mNodeInfo;
+  private ViewNodeInfo mViewNodeInfo;
