@@ -12,3 +12,5 @@ package com.facebook.litho.fresco;
 import java.util.Collections;
 import java.util.List;
 
+import android.content.Context;
+import android.graphics.Canvas;

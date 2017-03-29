@@ -12,3 +12,9 @@ package com.facebook.litho;
 import android.support.v4.util.SimpleArrayMap;
 
 import com.facebook.litho.annotations.TreeProp;
+import com.facebook.infer.annotation.ThreadConfined;
+
+/**
+ * A data structure to store tree props.
+ * @see {@link TreeProp}.
+ */

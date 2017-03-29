@@ -11,3 +11,4 @@ package com.facebook.litho;
 
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadSafe;
+
