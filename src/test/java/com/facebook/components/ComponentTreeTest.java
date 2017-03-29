@@ -329,3 +329,8 @@ public class ComponentTreeTest {
             .build();
 
     componentTree.setRoot(mComponent);
+
+    creationCommonChecks(componentTree);
+    Assert.assertNull(Whitebox.getInternalState(componentTree, "mMainThreadLayoutState"));
+    Assert.assertNull(Whitebox.getInternalState(componentTree, "mBackgroundLayoutState"));
+
