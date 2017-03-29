@@ -2696,3 +2696,5 @@ public class Stages {
       TypeName genericType,
       String builderClassName,
       TypeName[] builderGenericTypes,
+      ClassName contextClass,
+      ClassName eventHandlerClass,
