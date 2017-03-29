@@ -691,3 +691,5 @@ class LayoutState {
 
       // Special case where the host marker of the root host is pointing to itself.
       hostOutput.setHostMarker(ROOT_HOST_ID);
+      hostOutput.setUpdateState(LayoutOutput.STATE_DIRTY);
+    } else {
