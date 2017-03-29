@@ -216,3 +216,4 @@ public class Stages {
     validateAnnotatedParameters();
     populateOnCreateInitialStateDefinedProps();
     populateProps();
+    populateTreeProps();
