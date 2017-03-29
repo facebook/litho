@@ -359,3 +359,15 @@ public class ComponentHostTest {
   }
 
   @Test
+  public void testViewTag() {
+    assertNull(mHost.getTag());
+
+    Object tag = new Object();
+    mHost.setViewTag(tag);
+    assertEquals(tag, mHost.getTag());
+
+    mHost.setViewTag(null);
+    assertNull(mHost.getTag());
+  }
+
+  @Test
