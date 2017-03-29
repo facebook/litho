@@ -148,3 +148,4 @@ class FrescoComponentSpec {
   }
 
   @OnUnmount
+  protected static void onUnmount(
