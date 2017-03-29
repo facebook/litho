@@ -1373,3 +1373,7 @@ class MountState {
   private static void unsetViewBackground(View view, ViewNodeInfo viewNodeInfo) {
     final Reference<Drawable> backgroundReference = viewNodeInfo.getBackground();
     if (backgroundReference != null) {
+      Reference.release(
+          (ComponentContext) view.getContext(),
+          view.getBackground(),
+          backgroundReference);
