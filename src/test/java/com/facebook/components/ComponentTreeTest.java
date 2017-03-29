@@ -30,3 +30,4 @@ import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
+import static org.junit.Assert.assertNotEquals;

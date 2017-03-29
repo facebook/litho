@@ -30,3 +30,4 @@ import android.support.annotation.IntDef;
 import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;

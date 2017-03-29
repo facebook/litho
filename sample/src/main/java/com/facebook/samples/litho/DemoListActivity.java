@@ -26,3 +26,5 @@ public class DemoListActivity extends AppCompatActivity {
 
     Demos.initialize(context);
 
+    componentView.setComponent(
+        ComponentTree.create(context, DemoListComponent.create(context))
