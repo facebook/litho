@@ -553,3 +553,9 @@ public abstract class BaseBinder<
   public boolean isAsyncLayoutEnabled() {
     return false;
   }
+
+  /**
+   * Returns the width spec to be used for the component in the
+   * given position.
+   */
+  protected int getWidthSpec(int position) {

@@ -537,3 +537,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode paddingPx(YogaEdge edge, @Px int padding) {
+    mPrivateFlags |= PFLAG_PADDING_IS_SET;
+
+    if (mIsNestedTreeHolder) {
+      if (mNestedTreePadding == null) {
+        mNestedTreePadding = ComponentsPools.acquireSpacing();
+      }
+
