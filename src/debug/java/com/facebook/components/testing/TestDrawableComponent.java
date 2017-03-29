@@ -337,3 +337,26 @@ public class TestDrawableComponent extends ComponentLifecycle {
       return this;
     }
 
+    public Builder color(int color) {
+      mState.color = color;
+      return this;
+    }
+
+    public Builder unique() {
+      mState.mIsUnique = true;
+      return this;
+    }
+
+    @Override
+    public TestComponent<TestDrawableComponent> build() {
+      State state = mState;
+      release();
+      return state;
+    }
+
+    @Override
+    protected void release() {
+      super.release();
+      mState = null;
+      mBuilderPool.release(this);
+    }

@@ -54,3 +54,4 @@ public interface ComponentLayout {
   int getHeight();
 
   @Px
+  int getPaddingTop();

@@ -68,3 +68,4 @@ import static com.facebook.litho.annotations.ResType.BOOL;
 import static com.facebook.litho.annotations.ResType.STRING;
 
 @MountSpec(isPureRender = true, shouldUseDisplayList = true, poolSize = 30)
+class TextSpec {
