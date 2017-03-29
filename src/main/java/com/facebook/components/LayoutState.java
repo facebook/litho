@@ -1162,3 +1162,10 @@ class LayoutState {
           String.valueOf(previousDiffTreeRoot != null));
     }
 
+    root.calculateLayout(
+        SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED
+            ? YogaConstants.UNDEFINED
+            : SizeSpec.getSize(widthSpec),
+        SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED
+            ? YogaConstants.UNDEFINED
+            : SizeSpec.getSize(heightSpec));
