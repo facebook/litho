@@ -2708,3 +2708,4 @@ public class Stages {
     final ClassName implClass = ClassName.bestGuess(implClassName);
     final MethodSpec.Builder initMethodSpec = MethodSpec.methodBuilder("init")
         .addModifiers(Modifier.PRIVATE)
+        .addParameter(contextClass, "context");
