@@ -554,3 +554,20 @@ class LayoutState {
       }
     }
 
+    // 3. Now add the MountSpec (either View or Drawable) to the Outputs.
+    if (isMountSpec(component)) {
+      // Notify component about its final size.
+      component.getLifecycle().onBoundsDefined(layoutState.mContext, node, component);
+
+      addMountableOutput(layoutState, layoutOutput);
+      addLayoutOutputIdToPositionsMap(
+          layoutState.mOutputsIdToPositionMap,
+          layoutOutput,
+          layoutState.mMountableOutputs.size() - 1);
+
+      if (diffNode != null) {
+        diffNode.setContent(layoutOutput);
+      }
+    }
+
+    // 4. Add border color if defined.
