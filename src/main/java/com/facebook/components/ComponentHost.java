@@ -773,3 +773,10 @@ public class ComponentHost extends ViewGroup {
       if (value != null) {
         return value;
       }
+    }
+
+    return super.getTag(key);
+  }
+
+  @Override
+  public void invalidate(Rect dirty) {
