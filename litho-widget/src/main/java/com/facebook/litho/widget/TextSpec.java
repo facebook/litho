@@ -432,3 +432,5 @@ class TextSpec {
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float extraSpacing,
       @Prop(optional = true, resType = ResType.FLOAT) float spacingMultiplier,
       @Prop(optional = true) VerticalGravity verticalGravity,
+      @Prop(optional = true) int textStyle,
+      @Prop(optional = true) Typeface typeface,
