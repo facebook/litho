@@ -1113,3 +1113,5 @@ public class ComponentTree {
     return layoutState != null
         && layoutState.isCompatibleComponentAndSpec(componentId, widthSpec, heightSpec)
         && layoutState.isCompatibleAccessibility();
+  }
+
