@@ -123,3 +123,8 @@ public class TextSpecTest {
   }
 
   private TextDrawable getMountedDrawableForText(CharSequence text) {
+    return (TextDrawable) ComponentTestHelper.mountComponent(
+        mContext,
+        Text.create(mContext)
+            .text(text)
+            .build())
