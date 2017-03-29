@@ -428,3 +428,51 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public InternalNode flexGrow(float flexGrow) {
+    mPrivateFlags |= PFLAG_FLEX_GROW_IS_SET;
+    mYogaNode.setFlexGrow(flexGrow);
+    return this;
+  }
+
+  @Override
+  public InternalNode flexShrink(float flexShrink) {
+    mPrivateFlags |= PFLAG_FLEX_SHRINK_IS_SET;
+    mYogaNode.setFlexShrink(flexShrink);
+    return this;
+  }
+
+  @Override
+  public InternalNode flexBasisPx(@Px int flexBasis) {
+    mPrivateFlags |= PFLAG_FLEX_BASIS_IS_SET;
+    mYogaNode.setFlexBasis(flexBasis);
+    return this;
+  }
+
+  @Override
+  public InternalNode flexBasisPercent(float percent) {
+    mPrivateFlags |= PFLAG_FLEX_BASIS_IS_SET;
+    mYogaNode.setFlexBasisPercent(percent);
+    return this;
+  }
+
+  @Override
+  public InternalNode flexBasisAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+    return flexBasisPx(mResourceResolver.resolveDimenOffsetAttr(resId, defaultResId));
+  }
+
+  @Override
+  public InternalNode flexBasisAttr(@AttrRes int resId) {
+    return flexBasisAttr(resId, 0);
+  }
+
+  @Override
+  public InternalNode flexBasisRes(@DimenRes int resId) {
+    return flexBasisPx(mResourceResolver.resolveDimenOffsetRes(resId));
+  }
+
+  @Override
+  public InternalNode flexBasisDip(@Dimension(unit = DP) int flexBasis) {
+    return flexBasisPx(mResourceResolver.dipsToPixels(flexBasis));
+  }
+
+  @Override
