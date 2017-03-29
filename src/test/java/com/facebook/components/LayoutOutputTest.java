@@ -256,3 +256,4 @@ public class LayoutOutputTest {
 
     mLayoutOutput.setComponent(component);
     mLayoutOutput.setId(
+        LayoutStateOutputIdCalculator.calculateLayoutOutputId(
