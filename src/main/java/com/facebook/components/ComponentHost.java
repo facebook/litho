@@ -130,3 +130,6 @@ public class ComponentHost extends ViewGroup {
     final Object content = mountItem.getContent();
     if (content instanceof Drawable) {
       mountDrawable(index, mountItem, bounds);
+    } else if (content instanceof View) {
+      mViewMountItems.put(index, mountItem);
+      mountView((View) content, mountItem.getFlags());

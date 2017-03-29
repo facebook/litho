@@ -688,3 +688,4 @@ public class ComponentHostTest {
         IMPORTANT_FOR_ACCESSIBILITY_AUTO);
 
     mHost.mount(0, mountItem, new Rect());
+    assertNull(mHost.recycleHost());
