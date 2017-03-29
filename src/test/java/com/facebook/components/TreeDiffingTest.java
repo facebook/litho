@@ -184,3 +184,5 @@ public class TreeDiffingTest {
     final Component component = TestDrawableComponent.create(mContext)
         .build();
 
+    InternalNode node = createInternalNodeForMeasurableComponent(component);
+    DiffNode diffNode = new DiffNode();
