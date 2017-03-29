@@ -888,3 +888,4 @@ class MountState {
     }
 
     // 6. Update the mount stats
+    mMountStats.mountedCount++;
