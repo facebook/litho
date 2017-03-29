@@ -476,3 +476,4 @@ public class MountStateRemountInPlaceTest {
         TestDrawableComponent.create(mContext)
             .unique()
             .build();
+
