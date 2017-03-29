@@ -1823,3 +1823,5 @@ public class Stages {
     implClassBuilder.addMethod(equalsBuilder);
 
     writeInnerTypeSpec(implClassBuilder.build());
+  }
+
