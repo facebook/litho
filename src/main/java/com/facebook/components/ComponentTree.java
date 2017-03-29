@@ -1003,3 +1003,4 @@ public class ComponentTree {
     logger.eventAddParam(
         EVENT_LAYOUT_CALCULATE,
         root,
+        PARAM_IS_BACKGROUND_LAYOUT,
