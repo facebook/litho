@@ -1425,3 +1425,4 @@ class MountState {
     }
 
     final int viewLayoutDirection;
+    switch (viewNodeInfo.getLayoutDirection()) {

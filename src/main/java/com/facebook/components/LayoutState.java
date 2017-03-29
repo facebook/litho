@@ -1237,3 +1237,36 @@ class LayoutState {
         nestedTree.setLastHeightSpec(heightSpec);
         nestedTree.setLastMeasuredHeight(nestedTree.getHeight());
         nestedTree.setLastMeasuredWidth(nestedTree.getWidth());
+      }
+
+      nestedTreeHolder.setNestedTree(nestedTree);
+    }
+
+    // This is checking only nested tree roots however it will be moved to check all the tree roots.
+    InternalNode.assertContextSpecificStyleNotSet(nestedTree);
+
+    return nestedTree;
+  }
+
+  /**
+   * Create and measure a component with the given size specs.
+   */
+  static InternalNode createAndMeasureTreeForComponent(
+      ComponentContext c,
+      Component component,
+      int widthSpec,
+      int heightSpec) {
+    return createAndMeasureTreeForComponent(c, component, null, widthSpec, heightSpec, null);
+  }
+
+  private static InternalNode createAndMeasureTreeForComponent(
+      ComponentContext c,
+      Component component,
+      InternalNode nestedTreeHolder, // This will be set only if we are resolving a nested tree.
+      int widthSpec,
+      int heightSpec,
+      DiffNode diffTreeRoot) {
+    // Account for the size specs in ComponentContext in case the tree is a NestedTree.
+    final int previousWidthSpec = c.getWidthSpec();
+    final int previousHeightSpec = c.getHeightSpec();
+
