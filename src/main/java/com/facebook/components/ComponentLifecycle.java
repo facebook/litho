@@ -411,3 +411,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
    * {@link ComponentLayout}. Return either a {@link Drawable} or a {@link View} or
    * {@code null} to be mounted.
    *
+   * @param c The {@link ComponentContext} to mount the component into.
