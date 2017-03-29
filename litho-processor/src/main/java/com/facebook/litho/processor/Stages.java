@@ -2880,3 +2880,4 @@ public class Stages {
         .addAnnotation(Override.class)
         .addModifiers(Modifier.PROTECTED)
         .addStatement("super.release()")
+        .addStatement(implMemberInstanceName + " = null")
