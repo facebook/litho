@@ -110,3 +110,4 @@ public class StateUpdatesTestHelper {
       looper.runToEndOfTasks();
     }
 
+    ComponentTestHelper.mountComponent(componentView, componentTree);
