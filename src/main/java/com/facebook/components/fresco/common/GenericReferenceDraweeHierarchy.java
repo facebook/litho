@@ -45,3 +45,4 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
   private Drawable mRetry;
   private Drawable mFailure;
   private Drawable mProgressBar;
+  private Drawable mOverlayImage;
