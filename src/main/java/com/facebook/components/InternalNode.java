@@ -74,3 +74,8 @@ import static com.facebook.yoga.YogaEdge.VERTICAL;
  */
 @ThreadConfined(ThreadConfined.ANY)
 class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder {
+
+  // Used to check whether or not the framework can use style IDs for
+  // paddingStart/paddingEnd due to a bug in some Android devices.
+  private static final boolean SUPPORTS_RTL = (SDK_INT >= JELLY_BEAN_MR1);
+

@@ -240,3 +240,28 @@ public class LifecycleMethodsTest {
           assertTrue(
               mCurrentStep == LifecycleStep.ON_BOUNDS_DEFINED ||
               mCurrentStep == LifecycleStep.ON_CREATE_MOUNT_CONTENT);
+          break;
+
+        case ON_BIND:
+          assertTrue(
+              mCurrentStep == LifecycleStep.ON_MOUNT ||
+              mCurrentStep == LifecycleStep.ON_UNBIND);
+          break;
+
+        case ON_UNBIND:
+          assertEquals(LifecycleStep.ON_BIND, mCurrentStep);
+          break;
+
+        case ON_UNMOUNT:
+          assertEquals(LifecycleStep.ON_UNBIND, mCurrentStep);
+          break;
+      }
+
+      mCurrentStep = currentStep;
+    }
+
+    int getSize() {
+      return mSize;
+    }
+
+    @Override
