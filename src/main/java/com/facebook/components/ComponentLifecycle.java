@@ -165,3 +165,7 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     mId = sComponentId.incrementAndGet();
   }
 
+  int getId() {
+    return mId;
+  }
+
