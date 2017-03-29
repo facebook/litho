@@ -1505,3 +1505,4 @@ public class LayoutStateCalculateTest {
     assertNotNull(nodeInfo.getViewTags());
   }
 
+  @Test
