@@ -888,3 +888,6 @@ public class ComponentTree {
     synchronized (this) {
       // Can't compute a layout if specs or root are missing
       if (!hasSizeSpec() || mRoot == null) {
+        return;
+      }
+
