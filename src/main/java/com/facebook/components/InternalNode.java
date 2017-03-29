@@ -1421,3 +1421,6 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public ComponentLayout build() {
+    return this;
+  }
+
