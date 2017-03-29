@@ -97,3 +97,10 @@ class ProgressSpec {
     }
 
     if (color != Color.TRANSPARENT && progressBar.getIndeterminateDrawable() != null) {
+      progressBar.getIndeterminateDrawable().mutate().setColorFilter(
+          color,
+          PorterDuff.Mode.MULTIPLY);
+    }
+  }
+
+  @OnUnmount
