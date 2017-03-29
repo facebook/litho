@@ -1288,3 +1288,11 @@ public class Stages {
     }
   }
 
+  // ExecutableElement.hashCode may be different in different runs of the
+  // processor. getElementId() is deterministic and ensures that the output is
+  // the same across multiple runs.
+  private int getElementId(ExecutableElement el) {
+    return (mQualifiedClassName.hashCode() * 31 + el.getSimpleName().hashCode()) * 31 +
+        el.asType().toString().hashCode();
+  }
+
