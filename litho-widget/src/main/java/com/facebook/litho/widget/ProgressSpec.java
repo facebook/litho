@@ -87,3 +87,5 @@ class ProgressSpec {
 
   @OnMount
   static void onMount(
+      ComponentContext c,
+      ProgressBar progressBar,
