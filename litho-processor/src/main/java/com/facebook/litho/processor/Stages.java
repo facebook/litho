@@ -203,3 +203,5 @@ public class Stages {
         new Class[parameterAnnotations.size()]);
 
     mSupportState = supportState;
+    mSimpleClassName = Utils.getSimpleClassName(mQualifiedClassName);
+    mOnEventMethods = Utils.getAnnotatedMethods(mSourceElement, OnEvent.class);

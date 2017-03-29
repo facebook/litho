@@ -594,3 +594,6 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Override
   public InternalNode paddingDip(YogaEdge edge, @Dimension(unit = DP) int padding) {
     return paddingPx(edge, mResourceResolver.dipsToPixels(padding));
+  }
+
+  @Override
