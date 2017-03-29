@@ -321,3 +321,4 @@ public class InternalNodeTest {
     final int unspecifiedSizeSpec = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
     final int exactSizeSpec = SizeSpec.makeSizeSpec(50, SizeSpec.EXACTLY);
     final Component<Text> textComponent = Text.create(c)
+        .textSizePx(16)
