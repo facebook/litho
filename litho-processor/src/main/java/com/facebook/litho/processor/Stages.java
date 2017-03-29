@@ -2796,3 +2796,5 @@ public class Stages {
       if (!mTypeVariables.isEmpty()) {
         propsBuilderClassBuilder.addTypeVariables(mTypeVariables);
       }
+    }
+
