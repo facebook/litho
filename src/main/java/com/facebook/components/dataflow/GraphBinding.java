@@ -26,7 +26,7 @@ import android.util.ArraySet;
 public final class GraphBinding implements DataFlowBinding {
 
   private final DataFlowGraph mDataFlowGraph;
-  private final BindingSpecs mBindingSpecs = new BindingSpecs();
+  private final Bindings mBindings = new Bindings();
   private final ArraySet<ValueNode> mAllNodes = new ArraySet<>();
   private boolean mIsActive = false;
   private boolean mHasBeenActivated = false;
@@ -56,7 +56,7 @@ public final class GraphBinding implements DataFlowBinding {
       throw new RuntimeException(
           "Trying to add binding after DataFlowGraph has already been activated.");
     }
-    mBindingSpecs.addBinding(fromNode, toNode, name);
+    mBindings.addBinding(fromNode, toNode, name);
     mAllNodes.add(fromNode);
     mAllNodes.add(toNode);
   }
@@ -74,7 +74,7 @@ public final class GraphBinding implements DataFlowBinding {
 
   @Override
   public void activate() {
-    mBindingSpecs.applyBindings();
+    mBindings.applyBindings();
     mHasBeenActivated = true;
     mIsActive = true;
 
@@ -85,7 +85,7 @@ public final class GraphBinding implements DataFlowBinding {
   public void deactivate() {
     mIsActive = false;
     mDataFlowGraph.unregister(this);
-    mBindingSpecs.removeBindings();
+    mBindings.removeBindings();
   }
 
   @Override
@@ -93,7 +93,7 @@ public final class GraphBinding implements DataFlowBinding {
     return mIsActive;
   }
 
-  private static class BindingSpecs {
+  private static class Bindings {
 
     private final ArrayList<ValueNode> mFromNodes = new ArrayList<>();
     private final ArrayList<ValueNode> mToNodes = new ArrayList<>();

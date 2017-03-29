@@ -11,6 +11,8 @@ components_robolectric_test(
     name = "components",
     srcs = glob([
         "*Test.java",
+        "animation/*.java",
+        "dataflow/*.java",
         "reference/*Test.java",
     ]),
     contacts = ["oncall+components_for_android@xmail.facebook.com"],

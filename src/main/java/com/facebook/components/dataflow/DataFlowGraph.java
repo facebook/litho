@@ -43,7 +43,7 @@ public class DataFlowGraph {
   }
 
   @VisibleForTesting
-  static DataFlowGraph create(TimingSource timingSource) {
+  public static DataFlowGraph create(TimingSource timingSource) {
     DataFlowGraph instance = new DataFlowGraph(timingSource);
     timingSource.setDataFlowGraph(instance);
     return instance;
