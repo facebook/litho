@@ -1361,3 +1361,5 @@ class MountState {
     view.setPadding(0, 0, 0, 0);
   }
 
+  private static void setViewBackground(View view, ViewNodeInfo viewNodeInfo) {
+    final Reference<Drawable> backgroundReference = viewNodeInfo.getBackground();
