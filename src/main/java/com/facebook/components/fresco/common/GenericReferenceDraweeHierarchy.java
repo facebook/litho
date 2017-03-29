@@ -63,3 +63,24 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
    * Set the context to be used to acquire and release references.
    *
    * @param c
+   *    The context used to acquire and release references. This context is set to null on
+   *    releaseReferences()
+   */
+  public void setContext(ComponentContext c) {
+    mContext = c;
+  }
+
+  /**
+   * Set the placeholder image of the wrapped GenericDraweeHierarchy through the use of a reference.
+   *
+   * @param placeholderReference
+   *    The reference which references the placeholder drawable to use. Accepts null which will
+   *    remove the current placeholder image. Make sure to call release() to release this reference.
+   *
+   * @param scaleType
+   *    The scale type of the placeholder drawable. Accepts null which will use the default
+   *    scale type defined by GenericDraweeHierarchy.
+   */
+  public void setPlaceholderReference(
+      @Nullable Reference<Drawable> placeholderReference,
+      @Nullable ScalingUtils.ScaleType scaleType) {
