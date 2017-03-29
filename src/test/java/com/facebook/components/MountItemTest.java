@@ -57,3 +57,4 @@ public class MountItemTest {
         return TestDrawableComponent.create(c).buildWithLayout();
       }
     };
+    mComponentHost = new ComponentHost(RuntimeEnvironment.application);
