@@ -26,3 +26,4 @@ android_library(
         COMPONENTS_DISPLAYLISTSUBS_TARGET,
         COMPONENTS_YOGA_TARGET,
         COMPONENTS_JSR_TARGET,
+    ],
