@@ -365,3 +365,4 @@ public class ComponentTree {
     if (!mIncrementalMountEnabled) {
       throw new IllegalStateException("Calling incrementalMountComponent() but incremental mount" +
           " is not enabled");
+    }
