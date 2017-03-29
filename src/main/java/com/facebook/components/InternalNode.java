@@ -267,3 +267,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return FastMath.round(mYogaNode.getLayoutPadding(BOTTOM));
   }
 
+  public Reference<? extends Drawable> getBackground() {
