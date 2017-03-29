@@ -642,3 +642,4 @@ class LayoutState {
       }
     }
 
+    // 7. Add VisibilityOutputs if any visibility-related event handlers are present.
