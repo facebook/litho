@@ -98,3 +98,5 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
     return new HashSet<>(Arrays.asList(
         ClassNames.LAYOUT_SPEC.toString(),
         ClassNames.MOUNT_SPEC.toString()));
+  }
+

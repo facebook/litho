@@ -73,3 +73,4 @@ import static com.facebook.litho.processor.Utils.capitalize;
 import static com.facebook.litho.processor.Visibility.PRIVATE;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.DELEGATE_FIELD_NAME;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.SPEC_INSTANCE_NAME;
+import static java.util.Arrays.asList;

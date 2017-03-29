@@ -213,3 +213,51 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputsForDeepLayoutSpecs() {
+    final int paddingSize = 5;
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            .backgroundColor(0xFFFF0000)
+            .child(
+                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    .flexDirection(YogaFlexDirection.ROW)
+                    .justifyContent(YogaJustify.SPACE_AROUND)
+                    .alignItems(YogaAlign.CENTER)
+                    .positionType(YogaPositionType.ABSOLUTE)
+                    .positionPx(LEFT, 50)
+                    .positionPx(TOP, 50)
+                    .positionPx(RIGHT, 200)
+                    .positionPx(BOTTOM, 50)
+                    .child(
+                        Text.create(c)
+                            .text("textLeft1"))
+                    .child(
+                        Text.create(c)
+                            .text("textRight1"))
+                    .paddingPx(YogaEdge.ALL, paddingSize)
+                    .wrapInView())
+            .child(
+                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    .flexDirection(YogaFlexDirection.ROW)
+                    .justifyContent(YogaJustify.SPACE_AROUND)
+                    .alignItems(YogaAlign.CENTER)
+                    .positionType(YogaPositionType.ABSOLUTE)
+                    .positionPx(LEFT, 200)
+                    .positionPx(TOP, 50)
+                    .positionPx(RIGHT, 50)
+                    .positionPx(BOTTOM, 50)
+                    .child(
+                        Text.create(c)
+                            .text("textLeft2")
+                            .withLayout().flexShrink(0)
+                            .wrapInView()
+                            .paddingPx(YogaEdge.ALL, paddingSize))
+                    .child(
+                        TestViewComponent.create(c)
+                            .withLayout().flexShrink(0)
+                            .wrapInView()))
+            .build();
+      }
+    };
+

@@ -120,3 +120,4 @@ public class LayoutStateCalculateVisibilityOutputsTest {
                             .visibleHandler(c.newEventHandler(1))))
             .child(
                 TestDrawableComponent.create(c)
+                    .withLayout().flexShrink(0)

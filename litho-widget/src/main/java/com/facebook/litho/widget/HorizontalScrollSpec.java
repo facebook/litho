@@ -116,3 +116,7 @@ class HorizontalScrollSpec {
 
     // If size constraints were not explicitly defined, just fallback to the
     // component dimensions instead.
+    size.width = SizeSpec.getMode(widthSpec) == UNSPECIFIED
+        ? measuredWidth
+        : SizeSpec.getSize(widthSpec);
+    size.height = measuredHeight;

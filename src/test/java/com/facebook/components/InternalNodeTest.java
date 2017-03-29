@@ -270,3 +270,5 @@ public class InternalNodeTest {
 
     assertFalse(isFlagSet(holderNode, "PFLAG_LAYOUT_DIRECTION_IS_SET"));
     assertEquals(
+        YogaDirection.INHERIT,
+        holderNode.getStyleDirection());

@@ -45,3 +45,4 @@
     <attr name="android:background" />
     <attr name="android:foreground" />
     <attr name="android:importantForAccessibility" />
+    <attr name="android:duplicateParentState" />
