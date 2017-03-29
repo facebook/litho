@@ -82,3 +82,6 @@ class ProgressSpec {
       size.height = DEFAULT_SIZE;
     } else {
       MeasureUtils.measureWithEqualDimens(widthSpec, heightSpec, size);
+    }
+  }
+
