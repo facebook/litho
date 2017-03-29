@@ -146,3 +146,72 @@ public class RecyclerBinder implements Binder<RecyclerView> {
    */
   @UiThread
   public final void insertItemAtAsync(int position, ComponentInfo componentInfo) {
+    ThreadUtils.assertMainThread();
+
+    // If the binder has not been measured yet we simply fall back on the sync implementation as
+    // nothing will really happen until we compute the first range.
+    if (!mIsMeasured.get()) {
+      insertItemAt(position, componentInfo);
+      return;
+    }
+
+    //TODO t15827349 implement async operations in RecyclerBinder.
+  }
+
+  /**
+   * Moves an item from fromPosition to toPostion. If there are other pending operations on this
+   * binder this will only be executed when all the operations have been completed (to ensure index
+   * consistency).
+   */
+  @UiThread
+  public final void moveItemAsync(int fromPosition, int toPosition) {
+    ThreadUtils.assertMainThread();
+
+    // If the binder has not been measured yet we simply fall back on the sync implementation as
+    // nothing will really happen until we compute the first range.
+    if (!mIsMeasured.get()) {
+      moveItem(fromPosition, toPosition);
+      return;
+    }
+
+    //TODO t15827349 implement async operations in RecyclerBinder.
+  }
+
+  /**
+   * Removes an item from position. If there are other pending operations on this binder this will
+   * only be executed when all the operations have been completed (to ensure index consistency).
+   */
+  @UiThread
+  public final void removeItemAtAsync(int position) {
+    ThreadUtils.assertMainThread();
+
+    // If the binder has not been measured yet we simply fall back on the sync implementation as
+    // nothing will really happen until we compute the first range.
+    if (!mIsMeasured.get()) {
+      removeItemAt(position);
+      return;
+    }
+
+    //TODO t15827349 implement async operations in RecyclerBinder.
+  }
+
+  /**
+   * See {@link RecyclerBinder#insertItemAt(int, ComponentInfo)}.
+   */
+  @UiThread
+  public final void insertItemAt(int position, Component component) {
+    insertItemAt(position, ComponentInfo.create().component(component).build());
+  }
+
+  /**
+   * Inserts a new item at position. The {@link RecyclerView} gets notified immediately about the
+   * new item being inserted. If the item's position falls within the currently visible range, the
+   * layout is immediately computed on the] UiThread.
+   * The ComponentInfo contains the component that will be inserted in the Binder and extra info
+   * like isSticky or spanCount.
+   */
+  @UiThread
+  public final void insertItemAt(int position, ComponentInfo componentInfo) {
+    ThreadUtils.assertMainThread();
+
+    final ComponentTreeHolder holder = ComponentTreeHolder.acquire(
