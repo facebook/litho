@@ -901,3 +901,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     }
   }
 
+  private boolean shouldApplyTouchExpansion() {
