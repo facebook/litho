@@ -258,3 +258,5 @@ public class PagerBinderTest {
     int getComponentCount() {
       return ((BinderTreeCollection) Whitebox.getInternalState(this, "mComponentTrees")).size();
     }
+  }
+}
