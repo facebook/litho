@@ -85,3 +85,4 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
 
   @Override
   protected boolean onStateChange(int[] states) {
+    if (mColorStateList != null && mLayout != null) {
