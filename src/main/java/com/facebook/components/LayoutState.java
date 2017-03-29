@@ -114,3 +114,5 @@ class LayoutState {
 
   private Component<?> mComponent;
 
+  private int mWidthSpec;
+  private int mHeightSpec;

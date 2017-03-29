@@ -89,3 +89,4 @@ public abstract class GridComponentBinder extends RecyclerComponentBinder<
 
     if (isIncrementalMountEnabled()) {
       IncrementalMountUtils.performIncrementalMount(recyclerView);
+    }
