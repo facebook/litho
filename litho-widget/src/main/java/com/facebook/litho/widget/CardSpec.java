@@ -101,3 +101,6 @@ class CardSpec {
                 .withLayout()
                 .positionType(ABSOLUTE)
                 .positionPx(ALL, 0))
+        .build();
+  }
+}
