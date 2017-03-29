@@ -967,3 +967,11 @@ class MountState {
     }
   }
 
+  private static boolean canMountIncrementally(Component<?> component) {
+    return component.getLifecycle().canMountIncrementally();
+  }
+
+  /**
+   * Resolves the component host that will be used for the given layout output
+   * being mounted.
+   */
