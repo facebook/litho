@@ -27,3 +27,5 @@ import android.text.Layout;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
 import android.util.TypedValue;
+import android.view.MotionEvent;
+import android.view.View;
