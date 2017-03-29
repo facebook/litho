@@ -178,3 +178,4 @@ public class Stages {
       String qualifiedClassName,
       Class<Annotation>[] stageAnnotations,
       Class<Annotation>[] interStagePropAnnotations,
+      TypeSpec.Builder typeSpec,

@@ -559,3 +559,4 @@ public abstract class BaseBinder<
    * given position.
    */
   protected int getWidthSpec(int position) {
+    return mContentWidthSpec;
