@@ -107,3 +107,4 @@ class MountState {
   public MountState(ComponentView view) {
     mIndexToItemMap = new LongSparseArray<>();
     mVisibilityIdToItemMap = new LongSparseArray<>();
+    mCanMountIncrementallyMountItems = new LongSparseArray<>();

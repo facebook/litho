@@ -45,3 +45,4 @@ class TestComponentContext extends ComponentContext {
   }
 
   /**
+   * Uses the provided component to create a layout. Only the root node is created using
