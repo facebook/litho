@@ -38,3 +38,4 @@ import static com.facebook.litho.annotations.ResType.DRAWABLE;
 
 @MountSpec
 class FrescoComponentSpec {
+

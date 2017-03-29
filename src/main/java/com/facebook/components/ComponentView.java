@@ -255,3 +255,4 @@ public class ComponentView extends ComponentHost {
     }
     setMountStateDirty();
 
+    if (mComponent != null) {
