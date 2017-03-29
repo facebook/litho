@@ -462,3 +462,4 @@ public class ComponentTreeTest {
     return Whitebox.getInternalState(componentView, "mComponent");
   }
 
+  private static boolean componentTreeHasSizeSpec(ComponentTree componentTree) {
