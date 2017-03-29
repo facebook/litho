@@ -36,3 +36,4 @@ public class MountItemTest {
   private ComponentHost mComponentHost;
   private Object mContent;
   private CharSequence mContentDescription;
+  private Object mViewTag;
