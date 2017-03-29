@@ -1124,3 +1124,4 @@ public class Stages {
       throw new MultiPrintableException(errors);
     }
 
+    writeMethodSpec(new DelegateMethodSpecBuilder()
