@@ -2169,3 +2169,4 @@ public class Stages {
               implClass);
     }
 
+    final CodeBlock.Builder delegateParameters = CodeBlock.builder();
