@@ -490,3 +490,7 @@ public class ComponentTree {
         // Since outputs get set on the same object during the lifecycle calls,
         // we need to copy it in order to use it concurrently.
         component = mRoot.makeShallowCopy();
+      }
+    }
+
+    if (toRelease != null) {
