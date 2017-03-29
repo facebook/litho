@@ -732,3 +732,4 @@ public class RecyclerBinderTest {
 
   @Test
   public void testRemoveItem() {
+    final List<ComponentInfo> components = prepareLoadedBinder();
