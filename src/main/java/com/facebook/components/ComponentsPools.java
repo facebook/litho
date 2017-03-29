@@ -515,3 +515,4 @@ public class ComponentsPools {
     sVisibilityItemPool.release(item);
   }
 
+  @ThreadSafe(enableChecks = false)
