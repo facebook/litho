@@ -16,7 +16,7 @@ java_library(
         COMPONENTS_JSR_TARGET,
     ],
     tests = [
-        "//javatests/com/facebook/components/specmodels:specmodels",
+        "//javatests/com/facebook/litho/specmodels:specmodels",
     ],
     visibility = [
         "PUBLIC",

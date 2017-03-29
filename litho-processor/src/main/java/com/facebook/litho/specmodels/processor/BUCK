@@ -16,7 +16,7 @@ java_library(
         COMPONENTS_JAVAPOET_TARGET,
     ],
     tests = [
-        "//javatests/com/facebook/components/specmodels/processor:processor",
+        "//javatests/com/facebook/litho/specmodels/processor:processor",
     ],
     visibility = [
         "PUBLIC",

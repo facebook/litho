@@ -11,7 +11,7 @@ android_library(
     name = "utils",
     srcs = glob(["*.java"]),
     tests = [
-        "//javatests/com/facebook/components/utils:utils",
+        "//javatests/com/facebook/litho/utils:utils",
     ],
     visibility = [
         "PUBLIC",
