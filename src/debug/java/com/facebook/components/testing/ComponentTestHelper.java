@@ -353,3 +353,25 @@ public final class ComponentTestHelper {
   private static ComponentContext getContext(Component.Builder builder) {
     return Whitebox.getInternalState(builder, "mContext");
   }
+
+  /**
+   * Mounts the component & triggers the visibility event. Requires that the component supports
+   * incremental mounting.
+   *
+   * {@link com.facebook.components.VisibleEvent}
+   *
+   * @param context A components context
+   * @param onVisibleHandler SpecificComponent.onVisible(component)
+   * @param component The component builder which to get the subcomponent from
+   * @return A ComponentView with the component mounted in it.
+   */
+  public static ComponentView dispatchVisibleEvent(
+      ComponentContext context,
+      EventHandler onVisibleHandler,
+      Component component) {
+    ComponentView componentView = new ComponentView(context);
+
+    mountComponent(
+        componentView,
+        ComponentTree.create(context, component)
+            .build(),
