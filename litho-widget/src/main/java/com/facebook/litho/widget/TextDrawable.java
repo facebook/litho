@@ -56,3 +56,4 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
   private ColorStateList mColorStateList;
   private int mUserColor;
   private int mHighlightColor;
+  private ClickableSpan[] mClickableSpans;
