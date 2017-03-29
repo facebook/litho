@@ -2121,3 +2121,13 @@ public class Stages {
 
   public void generateIsPureRender() {
     final MethodSpec.Builder shouldUpdateComponent =
+        MethodSpec.methodBuilder("isPureRender")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(TypeName.BOOLEAN)
+            .addStatement("return true");
+
+    mClassTypeSpec.addMethod(shouldUpdateComponent.build());
+  }
+
+  public void generateCallsShouldUpdateOnMount() {
