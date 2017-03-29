@@ -80,3 +80,6 @@ class JUnknownCppException : public JavaClass<JUnknownCppException, JThrowable> 
   }
 };
 
+class JCppSystemErrorException : public JavaClass<JCppSystemErrorException, JThrowable> {
+ public:
+  static auto constexpr kJavaDescriptor = "Lcom/facebook/jni/CppSystemErrorException;";
