@@ -60,3 +60,4 @@ import static com.facebook.components.ThreadUtils.assertMainThread;
  * @see ComponentView
  * @see LayoutState
  */
+class MountState {

@@ -145,3 +145,15 @@ public class StateUpdateImplClassBuilder {
     return this;
   }
 
+  public StateUpdateImplClassBuilder withComponentStateUpdateInterface(
+      ClassName componentStateUpdateInterface) {
+    mComponentStateUpdateInterface = componentStateUpdateInterface;
+    return this;
+  }
+
+  public StateUpdateImplClassBuilder withComponentClassName(
+      ClassName componentClassName) {
+    mComponentClassName = componentClassName;
+    return this;
+  }
+
