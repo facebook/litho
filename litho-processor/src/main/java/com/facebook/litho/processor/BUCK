@@ -48,3 +48,4 @@ java_library(
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/processor:processor"),
         make_dep_path("src/main/java/com/facebook/components/javapoet:javapoet"),
         COMPONENTS_ANNOTATIONS_TARGET,
+    ],
