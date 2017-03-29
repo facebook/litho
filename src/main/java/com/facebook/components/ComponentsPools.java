@@ -84,3 +84,6 @@ public class ComponentsPools {
   private static final Pools.SynchronizedPool<LayoutOutput> sLayoutOutputPool =
       new Pools.SynchronizedPool<>(256);
 
+  private static final Pools.SynchronizedPool<VisibilityOutput> sVisibilityOutputPool =
+      new Pools.SynchronizedPool<>(64);
+
