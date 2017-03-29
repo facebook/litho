@@ -945,3 +945,4 @@ public class TreeDiffingTest {
         (TestComponent) prevLayoutState.getMountableOutputAt(2).getComponent();
     assertTrue(prevNestedRoot.wasMeasureCalled());
 
+    TestComponent nestedRoot = (TestComponent) layoutState.getMountableOutputAt(2).getComponent();
