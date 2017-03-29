@@ -100,3 +100,4 @@ public class IncrementalMountUtils {
         bottom <= scrollingParentHeight &&
         componentView.getPreviousMountBounds().width() == componentView.getWidth() &&
         componentView.getPreviousMountBounds().height() == componentView.getHeight()) {
+      // View is fully visible, and has already been completely mounted.
