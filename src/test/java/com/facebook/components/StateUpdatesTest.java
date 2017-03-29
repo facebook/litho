@@ -159,3 +159,22 @@ public class StateUpdatesTest {
     mComponentTree = ComponentTree.create(mContext, mTestComponent)
         .incrementalMount(false)
         .build();
+    final ComponentView componentView = new ComponentView(mContext);
+    componentView.setComponent(mComponentTree);
+    componentView.onAttachedToWindow();
+    ComponentTestHelper.measureAndLayout(componentView);
+  }
+
+  @Test(expected = RuntimeException.class)
+  public void testCrashOnSameComponentKey() {
+    final Component child1 = new TestComponent(mLifecycle);
+    final Component child2 = new TestComponent(mLifecycle);
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c)
+            .child(child1)
+            .child(child2)
+            .build();
+      }
+    };
