@@ -670,3 +670,4 @@ class MountState {
     if (logger != null) {
       logPrepareMountParams(logger, logTag, component, stats);
     }
+
