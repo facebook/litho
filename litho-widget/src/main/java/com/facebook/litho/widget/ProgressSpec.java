@@ -55,3 +55,17 @@ class ProgressSpec {
     indeterminateDrawable.set(getStyledIndeterminateDrawable(c, 0));
   }
 
+  @OnPrepare
+  static void onPrepare(
+      ComponentContext c,
+      @Prop(optional = true, resType = ResType.DRAWABLE) Reference<Drawable> indeterminateDrawable,
+      Output<Reference<Drawable>> resolvedIndeterminateDrawable) {
+    if (indeterminateDrawable != null) {
+      resolvedIndeterminateDrawable.set(indeterminateDrawable);
+    } else {
+      resolvedIndeterminateDrawable.set(getStyledIndeterminateDrawable(
+          c,
+          android.R.attr.progressBarStyle));
+    }
+  }
+
