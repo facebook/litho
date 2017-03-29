@@ -188,3 +188,9 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
     }
   }
 
+  Component<L> makeShallowCopyWithNewId() {
+    final Component<L> component = makeShallowCopy();
+    component.mId = sIdGenerator.incrementAndGet();
+    return component;
+  }
+

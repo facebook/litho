@@ -151,3 +151,6 @@ public class Stages {
   private List<VariableElement> mTreeProps;
   private final Map<String, VariableElement> mStateMap = new LinkedHashMap<>();
 
+  // Map of name to VariableElement, for members of the inner implementation class, in order
+  private LinkedHashMap<String, VariableElement> mImplMembers;
+  private List<Parameter> mImplParameters;
