@@ -20,3 +20,6 @@ import android.util.StateSet;
 
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.HONEYCOMB;
+
+/**
+ * A cache that holds Drawables retreived from Android {@link android.content.res.Resources} for

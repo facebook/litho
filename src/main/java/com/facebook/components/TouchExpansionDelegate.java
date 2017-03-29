@@ -30,3 +30,4 @@ class TouchExpansionDelegate extends TouchDelegate {
       sInnerTouchDelegateScrapArrayPool = new Pools.SimplePool<>(4);
 
   private final SparseArrayCompat<InnerTouchDelegate> mDelegates = new SparseArrayCompat<>();
+  private SparseArrayCompat<InnerTouchDelegate> mScrapDelegates;

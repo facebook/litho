@@ -9,3 +9,4 @@
 
 package com.facebook.litho;
 
+class HostComponent extends ComponentLifecycle {

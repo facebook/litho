@@ -32,3 +32,62 @@ import static org.mockito.Mockito.when;
  * Test for {@link DisplayListDrawable}
  */
 @RunWith(ComponentsTestRunner.class)
+public class DisplayListDrawableTest  {
+
+  private DisplayList mDisplayList;
+  private Drawable mDrawable;
+  private Canvas mCanvas;
+  private Canvas mDlCanvas;
+
+  @Before
+  public void setup() throws DisplayListException {
+    mDisplayList = Mockito.mock(DisplayList.class);
+    mDrawable = Mockito.mock(Drawable.class);
+    mCanvas = Mockito.mock(Canvas.class);
+    mDlCanvas = Mockito.mock(Canvas.class);
+    when(mDisplayList.isValid()).thenReturn(true);
+    when(mDrawable.getBounds()).thenReturn(new Rect());
+    when(mDisplayList.start(anyInt(), anyInt())).thenReturn(mDlCanvas);
+  }
+
+  @Test
+  public void testInvalidationSuppression() {
+    DisplayListDrawable displayListDrawable = new DisplayListDrawable(mDrawable, mDisplayList);
+    displayListDrawable.draw(mCanvas);
+    verify(mDrawable, never()).draw((Canvas) anyObject());
+
+    displayListDrawable.suppressInvalidations(true);
+    displayListDrawable.invalidateDrawable(mDrawable);
+    displayListDrawable.suppressInvalidations(false);
+    displayListDrawable.draw(mCanvas);
+    verify(mDrawable, never()).draw((Canvas) anyObject());
+  }
+
+  @Test
+  public void testInvalidation() throws DisplayListException {
+    DisplayListDrawable displayListDrawable = new DisplayListDrawable(mDrawable, mDisplayList);
+    displayListDrawable.draw(mCanvas);
+    verify(mDrawable, never()).draw((Canvas) anyObject());
+
+    displayListDrawable.invalidateDrawable(mDrawable);
+    displayListDrawable.draw(mCanvas);
+    verify(mDisplayList).start(anyInt(), anyInt());
+    verify(mDrawable).draw(mDlCanvas);
+    verify(mDisplayList).end(mDlCanvas);
+    verify(mDisplayList).setBounds(anyInt(), anyInt(), anyInt(), anyInt());
+  }
+
+  @Test
+  public void testMountItemUpdate() {
+    LayoutOutput layoutOutput = ComponentsPools.acquireLayoutOutput();
+    layoutOutput.setDisplayList(mDisplayList);
+    MountItem mountItem = ComponentsPools.acquireMountItem(null, null, mDrawable, layoutOutput);
+    DisplayListDrawable displayListDrawable = mountItem.getDisplayListDrawable();
+
+    layoutOutput.setDisplayList(null);
+    mountItem.init(null, null, mDrawable, layoutOutput, displayListDrawable);
+
+    displayListDrawable.draw(mCanvas);
+    verify(mDrawable).draw(mCanvas);
+  }
+}

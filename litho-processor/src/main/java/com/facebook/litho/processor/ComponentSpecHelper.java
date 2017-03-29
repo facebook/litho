@@ -23,3 +23,10 @@ import com.facebook.litho.specmodels.model.SpecModel;
 import com.squareup.javapoet.TypeName;
 
 public abstract class ComponentSpecHelper extends SpecHelper {
+
+  public ComponentSpecHelper(
+      ProcessingEnvironment processingEnv,
+      TypeElement specElement,
+      String name,
+      boolean isPublic,
+      Class<Annotation>[] stageAnnotations,

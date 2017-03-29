@@ -19,3 +19,5 @@ import com.facebook.litho.ResourceResolver;
  * to acquire the underlying resource and
  * {@link Reference#release(ComponentContext, Object, Reference)} to release it when
  * it's not needed anymore.
+ */
+public abstract class Reference<L> {

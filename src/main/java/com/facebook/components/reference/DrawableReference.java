@@ -42,3 +42,12 @@ public final class DrawableReference extends ReferenceLifecycle<Drawable> {
   @Override
   protected Drawable onAcquire(
       ComponentContext context,
+      Reference reference) {
+    return ((State) reference).mDrawable;
+  }
+
+  private static class State extends Reference<Drawable> {
+
+    Drawable mDrawable;
+
+    @Override
