@@ -70,3 +70,4 @@ class ProgressSpec {
   }
 
   @OnMeasure
+  static void onMeasure(

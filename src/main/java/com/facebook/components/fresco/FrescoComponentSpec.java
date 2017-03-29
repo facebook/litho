@@ -67,3 +67,4 @@ class FrescoComponentSpec {
       int widthSpec,
       int heightSpec,
       Size size,
+      @Prop(optional = true, resType = ResType.FLOAT) float aspectRatio) {
