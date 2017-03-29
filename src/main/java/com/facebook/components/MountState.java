@@ -1440,3 +1440,10 @@ class MountState {
   }
 
   private static void unsetViewLayoutDirection(View view, ViewNodeInfo viewNodeInfo) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
+      return;
+    }
+
+    view.setLayoutDirection(View.LAYOUT_DIRECTION_INHERIT);
+  }
+
