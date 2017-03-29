@@ -69,3 +69,15 @@ final class ViewExtractors {
       if (input == null) {
         return "Provided view was null";
       }
+      if (input.getContentDescription() == null) {
+        return String.format(
+            "No content description found, view is %s",
+            getVisibilityString(input.getVisibility()));
+      }
+      return String.format(
+          "Found content description: \"%s\", view is %s",
+          input.getContentDescription(),
+          getVisibilityString(input.getVisibility()));
+    }
+  };
+
