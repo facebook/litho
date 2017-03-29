@@ -903,3 +903,6 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   private boolean shouldApplyTouchExpansion() {
     return mTouchExpansion != null && mNodeInfo != null && mNodeInfo.hasTouchEventHandlers();
+  }
+
+  boolean hasTouchExpansion() {
