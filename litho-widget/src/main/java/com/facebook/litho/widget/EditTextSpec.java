@@ -345,3 +345,4 @@ class EditTextSpec {
       int gravity,
       boolean editable,
       int selection) {
+
