@@ -229,3 +229,7 @@ public interface ComponentLayout {
     Builder sendAccessibilityEventUncheckedHandler(
         EventHandler<SendAccessibilityEventUncheckedEvent> sendAccessibilityEventUncheckedHandler);
 
+    ComponentLayout build();
+  }
+
+  interface ContainerBuilder extends Builder {
