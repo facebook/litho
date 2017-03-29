@@ -796,3 +796,6 @@ public class Stages {
           v.asType(),
           ClassNames.OUTPUT) != null;
       if (isAnnotatedParameter && isInterStageOutput) {
+        throw new ComponentsProcessingException(
+            v,
+            "Variables that are both prop and output are forbidden.");
