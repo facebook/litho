@@ -147,3 +147,10 @@ class EditTextSpec {
         shadowColor.set(a.getColor(attr, 0));
       } else if (attr == R.styleable.Text_android_gravity) {
         gravity.set(a.getInteger(attr, 0));
+      }
+    }
+
+    a.recycle();
+  }
+
+  @OnMeasure
