@@ -1098,3 +1098,6 @@ public class ComponentTree {
       sDefaultLayoutThreadLooper = defaultThread.getLooper();
     }
 
+    return sDefaultLayoutThreadLooper;
+  }
+
