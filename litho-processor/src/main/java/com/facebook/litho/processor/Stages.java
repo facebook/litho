@@ -1869,3 +1869,10 @@ public class Stages {
             .superclass(
                 ParameterizedTypeName.get(
                     SectionClassNames.SECTION,
+                    ClassName.bestGuess(getSimpleClassName())))
+            .addSuperinterface(Cloneable.class);
+
+    if (isStatic.equals(Stages.StaticFlag.STATIC)) {
+      stateClassBuilder.addModifiers(Modifier.STATIC);
+    }
+
