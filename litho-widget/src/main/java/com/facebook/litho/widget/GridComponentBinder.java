@@ -142,3 +142,54 @@ public abstract class GridComponentBinder extends RecyclerComponentBinder<
       return SizeSpec.makeSizeSpec(
           (SizeSpec.getSize(super.getHeightSpec(position)) / spanCount) * itemSpanCount,
           EXACTLY);
+    }
+  }
+
+  @Override
+  protected boolean shouldContinueInitialization(
+      int position,
+      int itemWidth,
+      int itemHeight) {
+    final int itemMainAxisSize;
+    final int itemCrossAxisSize;
+    final int recyclerMainAxisSize;
+    final int recyclerCrossAxisSize;
+    // Assuming the range is starting always from the first position, the initial range consists
+    // of the visible viewport plus # viewports after depending by the WorkingRange size.
+    final int viewportsToInit = 1 + (RecyclerComponentWorkingRangeController.RANGE_SIZE - 1) / 2;
+    if (getInitializeStartPosition() == position) {
+      mInitFillMainAxis = 0;
+      mInitFillCrossAxis = 0;
+    }
+
+    if (getLayoutManager().getOrientation() == OrientationHelper.VERTICAL) {
+      itemMainAxisSize = itemHeight;
+      itemCrossAxisSize = itemWidth;
+      recyclerMainAxisSize = getHeight();
+      recyclerCrossAxisSize = getWidth();
+    } else {
+      itemMainAxisSize = itemWidth;
+      itemCrossAxisSize = itemHeight;
+      recyclerMainAxisSize = getWidth();
+      recyclerCrossAxisSize = getHeight();
+    }
+
+    // Fill first the cross axis until the total recycler size has been reached. Then fill the next
+    // "line" in the main axis.
+    mInitFillCrossAxis += itemCrossAxisSize;
+    // Overflow cross axis.
+    if (mInitFillCrossAxis < recyclerCrossAxisSize) {
+      // Keep filling the cross axis.
+      return true;
+    } else {
+      // New line in the main axis, re-init the cross axis and keep going.
+      mInitFillCrossAxis = 0;
+      mInitFillMainAxis += itemMainAxisSize;
+    }
+
+    // Check if the initial range is filled. The initial range consists of the viewport and the
+    // the items that should be loaded after the currently visible ones. Since the initial range
+    // always starts at the first position, there are no items before the viewport.
+    return mInitFillMainAxis < recyclerMainAxisSize * viewportsToInit;
+  }
+}
