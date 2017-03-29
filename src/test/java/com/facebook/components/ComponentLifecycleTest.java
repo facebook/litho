@@ -328,3 +328,11 @@ public class ComponentLifecycleTest {
     assertThat(YogaMeasureOutput.getHeight(output)).isEqualTo(nestedTreeHeight);
   }
 
+  private ComponentLifecycle setUpComponentForCreateLayout(
+      boolean isMountSpec,
+      boolean canMeasure) {
+    ComponentLifecycle componentLifecycle = spy(new TestBaseComponent());
+    when(componentLifecycle.canMeasure()).thenReturn(canMeasure);
+    when(componentLifecycle.getMountType()).thenReturn(
+        isMountSpec ? ComponentLifecycle.MountType.DRAWABLE : ComponentLifecycle.MountType.NONE);
+    when(mInput.getLifecycle()).thenReturn(componentLifecycle);
