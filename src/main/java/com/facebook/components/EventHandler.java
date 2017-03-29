@@ -15,3 +15,5 @@ public class EventHandler<E> {
   public final int id;
   public final Object[] params;
 
+  protected EventHandler(HasEventDispatcher hasEventDispatcher, int id) {
+    this(hasEventDispatcher, id, null);
