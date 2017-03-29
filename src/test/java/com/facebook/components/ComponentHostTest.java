@@ -714,3 +714,7 @@ public class ComponentHostTest {
   }
 
   private MountItem mount(int index, Object content, int flags) {
+    return mount(index, content, flags, null);
+  }
+
+  private MountItem mount(int index, Object content, int flags, CharSequence contentDescription) {
