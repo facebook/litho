@@ -139,3 +139,17 @@ class PropsBuilderMethodsSpecBuilder {
         } else {
           builders.add(regularBuilder());
         }
+        break;
+    }
+
+    if (JPUtil.getRawType(mPropParameter.parameter.type).equals(ClassNames.COMPONENT)) {
+      builders.add(builderBuilder(ClassNames.COMPONENT_BUILDER));
+    }
+
+    if (JPUtil.getRawType(mPropParameter.parameter.type).equals(ClassNames.REFERENCE)) {
+      builders.add(builderBuilder(ClassNames.REFERENCE_BUILDER));
+    }
+
+    return builders;
+  }
+

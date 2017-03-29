@@ -17,3 +17,6 @@ import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.fresco.FrescoComponent;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.interfaces.DraweeController;
+
+@LayoutSpec
+public class SingleImageComponentSpec {
