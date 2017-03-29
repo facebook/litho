@@ -452,3 +452,4 @@ public class ComponentTree {
       // This would indicate bad things happening, like leaking a context.
       throw new IllegalArgumentException(
           "Base view context differs, view context is: " + view.getContext() +
+              ", ComponentTree context is: " + mContext);
