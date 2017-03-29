@@ -389,3 +389,4 @@ public class ComponentHost extends ViewGroup {
    * present in newIndex the item is guaranteed to be either unmounted or moved to a different index
    * by subsequent calls to either {@link ComponentHost#unmount(int, MountItem)} or
    * {@link ComponentHost#moveItem(MountItem, int, int)}.
+   *

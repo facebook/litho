@@ -540,3 +540,4 @@ class LayoutState {
         final LayoutOutput convertBackground = (currentDiffNode != null)
             ? currentDiffNode.getBackground()
             : null;
+
