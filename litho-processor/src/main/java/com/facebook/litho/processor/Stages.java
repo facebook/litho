@@ -635,3 +635,4 @@ public class Stages {
     for (ExecutableElement stage : mStages) {
       for (VariableElement v : getProps(stage)) {
         // Validation unnecessary - already handled by validateAnnotatedParameters
+        final String variableName = v.getSimpleName().toString();
