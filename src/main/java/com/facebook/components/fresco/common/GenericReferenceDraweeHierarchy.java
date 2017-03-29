@@ -220,3 +220,8 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
     mProgressBarReference = progressBarReference;
     mProgressBar = Reference.acquire(mContext, progressBarReference);
 
+    Drawable progressBarDrawable = DrawableUtils.cloneDrawable(mProgressBar);
+    if (autoRotateInterval > 0) {
+      progressBarDrawable = new AutoRotateDrawable(progressBarDrawable, autoRotateInterval);
+    }
+
