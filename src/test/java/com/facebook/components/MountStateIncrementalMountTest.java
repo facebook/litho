@@ -436,3 +436,4 @@ public class MountStateIncrementalMountTest {
                     Layout.create(c, child2).flexShrink(0)
                         .widthPx(10)
                         .heightPx(20)
+                        .marginPx(YogaEdge.ALL, 2))
