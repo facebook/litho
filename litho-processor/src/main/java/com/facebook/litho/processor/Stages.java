@@ -1594,3 +1594,4 @@ public class Stages {
       return;
     }
 
+    final MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder("onLoadStyle")
