@@ -83,3 +83,5 @@ public class MountItemTest {
         mNodeInfo,
         null,
         null,
+        mFlags,
+        IMPORTANT_FOR_ACCESSIBILITY_YES);
