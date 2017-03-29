@@ -197,3 +197,9 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
             .getString(resourceId));
   }
 
+  private ImmutableList<View> getPathToVisibleSimilarText(final String text) {
+    return actual.findChild(
+        Predicates.and(
+            isVisible(),
+            hasTextMatchingPredicate(new Predicate<String>() {
+          @Override
