@@ -352,3 +352,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
    * Mark this node as a nested tree root holder.
    */
   void markIsNestedTreeHolder(TreeProps currentTreeProps) {
+    mIsNestedTreeHolder = true;
