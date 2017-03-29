@@ -191,3 +191,5 @@ public class MountStateVisibilityEventsTest {
     Whitebox.setInternalState(layoutState, "mVisibilityOutputs", visibilityOutputs);
 
     mMountState.mount(layoutState, new Rect(LEFT, 4, RIGHT, 9));
+    checkNoVisibilityEventsDispatched(mockLifecycle);
+

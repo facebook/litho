@@ -82,3 +82,5 @@ public class GridComponentBinderTest {
 
   @Test
   public void testMatchingWidthSpec() {
+    setupBinder(GridLayoutManager.VERTICAL);
+

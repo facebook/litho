@@ -55,3 +55,6 @@ public class LayoutStateCalculateVisibilityOutputsTest {
                     .child(
                         TestDrawableComponent.create(c)
                             .withLayout().flexShrink(0)
+                            .visibleHandler(c.newEventHandler(1))))
+            .child(
+                TestDrawableComponent.create(c)
