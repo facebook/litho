@@ -59,3 +59,10 @@ class CardSpec {
   @OnCreateLayout
   static ComponentLayout onCreateLayout(
       ComponentContext c,
+      @Prop Component<?> content,
+      @Prop(optional = true, resType = ResType.COLOR) int cardBackgroundColor,
+      @Prop(optional = true, resType = ResType.COLOR) int clippingColor,
+      @Prop(optional = true, resType = ResType.COLOR) int shadowStartColor,
+      @Prop(optional = true, resType = ResType.COLOR) int shadowEndColor,
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float cornerRadius,
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float elevation) {

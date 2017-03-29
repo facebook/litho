@@ -28,3 +28,6 @@ import org.robolectric.RuntimeEnvironment;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(ComponentsTestRunner.class)
+public class MountStateViewTagsTest {
+  private static final int DUMMY_ID = 0x10000000;
+

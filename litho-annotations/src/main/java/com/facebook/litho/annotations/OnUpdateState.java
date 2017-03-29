@@ -15,3 +15,4 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Used to mark a method that can update the state of a Component.
  */
+@Retention(RetentionPolicy.CLASS)

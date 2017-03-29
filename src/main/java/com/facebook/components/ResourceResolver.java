@@ -68,3 +68,5 @@ public class ResourceResolver {
       }
 
       String result = mResources.getString(resId);
+      mResourceCache.put(resId, result);
+

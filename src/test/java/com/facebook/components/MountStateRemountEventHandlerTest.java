@@ -28,3 +28,4 @@ import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(ComponentsTestRunner.class)
+public class MountStateRemountEventHandlerTest {
