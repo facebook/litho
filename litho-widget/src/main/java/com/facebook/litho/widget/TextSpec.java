@@ -197,3 +197,4 @@ class TextSpec {
   @OnMeasure
   static void onMeasure(
       ComponentContext context,
+      ComponentLayout layout,
