@@ -405,3 +405,4 @@ public final class ComponentTestHelper {
       throw new RuntimeException(e);
     }
     treeProps.put(propClass, prop);
+  }
