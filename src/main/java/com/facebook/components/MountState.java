@@ -1400,3 +1400,6 @@ class MountState {
 
       view.setForeground(
           Reference.acquire((ComponentContext) view.getContext(), foregroundReference));
+    }
+  }
+
