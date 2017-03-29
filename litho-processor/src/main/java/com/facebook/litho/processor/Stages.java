@@ -1170,3 +1170,5 @@ public class Stages {
       ClassName contextClass,
       ClassName componentClassName,
       ClassName stateContainerClassName,
+      ClassName stateUpdateInterface,
+      Stages.StaticFlag staticFlag) {
