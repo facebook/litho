@@ -46,3 +46,4 @@ public class ComponentStyleTest {
 
   @Test
   public void testStyleProp() {
+    Component<Text> component =
