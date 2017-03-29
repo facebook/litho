@@ -344,3 +344,8 @@ public abstract class ComponentLifecycle implements EventDispatcher {
    */
   protected void onBoundsDefined(
       ComponentContext c,
+      ComponentLayout layout,
+      Component<?> component) {
+  }
+
+  /**
