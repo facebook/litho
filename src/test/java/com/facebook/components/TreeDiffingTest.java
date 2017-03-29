@@ -377,3 +377,8 @@ public class TreeDiffingTest {
       assertEquals(
           prevLayoutState.getMountableOutputAt(i).getId(),
           layoutState.getMountableOutputAt(i).getId());
+    }
+  }
+
+  @Test
+  public void testLayoutOutputPartialReuse() {
