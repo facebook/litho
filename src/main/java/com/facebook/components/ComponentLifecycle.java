@@ -496,3 +496,7 @@ public abstract class ComponentLifecycle implements EventDispatcher {
    * @return the number of extra nodes
    */
   protected int getExtraAccessibilityNodesCount(Component<?> component) {
+    return 0;
+  }
+
+  /**
