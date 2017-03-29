@@ -168,3 +168,4 @@ public class LifecycleMethodsTest {
 
     @Override
     protected void onUnbind(
+        ComponentContext c,
