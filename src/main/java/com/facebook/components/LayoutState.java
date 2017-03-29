@@ -1138,3 +1138,4 @@ class LayoutState {
     final ComponentContext context = root.getContext();
     final Component component = root.getComponent();
     ComponentsSystrace.beginSection("measureTree:" + component.getSimpleName());
+
