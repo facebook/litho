@@ -149,3 +149,14 @@ public class MountItemTest {
         mNodeInfo,
         null,
         null,
+        mFlags,
+        IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+
+    assertThat(mountItem.isAccessible()).isTrue();
+  }
+
+  @Test
+  public void testIsAccessibleWithDisabledAccessibleComponent() {
+    final MountItem mountItem = new MountItem();
+    mountItem.init(
+        TestDrawableComponent.create(
