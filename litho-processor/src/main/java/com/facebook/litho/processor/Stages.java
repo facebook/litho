@@ -2232,3 +2232,12 @@ public class Stages {
     shouldUpdateComponent.addStatement(
         "boolean shouldUpdate = $L.$L(\n$L)",
         mSourceDelegateAccessorName,
+        shouldUpdateElement.getSimpleName(),
+        delegateParameters.build());
+    shouldUpdateComponent.addCode(releaseDiffs.build());
+    shouldUpdateComponent.addStatement(
+        "return shouldUpdate");
+
+    mClassTypeSpec.addMethod(shouldUpdateComponent.build());
+  }
+
