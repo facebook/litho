@@ -176,3 +176,12 @@ public class Utils {
     return null;
   }
 
+  public static String getSimpleClassName(String qualifiedName) {
+    return qualifiedName.substring(qualifiedName.lastIndexOf('.') + 1);
+  }
+
+  public static String getPackageName(String qualifiedName) {
+    return qualifiedName.substring(0, qualifiedName.lastIndexOf('.'));
+  }
+
+  public static List<VariableElement> getEnclosedFields(TypeElement typeElement) {

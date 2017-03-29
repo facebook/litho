@@ -90,3 +90,4 @@ class TextSpec {
   @PropDefault protected static final int maxEms = DEFAULT_EMS;
   @PropDefault protected static final int minWidth = DEFAULT_MIN_WIDTH;
   @PropDefault protected static final int maxWidth = DEFAULT_MAX_WIDTH;
+  @PropDefault protected static final int shadowColor = Color.GRAY;
