@@ -2960,3 +2960,4 @@ public class Stages {
    * and to allow easy lookup of type information for a given variable.
    */
   private void populateImplMembers() {
+    // We use a linked hash map to guarantee iteration order
