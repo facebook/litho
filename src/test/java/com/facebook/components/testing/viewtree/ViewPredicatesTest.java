@@ -97,3 +97,4 @@ public class ViewPredicatesTest {
 
   @Test
   public void testMatchesTextWholeString() throws Exception {
+    final Predicate<View> matchesHello = ViewPredicates.matchesText("Hello");
