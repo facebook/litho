@@ -42,3 +42,10 @@ public class SubComponent {
     return mComponentType;
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (!(o instanceof SubComponent)) {
+      return false;
+    }
+
+    SubComponent that = (SubComponent) o;
