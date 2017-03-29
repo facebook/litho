@@ -585,3 +585,18 @@ public class ComponentsPools {
 
     if (poolsArray == null) {
       return true;
+    }
+
+    final PoolWithCount pool = poolsArray.get(lifecycle.getId());
+    return pool == null || !pool.isFull();
+  }
+
+  static SparseArrayCompat<MountItem> acquireScrapMountItemsArray() {
+    SparseArrayCompat<MountItem> sparseArray = sMountItemScrapArrayPool.acquire();
+    if (sparseArray == null) {
+      sparseArray = new SparseArrayCompat<>(SCRAP_ARRAY_INITIAL_SIZE);
+    }
+
+    return sparseArray;
+  }
+

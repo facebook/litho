@@ -640,3 +640,6 @@ public class MountSpecHelper extends ComponentSpecHelper {
 
     final ExecutableElement onCreateMountContent = Utils.getAnnotatedMethod(
         mStages.getSourceElement(),
+        OnCreateMountContent.class);
+
+    if (getMountType(onCreateMountContent.getReturnType()) != MountType.DRAWABLE) {
