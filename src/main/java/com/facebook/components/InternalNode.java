@@ -1632,3 +1632,6 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     if ((mPrivateFlags & PFLAG_BORDER_COLOR_IS_SET) != 0L) {
       node.mBorderColor = mBorderColor;
     }
+  }
+
+  void setStyleWidthFromSpec(int widthSpec) {
