@@ -452,3 +452,5 @@ public class Stages {
                   "Inter-stage prop declaration is incorrect, the same name and type must be " +
                       "used in every method where the inter-stage prop is declared.");
             }
+          }
+

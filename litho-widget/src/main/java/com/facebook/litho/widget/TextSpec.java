@@ -390,3 +390,6 @@ class TextSpec {
           : TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR);
     }
 
+    layoutBuilder.setIncludeFontPadding(shouldIncludeFontPadding);
+    layoutBuilder.setTextSpacingExtra(extraSpacing);
+    layoutBuilder.setTextSpacingMultiplier(spacingMultiplier);
