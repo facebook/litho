@@ -163,3 +163,8 @@ public abstract class RecyclerComponentBinder<L extends RecyclerView.LayoutManag
   }
 
   protected void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+  }
+
+  private static class InternalAdapter
+      extends Adapter<ComponentViewHolder> implements BaseBinder.Listener {
+

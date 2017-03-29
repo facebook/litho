@@ -322,3 +322,22 @@ public class InternalNodeTest {
     final int exactSizeSpec = SizeSpec.makeSizeSpec(50, SizeSpec.EXACTLY);
     final Component<Text> textComponent = Text.create(c)
         .textSizePx(16)
+        .text("test")
+        .build();
+    final Size textSize = new Size();
+    textComponent.measure(
+        c,
+        exactSizeSpec,
+        unspecifiedSizeSpec,
+        textSize);
+
+    assertTrue(textComponent.hasCachedLayout());
+    InternalNode cachedLayout = textComponent.getCachedLayout();
+    assertNotNull(cachedLayout);
+    assertEquals(exactSizeSpec, cachedLayout.getLastWidthSpec());
+    assertEquals(unspecifiedSizeSpec, cachedLayout.getLastHeightSpec());
+
+    textComponent.clearCachedLayout();
+    assertFalse(textComponent.hasCachedLayout());
+  }
+

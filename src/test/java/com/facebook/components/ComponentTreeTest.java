@@ -74,3 +74,6 @@ public class ComponentTreeTest {
   }
 
   private void creationCommonChecks(ComponentTree componentTree) {
+    // Not view or attached yet
+    Assert.assertNull(getComponentView(componentTree));
+    Assert.assertFalse(isAttached(componentTree));
