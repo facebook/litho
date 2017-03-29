@@ -88,3 +88,4 @@ public class MountSpecHelper extends ComponentSpecHelper {
         specElement,
         specElement.getAnnotation(MountSpec.class).value(),
         specElement.getAnnotation(MountSpec.class).isPublic(),
+        STAGE_ANNOTATIONS,
