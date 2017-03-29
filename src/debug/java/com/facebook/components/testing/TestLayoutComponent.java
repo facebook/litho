@@ -215,3 +215,16 @@ public class TestLayoutComponent extends ComponentLifecycle {
     }
 
     @Override
+    public TestComponent<TestLayoutComponent> build() {
+      State state = mState;
+      release();
+      return state;
+    }
+
+    @Override
+    protected void release() {
+      super.release();
+      mState = null;
+      mBuilderPool.release(this);
+    }
+  }

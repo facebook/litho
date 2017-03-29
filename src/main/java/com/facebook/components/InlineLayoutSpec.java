@@ -35,3 +35,5 @@ public abstract class InlineLayoutSpec extends Component implements Cloneable {
     return "InlineLayout";
   }
 
+  protected abstract ComponentLayout onCreateLayout(ComponentContext c);
+}
