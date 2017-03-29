@@ -1313,3 +1313,4 @@ public class Stages {
     methodBuilder.addStatement("int id = eventHandler.id");
     methodBuilder.beginControlFlow("switch($L)", "id");
 
+    final String implInstanceName = "_" + getImplInstanceName();
