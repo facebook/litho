@@ -187,3 +187,5 @@ class EditTextSpec {
       @Prop(optional = true) boolean editable,
       @Prop(optional = true) int selection) {
 
+    // TODO(11759579) - don't allocate a new EditText in every measure.
+    final EditText editText = new EditText(c);
