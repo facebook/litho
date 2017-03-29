@@ -1478,3 +1478,6 @@ public class Stages {
 
     for (VariableElement e : updateMethodParamElements) {
       builder.updateMethodParam(
+          new Parameter(ClassName.get(e.asType()), e.getSimpleName().toString()));
+
+      List<TypeMirror> genericArgs = getTypeVarArguments(e.asType());
