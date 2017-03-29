@@ -111,3 +111,128 @@ public class MountStateRemountTest {
   public void testRemountDifferentMountType() throws IllegalAccessException, NoSuchFieldException {
     clearPool("sLayoutOutputPool");
     clearPool("sViewNodeInfoPool");
+
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return TestViewComponent.create(c).buildWithLayout();
+          }
+        });
+
+    ComponentTestHelper.mountComponent(
+        mContext,
+        componentView,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return TestDrawableComponent.create(c).buildWithLayout();
+          }
+        });
+  }
+
+  @Test
+  public void testRemountNewLayoutState() {
+    final TestComponent component1 = TestDrawableComponent.create(mContext)
+        .unique()
+        .build();
+    final TestComponent component2 = TestDrawableComponent.create(mContext)
+        .unique()
+        .build();
+    final TestComponent component3 = TestDrawableComponent.create(mContext)
+        .unique()
+        .build();
+    final TestComponent component4 = TestDrawableComponent.create(mContext)
+        .unique()
+        .build();
+
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                .child(component1)
+                .child(component2)
+                .build();
+          }
+        });
+
+    assertTrue(component1.isMounted());
+    assertTrue(component2.isMounted());
+
+    ComponentTestHelper.mountComponent(
+        mContext,
+        componentView,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                .child(component3)
+                .child(component4)
+                .build();
+          }
+        });
+
+    assertFalse(component1.isMounted());
+    assertFalse(component2.isMounted());
+    assertTrue(component3.isMounted());
+    assertTrue(component4.isMounted());
+  }
+
+  @Test
+  public void testRemountPartiallyDifferentLayoutState() {
+    final TestComponent component1 = TestDrawableComponent.create(mContext)
+        .build();
+    final TestComponent component2 = TestDrawableComponent.create(mContext)
+        .build();
+    final TestComponent component3 = TestDrawableComponent.create(mContext)
+        .build();
+    final TestComponent component4 = TestDrawableComponent.create(mContext)
+        .build();
+
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                .child(component1)
+                .child(component2)
+                .build();
+          }
+        });
+
+    assertTrue(component1.isMounted());
+    assertTrue(component2.isMounted());
+
+    ComponentTestHelper.mountComponent(
+        mContext,
+        componentView,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                .child(component3)
+                .child(
+                    Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                        .wrapInView()
+                        .child(component4))
+                .build();
+          }
+        });
+
+    assertTrue(component1.isMounted());
+    assertFalse(component2.isMounted());
+    assertFalse(component3.isMounted());
+    assertTrue(component4.isMounted());
+  }
+
+  private boolean containsRef(List<?> list, Object object) {
+    for (Object o : list) {
+      if (o == object) {
+        return true;
+      }
+    }
+    return false;
