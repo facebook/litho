@@ -17,3 +17,10 @@ import android.support.v4.util.Pools;
 import com.facebook.components.Component;
 import com.facebook.components.ComponentContext;
 import com.facebook.components.ComponentInfo;
+import com.facebook.components.ComponentTree;
+import com.facebook.components.LayoutHandler;
+import com.facebook.components.Size;
+import com.facebook.components.StateHandler;
+
+/**
+ * A class used to store the data backing a {@link RecyclerBinder}. For each item the

@@ -34,3 +34,6 @@ class DiffNode implements Cloneable {
   private List<DiffNode> mChildren;
 
   DiffNode() {
+    mChildren = new ArrayList<>(4);
+  }
+

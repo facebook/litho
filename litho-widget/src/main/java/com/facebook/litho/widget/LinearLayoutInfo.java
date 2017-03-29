@@ -90,3 +90,4 @@ public class LinearLayoutInfo implements LayoutInfo {
   public int getSpanCount() {
     return 1;
   }
+}

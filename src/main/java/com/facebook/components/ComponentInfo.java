@@ -11,3 +11,4 @@ package com.facebook.components;
 
 import android.support.v4.util.Pools;
 import android.support.v4.util.Pools.Pool;
+import android.support.v4.util.SimpleArrayMap;

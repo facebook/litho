@@ -20,3 +20,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import android.support.annotation.UiThread;
 import android.support.annotation.VisibleForTesting;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.OrientationHelper;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.LayoutManager;
+import android.view.ViewGroup;
+
+import com.facebook.components.Component;
+import com.facebook.components.ComponentContext;

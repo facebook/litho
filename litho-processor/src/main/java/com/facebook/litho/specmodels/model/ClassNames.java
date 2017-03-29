@@ -80,3 +80,4 @@ public interface ClassNames {
       ClassName.bestGuess("com.facebook.components.ComponentLifecycle.StateUpdate");
   ClassName STATE_CONTAINER_COMPONENT =
       ClassName.bestGuess("com.facebook.components.ComponentLifecycle.StateContainer");
+

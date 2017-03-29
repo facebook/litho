@@ -80,3 +80,4 @@ public interface LayoutInfo {
    * @return the number of columns declared. A non-grid layout will return 1
    */
   int getSpanCount();
+}
