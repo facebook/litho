@@ -219,3 +219,8 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
   }
 
   private ImmutableList<View> getPathToVisibleTextWithTag(final String text, final int tagId, final Object tagValue) {
+    return actual.findChild(
+        ViewPredicates.hasVisibleTextWithTag(text, tagId, tagValue),
+        ViewPredicates.isVisible());
+  }
+
