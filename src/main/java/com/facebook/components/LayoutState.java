@@ -1631,3 +1631,7 @@ class LayoutState {
     return stateHandler;
   }
 
+  InternalNode getLayoutRoot() {
+    return mLayoutRoot;
+  }
+
