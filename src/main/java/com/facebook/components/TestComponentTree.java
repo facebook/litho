@@ -66,3 +66,4 @@ public class TestComponentTree extends ComponentTree {
       if (root.getComponent() != null && root.getComponent() instanceof TestComponent) {
         TestComponent testSubcomponent = (TestComponent) root.getComponent();
         output.add(testSubcomponent.getWrappedComponent());
+      }
