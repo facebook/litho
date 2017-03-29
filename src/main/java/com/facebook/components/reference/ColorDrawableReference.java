@@ -26,3 +26,4 @@ import com.facebook.litho.config.ComponentsConfiguration;
 public final class ColorDrawableReference extends ReferenceLifecycle<Drawable> {
 
   private static final int DEFAULT_ALPHA = 255;
+  private static final int INITIAL_POOL_SIZE = 50;
