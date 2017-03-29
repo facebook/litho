@@ -67,3 +67,6 @@ class MountItem {
         content,
         layoutOutput.getNodeInfo(),
         layoutOutput.getViewNodeInfo(),
+        acquireDisplayListDrawableIfNeeded(
+            content,
+            layoutOutput.getDisplayList(),

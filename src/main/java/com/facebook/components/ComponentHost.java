@@ -74,3 +74,4 @@ public class ComponentHost extends ViewGroup {
   private boolean mInLayout;
 
   private ComponentAccessibilityDelegate mComponentAccessibilityDelegate;
+  private boolean mIsComponentAccessibilityDelegateSet = false;
