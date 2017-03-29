@@ -37,3 +37,4 @@ struct Environment {
  * is safe to nest it with itself or with non-fbjni code that manages the attachment correctly.
  *
  * Potential concerns:
+ *  - Attaching to the JVM is fast (~100us on MotoG), but ideally you would attach while the
