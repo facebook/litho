@@ -63,3 +63,5 @@ class EventDispatcherUtils {
       sVisibleEvent = new VisibleEvent();
     }
 
+    final EventDispatcher eventDispatcher = visibleHandler.mHasEventDispatcher.getEventDispatcher();
+    eventDispatcher.dispatchOnEvent(visibleHandler, sVisibleEvent);

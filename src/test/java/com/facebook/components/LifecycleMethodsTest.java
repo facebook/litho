@@ -288,3 +288,4 @@ public class LifecycleMethodsTest {
       super.setBounds(l, t, r, b);
 
       assertTrue(
+          mComponent.getCurrentStep() == LifecycleStep.ON_BIND ||
