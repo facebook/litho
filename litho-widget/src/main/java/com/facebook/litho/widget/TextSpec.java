@@ -269,3 +269,8 @@ class TextSpec {
 
     size.width = SizeSpec.resolveSize(widthSpec, newLayout.getWidth());
 
+    // Adjust height according to the minimum number of lines.
+    int preferredHeight = LayoutMeasureUtil.getHeight(newLayout);
+    final int lineCount = newLayout.getLineCount();
+    if (lineCount < minLines) {
+      final TextPaint paint = newLayout.getPaint();
