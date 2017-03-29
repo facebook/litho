@@ -90,3 +90,4 @@ class FrescoComponentSpec {
       @Prop(optional = true, resType = DRAWABLE) Reference<Drawable> failureImage,
       @Prop(optional = true) ScalingUtils.ScaleType failureImageScaleType,
       @Prop(optional = true, resType = DRAWABLE) Reference<Drawable> placeholderImage,
+      @Prop(optional = true) PointF placeholderImageFocusPoint,
