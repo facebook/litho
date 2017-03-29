@@ -790,3 +790,7 @@ public class ComponentTree {
 
   private void setRootAndSizeSpecInternal(
       Component<?> root,
+      int widthSpec,
+      int heightSpec,
+      boolean isAsync,
+      Size output) {
