@@ -1367,3 +1367,5 @@ public class Stages {
       methodBuilder.endControlFlow();
     }
 
+    methodBuilder.addStatement("default: \nreturn null");
+
