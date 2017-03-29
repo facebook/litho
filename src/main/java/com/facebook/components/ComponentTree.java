@@ -851,3 +851,5 @@ public class ComponentTree {
         mWidthSpec = widthSpec;
       }
 
+      if (heightSpecInitialized) {
+        mHeightSpec = heightSpec;
