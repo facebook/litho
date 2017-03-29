@@ -342,3 +342,4 @@ public class ComponentLifecycleTest {
     return componentLifecycle;
   }
 
+  private YogaMeasureFunction getMeasureFunction() {
