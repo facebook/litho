@@ -218,3 +218,12 @@ class EditTextSpec {
         gravity,
         editable,
         selection);
+
+    editText.measure(
+        MeasureUtils.getViewMeasureSpec(widthSpec),
+        MeasureUtils.getViewMeasureSpec(heightSpec));
+
+    size.width = editText.getMeasuredWidth();
+    size.height = editText.getMeasuredHeight();
+  }
+
