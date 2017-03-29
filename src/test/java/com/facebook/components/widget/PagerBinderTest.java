@@ -109,3 +109,4 @@ public class PagerBinderTest {
       assertNotNull(mBinder.getComponentAt(i));
     }
 
+    for (int i = 3; i < mBinder.getCount(); i++) {
