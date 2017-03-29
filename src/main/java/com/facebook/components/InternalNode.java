@@ -1923,3 +1923,22 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   public TreeProps getPendingTreeProps() {
     return mPendingTreeProps;
   }
+
+  private <T extends Drawable> void setPaddingFromDrawableReference(Reference<T> ref) {
+    if (ref == null) {
+      return;
+    }
+    final T drawable = Reference.acquire(mComponentContext,ref);
+    if (drawable != null) {
+      final Rect backgroundPadding = ComponentsPools.acquireRect();
+      if (drawable.getPadding(backgroundPadding)) {
+        paddingPx(LEFT, backgroundPadding.left);
+        paddingPx(TOP, backgroundPadding.top);
+        paddingPx(RIGHT, backgroundPadding.right);
+        paddingPx(BOTTOM, backgroundPadding.bottom);
+      }
+
+      Reference.release(mComponentContext, drawable, ref);
+      ComponentsPools.release(backgroundPadding);
+    }
+  }
