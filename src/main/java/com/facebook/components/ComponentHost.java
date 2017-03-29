@@ -260,3 +260,7 @@ public class ComponentHost extends ViewGroup {
   }
 
   /**
+   * Tries to recycle a scrap host attached to this host.
+   * @return The host view to be recycled.
+   */
+  ComponentHost recycleHost() {
