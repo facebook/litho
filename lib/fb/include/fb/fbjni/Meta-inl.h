@@ -67,3 +67,208 @@ local_ref<JArrayClass<jobject>::javaobject> makeArgsArray(Args... args) {
 
 
 inline bool needsSlowPath(alias_ref<jobject> obj) {
+#if defined(__ANDROID__)
+  // On Android 6.0, art crashes when attempting to call a function on a Proxy.
+  // So, when we detect that case we must use the safe, slow workaround. That is,
+  // we resolve the method id to the corresponding java.lang.reflect.Method object
+  // and make the call via it's invoke() method.
+  static auto android_sdk = ([] {
+     char sdk_version_str[PROP_VALUE_MAX];
+     __system_property_get("ro.build.version.sdk", sdk_version_str);
+     return atoi(sdk_version_str);
+  })();
+  static auto is_bad_android = android_sdk == 23;
+  if (!is_bad_android) return false;
+  static auto proxy_class = findClassStatic("java/lang/reflect/Proxy");
+  return obj->isInstanceOf(proxy_class);
+#else
+  return false;
+#endif
+}
+
+}
+
+template<typename... Args>
+inline void JMethod<void(Args...)>::operator()(alias_ref<jobject> self, Args... args) {
+  const auto env = Environment::current();
+  env->CallVoidMethod(
+        self.get(),
+        getId(),
+        detail::callToJni(detail::Convert<typename std::decay<Args>::type>::toCall(args))...);
+  FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
+}
+
+#pragma push_macro("DEFINE_PRIMITIVE_CALL")
+#undef DEFINE_PRIMITIVE_CALL
+#define DEFINE_PRIMITIVE_CALL(TYPE, METHOD, CLASS)                                             \
+template<typename... Args>                                                                     \
+inline TYPE JMethod<TYPE(Args...)>::operator()(alias_ref<jobject> self, Args... args) {        \
+  const auto env = internal::getEnv();                                                         \
+  auto result = env->Call ## METHOD ## Method(                                                 \
+        self.get(),                                                                            \
+        getId(),                                                                               \
+        detail::callToJni(detail::Convert<typename std::decay<Args>::type>::toCall(args))...); \
+  FACEBOOK_JNI_THROW_PENDING_EXCEPTION();                                                      \
+  return result;                                                                               \
+}
+
+DEFINE_PRIMITIVE_CALL(jboolean, Boolean, JBoolean)
+DEFINE_PRIMITIVE_CALL(jbyte, Byte, JByte)
+DEFINE_PRIMITIVE_CALL(jchar, Char, JCharacter)
+DEFINE_PRIMITIVE_CALL(jshort, Short, JShort)
+DEFINE_PRIMITIVE_CALL(jint, Int, JInteger)
+DEFINE_PRIMITIVE_CALL(jlong, Long, JLong)
+DEFINE_PRIMITIVE_CALL(jfloat, Float, JFloat)
+DEFINE_PRIMITIVE_CALL(jdouble, Double, JDouble)
+#pragma pop_macro("DEFINE_PRIMITIVE_CALL")
+
+/// JMethod specialization for references that wraps the return value in a @ref local_ref
+template<typename R, typename... Args>
+class JMethod<R(Args...)> : public JMethodBase {
+ public:
+   // TODO: static_assert is jobject-derived or local_ref jobject
+  using JniRet = typename detail::Convert<typename std::decay<R>::type>::jniType;
+  static_assert(IsPlainJniReference<JniRet>(), "JniRet must be a JNI reference");
+  using JMethodBase::JMethodBase;
+  JMethod() noexcept {};
+  JMethod(const JMethod& other) noexcept = default;
+
+  /// Invoke a method and return a local reference wrapping the result
+  local_ref<JniRet> operator()(alias_ref<jobject> self, Args... args);
+
+  friend class JClass;
+};
+
+template<typename R, typename... Args>
+inline auto JMethod<R(Args...)>::operator()(alias_ref<jobject> self, Args... args) -> local_ref<JniRet> {
+  const auto env = Environment::current();
+  auto result = env->CallObjectMethod(
+      self.get(),
+      getId(),
+      detail::callToJni(detail::Convert<typename std::decay<Args>::type>::toCall(args))...);
+  FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
+  return adopt_local(static_cast<JniRet>(result));
+}
+
+template<typename... Args>
+inline void JStaticMethod<void(Args...)>::operator()(alias_ref<jclass> cls, Args... args) {
+  const auto env = internal::getEnv();
+  env->CallStaticVoidMethod(
+        cls.get(),
+        getId(),
+        detail::callToJni(detail::Convert<typename std::decay<Args>::type>::toCall(args))...);
+  FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
+}
+
+#pragma push_macro("DEFINE_PRIMITIVE_STATIC_CALL")
+#undef DEFINE_PRIMITIVE_STATIC_CALL
+#define DEFINE_PRIMITIVE_STATIC_CALL(TYPE, METHOD)                                             \
+template<typename... Args>                                                                     \
+inline TYPE JStaticMethod<TYPE(Args...)>::operator()(alias_ref<jclass> cls, Args... args) {    \
+  const auto env = internal::getEnv();                                                         \
+  auto result = env->CallStatic ## METHOD ## Method(                                           \
+        cls.get(),                                                                             \
+        getId(),                                                                               \
+        detail::callToJni(detail::Convert<typename std::decay<Args>::type>::toCall(args))...); \
+  FACEBOOK_JNI_THROW_PENDING_EXCEPTION();                                                      \
+        return result;                                                                         \
+}
+
+DEFINE_PRIMITIVE_STATIC_CALL(jboolean, Boolean)
+DEFINE_PRIMITIVE_STATIC_CALL(jbyte, Byte)
+DEFINE_PRIMITIVE_STATIC_CALL(jchar, Char)
+DEFINE_PRIMITIVE_STATIC_CALL(jshort, Short)
+DEFINE_PRIMITIVE_STATIC_CALL(jint, Int)
+DEFINE_PRIMITIVE_STATIC_CALL(jlong, Long)
+DEFINE_PRIMITIVE_STATIC_CALL(jfloat, Float)
+DEFINE_PRIMITIVE_STATIC_CALL(jdouble, Double)
+#pragma pop_macro("DEFINE_PRIMITIVE_STATIC_CALL")
+
+/// JStaticMethod specialization for references that wraps the return value in a @ref local_ref
+template<typename R, typename... Args>
+class JStaticMethod<R(Args...)> : public JMethodBase {
+
+ public:
+  using JniRet = typename detail::Convert<typename std::decay<R>::type>::jniType;
+  static_assert(IsPlainJniReference<JniRet>(), "T* must be a JNI reference");
+  using JMethodBase::JMethodBase;
+  JStaticMethod() noexcept {};
+  JStaticMethod(const JStaticMethod& other) noexcept = default;
+
+  /// Invoke a method and return a local reference wrapping the result
+  local_ref<JniRet> operator()(alias_ref<jclass> cls, Args... args) {
+    const auto env = internal::getEnv();
+    auto result = env->CallStaticObjectMethod(
+          cls.get(),
+          getId(),
+          detail::callToJni(detail::Convert<typename std::decay<Args>::type>::toCall(args))...);
+    FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
+    return adopt_local(static_cast<JniRet>(result));
+  }
+
+  friend class JClass;
+};
+
+template<typename... Args>
+inline void
+JNonvirtualMethod<void(Args...)>::operator()(alias_ref<jobject> self, alias_ref<jclass> cls, Args... args) {
+  const auto env = internal::getEnv();
+  env->CallNonvirtualVoidMethod(
+        self.get(),
+        cls.get(),
+        getId(),
+        detail::callToJni(detail::Convert<typename std::decay<Args>::type>::toCall(args))...);
+  FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
+}
+
+#pragma push_macro("DEFINE_PRIMITIVE_NON_VIRTUAL_CALL")
+#undef DEFINE_PRIMITIVE_NON_VIRTUAL_CALL
+#define DEFINE_PRIMITIVE_NON_VIRTUAL_CALL(TYPE, METHOD)                                                      \
+template<typename... Args>                                                                                   \
+inline TYPE                                                                                                  \
+JNonvirtualMethod<TYPE(Args...)>::operator()(alias_ref<jobject> self, alias_ref<jclass> cls, Args... args) { \
+  const auto env = internal::getEnv();                                                                       \
+  auto result = env->CallNonvirtual ## METHOD ## Method(                                                     \
+        self.get(),                                                                                          \
+        cls.get(),                                                                                           \
+        getId(),                                                                                             \
+        detail::callToJni(detail::Convert<typename std::decay<Args>::type>::toCall(args))...);               \
+  FACEBOOK_JNI_THROW_PENDING_EXCEPTION();                                                                    \
+  return result;                                                                                             \
+}
+
+DEFINE_PRIMITIVE_NON_VIRTUAL_CALL(jboolean, Boolean)
+DEFINE_PRIMITIVE_NON_VIRTUAL_CALL(jbyte, Byte)
+DEFINE_PRIMITIVE_NON_VIRTUAL_CALL(jchar, Char)
+DEFINE_PRIMITIVE_NON_VIRTUAL_CALL(jshort, Short)
+DEFINE_PRIMITIVE_NON_VIRTUAL_CALL(jint, Int)
+DEFINE_PRIMITIVE_NON_VIRTUAL_CALL(jlong, Long)
+DEFINE_PRIMITIVE_NON_VIRTUAL_CALL(jfloat, Float)
+DEFINE_PRIMITIVE_NON_VIRTUAL_CALL(jdouble, Double)
+#pragma pop_macro("DEFINE_PRIMITIVE_NON_VIRTUAL_CALL")
+
+/// JNonvirtualMethod specialization for references that wraps the return value in a @ref local_ref
+template<typename R, typename... Args>
+class JNonvirtualMethod<R(Args...)> : public JMethodBase {
+ public:
+  using JniRet = typename detail::Convert<typename std::decay<R>::type>::jniType;
+  static_assert(IsPlainJniReference<JniRet>(), "T* must be a JNI reference");
+  using JMethodBase::JMethodBase;
+  JNonvirtualMethod() noexcept {};
+  JNonvirtualMethod(const JNonvirtualMethod& other) noexcept = default;
+
+  /// Invoke a method and return a local reference wrapping the result
+  local_ref<JniRet> operator()(alias_ref<jobject> self, alias_ref<jclass> cls, Args... args){
+    const auto env = internal::getEnv();
+    auto result = env->CallNonvirtualObjectMethod(
+          self.get(),
+          cls.get(),
+          getId(),
+          detail::callToJni(detail::Convert<typename std::decay<Args>::type>::toCall(args))...);
+    FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
+    return adopt_local(static_cast<JniRet>(result));
+  }
+
+  friend class JClass;
+};
+

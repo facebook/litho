@@ -60,3 +60,12 @@ alias_ref<JClass> findClassStatic(const char* name) {
   if (!env) {
     throw std::runtime_error("Unable to retrieve JNIEnv*.");
   }
+  auto cls = env->FindClass(name);
+  FACEBOOK_JNI_THROW_EXCEPTION_IF(!cls);
+  auto leaking_ref = (jclass)env->NewGlobalRef(cls);
+  FACEBOOK_JNI_THROW_EXCEPTION_IF(!leaking_ref);
+  return wrap_alias(leaking_ref);
+}
+
+local_ref<JClass> findClassLocal(const char* name) {
+  const auto env = internal::getEnv();

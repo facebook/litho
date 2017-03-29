@@ -9,3 +9,16 @@
 
 #pragma once
 #include <functional>
+#include <string>
+#include <jni.h>
+
+#include <fb/visibility.h>
+
+namespace facebook {
+namespace jni {
+
+// Keeps a thread-local reference to the current thread's JNIEnv.
+struct Environment {
+  // May be null if this thread isn't attached to the JVM
+  FBEXPORT static JNIEnv* current();
+  static void initialize(JavaVM* vm);

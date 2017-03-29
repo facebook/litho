@@ -40,3 +40,8 @@
 #define FACEBOOK_JNI_THROW_EXCEPTION_IF(CONDITION) \
   ::facebook::jni::throwCppExceptionIf(CONDITION)
 
+/// @cond INTERNAL
+
+namespace facebook {
+namespace jni {
+

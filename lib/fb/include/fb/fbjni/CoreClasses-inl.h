@@ -348,3 +348,316 @@ inline local_ref<JThrowable> JThrowable::initCause(alias_ref<JThrowable> cause) 
   return meth(self(), cause.get());
 }
 
+// jtypeArray //////////////////////////////////////////////////////////////////////////////////////
+
+namespace detail {
+inline size_t JArray::size() const noexcept {
+  const auto env = internal::getEnv();
+  return env->GetArrayLength(self());
+}
+}
+
+namespace detail {
+template<typename Target>
+inline ElementProxy<Target>::ElementProxy(
+    Target* target,
+    size_t idx)
+    : target_{target}, idx_{idx} {}
+
+template<typename Target>
+inline ElementProxy<Target>& ElementProxy<Target>::operator=(const T& o) {
+  target_->setElement(idx_, o);
+  return *this;
+}
+
+template<typename Target>
+inline ElementProxy<Target>& ElementProxy<Target>::operator=(alias_ref<T>& o) {
+  target_->setElement(idx_, o.get());
+  return *this;
+}
+
+template<typename Target>
+inline ElementProxy<Target>& ElementProxy<Target>::operator=(alias_ref<T>&& o) {
+  target_->setElement(idx_, o.get());
+  return *this;
+}
+
+template<typename Target>
+inline ElementProxy<Target>& ElementProxy<Target>::operator=(const ElementProxy<Target>& o) {
+  auto src = o.target_->getElement(o.idx_);
+  target_->setElement(idx_, src.get());
+  return *this;
+}
+
+template<typename Target>
+inline ElementProxy<Target>::ElementProxy::operator const local_ref<T> () const {
+  return target_->getElement(idx_);
+}
+
+template<typename Target>
+inline ElementProxy<Target>::ElementProxy::operator local_ref<T> () {
+  return target_->getElement(idx_);
+}
+}
+
+template <typename T>
+std::string JArrayClass<T>::get_instantiated_java_descriptor() {
+  return "[" + jtype_traits<T>::descriptor();
+};
+
+template <typename T>
+std::string JArrayClass<T>::get_instantiated_base_name() {
+  return get_instantiated_java_descriptor();
+};
+
+template<typename T>
+auto JArrayClass<T>::newArray(size_t size) -> local_ref<javaobject> {
+  static auto elementClass = findClassStatic(jtype_traits<T>::base_name().c_str());
+  const auto env = internal::getEnv();
+  auto rawArray = env->NewObjectArray(size, elementClass.get(), nullptr);
+  FACEBOOK_JNI_THROW_EXCEPTION_IF(!rawArray);
+  return adopt_local(static_cast<javaobject>(rawArray));
+}
+
+template<typename T>
+inline void JArrayClass<T>::setElement(size_t idx, const T& value) {
+  const auto env = internal::getEnv();
+  env->SetObjectArrayElement(this->self(), idx, value);
+}
+
+template<typename T>
+inline local_ref<T> JArrayClass<T>::getElement(size_t idx) {
+  const auto env = internal::getEnv();
+  auto rawElement = env->GetObjectArrayElement(this->self(), idx);
+  return adopt_local(static_cast<T>(rawElement));
+}
+
+template<typename T>
+inline detail::ElementProxy<JArrayClass<T>> JArrayClass<T>::operator[](size_t index) {
+  return detail::ElementProxy<JArrayClass<T>>(this, index);
+}
+
+// jarray /////////////////////////////////////////////////////////////////////////////////////////
+
+template <typename JArrayType>
+auto JPrimitiveArray<JArrayType>::getRegion(jsize start, jsize length)
+    -> std::unique_ptr<T[]> {
+  using T = typename jtype_traits<JArrayType>::entry_type;
+  auto buf = std::unique_ptr<T[]>{new T[length]};
+  getRegion(start, length, buf.get());
+  return buf;
+}
+
+template <typename JArrayType>
+std::string JPrimitiveArray<JArrayType>::get_instantiated_java_descriptor() {
+  return jtype_traits<JArrayType>::descriptor();
+}
+template <typename JArrayType>
+std::string JPrimitiveArray<JArrayType>::get_instantiated_base_name() {
+  return JPrimitiveArray::get_instantiated_java_descriptor();
+}
+
+template <typename JArrayType>
+auto JPrimitiveArray<JArrayType>::pin() -> PinnedPrimitiveArray<T, PinnedArrayAlloc<T>> {
+  return PinnedPrimitiveArray<T, PinnedArrayAlloc<T>>{this->self(), 0, 0};
+}
+
+template <typename JArrayType>
+auto JPrimitiveArray<JArrayType>::pinRegion(jsize start, jsize length)
+    -> PinnedPrimitiveArray<T, PinnedRegionAlloc<T>> {
+  return PinnedPrimitiveArray<T, PinnedRegionAlloc<T>>{this->self(), start, length};
+}
+
+template <typename JArrayType>
+auto JPrimitiveArray<JArrayType>::pinCritical()
+    -> PinnedPrimitiveArray<T, PinnedCriticalAlloc<T>> {
+  return PinnedPrimitiveArray<T, PinnedCriticalAlloc<T>>{this->self(), 0, 0};
+}
+
+template <typename T>
+class PinnedArrayAlloc {
+ public:
+  static void allocate(
+      alias_ref<typename jtype_traits<T>::array_type> array,
+      jsize start,
+      jsize length,
+      T** elements,
+      size_t* size,
+      jboolean* isCopy) {
+    (void) start;
+    (void) length;
+    *elements = array->getElements(isCopy);
+    *size = array->size();
+  }
+  static void release(
+      alias_ref<typename jtype_traits<T>::array_type> array,
+      T* elements,
+      jint start,
+      jint size,
+      jint mode) {
+    (void) start;
+    (void) size;
+    array->releaseElements(elements, mode);
+  }
+};
+
+template <typename T>
+class PinnedCriticalAlloc {
+ public:
+  static void allocate(
+      alias_ref<typename jtype_traits<T>::array_type> array,
+      jsize start,
+      jsize length,
+      T** elements,
+      size_t* size,
+      jboolean* isCopy) {
+    const auto env = internal::getEnv();
+    *elements = static_cast<T*>(env->GetPrimitiveArrayCritical(array.get(), isCopy));
+    FACEBOOK_JNI_THROW_EXCEPTION_IF(!elements);
+    *size = array->size();
+  }
+  static void release(
+      alias_ref<typename jtype_traits<T>::array_type> array,
+      T* elements,
+      jint start,
+      jint size,
+      jint mode) {
+    const auto env = internal::getEnv();
+    env->ReleasePrimitiveArrayCritical(array.get(), elements, mode);
+  }
+};
+
+template <typename T>
+class PinnedRegionAlloc {
+ public:
+  static void allocate(
+      alias_ref<typename jtype_traits<T>::array_type> array,
+      jsize start,
+      jsize length,
+      T** elements,
+      size_t* size,
+      jboolean* isCopy) {
+    auto buf = array->getRegion(start, length);
+    FACEBOOK_JNI_THROW_EXCEPTION_IF(!buf);
+    *elements = buf.release();
+    *size = length;
+    *isCopy = true;
+  }
+  static void release(
+      alias_ref<typename jtype_traits<T>::array_type> array,
+      T* elements,
+      jint start,
+      jint size,
+      jint mode) {
+    std::unique_ptr<T[]> holder;
+    if (mode == 0 || mode == JNI_ABORT) {
+      holder.reset(elements);
+    }
+    if (mode == 0 || mode == JNI_COMMIT) {
+      array->setRegion(start, size, elements);
+    }
+  }
+};
+
+// PinnedPrimitiveArray ///////////////////////////////////////////////////////////////////////////
+
+template<typename T, typename Alloc>
+PinnedPrimitiveArray<T, Alloc>::PinnedPrimitiveArray(PinnedPrimitiveArray&& o) {
+  *this = std::move(o);
+}
+
+template<typename T, typename Alloc>
+PinnedPrimitiveArray<T, Alloc>&
+PinnedPrimitiveArray<T, Alloc>::operator=(PinnedPrimitiveArray&& o) {
+  if (array_) {
+    release();
+  }
+  array_ = std::move(o.array_);
+  elements_ = o.elements_;
+  isCopy_ = o.isCopy_;
+  size_ = o.size_;
+  start_ = o.start_;
+  o.clear();
+  return *this;
+}
+
+template<typename T, typename Alloc>
+T* PinnedPrimitiveArray<T, Alloc>::get() {
+  return elements_;
+}
+
+template<typename T, typename Alloc>
+inline void PinnedPrimitiveArray<T, Alloc>::release() {
+  releaseImpl(0);
+  clear();
+}
+
+template<typename T, typename Alloc>
+inline void PinnedPrimitiveArray<T, Alloc>::commit() {
+  releaseImpl(JNI_COMMIT);
+}
+
+template<typename T, typename Alloc>
+inline void PinnedPrimitiveArray<T, Alloc>::abort() {
+  releaseImpl(JNI_ABORT);
+  clear();
+}
+
+template <typename T, typename Alloc>
+inline void PinnedPrimitiveArray<T, Alloc>::releaseImpl(jint mode) {
+  FACEBOOK_JNI_THROW_EXCEPTION_IF(array_.get() == nullptr);
+  Alloc::release(array_, elements_, start_, size_, mode);
+}
+
+template<typename T, typename Alloc>
+inline void PinnedPrimitiveArray<T, Alloc>::clear() noexcept {
+  array_ = nullptr;
+  elements_ = nullptr;
+  isCopy_ = false;
+  start_ = 0;
+  size_ = 0;
+}
+
+template<typename T, typename Alloc>
+inline T& PinnedPrimitiveArray<T, Alloc>::operator[](size_t index) {
+  FACEBOOK_JNI_THROW_EXCEPTION_IF(elements_ == nullptr);
+  return elements_[index];
+}
+
+template<typename T, typename Alloc>
+inline bool PinnedPrimitiveArray<T, Alloc>::isCopy() const noexcept {
+  return isCopy_ == JNI_TRUE;
+}
+
+template<typename T, typename Alloc>
+inline size_t PinnedPrimitiveArray<T, Alloc>::size() const noexcept {
+  return size_;
+}
+
+template<typename T, typename Alloc>
+inline PinnedPrimitiveArray<T, Alloc>::~PinnedPrimitiveArray() noexcept {
+  if (elements_) {
+    release();
+  }
+}
+
+template<typename T, typename Alloc>
+inline PinnedPrimitiveArray<T, Alloc>::PinnedPrimitiveArray(alias_ref<typename jtype_traits<T>::array_type> array, jint start, jint length) {
+  array_ = array;
+  start_ = start;
+  Alloc::allocate(array, start, length, &elements_, &size_, &isCopy_);
+}
+
+template<typename T, typename Base, typename JType>
+inline alias_ref<JClass> JavaClass<T, Base, JType>::javaClassStatic() {
+  static auto cls = findClassStatic(jtype_traits<typename T::javaobject>::base_name().c_str());
+  return cls;
+}
+
+template<typename T, typename Base, typename JType>
+inline local_ref<JClass> JavaClass<T, Base, JType>::javaClassLocal() {
+  std::string className(jtype_traits<typename T::javaobject>::base_name().c_str());
+  return findClassLocal(className.c_str());
+}
+
+}}

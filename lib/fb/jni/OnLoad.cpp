@@ -11,3 +11,9 @@
 #include <fb/Environment.h>
 #include <fb/fbjni.h>
 #include <fb/fbjni/NativeRunnable.h>
+
+using namespace facebook::jni;
+
+void initialize_fbjni() {
+  CountableOnLoad(Environment::current());
+  HybridDataOnLoad();
