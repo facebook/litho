@@ -406,3 +406,4 @@ public abstract class BaseBinder<
       if (mContentHeightSpec == newHeightSpec && mContentWidthSpec == newWidthSpec) {
         return;
       }
+
