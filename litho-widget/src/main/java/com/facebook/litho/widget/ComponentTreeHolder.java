@@ -112,3 +112,7 @@ public class ComponentTreeHolder {
     }
   }
 
+  synchronized int getSpanSize() {
+    return mComponentInfo.getSpanSize();
+  }
+
