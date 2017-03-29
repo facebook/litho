@@ -1735,3 +1735,4 @@ class MountState {
         EVENT_MOUNT,
         component,
         PARAM_NO_OP_COUNT,
+        String.valueOf(mountStats.noOpCount));

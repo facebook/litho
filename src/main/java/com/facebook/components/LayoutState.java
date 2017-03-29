@@ -1380,3 +1380,8 @@ class LayoutState {
       return true;
     }
 
+    if (!hostIsCompatible(layoutNode, diffNode)) {
+      return true;
+    }
+
+    layoutNode.setDiffNode(diffNode);
