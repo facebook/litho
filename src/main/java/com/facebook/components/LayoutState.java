@@ -212,3 +212,5 @@ class LayoutState {
   private static LayoutOutput createLayoutOutput(
       Component<?> component,
       LayoutState layoutState,
+      InternalNode node,
+      boolean useNodePadding,

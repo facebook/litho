@@ -91,3 +91,21 @@ class MountItem {
     mImportantForAccessibility = importantForAccessibility;
     mDisplayListDrawable = displayListDrawable;
 
+    if (mNodeInfo != null) {
+      mNodeInfo.release();
+      mNodeInfo = null;
+    }
+
+    if (nodeInfo != null) {
+      mNodeInfo = nodeInfo.acquireRef();
+    }
+
+    if (mViewNodeInfo != null) {
+      mViewNodeInfo.release();
+      mViewNodeInfo = null;
+    }
+
+    if (viewNodeInfo != null) {
+      mViewNodeInfo = viewNodeInfo.acquireRef();
+    }
+

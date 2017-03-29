@@ -57,3 +57,4 @@ public abstract class PagerBinder extends BaseBinder<
   public PagerBinder(Context context, PagerWorkingRangeController rangeController, int initialPage,
       float pageWidth) {
     super(context, rangeController);
+
