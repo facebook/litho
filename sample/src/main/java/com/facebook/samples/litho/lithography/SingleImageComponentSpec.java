@@ -28,3 +28,6 @@ public class SingleImageComponentSpec {
       ComponentContext c,
       @Prop String image,
       @Prop(optional = true) float aspectRatio) {
+    final DraweeController controller = Fresco.newDraweeControllerBuilder()
+        .setUri(image)
+        .build();
