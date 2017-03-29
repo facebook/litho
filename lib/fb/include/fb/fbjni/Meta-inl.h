@@ -272,3 +272,16 @@ class JNonvirtualMethod<R(Args...)> : public JMethodBase {
   friend class JClass;
 };
 
+template <typename... Args>
+local_ref<jobject> slowCall(jmethodID method_id, alias_ref<jobject> self, Args... args) {
+    static auto invoke = findClassStatic("java/lang/reflect/Method")
+      ->getMethod<jobject(jobject, JArrayClass<jobject>::javaobject)>("invoke");
+    // TODO(xxxxxxx): Provide fbjni interface to ToReflectedMethod.
+    auto reflected = adopt_local(Environment::current()->ToReflectedMethod(self->getClass().get(), method_id, JNI_FALSE));
+    FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
+    if (!reflected) throw std::runtime_error("Unable to get reflected java.lang.reflect.Method");
+    auto argsArray = makeArgsArray(args...);
+    // No need to check for exceptions since invoke is itself a JMethod that will do that for us.
+    return invoke(reflected, self.get(), argsArray.get());
+}
+

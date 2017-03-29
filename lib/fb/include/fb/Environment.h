@@ -22,3 +22,7 @@ struct Environment {
   // May be null if this thread isn't attached to the JVM
   FBEXPORT static JNIEnv* current();
   static void initialize(JavaVM* vm);
+
+  // There are subtle issues with calling the next functions directly. It is
+  // much better to always use a ThreadScope to manage attaching/detaching for
+  // you.

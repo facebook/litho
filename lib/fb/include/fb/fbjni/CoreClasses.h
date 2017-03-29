@@ -344,3 +344,5 @@ FBEXPORT local_ref<JString> make_jstring(const std::string& modifiedUtf8);
 class FBEXPORT JThrowable : public JavaClass<JThrowable, JObject, jthrowable> {
  public:
   static constexpr const char* kJavaDescriptor = "Ljava/lang/Throwable;";
+
+  local_ref<JThrowable> initCause(alias_ref<JThrowable> cause);

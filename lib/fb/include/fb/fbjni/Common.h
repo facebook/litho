@@ -45,3 +45,12 @@
 namespace facebook {
 namespace jni {
 
+FBEXPORT void throwPendingJniExceptionAsCppException();
+FBEXPORT void throwCppExceptionIf(bool condition);
+
+[[noreturn]] FBEXPORT void throwNewJavaException(jthrowable);
+[[noreturn]] FBEXPORT void throwNewJavaException(const char* throwableName, const char* msg);
+template<typename... Args>
+[[noreturn]] void throwNewJavaException(const char* throwableName, const char* fmt, Args... args);
+
+

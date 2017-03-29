@@ -10,3 +10,4 @@
 #include <fb/fbjni/CoreClasses.h>
 
 #include <fb/assert.h>
+#include <fb/log.h>

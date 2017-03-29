@@ -17,3 +17,5 @@ using namespace facebook::jni;
 void initialize_fbjni() {
   CountableOnLoad(Environment::current());
   HybridDataOnLoad();
+  JNativeRunnable::OnLoad();
+  ThreadScope::OnLoad();

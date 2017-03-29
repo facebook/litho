@@ -20,3 +20,29 @@
 namespace facebook {
 namespace jni {
 
+namespace {
+StaticInitialized<ThreadLocal<JNIEnv>> g_env;
+JavaVM* g_vm = nullptr;
+
+struct JThreadScopeSupport : JavaClass<JThreadScopeSupport> {
+  static auto constexpr kJavaDescriptor = "Lcom/facebook/jni/ThreadScopeSupport;";
+
+  // These reinterpret_casts are a totally dangerous pattern. Don't use them. Use HybridData instead.
+  static void runStdFunction(std::function<void()>&& func) {
+    static auto method = javaClassStatic()->getStaticMethod<void(jlong)>("runStdFunction");
+    method(javaClassStatic(), reinterpret_cast<jlong>(&func));
+  }
+
+  static void runStdFunctionImpl(alias_ref<JClass>, jlong ptr) {
+    (*reinterpret_cast<std::function<void()>*>(ptr))();
+  }
+
+  static void OnLoad() {
+    // We need the javaClassStatic so that the class lookup is cached and that
+    // runStdFunction can be called from a ThreadScope-attached thread.
+    javaClassStatic()->registerNatives({
+        makeNativeMethod("runStdFunctionImpl", runStdFunctionImpl),
+      });
+  }
+};
+}
