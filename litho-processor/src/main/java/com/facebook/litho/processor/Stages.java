@@ -102,3 +102,8 @@ public class Stages {
     NOT_STATIC
   }
 
+  public enum StyleableFlag {
+    STYLEABLE,
+    NOT_STYLEABLE
+  }
+

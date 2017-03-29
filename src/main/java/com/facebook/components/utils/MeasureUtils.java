@@ -227,3 +227,29 @@ public final class MeasureUtils {
       outputSize.height = heightSize;
 
       if (widthMode == UNSPECIFIED || heightBasedWidth <= widthSize) {
+        outputSize.width = heightBasedWidth;
+      } else {
+        outputSize.width = widthSize;
+        if (ComponentsConfiguration.IS_INTERNAL_BUILD) {
+          Log.d(
+              "com.facebook.components.utils.MeasureUtils",
+              String.format(
+                  "Ratio makes width larger than allowed. w:%s h:%s aspectRatio:%f",
+                  SizeSpec.toString(widthSpec),
+                  SizeSpec.toString(heightSpec),
+                  aspectRatio));
+        }
+      }
+    }
+    // Width is set to at most measurement. If that is the case heightMode must be unspecified.
+    else if (widthMode == AT_MOST) {
+      outputSize.width = widthSize;
+      outputSize.height = widthBasedHeight;
+    }
+    // Height is set to at most measurement. If that is the case widthMode must be unspecified.
+    else if (heightMode == AT_MOST) {
+      outputSize.width = heightBasedWidth;
+      outputSize.height = heightSize;
+    }
+  }
+}
