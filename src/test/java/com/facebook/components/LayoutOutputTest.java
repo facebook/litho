@@ -257,3 +257,8 @@ public class LayoutOutputTest {
     mLayoutOutput.setComponent(component);
     mLayoutOutput.setId(
         LayoutStateOutputIdCalculator.calculateLayoutOutputId(
+            mLayoutOutput,
+            LEVEL_TEST,
+            LayoutOutput.TYPE_FOREGROUND,
+            MAX_SEQ_TEST + 1));
+  }
