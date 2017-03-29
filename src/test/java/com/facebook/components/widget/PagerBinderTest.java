@@ -38,3 +38,6 @@ public class PagerBinderTest {
   private ComponentContext mContext;
   private TestPagerComponentBinder mBinder;
 
+  @Rule
+  public ComponentsRule mComponentsRule = new ComponentsRule();
+
