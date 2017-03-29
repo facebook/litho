@@ -43,3 +43,11 @@ public class ComponentsProcessor extends AbstractComponentsProcessor {
         .addToTypeSpec(mountSpecHelper.getTypeSpec());
     PreambleGenerator.generate(mountSpecHelper.getSpecModel())
         .addToTypeSpec(mountSpecHelper.getTypeSpec());
+
+    if (isPureRender) {
+      mountSpecHelper.getStages().generateIsPureRender();
+      mountSpecHelper.generateShouldUpdate();
+      if (mountSpecHelper.callsShouldUpdateOnMount()) {
+        mountSpecHelper.getStages().generateCallsShouldUpdateOnMount();
+      }
+    }

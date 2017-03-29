@@ -100,3 +100,4 @@ public class BaseBinderTest {
 
   @Test
   public void testNotifyItemChanged() {
+    mount();

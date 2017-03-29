@@ -148,3 +148,5 @@ public class ComponentViewMountTest {
         SizeSpec.makeSizeSpec(100, EXACTLY));
 
     mComponentView.resetRequestLayoutInvocationCount();
+    mComponentView.setComponent(newComponentTree);
+

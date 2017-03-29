@@ -46,3 +46,4 @@ public class RecyclerViewWrapper extends SwipeRefreshLayout {
         return childCount - 1 - i;
       }
     });
+
