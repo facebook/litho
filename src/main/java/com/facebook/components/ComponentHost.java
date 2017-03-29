@@ -587,3 +587,24 @@ public class ComponentHost extends ViewGroup {
     // A host has been recycled and is already attached.
     if (view instanceof ComponentHost && view.getParent() == this) {
       finishTemporaryDetach(view);
+      view.setVisibility(VISIBLE);
+      return;
+    }
+
+    LayoutParams lp = view.getLayoutParams();
+    if (lp == null) {
+      lp = generateDefaultLayoutParams();
+      view.setLayoutParams(lp);
+    }
+
+    if (mInLayout) {
+      addViewInLayout(view, -1, view.getLayoutParams(), true);
+    } else {
+      addView(view, -1, view.getLayoutParams());
+    }
+  }
+
+  private void unmountView(View view) {
+    mIsChildDrawingOrderDirty = true;
+
+    if (view instanceof ComponentHost) {
