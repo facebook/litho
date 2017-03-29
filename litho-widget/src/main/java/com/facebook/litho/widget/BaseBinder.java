@@ -403,3 +403,6 @@ public abstract class BaseBinder<
     final int newHeightSpec = SizeSpec.makeSizeSpec(height, EXACTLY);
 
     synchronized (this) {
+      if (mContentHeightSpec == newHeightSpec && mContentWidthSpec == newWidthSpec) {
+        return;
+      }
