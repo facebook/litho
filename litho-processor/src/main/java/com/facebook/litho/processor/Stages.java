@@ -1477,3 +1477,4 @@ public class Stages {
         .stateUpdateClassName(getStateUpdateClassName(element));
 
     for (VariableElement e : updateMethodParamElements) {
+      builder.updateMethodParam(
