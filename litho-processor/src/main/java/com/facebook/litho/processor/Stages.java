@@ -2709,3 +2709,8 @@ public class Stages {
     final MethodSpec.Builder initMethodSpec = MethodSpec.methodBuilder("init")
         .addModifiers(Modifier.PRIVATE)
         .addParameter(contextClass, "context");
+
+    if (isStylable == StyleableFlag.STYLEABLE) {
+      initMethodSpec
+          .addParameter(int.class, "defStyleAttr")
+          .addParameter(int.class, "defStyleRes")
