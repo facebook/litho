@@ -219,3 +219,4 @@ class HorizontalScrollSpec {
           MeasureSpec.getSize(heightMeasureSpec));
     }
 
+    void mount(ComponentTree component, int width, int height) {

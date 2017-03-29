@@ -125,3 +125,4 @@ class LayoutState {
   private final ArrayList<LayoutOutput> mMountableOutputBottoms = new ArrayList<>();
   private final List<TestOutput> mTestOutputs;
 
+  private InternalNode mLayoutRoot;
