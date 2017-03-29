@@ -415,3 +415,8 @@ class LayoutState {
    * is added for it. The mount pass will use the markers to decide which host should be used
    * for each layout output. The root node unconditionally generates a layout output corresponding
    * to the root host.
+   * <p/>
+   * The order of layout outputs follows a depth-first traversal in the tree to ensure the hosts
+   * will be created at the right order when mounting. The host markers will be define which host
+   * each mounted artifacts will be attached to.
+   * <p/>

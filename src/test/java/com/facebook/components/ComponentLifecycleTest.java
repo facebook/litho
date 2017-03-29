@@ -83,3 +83,5 @@ public class ComponentLifecycleTest {
     when(mDiffNode.getLastMeasuredHeight()).thenReturn(-1f);
     when(ComponentsPools.acquireInternalNode(any(ComponentContext.class), any(Resources.class)))
         .thenReturn(mNode);
+    mInput = mock(Component.class);
+
