@@ -662,3 +662,8 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
+  public InternalNode viewTags(SparseArray<Object> viewTags) {
+    return this;
+  }
+
+  @Override
