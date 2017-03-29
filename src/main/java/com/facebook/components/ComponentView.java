@@ -265,3 +265,4 @@ public class ComponentView extends ComponentHost {
 
     mComponent = component;
 
+    if (mComponent != null) {

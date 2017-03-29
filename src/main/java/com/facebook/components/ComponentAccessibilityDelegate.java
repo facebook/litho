@@ -126,3 +126,8 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
 
     node.setClassName(lifecycle.getClass().getName());
 
+    if (virtualViewId >= lifecycle.getExtraAccessibilityNodesCount(component)) {
+      Log.e(TAG, "Received unrecognized virtual view id: " + virtualViewId);
+
+      // ExploreByTouchHelper insists that we set something.
+      node.setContentDescription("");

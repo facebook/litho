@@ -658,3 +658,8 @@ public class MountStateRemountInPlaceTest {
     ComponentTestHelper.mountComponent(cv, tree);
     tree.setRoot(secondLayout);
 
+    verify(mComponentsLogger).eventAddParam(
+        EVENT_PREPARE_MOUNT,
+        tree,
+        PARAM_MOVED_COUNT,
+        "2");

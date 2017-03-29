@@ -732,3 +732,7 @@ public class ComponentHostTest {
         flags,
         IMPORTANT_FOR_ACCESSIBILITY_AUTO);
 
+    mHost.mount(
+        index,
+        mountItem,
+        content instanceof Drawable ? ((Drawable) content).getBounds() : new Rect());
