@@ -822,3 +822,6 @@ class LayoutState {
    * @return The position the HostLayoutOutput was inserted.
    */
   private static int addHostLayoutOutput(
+      InternalNode node,
+      LayoutState layoutState,
+      DiffNode diffNode) {
