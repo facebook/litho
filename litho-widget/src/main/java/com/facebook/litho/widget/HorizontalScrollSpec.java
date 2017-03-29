@@ -152,3 +152,9 @@ class HorizontalScrollSpec {
 
       releaseSize(contentSize);
       contentSize = null;
+
+      componentWidth.set(measuredWidth);
+      componentHeight.set(measuredHeight);
+    }
+  }
+

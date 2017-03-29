@@ -112,3 +112,4 @@ public class ResourceResolver {
     return 0;
   }
 
+  private final int[] resolveIntArrayRes(@ArrayRes int resId) {

@@ -92,3 +92,4 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
     public abstract Component<L> build();
   }
 
+  private static final AtomicInteger sIdGenerator = new AtomicInteger(0);
