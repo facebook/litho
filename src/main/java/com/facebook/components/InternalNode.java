@@ -718,3 +718,6 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Override
   public InternalNode widthDip(@Dimension(unit = DP) int width) {
     return widthPx(mResourceResolver.dipsToPixels(width));
+  }
+
+  @Override
