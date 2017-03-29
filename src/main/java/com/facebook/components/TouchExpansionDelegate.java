@@ -54,3 +54,6 @@ class TouchExpansionDelegate extends TouchDelegate {
    * @param index The drawing order index of the given view.
    */
   void unregisterTouchExpansion(int index) {
+    if (maybeUnregisterFromScrap(index)) {
+      return;
+    }

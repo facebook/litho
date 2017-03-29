@@ -23,3 +23,5 @@ import java.lang.annotation.RetentionPolicy;
  * - {@link OnMeasure}
  * - {@link OnBoundsDefined}
  * - {@link OnMount}
+ * - {@link OnBind}
+ * - {@link OnUnbind}

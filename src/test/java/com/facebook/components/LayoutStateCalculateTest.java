@@ -11,3 +11,4 @@ package com.facebook.litho;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Rect;

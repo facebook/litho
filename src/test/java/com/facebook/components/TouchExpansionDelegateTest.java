@@ -116,3 +116,33 @@ public class TouchExpansionDelegateTest {
   }
 
   @Test
+  public void testMove() {
+    final View firstView = mock(View.class);
+    final View secondView = mock(View.class);
+
+    when(firstView.getContext()).thenReturn(RuntimeEnvironment.application);
+    when(secondView.getContext()).thenReturn(RuntimeEnvironment.application);
+
+    mTouchDelegate.registerTouchExpansion(0, firstView, new Rect(0, 0, 10, 10));
+    mTouchDelegate.registerTouchExpansion(4, secondView, new Rect(0, 0, 10, 10));
+    mTouchDelegate.moveTouchExpansionIndexes(0, 2);
+
+    mTouchDelegate.unregisterTouchExpansion(2);
+  }
+
+  @Test
+  public void testComplexMove() {
+    final View firstView = mock(View.class);
+    final View secondView = mock(View.class);
+
+    when(firstView.getContext()).thenReturn(RuntimeEnvironment.application);
+    when(secondView.getContext()).thenReturn(RuntimeEnvironment.application);
+
+    mTouchDelegate.registerTouchExpansion(0, firstView, new Rect(0, 0, 10, 10));
+    mTouchDelegate.registerTouchExpansion(4, secondView, new Rect(0, 0, 10, 10));
+    mTouchDelegate.moveTouchExpansionIndexes(0, 4);
+    mTouchDelegate.unregisterTouchExpansion(4);
+    mTouchDelegate.unregisterTouchExpansion(4);
+  }
+
+  @Test

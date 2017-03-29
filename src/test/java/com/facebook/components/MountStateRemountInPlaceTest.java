@@ -23,3 +23,5 @@ import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 
 import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;

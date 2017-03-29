@@ -19,3 +19,4 @@ import com.facebook.litho.Diff;
  * them constantly in memory. References should be used any time it's necessary to include a large
  * Object into a {@link com.facebook.litho.Component} in order to limit the amount of
  * retained memory in ComponentTree.
+ *

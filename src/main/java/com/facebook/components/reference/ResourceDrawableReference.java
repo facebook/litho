@@ -20,3 +20,5 @@ import com.facebook.litho.config.ComponentsConfiguration;
  * avoid recreating the same Drawable instances multiple times.
  */
 public final class ResourceDrawableReference extends ReferenceLifecycle<Drawable> {
+
+  private static ResourceDrawableReference sInstance;

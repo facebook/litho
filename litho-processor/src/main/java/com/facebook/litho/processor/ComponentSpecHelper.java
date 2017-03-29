@@ -32,3 +32,9 @@ public abstract class ComponentSpecHelper extends SpecHelper {
       Class<Annotation>[] stageAnnotations,
       Class<Annotation>[] interStageInputAnnotations,
       SpecModel specModel) {
+    super(
+        processingEnv,
+        specElement,
+        name,
+        isPublic,
+        stageAnnotations,
