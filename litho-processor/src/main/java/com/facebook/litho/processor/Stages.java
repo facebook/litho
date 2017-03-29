@@ -1134,3 +1134,4 @@ public class Stages {
                 Arrays.asList(from.exceptions))
         .overridesSuper(
             from.annotations != null && Arrays.asList(from.annotations).contains(Override.class))
+        .parameterTranslation(parameterTranslation)
