@@ -56,3 +56,10 @@ public class BinderTreeCollectionTest {
     ComponentTree inexistentTree = createNewComponentTree();
 
     assertTrue(mBinderTreeCollection.getPositionOf(inexistentTree) < 0);
+  }
+
+  @Test
+  public void testPutAsReplace() {
+    int originalSize = mBinderTreeCollection.size();
+
+    assertNotNull(mBinderTreeCollection.get(1));

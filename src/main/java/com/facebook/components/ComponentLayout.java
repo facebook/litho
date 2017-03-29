@@ -38,3 +38,4 @@ import static android.support.annotation.Dimension.DP;
  * {@link android.view.View}s and {@link android.graphics.drawable.Drawable}s returned.
  * by {@link ComponentLifecycle#mount(ComponentContext, Object, Component)}.
  *
+ * @see ComponentLifecycle#createLayout(ComponentContext, Component, boolean)

@@ -77,3 +77,10 @@ public abstract class BaseBinder<
 
     setRangeController(rangeController);
 
+    mLayoutLooper = layoutLooper;
+
+    if (mLayoutLooper != null && mLayoutLooper == Looper.getMainLooper()) {
+      throw new IllegalStateException("If you want to compute the layout of the " +
+          "Binder's elements in the Main Thread you shouldn't set the MainLooper here but" +
+          "override isAsyncLayoutEnabled() and return false.");
+    }

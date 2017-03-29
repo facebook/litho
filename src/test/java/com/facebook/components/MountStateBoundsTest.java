@@ -162,3 +162,7 @@ public class MountStateBoundsTest {
             host.getBottom()));
 
     assertEquals(new Rect(20, 20, 40, 40), nestedHost.getDrawables().get(0).getBounds());
+
+    assertEquals(
+        new Rect(20, 20, 80, 80),
+        new Rect(

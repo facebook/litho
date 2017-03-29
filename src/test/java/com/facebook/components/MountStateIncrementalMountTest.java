@@ -103,3 +103,4 @@ public class MountStateIncrementalMountTest {
     assertTrue(child1.isMounted());
     assertFalse(child2.isMounted());
     verifyLoggingAndResetLogger(1, 0);
+

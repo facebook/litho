@@ -51,3 +51,12 @@ public class LinearComponentBinderTest {
   @Before
   public void setup() throws Exception {
     mItems = new ArrayList<>();
+    mItems.add(Color.BLACK);
+    mItems.add(Color.BLUE);
+    mItems.add(Color.CYAN);
+    mItems.add(Color.DKGRAY);
+    mItems.add(Color.GRAY);
+    mItems.add(Color.GREEN);
+    mItems.add(Color.LTGRAY);
+    mItems.add(Color.RED);
+    mItems.add(Color.MAGENTA);
