@@ -1464,3 +1464,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   boolean shouldDrawBorders() {
     return mBorderColor != Color.TRANSPARENT
+        && (mYogaNode.getLayoutBorder(LEFT) != 0
+            || mYogaNode.getLayoutBorder(TOP) != 0
+            || mYogaNode.getLayoutBorder(RIGHT) != 0
+            || mYogaNode.getLayoutBorder(BOTTOM) != 0);
