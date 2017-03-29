@@ -58,3 +58,5 @@ public abstract class PagerBinder extends BaseBinder<
       float pageWidth) {
     super(context, rangeController);
 
+    mCurrentItem = initialPage;
+    mPageWidth = pageWidth;
