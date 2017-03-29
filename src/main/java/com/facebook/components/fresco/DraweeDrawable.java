@@ -24,3 +24,8 @@ import com.facebook.litho.fresco.common.NoOpDrawable;
 import com.facebook.drawee.drawable.ForwardingDrawable;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.interfaces.DraweeHierarchy;
+import com.facebook.drawee.view.DraweeHolder;
+
+/**
+ * A Drawable that draws images using Drawee.
+ */
