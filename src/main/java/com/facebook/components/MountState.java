@@ -1353,3 +1353,5 @@ class MountState {
         viewNodeInfo.getPaddingBottom());
   }
 
+  private static void unsetViewPadding(View view, ViewNodeInfo viewNodeInfo) {
+    if (!viewNodeInfo.hasPadding()) {
