@@ -989,3 +989,5 @@ class LayoutState {
       return;
     }
 
+    for (int i = 0, count = layoutState.getMountableOutputCount(); i < count; i++) {
+      final LayoutOutput output = layoutState.getMountableOutputAt(i);
