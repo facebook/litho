@@ -1463,3 +1463,6 @@ public class Stages {
   }
 
   private void generateOnStateUpdateMethods(
+      ExecutableElement element,
+      ClassName contextClass,
+      ClassName componentClass) {
