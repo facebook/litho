@@ -316,3 +316,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     return Container.create(c).build();
   }
 
+  protected ComponentLayout onCreateLayoutWithSizeSpec(
