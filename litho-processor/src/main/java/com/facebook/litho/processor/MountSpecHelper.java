@@ -91,3 +91,5 @@ public class MountSpecHelper extends ComponentSpecHelper {
         STAGE_ANNOTATIONS,
         INTER_STAGE_INPUT_ANNOTATIONS,
         specModel);
+  }
+

@@ -146,3 +146,10 @@ public class ComponentTreeTest {
         ComponentTree.create(mContext, mComponent)
             .incrementalMount(false)
             .build();
+
+    creationCommonChecks(componentTree);
+
+    // Both the main thread and the background layout state shouldn't be calculated yet.
+    Assert.assertNull(Whitebox.getInternalState(componentTree, "mMainThreadLayoutState"));
+    Assert.assertNull(Whitebox.getInternalState(componentTree, "mBackgroundLayoutState"));
+

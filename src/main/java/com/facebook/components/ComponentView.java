@@ -247,3 +247,4 @@ public class ComponentView extends ComponentHost {
 
   public void setComponent(ComponentTree component) {
     mTemporaryDetachedComponent = null;
+    if (mComponent == component) {
