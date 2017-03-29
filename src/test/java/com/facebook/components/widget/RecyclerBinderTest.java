@@ -527,3 +527,23 @@ public class RecyclerBinderTest {
 
     for (int i = 0; i < components.size(); i++) {
       componentTreeHolder = mHoldersForComponents.get(components.get(i).getComponent());
+
+      if (i >= newRangeStart - (RANGE_RATIO * RANGE_SIZE) && i <= newRangeStart + rangeTotal) {
+        assertTrue(componentTreeHolder.isTreeValid());
+        assertTrue(componentTreeHolder.mLayoutAsyncCalled);
+        assertFalse(componentTreeHolder.mLayoutSyncCalled);
+      } else {
+        assertFalse(componentTreeHolder.isTreeValid());
+        assertFalse(componentTreeHolder.mLayoutAsyncCalled);
+        assertFalse(componentTreeHolder.mLayoutSyncCalled);
+        if (i <= rangeTotal) {
+          assertTrue(componentTreeHolder.mDidAcquireStateHandler);
+        } else {
+          assertFalse(componentTreeHolder.mDidAcquireStateHandler);
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testMoveItemOutsideFromRange() {
