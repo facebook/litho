@@ -176,3 +176,10 @@ public class ComponentViewMountTest {
 
     public void resetRequestLayoutInvocationCount() {
       mRequestLayoutInvocationCount = 0;
+    }
+
+    public void setMeasured(int width, int height) {
+      setMeasuredDimension(width, height);
+    }
+  }
+}
