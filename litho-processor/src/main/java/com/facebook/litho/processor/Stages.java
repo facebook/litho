@@ -2241,3 +2241,22 @@ public class Stages {
     mClassTypeSpec.addMethod(shouldUpdateComponent.build());
   }
 
+  public void generateTreePropsMethods(ClassName contextClassName, ClassName componentClassName) {
+    verifyOnCreateTreePropsForChildren(contextClassName);
+    if (!mTreeProps.isEmpty()) {
+      final PopulateTreePropsMethodBuilder builder = new PopulateTreePropsMethodBuilder();
+      builder.componentClassName = componentClassName;
+      builder.lifecycleImplClass = getImplClassName();
+      for (VariableElement treeProp : mTreeProps) {
+        builder.treeProps.add(
+            new Parameter(ClassName.get(treeProp.asType()), treeProp.getSimpleName().toString()));
+      }
+      mClassTypeSpec.addMethod(builder.build());
+    }
+
+    if (mOnCreateTreePropsMethods.isEmpty()) {
+      return;
+    }
+
+    final GetTreePropsForChildrenMethodBuilder builder = new GetTreePropsForChildrenMethodBuilder();
+    builder.lifecycleImplClass = getImplClassName();
