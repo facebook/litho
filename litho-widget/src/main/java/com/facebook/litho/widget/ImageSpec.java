@@ -183,3 +183,4 @@ class ImageSpec {
   static void onUnmount(
       ComponentContext c,
       MatrixDrawable convertDrawable,
+      @Prop(resType = ResType.DRAWABLE) Reference<Drawable> src) {
