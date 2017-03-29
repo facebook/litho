@@ -256,3 +256,6 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
   }
 
   protected void copyInterStageImpl(Component<L> component) {
+
+  }
+
