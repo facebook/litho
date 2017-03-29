@@ -719,3 +719,5 @@ public class Stages {
     for (PropDefaultModel propDefault : mPropDefaults) {
       if (propDefault.mName.equals(name) && propDefault.mType.equals(type)) {
         return true;
+      }
+    }
