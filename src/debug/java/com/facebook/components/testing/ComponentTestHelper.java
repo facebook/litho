@@ -257,3 +257,4 @@ public final class ComponentTestHelper {
   /**
    * Get the subcomponents of a component
    *
+   * @param context A components context
