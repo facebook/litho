@@ -794,3 +794,8 @@ class LayoutState {
     }
 
     for (int i = node.getChildCount() - 1; i >= 0; i--) {
+      final InternalNode child = node.getChildAt(i);
+
+      if (isNestedTree && node.hasNewLayout()) {
+        node.markLayoutSeen();
+      }
