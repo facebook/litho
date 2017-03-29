@@ -320,3 +320,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START).build();
   }
 
+  protected ComponentLayout onCreateLayoutWithSizeSpec(
