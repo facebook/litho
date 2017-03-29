@@ -115,3 +115,19 @@ public class TreePropGeneratorTest {
         "  final TestImpl _impl = (TestImpl) _abstractImpl;\n" +
         "  final com.facebook.components.TreeProps childTreeProps = com.facebook.components.TreeProps.copy(parentTreeProps);\n" +
         "  childTreeProps.put(java.class.Boolean.class, mSpec.onCreateTreeProp(\n" +
+        "      (com.facebook.components.ComponentContext) c,\n" +
+        "      (boolean) _impl.prop,\n" +
+        "      (int) _impl.state));\n" +
+        "  return childTreeProps;\n" +
+        "}\n");
+  }
+
+  private static Annotation createAnnotation(final Class<? extends Annotation> annotationClass) {
+    return new Annotation() {
+      @Override
+      public Class<? extends Annotation> annotationType() {
+        return annotationClass;
+      }
+    };
+  }
+}
