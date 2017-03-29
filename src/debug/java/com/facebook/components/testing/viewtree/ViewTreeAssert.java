@@ -98,3 +98,8 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
   }
 
   /**
+   * Tests if any view has visible text identified by the resource id
+   *
+   * @param resourceId resource id of the text
+   * @return the assertions object
+   */
