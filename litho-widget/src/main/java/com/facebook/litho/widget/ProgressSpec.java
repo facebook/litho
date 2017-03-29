@@ -80,3 +80,5 @@ class ProgressSpec {
         SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED) {
       size.width = DEFAULT_SIZE;
       size.height = DEFAULT_SIZE;
+    } else {
+      MeasureUtils.measureWithEqualDimens(widthSpec, heightSpec, size);
