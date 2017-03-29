@@ -294,3 +294,6 @@ public class MountStateRemountInPlaceTest {
     assertFalse(secondComponent.wasOnMountCalled());
     assertFalse(secondComponent.wasOnBindCalled());
     assertFalse(firstComponent.wasOnUnmountCalled());
+  }
+
+  @Test

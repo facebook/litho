@@ -68,3 +68,4 @@ public class MountSpecHelper extends ComponentSpecHelper {
       GetExtraAccessibilityNodesCount.class,
       OnPopulateExtraAccessibilityNode.class,
       GetExtraAccessibilityNodeAt.class,
+      OnUnbind.class,
