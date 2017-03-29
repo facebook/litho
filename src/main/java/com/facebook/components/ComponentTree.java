@@ -420,3 +420,4 @@ public class ComponentTree {
   void detach() {
     assertMainThread();
 
+    synchronized (this) {
