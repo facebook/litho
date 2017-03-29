@@ -131,3 +131,13 @@ public class ViewPredicatesTest {
   @Test
   public void testIsVisible() throws Exception {
     final Predicate<View> isVisible = ViewPredicates.isVisible();
+
+    assertThat(isVisible.apply(mView)).isTrue();
+    mView.setVisibility(View.GONE);
+    assertThat(isVisible.apply(mView)).isFalse();
+    mView.setVisibility(View.INVISIBLE);
+    assertThat(isVisible.apply(mView)).isFalse();
+  }
+
+  @Test
+  public void testHasDrawable() {
