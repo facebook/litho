@@ -534,3 +534,4 @@ public class MountStateIncrementalMountTest {
     verify(childView1).performIncrementalMount(any(Rect.class));
     verify(childView2).performIncrementalMount(any(Rect.class));
     verify(childView3).performIncrementalMount(any(Rect.class));
+  }

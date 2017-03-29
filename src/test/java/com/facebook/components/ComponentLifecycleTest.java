@@ -43,3 +43,4 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 /**
  * Tests {@link ComponentLifecycle}
  */
+@PrepareForTest({
