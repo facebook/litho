@@ -86,3 +86,6 @@ public class ComponentTreeTest {
     Assert.assertSame(
         mComponent,
         Whitebox.getInternalState(componentTree, "mRoot"));
+  }
+
+  private void postSizeSpecChecks(
