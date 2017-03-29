@@ -241,3 +241,4 @@ public class ComponentTree {
     boolean layoutStateUpdated;
     int componentRootId;
     synchronized (this) {
+      if (mRoot == null) {

@@ -213,3 +213,9 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
     mLastMeasuredLayout = null;
   }
 
+  void release() {
+    mIsLayoutStarted = false;
+  }
+
+  protected Component(L lifecycle) {
+    mLifecycle = lifecycle;
