@@ -105,3 +105,4 @@ public class ComponentGlobalKeyTest {
     // Text
     Assert.assertEquals(layoutSpecId + "[Text2]", getComponentAt(componentView, 0).getGlobalKey());
     // TestViewComponent in child layout
+    Assert.assertEquals(layoutSpecId + "" + nestedLayoutSpecId + "[TestViewComponent1]", getComponentAt(componentView, 1).getGlobalKey());

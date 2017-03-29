@@ -173,3 +173,6 @@ public class MountStateIncrementalMountTest {
     verifyLoggingAndResetLogger(0, 1);
   }
 
+  /**
+   * Tests incremental mount behaviour of a horizontal stack of components with a View mount type.
+   */

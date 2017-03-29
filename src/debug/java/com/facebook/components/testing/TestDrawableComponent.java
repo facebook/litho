@@ -316,3 +316,14 @@ public class TestDrawableComponent extends ComponentLifecycle {
 
   public static class Builder
       extends com.facebook.litho.Component.Builder<TestDrawableComponent> {
+    State mState;
+
+    private void init(
+        ComponentContext context,
+        @AttrRes int defStyleAttr,
+        @StyleRes int defStyleRes,
+        State state) {
+      super.init(context, defStyleAttr, defStyleRes, state);
+      mState = state;
+    }
+
