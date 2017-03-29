@@ -450,3 +450,9 @@ public class LayoutStateCalculateTest {
     assertEquals("textLeft2", getTextFromTextComponent(layoutState, 9));
 
     //Check that the backgrounds have the same size of the components to which they are associated
+    assertEquals(
+        layoutState.getMountableOutputAt(2).getBounds(),
+        layoutState.getMountableOutputAt(3).getBounds());
+    assertEquals(
+        layoutState.getMountableOutputAt(2).getBounds(),
+        layoutState.getMountableOutputAt(6).getBounds());

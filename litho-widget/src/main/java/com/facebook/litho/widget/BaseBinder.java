@@ -137,3 +137,6 @@ public abstract class BaseBinder<
       return;
     }
 
+    if (isInRange(positionStart, itemCount)) {
+      updateRange(positionStart, itemCount, URFLAG_REFRESH_IN_RANGE);
+    }
