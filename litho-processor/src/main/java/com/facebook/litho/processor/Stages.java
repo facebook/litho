@@ -2908,3 +2908,4 @@ public class Stages {
     final MethodSpec.Builder factoryMethod = MethodSpec.methodBuilder("new" + builder.simpleName())
         .addModifiers(Modifier.PRIVATE)
         .returns(builder)
+        .addParameter(contextClass, "context")
