@@ -21,3 +21,4 @@ public interface ComponentsLogger {
   int EVENT_PREPARE_PART_DEFINITION = 4;
   int EVENT_PREPARE_MOUNT = 5;
   int EVENT_MOUNT = 6;
+  int EVENT_SHOULD_UPDATE_REFERENCE_LAYOUT_MISMATCH = 8;

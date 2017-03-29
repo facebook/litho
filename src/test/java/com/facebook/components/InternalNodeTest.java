@@ -136,3 +136,10 @@ public class InternalNodeTest {
   @Test
   public void testMarginFlag() {
     mNode.marginPx(YogaEdge.ALL, 3);
+    assertTrue(isFlagSet(mNode, "PFLAG_MARGIN_IS_SET"));
+    clearFlag(mNode, "PFLAG_MARGIN_IS_SET");
+    assertEmptyFlags(mNode);
+  }
+
+  @Test
+  public void testPaddingFlag() {

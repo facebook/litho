@@ -41,3 +41,4 @@ import static com.facebook.components.ComponentHostUtils.maybeSetDrawableState;
 import static com.facebook.components.ComponentsLogger.ACTION_SUCCESS;
 import static com.facebook.components.ComponentsLogger.EVENT_MOUNT;
 import static com.facebook.components.ComponentsLogger.EVENT_PREPARE_MOUNT;
+import static com.facebook.components.ComponentsLogger.EVENT_SHOULD_UPDATE_REFERENCE_LAYOUT_MISMATCH;

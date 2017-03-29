@@ -105,3 +105,4 @@ class ComponentHostUtils {
    * @param drawable drawable to be mounted
    * @param bounds bounds of the drawable being mounted
    * @param flags flags that determine whether the drawable obtains state from the view
+   * @param nodeInfo nodeInfo associated to the drawable node
