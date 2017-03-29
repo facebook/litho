@@ -707,3 +707,5 @@ class LayoutState {
       LayoutState layoutState,
       LayoutOutput recycle,
       Reference<? extends Drawable> reference,
+      @LayoutOutput.LayoutOutputType int type) {
+    final Component<DrawableComponent> drawableComponent = DrawableComponent.create(reference);
