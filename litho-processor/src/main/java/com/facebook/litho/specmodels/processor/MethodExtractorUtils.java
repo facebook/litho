@@ -21,3 +21,12 @@ import java.util.Map;
 
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.MethodParamModelFactory;
+
+import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.TypeName;
+
+/**
+ * Extracts methods from the given input.
+ */
+public class MethodExtractorUtils {

@@ -20,3 +20,38 @@ import java.util.List;
 import com.facebook.common.internal.ImmutableList;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.specmodels.model.PropDefaultModel;
+
+import com.squareup.javapoet.TypeName;
+
+/**
+ * Extracts prop defaults from the given input.
+ */
+public class PropDefaultsExtractor {
+
+  /**
+   * Get the prop defaults from the given {@link TypeElement}.
+   */
+  public static ImmutableList<PropDefaultModel> getPropDefaults(TypeElement typeElement) {
+    final List<PropDefaultModel> propDefaults = new ArrayList<>();
+
+    final List<? extends Element> enclosedElements = typeElement.getEnclosedElements();
+    for (Element enclosedElement : enclosedElements) {
+      if (enclosedElement.getKind() != ElementKind.FIELD) {
+        continue;
+      }
+
+      final VariableElement variableElement = (VariableElement) enclosedElement;
+      if (variableElement.getAnnotation(PropDefault.class) == null) {
+        continue;
+      }
+
+      propDefaults.add(
+          new PropDefaultModel(
+              TypeName.get(variableElement.asType()),
+              variableElement.getSimpleName().toString(),
+              ImmutableList.copyOf(new ArrayList<>(variableElement.getModifiers()))));
+    }
+
+    return ImmutableList.copyOf(propDefaults);
+  }
+}

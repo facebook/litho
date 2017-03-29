@@ -25,3 +25,4 @@ class ShallowCopyMethodSpecBuilder {
   private boolean mHasDeepCopy;
   private String mImplClassName;
   private List<String> mComponentsToCopy;
+  private List<String> mInterStageVariables;

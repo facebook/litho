@@ -31,3 +31,7 @@ import com.facebook.litho.annotations.TreeProp;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethodModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
+
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.TypeName;
+
