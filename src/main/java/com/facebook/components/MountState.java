@@ -1673,3 +1673,8 @@ class MountState {
     ComponentsPools.release(context, item);
   }
 
+  int getItemCount() {
+    return mIndexToItemMap.size();
+  }
+
+  MountItem getItemAt(int i) {
