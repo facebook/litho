@@ -105,3 +105,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
 
       node.setLastWidthSpec(widthSpec);
       node.setLastHeightSpec(heightSpec);
+
