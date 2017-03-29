@@ -236,3 +236,25 @@ public class ComponentLifecycleTest {
         mInput);
     verify(mNode).setComponent(mInput);
     verify(mNode, never()).setMeasureFunction(any(YogaMeasureFunction.class));
+    verify(componentLifecycle).onPrepare(mContext, mInput);
+  }
+
+  @Test
+  public void testCreateLayoutAndDontResolveNestedTreeWithLayoutSpecCanMeasure() {
+    ComponentLifecycle componentLifecycle = setUpComponentForCreateLayout(
+        false /* isMountSpec */,
+        true /* canMeasure */);
+    componentLifecycle.createLayout(mContext, mInput, false);
+
+    PowerMockito.verifyStatic();
+    // Calling here to verify static call.
+    ComponentsPools.acquireInternalNode(mContext, mContext.getResources());
+    verify(componentLifecycle, never()).onCreateLayout(
+        any(ComponentContext.class),
+        any(Component.class));
+    verify(componentLifecycle, never()).onCreateLayoutWithSizeSpec(
+        any(ComponentContext.class),
+        anyInt(),
+        anyInt(),
+        any(Component.class));
+    verify(mNode).setComponent(mInput);

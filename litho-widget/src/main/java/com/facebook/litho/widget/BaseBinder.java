@@ -783,3 +783,8 @@ public abstract class BaseBinder<
 
   // t16407516: Infer does yet understand when a method takes ownership.
   @ThreadSafe(enableChecks = false)
+  private static void releaseList(List<?> list) {
+    list.clear();
+    sListPool.release(list);
+  }
+}
