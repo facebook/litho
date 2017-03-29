@@ -32,3 +32,4 @@ public class InternalNodeReleaseTest {
   }
 
   private static void assertDefaultValues(InternalNode node) {
+    assertEquals(false, node.isForceViewWrapping());

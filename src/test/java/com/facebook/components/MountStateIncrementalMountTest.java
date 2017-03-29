@@ -25,3 +25,4 @@ import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.yoga.YogaEdge;
 
+import org.junit.Before;

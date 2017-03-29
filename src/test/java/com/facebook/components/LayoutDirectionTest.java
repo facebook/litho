@@ -85,3 +85,43 @@ public class LayoutDirectionTest {
 
     View view1 = componentView.getChildAt(0);
     View view2 = componentView.getChildAt(1);
+
+    assertEquals(
+        new Rect(0, 0, 10, 10),
+        new Rect(
+            view1.getLeft(),
+            view1.getTop(),
+            view1.getRight(),
+            view1.getBottom()));
+
+    assertEquals(
+        new Rect(10, 0, 20, 10),
+        new Rect(
+            view2.getLeft(),
+            view2.getTop(),
+            view2.getRight(),
+            view2.getBottom()));
+
+    ComponentTestHelper.mountComponent(
+        mContext,
+        componentView,
+        new InlineLayoutSpec() {
+              @Override
+              protected ComponentLayout onCreateLayout(ComponentContext c) {
+                return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    .flexDirection(YogaFlexDirection.ROW)
+                    .layoutDirection(YogaDirection.RTL)
+                    .child(
+                        Layout.create(c, child1).flexShrink(0)
+                            .widthPx(10)
+                            .heightPx(10))
+                    .child(
+                        Layout.create(c, child2).flexShrink(0)
+                            .widthPx(10)
+                            .heightPx(10))
+                    .build();
+              }
+            },
+        20,
+        10);
+

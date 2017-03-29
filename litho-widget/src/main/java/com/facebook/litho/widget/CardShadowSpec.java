@@ -32,3 +32,4 @@ class CardShadowSpec {
 
   @OnMount
   static void onMount(
+      ComponentContext context,

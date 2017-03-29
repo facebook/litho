@@ -27,3 +27,5 @@ import static junit.framework.Assert.assertEquals;
 public class LayoutStateEventHandlerTest {
   private int mUnspecifiedSizeSpec = 0; //SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
 
+  private Component mRootComponent;
+  private Component mNestedComponent;

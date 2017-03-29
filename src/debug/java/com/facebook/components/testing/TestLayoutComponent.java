@@ -42,3 +42,4 @@ public class TestLayoutComponent extends ComponentLifecycle {
       boolean isPureRender,
       boolean hasMountSpecChild,
       boolean isDelegate) {
+    for (TestLayoutComponent lifecycle : sInstances) {

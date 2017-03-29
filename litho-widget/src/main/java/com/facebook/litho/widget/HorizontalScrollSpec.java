@@ -50,3 +50,4 @@ class HorizontalScrollSpec {
 
   @PropDefault static final boolean scrollbarEnabled = true;
 
+  private static final SynchronizedPool<Size> sSizePool =

@@ -158,3 +158,4 @@ public class SizeSpec {
     }
   }
 
+  public static int makeSizeSpecFromCssSpec(float cssSize, YogaMeasureMode cssMode) {

@@ -15,3 +15,4 @@ import com.squareup.javapoet.TypeName;
 /**
  * To avoid referring to classes directly in the processor (which would be a circular dependency and
  * would mean the annotation processor might need to process Android-specific class definitions)
+ * we provide class name constants instead.

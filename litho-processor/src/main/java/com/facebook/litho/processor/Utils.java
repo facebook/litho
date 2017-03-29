@@ -10,3 +10,5 @@
 package com.facebook.litho.processor;
 
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
