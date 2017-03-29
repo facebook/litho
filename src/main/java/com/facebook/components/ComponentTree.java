@@ -116,3 +116,4 @@ public class ComponentTree {
   private Component<?> mRoot;
 
   @GuardedBy("this")
+  private int mWidthSpec = SIZE_UNINITIALIZED;

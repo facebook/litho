@@ -102,3 +102,4 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
 
   private boolean mIsLayoutStarted = false;
 
+  // If we have a cachedLayout, onPrepare and onMeasure would have been called on it already.

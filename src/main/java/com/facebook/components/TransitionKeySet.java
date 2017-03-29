@@ -215,3 +215,5 @@ class TransitionKeySet implements TransitionListener {
           keyStatusToResume = KeyStatus.UNCHANGED;
         }
         break;
+
+      case KeyStatus.DISAPPEARED:
