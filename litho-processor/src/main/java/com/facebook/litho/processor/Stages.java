@@ -1713,3 +1713,4 @@ public class Stages {
     implClassBuilder.addMethod(equalsBuilder);
 
     final MethodSpec copyInterStage = generateCopyInterStageImpl(implClassName);
+    if (copyInterStage != null) {
