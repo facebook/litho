@@ -2260,3 +2260,4 @@ public class Stages {
 
     final GetTreePropsForChildrenMethodBuilder builder = new GetTreePropsForChildrenMethodBuilder();
     builder.lifecycleImplClass = getImplClassName();
+    builder.delegateName = getSourceDelegateAccessorName();
