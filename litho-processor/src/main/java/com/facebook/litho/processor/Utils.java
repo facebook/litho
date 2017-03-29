@@ -78,3 +78,9 @@ public class Utils {
     }
 
     return props;
+  }
+
+  /**
+   * Find ExecutableElement (aka methods) children with the given annotation.
+   */
+  public static <A extends Annotation> List<ExecutableElement> getAnnotatedMethods(
