@@ -66,3 +66,4 @@ public class IncrementalMountUtils {
   }
 
   private static void maybePerformIncrementalMountOnView(
+      int scrollingParentWidth,
