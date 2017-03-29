@@ -1143,3 +1143,7 @@ class LayoutState {
       root.setStyleWidthFromSpec(widthSpec);
     }
     if (YogaConstants.isUndefined(root.getStyleHeight())) {
+      root.setStyleHeightFromSpec(heightSpec);
+    }
+
+    if (previousDiffTreeRoot != null) {
