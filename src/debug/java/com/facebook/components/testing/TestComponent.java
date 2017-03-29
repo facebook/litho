@@ -38,3 +38,13 @@ public abstract class TestComponent<L extends ComponentLifecycle> extends Compon
     return "TestComponent";
   }
 
+  void onMountCalled() {
+    mOnMountCalled = true;
+    mMounted = true;
+  }
+
+  void onUnmountCalled() {
+    mOnUnmountCalled = true;
+    mMounted = false;
+  }
+

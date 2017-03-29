@@ -69,3 +69,6 @@ public class Utils {
   public static List<VariableElement> getParametersWithAnnotation(
       ExecutableElement element,
       Class<? extends Annotation> annotation) {
+    final List<? extends VariableElement> params = element.getParameters();
+    final ArrayList<VariableElement> props = new ArrayList<>();
+    for (final VariableElement v : params) {

@@ -80,3 +80,6 @@ public class MountStateRemountInPlaceTest {
       }
     });
 
+    assertTrue(secondComponent.wasOnMountCalled());
+    assertTrue(secondComponent.wasOnBindCalled());
+    assertTrue(firstComponent.wasOnUnmountCalled());

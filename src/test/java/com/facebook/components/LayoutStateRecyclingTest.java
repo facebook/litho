@@ -69,3 +69,12 @@ public class LayoutStateRecyclingTest {
         }).when(internalNodePool).release(Matchers.<InternalNode>any());
 
     // Create a layout state and release it.
+    final Component input = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c)
+            .child(
+                Container.create(c))
+            .build();
+      }
+    };
