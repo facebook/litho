@@ -441,3 +441,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     // Do nothing by default.
   }
 
+  /**
