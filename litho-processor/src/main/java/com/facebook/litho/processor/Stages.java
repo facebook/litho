@@ -2283,3 +2283,11 @@ public class Stages {
             "@OnCreateTreeProp annotated method" +
                 method.getSimpleName() +
                 "cannot have a void return type");
+      }
+
+      final List<? extends VariableElement> params = method.getParameters();
+      if (params.isEmpty()
+          || !ClassName.get(params.get(0).asType()).equals(contextClassName)) {
+        throw new ComponentsProcessingException(
+            method,
+            "The first argument of an @OnCreateTreeProp method should be the "
