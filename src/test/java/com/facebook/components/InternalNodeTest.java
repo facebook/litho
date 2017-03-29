@@ -315,3 +315,4 @@ public class InternalNodeTest {
         nestedTree.getStyleDirection());
   }
 
+  @Test
