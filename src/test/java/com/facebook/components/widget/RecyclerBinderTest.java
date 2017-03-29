@@ -36,3 +36,4 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RuntimeEnvironment;
 
+import static org.junit.Assert.assertEquals;
