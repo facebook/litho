@@ -141,3 +141,4 @@ WIN_EXPORT void YGNodeCopyStyle(const YGNodeRef dstNode, const YGNodeRef srcNode
   WIN_EXPORT void YGNodeStyleSet##name##Percent(const YGNodeRef node,   \
                                                 const YGEdge edge,      \
                                                 const float paramName); \
+  WIN_EXPORT WIN_STRUCT(type) YGNodeStyleGet##name(const YGNodeRef node, const YGEdge edge);
