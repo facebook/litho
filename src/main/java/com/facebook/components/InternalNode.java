@@ -1804,3 +1804,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     mFocusedHandler = null;
     mFullImpressionHandler = null;
     mInvisibleHandler = null;
+    mPrivateFlags = 0L;
