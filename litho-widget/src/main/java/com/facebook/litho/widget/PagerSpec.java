@@ -89,3 +89,4 @@ class PagerSpec {
     binder.unbind(mountedView);
   }
 
+  @OnUnmount

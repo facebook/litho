@@ -110,3 +110,10 @@ public class PagerBinderTest {
     }
 
     for (int i = 3; i < mBinder.getCount(); i++) {
+      assertNull(mBinder.getComponentAt(i));
+    }
+  }
+
+  @Test
+  public void testBinderUpdatePage5() {
+    mBinder = new TestPagerComponentBinder(mContext, 0, 1f);
