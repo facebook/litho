@@ -386,3 +386,7 @@ public class MountStateRemountInPlaceTest {
 
   @Test
   public void testMountUnmountWithSkipShouldUpdate() {
+    final TestComponent firstComponent =
+        TestDrawableComponent.create(mContext)
+            .color(Color.BLACK)
+            .build();

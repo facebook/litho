@@ -63,3 +63,4 @@ public class ComponentsProcessor extends AbstractComponentsProcessor {
     mountSpecHelper.generateOnUnbind();
     mountSpecHelper.generateOnUnmount();
     mountSpecHelper.generateAccessibilityMethods();
+    mountSpecHelper.generateCanMountIncrementally();

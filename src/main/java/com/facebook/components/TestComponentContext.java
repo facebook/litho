@@ -22,3 +22,4 @@ import com.facebook.yoga.YogaMeasureOutput;
  * {@link ComponentContext} for use within a test environment that is compatible with mock
  * ComponentSpecs in addition to real implementation.
  */
+class TestComponentContext extends ComponentContext {
