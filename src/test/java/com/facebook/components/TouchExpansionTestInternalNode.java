@@ -10,3 +10,4 @@
 package com.facebook.litho;
 
 /**
+ * Used by the {@link com.facebook.litho.ViewNodeInfoTest}.
