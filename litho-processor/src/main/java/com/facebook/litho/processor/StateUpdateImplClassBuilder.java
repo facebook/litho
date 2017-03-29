@@ -45,3 +45,6 @@ public class StateUpdateImplClassBuilder {
   private final List<Parameter> mStateValueParams = new ArrayList<>();
   private final List<Parameter> mSpecOnUpdateStateMethodParams = new ArrayList<>();
   private String mSpecOnUpdateStateMethodName;
+  private ClassName mComponentStateUpdateInterface;
+  private ClassName mComponentClassName;
+  private Stages.StaticFlag mStaticFlag;

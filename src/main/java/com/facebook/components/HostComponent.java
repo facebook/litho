@@ -38,3 +38,9 @@ class HostComponent extends ComponentLifecycle {
     public String getSimpleName() {
       return "HostComponent";
     }
+  }
+
+  @Override
+  protected int poolSize() {
+    return HOST_POOL_SIZE;
+  }
