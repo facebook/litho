@@ -1800,3 +1800,4 @@ public class Stages {
                     ClassName.get(referenceType)));
 
     if (isStatic.equals(Stages.StaticFlag.STATIC)) {
+      implClassBuilder.addModifiers(Modifier.STATIC);
