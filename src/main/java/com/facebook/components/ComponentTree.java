@@ -341,3 +341,7 @@ public class ComponentTree {
     return baseContext;
   }
 
+  boolean isMounting() {
+    return mIsMounting;
+  }
+
