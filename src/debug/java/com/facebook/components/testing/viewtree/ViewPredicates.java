@@ -77,3 +77,6 @@ final class ViewPredicates {
     };
   }
 
+  public static Predicate<View> hasContentDescription(final String contentDescription) {
+    return new Predicate<View>() {
+      @Override
