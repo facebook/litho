@@ -293,3 +293,16 @@ class MountState {
 
           if (visibleHandler != null) {
             EventDispatcherUtils.dispatchOnVisible(visibleHandler);
+          }
+        }
+
+        // Check if the component has entered the focused range.
+        if (focusedHandler != null && !visibilityItem.isInFocusedRange()) {
+          final View parent = (View) mComponentView.getParent();
+
+          if (hasEnteredFocusedRange(
+              parent.getWidth(),
+              parent.getHeight(),
+              visibilityOutputBounds,
+              sTempRect)) {
+            visibilityItem.setIsInFocusedRange();
