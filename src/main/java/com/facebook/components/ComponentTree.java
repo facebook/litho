@@ -1238,3 +1238,5 @@ public class ComponentTree {
       isLayoutDiffingEnabled = false;
       layoutThreadHandler = null;
       layoutLock = null;
+      stateHandler = null;
+      asyncStateUpdates = true;
