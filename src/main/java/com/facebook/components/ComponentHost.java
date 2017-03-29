@@ -1014,3 +1014,6 @@ public class ComponentHost extends ViewGroup {
       mCanvas = canvas;
       mDrawIndex = 0;
       mItemsToDraw = mMountItems.size();
+    }
+
+    private boolean isRunning() {
