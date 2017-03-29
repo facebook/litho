@@ -302,3 +302,5 @@ public class MountSpecHelper extends ComponentSpecHelper {
         onMount,
         Arrays.asList(ClassNames.COMPONENT_CONTEXT, getMountType()),
         ClassNames.COMPONENT);
+  }
+
