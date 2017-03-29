@@ -324,3 +324,5 @@ public class BaseBinderTest {
     }
   }
 
+  @Test
+  public void testMountNewViewBeforeUnmount() {
