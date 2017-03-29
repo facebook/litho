@@ -500,3 +500,4 @@ public abstract class BaseBinder<
     List<ComponentTree> componentTreesToRelease;
 
     synchronized (this) {
+      componentTreesToRelease = acquireList(mComponentTrees.size());
