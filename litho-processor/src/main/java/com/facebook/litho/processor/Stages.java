@@ -142,3 +142,4 @@ public class Stages {
   private final Map<String, String> mPropJavadocs;
 
   private final String mSimpleClassName;
+

@@ -39,3 +39,8 @@ public abstract class SpecHelper implements Closeable {
 
   private static final Pattern JAVADOC_SANITIZER = Pattern.compile("^\\s", Pattern.MULTILINE);
 
+  protected final Stages mStages;
+  protected final ProcessingEnvironment mProcessingEnv;
+  protected final TypeSpec.Builder mTypeSpec;
+  protected final String mQualifiedClassName;
+  protected final TypeElement mSpecElement;
