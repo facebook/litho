@@ -120,3 +120,11 @@ void throwPendingJniExceptionAsCppException() {
   }
   env->ExceptionClear();
 
+  throw JniException(throwable);
+}
+
+void throwCppExceptionIf(bool condition) {
+  if (!condition) {
+    return;
+  }
+
