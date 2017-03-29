@@ -1737,3 +1737,33 @@ public class Stages {
     writeInnerTypeSpec(implClassBuilder.build());
   }
 
+  public void generateLazyStateUpdateMethods(
+      ClassName context,
+      ClassName componentClass,
+      TypeName stateUpdateType,
+      TypeName stateContainerComponent) {
+    for (VariableElement state : mStateMap.values()) {
+      if (state.getAnnotation(State.class).canUpdateLazily()) {
+        writeMethodSpec(new OnLazyStateUpdateMethodSpecBuilder()
+            .contextClass(context)
+            .componentClass(componentClass)
+            .stateUpdateType(stateUpdateType)
+            .stateName(state.getSimpleName().toString())
+            .stateType(ClassName.get(state.asType()))
+            .withStateContainerClassName(stateContainerComponent)
+            .implClass(getImplClassName())
+            .lifecycleImplClass(mSimpleClassName)
+            .build());
+      }
+    }
+  }
+
+  private void generateStateContainerImplClass(
+      Stages.StaticFlag isStatic,
+      ClassName stateContainerClassName) {
+    final TypeSpec.Builder stateContainerImplClassBuilder = TypeSpec
+        .classBuilder(getStateContainerImplClassName())
+        .addSuperinterface(stateContainerClassName);
+
+    if (isStatic.equals(Stages.StaticFlag.STATIC)) {
+      stateContainerImplClassBuilder.addModifiers(Modifier.STATIC, Modifier.PRIVATE);
