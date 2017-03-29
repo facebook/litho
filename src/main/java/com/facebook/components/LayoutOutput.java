@@ -93,3 +93,11 @@ class LayoutOutput implements Cloneable {
     mHostTranslationY = hostTranslationY;
   }
 
+  int getFlags() {
+    return mFlags;
+  }
+
+  void setFlags(int flags) {
+    mFlags = flags;
+  }
+

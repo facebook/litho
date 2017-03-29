@@ -236,3 +236,4 @@ public class LifecycleMethodsTest {
           assertTrue(
               mCurrentStep == LifecycleStep.ON_BOUNDS_DEFINED);
 
+        case ON_MOUNT:
