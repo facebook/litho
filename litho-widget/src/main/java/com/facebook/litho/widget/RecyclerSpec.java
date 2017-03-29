@@ -62,3 +62,4 @@ class RecyclerSpec {
   @OnBoundsDefined
   static void onBoundsDefined(
       ComponentContext context,
+      ComponentLayout layout,
