@@ -2650,3 +2650,7 @@ public class Stages {
             "return new$L(context, new $T())",
             INNER_IMPL_BUILDER_CLASS_NAME,
             ClassName.bestGuess(getImplClassName()))
+        .addModifiers(isStatic == StaticFlag.STATIC ? Modifier.STATIC : Modifier.FINAL)
+        .build());
+  }
+
