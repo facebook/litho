@@ -381,3 +381,8 @@ public class ComponentsPools {
   }
 
   static ComponentTree.Builder acquireComponentTreeBuilder(ComponentContext c, Component<?> root) {
+    ComponentTree.Builder componentTreeBuilder = sComponentTreeBuilderPool.acquire();
+    if (componentTreeBuilder == null) {
+      componentTreeBuilder = new ComponentTree.Builder();
+    }
+
