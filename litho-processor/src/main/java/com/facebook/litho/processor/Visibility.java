@@ -6,3 +6,12 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+
+package com.facebook.components.processor;
+
+public enum Visibility {
+  PACKAGE,
+  PRIVATE,
+  PUBLIC,
+  PROTECTED,
+}

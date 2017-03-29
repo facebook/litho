@@ -6,3 +6,39 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+
+package com.facebook.components;
+
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.ArrayRes;
+import android.support.annotation.AttrRes;
+import android.support.annotation.BoolRes;
+import android.support.annotation.ColorRes;
+import android.support.annotation.DimenRes;
+import android.support.annotation.DrawableRes;
+import android.support.annotation.IntegerRes;
+import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
+
+import com.facebook.components.reference.Reference;
+import com.facebook.components.reference.ResourceDrawableReference;
+
+public class ResourceResolver {
+  private ComponentContext mContext;
+  private Resources mResources;
+  private Resources.Theme mTheme;
+  private ResourceCache mResourceCache;
+
+  // Use for *Attr methods to retrieve attributes without needing to
+  // allocate a new int[] for each call.
+  private final int[] mAttrs = new int[1];
+
+  public final void init(ComponentContext context, ResourceCache resourceCache) {
+    mContext = context;
+    mResources = context.getResources();
+    mTheme = context.getTheme();
+    mResourceCache = resourceCache;
+  }
+

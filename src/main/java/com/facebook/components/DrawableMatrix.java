@@ -6,3 +6,14 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+
+package com.facebook.components;
+
+import android.graphics.Matrix;
+import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
+import android.widget.ImageView.ScaleType;
+
+/**
+ * Static class containing a factory method for creating a matrix to apply to a drawable.
+ */
