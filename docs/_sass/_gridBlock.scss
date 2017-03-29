@@ -1,0 +1,163 @@
+.gridBlockWrapper {
+  background: $gridBlockWrapper-background;
+}
+
+.gridBlockWrapper.alternateBackground {
+  background: $gridBlockWrapper-alternate-background;
+}
+
+.gridBlock {
+  margin: 0px auto;
+  padding: 0 10px;
+  padding-top: 100px;
+  padding-bottom: 50px;
+  max-width: 1400px;
+
+  h3 {
+    width: 100%;
+    text-align: left;
+    color: #999;
+    font-size: 20px;
+    margin-top: -40px;
+  }
+
+  .blockElement {
+    padding: 5px 0;
+    align-items: center;
+
+    img {
+      max-width: 100%;
+    }
+
+    h3 {
+      font-size: 40px;
+      margin: 0;
+      padding: 10px 0;
+    }
+  }
+
+  .gridClear {
+    clear: both;
+  }
+}
+
+.gridBlock .alignCenter {
+	text-align: center;
+}
+.gridBlock .alignRight {
+	text-align: right;
+}
+.gridBlock .imageAlignSide {
+  justify-content: center;
+	align-items: center;
+	display: flex;
+	flex-flow: row wrap;
+}
+.blockImage {
+	max-width: 900px;
+	width: 50%;
+}
+.imageAlignTop .blockImage {
+	margin-bottom: 20px;
+}
+.imageAlignTop.alignCenter .blockImage {
+	margin-left: auto;
+	margin-right: auto;
+}
+.imageAlignSide {
+  p {
+    margin-bottom: 40px;
+    max-width: 560px;
+    margin: 0;
+  }
+}
+
+.imageAlignSide .blockImage {
+	flex: 0 1 400px;
+	margin-right: 100px;
+}
+
+.imageAlignSide .blockContent {
+	flex: 1 1;
+  p {
+    padding: 0;
+    font-size: 130%;
+    font-weight: normal;
+  }
+
+  .blockText {
+
+  }
+
+  .blockCode {
+  }
+}
+
+@media only screen and (max-width: 1023px) {
+	.responsiveList .blockContent {
+		position: relative;
+	}
+	.responsiveList .blockContent > div {
+		padding-left: 20px;
+	}
+	.responsiveList .blockContent::before {
+		content: "\2022";
+		position: absolute;
+	}
+}
+
+@media only screen and (min-width: 1024px) {
+  .gridBlock {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    .oneByGridBlock {
+      box-sizing: border-box;
+      flex: 1 0 100%;
+      padding: 10px;
+    }
+
+    .twoByGridBlock {
+      box-sizing: border-box;
+      flex: 1 0 50%;
+      padding: 10px;
+    }
+
+    .fourByGridBlock {
+      box-sizing: border-box;
+      flex: 1 0 25%;
+      padding: 10px;
+    }
+  }
+
+  h2 + .gridBlock {
+    padding-top: 20px;
+  }
+}
+
+@media only screen and (min-width: 1400px) {
+  .gridBlock {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    .oneByGridBlock {
+      box-sizing: border-box;
+      flex: 1 0 100%;
+      padding: 10px 20px;
+    }
+
+    .twoByGridBlock {
+      box-sizing: border-box;
+      flex: 1 0 50%;
+      padding: 10px 20px;
+    }
+
+    .fourByGridBlock {
+      box-sizing: border-box;
+      flex: 1 0 25%;
+      padding: 10px 20px;
+    }
+  }
+}

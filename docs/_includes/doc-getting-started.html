@@ -1,0 +1,77 @@
+<div class="post">
+  <header class="post-header">
+    <h1 class="post-title">{% if include.truncate %}<a href="{{ page.url | absolute_url }}">{{ page.title }}</a>{% else %}{{ page.title }}{% endif %}</h1>
+  </header>
+  <article class="post-content">
+    <div class="toggler">
+      <a href="javascript:void(0);" class="button-gradle" onclick="display('configuration', 'gradle')">Gradle</a>
+      <a href="javascript:void(0);" class="button-buck" onclick="display('configuration', 'buck')">Buck</a>
+    </div>
+    {{ content }}
+    <block class="gradle buck" />
+    <p><a class="edit-page-link" href="https://github.com/{{ site.ghrepo }}/tree/gh-pages/{{ page.path }}" target="_blank">Edit on GitHub</a></p>
+  </article>
+  {% include doc_paging.html %}
+</div>
+<script>
+// Convert <div>...<span><block /></span>...</div>
+// Into <div>...<block />...</div>
+var blocks = document.getElementsByTagName('block');
+var article = document.getElementsByTagName('article')[0];
+for (var i = 0; i < blocks.length; ++i) {
+  var block = blocks[i];
+  article.insertBefore(block, null);
+}
+// Convert <div>...<block />content<block />...</div>
+// Into <div>...<block>content</block><block />...</div>
+blocks = document.getElementsByTagName('block');
+for (var i = 0; i < blocks.length; ++i) {
+  var block = blocks[i];
+  while (block.nextSibling && block.nextSibling.tagName !== 'BLOCK') {
+    block.appendChild(block.nextSibling);
+  }
+}
+
+function display(type, value) {
+  var container = document.getElementsByTagName('block')[0].parentNode;
+  container.className = 'display-' + type + '-' + value + ' ' +
+    container.className.replace(RegExp('display-' + type + '-[a-z]+ ?'), '');
+}
+
+// If we are coming to the page with a hash in it (i.e. from a search, for example), try to get
+// us as close as possible to the correct platform and dev os using the hashtag and block walk up.
+var foundHash = false;
+if (window.location.hash !== '' && window.location.hash !== 'content') { // content is default
+  var hashLinks = document.querySelectorAll('a.hash-link');
+  for (var i = 0; i < hashLinks.length && !foundHash; ++i) {
+    if (hashLinks[i].hash === window.location.hash) {
+      var parent = hashLinks[i].parentElement;
+      while (parent) {
+        if (parent.tagName === 'BLOCK') {
+          var config = null;
+
+          // Configuration
+          if (parent.className.indexOf('gradle') > -1) {
+            config = 'gradle';
+          } else if (parent.className.indexOf('buck') > -1) {
+            config = 'buck';
+          } else {
+            break; // assume we don't have anything.
+          }
+
+          display('configuration', config);
+          foundHash = true;
+          break;
+        }
+        parent = parent.parentElement;
+      }
+    }
+  }
+}
+
+// Do the default if there is no matching hash
+if (!foundHash) {
+  display('configuration', 'gradle');
+}
+
+</script>

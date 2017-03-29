@@ -1,0 +1,9 @@
+.DS_Store
+
+# Buck files
+/buck-cache/
+/buck-out/
+/.buckconfig.local
+/.buckd
+/gentest/test.html
+.buckversion

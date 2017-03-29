@@ -1,0 +1,22 @@
+# Copyright 2014-present, Facebook, Inc.
+# All rights reserved.
+#
+# This source code is licensed under the license found in the
+# LICENSE-examples file in the root directory of this source tree.
+
+include_defs("//COMPONENTS_DEFS")
+
+android_binary(
+    name = "sample-barebones",
+    keystore = ":debug_keystore",
+    manifest = "src/main/AndroidManifest.xml",
+    deps = [
+        COMPONENTS_SAMPLE_BAREBONES_JAVA,
+    ],
+)
+
+keystore(
+    name = "debug_keystore",
+    properties = "debug.keystore.properties",
+    store = "debug.keystore",
+)

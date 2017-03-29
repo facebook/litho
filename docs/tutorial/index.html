@@ -1,0 +1,14 @@
+---
+id: tutorial
+title: Tutorial
+layout: tutorial
+category: tutorial
+---
+
+<div class="posts">
+  {% for page in site.tutorial %}
+    {% if page.categories contains 'tutorial' %}
+      {% include post.html truncate=true %}
+    {% endif %}
+  {% endfor %}
+</div>
