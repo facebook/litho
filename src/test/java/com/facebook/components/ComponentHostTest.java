@@ -514,3 +514,5 @@ public class ComponentHostTest {
     assertFalse(mHost.getContentDescriptions().contains(viewContentDescription));
   }
 
+  @Test
+  public void testGetChildDrawingOrder() {
