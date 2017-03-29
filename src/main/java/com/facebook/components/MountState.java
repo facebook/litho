@@ -1711,3 +1711,12 @@ class MountState {
       String logTag,
       ComponentTree component,
       MountStats mountStats) {
+    logger.eventAddParam(
+        EVENT_MOUNT,
+        component,
+        PARAM_LOG_TAG,
+        logTag);
+    logger.eventAddParam(
+        EVENT_MOUNT,
+        component,
+        PARAM_MOUNTED_COUNT,
