@@ -407,3 +407,4 @@ public class ComponentTreeTest {
 
     // Attach first view.
     ComponentView componentView1 = new ComponentView(mContext);
+    componentView1.setComponent(componentTree);
