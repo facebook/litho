@@ -2491,3 +2491,4 @@ public class Stages {
     } else {
       methodBuilder.addStatement("_lifecycle.dispatchOnEvent(_eventHandler, _eventState)");
     }
+
