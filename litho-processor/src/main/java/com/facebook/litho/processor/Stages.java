@@ -266,3 +266,8 @@ public class Stages {
             "@OnEvent declared methods must have unique names");
       }
 
+      final DeclaredType eventClass = Utils.getAnnotationParameter(
+          mProcessingEnv,
+          element,
+          OnEvent.class,
+          "value");
