@@ -401,3 +401,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public InternalNode alignContent(YogaAlign alignContent) {
+    mYogaNode.setAlignContent(alignContent);
+    return this;
+  }
+
+  @Override
+  public InternalNode alignSelf(YogaAlign alignSelf) {

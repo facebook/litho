@@ -377,3 +377,4 @@ public interface ComponentLayout {
         EventHandler<FullImpressionVisibleEvent> fullImpressionHandler);
     ContainerBuilder invisibleHandler(EventHandler<InvisibleEvent> invisibleHandler);
     ContainerBuilder contentDescription(CharSequence contentDescription);
+    ContainerBuilder contentDescription(@StringRes int stringId);
