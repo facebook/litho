@@ -456,3 +456,5 @@ class TextSpec {
     if (measureLayout != null &&
         measuredWidth == layoutWidth &&
         measuredHeight == layoutHeight) {
+      textLayout.set(measureLayout);
+    } else {
