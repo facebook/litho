@@ -47,3 +47,25 @@ public class RecyclerViewWrapper extends SwipeRefreshLayout {
       }
     });
 
+    addView(mRecyclerView);
+    mStickyHeader = new ComponentView(getContext());
+    mStickyHeader.setLayoutParams(new ViewGroup.LayoutParams(
+        ViewGroup.LayoutParams.MATCH_PARENT,
+        ViewGroup.LayoutParams.WRAP_CONTENT));
+
+    addView(mStickyHeader);
+  }
+
+  public RecyclerView getRecyclerView() {
+    return mRecyclerView;
+  }
+
+  public void setStickyComponent(ComponentTree component) {
+    if (component.getComponentView() != null) {
+      component.getComponentView().startTemporaryDetach();
+    }
+    mStickyHeader.setComponent(component);
+  }
+
+  public ComponentView getStickyHeader() {
+    return mStickyHeader;

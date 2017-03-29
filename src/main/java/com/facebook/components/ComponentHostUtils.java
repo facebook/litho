@@ -182,3 +182,19 @@ class ComponentHostUtils {
       mountItem.getHost().invalidateAccessibilityState();
     }
   }
+
+  /**
+   * Check whether {@param targetHost} is an ancestor of given {@param host} in the layout tree
+   */
+  static boolean hasAncestorHost(ComponentHost host, ComponentHost targetHost) {
+    if (host == null) {
+      return false;
+    }
+    if (host == targetHost) {
+      return true;
+    }
+    if (!(host.getParent() instanceof ComponentHost)) {
+      return false;
+    }
+    return hasAncestorHost((ComponentHost) host.getParent(), targetHost);
+  }

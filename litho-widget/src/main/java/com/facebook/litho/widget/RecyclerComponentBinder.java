@@ -137,3 +137,6 @@ public abstract class RecyclerComponentBinder<L extends RecyclerView.LayoutManag
     }
 
     recyclerView.setAdapter(mAdapter);
+    recyclerView.addOnScrollListener(mOnScrollListener);
+
+    maybeEnableStickyHeader();
