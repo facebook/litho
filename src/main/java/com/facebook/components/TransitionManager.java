@@ -178,3 +178,21 @@ class TransitionManager implements TransitionKeySetListener {
   @Override
   public void onTransitionKeySetEnd(String key, View view) {
     recursivelySetChildClipping(view, true);
+    removeRunningTransition(key);
+  }
+
+  private TransitionKeySet removeRunningTransition(String key) {
+    final TransitionKeySet runningTransition = mRunningTransitions.remove(key);
+    if (runningTransition != null && runningTransition.wasRunningDisappearTransition()) {
+      // The item with given key has completely disappeared, so we can remove it from KeysStatus
+      mKeysStatus.remove(key);
+    }
+
+    return runningTransition;
+  }
+
+  void cleanupDisappearingTransitions(List<String> transitionKeys) {
+    for (int i = 0, size = transitionKeys.size(); i < size; i++) {
+      final TransitionKeySet transitionKeySet = removeRunningTransition(transitionKeys.get(i));
+      transitionKeySet.cleanupAfterDisappear();
+    }

@@ -164,3 +164,8 @@ public class ComponentView extends ComponentHost {
     int width = MeasureSpec.getSize(widthMeasureSpec);
     int height = MeasureSpec.getSize(heightMeasureSpec);
 
+    if (mTemporaryDetachedComponent != null && mComponent == null) {
+      setComponent(mTemporaryDetachedComponent);
+      mTemporaryDetachedComponent = null;
+    }
+

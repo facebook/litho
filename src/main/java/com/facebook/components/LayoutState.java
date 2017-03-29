@@ -38,3 +38,5 @@ import com.facebook.components.reference.BorderColorDrawableReference;
 import com.facebook.components.reference.Reference;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.yoga.YogaConstants;
+import com.facebook.yoga.YogaDirection;
+import com.facebook.yoga.YogaEdge;

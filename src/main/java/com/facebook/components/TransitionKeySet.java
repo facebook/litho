@@ -174,3 +174,11 @@ class TransitionKeySet implements TransitionListener {
   }
 
   /**
+   * For disappear transitions we need to reset the state of the view from animation end state
+   * to its initial state so that it can be safely used for further recycling.
+   */
+  private void resetViewPropertiesAfterDisappear() {
+    mStartValues.applyProperties(mTargetView);
+  }
+
+  /**
