@@ -543,3 +543,6 @@ public class LayoutStateCalculateTest {
       }
     }
     assertEquals(7, totalHosts);
+
+    // Check all the Components match the right LayoutOutput positions.
+    // Tree One.
