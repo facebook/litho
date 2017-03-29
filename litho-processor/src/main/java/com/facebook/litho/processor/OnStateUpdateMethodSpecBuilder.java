@@ -83,3 +83,6 @@ class OnStateUpdateMethodSpecBuilder {
     final MethodSpec.Builder builder = MethodSpec.methodBuilder(mUpdateMethodName)
         .addModifiers(Modifier.PROTECTED, Modifier.STATIC)
         .addParameter(mContextClass, "c");
+    for (String typeParam : mTypeParameters) {
+      builder.addTypeVariable(TypeVariableName.get(typeParam));
+    }

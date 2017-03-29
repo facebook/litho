@@ -59,3 +59,8 @@ class TransferStateSpecBuilder {
     return this;
   }
 
+  MethodSpec build() {
+    MethodSpec.Builder builder = MethodSpec.methodBuilder("transferState")
+        .addAnnotation(Override.class)
+        .addModifiers(Modifier.PROTECTED)
+        .addParameter(ParameterSpec.builder(mContextClassName, "context").build())

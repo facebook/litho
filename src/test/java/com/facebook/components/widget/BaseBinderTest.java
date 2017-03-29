@@ -144,3 +144,4 @@ public class BaseBinderTest {
 
   @Test
   public void testNotifyItemInserted() {
+    mount();

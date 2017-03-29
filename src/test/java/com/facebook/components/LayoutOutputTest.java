@@ -63,3 +63,4 @@ public class LayoutOutputTest {
 
   @Test
   public void testHostMarkerSet() {
+    mLayoutOutput.setHostMarker(10l);
