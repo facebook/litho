@@ -1622,3 +1622,4 @@ class MountState {
     }
     lifecycle.unmount(context, content, component);
   }
+
