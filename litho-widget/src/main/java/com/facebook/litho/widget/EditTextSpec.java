@@ -214,3 +214,4 @@ class EditTextSpec {
         spacingMultiplier,
         textStyle,
         typeface,
+        textAlignment,
