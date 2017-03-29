@@ -1192,3 +1192,5 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputsForNonComponentContentDescriptionNode() {
+    enableAccessibility();
+
