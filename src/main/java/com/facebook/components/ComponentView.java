@@ -295,3 +295,5 @@ public class ComponentView extends ComponentHost {
     }
 
     mComponent = null;
+  }
+

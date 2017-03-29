@@ -135,3 +135,65 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       return;
     }
 
+    lifecycle.onPopulateExtraAccessibilityNode(
+        node,
+        virtualViewId,
+        bounds.left,
+        bounds.top,
+        component);
+  }
+
+  /**
+   * Finds extra accessibility nodes under the given event coordinates.
+   * Returns {@link #INVALID_ID} otherwise.
+   */
+  @Override
+  protected int getVirtualViewAt(float x, float y) {
+    final MountItem mountItem = getAccessibleMountItem(mView);
+    if (mountItem == null) {
+      return INVALID_ID;
+    }
+
+    final Component<?> component = mountItem.getComponent();
+    final ComponentLifecycle lifecycle = component.getLifecycle();
+
+    if (lifecycle.getExtraAccessibilityNodesCount(component) == 0) {
+      return INVALID_ID;
+    }
+
+    final Drawable drawable = (Drawable) mountItem.getContent();
+    final Rect bounds = drawable.getBounds();
+
+    // Try to find an extra accessibility node that intersects with
+    // the given coordinates.
+    final int virtualViewId = lifecycle.getExtraAccessibilityNodeAt(
+        (int) x - bounds.left,
+        (int) y - bounds.top,
+        component);
+
+    return (virtualViewId >= 0 ? virtualViewId : INVALID_ID);
+  }
+
+  @Override
+  protected void onPopulateEventForVirtualView(int virtualViewId, AccessibilityEvent event) {
+    // TODO (T10543861): ExploreByTouchHelper enforces subclasses to set a content description
+    // or text on new events but components don't provide APIs to do so yet.
+    event.setContentDescription("");
+  }
+
+  @Override
+  protected boolean onPerformActionForVirtualView(
+      int virtualViewId,
+      int action,
+      Bundle arguments) {
+    return false;
+  }
+
+  /**
+   * Returns a {AccessibilityNodeProviderCompat} if the host contains a component
+   * that implements custom accessibility logic. Returns {@code NULL} otherwise.
+   * Components with accessibility content are automatically wrapped in hosts by
+   * {@link LayoutState}.
+   */
+  @Override
+  public AccessibilityNodeProviderCompat getAccessibilityNodeProvider(View host) {
