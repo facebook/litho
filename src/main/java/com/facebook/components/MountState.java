@@ -1751,3 +1751,4 @@ class MountState {
 
     private PrepareMountStats() {}
 
+    private void reset() {
