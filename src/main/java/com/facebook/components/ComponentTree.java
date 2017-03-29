@@ -412,3 +412,4 @@ public class ComponentTree {
     assertMainThread();
     mIsMounting = true;
     // currentVisibleArea null or empty => mount all
+    mComponentView.mount(mMainThreadLayoutState, currentVisibleArea);
