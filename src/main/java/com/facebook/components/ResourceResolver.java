@@ -141,3 +141,6 @@ public class ResourceResolver {
       return result;
     }
 
+    return false;
+  }
+
