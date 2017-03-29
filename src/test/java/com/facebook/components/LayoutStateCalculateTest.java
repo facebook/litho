@@ -1328,3 +1328,6 @@ public class LayoutStateCalculateTest {
                     .marginDip(YogaEdge.HORIZONTAL, 10))
             .child(
                 Container.create(c)
+                    .flexDirection(YogaFlexDirection.ROW)
+                    .alignItems(YogaAlign.CENTER)
+                    .paddingDip(YogaEdge.ALL, 10)
