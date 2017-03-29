@@ -66,3 +66,4 @@ public class TransitionInterpolatorAnimatorTest {
 
     transitionAnimator.setDuration(DURATION);
     transitionAnimator.setStartDelay(START_DELAY);
+    transitionAnimator.setInterpolator(mInterpolator);

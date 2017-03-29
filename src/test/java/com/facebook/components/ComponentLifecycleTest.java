@@ -11,3 +11,4 @@ package com.facebook.components;
 
 import android.content.res.Resources;
 
+import com.facebook.components.testing.testrunner.ComponentsTestRunner;
