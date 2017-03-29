@@ -1878,3 +1878,4 @@ public class Stages {
 
     stateClassBuilder.addField(stateContainerImplClass, STATE_CONTAINER_IMPL_MEMBER);
     stateClassBuilder.addMethod(generateStateContainerGetter(SectionClassNames.STATE_CONTAINER_SECTION));
+
