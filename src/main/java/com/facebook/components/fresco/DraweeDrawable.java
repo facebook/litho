@@ -42,3 +42,5 @@ public class DraweeDrawable<DH extends DraweeHierarchy>
 
     setCurrent(mNoOpDrawable);
     mDraweeHolder = DraweeHolder.create(draweeHierarchy, context);
+  }
+
