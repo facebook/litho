@@ -137,3 +137,5 @@ void throwCppExceptionIf(bool condition) {
   throw JniException();
 }
 
+void throwNewJavaException(jthrowable throwable) {
+  throw JniException(wrap_alias(throwable));
