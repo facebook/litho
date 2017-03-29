@@ -11,3 +11,4 @@ package com.facebook.components.processor;
 
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
+import javax.lang.model.element.Modifier;

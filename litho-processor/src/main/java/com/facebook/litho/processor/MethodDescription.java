@@ -9,3 +9,5 @@
 
 package com.facebook.components.processor;
 
+import javax.lang.model.element.Modifier;
+
