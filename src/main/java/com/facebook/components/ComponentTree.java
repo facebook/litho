@@ -265,3 +265,19 @@ public class ComponentTree {
     int viewWidth = mComponentView.getMeasuredWidth();
     int viewHeight = mComponentView.getMeasuredHeight();
     if (viewWidth == 0 && viewHeight == 0) {
+      // The host view has not been measured yet.
+      return;
+    }
+
+    final boolean needsAndroidLayout =
+        !isCompatibleComponentAndSize(
+            mMainThreadLayoutState,
+            componentRootId,
+            viewWidth,
+            viewHeight);
+
+    if (needsAndroidLayout) {
+      mComponentView.requestLayout();
+    } else {
+      mountComponentIfDirty();
+    }
