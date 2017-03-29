@@ -190,3 +190,18 @@ public class BaseBinderTest {
   @Test
   public void testNotifyItemMoved() {
     mount();
+
+    int from = 4;
+    int to = 6;
+
+    String movingItem = mItems.remove(from);
+    mItems.add(to, movingItem);
+
+    mBinder.notifyItemMoved(from, to);
+    mLayoutThreadShadowLooper.runOneTask();
+
+    Assert.assertEquals(mItems.size(), mBinder.getComponentCount());
+    Assert.assertEquals(movingItem, getAdapterInputStringAtPosition(to));
+  }
+
+  @Test

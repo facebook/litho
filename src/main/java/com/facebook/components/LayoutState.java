@@ -53,3 +53,4 @@ import static com.facebook.components.Component.isLayoutSpecWithSizeSpec;
 import static com.facebook.components.Component.isMountSpec;
 import static com.facebook.components.Component.isMountViewSpec;
 import static com.facebook.components.ComponentContext.NULL_LAYOUT;
+import static com.facebook.components.ComponentLifecycle.MountType.NONE;
