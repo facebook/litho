@@ -1679,3 +1679,4 @@ class LayoutState {
 
 
   /**
+   * Returns true if this is the root node (which always generates a matching layout
