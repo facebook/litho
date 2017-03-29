@@ -153,3 +153,7 @@ public class ViewPredicatesTest {
 
   @Test
   public void testHasDrawableForRobolectric3AndColorDrawables() {
+    final Drawable black1 = new ColorDrawable(Color.BLACK);
+    final Drawable black2 = new ColorDrawable(Color.BLACK);
+    final Drawable white = new ColorDrawable(Color.WHITE);
+    final Predicate<View> hasDrawable = ViewPredicates.hasDrawable(black1);
