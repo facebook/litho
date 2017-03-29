@@ -893,3 +893,9 @@ public class ComponentTree {
 
       // Check if we already have a compatible layout.
       if (hasCompatibleComponentAndSpec()) {
+        if (output != null) {
+          final LayoutState mostRecentLayoutState =
+              mBackgroundLayoutState != null ? mBackgroundLayoutState : mMainThreadLayoutState;
+          output.width = mostRecentLayoutState.getWidth();
+          output.height = mostRecentLayoutState.getHeight();
+        }
