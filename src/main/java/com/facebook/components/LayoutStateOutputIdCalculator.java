@@ -55,3 +55,4 @@ class LayoutStateOutputIdCalculator {
       sequence = -1;
     }
 
+    final int currentSequence = mLayoutCurrentSequenceForBaseId.get(baseLayoutId, 0);

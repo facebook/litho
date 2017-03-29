@@ -41,3 +41,5 @@ class ViewNodeInfo {
     return mBackground;
   }
 
+  void setForeground(Reference<? extends Drawable> foreground) {
+    mForeground = (Reference<Drawable>) foreground;
