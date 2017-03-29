@@ -1090,3 +1090,10 @@ public class ComponentTree {
         && mHeightSpec != SIZE_UNINITIALIZED;
   }
 
+  private static synchronized Looper getDefaultLayoutThreadLooper() {
+    if (sDefaultLayoutThreadLooper == null) {
+      HandlerThread defaultThread =
+          new HandlerThread(DEFAULT_LAYOUT_THREAD_NAME, DEFAULT_LAYOUT_THREAD_PRIORITY);
+      defaultThread.start();
+      sDefaultLayoutThreadLooper = defaultThread.getLooper();
+    }
