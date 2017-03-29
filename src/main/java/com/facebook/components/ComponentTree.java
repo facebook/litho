@@ -347,3 +347,9 @@ public class ComponentTree {
 
   private boolean mountComponentIfDirty() {
     if (mComponentView.isMountStateDirty()) {
+      if (mIncrementalMountEnabled) {
+        incrementalMountComponent();
+      } else {
+        mountComponent(null);
+      }
+
