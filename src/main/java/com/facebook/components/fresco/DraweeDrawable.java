@@ -49,3 +49,4 @@ public class DraweeDrawable<DH extends DraweeHierarchy>
     mDraweeHolder.onAttach();
   }
 
+  public void unmount() {
