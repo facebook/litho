@@ -1103,3 +1103,5 @@ public class Stages {
       visibility = Visibility.PUBLIC;
     } else {
       visibility = Visibility.PACKAGE;
+    }
+
