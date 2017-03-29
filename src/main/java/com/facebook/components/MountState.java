@@ -1039,3 +1039,8 @@ class MountState {
 
   private static void unsetViewAttributes(MountItem item) {
     final Component<?> component = item.getComponent();
+    if (!isMountViewSpec(component)) {
+      return;
+    }
+
+    final View view = (View) item.getContent();
