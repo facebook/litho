@@ -78,3 +78,14 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testNoUnnecessaryLayoutOutputsForLayoutSpecs() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c)
+            .child(
+                Container.create(c)
+                    .child(TestDrawableComponent.create(c)))
+            .build();
+      }
+    };
+

@@ -61,3 +61,4 @@ class DiffNode implements Cloneable {
     mLastMeasuredWidth = lastMeasuredWidth;
   }
 
+  float getLastMeasuredHeight() {

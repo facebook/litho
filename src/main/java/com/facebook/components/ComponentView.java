@@ -170,3 +170,6 @@ public class ComponentView extends ComponentHost {
     }
 
     if (mComponent != null) {
+      boolean forceRelayout = mForceLayout;
+      mForceLayout = false;
+      mComponent.measure(widthMeasureSpec, heightMeasureSpec, sLayoutSize, forceRelayout);

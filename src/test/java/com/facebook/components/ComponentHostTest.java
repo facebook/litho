@@ -104,3 +104,4 @@ public class ComponentHostTest {
     assertEquals(2, mHost.getInvalidationCount());
     assertEquals(d2.getBounds(), mHost.getInvalidationRect());
 
+    View v1 = new View(mContext);

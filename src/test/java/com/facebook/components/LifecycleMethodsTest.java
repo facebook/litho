@@ -150,3 +150,4 @@ public class LifecycleMethodsTest {
 
     @Override
     protected void onUnmount(
+        ComponentContext c,
