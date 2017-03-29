@@ -499,3 +499,12 @@ public class TreeDiffingTest {
 
   @Test
   public void testLayoutOutputUpdateState() {
+    final Component firstComponent = TestDrawableComponent.create(mContext)
+        .color(Color.BLACK)
+        .build();
+    final Component secondComponent = TestDrawableComponent.create(mContext)
+        .color(Color.BLACK)
+        .build();
+    final Component thirdComponent = TestDrawableComponent.create(mContext)
+        .color(Color.WHITE)
+        .build();

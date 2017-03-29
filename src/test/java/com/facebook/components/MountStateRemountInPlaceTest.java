@@ -582,3 +582,4 @@ public class MountStateRemountInPlaceTest {
         .build();
     secondTree.setSizeSpec(100, 100);
 
+    ComponentTestHelper.mountComponent(firstComponentView, secondTree);
