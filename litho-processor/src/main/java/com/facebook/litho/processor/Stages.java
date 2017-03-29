@@ -1315,3 +1315,4 @@ public class Stages {
 
     final String implInstanceName = "_" + getImplInstanceName();
 
+    for (ExecutableElement element : mOnEventMethods) {
