@@ -2164,3 +2164,6 @@ public class Stages {
               implClass,
               implClass)
           .addStatement(
+              "$L nextImpl = ($L) next",
+              implClass,
+              implClass);
