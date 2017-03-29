@@ -43,3 +43,8 @@ public class ComponentsConfiguration {
   public static boolean isEndToEndTestRun = System.getProperty("IS_TESTING") != null;
 
   /**
+   * Indicates whether LayoutState should try to generate DisplayLists for Components that support
+   * that.
+   */
+  public static boolean shouldGenerateDisplayLists =
+      Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
