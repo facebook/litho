@@ -43,3 +43,4 @@ class FrescoComponentSpec {
       GenericDraweeHierarchyBuilder.DEFAULT_ACTUAL_IMAGE_SCALE_TYPE;
   private static final int DEFAULT_FADE_DURATION =
       GenericDraweeHierarchyBuilder.DEFAULT_FADE_DURATION;
+  private static final ScalingUtils.ScaleType DEFAULT_SCALE_TYPE =
