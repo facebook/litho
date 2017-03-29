@@ -117,3 +117,4 @@ public class PagerBinderTest {
   @Test
   public void testBinderUpdatePage5() {
     mBinder = new TestPagerComponentBinder(mContext, 0, 1f);
+    mBinder.getRangeController().notifyOnPageSelected(5);
