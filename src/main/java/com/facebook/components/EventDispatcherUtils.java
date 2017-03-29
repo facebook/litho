@@ -161,3 +161,4 @@ class EventDispatcherUtils {
     sDispatchPopulateAccessibilityEventEvent.superDelegate = superDelegate;
 
     final EventDispatcher eventDispatcher = eventHandler.mHasEventDispatcher.getEventDispatcher();
+    final boolean returnValue =  (boolean) eventDispatcher.dispatchOnEvent(

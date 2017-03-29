@@ -101,3 +101,10 @@ public abstract class PagerBinder extends BaseBinder<
     return null;
   }
 
+  @Override
+  protected int getInitializeStartPosition() {
+    return Math.max(0, mCurrentItem - getRangeController().getHalfWorkingRangeSize());
+  }
+
+  // TODO(12986103): Remove onBoundsDefined once the experiment proved to be ok.
+  @Override
