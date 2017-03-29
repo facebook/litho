@@ -194,3 +194,6 @@ class PropsBuilderMethodsSpecBuilder {
             mPropParameter.parameter.type,
             mPropParameter.parameter.name,
             extraAnnotations)),
+        mPropParameter.parameter.name);
+  }
+

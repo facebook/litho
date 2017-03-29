@@ -227,3 +227,10 @@ public class Utils {
     final Elements elements = processingEnv.getElementUtils();
     for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry :
         elements.getElementValuesWithDefaults(mirror).entrySet()) {
+      if (parameterName.equals(entry.getKey().getSimpleName().toString())) {
+        return (T) entry.getValue().getValue();
+      }
+    }
+
+    return null;
+  }
