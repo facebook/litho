@@ -309,3 +309,4 @@ public abstract class BaseBinder<
         } else {
           mComponentTrees.insert(toPosition, componentTree);
         }
+

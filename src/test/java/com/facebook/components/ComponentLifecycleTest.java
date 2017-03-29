@@ -85,3 +85,4 @@ public class ComponentLifecycleTest {
         .thenReturn(mNode);
     mInput = mock(Component.class);
 
+    mockStatic(LayoutState.class);
