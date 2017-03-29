@@ -254,3 +254,5 @@ public class MountSpecHelper extends ComponentSpecHelper {
                 "return $T.$L",
                 ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE,
                 componentMountType)
+            .build());
+
