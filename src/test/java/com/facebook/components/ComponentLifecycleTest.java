@@ -86,3 +86,4 @@ public class ComponentLifecycleTest {
     mInput = mock(Component.class);
 
     mockStatic(LayoutState.class);
+    mContext = new ComponentContext(RuntimeEnvironment.application);
