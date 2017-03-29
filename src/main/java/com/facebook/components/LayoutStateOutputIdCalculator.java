@@ -177,3 +177,4 @@ class LayoutStateOutputIdCalculator {
    * Calculates a base id for an {@link LayoutOutput} based on the {@link Component}, the depth
    * in the View hierarchy, and the type of output see {@link LayoutOutput.LayoutOutputType}.
    */
+  private static long calculateLayoutOutputBaseId(

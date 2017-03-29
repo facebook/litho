@@ -76,3 +76,5 @@ public class LinearComponentBinderTest {
   }
 
   private void performNotifyDataSetChanged() throws Exception {
+    mBinder.notifyDataSetChanged();
+    mLayoutThreadShadowLooper.runOneTask();

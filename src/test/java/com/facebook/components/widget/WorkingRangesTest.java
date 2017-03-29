@@ -627,3 +627,19 @@ public class WorkingRangesTest {
       return false;
     }
 
+    int getComponentCount() {
+      return ((BinderTreeCollection) Whitebox.getInternalState(this, "mComponentTrees")).size();
+    }
+
+    static class MyTestRangeController extends WorkingRangeController {
+
+      public void setWorkingRangeAt(int firstRangeItem) {
+        updateWorkingRange(firstRangeItem, RANGE_ITEM_COUNT);
+      }
+
+      public void setWorkingRangeAt(int firstRangeItem, int rangeItemCount) {
+        updateWorkingRange(firstRangeItem, rangeItemCount);
+      }
+    }
+  }
+}
