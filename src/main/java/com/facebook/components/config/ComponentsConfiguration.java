@@ -25,3 +25,5 @@ public class ComponentsConfiguration {
    * href="http://facebook.github.io/buck/rule/android_build_config.html">android_build_config</a>.
    */
   public static final boolean IS_INTERNAL_BUILD = BuildConfig.IS_INTERNAL_BUILD;
+
+  /**
