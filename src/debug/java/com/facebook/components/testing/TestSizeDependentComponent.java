@@ -144,3 +144,9 @@ public class TestSizeDependentComponent extends ComponentLifecycle {
     }
 
     @Override
+    public Builder key(String key) {
+      super.setKey(key);
+      return this;
+    }
+
+    @Override

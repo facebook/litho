@@ -45,3 +45,14 @@ public class ComponentTreeTest {
   private ShadowLooper mLayoutThreadShadowLooper;
   private ComponentContext mContext;
 
+  private static class TestComponent<L extends ComponentLifecycle> extends Component<L> {
+    public TestComponent(L component) {
+      super(component);
+    }
+
+    @Override
+    public String getSimpleName() {
+      return "TestComponent";
+    }
+  }
+
