@@ -1140,3 +1140,5 @@ class LayoutState {
     ComponentsSystrace.beginSection("measureTree:" + component.getSimpleName());
 
     if (YogaConstants.isUndefined(root.getStyleWidth())) {
+      root.setStyleWidthFromSpec(widthSpec);
+    }
