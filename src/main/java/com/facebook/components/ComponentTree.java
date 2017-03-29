@@ -1017,3 +1017,15 @@ public class ComponentTree {
   /**
    * Transfer mBackgroundLayoutState to mMainThreadLayoutState. This will proxy
    * to the main thread if necessary. If the component/size-spec changes in the
+   * meantime, then the transfer will be aborted.
+   */
+  private void postBackgroundLayoutStateUpdated() {
+    if (isMainThread()) {
+      // We need to possibly update mMainThreadLayoutState. This call will
+      // cause the host view to be invalidated and re-laid out, if necessary.
+      backgroundLayoutStateUpdated();
+    } else {
+      // If we aren't on the main thread, we send a message to the main thread
+      // to invoke backgroundLayoutStateUpdated.
+      sMainThreadHandler.obtainMessage(MESSAGE_WHAT_BACKGROUND_LAYOUT_STATE_UPDATED, this)
+          .sendToTarget();
