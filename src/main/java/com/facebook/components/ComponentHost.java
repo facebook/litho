@@ -99,3 +99,4 @@ public class ComponentHost extends ViewGroup {
     setWillNotDraw(false);
     setChildrenDrawingOrderEnabled(true);
 
+    mLogger = context.getLogger();

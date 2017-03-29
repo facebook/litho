@@ -176,3 +176,5 @@ class LayoutState {
     return createLayoutOutput(
         component,
         layoutState,
+        node,
+        true /* useNodePadding */,
