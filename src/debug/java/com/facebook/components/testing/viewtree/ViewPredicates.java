@@ -182,3 +182,4 @@ final class ViewPredicates {
     };
   }
 
+  public static Predicate<View> hasVisibleDrawable(final Drawable drawable) {
