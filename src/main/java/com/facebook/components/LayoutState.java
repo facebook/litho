@@ -123,3 +123,4 @@ class LayoutState {
   private final LayoutStateOutputIdCalculator mLayoutStateOutputIdCalculator;
   private final ArrayList<LayoutOutput> mMountableOutputTops = new ArrayList<>();
   private final ArrayList<LayoutOutput> mMountableOutputBottoms = new ArrayList<>();
+  private final List<TestOutput> mTestOutputs;
