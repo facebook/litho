@@ -732,3 +732,10 @@ class LayoutState {
     return output;
   }
 
+  private static Reference<? extends Drawable> getBorderColorDrawable(InternalNode node) {
+    if (!node.shouldDrawBorders()) {
+      throw new RuntimeException("This node does not support drawing border color");
+    }
+
+    return BorderColorDrawableReference.create(node.getContext())
+                .color(node.getBorderColor())
