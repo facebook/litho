@@ -87,3 +87,11 @@ public class ComponentHost extends ViewGroup {
   }
 
   public ComponentHost(Context context, AttributeSet attrs) {
+    this(new ComponentContext(context), attrs);
+  }
+
+  public ComponentHost(ComponentContext context) {
+    this(context, null);
+  }
+
+  public ComponentHost(ComponentContext context, AttributeSet attrs) {
