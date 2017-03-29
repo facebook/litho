@@ -9,3 +9,6 @@
 
 package com.facebook.litho.testing.eventhandler;
 
+import com.facebook.litho.EventDispatcher;
+import com.facebook.litho.EventHandler;
+import com.facebook.litho.HasEventDispatcher;
