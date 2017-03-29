@@ -8,3 +8,12 @@
  */
 
 package com.facebook.components.testing;
+
+import com.facebook.components.Component;
+import com.facebook.components.ComponentContext;
+import com.facebook.components.ComponentLayout;
+import com.facebook.components.ComponentLifecycle;
+
+public class TestNullLayoutComponent extends Component {
+
+  private static class Lifecycle extends ComponentLifecycle {
