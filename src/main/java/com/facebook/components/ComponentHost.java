@@ -1005,3 +1005,4 @@ public class ComponentHost extends ViewGroup {
 
     private Canvas mCanvas;
     private int mDrawIndex;
+    private int mItemsToDraw;
