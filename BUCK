@@ -47,3 +47,4 @@ android_resource(
     ],
     deps = [
     ],
+)
