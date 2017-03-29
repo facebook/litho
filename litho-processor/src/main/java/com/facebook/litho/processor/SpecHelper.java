@@ -133,3 +133,6 @@ public abstract class SpecHelper implements Closeable {
 
     validate();
 
+    if (mSpecModel == null) {
+      mStages.generateJavadoc();
+    }
