@@ -861,3 +861,4 @@ class LayoutState {
 
   static <T extends ComponentLifecycle> LayoutState calculate(
       ComponentContext c,
+      Component<T> component,
