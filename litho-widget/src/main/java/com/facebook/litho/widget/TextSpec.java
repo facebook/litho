@@ -540,3 +540,5 @@ class TextSpec {
         text,
         textLayout,
         textLayoutTranslationY == null ? 0 : textLayoutTranslationY,
+        textColorStateList,
+        textColor,
