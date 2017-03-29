@@ -865,3 +865,5 @@ public class ComponentTree {
           " we need the Size back");
     } else if (isAsync) {
       mLayoutThreadHandler.removeCallbacks(mCalculateLayoutRunnable);
+      mLayoutThreadHandler.post(mCalculateLayoutRunnable);
+    } else {
