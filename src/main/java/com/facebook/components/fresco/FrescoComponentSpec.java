@@ -39,3 +39,7 @@ import static com.facebook.litho.annotations.ResType.DRAWABLE;
 @MountSpec
 class FrescoComponentSpec {
 
+  private static final ScalingUtils.ScaleType DEFAULT_ACTUAL_IMAGE_SCALE_TYPE =
+      GenericDraweeHierarchyBuilder.DEFAULT_ACTUAL_IMAGE_SCALE_TYPE;
+  private static final int DEFAULT_FADE_DURATION =
+      GenericDraweeHierarchyBuilder.DEFAULT_FADE_DURATION;

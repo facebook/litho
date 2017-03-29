@@ -44,3 +44,4 @@ public class DraweeDrawable<DH extends DraweeHierarchy>
     mDraweeHolder = DraweeHolder.create(draweeHierarchy, context);
   }
 
+  public void mount() {
