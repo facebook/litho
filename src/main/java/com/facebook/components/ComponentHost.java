@@ -253,3 +253,9 @@ public class ComponentHost extends ViewGroup {
     }
 
     if (mTouchExpansionDelegate == null || viewNodeInfo.getExpandedTouchBounds() == null) {
+      return;
+    }
+
+    mTouchExpansionDelegate.unregisterTouchExpansion(index);
+  }
+
