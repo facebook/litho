@@ -2166,3 +2166,4 @@ public class LayoutStateCalculateTest {
     assertEquals(new Rect(0, 0, 100, 100), mountBounds);
   }
 
+  @Test
