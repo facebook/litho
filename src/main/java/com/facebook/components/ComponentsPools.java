@@ -148,3 +148,4 @@ public class ComponentsPools {
    * no record.
    */
   static boolean sIsManualCallbacks;
+
