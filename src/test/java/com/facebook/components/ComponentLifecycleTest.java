@@ -27,3 +27,4 @@ import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 
+import static com.facebook.yoga.YogaMeasureMode.EXACTLY;
