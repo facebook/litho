@@ -18,3 +18,9 @@ android_library(
     visibility = [
         "PUBLIC",
     ],
+    deps =
+        COMPONENTS_FRESCO_PIPELINE_TARGET +
+        COMPONENTS_FRESCO_CONTROLLER_TARGET +
+        COMPONENTS_FRESCO_INTERFACES_TARGET +
+        COMPONENTS_FRESCO_TARGETS + [
+            COMPONENTS_ROOT_TARGET,
