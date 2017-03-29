@@ -1150,3 +1150,5 @@ public class ComponentTree {
       @Nullable Object lock,
       ComponentContext context,
       Component<?> root,
+      int widthSpec,
+      int heightSpec,
