@@ -499,3 +499,17 @@ public class Stages {
                   "Inter-stage prop declared without source.");
             }
           }
+
+          // Enforce #6
+          final Prop propAnnotation = v.getAnnotation(Prop.class);
+          if (propAnnotation != null) {
+            for (String reservedPropName : RESERVED_PROP_NAMES) {
+              if (reservedPropName.equals(variableName)) {
+                throw new ComponentsProcessingException(
+                    v,
+                    "'" + reservedPropName + "' is a reserved prop name used by " +
+                        "the component's layout builder. Please use another name.");
+              }
+            }
+
+            // Enforce #7
