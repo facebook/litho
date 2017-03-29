@@ -220,3 +220,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
       node = (InternalNode) onCreateLayout(context, component);
     }
 
+    ComponentsSystrace.endSection();
