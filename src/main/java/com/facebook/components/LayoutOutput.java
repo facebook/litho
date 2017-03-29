@@ -151,3 +151,11 @@ class LayoutOutput implements Cloneable {
     mImportantForAccessibility = importantForAccessibility;
   }
 
+  public DisplayList getDisplayList() {
+    return mDisplayList;
+  }
+
+  public void setDisplayList(DisplayList displayList) {
+    mDisplayList = displayList;
+  }
+

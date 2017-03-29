@@ -87,3 +87,13 @@ class DrawableComponent<T extends Drawable> extends ComponentLifecycle {
 
   public static Component create(Reference<? extends Drawable> drawable) {
     return new State<>(drawable);
+  }
+
+  @Override
+  protected boolean shouldUpdate(Component previous, Component next) {
+    final Reference previousReference = ((State) previous).getDrawable();
+    final Reference nextReference = ((State) next).getDrawable();
+
+    return Reference.shouldUpdate(previousReference, nextReference);
+  }
+
