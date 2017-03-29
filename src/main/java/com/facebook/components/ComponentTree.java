@@ -639,3 +639,23 @@ public class ComponentTree {
         null /* output */);
   }
 
+  synchronized void updateStateLazy(String componentKey, StateUpdate stateUpdate) {
+    if (mRoot == null) {
+      return;
+    }
+
+    mStateHandler.queueStateUpdate(componentKey, stateUpdate);
+  }
+
+  void updateState(String componentKey, StateUpdate stateUpdate) {
+    updateStateInternal(componentKey, stateUpdate, false);
+  }
+
+  void updateStateAsync(String componentKey, StateUpdate stateUpdate) {
+    if (!mIsAsyncUpdateStateEnabled) {
+        throw new RuntimeException("Triggering async state updates on this component tree is " +
+            "disabled, use sync state updates.");
+    }
+    updateStateInternal(componentKey, stateUpdate, true);
+  }
+
