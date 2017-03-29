@@ -275,3 +275,6 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
     return (component != null && component.mLifecycle.getMountType() == MountType.DRAWABLE);
   }
 
+  static boolean isMountViewSpec(Component<?> component) {
+    return (component != null && component.mLifecycle.getMountType() == MountType.VIEW);
+  }
