@@ -1801,3 +1801,12 @@ class MountState {
     clearVisibilityItems();
   }
 
+  void detach() {
+    unbind();
+
+    if (mTransitionManager != null) {
+      ComponentsPools.release(mTransitionManager);
+      mTransitionManager = null;
+    }
+  }
+
