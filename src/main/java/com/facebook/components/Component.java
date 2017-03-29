@@ -95,3 +95,6 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
 
   private final L mLifecycle;
   private @ThreadConfined(ThreadConfined.ANY) ComponentContext mScopedContext;
+
+  private boolean mIsLayoutStarted = false;
+

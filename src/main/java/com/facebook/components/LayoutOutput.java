@@ -173,3 +173,10 @@ class LayoutOutput implements Cloneable {
 
   ViewNodeInfo getViewNodeInfo() {
     return mViewNodeInfo;
+  }
+
+  void release() {
+    if (mComponent != null) {
+      mComponent.release();
+      mComponent = null;
+    }

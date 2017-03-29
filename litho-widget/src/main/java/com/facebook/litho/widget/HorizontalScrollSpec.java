@@ -127,3 +127,17 @@ class HorizontalScrollSpec {
       ComponentContext context,
       ComponentLayout layout,
       @FromPrepare ComponentTree contentComponent,
+      @FromMeasure Integer measuredComponentWidth,
+      @FromMeasure Integer measuredComponentHeight,
+      Output<Integer> componentWidth,
+      Output<Integer> componentHeight) {
+
+    // If onMeasure() has been called, this means the content component already
+    // has a defined size, no need to calculate it again.
+    if (measuredComponentWidth != null && measuredComponentHeight != null) {
+      componentWidth.set(measuredComponentWidth);
+      componentHeight.set(measuredComponentHeight);
+    } else {
+      final int measuredWidth;
+      final int measuredHeight;
+
