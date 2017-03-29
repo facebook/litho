@@ -78,3 +78,5 @@ class ProgressSpec {
       Size size) {
     if (SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED &&
         SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED) {
+      size.width = DEFAULT_SIZE;
+      size.height = DEFAULT_SIZE;
