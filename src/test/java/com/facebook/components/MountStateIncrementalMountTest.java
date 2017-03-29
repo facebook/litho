@@ -452,3 +452,6 @@ public class MountStateIncrementalMountTest {
     final TestComponentView mountedView = new TestComponentView(mContext);
     mountedView.layout(0, 0, 100, 100);
 
+    final TestComponentContextWithView testComponentContext =
+        new TestComponentContextWithView(mContext, mountedView);
+
