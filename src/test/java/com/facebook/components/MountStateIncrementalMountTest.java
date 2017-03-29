@@ -345,3 +345,4 @@ public class MountStateIncrementalMountTest {
                         .widthPx(10)
                         .heightPx(10)
                         .clickHandler(c.newEventHandler(1))
+                        .marginDip(YogaEdge.TOP, -10))
