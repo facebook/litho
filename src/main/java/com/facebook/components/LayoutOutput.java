@@ -44,3 +44,4 @@ class LayoutOutput implements Cloneable {
 
   private NodeInfo mNodeInfo;
   private ViewNodeInfo mViewNodeInfo;
+  private long mId;

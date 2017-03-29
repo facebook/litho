@@ -51,3 +51,5 @@ class MountItem {
         component,
         mountItem.getHost(),
         mountItem.getContent(),
+        layoutOutput,
+        mountItem.getDisplayListDrawable());

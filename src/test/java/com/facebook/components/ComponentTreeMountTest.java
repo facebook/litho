@@ -53,3 +53,4 @@ public class ComponentTreeMountTest {
     Shadows.shadowOf(componentView).callOnAttachedToWindow();
 
     assertEquals(1, componentView.getDrawables().size());
+    assertEquals(Color.BLACK, ((ColorDrawable) componentView.getDrawables().get(0)).getColor());

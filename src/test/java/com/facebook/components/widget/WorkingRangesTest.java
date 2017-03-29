@@ -550,3 +550,4 @@ public class WorkingRangesTest {
   }
 
   private static class MyTestComponentBinder extends BaseBinder<ViewGroup,
+        MyTestComponentBinder.MyTestRangeController> {
