@@ -220,3 +220,5 @@ public class ComponentsPools {
   }
 
   static MountItem acquireRootHostMountItem(
+      Component<?> component,
+      ComponentHost host,
