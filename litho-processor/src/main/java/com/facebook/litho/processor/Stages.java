@@ -2280,3 +2280,6 @@ public class Stages {
       if (method.getReturnType().getKind().equals(TypeKind.VOID)) {
         throw new ComponentsProcessingException(
             method,
+            "@OnCreateTreeProp annotated method" +
+                method.getSimpleName() +
+                "cannot have a void return type");
