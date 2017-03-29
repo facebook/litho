@@ -65,3 +65,4 @@ public class MountItemTest {
     mClickHandler = new EventHandler(mComponent, 5);
     mLongClickHandler = new EventHandler(mComponent, 3);
     mTouchHandler = new EventHandler(mComponent, 1);
+    mDispatchPopulateAccessibilityEventHandler = new EventHandler(mComponent, 7);
