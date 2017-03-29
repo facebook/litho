@@ -90,3 +90,5 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
     }
 
     public abstract Component<L> build();
+  }
+

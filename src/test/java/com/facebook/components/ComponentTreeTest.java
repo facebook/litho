@@ -113,3 +113,23 @@ public class ComponentTreeTest {
     assertEquals(
         heightSpec,
         Whitebox.getInternalState(componentTree, "mHeightSpec"));
+
+    LayoutState mainThreadLayoutState = Whitebox.getInternalState(
+        componentTree, "mMainThreadLayoutState");
+
+    LayoutState backgroundLayoutState = Whitebox.getInternalState(
+        componentTree, "mBackgroundLayoutState");
+
+    LayoutState layoutState = null;
+    LayoutState nullLayoutState = null;
+    if ("mMainThreadLayoutState".equals(layoutStateVariableName)) {
+      layoutState = mainThreadLayoutState;
+      nullLayoutState = backgroundLayoutState;
+    } else if ("mBackgroundLayoutState".equals(layoutStateVariableName)) {
+      layoutState = backgroundLayoutState;
+      nullLayoutState = mainThreadLayoutState;
+    } else {
+      fail("Incorrect variable name: " + layoutStateVariableName);
+    }
+
+    Assert.assertNull(nullLayoutState);
