@@ -744,3 +744,8 @@ public class Stages {
             "Prop defaults (fields annotated with " + PropDefault.class + ") should have the " +
                 "same name and type as the prop that they set the default for. This is not the " +
                 "case for " + propDefault.mName);
+      }
+    }
+  }
+
+  /**
