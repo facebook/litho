@@ -2306,3 +2306,4 @@ public class Stages {
     return null;
   }
 
+  private MethodSpec generateCopyInterStageImpl(String implClassName) {
