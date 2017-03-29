@@ -66,3 +66,6 @@ public abstract class SpecHelper implements Closeable {
     }
 
     mTypeSpec = TypeSpec.classBuilder(name).superclass(getSuperclassClass());
+    final List<TypeVariableName> typeVariables =
+        TypeVariablesExtractor.getTypeVariables(specElement);
+    mTypeSpec.addTypeVariables(typeVariables);
