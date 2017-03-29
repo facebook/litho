@@ -1,0 +1,78 @@
+# Copyright (c) 2014-present, Facebook, Inc.
+# All rights reserved.
+#
+# This source code is licensed under the BSD-style license found in the
+# LICENSE file in the root directory of this source tree. An additional grant
+# of patent rights can be found in the PATENTS file in the same directory.
+
+include_defs("//COMPONENTS_DEFS")
+
+android_prebuilt_aar(
+    name = "fresco",
+    aar = ":fresco-binary-aar",
+    visibility = [COMPONENTS_VISIBILITY],
+)
+
+remote_file(
+    name = "fresco-binary-aar",
+    sha1 = "52485ba511d98cf7d46e287aaa0e0360a1c5a1b1",
+    url = "mvn:com.facebook.fresco:fresco:aar:1.1.0",
+)
+
+android_prebuilt_aar(
+    name = "fresco-drawee",
+    aar = ":drawee-binary-aar",
+    visibility = [COMPONENTS_VISIBILITY],
+)
+
+remote_file(
+    name = "drawee-binary-aar",
+    sha1 = "31706533dce4370a6cda9f2147566cc420514cb1",
+    url = "mvn:com.facebook.fresco:drawee:aar:1.1.0",
+)
+
+android_library(
+    name = "imagepipeline",
+    exported_deps = [
+        ":bolts",
+        ":imagepipeline-base",
+        ":imagepipeline-core",
+    ],
+    visibility = [COMPONENTS_VISIBILITY],
+)
+
+android_prebuilt_aar(
+    name = "imagepipeline-base",
+    aar = ":imagepipeline-base-aar",
+    visibility = [COMPONENTS_VISIBILITY],
+)
+
+remote_file(
+    name = "imagepipeline-base-aar",
+    sha1 = "c1494ed506b7b4e8f0c8cf4824f090990a90de0b",
+    url = "mvn:com.facebook.fresco:imagepipeline-base:aar:1.1.0",
+)
+
+android_prebuilt_aar(
+    name = "imagepipeline-core",
+    aar = ":imagepipeline-aar",
+    visibility = [COMPONENTS_VISIBILITY],
+)
+
+remote_file(
+    name = "imagepipeline-aar",
+    sha1 = "41f6d13c86ce06d7acc9ca36b465253db132a719",
+    url = "mvn:com.facebook.fresco:imagepipeline:aar:1.1.0",
+)
+
+prebuilt_jar(
+    name = "bolts",
+    binary_jar = ":download-bolts",
+    visibility = [COMPONENTS_VISIBILITY],
+)
+
+remote_file(
+    name = "download-bolts",
+    sha1 = "d85884acf6810a3bbbecb587f239005cbc846dc4",
+    url = "mvn:com.parse.bolts:bolts-tasks:jar:1.4.0",
+)

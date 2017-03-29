@@ -1,0 +1,22 @@
+# Copyright (c) 2014-present, Facebook, Inc.
+# All rights reserved.
+#
+# This source code is licensed under the BSD-style license found in the
+# LICENSE file in the root directory of this source tree. An additional grant
+# of patent rights can be found in the PATENTS file in the same directory.
+
+include_defs("//COMPONENTS_DEFS")
+
+prebuilt_jar(
+    name = "jsr-305",
+    binary_jar = ":jsr-305.jar",
+    visibility = [
+        COMPONENTS_VISIBILITY,
+    ],
+)
+
+remote_file(
+    name = "jsr-305.jar",
+    sha1 = "f7be08ec23c21485b9b5a1cf1654c2ec8c58168d",
+    url = "mvn:com.google.code.findbugs:jsr305:jar:3.0.1",
+)
