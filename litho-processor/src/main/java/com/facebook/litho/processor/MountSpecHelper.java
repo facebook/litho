@@ -480,3 +480,7 @@ public class MountSpecHelper extends ComponentSpecHelper {
         OnCreateMountContent.class);
     final MountType componentMountType = getMountType(onCreateMountContent.getReturnType());
 
+    if (componentMountType != MountType.DRAWABLE) {
+      throw new ComponentsProcessingException(
+          mSpecElement,
+          "Only implement accessibility support for Mount Specs that mount drawables.");
