@@ -209,3 +209,6 @@ class MountItem {
     }
 
     mComponent = null;
+    mHost = null;
+    mContent = null;
+    mFlags = 0;

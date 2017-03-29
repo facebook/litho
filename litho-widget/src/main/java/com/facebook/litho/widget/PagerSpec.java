@@ -93,3 +93,4 @@ class PagerSpec {
   static void onUnmount(
       ComponentContext context,
       ViewPager mountedView,
+      @Prop PagerBinder binder) {

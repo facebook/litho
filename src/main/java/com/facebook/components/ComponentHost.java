@@ -231,3 +231,19 @@ public class ComponentHost extends ViewGroup {
     }
 
     final Rect expandedTouchBounds = viewNodeInfo.getExpandedTouchBounds();
+    if (expandedTouchBounds == null) {
+      return;
+    }
+
+    if (mTouchExpansionDelegate == null) {
+      mTouchExpansionDelegate = new TouchExpansionDelegate(this);
+      setTouchDelegate(mTouchExpansionDelegate);
+    }
+
+    mTouchExpansionDelegate.registerTouchExpansion(
+        index,
+        (View) mountItem.getContent(),
+        expandedTouchBounds);
+  }
+
+  private void maybeUnregisterTouchExpansion(int index, MountItem mountItem) {
