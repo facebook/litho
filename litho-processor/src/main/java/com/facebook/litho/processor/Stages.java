@@ -1328,3 +1328,4 @@ public class Stages {
       methodBuilder.addStatement(
           "$L $L = ($L) $L",
           eventName,
+          implInstanceName,
