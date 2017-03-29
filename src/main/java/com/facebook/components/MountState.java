@@ -894,3 +894,4 @@ class MountState {
   // The content might be null because it's the LayoutSpec for the root host
   // (the very first LayoutOutput).
   private MountItem mountContent(
+      int index,
