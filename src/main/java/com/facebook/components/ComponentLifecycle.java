@@ -117,3 +117,12 @@ public abstract class ComponentLifecycle implements EventDispatcher {
         outputHeight = (int) diffNode.getLastMeasuredHeight();
       } else {
         final Size size = acquireSize(Integer.MIN_VALUE /* initialValue */);
+
+        try {
+          component.getLifecycle().onMeasure(
+              node.getContext(),
+              node,
+              widthSpec,
+              heightSpec,
+              size,
+              component);
