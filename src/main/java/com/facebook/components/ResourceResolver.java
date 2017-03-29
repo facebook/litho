@@ -117,3 +117,4 @@ public class ResourceResolver {
       int[] cached = mResourceCache.get(resId);
       if (cached != null) {
         return cached;
+      }

@@ -222,3 +222,5 @@ public class TreeDiffingTest {
 
     node.setCachedMeasuresValid(false);
     DiffNode diffNode = LayoutState.createDiffNode(node, null);
+    assertTrue(YogaMeasureOutput.getHeight(output) == (int) diffNode.getLastMeasuredHeight());
+    assertTrue(YogaMeasureOutput.getWidth(output) == (int) diffNode.getLastMeasuredWidth());
