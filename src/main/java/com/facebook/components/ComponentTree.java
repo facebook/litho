@@ -1127,3 +1127,12 @@ public class ComponentTree {
     return mContext;
   }
 
+  private static class ComponentMainThreadHandler extends Handler {
+    private ComponentMainThreadHandler() {
+      super(Looper.getMainLooper());
+    }
+
+    @Override
+    public void handleMessage(Message msg) {
+      switch (msg.what) {
+        case MESSAGE_WHAT_BACKGROUND_LAYOUT_STATE_UPDATED:
