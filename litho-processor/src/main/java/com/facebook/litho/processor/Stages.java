@@ -226,3 +226,5 @@ public class Stages {
     validateStyleOutputs();
   }
 
+  private boolean isInterStagePropAnnotationValidInStage(
+      Class<? extends Annotation> interStageProp,
