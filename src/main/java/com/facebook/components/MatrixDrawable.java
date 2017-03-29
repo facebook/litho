@@ -107,3 +107,7 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
   }
 
   private void setInnerDrawableBounds(int left, int top) {
+    if (mDrawable == null) {
+      return;
+    }
+
