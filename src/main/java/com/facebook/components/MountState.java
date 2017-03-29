@@ -1096,3 +1096,33 @@ class MountState {
     }
   }
 
+  /**
+   * Store a {@link ComponentAccessibilityDelegate} as a tag in {@code view}. {@link ComponentView}
+   * contains the logic for setting/unsetting it whenever accessibility is enabled/disabled
+   *
+   * For non {@link ComponentHost}s
+   * this is only done if any {@link EventHandler}s for accessibility events have been implemented,
+   * we want to preserve the original behaviour since {@code view} might have had
+   * a default delegate.
+   */
+  private static void setAccessibilityDelegate(View view, NodeInfo nodeInfo) {
+    if (!(view instanceof ComponentHost) && !nodeInfo.hasAccessibilityHandlers()) {
+      return;
+    }
+
+    view.setTag(
+        R.id.component_node_info,
+        nodeInfo);
+  }
+
+  private static void unsetAccessibilityDelegate(View view) {
+    if (!(view instanceof ComponentHost)
+        && view.getTag(R.id.component_node_info) == null) {
+      return;
+    }
+    view.setTag(R.id.component_node_info, null);
+    if (!(view instanceof ComponentHost)) {
+      ViewCompat.setAccessibilityDelegate(view, null);
+    }
+  }
+
