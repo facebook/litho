@@ -821,3 +821,5 @@ public class Stages {
 
   /**
    * Get the @FromLayout, @FromMeasure, etc annotation on this element (@Prop isn't
+   * considered - use getParameterAnnotation if you want to consider them)
+   */
