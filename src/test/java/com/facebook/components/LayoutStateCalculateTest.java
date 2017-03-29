@@ -2100,3 +2100,13 @@ public class LayoutStateCalculateTest {
     assertEquals(new Rect(20, 0, 280, 0), mountBounds);
     assertTrue(getComponentAt(layoutState, 2) instanceof TestDrawableComponent);
     layoutState.getMountableOutputAt(2).getMountBounds(mountBounds);
+    assertEquals(new Rect(20, 0, 280, 0), mountBounds);
+
+    Mockito.validateMockitoUsage();
+  }
+
+  @Test
+  public void testNestedTreeComponentWithDoubleMeasurementsDoesntThrow() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
