@@ -1233,3 +1233,7 @@ class LayoutState {
             widthSpec,
             heightSpec,
             nestedTreeHolder.getDiffNode()); // Previously set while traversing the holder's tree.
+        nestedTree.setLastWidthSpec(widthSpec);
+        nestedTree.setLastHeightSpec(heightSpec);
+        nestedTree.setLastMeasuredHeight(nestedTree.getHeight());
+        nestedTree.setLastMeasuredWidth(nestedTree.getWidth());
