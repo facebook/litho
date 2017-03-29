@@ -93,3 +93,6 @@ public class Stages {
   private static final String REQUIRED_PROPS_COUNT = "REQUIRED_PROPS_COUNT";
 
   private static final int ON_STYLE_PROPS = 1;
+  private static final int ON_CREATE_INITIAL_STATE = 1;
+
+  private final boolean mSupportState;

@@ -513,3 +513,4 @@ public class TreeDiffingTest {
     LayoutState state = componentTree.calculateLayoutState(
         null,
         mContext,
+        firstComponent,

@@ -191,3 +191,4 @@ public interface ComponentLayout {
     Builder foregroundAttr(@AttrRes int resId);
     Builder foregroundRes(@DrawableRes int resId);
     Builder foregroundColor(@ColorInt int foregroundColor);
+
