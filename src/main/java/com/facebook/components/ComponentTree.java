@@ -1160,3 +1160,6 @@ public class ComponentTree {
           new ComponentContext(context, StateHandler.acquireNewInstance(mStateHandler));
     }
 
+    if (lock != null) {
+      synchronized (lock) {
+        return LayoutState.calculate(
