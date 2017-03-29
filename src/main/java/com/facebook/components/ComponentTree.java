@@ -288,3 +288,6 @@ public class ComponentTree {
 
     if (mComponentView == null) {
       throw new IllegalStateException("Trying to attach a ComponentTree without a set View");
+    }
+
+    LayoutState toRelease;
