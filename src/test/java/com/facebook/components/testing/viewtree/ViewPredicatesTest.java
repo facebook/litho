@@ -144,3 +144,12 @@ public class ViewPredicatesTest {
     final Resources resources = RuntimeEnvironment.application.getResources();
     final Drawable noAvatar = resources.getDrawable(R.drawable.custom_drawable);
     final Predicate<View> hasDrawable = ViewPredicates.hasDrawable(noAvatar);
+
+    assertThat(hasDrawable.apply(mView)).isFalse();
+    assertThat(hasDrawable.apply(mImagelessView)).isFalse();
+    assertThat(hasDrawable.apply(mOtherImageView)).isFalse();
+    assertThat(hasDrawable.apply(mImageView)).isTrue();
+  }
+
+  @Test
+  public void testHasDrawableForRobolectric3AndColorDrawables() {
