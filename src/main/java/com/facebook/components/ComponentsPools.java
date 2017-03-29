@@ -496,3 +496,4 @@ public class ComponentsPools {
     sMountItemPool.release(item);
   }
 
+  @ThreadSafe(enableChecks = false)
