@@ -322,3 +322,5 @@ class TextSpec {
       int minEms,
       int maxEms,
       int minWidth,
+      int maxWidth,
+      TextDirectionHeuristicCompat textDirection) {
