@@ -2457,3 +2457,5 @@ public class Stages {
           TypeVariableName.get(typeParameterElement.getSimpleName().toString()));
     }
 
+    if (fixedMethod.accessType != null) {
+      methodBuilder.addModifiers(fixedMethod.accessType);
