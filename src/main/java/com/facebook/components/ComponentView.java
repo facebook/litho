@@ -333,3 +333,12 @@ public class ComponentView extends ComponentHost {
       mComponent = null;
     }
   }
+
+  void mount(LayoutState layoutState, Rect currentVisibleArea) {
+    if (currentVisibleArea == null) {
+      mPreviousMountBounds.setEmpty();
+    } else {
+      mPreviousMountBounds.set(currentVisibleArea);
+    }
+
+    mMountState.mount(layoutState, currentVisibleArea);

@@ -57,3 +57,4 @@ public class TestComponentTree extends ComponentTree {
         diffNode);
   }
 
+  private static void extractSubComponents(DiffNode root, List<Component> output) {

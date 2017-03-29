@@ -79,3 +79,6 @@ public class DraweeDrawable<DH extends DraweeHierarchy>
     return mDraweeHolder.getController();
   }
 
+  public DH getDraweeHierarchy() {
+    return mDraweeHolder.getHierarchy();
+  }
