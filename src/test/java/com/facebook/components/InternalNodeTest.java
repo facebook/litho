@@ -349,3 +349,4 @@ public class InternalNodeTest {
   @Test
   public void testContextSpecificComponentAssertionFailFormatting() {
     final Component testComponent = new TestComponent<>(mLifecycle);
+    mNode.alignSelf(YogaAlign.AUTO);

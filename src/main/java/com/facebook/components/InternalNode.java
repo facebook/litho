@@ -100,3 +100,6 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   // When this flag is set, margin was explicitly set on this node.
   private static final long PFLAG_MARGIN_IS_SET = 1L << 9;
   // When this flag is set, padding was explicitly set on this node.
+  private static final long PFLAG_PADDING_IS_SET = 1L << 10;
+  // When this flag is set, position was explicitly set on this node.
+  private static final long PFLAG_POSITION_IS_SET = 1L << 11;
