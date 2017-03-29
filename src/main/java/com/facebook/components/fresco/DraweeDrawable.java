@@ -59,3 +59,4 @@ public class DraweeDrawable<DH extends DraweeHierarchy>
     mDraweeHolder.onDraw();
     super.draw(canvas);
   }
+
