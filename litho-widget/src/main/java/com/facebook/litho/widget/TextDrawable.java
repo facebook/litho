@@ -221,3 +221,8 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
     return mLayout.getPaint().getColor();
   }
 
+  @Override
+  public List<CharSequence> getTextItems() {
+    return mText != null ? Collections.singletonList(mText) : Collections.<CharSequence>emptyList();
+  }
+
