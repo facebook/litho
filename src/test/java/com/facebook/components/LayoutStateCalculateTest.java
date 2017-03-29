@@ -1309,3 +1309,4 @@ public class LayoutStateCalculateTest {
 
     final Component component = new InlineLayoutSpec() {
       @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
