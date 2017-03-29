@@ -252,3 +252,12 @@ public class MountStateRemountInPlaceTest {
         TestDrawableComponent.create(mContext)
             .build();
 
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        new ComponentView(mContext),
+        ComponentTree.create(mContext, new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Container.create(c)
+                .child(firstComponent)
+                .build();
+          }

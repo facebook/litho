@@ -156,3 +156,5 @@ public class TreeDiffingTest {
 
   @Test
   public void testCachedMeasureFunction() {
+    final Component component = TestDrawableComponent.create(mContext)
+        .build();

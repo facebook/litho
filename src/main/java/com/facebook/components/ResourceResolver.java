@@ -81,3 +81,4 @@ public class ResourceResolver {
   }
 
   private final String[] resolveStringArrayRes(@ArrayRes int resId) {
+    if (resId != 0) {

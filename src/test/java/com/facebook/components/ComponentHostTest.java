@@ -193,3 +193,4 @@ public class ComponentHostTest {
   @Test
   public void testMoveItem() {
     MountItem mountItem1 = mount(1, new ColorDrawable());
+    MountItem mountItem2 = mount(2, new View(mContext));
