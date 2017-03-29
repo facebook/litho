@@ -505,3 +505,8 @@ class MountState {
         layoutOutputComponent);
     currentMountItem.setIsBound(true);
 
+    // 7. Update the bounds of the mounted content. This needs to be done regardless of whether
+    // the component has been updated or not since the mounted item might might have the same
+    // size and content but a different position.
+    updateBoundsForMountedLayoutOutput(layoutOutput, currentMountItem);
+

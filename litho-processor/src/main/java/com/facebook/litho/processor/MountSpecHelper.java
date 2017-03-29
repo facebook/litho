@@ -628,3 +628,6 @@ public class MountSpecHelper extends ComponentSpecHelper {
     mTypeSpec.addMethod(canMountIncrementally.build());
   }
 
+  @Override
+  public Class getSpecAnnotationClass() {
+    return MountSpec.class;
