@@ -130,3 +130,4 @@ public class ViewPredicatesTest {
 
   @Test
   public void testIsVisible() throws Exception {
+    final Predicate<View> isVisible = ViewPredicates.isVisible();
