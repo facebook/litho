@@ -126,3 +126,23 @@ class ProgressSpec {
   static ProgressBar onCreateMountContent(ComponentContext c) {
     return new ProgressView(c);
   }
+
+  static Reference<Drawable> getStyledIndeterminateDrawable(ComponentContext c, int defStyle) {
+    Reference<Drawable> indeterminateDrawable = null;
+
+    final TypedArray styledAttributes = c.obtainStyledAttributes(R.styleable.Progress, defStyle);
+
+    for (int i = 0, size = styledAttributes.getIndexCount(); i < size; i++) {
+      final int attr = styledAttributes.getIndex(i);
+
+      if (attr == R.styleable.Progress_android_indeterminateDrawable) {
+        indeterminateDrawable = ResourceDrawableReference.create(c)
+            .resId(styledAttributes.getResourceId(attr, 0))
+            .build();
+      }
+    }
+
+    styledAttributes.recycle();
+
+    return indeterminateDrawable;
+  }
