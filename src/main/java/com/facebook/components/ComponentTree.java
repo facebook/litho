@@ -180,3 +180,8 @@ public class ComponentTree {
     return mBackgroundLayoutState;
   }
 
+  /**
+   * Picks the best LayoutState and sets it in mMainThreadLayoutState. The return value
+   * is a LayoutState that must be released (after the lock is released). This
+   * awkward contract is necessary to ensure thread-safety.
+   */
