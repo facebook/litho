@@ -42,3 +42,17 @@ class TreePropValidation {
                     "creating your own wrapper classes instead."));
       }
 
+      if (onCreateTreePropMethod.methodParams.isEmpty() ||
+          !onCreateTreePropMethod.methodParams.get(0).getType()
+              .equals(specModel.getContextClass())) {
+        validationErrors.add(
+            new SpecModelValidationError(
+                onCreateTreePropMethod.representedObject,
+                "The first argument of an @OnCreateTreeProp method should be " +
+                    specModel.getComponentClass() + "."));
+      }
+    }
+
+    return validationErrors;
+  }
+}

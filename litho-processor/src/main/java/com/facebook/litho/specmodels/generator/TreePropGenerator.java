@@ -63,3 +63,16 @@ public class TreePropGenerator {
           "_impl.$L = treeProps.get($L.class)",
           treeProp.getName(),
           treeProp.getType());
+    }
+
+    return TypeSpecDataHolder.newBuilder().addMethod(method.build()).build();
+  }
+
+  static TypeSpecDataHolder generateGetTreePropsForChildren(SpecModel specModel) {
+    final List<DelegateMethodModel> onCreateTreePropsMethods =
+        SpecModelUtils.getMethodModelsWithAnnotation(specModel, OnCreateTreeProp.class);
+
+    if (onCreateTreePropsMethods.isEmpty()) {
+      return TypeSpecDataHolder.newBuilder().build();
+    }
+

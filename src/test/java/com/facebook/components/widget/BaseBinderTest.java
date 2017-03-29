@@ -327,3 +327,15 @@ public class BaseBinderTest {
   @Test
   public void testMountNewViewBeforeUnmount() {
     mount();
+    ComponentView newView = new ComponentView(RuntimeEnvironment.application);
+
+    mBinder.mount(newView);
+    mBinder.unmount(newView);
+    mBinder.unmount(mView);
+
+    mBinder.mount(mView);
+    mBinder.mount(newView);
+    mBinder.unmount(mView);
+    mBinder.unmount(newView);
+  }
+
