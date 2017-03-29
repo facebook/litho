@@ -502,3 +502,6 @@ class LayoutState {
       layoutState.mCurrentLevel++;
       layoutState.mCurrentHostMarker =
           layoutState.mMountableOutputs.get(hostLayoutPosition).getId();
+      layoutState.mCurrentHostOutputPosition = hostLayoutPosition;
+    }
+
