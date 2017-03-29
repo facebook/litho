@@ -1072,3 +1072,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Override
   public InternalNode foreground(Reference<? extends Drawable> foreground) {
     mPrivateFlags |= PFLAG_FOREGROUND_IS_SET;
+    mForeground = foreground;
+    return this;
+  }
+
+  @Override

@@ -239,3 +239,12 @@ class TextSpec {
 
     Layout newLayout = createTextLayout(
         widthSpec,
+        ellipsize,
+        shouldIncludeFontPadding,
+        maxLines,
+        shadowRadius,
+        shadowDx,
+        shadowDy,
+        shadowColor,
+        isSingleLine,
+        text,
