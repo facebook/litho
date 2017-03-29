@@ -590,3 +590,5 @@ public class RecyclerBinderTest {
   @Test
   public void testMoveItemInsideVisibleRange() {
     final List<ComponentInfo> components = prepareLoadedBinder();
+    mRecyclerBinder.moveItem(99, 2);
+
