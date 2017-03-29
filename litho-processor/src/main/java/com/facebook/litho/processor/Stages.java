@@ -2982,3 +2982,4 @@ public class Stages {
       }
     }
 
+    mImplMembers = variableNameToElementMap;
