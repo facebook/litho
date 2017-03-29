@@ -548,3 +548,77 @@ class NoOpInternalNode extends InternalNode {
 
   @Override
   public InternalNode child(Component.Builder<?> child) {
+    return this;
+  }
+
+  @Override
+  public InternalNode background(Reference<? extends Drawable> builder) {
+    return this;
+  }
+
+  @Override
+  public InternalNode background(Reference.Builder<? extends Drawable> builder) {
+    return this;
+  }
+
+  @Override
+  public InternalNode backgroundAttr(@AttrRes int resId, @DrawableRes int defaultResId) {
+    return this;
+  }
+
+  @Override
+  public InternalNode backgroundAttr(@AttrRes int resId) {
+    return this;
+  }
+
+  @Override
+  public InternalNode backgroundRes(@DrawableRes int resId) {
+    return this;
+  }
+
+  @Override
+  public InternalNode backgroundColor(@ColorInt int backgroundColor) {
+    return this;
+  }
+
+  @Override
+  public InternalNode foreground(Reference.Builder<? extends Drawable> builder) {
+    return this;
+  }
+
+  @Override
+  public InternalNode foregroundAttr(@AttrRes int resId, @DrawableRes int defaultResId) {
+    return this;
+  }
+
+  @Override
+  public InternalNode foregroundAttr(@AttrRes int resId) {
+    return this;
+  }
+
+  @Override
+  public InternalNode foregroundRes(@DrawableRes int resId) {
+    return this;
+  }
+
+  @Override
+  public InternalNode foregroundColor(@ColorInt int foregroundColor) {
+    return this;
+  }
+
+  @Override
+  public InternalNode wrapInView() {
+    return this;
+  }
+
+  @Override
+  public InternalNode clickHandler(EventHandler clickHandler) {
+    return this;
+  }
+
+  @Override
+  public InternalNode touchHandler(EventHandler touchHandler) {
+    return this;
+  }
+
+  @Override
