@@ -2261,3 +2261,22 @@ public class Stages {
     final GetTreePropsForChildrenMethodBuilder builder = new GetTreePropsForChildrenMethodBuilder();
     builder.lifecycleImplClass = getImplClassName();
     builder.delegateName = getSourceDelegateAccessorName();
+    builder.contextClassName = contextClassName;
+    builder.componentClassName = componentClassName;
+
+    for (ExecutableElement executable : mOnCreateTreePropsMethods) {
+      final CreateTreePropMethodData method = new CreateTreePropMethodData();
+      method.parameters = getParams(executable);
+      method.returnType = ClassName.get(executable.getReturnType());
+      method.name = executable.getSimpleName().toString();
+      builder.createTreePropMethods.add(method);
+    }
+
+    mClassTypeSpec.addMethod(builder.build());
+  }
+
+  private void verifyOnCreateTreePropsForChildren(ClassName contextClassName) {
+    for (ExecutableElement method : mOnCreateTreePropsMethods) {
+      if (method.getReturnType().getKind().equals(TypeKind.VOID)) {
+        throw new ComponentsProcessingException(
+            method,
