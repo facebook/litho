@@ -1048,3 +1048,24 @@ public class TreeDiffingTest {
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .paddingPx(YogaEdge.HORIZONTAL, horizontalPadding)
+            .child(sizeDependentComponentSpy1)
+            .build();
+      }
+    };
+
+    final Component<?> sizeDependentComponentSpy2 = PowerMockito.spy(
+        TestSizeDependentComponent.create(c)
+            .setFixSizes(false)
+            .setDelegate(false)
+            .build());
+    Size sizeOutput2 = new Size();
+    sizeDependentComponentSpy1.measure(
+        c,
+        widthMeasuredComponent,
+        heightSpec,
+        sizeOutput2);
+
+    // Now embed the measured component in another container and calculate a layout.
+    final Component rootContainer2 = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {

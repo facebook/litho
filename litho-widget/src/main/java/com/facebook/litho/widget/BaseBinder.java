@@ -678,3 +678,36 @@ public abstract class BaseBinder<
         .build();
   }
 
+  /**
+   * Create ComponentTrees for the items starting at startPosition and until the end of the
+   * initialization range.
+   * Could be called by any thread and it will synchronoysly run on that thread.
+   * @param positionStart the position at which the bootstrapping range begins
+   */
+  private void initializeRange(int positionStart) {
+    assertDoesntHoldLock(this);
+
+    final List<Component<?>> componentList = acquireList(getCount() - positionStart);
+    final List<ComponentTree> componentTreesToRelease = acquireList(mComponentTrees.size());
+
+    // This must remain outside the synchronized block to maintain thread safety.
+    for (int i = positionStart, size = getCount(); i < size; i++) {
+      componentList.add(createComponent(mContext, i));
+    }
+
+    synchronized (this) {
+      // Clear all the component trees.
+      // TODO (13197987): this can be optimized by reusing the ComponentTrees that are inside the
+      // initialization range.
+      mComponentTrees.addAllTo(componentTreesToRelease);
+      mComponentTrees.clear();
+
+      final Size itemSize = new Size();
+      boolean shouldContinueInitialization = true;
+      for (int position = positionStart, size = getCount();
+           position < size && shouldContinueInitialization;
+           position++) {
+        // Offset the position back by startPosition.
+        final Component<?> component = componentList.get(position - positionStart);
+
+        // Create a new ComponentTree.
