@@ -2414,3 +2414,4 @@ public class Stages {
     methodDescription.name = "dispatch" + eventName;
     methodDescription.parameterTypes = new TypeName[] { ClassName.bestGuess(mQualifiedClassName) };
 
+    final TypeMirror returnType =
