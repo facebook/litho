@@ -1733,3 +1733,4 @@ public class LayoutStateCalculateTest {
                 .build();
 
         return Layout.create(c, nestedTreeRootComponent)
+            .paddingPx(YogaEdge.ALL, 10)
