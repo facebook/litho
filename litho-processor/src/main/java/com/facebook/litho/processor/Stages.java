@@ -1843,3 +1843,18 @@ public class Stages {
     }
   }
 
+  public void generateHasState() {
+    if (mStateMap.isEmpty()) {
+      return;
+    }
+
+    MethodSpec hasStateMethod =  MethodSpec.methodBuilder("hasState")
+        .addAnnotation(Override.class)
+        .addModifiers(Modifier.PROTECTED)
+        .returns(TypeName.BOOLEAN)
+        .addStatement("return true")
+        .build();
+    mClassTypeSpec.addMethod(hasStateMethod);
+  }
+
+  public void generateListComponentImplClass(Stages.StaticFlag isStatic) {
