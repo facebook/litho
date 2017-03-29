@@ -479,3 +479,5 @@ public class LayoutStateCalculateTest {
     assertTrue(viewNodeInfo.getPaddingTop() == paddingSize);
     assertTrue(viewNodeInfo.getPaddingRight() == paddingSize);
     assertTrue(viewNodeInfo.getPaddingBottom() == paddingSize);
+  }
+

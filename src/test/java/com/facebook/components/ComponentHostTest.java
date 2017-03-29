@@ -771,3 +771,4 @@ public class ComponentHostTest {
       super(context);
     }
 
+    public TestableComponentHost(Context context) {
