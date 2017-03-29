@@ -1830,3 +1830,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     mCachedMeasuresValid = false;
     mIsNestedTreeHolder = false;
     mTestKey = null;
+
+    if (mPendingTreeProps != null) {
+      mPendingTreeProps.reset();
+      ComponentsPools.release(mPendingTreeProps);
+      mPendingTreeProps = null;
+    }
