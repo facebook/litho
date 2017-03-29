@@ -348,3 +348,5 @@ public class ComponentHost extends ViewGroup {
   /**
    * @return the content descriptons that are set on content mounted on this host
    */
+  @Override
+  public CharSequence getContentDescription() {
