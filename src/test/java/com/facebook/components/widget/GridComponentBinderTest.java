@@ -59,3 +59,4 @@ public class GridComponentBinderTest {
 
   @Before
   public void setup() throws Exception {
+    mItems = new ArrayList<>();

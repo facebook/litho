@@ -95,3 +95,4 @@ public class DuplicateParentStateTest {
         false,
         null);
 
+    assertEquals(12, layoutState.getMountableOutputCount());

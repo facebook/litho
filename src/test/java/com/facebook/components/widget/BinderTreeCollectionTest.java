@@ -63,3 +63,4 @@ public class BinderTreeCollectionTest {
     int originalSize = mBinderTreeCollection.size();
 
     assertNotNull(mBinderTreeCollection.get(1));
+    assertNotNull(mBinderTreeCollection.get(2));
