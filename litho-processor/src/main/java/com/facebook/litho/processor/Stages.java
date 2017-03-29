@@ -2065,3 +2065,4 @@ public class Stages {
       TypeSpec.Builder implClassBuilder,
       ClassName eventHandlerClassName) {
     for (VariableElement v : mImplMembers.values()) {
+      implClassBuilder.addField(getPropFieldSpec(v, false));
