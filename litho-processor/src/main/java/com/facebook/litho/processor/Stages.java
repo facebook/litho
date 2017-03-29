@@ -1125,3 +1125,6 @@ public class Stages {
     }
 
     writeMethodSpec(new DelegateMethodSpecBuilder()
+        .implClassName(getImplClassName())
+        .abstractImplType(propsClass)
+        .implParameters(mImplParameters)
