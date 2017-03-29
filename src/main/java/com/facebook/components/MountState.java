@@ -1542,3 +1542,4 @@ class MountState {
   private void unmountItem(
       ComponentContext context,
       int index,
+      LongSparseArray<ComponentHost> hostsByMarker) {
