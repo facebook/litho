@@ -168,3 +168,26 @@ public class TestLayoutComponent extends ComponentLifecycle {
         boolean hasMountSpecChild,
         boolean isDelegate) {
       super(get(callsShouldUpdateOnMount, isPureRender, hasMountSpecChild, isDelegate));
+    }
+
+    @Override
+    public int hashCode() {
+      return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (o == null) {
+        return false;
+      }
+      if (!super.equals(o)) {
+        return false;
+      }
+      if (o instanceof State) {
+        return true;
+      }
+      return false;
+    }
+  }
+
+  public static class Builder

@@ -163,3 +163,4 @@ public class MountStateRemountEventHandlerTest {
       }
     });
 
+    final ComponentClickListener listener = MountState.getComponentClickListener(componentView);

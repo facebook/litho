@@ -102,3 +102,8 @@ public class MountStateRemountTest {
     assertTrue(containsRef(components, component4));
   }
 
+  /**
+   * There was a crash when mounting a drawing in place of a view. This test is here to make sure
+   * this does not regress. To reproduce this crash the pools needed to be in a specific state
+   * as view layout outputs and mount items were being re-used for drawables.
+   */
