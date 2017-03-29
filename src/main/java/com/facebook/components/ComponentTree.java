@@ -922,3 +922,4 @@ public class ComponentTree {
         mIsLayoutDiffingEnabled,
         previousLayoutState != null ? previousLayoutState.getDiffTree() : null);
 
+    if (output != null) {
