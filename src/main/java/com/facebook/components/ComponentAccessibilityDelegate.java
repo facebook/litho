@@ -63,3 +63,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       View host,
       AccessibilityNodeInfoCompat node) {
     final MountItem mountItem = getAccessibleMountItem(mView);
+
+    if (
+      mNodeInfo != null
+      && mNodeInfo.getOnInitializeAccessibilityNodeInfoHandler() != null) {

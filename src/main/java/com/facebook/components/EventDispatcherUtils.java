@@ -89,3 +89,12 @@ class EventDispatcherUtils {
     final EventDispatcher eventDispatcher =
         fullImpressionHandler.mHasEventDispatcher.getEventDispatcher();
     eventDispatcher.dispatchOnEvent(fullImpressionHandler, sFullImpressionVisibleEvent);
+  }
+
+  static void dispatchOnInvisible(EventHandler<InvisibleEvent> invisibleHandler) {
+    assertMainThread();
+
+    if (sInvisibleEvent == null) {
+      sInvisibleEvent = new InvisibleEvent();
+    }
+
