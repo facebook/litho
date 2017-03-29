@@ -679,3 +679,5 @@ public class ComponentHost extends ViewGroup {
     if (!handled) {
       handled = super.onTouchEvent(event);
     }
+
+    return handled;
