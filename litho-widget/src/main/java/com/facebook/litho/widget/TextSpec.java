@@ -633,3 +633,4 @@ class TextSpec {
   }
 
   @GetExtraAccessibilityNodeAt
+  static int getExtraAccessibilityNodeAt(
