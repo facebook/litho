@@ -117,3 +117,5 @@ class LayoutState {
   private int mWidthSpec;
   private int mHeightSpec;
 
+  private final List<LayoutOutput> mMountableOutputs = new ArrayList<>(8);
+  private final List<VisibilityOutput> mVisibilityOutputs = new ArrayList<>(8);
