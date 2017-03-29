@@ -411,3 +411,7 @@ class LayoutState {
    * Collects layout outputs and release the layout tree. The layout outputs hold necessary
    * information to be used by {@link MountState} to mount components into a {@link ComponentHost}.
    * <p/>
+   * Whenever a component has view content (view tags, click handler, etc), a new host 'marker'
+   * is added for it. The mount pass will use the markers to decide which host should be used
+   * for each layout output. The root node unconditionally generates a layout output corresponding
+   * to the root host.
