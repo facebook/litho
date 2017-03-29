@@ -569,3 +569,5 @@ public class ComponentHost extends ViewGroup {
       final CharSequence contentDescription = nodeInfo.getContentDescription();
       if (contentDescription != null) {
         contentDescriptions.add(contentDescription);
+      }
+    }
