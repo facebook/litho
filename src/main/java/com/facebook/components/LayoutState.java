@@ -1210,3 +1210,4 @@ class LayoutState {
             InternalNode.hasValidLayoutDirectionInNestedTree(nestedTreeHolder, cachedLayout);
 
         // Transfer the cached layout to the node without releasing it if it's compatible.
+        if (hasCompatibleLayoutDirection &&
