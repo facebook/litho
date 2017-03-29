@@ -51,3 +51,4 @@ public class ComponentsProcessor extends AbstractComponentsProcessor {
         mountSpecHelper.getStages().generateCallsShouldUpdateOnMount();
       }
     }
+
