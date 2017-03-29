@@ -2329,3 +2329,17 @@ public class Stages {
             implClassName,
             implClassName);
 
+    for (String s : elementList) {
+      copyInterStageComponentBuilder
+          .addStatement(
+              "$L = " + implInstanceName + ".$L",
+              s,
+              s);
+    }
+
+    return copyInterStageComponentBuilder.build();
+  }
+
+  private List<String> getInterStageVariableNames() {
+    final List<String> elementList = new ArrayList<>();
+

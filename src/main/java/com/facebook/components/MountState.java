@@ -1758,3 +1758,17 @@ class MountState {
     }
   }
 
+  private static class MountStats {
+    private int mountedCount;
+    private int unmountedCount;
+    private int updatedCount;
+    private int noOpCount;
+
+    private void reset() {
+      mountedCount = 0;
+      unmountedCount = 0;
+      updatedCount = 0;
+      noOpCount = 0;
+    }
+  }
+
