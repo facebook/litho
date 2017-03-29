@@ -207,3 +207,4 @@ public interface ComponentLayout {
     Builder viewTag(Object viewTag);
     Builder viewTags(SparseArray<Object> viewTags);
     Builder transitionKey(String key);
+    Builder testKey(String testKey);
