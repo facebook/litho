@@ -39,3 +39,21 @@ import com.facebook.litho.utils.IncrementalMountUtils;
 import static android.support.v7.widget.OrientationHelper.HORIZONTAL;
 import static android.support.v7.widget.OrientationHelper.VERTICAL;
 import static com.facebook.litho.MeasureComparisonUtils.isMeasureSpecCompatible;
+
+/**
+ * This binder class is used to asynchronously layout Components given a list of {@link Component}
+ * and attaching them to a {@link RecyclerSpec}.
+ */
+@ThreadSafe
+public class RecyclerBinder implements Binder<RecyclerView> {
+
+  private static final int UNINITIALIZED = -1;
+  private static final Size sDummySize = new Size();
+
+  @GuardedBy("this")
+  private final List<ComponentTreeHolder> mComponentTreeHolders;
+  private final LayoutInfo mLayoutInfo;
+  private final RecyclerView.Adapter mInternalAdapter;
+  private final ComponentContext mComponentContext;
+  private final RangeScrollListener mRangeScrollListener = new RangeScrollListener();
+  private final LayoutHandlerFactory mLayoutHandlerFactory;

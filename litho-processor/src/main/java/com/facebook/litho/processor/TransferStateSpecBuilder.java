@@ -72,3 +72,4 @@ class TransferStateSpecBuilder {
             "$L prevStateContainerImpl = ($L) prevStateContainer",
             mStateContainerImplClassName,
             mStateContainerImplClassName)
+        .addStatement(

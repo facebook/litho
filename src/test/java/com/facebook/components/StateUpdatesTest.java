@@ -110,3 +110,4 @@ public class StateUpdatesTest {
     }
 
     @Override
+    public Component makeShallowCopy() {

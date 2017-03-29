@@ -165,3 +165,10 @@ public class TreeDiffingTest {
     DiffNode diffNode = new DiffNode();
     diffNode.setLastHeightSpec(mUnspecifiedSpec);
     diffNode.setLastWidthSpec(mUnspecifiedSpec);
+    diffNode.setLastMeasuredWidth(10);
+    diffNode.setLastMeasuredHeight(5);
+    diffNode.setComponent(component);
+
+    node.setCachedMeasuresValid(true);
+    node.setDiffNode(diffNode);
+
