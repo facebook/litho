@@ -1657,3 +1657,6 @@ class LayoutState {
    *    the old measured size is smaller than the allowed max size for the new sizeSpec.
    */
   public static boolean hasCompatibleSizeSpec(
+      int oldWidthSpec,
+      int oldHeightSpec,
+      int newWidthSpec,
