@@ -326,3 +326,5 @@ public class ComponentLifecycleTest {
 
     assertThat(YogaMeasureOutput.getWidth(output)).isEqualTo(nestedTreeWidth);
     assertThat(YogaMeasureOutput.getHeight(output)).isEqualTo(nestedTreeHeight);
+  }
+
