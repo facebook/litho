@@ -82,3 +82,5 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
    * @param tagValue the expected value of the tag associated with tagId
    * @return the assertions object
    */
+  public ViewTreeAssert hasVisibleTextWithTag(final String text, final int tagId, final Object tagValue) {
+    final ImmutableList<View> path = getPathToVisibleTextWithTag(text, tagId, tagValue);
