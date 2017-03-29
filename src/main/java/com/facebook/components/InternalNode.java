@@ -1419,3 +1419,5 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return (InternalNode) mYogaNode.removeChildAt(index).getData();
   }
 
+  @Override
+  public ComponentLayout build() {
