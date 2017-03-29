@@ -327,3 +327,18 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
+  public InternalNode positionAttr(
+      YogaEdge edge,
+      @AttrRes int resId,
+      @DimenRes int defaultResId) {
+    return this;
+  }
+
+  @Override
+  public InternalNode positionRes(YogaEdge edge, @DimenRes int resId) {
+    return this;
+  }
+
+  @Override
+  public InternalNode positionDip(
+      YogaEdge edge,
