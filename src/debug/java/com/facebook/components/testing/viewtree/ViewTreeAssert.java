@@ -378,3 +378,14 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
    */
   public ViewTreeAssert doesNotHaveVisibleDrawable(final Drawable drawable) {
     final ImmutableList<View> path = getPathToVisibleWithDrawable(drawable);
+
+    Assertions.assertThat(path)
+        .overridingErrorMessage(
+            "Found drawable %s in view hierarchy:%n%s",
+            drawable,
+            actual.makeString(ViewExtractors.GET_DRAWABLE_FUNCTION))
+        .isNull();
+
+    return this;
+  }
+
