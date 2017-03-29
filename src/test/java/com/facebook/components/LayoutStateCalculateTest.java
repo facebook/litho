@@ -1448,3 +1448,4 @@ public class LayoutStateCalculateTest {
     assertTrue(getComponentAt(layoutState, 6) instanceof TestDrawableComponent);
 
     assertEquals(
+        layoutState.getMountableOutputAt(0).getImportantForAccessibility(),
