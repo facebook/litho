@@ -184,3 +184,4 @@ public interface ComponentLayout {
     Builder backgroundAttr(@AttrRes int resId);
     Builder backgroundRes(@DrawableRes int resId);
     Builder backgroundColor(@ColorInt int backgroundColor);
+

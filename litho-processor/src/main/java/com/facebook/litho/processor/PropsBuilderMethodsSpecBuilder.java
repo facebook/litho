@@ -183,3 +183,7 @@ class PropsBuilderMethodsSpecBuilder {
         Arrays.asList(parameter(mPropParameter.parameter.type, mPropParameter.parameter.name)),
         mPropParameter.parameter.name +
             " == null ? null : " +
+            mPropParameter.parameter.name +
+            ".makeShallowCopy()");
+  }
+
