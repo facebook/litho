@@ -3318,3 +3318,4 @@ bool YGLayoutNodeInternal(const YGNodeRef node,
 void YGConfigSetPointScaleFactor(const YGConfigRef config, const float pixelsInPoint) {
   YG_ASSERT(pixelsInPoint >= 0.0f, "Scale factor should not be less than zero");
   // We store points for Pixel as we will use it for rounding
+  if (pixelsInPoint == 0.0f) {
