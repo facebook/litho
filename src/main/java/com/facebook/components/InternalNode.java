@@ -1887,3 +1887,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return (mIsPaddingPercent == null) ? false : mIsPaddingPercent[edge.intValue()];
   }
 
+  /**
