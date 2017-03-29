@@ -1225,3 +1225,4 @@ public class ComponentTree {
       init(context, root);
     }
 
+    protected void init(ComponentContext context, Component<?> root) {
