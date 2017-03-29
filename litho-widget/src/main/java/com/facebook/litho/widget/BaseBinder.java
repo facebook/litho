@@ -84,3 +84,5 @@ public abstract class BaseBinder<
           "Binder's elements in the Main Thread you shouldn't set the MainLooper here but" +
           "override isAsyncLayoutEnabled() and return false.");
     }
+  }
+
