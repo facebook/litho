@@ -563,3 +563,5 @@ public class Stages {
         } catch (PrintableException e) {
           exceptions.add(e);
         }
+      }
+    }
