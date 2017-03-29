@@ -1095,3 +1095,6 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   public InternalNode foregroundRes(@DrawableRes int resId) {
     if (resId == 0) {
       return foreground((Reference<Drawable>) null);
+    }
+
+    return foreground(
