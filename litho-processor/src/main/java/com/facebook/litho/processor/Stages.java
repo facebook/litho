@@ -2659,3 +2659,5 @@ public class Stages {
         isStatic,
         StyleableFlag.NOT_STYLEABLE,
         SectionClassNames.SECTION,
+        genericType,
+        INNER_IMPL_BUILDER_CLASS_NAME,
