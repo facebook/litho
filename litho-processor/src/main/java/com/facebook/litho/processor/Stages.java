@@ -2658,3 +2658,4 @@ public class Stages {
     generateBuilder(
         isStatic,
         StyleableFlag.NOT_STYLEABLE,
+        SectionClassNames.SECTION,
