@@ -1271,3 +1271,4 @@ public class Stages {
                   "a parameter with the same name annotated with @State");
         }
       }
+    }
