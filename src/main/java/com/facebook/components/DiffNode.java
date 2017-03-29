@@ -31,3 +31,5 @@ class DiffNode implements Cloneable {
   private float mLastMeasuredHeight;
   private int mLastWidthSpec;
   private int mLastHeightSpec;
+  private List<DiffNode> mChildren;
+

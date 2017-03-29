@@ -112,3 +112,4 @@ class LayoutStateOutputIdCalculator {
     mVisibilityCurrentSequenceForBaseId.put(baseVisibilityId, sequence + 1);
   }
 
+  void clear() {
