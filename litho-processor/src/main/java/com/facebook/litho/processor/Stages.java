@@ -3062,3 +3062,4 @@ public class Stages {
 
   private void writeMethodSpec(MethodSpec methodSpec) {
     mClassTypeSpec.addMethod(methodSpec);
+  }
