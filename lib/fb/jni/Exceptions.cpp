@@ -31,3 +31,5 @@ class JRuntimeException : public JavaClass<JRuntimeException, JThrowable> {
  public:
   static auto constexpr kJavaDescriptor = "Ljava/lang/RuntimeException;";
 
+  static local_ref<JRuntimeException> create(const char* str) {
+    return newInstance(make_jstring(str));

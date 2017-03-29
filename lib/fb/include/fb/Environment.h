@@ -42,3 +42,5 @@ struct Environment {
  *  - Having a thread detach at arbitrary points is not safe in Dalvik; you need to be sure that
  *    there is no Java code on the current stack or you run the risk of a crash like:
  *      ERROR: detaching thread with interp frames (count=18)
+ *    (More detail at https://groups.google.com/forum/#!topic/android-ndk/2H8z5grNqjo)
+ *    ThreadScope won't do a detach if the thread was already attached before the guard is

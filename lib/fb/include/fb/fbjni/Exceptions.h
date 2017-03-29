@@ -71,3 +71,4 @@ class FBEXPORT JniException : public std::exception {
 
   JniException(const JniException &other);
 
+  local_ref<JThrowable> getThrowable() const noexcept;
