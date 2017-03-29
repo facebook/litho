@@ -578,3 +578,15 @@ class TextSpec {
 
   @OnPopulateExtraAccessibilityNode
   static void onPopulateExtraAccessibilityNode(
+      AccessibilityNodeInfoCompat node,
+      int extraNodeIndex,
+      int componentBoundsLeft,
+      int componentBoundsTop,
+      @Prop(resType = STRING) CharSequence text,
+      @FromBoundsDefined Layout textLayout,
+      @FromBoundsDefined ClickableSpan[] clickableSpans) {
+    final Spanned spanned = (Spanned) text;
+
+    final ClickableSpan span = clickableSpans[extraNodeIndex];
+    final int start = spanned.getSpanStart(span);
+    final int end = spanned.getSpanEnd(span);
