@@ -2007,3 +2007,20 @@ public class LayoutStateCalculateTest {
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .paddingPx(YogaEdge.HORIZONTAL, horizontalPadding)
+            .child(componentSpy)
+            .build();
+      }
+    };
+
+    LayoutState layoutState = calculateLayoutState(
+        RuntimeEnvironment.application,
+        rootContainer,
+        -1,
+        widthSpecContainer,
+        heightSpec);
+
+    // Make sure we reused the cached layout and it wasn't released.
+    verify(componentSpy, never()).releaseCachedLayout();
+    verify(componentSpy, times(1)).clearCachedLayout();
+
+    // Check total layout outputs.
