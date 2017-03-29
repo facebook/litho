@@ -1135,3 +1135,7 @@ public class Stages {
         .overridesSuper(
             from.annotations != null && Arrays.asList(from.annotations).contains(Override.class))
         .parameterTranslation(parameterTranslation)
+        .visibility(visibility)
+        .fromName(from.name)
+        .fromReturnType(from.returnType == null ? TypeName.VOID : from.returnType)
+        .fromParams(fromParams)
