@@ -249,3 +249,4 @@ public class MountStateIncrementalMountTest {
                     Layout.create(c, child1).flexShrink(0)
                         .widthPx(10)
                         .heightPx(10))
+                .child(

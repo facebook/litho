@@ -109,3 +109,4 @@ public final class ResourceDrawableReference extends ReferenceLifecycle<Drawable
   public static class PropsBuilder extends Reference.Builder<Drawable> {
 
     private State mState;
+    private ComponentContext mContext;
