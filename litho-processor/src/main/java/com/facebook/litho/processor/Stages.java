@@ -1912,3 +1912,6 @@ public class Stages {
   }
 
   private MethodSpec generateEqualsMethodDefinition(boolean shouldCheckId) {
+    final String implClassName = getImplClassName();
+    final String implInstanceName = getImplInstanceName();
+
