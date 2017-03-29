@@ -1822,3 +1822,5 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       mNestedTreeBorderWidth = null;
     }
 
+    mLastWidthSpec = DiffNode.UNSPECIFIED;
+    mLastHeightSpec = DiffNode.UNSPECIFIED;
