@@ -1548,3 +1548,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
             "If padding was set on the holder node, we must have a mNestedTreePadding instance");
       }
 
+      final YogaNodeAPI yogaNode = node.mYogaNode;
