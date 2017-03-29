@@ -56,3 +56,4 @@ class RecyclerSpec {
       int heightSpec,
       Size measureOutput,
       @Prop Binder<RecyclerView> binder) {
+    binder.measure(measureOutput, widthSpec, heightSpec);
