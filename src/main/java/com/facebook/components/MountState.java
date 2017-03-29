@@ -1647,3 +1647,4 @@ class MountState {
 
   private void endUnmountDisappearingItem(ComponentContext context, MountItem item) {
     final ComponentHost content = (ComponentHost) item.getContent();
+

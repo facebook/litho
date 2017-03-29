@@ -1902,3 +1902,5 @@ public class Stages {
               .build());
     }
 
+    final MethodSpec makeShallowCopy =
+        generateMakeShallowCopy(SectionClassNames.SECTION, /* hasDeepCopy */ true);
