@@ -470,3 +470,4 @@ public class MountSpecHelper extends ComponentSpecHelper {
 
       throw new ComponentsProcessingException(
           mSpecElement,
+          "In order to implement accessibility support for extra nodes, you need to implement " +
