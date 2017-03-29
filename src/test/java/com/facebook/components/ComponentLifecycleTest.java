@@ -81,3 +81,5 @@ public class ComponentLifecycleTest {
     when(mNode.getDiffNode()).thenReturn(mDiffNode);
     when(mDiffNode.getLastMeasuredWidth()).thenReturn(-1f);
     when(mDiffNode.getLastMeasuredHeight()).thenReturn(-1f);
+    when(ComponentsPools.acquireInternalNode(any(ComponentContext.class), any(Resources.class)))
+        .thenReturn(mNode);
