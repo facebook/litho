@@ -1539,3 +1539,7 @@ public class Stages {
 
   /**
    * Generates a class that implements {@link com.facebook.litho.ComponentLifecycle} given
+   *  a method annotated with {@link OnUpdateState}. The class constructor takes as params all the
+   *  params annotated with {@link Param} on the method and keeps them in class members.
+   * @param element The method annotated with {@link OnUpdateState}
+   */
