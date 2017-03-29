@@ -58,3 +58,4 @@ public class TestDrawableComponent extends ComponentLifecycle {
     final TestDrawableComponent lifecycle = new TestDrawableComponent(
         callsShouldUpdateOnMount,
         isPureRender,
+        canMeasure,

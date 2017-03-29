@@ -80,3 +80,6 @@ public abstract class ComponentLifecycle implements EventDispatcher {
       mSizePool.release(size);
     }
 
+    @Override
+    @SuppressLint("WrongCall")
+    @SuppressWarnings("unchecked")

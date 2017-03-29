@@ -36,3 +36,4 @@ public class LayoutStateSizeTest {
     mContext = new ComponentContext(RuntimeEnvironment.application);
     mComponent = TestLayoutComponent.create(mContext)
         .build();
+    Whitebox.setInternalState(mComponent, "mId", COMPONENT_ID);

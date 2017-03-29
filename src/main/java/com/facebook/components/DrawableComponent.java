@@ -55,3 +55,12 @@ class DrawableComponent<T extends Drawable> extends ComponentLifecycle {
   @Override
   protected void onBind(
       ComponentContext c,
+      Object mountedContent,
+      Component<?> component) {
+    final MatrixDrawable mountedDrawable = (MatrixDrawable) mountedContent;
+    final State state = (State) component;
+
+    mountedDrawable.bind(state.getDrawableWidth(), state.getDrawableHeight());
+  }
+
+  @Override
