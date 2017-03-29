@@ -86,3 +86,15 @@ class LayoutState {
               : isHostSpec(lhs.getComponent()) == isHostSpec(rhs.getComponent())
               ? 0
               : isHostSpec(lhs.getComponent()) ? -1 : 1;
+        }
+      };
+
+  static final Comparator<LayoutOutput> sBottomsComparator =
+      new Comparator<LayoutOutput>() {
+        @Override
+        public int compare(LayoutOutput lhs, LayoutOutput rhs) {
+          final int lhsBottom = lhs.getBounds().bottom;
+          final int rhsBottom = rhs.getBounds().bottom;
+          return lhsBottom < rhsBottom
+              ? -1
+              : lhsBottom > rhsBottom

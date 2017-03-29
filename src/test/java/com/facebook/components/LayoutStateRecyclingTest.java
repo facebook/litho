@@ -89,3 +89,5 @@ public class LayoutStateRecyclingTest {
         -1,
         mUnspecifiedSizeSpec,
         mUnspecifiedSizeSpec,
+        false,
+        null);

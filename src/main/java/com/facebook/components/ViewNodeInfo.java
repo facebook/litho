@@ -164,3 +164,5 @@ class ViewNodeInfo {
       return;
     }
 
+    mBackground = null;
+    mForeground = null;
