@@ -1323,3 +1323,4 @@ public class Stages {
           element,
           OnEvent.class,
           "value");
+      final String eventName = eventClass.toString();
