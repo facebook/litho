@@ -117,3 +117,9 @@ public class MountItemTest {
   }
 
   @Test
+  public void testIsAccessibleWithNullComponent() {
+    final MountItem mountItem = new MountItem();
+    mountItem.init(
+        null,
+        mComponentHost,
+        mContent,
