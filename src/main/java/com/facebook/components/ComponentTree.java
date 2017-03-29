@@ -1183,3 +1183,11 @@ public class ComponentTree {
     }
   }
 
+  ComponentsStethoManager getStethoManager() {
+    return mStethoManager;
+  }
+
+  void setStethoManager(ComponentsStethoManager stethoManager) {
+    mStethoManager = stethoManager;
+  }
+
