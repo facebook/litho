@@ -69,3 +69,23 @@ public class IncrementalMountUtils {
 
   private static void maybePerformIncrementalMountOnView(
       int scrollingParentWidth,
+      int scrollingParentHeight,
+      View view) {
+    final View underlyingView = view instanceof WrapperView
+        ? ((WrapperView) view).getWrappedView()
+        : view;
+
+    if (!(underlyingView instanceof ComponentView)) {
+      return;
+    }
+
+    final ComponentView componentView = (ComponentView) underlyingView;
+    if (!componentView.isIncrementalMountEnabled()) {
+      return;
+    }
+
+    if (view != underlyingView && view.getHeight() != underlyingView.getHeight()) {
+      throw new IllegalStateException(
+          "ViewDiagnosticsWrapper must be the same height as the underlying view");
+    }
+

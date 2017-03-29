@@ -727,3 +727,9 @@ public class ComponentHost extends ViewGroup {
   @Override
   protected void drawableStateChanged() {
     super.drawableStateChanged();
+
+    for (int i = 0, size = mDrawableMountItems.size(); i < size; i++) {
+      final MountItem mountItem = mDrawableMountItems.valueAt(i);
+      ComponentHostUtils.maybeSetDrawableState(
+          this,
+          (Drawable) mountItem.getContent(),
