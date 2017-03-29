@@ -1868,3 +1868,4 @@ public class Stages {
             .addModifiers(Modifier.PRIVATE)
             .superclass(
                 ParameterizedTypeName.get(
+                    SectionClassNames.SECTION,
