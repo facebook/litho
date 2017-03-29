@@ -138,3 +138,4 @@ class TextSpec {
       Output<Integer> shadowColor) {
 
     final TypedArray a = c.obtainStyledAttributes(R.styleable.Text, 0);
+
