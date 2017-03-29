@@ -1397,3 +1397,4 @@ class LayoutState {
     for (int i = 0; i < layoutCount && i < diffCount; i++) {
       // ensure that we always run for all children.
       boolean shouldUpdateChild =
+          applyDiffNodeToUnchangedNodes(
