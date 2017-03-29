@@ -1644,3 +1644,4 @@ class LayoutState {
         : node == mLayoutRoot;
   }
 
+  /**
