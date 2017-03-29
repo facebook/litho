@@ -1087,3 +1087,4 @@ public class Stages {
    * @param propsClass Component / Delegate. The base class of the inner implementation object
    * @throws java.io.IOException If one of the writer methods throw
    */
+  public void generateDelegate(
