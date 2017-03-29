@@ -772,3 +772,4 @@ class LayoutState {
         drawableComponent,
         layoutState,
         node);
+    layoutState.mLayoutStateOutputIdCalculator.calculateAndSetLayoutOutputIdAndUpdateState(
