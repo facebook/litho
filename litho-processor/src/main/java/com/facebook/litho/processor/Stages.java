@@ -1383,3 +1383,5 @@ public class Stages {
     final List<Parameter> eventParams = new ArrayList<>();
     final List<String> typeParameters = new ArrayList<>();
 
+    for (VariableElement e : eventParamElements) {
+      eventParams.add(new Parameter(ClassName.get(e.asType()), e.getSimpleName().toString()));
