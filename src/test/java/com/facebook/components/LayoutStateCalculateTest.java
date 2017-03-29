@@ -887,3 +887,4 @@ public class LayoutStateCalculateTest {
     return component instanceof HostComponent;
   }
 
+  @Test

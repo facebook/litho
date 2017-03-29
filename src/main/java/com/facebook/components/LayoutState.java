@@ -536,3 +536,4 @@ class LayoutState {
     if (background != null) {
       if (layoutOutput != null && layoutOutput.hasViewNodeInfo()) {
         layoutOutput.getViewNodeInfo().setBackground(background);
+      } else {
