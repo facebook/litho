@@ -29,3 +29,5 @@ import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 
 import com.facebook.R;
+import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.reference.Reference;

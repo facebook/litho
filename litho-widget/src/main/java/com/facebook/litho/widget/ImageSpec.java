@@ -38,3 +38,4 @@ import com.facebook.litho.reference.Reference;
 import com.facebook.litho.reference.ResourceDrawableReference;
 import com.facebook.litho.utils.MeasureUtils;
 
+import static com.facebook.litho.SizeSpec.UNSPECIFIED;

@@ -17,3 +17,4 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 
+import static com.facebook.litho.ThreadUtils.assertMainThread;

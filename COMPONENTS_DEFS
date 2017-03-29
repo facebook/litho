@@ -65,3 +65,20 @@ COMPONENTS_PROCESSOR_TARGET = make_dep_path('litho-processor/src/main/java/com/f
 COMPONENTS_PROCESSOR_LIB_TARGET = make_dep_path('litho-processor/src/main/java/com/facebook/litho/processor:processor-lib')
 
 # Sample app
+COMPONENTS_SAMPLE_JAVA = make_dep_path('sample/src/main/java/com/facebook/samples/litho:litho')
+COMPONENTS_SAMPLE_BAREBONES_JAVA = make_dep_path('sample-barebones/src/main/java/com/facebook/samples/lithobarebones:lithobarebones')
+COMPONENTS_SAMPLE_RES  = make_dep_path('sample:res')
+
+# Other targets
+COMPONENTS_OSS_TARGET = make_dep_path(":components")
+
+# Targets that sometimes exist and sometimes don't
+COMPONENTS_TEXTLAYOUTBUILDER_UTILS_TARGET = []
+COMPONENTS_FRESCO_TARGETS = [
+    make_dep_path('lib/fbcore:fbcore'),
+    make_dep_path('lib/fresco:fresco-drawee'),
+    make_dep_path('lib/fresco:fresco'),
+]
+COMPONENTS_FRESCO_PIPELINE_TARGET         = [make_dep_path('lib/fresco:imagepipeline')]
+COMPONENTS_FRESCO_CONTROLLER_TARGET       = []
+COMPONENTS_FRESCO_INTERFACES_TARGET       = []

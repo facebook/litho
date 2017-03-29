@@ -16,3 +16,8 @@ import android.content.Context;
 import android.os.Looper;
 import android.view.ViewGroup;
 
+import com.facebook.litho.Component;
+import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentTree;
+import com.facebook.litho.ComponentView;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
