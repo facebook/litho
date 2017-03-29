@@ -226,3 +226,8 @@ public class PagerBinderTest {
   }
 
   private class TestPagerComponentBinder extends PagerBinder {
+    public TestPagerComponentBinder(Context context, int initialPage, float pageWidth) {
+      super(context, initialPage, pageWidth);
+    }
+
+    @Override
