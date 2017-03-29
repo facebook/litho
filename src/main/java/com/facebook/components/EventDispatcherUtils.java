@@ -265,3 +265,4 @@ class EventDispatcherUtils {
         sOnRequestSendAccessibilityEventEvent);
 
     sOnRequestSendAccessibilityEventEvent.host = null;
+    sOnRequestSendAccessibilityEventEvent.child = null;
