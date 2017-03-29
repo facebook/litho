@@ -2190,3 +2190,5 @@ public class Stages {
           ClassNames.DIFF);
 
       if (innerType == null) {
+        throw new ComponentsProcessingException(
+            variableElement,
