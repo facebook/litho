@@ -84,3 +84,13 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
   public void setPlaceholderReference(
       @Nullable Reference<Drawable> placeholderReference,
       @Nullable ScalingUtils.ScaleType scaleType) {
+    if (mPlaceholderReference != null) {
+      if (!Reference.shouldUpdate(mPlaceholderReference, placeholderReference)) {
+        return;
+      } else {
+        Reference.release(mContext, mPlaceholder, mPlaceholderReference);
+        mPlaceholderReference = null;
+        mPlaceholder = null;
+      }
+    }
+
