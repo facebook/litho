@@ -1117,3 +1117,6 @@ public class Stages {
         errors.add(new ComponentsProcessingException(
             to.getParameters().get(i),
             "Expected " + expectedTypes.get(i)));
+      }
+    }
+
