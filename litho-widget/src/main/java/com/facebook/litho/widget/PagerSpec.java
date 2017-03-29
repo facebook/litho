@@ -30,3 +30,4 @@ import com.facebook.litho.annotations.ShouldUpdate;
  * A component that takes a list of component inputs to render them as items
  * in a {@link ViewPager}.
  */
+@MountSpec(canMountIncrementally = true, isPureRender = true)
