@@ -54,3 +54,4 @@ public class ComponentHost extends ViewGroup {
 
   private final SparseArrayCompat<MountItem> mDisappearingItems = new SparseArrayCompat<>();
 
+  private CharSequence mContentDescription;

@@ -24,3 +24,15 @@ import com.squareup.javapoet.TypeVariableName;
 
 import static com.facebook.components.specmodels.generator.GeneratorConstants.SPEC_INSTANCE_NAME;
 
+/**
+ * Provides a Builder for generating an implementation of
+ * {@link com.facebook.components.ComponentLifecycle.StateUpdate}
+ */
+public class StateUpdateImplClassBuilder {
+
+  private static final String STATE_CONTAINER_PARAM_NAME = "stateContainer";
+  private static final String STATE_CONTAINER_IMPL_NAME = "stateContainerImpl";
+  private static final String STATE_UPDATE_OLD_COMPONENT_NAME = "oldComponent";
+  private static final String STATE_UPDATE_NEW_COMPONENT_NAME = "newComponent";
+  private static final String STATE_UPDATE_IMPL_NAME_SUFFIX = "StateUpdate";
+  private static final String STATE_UPDATE_METHOD_NAME = "updateState";
