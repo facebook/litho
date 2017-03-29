@@ -1736,3 +1736,32 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       } else if (attr == R.styleable.ComponentLayout_flex_direction) {
         flexDirection(YogaFlexDirection.fromInt(a.getInteger(attr, 0)));
       } else if (attr == R.styleable.ComponentLayout_flex_wrap) {
+        wrap(YogaWrap.fromInt(a.getInteger(attr, 0)));
+      } else if (attr == R.styleable.ComponentLayout_flex_justifyContent) {
+        justifyContent(YogaJustify.fromInt(a.getInteger(attr, 0)));
+      } else if (attr == R.styleable.ComponentLayout_flex_alignItems) {
+        alignItems(YogaAlign.fromInt(a.getInteger(attr, 0)));
+      } else if (attr == R.styleable.ComponentLayout_flex_alignSelf) {
+        alignSelf(YogaAlign.fromInt(a.getInteger(attr, 0)));
+      } else if (attr == R.styleable.ComponentLayout_flex_positionType) {
+        positionType(YogaPositionType.fromInt(a.getInteger(attr, 0)));
+      } else if (attr == R.styleable.ComponentLayout_flex) {
+        final float flex = a.getFloat(attr, -1);
+        if (flex >= 0f) {
+          flex(flex);
+        }
+      } else if (attr == R.styleable.ComponentLayout_flex_left) {
+        positionPx(LEFT, a.getDimensionPixelOffset(attr, 0));
+      } else if (attr == R.styleable.ComponentLayout_flex_top) {
+        positionPx(TOP, a.getDimensionPixelOffset(attr, 0));
+      } else if (attr == R.styleable.ComponentLayout_flex_right) {
+        positionPx(RIGHT, a.getDimensionPixelOffset(attr, 0));
+      } else if (attr == R.styleable.ComponentLayout_flex_bottom) {
+        positionPx(BOTTOM, a.getDimensionPixelOffset(attr, 0));
+      } else if (attr == R.styleable.ComponentLayout_flex_layoutDirection) {
+        final int layoutDirection = a.getInteger(attr, -1);
+        layoutDirection(YogaDirection.fromInt(layoutDirection));
+      }
+    }
+  }
+
