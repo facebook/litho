@@ -1478,3 +1478,7 @@ class MountState {
     if (view instanceof ComponentView) {
       final ComponentView componentView = (ComponentView) view;
       componentView.performIncrementalMount(localVisibleRect);
+    } else if (view instanceof ViewGroup) {
+      final ViewGroup viewGroup = (ViewGroup) view;
+
+      for (int i = 0; i < viewGroup.getChildCount(); i++) {
