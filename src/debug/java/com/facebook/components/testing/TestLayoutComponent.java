@@ -129,3 +129,7 @@ public class TestLayoutComponent extends ComponentLifecycle {
       boolean isPureRender,
       boolean hasMountSpecChild,
       boolean isDelegate) {
+    return newBuilder(
+        context,
+        defStyleAttr,
+        defStyleRes,

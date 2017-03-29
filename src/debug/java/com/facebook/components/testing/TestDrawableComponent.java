@@ -125,3 +125,13 @@ public class TestDrawableComponent extends ComponentLifecycle {
     State state = (State) _stateObject;
     ((ColorDrawable) convertDrawable).setColor(state.color);
 
+    state.onMountCalled();
+  }
+
+  @Override
+  protected void onUnmount(ComponentContext c, Object mountedContent, Component<?> component) {
+    State state = (State) component;
+    state.onUnmountCalled();
+  }
+
+  @Override

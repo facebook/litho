@@ -425,3 +425,14 @@ public class LayoutDirectionTest {
         .build();
 
     ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                .layoutDirection(YogaDirection.RTL)
+                .child(child)
+                .build();
+          }
+        });
+

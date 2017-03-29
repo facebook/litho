@@ -83,3 +83,11 @@ class ViewNodeInfo {
     return (mPadding != null);
   }
 
+  void setLayoutDirection(YogaDirection layoutDirection) {
+    mLayoutDirection = layoutDirection;
+  }
+
+  YogaDirection getLayoutDirection() {
+    return mLayoutDirection;
+  }
+

@@ -69,3 +69,25 @@ public class MountStateIncrementalMountTest {
    */
   @Test
   public void testIncrementalMountVerticalViewStackScrollUp() {
+    final TestComponent child1 = TestViewComponent.create(mContext)
+        .build();
+    final TestComponent child2 = TestViewComponent.create(mContext)
+        .build();
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                .flexDirection(COLUMN)
+                .child(
+                    Layout.create(c, child1).flexShrink(0)
+                        .widthPx(10)
+                        .heightPx(10))
+                .child(
+                    Layout.create(c, child2).flexShrink(0)
+                        .widthPx(10)
+                        .heightPx(10))
+                .build();
+          }
+        });

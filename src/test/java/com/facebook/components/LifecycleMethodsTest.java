@@ -138,3 +138,4 @@ public class LifecycleMethodsTest {
 
     @Override
     protected void onMount(
+        ComponentContext c,
