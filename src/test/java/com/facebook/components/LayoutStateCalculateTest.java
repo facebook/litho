@@ -2114,3 +2114,4 @@ public class LayoutStateCalculateTest {
             .flexDirection(YogaFlexDirection.ROW)
             .alignItems(YogaAlign.STRETCH)
             .paddingPx(YogaEdge.ALL, 2)
+            .child(
