@@ -639,3 +639,4 @@ class LayoutState {
         if (diffNode != null) {
           diffNode.setForeground(foregroundOutput);
         }
+      }

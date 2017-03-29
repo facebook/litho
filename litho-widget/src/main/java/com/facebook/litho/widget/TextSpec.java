@@ -555,3 +555,4 @@ class TextSpec {
       ComponentContext c,
       TextDrawable textDrawable,
       @Prop(resType = ResType.STRING) CharSequence text) {
+    textDrawable.unmount();
