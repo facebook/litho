@@ -627,3 +627,4 @@ public class ComponentsPools {
     return rect;
   }
 
+  @ThreadSafe(enableChecks = false)
