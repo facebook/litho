@@ -1290,3 +1290,7 @@ class LayoutState {
     c.setWidthSpec(previousWidthSpec);
     c.setHeightSpec(previousHeightSpec);
 
+    if (root == NULL_LAYOUT) {
+      return root;
+    }
+
