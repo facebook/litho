@@ -302,3 +302,4 @@ public class ComponentTree {
     }
 
     if (toRelease != null) {
+      toRelease.releaseRef();
