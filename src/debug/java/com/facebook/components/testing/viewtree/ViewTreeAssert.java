@@ -365,3 +365,4 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
             .application
             .getResources()
             .getDrawable(resourceId)
+    );
