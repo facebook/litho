@@ -42,3 +42,6 @@ public class MountStateRemountTest {
   public void setup() {
     mContext = new ComponentContext(RuntimeEnvironment.application);
   }
+
+  @Test
+  public void testRemountSameLayoutState() {

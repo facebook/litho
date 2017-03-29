@@ -28,3 +28,4 @@ public class LayoutStateSizeTest {
   private static final int HEIGHT = 51;
 
   private LayoutState mLayoutState;
+  private Component<?> mComponent;

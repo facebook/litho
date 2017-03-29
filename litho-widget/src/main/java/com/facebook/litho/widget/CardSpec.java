@@ -94,3 +94,4 @@ class CardSpec {
                         .clippingColor(clippingColor)
                         .cornerRadiusPx(cornerRadius)
                         .withLayout().flexShrink(0)
+                        .positionType(ABSOLUTE)

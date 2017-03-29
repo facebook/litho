@@ -12,3 +12,6 @@ package com.facebook.litho.widget;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.graphics.Path;
+import android.graphics.Rect;
+import android.graphics.RectF;

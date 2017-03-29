@@ -42,3 +42,4 @@ import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 
 /**
  * A component that is able to display drawable resources. It takes a drawable
+ * resource ID as prop.
