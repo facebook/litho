@@ -279,3 +279,4 @@ public interface ComponentLayout {
 
     ContainerBuilder positionPx(YogaEdge edge, @Px int position);
     ContainerBuilder positionAttr(
+        YogaEdge edge,
