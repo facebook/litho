@@ -125,3 +125,9 @@ public class ComponentTree {
   // no lock held, or read from any other thread with the lock held.
   private LayoutState mMainThreadLayoutState;
 
+  // The semantics here are tricky. Whenever you transfer mBackgroundLayoutState to a local that
+  // will be accessed outside of the lock, you must set mBackgroundLayoutState to null to ensure
+  // that the current thread alone has access to the LayoutState, which is single-threaded.
+  @GuardedBy("this")
+  private LayoutState mBackgroundLayoutState;
+
