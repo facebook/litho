@@ -227,3 +227,5 @@ public class StateUpdateImplClassBuilder {
         SPEC_INSTANCE_NAME + "." + mTarget :
         mTarget;
 
+    // Call the spec's update method.
+    updateStateMethodBuilder.addStatement(

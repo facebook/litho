@@ -56,3 +56,8 @@ public class ComponentHost extends ViewGroup {
 
   private CharSequence mContentDescription;
   private Object mViewTag;
+  private SparseArray<Object> mViewTags;
+
+  private boolean mWasInvalidatedWhileSuppressed;
+  private boolean mWasInvalidatedForAccessibilityWhileSuppressed;
+  private boolean mSuppressInvalidations;

@@ -275,3 +275,36 @@ public class StateUpdatesTest {
     mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate());
     mLayoutThreadShadowLooper.runOneTask();
     mComponentTree.setSizeSpec(mWidthSpec, mHeightSpec);
+    assertEquals(
+        INITIAL_COUNT_STATE_VALUE + 1,
+        mTestComponent.getComponentForStateUpdate().getCount());
+  }
+
+  @Test
+  public void testTransferAndUpdateState() {
+    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate());
+    mLayoutThreadShadowLooper.runOneTask();
+
+    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate());
+    mLayoutThreadShadowLooper.runOneTask();
+    assertEquals(
+        INITIAL_COUNT_STATE_VALUE + 2,
+        mTestComponent.getComponentForStateUpdate().getCount());
+  }
+
+  private StateHandler getStateHandler() {
+    return Whitebox.getInternalState(mComponentTree, "mStateHandler");
+  }
+
+  private Map<String, StateContainer> getStateContainersMap() {
+    return getStateHandler().getStateContainers();
+  }
+
+  private Map<String, List<StateUpdate>> getPendingStateUpdates() {
+    return getStateHandler().getPendingStateUpdates();
+  }
+
+  private List<StateUpdate> getPendingStateUpdatesForComponent(Component component) {
+    return getPendingStateUpdates().get(component.getGlobalKey());
+  }
+}

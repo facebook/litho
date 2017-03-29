@@ -164,3 +164,8 @@ public class ComponentTree {
     if (mLayoutThreadHandler == null) {
       mLayoutThreadHandler = new DefaultLayoutHandler(getDefaultLayoutThreadLooper());
     }
+
+    final StateHandler builderStateHandler = builder.stateHandler;
+    mStateHandler = builderStateHandler == null
+        ? StateHandler.acquireNewInstance(null)
+        : builderStateHandler;
