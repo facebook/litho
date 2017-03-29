@@ -256,3 +256,19 @@ public class GridComponentBinderTest {
                     : 1;
           }
         });
+    mBinder = new MyTestGridComponentBinder(mContext, mItems, mGridLayoutManager);
+    mBinder.setSize(GRID_WIDTH - 4, GRID_HEIGHT - 6);
+    mBinder.mount(mRecyclerView);
+    mBinder.bind(mRecyclerView);
+
+    mLayoutThreadShadowLooper.runOneTask();
+  }
+
+  private Integer getAdapterInputStringAtPosition(int position) {
+    ComponentTree componentTree = mBinder.getComponentAt(position);
+
+    if (componentTree == null) {
+      return null;
+    }
+
+    return Whitebox.getInternalState(Whitebox.getInternalState(componentTree, "mRoot"), "color");
