@@ -272,3 +272,69 @@ public class ComponentHostTest {
   }
 
   @Test
+  public void testDuplicateParentStateOnViews() {
+    View v1 = mock(View.class);
+    mount(0, v1);
+
+    View v2 = mock(View.class);
+    mount(1, v2, FLAG_DUPLICATE_PARENT_STATE);
+
+    verify(v1, times(1)).setDuplicateParentStateEnabled(eq(false));
+    verify(v2, times(1)).setDuplicateParentStateEnabled(eq(true));
+  }
+
+  @Test
+  public void testJumpDrawablesToCurrentState() {
+    mHost.jumpDrawablesToCurrentState();
+
+    Drawable d1 = mock(ColorDrawable.class);
+    when(d1.getBounds()).thenReturn(new Rect());
+    mount(0, d1);
+
+    Drawable d2 = mock(ColorDrawable.class);
+    when(d2.getBounds()).thenReturn(new Rect());
+    mount(1, d2);
+
+    View v1 = mock(View.class);
+    mount(2, v1);
+
+    mHost.jumpDrawablesToCurrentState();
+
+    verify(d1, times(1)).jumpToCurrentState();
+    verify(d2, times(1)).jumpToCurrentState();
+  }
+
+  @Test
+  public void testSetVisibility() {
+    Drawable d1 = mock(ColorDrawable.class);
+    when(d1.getBounds()).thenReturn(new Rect());
+    mount(0, d1);
+
+    Drawable d2 = mock(ColorDrawable.class);
+    when(d2.getBounds()).thenReturn(new Rect());
+    mount(1, d2);
+
+    View v1 = mock(View.class);
+    mount(2, v1);
+
+    mHost.setVisibility(GONE);
+    mHost.setVisibility(INVISIBLE);
+    mHost.setVisibility(VISIBLE);
+
+    verify(d1, times(2)).setVisible(eq(true), eq(false));
+    verify(d1, times(2)).setVisible(eq(false), eq(false));
+
+    verify(d2, times(2)).setVisible(eq(true), eq(false));
+    verify(d2, times(2)).setVisible(eq(false), eq(false));
+
+    verify(v1, never()).setVisibility(anyInt());
+  }
+
+  @Test
+  public void testGetDrawables() {
+    Drawable d1 = new ColorDrawable();
+    MountItem mountItem1 = mount(0, d1);
+
+    Drawable d2 = new ColorDrawable();
+    mount(1, d2);
+
