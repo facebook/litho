@@ -92,3 +92,5 @@ class CardSpec {
                 .child(
                     CardClip.create(c)
                         .clippingColor(clippingColor)
+                        .cornerRadiusPx(cornerRadius)
+                        .withLayout().flexShrink(0)

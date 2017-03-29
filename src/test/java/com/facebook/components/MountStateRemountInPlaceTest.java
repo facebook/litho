@@ -50,3 +50,7 @@ public class MountStateRemountInPlaceTest {
 
   @Test
   public void testMountUnmountWithShouldUpdate() {
+    final TestComponent firstComponent =
+        TestDrawableComponent.create(mContext)
+            .unique()
+            .build();

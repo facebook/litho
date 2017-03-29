@@ -161,3 +161,88 @@ public class TestViewComponent extends ComponentLifecycle {
     return MountType.VIEW;
   }
 
+  public static Builder create(
+      ComponentContext context,
+      @AttrRes int defStyleAttr,
+      @StyleRes int defStyleRes) {
+    return create(context, defStyleAttr, defStyleRes, true, true, true, true);
+  }
+
+  public static Builder create(
+      ComponentContext context,
+      @AttrRes int defStyleAttr,
+      @StyleRes int defStyleRes,
+      boolean callsShouldUpdateOnMount,
+      boolean isPureRender,
+      boolean canMeasure,
+      boolean canMountIncrementally) {
+    return newBuilder(
+        context,
+        defStyleAttr,
+        defStyleRes,
+        new State(callsShouldUpdateOnMount, isPureRender, canMeasure, canMountIncrementally));
+  }
+
+  public static Builder create(ComponentContext context) {
+    return create(context, 0, 0, true, true, true, true);
+  }
+
+  public static Builder create(
+      ComponentContext context,
+      boolean callsShouldUpdateOnMount,
+      boolean isPureRender,
+      boolean canMeasure,
+      boolean canMountIncrementally) {
+    return create(
+        context,
+        0,
+        0,
+        callsShouldUpdateOnMount,
+        isPureRender,
+        canMeasure,
+        canMountIncrementally);
+  }
+
+  private static Builder newBuilder(
+      ComponentContext context,
+      @AttrRes int defStyleAttr,
+      @StyleRes int defStyleRes,
+      State state) {
+    Builder builder = mBuilderPool.acquire();
+    if (builder == null) {
+      builder = new Builder();
+    }
+    builder.init(context, defStyleAttr, defStyleRes, state);
+    return builder;
+  }
+
+  private static class State extends TestComponent<TestViewComponent> implements Cloneable {
+
+    private State(
+        boolean callsShouldUpdateOnMount,
+        boolean isPureRender,
+        boolean canMeasure,
+        boolean canMountIncrementally) {
+      super(get(callsShouldUpdateOnMount, isPureRender, canMeasure, canMountIncrementally));
+    }
+
+    @Override
+    public int hashCode() {
+      return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (o == null) {
+        return false;
+      }
+      if (!super.equals(o)) {
+        return false;
+      }
+      if (o instanceof State) {
+        return true;
+      }
+      return false;
+    }
+  }
+

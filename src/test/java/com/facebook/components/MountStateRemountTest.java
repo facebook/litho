@@ -36,3 +36,9 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(ComponentsTestRunner.class)
 public class MountStateRemountTest {
+  private ComponentContext mContext;
+
+  @Before
+  public void setup() {
+    mContext = new ComponentContext(RuntimeEnvironment.application);
+  }
