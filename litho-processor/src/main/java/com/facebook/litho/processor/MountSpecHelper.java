@@ -129,3 +129,6 @@ public class MountSpecHelper extends ComponentSpecHelper {
     methodDescription.name = "onPrepare";
     methodDescription.parameterTypes = new TypeName[] {ClassNames.COMPONENT_CONTEXT};
 
+    mStages.generateDelegate(
+        methodDescription,
+        onPrepare,
