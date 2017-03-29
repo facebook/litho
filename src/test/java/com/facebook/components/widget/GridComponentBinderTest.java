@@ -293,3 +293,7 @@ public class GridComponentBinderTest {
 
     @Override
     public Component<?> createComponent(ComponentContext c, int position) {
+      return TestDrawableComponent.create(c)
+          .color(mItems.get(position))
+          .measuredWidth(50)
+          .measuredHeight(100)

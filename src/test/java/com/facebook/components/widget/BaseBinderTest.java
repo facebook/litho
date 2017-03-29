@@ -245,3 +245,4 @@ public class BaseBinderTest {
   }
 
   @Test
+  public void testNotifyItemRemovedBeforeFirstPosition() {

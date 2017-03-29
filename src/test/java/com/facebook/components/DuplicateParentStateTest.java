@@ -122,3 +122,4 @@ public class DuplicateParentStateTest {
 
     assertFalse(
         "Background should duplicate non-clickable node state",
+        MountItem.isDuplicateParentState(layoutState.getMountableOutputAt(10).getFlags()));

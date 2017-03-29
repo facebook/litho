@@ -85,3 +85,4 @@ public class LayoutOutputTest {
 
     mLayoutOutput.setComponent(component);
 
+    long stableId = LayoutStateOutputIdCalculator.calculateLayoutOutputId(
