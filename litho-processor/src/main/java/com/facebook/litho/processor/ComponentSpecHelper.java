@@ -22,3 +22,4 @@ import com.facebook.litho.specmodels.model.SpecModel;
 
 import com.squareup.javapoet.TypeName;
 
+public abstract class ComponentSpecHelper extends SpecHelper {

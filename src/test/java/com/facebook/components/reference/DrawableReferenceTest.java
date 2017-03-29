@@ -17,3 +17,4 @@ import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RuntimeEnvironment;

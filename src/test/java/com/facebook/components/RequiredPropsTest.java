@@ -20,3 +20,16 @@ import org.robolectric.RuntimeEnvironment;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(ComponentsTestRunner.class)
+public class RequiredPropsTest {
+
+  private ComponentContext mContext;
+
+  @Before
+  public void setup() throws Exception {
+    mContext = new ComponentContext(RuntimeEnvironment.application);
+  }
+
+  @Test
+  public void testWithoutRequiredProps() {
+    String error = "";
+    try {

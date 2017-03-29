@@ -9,3 +9,6 @@
 
 package com.facebook.litho;
 
+import android.support.annotation.AttrRes;
+import android.support.annotation.StyleRes;
+

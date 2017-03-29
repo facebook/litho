@@ -18,3 +18,21 @@ import com.facebook.litho.reference.ColorDrawableReference;
 
 import static android.widget.ImageView.ScaleType.FIT_XY;
 import static com.facebook.litho.annotations.ResType.COLOR;
+
+/**
+ * A component that renders a solid color.
+ */
+@LayoutSpec
+class SolidColorSpec {
+
+  @OnCreateLayout
+  static ComponentLayout onCreateLayout(
+      ComponentContext c,
+      @Prop(resType = COLOR) int color) {
+    return Image.create(c)
+        .scaleType(FIT_XY)
+        .src(ColorDrawableReference.create(c)
+            .color(color))
+        .buildWithLayout();
+  }
+}

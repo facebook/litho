@@ -28,3 +28,8 @@ public abstract class TestComponent<L extends ComponentLifecycle> extends Compon
   private boolean mOnUnbindCalled;
   protected boolean mIsUnique;
   private boolean mOnMeasureCalled;
+
+  protected TestComponent(L lifecycle) {
+    super(lifecycle);
+  }
+

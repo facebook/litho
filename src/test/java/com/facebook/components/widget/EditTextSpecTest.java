@@ -16,3 +16,6 @@ import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.ComponentsRule;
 
 import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+

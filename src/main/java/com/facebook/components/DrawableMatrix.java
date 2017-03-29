@@ -32,3 +32,12 @@ public final class DrawableMatrix extends Matrix {
   }
 
   /**
+   * Create a matrix to be applied to a drawable which scales the drawable according to its
+   * scale type.
+   *
+   * @param d The drawable to create a matrix for
+   * @param scaleType A scale type describing how to scale the drawable.
+   * @param width The width of the drawable's container.
+   * @param height The height of the drawable's container.
+   * @return The scale matrix or null if the drawable does not need to be scaled.
+   */

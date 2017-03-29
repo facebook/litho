@@ -16,3 +16,20 @@ class ResourceCache {
   private static ResourceCache latest;
 
   static synchronized ResourceCache getLatest(Configuration configuration) {
+    if (latest == null || !latest.mConfiguration.equals(configuration)) {
+      latest = new ResourceCache(configuration);
+    }
+    return latest;
+  }
+
+  private Configuration mConfiguration;
+  private final LruCache<Integer, Object> mCache = new LruCache<Integer, Object>(500) {
+    @Override
+    protected int sizeOf(Integer key, Object value) {
+      if (value instanceof String) {
+        return ((String) value).length();
+      }
+      return 1;
+    }
+  };
+

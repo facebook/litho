@@ -24,3 +24,12 @@ import com.facebook.yoga.YogaEdge;
 import static android.graphics.Color.GRAY;
 import static android.graphics.Typeface.ITALIC;
 import static com.facebook.litho.annotations.ResType.STRING;
+
+@LayoutSpec
+public class FooterComponentSpec {
+
+  @OnCreateLayout
+  static ComponentLayout onCreateLayout(
+      ComponentContext c,
+      @Prop(resType = STRING) String text) {
+    return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
