@@ -500,3 +500,4 @@ class MountState {
 
     // 6. Set the mounted content on the Component and call the bind callback.
     layoutOutputComponent.getLifecycle().bind(
+        layoutOutputComponent.getScopedContext(),
