@@ -291,3 +291,4 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
     return this;
   }
 
+  private String getTextProof(@Nullable final ImmutableList<View> path) {
