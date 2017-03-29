@@ -214,3 +214,5 @@ public class LayoutOutputTest {
             LayoutOutput.TYPE_HOST,
             SEQ_TEST));
     assertEquals(LayoutStateOutputIdCalculator.getSequenceFromId(mLayoutOutput.getId()), SEQ_TEST);
+
+    mLayoutOutput.setId(
