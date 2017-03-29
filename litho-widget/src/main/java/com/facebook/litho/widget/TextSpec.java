@@ -299,3 +299,12 @@ class TextSpec {
 
   private static Layout createTextLayout(
       int widthSpec,
+      TruncateAt ellipsize,
+      boolean shouldIncludeFontPadding,
+      int maxLines,
+      float shadowRadius,
+      float shadowDx,
+      float shadowDy,
+      int shadowColor,
+      boolean isSingleLine,
+      CharSequence text,
