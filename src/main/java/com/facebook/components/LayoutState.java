@@ -934,3 +934,7 @@ class LayoutState {
     }
 
     collectResults(root, layoutState, null);
+
+    if (logger != null) {
+      logger.eventEnd(EVENT_COLLECT_RESULTS, component, ACTION_SUCCESS);
+    }
