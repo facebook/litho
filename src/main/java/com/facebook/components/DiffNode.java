@@ -138,3 +138,6 @@ class DiffNode implements Cloneable {
   }
 
   void setHost(LayoutOutput host) {
+    mHost = host;
+  }
+

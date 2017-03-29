@@ -268,3 +268,4 @@ public class BaseBinderTest {
 
   @Test
   public void testNotifyItemRangeRemoved() {
+    mount();

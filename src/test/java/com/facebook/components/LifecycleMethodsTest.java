@@ -265,3 +265,4 @@ public class LifecycleMethodsTest {
     }
 
     @Override
+    public Component<LifecycleMethodsComponent> makeShallowCopy() {
