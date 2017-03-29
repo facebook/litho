@@ -37,3 +37,5 @@ public class MountItemTest {
   private Object mContent;
   private CharSequence mContentDescription;
   private Object mViewTag;
+  private SparseArray<Object> mViewTags;
+  private EventHandler mClickHandler;

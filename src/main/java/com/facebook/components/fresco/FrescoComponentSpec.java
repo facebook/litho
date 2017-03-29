@@ -10,3 +10,6 @@
 package com.facebook.litho.fresco;
 
 import android.graphics.ColorFilter;
+import android.graphics.PointF;
+import android.graphics.drawable.Drawable;
+
