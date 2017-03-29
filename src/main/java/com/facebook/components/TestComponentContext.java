@@ -23,3 +23,4 @@ import com.facebook.yoga.YogaMeasureOutput;
  * ComponentSpecs in addition to real implementation.
  */
 class TestComponentContext extends ComponentContext {
+
