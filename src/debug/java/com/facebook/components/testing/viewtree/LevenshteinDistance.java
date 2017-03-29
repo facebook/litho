@@ -44,3 +44,4 @@ public class LevenshteinDistance {
     for (j = 1; j <= m; j++) {
       t_j = t.charAt(j - 1);
       d[0] = j;
+      min = maxAllowedEditDistance + 1;
