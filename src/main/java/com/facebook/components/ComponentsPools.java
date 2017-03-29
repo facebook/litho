@@ -502,3 +502,4 @@ public class ComponentsPools {
     sLayoutOutputPool.release(output);
   }
 
+  @ThreadSafe(enableChecks = false)
