@@ -703,3 +703,4 @@ public class ComponentHostTest {
     assertNull(mHost.recycleHost());
     assertEquals(1, mHost.getChildCount());
 
+    assertNull(mHost.recycleHost());

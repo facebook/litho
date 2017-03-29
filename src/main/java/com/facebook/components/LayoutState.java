@@ -256,3 +256,4 @@ class LayoutState {
       final ViewNodeInfo viewNodeInfo = ViewNodeInfo.acquire();
       viewNodeInfo.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
       viewNodeInfo.setLayoutDirection(node.getResolvedLayoutDirection());
+      viewNodeInfo.setExpandedTouchBounds(node, l, t, r, b);
