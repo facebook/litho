@@ -100,3 +100,4 @@ class FrescoComponentSpec {
       @Prop(optional = true) RoundingParams roundingParams,
       @Prop(optional = true) ColorFilter colorFilter) {
 
+    GenericReferenceDraweeHierarchy draweeHierarchy = draweeDrawable.getDraweeHierarchy();
