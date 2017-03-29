@@ -2442,3 +2442,4 @@ public class Stages {
       TypeElement element,
       ClassName eventHandlerClassName,
       ClassName lifecycleClassName) {
+    final List<? extends VariableElement> parameters = Utils.getEnclosedFields(element);
