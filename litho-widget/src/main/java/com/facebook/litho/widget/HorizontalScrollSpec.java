@@ -244,3 +244,5 @@ class HorizontalScrollSpec {
     }
 
     return size;
+  }
+
