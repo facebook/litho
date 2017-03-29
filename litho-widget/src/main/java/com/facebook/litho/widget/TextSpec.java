@@ -139,3 +139,6 @@ class TextSpec {
 
     final TypedArray a = c.obtainStyledAttributes(R.styleable.Text, 0);
 
+    for (int i = 0, size = a.getIndexCount(); i < size; i++) {
+      final int attr = a.getIndex(i);
+
