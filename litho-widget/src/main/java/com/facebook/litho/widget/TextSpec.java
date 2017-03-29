@@ -57,3 +57,4 @@ import com.facebook.litho.annotations.ResType;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.fbui.textlayoutbuilder.TextLayoutBuilder;
 import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
+import com.facebook.widget.accessibility.delegates.AccessibleClickableSpan;

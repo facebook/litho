@@ -15,3 +15,4 @@ package com.facebook.components;
  */
 public interface EventDispatcher {
   public Object dispatchOnEvent(EventHandler eventHandler, Object eventState);
+}

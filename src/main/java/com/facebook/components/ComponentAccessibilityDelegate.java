@@ -32,3 +32,7 @@ import android.view.accessibility.AccessibilityEvent;
 class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
   private static final String TAG = "ComponentAccessibility";
 
+  private final View mView;
+  private NodeInfo mNodeInfo;
+  private final AccessibilityDelegateCompat mSuperDelegate;
+  private static Rect sDefaultBounds;

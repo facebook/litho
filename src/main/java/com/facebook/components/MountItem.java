@@ -61,3 +61,7 @@ class MountItem {
       Object content,
       LayoutOutput layoutOutput,
       DisplayListDrawable displayListDrawable) {
+    init(
+        component,
+        host,
+        content,
