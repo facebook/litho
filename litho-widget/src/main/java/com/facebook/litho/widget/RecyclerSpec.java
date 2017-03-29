@@ -157,3 +157,4 @@ class RecyclerSpec {
       recyclerView.addOnScrollListener(onScrollListener);
     }
 
+    binder.bind(recyclerView);
