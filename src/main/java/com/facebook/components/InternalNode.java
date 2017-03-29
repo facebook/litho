@@ -138,3 +138,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   // When this flag is set, border color was explicitly set on this node.
   private static final long PFLAG_BORDER_COLOR_IS_SET = 1L << 28;
 
+  private final ResourceResolver mResourceResolver = new ResourceResolver();
+
+  YogaNodeAPI mYogaNode;
+  private ComponentContext mComponentContext;
