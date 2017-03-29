@@ -207,3 +207,7 @@ public class TreeDiffingTest {
     assertTrue(SizeSpec.getMode(lastHeightSpec) == SizeSpec.EXACTLY);
     assertTrue(SizeSpec.getSize(lastWidthSpec) == 10);
     assertTrue(SizeSpec.getSize(lastHeightSpec) == 5);
+  }
+
+  @Test
+  public void measureAndCreateDiffNode() {

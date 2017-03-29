@@ -57,3 +57,7 @@ public class ComponentsProcessor extends AbstractComponentsProcessor {
     mountSpecHelper.generateOnMeasure();
     mountSpecHelper.generateOnMeasureBaseline();
     mountSpecHelper.generateOnBoundsDefined();
+    mountSpecHelper.generateOnCreateMountContentAndGetMountType();
+    mountSpecHelper.generateOnMount();
+    mountSpecHelper.generateOnBind();
+    mountSpecHelper.generateOnUnbind();

@@ -82,3 +82,8 @@ class TransferStateSpecBuilder {
           "componentImpl." + Stages.STATE_CONTAINER_IMPL_MEMBER + ".$L = prevStateContainerImpl.$L",
           stateName,
           stateName);
+    }
+
+    return builder.build();
+  }
+}
