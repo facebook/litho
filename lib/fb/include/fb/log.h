@@ -122,3 +122,4 @@ int __android_log_print(int prio, const char *tag, const char *fmt, ...)
 #endif
 #endif
 
+#define CONDITION(cond) (__builtin_expect((cond) != 0, 0))
