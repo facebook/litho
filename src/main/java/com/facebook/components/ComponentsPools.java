@@ -280,3 +280,5 @@ public class ComponentsPools {
             .registerActivityLifecycleCallbacks(sActivityCallbacks);
       }
 
+      SparseArray<PoolWithCount> poolsArray =
+          sMountContentPoolsByContext.get(context);
