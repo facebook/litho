@@ -884,3 +884,9 @@ public class Stages {
           v.getSimpleName().toString(),
           Utils.getTypeName(v.asType()),
           sanitizedJavadoc);
+    }
+  }
+
+  /**
+   * Generate a method for this component which either lazily instantiates a singleton reference or
+   * return this depending on whether this lifecycle is static or not.
