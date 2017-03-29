@@ -31,3 +31,4 @@ import static org.mockito.Mockito.when;
 /**
  * Test for {@link DisplayListDrawable}
  */
+@RunWith(ComponentsTestRunner.class)

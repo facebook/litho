@@ -11,3 +11,7 @@ package com.facebook.components;
 
 import android.support.v4.util.Pools;
 
+import com.facebook.components.testing.testrunner.ComponentsTestRunner;
+
+import org.junit.Before;
+import org.junit.Rule;

@@ -12,3 +12,4 @@ package com.facebook.components;
 import android.support.v4.util.Pools;
 import android.util.SparseArray;
 
+import com.facebook.components.testing.testrunner.ComponentsTestRunner;

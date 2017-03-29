@@ -16,3 +16,4 @@ import android.graphics.drawable.LayerDrawable;
 
 import com.facebook.components.testing.testrunner.ComponentsTestRunner;
 
+import org.junit.Test;

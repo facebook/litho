@@ -8,3 +8,4 @@
 include_defs("//COMPONENTS_DEFS")
 
 # This target is only used in open source
+if COMPONENTS_IS_OSS_BUILD:

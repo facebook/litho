@@ -19,3 +19,4 @@ import org.junit.runner.RunWith;
 
 import static junit.framework.Assert.assertEquals;
 
+@RunWith(ComponentsTestRunner.class)

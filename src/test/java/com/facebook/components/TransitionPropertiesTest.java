@@ -13,3 +13,4 @@ import java.util.List;
 
 import android.view.View;
 
+import com.facebook.components.testing.testrunner.ComponentsTestRunner;

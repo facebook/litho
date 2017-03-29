@@ -12,3 +12,4 @@ package com.facebook.components;
 import android.graphics.Color;
 
 import com.facebook.components.testing.ComponentTestHelper;
+import com.facebook.components.testing.testrunner.ComponentsTestRunner;

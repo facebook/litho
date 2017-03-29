@@ -11,3 +11,9 @@ android_library(
     name = "yoga",
     srcs = glob(["yoga/*.java"]),
     visibility = [COMPONENTS_VISIBILITY],
+    deps = [
+        COMPONENTS_PROGUARDANNOTATIONS_TARGET,
+        COMPONENTS_SOLOADER_TARGET,
+        COMPONENTS_INFERANNOTATIONS_TARGET,
+        COMPONENTS_JSR_TARGET,
+    ],
