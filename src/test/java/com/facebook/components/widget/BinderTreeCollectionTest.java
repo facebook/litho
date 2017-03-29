@@ -64,3 +64,4 @@ public class BinderTreeCollectionTest {
 
     assertNotNull(mBinderTreeCollection.get(1));
     assertNotNull(mBinderTreeCollection.get(2));
+

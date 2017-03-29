@@ -160,3 +160,4 @@ class BinderTreeCollection {
    */
   private void shiftRangeRight(int positionStart, int itemCount, int shiftByAmount) {
     final int positionEnd = positionStart + itemCount - 1;
+

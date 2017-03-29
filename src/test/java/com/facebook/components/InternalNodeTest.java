@@ -90,3 +90,7 @@ public class InternalNodeTest {
     mNode.flex(1.5f);
     assertTrue(isFlagSet(mNode, "PFLAG_FLEX_IS_SET"));
     clearFlag(mNode, "PFLAG_FLEX_IS_SET");
+    assertEmptyFlags(mNode);
+  }
+
+  @Test

@@ -69,3 +69,5 @@ public class GridComponentBinderTest {
     }
 
     mContext = RuntimeEnvironment.application;
+    ComponentsConfiguration.bootstrapBinderItems = true;
+
