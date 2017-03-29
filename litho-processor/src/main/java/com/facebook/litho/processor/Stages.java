@@ -396,3 +396,7 @@ public class Stages {
             v,
             "Output named '" + v.getSimpleName() + "' does not match any prop " +
                 "in the component.");
+      }
+    }
+  }
+

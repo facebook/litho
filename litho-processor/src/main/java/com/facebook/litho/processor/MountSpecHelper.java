@@ -400,3 +400,4 @@ public class MountSpecHelper extends ComponentSpecHelper {
     if (!mStages.isSameType(mountParameterType, mountReturnType)) {
       throw new ComponentsProcessingException(
           mountParameter,
+          "Second parameter of " + methodDescription.name + " should be of same type " +

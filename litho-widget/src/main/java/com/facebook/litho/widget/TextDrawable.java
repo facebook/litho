@@ -116,3 +116,4 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
         view.getResources().getDisplayMetrics());
 
     ClickableSpan clickedSpan = getClickableSpanInCoords(x, y);
+
