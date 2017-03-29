@@ -869,3 +869,4 @@ class LayoutState {
       DiffNode previousDiffTreeRoot) {
 
     // Detect errors internal to components
+    component.markLayoutStarted();
