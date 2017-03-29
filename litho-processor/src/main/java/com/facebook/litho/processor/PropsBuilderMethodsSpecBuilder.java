@@ -304,3 +304,9 @@ class PropsBuilderMethodsSpecBuilder {
     }
 
     for (AnnotationSpec annotation : extraAnnotations) {
+      builder.addAnnotation(annotation);
+    }
+
+    return builder.build();
+  }
+
