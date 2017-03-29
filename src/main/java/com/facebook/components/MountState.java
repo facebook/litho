@@ -865,3 +865,4 @@ class MountState {
       registerHost(layoutOutput.getId(), componentHost);
     }
 
+    // 4. Mount the content into the selected host.
