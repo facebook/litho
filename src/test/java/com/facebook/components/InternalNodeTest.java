@@ -52,3 +52,7 @@ public class InternalNodeTest {
     }
   }
 
+  private InternalNode mNode;
+
+  @Before
+  public void setup() {
