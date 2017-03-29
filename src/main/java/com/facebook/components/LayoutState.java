@@ -191,3 +191,7 @@ class LayoutState {
         node.getImportantForAccessibility(),
         node.isDuplicateParentStateEnabled());
 
+    hostOutput.getViewNodeInfo().setTransitionKey(node.getTransitionKey());
+
+    return hostOutput;
+  }
