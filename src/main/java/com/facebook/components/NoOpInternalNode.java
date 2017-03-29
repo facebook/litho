@@ -672,3 +672,16 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
+  void setNestedTree(InternalNode nestedTree) {}
+
+  @Override
+  void copyInto(InternalNode node) {}
+
+  @Override
+  void setStyleWidthFromSpec(int widthSpec) {}
+
+  @Override
+  void setStyleHeightFromSpec(int heightSpec) {}
+
+  @Override
+  void applyAttributes(TypedArray a) {}
