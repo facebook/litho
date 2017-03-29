@@ -294,3 +294,4 @@ public class ComponentView extends ComponentHost {
       throw new IllegalStateException("Trying to clear the ComponentTree while attached.");
     }
 
+    mComponent = null;
