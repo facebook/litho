@@ -208,3 +208,19 @@ public class Utils {
 
   public static <T> T getAnnotationParameter(
       ProcessingEnvironment processingEnv,
+      Element element,
+      Class<?> annotationType,
+      String parameterName) {
+    List<? extends AnnotationMirror> annotationMirrors = element.getAnnotationMirrors();
+    AnnotationMirror mirror = null;
+    for (AnnotationMirror m : annotationMirrors) {
+      if (m.getAnnotationType().toString().equals(annotationType.getCanonicalName())) {
+        mirror = m;
+        break;
+      }
+    }
+
+    if (mirror == null) {
+      return null;
+    }
+

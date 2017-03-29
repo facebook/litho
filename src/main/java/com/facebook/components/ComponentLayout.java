@@ -180,3 +180,7 @@ public interface ComponentLayout {
 
     Builder background(Reference<? extends Drawable> background);
     Builder background(Reference.Builder<? extends Drawable> backgroundBuilder);
+    Builder backgroundAttr(@AttrRes int resId, @DrawableRes int defaultResId);
+    Builder backgroundAttr(@AttrRes int resId);
+    Builder backgroundRes(@DrawableRes int resId);
+    Builder backgroundColor(@ColorInt int backgroundColor);
