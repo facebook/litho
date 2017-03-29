@@ -77,3 +77,4 @@ class PagerSpec {
   static void onBind(
       ComponentContext context,
       ViewPager mountedView,
+      @Prop PagerBinder binder) {
