@@ -136,3 +136,5 @@ class LayoutState {
   private int mCurrentX;
   private int mCurrentY;
 
+  private int mCurrentLevel = 0;
+
