@@ -15,3 +15,6 @@ import android.text.Spannable;
 import android.text.style.ClickableSpan;
 import android.view.View;
 
+import com.facebook.litho.ComponentContext;
+import com.facebook.litho.testing.ComponentTestHelper;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
