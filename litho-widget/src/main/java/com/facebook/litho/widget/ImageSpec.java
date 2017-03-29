@@ -170,3 +170,4 @@ class ImageSpec {
     matrixDrawable.mount(Reference.acquire(c, src), drawableMatrix);
   }
 
+  @OnBind
