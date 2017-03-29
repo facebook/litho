@@ -15,3 +15,12 @@ import java.util.List;
 import android.graphics.Rect;
 import android.view.View;
 
+import com.facebook.litho.Component;
+import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentLifecycle;
+import com.facebook.litho.ComponentTree;
+import com.facebook.litho.ComponentView;
+import com.facebook.litho.ComponentsPools;
+import com.facebook.litho.EventHandler;
+import com.facebook.litho.TestComponentTree;
+import com.facebook.litho.TreeProps;

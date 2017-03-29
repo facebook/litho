@@ -71,3 +71,4 @@ public interface ClassNames {
   ClassName REFERENCE_BUILDER =
       ClassName.bestGuess("com.facebook.litho.reference.Reference.Builder");
   ClassName REFERENCE_LIFECYCLE =
+      ClassName.bestGuess("com.facebook.litho.reference.ReferenceLifecycle");
