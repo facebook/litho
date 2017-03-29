@@ -184,3 +184,4 @@ public class LayoutOutputTest {
             LEVEL_TEST,
             LayoutOutput.TYPE_HOST,
             SEQ_TEST));
+    assertEquals(LayoutStateOutputIdCalculator.getLevelFromId(mLayoutOutput.getId()), LEVEL_TEST);
