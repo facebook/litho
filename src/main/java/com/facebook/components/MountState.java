@@ -251,3 +251,5 @@ class MountState {
       mTransitionManager.processTransitions();
     }
 
+    processTestOutputs(layoutState);
+
