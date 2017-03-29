@@ -676,3 +676,16 @@ public class Stages {
     }
   }
 
+  private void populateTreeProps() {
+    final LinkedHashMap<String, VariableElement> variableNameToElementMap = new LinkedHashMap<>();
+
+    for (ExecutableElement stage : mStages) {
+      for (VariableElement v : Utils.getParametersWithAnnotation(stage, TreeProp.class)) {
+        final String variableName = v.getSimpleName().toString();
+        variableNameToElementMap.put(variableName, v);
+      }
+    }
+
+    mTreeProps = new ArrayList<>(variableNameToElementMap.values());
+  }
+
