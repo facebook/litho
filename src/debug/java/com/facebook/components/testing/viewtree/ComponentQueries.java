@@ -18,3 +18,4 @@ import com.google.common.base.Predicate;
  */
 class ComponentQueries {
 
+  /**
