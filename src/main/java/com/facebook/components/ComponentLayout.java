@@ -40,3 +40,5 @@ import static android.support.annotation.Dimension.DP;
  *
  * @see ComponentLifecycle#createLayout(ComponentContext, Component, boolean)
  * @see ComponentLifecycle#mount(ComponentContext, Object, Component)
+ */
+public interface ComponentLayout {

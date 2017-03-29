@@ -61,3 +61,5 @@ import static com.facebook.litho.ThreadUtils.assertMainThread;
  * @see LayoutState
  */
 class MountState {
+
+  static final int ROOT_HOST_ID = 0;
