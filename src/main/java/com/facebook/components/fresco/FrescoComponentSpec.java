@@ -98,3 +98,4 @@ class FrescoComponentSpec {
       @Prop(optional = true, resType = DRAWABLE) Reference<Drawable> retryImage,
       @Prop(optional = true) ScalingUtils.ScaleType retryImageScaleType,
       @Prop(optional = true) RoundingParams roundingParams,
+      @Prop(optional = true) ColorFilter colorFilter) {
