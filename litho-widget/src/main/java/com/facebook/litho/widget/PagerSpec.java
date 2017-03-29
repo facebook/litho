@@ -49,3 +49,4 @@ class PagerSpec {
       ComponentContext context,
       ComponentLayout layout,
       @Prop PagerBinder binder) {
+    binder.setSize(
