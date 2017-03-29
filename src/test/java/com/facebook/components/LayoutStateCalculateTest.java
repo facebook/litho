@@ -1679,3 +1679,26 @@ public class LayoutStateCalculateTest {
     assertEquals(new Rect(18, 18, 68, 68), mountBounds);
     assertTrue(getComponentAt(layoutState, 3) instanceof TestViewComponent);
     layoutState.getMountableOutputAt(3).getMountBounds(mountBounds);
+    assertEquals(new Rect(21, 71, 329, 91), mountBounds);
+  }
+
+  @Test
+  public void testLayoutOutputForRootWithDelegateNestedTreeComponent() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return TestSizeDependentComponent.create(c)
+            .setFixSizes(true)
+            .setDelegate(false)
+            .buildWithLayout();
+      }
+    };
+
+    LayoutState layoutState = calculateLayoutState(
+        RuntimeEnvironment.application,
+        component,
+        -1,
+        SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
+        SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY));
+
+    // Check total layout outputs.
