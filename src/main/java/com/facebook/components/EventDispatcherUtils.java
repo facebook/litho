@@ -40,3 +40,13 @@ class EventDispatcherUtils {
   private static PerformAccessibilityActionEvent sPerformAccessibilityActionEvent;
   private static SendAccessibilityEventEvent sSendAccessibilityEventEvent;
   private static SendAccessibilityEventUncheckedEvent sSendAccessibilityEventUncheckedEvent;
+
+  static void dispatchOnClick(EventHandler<ClickEvent> clickHandler, View view) {
+    assertMainThread();
+
+    if (sClickEvent == null) {
+      sClickEvent = new ClickEvent();
+    }
+
+    sClickEvent.view = view;
+

@@ -15,3 +15,4 @@ package com.facebook.litho;
  */
 public interface EventDispatcher {
   public Object dispatchOnEvent(EventHandler eventHandler, Object eventState);
+}
