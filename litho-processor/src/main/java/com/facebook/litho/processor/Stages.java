@@ -1446,3 +1446,4 @@ public class Stages {
       fromParams.add(new Parameter(ClassName.get(v.asType()), v.getSimpleName().toString()));
     }
 
+    writeMethodSpec(new DelegateMethodSpecBuilder()
