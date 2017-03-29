@@ -771,3 +771,15 @@ public class RecyclerBinder implements Binder<RecyclerView> {
       if (!componentTreeHolder.isTreeValid()) {
         componentTreeHolder
             .computeLayoutSync(mComponentContext, childrenWidthSpec, childrenHeightSpec, null);
+      }
+
+      componentView.setComponent(componentTreeHolder.getComponentTree());
+    }
+
+    @Override
+    public int getItemCount() {
+      // We can ignore the synchronization here. We'll only add to this from the UiThread.
+      // This read only happens on the UiThread as well and we are never writing this here.
+      return mComponentTreeHolders.size();
+    }
+  }
