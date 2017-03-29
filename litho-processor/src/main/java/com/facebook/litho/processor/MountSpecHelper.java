@@ -245,3 +245,7 @@ public class MountSpecHelper extends ComponentSpecHelper {
           "onCreateMountContent's return type should be either a View or a Drawable subclass");
     }
 
+    mTypeSpec.addMethod(
+        MethodSpec.methodBuilder("getMountType")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PUBLIC)
