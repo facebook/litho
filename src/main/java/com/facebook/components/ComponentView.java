@@ -133,3 +133,10 @@ public class ComponentView extends ComponentHost {
 
       if (mComponent != null) {
         mComponent.attach();
+      }
+
+      refreshAccessibilityDelegatesIfNeeded(isAccessibilityEnabled(getContext()));
+
+      AccessibilityManagerCompat.addAccessibilityStateChangeListener(
+          mAccessibilityManager,
+          mAccessibilityStateChangeListener);

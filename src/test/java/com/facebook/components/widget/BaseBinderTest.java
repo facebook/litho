@@ -45,3 +45,7 @@ public class BaseBinderTest {
   private MyTestComponentBinder mBinder;
   private ShadowLooper mLayoutThreadShadowLooper;
 
+  private ComponentView mView;
+  private ComponentView mComponentView1;
+  private ComponentView mComponentView2;
+
