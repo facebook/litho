@@ -15,3 +15,11 @@ import com.facebook.components.testing.testrunner.ComponentsTestRunner;
 import com.facebook.components.testing.TestDrawableComponent;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaPositionType;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RuntimeEnvironment;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+

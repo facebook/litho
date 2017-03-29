@@ -11,3 +11,7 @@ package com.facebook.components;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.view.View;
+

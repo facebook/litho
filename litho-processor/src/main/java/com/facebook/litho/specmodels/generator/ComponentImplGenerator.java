@@ -109,3 +109,35 @@ public class ComponentImplGenerator {
       stateContainerImplClassBuilder.addField(FieldSpec.builder(
           stateValue.getType(),
           stateValue.getName()).addAnnotation(State.class).build());
+    }
+
+    return stateContainerImplClassBuilder.build();
+  }
+
+  static String getImplClassName(SpecModel specModel) {
+    return specModel.getComponentName() + IMPL_CLASS_NAME_SUFFIX;
+  }
+
+  static String getImplInstanceName(SpecModel specModel) {
+    final String implClassName = getImplClassName(specModel);
+    return implClassName.substring(0, 1).toLowerCase(Locale.ROOT) + implClassName.substring(1);
+  }
+
+  static String getStateContainerImplClassName(SpecModel specModel) {
+    return specModel.getComponentName() + GeneratorConstants.STATE_CONTAINER_IMPL_NAME_SUFFIX;
+  }
+
+  static MethodSpec generateStateContainerGetter(TypeName stateContainerClassName) {
+    return MethodSpec.methodBuilder("getStateContainer")
+        .addModifiers(Modifier.PROTECTED)
+        .addAnnotation(Override.class)
+        .returns(stateContainerClassName)
+        .addStatement("return " + GeneratorConstants.STATE_CONTAINER_FIELD_NAME)
+        .build();
+  }
+
+  static TypeSpecDataHolder generateProps(SpecModel specModel) {
+    final TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
+    final ImmutableList<PropModel> props = specModel.getProps();
+
+    for (PropModel prop : props) {

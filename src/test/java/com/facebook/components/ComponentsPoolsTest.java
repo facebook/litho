@@ -24,3 +24,5 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
 @RunWith(ComponentsTestRunner.class)
+public class ComponentsPoolsTest {
+  private final ComponentLifecycle mLifecycle = new ComponentLifecycle() {

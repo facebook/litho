@@ -9,3 +9,7 @@
 
 package com.facebook.components;
 
+import android.content.Context;
+import android.graphics.Rect;
+import android.view.ViewGroup;
+
