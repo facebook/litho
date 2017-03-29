@@ -746,3 +746,4 @@ class MountState {
 
       if (newPosition == -1) {
         unmountItem(mContext, i, mHostsByMarker);
+        mPrepareMountStats.unmountedCount++;
