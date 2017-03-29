@@ -610,3 +610,12 @@ class TextSpec {
         componentBoundsLeft + (int) sTempRectF.right,
         componentBoundsTop + (int) sTempRectF.bottom);
 
+    if (sTempRect.isEmpty()) {
+      // Text is not actually visible.
+      // Override bounds so it doesn't crash ExploreByTouchHelper.java
+      sTempRect.set(0, 0, 1, 1);
+      node.setBoundsInParent(sTempRect);
+      node.setContentDescription(""); // make node non-focusable
+      return;
+    }
+
