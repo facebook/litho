@@ -499,3 +499,4 @@ class MountState {
     final Object currentContent = currentMountItem.getContent();
 
     // 6. Set the mounted content on the Component and call the bind callback.
+    layoutOutputComponent.getLifecycle().bind(

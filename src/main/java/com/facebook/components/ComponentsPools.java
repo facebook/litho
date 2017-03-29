@@ -164,3 +164,4 @@ public class ComponentsPools {
     }
     state.init(context);
 
+    return state;
