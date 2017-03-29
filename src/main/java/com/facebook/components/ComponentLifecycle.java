@@ -418,3 +418,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
    * @param c The {@link ComponentContext} to mount the component into.
    * @param component The {@link Component} for this component.
    */
+  protected void onMount(ComponentContext c, Object convertContent, Component<?> component) {
