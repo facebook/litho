@@ -96,3 +96,4 @@ class RecyclerSpec {
       @Prop Binder<RecyclerView> binder,
       @Prop(optional = true) boolean hasFixedSize,
       @Prop(optional = true) boolean clipToPadding,
+      @Prop(optional = true) boolean nestedScrollingEnabled,
