@@ -366,3 +366,7 @@ public class MountSpecHelper extends ComponentSpecHelper {
     final ExecutableElement onUnmount = Utils.getAnnotatedMethod(
         mStages.getSourceElement(),
         OnUnmount.class);
+    if (onUnmount == null) {
+      return;
+    }
+
