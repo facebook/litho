@@ -41,3 +41,11 @@ class JCppException : public JavaClass<JCppException, JThrowable> {
  public:
   static auto constexpr kJavaDescriptor = "Lcom/facebook/jni/CppException;";
 
+  static local_ref<JCppException> create(const char* str) {
+    return newInstance(make_jstring(str));
+  }
+
+  static local_ref<JCppException> create(const std::exception& ex) {
+    return newInstance(make_jstring(ex.what()));
+  }
+};

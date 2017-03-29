@@ -53,3 +53,4 @@ JNIEnv* Environment::current() {
   if ((env == nullptr) && (g_vm != nullptr)) {
     if (g_vm->GetEnv((void**) &env, JNI_VERSION_1_6) != JNI_OK) {
       FBLOGE("Error retrieving JNI Environment, thread is probably not attached to JVM");
+      // TODO(cjhopman): This should throw an exception.
