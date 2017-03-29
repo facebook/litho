@@ -38,3 +38,5 @@ class TestComponentContext extends ComponentContext {
 
   TestComponentContext(Context c) {
     super(c);
+  }
+
