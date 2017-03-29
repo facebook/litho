@@ -196,3 +196,4 @@ class RecyclerSpec {
 
     if (onScrollListener != null) {
       recyclerView.removeOnScrollListener(onScrollListener);
+    }
