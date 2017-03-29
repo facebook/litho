@@ -567,3 +567,4 @@ public abstract class BaseBinder<
    * given position.
    */
   protected int getHeightSpec(int position) {
+    return mContentHeightSpec;
