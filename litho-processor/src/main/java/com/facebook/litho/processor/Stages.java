@@ -412,3 +412,6 @@ public class Stages {
    *   <li>5. Inter-stage parameters don't have duplicate annotations (and that outputs aren't
    *   annotated as inter-stage props)</li>
    *   <li>6. Ensure props don't use reserved words as names.</li>
+   *   <li>7. Ensure required props don't have default values.</li>
+   *   <li>8. Ensure same props are annotated identically</li>
+   *   <li>9. Ensure props are of legal types</li>
