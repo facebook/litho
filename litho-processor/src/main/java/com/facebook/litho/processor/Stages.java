@@ -2082,3 +2082,5 @@ public class Stages {
           getEventHandlerInstanceName(event.getSimpleName().toString()))
           .build());
     }
+  }
+
