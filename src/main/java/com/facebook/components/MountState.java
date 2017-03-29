@@ -1799,3 +1799,5 @@ class MountState {
     }
 
     clearVisibilityItems();
+  }
+
