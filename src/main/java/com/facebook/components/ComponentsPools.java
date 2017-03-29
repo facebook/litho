@@ -257,3 +257,4 @@ public class ComponentsPools {
     return item;
   }
 
+  static Object acquireMountContent(Context context, int componentId) {

@@ -1252,3 +1252,5 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Override
   public InternalNode onPopulateAccessibilityEventHandler(
       EventHandler<OnPopulateAccessibilityEventEvent> onPopulateAccessibilityEventHandler) {
+    getOrCreateNodeInfo().setOnPopulateAccessibilityEventHandler(
+        onPopulateAccessibilityEventHandler);
