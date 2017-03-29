@@ -1334,3 +1334,7 @@ public class Stages {
 
       final CodeBlock.Builder eventHandlerParams = CodeBlock.builder();
       eventHandlerParams.indent();
+
+      int i = 0;
+      eventHandlerParams.add("\n($T) eventHandler.params[$L],", contextClassName, i++);
+
