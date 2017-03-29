@@ -1403,3 +1403,5 @@ class MountState {
     }
   }
 
+  private static void unsetViewForeground(View view, ViewNodeInfo viewNodeInfo) {
+    final Reference<Drawable> foregroundReference = viewNodeInfo.getForeground();

@@ -1176,3 +1176,16 @@ class LayoutState {
     ComponentsSystrace.endSection(/* measureTree */);
   }
 
+  /**
+   * Create and measure the nested tree or return the cached one for the same size specs.
+   */
+  static InternalNode resolveNestedTree(
+      InternalNode nestedTreeHolder,
+      int widthSpec,
+      int heightSpec) {
+    final ComponentContext context = nestedTreeHolder.getContext();
+    final Component<?> component = nestedTreeHolder.getComponent();
+
+    InternalNode nestedTree = nestedTreeHolder.getNestedTree();
+
+    if (nestedTree == null
