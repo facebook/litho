@@ -749,3 +749,5 @@ public class ComponentTree {
 
     setRootAndSizeSpecInternal(
         root,
+        widthSpec,
+        heightSpec,
