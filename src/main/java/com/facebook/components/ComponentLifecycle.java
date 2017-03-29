@@ -265,3 +265,13 @@ public abstract class ComponentLifecycle implements EventDispatcher {
 
   void loadStyle(ComponentContext c, Component<?> component) {
     onLoadStyle(c, component);
+  }
+
+  protected Output acquireOutput() {
+    return ComponentsPools.acquireOutput();
+  }
+
+  protected void releaseOutput(Output output) {
+    ComponentsPools.release(output);
+  }
+
