@@ -156,3 +156,6 @@ public abstract class PagerBinder extends BaseBinder<
   }
 
   private static class InternalAdapter extends PagerAdapter implements BaseBinder.Listener {
+
+    private static final int VIEW_POOL_SIZE = 5;
+
