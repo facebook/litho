@@ -17,3 +17,4 @@ import com.facebook.components.ComponentView;
 import com.facebook.components.testing.ComponentTestHelper;
 import com.facebook.components.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.Text;
+import com.facebook.components.ColorDrawableShadow;
