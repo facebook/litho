@@ -52,3 +52,5 @@ class EventDispatcherUtils {
 
     final EventDispatcher eventDispatcher = clickHandler.mHasEventDispatcher.getEventDispatcher();
     eventDispatcher.dispatchOnEvent(clickHandler, sClickEvent);
+
+    sClickEvent.view = null;
