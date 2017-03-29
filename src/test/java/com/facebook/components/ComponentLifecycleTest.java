@@ -310,3 +310,11 @@ public class ComponentLifecycleTest {
   public void testLayoutSpecMeasureResolveNestedTree() {
     setUpComponentForCreateLayout(false /* isMountSpec */, true /* canMeasure */);
     YogaMeasureFunction measureFunction = getMeasureFunction();
+
+    final int nestedTreeWidth = 20;
+    final int nestedTreeHeight = 25;
+    InternalNode nestedTree = mock(InternalNode.class);
+    when(nestedTree.getWidth()).thenReturn(nestedTreeWidth);
+    when(nestedTree.getHeight()).thenReturn(nestedTreeHeight);
+
+    when(LayoutState.resolveNestedTree(eq(mNode), anyInt(), anyInt())).thenReturn(nestedTree);
