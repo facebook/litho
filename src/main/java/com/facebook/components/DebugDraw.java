@@ -47,3 +47,4 @@ class DebugDraw {
       highlightInteractiveBounds(host, canvas);
     }
 
+    if (ComponentsConfiguration.debugHighlightMountBounds) {
