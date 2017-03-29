@@ -463,3 +463,4 @@ class LayoutState {
       layoutState.mCurrentX += node.getX();
       layoutState.mCurrentY += node.getY();
 
+      collectResults(nestedTree, layoutState, parentDiffNode);
