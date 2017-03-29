@@ -478,3 +478,4 @@ public class ComponentsPools {
   static void release(InternalNode node) {
     node.release();
     sInternalNodePool.release(node);
+  }
