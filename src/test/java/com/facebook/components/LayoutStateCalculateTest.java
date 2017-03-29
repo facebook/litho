@@ -481,3 +481,5 @@ public class LayoutStateCalculateTest {
     assertTrue(viewNodeInfo.getPaddingBottom() == paddingSize);
   }
 
+  @Test
+  public void testLayoutOutputsForMegaDeepLayoutSpecs() {
