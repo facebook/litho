@@ -608,3 +608,13 @@ public class MountStateRemountInPlaceTest {
                         Text.create(c).text("test")))
             .child(
                 Container.create(c)
+                    .clickHandler(c.newEventHandler(2))
+                    .child(
+                        Text.create(c).text("test2"))
+                    .child(
+                        Container.create(c)
+                            .clickHandler(c.newEventHandler(1))
+                            .child(
+                                firstComponent)
+                            .child(
+                                SolidColor.create(c).color(Color.GREEN))))
