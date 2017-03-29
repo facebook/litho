@@ -33,3 +33,4 @@ public class SingleImageComponentSpec {
         .build();
     return FrescoComponent.create(c)
         .controller(controller)
+        .aspectRatio(aspectRatio)
