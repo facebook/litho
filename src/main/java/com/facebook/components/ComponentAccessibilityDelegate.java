@@ -29,3 +29,5 @@ import android.view.accessibility.AccessibilityEvent;
  * Virtual nodes are only exposed if the component implements support for
  * extra accessibility nodes.
  */
+class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
+  private static final String TAG = "ComponentAccessibility";

@@ -74,3 +74,4 @@ class HorizontalScrollSpec {
   }
 
   @OnPrepare
+  static void onPrepare(

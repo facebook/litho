@@ -129,3 +129,5 @@ public class MountStateIncrementalMountTest {
           protected ComponentLayout onCreateLayout(ComponentContext c) {
             return Container.create(c)
                 .flexDirection(COLUMN)
+                .child(
+                    Layout.create(c, child1)
