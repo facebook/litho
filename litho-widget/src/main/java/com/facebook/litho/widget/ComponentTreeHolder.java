@@ -124,3 +124,4 @@ public class ComponentTreeHolder {
     return mComponentTree;
   }
 
+  synchronized void setComponentInfo(ComponentInfo componentInfo) {
