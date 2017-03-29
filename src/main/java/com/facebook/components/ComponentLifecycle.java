@@ -245,3 +245,6 @@ public abstract class ComponentLifecycle implements EventDispatcher {
       }
     }
 
+    if (!deferNestedTreeResolution) {
+      onPrepare(context, component);
+    }
