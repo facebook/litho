@@ -2807,3 +2807,4 @@ public class Stages {
               propsBuilderClassName,
               requiredPropIndex,
               componentClassName));
+      if (!v.getAnnotation(Prop.class).optional()) {
