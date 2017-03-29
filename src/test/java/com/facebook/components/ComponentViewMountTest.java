@@ -141,3 +141,4 @@ public class ComponentViewMountTest {
     mComponentView.resetRequestLayoutInvocationCount();
     mComponentView.onAttachedToWindow();
 
+    assertEquals(1, mComponentView.getRequestLayoutInvocationCount());

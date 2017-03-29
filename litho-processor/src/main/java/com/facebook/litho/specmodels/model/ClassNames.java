@@ -66,3 +66,4 @@ public interface ClassNames {
   ClassName COMPONENT_LIFECYCLE = ClassName.bestGuess("com.facebook.litho.ComponentLifecycle");
   ClassName COMPONENT_LIFECYCLE_MOUNT_TYPE =
       ClassName.bestGuess("com.facebook.litho.ComponentLifecycle.MountType");
+

@@ -27,3 +27,4 @@ java_library(
         COMPONENTS_FBCORE_TARGET,
         COMPONENTS_JSR_TARGET,
     ],
+)
