@@ -219,3 +219,6 @@ final class ViewPredicates {
     }
   }
 
+  public static Predicate<View> hasId(final int id) {
+    return new Predicate<View>() {
+      @Override
