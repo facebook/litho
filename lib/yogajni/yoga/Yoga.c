@@ -3317,3 +3317,4 @@ void YGConfigSetPointScaleFactor(const YGConfigRef config, const float pixelsInP
   if (pixelsInPoint == 0.0f) {
     // Zero is used to skip rounding
     config->pointScaleFactor = 0.0f;
+  } else {
