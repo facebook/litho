@@ -254,3 +254,4 @@ public class Stages {
       }
     }
 
+    return interStagePropIndex == stageIndex;
