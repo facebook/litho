@@ -229,3 +229,8 @@ class PropsBuilderMethodsSpecBuilder {
         Arrays.asList(
             parameter(TypeName.INT, "attrResId", annotation(ClassNames.ATTR_RES)),
             parameter(TypeName.INT, "defResId", annotation(annotationClassName))),
+        "$L(attrResId, defResId)",
+        resolver + "Attr"));
+
+    builders.add(builder(
+        mPropParameter.parameter.name + "Attr",

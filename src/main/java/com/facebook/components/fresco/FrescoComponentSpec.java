@@ -37,3 +37,4 @@ import com.facebook.drawee.interfaces.DraweeController;
 import static com.facebook.litho.annotations.ResType.DRAWABLE;
 
 @MountSpec
+class FrescoComponentSpec {
