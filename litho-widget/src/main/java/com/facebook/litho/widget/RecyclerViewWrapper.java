@@ -37,3 +37,4 @@ public class RecyclerViewWrapper extends SwipeRefreshLayout {
   public RecyclerViewWrapper(Context context, RecyclerView recyclerView) {
     super(context);
 
+    mRecyclerView = recyclerView;
