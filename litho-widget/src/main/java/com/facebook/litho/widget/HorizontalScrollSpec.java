@@ -36,3 +36,4 @@ import com.facebook.litho.annotations.OnMount;
 import com.facebook.litho.annotations.OnPrepare;
 import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.ResType;
+import com.facebook.components.Size;

@@ -35,3 +35,4 @@ import static com.facebook.litho.widget.CardShadowDrawable.getShadowTop;
  * A component that renders a given component into a card border with shadow.
  */
 @LayoutSpec (isPureRender = true)
+class CardSpec {

@@ -35,3 +35,6 @@ public class ResourceDrawableReferenceTest {
   @Test
   public void testAcquire() {
     Drawable drawable = Reference.acquire(
+        mContext,
+        ResourceDrawableReference.create(mContext)
+            .resId(R.drawable.background)

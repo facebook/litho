@@ -174,3 +174,4 @@ public class SizeSpec {
         break;
 
       default:
+        throw new IllegalArgumentException("Unexpected YogaMeasureMode: " + cssMode);

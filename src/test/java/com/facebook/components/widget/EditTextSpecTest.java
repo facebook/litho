@@ -31,3 +31,6 @@ public class EditTextSpecTest {
   public ComponentsRule mComponentsRule = new ComponentsRule();
 
   private static final String TEXT = "Hello Components";
+
+  @Test
+  public void testEditTextWithText() {

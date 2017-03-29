@@ -48,3 +48,6 @@ public abstract class ComponentSpecHelper extends SpecHelper {
   }
 
   public void generateShouldUpdate() {
+    final ExecutableElement onShouldUpdate = Utils.getAnnotatedMethod(
+        mStages.getSourceElement(),
+        ShouldUpdate.class);
