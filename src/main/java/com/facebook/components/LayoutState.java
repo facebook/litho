@@ -829,3 +829,8 @@ class LayoutState {
 
     // Only the root host is allowed to wrap view mount specs as a layout output
     // is unconditionally added for it.
+    if (isMountViewSpec(component) && !layoutState.isLayoutRoot(node)) {
+      throw new IllegalArgumentException("We shouldn't insert a host as a parent of a View");
+    }
+
+    final LayoutOutput hostLayoutOutput = createHostLayoutOutput(layoutState, node);
