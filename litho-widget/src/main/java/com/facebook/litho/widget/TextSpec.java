@@ -495,3 +495,4 @@ class TextSpec {
               textDirection));
     }
 
+    final float textHeight = LayoutMeasureUtil.getHeight(textLayout.get());
