@@ -39,3 +39,7 @@ public class ComponentQueriesTest {
 
     assertThat(ComponentQueries.hasTextMatchingPredicate(view, Predicates.equalTo("hello")))
         .isFalse();
+  }
+
+  @Test
+  public void testTextOnComponent() {
