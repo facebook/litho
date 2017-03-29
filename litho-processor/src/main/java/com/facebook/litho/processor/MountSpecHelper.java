@@ -591,3 +591,5 @@ public class MountSpecHelper extends ComponentSpecHelper {
         methodDescription,
         getNumExtraAccessibilityNodes,
         ClassNames.COMPONENT);
+  }
+

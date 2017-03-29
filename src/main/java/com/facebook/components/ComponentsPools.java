@@ -549,3 +549,4 @@ public class ComponentsPools {
   static void release(Context context, ComponentLifecycle lifecycle, Object mountContent) {
 
     if (context instanceof ComponentContext) {
+      context = ((ComponentContext) context).getBaseContext();
