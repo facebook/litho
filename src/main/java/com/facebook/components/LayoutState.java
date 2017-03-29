@@ -684,3 +684,4 @@ class LayoutState {
       LayoutOutput hostOutput,
       LayoutState layoutState,
       boolean isCachedOutputUpdated) {
+    if (layoutState.isLayoutRoot(node)) {

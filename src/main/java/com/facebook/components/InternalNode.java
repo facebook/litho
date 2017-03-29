@@ -1626,3 +1626,6 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       yogaNode.setBorder(END, mNestedTreeBorderWidth.getRaw(Spacing.END));
       yogaNode.setBorder(ALL, mNestedTreeBorderWidth.getRaw(Spacing.ALL));
     }
+    if ((mPrivateFlags & PFLAG_TRANSITION_KEY_IS_SET) != 0L) {
+      node.mTransitionKey = mTransitionKey;
+    }
