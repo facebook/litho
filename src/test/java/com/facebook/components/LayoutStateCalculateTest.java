@@ -2115,3 +2115,13 @@ public class LayoutStateCalculateTest {
             .alignItems(YogaAlign.STRETCH)
             .paddingPx(YogaEdge.ALL, 2)
             .child(
+                TestSizeDependentComponent.create(c)
+                    .setFixSizes(true)
+                    .setDelegate(false)
+                    .withLayout()
+                    .marginPx(YogaEdge.ALL, 11))
+            .child(
+                TestDrawableComponent.create(c)
+                    .withLayout()
+                    .heightPx(200)
+                    .widthPx(200))
