@@ -41,3 +41,5 @@
 //
 #pragma once
 
+#include <fb/visibility.h>
+

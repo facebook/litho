@@ -10,3 +10,5 @@
 #ifndef FBASSERT_H
 #define FBASSERT_H
 
+#include <fb/visibility.h>
+

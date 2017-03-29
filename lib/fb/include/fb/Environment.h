@@ -51,3 +51,13 @@ struct Environment {
  *    class or instance to the new thread; this bypasses the need for the class loader.
  *    (See http://docs.oracle.com/javase/7/docs/technotes/guides/jni/spec/invocation.html#attach_current_thread)
  *    If you need access to the application's classes, you can use ThreadScope::WithClassLoader.
+ */
+class FBEXPORT ThreadScope {
+ public:
+  ThreadScope();
+  ThreadScope(ThreadScope&) = delete;
+  ThreadScope(ThreadScope&&) = default;
+  ThreadScope& operator=(ThreadScope&) = delete;
+  ThreadScope& operator=(ThreadScope&&) = delete;
+  ~ThreadScope();
+
