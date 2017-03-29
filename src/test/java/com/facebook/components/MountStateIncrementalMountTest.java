@@ -474,3 +474,7 @@ public class MountStateIncrementalMountTest {
     when(mountedView.getTop()).thenReturn(0);
     when(mountedView.getRight()).thenReturn(100);
     when(mountedView.getBottom()).thenReturn(100);
+    when(mountedView.getChildCount()).thenReturn(3);
+
+    final ComponentView childView1 = getMockComponentViewWithBounds(new Rect(5, 10, 20, 30));
+    when(mountedView.getChildAt(0)).thenReturn(childView1);

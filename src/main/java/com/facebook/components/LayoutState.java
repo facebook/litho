@@ -249,3 +249,5 @@ class LayoutState {
     // Non-view specs (drawable and layout) always transfer their view attributes
     // to their respective hosts.
     // Moreover, if the component mounts a view, then we apply padding to the view itself later on.
+    // Otherwise, apply the padding to the bounds of the layout output.
+    if (isMountViewSpec) {

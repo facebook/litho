@@ -74,3 +74,4 @@ class PagerSpec {
   }
 
   @OnBind
+  static void onBind(
