@@ -324,3 +324,5 @@ class TextSpec {
       int minWidth,
       int maxWidth,
       TextDirectionHeuristicCompat textDirection) {
+    Layout newLayout;
+
