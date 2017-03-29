@@ -193,3 +193,5 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
     return hasContentDescription(
         RuntimeEnvironment
             .application
+            .getResources()
+            .getString(resourceId));
