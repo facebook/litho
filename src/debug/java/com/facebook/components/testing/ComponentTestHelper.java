@@ -324,3 +324,8 @@ public final class ComponentTestHelper {
    *
    * @param component The component builder which to get the subcomponent from
    * @param componentClass the class type of the requested sub component
+   * @return The first instance of subComponent of type Class or null if none is present.
+   */
+  public static <T extends ComponentLifecycle> Component<T> getSubComponent(
+      Component.Builder component,
+      Class<T> componentClass) {

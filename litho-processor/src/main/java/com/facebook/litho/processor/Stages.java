@@ -1489,3 +1489,4 @@ public class Stages {
       }
     }
 
+    writeMethodSpec(builder
