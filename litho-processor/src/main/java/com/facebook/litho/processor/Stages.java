@@ -617,3 +617,6 @@ public class Stages {
           mSourceElement,
           stageAnnotation);
       if (stage != null && !stage.getModifiers().contains(Modifier.STATIC)) {
+        throw new ComponentsProcessingException(
+            stage,
+            "Method " + stage.getSimpleName() + " in " + mSourceElement.getQualifiedName() +
