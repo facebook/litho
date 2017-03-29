@@ -239,3 +239,6 @@ class EditTextSpec {
       EditTextTextTextChangedEventHandler editTextView,
       @Prop(optional = true, resType = ResType.STRING) CharSequence text,
       @Prop(optional = true, resType = ResType.STRING) CharSequence hint,
+      @Prop(optional = true) TextUtils.TruncateAt ellipsize,
+      @Prop(optional = true, resType = ResType.INT) int minLines,
+      @Prop(optional = true, resType = ResType.INT) int maxLines,
