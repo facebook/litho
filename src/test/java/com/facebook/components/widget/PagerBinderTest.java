@@ -36,3 +36,5 @@ public class PagerBinderTest {
   private static final int HEIGHT = 300;
 
   private ComponentContext mContext;
+  private TestPagerComponentBinder mBinder;
+
