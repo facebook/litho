@@ -54,3 +54,4 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
     }
 
     mDrawable = drawable;
+

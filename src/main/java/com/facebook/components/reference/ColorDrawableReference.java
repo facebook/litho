@@ -89,3 +89,5 @@ public final class ColorDrawableReference extends ReferenceLifecycle<Drawable> {
   @Override
   protected void onRelease(
       ComponentContext context,
+      Drawable drawable,
+      Reference reference) {
