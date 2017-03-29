@@ -321,3 +321,5 @@ class EventDispatcherUtils {
     eventDispatcher.dispatchOnEvent(eventHandler, sSendAccessibilityEventEvent);
 
     sSendAccessibilityEventEvent.host = null;
+    sSendAccessibilityEventEvent.eventType = 0;
+    sSendAccessibilityEventEvent.superDelegate = null;
