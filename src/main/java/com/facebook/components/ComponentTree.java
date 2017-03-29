@@ -949,3 +949,5 @@ public class ComponentTree {
           }
         }
 
+        // Set the new layout state, and remember the old layout state so we
+        // can release it.
