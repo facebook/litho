@@ -807,3 +807,15 @@ public class Stages {
     return specDefinedParameters;
   }
 
+  private void populateOnCreateInitialStateDefinedProps() {
+    final ExecutableElement onCreateInitialState = Utils.getAnnotatedMethod(
+        getSourceElement(),
+        OnCreateInitialState.class);
+
+    if (onCreateInitialState == null) {
+      mOnCreateInitialStateDefinedProps = new ArrayList<>();
+    } else {
+      mOnCreateInitialStateDefinedProps = getSpecDefinedParameters(onCreateInitialState, false);
+    }
+  }
+
