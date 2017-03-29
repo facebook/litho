@@ -468,3 +468,12 @@ class TextSpec {
       textLayout.set(
           createTextLayout(
               SizeSpec.makeSizeSpec((int) layoutWidth, EXACTLY),
+              ellipsize,
+              shouldIncludeFontPadding,
+              maxLines,
+              shadowRadius,
+              shadowDx,
+              shadowDy,
+              shadowColor,
+              isSingleLine,
+              text,
