@@ -1026,3 +1026,6 @@ class MountState {
       // as it otherwise overrides the padding.
       setViewBackground(view, viewNodeInfo);
 
+      // 10. Set view padding, if applicable.
+      setViewPadding(view, viewNodeInfo);
+
