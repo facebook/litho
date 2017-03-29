@@ -1351,3 +1351,4 @@ public class Stages {
       eventHandlerParams.add("\n$L", "eventHandler.mHasEventDispatcher");
       eventHandlerParams.unindent();
 
+      if (element.getReturnType().getKind() != VOID) {
