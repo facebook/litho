@@ -670,3 +670,4 @@ public class Stages {
         }
 
         mStateMap.put(
+            variableName,
