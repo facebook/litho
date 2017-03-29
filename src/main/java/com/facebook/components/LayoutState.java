@@ -1531,3 +1531,14 @@ class LayoutState {
    * LayoutState.
    */
   @ThreadSafe(enableChecks = false)
+  void releaseRef() {
+    int count = mReferenceCount.decrementAndGet();
+    if (count < 0) {
+      throw new IllegalStateException("Trying to releaseRef a recycled LayoutState");
+    }
+    if (count == 0) {
+      mContext = null;
+      mComponent = null;
+
+      mWidth = 0;
+      mHeight = 0;
