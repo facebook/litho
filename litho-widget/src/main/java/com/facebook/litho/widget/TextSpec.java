@@ -149,3 +149,9 @@ class TextSpec {
       } else if (attr == R.styleable.Text_android_textSize) {
         textSize.set(a.getDimensionPixelSize(attr, 0));
       } else if (attr == R.styleable.Text_android_ellipsize) {
+        final int index = a.getInteger(attr, 0);
+        if (index > 0) {
+          ellipsize.set(TRUNCATE_AT[index - 1]);
+        }
+      } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 &&
+          attr == R.styleable.Text_android_textAlignment) {

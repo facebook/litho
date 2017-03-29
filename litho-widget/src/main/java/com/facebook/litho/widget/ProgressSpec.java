@@ -43,3 +43,4 @@ import com.facebook.litho.utils.MeasureUtils;
 @MountSpec(isPureRender = true)
 class ProgressSpec {
 
+  static final int DEFAULT_SIZE = 50;
