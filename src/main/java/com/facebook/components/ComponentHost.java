@@ -610,3 +610,4 @@ public class ComponentHost extends ViewGroup {
     if (view instanceof ComponentHost) {
       final ComponentHost componentHost = (ComponentHost) view;
 
+      view.setVisibility(GONE);

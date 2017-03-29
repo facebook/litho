@@ -332,3 +332,4 @@ public class MountSpecHelper extends ComponentSpecHelper {
         ClassName.OBJECT,
     };
 
+    generateMountCompliantMethod(onBind, methodDescription);
