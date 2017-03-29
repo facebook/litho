@@ -548,3 +548,4 @@ public abstract class BaseBinder<
   public void onBoundsDefined() {
     updateRange(0, getCount(), URFLAG_REFRESH_IN_RANGE);
   }
+
