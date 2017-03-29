@@ -65,3 +65,4 @@ public abstract class BaseBinder<
   private int mContentHeightSpec = SizeSpec.makeSizeSpec(0, UNSPECIFIED);
   private Listener mListener;
   private R mRangeController;
+  private V mView;

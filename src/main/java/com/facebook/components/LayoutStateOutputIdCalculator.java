@@ -56,3 +56,20 @@ class LayoutStateOutputIdCalculator {
     }
 
     final int currentSequence = mLayoutCurrentSequenceForBaseId.get(baseLayoutId, 0);
+    final int layoutOutputUpdateState;
+    // If sequence is positive we are trying to re-use the id from a previous LayoutOutput.
+    // We can only do that if the sequence that layoutOutput used is not already assigned.
+    if (sequence < currentSequence) {
+      // If we failed re-using the same id from the previous LayoutOutput we default the
+      // UpdateState to STATE_UNKNOWN
+      sequence = currentSequence + 1;
+      layoutOutputUpdateState = LayoutOutput.STATE_UNKNOWN;
+    } else {
+      // If we successfully re-used the id from a previous LayoutOutput we can also set the
+      // UpdateState so that MountItem won't need to call shouldComponentUpdate.
+      layoutOutputUpdateState = isCachedOutputUpdated ?
+          LayoutOutput.STATE_UPDATED :
+          LayoutOutput.STATE_DIRTY;
+    }
+    layoutOutput.setUpdateState(layoutOutputUpdateState);
+

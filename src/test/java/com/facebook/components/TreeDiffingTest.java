@@ -63,3 +63,5 @@ public class TreeDiffingTest {
     mUnspecifiedSpec = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
   }
 
+  @Test
+  public void testDiffTreeDisabled() {

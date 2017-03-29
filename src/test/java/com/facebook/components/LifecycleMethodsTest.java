@@ -84,3 +84,4 @@ public class LifecycleMethodsTest {
     assertEquals(LifecycleStep.ON_UNBIND, mComponent.getCurrentStep());
   }
 
+  private class LifecycleMethodsComponent extends ComponentLifecycle {

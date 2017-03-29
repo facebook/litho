@@ -26,3 +26,4 @@ public abstract class WorkingRangeController {
   }
 
   /**
+   * Returns the {@link Binder} corresponding to this range controller instance.
