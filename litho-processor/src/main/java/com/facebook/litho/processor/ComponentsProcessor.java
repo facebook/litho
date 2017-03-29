@@ -52,3 +52,4 @@ public class ComponentsProcessor extends AbstractComponentsProcessor {
       }
     }
 
+    TreePropGenerator.generate(specModel).addToTypeSpec(typeSpec);
