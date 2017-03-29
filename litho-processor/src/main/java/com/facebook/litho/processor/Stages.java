@@ -2850,3 +2850,4 @@ public class Stages {
     if (numRequiredProps > 0) {
       buildMethodBuilder
           .beginControlFlow(
+              "if (mRequired != null && mRequired.nextClearBit(0) < $L)", REQUIRED_PROPS_COUNT)
