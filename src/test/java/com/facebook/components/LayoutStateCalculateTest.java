@@ -631,3 +631,6 @@ public class LayoutStateCalculateTest {
         SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(20, SizeSpec.EXACTLY));
 
+    assertEquals(
+        layoutState.getMountableOutputCount(),
+        sameComponentLayoutState.getMountableOutputCount());
