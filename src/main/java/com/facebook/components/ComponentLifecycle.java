@@ -584,3 +584,11 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     return !previous.equals(next);
   }
 
+  /**
+   * Return a {@link Transition} or a {@link TransitionSet} to be animated at the appropriate time
+   * when the layout changes.
+   */
+  protected Transition onLayoutTransition(ComponentContext c, Component<?> component) {
+    return null;
+  }
+
