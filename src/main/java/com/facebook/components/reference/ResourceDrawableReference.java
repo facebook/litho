@@ -123,3 +123,4 @@ public final class ResourceDrawableReference extends ReferenceLifecycle<Drawable
       super.release();
 
       mState = null;
+      mContext = null;
