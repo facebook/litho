@@ -2085,3 +2085,17 @@ public class Stages {
   }
 
   private FieldSpec getPropFieldSpec(VariableElement v, boolean isStateProp) {
+    final TypeMirror variableType = v.asType();
+    TypeMirror wrappingTypeMirror = Utils.getGenericTypeArgument(
+        variableType,
+        ClassNames.OUTPUT);
+    if (wrappingTypeMirror == null) {
+      wrappingTypeMirror = Utils.getGenericTypeArgument(variableType, ClassNames.DIFF);
+    }
+    final TypeName variableClassName = JPUtil.getTypeFromMirror(
+        wrappingTypeMirror != null ? wrappingTypeMirror : variableType);
+
+    final FieldSpec.Builder fieldBuilder = FieldSpec.builder(
+        variableClassName,
+        v.getSimpleName().toString());
+
