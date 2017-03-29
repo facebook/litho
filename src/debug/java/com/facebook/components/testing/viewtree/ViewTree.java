@@ -117,3 +117,5 @@ public final class ViewTree {
     return string.startsWith(prefix) ? string.substring(prefix.length()) : string;
   }
 
+  @Nullable
+  private ImmutableList<View> findChild(

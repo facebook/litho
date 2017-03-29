@@ -28,3 +28,4 @@ import static com.facebook.litho.testing.viewtree.ViewPredicates.isVisible;
  * nodes, but do not check actual layout. So a visible view might have 0 pixels available for it
  * in actual app code and still pass the checks done here
  */
+public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTree> {
