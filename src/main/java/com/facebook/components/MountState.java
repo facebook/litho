@@ -258,3 +258,5 @@ class MountState {
     mLastMountedComponentTreeId = componentTreeId;
 
     if (logger != null) {
+      final String logTag = componentTree.getContext().getLogTag();
+      logMountEnd(logger, logTag, componentTree, mMountStats);
