@@ -86,3 +86,4 @@ public class TestViewComponent extends ComponentLifecycle {
   protected boolean isPureRender() {
     return mIsPureRender;
   }
+

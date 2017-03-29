@@ -134,3 +134,10 @@ public class StateValidation {
                   "Only state parameters and parameters annotated with @Param are permitted in " +
                       "@OnUpdateState method, and all state parameters must be of type " +
                       "com.facebook.litho.StateValue, but " + methodParam.getName() +
+                      " is of type " + methodParam.getType() + "."));
+        } else if (((ParameterizedTypeName) methodParam.getType()).typeArguments.size() != 1 ||
+            ((ParameterizedTypeName) methodParam.getType()).typeArguments.get(0)
+                instanceof WildcardTypeName) {
+          validationErrors.add(
+              new SpecModelValidationError(
+                  methodParam.getRepresentedObject(),

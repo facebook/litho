@@ -25,3 +25,14 @@ import java.lang.annotation.RetentionPolicy;
  * - {@link OnMount}
  * - {@link OnBind}
  * - {@link OnUnbind}
+ * - {@link OnUnmount}
+ * <p>If you wish to create a component that is a composition of other components, then use
+ * {@link LayoutSpec} instead.
+ * <p>For example:
+ * <pre>
+ * {@code
+ *
+ * @MountSpec
+ * public class MyComponentSpec {
+ *
+ *   @OnMount

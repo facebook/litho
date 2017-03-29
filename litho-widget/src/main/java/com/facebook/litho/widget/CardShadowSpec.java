@@ -26,3 +26,4 @@ import com.facebook.litho.annotations.ResType;
 class CardShadowSpec {
 
   @OnCreateMountContent
+  static CardShadowDrawable onCreateMountContent(ComponentContext c) {

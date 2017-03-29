@@ -38,3 +38,5 @@ public abstract class ComponentSpecHelper extends SpecHelper {
         name,
         isPublic,
         stageAnnotations,
+        interStageInputAnnotations,
+        specModel);

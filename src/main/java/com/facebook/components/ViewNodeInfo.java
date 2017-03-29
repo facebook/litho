@@ -21,3 +21,4 @@ import com.facebook.litho.reference.Reference;
 /**
  * Additional information passed between {@link LayoutState} and {@link MountState}
  * used on a {@link View}.
+ */

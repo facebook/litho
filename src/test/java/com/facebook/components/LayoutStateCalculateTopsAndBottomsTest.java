@@ -28,3 +28,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
 @RunWith(ComponentsTestRunner.class)
+public class LayoutStateCalculateTopsAndBottomsTest {
+
+  @Test
+  public void testCalculateTopsAndBottoms() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
