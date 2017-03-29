@@ -60,3 +60,5 @@ public class ComponentLifecycleTest {
   private static final int A_WIDTH = 12;
   private int mNestedTreeWidthSpec;
   private int mNestedTreeHeightSpec;
+
+  private InternalNode mNode;
