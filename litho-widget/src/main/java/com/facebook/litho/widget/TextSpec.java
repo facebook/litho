@@ -264,3 +264,7 @@ class TextSpec {
         minWidth,
         maxWidth,
         textDirection);
+
+    measureLayout.set(newLayout);
+
+    size.width = SizeSpec.resolveSize(widthSpec, newLayout.getWidth());
