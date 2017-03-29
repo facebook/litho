@@ -1088,3 +1088,5 @@ public class ComponentTree {
 
     return mWidthSpec != SIZE_UNINITIALIZED
         && mHeightSpec != SIZE_UNINITIALIZED;
+  }
+

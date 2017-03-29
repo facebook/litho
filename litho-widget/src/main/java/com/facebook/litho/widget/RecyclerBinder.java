@@ -716,3 +716,28 @@ public class RecyclerBinder implements Binder<RecyclerView> {
         mChildrenHeightSpec * treeHolder.getSpanSize();
   }
 
+  private class RangeScrollListener extends RecyclerView.OnScrollListener {
+
+    @Override
+    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+
+      IncrementalMountUtils.performIncrementalMount(recyclerView);
+
+      final int firstVisiblePosition = mLayoutInfo.findFirstVisiblePosition();
+      final int lastVisiblePosition = mLayoutInfo.findLastVisiblePosition();
+      if (firstVisiblePosition != mCurrentFirstVisiblePosition
+          || lastVisiblePosition != mCurrentLastVisiblePosition) {
+        onNewVisibleRange(firstVisiblePosition, lastVisiblePosition);
+      }
+    }
+  }
+
+  private class ComponentViewHolder extends RecyclerView.ViewHolder {
+
+    public ComponentViewHolder(ComponentView componentView) {
+      super(componentView);
+
+      switch (mLayoutInfo.getScrollDirection()) {
+        case OrientationHelper.VERTICAL:
+            componentView.setLayoutParams(
+            new RecyclerView.LayoutParams(
