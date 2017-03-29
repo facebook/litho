@@ -183,3 +183,6 @@ class BinderTreeCollection {
     }
   }
 
+  void shiftAllRight(int shiftByAmount) {
+    shiftRangeRight(getFirstPosition(), size(), shiftByAmount);
+  }

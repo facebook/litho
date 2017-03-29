@@ -164,3 +164,29 @@ public class MountStateVisibilityEventsTest {
     checkNoVisibilityEventsDispatched(mockLifecycle);
 
     mMountState.mount(layoutState, new Rect(LEFT, 3, RIGHT, 8));
+    verify(mockLifecycle, times(1)).dispatchOnEvent(
+        eq(focusedHandler),
+        isA(FocusedVisibleEvent.class));
+  }
+
+  @Test
+  public void testFullImpression() {
+    ComponentLifecycle mockLifecycle = createLifecycleMock();
+    Component<?> content = TestViewComponent.create(mContext).build();
+    Whitebox.setInternalState(content, "mLifecycle", mockLifecycle);
+
+    final EventHandler fullImpressionHandler = createEventHandler(content, FULL_IMPRESSION);
+
+    final List<VisibilityOutput> visibilityOutputs = new ArrayList<>();
+
+    visibilityOutputs.add(createVisibilityOutput(
+        content,
+        new Rect(LEFT, 5, RIGHT, 10),
+        null,
+        null,
+        fullImpressionHandler,
+        null));
+
+    final LayoutState layoutState = new LayoutState();
+    Whitebox.setInternalState(layoutState, "mVisibilityOutputs", visibilityOutputs);
+

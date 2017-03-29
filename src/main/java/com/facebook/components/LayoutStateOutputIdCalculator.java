@@ -142,3 +142,4 @@ class LayoutStateOutputIdCalculator {
       int level,
       @LayoutOutput.LayoutOutputType int type,
       int sequence) {
+    long baseId = calculateLayoutOutputBaseId(layoutOutput, level, type);
