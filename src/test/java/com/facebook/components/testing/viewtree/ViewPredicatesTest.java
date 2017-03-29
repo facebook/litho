@@ -189,3 +189,4 @@ public class ViewPredicatesTest {
     mImageViewWithCustomDrawable.setVisibility(View.GONE);
     assertThat(hasVisibleDrawable.apply(mImageViewWithCustomDrawable)).isFalse();
   }
+}
