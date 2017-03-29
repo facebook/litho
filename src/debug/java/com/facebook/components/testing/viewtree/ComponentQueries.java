@@ -41,3 +41,4 @@ class ComponentQueries {
    * @param host the component host
    * @param pattern the pattern to match
    * @return true if the host has text matching the pattern.
+   */
