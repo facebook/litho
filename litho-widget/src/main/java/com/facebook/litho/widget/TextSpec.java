@@ -436,3 +436,4 @@ class TextSpec {
       @Prop(optional = true) Typeface typeface,
       @Prop(optional = true) Alignment textAlignment,
       @Prop(optional = true) boolean glyphWarming,
+      @Prop(optional = true) TextDirectionHeuristicCompat textDirection,
