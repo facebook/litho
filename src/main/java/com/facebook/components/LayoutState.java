@@ -1202,3 +1202,11 @@ class LayoutState {
         }
 
         nestedTree = null;
+      }
+
+      if (component.hasCachedLayout()) {
+        final InternalNode cachedLayout = component.getCachedLayout();
+        final boolean hasCompatibleLayoutDirection =
+            InternalNode.hasValidLayoutDirectionInNestedTree(nestedTreeHolder, cachedLayout);
+
+        // Transfer the cached layout to the node without releasing it if it's compatible.
