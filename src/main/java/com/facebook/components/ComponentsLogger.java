@@ -31,3 +31,5 @@ public interface ComponentsLogger {
   String PARAM_LOG_TAG = "log_tag";
   String PARAM_TREE_DIFF_ENABLED = "tree_diff_enabled";
   String PARAM_IS_ASYNC_PREPARE = "is_async_prepare";
+  String PARAM_IS_BACKGROUND_LAYOUT = "is_background_layout";
+  String PARAM_IS_BACKGROUND_LAYOUT_ENABLED = "is_background_layout_enabled";

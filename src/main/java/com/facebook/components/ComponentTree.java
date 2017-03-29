@@ -40,3 +40,4 @@ import static com.facebook.components.ComponentLifecycle.StateUpdate;
 import static com.facebook.components.ComponentsLogger.ACTION_SUCCESS;
 import static com.facebook.components.ComponentsLogger.EVENT_LAYOUT_CALCULATE;
 import static com.facebook.components.ComponentsLogger.EVENT_PRE_ALLOCATE_MOUNT_CONTENT;
+import static com.facebook.components.ComponentsLogger.PARAM_IS_BACKGROUND_LAYOUT;
