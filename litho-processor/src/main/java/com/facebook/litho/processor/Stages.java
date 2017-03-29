@@ -1825,3 +1825,8 @@ public class Stages {
     writeInnerTypeSpec(implClassBuilder.build());
   }
 
+  public void generateTransferState(
+      ClassName contextClassName,
+      ClassName componentClassName,
+      ClassName stateContainerClassName) {
+    if (!mStateMap.isEmpty()) {
