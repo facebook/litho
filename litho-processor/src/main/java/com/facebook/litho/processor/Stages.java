@@ -143,3 +143,5 @@ public class Stages {
 
   private final String mSimpleClassName;
 
+  private String mSourceDelegateAccessorName = DELEGATE_FIELD_NAME;
+
