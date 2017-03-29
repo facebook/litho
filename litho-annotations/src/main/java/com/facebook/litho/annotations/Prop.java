@@ -15,3 +15,4 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Prop {
 
+  boolean optional() default false;

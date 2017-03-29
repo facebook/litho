@@ -26,3 +26,5 @@ class ViewNodeInfo {
 
   private final AtomicInteger mReferenceCount = new AtomicInteger(0);
 
+  private Reference<Drawable> mBackground;
+  private Reference<Drawable> mForeground;

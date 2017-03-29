@@ -142,3 +142,33 @@ public class StateValidation {
               new SpecModelValidationError(
                   methodParam.getRepresentedObject(),
                   "All parameters of type com.facebook.litho.StateValue must define a type " +
+                      "argument, " + methodParam.getName() + " in method " +
+                      updateStateMethodModel.name + " does not."));
+        } else if (!definesStateValue(
+            specModel,
+            methodParam.getName(),
+            ((ParameterizedTypeName) methodParam.getType()).typeArguments.get(0))) {
+          // Check #3
+          validationErrors.add(
+              new SpecModelValidationError(
+                  methodParam.getRepresentedObject(),
+                  "Names of parameters of type StateValue must match the name and type of a " +
+                      "parameter annotated with @State."));
+        }
+      }
+    }
+
+    return validationErrors;
+  }
+
+  private static boolean definesStateValue(SpecModel specModel, String name, TypeName type) {
+    for (StateParamModel stateValue : specModel.getStateValues()) {
+      if (stateValue.getName().equals(name) &&
+          stateValue.getType().box().equals(type.box())) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+}

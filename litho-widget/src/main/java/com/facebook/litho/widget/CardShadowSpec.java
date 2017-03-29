@@ -31,3 +31,4 @@ class CardShadowSpec {
   }
 
   @OnMount
+  static void onMount(

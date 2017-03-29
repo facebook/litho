@@ -12,3 +12,4 @@ package com.facebook.litho.specmodels.model;
 import com.squareup.javapoet.ClassName;
 
 /**
+ * Constants used in {@link SpecModel}s.

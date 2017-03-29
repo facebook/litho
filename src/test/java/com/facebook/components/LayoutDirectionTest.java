@@ -83,3 +83,5 @@ public class LayoutDirectionTest {
         20,
         10);
 
+    View view1 = componentView.getChildAt(0);
+    View view2 = componentView.getChildAt(1);
