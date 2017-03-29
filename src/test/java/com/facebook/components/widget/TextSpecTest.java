@@ -148,3 +148,4 @@ public class TextSpecTest {
         .getDrawables()
         .get(0);
   }
+}

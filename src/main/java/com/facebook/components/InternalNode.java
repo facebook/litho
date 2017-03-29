@@ -820,3 +820,6 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Override
   public InternalNode heightDip(@Dimension(unit = DP) int height) {
     return heightPx(mResourceResolver.dipsToPixels(height));
+  }
+
+  @Override
