@@ -340,3 +340,4 @@ class TransitionKeySet implements TransitionListener {
       }
 
       if (mRunningTransitionsPointer.size() > 0) {
+        mTransitionKeySetListener.onTransitionKeySetStart(mKey, mTargetView);

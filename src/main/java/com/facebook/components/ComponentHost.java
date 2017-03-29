@@ -167,3 +167,44 @@ public class ComponentHost extends ViewGroup {
     maybeInvalidateAccessibilityState(mountItem);
   }
 
+  void startUnmountDisappearingItem(int index, MountItem mountItem) {
+    final Object content = mountItem.getContent();
+    if (!(content instanceof View)) {
+      throw new RuntimeException("Cannot unmount non-view item");
+    }
+    mIsChildDrawingOrderDirty = true;
+
+    ComponentHostUtils.removeItem(index, mViewMountItems, mScrapViewMountItemsArray);
+    ComponentHostUtils.removeItem(index, mMountItems, mScrapMountItemsArray);
+    releaseScrapDataStructuresIfNeeded();
+    mDisappearingItems.put(index, mountItem);
+  }
+
+  void unmountDisappearingItem(MountItem disappearingItem) {
+    final int indexOfValue = mDisappearingItems.indexOfValue(disappearingItem);
+    final int key = mDisappearingItems.keyAt(indexOfValue);
+    mDisappearingItems.removeAt(indexOfValue);
+
+    final View content = (View) disappearingItem.getContent();
+
+    unmountView(content);
+    maybeUnregisterTouchExpansion(key, disappearingItem);
+    maybeInvalidateAccessibilityState(disappearingItem);
+  }
+
+  boolean hasDisappearingItems() {
+    return mDisappearingItems.size() > 0;
+  }
+
+  List<String> getDisappearingItemKeys() {
+    if (!hasDisappearingItems()) {
+      return null;
+    }
+    final List<String> keys = new ArrayList<>();
+    for (int i = 0, size = mDisappearingItems.size(); i < size; i++) {
+      keys.add(mDisappearingItems.valueAt(i).getViewNodeInfo().getTransitionKey());
+    }
+
+    return keys;
+  }
+
