@@ -354,3 +354,4 @@ class LayoutState {
     return false;
   }
 
+  @TargetApi(JELLY_BEAN_MR1)
