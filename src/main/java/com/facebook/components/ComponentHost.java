@@ -134,3 +134,9 @@ public class ComponentHost extends ViewGroup {
       mViewMountItems.put(index, mountItem);
       mountView((View) content, mountItem.getFlags());
       maybeRegisterTouchExpansion(index, mountItem);
+    }
+
+    mMountItems.put(index, mountItem);
+
+    maybeInvalidateAccessibilityState(mountItem);
+  }
