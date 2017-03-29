@@ -688,3 +688,6 @@ class MountState {
       mLayoutOutputsIds[i] = layoutState.getMountableOutputAt(i).getId();
     }
 
+    if (logger != null) {
+      logger.eventEnd(EVENT_PREPARE_MOUNT, component, ACTION_SUCCESS);
+    }
