@@ -1123,3 +1123,4 @@ class LayoutState {
         true /* resolveNestedTree */);
 
     if (logger != null) {
+      logger.eventEnd(EVENT_CREATE_LAYOUT, context, ACTION_SUCCESS);
