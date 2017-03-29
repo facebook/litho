@@ -342,3 +342,7 @@ public class MountSpecHelper extends ComponentSpecHelper {
     final ExecutableElement onIdle = Utils.getAnnotatedMethod(
         mStages.getSourceElement(),
         OnUnbind.class);
+    if (onIdle == null) {
+      return;
+    }
+
