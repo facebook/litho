@@ -304,3 +304,4 @@ public final class ComponentTestHelper {
             .layoutDiffing(true)
             .build();
 
+    final ComponentView componentView = new ComponentView(context);
