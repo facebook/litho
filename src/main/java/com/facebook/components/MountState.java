@@ -1017,3 +1017,5 @@ class MountState {
     }
 
     // 8. Set important for accessibility flag
+    setImportantForAccessibility(view, item.getImportantForAccessibility());
+
