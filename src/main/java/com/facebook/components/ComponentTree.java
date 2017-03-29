@@ -325,3 +325,6 @@ public class ComponentTree {
       mComponentView.requestLayout();
     } else {
       mComponentView.rebind();
+    }
+  }
+
