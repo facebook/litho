@@ -56,3 +56,14 @@ final class ViewPredicates {
     };
   }
 
+  /**
+   * Returns a predicate that returns true if the applied on view's text is equal to the given
+   * text.
+   * substring.
+   * @param text the text to check
+   * @return the predicate
+   */
+  public static Predicate<View> hasText(final String text) {
+    return hasTextMatchingPredicate(Predicates.equalTo(text));
+  }
+
