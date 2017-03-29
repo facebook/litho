@@ -52,3 +52,4 @@ public abstract class RecyclerComponentBinder<L extends RecyclerView.LayoutManag
     super(context, layoutLooper, rangeController);
 
     mLayoutManager = layoutManager;
+    mAdapter = new InternalAdapter(context, this);

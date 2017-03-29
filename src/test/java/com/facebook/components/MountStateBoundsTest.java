@@ -118,3 +118,34 @@ public class MountStateBoundsTest {
 
   @Test
   public void testDoubleInnerComponentHostBounds() {
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                .flexDirection(COLUMN)
+                .alignItems(YogaAlign.FLEX_END)
+                .justifyContent(YogaJustify.FLEX_END)
+                .child(
+                    Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                        .widthPx(100)
+                        .heightPx(100)
+                        .paddingPx(ALL, 20)
+                        .wrapInView()
+                        .child(
+                            Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                                .widthPx(60)
+                                .heightPx(60)
+                                .wrapInView()
+                                .child(
+                                    TestDrawableComponent.create(c)
+                                        .withLayout().flexShrink(0)
+                                        .widthPx(20)
+                                        .heightPx(20)
+                                        .marginPx(ALL, 20))))
+                .build();
+          }
+        },
+        200,
+        200);

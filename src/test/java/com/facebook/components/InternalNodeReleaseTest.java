@@ -93,3 +93,8 @@ public class InternalNodeReleaseTest {
   @Test(expected=IllegalStateException.class)
   public void testNodeWithChildren() {
     assertDefaultValues(mInternalNode);
+    mInternalNode.addChildAt(
+        ComponentsPools.acquireInternalNode(
+            new ComponentContext(RuntimeEnvironment.application),
+            RuntimeEnvironment.application.getResources()),
+        0);
