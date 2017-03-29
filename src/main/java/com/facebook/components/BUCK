@@ -13,3 +13,6 @@ android_library(
         "*.java",
         "dataflow/**/*.java",
         "displaylist/*.java",
+        "reference/*.java",
+    ]),
+    exported_deps = [
