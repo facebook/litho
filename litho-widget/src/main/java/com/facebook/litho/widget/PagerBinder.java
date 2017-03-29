@@ -118,3 +118,9 @@ public abstract class PagerBinder extends BaseBinder<
   public void onMount(ViewPager viewPager) {
     mViewPager = viewPager;
 
+    viewPager.setOnPageChangeListener(mOnPageChangeListener);
+    viewPager.setAdapter(mAdapter);
+    viewPager.setCurrentItem(mCurrentItem);
+    viewPager.setOffscreenPageLimit(mPagerOffscreenLimit);
+  }
+
