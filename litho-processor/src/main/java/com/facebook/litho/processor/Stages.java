@@ -1701,3 +1701,5 @@ public class Stages {
 
     implClassBuilder.addMethod(constructorBuilder.build());
 
+    implClassBuilder.addMethod(
+        MethodSpec.methodBuilder("getSimpleName")
