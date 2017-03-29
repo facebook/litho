@@ -407,3 +407,5 @@ public abstract class BaseBinder<
         return;
       }
 
+      mContentWidthSpec = newWidthSpec;
+      mContentHeightSpec = newHeightSpec;

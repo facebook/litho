@@ -270,3 +270,4 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
   @Override
   public void onPopulateAccessibilityEvent(View host, AccessibilityEvent event) {
     if (mNodeInfo != null && mNodeInfo.getOnPopulateAccessibilityEventHandler() != null) {
+      EventDispatcherUtils.dispatchOnPopulateAccessibilityEvent(
