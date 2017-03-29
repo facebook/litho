@@ -635,3 +635,4 @@ public class RecyclerBinderTest {
   @Test
   public void testMoveWithinRange() {
     final List<ComponentInfo> components = prepareLoadedBinder();
+
