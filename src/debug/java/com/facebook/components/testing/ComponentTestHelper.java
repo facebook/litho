@@ -252,3 +252,8 @@ public final class ComponentTestHelper {
    */
   public static List<SubComponent> getSubComponents(Component.Builder component) {
     return getSubComponents(getContext(component), component.build());
+  }
+
+  /**
+   * Get the subcomponents of a component
+   *
