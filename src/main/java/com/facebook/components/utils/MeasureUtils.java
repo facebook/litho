@@ -126,3 +126,83 @@ public final class MeasureUtils {
     outputSize.width = heightSize;
   }
 
+  /**
+   * Measure according to an aspect ratio an width and height constraints. This version
+   * of measureWithAspectRatio will respect the intrinsic size of the component being measured.
+   *
+   * @param widthSpec A SizeSpec for the width
+   * @param heightSpec A SizeSpec for the height
+   * @param intrinsicWidth A pixel value for the intrinsic width of the measured component
+   * @param intrinsicHeight A pixel value for the intrinsic height of the measured component
+   * @param aspectRatio The aspect ration size against
+   * @param outputSize The output size of this measurement
+   */
+  public static void measureWithAspectRatio(
+      int widthSpec,
+      int heightSpec,
+      int intrinsicWidth,
+      int intrinsicHeight,
+      float aspectRatio,
+      Size outputSize) {
+
+    if (SizeSpec.getMode(widthSpec) == AT_MOST &&
+        SizeSpec.getSize(widthSpec) > intrinsicWidth) {
+      widthSpec = SizeSpec.makeSizeSpec(intrinsicWidth, AT_MOST);
+    }
+
+    if (SizeSpec.getMode(heightSpec) == AT_MOST &&
+        SizeSpec.getSize(heightSpec) > intrinsicHeight) {
+      heightSpec = SizeSpec.makeSizeSpec(intrinsicHeight, AT_MOST);
+    }
+
+    measureWithAspectRatio(widthSpec, heightSpec, aspectRatio, outputSize);
+  }
+
+  /**
+   * Measure according to an aspect ratio an width and height constraints.
+   *
+   * @param widthSpec A SizeSpec for the width
+   * @param heightSpec A SizeSpec for the height
+   * @param aspectRatio The aspect ration size against
+   * @param outputSize The output size of this measurement
+   */
+  public static void measureWithAspectRatio(
+      int widthSpec,
+      int heightSpec,
+      float aspectRatio,
+      Size outputSize) {
+
+    final int widthMode = SizeSpec.getMode(widthSpec);
+    final int widthSize = SizeSpec.getSize(widthSpec);
+    final int heightMode = SizeSpec.getMode(heightSpec);
+    final int heightSize = SizeSpec.getSize(heightSpec);
+    final int widthBasedHeight = (int) Math.ceil(widthSize / aspectRatio);
+    final int heightBasedWidth = (int) Math.ceil(heightSize * aspectRatio);
+
+    if (widthMode == UNSPECIFIED && heightMode == UNSPECIFIED) {
+      outputSize.width = 0;
+      outputSize.height = 0;
+
+      if (ComponentsConfiguration.IS_INTERNAL_BUILD) {
+        Log.d(
+            "com.facebook.components.utils.MeasureUtils",
+            "Default to size {0, 0} because both width and height are UNSPECIFIED");
+      }
+      return;
+    }
+
+    // Both modes are AT_MOST, find the largest possible size which respects both constraints.
+    if (widthMode == AT_MOST && heightMode == AT_MOST) {
+      if (widthBasedHeight > heightSize) {
+        outputSize.width = heightBasedWidth;
+        outputSize.height = heightSize;
+      } else {
+        outputSize.width = widthSize;
+        outputSize.height = widthBasedHeight;
+      }
+    }
+    // Width is set to exact measurement and the height is either unspecified or is allowed to be
+    // large enough to accommodate the given aspect ratio.
+    else if (widthMode == EXACTLY) {
+      outputSize.width = widthSize;
+

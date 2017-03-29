@@ -35,3 +35,4 @@ public class PagerBinderTest {
   private static final int WIDTH = 200;
   private static final int HEIGHT = 300;
 
+  private ComponentContext mContext;
