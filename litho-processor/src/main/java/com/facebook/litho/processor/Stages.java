@@ -2313,3 +2313,6 @@ public class Stages {
       return null;
     }
 
+    final String implInstanceName = getImplInstanceName();
+    final MethodSpec.Builder copyInterStageComponentBuilder = MethodSpec
+        .methodBuilder("copyInterStageImpl")
