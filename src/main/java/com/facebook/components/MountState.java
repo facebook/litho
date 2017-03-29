@@ -460,3 +460,10 @@ class MountState {
       MountItem currentMountItem,
       boolean useUpdateValueFromLayoutOutput,
       ComponentsLogger logger) {
+    final Component layoutOutputComponent = layoutOutput.getComponent();
+    final Component itemComponent = currentMountItem.getComponent();
+
+    // 1. Check if the mount item generated from the old component should be updated.
+    final boolean shouldUpdate = shouldUpdateMountItem(
+        layoutOutput,
+        currentMountItem,
