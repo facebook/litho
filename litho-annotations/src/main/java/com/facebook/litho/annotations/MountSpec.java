@@ -40,3 +40,16 @@ import java.lang.annotation.RetentionPolicy;
  *       ComponentContext context,
  *       MyDrawable convertDrawable,
  *       @Prop MyProp prop) {
+ *     if (convertDrawable == null) {
+ *       convertDrawable = new MyDrawable();
+ *     }
+ *
+ *     convertDrawable.setMyProp(prop);
+ *
+ *     return convertDrawable;
+ *   }
+ * }
+ * }
+ * </pre>
+ */
+@Retention(RetentionPolicy.RUNTIME)
