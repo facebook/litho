@@ -109,3 +109,5 @@ private static class State<T extends Drawable> extends Component<DrawableCompone
       mDrawable = drawable;
     }
 
+    @Override
+    public String getSimpleName() {
