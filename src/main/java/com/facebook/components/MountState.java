@@ -1736,3 +1736,11 @@ class MountState {
         component,
         PARAM_NO_OP_COUNT,
         String.valueOf(mountStats.noOpCount));
+    logger.eventAddParam(
+        EVENT_MOUNT,
+        component,
+        PARAM_IS_DIRTY,
+        String.valueOf(mIsDirty));
+    logger.eventEnd(EVENT_MOUNT, component, ACTION_SUCCESS);
+  }
+
