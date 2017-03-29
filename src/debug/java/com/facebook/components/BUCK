@@ -14,3 +14,4 @@ android_library(
         COMPONENTS_YOGA_TARGET,
     ],
     visibility = [
+        COMPONENTS_VISIBILITY,
