@@ -94,3 +94,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
       final Component<?> component = node.getComponent();
       final int widthSpec;
       final int heightSpec;
+
