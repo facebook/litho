@@ -1215,3 +1215,5 @@ public class ComponentTree {
     private boolean isLayoutDiffingEnabled;
     private LayoutHandler layoutThreadHandler;
     private Object layoutLock;
+    private StateHandler stateHandler;
+    private boolean asyncStateUpdates = true;
