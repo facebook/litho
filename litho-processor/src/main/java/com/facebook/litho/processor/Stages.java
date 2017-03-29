@@ -1862,3 +1862,5 @@ public class Stages {
 
     final ClassName stateContainerImplClass =
         ClassName.bestGuess(getSimpleClassName() + STATE_CONTAINER_IMPL_NAME_SUFFIX);
+
+    final TypeSpec.Builder stateClassBuilder =
