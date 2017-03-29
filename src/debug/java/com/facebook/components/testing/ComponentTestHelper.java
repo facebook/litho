@@ -377,3 +377,14 @@ public final class ComponentTestHelper {
             .build(),
         makeMeasureSpec(100, EXACTLY),
         makeMeasureSpec(100, EXACTLY));
+
+    componentView.performIncrementalMount();
+
+    try {
+      Whitebox.invokeMethod(component.getLifecycle(), "dispatchOnVisible", onVisibleHandler);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+
+    return componentView;
+  }
