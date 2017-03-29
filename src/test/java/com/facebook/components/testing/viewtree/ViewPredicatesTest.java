@@ -121,3 +121,4 @@ public class ViewPredicatesTest {
 
   @Test
   public void testHasVisibleMatchingText() throws Exception {
+    final Predicate<View> hasHello = ViewPredicates.hasVisibleMatchingText(".*o.*");
