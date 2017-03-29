@@ -177,3 +177,4 @@ public class ResourceResolver {
   }
 
   protected final int resolveDimenOffsetRes(@DimenRes int resId) {
+    if (resId != 0) {
