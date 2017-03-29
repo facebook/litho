@@ -34,3 +34,4 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
     super(actual, ViewTreeAssert.class);
   }
 
+  public static ViewTreeAssert assertThat(final ViewTree actual) {

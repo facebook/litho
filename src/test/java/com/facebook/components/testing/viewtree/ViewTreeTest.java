@@ -104,3 +104,4 @@ public class ViewTreeTest {
       "android.view.");
   }
 
+  private static String removePrefix(final String string, final String prefix) {
