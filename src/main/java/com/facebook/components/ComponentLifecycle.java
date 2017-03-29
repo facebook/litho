@@ -481,3 +481,5 @@ public abstract class ComponentLifecycle implements EventDispatcher {
    * @return the extra virtual view id if one is found, otherwise
    *         {@code ExploreByTouchHelper#INVALID_ID}
    */
+  protected int getExtraAccessibilityNodeAt(int x, int y, Component<?> component) {
+    return ExploreByTouchHelper.INVALID_ID;
