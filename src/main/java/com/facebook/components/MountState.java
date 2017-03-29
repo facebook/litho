@@ -1351,3 +1351,5 @@ class MountState {
         viewNodeInfo.getPaddingTop(),
         viewNodeInfo.getPaddingRight(),
         viewNodeInfo.getPaddingBottom());
+  }
+

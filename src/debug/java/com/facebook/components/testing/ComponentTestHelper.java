@@ -310,3 +310,6 @@ public final class ComponentTestHelper {
     componentView.measure(widthSpec, heightSpec);
     componentView.layout(0, 0, componentView.getMeasuredWidth(), componentView.getMeasuredHeight());
 
+    final List<Component> components = componentTree.getSubComponents();
+    final List<SubComponent> subComponents = new ArrayList<>(components.size());
+    for (Component lifecycle : components) {
