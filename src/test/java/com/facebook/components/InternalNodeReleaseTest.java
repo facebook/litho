@@ -55,3 +55,19 @@ public class InternalNodeReleaseTest {
     mInternalNode.clickHandler(new EventHandler(null, 1));
     mInternalNode.longClickHandler(new EventHandler(null, 1));
     mInternalNode.touchHandler(new EventHandler(null, 1));
+    mInternalNode.dispatchPopulateAccessibilityEventHandler(
+        new EventHandler<DispatchPopulateAccessibilityEventEvent>(null, 1));
+    mInternalNode.onInitializeAccessibilityEventHandler(
+        new EventHandler<OnInitializeAccessibilityEventEvent>(null, 1));
+    mInternalNode.onPopulateAccessibilityEventHandler(
+        new EventHandler<OnPopulateAccessibilityEventEvent>(null, 1));
+    mInternalNode.onInitializeAccessibilityNodeInfoHandler(
+        new EventHandler<OnInitializeAccessibilityNodeInfoEvent>(null, 1));
+    mInternalNode.onRequestSendAccessibilityEventHandler(
+        new EventHandler<OnRequestSendAccessibilityEventEvent>(null, 1));
+    mInternalNode.performAccessibilityActionHandler(
+        new EventHandler<PerformAccessibilityActionEvent>(null, 1));
+    mInternalNode.sendAccessibilityEventHandler(
+        new EventHandler<SendAccessibilityEventEvent>(null, 1));
+    mInternalNode.sendAccessibilityEventUncheckedHandler(
+        new EventHandler<SendAccessibilityEventUncheckedEvent>(null, 1));
