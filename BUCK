@@ -45,3 +45,14 @@ android_resource(
     deps = [
     ],
 )
+
+android_build_config(
+    name = "build_config",
+    package = "com.facebook.components",
+    values = [
+        "boolean IS_INTERNAL_BUILD = true",
+    ],
+    visibility = [
+        COMPONENTS_VISIBILITY,
+    ],
+)
