@@ -190,3 +190,8 @@ class ImageSpec {
 
   @ShouldUpdate(onMount = true)
   static boolean shouldUpdate(
+      Diff<ScaleType> scaleType,
+      Diff<Reference<Drawable>> src) {
+    return (scaleType.getNext() != scaleType.getPrevious()) ||
+        Reference.shouldUpdate(src.getNext(), src.getPrevious());
+  }
