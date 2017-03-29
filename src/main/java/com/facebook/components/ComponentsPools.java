@@ -643,3 +643,17 @@ public class ComponentsPools {
   }
 
   @ThreadSafe(enableChecks = false)
+  static void release(Rect rect) {
+    rect.setEmpty();
+    sRectPool.release(rect);
+  }
+
+  static Spacing acquireSpacing() {
+    Spacing spacing = sSpacingPool.acquire();
+    if (spacing == null) {
+      spacing = new Spacing();
+    }
+
+    return spacing;
+  }
+

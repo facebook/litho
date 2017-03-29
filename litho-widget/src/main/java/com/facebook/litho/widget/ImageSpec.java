@@ -125,3 +125,4 @@ class ImageSpec {
       ComponentLayout layout,
       @Prop(resType = ResType.DRAWABLE) Reference<Drawable> src,
       @Prop(optional = true) ScaleType scaleType,
+      Output<DrawableMatrix> drawableMatrix,
