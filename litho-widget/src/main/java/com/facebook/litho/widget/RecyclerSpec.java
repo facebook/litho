@@ -98,3 +98,4 @@ class RecyclerSpec {
       @Prop(optional = true) boolean clipToPadding,
       @Prop(optional = true) boolean nestedScrollingEnabled,
       @Prop(optional = true) int scrollBarStyle,
+      @Prop(optional = true) RecyclerView.ItemDecoration itemDecoration,
