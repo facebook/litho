@@ -89,3 +89,4 @@ class HorizontalScrollSpec {
       int widthSpec,
       int heightSpec,
       Size size,
+      @FromPrepare ComponentTree contentComponent,

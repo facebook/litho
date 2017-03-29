@@ -272,3 +272,7 @@ public class GridComponentBinderTest {
     }
 
     return Whitebox.getInternalState(Whitebox.getInternalState(componentTree, "mRoot"), "color");
+  }
+
+  private static class MyTestGridComponentBinder extends GridComponentBinder {
+

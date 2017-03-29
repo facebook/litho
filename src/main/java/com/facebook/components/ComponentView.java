@@ -148,3 +148,5 @@ public class ComponentView extends ComponentHost {
       mIsAttached = false;
 
       if (mComponent != null) {
+        mMountState.detach();
+
