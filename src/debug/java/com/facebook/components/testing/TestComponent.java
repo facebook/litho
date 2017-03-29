@@ -115,3 +115,7 @@ public abstract class TestComponent<L extends ComponentLifecycle> extends Compon
     return mOnUnbindCalled;
   }
 
+  public boolean wasMeasureCalled() {
+    return mOnMeasureCalled;
+  }
+

@@ -566,3 +566,4 @@ public class WorkingRangesTest {
     }
 
     @Override
+    public void onMount(ViewGroup view) {

@@ -72,3 +72,12 @@ public class LayoutOutputTest {
     mLayoutOutput.setFlags(1);
     assertEquals(1, mLayoutOutput.getFlags());
   }
+
+  @Test
+  public void testStableIdCalculation() {
+    ComponentLifecycle lifecycle = new ComponentLifecycle() {
+      @Override
+      int getId() {
+        return LIFECYCLE_TEST_ID;
+      }
+    };

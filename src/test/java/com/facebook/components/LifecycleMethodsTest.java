@@ -130,3 +130,11 @@ public class LifecycleMethodsTest {
     }
 
     @Override
+    protected Object onCreateMountContent(ComponentContext context) {
+      mComponent.setCurrentStep(LifecycleStep.ON_CREATE_MOUNT_CONTENT);
+
+      return new LifecycleMethodsDrawable(mComponent);
+    }
+
+    @Override
+    protected void onMount(

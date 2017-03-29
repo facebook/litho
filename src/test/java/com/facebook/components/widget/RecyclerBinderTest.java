@@ -21,3 +21,6 @@ import com.facebook.components.LayoutHandler;
 import com.facebook.components.Size;
 import com.facebook.components.SizeSpec;
 import com.facebook.components.testing.testrunner.ComponentsTestRunner;
+
+import junit.framework.Assert;
+import org.junit.Before;

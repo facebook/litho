@@ -158,3 +158,6 @@ public class TestDrawableComponent extends ComponentLifecycle {
     size.height = (state.measuredHeight != -1)
         ? SizeSpec.resolveSize(heightSpec, state.measuredHeight)
         : height;
+  }
+
+  @Override
