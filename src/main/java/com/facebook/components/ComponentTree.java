@@ -1016,3 +1016,4 @@ public class ComponentTree {
 
   /**
    * Transfer mBackgroundLayoutState to mMainThreadLayoutState. This will proxy
+   * to the main thread if necessary. If the component/size-spec changes in the
