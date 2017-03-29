@@ -553,3 +553,5 @@ class TextSpec {
   @OnUnmount
   static void onUnmount(
       ComponentContext c,
+      TextDrawable textDrawable,
+      @Prop(resType = ResType.STRING) CharSequence text) {
