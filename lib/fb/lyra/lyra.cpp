@@ -87,3 +87,5 @@ void getStackTraceSymbols(vector<StackTraceElement>& symbols,
 }
 
 ostream& operator<<(ostream& out, const StackTraceElement& elm) {
+  IosFlagsSaver flags{out};
+
