@@ -667,3 +667,6 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       @AttrRes int resId,
       @DimenRes int defaultResId) {
     return positionPx(edge, mResourceResolver.resolveDimenOffsetAttr(resId, defaultResId));
+  }
+
+  @Override
