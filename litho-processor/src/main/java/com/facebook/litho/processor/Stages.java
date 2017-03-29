@@ -1683,3 +1683,4 @@ public class Stages {
                     ClassNames.COMPONENT,
                     ClassName.bestGuess(getSimpleClassName())))
             .addSuperinterface(Cloneable.class);
+
