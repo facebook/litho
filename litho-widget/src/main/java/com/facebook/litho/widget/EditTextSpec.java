@@ -332,3 +332,5 @@ class EditTextSpec {
       boolean isSingleLine,
       int textColor,
       ColorStateList textColorStateList,
+      int hintColor,
+      ColorStateList hintColorStateList,
