@@ -38,3 +38,11 @@ public final class ColorDrawableReference extends ReferenceLifecycle<Drawable> {
   private static final Pools.Pool<ColorDrawable> sPool = CAN_RECYCLE
       ? new Pools.SynchronizedPool<ColorDrawable>(INITIAL_POOL_SIZE)
       : null;
+
+  private ColorDrawableReference() {
+  }
+
+  public static synchronized ColorDrawableReference get() {
+    if (sInstance == null) {
+      sInstance = new ColorDrawableReference();
+    }
