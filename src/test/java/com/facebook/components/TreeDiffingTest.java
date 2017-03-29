@@ -211,3 +211,6 @@ public class TreeDiffingTest {
 
   @Test
   public void measureAndCreateDiffNode() {
+    final Component component = TestDrawableComponent.create(mContext)
+        .build();
+

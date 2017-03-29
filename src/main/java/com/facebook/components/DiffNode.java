@@ -109,3 +109,4 @@ class DiffNode implements Cloneable {
     mVisibilityOutput = visibilityOutput;
   }
 
+  LayoutOutput getBackground() {

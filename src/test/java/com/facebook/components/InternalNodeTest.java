@@ -264,3 +264,5 @@ public class InternalNodeTest {
             new ComponentContext(RuntimeEnvironment.application),
             RuntimeEnvironment.application.getResources());
 
+    nestedTree.layoutDirection(YogaDirection.RTL);
+    holderNode.calculateLayout();

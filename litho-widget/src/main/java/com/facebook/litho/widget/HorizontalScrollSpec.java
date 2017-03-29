@@ -96,3 +96,4 @@ class HorizontalScrollSpec {
     final int measuredWidth;
     final int measuredHeight;
 
+    Size contentSize = acquireSize();
