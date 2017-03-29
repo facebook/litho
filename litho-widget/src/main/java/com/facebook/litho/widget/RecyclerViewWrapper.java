@@ -127,3 +127,5 @@ public class RecyclerViewWrapper extends SwipeRefreshLayout {
    * This is needed to solve a launch-blocker t14789523 and work around a framework bug t14809560.
    */
   @Override
+  public boolean isLayoutRequested() {
+    if (getParent() != null) {

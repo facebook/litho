@@ -154,3 +154,10 @@ class DiffNode implements Cloneable {
     mLastMeasuredHeight = UNSPECIFIED;
     mLastWidthSpec = UNSPECIFIED;
     mLastHeightSpec = UNSPECIFIED;
+
+    for (int i = 0, size = mChildren.size(); i < size; i++) {
+      ComponentsPools.release(mChildren.get(i));
+    }
+    mChildren.clear();
+  }
+}
