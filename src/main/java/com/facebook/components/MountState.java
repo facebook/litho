@@ -458,3 +458,5 @@ class MountState {
   private boolean updateMountItemIfNeeded(
       LayoutOutput layoutOutput,
       MountItem currentMountItem,
+      boolean useUpdateValueFromLayoutOutput,
+      ComponentsLogger logger) {
