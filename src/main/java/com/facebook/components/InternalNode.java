@@ -1124,3 +1124,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Override
   public InternalNode clickHandler(EventHandler clickHandler) {
     getOrCreateNodeInfo().setClickHandler(clickHandler);
+    return this;
+  }
+
+  @Override
+  public InternalNode longClickHandler(EventHandler longClickHandler) {
