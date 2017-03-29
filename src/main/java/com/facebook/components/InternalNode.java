@@ -1470,3 +1470,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
             || mYogaNode.getLayoutBorder(BOTTOM) != 0);
   }
 
+  void setComponent(Component component) {
