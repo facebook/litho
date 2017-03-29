@@ -57,3 +57,4 @@ public class ComponentViewTest {
 
   @Test
   public void measureBeforeBeingAttached() {
+    mComponentView.measure(

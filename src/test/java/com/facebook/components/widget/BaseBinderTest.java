@@ -38,3 +38,5 @@ import static org.mockito.Mockito.mock;
 @RunWith(ComponentsTestRunner.class)
 public class BaseBinderTest {
 
+  private static final int WIDTH = 200;
+  private static final int HEIGHT = 400;
