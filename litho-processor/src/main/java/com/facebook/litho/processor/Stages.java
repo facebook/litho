@@ -1820,3 +1820,4 @@ public class Stages {
             .build());
 
     final MethodSpec equalsBuilder = generateEqualsMethodDefinition(false);
+    implClassBuilder.addMethod(equalsBuilder);
