@@ -979,3 +979,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   public InternalNode touchExpansionAttr(
       YogaEdge edge,
       @AttrRes int resId) {
+    return touchExpansionAttr(edge, resId, 0);
