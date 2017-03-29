@@ -779,3 +779,4 @@ public class RecyclerBinderTest {
     }
 
     for (int i = 0; i < 100; i++) {
+      Assert.assertNotNull(mHoldersForComponents.get(components.get(i).getComponent()));
