@@ -50,3 +50,5 @@ public class ComponentContext extends ContextWrapper {
 
   public ComponentContext(Context context, StateHandler stateHandler) {
     this(context, null, null, stateHandler);
+  }
+
