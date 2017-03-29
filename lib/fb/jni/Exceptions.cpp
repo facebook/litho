@@ -193,3 +193,4 @@ void translatePendingCppExceptionToJavaException() noexcept {
     try {
       throw;
     } catch(const JniException& ex) {
+      current = ex.getThrowable();
