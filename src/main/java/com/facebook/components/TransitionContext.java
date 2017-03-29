@@ -71,3 +71,5 @@ class TransitionContext {
       return false;
     }
     return !mTransitionKeys.contains(transitionKey);
+  }
+}

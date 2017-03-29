@@ -149,3 +149,173 @@ public class Transition {
 
   boolean restoreState(Transition transition) {
     return mAnimator.restoreState(transition.mAnimator);
+  }
+
+  void setListener(TransitionListener listener) {
+    mAnimator.setListener(listener);
+  }
+
+  public static class Builder {
+
+    private final String mKey;
+    private final Transition mTransition;
+
+    private Transition mAppearTransition;
+    private Transition mDisappearTransition;
+    private @PropertyType int mCurrentEvaluatingType = PropertyType.NONE;
+
+    Builder(String key) {
+      mKey = key;
+      mTransition = new Transition(key, CHANGE);
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    Builder(String key, TransitionAnimator animator) {
+      mKey = key;
+      mTransition = new Transition(key, CHANGE, animator);
+    }
+
+    /**
+     * Animate the alpha property of the object backed by the matching transitionKey.
+     */
+    public Builder alpha() {
+      mCurrentEvaluatingType = PropertyType.ALPHA;
+      mTransition.mValuesFlag |= PropertyType.ALPHA;
+      return this;
+    }
+
+    /**
+     * Animate the translationX property of the object backed by the matching transitionKey.
+     */
+    public Builder translationX() {
+      mCurrentEvaluatingType = PropertyType.TRANSLATION_X;
+      mTransition.mValuesFlag |= PropertyType.TRANSLATION_X;
+      return this;
+    }
+
+    /**
+     * Animate the translationY property of the object backed by the matching transitionKey.
+     */
+    public Builder translationY() {
+      mCurrentEvaluatingType = PropertyType.TRANSLATION_Y;
+      mTransition.mValuesFlag |= PropertyType.TRANSLATION_Y;
+      return this;
+    }
+
+    /**
+     * Set the start value to animate the previous property from,
+     * when the component will appear on screen.
+     */
+    public Builder withStartValue(float startValue) {
+      if (mAppearTransition == null) {
+        mAppearTransition = new Transition(mKey, APPEAR);
+      }
+
+      setValue(mAppearTransition, mCurrentEvaluatingType, startValue);
+      return this;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    Builder withStartValue(float startValue, TransitionAnimator animator) {
+      if (mAppearTransition == null) {
+        mAppearTransition = new Transition(mKey, APPEAR, animator);
+      }
+
+      setValue(mAppearTransition, mCurrentEvaluatingType, startValue);
+      return this;
+    }
+
+    /**
+     * Set the end value to animate the previous property to,
+     * when the component will disappear from the screen.
+     */
+    public Builder withEndValue(float endValue) {
+      if (mDisappearTransition == null) {
+        mDisappearTransition = new Transition(mKey, DISAPPEAR);
+      }
+
+      setValue(mDisappearTransition, mCurrentEvaluatingType, endValue);
+      return this;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    public Builder withEndValue(float endValue, TransitionAnimator animator) {
+      if (mDisappearTransition == null) {
+        mDisappearTransition = new Transition(mKey, DISAPPEAR, animator);
+      }
+
+      setValue(mDisappearTransition, mCurrentEvaluatingType, endValue);
+      return this;
+    }
+
+    /**
+     * Define an animator to be use in case of a change transition. If not separately defined,
+     * this animator will also be used for appear and disappear transitions.
+     * {@link TransitionInterpolatorAnimator} is the default animator able to run interpolators.
+     */
+    public Builder animator(TransitionAnimator animator) {
+      mTransition.mAnimator = animator;
+      return this;
+    }
+
+    /**
+     * Define an animator to be use in appear transitions.
+     * {@link TransitionInterpolatorAnimator} is the default animator able to run interpolators.
+     */
+    public Builder animatorOnAppear(TransitionAnimator animator) {
+      if (mAppearTransition == null) {
+        mAppearTransition = new Transition(mKey, APPEAR);
+      }
+      mAppearTransition.mAnimator = animator;
+      return this;
+    }
+
+    /**
+     * Define an animator to be use in disappear transitions.
+     * {@link TransitionInterpolatorAnimator} is the default animator able to run interpolators.
+     */
+    public Builder animatorOnDisappear(TransitionAnimator animator) {
+      if (mDisappearTransition == null) {
+        mDisappearTransition = new Transition(mKey, DISAPPEAR);
+      }
+      mDisappearTransition.mAnimator = animator;
+      return this;
+    }
+
+    public Transition build() {
+      if (mTransition.mAnimator == null) {
+        mTransition.mAnimator = new TransitionInterpolatorAnimator();
+      }
+
+      if (mAppearTransition != null && mAppearTransition.mAnimator == null) {
+        mAppearTransition.mAnimator = mTransition.mAnimator.clone();
+      }
+
+      if (mDisappearTransition != null && mDisappearTransition.mAnimator == null) {
+        mDisappearTransition.mAnimator = mTransition.mAnimator.clone();
+      }
+
+      if (mAppearTransition != null && mDisappearTransition != null) {
+        return TransitionSet.createSet(mTransition, mAppearTransition, mDisappearTransition);
+      }
+      if (mAppearTransition != null && mDisappearTransition == null) {
+        return TransitionSet.createSet(mTransition, mAppearTransition);
+      }
+      if (mAppearTransition == null && mDisappearTransition != null) {
+        return TransitionSet.createSet(mTransition, mDisappearTransition);
+      }
+
+      return mTransition;
+    }
+
+    private static void setValue(Transition transition, @PropertyType int type, float value) {
+      if (type == PropertyType.NONE) {
+        throw new IllegalStateException("Before setting a start/end transition value, you should " +
+            "define with transition type you want to animate.");
+      }
+
+      transition.mValuesFlag |= type;
+      transition.mLocalValues.set(type, value);
+    }
+  }
+}

@@ -66,3 +66,4 @@ public abstract class BaseBinder<
   private Listener mListener;
   private R mRangeController;
   private V mView;
+

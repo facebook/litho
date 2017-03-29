@@ -168,3 +168,9 @@ class TransitionKeySet implements TransitionListener {
 
     if (mRunningTransitionsPointer.size() > 0) {
       mTransitionKeySetListener.onTransitionKeySetStop(mKey, mTargetView);
+    }
+
+    mAnimationRunningCounter = 0;
+  }
+
+  /**

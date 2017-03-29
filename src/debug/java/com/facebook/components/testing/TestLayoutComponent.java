@@ -133,3 +133,4 @@ public class TestLayoutComponent extends ComponentLifecycle {
         context,
         defStyleAttr,
         defStyleRes,
+        new State(callsShouldUpdateOnMount, isPureRender, hasMountSpecChild, isDelegate));
