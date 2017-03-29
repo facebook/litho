@@ -109,3 +109,4 @@ public class ViewPredicatesTest {
 
   @Test
   public void testMatchesTextPartOfString() throws Exception {
+    final Predicate<View> matchesPartOfHello = ViewPredicates.matchesText(".*o.*");
