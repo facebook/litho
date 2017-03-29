@@ -30,3 +30,7 @@
     <attr name="android:shadowDy" />
     <attr name="android:shadowRadius" />
     <attr name="android:gravity" />
+    <attr name="android:minEms" />
+    <attr name="android:maxEms" />
+    <attr name="android:minWidth" />
+    <attr name="android:maxWidth" />
