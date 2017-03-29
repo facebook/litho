@@ -1269,3 +1269,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   public InternalNode performAccessibilityActionHandler(
       EventHandler<PerformAccessibilityActionEvent> performAccessibilityActionHandler) {
     getOrCreateNodeInfo().setPerformAccessibilityActionHandler(performAccessibilityActionHandler);
+    return this;
+  }
+
+  @Override
+  public InternalNode sendAccessibilityEventHandler(
+      EventHandler<SendAccessibilityEventEvent> sendAccessibilityEventHandler) {
