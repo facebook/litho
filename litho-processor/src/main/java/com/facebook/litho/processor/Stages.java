@@ -2434,3 +2434,4 @@ public class Stages {
    * @param fixedMethod description of method signature to be generated
    * @param typeParameters
    * @param element method the event will call to dispatch
+   * @param eventHandlerClassName   @throws IOException If one of the writer methods throw
