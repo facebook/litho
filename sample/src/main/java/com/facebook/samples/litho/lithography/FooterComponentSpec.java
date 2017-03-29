@@ -36,3 +36,6 @@ public class FooterComponentSpec {
                 .textSizeDip(14)
                 .textColor(GRAY)
                 .textStyle(ITALIC))
+        .build();
+  }
+}

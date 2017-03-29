@@ -36,3 +36,8 @@ public class ComponentTreeBuilderTest {
   private static final String mLogTag = "logTag";
   private final Object mLayoutLock = new Object();
 
+  private ComponentContext mContext;
+  private Component mRoot;
+  private ComponentTree.Builder mComponentTreeBuilder;
+  private Looper mLooper;
+  private ComponentsLogger mComponentsLogger;

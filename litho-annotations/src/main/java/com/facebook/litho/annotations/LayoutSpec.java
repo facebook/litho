@@ -31,3 +31,4 @@ import java.lang.annotation.RetentionPolicy;
  *   @OnCreateLayout
  *   protected ComponentLayout onCreateLayout(LayoutContext c, @Prop MyProp prop) {
  *       return Container.create(c)
+ *           .flexDirection(ROW)

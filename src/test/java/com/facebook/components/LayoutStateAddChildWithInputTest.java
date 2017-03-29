@@ -30,3 +30,6 @@ public class LayoutStateAddChildWithInputTest {
 
   @Test
   public void testNewEmptyLayout() {
+    InternalNode node = (InternalNode) Container.create(mContext)
+        .child(TestLayoutComponent.create(mContext))
+        .child(TestLayoutComponent.create(mContext))
