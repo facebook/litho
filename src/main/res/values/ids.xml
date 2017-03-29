@@ -14,3 +14,4 @@
   <item type="id" name="component_click_listener"/>
   <item type="id" name="component_long_click_listener"/>
   <item type="id" name="component_touch_listener"/>
+  <item type="id" name="component_node_info"/>

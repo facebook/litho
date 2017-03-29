@@ -16,3 +16,5 @@ import android.view.accessibility.AccessibilityManager;
 import static android.content.Context.ACCESSIBILITY_SERVICE;
 
 class AccessibilityUtils {
+  private static final boolean ACCESSIBILITY_ENABLED =
+      Boolean.getBoolean("is_accessibility_enabled");
