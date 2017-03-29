@@ -970,3 +970,5 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       YogaEdge edge,
       @AttrRes int resId,
       @DimenRes int defaultResId) {
+    return touchExpansionPx(
+        edge,
