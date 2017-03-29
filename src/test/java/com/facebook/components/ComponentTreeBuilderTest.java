@@ -41,3 +41,6 @@ public class ComponentTreeBuilderTest {
   private ComponentTree.Builder mComponentTreeBuilder;
   private Looper mLooper;
   private ComponentsLogger mComponentsLogger;
+
+  @Before
+  public void setup() throws Exception {

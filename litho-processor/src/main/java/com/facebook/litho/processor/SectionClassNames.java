@@ -17,3 +17,4 @@ import com.squareup.javapoet.TypeName;
  * would mean the annotation processor might need to process Android-specific class definitions)
  * we provide class name constants instead.
  */
+public class SectionClassNames {

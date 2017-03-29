@@ -32,3 +32,12 @@ import java.lang.annotation.RetentionPolicy;
  *   protected ComponentLayout onCreateLayout(LayoutContext c, @Prop MyProp prop) {
  *       return Container.create(c)
  *           .flexDirection(ROW)
+ *           .alignItems(FLEX_START)
+ *           .child(someChild1)
+ *           .child(someChild2)
+ *           .build();
+ * }
+ * }
+ * </pre>
+ */
+@Retention(RetentionPolicy.RUNTIME)

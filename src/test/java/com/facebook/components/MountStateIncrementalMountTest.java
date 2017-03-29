@@ -28,3 +28,6 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.robolectric.RuntimeEnvironment;
 
+import static com.facebook.components.ComponentsLogger.EVENT_MOUNT;
+import static com.facebook.components.ComponentsLogger.PARAM_MOUNTED_COUNT;
+import static com.facebook.components.ComponentsLogger.PARAM_UNMOUNTED_COUNT;
