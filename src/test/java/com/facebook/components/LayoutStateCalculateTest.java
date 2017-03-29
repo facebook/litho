@@ -1851,3 +1851,4 @@ public class LayoutStateCalculateTest {
         SizeSpec.EXACTLY);
 
     final Component<?> componentSpy = PowerMockito.spy(
+        TestLayoutComponent.create(c, 0, 0, true, true, true, false).build());
