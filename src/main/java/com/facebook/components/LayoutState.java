@@ -674,3 +674,6 @@ class LayoutState {
       layoutState.mCurrentLevel--;
     }
     layoutState.mShouldDuplicateParentState = shouldDuplicateParentState;
+
+    Collections.sort(layoutState.mMountableOutputTops, sTopsComparator);
+    Collections.sort(layoutState.mMountableOutputBottoms, sBottomsComparator);
