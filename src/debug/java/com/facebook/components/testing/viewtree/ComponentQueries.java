@@ -114,3 +114,8 @@ class ComponentQueries {
   private static boolean satisfiesPredicate(final ComponentHost host, final Predicate<Drawable> predicate) {
     final List<Drawable> drawables = host.getDrawables();
     for (final Drawable drawable : drawables) {
+      if (predicate.apply(drawable)) {
+        return true;
+      }
+    }
+
