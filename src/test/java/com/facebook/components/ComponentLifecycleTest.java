@@ -394,3 +394,5 @@ public class ComponentLifecycleTest {
         int heightSpec,
         Size size,
         Component<?> component) {
+      size.width = A_WIDTH;
+      size.height = A_HEIGHT;
