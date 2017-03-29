@@ -43,3 +43,5 @@ public class IncrementalMountUtils {
   public static void performIncrementalMount(ViewGroup scrollingViewParent) {
     assertMainThread();
     final int viewGroupWidth = scrollingViewParent.getWidth();
+    final int viewGroupHeight = scrollingViewParent.getHeight();
+    for (int i = 0; i < scrollingViewParent.getChildCount(); i++) {
