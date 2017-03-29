@@ -1711,3 +1711,10 @@ class LayoutState {
     layoutState.mMountableOutputTops.add(layoutOutput);
     layoutState.mMountableOutputBottoms.add(layoutOutput);
   }
+
+  private TransitionContext getOrCreateTransitionContext() {
+    if (mTransitionContext == null) {
+      mTransitionContext = ComponentsPools.acquireTransitionContext();
+    }
+    return mTransitionContext;
+  }
