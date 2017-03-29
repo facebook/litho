@@ -738,3 +738,4 @@ public class RecyclerBinderTest {
     mRecyclerBinder.removeItemAt(rangeTotal + 1);
 
     final TestComponentTreeHolder holder =
+        mHoldersForComponents.get(components.get(rangeTotal + 1).getComponent());
