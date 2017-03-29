@@ -838,3 +838,4 @@ public class TreeDiffingTest {
         true,
         firstLayoutState.getDiffTree());
 
+    assertFalse(secondComponent.wasMeasureCalled());
