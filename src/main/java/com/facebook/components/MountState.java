@@ -752,3 +752,4 @@ class MountState {
 
         if (oldItem == null) {
           // This was previously unmounted.
+          mPrepareMountStats.unmountedCount++;

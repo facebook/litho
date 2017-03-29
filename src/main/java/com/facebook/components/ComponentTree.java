@@ -996,3 +996,7 @@ public class ComponentTree {
 
     logger.eventStart(EVENT_LAYOUT_CALCULATE, root, PARAM_LOG_TAG, mContext.getLogTag());
     logger.eventAddParam(
+        EVENT_LAYOUT_CALCULATE,
+        root,
+        PARAM_TREE_DIFF_ENABLED,
+        String.valueOf(mIsLayoutDiffingEnabled));
