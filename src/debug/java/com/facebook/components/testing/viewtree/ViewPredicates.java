@@ -92,3 +92,7 @@ final class ViewPredicates {
     };
   }
 
+  public static Predicate<View> hasVisibleText(final String text) {
+    return Predicates.and(isVisible(), hasText(text));
+  }
+
