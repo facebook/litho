@@ -1407,3 +1407,6 @@ public class LayoutStateCalculateTest {
                     .flexDirection(YogaFlexDirection.ROW)
                     .alignItems(YogaAlign.CENTER)
                     .paddingDip(YogaEdge.ALL, 10)
+                    .importantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS)
+                    .child(
+                        TestDrawableComponent.create(c)
