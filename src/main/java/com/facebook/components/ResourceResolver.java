@@ -48,3 +48,6 @@ public class ResourceResolver {
   }
 
   final int dipsToPixels(int dips) {
+    return dipsToPixels((float) dips);
+  }
+

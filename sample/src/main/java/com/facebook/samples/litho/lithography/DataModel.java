@@ -91,3 +91,5 @@ public class DataModel {
             "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Inauguraci\u00F3n_de_la_Estaci\u00F3n_definitiva_del_ferrocarril_de_Madrid_a_Ciudad_Real_y_Badajoz_%28Comba%29.jpg/512px-Inauguraci\u00F3n_de_la_Estaci\u00F3n_definitiva_del_ferrocarril_de_Madrid_a_Ciudad_Real_y_Badajoz_%28Comba%29.jpg",
             "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Palacio_del_pardo_XIX.jpg/512px-Palacio_del_pardo_XIX.jpg"
         )
+    };
+  }
