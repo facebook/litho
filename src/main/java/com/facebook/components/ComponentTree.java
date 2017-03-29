@@ -1102,3 +1102,4 @@ public class ComponentTree {
   }
 
   private static boolean isCompatibleSpec(
+      LayoutState layoutState, int widthSpec, int heightSpec) {
