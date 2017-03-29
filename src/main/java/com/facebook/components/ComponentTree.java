@@ -481,3 +481,7 @@ public class ComponentTree {
       // This widthSpec/heightSpec is fixed until the view gets detached.
       mWidthSpec = widthSpec;
       mHeightSpec = heightSpec;
+      mHasViewMeasureSpec = true;
+
+      toRelease = setBestMainThreadLayoutAndReturnOldLayout();
+
