@@ -986,3 +986,32 @@ public class Stages {
 
   /**
    * Generates a method to create the initial values for parameters annotated with {@link State}.
+   * This method also validates that the delegate method only tries to assign an initial value to
+   * State annotated parameters.
+   */
+  public void generateCreateInitialState(
+      ExecutableElement from,
+      ClassName contextClass,
+      ClassName componentClass) {
+
+    verifyParametersForCreateInitialState(contextClass, from);
+
+    final MethodDescription methodDescription = new MethodDescription();
+    methodDescription.annotations = new Class[] { Override.class };
+    methodDescription.accessType = Modifier.PROTECTED;
+    methodDescription.returnType = null;
+    methodDescription.name = "createInitialState";
+    methodDescription.parameterTypes = new TypeName[] {contextClass};
+
+    generateDelegate(methodDescription, from, componentClass);
+  }
+
+  private void verifyParametersForCreateInitialState(
+      ClassName contextClass,
+      ExecutableElement executableElement) {
+    final List<VariableElement> parameters =
+        (List<VariableElement>) executableElement.getParameters();
+
+    if (parameters.size() < ON_CREATE_INITIAL_STATE + 1) {
+      throw new ComponentsProcessingException(
+          executableElement,
