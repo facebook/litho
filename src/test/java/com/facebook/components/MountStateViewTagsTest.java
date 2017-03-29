@@ -40,3 +40,6 @@ public class MountStateViewTagsTest {
 
   @Test
   public void testInnerComponentHostViewTags() {
+    final Object tag1 = new Object();
+    final SparseArray<Object> tags1 = new SparseArray<>(1);
+    tags1.put(DUMMY_ID, tag1);

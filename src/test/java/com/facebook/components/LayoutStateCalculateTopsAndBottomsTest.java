@@ -45,3 +45,4 @@ public class LayoutStateCalculateTopsAndBottomsTest {
                             .heightPx(50)))
             .child(
                 TestDrawableComponent.create(c)
+                    .withLayout().flexShrink(0)

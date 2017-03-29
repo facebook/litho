@@ -55,3 +55,4 @@ class HorizontalScrollSpec {
 
   @OnLoadStyle
   static void onLoadStyle(
+      ComponentContext c,

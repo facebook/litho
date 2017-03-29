@@ -45,3 +45,8 @@ public class ResourceDrawableReferenceTest {
   @Test
   public void testReleaseAndAcquire() {
     Reference<Drawable> ref1 =
+        ResourceDrawableReference.create(mContext)
+            .resId(R.drawable.background)
+            .build();
+    Drawable drawable1 = Reference.acquire(mContext, ref1);
+    Reference.release(mContext, drawable1, ref1);

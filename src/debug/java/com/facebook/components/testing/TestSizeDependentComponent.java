@@ -46,3 +46,5 @@ public class TestSizeDependentComponent extends ComponentLifecycle {
 
     if (state.hasFixedSizes) {
       builder1
+          .widthPx(50)
+          .heightPx(50);

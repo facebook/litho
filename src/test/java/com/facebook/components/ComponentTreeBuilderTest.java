@@ -78,3 +78,5 @@ public class ComponentTreeBuilderTest {
     assertEquals(mComponentsLogger, mContext.getLogger());
     assertEquals(mLogTag, mContext.getLogTag());
 
+    Handler handler = Whitebox.getInternalState(componentTree, "mLayoutThreadHandler");
+    assertSame(mLooper, handler.getLooper());

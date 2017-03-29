@@ -180,3 +180,30 @@ public class LayoutDirectionTest {
 
     Drawable drawable1 = componentView.getDrawables().get(0);
     Drawable drawable2 = componentView.getDrawables().get(1);
+
+    assertEquals(new Rect(0, 0, 10, 10), drawable1.getBounds());
+    assertEquals(new Rect(10, 0, 20, 10), drawable2.getBounds());
+
+    ComponentTestHelper.mountComponent(
+        mContext,
+        componentView,
+        new InlineLayoutSpec() {
+              @Override
+              protected ComponentLayout onCreateLayout(ComponentContext c) {
+                return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    .flexDirection(YogaFlexDirection.ROW)
+                    .layoutDirection(YogaDirection.RTL)
+                    .child(
+                        Layout.create(c, child1).flexShrink(0)
+                            .widthPx(10)
+                            .heightPx(10))
+                    .child(
+                        Layout.create(c, child2).flexShrink(0)
+                            .widthPx(10)
+                            .heightPx(10))
+                    .build();
+              }
+            },
+        20,
+        10);
+

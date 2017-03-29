@@ -41,3 +41,6 @@ import static org.mockito.Mockito.verify;
 public class MountStateRemountInPlaceTest {
   private ComponentContext mContext;
   private ComponentsLogger mComponentsLogger;
+
+  @Before
+  public void setup() {

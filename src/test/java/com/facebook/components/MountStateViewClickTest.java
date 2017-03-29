@@ -30,3 +30,10 @@ import static org.junit.Assert.assertTrue;
 @RunWith(ComponentsTestRunner.class)
 public class MountStateViewClickTest {
 
+  private ComponentContext mContext;
+
+  @Before
+  public void setup() {
+    mContext = new ComponentContext(RuntimeEnvironment.application);
+  }
+
