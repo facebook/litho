@@ -191,3 +191,4 @@ public class Stages {
     mInterStagePropAnnotations = interStagePropAnnotations;
     mClassTypeSpec = typeSpec;
     mTypeVariables = typeVariables;
+    mEventDeclarations = eventDeclarations;
