@@ -165,3 +165,4 @@ class ImageSpec {
   static void onMount(
       ComponentContext c,
       MatrixDrawable matrixDrawable,
+      @Prop(resType = ResType.DRAWABLE) Reference<Drawable> src,
