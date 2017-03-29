@@ -435,3 +435,5 @@ public class ComponentHost extends ViewGroup {
       finishTemporaryDetach(((View) content));
     }
   }
+
+  /**

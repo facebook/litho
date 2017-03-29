@@ -1131,3 +1131,5 @@ public class LayoutStateCalculateTest {
     assertEquals(4, layoutState.getMountableOutputCount());
 
     // First and third output are the background and the foreground
+    assertTrue(getComponentAt(layoutState, 1) instanceof DrawableComponent);
+    assertTrue(getComponentAt(layoutState, 3) instanceof DrawableComponent);
