@@ -519,3 +519,4 @@ class TextSpec {
     }
   }
 
+  @OnCreateMountContent
