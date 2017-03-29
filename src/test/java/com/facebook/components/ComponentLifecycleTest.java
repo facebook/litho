@@ -375,3 +375,4 @@ public class ComponentLifecycleTest {
 
     @Override
     protected void onMeasure(
+        ComponentContext c,
