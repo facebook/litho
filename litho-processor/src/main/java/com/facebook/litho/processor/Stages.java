@@ -1352,3 +1352,5 @@ public class Stages {
       eventHandlerParams.unindent();
 
       if (element.getReturnType().getKind() != VOID) {
+        methodBuilder.addStatement(
+            "return do$L($L)",
