@@ -153,3 +153,14 @@ public class RecyclerBinderTest {
 
     for (int k = rangeTotal + 1; k < components.size(); k++) {
       componentTreeHolder = mHoldersForComponents.get(components.get(k).getComponent());
+
+      assertFalse(componentTreeHolder.isTreeValid());
+      assertFalse(componentTreeHolder.mLayoutAsyncCalled);
+      assertFalse(componentTreeHolder.mLayoutSyncCalled);
+    }
+
+    Assert.assertEquals(100, size.width);
+  }
+
+  @Test
+  public void onBoundsDefined() {

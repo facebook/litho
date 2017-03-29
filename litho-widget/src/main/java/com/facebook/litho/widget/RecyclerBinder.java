@@ -446,3 +446,8 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     mLastHeightSpec = heightSpec;
 
     // Width and Height specs here are all for span size 1
+    mChildrenWidthSpec = mLayoutInfo.getChildWidthSpec(widthSpec);
+    mChildrenHeightSpec = mLayoutInfo.getChildHeightSpec(heightSpec);
+
+    // We now need to compute the size of the non scrolling side. We try to do this by using the
+    // calculated range (if we have one) or computing one.
