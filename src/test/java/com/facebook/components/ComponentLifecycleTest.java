@@ -309,3 +309,4 @@ public class ComponentLifecycleTest {
   @Test
   public void testLayoutSpecMeasureResolveNestedTree() {
     setUpComponentForCreateLayout(false /* isMountSpec */, true /* canMeasure */);
+    YogaMeasureFunction measureFunction = getMeasureFunction();
