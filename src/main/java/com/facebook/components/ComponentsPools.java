@@ -826,3 +826,6 @@ public class ComponentsPools {
   }
 
   @ThreadSafe(enableChecks = false)
+  public static void release(BorderColorDrawable borderColorDrawable) {
+    sBorderColorDrawablePool.release(borderColorDrawable);
+  }
