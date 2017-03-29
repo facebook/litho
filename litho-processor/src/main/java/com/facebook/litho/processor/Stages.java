@@ -844,3 +844,4 @@ public class Stages {
       Class<Annotation>[] possibleAnnotations) {
     final ArrayList<Annotation> annotations = new ArrayList<>();
     for (Class<Annotation> annotationClass : possibleAnnotations) {
+      final Annotation annotation = element.getAnnotation(annotationClass);
