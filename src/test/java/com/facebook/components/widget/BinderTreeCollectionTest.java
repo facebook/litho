@@ -15,3 +15,7 @@ import com.facebook.components.ComponentContext;
 import com.facebook.components.ComponentTree;
 import com.facebook.components.testing.testrunner.ComponentsTestRunner;
 import com.facebook.components.testing.TestLayoutComponent;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;

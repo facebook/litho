@@ -175,3 +175,7 @@ public class SizeSpec {
 
       default:
         throw new IllegalArgumentException("Unexpected YogaMeasureMode: " + cssMode);
+    }
+
+    return makeSizeSpec(FastMath.round(cssSize), mode);
+  }

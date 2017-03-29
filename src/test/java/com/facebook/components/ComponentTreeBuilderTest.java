@@ -75,3 +75,5 @@ public class ComponentTreeBuilderTest {
     assertSameAsInternalState(componentTree, mLayoutLock, "mLayoutLock");
 
     assertTrue(componentTree.isIncrementalMountEnabled());
+    assertEquals(mComponentsLogger, mContext.getLogger());
+    assertEquals(mLogTag, mContext.getLogTag());

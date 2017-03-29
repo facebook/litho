@@ -45,3 +45,28 @@ public abstract class GridComponentBinder extends RecyclerComponentBinder<
       GridLayoutManager layoutManager,
       RecyclerComponentWorkingRangeController rangeController) {
     super(context, layoutManager, rangeController);
+  }
+
+  /**
+   * ComponentView.performIncrementalMount() checks visible bounds of the View
+   * and incrementally mounts/unmounts.
+   * When a view is completely visible don't need to check the bounds to unmount some stuff.
+   * But only the Views at the beginning/end of the scrolling parent need to check if it needs to
+   * mount/unmount stuff.
+   *
+   * Example with 6 items: items 0 and 1 partially visible, item 2 and 3 completely visible,
+   * item 4 and 5 partially visible.
+   *                  _______
+   * ------------     |__|__|
+   * ViewPort         |__|__|
+   * ------------     |__|__|
+   *
+   *
+   * Example with 4 items so big that in the center there are no items completely visible...
+   *                _________
+   * ------------   |   |   |
+   * ViewPort       |___|___|
+   * ------------   |   |   |
+   *                |___|___|
+   */
+  @Override

@@ -53,3 +53,12 @@ class BinderTreeCollection {
    */
   void insert(int position, ComponentTree item) {
     shiftRangeRight(position, getFirstPosition() + size() - position, 1);
+    mItems.put(position, item);
+  }
+
+  /**
+   * Move an ComponentTree from a position to another position.
+   */
+  void move(int fromPosition, int toPosition) {
+    ComponentTree movingComponentTree = mItems.get(fromPosition);
+

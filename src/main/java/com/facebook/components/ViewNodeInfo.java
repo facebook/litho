@@ -31,3 +31,4 @@ class ViewNodeInfo {
   private Rect mPadding;
   private Rect mExpandedTouchBounds;
   private YogaDirection mLayoutDirection;
+  private String mTransitionKey;

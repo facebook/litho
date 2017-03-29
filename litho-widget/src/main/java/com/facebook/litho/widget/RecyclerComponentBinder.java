@@ -15,3 +15,5 @@ import android.os.Looper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.view.View;
+import android.view.ViewGroup;
+
