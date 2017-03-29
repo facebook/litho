@@ -67,3 +67,4 @@ class LayoutOutput implements Cloneable {
   }
 
   void setComponent(Component<?> component) {
+    mComponent = component;

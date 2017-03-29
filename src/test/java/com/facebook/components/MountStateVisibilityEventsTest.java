@@ -302,3 +302,4 @@ public class MountStateVisibilityEventsTest {
     final LayoutState layoutState = new LayoutState();
     Whitebox.setInternalState(layoutState, "mVisibilityOutputs", visibilityOutputs);
 
+    mMountState.mount(layoutState, new Rect(LEFT, 5, RIGHT, 10));
