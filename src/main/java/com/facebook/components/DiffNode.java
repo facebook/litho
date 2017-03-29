@@ -33,3 +33,4 @@ class DiffNode implements Cloneable {
   private int mLastHeightSpec;
   private List<DiffNode> mChildren;
 
+  DiffNode() {

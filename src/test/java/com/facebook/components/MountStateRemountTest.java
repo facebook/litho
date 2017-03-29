@@ -89,3 +89,4 @@ public class MountStateRemountTest {
 
     final List<Component> components = new ArrayList<>();
     for (int i = 0; i < indexToItemMap.size(); i++) {
+      components.add(indexToItemMap.valueAt(i).getComponent());

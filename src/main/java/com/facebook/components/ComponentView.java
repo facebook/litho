@@ -94,3 +94,8 @@ public class ComponentView extends ComponentHost {
     }
   }
 
+  void forceRelayout() {
+    mForceLayout = true;
+    requestLayout();
+  }
+

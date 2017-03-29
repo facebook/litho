@@ -35,3 +35,49 @@ public class DuplicateParentStateTest {
 
   @Test
   public void testDuplicateParentStateAvoidedIfRedundant() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c)
+            .duplicateParentState(true)
+            .clickHandler(c.newEventHandler(1))
+            .child(
+                Container.create(c)
+                    .duplicateParentState(false)
+                    .child(
+                        TestDrawableComponent.create(c)
+                            .withLayout()
+                            .duplicateParentState(true)))
+            .child(
+                Container.create(c)
+                    .duplicateParentState(true)
+                    .child(
+                        TestDrawableComponent.create(c)
+                            .withLayout()
+                            .duplicateParentState(true)))
+            .child(
+                Container.create(c)
+                    .clickHandler(c.newEventHandler(2))
+                    .child(
+                        TestDrawableComponent.create(c)
+                            .withLayout()
+                            .duplicateParentState(true)))
+            .child(
+                Container.create(c)
+                    .clickHandler(c.newEventHandler(3))
+                    .child(
+                        TestDrawableComponent.create(c)
+                            .withLayout()
+                            .duplicateParentState(false)))
+            .child(
+                Container.create(c)
+                    .clickHandler(c.newEventHandler(3))
+                    .backgroundColor(Color.RED)
+                    .foregroundColor(Color.RED))
+            .child(
+                Container.create(c)
+                    .backgroundColor(Color.BLUE)
+                    .foregroundColor(Color.BLUE))
+            .build();
+      }
+    };
