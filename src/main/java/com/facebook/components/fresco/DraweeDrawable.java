@@ -18,3 +18,6 @@ import android.graphics.drawable.Drawable;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.facebook.components.ImageContent;
+import com.facebook.components.Touchable;
+import com.facebook.components.fresco.common.NoOpDrawable;

@@ -24,3 +24,6 @@ public class SubComponent {
 
   public static SubComponent of(Component component) {
     return new SubComponent(component.getLifecycle().getClass(), component);
+  }
+
+  private Class<? extends ComponentLifecycle> mComponentType;
