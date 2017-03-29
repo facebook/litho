@@ -1447,3 +1447,4 @@ public class Stages {
     }
 
     writeMethodSpec(new DelegateMethodSpecBuilder()
+        .implClassName(getImplClassName())
