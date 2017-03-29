@@ -85,3 +85,4 @@ public class DuplicateParentStateTest {
     LayoutState layoutState = LayoutState.calculate(
         new ComponentContext(RuntimeEnvironment.application),
         component,
+        -1,

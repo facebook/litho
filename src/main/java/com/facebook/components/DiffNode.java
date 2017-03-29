@@ -46,3 +46,6 @@ class DiffNode implements Cloneable {
   }
 
   Component getComponent() {
+    return mComponent;
+  }
+

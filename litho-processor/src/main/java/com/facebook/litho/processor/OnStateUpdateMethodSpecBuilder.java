@@ -90,3 +90,33 @@ class OnStateUpdateMethodSpecBuilder {
       builder.addParameter(eventParam.type, eventParam.name);
     }
 
+    builder.addStatement(
+        "$T _component = c.get$LScope()",
+        mComponentClass,
+        mComponentClass.simpleName())
+        .addCode(
+            CodeBlock.builder()
+                .beginControlFlow("if (_component == null)")
+                .addStatement("return")
+                .endControlFlow()
+                .build());
+    final CodeBlock.Builder codeBlockBuilder = CodeBlock.builder();
+    codeBlockBuilder.add(mLifecycleImplClass +
+        "." +
+        mStateUpdateClassName +
+        " _stateUpdate = ((" +
+        mLifecycleImplClass+"."+
+        mLifecycleImplClass +
+        "Impl) _component).create" +
+        mStateUpdateClassName +
+        "(");
+
+    for (int i = 0, size = mUpdateParams.size(); i < size; i++) {
+      codeBlockBuilder.add(mUpdateParams.get(i).name);
+      if (i < size -1) {
+        codeBlockBuilder.add(", ");
+      }
+    }
+    codeBlockBuilder.add(");\n");
+
+    builder.addCode(codeBlockBuilder.build());

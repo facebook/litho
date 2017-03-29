@@ -114,3 +114,6 @@ public class ComponentViewMountTest {
     mComponentView.setComponent(mComponentTree);
 
     assertEquals(1, mComponentView.getRequestLayoutInvocationCount());
+  }
+
+  @Test
