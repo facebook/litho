@@ -1605,3 +1605,8 @@ public class LayoutStateCalculateTest {
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Container.create(c)
             .paddingPx(YogaEdge.ALL, 2)
+            .child(
+                TestSizeDependentComponent.create(c)
+                    .setFixSizes(true)
+                    .setDelegate(true)
+                    .withLayout()
