@@ -67,3 +67,5 @@ public class TestLayoutComponent extends ComponentLifecycle {
 
     mCallsShouldUpdateOnMount = callsShouldUpdateOnMount;
     mIsPureRender = isPureRender;
+    mHasMountSpecChild = hasMountSpecChild;
+    mIsDelegate = isDelegate;

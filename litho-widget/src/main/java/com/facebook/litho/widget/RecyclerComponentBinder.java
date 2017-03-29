@@ -27,3 +27,6 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static com.facebook.components.SizeSpec.getMode;
 import static com.facebook.components.SizeSpec.UNSPECIFIED;
 
+/**
+ * A component binder for {@link RecyclerView}.
+ */

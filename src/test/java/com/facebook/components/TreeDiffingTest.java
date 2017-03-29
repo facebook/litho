@@ -54,3 +54,4 @@ public class TreeDiffingTest {
   public PowerMockRule mPowerMockRule = new PowerMockRule();
 
   private int mUnspecifiedSpec;
+

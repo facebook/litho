@@ -67,3 +67,13 @@ public class TransitionInterpolatorAnimatorTest {
     transitionAnimator.setDuration(DURATION);
     transitionAnimator.setStartDelay(START_DELAY);
     transitionAnimator.setInterpolator(mInterpolator);
+    transitionAnimator.setListener(new Transition.TransitionListener() {
+      @Override
+      public void onTransitionEnd() {
+      }
+    });
+
+    transitionAnimator.start(mView, PROPERTY_CHANGE_HOLDERS);
+
+    assertEquals(DURATION, mAnimator.getDuration());
+    assertEquals(START_DELAY, mAnimator.getStartDelay());
