@@ -599,3 +599,5 @@ class LayoutState {
             layoutState.mContext,
             component);
 
+        if (transition != null) {
+          layoutState.getOrCreateTransitionContext().add(transition);
