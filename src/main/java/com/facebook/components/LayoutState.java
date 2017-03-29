@@ -98,3 +98,8 @@ class LayoutState {
           return lhsBottom < rhsBottom
               ? -1
               : lhsBottom > rhsBottom
+              ? 1
+              // Hosts should be lower for bottoms so that they are mounted first if possible.
+              : isHostSpec(lhs.getComponent()) == isHostSpec(rhs.getComponent())
+              ? 0
+              : isHostSpec(lhs.getComponent()) ? 1 : -1;

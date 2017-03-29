@@ -77,3 +77,5 @@ class HorizontalScrollSpec {
   static void onPrepare(
       ComponentContext context,
       @Prop Component<?> contentProps,
+      Output<ComponentTree> contentComponent) {
+    contentComponent.set(
