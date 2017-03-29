@@ -261,3 +261,6 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
     mGenericDraweeHierarchy.setOverlayImage(DrawableUtils.cloneDrawable(mOverlayImage));
   }
 
+  public void releaseReferences() {
+    if (mPlaceholderReference != null) {
+      Reference.release(mContext, mPlaceholder, mPlaceholderReference);
