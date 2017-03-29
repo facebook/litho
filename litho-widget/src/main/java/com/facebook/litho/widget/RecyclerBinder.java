@@ -320,3 +320,5 @@ public class RecyclerBinder implements Binder<RecyclerView> {
           toPosition >= mCurrentFirstVisiblePosition &&
           toPosition <= mCurrentFirstVisiblePosition + mRangeSize;
 
+      childrenWidthSpec = getActualChildrenWidthSpec(holder);
+      childrenHeightSpec = getActualChildrenHeightSpec(holder);

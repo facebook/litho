@@ -164,3 +164,4 @@ public class RecyclerBinderTest {
 
   @Test
   public void onBoundsDefined() {
+    final List<ComponentInfo> components = prepareLoadedBinder();
