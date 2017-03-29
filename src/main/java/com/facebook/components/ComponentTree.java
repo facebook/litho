@@ -891,3 +891,5 @@ public class ComponentTree {
         return;
       }
 
+      // Check if we already have a compatible layout.
+      if (hasCompatibleComponentAndSpec()) {
