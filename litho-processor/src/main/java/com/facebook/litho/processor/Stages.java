@@ -1235,3 +1235,5 @@ public class Stages {
       if (!paramDeclaredTypeName.equals(ClassNames.STATE_VALUE.simpleName())) {
         throw new ComponentsProcessingException(
             "All state parameters must be of type com.facebook.litho.StateValue, " +
+                param.getSimpleName() + " is of type " +
+                param.asType());
