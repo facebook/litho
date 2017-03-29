@@ -194,3 +194,5 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
     mHighlightColor = 0;
     mColorStateList = null;
     mUserColor = 0;
+  }
+
