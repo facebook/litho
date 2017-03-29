@@ -49,3 +49,4 @@ public interface Binder<V extends ViewGroup> {
 
   /**
    * Call this method before the {@link View} is mounted, i.e. within
+   * {@link com.facebook.litho.ComponentLifecycle#onMount(Context, Object, Component)}
