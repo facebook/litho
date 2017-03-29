@@ -218,3 +218,43 @@ public class LayoutStateCalculateVisibilityOutputsTest {
             .child(
                 TestDrawableComponent.create(c)
                     .withLayout().flexShrink(0)
+                    .visibleHandler(c.newEventHandler(1))
+                    .wrapInView())
+            .build();
+      }
+    };
+
+    final LayoutState layoutState = calculateLayoutState(
+        RuntimeEnvironment.application,
+        component,
+        -1,
+        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
+        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
+
+    assertEquals(1, layoutState.getVisibilityOutputCount());
+  }
+
+  @Test
+  public void testLayoutOutputForRootWithNullLayout() {
+    final Component componentWithNullLayout = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return null;
+      }
+    };
+
+    LayoutState layoutState = calculateLayoutState(
+        RuntimeEnvironment.application,
+        componentWithNullLayout,
+        -1,
+        SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
+        SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY));
+
+    assertEquals(0, layoutState.getVisibilityOutputCount());
+  }
+
+  @Test
+  public void testLayoutComponentForNestedTreeChildWithNullLayout() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
