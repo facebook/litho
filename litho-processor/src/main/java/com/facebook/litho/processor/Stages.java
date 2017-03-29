@@ -1612,3 +1612,6 @@ public class Stages {
 
     final List<? extends VariableElement> parameters = delegateMethod.getParameters();
 
+    for (int i = ON_STYLE_PROPS, size = parameters.size(); i < size; i++) {
+      final VariableElement v = parameters.get(i);
+      final TypeName typeName = ClassName.get(v.asType());
