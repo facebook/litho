@@ -245,3 +245,8 @@ public abstract class ComponentLifecycle implements EventDispatcher {
       onPrepare(context, component);
     }
 
+    if (context.getTreeProps() != parentTreeProps) {
+      ComponentsPools.release(context.getTreeProps());
+      context.setTreeProps(parentTreeProps);
+    }
+
