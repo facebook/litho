@@ -356,3 +356,7 @@ class EditTextSpec {
     editText.setMinLines(minLines);
     editText.setMaxLines(maxLines);
     editText.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLength)});
+    editText.setShadowLayer(shadowRadius, shadowDx, shadowDy, shadowColor);
+    editText.setSingleLine(isSingleLine);
+    editText.setLinkTextColor(linkColor);
+    editText.setHighlightColor(highlightColor);
