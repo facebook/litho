@@ -353,3 +353,26 @@ public class RecyclerBinderTest {
     int heightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
 
     mRecyclerBinder.measure(size, widthSpec, heightSpec);
+
+    TestComponentTreeHolder componentTreeHolder =
+        mHoldersForComponents.get(components.get(0).getComponent());
+
+    assertTrue(componentTreeHolder.isTreeValid());
+    assertTrue(componentTreeHolder.mLayoutSyncCalled);
+    Assert.assertEquals(200, size.width);
+
+    final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
+
+    for (int i = 1; i <= rangeTotal; i++) {
+      componentTreeHolder = mHoldersForComponents.get(components.get(i).getComponent());
+
+      assertTrue(componentTreeHolder.isTreeValid());
+      assertTrue(componentTreeHolder.mLayoutAsyncCalled);
+
+      final int expectedWidth = i % 3 == 0 ? 200 : 100;
+      Assert.assertEquals(expectedWidth, componentTreeHolder.mChildWidth);
+      Assert.assertEquals(100, componentTreeHolder.mChildHeight);
+    }
+  }
+
+  @Test
