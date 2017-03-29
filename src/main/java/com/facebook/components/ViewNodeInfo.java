@@ -118,3 +118,5 @@ class ViewNodeInfo {
         t - touchExpansionTop,
         r + touchExpansionRight,
         b + touchExpansionBottom);
+  }
+

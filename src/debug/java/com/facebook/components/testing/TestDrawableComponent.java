@@ -245,3 +245,4 @@ public class TestDrawableComponent extends ComponentLifecycle {
       ComponentContext context,
       boolean callsShouldUpdateOnMount,
       boolean isPureRender,
+      boolean canMeasure,
