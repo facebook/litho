@@ -1483,3 +1483,11 @@ class LayoutState {
     return mMountableOutputs.get(index);
   }
 
+  ArrayList<LayoutOutput> getMountableOutputTops() {
+    return mMountableOutputTops;
+  }
+
+  ArrayList<LayoutOutput> getMountableOutputBottoms() {
+    return mMountableOutputBottoms;
+  }
+
