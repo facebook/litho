@@ -130,3 +130,4 @@ class RecyclerSpec {
       RecyclerViewWrapper recyclerViewWrapper,
       @Prop(optional = true) ItemAnimator itemAnimator,
       @Prop Binder<RecyclerView> binder,
+      @Prop(optional = true) final RecyclerEventsController recyclerEventsController,
