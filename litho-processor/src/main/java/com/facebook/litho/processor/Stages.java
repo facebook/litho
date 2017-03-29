@@ -301,3 +301,5 @@ public class Stages {
         if (!hasMatchingParameter) {
           throw new ComponentsProcessingException(
               v,
+              v.getSimpleName() + " of this type is not a member of " +
+                  eventClass);
