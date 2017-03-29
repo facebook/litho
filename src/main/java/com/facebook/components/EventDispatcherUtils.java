@@ -233,3 +233,5 @@ class EventDispatcherUtils {
     sOnPopulateAccessibilityEventEvent.event = event;
     sOnPopulateAccessibilityEventEvent.superDelegate = superDelegate;
 
+    final EventDispatcher eventDispatcher = eventHandler.mHasEventDispatcher.getEventDispatcher();
+    eventDispatcher.dispatchOnEvent(eventHandler, sOnPopulateAccessibilityEventEvent);

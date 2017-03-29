@@ -306,3 +306,8 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
       c.getStateHandler().applyStateUpdatesForComponent(this);
     }
   }
+
+  @Override
+  public EventDispatcher getEventDispatcher() {
+    return mLifecycle;
+  }
