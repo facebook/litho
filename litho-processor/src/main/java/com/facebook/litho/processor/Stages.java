@@ -2307,3 +2307,9 @@ public class Stages {
   }
 
   private MethodSpec generateCopyInterStageImpl(String implClassName) {
+    final List<String> elementList = getInterStageVariableNames();
+
+    if (elementList.isEmpty()) {
+      return null;
+    }
+
