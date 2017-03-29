@@ -130,3 +130,6 @@ public class RecyclerViewWrapper extends SwipeRefreshLayout {
   public boolean isLayoutRequested() {
     if (getParent() != null) {
       return getParent().isLayoutRequested() || super.isLayoutRequested();
+    }
+    return super.isLayoutRequested();
+  }
