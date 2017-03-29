@@ -1956,3 +1956,4 @@ public class LayoutStateCalculateTest {
     verify(sizeDependentComponentSpy, times(1)).clearCachedLayout();
 
     // Check total layout outputs.
+    assertEquals(4, layoutState.getMountableOutputCount());
