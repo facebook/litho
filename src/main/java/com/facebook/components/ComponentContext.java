@@ -182,3 +182,4 @@ public class ComponentContext extends ContextWrapper {
     return mLogTag;
   }
 
+  public @Nullable ComponentsLogger getLogger() {
