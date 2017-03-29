@@ -32,3 +32,8 @@ import java.lang.annotation.RetentionPolicy;
  *     ComponentsContext c,
  *     @Prop SomeProp prop) {
  *    return new SomeTreePropClass(prop.getSomeProperty());
+ *   }
+ * }
+ * }
+ * </pre>
+ */

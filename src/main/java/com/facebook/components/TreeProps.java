@@ -28,3 +28,22 @@ public class TreeProps {
   }
 
   public <T> T get(Class key) {
+    return (T) mMap.get(key);
+  }
+
+  /**
+   * Whenever a Spec sets tree props, the TreeProps map from the parent is copied.
+   */
+  public static TreeProps copy(TreeProps source) {
+    final TreeProps newProps = ComponentsPools.acquireTreeProps();
+    if (source != null) {
+      newProps.mMap.putAll(source.mMap);
+    }
+
+    return newProps;
+  }
+
+  void reset() {
+    mMap.clear();
+  }
+}

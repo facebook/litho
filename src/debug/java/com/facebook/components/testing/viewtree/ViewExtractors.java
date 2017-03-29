@@ -104,3 +104,16 @@ final class ViewExtractors {
     };
   }
 
+  /** A function that inputs a view and outputs the view's id and visibility. */
+  public static Function<View, String> GET_VIEW_ID_FUNCTION = new Function<View, String>() {
+    @Override
+    public String apply(View input) {
+      int id = input.getId();
+      return String.format(
+          "View with id \"%s=%d\" is %s.",
+          ViewTreeUtil.getResourceName(id),
+          id,
+          getVisibilityString(input.getVisibility()));
+    }
+  };
+
