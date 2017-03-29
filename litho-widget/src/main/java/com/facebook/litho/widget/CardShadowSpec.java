@@ -27,3 +27,6 @@ class CardShadowSpec {
 
   @OnCreateMountContent
   static CardShadowDrawable onCreateMountContent(ComponentContext c) {
+    return new CardShadowDrawable();
+  }
+

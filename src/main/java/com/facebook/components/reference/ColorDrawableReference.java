@@ -22,3 +22,4 @@ import com.facebook.litho.config.ComponentsConfiguration;
 /**
  * A Reference for {@link ColorDrawable}. This keeps a {@link Pools.Pool} of up to 10 ColorDrawable
  * and allows to specify color and alpha as create.
+ */

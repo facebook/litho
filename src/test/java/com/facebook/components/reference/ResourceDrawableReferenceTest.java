@@ -22,3 +22,4 @@ import org.robolectric.RuntimeEnvironment;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
+

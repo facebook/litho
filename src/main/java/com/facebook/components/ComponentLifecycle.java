@@ -41,3 +41,4 @@ import com.facebook.yoga.YogaMeasureOutput;
  * annotation processor at build-time based on your spec class and you won't have to deal with
  * it directly when implementing new component types.
  */
+public abstract class ComponentLifecycle implements EventDispatcher {

@@ -40,3 +40,7 @@ public abstract class ComponentSpecHelper extends SpecHelper {
         stageAnnotations,
         interStageInputAnnotations,
         specModel);
+  }
+
+  @Override
+  protected TypeName getSuperclassClass() {

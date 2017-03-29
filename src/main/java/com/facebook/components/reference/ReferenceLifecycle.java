@@ -25,3 +25,8 @@ import com.facebook.litho.Diff;
  * and releasing/caching it for future use.
  */
 public abstract class ReferenceLifecycle<T> {
+
+  private static final Pools.SynchronizedPool<Diff<?>> sDiffPool =
+      new Pools.SynchronizedPool<>(20);
+
+  protected abstract T onAcquire(

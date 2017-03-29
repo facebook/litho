@@ -32,3 +32,11 @@ public class DrawableReferenceTest {
     assertEquals(
         Reference.acquire(
             context,
+            DrawableReference.create()
+                .drawable(drawable)
+                .build()),
+        drawable);
+  }
+
+}
+
