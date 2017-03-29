@@ -175,3 +175,4 @@ class LayoutState {
 
     return createLayoutOutput(
         component,
+        layoutState,
