@@ -446,3 +446,18 @@ public class ComponentTreeTest {
 
     assertEquals(componentView2, getComponentView(componentTree));
     assertEquals(componentTree, getComponentTree(componentView2));
+
+    Assert.assertNull(getComponentTree(componentView1));
+  }
+
+  private static ComponentView getComponentView(ComponentTree componentTree) {
+    return Whitebox.getInternalState(componentTree, "mComponentView");
+  }
+
+  private static boolean isAttached(ComponentTree componentTree) {
+    return Whitebox.getInternalState(componentTree, "mIsAttached");
+  }
+
+  private static ComponentTree getComponentTree(ComponentView componentView) {
+    return Whitebox.getInternalState(componentView, "mComponent");
+  }
