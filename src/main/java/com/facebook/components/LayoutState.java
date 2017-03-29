@@ -1067,3 +1067,7 @@ class LayoutState {
   }
 
   private static LayoutOutput findInteractiveRoot(LayoutState layoutState, LayoutOutput output) {
+    if (output.getId() == ROOT_HOST_ID) {
+      return output;
+    }
+
