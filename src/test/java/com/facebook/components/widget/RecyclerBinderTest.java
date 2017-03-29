@@ -135,3 +135,5 @@ public class RecyclerBinderTest {
 
     mRecyclerBinder.measure(size, widthSpec, heightSpec);
 
+    TestComponentTreeHolder componentTreeHolder =
+        mHoldersForComponents.get(components.get(0).getComponent());
