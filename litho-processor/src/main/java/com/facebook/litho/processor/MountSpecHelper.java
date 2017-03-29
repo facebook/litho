@@ -238,3 +238,6 @@ public class MountSpecHelper extends ComponentSpecHelper {
         OnCreateMountContent.class);
 
     final MountType componentMountType = getMountType(onCreateMountContent.getReturnType());
+    if (componentMountType != MountType.VIEW &&
+        componentMountType != MountType.DRAWABLE) {
+      throw new ComponentsProcessingException(
