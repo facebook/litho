@@ -1357,3 +1357,5 @@ class LayoutState {
         AccessibilityManagerCompat.isTouchExplorationEnabled(accessibilityManager);
   }
 
+  /**
+   * Traverses the layoutTree and the diffTree recursively. If a layoutNode has a compatible host

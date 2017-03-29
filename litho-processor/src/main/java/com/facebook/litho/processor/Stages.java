@@ -2061,3 +2061,6 @@ public class Stages {
     return false;
   }
 
+  private void generateComponentClassProps(
+      TypeSpec.Builder implClassBuilder,
+      ClassName eventHandlerClassName) {
