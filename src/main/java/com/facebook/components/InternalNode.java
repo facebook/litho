@@ -1516,3 +1516,5 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       node.mImportantForAccessibility = mImportantForAccessibility;
     }
     if ((mPrivateFlags & PFLAG_DUPLICATE_PARENT_STATE_IS_SET) != 0L) {
+      node.mDuplicateParentState = mDuplicateParentState;
+    }

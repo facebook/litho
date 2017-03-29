@@ -622,3 +622,5 @@ class LayoutState {
     // 6. Add foreground if defined.
     final Reference<? extends Drawable> foreground = node.getForeground();
     if (foreground != null) {
+      if (layoutOutput != null && layoutOutput.hasViewNodeInfo() && SDK_INT >= M) {
+        layoutOutput.getViewNodeInfo().setForeground(foreground);
