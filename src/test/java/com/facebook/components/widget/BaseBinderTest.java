@@ -411,3 +411,4 @@ public class BaseBinderTest {
           .text(mItems.get(position))
           .build();
     }
+
