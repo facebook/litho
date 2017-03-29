@@ -482,3 +482,14 @@ public abstract class BaseBinder<
   }
 
   /**
+   * Returns the height of the {@link View} corresponding to the binder.
+   */
+  public int getHeight() {
+    return SizeSpec.getSize(mContentHeightSpec);
+  }
+
+  /**
+   * Returns the width of the {@link View} corresponding to the binder.
+   */
+  public int getWidth() {
+    return SizeSpec.getSize(mContentWidthSpec);
