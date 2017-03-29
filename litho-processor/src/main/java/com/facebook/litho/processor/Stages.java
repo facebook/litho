@@ -2195,3 +2195,5 @@ public class Stages {
             "Arguments for ShouldUpdate should be of type Diff " + componentMember.asType());
       }
 
+      final TypeName typeName;
+      final TypeName innerTypeName = JPUtil.getTypeFromMirror(innerType);
