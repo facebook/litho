@@ -13,3 +13,4 @@ public class EventHandler<E> {
 
   public final HasEventDispatcher mHasEventDispatcher;
   public final int id;
+  public final Object[] params;
