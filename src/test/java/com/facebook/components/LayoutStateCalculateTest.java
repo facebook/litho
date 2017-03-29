@@ -870,3 +870,4 @@ public class LayoutStateCalculateTest {
     // Check total layout outputs.
     assertEquals(3, layoutState.getMountableOutputCount());
 
+    assertTrue(isHostComponent(getComponentAt(layoutState, 0)));

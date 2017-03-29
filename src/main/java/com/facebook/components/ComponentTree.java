@@ -346,3 +346,4 @@ public class ComponentTree {
   }
 
   private boolean mountComponentIfDirty() {
+    if (mComponentView.isMountStateDirty()) {
