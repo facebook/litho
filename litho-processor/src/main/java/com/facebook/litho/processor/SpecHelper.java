@@ -138,3 +138,5 @@ public abstract class SpecHelper implements Closeable {
     }
   }
 
+  protected abstract void validate();
+
