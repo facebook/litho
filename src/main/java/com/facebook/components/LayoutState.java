@@ -1619,3 +1619,4 @@ class LayoutState {
     mContext = context;
     mStateHandler = mContext.getStateHandler();
     mReferenceCount.set(1);
+  }
