@@ -983,3 +983,9 @@ class LayoutState {
   private static void collectDisplayLists(LayoutState layoutState) {
     final Rect rect = new Rect();
     final ComponentContext context = layoutState.mContext;
+    final Activity activity = findActivityInContext(context);
+
+    if (activity == null || activity.isFinishing() || isActivityDestroyed(activity)) {
+      return;
+    }
+
