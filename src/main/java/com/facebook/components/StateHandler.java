@@ -97,3 +97,43 @@ public class StateHandler {
    * @param component the new component
    */
   @ThreadSafe(enableChecks = false)
+  void applyStateUpdatesForComponent(Component component) {
+    maybeInitStateContainers();
+    maybeInitKnownGlobalKeys();
+
+    final ComponentLifecycle lifecycle = component.getLifecycle();
+    if (!lifecycle.hasState()) {
+      return;
+    }
+
+    final StateContainer previousStateContainer;
+    final String key = component.getGlobalKey();
+    final StateContainer currentStateContainer =
+        mStateContainers.get(key);
+
+    if (mKnownGlobalKeys.contains(key)) {
+      // We found two components with the same global key.
+      throw new RuntimeException(
+          "Cannot set State for " +
+              component.getSimpleName() +
+              ", found another Component with the same key");
+    }
+    mKnownGlobalKeys.add(key);
+
+    if (currentStateContainer != null) {
+      lifecycle.transferState(
+          component.getScopedContext(),
+          currentStateContainer,
+          component);
+      previousStateContainer = currentStateContainer;
+    } else {
+      lifecycle.createInitialState(component.getScopedContext(), component);
+      previousStateContainer = component.getStateContainer();
+    }
+
+    final List<StateUpdate> stateUpdatesForKey = mPendingStateUpdates == null
+        ? null
+        : mPendingStateUpdates.get(key);
+
+    // If there are no state updates pending for this component, simply store its current state.
+    if (stateUpdatesForKey != null) {

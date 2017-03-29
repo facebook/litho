@@ -87,3 +87,5 @@ public abstract class GridComponentBinder extends RecyclerComponentBinder<
         firstItemPosition,
         lastItemPosition - firstItemPosition + 1);
 
+    if (isIncrementalMountEnabled()) {
+      IncrementalMountUtils.performIncrementalMount(recyclerView);
