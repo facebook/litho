@@ -856,3 +856,4 @@ class MountState {
     lifecycle.mount(
         component.getScopedContext(),
         content,
+        component);
