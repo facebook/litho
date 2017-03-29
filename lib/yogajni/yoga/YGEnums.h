@@ -62,3 +62,74 @@ typedef YG_ENUM_BEGIN(YGExperimentalFeature) {
   YGExperimentalFeatureRounding,
   YGExperimentalFeatureWebFlexBasis,
   YGExperimentalFeatureMinFlexFix,
+} YG_ENUM_END(YGExperimentalFeature);
+
+#define YGFlexDirectionCount 4
+typedef YG_ENUM_BEGIN(YGFlexDirection) {
+  YGFlexDirectionColumn,
+  YGFlexDirectionColumnReverse,
+  YGFlexDirectionRow,
+  YGFlexDirectionRowReverse,
+} YG_ENUM_END(YGFlexDirection);
+
+#define YGJustifyCount 5
+typedef YG_ENUM_BEGIN(YGJustify) {
+  YGJustifyFlexStart,
+  YGJustifyCenter,
+  YGJustifyFlexEnd,
+  YGJustifySpaceBetween,
+  YGJustifySpaceAround,
+} YG_ENUM_END(YGJustify);
+
+#define YGLogLevelCount 5
+typedef YG_ENUM_BEGIN(YGLogLevel) {
+  YGLogLevelError,
+  YGLogLevelWarn,
+  YGLogLevelInfo,
+  YGLogLevelDebug,
+  YGLogLevelVerbose,
+} YG_ENUM_END(YGLogLevel);
+
+#define YGMeasureModeCount 3
+typedef YG_ENUM_BEGIN(YGMeasureMode) {
+  YGMeasureModeUndefined,
+  YGMeasureModeExactly,
+  YGMeasureModeAtMost,
+} YG_ENUM_END(YGMeasureMode);
+
+#define YGOverflowCount 3
+typedef YG_ENUM_BEGIN(YGOverflow) {
+  YGOverflowVisible,
+  YGOverflowHidden,
+  YGOverflowScroll,
+} YG_ENUM_END(YGOverflow);
+
+#define YGPositionTypeCount 2
+typedef YG_ENUM_BEGIN(YGPositionType) {
+  YGPositionTypeRelative,
+  YGPositionTypeAbsolute,
+} YG_ENUM_END(YGPositionType);
+
+#define YGPrintOptionsCount 3
+typedef YG_ENUM_BEGIN(YGPrintOptions) {
+  YGPrintOptionsLayout = 1,
+  YGPrintOptionsStyle = 2,
+  YGPrintOptionsChildren = 4,
+} YG_ENUM_END(YGPrintOptions);
+
+#define YGUnitCount 4
+typedef YG_ENUM_BEGIN(YGUnit) {
+  YGUnitUndefined,
+  YGUnitPoint,
+  YGUnitPercent,
+  YGUnitAuto,
+} YG_ENUM_END(YGUnit);
+
+#define YGWrapCount 3
+typedef YG_ENUM_BEGIN(YGWrap) {
+  YGWrapNoWrap,
+  YGWrapWrap,
+  YGWrapWrapReverse,
+} YG_ENUM_END(YGWrap);
+
+YG_EXTERN_C_END
