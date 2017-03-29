@@ -1374,3 +1374,5 @@ public class LayoutStateCalculateTest {
     assertTrue(isHostComponent(getComponentAt(layoutState, 2)));
     assertTrue(getComponentAt(layoutState, 3) instanceof DrawableComponent);
     assertTrue(getComponentAt(layoutState, 4) instanceof TestDrawableComponent);
+    assertTrue(isHostComponent(getComponentAt(layoutState, 5)));
+    assertTrue(isHostComponent(getComponentAt(layoutState, 6)));
