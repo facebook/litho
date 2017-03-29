@@ -790,3 +790,4 @@ public class Stages {
       ExecutableElement element,
       boolean shouldIncludeOutputs) {
     final ArrayList<VariableElement> specDefinedParameters = new ArrayList<>();
+    for (VariableElement v : element.getParameters()) {
