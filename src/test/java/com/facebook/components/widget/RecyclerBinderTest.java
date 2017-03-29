@@ -314,3 +314,7 @@ public class RecyclerBinderTest {
     final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
 
     TestComponentTreeHolder holder =  mHoldersForComponents.get(components.get(0).getComponent());
+    assertTrue(holder.isTreeValid());
+    assertTrue(holder.mLayoutSyncCalled);
+
+    for (int i = 1; i <= rangeTotal; i++) {

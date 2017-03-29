@@ -558,3 +558,30 @@ public class RecyclerBinder implements Binder<RecyclerView> {
           sDummySize,
           SizeSpec.makeSizeSpec(width, SizeSpec.EXACTLY),
           SizeSpec.makeSizeSpec(height, SizeSpec.EXACTLY));
+    }
+  }
+
+  /**
+   * Call from the owning {@link Component}'s onMount. This is where the adapter is assigned to the
+   * {@link RecyclerView}.
+   *
+   * @param view the {@link RecyclerView} being mounted.
+   */
+  @UiThread
+  @Override
+  public void mount(RecyclerView view) {
+    ThreadUtils.assertMainThread();
+
+    if (mMountedView == view) {
+      return;
+    }
+
+    if (mMountedView != null) {
+      unmount(mMountedView);
+    }
+
+    mMountedView = view;
+
+    view.setLayoutManager(mLayoutInfo.getLayoutManager());
+    view.setAdapter(mInternalAdapter);
+    view.addOnScrollListener(mRangeScrollListener);
