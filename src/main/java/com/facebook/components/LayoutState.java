@@ -918,3 +918,4 @@ class LayoutState {
     layoutState.mLayoutStateOutputIdCalculator.clear();
 
     // Reset markers before collecting layout outputs.
+    layoutState.mCurrentHostMarker = -1;
