@@ -896,3 +896,4 @@ public class Stages {
     if (isStatic) {
       mClassTypeSpec.addField(
           FieldSpec
+              .builder(className, SPEC_INSTANCE_NAME, Modifier.PRIVATE, Modifier.STATIC)
