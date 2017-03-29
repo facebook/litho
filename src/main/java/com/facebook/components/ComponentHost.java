@@ -1017,3 +1017,4 @@ public class ComponentHost extends ViewGroup {
     }
 
     private boolean isRunning() {
+      return (mCanvas != null && mDrawIndex < mItemsToDraw);
