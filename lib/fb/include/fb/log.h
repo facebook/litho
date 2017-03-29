@@ -239,3 +239,5 @@ int __android_log_print(int prio, const char *tag, const char *fmt, ...)
 #define FBLOG_ALWAYS_FATAL_IF(cond, ...)                                   \
   ((CONDITION(cond)) ? ((void)fb_printAssert(#cond, LOG_TAG, __VA_ARGS__)) \
                      : (void)0)
+
+#define FBLOG_ALWAYS_FATAL(...) \
