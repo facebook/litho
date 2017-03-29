@@ -341,3 +341,10 @@ struct Convert<const char*> {
 };
 }
 
+// jthrowable //////////////////////////////////////////////////////////////////////////////////////
+
+inline local_ref<JThrowable> JThrowable::initCause(alias_ref<JThrowable> cause) {
+  static auto meth = javaClassStatic()->getMethod<javaobject(javaobject)>("initCause");
+  return meth(self(), cause.get());
+}
+

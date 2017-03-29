@@ -66,3 +66,4 @@ local_ref<JArrayClass<jobject>::javaobject> makeArgsArray(Args... args) {
 }
 
 
+inline bool needsSlowPath(alias_ref<jobject> obj) {

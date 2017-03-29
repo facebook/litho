@@ -156,3 +156,4 @@ void utf8ToModifiedUTF8(const uint8_t* utf8, size_t len, uint8_t* modified, size
   modified[j++] = '\0';
 }
 
+std::string modifiedUTF8ToUTF8(const uint8_t* modified, size_t len) noexcept {
