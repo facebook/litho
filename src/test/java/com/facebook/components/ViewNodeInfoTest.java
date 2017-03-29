@@ -25,3 +25,4 @@ import static junit.framework.Assert.fail;
 /**
  * Tests {@link ViewNodeInfo}
  */
+@RunWith(ComponentsTestRunner.class)

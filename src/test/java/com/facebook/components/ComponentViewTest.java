@@ -25,3 +25,4 @@ import org.robolectric.shadows.ShadowView;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+@RunWith(ComponentsTestRunner.class)

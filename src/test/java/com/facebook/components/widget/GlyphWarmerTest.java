@@ -31,3 +31,5 @@ import static org.mockito.Mockito.verify;
 /**
  * Tests {@link GlyphWarmer}.
  */
+@RunWith(ComponentsTestRunner.class)
+@Config(shadows = GlyphWarmerTest.ShadowPicture.class)
