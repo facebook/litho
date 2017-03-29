@@ -197,3 +197,4 @@ public class Stages {
     final List<Class<Annotation>> parameterAnnotations = new ArrayList<>();
     parameterAnnotations.addAll(asList(PROP_ANNOTATIONS));
     parameterAnnotations.addAll(asList(STATE_ANNOTATIONS));
+    parameterAnnotations.addAll(asList(mInterStagePropAnnotations));
