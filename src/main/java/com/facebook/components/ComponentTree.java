@@ -216,3 +216,6 @@ public class ComponentTree {
       return toRelease;
     } else {
       // Since we are changing layout states we'll need to remount.
+      if (mComponentView != null) {
+        mComponentView.setMountStateDirty();
+      }
