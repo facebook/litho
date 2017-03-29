@@ -96,3 +96,8 @@ public abstract class PagerBinder extends BaseBinder<
 
   /**
    * Overrides this method to provide a title for for the page at the given position.
+   */
+  protected CharSequence getPageTitle(int position) {
+    return null;
+  }
+
