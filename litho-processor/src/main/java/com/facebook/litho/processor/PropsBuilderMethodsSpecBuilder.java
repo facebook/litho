@@ -345,3 +345,5 @@ class PropsBuilderMethodsSpecBuilder {
       String statement,
       Object ...formatObjects) {
     return getMethodSpecBuilder(name, parameters, statement, formatObjects).build();
+  }
+}
