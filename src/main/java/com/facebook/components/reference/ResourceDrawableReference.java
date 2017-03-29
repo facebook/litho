@@ -58,3 +58,4 @@ public final class ResourceDrawableReference extends ReferenceLifecycle<Drawable
   @Override
   protected Drawable onAcquire(
       ComponentContext context,
+      Reference reference) {

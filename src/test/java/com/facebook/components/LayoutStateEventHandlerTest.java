@@ -29,3 +29,8 @@ public class LayoutStateEventHandlerTest {
 
   private Component mRootComponent;
   private Component mNestedComponent;
+
+  private static void assertCorrectEventHandler(
+      EventHandler eventHandler,
+      int expectedId,
+      Component<?> expectedInput) {

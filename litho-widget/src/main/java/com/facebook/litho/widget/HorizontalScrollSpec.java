@@ -52,3 +52,4 @@ class HorizontalScrollSpec {
 
   private static final SynchronizedPool<Size> sSizePool =
       new SynchronizedPool<>(2);
+

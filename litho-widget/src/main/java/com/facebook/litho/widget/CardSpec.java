@@ -66,3 +66,18 @@ class CardSpec {
       @Prop(optional = true, resType = ResType.COLOR) int shadowEndColor,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float cornerRadius,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float elevation) {
+
+    final Resources resources = c.getResources();
+
+    if (cornerRadius == -1) {
+      cornerRadius = pixels(resources, DEFAULT_CORNER_RADIUS_DP);
+    }
+
+    if (elevation == -1) {
+      elevation = pixels(resources, DEFAULT_SHADOW_SIZE_DP);
+    }
+
+    final int shadowTop = getShadowTop(elevation);
+    final int shadowBottom = getShadowBottom(elevation);
+    final int shadowHorizontal = getShadowHorizontal(elevation);
+

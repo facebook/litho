@@ -36,3 +36,7 @@ public class InternalNodeResolvedPaddingTest {
     node.layoutDirection(direction);
     node.calculateLayout();
     node.markLayoutSeen();
+  }
+
+  @Test
+  public void testPaddingLeftWithUndefinedStartEnd() {

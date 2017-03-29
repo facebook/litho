@@ -30,3 +30,7 @@ public class LayoutStateAddChildWithInputTest {
   @Before
   public void setup() {
     mContext = new ComponentContext(RuntimeEnvironment.application);
+  }
+
+  @Test
+  public void testNewEmptyLayout() {

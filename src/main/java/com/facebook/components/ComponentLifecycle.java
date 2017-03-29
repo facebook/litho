@@ -44,3 +44,4 @@ import com.facebook.yoga.YogaMeasureOutput;
 public abstract class ComponentLifecycle implements EventDispatcher {
   private static final AtomicInteger sComponentId = new AtomicInteger();
   private static final int DEFAULT_MAX_PREALLOCATION = 15;
+

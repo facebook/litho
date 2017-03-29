@@ -38,3 +38,4 @@ class CardShadowSpec {
       @Prop(optional = true, resType = ResType.COLOR) int shadowEndColor,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float cornerRadius,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) float shadowSize) {
+
