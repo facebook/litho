@@ -1768,3 +1768,7 @@ public class Stages {
     if (isStatic.equals(Stages.StaticFlag.STATIC)) {
       stateContainerImplClassBuilder.addModifiers(Modifier.STATIC, Modifier.PRIVATE);
       stateContainerImplClassBuilder.addTypeVariables(mTypeVariables);
+    }
+
+    for (String stateName : mStateMap.keySet()) {
+      VariableElement v = mStateMap.get(stateName);
