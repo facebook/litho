@@ -369,3 +369,4 @@ public class ComponentHost extends ViewGroup {
 
   @Override
   public void setImportantForAccessibility(int mode) {
+    if (mode != ViewCompat.getImportantForAccessibility(this)) {
