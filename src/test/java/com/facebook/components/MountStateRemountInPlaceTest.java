@@ -644,3 +644,11 @@ public class MountStateRemountInPlaceTest {
                                 SolidColor.create(c).color(Color.GREEN))))
             .child(
                 Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    .clickHandler(c.newEventHandler(2))
+                    .child(
+                        Text.create(c).text("test2")))
+            .build();
+      }
+    };
+
+    ComponentTree tree = ComponentTree.create(mContext, firstLayout)

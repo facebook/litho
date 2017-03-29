@@ -114,3 +114,9 @@ class EventDispatcherUtils {
 
     final EventDispatcher eventDispatcher =
         longClickHandler.mHasEventDispatcher.getEventDispatcher();
+    final boolean returnValue =
+        (boolean) eventDispatcher.dispatchOnEvent(longClickHandler, sLongClickEvent);
+
+    sLongClickEvent.view = null;
+
+    return returnValue;
