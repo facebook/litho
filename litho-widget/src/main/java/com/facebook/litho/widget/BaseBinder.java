@@ -325,3 +325,8 @@ public abstract class BaseBinder<
   public void notifyItemRemoved(int position) {
     assertMainThread();
 
+    if (!hasContentSize()) {
+      return;
+    }
+
+    ComponentTree componentTreeToRecycle = null;
