@@ -146,3 +146,24 @@ class ProgressSpec {
 
     return indeterminateDrawable;
   }
+
+  private static class ProgressView extends ProgressBar {
+
+    private ProgressView(Context context) {
+      super(context);
+    }
+
+    /**
+     * ProgressBar is not setting the right bounds on the drawable passed to
+     * {@link ProgressBar#setIndeterminateDrawable(Drawable)}. Overriding the method and setting
+     * the bounds before passing the drawable in solves the issue.
+     */
+    @Override
+    public void setIndeterminateDrawable(Drawable d) {
+      if (d != null) {
+        d.setBounds(0, 0, getWidth(), getHeight());
+      }
+
+      super.setIndeterminateDrawable(d);
+    }
+  }
