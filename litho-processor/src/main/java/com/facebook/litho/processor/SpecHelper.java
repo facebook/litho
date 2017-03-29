@@ -44,3 +44,4 @@ public abstract class SpecHelper implements Closeable {
   protected final TypeSpec.Builder mTypeSpec;
   protected final String mQualifiedClassName;
   protected final TypeElement mSpecElement;
+  protected final SpecModel mSpecModel;
