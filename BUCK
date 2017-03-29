@@ -10,3 +10,5 @@ include_defs("//COMPONENTS_DEFS")
 android_library(
     name = "components",
     exported_deps = [
+        COMPONENTS_DEBUG_JAVA_TARGET,
+        COMPONENTS_JAVA_TARGET,

@@ -30,3 +30,4 @@ public class LithographyRootComponentSpec {
     return Recycler.create(c)
         .binder(recyclerBinder)
         .withLayout()
+        .paddingDip(YogaEdge.TOP, 8)

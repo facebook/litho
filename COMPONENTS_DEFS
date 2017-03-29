@@ -54,3 +54,5 @@ COMPONENTS_JNI_TARGET                         = make_dep_path('lib/jni-hack:jni-
 COMPONENTS_FBJNI_TARGET                       = make_dep_path('lib/fb:jni')
 COMPONENTS_GUAVA_TARGET                       = make_dep_path('lib/guava:guava')
 COMPONENTS_DIFFUTILS_TARGET                   = make_dep_path('lib/diff-utils:diff-utils')
+
+# Fresco

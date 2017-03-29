@@ -26,3 +26,16 @@ package com.facebook.components;
 public class ComponentsSystrace {
 
   private static volatile Systrace sInstance = null;
+
+  public interface Systrace {
+    void beginSection(String name);
+    void endSection();
+  }
+
+  private ComponentsSystrace() {
+  }
+
+  public static void provide(Systrace instance) {
+    sInstance = instance;
+  }
+

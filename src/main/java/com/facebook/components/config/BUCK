@@ -12,3 +12,4 @@ android_library(
     srcs = glob(["*.java"]),
     visibility = ["PUBLIC"],
     deps = [
+        COMPONENTS_BUILD_CONFIG_TARGET,

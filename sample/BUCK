@@ -11,3 +11,4 @@ android_binary(
     keystore = ":debug_keystore",
     manifest = "src/main/AndroidManifest.xml",
     deps = [
+        COMPONENTS_SAMPLE_JAVA,

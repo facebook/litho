@@ -11,3 +11,4 @@ package com.facebook.components;
 
 import android.support.v4.util.SimpleArrayMap;
 
+import com.facebook.litho.annotations.TreeProp;
