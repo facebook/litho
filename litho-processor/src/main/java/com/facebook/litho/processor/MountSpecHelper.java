@@ -494,3 +494,4 @@ public class MountSpecHelper extends ComponentSpecHelper {
       generateOnPopulateExtraAccessibilityNode(onPopulateExtraAccessibilityNode);
       generateGetExtraAccessibilityNodeAt(getExtraAccessibilityNodeAt);
       generateGetNumExtraAccessibilityNodes(getNumExtraAccessibilityNodes);
+      generateImplementsExtraAccessibilityNodes();

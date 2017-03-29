@@ -530,3 +530,4 @@ public class ComponentHost extends ViewGroup {
    * Invalidates the accessibility node tree in this host.
    */
   void invalidateAccessibilityState() {
+    if (!mIsComponentAccessibilityDelegateSet) {
