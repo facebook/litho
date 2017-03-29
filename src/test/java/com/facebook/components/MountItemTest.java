@@ -85,3 +85,19 @@ public class MountItemTest {
         null,
         mFlags,
         IMPORTANT_FOR_ACCESSIBILITY_YES);
+  }
+
+  @Test
+  public void testIsBound() {
+    mMountItem.setIsBound(true);
+    assertThat(mMountItem.isBound()).isTrue();
+
+    mMountItem.setIsBound(false);
+    assertThat(mMountItem.isBound()).isFalse();
+  }
+
+  @Test
+  public void testGetters() {
+    assertThat(mMountItem.getComponent()).isSameAs((Component) mComponent);
+    assertThat(mMountItem.getHost()).isSameAs(mComponentHost);
+    assertThat(mMountItem.getContent()).isSameAs(mContent);
