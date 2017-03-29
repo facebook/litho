@@ -46,3 +46,4 @@ class FrescoComponentSpec {
   private static final ScalingUtils.ScaleType DEFAULT_SCALE_TYPE =
       GenericDraweeHierarchyBuilder.DEFAULT_SCALE_TYPE;
 
+  @PropDefault protected static final float aspectRatio = 1f;
