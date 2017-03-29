@@ -1643,3 +1643,5 @@ public class Stages {
     final String implInstanceName = "_" + getImplInstanceName();
     methodBuilder.addStatement(
         "$L " + implInstanceName + "= ($L) _component",
+        implClassName,
+        implClassName);
