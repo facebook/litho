@@ -2722,3 +2722,5 @@ public class Stages {
       initMethodSpec
           .addParameter(implClass, implInstanceName)
           .addStatement("super.init(context, " + implInstanceName + ")");
+    }
+
