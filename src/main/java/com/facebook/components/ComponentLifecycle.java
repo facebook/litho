@@ -161,3 +161,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
 
   private final int mId;
 
+  protected ComponentLifecycle() {
