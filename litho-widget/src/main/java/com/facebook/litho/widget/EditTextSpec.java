@@ -84,3 +84,4 @@ class EditTextSpec {
   @PropDefault protected static final int selection = -1;
 
   @OnLoadStyle
+  static void onLoadStyle(

@@ -1202,3 +1202,8 @@ public class ComponentTree {
   }
 
   /**
+   * A builder class that can be used to create a {@link ComponentTree}.
+   */
+  public static class Builder {
+
+    // required
