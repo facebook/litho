@@ -122,3 +122,6 @@ class DiffNode implements Cloneable {
   }
 
   void setForeground(LayoutOutput foreground) {
+    mForeground = foreground;
+  }
+
