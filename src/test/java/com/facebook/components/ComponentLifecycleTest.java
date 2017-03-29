@@ -258,3 +258,4 @@ public class ComponentLifecycleTest {
         anyInt(),
         any(Component.class));
     verify(mNode).setComponent(mInput);
+    verify(mNode).setMeasureFunction(any(YogaMeasureFunction.class));
