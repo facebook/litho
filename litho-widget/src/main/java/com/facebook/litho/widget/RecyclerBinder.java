@@ -456,3 +456,5 @@ public class RecyclerBinder implements Binder<RecyclerView> {
           SizeSpec.getSize(widthSpec),
           SizeSpec.getSize(heightSpec),
           mCurrentFirstVisiblePosition,
+          getActualChildrenWidthSpec(mComponentTreeHolders.get(mCurrentFirstVisiblePosition)),
+          getActualChildrenHeightSpec(mComponentTreeHolders.get(mCurrentFirstVisiblePosition)),
