@@ -2801,3 +2801,4 @@ public class Stages {
     final ClassName propsBuilderClassName = ClassName.bestGuess(builderClassName);
     int requiredPropIndex = 0;
     for (VariableElement v : mProps) {
+      propsBuilderClassBuilder.addMethods(
