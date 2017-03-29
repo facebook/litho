@@ -854,3 +854,6 @@ public class Stages {
     } else if (annotations.size() == 1) {
       return annotations.get(0);
     } else {
+      throw new ComponentsProcessingException(
+          element,
+          "Duplicate parameter annotation: '" + annotations.get(0) + "' and '" +
