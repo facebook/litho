@@ -396,3 +396,4 @@ public class BaseBinderTest {
     }
 
     @Override
+    public boolean isAsyncLayoutEnabled() {

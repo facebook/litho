@@ -88,3 +88,17 @@ public final class ResourceDrawableReference extends ReferenceLifecycle<Drawable
     @Override
     public int hashCode() {
       return mResId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+
+      State state = (State) o;
+
