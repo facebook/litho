@@ -907,3 +907,4 @@ class MountState {
           layoutOutput);
 
     // Create and keep a MountItem even for the layoutSpec with null content
+    // that sets the root host interactions.

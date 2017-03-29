@@ -1444,3 +1444,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
     float result = spacing.getRaw(resolvedIndex);
     if (YogaConstants.isUndefined(result)) {
+      result = spacing.get(index);
+    }
+
+    return result;
+  }
+
