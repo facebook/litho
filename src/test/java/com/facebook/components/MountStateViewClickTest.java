@@ -57,3 +57,26 @@ public class MountStateViewClickTest {
   }
 
   @Test
+  public void testInnerComponentHostClickableWithLongClickHandler() {
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Container.create(c)
+                .child(
+                    Container.create(c)
+                        .longClickHandler(c.newEventHandler(1))
+                        .child(TestViewComponent.create(c)))
+                .build();
+          }
+        });
+
+    assertEquals(1, componentView.getChildCount());
+    assertFalse(componentView.isClickable());
+
+    ComponentHost innerHost = (ComponentHost) componentView.getChildAt(0);
+    assertTrue(innerHost.isLongClickable());
+  }
+
+  @Test

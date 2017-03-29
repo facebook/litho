@@ -49,3 +49,4 @@ class LayoutOutput implements Cloneable {
   private final Rect mBounds = new Rect();
   private int mHostTranslationX;
   private int mHostTranslationY;
+  private int mFlags;

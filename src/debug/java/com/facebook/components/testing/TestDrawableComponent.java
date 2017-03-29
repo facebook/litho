@@ -80,3 +80,4 @@ public class TestDrawableComponent extends ComponentLifecycle {
     mCallsShouldUpdateOnMount = callsShouldUpdateOnMount;
     mIsPureRender = isPureRender;
     mCanMeasure = canMeasure;
+    mImplementsAccessibility = implementsAccessibility;

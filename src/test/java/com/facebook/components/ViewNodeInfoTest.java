@@ -42,3 +42,4 @@ public class ViewNodeInfoTest {
     final InternalNode node = new TouchExpansionTestInternalNode();
 
     mViewNodeInfo.setExpandedTouchBounds(node, 10, 10, 20, 20);
+
