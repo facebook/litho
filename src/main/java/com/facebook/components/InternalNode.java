@@ -1629,3 +1629,6 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     if ((mPrivateFlags & PFLAG_TRANSITION_KEY_IS_SET) != 0L) {
       node.mTransitionKey = mTransitionKey;
     }
+    if ((mPrivateFlags & PFLAG_BORDER_COLOR_IS_SET) != 0L) {
+      node.mBorderColor = mBorderColor;
+    }
