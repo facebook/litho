@@ -510,3 +510,4 @@ class MountState {
     // size and content but a different position.
     updateBoundsForMountedLayoutOutput(layoutOutput, currentMountItem);
 
+    maybeInvalidateAccessibilityState(currentMountItem);
