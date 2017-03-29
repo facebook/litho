@@ -455,3 +455,11 @@ public abstract class ComponentLifecycle implements EventDispatcher {
   protected void onPopulateAccessibilityNode(
       AccessibilityNodeInfoCompat accessibilityNode,
       Component<?> component) {
+  }
+
+  /**
+   * Populate an extra accessibility node.
+   * @param accessibilityNode node to populate
+   * @param extraNodeIndex index of extra node
+   * @param componentBoundsX left bound of the mounted component
+   * @param componentBoundsY top bound of the mounted component
