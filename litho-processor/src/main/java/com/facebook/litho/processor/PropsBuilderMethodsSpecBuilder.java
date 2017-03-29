@@ -289,3 +289,5 @@ class PropsBuilderMethodsSpecBuilder {
     final TypeName typeParameter = typeParameters == null
         ? WildcardTypeName.subtypeOf(ClassNames.COMPONENT_LIFECYCLE)
         : typeParameters.get(0);
+
+    return new TypeName[]{typeParameter};
