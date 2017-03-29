@@ -924,3 +924,6 @@ class MountState {
   }
 
   private Object acquireMountContent(Component<?> component, ComponentHost host) {
+    final ComponentLifecycle lifecycle = component.getLifecycle();
+
+    if (isHostSpec(component)) {
