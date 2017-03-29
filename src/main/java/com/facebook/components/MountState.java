@@ -588,3 +588,6 @@ class MountState {
               }
             }
 
+            logger.eventStart(EVENT_SHOULD_UPDATE_REFERENCE_LAYOUT_MISMATCH, logObj);
+            logger
+                .eventEnd(EVENT_SHOULD_UPDATE_REFERENCE_LAYOUT_MISMATCH, logObj, ACTION_SUCCESS);
