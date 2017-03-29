@@ -529,3 +529,8 @@ public class ComponentTree {
           ComponentsPools.release(layoutStateStateHandler);
         }
 
+        mMainThreadLayoutState = localLayoutState;
+        localLayoutState = null;
+      }
+
+      // We need to force remount on layout
