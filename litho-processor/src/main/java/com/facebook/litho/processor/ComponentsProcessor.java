@@ -74,3 +74,4 @@ public class ComponentsProcessor extends AbstractComponentsProcessor {
     EventGenerator.generate(specModel).addToTypeSpec(typeSpec);
     StateGenerator.generate(specModel).addToTypeSpec(typeSpec);
     BuilderGenerator.generate(specModel).addToTypeSpec(typeSpec);
+  }
