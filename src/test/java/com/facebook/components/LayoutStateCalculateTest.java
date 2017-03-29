@@ -1472,3 +1472,13 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputsForClickHandlerAndViewTagsOnRoot() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c)
+            .child(TestDrawableComponent.create(c))
+            .clickHandler(c.newEventHandler(1))
+            .viewTags(new SparseArray<>())
+            .build();
+      }
+    };

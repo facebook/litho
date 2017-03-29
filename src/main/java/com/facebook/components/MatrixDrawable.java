@@ -45,3 +45,6 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
 
   public void mount(T drawable, DrawableMatrix matrix) {
 
+    if (mDrawable == drawable) {
+      return;
+    }
