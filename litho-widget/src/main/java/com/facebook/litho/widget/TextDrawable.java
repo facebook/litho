@@ -67,3 +67,8 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
 
   @Override
   public void draw(Canvas canvas) {
+    if (mLayout == null) {
+      return;
+    }
+
+    final Rect bounds = getBounds();
