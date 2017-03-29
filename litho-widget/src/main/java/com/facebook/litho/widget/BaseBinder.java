@@ -240,3 +240,12 @@ public abstract class BaseBinder<
 
           for (int i = 0; i < itemCount; i++) {
             final ComponentTree componentTree = buildComponentTree(componentList.get(i));
+
+            if (isAsyncLayoutEnabled()) {
+              componentTree.setSizeSpecAsync(getWidthSpec(i), getHeightSpec(i));
+            } else {
+              componentTree.setSizeSpec(getWidthSpec(i), getHeightSpec(i));
+            }
+
+            mComponentTrees.insert(i + positionStart, componentTree);
+          }
