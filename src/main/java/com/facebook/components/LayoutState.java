@@ -630,3 +630,4 @@ class LayoutState {
             : null;
 
         final LayoutOutput foregroundOutput = addDrawableComponent(
+            node,
