@@ -278,3 +278,14 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
   static boolean isMountViewSpec(Component<?> component) {
     return (component != null && component.mLifecycle.getMountType() == MountType.VIEW);
   }
+
+  static boolean isLayoutSpecWithSizeSpec(Component<?> component) {
+    return (isLayoutSpec(component) && component.mLifecycle.canMeasure());
+  }
+
+  // TODO(#11675508): Shouldn't rely on the component.hasCachedLayout() condition depending on
+  // the fact that the cached layout could be transferred into the holder.nestedTree member or not.
+  static boolean isNestedTree(Component<?> component) {
+    return (isLayoutSpecWithSizeSpec(component)
+        || (component != null && component.hasCachedLayout()));
+  }
