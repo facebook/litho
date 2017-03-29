@@ -460,3 +460,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
   }
 
   private ImmutableList<View> getPathToVisibleWithDrawable(final Drawable drawable) {
+    return actual.findChild(
+        ViewPredicates.hasVisibleDrawable(drawable),
+        ViewPredicates.isVisible());
+  }
