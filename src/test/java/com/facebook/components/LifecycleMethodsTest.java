@@ -290,3 +290,24 @@ public class LifecycleMethodsTest {
       assertTrue(
           mComponent.getCurrentStep() == LifecycleStep.ON_BIND ||
               mComponent.getCurrentStep() == LifecycleStep.ON_UNBIND);
+    }
+
+    @Override
+    public void draw(Canvas canvas) {
+      assertEquals(mComponent.getCurrentStep(), LifecycleStep.ON_BIND);
+    }
+
+    @Override
+    public void setAlpha(int alpha) {
+    }
+
+    @Override
+    public void setColorFilter(ColorFilter cf) {
+    }
+
+    @Override
+    public int getOpacity() {
+      return 0;
+    }
+  }
+}
