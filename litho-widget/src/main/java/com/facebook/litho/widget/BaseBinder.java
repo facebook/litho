@@ -352,3 +352,5 @@ public abstract class BaseBinder<
 
   @Override
   public void notifyItemRangeRemoved(int positionStart, int itemCount) {
+    assertMainThread();
+

@@ -233,3 +233,43 @@ public abstract class PagerBinder extends BaseBinder<
     public int getCount() {
       return mBinder.getCount();
     }
+
+    @Override
+    public void onDataSetChanged() {
+      notifyDataSetChanged();
+    }
+
+    @Override
+    public void onItemInserted(int position) {
+      onDataSetChanged();
+    }
+
+    @Override
+    public void onItemRangeInserted(int positionStart, int itemCount) {
+      onDataSetChanged();
+    }
+
+    @Override
+    public void onItemChanged(int position) {
+      onDataSetChanged();
+    }
+
+    @Override
+    public void onItemRangeChanged(int positionStart, int itemCount) {
+      onDataSetChanged();
+    }
+
+    @Override
+    public void onItemMoved(int fromPosition, int toPosition) {
+      onDataSetChanged();
+    }
+
+    @Override
+    public void onItemRemoved(int position) {
+      onDataSetChanged();
+    }
+
+    @Override
+    public void onItemRangeRemoved(int positionStart, int itemCount) {
+      onDataSetChanged();
+    }
