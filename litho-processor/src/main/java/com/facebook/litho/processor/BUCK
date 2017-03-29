@@ -18,3 +18,4 @@ java_annotation_processor(
     ],
 )
 
+java_library(
