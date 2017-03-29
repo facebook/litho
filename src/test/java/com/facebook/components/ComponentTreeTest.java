@@ -106,3 +106,4 @@ public class ComponentTreeTest {
     // Spec specified in create
 
     Assert.assertTrue(componentTreeHasSizeSpec(componentTree));
+    assertEquals(

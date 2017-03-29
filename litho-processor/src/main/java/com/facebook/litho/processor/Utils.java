@@ -129,3 +129,5 @@ public class Utils {
         final ExecutableElement executableElement = (ExecutableElement) enclosedElement;
         if (executableElement.getAnnotation(annotation) != null) {
           if (annotatedMethod != null) {
+            throw new ComponentsProcessingException(
+                element,

@@ -34,3 +34,4 @@ public class ComponentsProcessor extends AbstractComponentsProcessor {
    */
   @Override
   protected void generate(MountSpecHelper mountSpecHelper) {
+    final boolean isPureRender = mountSpecHelper.isPureRender();
