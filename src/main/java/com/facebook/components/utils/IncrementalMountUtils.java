@@ -113,3 +113,4 @@ public class IncrementalMountUtils {
         Math.min(right, scrollingParentWidth) - left,
         Math.min(bottom, scrollingParentHeight) - top);
 
+    if (rect.isEmpty()) {
