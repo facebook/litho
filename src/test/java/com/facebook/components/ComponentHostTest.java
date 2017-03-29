@@ -105,3 +105,48 @@ public class ComponentHostTest {
     assertEquals(d2.getBounds(), mHost.getInvalidationRect());
 
     View v1 = new View(mContext);
+    Rect v1Bounds = new Rect(0, 0, 10, 10);
+    v1.measure(
+        makeMeasureSpec(v1Bounds.width(), EXACTLY),
+        makeMeasureSpec(v1Bounds.height(), EXACTLY));
+    v1.layout(v1Bounds.left, v1Bounds.top, v1Bounds.right, v1Bounds.bottom);
+
+    MountItem mountItem3 = mount(2, v1);
+    assertEquals(3, mHost.getInvalidationCount());
+    assertEquals(v1Bounds, mHost.getInvalidationRect());
+
+    unmount(0, mountItem1);
+    assertEquals(4, mHost.getInvalidationCount());
+    assertEquals(d1.getBounds(), mHost.getInvalidationRect());
+
+    unmount(1, mountItem2);
+    assertEquals(5, mHost.getInvalidationCount());
+    assertEquals(d2.getBounds(), mHost.getInvalidationRect());
+
+    unmount(2, mountItem3);
+    assertEquals(6, mHost.getInvalidationCount());
+    assertEquals(v1Bounds, mHost.getInvalidationRect());
+  }
+
+  @Test
+  public void testCallbacks() {
+    Drawable d = new ColorDrawable();
+    assertNull(d.getCallback());
+
+    MountItem mountItem = mount(0, d);
+    assertEquals(mHost, d.getCallback());
+
+    unmount(0, mountItem);
+    assertNull(d.getCallback());
+  }
+
+  @Test
+  public void testGetMountItemCount() {
+    assertEquals(0, mHost.getMountItemCount());
+
+    MountItem mountItem1 = mount(0, new ColorDrawable());
+    assertEquals(1, mHost.getMountItemCount());
+
+    mount(1, new ColorDrawable());
+    assertEquals(2, mHost.getMountItemCount());
+
