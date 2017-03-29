@@ -217,3 +217,33 @@ class TransitionKeySet implements TransitionListener {
         break;
 
       case KeyStatus.DISAPPEARED:
+        keyStatusToResume = KeyStatus.DISAPPEARED;
+        mEndValues = mLocalEndValues;
+        if (oldTransition.wasRunningDisappearTransition()) {
+          // Was disappearing, continue disappearing animation.
+          mStartValues = oldTransition.mStartValues;
+          setTargetView(oldTransition.mTargetView);
+          setTransitionCleanupListener(oldTransition.mTransitionCleanupListener);
+          if (oldTransition.mEndValues.equals(mLocalEndValues)) {
+            oldTransitionToResumeFrom = oldTransition.mRunningTransitionsPointer;
+          }
+        } else if (oldTransition.wasRunningAppearTransition()) {
+          // Was appearing now disappearing.
+          mStartValues = oldTransition.mEndValues;
+        } else if (oldTransition.wasRunningChangeTransition()) {
+          mStartValues = oldTransition.mStartValues;
+        } else {
+          throw new IllegalStateException("Trying to resume a transition with an invalid state.");
+        }
+        break;
+
+      case KeyStatus.APPEARED:
+        // If we are resuming from disappear transition to appear transition, we need to make sure
+        // to clean up the state of the current transition before it is implicitly de-referenced.
+        if (oldTransition.wasRunningDisappearTransition()) {
+          oldTransition.cleanupAfterDisappear();
+        }
+
+        // Was disappearing and now re-appearing.
+        keyStatusToResume = KeyStatus.APPEARED;
+        break;
