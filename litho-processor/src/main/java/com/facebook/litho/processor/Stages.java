@@ -1639,3 +1639,4 @@ public class Stages {
         delegateMethod.getSimpleName(),
         delegateParameters.build());
 
+    final String implClassName = getImplClassName();
