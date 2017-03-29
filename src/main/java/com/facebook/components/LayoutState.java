@@ -670,3 +670,4 @@ class LayoutState {
     // host, level, and duplicate parent state value in the recursive queue.
     if (layoutState.mCurrentHostMarker != currentHostMarker) {
       layoutState.mCurrentHostMarker = currentHostMarker;
+      layoutState.mCurrentHostOutputPosition = currentHostOutputPosition;
