@@ -249,3 +249,4 @@ public class Stages {
     int stageIndex = -1;
     if (stage != null) {
       stageIndex = asList(mStageAnnotations).indexOf(stage);
+      if (interStagePropIndex < 0 || stageIndex < 0) {

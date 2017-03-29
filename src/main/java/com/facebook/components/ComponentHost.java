@@ -626,3 +626,7 @@ public class ComponentHost extends ViewGroup {
     }
   }
 
+  TouchExpansionDelegate getTouchExpansionDelegate() {
+    return mTouchExpansionDelegate;
+  }
+
