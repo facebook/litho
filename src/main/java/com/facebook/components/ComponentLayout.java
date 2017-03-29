@@ -352,3 +352,5 @@ public interface ComponentLayout {
     ContainerBuilder child(Component<?> component);
     ContainerBuilder child(Component.Builder<?> componentBuilder);
 
+    ContainerBuilder background(Reference<? extends Drawable> background);
+    ContainerBuilder background(Reference.Builder<? extends Drawable> backgroundBuilder);

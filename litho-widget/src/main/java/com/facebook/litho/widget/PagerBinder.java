@@ -294,3 +294,4 @@ public abstract class PagerBinder extends BaseBinder<
     @Override
     public void onPageSelected(int position) {
       mBinder.mCurrentItem = position;
+      mBinder.getRangeController().notifyOnPageSelected(position);
