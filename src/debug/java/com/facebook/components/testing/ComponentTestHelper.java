@@ -341,3 +341,5 @@ public final class ComponentTestHelper {
   }
 
   /**
+   * Measure and layout a component view.
+   *
