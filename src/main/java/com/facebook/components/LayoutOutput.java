@@ -195,3 +195,6 @@ class LayoutOutput implements Cloneable {
     mFlags = 0;
     mHostMarker = -1L;
     mUpdateState = STATE_UNKNOWN;
+    mImportantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+  }
+}
