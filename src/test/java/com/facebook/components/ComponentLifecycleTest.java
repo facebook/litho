@@ -304,3 +304,8 @@ public class ComponentLifecycleTest {
 
     assertThat(YogaMeasureOutput.getWidth(output)).isEqualTo(A_WIDTH);
     assertThat(YogaMeasureOutput.getHeight(output)).isEqualTo(A_HEIGHT);
+  }
+
+  @Test
+  public void testLayoutSpecMeasureResolveNestedTree() {
+    setUpComponentForCreateLayout(false /* isMountSpec */, true /* canMeasure */);
