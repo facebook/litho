@@ -1373,3 +1373,10 @@ class LayoutState {
    *              from the diff node.
    */
   static boolean applyDiffNodeToUnchangedNodes(InternalNode layoutNode, DiffNode diffNode) {
+    // Root of the main tree or of a nested tree.
+    final boolean isTreeRoot = layoutNode.getParent() == null;
+    if (isLayoutSpecWithSizeSpec(layoutNode.getComponent()) && !isTreeRoot) {
+      layoutNode.setDiffNode(diffNode);
+      return true;
+    }
+
