@@ -246,3 +246,5 @@ class HorizontalScrollSpec {
     return size;
   }
 
+  private static void releaseSize(Size size) {
+    sSizePool.release(size);

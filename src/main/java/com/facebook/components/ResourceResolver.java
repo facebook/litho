@@ -199,3 +199,4 @@ public class ResourceResolver {
         return cached;
       }
 
+      float result = mResources.getDimension(resId);
