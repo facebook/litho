@@ -188,3 +188,9 @@ public class PagerBinderTest {
     }
 
     mBinder.getRangeController().notifyOnPageSelected(4);
+    assertNull(mBinder.getComponentAt(8));
+    for (int i = 2; i < 7; i++) {
+      assertNotNull(mBinder.getComponentAt(i));
+    }
+  }
+
