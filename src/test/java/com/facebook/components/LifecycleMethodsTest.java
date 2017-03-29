@@ -85,3 +85,5 @@ public class LifecycleMethodsTest {
   }
 
   private class LifecycleMethodsComponent extends ComponentLifecycle {
+
+    @Override
