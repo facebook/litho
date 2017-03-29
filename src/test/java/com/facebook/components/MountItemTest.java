@@ -80,3 +80,4 @@ public class MountItemTest {
         mComponent,
         mComponentHost,
         mContent,
+        mNodeInfo,
