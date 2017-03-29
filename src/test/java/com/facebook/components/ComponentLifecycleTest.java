@@ -344,3 +344,4 @@ public class ComponentLifecycleTest {
 
   private YogaMeasureFunction getMeasureFunction() {
     when(mNode.getComponent()).thenReturn(mInput);
+
