@@ -29,3 +29,4 @@ public class ComponentsConfiguration {
   /**
    * Debug option to highlight interactive areas in mounted components.
    */
+  public static boolean debugHighlightInteractiveBounds = false;
