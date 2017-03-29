@@ -1033,3 +1033,4 @@ class MountState {
       setViewForeground(view, viewNodeInfo);
 
       // 12. Set view layout direction, if applicable.
+      setViewLayoutDirection(view, viewNodeInfo);
