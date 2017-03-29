@@ -140,3 +140,9 @@ public abstract class BaseBinder<
     if (isInRange(positionStart, itemCount)) {
       updateRange(positionStart, itemCount, URFLAG_REFRESH_IN_RANGE);
     }
+
+    if (mListener != null) {
+      mListener.onItemRangeChanged(positionStart, itemCount);
+    }
+  }
+

@@ -86,3 +86,5 @@ public abstract class PagerBinder extends BaseBinder<
     return mPagerOffscreenLimit;
   }
 
+  @Override
+  protected int getWidthSpec(int position) {
