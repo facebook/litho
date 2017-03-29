@@ -579,3 +579,4 @@ public class MountSpecHelper extends ComponentSpecHelper {
     methodDescription.name = "getExtraAccessibilityNodesCount";
     methodDescription.returnType = ClassName.INT;
     methodDescription.parameterTypes = new TypeName[] {};
+
