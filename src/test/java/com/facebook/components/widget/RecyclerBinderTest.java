@@ -443,3 +443,8 @@ public class RecyclerBinderTest {
 
     TestComponentTreeHolder componentTreeHolder =
         mHoldersForComponents.get(components.get(0).getComponent());
+
+    assertTrue(componentTreeHolder.isTreeValid());
+    assertTrue(componentTreeHolder.mLayoutSyncCalled);
+
+    for (int i = 1; i < 2; i++) {
