@@ -27,3 +27,5 @@ public class ComponentsConfiguration {
   public static final boolean IS_INTERNAL_BUILD = BuildConfig.IS_INTERNAL_BUILD;
 
   /**
+   * Debug option to highlight interactive areas in mounted components.
+   */
