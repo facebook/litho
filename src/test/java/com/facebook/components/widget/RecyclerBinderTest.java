@@ -188,3 +188,11 @@ public class RecyclerBinderTest {
     for (int i = 0; i < components.size(); i++) {
       final TestComponentTreeHolder holder =
           mHoldersForComponents.get(components.get(i).getComponent());
+      holder.mLayoutAsyncCalled = false;
+      holder.mLayoutSyncCalled = false;
+    }
+
+    mRecyclerBinder.setSize(300, 200);
+
+    final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
+

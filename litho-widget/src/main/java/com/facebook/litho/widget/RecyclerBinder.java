@@ -458,3 +458,8 @@ public class RecyclerBinder implements Binder<RecyclerView> {
           mCurrentFirstVisiblePosition,
           getActualChildrenWidthSpec(mComponentTreeHolders.get(mCurrentFirstVisiblePosition)),
           getActualChildrenHeightSpec(mComponentTreeHolders.get(mCurrentFirstVisiblePosition)),
+          scrollDirection);
+    }
+
+    // At this point we might still not have a range. In this situation we should return the best
+    // size we can detect from the size spec and update it when the first item comes in.
