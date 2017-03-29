@@ -15,3 +15,6 @@ class HostComponent extends ComponentLifecycle {
   private static final int HOST_POOL_SIZE = 30;
 
   @Override
+  protected Object onCreateMountContent(ComponentContext c) {
+    return new ComponentHost(c);
+  }

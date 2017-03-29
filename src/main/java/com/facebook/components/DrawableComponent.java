@@ -14,3 +14,15 @@ import android.graphics.drawable.Drawable;
 import com.facebook.litho.reference.Reference;
 
 class DrawableComponent<T extends Drawable> extends ComponentLifecycle {
+
+  static DrawableComponent sInstance;
+
+  static synchronized DrawableComponent get() {
+    if (sInstance == null) {
+      sInstance = new DrawableComponent();
+    }
+
+    return sInstance;
+  }
+
+  @Override

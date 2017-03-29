@@ -26,3 +26,5 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 
 @RunWith(ComponentsTestRunner.class)
+public class ColorDrawableReferenceTest {
+

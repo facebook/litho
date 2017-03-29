@@ -41,3 +41,37 @@ public class GlyphWarmerTest {
   public void setup() {
     mGlyphWarmer = GlyphWarmer.getInstance();
     mShadowLooper = Shadows.shadowOf(mGlyphWarmer.getWarmerLooper());
+  }
+
+  @Test
+  public void testWarmGlyph() {
+    Layout layout = mock(Layout.class);
+    mGlyphWarmer.warmLayout(layout);
+    mShadowLooper.runOneTask();
+    verify(layout).draw(any(Canvas.class));
+  }
+
+  @Implements(Picture.class)
+  public static class ShadowPicture {
+
+    @Implementation
+    public void __constructor__(int nativePicture, boolean fromStream) {
+
+    }
+
+    @Implementation
+    public void __constructor__(int nativePicture) {
+
+    }
+
+    @Implementation
+    public void __constructor__() {
+
+    }
+
+    @Implementation
+    public Canvas beginRecording(int width, int height) {
+      return new Canvas();
+    }
+  }
+}

@@ -24,3 +24,5 @@ import com.facebook.litho.config.ComponentsConfiguration;
  * and allows to specify color and alpha as create.
  */
 public final class ColorDrawableReference extends ReferenceLifecycle<Drawable> {
+
+  private static final int DEFAULT_ALPHA = 255;
