@@ -788,3 +788,11 @@ public class LayoutStateCalculateTest {
         SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(20, SizeSpec.EXACTLY));
 
+    assertEquals(
+        layoutState1.getMountableOutputAt(0).getId(),
+        layoutState2.getMountableOutputAt(0).getId());
+    assertEquals(
+        layoutState1.getMountableOutputAt(1).getId(),
+        layoutState2.getMountableOutputAt(1).getId());
+    assertEquals(3, layoutState1.getMountableOutputCount());
+    assertEquals(4, layoutState2.getMountableOutputCount());
