@@ -1287,3 +1287,6 @@ class LayoutState {
       c.setTreeProps(null);
     }
 
+    c.setWidthSpec(previousWidthSpec);
+    c.setHeightSpec(previousHeightSpec);
+
