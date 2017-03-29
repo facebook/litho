@@ -114,3 +114,17 @@ ThreadScope::~ThreadScope() {
   }
 }
 
+/* static */
+void ThreadScope::OnLoad() {
+  // These classes are required for ScopeWithClassLoader. Ensure they are looked up when loading.
+  JThreadScopeSupport::OnLoad();
+}
+
+/* static */
+void ThreadScope::WithClassLoader(std::function<void()>&& runnable) {
+  // TODO(cjhopman): If the classloader is already available in this scope, we
+  // shouldn't have to jump through java.
+  ThreadScope ts;
+  JThreadScopeSupport::runStdFunction(std::move(runnable));
+}
+

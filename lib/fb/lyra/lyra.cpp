@@ -106,3 +106,5 @@ ostream& operator<<(ostream& out, const StackTraceElement& elm) {
 // TODO(t10737667): The implement a tool that parse the stack trace and
 // symbolicate it
 ostream& operator<<(ostream& out, const vector<StackTraceElement>& trace) {
+  IosFlagsSaver flags{out};
+

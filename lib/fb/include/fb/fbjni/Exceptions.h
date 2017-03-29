@@ -63,3 +63,4 @@ class JCppException : public JavaClass<JCppException, JThrowable> {
 class FBEXPORT JniException : public std::exception {
  public:
   JniException();
+  ~JniException();
