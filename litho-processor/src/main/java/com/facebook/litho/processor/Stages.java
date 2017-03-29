@@ -2566,3 +2566,14 @@ public class Stages {
     }
 
     final TypeName type = JPUtil.getTypeFromMirror(typeMirror);
+    final String name = element.getSimpleName().toString();
+
+    final PropParameter propParameter = new PropParameter(
+        new Parameter(type, name),
+        propAnnotation.optional(),
+        resType,
+        getNonComponentAnnotations(element));
+
+    return new PropsBuilderMethodsSpecBuilder()
+        .index(requiredIndex)
+        .propParameter(propParameter)
