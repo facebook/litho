@@ -2738,3 +2738,6 @@ public class Stages {
         .addField(implClass, implMemberInstanceName)
         .addField(contextClass, "mContext");
 
+    final List<String> requiredPropNames = new ArrayList<>();
+    int numRequiredProps = 0;
+    for (VariableElement v : mProps) {
