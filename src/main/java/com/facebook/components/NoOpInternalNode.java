@@ -532,3 +532,18 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
+  public InternalNode child(ComponentLayout child) {
+    return this;
+  }
+
+  @Override
+  public InternalNode child(ComponentLayout.Builder child) {
+    return this;
+  }
+
+  @Override
+  public InternalNode child(Component<?> child) {
+    return this;
+  }
+
+  @Override
