@@ -230,3 +230,13 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
         scaleType != null ? scaleType : DEFAULT_SCALE_TYPE);
   }
 
+  /**
+   * Set the overlay image of the wrapped GenericDraweeHierarchy through the use of a
+   * reference.
+   *
+   * @param overlayImageReference
+   *    The reference which references the overlay drawable to use. Accepts null which will
+   *    remove the current overlay image. Make sure to call release() to release this
+   *    reference.
+   */
+  public void setOverlayImageReference(@Nullable Reference<Drawable> overlayImageReference) {
