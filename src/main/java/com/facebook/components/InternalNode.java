@@ -272,3 +272,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   public Reference<? extends Drawable> getForeground() {
+    return mForeground;
+  }
+
+  public void setCachedMeasuresValid(boolean valid) {
+    mCachedMeasuresValid = valid;
+  }
+
