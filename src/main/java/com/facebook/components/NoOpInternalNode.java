@@ -227,3 +227,4 @@ class NoOpInternalNode extends InternalNode {
 
   @Override
   public InternalNode marginAttr(
+      YogaEdge edge,
