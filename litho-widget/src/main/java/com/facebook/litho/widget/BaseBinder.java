@@ -712,3 +712,36 @@ public abstract class BaseBinder<
 
         // Create a new ComponentTree.
         final ComponentTree componentTree = buildComponentTree(component);
+
+        componentTree.setSizeSpec(getWidthSpec(position), getHeightSpec(position), itemSize);
+        mComponentTrees.put(position, componentTree);
+
+        shouldContinueInitialization = shouldContinueInitialization(
+            position,
+            itemSize.width,
+            itemSize.height);
+      }
+    }
+
+    for (int i = 0, size = componentTreesToRelease.size(); i < size; i++) {
+      componentTreesToRelease.get(i).release();
+    }
+    releaseList(componentTreesToRelease);
+    releaseList(componentList);
+  }
+
+  /**
+   * Returns true if all the loaded items did not fill the initial range and the initialization
+   * process should continue and false otherwise. Needs to be called from inside the synchronized
+   * block to make sure the current item remains unchanged.
+   * @param position the position of the new item
+   * @param itemWidth the width of the new item
+   * @param itemHeight the height of the new item
+   */
+  protected abstract boolean shouldContinueInitialization(
+      int position,
+      int itemWidth,
+      int itemHeight);
+
+  private boolean hasContentSize() {
+    synchronized (this) {
