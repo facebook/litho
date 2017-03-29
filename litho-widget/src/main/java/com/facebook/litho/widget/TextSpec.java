@@ -570,3 +570,4 @@ class TextSpec {
   }
 
   @GetExtraAccessibilityNodesCount
+  static int getExtraAccessibilityNodesCount(
