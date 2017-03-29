@@ -51,3 +51,7 @@ public class ComponentQueriesTest {
 
     assertThat(ComponentQueries.hasTextMatchingPredicate(view, Predicates.equalTo("hello")))
         .isTrue();
+  }
+
+  @Test
+  public void testExtractTextFromTextComponent() {
