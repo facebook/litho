@@ -793,3 +793,4 @@ class LayoutState {
       throw new IllegalArgumentException("Cannot release a null node tree");
     }
 
+    for (int i = node.getChildCount() - 1; i >= 0; i--) {
