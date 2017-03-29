@@ -1332,3 +1332,4 @@ public class Stages {
           eventName,
           "eventState");
 
+      final CodeBlock.Builder eventHandlerParams = CodeBlock.builder();
