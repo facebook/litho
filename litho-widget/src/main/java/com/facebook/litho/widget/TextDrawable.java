@@ -31,3 +31,4 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.facebook.components.TextContent;
+import com.facebook.components.Touchable;
