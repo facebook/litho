@@ -1716,3 +1716,4 @@ public class Stages {
     if (copyInterStage != null) {
       implClassBuilder.addMethod(copyInterStage);
     }
+
