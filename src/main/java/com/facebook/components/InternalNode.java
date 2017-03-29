@@ -1903,3 +1903,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       errorTypes = addOrCreateList(errorTypes, "flex");
     }
     if ((node.mPrivateFlags & PFLAG_FLEX_GROW_IS_SET) != 0L) {
+      errorTypes = addOrCreateList(errorTypes, "flexGrow");
