@@ -380,3 +380,4 @@ public interface ComponentLayout {
     ContainerBuilder contentDescription(@StringRes int stringId);
     ContainerBuilder viewTag(Object viewTag);
     ContainerBuilder viewTags(SparseArray<Object> viewTags);
+    ContainerBuilder transitionKey(String key);

@@ -418,3 +418,6 @@ public class ComponentTreeTest {
     // This should be ok.
     componentView2.setComponent(componentTree);
   }
+
+  @Test
+  public void testSettingNewViewToTree() {
