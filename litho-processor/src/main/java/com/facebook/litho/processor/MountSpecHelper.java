@@ -411,3 +411,4 @@ public class MountSpecHelper extends ComponentSpecHelper {
         ClassNames.COMPONENT);
   }
 
+  private static MountType getMountType(TypeMirror returnTypeParam) {
