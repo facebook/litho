@@ -114,3 +114,4 @@ void throwPendingJniExceptionAsCppException() {
     return;
   }
 
+  auto throwable = adopt_local(env->ExceptionOccurred());
