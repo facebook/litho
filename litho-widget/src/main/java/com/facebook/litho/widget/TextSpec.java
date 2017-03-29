@@ -232,3 +232,5 @@ class TextSpec {
 
     if (TextUtils.isEmpty(text)) {
       measureLayout.set(null);
+      size.width = 0;
+      size.height = 0;
