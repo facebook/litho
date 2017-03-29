@@ -20,3 +20,9 @@ import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
 import static com.facebook.components.SizeSpec.EXACTLY;
+import static org.junit.Assert.assertEquals;
+
+/**
+ * Tests for {@link ComponentView} and {@link MountState} to make sure mount only happens once when
+ * attaching the view and setting the component.
+ */

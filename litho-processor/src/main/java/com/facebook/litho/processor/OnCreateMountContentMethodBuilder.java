@@ -27,3 +27,15 @@ class OnCreateMountContentMethodBuilder {
     return this;
   }
 
+  OnCreateMountContentMethodBuilder delegateName(String delegateMethodName) {
+    mDelegateMethodName = delegateMethodName;
+    return this;
+  }
+
+  MethodSpec build() {
+    return  MethodSpec.methodBuilder("onCreateMountContent")
+        .addAnnotation(Override.class)
+        .addModifiers(Modifier.PUBLIC)
+        .addParameter(
+            ParameterSpec.builder(ClassNames.COMPONENT_CONTEXT, "context").build())
+        .returns(ClassName.OBJECT)

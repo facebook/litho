@@ -25,3 +25,4 @@ public class ComponentsProcessingException extends PrintableException {
     this.element = element;
   }
 
+  public void print(Messager messager) {

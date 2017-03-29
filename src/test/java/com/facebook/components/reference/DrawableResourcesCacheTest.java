@@ -27,3 +27,15 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(ComponentsTestRunner.class)
+public class DrawableResourcesCacheTest {
+
+  private DrawableResourcesCache mCache;
+
+  @Before
+  public void setup() {
+    mCache = new DrawableResourcesCache();
+  }
+
+  @Test
+  public void testPoolIsNeverEmpty() {
+

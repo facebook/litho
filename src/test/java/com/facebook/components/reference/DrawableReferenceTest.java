@@ -22,3 +22,8 @@ import org.robolectric.RuntimeEnvironment;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(ComponentsTestRunner.class)
+public class DrawableReferenceTest {
+
+  @Test
+  public void testAcquire() {
+    Drawable drawable = new ColorDrawable();
