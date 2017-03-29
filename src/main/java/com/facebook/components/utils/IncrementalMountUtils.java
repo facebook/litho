@@ -8,3 +8,5 @@
  */
 
 package com.facebook.litho.utils;
+
+import android.graphics.Rect;

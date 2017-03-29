@@ -26,3 +26,4 @@ class EventHandlerFactoryMethodSpecBuilder {
   private TypeName mContextClass;
   private final List<Parameter> mEventParams = new ArrayList<>();
   private TypeName mEventHandlerClassName;
+  private final ArrayList<String> mTypeParameters = new ArrayList<>();

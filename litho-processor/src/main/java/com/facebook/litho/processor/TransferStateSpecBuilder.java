@@ -20,3 +20,4 @@ import com.squareup.javapoet.ParameterSpec;
 
 class TransferStateSpecBuilder {
 
+  private Set<String> mStateParameters = new LinkedHashSet<>();
