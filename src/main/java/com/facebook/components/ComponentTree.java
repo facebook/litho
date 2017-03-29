@@ -857,3 +857,4 @@ public class ComponentTree {
 
       if (rootInitialized) {
         mRoot = root;
+      }
