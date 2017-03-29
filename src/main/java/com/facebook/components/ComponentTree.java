@@ -105,3 +105,4 @@ public class ComponentTree {
   private boolean mIsAsyncUpdateStateEnabled;
   private ComponentView mComponentView;
   private LayoutHandler mLayoutThreadHandler;
+

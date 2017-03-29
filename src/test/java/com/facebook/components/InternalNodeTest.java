@@ -308,3 +308,6 @@ public class InternalNodeTest {
 
     holderNode.layoutDirection(YogaDirection.RTL);
     holderNode.calculateLayout();
+    holderNode.copyInto(nestedTree);
+
+    assertEquals(
