@@ -106,3 +106,5 @@ class LayoutOutput implements Cloneable {
    */
   long getHostMarker() {
     return mHostMarker;
+  }
+

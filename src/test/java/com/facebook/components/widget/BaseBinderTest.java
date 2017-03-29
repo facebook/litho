@@ -351,3 +351,4 @@ public class BaseBinderTest {
 
     private ViewGroup mView;
     private final List<String> mItems;
+    private boolean mIncrementalMountEnabled;

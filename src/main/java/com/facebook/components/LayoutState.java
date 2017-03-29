@@ -116,3 +116,4 @@ class LayoutState {
 
   private int mWidthSpec;
   private int mHeightSpec;
+
