@@ -161,3 +161,17 @@ class MountState {
       logger.eventStart(EVENT_MOUNT, componentTree);
     }
 
+    prepareTransitionManager(layoutState);
+    if (mTransitionManager != null) {
+      if (mIsDirty) {
+        mTransitionManager.onNewTransitionContext(layoutState.getTransitionContext());
+      }
+
+      mTransitionManager.onMountStart();
+      recordMountedItemsWithTransitionKeys(
+          mTransitionManager,
+          mIndexToItemMap,
+          true /* isPreMount */);
+    }
+
+    if (mIsDirty) {
