@@ -32,3 +32,6 @@ public final class ColorDrawableReference extends ReferenceLifecycle<Drawable> {
 
   private static ColorDrawableReference sInstance;
 
+  private static final Pools.SynchronizedPool<PropsBuilder> mBuilderPool =
+      new Pools.SynchronizedPool<PropsBuilder>(2);
+
