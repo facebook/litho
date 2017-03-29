@@ -880,3 +880,4 @@ class LayoutState {
     layoutState.mComponent = component;
     layoutState.mWidthSpec = widthSpec;
     layoutState.mHeightSpec = heightSpec;
+
