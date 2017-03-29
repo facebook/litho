@@ -380,3 +380,4 @@ public class ComponentLifecycleTest {
         int widthSpec,
         int heightSpec,
         Size size,
+        Component<?> component) {
