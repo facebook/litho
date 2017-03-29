@@ -121,3 +121,13 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
   public void setRetryReference(
       @Nullable Reference<Drawable> retryReference,
       @Nullable ScalingUtils.ScaleType scaleType) {
+    if (mRetryReference != null) {
+      if (!Reference.shouldUpdate(mRetryReference, retryReference)) {
+        return;
+      } else {
+        Reference.release(mContext, mRetry, mRetryReference);
+        mRetryReference = null;
+        mRetry = null;
+      }
+    }
+
