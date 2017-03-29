@@ -990,3 +990,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Override
   public InternalNode touchExpansionDip(
       YogaEdge edge,
+      @Dimension(unit = DP) int touchExpansion) {
