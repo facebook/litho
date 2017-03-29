@@ -208,3 +208,8 @@ public class ComponentContext extends ContextWrapper {
 
   <E> EventHandler<E> newEventHandler(int id, Object[] params) {
     return new EventHandler<E>(mComponentScope, id, params);
+  }
+
+  ComponentLayout.ContainerBuilder newLayoutBuilder(ComponentContext c) {
+    return newLayoutBuilder(0, 0);
+  }
