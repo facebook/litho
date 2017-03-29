@@ -552,3 +552,5 @@ public class ComponentHostTest {
 
     assertEquals(0, mHost.getChildDrawingOrder(mHost.getChildCount(), 0));
     assertEquals(1, mHost.getChildDrawingOrder(mHost.getChildCount(), 1));
+  }
+
