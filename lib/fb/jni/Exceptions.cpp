@@ -84,3 +84,7 @@ class JCppSystemErrorException : public JavaClass<JCppSystemErrorException, JThr
  public:
   static auto constexpr kJavaDescriptor = "Lcom/facebook/jni/CppSystemErrorException;";
 
+  static local_ref<JCppSystemErrorException> create(const std::system_error& e) {
+    return newInstance(make_jstring(e.what()), e.code().value());
+  }
+};
