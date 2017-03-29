@@ -43,3 +43,4 @@ public class EditTextSpecTest {
 
     final android.widget.EditText editText = (android.widget.EditText) componentView.getChildAt(0);
     assertThat(editText.getText().toString()).isEqualTo(TEXT);
+    assertThat(editText.getTextSize()).isEqualTo(10);
