@@ -114,3 +114,4 @@ class ProgressSpec {
     if (color != Color.TRANSPARENT && progressBar.getIndeterminateDrawable() != null) {
       progressBar.getIndeterminateDrawable().mutate().clearColorFilter();
     }
+
