@@ -129,3 +129,11 @@ void throwCppExceptionIf(bool condition) {
   }
 
   auto env = Environment::current();
+  if (env->ExceptionCheck() == JNI_TRUE) {
+    throwPendingJniExceptionAsCppException();
+    return;
+  }
+
+  throw JniException();
+}
+
