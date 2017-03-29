@@ -52,3 +52,4 @@ public class MountStateViewClickTest {
                 .build();
           }
         });
+

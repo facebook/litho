@@ -69,3 +69,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     private final Pools.SynchronizedPool<Size> mSizePool =
         new Pools.SynchronizedPool<>(2);
 
+    private Size acquireSize(int initialValue) {

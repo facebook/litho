@@ -23,3 +23,4 @@ import static com.facebook.litho.ThreadUtils.assertMainThread;
  * This class contains utility methods to send pre-defined events
  * (click, touch, accessibility, etc.) to {@link EventHandler} instances' {@link Component}s
  */
+class EventDispatcherUtils {

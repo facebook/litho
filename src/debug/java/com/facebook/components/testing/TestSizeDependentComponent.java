@@ -50,3 +50,9 @@ public class TestSizeDependentComponent extends ComponentLifecycle {
           .heightPx(50);
       builder2
           .heightPx(20);
+    }
+
+    if (state.isDelegate) {
+      return builder1.build();
+    }
+

@@ -24,3 +24,4 @@ import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
