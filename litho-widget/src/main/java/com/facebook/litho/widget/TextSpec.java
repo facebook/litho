@@ -198,3 +198,6 @@ class TextSpec {
   static void onMeasure(
       ComponentContext context,
       ComponentLayout layout,
+      int widthSpec,
+      int heightSpec,
+      Size size,

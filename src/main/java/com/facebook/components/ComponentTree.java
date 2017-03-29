@@ -514,3 +514,4 @@ public class ComponentTree {
       // We have no layout that matches the given spec, so we need to compute it on the main thread.
       LayoutState localLayoutState = calculateLayoutState(
           mLayoutLock,
+          mContext,
