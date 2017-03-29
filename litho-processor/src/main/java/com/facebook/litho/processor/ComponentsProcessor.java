@@ -14,3 +14,12 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
+import com.facebook.litho.specmodels.generator.BuilderGenerator;
+import com.facebook.litho.specmodels.generator.ComponentImplGenerator;
+import com.facebook.litho.specmodels.generator.EventGenerator;
+import com.facebook.litho.specmodels.generator.JavadocGenerator;
+import com.facebook.litho.specmodels.generator.PreambleGenerator;
+import com.facebook.litho.specmodels.generator.StateGenerator;
+import com.facebook.litho.specmodels.generator.TreePropGenerator;
+import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
+import com.facebook.litho.specmodels.model.SpecModel;
