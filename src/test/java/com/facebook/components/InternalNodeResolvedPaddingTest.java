@@ -30,3 +30,5 @@ public class InternalNodeResolvedPaddingTest {
         ComponentsPools.acquireInternalNode(
             new ComponentContext(RuntimeEnvironment.application),
             RuntimeEnvironment.application.getResources());
+  }
+

@@ -77,3 +77,5 @@ public final class DrawableMatrix extends Matrix {
       result.setTranslate(
           FastMath.round((width - intrinsicWidth) * 0.5f),
           FastMath.round((height - intrinsicHeight) * 0.5f));
+
+      result.mShouldClipRect = (intrinsicWidth > width || intrinsicHeight > height);
