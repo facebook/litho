@@ -2235,3 +2235,6 @@ static void YGNodelayoutImpl(const YGNodeRef node,
     // If we don't measure with exact main dimension we want to ensure we don't violate min and max
     if (measureModeMainDim != YGMeasureModeExactly) {
       if (!YGFloatIsUndefined(minInnerMainDim) && sizeConsumedOnCurrentLine < minInnerMainDim) {
+        availableInnerMainDim = minInnerMainDim;
+      } else if (!YGFloatIsUndefined(maxInnerMainDim) && sizeConsumedOnCurrentLine > maxInnerMainDim) {
+        availableInnerMainDim = maxInnerMainDim;
