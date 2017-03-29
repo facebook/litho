@@ -235,3 +235,7 @@ class LayoutState {
       layoutOutput.setHostTranslationY(hostBounds.top);
     }
 
+    int l = layoutState.mCurrentX + node.getX();
+    int t = layoutState.mCurrentY + node.getY();
+    int r = l + node.getWidth();
+    int b = t + node.getHeight();

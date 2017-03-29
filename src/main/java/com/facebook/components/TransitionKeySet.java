@@ -312,3 +312,11 @@ class TransitionKeySet implements TransitionListener {
       case KeyStatus.DISAPPEARED:
         if (hasDisappearingTransitions()) {
           mRunningTransitionsPointer = mDisappearTransitions;
+        }
+        break;
+    }
+
+    if (mRunningTransitionsPointer != null) {
+      for (int i = 0, size = mRunningTransitionsPointer.size(); i < size; i++) {
+        final Transition t = mRunningTransitionsPointer.valueAt(i);
+        final Integer valueFlags = t.getValuesFlag();
