@@ -77,3 +77,10 @@ public class ComponentTreeTest {
     // Not view or attached yet
     Assert.assertNull(getComponentView(componentTree));
     Assert.assertFalse(isAttached(componentTree));
+
+    // No measure spec from view yet.
+    Assert.assertFalse(
+        (Boolean) Whitebox.getInternalState(componentTree, "mHasViewMeasureSpec"));
+
+    // The component input should be the one we passed in
+    Assert.assertSame(

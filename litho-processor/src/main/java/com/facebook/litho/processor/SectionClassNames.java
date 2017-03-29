@@ -36,3 +36,4 @@ public class SectionClassNames {
       ClassName.bestGuess("com.facebook.litho.list.LoadingEvent");
   public static final ClassName CHILDREN =
       ClassName.bestGuess("com.facebook.litho.list.Children");
+}

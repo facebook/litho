@@ -92,3 +92,8 @@ public class LayoutStateRecyclingTest {
         false,
         null);
     layoutState.releaseRef();
+
+    // Verify that the nodes did get recycled
+    verify(internalNodePool, atLeast(2)).release(Matchers.<InternalNode>any());
+  }
+}
