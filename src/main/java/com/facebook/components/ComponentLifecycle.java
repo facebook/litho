@@ -87,3 +87,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
         YogaNodeAPI cssNode,
         float width,
         YogaMeasureMode widthMode,
+        float height,
