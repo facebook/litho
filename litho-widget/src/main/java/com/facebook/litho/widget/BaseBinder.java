@@ -146,3 +146,5 @@ public abstract class BaseBinder<
     }
   }
 
+  @Override
+  public void notifyItemInserted(int position) {
