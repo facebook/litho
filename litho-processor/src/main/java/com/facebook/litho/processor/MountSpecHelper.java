@@ -387,3 +387,4 @@ public class MountSpecHelper extends ComponentSpecHelper {
       ExecutableElement method,
       MethodDescription methodDescription) {
     final ExecutableElement onCreateMountContent = Utils.getAnnotatedMethod(
+        mStages.getSourceElement(),
