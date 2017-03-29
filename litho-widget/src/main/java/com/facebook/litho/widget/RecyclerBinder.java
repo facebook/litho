@@ -389,3 +389,26 @@ public class RecyclerBinder implements Binder<RecyclerView> {
    */
   @Override
   public synchronized void measure(Size outSize, int widthSpec, int heightSpec) {
+    final int scrollDirection = mLayoutInfo.getScrollDirection();
+
+    switch (scrollDirection) {
+      case OrientationHelper.HORIZONTAL:
+        if (SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED) {
+          throw new IllegalStateException(
+              "Width mode has to be EXACTLY OR AT MOST for an horizontal scrolling RecyclerView");
+        }
+        break;
+
+      case OrientationHelper.VERTICAL:
+        if (SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED) {
+          throw new IllegalStateException(
+              "Height mode has to be EXACTLY OR AT MOST for a vertical scrolling RecyclerView");
+        }
+        break;
+
+      default:
+        throw new UnsupportedOperationException(
+            "The orientation defined by LayoutInfo should be" +
+                " either OrientationHelper.HORIZONTAL or OrientationHelper.VERTICAL");
+    }
+
