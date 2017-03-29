@@ -556,3 +556,14 @@ public class ComponentsPools {
       }
     }
 
+    PoolWithCount pool = null;
+
+    synchronized (mountContentLock) {
+      SparseArray<PoolWithCount> poolsArray =
+          sMountContentPoolsByContext.get(context);
+      if (poolsArray != null) {
+        pool = poolsArray.get(lifecycle.getId());
+        if (pool == null) {
+          pool = new PoolWithCount(lifecycle.poolSize());
+          poolsArray.put(lifecycle.getId(), pool);
+        }
