@@ -1819,3 +1819,32 @@ public class LayoutStateCalculateTest {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            .child(
+                TestDrawableComponent.create(c)
+                    .measuredWidth(width)
+                    .measuredHeight(height))
+            .build();
+      }
+    };
+
+    InternalNode node = LayoutState.createAndMeasureTreeForComponent(
+        c,
+        component,
+        SizeSpec.makeSizeSpec(width, SizeSpec.AT_MOST),
+        SizeSpec.makeSizeSpec(height, SizeSpec.AT_MOST));
+
+    assertEquals(width, node.getWidth());
+    assertEquals(height, node.getHeight());
+    assertEquals(1, node.getChildCount());
+    assertEquals(width, ((InternalNode) node.getChildAt(0)).getWidth());
+    assertEquals(height, ((InternalNode) node.getChildAt(0)).getHeight());
+  }
+
+  @Test
+  public void testLayoutOutputWithCachedLayoutSpec() {
+    final ComponentContext c = new ComponentContext(RuntimeEnvironment.application);
+    final int widthSpecContainer = SizeSpec.makeSizeSpec(300, SizeSpec.EXACTLY);
+    final int heightSpec = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
+    final int horizontalPadding = 20;
+    final int widthMeasuredComponent = SizeSpec.makeSizeSpec(
+        SizeSpec.getSize(widthSpecContainer) - horizontalPadding - horizontalPadding,

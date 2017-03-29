@@ -91,3 +91,6 @@ public final class ColorDrawableReference extends ReferenceLifecycle<Drawable> {
       ComponentContext context,
       Drawable drawable,
       Reference reference) {
+    if (CAN_RECYCLE) {
+      sPool.release((ColorDrawable) drawable);
+    }
