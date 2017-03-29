@@ -2179,3 +2179,4 @@ public class Stages {
       final TypeMirror variableElementType = variableElement.asType();
       final VariableElement componentMember = findPropVariableForName(variableElementName);
 
+      if (componentMember == null) {
