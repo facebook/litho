@@ -140,3 +140,11 @@ public abstract class SpecHelper implements Closeable {
 
   protected abstract void validate();
 
+  /**
+   * @return any extra member for the generated State class.
+   */
+  protected Map<String, TypeMirror> populateExtraStateMembers() {
+    return null;
+  }
+
+  /**
