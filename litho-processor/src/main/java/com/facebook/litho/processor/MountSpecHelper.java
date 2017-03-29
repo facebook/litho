@@ -229,3 +229,5 @@ public class MountSpecHelper extends ComponentSpecHelper {
   }
 
   /**
+   * Generate an onCreateMountContent implementation that delegates to the
+   * @OnCreateMountContent-annotated method.
