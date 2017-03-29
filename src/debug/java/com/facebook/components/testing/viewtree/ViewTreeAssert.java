@@ -306,3 +306,4 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
         ViewPredicates.isVisible());
   }
 
+  private String makeString(final Iterable<View> path) {
