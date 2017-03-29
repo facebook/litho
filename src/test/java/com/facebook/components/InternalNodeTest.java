@@ -373,3 +373,4 @@ public class InternalNodeTest {
   }
 
   private static void clearFlag(InternalNode internalNode, String flagName) {
+    long flagPosition = Whitebox.getInternalState(InternalNode.class, flagName);
