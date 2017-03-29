@@ -32,3 +32,7 @@ import android.text.TextUtils;
 import android.util.SparseArray;
 
 import com.facebook.R;
+import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.reference.ColorDrawableReference;
+import com.facebook.litho.reference.Reference;
+import com.facebook.litho.reference.ResourceDrawableReference;

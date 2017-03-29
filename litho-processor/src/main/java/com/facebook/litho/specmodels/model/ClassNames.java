@@ -43,3 +43,6 @@ public interface ClassNames {
   ClassName LAYOUT_SPEC = ClassName.bestGuess("com.facebook.litho.annotations.LayoutSpec");
   ClassName MOUNT_SPEC = ClassName.bestGuess("com.facebook.litho.annotations.MountSpec");
 
+  ClassName OUTPUT = ClassName.bestGuess("com.facebook.litho.Output");
+  ClassName DIFF = ClassName.bestGuess("com.facebook.litho.Diff");
+  ClassName SIZE = ClassName.bestGuess("com.facebook.litho.Size");

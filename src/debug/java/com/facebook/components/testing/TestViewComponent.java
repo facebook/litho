@@ -247,3 +247,4 @@ public class TestViewComponent extends ComponentLifecycle {
   }
 
   public static class Builder
+      extends com.facebook.litho.Component.Builder<TestViewComponent> {
