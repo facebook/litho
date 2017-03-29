@@ -1811,3 +1811,11 @@ public class Stages {
             .addStatement("super(get())")
             .build());
 
+    implClassBuilder.addMethod(
+        MethodSpec.methodBuilder("getSimpleName")
+            .addModifiers(Modifier.PUBLIC)
+            .addAnnotation(Override.class)
+            .returns(ClassNames.STRING)
+            .addStatement("return \"" + getSimpleClassName() + "\"")
+            .build());
+
