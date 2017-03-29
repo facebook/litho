@@ -193,3 +193,6 @@ public interface ComponentLayout {
     Builder foregroundColor(@ColorInt int foregroundColor);
 
     Builder wrapInView();
+    Builder clickHandler(EventHandler<ClickEvent> clickHandler);
+    Builder longClickHandler(EventHandler<LongClickEvent> clickHandler);
+    Builder touchHandler(EventHandler<TouchEvent> touchHandler);
