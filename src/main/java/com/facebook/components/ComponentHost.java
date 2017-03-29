@@ -844,3 +844,13 @@ public class ComponentHost extends ViewGroup {
     mIsComponentAccessibilityDelegateSet = false;
   }
 
+  private void updateChildDrawingOrderIfNeeded() {
+    if (!mIsChildDrawingOrderDirty) {
+      return;
+    }
+
+    final int childCount = getChildCount();
+    if (mChildDrawingOrder.length < childCount) {
+      mChildDrawingOrder = new int[childCount + 5];
+    }
+

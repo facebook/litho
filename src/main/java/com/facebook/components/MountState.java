@@ -476,3 +476,15 @@ class MountState {
     // this item if it needs to be updated. the update mount item will re-set the new ones.
     if (shouldUpdate) {
       unsetViewAttributes(currentMountItem);
+    }
+
+    // 3. We will re-bind this later in 7 regardless so let's make sure it's currently unbound.
+    if (currentMountItem.isBound()) {
+      itemComponent.getLifecycle().onUnbind(
+          itemComponent.getScopedContext(),
+          currentMountItem.getContent(),
+          itemComponent);
+      currentMountItem.setIsBound(false);
+    }
+
+    // 4. Re initialize the MountItem internal state with the new attributes from LayoutOutput
