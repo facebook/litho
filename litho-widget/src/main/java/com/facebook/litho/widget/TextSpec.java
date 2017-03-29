@@ -525,3 +525,4 @@ class TextSpec {
   }
 
   @OnMount
+  static void onMount(
