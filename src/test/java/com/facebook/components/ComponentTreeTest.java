@@ -29,3 +29,4 @@ import static com.facebook.components.SizeSpec.EXACTLY;
 import static com.facebook.components.SizeSpec.makeSizeSpec;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
