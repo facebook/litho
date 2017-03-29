@@ -32,3 +32,6 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.robolectric.RuntimeEnvironment;
 
+import static com.facebook.litho.ComponentsLogger.EVENT_MOUNT;
+import static com.facebook.litho.ComponentsLogger.PARAM_MOUNTED_COUNT;
+import static com.facebook.litho.ComponentsLogger.PARAM_UNMOUNTED_COUNT;

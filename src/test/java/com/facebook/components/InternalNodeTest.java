@@ -12,3 +12,5 @@ package com.facebook.litho;
 import android.graphics.Color;
 import android.support.v4.view.ViewCompat;
 
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.widget.Text;

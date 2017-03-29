@@ -13,3 +13,7 @@ import com.facebook.yoga.YogaAlign;
 
 import com.facebook.yoga.YogaFlexDirection;
 
+import com.facebook.litho.testing.ComponentTestHelper;
+import com.facebook.litho.testing.TestDrawableComponent;
+import com.facebook.litho.testing.TestViewComponent;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;

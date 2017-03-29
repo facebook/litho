@@ -59,3 +59,8 @@ COMPONENTS_DIFFUTILS_TARGET                   = make_dep_path('lib/diff-utils:di
 COMPONENTS_FRESCO_TARGET                      = make_dep_path('lib/fresco:fresco')
 COMPONENTS_ROBOLECTRIC_TARGET                 = make_dep_path('lib/robolectric3:robolectric3')
 COMPONENTS_JUNIT_TARGET                       = make_dep_path('lib/junit:junit')
+
+# Annotation processors
+COMPONENTS_PROCESSOR_TARGET = make_dep_path('litho-processor/src/main/java/com/facebook/litho/processor:processor')
+COMPONENTS_PROCESSOR_LIB_TARGET = make_dep_path('litho-processor/src/main/java/com/facebook/litho/processor:processor-lib')
+
