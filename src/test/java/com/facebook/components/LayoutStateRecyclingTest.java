@@ -91,3 +91,4 @@ public class LayoutStateRecyclingTest {
         mUnspecifiedSizeSpec,
         false,
         null);
+    layoutState.releaseRef();

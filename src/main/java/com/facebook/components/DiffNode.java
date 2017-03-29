@@ -66,3 +66,6 @@ class DiffNode implements Cloneable {
   }
 
   void setLastMeasuredHeight(float lastMeasuredHeight) {
+    mLastMeasuredHeight = lastMeasuredHeight;
+  }
+

@@ -39,3 +39,81 @@ public class GlyphWarmer {
   private static final int WARMER_THREAD_PRIORITY =
       (THREAD_PRIORITY_BACKGROUND + THREAD_PRIORITY_LOWEST) / 2;
 
+  private static GlyphWarmer sInstance;
+  private WarmerHandler mHandler;
+
+  /**
+   * @return the global {@link GlyphWarmer} instance.
+   */
+  public synchronized static GlyphWarmer getInstance() {
+    if (sInstance == null) {
+      sInstance = new GlyphWarmer();
+    }
+
+    return sInstance;
+  }
+
+  private GlyphWarmer() {
+
+    HandlerThread handlerThread = new HandlerThread(TAG, WARMER_THREAD_PRIORITY);
+    handlerThread.start();
+
+    mHandler = new WarmerHandler(handlerThread.getLooper());
+  }
+
+  @VisibleForTesting
+  Looper getWarmerLooper() {
+    return mHandler.getLooper();
+  }
+
+  /**
+   * Schedules a {@link Layout} to be drawn in the background. This warms up the Glyph cache for
+   * that {@link Layout}.
+   */
+  public void warmLayout(Layout layout) {
+    mHandler.obtainMessage(WarmerHandler.WARM_LAYOUT, new WeakReference<>(layout)).sendToTarget();
+  }
+
+  private static final class WarmerHandler extends Handler {
+    public static final int WARM_LAYOUT = 0;
+
+    private final Picture mPicture;
+
+    private WarmerHandler(Looper looper) {
+      super(looper);
+
+      Picture picture;
+      try {
+        picture = new Picture();
+      } catch (RuntimeException e) {
+        picture = null;
+      }
+
+      mPicture = picture;
+    }
+
+    @Override
+    public void handleMessage(Message msg) {
+      if (mPicture == null) {
+        return;
+      }
+
+      try {
+        final Layout layout = ((WeakReference<Layout>) msg.obj).get();
+
+        if (layout == null) {
+          return;
+        }
+
+        final Canvas canvas = mPicture.beginRecording(
+            layout.getWidth(),
+            LayoutMeasureUtil.getHeight(layout));
+
+        layout.draw(canvas);
+        mPicture.endRecording();
+      } catch (Exception e) {
+        // Nothing to do here. This is a best effort. No real problem if it fails.
+      }
+    }
+  }
+}

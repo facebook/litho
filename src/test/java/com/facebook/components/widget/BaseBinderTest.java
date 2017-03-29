@@ -189,3 +189,4 @@ public class BaseBinderTest {
 
   @Test
   public void testNotifyItemMoved() {
+    mount();
