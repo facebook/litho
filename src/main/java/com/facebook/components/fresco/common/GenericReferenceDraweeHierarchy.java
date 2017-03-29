@@ -17,3 +17,4 @@ import android.support.annotation.Nullable;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.reference.Reference;
 import com.facebook.drawee.drawable.AutoRotateDrawable;
+import com.facebook.drawee.drawable.DrawableUtils;

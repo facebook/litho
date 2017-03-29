@@ -45,3 +45,4 @@ import static android.view.MotionEvent.ACTION_UP;
  * @see Component
  * @see TextSpec
  */
+public class TextDrawable extends Drawable implements Touchable, TextContent {
