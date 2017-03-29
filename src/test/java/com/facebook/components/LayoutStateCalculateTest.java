@@ -1269,3 +1269,4 @@ public class LayoutStateCalculateTest {
     assertEquals(2, layoutState.getMountableOutputCount());
     long hostMarkerZero = layoutState.getMountableOutputAt(0).getHostMarker();
 
+    assertEquals(hostMarkerZero, layoutState.getMountableOutputAt(1).getHostMarker());
