@@ -2291,3 +2291,4 @@ public class Stages {
         throw new ComponentsProcessingException(
             method,
             "The first argument of an @OnCreateTreeProp method should be the "
+                + contextClassName.simpleName());
