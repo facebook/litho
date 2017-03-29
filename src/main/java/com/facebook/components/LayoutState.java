@@ -1115,3 +1115,11 @@ class LayoutState {
     if (logger != null) {
       logger.eventStart(EVENT_CREATE_LAYOUT, context, PARAM_LOG_TAG, context.getLogTag());
       logger.eventAddTag(EVENT_CREATE_LAYOUT, context, component.getSimpleName());
+    }
+
+    final InternalNode root = (InternalNode) component.getLifecycle().createLayout(
+        context,
+        component,
+        true /* resolveNestedTree */);
+
+    if (logger != null) {
