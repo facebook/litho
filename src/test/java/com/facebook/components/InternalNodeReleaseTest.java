@@ -52,3 +52,4 @@ public class InternalNodeReleaseTest {
     mInternalNode.touchExpansionPx(YogaEdge.END, 1);
     mInternalNode.testKey("testkey");
     mInternalNode.wrapInView();
+    mInternalNode.clickHandler(new EventHandler(null, 1));

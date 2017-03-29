@@ -47,3 +47,4 @@ public class MountStateViewTagsTest {
     final Object tag2 = new Object();
     final SparseArray<Object> tags2 = new SparseArray<>(1);
     tags2.put(DUMMY_ID, tag2);
+

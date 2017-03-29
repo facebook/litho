@@ -66,3 +66,12 @@ public class MountStateViewTest {
 
     final View child = componentView.getChildAt(0);
     final Drawable background = child.getBackground();
+
+    assertEquals(5, child.getPaddingLeft());
+    assertEquals(6, child.getPaddingTop());
+    assertEquals(7, child.getPaddingRight());
+    assertEquals(8, child.getPaddingBottom());
+    assertTrue(background instanceof ColorDrawable);
+    assertEquals(color, ((ColorDrawable) background).getColor());
+  }
+}

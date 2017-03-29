@@ -93,3 +93,9 @@ class ShallowCopyMethodSpecBuilder {
       builder.addStatement(
           "component." + Stages.STATE_CONTAINER_IMPL_MEMBER + " = new $T()",
           ClassName.bestGuess(mStateContainerImplClassName));
+    }
+
+    if (mHasDeepCopy) {
+      builder.endControlFlow();
+    }
+

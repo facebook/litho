@@ -33,3 +33,4 @@ import org.robolectric.shadows.ShadowLooper;
 
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
+import static org.mockito.Mockito.mock;

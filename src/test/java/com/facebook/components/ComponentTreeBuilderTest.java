@@ -88,3 +88,6 @@ public class ComponentTreeBuilderTest {
         .layoutDiffing(true)
         .layoutLock(mLayoutLock)
         .layoutThreadLooper(mLooper);
+
+    mComponentTreeBuilder.release();
+
