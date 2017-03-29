@@ -158,3 +158,13 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
   public void setFailureReference(
       @Nullable Reference<Drawable> failureReference,
       @Nullable ScalingUtils.ScaleType scaleType) {
+    if (mFailureReference != null) {
+      if (!Reference.shouldUpdate(mFailureReference, failureReference)) {
+        return;
+      } else {
+        Reference.release(mContext, mFailure, mFailureReference);
+        mFailureReference = null;
+        mFailure = null;
+      }
+    }
+
