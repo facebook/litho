@@ -601,3 +601,16 @@ public class ComponentsPools {
   }
 
   @ThreadSafe(enableChecks = false)
+  static void releaseScrapMountItemsArray(SparseArrayCompat<MountItem> sparseArray) {
+    sMountItemScrapArrayPool.release(sparseArray);
+  }
+
+  static SparseArrayCompat<Touchable> acquireScrapTouchablesArray() {
+    SparseArrayCompat<Touchable> sparseArray = sTouchableScrapArrayPool.acquire();
+    if (sparseArray == null) {
+      sparseArray = new SparseArrayCompat<>(SCRAP_ARRAY_INITIAL_SIZE);
+    }
+
+    return sparseArray;
+  }
+
