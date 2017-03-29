@@ -3026,3 +3026,7 @@ public class Stages {
     return mImplParameters;
   }
 
+  public String getSimpleClassName() {
+    return mSimpleClassName;
+  }
+
