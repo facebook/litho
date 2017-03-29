@@ -464,3 +464,9 @@ public abstract class ComponentLifecycle implements EventDispatcher {
    * @param componentBoundsX left bound of the mounted component
    * @param componentBoundsY top bound of the mounted component
    * @param component The {@link Component} for this component.
+   */
+  protected void onPopulateExtraAccessibilityNode(
+      AccessibilityNodeInfoCompat accessibilityNode,
+      int extraNodeIndex,
+      int componentBoundsX,
+      int componentBoundsY,
