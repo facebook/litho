@@ -118,3 +118,4 @@ typedef struct YGNode {
 
   bool isDirty;
   bool hasNewLayout;
+
