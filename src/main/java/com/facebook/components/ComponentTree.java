@@ -708,3 +708,6 @@ public class ComponentTree {
   public void setSizeSpec(int widthSpec, int heightSpec, Size output) {
     setRootAndSizeSpecInternal(
         null,
+        widthSpec,
+        heightSpec,
+        false /* isAsync */,
