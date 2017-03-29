@@ -209,3 +209,9 @@ public class ComponentHost extends ViewGroup {
   }
 
   private void maybeMoveTouchExpansionIndexes(MountItem item, int oldIndex, int newIndex) {
+    final ViewNodeInfo viewNodeInfo = item.getViewNodeInfo();
+    if (viewNodeInfo == null) {
+      return;
+    }
+
+    final Rect expandedTouchBounds = viewNodeInfo.getExpandedTouchBounds();

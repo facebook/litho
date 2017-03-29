@@ -363,3 +363,13 @@ class TransitionKeySet implements TransitionListener {
   }
 
   boolean hasDisappearingTransitions() {
+    return (mDisappearTransitions != null && !mDisappearTransitions.isEmpty());
+  }
+
+  private boolean wasRunningAppearTransition() {
+    return (mRunningTransitionsPointer == mAppearTransition);
+  }
+
+  private boolean wasRunningChangeTransition() {
+    return (mRunningTransitionsPointer == mChangeTransitions);
+  }

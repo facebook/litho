@@ -739,3 +739,6 @@ public class ComponentHostTest {
     return mountItem;
   }
 
+  private MountItem mountTouchExpansionItem(int index, Object content) {
+    final MountItem viewMountItem = new MountItem();
+    final ViewNodeInfo viewNodeInfo = ViewNodeInfo.acquire();
