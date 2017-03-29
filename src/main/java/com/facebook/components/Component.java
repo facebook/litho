@@ -225,3 +225,4 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
   public L getLifecycle() {
     return mLifecycle;
   }
+
