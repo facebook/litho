@@ -61,3 +61,5 @@ public class MountItemTest {
     mContent = new View(RuntimeEnvironment.application);
     mContentDescription = "contentDescription";
     mViewTag = "tag";
+    mViewTags = new SparseArray<>();
+    mClickHandler = new EventHandler(mComponent, 5);
