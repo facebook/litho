@@ -62,3 +62,5 @@ public class ComponentHostTest {
   private Component<?> mViewGroupHost;
 
   private TestableComponentHost mHost;
+  private Component<?> mDrawableComponent;
+  private Component<?> mViewComponent;

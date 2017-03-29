@@ -38,3 +38,4 @@ public class StateUpdateImplClassBuilder {
   private static final String STATE_UPDATE_METHOD_NAME = "updateState";
   private static final String STATE_UPDATE_IS_LAZY_METHOD_NAME = "isLazyStateUpdate";
 
+  private String mTarget;
