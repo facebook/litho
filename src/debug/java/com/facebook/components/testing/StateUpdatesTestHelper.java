@@ -106,3 +106,6 @@ public class StateUpdatesTestHelper {
     Whitebox.setInternalState(context, "mComponentTree", componentTree);
 
     stateUpdater.performStateUpdate(context);
+    for (ShadowLooper looper : loopers) {
+      looper.runToEndOfTasks();
+    }
