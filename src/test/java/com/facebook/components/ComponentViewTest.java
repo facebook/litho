@@ -97,3 +97,16 @@ public class ComponentViewTest {
             component)
             .incrementalMount(false)
             .build());
+
+    nullComponentView.measure(
+        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+    nullComponentView.layout(
+        0,
+        0,
+        nullComponentView.getMeasuredWidth(),
+        nullComponentView.getMeasuredHeight());
+
+    assertTrue(nullComponentView.getMeasuredHeight() == 0
+        && nullComponentView.getMeasuredWidth() == 0);
+  }
