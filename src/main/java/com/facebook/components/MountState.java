@@ -1341,3 +1341,5 @@ class MountState {
     view.setFocusable(MountItem.isViewFocusable(mountItem.getFlags()));
   }
 
+  private static void setViewPadding(View view, ViewNodeInfo viewNodeInfo) {
+    if (!viewNodeInfo.hasPadding()) {
