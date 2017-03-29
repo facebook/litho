@@ -1648,3 +1648,26 @@ class MountState {
   private void endUnmountDisappearingItem(ComponentContext context, MountItem item) {
     final ComponentHost content = (ComponentHost) item.getContent();
 
+    // Unmount descendant items in reverse order.
+    for (int i = content.getMountItemCount() - 1; i >= 0; i--) {
+      final MountItem mountItem = content.getMountItemAt(i);
+      unmountDisappearingItemChild(context, mountItem);
+    }
+
+    if (content.getMountItemCount() > 0) {
+      throw new IllegalStateException("Recursively unmounting items from a ComponentHost, left" +
+          " some items behind maybe because not tracked by its MountState");
+    }
+    final ComponentHost host = item.getHost();
+    host.unmountDisappearingItem(item);
+    unsetViewAttributes(item);
+
+    unbindAndUnmountLifecycle(context, item);
+
+    if (item.getComponent().getLifecycle().canMountIncrementally()) {
+      final int index = mCanMountIncrementallyMountItems.indexOfValue(item);
+      if (index > 0) {
+        mCanMountIncrementallyMountItems.removeAt(index);
+      }
+    }
+    ComponentsPools.release(context, item);
