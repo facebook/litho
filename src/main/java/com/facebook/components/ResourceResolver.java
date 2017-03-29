@@ -128,3 +128,4 @@ public class ResourceResolver {
     return null;
   }
 
+  protected final boolean resolveBoolRes(@BoolRes int resId) {

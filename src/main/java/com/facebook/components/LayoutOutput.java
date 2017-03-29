@@ -189,3 +189,4 @@ class LayoutOutput implements Cloneable {
       mViewNodeInfo = null;
     }
     mDisplayList = null;
+    mBounds.setEmpty();
