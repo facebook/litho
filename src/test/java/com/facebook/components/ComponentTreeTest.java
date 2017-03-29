@@ -250,3 +250,5 @@ public class ComponentTreeTest {
 
     componentTree.setSizeSpec(mWidthSpec, mHeightSpec, size);
 
+    assertEquals(SizeSpec.getSize(mWidthSpec), size.width, 0.0);
+    assertEquals(SizeSpec.getSize(mHeightSpec), size.height, 0.0);
