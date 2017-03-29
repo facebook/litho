@@ -33,3 +33,5 @@ import static org.mockito.Mockito.mock;
 
 @RunWith(ComponentsTestRunner.class)
 public class ComponentTreeBuilderTest {
+  private static final String mLogTag = "logTag";
+  private final Object mLayoutLock = new Object();

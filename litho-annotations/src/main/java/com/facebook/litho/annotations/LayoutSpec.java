@@ -17,3 +17,4 @@ import java.lang.annotation.RetentionPolicy;
  * is made up of other components.
  * <p>A class that is annotated with {@link LayoutSpec} must implement a method with the
  * {@link OnCreateLayout} annotation. It may also implement methods with the following annotations:
+ * - {@link OnLoadStyle}

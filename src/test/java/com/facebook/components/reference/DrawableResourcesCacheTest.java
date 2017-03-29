@@ -39,3 +39,4 @@ public class DrawableResourcesCacheTest {
   @Test
   public void testPoolIsNeverEmpty() {
 
+    Resources resources = RuntimeEnvironment.application.getResources();

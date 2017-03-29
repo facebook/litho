@@ -27,3 +27,4 @@ public class DrawableReferenceTest {
   @Test
   public void testAcquire() {
     Drawable drawable = new ColorDrawable();
+    ComponentContext context = new ComponentContext(RuntimeEnvironment.application);

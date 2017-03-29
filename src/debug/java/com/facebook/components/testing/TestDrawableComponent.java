@@ -18,3 +18,5 @@ import android.support.annotation.AttrRes;
 import android.support.annotation.StyleRes;
 import android.support.v4.util.Pools;
 
+import com.facebook.components.Component;
+import com.facebook.components.ComponentLayout;
