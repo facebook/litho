@@ -345,3 +345,4 @@ public class ComponentTreeTest {
   public void testSetComponentFromView() {
     Component component1 = TestDrawableComponent.create(mContext)
         .build();
+    ComponentTree componentTree1 = ComponentTree.create(
