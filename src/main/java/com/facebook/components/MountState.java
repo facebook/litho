@@ -983,3 +983,10 @@ class MountState {
     return hostsByMarker.get(hostMarker);
   }
 
+  private static void setViewAttributes(MountItem item) {
+    final Component<?> component = item.getComponent();
+    if (!isMountViewSpec(component)) {
+      return;
+    }
+
+    final View view = (View) item.getContent();

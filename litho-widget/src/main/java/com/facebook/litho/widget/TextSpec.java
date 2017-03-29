@@ -592,3 +592,4 @@ class TextSpec {
     final int end = spanned.getSpanEnd(span);
     final int startLine = textLayout.getLineForOffset(start);
     final int endLine = textLayout.getLineForOffset(end);
+
