@@ -215,3 +215,5 @@ public class LayoutStateCalculateVisibilityOutputsTest {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            .child(
+                TestDrawableComponent.create(c)

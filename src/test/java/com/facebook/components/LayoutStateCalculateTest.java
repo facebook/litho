@@ -337,3 +337,4 @@ public class LayoutStateCalculateTest {
 
     Rect mountBounds = new Rect();
 
+    layoutState.getMountableOutputAt(0).getMountBounds(mountBounds);

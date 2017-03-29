@@ -224,3 +224,4 @@ public class Utils {
       return null;
     }
 
+    final Elements elements = processingEnv.getElementUtils();
