@@ -208,3 +208,20 @@ public class RecyclerBinderTest {
 
     for (int i = rangeTotal + 1; i < components.size(); i++) {
       holder = mHoldersForComponents.get(components.get(i).getComponent());
+      assertFalse(holder.isTreeValid());
+      assertFalse(holder.mLayoutAsyncCalled);
+      assertFalse(holder.mLayoutSyncCalled);
+    }
+  }
+
+  @Test
+  public void testMount() {
+    RecyclerView recyclerView = mock(RecyclerView.class);
+    mRecyclerBinder.mount(recyclerView);
+
+    verify(recyclerView).setLayoutManager(mLayoutInfo.getLayoutManager());
+    verify(recyclerView).setAdapter(any(RecyclerView.Adapter.class));
+    verify(recyclerView).addOnScrollListener(any(OnScrollListener.class));
+  }
+
+  @Test
