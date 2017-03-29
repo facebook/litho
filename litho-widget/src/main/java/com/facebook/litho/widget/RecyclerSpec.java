@@ -198,3 +198,4 @@ class RecyclerSpec {
       recyclerView.removeOnScrollListener(onScrollListener);
     }
 
+    recyclerViewWrapper.setOnRefreshListener(null);
