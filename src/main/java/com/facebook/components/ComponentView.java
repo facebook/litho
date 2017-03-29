@@ -261,3 +261,5 @@ public class ComponentView extends ComponentHost {
       }
 
       mComponent.clearComponentView();
+    }
+
