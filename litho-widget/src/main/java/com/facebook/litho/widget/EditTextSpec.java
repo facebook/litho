@@ -431,3 +431,20 @@ class EditTextSpec {
                 mEventHandler,
                 s.toString());
           }
+        }
+      };
+    }
+
+    void attachWatcher() {
+      addTextChangedListener(mTextWatcher);
+    }
+
+    void detachWatcher() {
+      removeTextChangedListener(mTextWatcher);
+    }
+
+    public void setEventHandler(EventHandler eventHandler) {
+      mEventHandler = eventHandler;
+    }
+  }
+}
