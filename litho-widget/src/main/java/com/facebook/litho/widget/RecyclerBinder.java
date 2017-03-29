@@ -413,3 +413,35 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     }
 
     if (mLastWidthSpec != UNINITIALIZED) {
+      switch (scrollDirection) {
+        case OrientationHelper.VERTICAL:
+          if (MeasureComparisonUtils.isMeasureSpecCompatible(
+              mLastWidthSpec,
+              widthSpec,
+              mMeasuredSize.width)) {
+            outSize.width = mMeasuredSize.width;
+            outSize.height = SizeSpec.getSize(heightSpec);
+
+            return;
+          }
+          break;
+        default:
+          if (MeasureComparisonUtils.isMeasureSpecCompatible(
+              mLastHeightSpec,
+              heightSpec,
+              mMeasuredSize.height)) {
+            outSize.width = SizeSpec.getSize(widthSpec);
+            outSize.height = mMeasuredSize.height;
+
+            return;
+          }
+      }
+
+      mIsMeasured.set(false);
+      invalidateLayoutData();
+    }
+
+    // We have never measured before or the measures are not valid so we need to measure now.
+    mLastWidthSpec = widthSpec;
+    mLastHeightSpec = heightSpec;
+
