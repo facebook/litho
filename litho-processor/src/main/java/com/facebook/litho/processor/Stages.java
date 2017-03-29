@@ -1655,3 +1655,5 @@ public class Stages {
           implInstanceName,
           name,
           name);
+      methodBuilder.endControlFlow();
+      methodBuilder.addStatement("releaseOutput($L)", name);
