@@ -62,3 +62,7 @@ public abstract class Reference<L> {
 
   public abstract String getSimpleName();
 
+  /**
+   * Checks whether acquiring object from two references will produce the same result.
+   * This is implemented by default calling {@link Reference#equals(Object)}. When defining a custom
+   * reference it's possible to provide custom logic for the comparison implementing a method

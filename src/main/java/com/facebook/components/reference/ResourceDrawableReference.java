@@ -86,3 +86,4 @@ public final class ResourceDrawableReference extends ReferenceLifecycle<Drawable
     }
 
     @Override
+    public int hashCode() {

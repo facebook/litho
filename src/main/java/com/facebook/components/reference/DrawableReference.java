@@ -56,3 +56,45 @@ public final class DrawableReference extends ReferenceLifecycle<Drawable> {
     }
 
     @Override
+    public int hashCode() {
+      return mDrawable != null ? mDrawable.hashCode() : 0;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+
+      State state = (State) o;
+      return DrawableUtils.areDrawablesEqual(mDrawable, state.mDrawable);
+    }
+
+    protected State() {
+      super(get());
+    }
+  }
+
+  public static class PropsBuilder extends Reference.Builder<Drawable> {
+
+    private State mState;
+
+    public PropsBuilder(State state) {
+      mState = state;
+    }
+
+    public PropsBuilder drawable(Drawable drawable) {
+      mState.mDrawable = drawable;
+      return this;
+    }
+
+    @Override
+    public Reference<Drawable> build() {
+      return mState;
+    }
+  }
+}
