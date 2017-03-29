@@ -178,3 +178,21 @@ class LayoutStateOutputIdCalculator {
    * in the View hierarchy, and the type of output see {@link LayoutOutput.LayoutOutputType}.
    */
   private static long calculateLayoutOutputBaseId(
+      LayoutOutput layoutOutput,
+      int level,
+      @LayoutOutput.LayoutOutputType int type) {
+    if (level < 0 || level > MAX_LEVEL) {
+      throw new IllegalArgumentException(
+          "Level must be non-negative and no greater than " + MAX_LEVEL + " actual level " + level);
+    }
+
+    long componentId = layoutOutput.getComponent() != null ?
+        layoutOutput.getComponent().getLifecycle().getId() :
+        0L;
+
+    long componentShifted = componentId << COMPONENT_ID_SHIFT;
+    long levelShifted = ((long) level) << LEVEL_SHIFT;
+    long typeShifted = ((long) type) << TYPE_SHIFT;
+
+    return 0L | componentShifted | levelShifted | typeShifted;
+  }

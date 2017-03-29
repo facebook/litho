@@ -56,3 +56,5 @@ class LayoutOutput implements Cloneable {
   private int mImportantForAccessibility;
   private DisplayList mDisplayList;
 
+  public LayoutOutput() {
+    mUpdateState = STATE_UNKNOWN;

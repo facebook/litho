@@ -155,3 +155,11 @@ public class ComponentViewMountTest {
 
   private static class TestComponentView extends ComponentView {
     private int mRequestLayoutInvocationCount = 0;
+
+    public TestComponentView(Context context) {
+      super(context);
+    }
+
+    @Override
+    public void requestLayout() {
+      super.requestLayout();
