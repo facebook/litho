@@ -1355,3 +1355,7 @@ public class Stages {
         methodBuilder.addStatement(
             "return do$L($L)",
             capitalize(element.getSimpleName().toString()),
+            eventHandlerParams.build());
+      } else {
+        methodBuilder.addStatement(
+            "do$L($L)",
