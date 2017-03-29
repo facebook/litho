@@ -1392,3 +1392,6 @@ public class LayoutStateCalculateTest {
             .contentDescription("This is root view")
             .child(
                 TestDrawableComponent.create(c)
+                    .withLayout().flexShrink(0)
+                    .widthDip(30)
+                    .heightDip(30))

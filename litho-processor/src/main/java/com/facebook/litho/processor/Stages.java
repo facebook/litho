@@ -514,3 +514,23 @@ public class Stages {
 
             // Enforce #7
             final boolean hasDefaultValue = hasDefaultValue(v);
+            if (hasDefaultValue && !propAnnotation.optional()) {
+              throw new ComponentsProcessingException(
+                  v,
+                  "Prop is not optional but has a declared default value.");
+            }
+
+            // Enforce #8
+            if (existingType != null) {
+              final Prop existingPropAnnotation = existingType.getAnnotation(Prop.class);
+              if (existingPropAnnotation != null) {
+                if (!hasSameAnnotations(v, existingType)) {
+                  throw new ComponentsProcessingException(
+                      v,
+                      "The prop '" + variableName + "' is configured differently for different " +
+                          "methods. Ensure each instance of this prop is declared identically.");
+                }
+              }
+            }
+
+            // Enforce #9
