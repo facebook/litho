@@ -69,3 +69,6 @@ import static org.mockito.Mockito.verify;
 @RunWith(ComponentsTestRunner.class)
 public class LayoutStateCalculateTest {
 
+  @Rule
+  public PowerMockRule mPowerMockRule = new PowerMockRule();
+

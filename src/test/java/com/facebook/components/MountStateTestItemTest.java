@@ -121,3 +121,21 @@ public class MountStateTestItemTest {
                 .child(
                     TestDrawableComponent.create(c)
                         .withLayout().flexShrink(0)
+                        .testKey(TEST_ID_1))
+                .build();
+          }
+        });
+
+    ComponentViewAssert.assertThat(componentView)
+        .doesNotContainTestKey("")
+        .doesNotContainTestKey(null)
+        .containsTestKey(TEST_ID_1);
+  }
+
+  @Test
+  public void testTextItemTextContent() {
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {

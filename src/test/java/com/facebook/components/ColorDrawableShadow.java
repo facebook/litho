@@ -18,3 +18,4 @@ import static org.robolectric.internal.Shadow.directlyOn;
  * {@link org.robolectric.shadows.ShadowCanvas}
  */
 @Implements(value = ColorDrawable.class, inheritImplementationMethods = true)
+public class ColorDrawableShadow extends ShadowDrawable {
