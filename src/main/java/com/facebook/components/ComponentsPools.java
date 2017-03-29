@@ -807,3 +807,4 @@ public class ComponentsPools {
     return displayListDrawable;
   }
 
+  @ThreadSafe(enableChecks = false)
