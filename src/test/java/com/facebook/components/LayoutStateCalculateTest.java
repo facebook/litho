@@ -1506,3 +1506,7 @@ public class LayoutStateCalculateTest {
   }
 
   @Test
+  public void testLayoutOutputsForLongClickHandlerAndViewTagsOnRoot() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
