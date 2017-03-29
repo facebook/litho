@@ -237,3 +237,5 @@ public abstract class ComponentLifecycle implements EventDispatcher {
       final boolean isMountSpecWithMeasure = canMeasure() && Component.isMountSpec(component);
 
       if (isMountSpecWithMeasure || deferNestedTreeResolution) {
+        node.setMeasureFunction(sMeasureFunction);
+      }
