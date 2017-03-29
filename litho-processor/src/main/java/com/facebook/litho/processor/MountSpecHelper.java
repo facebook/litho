@@ -402,3 +402,7 @@ public class MountSpecHelper extends ComponentSpecHelper {
           mountParameter,
           "Second parameter of " + methodDescription.name + " should be of same type " +
           "of onCreateMountContent()'s return");
+    }
+
+    mStages.generateDelegate(
+        methodDescription,
