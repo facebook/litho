@@ -64,3 +64,4 @@ COMPONENTS_JUNIT_TARGET                       = make_dep_path('lib/junit:junit')
 COMPONENTS_PROCESSOR_TARGET = make_dep_path('litho-processor/src/main/java/com/facebook/litho/processor:processor')
 COMPONENTS_PROCESSOR_LIB_TARGET = make_dep_path('litho-processor/src/main/java/com/facebook/litho/processor:processor-lib')
 
+# Sample app

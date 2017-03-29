@@ -11,3 +11,8 @@ components_robolectric_test(
         COMPONENTS_JUNIT_TARGET,
         COMPONENTS_ROBOLECTRIC_TARGET,
         make_dep_path("litho-widget/src/main/java/com/facebook/litho/widget:widget"),
+        make_dep_path("src/debug/java/com/facebook/components/testing/testrunner:testrunner"),
+        make_dep_path("src/debug/java/com/facebook/components/testing/viewtree:viewtree"),
+        make_dep_path("src/debug/java/com/facebook/components/testing:testing"),
+        make_dep_path("src/test/java/com/facebook/components:res"),
+        make_dep_path("src/test/java/com/facebook/components:testutil"),

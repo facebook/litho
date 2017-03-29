@@ -51,3 +51,5 @@ android_resource(
     package = "com.facebook.litho",
     res = "res",
     visibility = [
+        make_dep_path("src/test/..."),
+        "//javatests/com/facebook/components/...",
