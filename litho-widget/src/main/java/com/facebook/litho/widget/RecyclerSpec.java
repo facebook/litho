@@ -207,3 +207,4 @@ class RecyclerSpec {
       RecyclerViewWrapper recyclerViewWrapper,
       @Prop Binder<RecyclerView> binder,
       @Prop(optional = true) RecyclerView.ItemDecoration itemDecoration) {
+    final RecyclerView recyclerView = recyclerViewWrapper.getRecyclerView();
