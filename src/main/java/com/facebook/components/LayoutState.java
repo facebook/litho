@@ -1303,3 +1303,14 @@ class LayoutState {
     } else if (root.getStyleDirection() == com.facebook.yoga.YogaDirection.INHERIT
         && LayoutState.isLayoutDirectionRTL(c)) {
       root.layoutDirection(YogaDirection.RTL);
+    }
+
+    measureTree(
+        root,
+        widthSpec,
+        heightSpec,
+        diffTreeRoot);
+
+    return root;
+  }
+
