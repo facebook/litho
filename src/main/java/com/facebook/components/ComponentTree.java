@@ -426,3 +426,11 @@ public class ComponentTree {
     }
   }
 
+  /**
+   * Set a new ComponentView to this ComponentTree checking that they have the same context and
+   * clear the ComponentTree reference from the previous ComponentView if any.
+   * Be sure this ComponentTree is detach first.
+   */
+  void setComponentView(@NonNull ComponentView view) {
+    assertMainThread();
+
