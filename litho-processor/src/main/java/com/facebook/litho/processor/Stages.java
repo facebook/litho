@@ -1091,3 +1091,4 @@ public class Stages {
       MethodDescription from,
       ExecutableElement to,
       List<TypeName> expectedTypes,
+      Map<String, String> parameterTranslation,
