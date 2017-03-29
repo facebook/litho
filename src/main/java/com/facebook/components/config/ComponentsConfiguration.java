@@ -15,3 +15,4 @@ import com.facebook.litho.BuildConfig;
 
 /**
  * Configuration for the Components library.
+ */
