@@ -78,3 +78,7 @@ public class GridComponentBinderTest {
         (Looper) Whitebox.invokeMethod(
             ComponentTree.class,
             "getDefaultLayoutThreadLooper"));
+  }
+
+  @Test
+  public void testMatchingWidthSpec() {

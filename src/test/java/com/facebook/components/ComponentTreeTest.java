@@ -63,3 +63,6 @@ public class ComponentTreeTest {
         .build();
 
     mLayoutThreadShadowLooper = Shadows.shadowOf(
+        (Looper) Whitebox.invokeMethod(
+            ComponentTree.class,
+            "getDefaultLayoutThreadLooper"));

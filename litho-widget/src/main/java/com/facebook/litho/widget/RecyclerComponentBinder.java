@@ -99,3 +99,13 @@ public abstract class RecyclerComponentBinder<L extends RecyclerView.LayoutManag
   /**
    * Indicates whether each component in the data set can be represented with a unique identifier of
    * type {@link java.lang.Long}.
+   *
+   * @param hasStableIds Whether components in data set have unique identifiers or not.
+   * @see #hasStableIds()
+   * @see #getComponentId(int)
+   */
+  public void setHasStableIds(boolean hasStableIds) {
+    mAdapter.setHasStableIds(hasStableIds);
+  }
+
+  /**

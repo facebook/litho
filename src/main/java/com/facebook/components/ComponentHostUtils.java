@@ -103,3 +103,4 @@ class ComponentHostUtils {
    * Mounts a drawable into a view.
    * @param view view into which the drawable should be mounted
    * @param drawable drawable to be mounted
+   * @param bounds bounds of the drawable being mounted
