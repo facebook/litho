@@ -20,3 +20,4 @@ import android.os.Message;
 import android.support.annotation.VisibleForTesting;
 import android.text.Layout;
 
+import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
