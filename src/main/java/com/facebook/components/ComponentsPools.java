@@ -51,3 +51,7 @@ public class ComponentsPools {
 
   private static YogaConfig sYogaConfig;
 
+  private static final int SCRAP_ARRAY_INITIAL_SIZE = 4;
+
+  private ComponentsPools() {
+  }

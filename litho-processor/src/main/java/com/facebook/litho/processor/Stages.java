@@ -217,3 +217,4 @@ public class Stages {
     populateOnCreateInitialStateDefinedProps();
     populateProps();
     populateTreeProps();
+    if (mSupportState) {
