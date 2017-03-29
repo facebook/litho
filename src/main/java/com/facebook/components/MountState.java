@@ -947,3 +947,4 @@ class MountState {
       int width = right - left;
       int height = bottom - top;
 
+      if (force || view.getMeasuredHeight() != height || view.getMeasuredWidth() != width) {
