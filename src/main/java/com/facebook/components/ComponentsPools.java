@@ -103,3 +103,6 @@ public class ComponentsPools {
   private static final Pools.SynchronizedPool<Diff<?>> sDiffPool =
       new Pools.SynchronizedPool<>(20);
 
+  private static final Pools.SynchronizedPool<ComponentTree.Builder> sComponentTreeBuilderPool =
+      new Pools.SynchronizedPool<>(2);
+
