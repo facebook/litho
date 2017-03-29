@@ -476,3 +476,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public InternalNode importantForAccessibility(int importantForAccessibility) {
