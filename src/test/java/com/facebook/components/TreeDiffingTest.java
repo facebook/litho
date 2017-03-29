@@ -60,3 +60,4 @@ public class TreeDiffingTest {
   @Before
   public void setup() throws Exception {
     mContext = new ComponentContext(RuntimeEnvironment.application);
+    mUnspecifiedSpec = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
