@@ -142,3 +142,19 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
     mGenericDraweeHierarchy.setRetryImage(
         DrawableUtils.cloneDrawable(mRetry),
         scaleType != null ? scaleType : DEFAULT_SCALE_TYPE);
+  }
+
+  /**
+   * Set the failure of the wrapped GenericDraweeHierarchy through the use of a reference.
+   *
+   * @param failureReference
+   *    The reference which references the failure drawable to use. Accepts null which will
+   *    remove the current failure image. Make sure to call release() to release this reference.
+   *
+   * @param scaleType
+   *    The scale type of the failure drawable. Accepts null which will use the default
+   *    scale type defined by GenericDraweeHierarchy.
+   */
+  public void setFailureReference(
+      @Nullable Reference<Drawable> failureReference,
+      @Nullable ScalingUtils.ScaleType scaleType) {
