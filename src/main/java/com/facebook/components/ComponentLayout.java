@@ -79,3 +79,5 @@ public interface ComponentLayout {
     Builder flexBasisPercent(float percent);
 
     Builder importantForAccessibility(@ImportantForAccessibility int importantForAccessibility);
+    Builder duplicateParentState(boolean duplicateParentState);
+

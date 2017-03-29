@@ -179,3 +179,43 @@ class HorizontalScrollSpec {
   @OnUnmount
   static void onUnmount(
       ComponentContext context,
+      HorizontalScrollComponentView mountedView) {
+    mountedView.unmount();
+  }
+
+  static class HorizontalScrollComponentView extends HorizontalScrollView {
+    private final ComponentView mComponentView;
+
+    private int mComponentWidth;
+    private int mComponentHeight;
+
+    public HorizontalScrollComponentView(Context context) {
+      super(context);
+      mComponentView = new ComponentView(context);
+      addView(mComponentView);
+    }
+
+    @Override
+    protected void onScrollChanged(int left, int top, int oldLeft, int oldTop) {
+      super.onScrollChanged(left, top, oldLeft, oldTop);
+
+      // Visible area changed, perform incremental mount.
+      incrementalMount();
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+      // The hosting component view always matches the component size. This will
+      // ensure that there will never be a size-mismatch between the view and the
+      // component-based content, which would trigger a layout pass in the
+      // UI thread.
+      mComponentView.measure(
+          MeasureSpec.makeMeasureSpec(mComponentWidth, MeasureSpec.EXACTLY),
+          MeasureSpec.makeMeasureSpec(mComponentHeight, MeasureSpec.EXACTLY));
+
+      // The mounted view always gets exact dimensions from the framework.
+      setMeasuredDimension(
+          MeasureSpec.getSize(widthMeasureSpec),
+          MeasureSpec.getSize(heightMeasureSpec));
+    }
+
