@@ -1359,3 +1359,4 @@ public class Stages {
       } else {
         methodBuilder.addStatement(
             "do$L($L)",
+            capitalize(element.getSimpleName().toString()),
