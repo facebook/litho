@@ -276,3 +276,4 @@ public class TestDrawableComponent extends ComponentLifecycle {
     int color = Color.BLACK;
     int measuredWidth = -1;
     int measuredHeight = -1;
+

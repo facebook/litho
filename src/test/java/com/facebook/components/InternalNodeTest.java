@@ -238,3 +238,10 @@ public class InternalNodeTest {
   }
 
   @Test
+  public void testAspectRatioFlag() {
+    mNode.aspectRatio(1);
+    assertTrue(isFlagSet(mNode, "PFLAG_ASPECT_RATIO_IS_SET"));
+    clearFlag(mNode, "PFLAG_ASPECT_RATIO_IS_SET");
+    assertEmptyFlags(mNode);
+  }
+
