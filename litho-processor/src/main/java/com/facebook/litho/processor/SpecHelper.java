@@ -102,3 +102,10 @@ public abstract class SpecHelper implements Closeable {
         String[] keyValuePropJavadocs = javadocContents.split("@prop ");
         propJavadocs = new HashMap<>(keyValuePropJavadocs.length);
 
+        for (int i = 1; i < keyValuePropJavadocs.length; i++) {
+          // Each prop comment line look like:
+          // @prop propName comment for the prop.
+          String propJavadoc[] = keyValuePropJavadocs[i].split(" ", 2);
+          if (propJavadoc.length == 2) {
+            propJavadocs.put(propJavadoc[0], propJavadoc[1].trim());
+          }
