@@ -21,3 +21,4 @@ import com.facebook.litho.annotations.ResType;
  * component being rendered below it. Used in {@link CardSpec}.
  */
 @MountSpec(isPureRender = true)
+class CardClipSpec {

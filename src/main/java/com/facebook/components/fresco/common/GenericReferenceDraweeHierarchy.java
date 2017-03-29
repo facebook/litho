@@ -10,3 +10,9 @@
 package com.facebook.components.fresco.common;
 
 import android.graphics.ColorFilter;
+import android.graphics.PointF;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.Nullable;
+
+import com.facebook.components.ComponentContext;
+import com.facebook.components.reference.Reference;
