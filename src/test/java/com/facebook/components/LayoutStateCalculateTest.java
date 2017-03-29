@@ -1467,3 +1467,8 @@ public class LayoutStateCalculateTest {
         IMPORTANT_FOR_ACCESSIBILITY_YES);
     assertEquals(
         layoutState.getMountableOutputAt(6).getImportantForAccessibility(),
+        IMPORTANT_FOR_ACCESSIBILITY_YES);
+  }
+
+  @Test
+  public void testLayoutOutputsForClickHandlerAndViewTagsOnRoot() {
