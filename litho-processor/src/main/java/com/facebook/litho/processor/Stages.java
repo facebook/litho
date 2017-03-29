@@ -1225,3 +1225,12 @@ public class Stages {
             param,
             "Parameters not annotated with @Param must be of type " +
                 "com.facebook.litho.StateValue");
+      }
+      final DeclaredType paramDeclaredType = (DeclaredType) param.asType();
+      final String paramDeclaredTypeName = paramDeclaredType
+          .asElement()
+          .getSimpleName()
+          .toString();
+
+      if (!paramDeclaredTypeName.equals(ClassNames.STATE_VALUE.simpleName())) {
+        throw new ComponentsProcessingException(
