@@ -750,3 +750,5 @@ class MountState {
       } else {
         final long newHostMarker = newLayoutState.getMountableOutputAt(newPosition).getHostMarker();
 
+        if (oldItem == null) {
+          // This was previously unmounted.
