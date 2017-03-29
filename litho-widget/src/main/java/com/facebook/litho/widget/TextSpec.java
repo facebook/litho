@@ -82,3 +82,5 @@ class TextSpec {
   private static final int[][] DEFAULT_TEXT_COLOR_STATE_LIST_STATES = {{0}};
   private static final int[] DEFAULT_TEXT_COLOR_STATE_LIST_COLORS = {Color.BLACK};
 
+  private static final String TAG = "TextSpec";
+

@@ -16,3 +16,6 @@ import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.facebook.litho.ComponentTree;
+import com.facebook.litho.ComponentView;
+import com.facebook.litho.SizeSpec;
