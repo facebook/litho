@@ -1005,3 +1005,6 @@ class MountState {
       // 4. Set listeners for AccessibilityDelegate methods
       setAccessibilityDelegate(view, nodeInfo);
 
+      // 5. Setup view tags for the component, if applicable.
+      setViewTag(view, nodeInfo.getViewTag());
+      setViewTags(view, nodeInfo.getViewTags());
