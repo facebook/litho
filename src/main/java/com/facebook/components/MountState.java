@@ -152,3 +152,4 @@ class MountState {
   void mount(LayoutState layoutState, Rect localVisibleRect) {
     assertMainThread();
 
+    ComponentsSystrace.beginSection("mount");

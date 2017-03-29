@@ -129,3 +129,4 @@ class MountItem {
   private DisplayListDrawable acquireDisplayListDrawableIfNeeded(
       Object content,
       DisplayList displayList,
+      DisplayListDrawable convertDisplayListDrawable) {
