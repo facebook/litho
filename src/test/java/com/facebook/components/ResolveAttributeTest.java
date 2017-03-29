@@ -15,3 +15,11 @@ import android.view.ContextThemeWrapper;
 import com.facebook.litho.R;
 import com.facebook.components.reference.Reference;
 import com.facebook.components.testing.testrunner.ComponentsTestRunner;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RuntimeEnvironment;
+
+import static junit.framework.Assert.assertEquals;
+

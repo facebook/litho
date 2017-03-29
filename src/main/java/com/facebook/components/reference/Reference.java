@@ -11,3 +11,5 @@ package com.facebook.components.reference;
 
 import com.facebook.components.ComponentContext;
 import com.facebook.components.config.ComponentsConfiguration;
+import com.facebook.components.ResourceResolver;
+

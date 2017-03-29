@@ -13,3 +13,15 @@
 
   <declare-styleable name="Text">
     <attr name="android:minLines" />
+    <attr name="android:maxLines" />
+    <attr name="android:textColor" />
+    <attr name="android:textColorLink" />
+    <attr name="android:textColorHighlight" />
+    <attr name="android:textSize" />
+    <attr name="android:lineSpacingMultiplier" />
+    <attr name="android:ellipsize" />
+    <attr name="android:textAlignment" />
+    <attr name="android:textStyle" />
+    <attr name="android:text" />
+    <attr name="android:includeFontPadding" />
+    <attr name="android:singleLine" />

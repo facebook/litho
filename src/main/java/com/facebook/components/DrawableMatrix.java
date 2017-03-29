@@ -20,3 +20,8 @@ import android.widget.ImageView.ScaleType;
 public final class DrawableMatrix extends Matrix {
 
   private boolean mShouldClipRect;
+
+  private DrawableMatrix() {
+  }
+
+  /**

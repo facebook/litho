@@ -108,3 +108,4 @@ public class ComponentImplGenerator {
     for (StateParamModel stateValue : specModel.getStateValues()) {
       stateContainerImplClassBuilder.addField(FieldSpec.builder(
           stateValue.getType(),
+          stateValue.getName()).addAnnotation(State.class).build());

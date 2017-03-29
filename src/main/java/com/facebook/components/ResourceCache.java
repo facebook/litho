@@ -13,3 +13,5 @@ import android.content.res.Configuration;
 import android.support.v4.util.LruCache;
 
 class ResourceCache {
+  private static ResourceCache latest;
+

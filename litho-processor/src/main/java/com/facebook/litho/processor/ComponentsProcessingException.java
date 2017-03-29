@@ -17,3 +17,6 @@ public class ComponentsProcessingException extends PrintableException {
   private final Element element;
 
   public ComponentsProcessingException(String message) {
+    this(null, message);
+  }
+

@@ -14,3 +14,6 @@ import com.facebook.components.ComponentContext;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
+import com.facebook.components.reference.ColorDrawableReference;
+
+import static android.widget.ImageView.ScaleType.FIT_XY;

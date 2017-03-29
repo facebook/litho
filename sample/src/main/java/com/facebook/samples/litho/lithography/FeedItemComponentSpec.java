@@ -16,3 +16,10 @@ import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.widget.Recycler;
 import com.facebook.litho.widget.RecyclerBinder;
+
+@LayoutSpec
+public class FeedItemComponentSpec {
+
+  @OnCreateLayout
+  static ComponentLayout onCreateLayout(
+      ComponentContext c,

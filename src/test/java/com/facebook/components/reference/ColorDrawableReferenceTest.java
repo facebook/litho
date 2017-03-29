@@ -16,3 +16,4 @@ import android.graphics.drawable.Drawable;
 import com.facebook.components.ComponentContext;
 import com.facebook.components.testing.testrunner.ComponentsTestRunner;
 
+import org.junit.Before;

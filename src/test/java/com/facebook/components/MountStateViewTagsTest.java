@@ -12,3 +12,4 @@ package com.facebook.components;
 import android.util.SparseArray;
 import android.view.View;
 
+import com.facebook.components.testing.ComponentTestHelper;

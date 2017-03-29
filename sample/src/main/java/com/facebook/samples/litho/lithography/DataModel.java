@@ -12,3 +12,5 @@ import com.facebook.components.ComponentContext;
 import com.facebook.components.ComponentInfo;
 import com.facebook.litho.widget.RecyclerBinder;
 
+public class DataModel {
+

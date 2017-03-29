@@ -9,3 +9,7 @@
 
 package com.facebook.components.testing;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import android.graphics.Color;

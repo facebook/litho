@@ -9,3 +9,6 @@
 
 package com.facebook.components;
 
+import android.support.annotation.AttrRes;
+import android.support.annotation.StyleRes;
+

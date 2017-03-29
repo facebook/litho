@@ -29,3 +29,17 @@ public class LithoSampleApplication extends Application {
 
     Fresco.initialize(this);
     SoLoader.init(this, false);
+    Stetho.initialize(Stetho.newInitializerBuilder(this).enableWebKitInspector(
+        new InspectorModulesProvider() {
+          @Override
+          public Iterable<ChromeDevtoolsDomain> get() {
+            final Stetho.DefaultInspectorModulesBuilder defaultModulesBuilder =
+                new Stetho.DefaultInspectorModulesBuilder(LithoSampleApplication.this);
+
+            defaultModulesBuilder.documentProvider(new AndroidDocumentProviderFactory(
+                LithoSampleApplication.this,
+                Arrays.<DescriptorProvider>asList(new ComponentsDescriptorProvider())));
+
+            return defaultModulesBuilder.finish();
+          }
+        }).build());
