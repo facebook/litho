@@ -277,3 +277,24 @@ public class RecyclerBinderTest {
   }
 
   @Test
+  public void testUnmountGrid() {
+    when(mLayoutInfo.getSpanCount()).thenReturn(2);
+    GridLayoutManager gridLayoutManager = mock(GridLayoutManager.class);
+    when(mLayoutInfo.getLayoutManager()).thenReturn(gridLayoutManager);
+
+    RecyclerView recyclerView = mock(RecyclerView.class);
+    mRecyclerBinder.mount(recyclerView);
+
+    verify(recyclerView).setLayoutManager(mLayoutInfo.getLayoutManager());
+    verify(gridLayoutManager).setSpanSizeLookup(any(GridLayoutManager.SpanSizeLookup.class));
+    verify(recyclerView).setAdapter(any(RecyclerView.Adapter.class));
+    verify(recyclerView).addOnScrollListener(any(OnScrollListener.class));
+
+    mRecyclerBinder.unmount(recyclerView);
+    verify(recyclerView).setLayoutManager(null);
+    verify(gridLayoutManager).setSpanSizeLookup(null);
+    verify(recyclerView).setAdapter(null);
+    verify(recyclerView).removeOnScrollListener(any(OnScrollListener.class));
+  }
+
+  @Test

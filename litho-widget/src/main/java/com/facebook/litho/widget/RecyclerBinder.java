@@ -678,3 +678,4 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     // TODO 16212153 optimize computeRange loop.
     for (int i = 0; i < treeHoldersSize; i++) {
       final ComponentTreeHolder holder;
+      final int childrenWidthSpec, childrenHeightSpec;
