@@ -170,3 +170,10 @@ class PropsBuilderMethodsSpecBuilder {
             ParameterizedTypeName.get(
                 ClassNames.EVENT_HANDLER,
                 SectionClassNames.LOADING_EVENT_HANDLER),
+            "loadingEventHandler")
+        .addStatement("super.setLoadingEventHandler(loadingEventHandler)")
+        .addStatement("return this")
+        .returns(mBuilderClass)
+        .build();
+  }
+

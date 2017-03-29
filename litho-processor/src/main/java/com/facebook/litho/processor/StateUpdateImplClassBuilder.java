@@ -253,3 +253,26 @@ public class StateUpdateImplClassBuilder {
 
     stateUpdateClassBuilder.addMethod(isLazyStateStateUpdateMethodBuilder.build());
 
+    return stateUpdateClassBuilder.build();
+  }
+
+  private static String getMemberName(String paramName) {
+    return "m" + paramName.substring(0, 1).toUpperCase() + paramName.substring(1);
+  }
+
+  private String getParamsForSpecUpdateMethodCall() {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < mSpecOnUpdateStateMethodParams.size(); i++) {
+      String name = mSpecOnUpdateStateMethodParams.get(i).name;
+      String paramCallName = mParamsForStateUpdate.contains(mSpecOnUpdateStateMethodParams.get(i))
+          ? getMemberName(name)
+          : name;
+      sb.append(paramCallName);
+      if (i < mSpecOnUpdateStateMethodParams.size() - 1) {
+        sb.append(',');
+      }
+    }
+
+    return sb.toString();
+  }
+}

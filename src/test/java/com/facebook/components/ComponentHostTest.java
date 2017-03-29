@@ -617,3 +617,58 @@ public class ComponentHostTest {
   }
 
   @Test
+  public void testDrawableItemsSize()
+      throws Exception {
+
+    assertEquals(0, getDrawableItemsSize());
+
+    assertEquals(0, getDrawableItemsSize());
+
+    Drawable d1 = new ColorDrawable(Color.BLACK);
+    MountItem m1 = mount(0, d1);
+    assertEquals(1, getDrawableItemsSize());
+
+    Drawable d2 = new ColorDrawable(Color.BLACK);
+    mount(1, d2);
+    assertEquals(2, getDrawableItemsSize());
+
+    unmount(0, m1);
+    assertEquals(1, getDrawableItemsSize());
+
+    Drawable d3 = new ColorDrawable(Color.BLACK);
+    MountItem m3 = mount(1, d3);
+    assertEquals(1, getDrawableItemsSize());
+
+    unmount(1, m3);
+    assertEquals(0, getDrawableItemsSize());
+  }
+
+  @Test
+  public void testGetDrawableMountItem()
+      throws Exception {
+    Drawable d1 = new ColorDrawable(Color.BLACK);
+    MountItem mountItem1 = mount(0, d1);
+
+    Drawable d2 = new ColorDrawable(Color.BLACK);
+    MountItem mountItem2 = mount(1, d2);
+
+    Drawable d3 = new ColorDrawable(Color.BLACK);
+    MountItem mountItem3 = mount(5, d3);
+
+    assertEquals(mountItem1, getDrawableMountItemAt(0));
+    assertEquals(mountItem2, getDrawableMountItemAt(1));
+    assertEquals(mountItem3, getDrawableMountItemAt(2));
+  }
+
+  private int getDrawableItemsSize()
+      throws Exception {
+    SparseArrayCompat drawableItems = Whitebox.getInternalState(mHost, "mDrawableMountItems");
+    return Whitebox.invokeMethod(drawableItems, "size");
+  }
+
+  private MountItem getDrawableMountItemAt(int index)
+      throws Exception {
+    SparseArrayCompat drawableItems = Whitebox.getInternalState(mHost, "mDrawableMountItems");
+    return Whitebox.invokeMethod(drawableItems, "valueAt", index);
+  }
+
