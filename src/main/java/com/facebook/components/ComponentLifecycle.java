@@ -275,3 +275,15 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     ComponentsPools.release(output);
   }
 
+  protected final <T> Diff<T> acquireDiff(T previousValue, T nextValue) {
+    Diff<T> diff =  ComponentsPools.acquireDiff();
+    diff.setPrevious(previousValue);
+    diff.setNext(nextValue);
+
+    return diff;
+  }
+
+  protected void releaseDiff(Diff diff) {
+    ComponentsPools.release(diff);
+  }
+
