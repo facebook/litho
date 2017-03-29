@@ -144,3 +144,5 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
    * @param key
    *
    */
+  // thread-safe because the one write is before all the reads
+  @ThreadSafe(enableChecks = false)
