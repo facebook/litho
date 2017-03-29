@@ -420,3 +420,6 @@ public class MountStateRemountInPlaceTest {
       }
     });
 
+    assertFalse(secondComponent.wasOnMountCalled());
+    assertTrue(secondComponent.wasOnBindCalled());
+    assertFalse(firstComponent.wasOnUnmountCalled());

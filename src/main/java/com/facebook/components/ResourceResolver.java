@@ -119,3 +119,4 @@ public class ResourceResolver {
         return cached;
       }
 
+      int[] result = mResources.getIntArray(resId);
