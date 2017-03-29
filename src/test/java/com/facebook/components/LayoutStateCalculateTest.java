@@ -1609,3 +1609,5 @@ public class LayoutStateCalculateTest {
                 TestSizeDependentComponent.create(c)
                     .setFixSizes(true)
                     .setDelegate(true)
+                    .withLayout().flexShrink(0)
+                    .marginPx(YogaEdge.ALL, 11))
