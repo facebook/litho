@@ -349,3 +349,4 @@ public abstract class PagerBinder extends BaseBinder<
       // the ones in the viewport itself.
       return mPagerOffscreenLimit + ADDITIONAL_ADAPTER_PAGES;
     }
+  }
