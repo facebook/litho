@@ -2881,3 +2881,4 @@ public class Stages {
         .addModifiers(Modifier.PROTECTED)
         .addStatement("super.release()")
         .addStatement(implMemberInstanceName + " = null")
+        .addStatement(contextMemberInstanceName + " = null")
