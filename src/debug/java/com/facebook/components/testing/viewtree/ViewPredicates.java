@@ -72,3 +72,8 @@ final class ViewPredicates {
       @Override
       public boolean apply(final View input) {
         final Object tag = input.getTag(tagId);
+        return tag != null && tag.equals(tagValue);
+      }
+    };
+  }
+
