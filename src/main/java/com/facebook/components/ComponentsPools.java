@@ -458,3 +458,8 @@ public class ComponentsPools {
   }
 
   @ThreadSafe(enableChecks = false)
+  static void release(StateHandler stateHandler) {
+    stateHandler.release();
+    sStateHandlerPool.release(stateHandler);
+  }
+
