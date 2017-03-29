@@ -2035,3 +2035,8 @@ static void YGNodelayoutImpl(const YGNodeRef node,
       marginAxisColumn - paddingAndBorderAxisColumn;
   const float minInnerMainDim = isMainAxisRow ? minInnerWidth : minInnerHeight;
   const float maxInnerMainDim = isMainAxisRow ? maxInnerWidth : maxInnerHeight;
+
+  // Max dimension overrides predefined dimension value; Min dimension in turn overrides both of the
+  // above
+  float availableInnerWidth = availableWidth - marginAxisRow - paddingAndBorderAxisRow;
+  if (!YGFloatIsUndefined(availableInnerWidth)) {
