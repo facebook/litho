@@ -421,3 +421,8 @@ public class MountSpecHelper extends ComponentSpecHelper {
         return MountType.VIEW;
       } else if (type.equals(ClassNames.DRAWABLE)) {
         return MountType.DRAWABLE;
+      }
+
+      returnType = returnElement.getSuperclass();
+    }
+
