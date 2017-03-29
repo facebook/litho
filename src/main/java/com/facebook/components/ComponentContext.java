@@ -234,3 +234,5 @@ public class ComponentContext extends ContextWrapper {
       Component<?> component,
       @AttrRes int defStyleAttr,
       @StyleRes int defStyleRes) {
+    component.applyStateUpdates(this);
+

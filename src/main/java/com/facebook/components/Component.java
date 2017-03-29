@@ -289,3 +289,20 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
     return (isLayoutSpecWithSizeSpec(component)
         || (component != null && component.hasCachedLayout()));
   }
+
+  /**
+   * Prepares a component for calling any pending state updates on it by setting a global key and
+   *   a scoped component context and applies the pending state updates.
+   * @param c component context
+   */
+  void applyStateUpdates(ComponentContext c) {
+    final Component<?> parentScope = c.getComponentScope();
+    final String key = getKey();
+    setGlobalKey(parentScope == null ? key : parentScope.getGlobalKey() + key);
+
+    setScopedContext(ComponentContext.withComponentScope(c, this));
+
+    if (getLifecycle().hasState()) {
+      c.getStateHandler().applyStateUpdatesForComponent(this);
+    }
+  }
