@@ -178,3 +178,15 @@ public class MountItemTest {
   }
 
   @Test
+  public void testIsAccessibleWithAccessibilityEventHandler() {
+    final MountItem mountItem = new MountItem();
+    mountItem.init(
+        TestDrawableComponent.create(
+            mContext,
+            true,
+            true,
+            true,
+            true, /* implementsAccessibility */
+            false).build(),
+        mComponentHost,
+        mContent,
