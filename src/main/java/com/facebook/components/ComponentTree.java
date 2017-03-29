@@ -281,3 +281,5 @@ public class ComponentTree {
     } else {
       mountComponentIfDirty();
     }
+  }
+
