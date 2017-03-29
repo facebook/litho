@@ -800,3 +800,5 @@ public class ComponentHost extends ViewGroup {
 
   @Override
   public void invalidate() {
+    if (mSuppressInvalidations) {
+      mWasInvalidatedWhileSuppressed = true;

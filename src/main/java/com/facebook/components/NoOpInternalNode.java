@@ -547,3 +547,4 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
+  public InternalNode child(Component.Builder<?> child) {
