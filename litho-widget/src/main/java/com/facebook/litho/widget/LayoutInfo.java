@@ -75,3 +75,8 @@ public interface LayoutInfo {
    * {@link RecyclerBinder}.
    */
   int getChildHeightSpec(int heightSpec);
+
+  /**
+   * @return the number of columns declared. A non-grid layout will return 1
+   */
+  int getSpanCount();

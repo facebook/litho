@@ -24,3 +24,6 @@ import com.facebook.litho.StateHandler;
 
 /**
  * A class used to store the data backing a {@link RecyclerBinder}. For each item the
+ * ComponentTreeHolder keeps the {@link ComponentInfo} which contains the original {@link Component}
+ * and either the {@link ComponentTree} or the {@link StateHandler} depending upon whether
+ * the item is within the current working range or not.
