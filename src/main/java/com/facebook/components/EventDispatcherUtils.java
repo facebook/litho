@@ -293,3 +293,4 @@ class EventDispatcherUtils {
     final boolean returnValue = (boolean) eventDispatcher.dispatchOnEvent(
         eventHandler,
         sPerformAccessibilityActionEvent);
+
