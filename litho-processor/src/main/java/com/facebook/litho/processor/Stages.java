@@ -2206,3 +2206,4 @@ public class Stages {
       if (!typeName.equals(innerTypeName)) {
         throw new ComponentsProcessingException(
             variableElement,
+            "Diff Type parameter does not match Prop " + componentMember);
