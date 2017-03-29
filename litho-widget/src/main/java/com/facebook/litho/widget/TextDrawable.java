@@ -25,3 +25,4 @@ import android.graphics.Region;
 import android.graphics.drawable.Drawable;
 import android.text.Layout;
 import android.text.Spanned;
+import android.text.style.ClickableSpan;
