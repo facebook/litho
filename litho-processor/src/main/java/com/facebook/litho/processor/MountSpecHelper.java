@@ -241,3 +241,5 @@ public class MountSpecHelper extends ComponentSpecHelper {
     if (componentMountType != MountType.VIEW &&
         componentMountType != MountType.DRAWABLE) {
       throw new ComponentsProcessingException(
+          onCreateMountContent,
+          "onCreateMountContent's return type should be either a View or a Drawable subclass");

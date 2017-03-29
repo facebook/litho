@@ -391,3 +391,6 @@ public class ComponentHost extends ViewGroup {
    * {@link ComponentHost#moveItem(MountItem, int, int)}.
    *
    * @param item The item that has been moved.
+   * @param oldIndex The current index of the MountItem.
+   * @param newIndex The new index of the MountItem.
+   */
