@@ -1170,3 +1170,6 @@ public class ComponentTree {
             heightSpec,
             diffingEnabled,
             diffNode);
+      }
+    } else {
+      return LayoutState.calculate(
