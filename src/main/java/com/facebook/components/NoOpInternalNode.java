@@ -136,3 +136,4 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
+  public InternalNode wrap(YogaWrap wrap) {
