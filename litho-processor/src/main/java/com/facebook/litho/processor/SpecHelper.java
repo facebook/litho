@@ -92,3 +92,8 @@ public abstract class SpecHelper implements Closeable {
     }
 
     Map<String, String> propJavadocs = null;
+    if (specModel == null) {
+      String javadoc = mProcessingEnv.getElementUtils().getDocComment(mSpecElement);
+      if (javadoc != null && !javadoc.isEmpty()) {
+        // Javadoc returns a space at the start of every line.
+        String javadocContents = JAVADOC_SANITIZER.matcher(javadoc).replaceAll("");

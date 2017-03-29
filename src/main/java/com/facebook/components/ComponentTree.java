@@ -321,3 +321,5 @@ public class ComponentTree {
             viewWidth,
             viewHeight);
 
+    if (needsAndroidLayout || mComponentView.isMountStateDirty()) {
+      mComponentView.requestLayout();
