@@ -61,3 +61,4 @@ typedef YG_ENUM_BEGIN(YGEdge) {
 typedef YG_ENUM_BEGIN(YGExperimentalFeature) {
   YGExperimentalFeatureRounding,
   YGExperimentalFeatureWebFlexBasis,
+  YGExperimentalFeatureMinFlexFix,
