@@ -184,3 +184,5 @@ public class ResourceResolver {
       }
 
       int result = mResources.getDimensionPixelOffset(resId);
+      mResourceCache.put(resId, result);
+
