@@ -371,3 +371,52 @@ public class ComponentHostTest {
   }
 
   @Test
+  public void testViewTags() {
+    assertNull(mHost.getTag(1));
+    assertNull(mHost.getTag(2));
+
+    Object value1 = new Object();
+    Object value2 = new Object();
+
+    SparseArray<Object> viewTags = new SparseArray<>();
+    viewTags.put(1, value1);
+    viewTags.put(2, value2);
+
+    mHost.setViewTags(viewTags);
+
+    assertEquals(value1, mHost.getTag(1));
+    assertEquals(value2, mHost.getTag(2));
+
+    mHost.setViewTags(null);
+
+    assertNull(mHost.getTag(1));
+    assertNull(mHost.getTag(2));
+  }
+
+  @Test
+  public void testComponentClickListener() {
+    assertNull(mHost.getComponentClickListener());
+
+    ComponentClickListener listener = new ComponentClickListener();
+    mHost.setComponentClickListener(listener);
+
+    assertEquals(listener, mHost.getComponentClickListener());
+
+    mHost.setComponentClickListener(null);
+    assertNull(mHost.getComponentClickListener());
+  }
+
+  @Test
+  public void testComponentLongClickListener() {
+    assertNull(mHost.getComponentLongClickListener());
+
+    ComponentLongClickListener listener = new ComponentLongClickListener();
+    mHost.setComponentLongClickListener(listener);
+
+    assertEquals(listener, mHost.getComponentLongClickListener());
+
+    mHost.setComponentLongClickListener(null);
+    assertNull(mHost.getComponentLongClickListener());
+  }
+
+  @Test
