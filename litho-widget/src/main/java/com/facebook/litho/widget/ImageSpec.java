@@ -79,3 +79,4 @@ class ImageSpec {
       int widthSpec,
       int heightSpec,
       Size size,
+      @Prop(resType = ResType.DRAWABLE) Reference<Drawable> src) {
