@@ -39,3 +39,4 @@ public class ViewExtractorsTest {
 
     mView = new View(activity);
 
+    mTextView = new TextView(activity);

@@ -59,3 +59,4 @@ public interface ComponentLayout {
   int getPaddingRight();
   @Px
   int getPaddingBottom();
+  @Px
