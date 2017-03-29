@@ -136,3 +136,4 @@ class TextSpec {
       Output<Float> shadowDx,
       Output<Float> shadowDy,
       Output<Integer> shadowColor) {
+
