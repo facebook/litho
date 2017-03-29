@@ -1268,3 +1268,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Override
   public InternalNode performAccessibilityActionHandler(
       EventHandler<PerformAccessibilityActionEvent> performAccessibilityActionHandler) {
+    getOrCreateNodeInfo().setPerformAccessibilityActionHandler(performAccessibilityActionHandler);
