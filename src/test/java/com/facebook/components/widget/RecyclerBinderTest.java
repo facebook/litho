@@ -717,3 +717,5 @@ public class RecyclerBinderTest {
     prepareLoadedBinder();
     final ComponentInfo newComponentInfo =
         ComponentInfo.create().component(mock(Component.class)).build();
+    final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
+
