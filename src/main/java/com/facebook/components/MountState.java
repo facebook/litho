@@ -1935,3 +1935,32 @@ class MountState {
     return true;
   }
 
+  private void prepareTransitionManager(LayoutState layoutState) {
+    if (layoutState.hasTransitionContext() && mTransitionManager == null) {
+      mTransitionManager = ComponentsPools.acquireTransitionManager();
+    } else if (!layoutState.hasTransitionContext() && mTransitionManager != null) {
+      ComponentsPools.release(mTransitionManager);
+      mTransitionManager = null;
+    }
+  }
+
+  private static void recordMountedItemsWithTransitionKeys(
+      TransitionManager transitionManager,
+      LongSparseArray<MountItem> indexToItemMap,
+      boolean isPreMount) {
+    for (int i = 0, size = indexToItemMap.size(); i < size; i++) {
+      final MountItem item = indexToItemMap.valueAt(i);
+      final ViewNodeInfo viewNodeInfo = item.getViewNodeInfo();
+      final String transitionKey = viewNodeInfo != null
+          ? viewNodeInfo.getTransitionKey()
+          : null;
+
+      if (transitionKey != null) {
+        if (isPreMount) {
+          transitionManager.onPreMountItem(transitionKey, (View) item.getContent());
+        } else {
+          transitionManager.onPostMountItem(transitionKey, (View) item.getContent());
+        }
+      }
+    }
+  }
