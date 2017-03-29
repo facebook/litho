@@ -1645,3 +1645,5 @@ class LayoutState {
   }
 
   /**
+   * Check if a cached nested tree has compatible SizeSpec to be reused as is or
+   * if it needs to be recomputed.
