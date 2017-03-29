@@ -534,3 +534,8 @@ public class MountSpecHelper extends ComponentSpecHelper {
         ClassName.INT,
     };
 
+    final TypeName returnType = ClassName.get(onPopulateExtraAccessibilityNode.getReturnType());
+    if (!returnType.equals(ClassName.VOID)) {
+      throw new ComponentsProcessingException(
+          onPopulateExtraAccessibilityNode,
+          methodDescription.name + "'s return type should be void");
