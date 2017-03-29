@@ -219,3 +219,7 @@ class TextSpec {
       @Prop(optional = true) ColorStateList textColorStateList,
       @Prop(optional = true, resType = ResType.COLOR) int linkColor,
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) int textSize,
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float extraSpacing,
+      @Prop(optional = true, resType = ResType.FLOAT) float spacingMultiplier,
+      @Prop(optional = true) int textStyle,
+      @Prop(optional = true) Typeface typeface,
