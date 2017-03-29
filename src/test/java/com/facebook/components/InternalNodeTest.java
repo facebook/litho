@@ -266,3 +266,7 @@ public class InternalNodeTest {
 
     nestedTree.layoutDirection(YogaDirection.RTL);
     holderNode.calculateLayout();
+    holderNode.setNestedTree(nestedTree);
+
+    assertFalse(isFlagSet(holderNode, "PFLAG_LAYOUT_DIRECTION_IS_SET"));
+    assertEquals(

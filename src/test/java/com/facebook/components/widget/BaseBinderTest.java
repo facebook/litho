@@ -232,3 +232,16 @@ public class BaseBinderTest {
   @Test
   public void testNotifyItemRemoved() {
     mount();
+
+    int position = 4;
+    String itemNextToRemoved = mItems.get(position + 1);
+    mItems.remove(position);
+
+    mBinder.notifyItemRemoved(position);
+    mLayoutThreadShadowLooper.runOneTask();
+
+    Assert.assertEquals(mItems.size(), mBinder.getComponentCount());
+    Assert.assertEquals(itemNextToRemoved, getAdapterInputStringAtPosition(position));
+  }
+
+  @Test
