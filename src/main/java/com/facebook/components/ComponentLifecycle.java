@@ -185,3 +185,12 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     onUnmount(c, mountedContent, component);
   }
 
+  /**
+   * Create a layout from the given component.
+   *
+   * @param context ComponentContext associated with the current ComponentTree.
+   * @param component Component to process the layout for.
+   * @param resolveNestedTree if the component's layout tree should be resolved as part of this
+   *                          call.
+   * @return New InternalNode associated with the given component.
+   */
