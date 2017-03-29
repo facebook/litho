@@ -616,3 +616,4 @@ public class Stages {
       final ExecutableElement stage = Utils.getAnnotatedMethod(
           mSourceElement,
           stageAnnotation);
+      if (stage != null && !stage.getModifiers().contains(Modifier.STATIC)) {
