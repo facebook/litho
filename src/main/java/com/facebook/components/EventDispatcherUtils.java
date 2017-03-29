@@ -323,3 +323,20 @@ class EventDispatcherUtils {
     sSendAccessibilityEventEvent.host = null;
     sSendAccessibilityEventEvent.eventType = 0;
     sSendAccessibilityEventEvent.superDelegate = null;
+  }
+
+  static void dispatchSendAccessibilityEventUnchecked(
+      EventHandler<SendAccessibilityEventUncheckedEvent> eventHandler,
+      View host,
+      AccessibilityEvent event,
+      AccessibilityDelegateCompat superDelegate) {
+    assertMainThread();
+
+    if (sSendAccessibilityEventUncheckedEvent == null) {
+      sSendAccessibilityEventUncheckedEvent = new SendAccessibilityEventUncheckedEvent();
+    }
+
+    sSendAccessibilityEventUncheckedEvent.host = host;
+    sSendAccessibilityEventUncheckedEvent.event = event;
+    sSendAccessibilityEventUncheckedEvent.superDelegate = superDelegate;
+
