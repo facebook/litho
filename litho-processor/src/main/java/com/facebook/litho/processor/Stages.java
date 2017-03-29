@@ -795,3 +795,4 @@ public class Stages {
       final boolean isInterStageOutput = Utils.getGenericTypeArgument(
           v.asType(),
           ClassNames.OUTPUT) != null;
+      if (isAnnotatedParameter && isInterStageOutput) {
