@@ -441,3 +441,6 @@ class LayoutState {
       InternalNode node,
       LayoutState layoutState,
       DiffNode parentDiffNode) {
+    if (node.hasNewLayout()) {
+      node.markLayoutSeen();
+    }
