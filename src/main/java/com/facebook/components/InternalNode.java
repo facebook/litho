@@ -80,3 +80,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private static final boolean SUPPORTS_RTL = (SDK_INT >= JELLY_BEAN_MR1);
 
   // When this flag is set, layoutDirection style was explicitly set on this node.
+  private static final long PFLAG_LAYOUT_DIRECTION_IS_SET = 1L << 0;

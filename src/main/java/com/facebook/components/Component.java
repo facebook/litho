@@ -84,3 +84,5 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
 
       return Layout.create(context, build(), defStyleAttr, defStyleRes);
     }
+
+    public abstract Component<L> build();

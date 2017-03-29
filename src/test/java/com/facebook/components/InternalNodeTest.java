@@ -288,3 +288,4 @@ public class InternalNodeTest {
             new ComponentContext(RuntimeEnvironment.application),
             RuntimeEnvironment.application.getResources());
 
+    holderNode.calculateLayout();
