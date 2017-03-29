@@ -34,3 +34,11 @@ public class SubComponent {
     mComponent = component;
   }
 
+  public Component<?> getComponent() {
+    return mComponent;
+  }
+
+  public Class<? extends ComponentLifecycle> getComponentType() {
+    return mComponentType;
+  }
+
