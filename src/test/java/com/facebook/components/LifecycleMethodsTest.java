@@ -88,3 +88,10 @@ public class LifecycleMethodsTest {
 
     @Override
     protected ComponentLayout onCreateLayout(ComponentContext c, Component<?> component) {
+      LifecycleMethodsInstance instance = (LifecycleMethodsInstance) component;
+      instance.setCurrentStep(LifecycleStep.ON_CREATE_LAYOUT);
+
+      return super.onCreateLayout(c, component);
+    }
+
+    @Override

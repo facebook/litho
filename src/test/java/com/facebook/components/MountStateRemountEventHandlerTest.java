@@ -160,3 +160,41 @@ public class MountStateRemountEventHandlerTest {
     });
 
     final ComponentClickListener listener = MountState.getComponentClickListener(componentView);
+    assertNotNull(listener);
+    assertNull(listener.getEventHandler());
+  }
+
+  @Test
+  public void testUnsetLongClickHandler() {
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Container.create(c)
+                .longClickHandler(c.newEventHandler(1))
+                .child(TestDrawableComponent.create(c))
+                .child(TestDrawableComponent.create(c))
+                .build();
+          }
+        });
+
+    assertNotNull(MountState.getComponentLongClickListener(componentView));
+
+    componentView.getComponent().setRoot(new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c)
+            .child(TestDrawableComponent.create(c))
+            .child(TestDrawableComponent.create(c))
+            .build();
+      }
+    });
+
+    final ComponentLongClickListener listener =
+        MountState.getComponentLongClickListener(componentView);
+    assertNotNull(listener);
+    assertNull(listener.getEventHandler());
+  }
+
+  @Test

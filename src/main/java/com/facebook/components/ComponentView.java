@@ -90,3 +90,7 @@ public class ComponentView extends ComponentHost {
 
       if (child instanceof ComponentHost) {
         performLayoutOnChildrenIfNecessary((ComponentHost) child);
+      }
+    }
+  }
+
