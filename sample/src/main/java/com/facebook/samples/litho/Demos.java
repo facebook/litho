@@ -50,3 +50,14 @@ public final class Demos {
   public static Component<?> getComponent(String name) {
     return demoModels.get(name);
   }
+
+  public static void addAllToBinder(RecyclerBinder recyclerBinder, ComponentContext c) {
+    for (String name : demoModels.keySet()) {
+      ComponentInfo.Builder componentInfoBuilder = ComponentInfo.create();
+      componentInfoBuilder.component(
+          DemoListItemComponent.create(c)
+              .name(name)
+              .build());
+      recyclerBinder.insertItemAt(recyclerBinder.getItemCount(), componentInfoBuilder.build());
+    }
+  }
