@@ -768,3 +768,6 @@ public class ComponentTree {
         output);
   }
 
+  /**
+   * @return the {@link ComponentView} associated with this ComponentTree if any.
+   */
