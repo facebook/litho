@@ -228,3 +228,7 @@ public class LinearComponentBinderTest {
 
     @Override
     public Component<?> createComponent(ComponentContext c, int position) {
+      return TestDrawableComponent.create(c)
+          .color(mItems.get(position))
+          .measuredWidth(50)
+          .measuredHeight(100)

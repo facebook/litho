@@ -276,3 +276,5 @@ public class LayoutStateCalculateTest {
       ComponentLifecycle lifecycle = getComponentAt(layoutState, i);
       if (isHostComponent(lifecycle)) {
         totalHosts++;
+      }
+    }
