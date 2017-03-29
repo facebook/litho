@@ -303,3 +303,7 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
     mGenericDraweeHierarchy.setPlaceholderImageFocusPoint(placeholderImageFocusPoint);
   }
 
+  public void setActualImageFocusPoint(PointF actualImageFocusPoint) {
+    mGenericDraweeHierarchy.setActualImageFocusPoint(actualImageFocusPoint);
+  }
+
