@@ -729,3 +729,6 @@ public class ComponentHostTest {
         nodeInfo,
         null,
         null,
+        flags,
+        IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+
