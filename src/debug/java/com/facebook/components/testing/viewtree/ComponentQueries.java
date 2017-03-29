@@ -53,3 +53,5 @@ class ComponentQueries {
   }
 
   /**
+   * Checks whether the given {@link ComponentHost} contains the given drawable. It does not look
+   * at the host's children.
