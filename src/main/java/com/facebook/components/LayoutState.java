@@ -1106,3 +1106,10 @@ class LayoutState {
     return null;
   }
 
+  @VisibleForTesting
+  static <T extends ComponentLifecycle> InternalNode createTree(
+      Component<T> component,
+      ComponentContext context) {
+    final ComponentsLogger logger = context.getLogger();
+
+    if (logger != null) {
