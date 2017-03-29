@@ -82,3 +82,8 @@ public final class ColorDrawableReference extends ReferenceLifecycle<Drawable> {
     }
 
     drawable.setAlpha(((State) reference).mAlpha);
+
+    return drawable;
+  }
+
+  @Override
