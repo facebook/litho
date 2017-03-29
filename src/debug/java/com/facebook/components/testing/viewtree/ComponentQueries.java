@@ -104,3 +104,5 @@ class ComponentQueries {
 
     return drawable.equals(containingDrawable);
   }
+
+  /**
