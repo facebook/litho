@@ -690,3 +690,7 @@ public class RecyclerBinder implements Binder<RecyclerView> {
         holder = mComponentTreeHolders.get(i);
         childrenWidthSpec = getActualChildrenWidthSpec(holder);
         childrenHeightSpec = getActualChildrenHeightSpec(holder);
+      }
+
+      if (i >= rangeStart && i <= rangeEnd) {
+        if (!holder.isTreeValid()) {
