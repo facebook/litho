@@ -30,3 +30,5 @@ public abstract class ComponentSpecHelper extends SpecHelper {
       String name,
       boolean isPublic,
       Class<Annotation>[] stageAnnotations,
+      Class<Annotation>[] interStageInputAnnotations,
+      SpecModel specModel) {

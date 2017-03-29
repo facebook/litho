@@ -18,3 +18,16 @@ import java.lang.annotation.RetentionPolicy;
  * <p>A class that is annotated with {@link LayoutSpec} must implement a method with the
  * {@link OnCreateLayout} annotation. It may also implement methods with the following annotations:
  * - {@link OnLoadStyle}
+ * - {@link OnEvent}
+ * <p>If you wish to create a component that mounts its own content, then use {@link MountSpec}
+ * instead.
+ * <p>For example:
+ * <pre>
+ * {@code
+ *
+ * @LayoutSpec
+ * public class MyComponentSpec {
+ *
+ *   @OnCreateLayout
+ *   protected ComponentLayout onCreateLayout(LayoutContext c, @Prop MyProp prop) {
+ *       return Container.create(c)

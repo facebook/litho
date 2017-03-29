@@ -18,3 +18,8 @@ import java.lang.annotation.RetentionPolicy;
  * <p>A class that is annotated with {@link MountSpec} must implement a method with the
  * {@link OnMount} annotation. It may also implement methods with the following annotations:
  * - {@link OnLoadStyle}
+ * - {@link OnEvent}
+ * - {@link OnPrepare}
+ * - {@link OnMeasure}
+ * - {@link OnBoundsDefined}
+ * - {@link OnMount}

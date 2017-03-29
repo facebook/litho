@@ -31,3 +31,44 @@ public class ComponentsPoolsTest {
       return 1;
     }
   };
+
+  private ComponentContext mContext1;
+  private ComponentContext mContext2;
+  private ComponentContext mContext3;
+  private ColorDrawable mMountContent;
+
+  @Before
+  public void setup() {
+    mContext1 = new ComponentContext(RuntimeEnvironment.application);
+    mContext2 = new ComponentContext(new ComponentContext(RuntimeEnvironment.application));
+    mContext3 = new ComponentContext(new ContextWrapper(RuntimeEnvironment.application));
+    mMountContent = new ColorDrawable(Color.RED);
+  }
+
+  @Test
+  public void testAcquireMountContentWithSameContext() {
+    assertNull(ComponentsPools.acquireMountContent(mContext1, mLifecycle.getId()));
+
+    ComponentsPools.release(mContext1, mLifecycle, mMountContent);
+
+    assertSame(mMountContent, ComponentsPools.acquireMountContent(mContext1, mLifecycle.getId()));
+  }
+
+  @Test
+  public void testAcquireMountContentWithSameUnderlyingContext() {
+    assertNull(ComponentsPools.acquireMountContent(mContext1, mLifecycle.getId()));
+
+    ComponentsPools.release(mContext1, mLifecycle, mMountContent);
+
+    assertSame(mMountContent, ComponentsPools.acquireMountContent(mContext2, mLifecycle.getId()));
+  }
+
+  @Test
+  public void testAcquireMountContentWithDifferentUnderlyingContext() {
+    assertNull(ComponentsPools.acquireMountContent(mContext1, mLifecycle.getId()));
+
+    ComponentsPools.release(mContext1, mLifecycle, mMountContent);
+
+    assertNull(ComponentsPools.acquireMountContent(mContext3, mLifecycle.getId()));
+  }
+}

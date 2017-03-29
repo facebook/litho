@@ -14,3 +14,5 @@ import java.util.Deque;
 import android.content.Context;
 import android.graphics.Rect;
 import android.support.annotation.VisibleForTesting;
+import android.support.v4.view.accessibility.AccessibilityManagerCompat;
+import android.support.v4.view.accessibility.AccessibilityManagerCompat.AccessibilityStateChangeListenerCompat;

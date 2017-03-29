@@ -40,3 +40,4 @@ public class RequiredPropsTest {
     }
     assertTrue(
         "Error message did not mention the missing required prop",
+        error.contains("text"));

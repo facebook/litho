@@ -32,3 +32,4 @@ import static org.mockito.Mockito.mock;
  */
 
 @RunWith(ComponentsTestRunner.class)
+public class ComponentTreeBuilderTest {
