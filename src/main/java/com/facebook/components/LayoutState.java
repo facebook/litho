@@ -872,3 +872,5 @@ class LayoutState {
     component.markLayoutStarted();
 
     LayoutState layoutState = ComponentsPools.acquireLayoutState(c);
+    layoutState.mShouldGenerateDiffTree = shouldGenerateDiffTree;
+    layoutState.mComponentTreeId = componentTreeId;
