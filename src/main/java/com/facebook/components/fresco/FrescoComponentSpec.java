@@ -118,3 +118,4 @@ class FrescoComponentSpec {
         progressBarAutoRotateInterval);
     draweeHierarchy.setRetryReference(retryImage, retryImageScaleType);
     draweeHierarchy.setRoundingParams(roundingParams);
+    draweeHierarchy.setActualImageColorFilter(colorFilter);
