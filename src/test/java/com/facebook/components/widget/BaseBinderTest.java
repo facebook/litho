@@ -207,3 +207,26 @@ public class BaseBinderTest {
   @Test
   public void testNotifyItemMovedFromBeforeCollection() {
     mount();
+
+    mBinder.updateRange(
+        3,
+        4,
+        BaseBinder.URFLAG_REFRESH_IN_RANGE | BaseBinder.URFLAG_RELEASE_OUTSIDE_RANGE);
+
+    int from = 2;
+    int to = 7;
+
+    String movingItem = mItems.remove(from);
+    mItems.add(to, movingItem);
+
+    mBinder.notifyItemMoved(from, to);
+    mLayoutThreadShadowLooper.runOneTask();
+
+    Assert.assertEquals(4, mBinder.getComponentCount());
+    Assert.assertEquals("3", getAdapterInputStringAtPosition(2));
+    Assert.assertEquals("4", getAdapterInputStringAtPosition(3));
+    Assert.assertEquals("5", getAdapterInputStringAtPosition(4));
+    Assert.assertEquals("6", getAdapterInputStringAtPosition(5));
+  }
+
+  @Test

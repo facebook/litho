@@ -81,3 +81,7 @@ public class LinearComponentBinderTest {
 
     // Only loads enough items to fill the viewport.
     Assert.assertEquals(6, mBinder.getComponentCount());
+  }
+
+  @Test
+  public void testWorkingRangesBasic() throws Exception {

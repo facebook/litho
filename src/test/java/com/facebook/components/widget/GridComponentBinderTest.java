@@ -86,3 +86,135 @@ public class GridComponentBinderTest {
 
     mRecyclerView.layout(0, 0, GRID_WIDTH, 2000);
 
+    for (int i = 0; i < mItems.size(); i++) {
+      assertEquals(
+          mRecyclerView.getChildAt(i).getWidth(),
+          SizeSpec.getSize(mBinder.getWidthSpec(i)));
+    }
+  }
+
+  @Test
+  public void testGetSpanIndex() {
+    setupBinder(GridLayoutManager.VERTICAL);
+
+    Assert.assertEquals(0, mBinder.getSpanIndex(0));
+    Assert.assertEquals(0, mBinder.getSpanIndex(1));
+    Assert.assertEquals(1, mBinder.getSpanIndex(2));
+    Assert.assertEquals(0, mBinder.getSpanIndex(3));
+    Assert.assertEquals(1, mBinder.getSpanIndex(8));
+    Assert.assertEquals(0, mBinder.getSpanIndex(19));
+  }
+
+  @Test
+  public void testWorkingRangesBasic() throws Exception {
+    setupBinder(GridLayoutManager.VERTICAL);
+
+    // Set the range controller.
+    mBinder.getRangeController().notifyOnScroll(4 * SPAN_COUNT - 1, 2 * SPAN_COUNT);
+
+    int rangeSizeInViewPorts =
+        RecyclerComponentBinder.RecyclerComponentWorkingRangeController.RANGE_SIZE;
+    int rangeItemCount = 2 * SPAN_COUNT * rangeSizeInViewPorts;
+    Assert.assertEquals(rangeItemCount, mBinder.getComponentCount());
+
+    // The items outside of the range should not be loaded.
+    Assert.assertEquals(null, getAdapterInputStringAtPosition(2 * SPAN_COUNT - 3));
+    Assert.assertEquals(null, getAdapterInputStringAtPosition(2 * SPAN_COUNT - 2));
+    Assert.assertEquals(null, getAdapterInputStringAtPosition(8 * SPAN_COUNT - 1));
+    Assert.assertEquals(null, getAdapterInputStringAtPosition(8 * SPAN_COUNT));
+
+    for (int i = 2 * SPAN_COUNT - 1; i < 8 * SPAN_COUNT - 1; i++) {
+      Assert.assertEquals(mItems.get(i), getAdapterInputStringAtPosition(i));
+    }
+  }
+
+  @Test
+  public void testWorkingRangesTrimmedBeginning() throws Exception {
+    setupBinder(GridLayoutManager.VERTICAL);
+
+    // Set the range controller.
+    mBinder.getRangeController().notifyOnScroll(2 * SPAN_COUNT - 1, 3 * SPAN_COUNT);
+
+    int rangeSizeInViewPorts =
+        RecyclerComponentBinder.RecyclerComponentWorkingRangeController.RANGE_SIZE;
+    int rangeItemCount = 3 + 3 * SPAN_COUNT * (rangeSizeInViewPorts - 1);
+    Assert.assertEquals(rangeItemCount, mBinder.getComponentCount());
+
+    // The items outside of the range should not be loaded.
+    Assert.assertEquals(null, getAdapterInputStringAtPosition(8 * SPAN_COUNT - 1));
+    Assert.assertEquals(null, getAdapterInputStringAtPosition(8 * SPAN_COUNT));
+
+    for (int i = 0; i < 8 * SPAN_COUNT - 1; i++) {
+      Assert.assertEquals(mItems.get(i), getAdapterInputStringAtPosition(i));
+    }
+  }
+
+  @Test
+  public void testWorkingRangesTrimmedEnd() throws Exception {
+    setupBinder(GridLayoutManager.VERTICAL);
+
+    // Set the range controller.
+    mBinder.getRangeController().notifyOnScroll(6 * SPAN_COUNT - 1, 3 * SPAN_COUNT);
+
+    int rangeSizeInViewPorts =
+        RecyclerComponentBinder.RecyclerComponentWorkingRangeController.RANGE_SIZE;
+    int rangeItemCount = 1 + SPAN_COUNT + 3 * SPAN_COUNT * (rangeSizeInViewPorts - 1);
+    Assert.assertEquals(rangeItemCount, mBinder.getComponentCount());
+
+    // The items outside of the range should not be loaded.
+    Assert.assertEquals(null, getAdapterInputStringAtPosition(3 * SPAN_COUNT - 2));
+
+    for (int i = 3 * SPAN_COUNT - 1; i < mItems.size(); i++) {
+      Assert.assertEquals(mItems.get(i), getAdapterInputStringAtPosition(i));
+    }
+  }
+
+  @Test
+  public void testWorkingRangesTrimmedBothEnds() {
+    setupBinder(GridLayoutManager.VERTICAL);
+
+    // Set the range controller.
+    mBinder.getRangeController().notifyOnScroll(3 * SPAN_COUNT - 1, 4 * SPAN_COUNT);
+
+    Assert.assertEquals(mItems.size(), mBinder.getComponentCount());
+
+    for (int i = 0; i < mItems.size(); i++) {
+      Assert.assertEquals(mItems.get(i), getAdapterInputStringAtPosition(i));
+    }
+  }
+
+  @Test
+  public void testWorkingRangesBasicHorizontal() throws Exception {
+    setupBinder(GridLayoutManager.HORIZONTAL);
+
+    // Set the range controller.
+    mBinder.getRangeController().notifyOnScroll(3 * SPAN_COUNT - 1, 2 * SPAN_COUNT);
+
+    int rangeSizeInViewPorts =
+        RecyclerComponentBinder.RecyclerComponentWorkingRangeController.RANGE_SIZE;
+    int rangeItemCount = 2 * SPAN_COUNT * rangeSizeInViewPorts;
+    Assert.assertEquals(rangeItemCount, mBinder.getComponentCount());
+
+    // The items outside of the range should not be loaded.
+    Assert.assertEquals(null, getAdapterInputStringAtPosition(SPAN_COUNT - 2));
+    Assert.assertEquals(null, getAdapterInputStringAtPosition(7 * SPAN_COUNT - 1));
+
+    for (int i = SPAN_COUNT - 1; i < 7 * SPAN_COUNT - 1; i++) {
+      Assert.assertEquals(mItems.get(i), getAdapterInputStringAtPosition(i));
+    }
+  }
+
+  @Test
+  public void testWorkingRangesTrimmedBothEndsHorizontal() {
+    setupBinder(GridLayoutManager.HORIZONTAL);
+
+    // Set the range controller.
+    mBinder.getRangeController().notifyOnScroll(3 * SPAN_COUNT - 1, 4 * SPAN_COUNT);
+
+    Assert.assertEquals(mItems.size(), mBinder.getComponentCount());
+
+    for (int i = 0; i < mItems.size(); i++) {
+      Assert.assertEquals(mItems.get(i), getAdapterInputStringAtPosition(i));
+    }
+  }
+
