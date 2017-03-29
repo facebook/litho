@@ -540,3 +540,4 @@ public class TreeDiffingTest {
         thirdComponent,
         SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
+        true,

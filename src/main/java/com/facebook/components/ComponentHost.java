@@ -160,3 +160,5 @@ public class ComponentHost extends ViewGroup {
       unmountView((View) content);
       ComponentHostUtils.removeItem(index, mViewMountItems, mScrapViewMountItemsArray);
       maybeUnregisterTouchExpansion(index, mountItem);
+    }
+

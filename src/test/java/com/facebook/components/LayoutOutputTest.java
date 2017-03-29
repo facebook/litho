@@ -110,3 +110,6 @@ public class LayoutOutputTest {
       }
     };
     Component component = new TestComponent(lifecycle) {};
+
+    mLayoutOutput.setComponent(component);
+    mLayoutOutput.setId(
