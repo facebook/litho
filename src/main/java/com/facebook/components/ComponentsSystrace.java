@@ -56,3 +56,5 @@ public class ComponentsSystrace {
       }
     }
     return sInstance;
+  }
+}

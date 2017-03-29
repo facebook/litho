@@ -97,3 +97,8 @@ public class Stages {
 
   private final boolean mSupportState;
 
+  public enum StaticFlag {
+    STATIC,
+    NOT_STATIC
+  }
+

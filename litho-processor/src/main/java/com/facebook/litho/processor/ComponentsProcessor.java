@@ -80,3 +80,4 @@ public class ComponentsProcessor extends AbstractComponentsProcessor {
   protected DependencyInjectionHelper getDependencyInjectionGenerator(TypeElement typeElement) {
     return null;
   }
+}
