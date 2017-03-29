@@ -1163,3 +1163,4 @@ public class ComponentTree {
     if (lock != null) {
       synchronized (lock) {
         return LayoutState.calculate(
+            contextWithStateHandler,
