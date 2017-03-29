@@ -88,3 +88,5 @@ public abstract class PagerBinder extends BaseBinder<
 
   @Override
   protected int getWidthSpec(int position) {
+    int widthSpec = super.getWidthSpec(position);
+    int width = (int) (SizeSpec.getSize(widthSpec) * mPageWidth);

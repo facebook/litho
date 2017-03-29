@@ -59,3 +59,4 @@ class PagerSpec {
     return new ViewPager(c);
   }
 
+  @OnMount
