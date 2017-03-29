@@ -49,3 +49,7 @@ public class ColorDrawableReferenceTest {
 
     assertEquals(drawable.getColor(), Color.BLACK);
     assertEquals(drawable.getAlpha(), DEFAULT_ALPHA_VALUE);
+    assertNotNull(drawable);
+  }
+
+  @Test

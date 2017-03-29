@@ -75,3 +75,9 @@ public final class ResourceDrawableReference extends ReferenceLifecycle<Drawable
 
   private static class State extends Reference<Drawable> {
     int mResId;
+
+    protected State() {
+      super(get());
+    }
+
+    @Override

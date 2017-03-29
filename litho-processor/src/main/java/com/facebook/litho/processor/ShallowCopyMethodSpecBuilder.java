@@ -53,3 +53,7 @@ class ShallowCopyMethodSpecBuilder {
     return this;
   }
 
+  MethodSpec build() {
+    MethodSpec.Builder builder = MethodSpec.methodBuilder("makeShallowCopy")
+        .addModifiers(Modifier.PUBLIC)
+        .addAnnotation(Override.class)

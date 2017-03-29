@@ -28,3 +28,5 @@ import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static com.facebook.components.ComponentsLogger.EVENT_PREPARE_MOUNT;
 import static com.facebook.components.ComponentsLogger.PARAM_MOVED_COUNT;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
