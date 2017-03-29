@@ -1669,3 +1669,11 @@ public class Stages {
     mPropDefaults = PropDefaultsExtractor.getPropDefaults(mSourceElement);
   }
 
+  public void generateComponentImplClass(Stages.StaticFlag isStatic) {
+    generateStateContainerImplClass(isStatic, ClassNames.STATE_CONTAINER_COMPONENT);
+
+    final String implClassName = getImplClassName();
+    final ClassName stateContainerImplClass =
+        ClassName.bestGuess(getSimpleClassName() + STATE_CONTAINER_IMPL_NAME_SUFFIX);
+    final TypeSpec.Builder implClassBuilder =
+        TypeSpec.classBuilder(implClassName)
