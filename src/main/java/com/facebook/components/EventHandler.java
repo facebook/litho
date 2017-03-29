@@ -11,3 +11,4 @@ package com.facebook.litho;
 
 public class EventHandler<E> {
 
+  public final HasEventDispatcher mHasEventDispatcher;

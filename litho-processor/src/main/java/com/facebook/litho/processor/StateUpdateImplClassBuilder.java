@@ -168,3 +168,5 @@ public class StateUpdateImplClassBuilder {
             .addModifiers(Modifier.PRIVATE)
             .addSuperinterface(mComponentStateUpdateInterface);
 
+    if (mStaticFlag == Stages.StaticFlag.STATIC) {
+      stateUpdateClassBuilder.addModifiers(Modifier.STATIC);
