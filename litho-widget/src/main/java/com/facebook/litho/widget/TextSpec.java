@@ -142,3 +142,8 @@ class TextSpec {
     for (int i = 0, size = a.getIndexCount(); i < size; i++) {
       final int attr = a.getIndex(i);
 
+      if (attr == R.styleable.Text_android_text) {
+        text.set(a.getString(attr));
+      } else if (attr == R.styleable.Text_android_textColor) {
+        textColorStateList.set(a.getColorStateList(attr));
+      } else if (attr == R.styleable.Text_android_textSize) {
