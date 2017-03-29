@@ -108,3 +108,4 @@ public class TestComponentTree extends ComponentTree {
       return new TestComponentTree(this);
     }
   }
+}
