@@ -66,3 +66,9 @@ public class ComponentsPools {
   private static final Pools.SynchronizedPool<InternalNode> sInternalNodePool =
       new Pools.SynchronizedPool<>(256);
 
+  private static final Pools.SynchronizedPool<NodeInfo> sNodeInfoPool =
+      new Pools.SynchronizedPool<>(256);
+
+  private static final Pools.SynchronizedPool<ViewNodeInfo> sViewNodeInfoPool =
+      new Pools.SynchronizedPool<>(64);
+
