@@ -216,3 +216,4 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
   public CharSequence getText() {
     return mText;
   }
+
