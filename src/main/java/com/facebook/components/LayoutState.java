@@ -1318,3 +1318,5 @@ class LayoutState {
     ComponentsSystrace.beginSection("diff_node_creation");
     DiffNode diffNode = ComponentsPools.acquireDiffNode();
 
+    diffNode.setLastWidthSpec(node.getLastWidthSpec());
+    diffNode.setLastHeightSpec(node.getLastHeightSpec());
