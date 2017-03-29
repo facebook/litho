@@ -34,3 +34,5 @@ public class MountStateViewTagsTest {
     mContext = new ComponentContext(RuntimeEnvironment.application);
   }
 
+  @Test
+  public void testInnerComponentHostViewTags() {

@@ -30,3 +30,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 
 @RunWith(ComponentsTestRunner.class)
+public class MountItemTest {
+  private MountItem mMountItem;
+  private Component<?> mComponent;
+  private ComponentHost mComponentHost;
+  private Object mContent;
+  private CharSequence mContentDescription;

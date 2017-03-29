@@ -27,3 +27,10 @@ import java.util.Set;
 
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.MountSpec;
+import com.facebook.components.specmodels.model.ClassNames;
+import com.facebook.components.specmodels.model.DependencyInjectionHelper;
+import com.facebook.components.specmodels.model.MountSpecModel;
+import com.facebook.components.specmodels.model.SpecModel;
+import com.facebook.components.specmodels.model.SpecModelValidationError;
+import com.facebook.components.specmodels.processor.LayoutSpecModelFactory;
+import com.facebook.components.specmodels.processor.MountSpecModelFactory;

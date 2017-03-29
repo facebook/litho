@@ -29,3 +29,4 @@ public class TestDrawableComponent extends ComponentLifecycle {
   private static final List<TestDrawableComponent> sInstances = new ArrayList<>();
   private static final Pools.SynchronizedPool<Builder> mBuilderPool =
       new Pools.SynchronizedPool<>(2);
+

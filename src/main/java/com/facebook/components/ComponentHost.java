@@ -30,3 +30,4 @@ import android.view.ViewParent;
 
 import com.facebook.R;
 
+import static com.facebook.components.AccessibilityUtils.isAccessibilityEnabled;

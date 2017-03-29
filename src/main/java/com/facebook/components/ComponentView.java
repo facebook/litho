@@ -32,3 +32,5 @@ import static com.facebook.components.AccessibilityUtils.isAccessibilityEnabled;
 public class ComponentView extends ComponentHost {
   private ComponentTree mComponent;
   private final MountState mMountState;
+  private boolean mIsAttached;
+  private final Rect mPreviousMountBounds = new Rect();
