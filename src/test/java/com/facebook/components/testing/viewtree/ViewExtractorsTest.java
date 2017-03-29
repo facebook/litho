@@ -48,3 +48,4 @@ public class ViewExtractorsTest {
 
     mImageView = new ImageView(activity);
     mImageView.setImageDrawable(mLithoDrawable);
+

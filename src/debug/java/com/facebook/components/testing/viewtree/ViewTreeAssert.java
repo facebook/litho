@@ -50,3 +50,8 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
 
     Assertions.assertThat(path)
         .overridingErrorMessage(path == null ? getHasVisibleTextErrorMessage(text) : "")
+        .isNotNull();
+
+    return this;
+  }
+
