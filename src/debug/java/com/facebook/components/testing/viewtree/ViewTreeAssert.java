@@ -442,3 +442,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
       final Class<V> clazz,
       final Predicate<V> predicate) {
     final Predicate<View> conjunction = Predicates.and(
+        Predicates.instanceOf(clazz),
+        ViewPredicates.isVisible(),
+        (Predicate<View>) predicate);
+
