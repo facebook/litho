@@ -765,3 +765,4 @@ class LayoutState {
 
     drawableComponent.getLifecycle().onBoundsDefined(
         layoutState.mContext,
+        node,
