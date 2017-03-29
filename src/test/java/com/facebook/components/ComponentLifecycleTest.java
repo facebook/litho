@@ -149,3 +149,5 @@ public class ComponentLifecycleTest {
         false /* canMeasure */);
     componentLifecycle.createLayout(mContext, mInput, true);
 
+    verify(componentLifecycle).onCreateLayout(mContext, mInput);
+    verify(mNode).setComponent(mInput);

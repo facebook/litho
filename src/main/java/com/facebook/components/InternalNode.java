@@ -354,3 +354,13 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   void markIsNestedTreeHolder(TreeProps currentTreeProps) {
     mIsNestedTreeHolder = true;
     mPendingTreeProps = TreeProps.copy(currentTreeProps);
+  }
+
+  /**
+   * @return Whether this node is holding a nested tree or not. The decision was made during
+   * tree creation {@link ComponentLifecycle#createLayout(ComponentContext, Component, boolean)}.
+   */
+  boolean isNestedTreeHolder() {
+    return mIsNestedTreeHolder;
+  }
+
