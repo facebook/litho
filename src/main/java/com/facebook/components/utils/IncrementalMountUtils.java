@@ -116,3 +116,6 @@ public class IncrementalMountUtils {
     if (rect.isEmpty()) {
       // View is not visible at all, nothing to do.
       release(rect);
+      return;
+    }
+
