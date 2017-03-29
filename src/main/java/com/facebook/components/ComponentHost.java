@@ -996,3 +996,12 @@ public class ComponentHost extends ViewGroup {
     ViewCompat.dispatchFinishTemporaryDetach(view);
   }
 
+  /**
+   * Encapsulates the logic for drawing a set of views and drawables respecting
+   * their drawing order withing the component host i.e. allow interleaved views
+   * and drawables to be drawn with the correct z-index.
+   */
+  private class InterleavedDispatchDraw {
+
+    private Canvas mCanvas;
+    private int mDrawIndex;

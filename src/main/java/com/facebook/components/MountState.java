@@ -684,3 +684,4 @@ class MountState {
       mLayoutOutputsIds = new long[layoutState.getMountableOutputCount()];
     }
 
+    for (int i = 0; i < outputCount; i++) {
