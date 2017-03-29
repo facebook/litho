@@ -641,3 +641,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public Builder borderColor(@ColorInt int borderColor) {
+    mPrivateFlags |= PFLAG_BORDER_COLOR_IS_SET;
+    mBorderColor = borderColor;
+    return this;
+  }
+
+  @Override
