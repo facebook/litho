@@ -60,3 +60,7 @@ public class ViewPredicatesTest {
     mOtherImageView = new ImageView(activity);
     mImageView = new ImageView(activity);
     mImageViewWithCustomDrawable = new ImageView(activity);
+
+    mTextViewWithEmptyString.setText("");
+    mTextViewWithHello.setText("Hello");
+    mTextViewWithWorld.setText("World");
