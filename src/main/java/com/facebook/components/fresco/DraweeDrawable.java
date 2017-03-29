@@ -89,3 +89,4 @@ public class DraweeDrawable<DH extends DraweeHierarchy>
     }
     mDraweeHolder.setController(controller);
   }
+}
