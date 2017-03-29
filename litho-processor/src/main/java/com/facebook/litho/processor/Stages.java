@@ -1340,3 +1340,4 @@ public class Stages {
 
       for (VariableElement v : Utils.getParametersWithAnnotation(element, FromEvent.class)) {
         eventHandlerParams.add(
+            "\n" + implInstanceName + ".$L,",
