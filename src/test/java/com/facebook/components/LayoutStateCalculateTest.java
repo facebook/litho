@@ -830,3 +830,5 @@ public class LayoutStateCalculateTest {
         RuntimeEnvironment.application,
         component1,
         -1,
+        SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
+        SizeSpec.makeSizeSpec(20, SizeSpec.EXACTLY));

@@ -146,3 +146,4 @@ public class MountItemTest {
             false).build(),
         mComponentHost,
         mContent,
+        mNodeInfo,
