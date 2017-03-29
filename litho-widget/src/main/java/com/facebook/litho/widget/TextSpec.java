@@ -630,3 +630,6 @@ class TextSpec {
     } else {
       node.setText(spanned.subSequence(start, end));
     }
+  }
+
+  @GetExtraAccessibilityNodeAt
