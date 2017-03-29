@@ -121,3 +121,4 @@ public class Stages {
       TreeProp.class,
   };
 
+  private static final Class<Annotation>[] PROP_ANNOTATIONS = new Class[] {
