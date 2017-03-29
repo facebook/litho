@@ -1088,3 +1088,6 @@ public class Stages {
    * @throws java.io.IOException If one of the writer methods throw
    */
   public void generateDelegate(
+      MethodDescription from,
+      ExecutableElement to,
+      List<TypeName> expectedTypes,
