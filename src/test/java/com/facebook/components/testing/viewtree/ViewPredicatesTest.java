@@ -180,3 +180,4 @@ public class ViewPredicatesTest {
   }
 
   @Test
+  public void testHasVisibleCustomDrawable() {
