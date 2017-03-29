@@ -1377,3 +1377,13 @@ class MountState {
           (ComponentContext) view.getContext(),
           view.getBackground(),
           backgroundReference);
+      setBackgroundCompat(view, null);
+    }
+  }
+
+  @SuppressWarnings("deprecation")
+  private static void setBackgroundCompat(View view, Drawable drawable) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+      view.setBackgroundDrawable(drawable);
+    } else {
+      view.setBackground(drawable);
