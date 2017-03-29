@@ -1121,3 +1121,4 @@ public class Stages {
     }
 
     if (!errors.isEmpty()) {
+      throw new MultiPrintableException(errors);
