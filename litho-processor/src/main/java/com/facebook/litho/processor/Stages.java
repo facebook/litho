@@ -345,3 +345,4 @@ public class Stages {
     }
 
     final List<? extends VariableElement> parameters = delegateMethod.getParameters();
+
