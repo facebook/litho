@@ -294,3 +294,13 @@ public class ComponentsPools {
       if (pool == null) {
         return null;
       }
+    }
+
+    return pool.acquire();
+  }
+
+  static LayoutOutput acquireLayoutOutput() {
+    LayoutOutput output = sLayoutOutputPool.acquire();
+    if (output == null) {
+      output = new LayoutOutput();
+    }
