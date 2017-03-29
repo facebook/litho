@@ -140,3 +140,5 @@ public class Stages {
   private final List<TypeVariableName> mTypeVariables;
   private final List<TypeElement> mEventDeclarations;
   private final Map<String, String> mPropJavadocs;
+
+  private final String mSimpleClassName;

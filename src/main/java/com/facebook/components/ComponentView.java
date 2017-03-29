@@ -327,3 +327,9 @@ public class ComponentView extends ComponentHost {
     return (mComponent != null && mComponent.isIncrementalMountEnabled());
   }
 
+  public void release() {
+    if (mComponent != null) {
+      mComponent.release();
+      mComponent = null;
+    }
+  }

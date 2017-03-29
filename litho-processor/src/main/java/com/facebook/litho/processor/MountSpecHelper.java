@@ -118,3 +118,7 @@ public class MountSpecHelper extends ComponentSpecHelper {
     final ExecutableElement onPrepare = Utils.getAnnotatedMethod(
         mStages.getSourceElement(),
         OnPrepare.class);
+    if (onPrepare == null) {
+      return;
+    }
+

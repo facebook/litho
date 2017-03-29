@@ -199,3 +199,20 @@ public class ComponentTree {
         || !isCompatibleSpec(mMainThreadLayoutState, mWidthSpec, mHeightSpec)) {
       // If mMainThreadLayoutState isn't a perfect match, we'll prefer
       // mBackgroundLayoutState since it will have the more recent create.
+      isMainThreadLayoutBest = false;
+    } else {
+      // If the main thread layout is still compatible size-wise, and the
+      // background one is not, then we'll do nothing. We want to keep the same
+      // main thread layout so that we don't force main thread re-layout.
+      isMainThreadLayoutBest = true;
+    }
+
+    if (isMainThreadLayoutBest) {
+      // We don't want to hold onto mBackgroundLayoutState since it's unlikely
+      // to ever be used again. We return mBackgroundLayoutState to indicate it
+      // should be released after exiting the lock.
+      LayoutState toRelease = mBackgroundLayoutState;
+      mBackgroundLayoutState = null;
+      return toRelease;
+    } else {
+      // Since we are changing layout states we'll need to remount.
