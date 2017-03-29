@@ -1372,3 +1372,5 @@ public class Stages {
     methodBuilder.endControlFlow();
 
     writeMethodSpec(methodBuilder.build());
+  }
+
