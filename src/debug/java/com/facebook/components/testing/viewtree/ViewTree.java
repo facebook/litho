@@ -45,3 +45,15 @@ public final class ViewTree {
    */
   @Nullable
   public ImmutableList<View> findChild(Predicate<View> predicate) {
+    return findChild(mView, predicate, Predicates.<ViewGroup>alwaysTrue());
+  }
+
+  /**
+   * Find a view in the hierarchy for which the given predicate is true, while only check children
+   * of nodes as directed by the additional shouldCheckChildren predicate
+   *
+   * @param predicate the predicate to find a view upholding
+   * @param shouldCheckChildren a predicate to decide whether to
+   * @return null if no such view is found, or a list showing the path in the hierarchy to the
+   * view for which the predicate holds
+   */
