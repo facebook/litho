@@ -232,3 +232,7 @@ public class PagerBinderTest {
 
     @Override
     public Component<?> createComponent(ComponentContext context, int position) {
+      return TestDrawableComponent.create(context)
+          .color(Color.RED)
+          .measuredWidth(50)
+          .measuredHeight(100)
