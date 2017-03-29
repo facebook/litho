@@ -142,3 +142,7 @@ public class MountSpecHelper extends ComponentSpecHelper {
     final ExecutableElement onMeasure = Utils.getAnnotatedMethod(
         mStages.getSourceElement(),
         OnMeasure.class);
+    if (onMeasure == null) {
+      return;
+    }
+
