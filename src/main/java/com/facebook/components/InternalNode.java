@@ -1670,3 +1670,27 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return mDuplicateParentState;
   }
 
+  void applyAttributes(TypedArray a) {
+    for (int i = 0, size = a.getIndexCount(); i < size; i++) {
+      final int attr = a.getIndex(i);
+
+      if (attr == R.styleable.ComponentLayout_android_layout_width) {
+        int width = a.getLayoutDimension(attr, -1);
+        // We don't support WRAP_CONTENT or MATCH_PARENT so no-op for them
+        if (width >= 0) {
+          widthPx(width);
+        }
+      } else if (attr == R.styleable.ComponentLayout_android_layout_height) {
+        int height = a.getLayoutDimension(attr, -1);
+        // We don't support WRAP_CONTENT or MATCH_PARENT so no-op for them
+        if (height >= 0) {
+          heightPx(height);
+        }
+      } else if (attr == R.styleable.ComponentLayout_android_paddingLeft) {
+        paddingPx(LEFT, a.getDimensionPixelOffset(attr, 0));
+      } else if (attr == R.styleable.ComponentLayout_android_paddingTop) {
+        paddingPx(TOP, a.getDimensionPixelOffset(attr, 0));
+      } else if (attr == R.styleable.ComponentLayout_android_paddingRight) {
+        paddingPx(RIGHT, a.getDimensionPixelOffset(attr, 0));
+      } else if (attr == R.styleable.ComponentLayout_android_paddingBottom) {
+        paddingPx(BOTTOM, a.getDimensionPixelOffset(attr, 0));
