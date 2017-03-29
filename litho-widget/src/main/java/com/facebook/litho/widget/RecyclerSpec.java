@@ -49,3 +49,4 @@ class RecyclerSpec {
   @PropDefault static final int refreshProgressBarColor = Color.BLACK;
 
   @OnMeasure
+  static void onMeasure(
