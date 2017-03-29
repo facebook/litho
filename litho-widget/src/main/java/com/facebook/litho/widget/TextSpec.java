@@ -25,3 +25,4 @@ import android.text.Layout;
 import android.text.Layout.Alignment;
 import android.text.Spanned;
 import android.text.TextPaint;
+import android.text.TextUtils;

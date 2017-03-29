@@ -19,3 +19,5 @@ import com.facebook.infer.annotation.ThreadConfined;
  * @see {@link TreeProp}.
  */
 @ThreadConfined(ThreadConfined.ANY)
+public class TreeProps {
+
