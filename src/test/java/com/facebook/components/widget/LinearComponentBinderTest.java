@@ -235,3 +235,9 @@ public class LinearComponentBinderTest {
           .build();
     }
 
+    int getFirstPosition() {
+      return ((BinderTreeCollection) Whitebox.getInternalState(
+          this,
+          "mComponentTrees")).getFirstPosition();
+    }
+

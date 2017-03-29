@@ -99,3 +99,26 @@ public abstract class GridComponentBinder extends RecyclerComponentBinder<
   public int getSpanIndex(int position) {
     GridLayoutManager layoutManager = getLayoutManager();
     return layoutManager.getSpanSizeLookup().getSpanIndex(position, layoutManager.getSpanCount());
+  }
+
+  /**
+   * Perform incremental mount on positions [fromPosition, toPosition).
+   */
+  private void performIncrementalMountOnRange(int fromPosition, int toPosition) {
+    final GridLayoutManager layoutManager = getLayoutManager();
+
+    for (int i = fromPosition; i < toPosition; i++) {
+      ComponentView partiallyVisibleView = (ComponentView) layoutManager.findViewByPosition(i);
+      if (partiallyVisibleView != null) {
+        partiallyVisibleView.performIncrementalMount();
+      }
+    }
+  }
+
+  @Override
+  public int getWidthSpec(int position) {
+    final GridLayoutManager layoutManager = getLayoutManager();
+    final int spanCount = layoutManager.getSpanCount();
+    final int itemSpanCount = layoutManager.getSpanSizeLookup().getSpanSize(position);
+
+    if (layoutManager.getOrientation() == OrientationHelper.VERTICAL) {

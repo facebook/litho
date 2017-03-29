@@ -355,3 +355,7 @@ public class BaseBinderTest {
 
     public MyTestComponentBinder(Context context, List<String> items) {
       super(context, new MyTestWorkingRangeController());
+      mItems = items;
+    }
+
+    @Override
