@@ -1155,3 +1155,20 @@ class MountState {
     }
   }
 
+  static ComponentClickListener getComponentClickListener(View v) {
+    if (v instanceof ComponentHost) {
+      return ((ComponentHost) v).getComponentClickListener();
+    } else {
+      return (ComponentClickListener) v.getTag(R.id.component_click_listener);
+    }
+  }
+
+  static void setComponentClickListener(View v, ComponentClickListener listener) {
+    if (v instanceof ComponentHost) {
+      ((ComponentHost) v).setComponentClickListener(listener);
+    } else {
+      v.setOnClickListener(listener);
+      v.setTag(R.id.component_click_listener, listener);
+    }
+  }
+
