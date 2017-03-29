@@ -1546,3 +1546,4 @@ public class Stages {
   private void generateStateUpdateClass(
       ExecutableElement element,
       ClassName componentClassName,
+      ClassName stateContainerClassName,
