@@ -507,3 +507,6 @@ public class MountStateRemountInPlaceTest {
         .build();
     secondTree.setSizeSpec(100, 100);
 
+    final TestComponent thirdComponent =
+        TestDrawableComponent.create(mContext)
+            .build();
