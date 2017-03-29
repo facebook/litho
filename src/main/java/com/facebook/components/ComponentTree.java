@@ -535,3 +535,5 @@ public class ComponentTree {
 
       // We need to force remount on layout
       mComponentView.setMountStateDirty();
+    }
+
