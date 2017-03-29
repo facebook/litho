@@ -370,3 +370,4 @@ public abstract class BaseBinder<
 
     if (shouldRemoveItems) {
       List<ComponentTree> treesToRelease = acquireList(itemCount);
+
