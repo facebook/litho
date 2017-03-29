@@ -1805,3 +1805,4 @@ public class Stages {
 
     generateComponentClassProps(implClassBuilder, null);
 
+    implClassBuilder.addMethod(
