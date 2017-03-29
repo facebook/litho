@@ -29,3 +29,5 @@ import java.lang.annotation.RetentionPolicy;
  *
  *   @OnCreateTreeProp
  *   protected SomeTreePropClass onCreateSomeTreeProp(
+ *     ComponentsContext c,
+ *     @Prop SomeProp prop) {

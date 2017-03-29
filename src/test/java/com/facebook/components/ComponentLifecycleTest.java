@@ -28,3 +28,4 @@ import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 
 import static com.facebook.yoga.YogaMeasureMode.EXACTLY;
+import static junit.framework.Assert.fail;

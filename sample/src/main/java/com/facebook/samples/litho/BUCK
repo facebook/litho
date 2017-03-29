@@ -37,3 +37,4 @@ android_library(
             COMPONENTS_JSR_TARGET,
             COMPONENTS_YOGAPREBUILT_TARGET,
         ],
+)
