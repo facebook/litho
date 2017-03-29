@@ -354,3 +354,8 @@ public class ComponentTree {
       }
 
       return true;
+    }
+
+    return false;
+  }
+
