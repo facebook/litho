@@ -2939,3 +2939,5 @@ public class Stages {
 
     writeMethodSpec(factoryMethod.build());
     writeFieldSpec(poolField.build());
+  }
+
