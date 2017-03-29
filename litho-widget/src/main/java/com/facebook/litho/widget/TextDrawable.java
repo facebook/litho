@@ -161,3 +161,4 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
       CharSequence text,
       Layout layout,
       float layoutTranslationY,
+      ColorStateList colorStateList,
