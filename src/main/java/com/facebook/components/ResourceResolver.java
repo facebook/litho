@@ -87,3 +87,4 @@ public class ResourceResolver {
         return cached;
       }
 
+      String[] result = mResources.getStringArray(resId);

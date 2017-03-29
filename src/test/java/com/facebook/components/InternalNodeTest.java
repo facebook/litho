@@ -175,3 +175,4 @@ public class InternalNodeTest {
 
   @Test
   public void testWidthFlag() {
+    mNode.widthPx(4);
