@@ -1772,3 +1772,4 @@ public class Stages {
 
     for (String stateName : mStateMap.keySet()) {
       VariableElement v = mStateMap.get(stateName);
+      stateContainerImplClassBuilder.addField(getPropFieldSpec(v, true));
