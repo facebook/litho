@@ -405,3 +405,4 @@ public class ComponentTreeTest {
         .incrementalMount(false)
         .build();
 
+    // Attach first view.
