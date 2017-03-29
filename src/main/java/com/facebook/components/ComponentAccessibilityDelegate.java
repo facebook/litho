@@ -300,3 +300,4 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
   @Override
   public boolean performAccessibilityAction(View host, int action, Bundle args) {
     if (mNodeInfo != null && mNodeInfo.getPerformAccessibilityActionHandler() != null) {
+      return EventDispatcherUtils.dispatchPerformAccessibilityActionEvent(

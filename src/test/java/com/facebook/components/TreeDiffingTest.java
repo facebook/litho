@@ -868,3 +868,8 @@ public class TreeDiffingTest {
     assertTrue(component.wasMeasureCalled());
 
     final TestComponent secondComponent = TestDrawableComponent.create(mContext)
+        .color(Color.BLACK)
+        .build();
+
+    final Component secondLayoutComponent = new InlineLayoutSpec() {
+      @Override
