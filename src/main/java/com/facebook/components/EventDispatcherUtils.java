@@ -191,3 +191,5 @@ class EventDispatcherUtils {
     eventDispatcher.dispatchOnEvent(eventHandler, sOnInitializeAccessibilityEventEvent);
 
     sOnInitializeAccessibilityEventEvent.host = null;
+    sOnInitializeAccessibilityEventEvent.event = null;
+    sOnInitializeAccessibilityEventEvent.superDelegate = null;
