@@ -202,3 +202,8 @@ final class ViewPredicates {
    */
   @TargetApi(Build.VERSION_CODES.KITKAT)
   private static String getDrawnViewDescription(View view) {
+    final Canvas canvas = new Canvas();
+    view.draw(canvas);
+    final ShadowCanvas shadowCanvas = Shadows.shadowOf(canvas);
+    if (!shadowCanvas.getDescription().isEmpty()) {
+      return shadowCanvas.getDescription();
