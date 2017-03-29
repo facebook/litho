@@ -1801,3 +1801,7 @@ public class Stages {
 
     if (isStatic.equals(Stages.StaticFlag.STATIC)) {
       implClassBuilder.addModifiers(Modifier.STATIC);
+    }
+
+    generateComponentClassProps(implClassBuilder, null);
+
