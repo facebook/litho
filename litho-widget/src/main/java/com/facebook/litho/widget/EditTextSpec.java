@@ -360,3 +360,4 @@ class EditTextSpec {
     editText.setSingleLine(isSingleLine);
     editText.setLinkTextColor(linkColor);
     editText.setHighlightColor(highlightColor);
+    editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
