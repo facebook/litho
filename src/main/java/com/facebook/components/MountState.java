@@ -1218,3 +1218,44 @@ class MountState {
   }
 
   /**
+   * Installs the touch listeners that will dispatch the touch handler
+   * defined in the component's props.
+   */
+  private static void setTouchHandler(EventHandler touchHandler, View view) {
+    if (touchHandler != null) {
+      ComponentTouchListener listener = getComponentTouchListener(view);
+
+      if (listener == null) {
+        listener = new ComponentTouchListener();
+        setComponentTouchListener(view, listener);
+      }
+
+      listener.setEventHandler(touchHandler);
+    }
+  }
+
+  private static void unsetTouchHandler(View view) {
+    final ComponentTouchListener listener = getComponentTouchListener(view);
+
+    if (listener != null) {
+      listener.setEventHandler(null);
+    }
+  }
+
+  static ComponentTouchListener getComponentTouchListener(View v) {
+    if (v instanceof ComponentHost) {
+      return ((ComponentHost) v).getComponentTouchListener();
+    } else {
+      return (ComponentTouchListener) v.getTag(R.id.component_touch_listener);
+    }
+  }
+
+  static void setComponentTouchListener(View v, ComponentTouchListener listener) {
+    if (v instanceof ComponentHost) {
+      ((ComponentHost) v).setComponentTouchListener(listener);
+    } else {
+      v.setOnTouchListener(listener);
+      v.setTag(R.id.component_touch_listener, listener);
+    }
+  }
+

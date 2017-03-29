@@ -345,3 +345,6 @@ public final class ComponentTestHelper {
    *
    * @param view The component view to measure and layout
    */
+  public static void measureAndLayout(View view) {
+    view.measure(makeMeasureSpec(1000, EXACTLY), makeMeasureSpec(0, UNSPECIFIED));
+    view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
