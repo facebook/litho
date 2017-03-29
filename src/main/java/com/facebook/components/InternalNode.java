@@ -1836,3 +1836,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       ComponentsPools.release(mPendingTreeProps);
       mPendingTreeProps = null;
     }
+  }
