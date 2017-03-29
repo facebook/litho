@@ -201,3 +201,6 @@ class TextSpec {
       int widthSpec,
       int heightSpec,
       Size size,
+      @Prop(resType = ResType.STRING) CharSequence text,
+      @Prop(optional = true) TruncateAt ellipsize,
+      @Prop(optional = true, resType = ResType.BOOL) boolean shouldIncludeFontPadding,
