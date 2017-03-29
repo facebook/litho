@@ -8,9 +8,7 @@
 
 package com.facebook.samples.litho.lithography;
 
-import com.facebook.yoga.YogaAlign;
 
-import com.facebook.yoga.YogaFlexDirection;
 
 import android.view.View;
 
@@ -25,7 +23,6 @@ import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.State;
-import com.facebook.yoga.YogaEdge;
 
 import static android.R.drawable.star_on;
 import static android.R.drawable.star_off;
@@ -37,9 +34,8 @@ public class FavouriteButtonSpec {
   static ComponentLayout onCreateLayout(
       ComponentContext c,
       @State boolean favourited) {
-    return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+    return Container.create(c)
         .backgroundRes(favourited ? star_on : star_off)
-        .marginDip(YogaEdge.RIGHT, 2)
         .widthDip(32)
         .heightDip(32)
         .clickHandler(FavouriteButton.onClick(c))

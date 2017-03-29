@@ -26,29 +26,28 @@ public class DecadeSeparatorSpec {
   static ComponentLayout onCreateLayout(
       ComponentContext c,
       @Prop final Decade decade) {
-    return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+    return Container.create(c)
         .flexDirection(YogaFlexDirection.ROW)
         .alignItems(YogaAlign.CENTER)
-        .paddingDip(YogaEdge.HORIZONTAL, 16)
-        .paddingDip(YogaEdge.VERTICAL, 16)
+        .paddingDip(YogaEdge.ALL, 16)
         .child(
-            Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            Container.create(c)
                 .heightPx(1)
                 .backgroundColor(0xFFAAAAAA)
-                .flex(1).flexBasisDip(0))
+                .flex(1))
         .child(
             Text.create(c)
-            .text(String.valueOf(decade.year))
-            .textSizeDip(14)
-            .textColor(0xFFAAAAAA)
-            .withLayout().flexShrink(0)
-            .marginDip(YogaEdge.HORIZONTAL, 10)
-            .flex(0).flexBasisDip(0))
+                .text(String.valueOf(decade.year))
+                .textSizeDip(14)
+                .textColor(0xFFAAAAAA)
+                .withLayout()
+                .marginDip(YogaEdge.HORIZONTAL, 10)
+                .flex(0))
         .child(
-            Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            Container.create(c)
                 .heightPx(1)
                 .backgroundColor(0xFFAAAAAA)
-                .flex(1).flexBasisDip(0))
+                .flex(1))
         .build();
   }
 }
