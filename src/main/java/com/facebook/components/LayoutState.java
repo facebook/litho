@@ -359,3 +359,9 @@ class LayoutState {
     return context.getResources().getConfiguration().getLayoutDirection();
   }
 
+  /**
+   * Determine if a given {@link InternalNode} within the context of a given {@link LayoutState}
+   * requires to be wrapped inside a view.
+   *
+   * @see #needsHostView(InternalNode, LayoutState)
+   */
