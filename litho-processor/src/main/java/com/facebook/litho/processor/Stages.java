@@ -2798,3 +2798,5 @@ public class Stages {
       }
     }
 
+    final ClassName propsBuilderClassName = ClassName.bestGuess(builderClassName);
+    int requiredPropIndex = 0;
