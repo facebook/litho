@@ -1314,3 +1314,6 @@ public class LayoutStateCalculateTest {
             .flexDirection(YogaFlexDirection.ROW)
             .alignItems(YogaAlign.CENTER)
             .paddingDip(YogaEdge.ALL, 10)
+            .contentDescription("This is root view")
+            .child(
+                TestDrawableComponent.create(c)
