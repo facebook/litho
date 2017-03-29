@@ -567,3 +567,6 @@ public class LayoutStateCalculateTest {
 
     // Tree Four.
     assertTrue(isHostComponent(getComponentAt(layoutState, 14)));
+    assertTrue(getComponentAt(layoutState, 15) instanceof TestDrawableComponent);
+    assertTrue(getComponentAt(layoutState, 16) instanceof TestDrawableComponent);
+    assertTrue(getComponentAt(layoutState, 17) instanceof TestViewComponent);
