@@ -432,3 +432,5 @@ public class MountSpecHelper extends ComponentSpecHelper {
   /**
    * Generate an onPopulateAccessibilityNode implementation that delegates to the
    * {@link com.facebook.litho.annotations.OnPopulateAccessibilityNode}-annotated method.
+   */
+  public void generateAccessibilityMethods() {
