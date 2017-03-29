@@ -108,3 +108,4 @@ public class ComponentHost extends ViewGroup {
    * Sets the parent host marker for this host.
    * @param parentHostMarker marker that indicates which {@link ComponentHost} hosts this host.
    */
+  void setParentHostMarker(long parentHostMarker) {
