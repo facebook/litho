@@ -366,3 +366,4 @@ public class InternalNodeTest {
   // }
 
   private static boolean isFlagSet(InternalNode internalNode, String flagName) {
+    long flagPosition = Whitebox.getInternalState(InternalNode.class, flagName);
