@@ -2605,3 +2605,23 @@ public class Stages {
     for (AnnotationMirror annotationMirror : annotationMirrors) {
       if (annotationMirror.getAnnotationType().toString().startsWith("com.facebook.litho")) {
         continue;
+      }
+
+      if (annotationMirror.getElementValues().size() > 0) {
+        throw new ComponentsProcessingException(
+            element,
+            "Currently only non-component annotations without parameters are supported");
+      }
+
+      annotations.add(ClassName.bestGuess(annotationMirror.getAnnotationType().toString()));
+    }
+
+    return annotations;
+  }
+
+  public void generateReferenceBuilder(StaticFlag isStatic, TypeName genericType) {
+    generateBuilder(
+        isStatic,
+        StyleableFlag.NOT_STYLEABLE,
+        ClassNames.REFERENCE,
+        genericType,
