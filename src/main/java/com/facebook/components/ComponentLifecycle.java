@@ -253,3 +253,15 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     return node;
   }
 
+  void loadStyle(
+      ComponentContext c,
+      @AttrRes int defStyleAttr,
+      @StyleRes int defStyleRes,
+      Component<?> component) {
+    c.setDefStyle(defStyleAttr, defStyleRes);
+    onLoadStyle(c, component);
+    c.setDefStyle(0, 0);
+  }
+
+  void loadStyle(ComponentContext c, Component<?> component) {
+    onLoadStyle(c, component);
