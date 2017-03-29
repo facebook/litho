@@ -345,3 +345,5 @@ class LayoutState {
     ApplicationInfo applicationInfo = context.getApplicationInfo();
 
     if ((SDK_INT >= JELLY_BEAN_MR1)
+        && (applicationInfo.flags & ApplicationInfo.FLAG_SUPPORTS_RTL) != 0) {
+

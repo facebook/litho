@@ -177,3 +177,4 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
   }
 
   public Component<L> makeShallowCopy() {
+    try {
