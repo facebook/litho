@@ -335,3 +335,5 @@ public class LayoutStateCalculateTest {
         SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY));
 
+    Rect mountBounds = new Rect();
+

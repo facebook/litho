@@ -94,3 +94,6 @@ class MountState {
 
   private final ComponentContext mContext;
   private final ComponentView mComponentView;
+  private final Rect mPreviousLocalVisibleRect = new Rect();
+  private final PrepareMountStats mPrepareMountStats = new PrepareMountStats();
+  private final MountStats mMountStats = new MountStats();
