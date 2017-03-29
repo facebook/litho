@@ -51,3 +51,5 @@ class ImageSpec {
 
   @OnLoadStyle
   static void onLoadStyle(
+      ComponentContext c,
+      Output<Reference<Drawable>> src,

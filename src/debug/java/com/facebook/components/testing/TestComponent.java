@@ -119,3 +119,19 @@ public abstract class TestComponent<L extends ComponentLifecycle> extends Compon
     return mOnMeasureCalled;
   }
 
+  @Override
+  public int hashCode() {
+    return mIsUnique ? 1 : 0;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o == null) {
+      return false;
+    }
+    if (o instanceof TestComponent) {
+      TestComponent c = (TestComponent) o;
+      return !(mIsUnique || c.mIsUnique);
+    }
+    return false;
+  }

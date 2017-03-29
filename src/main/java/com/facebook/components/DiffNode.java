@@ -45,3 +45,4 @@ class DiffNode implements Cloneable {
     return mChildren.get(i);
   }
 
+  Component getComponent() {

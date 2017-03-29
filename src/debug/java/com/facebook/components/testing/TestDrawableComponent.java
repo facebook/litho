@@ -186,3 +186,16 @@ public class TestDrawableComponent extends ComponentLifecycle {
     return MountType.DRAWABLE;
   }
 
+  public static Builder create(
+      ComponentContext context,
+      @AttrRes int defStyleAttr,
+      @StyleRes int defStyleRes) {
+    return create(context, defStyleAttr, defStyleRes, true, true, true, false, false);
+  }
+
+  public static Builder create(
+      ComponentContext context,
+      @AttrRes int defStyleAttr,
+      @StyleRes int defStyleRes,
+      boolean callsShouldUpdateOnMount,
+      boolean isPureRender,

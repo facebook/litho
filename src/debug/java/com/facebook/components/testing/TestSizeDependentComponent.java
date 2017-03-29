@@ -131,3 +131,4 @@ public class TestSizeDependentComponent extends ComponentLifecycle {
     State mState;
 
     private void init(ComponentContext context, State state) {
+      super.init(context, 0, 0, state);
