@@ -119,3 +119,29 @@ class FrescoComponentSpec {
     draweeHierarchy.setRetryReference(retryImage, retryImageScaleType);
     draweeHierarchy.setRoundingParams(roundingParams);
     draweeHierarchy.setActualImageColorFilter(colorFilter);
+
+    draweeDrawable.mount();
+  }
+
+  @OnBind
+  protected static void onBind(
+      ComponentContext c,
+      DraweeDrawable<GenericReferenceDraweeHierarchy> mountedDrawable,
+      @Prop DraweeController controller) {
+    mountedDrawable.setController(controller);
+
+    if (controller != null) {
+      controller.onViewportVisibilityHint(true);
+    }
+  }
+
+  @OnUnbind
+  protected static void onUnbind(
+      ComponentContext c,
+      DraweeDrawable<GenericReferenceDraweeHierarchy> mountedDrawable,
+      @Prop DraweeController controller) {
+    mountedDrawable.setController(null);
+
+    if (controller != null) {
+      controller.onViewportVisibilityHint(false);
+    }
