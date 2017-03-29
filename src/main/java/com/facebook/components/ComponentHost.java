@@ -665,3 +665,17 @@ public class ComponentHost extends ViewGroup {
 
   @Override
   public boolean onTouchEvent(MotionEvent event) {
+    boolean handled = false;
+
+    // Iterate drawable from last to first to respect drawing order.
+    for (int size = mTouchables.size(), i = size - 1; i >= 0; i--) {
+      final Touchable t = mTouchables.valueAt(i);
+      if (t.shouldHandleTouchEvent(event) && t.onTouchEvent(event, this)) {
+        handled = true;
+        break;
+      }
+    }
+
+    if (!handled) {
+      handled = super.onTouchEvent(event);
+    }
