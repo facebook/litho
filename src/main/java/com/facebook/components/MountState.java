@@ -1022,3 +1022,5 @@ class MountState {
     final ViewNodeInfo viewNodeInfo = item.getViewNodeInfo();
     if (viewNodeInfo != null && !isHostSpec(component)) {
 
+      // 9. Set view background, if applicable.  Do this before padding
+      // as it otherwise overrides the padding.
