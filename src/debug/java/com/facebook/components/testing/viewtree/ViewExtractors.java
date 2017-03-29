@@ -62,3 +62,7 @@ final class ViewExtractors {
     }
   };
 
+  public static Function<View, String> GET_CONTENT_DESCRIPTION_FUNCTION
+      = new Function<View, String>() {
+    @Override
+    public String apply(@Nullable View input) {

@@ -19,3 +19,7 @@ public class ViewTreeUtil {
           .getResources()
           .getResourceEntryName(resourceId);
     } catch (final NotFoundException notFoundException) {
+      return "<undefined>";
+    }
+  }
+}

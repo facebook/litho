@@ -22,3 +22,4 @@ import com.facebook.components.ImageContent;
 import com.facebook.components.Touchable;
 import com.facebook.components.fresco.common.NoOpDrawable;
 import com.facebook.drawee.drawable.ForwardingDrawable;
+import com.facebook.drawee.interfaces.DraweeController;
