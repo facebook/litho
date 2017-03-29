@@ -1311,3 +1311,6 @@ public class LayoutStateCalculateTest {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Container.create(c)
+            .flexDirection(YogaFlexDirection.ROW)
+            .alignItems(YogaAlign.CENTER)
+            .paddingDip(YogaEdge.ALL, 10)
