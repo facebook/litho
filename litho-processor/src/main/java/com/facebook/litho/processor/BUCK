@@ -20,3 +20,8 @@ java_annotation_processor(
 
 java_library(
     name = "processor-lib",
+    exported_deps = [
+        ":processor-lib-bare",
+        COMPONENTS_FBCORE_TARGET,
+        COMPONENTS_JAVAPOET_TARGET,
+    ],
