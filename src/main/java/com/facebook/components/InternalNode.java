@@ -1542,3 +1542,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     if (mTestKey != null) {
       node.mTestKey = mTestKey;
     }
+    if ((mPrivateFlags & PFLAG_PADDING_IS_SET) != 0L) {
