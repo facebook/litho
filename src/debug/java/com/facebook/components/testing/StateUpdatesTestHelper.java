@@ -109,3 +109,4 @@ public class StateUpdatesTestHelper {
     for (ShadowLooper looper : loopers) {
       looper.runToEndOfTasks();
     }
+
