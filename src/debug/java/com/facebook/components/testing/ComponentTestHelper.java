@@ -213,3 +213,4 @@ public final class ComponentTestHelper {
     return componentView;
   }
 
+  /**
