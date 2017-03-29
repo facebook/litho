@@ -89,3 +89,11 @@ public class ViewPredicatesTest {
   @Test
   public void testHasVisibleText() throws Exception {
     final Predicate<View> hasHello = ViewPredicates.hasVisibleText("Hello");
+
+    assertThat(hasHello.apply(mTextViewWithHello)).isTrue();
+    mTextViewWithHello.setVisibility(View.GONE);
+    assertThat(hasHello.apply(mTextViewWithHello)).isFalse();
+  }
+
+  @Test
+  public void testMatchesTextWholeString() throws Exception {
