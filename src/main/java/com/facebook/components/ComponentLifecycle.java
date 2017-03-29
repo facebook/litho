@@ -90,3 +90,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
         float height,
         YogaMeasureMode heightMode) {
       final InternalNode node = (InternalNode) cssNode.getData();
+      final DiffNode diffNode = node.areCachedMeasuresValid() ? node.getDiffNode() : null;
