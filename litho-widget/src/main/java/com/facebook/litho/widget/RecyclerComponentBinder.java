@@ -129,3 +129,5 @@ public abstract class RecyclerComponentBinder<L extends RecyclerView.LayoutManag
   public void onMount(RecyclerView recyclerView) {
     mRecyclerView = recyclerView;
 
+    if (recyclerView.getLayoutManager() == null) {
+      recyclerView.setLayoutManager(mLayoutManager);

@@ -71,3 +71,5 @@ public class LinearComponentBinderTest {
 
     mBinder = Mockito.spy(new MyTestLinearComponentBinder(context, mLayoutManager, mItems));
 
+    Mockito.doReturn(HEIGHT).when(mBinder).getHeight();
+    Mockito.doReturn(WIDTH).when(mBinder).getWidth();

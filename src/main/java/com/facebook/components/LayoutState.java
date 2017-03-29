@@ -49,3 +49,4 @@ import static android.os.Build.VERSION_CODES.M;
 import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
 import static com.facebook.components.Component.isHostSpec;
+import static com.facebook.components.Component.isLayoutSpecWithSizeSpec;
