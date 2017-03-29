@@ -245,3 +245,11 @@ public class InternalNodeTest {
     assertEmptyFlags(mNode);
   }
 
+  public void testTransitionKeyFlag() {
+    mNode.transitionKey("key");
+    assertTrue(isFlagSet(mNode, "PFLAG_TRANSITION_KEY_IS_SET"));
+    assertTrue(mNode.isForceViewWrapping());
+    clearFlag(mNode, "PFLAG_TRANSITION_KEY_IS_SET");
+    assertEmptyFlags(mNode);
+  }
+

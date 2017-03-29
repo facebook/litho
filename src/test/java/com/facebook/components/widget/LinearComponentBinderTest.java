@@ -203,3 +203,4 @@ public class LinearComponentBinderTest {
       return null;
     }
 
+    return Whitebox.getInternalState(Whitebox.getInternalState(componentTree, "mRoot"), "color");
