@@ -153,3 +153,21 @@ void throwNewJavaException(const char* throwableName, const char* msg) {
 
 // Translate C++ to Java Exception
 
+namespace {
+
+// The implementation std::rethrow_if_nested uses a dynamic_cast to determine
+// if the exception is a nested_exception. If the exception is from a library
+// built with -fno-rtti, then that will crash. This avoids that.
+void rethrow_if_nested() {
+  try {
+    throw;
+  } catch (const std::nested_exception& e) {
+    e.rethrow_nested();
+  } catch (...) {
+  }
+}
+
+// For each exception in the chain of the currently handled exception, func
+// will be called with that exception as the currently handled exception (in
+// reverse order, i.e. innermost first).
+void denest(std::function<void()> func) {
