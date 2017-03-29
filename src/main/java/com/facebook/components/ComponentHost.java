@@ -285,3 +285,5 @@ public class ComponentHost extends ViewGroup {
   }
 
   /**
+   * @return number of {@link MountItem}s that are currently mounted in the host.
+   */

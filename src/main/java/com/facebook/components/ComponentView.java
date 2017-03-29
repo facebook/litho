@@ -303,3 +303,4 @@ public class ComponentView extends ComponentHost {
     }
 
     if (mComponent.isIncrementalMountEnabled()) {
+      mComponent.mountComponent(visibleRect);

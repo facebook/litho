@@ -94,3 +94,4 @@ class PagerSpec {
       ComponentContext context,
       ViewPager mountedView,
       @Prop PagerBinder binder) {
+    binder.unmount(mountedView);
