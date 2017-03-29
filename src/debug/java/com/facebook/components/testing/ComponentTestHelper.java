@@ -305,3 +305,4 @@ public final class ComponentTestHelper {
             .build();
 
     final ComponentView componentView = new ComponentView(context);
+    componentView.setComponent(componentTree);
