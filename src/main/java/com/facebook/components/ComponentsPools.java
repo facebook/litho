@@ -813,3 +813,16 @@ public class ComponentsPools {
     displayListDrawable.release();
     sDisplayListDrawablePool.release(displayListDrawable);
   }
+
+  public static BorderColorDrawable acquireBorderColorDrawable() {
+    if (sBorderColorDrawablePool == null) {
+      sBorderColorDrawablePool = new Pools.SynchronizedPool<>(10);
+    }
+    BorderColorDrawable drawable = sBorderColorDrawablePool.acquire();
+    if (drawable == null) {
+      drawable = new BorderColorDrawable();
+    }
+
+    return drawable;
+  }
+
