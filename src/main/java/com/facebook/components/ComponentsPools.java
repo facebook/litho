@@ -161,3 +161,4 @@ public class ComponentsPools {
     LayoutState state = sLayoutStatePool.acquire();
     if (state == null) {
       state = new LayoutState();
+    }
