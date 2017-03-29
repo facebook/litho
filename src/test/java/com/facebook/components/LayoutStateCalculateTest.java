@@ -1852,3 +1852,21 @@ public class LayoutStateCalculateTest {
 
     final Component<?> componentSpy = PowerMockito.spy(
         TestLayoutComponent.create(c, 0, 0, true, true, true, false).build());
+    Size sizeOutput = new Size();
+    componentSpy.measure(
+        c,
+        widthMeasuredComponent,
+        heightSpec,
+        sizeOutput);
+
+    // Check the cached measured component tree
+    assertTrue(componentSpy.hasCachedLayout());
+    final InternalNode cachedLayout = componentSpy.getCachedLayout();
+    assertEquals(1, cachedLayout.getChildCount());
+    assertTrue(((InternalNode) cachedLayout.getChildAt(0))
+        .getComponent().getLifecycle() instanceof TestDrawableComponent);
+
+    // Now embed the measured component in another container and calculate a layout.
+    final Component rootContainer = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
