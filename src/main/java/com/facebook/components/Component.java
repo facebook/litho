@@ -182,3 +182,9 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
       component.mIsLayoutStarted = false;
 
       return component;
+    } catch (CloneNotSupportedException e) {
+      // Subclasses implement Cloneable, so this is impossible
+      throw new RuntimeException(e);
+    }
+  }
+
