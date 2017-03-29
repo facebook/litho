@@ -891,3 +891,26 @@ class LayoutState {
         heightSpec,
         previousDiffTreeRoot);
 
+    switch (SizeSpec.getMode(widthSpec)) {
+      case SizeSpec.EXACTLY:
+        layoutState.mWidth = SizeSpec.getSize(widthSpec);
+        break;
+      case SizeSpec.AT_MOST:
+        layoutState.mWidth = Math.min(root.getWidth(), SizeSpec.getSize(widthSpec));
+        break;
+      case SizeSpec.UNSPECIFIED:
+        layoutState.mWidth = root.getWidth();
+        break;
+    }
+
+    switch (SizeSpec.getMode(heightSpec)) {
+      case SizeSpec.EXACTLY:
+        layoutState.mHeight = SizeSpec.getSize(heightSpec);
+        break;
+      case SizeSpec.AT_MOST:
+        layoutState.mHeight = Math.min(root.getHeight(), SizeSpec.getSize(heightSpec));
+        break;
+      case SizeSpec.UNSPECIFIED:
+        layoutState.mHeight = root.getHeight();
+        break;
+    }
