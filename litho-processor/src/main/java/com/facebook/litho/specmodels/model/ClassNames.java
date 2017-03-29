@@ -50,3 +50,4 @@ public interface ClassNames {
   ClassName ANIMATION = ClassName.bestGuess("com.facebook.litho.Transition");
 
   ClassName COMPONENTS_CONFIGURATION =
+      ClassName.bestGuess("com.facebook.litho.config.ComponentsConfiguration");

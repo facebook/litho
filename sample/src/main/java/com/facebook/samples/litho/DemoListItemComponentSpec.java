@@ -34,3 +34,4 @@ public class DemoListItemComponentSpec {
   @OnCreateLayout
   static ComponentLayout onCreateLayout(
       ComponentContext c,
+      @Prop final String name) {

@@ -24,3 +24,4 @@ public class SectionClassNames {
   public static final ClassName SECTION =
       ClassName.bestGuess("com.facebook.litho.list.Section");
   public static final ClassName SECTION_LIFECYCLE =
+      ClassName.bestGuess("com.facebook.litho.list.SectionLifecycle");

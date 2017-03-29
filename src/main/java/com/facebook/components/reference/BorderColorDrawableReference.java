@@ -19,3 +19,4 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.ComponentsPools;
 
 /**
+ * A Reference for {@link com.facebook.litho.BorderColorDrawable}.

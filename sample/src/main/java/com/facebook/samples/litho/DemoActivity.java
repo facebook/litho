@@ -32,3 +32,4 @@ public class DemoActivity extends AppCompatActivity {
 
     final ComponentView componentView = new ComponentView(this);
     componentView.setComponent(
+        ComponentTree.create(context, component)
