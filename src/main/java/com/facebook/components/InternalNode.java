@@ -550,3 +550,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       mYogaNode.setPadding(edge, padding);
     }
 
+    return this;
+  }
+
+  @Override
