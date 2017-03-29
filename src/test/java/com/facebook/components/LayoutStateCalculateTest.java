@@ -1804,3 +1804,5 @@ public class LayoutStateCalculateTest {
         SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY));
 
     assertEquals(1, layoutState.getMountableOutputCount());
+    Rect mountBounds = new Rect();
+    assertTrue(isHostComponent(getComponentAt(layoutState, 0)));
