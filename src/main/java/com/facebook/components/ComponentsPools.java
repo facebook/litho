@@ -457,3 +457,4 @@ public class ComponentsPools {
     sComponentTreeBuilderPool.release(componentTreeBuilder);
   }
 
+  @ThreadSafe(enableChecks = false)

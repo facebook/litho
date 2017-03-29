@@ -381,3 +381,6 @@ public class ComponentLifecycleTest {
         int heightSpec,
         Size size,
         Component<?> component) {
+    }
+  }
+
