@@ -1015,3 +1015,4 @@ public class TreeDiffingTest {
     TestComponent mainTreeLeaf = (TestComponent) layoutState.getMountableOutputAt(1).getComponent();
     assertFalse(mainTreeLeaf.wasMeasureCalled());
     TestComponent nestedLeaf1 = (TestComponent) layoutState.getMountableOutputAt(3).getComponent();
+    assertFalse(nestedLeaf1.wasMeasureCalled());
