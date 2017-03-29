@@ -219,3 +219,22 @@ public class ComponentHostTest {
   }
 
   @Test
+  public void testMoveItemWithoutTouchables()
+      throws Exception {
+    Drawable d1 = new ColorDrawable(Color.BLACK);
+    MountItem mountItem1 = mount(1, d1);
+
+    Drawable d2 = new ColorDrawable(Color.BLACK);
+    MountItem mountItem2 = mount(2, d2);
+
+    assertEquals(2, getDrawableItemsSize());
+    assertEquals(mountItem1, getDrawableMountItemAt(0));
+    assertEquals(mountItem2, getDrawableMountItemAt(1));
+
+    mHost.moveItem(mountItem2, 2, 0);
+
+    // There are no Touchable Drawables so this call should return false and not crash.
+    assertFalse(mHost.onTouchEvent(MotionEvent.obtain(0, 0, 0, 0, 0, 0)));
+  }
+
+  @Test

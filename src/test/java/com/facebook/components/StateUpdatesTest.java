@@ -153,3 +153,10 @@ public class StateUpdatesTest {
     mContext = new ComponentContext(RuntimeEnvironment.application);
     mWidthSpec = makeSizeSpec(39, EXACTLY);
     mHeightSpec = makeSizeSpec(41, EXACTLY);
+
+    mLayoutThreadShadowLooper = Shadows.shadowOf(
+        (Looper) Whitebox.invokeMethod(
+            ComponentTree.class,
+            "getDefaultLayoutThreadLooper"));
+    mTestComponent = new TestComponent(mLifecycle);
+

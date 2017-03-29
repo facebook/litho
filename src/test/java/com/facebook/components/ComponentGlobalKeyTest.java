@@ -100,3 +100,8 @@ public class ComponentGlobalKeyTest {
     ComponentTree componentTree = ComponentTree.create(mContext, component)
         .incrementalMount(false)
         .build();
+    ComponentView componentView = getComponentView(componentTree);
+
+    // Text
+    Assert.assertEquals(layoutSpecId + "[Text2]", getComponentAt(componentView, 0).getGlobalKey());
+    // TestViewComponent in child layout

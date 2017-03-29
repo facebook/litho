@@ -77,3 +77,8 @@ class TransferStateSpecBuilder {
             mComponentImplClassName,
             mComponentImplClassName);
 
+    for (String stateName : mStateParameters) {
+      builder.addStatement(
+          "componentImpl." + Stages.STATE_CONTAINER_IMPL_MEMBER + ".$L = prevStateContainerImpl.$L",
+          stateName,
+          stateName);

@@ -140,3 +140,14 @@ class OnLazyStateUpdateMethodSpecBuilder {
         .addSuperinterface(mStateUpdateType)
         .addMethod(stateUpdate.build())
         .addMethod(isLazyStateUpdate.build());
+
+    builder.addStatement(
+        "$T _stateUpdate = $L",
+        mStateUpdateType,
+        stateBuilderImpl.build());
+
+    builder.addStatement("c.updateStateLazy(_stateUpdate)");
+
+    return builder.build();
+  }
+}
