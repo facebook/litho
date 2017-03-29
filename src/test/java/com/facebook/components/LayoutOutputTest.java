@@ -238,3 +238,17 @@ public class LayoutOutputTest {
     mLayoutOutput.setComponent(component);
     mLayoutOutput.setId(
         LayoutStateOutputIdCalculator.calculateLayoutOutputId(
+            mLayoutOutput,
+            MAX_LEVEL_TEST + 1,
+            LayoutOutput.TYPE_HOST,
+            SEQ_TEST));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void sequenceOutOfRangeTest() {
+    ComponentLifecycle lifecycle = new ComponentLifecycle() {
+      @Override
+      int getId() {
+        return LIFECYCLE_TEST_ID;
+      }
+    };
