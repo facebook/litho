@@ -735,3 +735,5 @@ public class ComponentTree {
         root,
         widthSpec,
         heightSpec,
+        true /* isAsync */,
+        null /* output */);

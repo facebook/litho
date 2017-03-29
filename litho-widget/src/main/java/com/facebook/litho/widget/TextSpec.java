@@ -425,3 +425,5 @@ class TextSpec {
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float shadowDy,
       @Prop(optional = true, resType = ResType.COLOR) int shadowColor,
       @Prop(optional = true, resType = ResType.BOOL) boolean isSingleLine,
+      @Prop(optional = true, resType = ResType.COLOR) int textColor,
+      @Prop(optional = true) ColorStateList textColorStateList,
