@@ -583,3 +583,7 @@ public class ComponentTree {
     return mRoot;
   }
 
+  /**
+   * Update the root component. This can happen in both attached and detached states. In each case
+   * we will run a layout and then proxy a message to the main thread to cause a
+   * relayout/invalidate.

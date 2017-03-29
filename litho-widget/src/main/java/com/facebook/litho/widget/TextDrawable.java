@@ -196,3 +196,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
     mUserColor = 0;
   }
 
+  public ClickableSpan[] getClickableSpans() {
+    return mClickableSpans;
+  }
+
