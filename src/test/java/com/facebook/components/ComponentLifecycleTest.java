@@ -69,3 +69,5 @@ public class ComponentLifecycleTest {
 
   @Before
   public void setUp() {
+    mDiffNode = mock(DiffNode.class);
+    mNode = mock(InternalNode.class);

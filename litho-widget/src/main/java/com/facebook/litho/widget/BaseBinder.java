@@ -295,3 +295,10 @@ public abstract class BaseBinder<
 
       } else if (!isFromInRange && isToInRange) {
         final ComponentTree componentTree = buildComponentTree(component);
+
+        if (isAsyncLayoutEnabled()) {
+          componentTree.setSizeSpecAsync(getWidthSpec(toPosition), getHeightSpec(toPosition));
+        } else {
+          componentTree.setSizeSpec(getWidthSpec(toPosition), getHeightSpec(toPosition));
+        }
+
