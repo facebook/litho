@@ -994,3 +994,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return touchExpansionPx(edge, mResourceResolver.dipsToPixels(touchExpansion));
   }
 
+  @Override

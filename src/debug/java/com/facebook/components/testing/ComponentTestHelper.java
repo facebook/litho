@@ -49,3 +49,6 @@ public final class ComponentTestHelper {
     return mountComponent(getContext(component), component.build());
   }
 
+  /**
+   * Mount a component into a component view.
+   *
