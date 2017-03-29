@@ -762,3 +762,4 @@ public class ComponentHostTest {
     mHost.unmount(index, mountItem);
   }
 
+  private static class TestableComponentHost extends ComponentHost {
