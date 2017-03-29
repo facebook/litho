@@ -258,3 +258,7 @@ class TextSpec {
         typeface,
         textAlignment,
         glyphWarming,
+        layout.getResolvedLayoutDirection(),
+        minEms,
+        maxEms,
+        minWidth,

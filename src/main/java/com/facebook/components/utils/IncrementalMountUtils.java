@@ -110,3 +110,8 @@ public class IncrementalMountUtils {
         Math.min(right, scrollingParentWidth) - left,
         Math.min(bottom, scrollingParentHeight) - top);
 
+    if (sTmpRect.isEmpty()) {
+      // View is not visible at all, nothing to do.
+      return;
+    }
+
