@@ -922,3 +922,4 @@ public class Stages {
   }
 
   public void generateSourceDelegate(boolean initialized) {
+    final ClassName specClassName = ClassName.get(mSourceElement);
