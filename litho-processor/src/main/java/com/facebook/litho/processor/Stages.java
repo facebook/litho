@@ -534,3 +534,13 @@ public class Stages {
             }
 
             // Enforce #9
+            TypeName typeName;
+            try {
+              typeName = ClassName.get(v.asType());
+            } catch (IllegalArgumentException e) {
+              throw new ComponentsProcessingException(
+                  v,
+                  "Prop type does not exist");
+            }
+
+            // Enforce #10
