@@ -117,3 +117,4 @@ class ComponentHostUtils {
     drawable.setCallback(view);
     maybeSetDrawableState(view, drawable, flags, nodeInfo);
     view.invalidate(bounds);
+  }
