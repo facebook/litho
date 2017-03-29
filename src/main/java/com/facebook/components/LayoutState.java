@@ -1436,3 +1436,6 @@ class LayoutState {
     }
 
     return isSameComponentType(node.getComponent(), diffNode.getComponent());
+  }
+
+  private static boolean isSameComponentType(Component a, Component b) {
