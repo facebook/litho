@@ -529,3 +529,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
   public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
     // Do nothing by default.
     return null;
+  }
