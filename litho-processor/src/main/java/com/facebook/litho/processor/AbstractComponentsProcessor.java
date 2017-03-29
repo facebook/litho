@@ -101,3 +101,33 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
   }
 
   abstract protected void generate(MountSpecHelper mountSpecHelper);
+
+  abstract protected DependencyInjectionHelper getDependencyInjectionGenerator(
+      TypeElement typeElement);
+
+  void validate(SpecModel specModel) {
+    List<SpecModelValidationError> validationErrors = specModel.validate();
+
+    if (validationErrors.isEmpty()) {
+      return;
+    }
+
+    final List<PrintableException> printableExceptions = new ArrayList<>();
+    for (SpecModelValidationError validationError : validationErrors) {
+      printableExceptions.add(
+          new ComponentsProcessingException(
+              (Element) validationError.element,
+              validationError.message));
+    }
+
+    throw new MultiPrintableException(printableExceptions);
+  }
+
+  void generate(SpecModel specModel) throws IOException {
+    JavaFile.builder(
+        Utils.getPackageName(specModel.getComponentTypeName().toString()), specModel.generate())
+        .skipJavaLangImports(true)
+        .addFileComment("Copyright 2004-present Facebook. All Rights Reserved.")
+        .build()
+        .writeTo(processingEnv.getFiler());
+  }

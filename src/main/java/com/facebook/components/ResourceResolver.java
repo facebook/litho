@@ -130,3 +130,6 @@ public class ResourceResolver {
 
   protected final boolean resolveBoolRes(@BoolRes int resId) {
     if (resId != 0) {
+      Boolean cached = mResourceCache.get(resId);
+      if (cached != null) {
+        return cached;

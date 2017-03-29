@@ -27,3 +27,6 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 
+import com.facebook.components.specmodels.model.SpecModel;
+import com.facebook.components.specmodels.processor.TypeVariablesExtractor;
+
