@@ -648,3 +648,4 @@ public class Stages {
    * Gather a list of VariableElement that are the state to this component
    */
   private void populateStateMap() {
+    // We use a linked hash map to guarantee iteration order
