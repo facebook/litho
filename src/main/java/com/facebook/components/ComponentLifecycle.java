@@ -450,3 +450,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
   /**
    * Populate an accessibility node with information about the component.
    * @param accessibilityNode node to populate
+   * @param component The {@link Component} for this component.
