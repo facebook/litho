@@ -666,3 +666,7 @@ class MountState {
     }
 
     PrepareMountStats stats = unmountOrMoveOldItems(layoutState);
+
+    if (logger != null) {
+      logPrepareMountParams(logger, logTag, component, stats);
+    }
