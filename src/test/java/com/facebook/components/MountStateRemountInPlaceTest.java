@@ -643,3 +643,4 @@ public class MountStateRemountInPlaceTest {
                             .child(
                                 SolidColor.create(c).color(Color.GREEN))))
             .child(
+                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)

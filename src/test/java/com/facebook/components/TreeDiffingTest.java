@@ -562,3 +562,17 @@ public class TreeDiffingTest {
       }
     };
 
+    final Component component2 = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            .backgroundColor(Color.RED)
+            .foregroundRes(android.R.drawable.btn_default)
+            .child(TestDrawableComponent.create(c))
+            .child(
+                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    .child(TestDrawableComponent.create(c)))
+            .build();
+      }
+    };
+
