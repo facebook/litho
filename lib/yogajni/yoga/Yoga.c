@@ -751,3 +751,7 @@ static inline void YGResolveDimensions(YGNodeRef node) {
       node->resolvedDimensions[dim] = &node->style.maxDimensions[dim];
     } else {
       node->resolvedDimensions[dim] = &node->style.dimensions[dim];
+    }
+  }
+}
+
