@@ -166,3 +166,4 @@ class ImageSpec {
       ComponentContext c,
       MatrixDrawable matrixDrawable,
       @Prop(resType = ResType.DRAWABLE) Reference<Drawable> src,
+      @FromBoundsDefined DrawableMatrix drawableMatrix) {
