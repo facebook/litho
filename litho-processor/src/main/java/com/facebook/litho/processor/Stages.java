@@ -1438,3 +1438,9 @@ public class Stages {
     fromParams.add(new Parameter(
         contextClassName,
         element.getParameters().get(0).getSimpleName().toString()));
+    final List<VariableElement> fromParamElements =
+        Utils.getParametersWithAnnotation(element, FromEvent.class);
+    fromParamElements.addAll(Utils.getParametersWithAnnotation(element, Param.class));
+
+    for (VariableElement v : fromParamElements) {
+      fromParams.add(new Parameter(ClassName.get(v.asType()), v.getSimpleName().toString()));
