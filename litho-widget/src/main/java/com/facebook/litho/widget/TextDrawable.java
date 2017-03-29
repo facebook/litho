@@ -44,3 +44,4 @@ import static android.view.MotionEvent.ACTION_UP;
  *
  * @see Component
  * @see TextSpec
+ */
