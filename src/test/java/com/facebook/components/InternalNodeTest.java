@@ -80,3 +80,9 @@ public class InternalNodeTest {
   @Test
   public void testPositionTypeFlag() {
     mNode.positionType(YogaPositionType.ABSOLUTE);
+    assertTrue(isFlagSet(mNode, "PFLAG_POSITION_TYPE_IS_SET"));
+    clearFlag(mNode, "PFLAG_POSITION_TYPE_IS_SET");
+    assertEmptyFlags(mNode);
+  }
+
+  @Test

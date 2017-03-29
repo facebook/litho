@@ -69,3 +69,4 @@ public class LinearComponentBinderTest {
     mView = new RecyclerView(context);
     mView.setLayoutManager(mLayoutManager);
 
+    mBinder = Mockito.spy(new MyTestLinearComponentBinder(context, mLayoutManager, mItems));
