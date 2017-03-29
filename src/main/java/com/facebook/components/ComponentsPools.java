@@ -532,3 +532,4 @@ public class ComponentsPools {
     sDiffNodePool.release(node);
   }
 
+  @ThreadSafe(enableChecks = false)
