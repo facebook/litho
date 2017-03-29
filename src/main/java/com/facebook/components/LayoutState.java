@@ -886,3 +886,7 @@ class LayoutState {
     final InternalNode root = createAndMeasureTreeForComponent(
         component.getScopedContext(),
         component,
+        null, // nestedTreeHolder is null because this is measuring the root component tree.
+        widthSpec,
+        heightSpec,
+        previousDiffTreeRoot);
