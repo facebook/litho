@@ -1717,3 +1717,14 @@ public class Stages {
       implClassBuilder.addMethod(copyInterStage);
     }
 
+    for (ExecutableElement element : mOnUpdateStateMethods) {
+      final String stateUpdateClassName = getStateUpdateClassName(element);
+      final List<Parameter> parameters = getParamsWithAnnotation(element, Param.class);
+
+      implClassBuilder.addMethod(
+          new CreateStateUpdateInstanceMethodSpecBuilder()
+              .parameters(parameters)
+              .stateUpdateClass(stateUpdateClassName)
+              .build());
+    }
+
