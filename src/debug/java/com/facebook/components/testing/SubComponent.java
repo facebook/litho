@@ -61,3 +61,13 @@ public class SubComponent {
   public String toString() {
     return mComponentType.toString() + " [" + super.toString() +"]";
   }
+
+  /**
+   * For testing purposes, props are only compared if both subcomponents supply them. Otherwise,
+   * just ignore them.
+   */
+  private static boolean arePropsEqual(Component<?> thatComponent, Component<?> thisComponent) {
+    return thatComponent == null ||
+        thisComponent == null ||
+        thatComponent.equals(thisComponent);
+  }

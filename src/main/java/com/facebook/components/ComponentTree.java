@@ -151,3 +151,4 @@ public class ComponentTree {
     return ComponentsPools.acquireComponentTreeBuilder(context, root);
   }
 
+  protected ComponentTree(Builder builder) {

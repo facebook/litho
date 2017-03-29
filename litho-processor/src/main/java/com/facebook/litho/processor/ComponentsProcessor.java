@@ -67,3 +67,10 @@ public class ComponentsProcessor extends AbstractComponentsProcessor {
     mountSpecHelper.generateShouldUseDisplayList();
     mountSpecHelper.generateCreateInitialState();
 
+    final Stages stages = mountSpecHelper.getStages();
+    stages.generateOnLoadStyle();
+
+    ComponentImplGenerator.generate(specModel).addToTypeSpec(typeSpec);
+    EventGenerator.generate(specModel).addToTypeSpec(typeSpec);
+    StateGenerator.generate(specModel).addToTypeSpec(typeSpec);
+    BuilderGenerator.generate(specModel).addToTypeSpec(typeSpec);
