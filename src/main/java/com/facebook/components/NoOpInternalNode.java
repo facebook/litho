@@ -56,3 +56,8 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Px
+  @Override
+  public int getY() {
+    return 0;
+  }
+
