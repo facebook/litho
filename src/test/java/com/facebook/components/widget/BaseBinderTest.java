@@ -412,3 +412,11 @@ public class BaseBinderTest {
           .build();
     }
 
+    @Override
+    protected boolean shouldContinueInitialization(
+        int position,
+        int itemWidth,
+        int itemHeight) {
+      return true;
+    }
+

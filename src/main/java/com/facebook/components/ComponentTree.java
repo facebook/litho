@@ -121,3 +121,7 @@ public class ComponentTree {
   @GuardedBy("this")
   private int mHeightSpec = SIZE_UNINITIALIZED;
 
+  // This is written to only by the main thread with the lock held, read from the main thread with
+  // no lock held, or read from any other thread with the lock held.
+  private LayoutState mMainThreadLayoutState;
+
