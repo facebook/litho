@@ -1640,3 +1640,4 @@ public class Stages {
         delegateParameters.build());
 
     final String implClassName = getImplClassName();
+    final String implInstanceName = "_" + getImplInstanceName();
