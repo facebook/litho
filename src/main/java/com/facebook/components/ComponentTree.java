@@ -1047,3 +1047,6 @@ public class ComponentTree {
       }
       mRoot = null;
 
+      mainThreadLayoutState = mMainThreadLayoutState;
+      mMainThreadLayoutState = null;
+
