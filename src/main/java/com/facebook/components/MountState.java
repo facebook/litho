@@ -92,3 +92,4 @@ class MountState {
 
   private static final Rect sTempRect = new Rect();
 
+  private final ComponentContext mContext;

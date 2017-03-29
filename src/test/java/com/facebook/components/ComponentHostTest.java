@@ -516,3 +516,4 @@ public class ComponentHostTest {
 
   @Test
   public void testGetChildDrawingOrder() {
+    View v1 = new View(mContext);

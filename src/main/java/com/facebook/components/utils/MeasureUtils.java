@@ -76,3 +76,14 @@ public final class MeasureUtils {
     final int heightMode = SizeSpec.getMode(heightSpec);
     final int heightSize = SizeSpec.getSize(heightSpec);
 
+    if (widthMode == UNSPECIFIED && heightMode == UNSPECIFIED) {
+      outputSize.width = 0;
+      outputSize.height = 0;
+
+      if (ComponentsConfiguration.IS_INTERNAL_BUILD) {
+        Log.d(
+            "com.facebook.components.utils.MeasureUtils",
+            "Default to size {0, 0} because both width and height are UNSPECIFIED");
+      }
+      return;
+    }
