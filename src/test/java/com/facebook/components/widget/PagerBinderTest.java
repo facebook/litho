@@ -47,3 +47,58 @@ public class PagerBinderTest {
   }
 
   @Test
+  public void testEmptyPager() {
+    PagerBinder pagerBinder = new PagerBinder(mContext) {
+      @Override
+      protected int getCount() {
+        return 0;
+      }
+
+      @Override
+      public Component<?> createComponent(ComponentContext c, int position) {
+        return null;
+      }
+    };
+
+    pagerBinder.setSize(WIDTH, HEIGHT);
+    assertEquals(
+        0,
+        ((BinderTreeCollection) Whitebox.getInternalState(pagerBinder, "mComponentTrees")).size());
+  }
+
+  @Test
+  public void testOffscreenPageMathWithAFullPage() {
+    mBinder = new TestPagerComponentBinder(mContext, 0, 1f);
+
+    assertEquals(1, getPagerOffscreenLimit(mBinder));
+  }
+
+  @Test
+  public void testOffscreenPageMathWithMoreThanHalfPage() {
+    mBinder = new TestPagerComponentBinder(mContext, 0, 0.8f);
+
+    assertEquals(2, getPagerOffscreenLimit(mBinder));
+  }
+
+  @Test
+  public void testOffscreenPageMathWithHalfPage() {
+    mBinder = new TestPagerComponentBinder(mContext, 0, 0.5f);
+
+    assertEquals(2, getPagerOffscreenLimit(mBinder));
+  }
+
+  @Test
+  public void testOffscreenPageMathWithLessThanHalfPage() {
+    mBinder = new TestPagerComponentBinder(mContext, 0, 0.4f);
+
+    assertEquals(3, getPagerOffscreenLimit(mBinder));
+  }
+
+  @Test
+  public void testOffscreenPageMathWithLessThanAThirdPage() {
+    mBinder = new TestPagerComponentBinder(mContext, 0, 0.3f);
+
+    assertEquals(4, getPagerOffscreenLimit(mBinder));
+  }
+
+  @Test
