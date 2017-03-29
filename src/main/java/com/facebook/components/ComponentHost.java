@@ -274,3 +274,7 @@ public class ComponentHost extends ViewGroup {
         bringChildToFront(host);
       }
 
+      // The recycled host is immediately re-mounted in mountView(), therefore setting
+      // the flag here is redundant, but future proof.
+      mIsChildDrawingOrderDirty = true;
+

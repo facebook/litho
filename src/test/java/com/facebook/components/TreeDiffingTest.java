@@ -611,3 +611,4 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
         true,
+        state.getDiffTree());
