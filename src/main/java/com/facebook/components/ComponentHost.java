@@ -437,3 +437,11 @@ public class ComponentHost extends ViewGroup {
   }
 
   /**
+   * Sets view tag on this host.
+   * @param viewTag the object to set as tag.
+   */
+  public void setViewTag(Object viewTag) {
+    mViewTag = viewTag;
+  }
+
+  /**

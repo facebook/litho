@@ -378,3 +378,4 @@ public interface ComponentLayout {
     ContainerBuilder invisibleHandler(EventHandler<InvisibleEvent> invisibleHandler);
     ContainerBuilder contentDescription(CharSequence contentDescription);
     ContainerBuilder contentDescription(@StringRes int stringId);
+    ContainerBuilder viewTag(Object viewTag);
