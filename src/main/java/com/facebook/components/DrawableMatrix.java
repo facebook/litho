@@ -97,3 +97,55 @@ public final class DrawableMatrix extends Matrix {
       result.postTranslate(FastMath.round(dx), FastMath.round(dy));
 
       result.mShouldClipRect = true;
+    } else if (ScaleType.CENTER_INSIDE == scaleType) {
+
+      final float scale;
+      if (intrinsicWidth <= width && intrinsicHeight <= height) {
+        scale = 1.0f;
+      } else {
+        scale = Math.min(
+            (float) width / (float) intrinsicWidth,
+            (float) height / (float) intrinsicHeight);
+      }
+
+      final float dx = FastMath.round((width - intrinsicWidth * scale) * 0.5f);
+      final float dy = FastMath.round((height - intrinsicHeight * scale) * 0.5f);
+
+      result.setScale(scale, scale);
+      result.postTranslate(dx, dy);
+    } else {
+      RectF src = ComponentsPools.acquireRectF();
+      RectF dest = ComponentsPools.acquireRectF();
+
+      try {
+        // Generate the required transform.
+        src.set(0, 0, intrinsicWidth, intrinsicHeight);
+        dest.set(0, 0, width, height);
+
+        result.setRectToRect(src, dest, scaleTypeToScaleToFit(scaleType));
+      } finally {
+        ComponentsPools.releaseRectF(src);
+        ComponentsPools.releaseRectF(dest);
+      }
+    }
+
+    return result;
+  }
+
+  private static Matrix.ScaleToFit scaleTypeToScaleToFit(ScaleType st)  {
+    // ScaleToFit enum to their corresponding Matrix.ScaleToFit values
+    switch (st) {
+      case FIT_XY:
+        return Matrix.ScaleToFit.FILL;
+      case FIT_START:
+        return Matrix.ScaleToFit.START;
+      case FIT_CENTER:
+        return Matrix.ScaleToFit.CENTER;
+      case FIT_END:
+        return Matrix.ScaleToFit.END;
+
+      default:
+        throw new IllegalArgumentException("Only FIT_... values allowed");
+    }
+  }
+}

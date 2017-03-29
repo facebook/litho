@@ -37,3 +37,5 @@ public class LithographyRootComponentSpec {
         .paddingDip(YogaEdge.TOP, 8)
         .testKey(MAIN_SCREEN)
         .build();
+  }
+}

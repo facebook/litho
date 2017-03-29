@@ -40,3 +40,46 @@ import static org.junit.Assert.assertEquals;
         LayoutDirectionViewShadow.class,
         LayoutDirectionViewGroupShadow.class})
 @RunWith(ComponentsTestRunner.class)
+public class LayoutDirectionTest {
+  private ComponentContext mContext;
+
+  @Before
+  public void setup() {
+    mContext = new ComponentContext(RuntimeEnvironment.application);
+  }
+
+  /**
+   * Test that view mount items are laid out in the correct positions for LTR and RTL layout
+   * directions.
+   */
+  @Test
+  public void testViewChildrenLayoutDirection() {
+    final TestComponent child1 =
+        TestViewComponent.create(mContext, true, true, true, false)
+            .build();
+    final TestComponent child2 =
+        TestViewComponent.create(mContext, true, true, true, false)
+            .build();
+
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+              @Override
+              protected ComponentLayout onCreateLayout(ComponentContext c) {
+                return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    .flexDirection(YogaFlexDirection.ROW)
+                    .layoutDirection(YogaDirection.LTR)
+                    .child(
+                        Layout.create(c, child1).flexShrink(0)
+                            .widthPx(10)
+                            .heightPx(10))
+                    .child(
+                        Layout.create(c, child2).flexShrink(0)
+                            .widthPx(10)
+                            .heightPx(10))
+                    .build();
+              }
+            },
+        20,
+        10);
+

@@ -27,3 +27,4 @@ import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
 import static com.facebook.yoga.YogaEdge.ALL;
+import static com.facebook.yoga.YogaFlexDirection.COLUMN;

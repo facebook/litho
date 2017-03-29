@@ -40,3 +40,4 @@ public class GlyphWarmerTest {
   @Before
   public void setup() {
     mGlyphWarmer = GlyphWarmer.getInstance();
+    mShadowLooper = Shadows.shadowOf(mGlyphWarmer.getWarmerLooper());

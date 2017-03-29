@@ -38,3 +38,4 @@ public abstract class Reference<L> {
 
   /**
    * Acquires a Reference of type T. It is responsibility of the caller to release the acquired
+   * object by calling {@link Reference#release(ComponentContext, Object, Reference)}.

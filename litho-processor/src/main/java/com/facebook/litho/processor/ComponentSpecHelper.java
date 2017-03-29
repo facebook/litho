@@ -44,3 +44,4 @@ public abstract class ComponentSpecHelper extends SpecHelper {
 
   @Override
   protected TypeName getSuperclassClass() {
+    return ClassNames.COMPONENT_LIFECYCLE;

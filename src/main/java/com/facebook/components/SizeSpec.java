@@ -112,3 +112,48 @@ public class SizeSpec {
    * @param sizeSpec the size specification to extract the mode from
    * @return {@link com.facebook.litho.SizeSpec#UNSPECIFIED} or
    *         {@link com.facebook.litho.SizeSpec#EXACTLY}
+   */
+  public static int getMode(int sizeSpec) {
+    return View.MeasureSpec.getMode(sizeSpec);
+  }
+
+  /**
+   * Extracts the size from the supplied size specification.
+   *
+   * @param sizeSpec the size specification to extract the size from
+   * @return the size in pixels defined in the supplied size specification
+   */
+  public static int getSize(int sizeSpec) {
+    return View.MeasureSpec.getSize(sizeSpec);
+  }
+
+  /**
+   * Returns a String representation of the specified measure
+   * specification.
+   *
+   * @param sizeSpec the size specification to convert to a String
+   * @return a String with the following format: "MeasureSpec: MODE SIZE"
+   */
+  public static String toString(int sizeSpec) {
+    return View.MeasureSpec.toString(sizeSpec);
+  }
+
+  /**
+   * Resolve a size spec given a preferred size.
+   *
+   * @param sizeSpec The spec to resolve.
+   * @param preferredSize The preferred size.
+   * @return The resolved size.
+   */
+  public static int resolveSize(int sizeSpec, int preferredSize) {
+    switch (SizeSpec.getMode(sizeSpec)) {
+      case EXACTLY:
+        return SizeSpec.getSize(sizeSpec);
+      case AT_MOST:
+        return Math.min(SizeSpec.getSize(sizeSpec), preferredSize);
+      case UNSPECIFIED:
+        return preferredSize;
+      default:
+        throw new IllegalStateException("Unexpected size mode: " + SizeSpec.getMode(sizeSpec));
+    }
+  }

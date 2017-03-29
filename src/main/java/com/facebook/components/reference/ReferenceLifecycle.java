@@ -30,3 +30,4 @@ public abstract class ReferenceLifecycle<T> {
       new Pools.SynchronizedPool<>(20);
 
   protected abstract T onAcquire(
+      ComponentContext context,

@@ -25,3 +25,4 @@ import static junit.framework.Assert.assertEquals;
 
 @RunWith(ComponentsTestRunner.class)
 public class LayoutStateAddChildWithInputTest {
+  private ComponentContext mContext;

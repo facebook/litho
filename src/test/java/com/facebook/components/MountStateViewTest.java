@@ -26,3 +26,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
+import static com.facebook.yoga.YogaEdge.BOTTOM;
+import static com.facebook.yoga.YogaEdge.LEFT;
+import static com.facebook.yoga.YogaEdge.RIGHT;
+import static com.facebook.yoga.YogaEdge.TOP;

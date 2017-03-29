@@ -65,3 +65,4 @@ public class ResourceResolver {
       String cached = mResourceCache.get(resId);
       if (cached != null) {
         return cached;
+      }
