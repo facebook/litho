@@ -212,3 +212,4 @@ public final class MeasureUtils {
         outputSize.height = heightSize;
         if (ComponentsConfiguration.IS_INTERNAL_BUILD) {
           Log.d(
+              "com.facebook.litho.utils.MeasureUtils",
