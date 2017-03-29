@@ -280,3 +280,7 @@ public abstract class BaseBinder<
       boolean isToInRange = isInRange(toPosition);
 
       if (!isFromInRange && !isToInRange) {
+        // If the item is moved from after the range, before the range or the other way round, then
+        // shift the range right, or left, accordingly.
+        final int firstPosition = mComponentTrees.getFirstPosition();
+        final int lastPosition = firstPosition + mComponentTrees.size() - 1;
