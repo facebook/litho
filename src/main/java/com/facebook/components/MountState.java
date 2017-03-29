@@ -488,3 +488,4 @@ class MountState {
     }
 
     // 4. Re initialize the MountItem internal state with the new attributes from LayoutOutput
+    currentMountItem.init(layoutOutput.getComponent(), currentMountItem, layoutOutput);
