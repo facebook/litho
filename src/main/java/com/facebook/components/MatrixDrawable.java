@@ -48,3 +48,4 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
     if (mDrawable == drawable) {
       return;
     }
+
