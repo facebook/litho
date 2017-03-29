@@ -343,3 +343,10 @@ public abstract class BaseBinder<
 
     if (componentTreeToRecycle != null) {
       componentTreeToRecycle.release();
+    }
+
+    if (mListener != null) {
+      mListener.onItemRemoved(position);
+    }
+  }
+
