@@ -51,3 +51,4 @@ import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
 import static com.facebook.components.Component.isHostSpec;
 import static com.facebook.components.Component.isLayoutSpecWithSizeSpec;
 import static com.facebook.components.Component.isMountSpec;
+import static com.facebook.components.Component.isMountViewSpec;

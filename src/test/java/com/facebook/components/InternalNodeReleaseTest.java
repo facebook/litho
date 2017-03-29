@@ -71,3 +71,5 @@ public class InternalNodeReleaseTest {
         new EventHandler<SendAccessibilityEventEvent>(null, 1));
     mInternalNode.sendAccessibilityEventUncheckedHandler(
         new EventHandler<SendAccessibilityEventUncheckedEvent>(null, 1));
+
+    mInternalNode.release();

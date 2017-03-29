@@ -22,3 +22,10 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityEvent;
+
+/**
+ * Class that is used to set up accessibility for {@link ComponentHost}s.
+ * Virtual nodes are only exposed if the component implements support for
+ * extra accessibility nodes.
+ */

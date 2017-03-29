@@ -97,3 +97,7 @@ public class LayoutStateCalculateTest {
         SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
 
     assertEquals(2, layoutState.getMountableOutputCount());
+  }
+
+  @Test
+  public void testLayoutOutputsForRootInteractiveLayoutSpecs() {

@@ -67,3 +67,10 @@ class HorizontalScrollSpec {
 
       if (attr == R.styleable.HorizontalScroll_android_scrollbars) {
         scrollbarEnabled.set(a.getInt(attr, 0) != 0);
+      }
+    }
+
+    a.recycle();
+  }
+
+  @OnPrepare
