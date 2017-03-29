@@ -1108,3 +1108,4 @@ public class ComponentTree {
         && layoutState.isCompatibleAccessibility();
   }
 
+  private static boolean isCompatibleComponentAndSpec(
