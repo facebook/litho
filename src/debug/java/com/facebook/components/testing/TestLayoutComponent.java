@@ -103,3 +103,5 @@ public class TestLayoutComponent extends ComponentLifecycle {
     }
 
     return containerBuilder.build();
+  }
+

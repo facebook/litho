@@ -44,3 +44,4 @@ class DelegateMethodSpecBuilder {
   private TypeName mToReturnType = TypeName.VOID;
   private List<Parameter> mToParams = new ArrayList<>();
   private Set<String> mStateParamNames = new LinkedHashSet<>();
+  private Map<String, String> mParameterTranslation;

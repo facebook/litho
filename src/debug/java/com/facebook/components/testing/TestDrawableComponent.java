@@ -81,3 +81,5 @@ public class TestDrawableComponent extends ComponentLifecycle {
     mIsPureRender = isPureRender;
     mCanMeasure = canMeasure;
     mImplementsAccessibility = implementsAccessibility;
+    mUsesDisplayList = usesDisplayList;
+    mIsMountSizeDependent = isMountSizeDependent;

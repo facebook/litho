@@ -51,3 +51,4 @@ public interface ClassNames {
 
   ClassName COMPONENTS_CONFIGURATION =
       ClassName.bestGuess("com.facebook.components.config.ComponentsConfiguration");
+

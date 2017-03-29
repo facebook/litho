@@ -148,3 +148,4 @@ public class MountStateRemountEventHandlerTest {
         });
 
     assertNotNull(MountState.getComponentClickListener(componentView));
+

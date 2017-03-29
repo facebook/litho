@@ -75,3 +75,4 @@ public class ComponentView extends ComponentHost {
     mAccessibilityManager = (AccessibilityManager) context.getSystemService(ACCESSIBILITY_SERVICE);
   }
 
+  private static void performLayoutOnChildrenIfNecessary(ComponentHost host) {

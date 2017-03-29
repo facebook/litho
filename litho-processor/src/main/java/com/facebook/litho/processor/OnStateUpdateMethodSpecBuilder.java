@@ -30,3 +30,5 @@ class OnStateUpdateMethodSpecBuilder {
   private String mLifecycleImplClass;
 
   private final List<Parameter> mUpdateParams = new ArrayList<>();
+  private final List<String> mTypeParameters = new ArrayList<>();
+  private String mStateUpdateClassName;

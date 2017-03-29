@@ -26,3 +26,5 @@ import com.facebook.components.ComponentView;
  */
 public class RecyclerViewWrapper extends SwipeRefreshLayout {
 
+  private final ComponentView mStickyHeader;
+  private final RecyclerView mRecyclerView;
