@@ -739,3 +739,7 @@ class LayoutState {
 
     return BorderColorDrawableReference.create(node.getContext())
                 .color(node.getBorderColor())
+                .borderLeft(FastMath.round(node.mYogaNode.getLayoutBorder(YogaEdge.LEFT)))
+                .borderTop(FastMath.round(node.mYogaNode.getLayoutBorder(YogaEdge.TOP)))
+                .borderRight(FastMath.round(node.mYogaNode.getLayoutBorder(YogaEdge.RIGHT)))
+                .borderBottom(FastMath.round(node.mYogaNode.getLayoutBorder(YogaEdge.BOTTOM)))
