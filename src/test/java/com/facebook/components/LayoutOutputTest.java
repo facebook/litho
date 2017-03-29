@@ -86,3 +86,8 @@ public class LayoutOutputTest {
     mLayoutOutput.setComponent(component);
 
     long stableId = LayoutStateOutputIdCalculator.calculateLayoutOutputId(
+        mLayoutOutput,
+        LEVEL_TEST,
+        LayoutOutput.TYPE_CONTENT,
+        SEQ_TEST);
+
