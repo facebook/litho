@@ -446,3 +446,7 @@ class LayoutState {
     }
     final Component<?> component = node.getComponent();
 
+    // Early return if collecting results of a node holding a nested tree.
+    if (node.isNestedTreeHolder()) {
+      // If the nested tree is defined, it has been resolved during a measure call during
+      // layout calculation.
