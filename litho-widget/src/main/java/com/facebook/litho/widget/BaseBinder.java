@@ -249,3 +249,5 @@ public abstract class BaseBinder<
 
             mComponentTrees.insert(i + positionStart, componentTree);
           }
+        }
+      }
