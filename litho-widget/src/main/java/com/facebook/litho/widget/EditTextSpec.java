@@ -321,3 +321,6 @@ class EditTextSpec {
       EditText editText,
       CharSequence text,
       CharSequence hint,
+      TextUtils.TruncateAt ellipsize,
+      int minLines,
+      int maxLines,
