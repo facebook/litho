@@ -106,3 +106,29 @@ public class ComponentView extends ComponentHost {
   @Override
   protected void onAttachedToWindow() {
     super.onAttachedToWindow();
+    onAttach();
+  }
+
+  @Override
+  protected void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+    onDetach();
+  }
+
+  @Override
+  public void onStartTemporaryDetach() {
+    super.onStartTemporaryDetach();
+    onDetach();
+  }
+
+  @Override
+  public void onFinishTemporaryDetach() {
+    super.onFinishTemporaryDetach();
+    onAttach();
+  }
+
+  private void onAttach() {
+    if (!mIsAttached) {
+      mIsAttached = true;
+
+      if (mComponent != null) {
