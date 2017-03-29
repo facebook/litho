@@ -201,3 +201,11 @@ class MountState {
                 isMountedHostWithChildContent(currentMountItem) ||
                 Rect.intersects(localVisibleRect, layoutOutput.getBounds());
 
+        if (isMountable && !isMounted) {
+          mountLayoutOutput(i, layoutOutput, layoutState);
+        } else if (!isMountable && isMounted) {
+          unmountItem(mContext, i, mHostsByMarker);
+        } else if (isMounted) {
+          if (isIncrementalMountEnabled && canMountIncrementally(component)) {
+            mountItemIncrementally(currentMountItem, layoutOutput.getBounds(), localVisibleRect);
+          }
