@@ -1410,3 +1410,4 @@ public class Stages {
         .build());
 
     writeMethodSpec(new EventHandlerFactoryMethodSpecBuilder()
+        .eventId(getElementId(element))
