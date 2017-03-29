@@ -231,3 +231,4 @@ public class ComponentView extends ComponentHost {
     return false;
   }
 
+  @Override

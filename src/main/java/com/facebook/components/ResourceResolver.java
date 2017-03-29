@@ -312,3 +312,4 @@ public class ResourceResolver {
     }
   }
 
+  protected final float resolveFloatAttr(@AttrRes int attrResId, @DimenRes int defResId) {
