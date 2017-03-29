@@ -2603,3 +2603,4 @@ public class Stages {
     final List<ClassName> annotations = new ArrayList<>();
 
     for (AnnotationMirror annotationMirror : annotationMirrors) {
+      if (annotationMirror.getAnnotationType().toString().startsWith("com.facebook.litho")) {
