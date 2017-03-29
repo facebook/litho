@@ -25,3 +25,4 @@ public class ProcessorUtils {
    */
   public static AnnotationMirror getAnnotationMirror(TypeElement typeElement, ClassName className) {
     final String classSimpleName = className.simpleName();
+    for (AnnotationMirror m : typeElement.getAnnotationMirrors()) {
