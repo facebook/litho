@@ -24,3 +24,7 @@ public class EventHandler<E> {
     this.id = id;
     this.params = params;
   }
+
+  public void dispatchEvent(E event) {
+    mHasEventDispatcher.getEventDispatcher().dispatchOnEvent(this, event);
+  }
