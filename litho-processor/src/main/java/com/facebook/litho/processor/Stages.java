@@ -279,3 +279,6 @@ public class Stages {
           "returnType");
 
       if (!mProcessingEnv.getTypeUtils().isSameType(element.getReturnType(), returnType)) {
+        throw new ComponentsProcessingException(
+            element,
+            "Method " + element.getSimpleName() + " must return " + returnType +

@@ -695,3 +695,16 @@ public class ComponentHost extends ViewGroup {
 
   @Override
   public void requestLayout() {
+    // Don't request a layout if it will be blocked by any parent. Requesting a layout that is
+    // then ignored by an ancestor means that this host will remain in a state where it thinks that
+    // it has requested layout, and will therefore ignore future layout requests. This will lead to
+    // problems if a child (e.g. a ViewPager) requests a layout later on, since the request will be
+    // wrongly ignored by this host.
+    ViewParent parent = this;
+    while (parent instanceof ComponentHost) {
+      final ComponentHost host = (ComponentHost) parent;
+      if (!host.shouldRequestLayout()) {
+        return;
+      }
+
+      parent = parent.getParent();
