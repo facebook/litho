@@ -2320,3 +2320,7 @@ public class Stages {
         .addModifiers(Modifier.PROTECTED)
         .returns(TypeName.VOID)
         .addParameter(
+            ParameterizedTypeName.get(
+                ClassNames.COMPONENT,
+                ClassName.bestGuess(getSimpleClassName())),
+            "impl")
