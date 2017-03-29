@@ -98,3 +98,11 @@ public class StateUpdatesTestHelper {
 
     final ComponentView componentView = new ComponentView(context);
     ComponentTestHelper.mountComponent(componentView, componentTree);
+
+    Whitebox.setInternalState(component, "mGlobalKey", "bogusKeyForTest");
+    Whitebox.setInternalState(component, "mId", 457282882);
+
+    Whitebox.setInternalState(context, "mComponentScope", component);
+    Whitebox.setInternalState(context, "mComponentTree", componentTree);
+
+    stateUpdater.performStateUpdate(context);
