@@ -201,3 +201,7 @@ class PropsBuilderMethodsSpecBuilder {
     return builder(
         mPropParameter.parameter.name + "Res",
         Arrays.asList(parameter(TypeName.INT, "resId", annotation(annotationClassName))),
+        "$L(resId)",
+        resolver + "Res");
+  }
+

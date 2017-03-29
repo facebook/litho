@@ -96,3 +96,24 @@ class ImageSpec {
         return;
       }
 
+      final int intrinsicHeight = drawable.getIntrinsicHeight();
+      final int intrinsicWidth = drawable.getIntrinsicWidth();
+
+      if (SizeSpec.getMode(widthSpec) == UNSPECIFIED &&
+          SizeSpec.getMode(heightSpec) == UNSPECIFIED) {
+        size.width = intrinsicWidth;
+        size.height = intrinsicHeight;
+        return;
+      }
+
+      final float aspectRatio = intrinsicWidth / (float) intrinsicHeight;
+      MeasureUtils.measureWithAspectRatio(
+          widthSpec,
+          heightSpec,
+          intrinsicWidth,
+          intrinsicHeight,
+          aspectRatio,
+          size);
+    } finally {
+      Reference.release(c, drawable, src);
+    }
