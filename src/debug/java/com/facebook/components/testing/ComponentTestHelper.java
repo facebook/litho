@@ -234,3 +234,4 @@ public final class ComponentTestHelper {
   /**
    * Unbinds a component tree from a component view.
    *
+   * @param componentView The view to unbind.
