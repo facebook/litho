@@ -460,3 +460,7 @@ public class ComponentHost extends ViewGroup {
     mOnClickListener = listener;
     this.setOnClickListener(listener);
   }
+
+  /**
+   * @return The previously set click listener
+   */

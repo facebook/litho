@@ -983,3 +983,5 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public InternalNode touchExpansionRes(YogaEdge edge, @DimenRes int resId) {
+    return touchExpansionPx(edge, mResourceResolver.resolveDimenOffsetRes(resId));
