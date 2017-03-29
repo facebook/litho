@@ -944,3 +944,4 @@ class LayoutState {
       releaseNodeTree(layoutState.mLayoutRoot, false /* isNestedTree */);
       layoutState.mLayoutRoot = null;
     }
+
