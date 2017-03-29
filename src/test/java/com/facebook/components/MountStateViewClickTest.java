@@ -80,3 +80,4 @@ public class MountStateViewClickTest {
   }
 
   @Test
+  public void testRootHostClickable() {

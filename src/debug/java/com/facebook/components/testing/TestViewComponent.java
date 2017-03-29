@@ -283,3 +283,4 @@ public class TestViewComponent extends ComponentLifecycle {
       return this;
     }
   }
+}

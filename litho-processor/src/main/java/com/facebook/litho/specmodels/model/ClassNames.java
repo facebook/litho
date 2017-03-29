@@ -52,3 +52,30 @@ public interface ClassNames {
   ClassName COMPONENTS_CONFIGURATION =
       ClassName.bestGuess("com.facebook.components.config.ComponentsConfiguration");
 
+  ClassName COMPONENT_CONTEXT = ClassName.bestGuess("com.facebook.components.ComponentContext");
+  ClassName COMPONENT_LAYOUT = ClassName.bestGuess("com.facebook.components.ComponentLayout");
+  ClassName COMPONENT_LAYOUT_BUILDER =
+      ClassName.bestGuess("com.facebook.components.ComponentLayout.Builder");
+  ClassName COMPONENT_LAYOUT_CONTAINER_BUILDER =
+      ClassName.bestGuess("com.facebook.components.ComponentLayout.ContainerBuilder");
+
+  ClassName COMPONENT = ClassName.bestGuess("com.facebook.components.Component");
+  ClassName COMPONENT_BUILDER = ClassName.bestGuess("com.facebook.components.Component.Builder");
+  ClassName COMPONENT_BUILDER_WITH_LAYOUT =
+      ClassName.bestGuess("com.facebook.components.Component.BuilderWithLayout");
+  ClassName COMPONENT_LIFECYCLE = ClassName.bestGuess("com.facebook.components.ComponentLifecycle");
+  ClassName COMPONENT_LIFECYCLE_MOUNT_TYPE =
+      ClassName.bestGuess("com.facebook.components.ComponentLifecycle.MountType");
+
+  ClassName REFERENCE = ClassName.bestGuess("com.facebook.components.reference.Reference");
+  ClassName REFERENCE_BUILDER =
+      ClassName.bestGuess("com.facebook.components.reference.Reference.Builder");
+  ClassName REFERENCE_LIFECYCLE =
+      ClassName.bestGuess("com.facebook.components.reference.ReferenceLifecycle");
+
+  ClassName TREE_PROPS = ClassName.bestGuess("com.facebook.components.TreeProps");
+
+  ClassName STATE_VALUE = ClassName.bestGuess("com.facebook.components.StateValue");
+  ClassName COMPONENT_STATE_UPDATE =
+      ClassName.bestGuess("com.facebook.components.ComponentLifecycle.StateUpdate");
+  ClassName STATE_CONTAINER_COMPONENT =
