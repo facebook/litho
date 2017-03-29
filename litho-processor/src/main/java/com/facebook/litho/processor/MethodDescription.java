@@ -21,3 +21,5 @@ import com.squareup.javapoet.TypeName;
  * props.
  */
 public class MethodDescription {
+  public Class[] annotations;
+  public Modifier accessType;
