@@ -1636,3 +1636,5 @@ public class Stages {
     methodBuilder.addStatement(
         "this.$L.$L($L)",
         mSourceDelegateAccessorName,
+        delegateMethod.getSimpleName(),
+        delegateParameters.build());
