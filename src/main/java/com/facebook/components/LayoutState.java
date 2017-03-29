@@ -226,3 +226,5 @@ class LayoutState {
     // parent host to ensure the correct hierarchy when nesting the host views.
     layoutOutput.setHostMarker(layoutState.mCurrentHostMarker);
 
+    if (layoutState.mCurrentHostOutputPosition >= 0) {
+      final LayoutOutput hostOutput =
