@@ -1119,3 +1119,6 @@ public class TreeDiffingTest {
   private static void assertOutputsState(
       LayoutState layoutState,
       @LayoutOutput.UpdateState int state) {
+    assertEquals(layoutState.getMountableOutputAt(0).getUpdateState(), LayoutOutput.STATE_DIRTY);
+    for (int i = 1; i < layoutState.getMountableOutputCount(); i++) {
+      LayoutOutput output = layoutState.getMountableOutputAt(i);
