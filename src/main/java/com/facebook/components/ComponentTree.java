@@ -589,3 +589,9 @@ public class ComponentTree {
    * relayout/invalidate.
    */
   public void setRoot(Component<?> rootComponent) {
+    if (rootComponent == null) {
+      throw new IllegalArgumentException("Root component can't be null");
+    }
+
+    setRootAndSizeSpecInternal(
+        rootComponent,
