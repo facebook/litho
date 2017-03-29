@@ -590,3 +590,5 @@ class TextSpec {
     final ClickableSpan span = clickableSpans[extraNodeIndex];
     final int start = spanned.getSpanStart(span);
     final int end = spanned.getSpanEnd(span);
+    final int startLine = textLayout.getLineForOffset(start);
+    final int endLine = textLayout.getLineForOffset(end);
