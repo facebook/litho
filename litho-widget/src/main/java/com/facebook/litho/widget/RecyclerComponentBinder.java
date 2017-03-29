@@ -168,3 +168,4 @@ public abstract class RecyclerComponentBinder<L extends RecyclerView.LayoutManag
   private static class InternalAdapter
       extends Adapter<ComponentViewHolder> implements BaseBinder.Listener {
 
+    private final Context mContext;
