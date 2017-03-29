@@ -1169,3 +1169,4 @@ public class Stages {
   public void generateOnStateUpdateMethods(
       ClassName contextClass,
       ClassName componentClassName,
+      ClassName stateContainerClassName,
