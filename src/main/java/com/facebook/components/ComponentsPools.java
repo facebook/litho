@@ -352,3 +352,12 @@ public class ComponentsPools {
     return item;
   }
 
+  static Output acquireOutput() {
+    Output output = sOutputPool.acquire();
+    if (output == null) {
+      output = new Output();
+    }
+
+    return output;
+  }
+
