@@ -439,3 +439,4 @@ public class MountSpecHelper extends ComponentSpecHelper {
             mStages.getSourceElement(),
             OnPopulateAccessibilityNode.class);
 
+    final ExecutableElement onPopulateExtraAccessibilityNode =

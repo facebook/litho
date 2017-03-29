@@ -462,3 +462,10 @@ public class Stages {
                 v,
                 "Inter-stage create must refer to previous stages.");
           }
+
+          final VariableElement existingType = variableNameToElementMap.get(variableName);
+          if (existingType != null && !isSameType(existingType.asType(), v.asType())) {
+            // We have a type mis-match. This is allowed, provided that the previous type is an
+            // outputand the new type is an prop, and the type argument of the output matches the
+            // prop. In the future, we may want to allow stages to modify outputs from previous
+            // stages, but for now we disallow it.
