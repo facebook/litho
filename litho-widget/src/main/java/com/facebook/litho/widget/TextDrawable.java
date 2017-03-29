@@ -160,3 +160,4 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
   public void mount(
       CharSequence text,
       Layout layout,
+      float layoutTranslationY,
