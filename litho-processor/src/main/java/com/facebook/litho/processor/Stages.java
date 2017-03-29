@@ -2177,3 +2177,4 @@ public class Stages {
     for (VariableElement variableElement : shouldUpdateParams) {
       final Name variableElementName = variableElement.getSimpleName();
       final TypeMirror variableElementType = variableElement.asType();
+      final VariableElement componentMember = findPropVariableForName(variableElementName);
