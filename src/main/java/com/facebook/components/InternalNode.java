@@ -421,3 +421,6 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public InternalNode flex(float flex) {
+    mPrivateFlags |= PFLAG_FLEX_IS_SET;
+    mYogaNode.setFlex(flex);

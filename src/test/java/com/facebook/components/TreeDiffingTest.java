@@ -910,3 +910,4 @@ public class TreeDiffingTest {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Container.create(c)
+            .paddingPx(YogaEdge.ALL, 2)

@@ -165,3 +165,16 @@ public class ComponentContext extends ContextWrapper {
     mComponentTree.updateStateLazy(mComponentScope.getGlobalKey(), stateUpdate);
   }
 
+  void setDefStyle(@AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
+    mDefStyleAttr = defStyleAttr;
+    mDefStyleRes = defStyleRes;
+  }
+
+  public TypedArray obtainStyledAttributes(int[] attrs, @AttrRes int defStyleAttr) {
+    return obtainStyledAttributes(
+        null,
+        attrs,
+        defStyleAttr != 0 ? defStyleAttr : mDefStyleAttr,
+        mDefStyleRes);
+  }
+
