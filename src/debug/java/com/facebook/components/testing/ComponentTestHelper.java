@@ -209,3 +209,7 @@ public final class ComponentTestHelper {
         0,
         componentView.getMeasuredWidth(),
         componentView.getMeasuredHeight());
+
+    return componentView;
+  }
+
