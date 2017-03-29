@@ -160,3 +160,4 @@ class TextSpec {
         shouldIncludeFontPadding.set(a.getBoolean(attr, false));
       } else if (attr == R.styleable.Text_android_minLines) {
         minLines.set(a.getInteger(attr, -1));
+      } else if (attr == R.styleable.Text_android_maxLines) {
