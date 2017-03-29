@@ -298,3 +298,4 @@ public class RecyclerBinderTest {
   }
 
   @Test
+  public void onRemeasureWithDifferentSize() {

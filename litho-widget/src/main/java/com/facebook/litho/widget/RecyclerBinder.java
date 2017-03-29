@@ -679,3 +679,12 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     for (int i = 0; i < treeHoldersSize; i++) {
       final ComponentTreeHolder holder;
       final int childrenWidthSpec, childrenHeightSpec;
+
+      synchronized (this) {
+        // Someone modified the ComponentsTreeHolders while we were computing this range. We
+        // can just bail as another range will be computed.
+        if (treeHoldersSize != mComponentTreeHolders.size()) {
+          return;
+        }
+
+        holder = mComponentTreeHolders.get(i);
