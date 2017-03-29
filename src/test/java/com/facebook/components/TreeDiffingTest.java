@@ -679,3 +679,8 @@ public class TreeDiffingTest {
                 .backgroundColor(Color.RED))
             .child(
                 Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    .child(TestDrawableComponent.create(c)))
+            .build();
+      }
+    };
+
