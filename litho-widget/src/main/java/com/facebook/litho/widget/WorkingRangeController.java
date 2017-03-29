@@ -12,3 +12,10 @@ package com.facebook.litho.widget;
 /**
  * The RangeController used to calculate the range for which the ComponentTrees will be created. A
  * reference to this type of controller is stored in {@link Binder}. This class will be extended
+ * by all the specific RangeControllers that deal with computing the range for a particular layout.
+ */
+public abstract class WorkingRangeController {
+
+  private BaseBinder mBinder;
+
+  /**

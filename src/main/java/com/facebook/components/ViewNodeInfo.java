@@ -33,3 +33,5 @@ class ViewNodeInfo {
   private YogaDirection mLayoutDirection;
   private String mTransitionKey;
 
+  void setBackground(Reference<? extends Drawable> background) {
+    mBackground = (Reference<Drawable>) background;

@@ -62,3 +62,8 @@ class BinderTreeCollection {
   void move(int fromPosition, int toPosition) {
     ComponentTree movingComponentTree = mItems.get(fromPosition);
 
+    if (toPosition < fromPosition) {
+      shiftRangeRight(toPosition, fromPosition - toPosition, 1);
+    } else {
+      shiftRangeLeft(fromPosition + 1, toPosition - fromPosition, 1);
+    }

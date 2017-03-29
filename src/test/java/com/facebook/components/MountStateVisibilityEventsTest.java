@@ -36,3 +36,62 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @RunWith(ComponentsTestRunner.class)
+public class MountStateVisibilityEventsTest {
+
+  private static final int VISIBLE = 1;
+  private static final int FOCUSED = 2;
+  private static final int FULL_IMPRESSION = 3;
+  private static final int INVISIBLE = 4;
+
+  private static final int LEFT = 0;
+  private static final int RIGHT = 10;
+
+  private static final int VIEWPORT_HEIGHT = 5;
+  private static final int VIEWPORT_WIDTH = 10;
+
+  private long mLastVisibilityOutputId = 0;
+  private ComponentContext mContext;
+  private MountState mMountState;
+
+  @Before
+  public void setup() {
+    mContext = new ComponentContext(RuntimeEnvironment.application);
+
+    ComponentTree mockComponentTree = mock(ComponentTree.class);
+    doReturn(mContext).when(mockComponentTree).getContext();
+
+    ComponentHost mockParent = mock(ComponentHost.class);
+    doReturn(VIEWPORT_WIDTH).when(mockParent).getWidth();
+    doReturn(VIEWPORT_HEIGHT).when(mockParent).getHeight();
+
+    ComponentView attachedView = spy(new ComponentView(mContext));
+    Whitebox.setInternalState(attachedView, "mComponent", mockComponentTree);
+    doReturn(mockParent).when(attachedView).getParent();
+
+    mMountState = new MountState(attachedView);
+    Whitebox.setInternalState(mMountState, "mIsDirty", false);
+
+    mLastVisibilityOutputId = 0;
+  }
+
+  @Test
+  public void testVisibleEvent() {
+    ComponentLifecycle mockLifecycle = createLifecycleMock();
+    Component<?> content = TestViewComponent.create(mContext).build();
+    Whitebox.setInternalState(content, "mLifecycle", mockLifecycle);
+
+    final EventHandler visibleHandler = createEventHandler(content, VISIBLE);
+
+    final List<VisibilityOutput> visibilityOutputs = new ArrayList<>();
+
+    visibilityOutputs.add(createVisibilityOutput(
+        content,
+        new Rect(LEFT, 5, RIGHT, 10),
+        visibleHandler,
+        null,
+        null,
+        null));
+
+    final LayoutState layoutState = new LayoutState();
+    Whitebox.setInternalState(layoutState, "mVisibilityOutputs", visibilityOutputs);
+

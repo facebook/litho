@@ -44,3 +44,4 @@ class LayoutStateOutputIdCalculator {
     // on the component of the LayoutOutput, the output type {@link LayoutOutput#LayoutOutputType}
     // the depth of this output in the view hierarchy and an incremental sequence number for
     // LayoutOutputs that have all the other parameters in common.
+    long baseLayoutId = LayoutStateOutputIdCalculator.calculateLayoutOutputBaseId(
