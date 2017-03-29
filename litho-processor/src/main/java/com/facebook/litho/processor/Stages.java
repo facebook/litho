@@ -799,3 +799,4 @@ public class Stages {
         throw new ComponentsProcessingException(
             v,
             "Variables that are both prop and output are forbidden.");
+      } else if (isAnnotatedParameter || (shouldIncludeOutputs && isInterStageOutput)) {

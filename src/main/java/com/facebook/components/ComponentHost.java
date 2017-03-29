@@ -780,3 +780,5 @@ public class ComponentHost extends ViewGroup {
 
   @Override
   public void invalidate(Rect dirty) {
+    if (mSuppressInvalidations) {
+      mWasInvalidatedWhileSuppressed = true;
