@@ -87,3 +87,4 @@ public class MountStateRemountTest {
     final LongSparseArray<MountItem> indexToItemMap =
         Whitebox.getInternalState(mountState,"mIndexToItemMap");
 
+    final List<Component> components = new ArrayList<>();

@@ -87,3 +87,16 @@ class EventHandlerFactoryMethodSpecBuilder {
       paramsBlock.add("new Object[] {\n");
       paramsBlock.indent();
       paramsBlock.add("c,\n");
+
+      for (Parameter eventParam : mEventParams) {
+        paramsBlock.add("$L,\n", eventParam.name);
+      }
+
+      paramsBlock.unindent();
+      paramsBlock.add("}");
+
+    builder.addStatement("return newEventHandler(c, $L, $L)", mEventId, paramsBlock.build());
+
+    return builder.build();
+  }
+}

@@ -91,3 +91,4 @@ class CardSpec {
                         .cornerRadiusPx(cornerRadius)
                         .withLayout()
                         .positionType(ABSOLUTE)
+                        .positionPx(ALL, 0)))

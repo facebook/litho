@@ -87,3 +87,4 @@ public class LifecycleMethodsTest {
   private class LifecycleMethodsComponent extends ComponentLifecycle {
 
     @Override
+    protected ComponentLayout onCreateLayout(ComponentContext c, Component<?> component) {
