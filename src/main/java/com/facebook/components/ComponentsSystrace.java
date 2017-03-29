@@ -22,3 +22,5 @@ package com.facebook.litho;
  *
  * As a default, it simply calls {@code android.os.Trace} (see {@link DefaultComponentsSystrace}).
  * You may supply your own with {@link ComponentsSystrace#provide(Systrace)}.
+ */
+public class ComponentsSystrace {

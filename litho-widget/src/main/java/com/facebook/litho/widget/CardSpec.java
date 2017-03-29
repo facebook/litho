@@ -45,3 +45,8 @@ class CardSpec {
   private static final int DEFAULT_SHADOW_SIZE_DP = 2;
 
   @PropDefault static final int cardBackgroundColor = Color.WHITE;
+  @PropDefault static final int clippingColor = Color.WHITE;
+  @PropDefault static final int shadowStartColor = 0x37000000;
+  @PropDefault static final int shadowEndColor = 0x03000000;
+  @PropDefault static final float cornerRadius = -1;
+  @PropDefault static final float elevation = -1;
