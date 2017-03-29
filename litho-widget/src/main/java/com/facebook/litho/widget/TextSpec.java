@@ -231,3 +231,4 @@ class TextSpec {
       Output<Integer> measuredHeight) {
 
     if (TextUtils.isEmpty(text)) {
+      measureLayout.set(null);
