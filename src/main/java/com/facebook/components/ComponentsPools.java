@@ -78,3 +78,5 @@ public class ComponentsPools {
   private static final Pools.SynchronizedPool<MountItem> sMountItemPool =
       new Pools.SynchronizedPool<>(256);
 
+  private static final Map<Context, SparseArray<PoolWithCount>>
+      sMountContentPoolsByContext = new ConcurrentHashMap<>(4);
