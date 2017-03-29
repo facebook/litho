@@ -624,3 +624,4 @@ class LayoutState {
     if (foreground != null) {
       if (layoutOutput != null && layoutOutput.hasViewNodeInfo() && SDK_INT >= M) {
         layoutOutput.getViewNodeInfo().setForeground(foreground);
+      } else {
