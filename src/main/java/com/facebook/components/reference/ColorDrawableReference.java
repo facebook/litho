@@ -141,3 +141,4 @@ public final class ColorDrawableReference extends ReferenceLifecycle<Drawable> {
 
     private State mState;
     private ComponentContext mContext;
+
