@@ -321,3 +321,4 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
    * @return the assertions object
    */
   public ViewTreeAssert hasVisibleDrawable(final int resourceId) {
+    hasVisibleDrawable(
