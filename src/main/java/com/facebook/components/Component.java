@@ -33,3 +33,4 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
     private ComponentContext mContext;
     private @AttrRes int mDefStyleAttr;
     private @StyleRes int mDefStyleRes;
+    private Component mComponent;

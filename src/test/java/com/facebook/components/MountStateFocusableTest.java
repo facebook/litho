@@ -55,3 +55,26 @@ public class MountStateFocusableTest {
     // that our Robolectric setup is not actually identical. Until we can figure out why,
     // we will compare against the dynamic default instead of asserting false.
     assertEquals(mFocusableDefault, componentView.isFocusable());
+
+    ComponentHost innerHost = (ComponentHost) componentView.getChildAt(0);
+    assertTrue(innerHost.isFocusable());
+  }
+
+  @Test
+  public void testRootHostFocusable() {
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Container.create(c)
+                .focusable(true)
+                .child(TestDrawableComponent.create(c))
+                .build();
+          }
+        });
+
+    assertEquals(0, componentView.getChildCount());
+    assertTrue(componentView.isFocusable());
+  }
+}

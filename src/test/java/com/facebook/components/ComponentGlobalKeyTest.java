@@ -79,3 +79,15 @@ public class ComponentGlobalKeyTest {
     ComponentTree componentTree = ComponentTree.create(mContext, component)
         .incrementalMount(false)
         .build();
+    ComponentView componentView = getComponentView(componentTree);
+
+    Assert.assertEquals(
+        componentView.getMountItemAt(0).getComponent().getGlobalKey(),
+        "someKey");
+  }
+
+  @Test
+  public void testMultipleChildrenComponentKey() {
+    Component component = getMultipleChildrenComponent();
+
+    int layoutSpecId = component.getLifecycle().getId();
