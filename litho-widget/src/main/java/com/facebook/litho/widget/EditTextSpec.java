@@ -428,3 +428,6 @@ class EditTextSpec {
         public void afterTextChanged(Editable s) {
           if (mEventHandler != null) {
             com.facebook.litho.widget.EditText.dispatchTextChangedEvent(
+                mEventHandler,
+                s.toString());
+          }
