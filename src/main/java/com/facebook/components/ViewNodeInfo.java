@@ -167,3 +167,13 @@ class ViewNodeInfo {
     mBackground = null;
     mForeground = null;
     mLayoutDirection = YogaDirection.INHERIT;
+    mTransitionKey = null;
+
+    if (mPadding != null) {
+      ComponentsPools.release(mPadding);
+      mPadding = null;
+    }
+
+    if (mExpandedTouchBounds != null) {
+      ComponentsPools.release(mExpandedTouchBounds);
+      mExpandedTouchBounds = null;

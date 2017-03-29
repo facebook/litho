@@ -200,3 +200,9 @@ public class InternalNodeTest {
   @Test
   public void testHeightFlag() {
     mNode.heightPx(4);
+    assertTrue(isFlagSet(mNode, "PFLAG_HEIGHT_IS_SET"));
+    clearFlag(mNode, "PFLAG_HEIGHT_IS_SET");
+    assertEmptyFlags(mNode);
+  }
+
+  @Test
