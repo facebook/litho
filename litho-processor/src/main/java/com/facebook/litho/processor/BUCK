@@ -31,3 +31,15 @@ java_library(
     visibility = [
         "PUBLIC",
     ],
+)
+
+java_library(
+    name = "processor-lib-bare",
+    srcs = glob(["*.java"]),
+    provided_deps = [
+        COMPONENTS_FBCORE_TARGET,
+        COMPONENTS_JAVAPOET_TARGET,
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
