@@ -795,3 +795,4 @@ public class RecyclerBinderTest {
 
     private boolean mTreeValid;
     private ComponentTree mComponentTree;
+    private ComponentInfo mComponentInfo;
