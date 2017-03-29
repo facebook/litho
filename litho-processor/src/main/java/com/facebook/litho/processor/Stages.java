@@ -1519,3 +1519,13 @@ public class Stages {
 
   public static List<TypeMirror> getGenericTypeArguments(TypeMirror diffType) {
     if (diffType.getKind() == DECLARED) {
+      final DeclaredType parameterDeclaredType = (DeclaredType) diffType;
+      final List<? extends TypeMirror> typeArguments = parameterDeclaredType.getTypeArguments();
+
+      return (List<TypeMirror>) typeArguments;
+    }
+
+    return null;
+  }
+
+  public static List<Parameter> getParams(ExecutableElement e) {

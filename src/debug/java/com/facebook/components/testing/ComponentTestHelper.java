@@ -320,3 +320,6 @@ public final class ComponentTestHelper {
   }
 
   /**
+   * Returns the first subComponent of type class.
+   *
+   * @param component The component builder which to get the subcomponent from
