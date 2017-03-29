@@ -143,3 +143,4 @@ public class ComponentTree {
   @GuardedBy("this")
   private @PendingLayoutCalculation int mScheduleLayoutAfterMeasure;
 
+  public static Builder create(ComponentContext context, Component.Builder<?> root) {

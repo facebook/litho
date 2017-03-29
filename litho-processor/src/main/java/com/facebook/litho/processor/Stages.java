@@ -149,3 +149,4 @@ public class Stages {
   private List<VariableElement> mOnCreateInitialStateDefinedProps;
   private ImmutableList<PropDefaultModel> mPropDefaults;
   private List<VariableElement> mTreeProps;
+  private final Map<String, VariableElement> mStateMap = new LinkedHashMap<>();
