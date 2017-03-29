@@ -81,3 +81,9 @@ final class ViewPredicates {
     return new Predicate<View>() {
       @Override
       public boolean apply(final View input) {
+        if (input instanceof ComponentHost) {
+          final List<CharSequence> contentDescriptions =
+              ((ComponentHost) input).getContentDescriptions();
+          return contentDescriptions.contains(contentDescription);
+        }
+
