@@ -114,3 +114,7 @@ class ViewNodeInfo {
 
     mExpandedTouchBounds = ComponentsPools.acquireRect();
     mExpandedTouchBounds.set(
+        l - touchExpansionLeft,
+        t - touchExpansionTop,
+        r + touchExpansionRight,
+        b + touchExpansionBottom);

@@ -42,3 +42,6 @@ class DiffNode implements Cloneable {
   }
 
   DiffNode getChildAt(int i) {
+    return mChildren.get(i);
+  }
+

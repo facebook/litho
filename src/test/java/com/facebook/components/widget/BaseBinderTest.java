@@ -82,3 +82,4 @@ public class BaseBinderTest {
   public void testNotifyDataSetChanged() {
     Assert.assertEquals(0, mBinder.getComponentCount());
 
+    mount();

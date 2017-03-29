@@ -151,3 +151,30 @@ public class MountStateRemountInPlaceTest {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
             return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                .child(firstComponent)
+                .build();
+          }
+        });
+
+    assertTrue(firstComponent.wasOnMountCalled());
+    assertTrue(firstComponent.wasOnBindCalled());
+    assertFalse(firstComponent.wasOnUnmountCalled());
+
+    final TestComponent secondComponent =
+        TestDrawableComponent
+            .create(
+                mContext,
+                0,
+                0,
+                true,
+                true,
+                true,
+                false,
+                false,
+                true /*isMountSizeDependent*/)
+            .measuredHeight(11)
+            .build();
+
+    componentView.getComponent().setRoot(new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
