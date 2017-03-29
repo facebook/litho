@@ -122,3 +122,6 @@ public class Stages {
   };
 
   private static final Class<Annotation>[] PROP_ANNOTATIONS = new Class[] {
+      Prop.class,
+  };
+
