@@ -142,3 +142,7 @@ class NoOpInternalNode extends InternalNode {
 
   @Override
   public InternalNode justifyContent(YogaJustify justifyContent) {
+    return this;
+  }
+
+  @Override
