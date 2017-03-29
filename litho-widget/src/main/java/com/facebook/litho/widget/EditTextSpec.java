@@ -294,3 +294,6 @@ class EditTextSpec {
         gravity,
         editable,
         selection);
+  }
+
+  @OnBind
