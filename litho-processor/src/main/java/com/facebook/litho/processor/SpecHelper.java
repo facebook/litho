@@ -109,3 +109,4 @@ public abstract class SpecHelper implements Closeable {
           if (propJavadoc.length == 2) {
             propJavadocs.put(propJavadoc[0], propJavadoc[1].trim());
           }
+        }
