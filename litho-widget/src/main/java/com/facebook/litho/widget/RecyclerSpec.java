@@ -222,3 +222,42 @@ class RecyclerSpec {
     }
 
     binder.unmount(recyclerView);
+  }
+
+  @ShouldUpdate(onMount = true)
+  protected static boolean shouldUpdate(
+      Diff<Binder<RecyclerView>> binder,
+      Diff<Boolean> hasFixedSize,
+      Diff<Boolean> clipToPadding,
+      Diff<Integer> scrollBarStyle,
+      Diff<RecyclerView.ItemDecoration> itemDecoration) {
+    if (binder.getPrevious() != binder.getNext()) {
+      return true;
+    }
+
+    if (!hasFixedSize.getPrevious().equals(hasFixedSize.getNext())) {
+      return true;
+    }
+
+    if (!clipToPadding.getPrevious().equals(clipToPadding.getNext())) {
+      return true;
+    }
+
+    if (!scrollBarStyle.getPrevious().equals(scrollBarStyle.getNext())) {
+      return true;
+    }
+
+    final RecyclerView.ItemDecoration previous = itemDecoration.getPrevious();
+    final RecyclerView.ItemDecoration next = itemDecoration.getNext();
+    final boolean itemDecorationIsEqual =
+        (previous == null) ? (next == null) : previous.equals(next);
+
+    return !itemDecorationIsEqual;
+  }
+
+  public static class NoUpdateItemAnimator extends DefaultItemAnimator {
+    public NoUpdateItemAnimator() {
+      super();
+      setSupportsChangeAnimations(false);
+    }
+  }
