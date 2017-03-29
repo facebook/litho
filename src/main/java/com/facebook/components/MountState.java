@@ -1009,3 +1009,9 @@ class MountState {
       setViewTag(view, nodeInfo.getViewTag());
       setViewTags(view, nodeInfo.getViewTags());
 
+      // 6. Set content description.
+      setContentDescription(view, nodeInfo.getContentDescription());
+
+      // 7. Set setFocusable flag.
+      setFocusable(view, nodeInfo.getFocusState());
+    }
