@@ -13,6 +13,7 @@ import android.support.v4.util.SimpleArrayMap;
 
 import com.facebook.litho.annotations.TreeProp;
 import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.infer.annotation.ThreadSafe;
 
 /**
  * A data structure to store tree props.
@@ -33,7 +34,10 @@ public class TreeProps {
 
   /**
    * Whenever a Spec sets tree props, the TreeProps map from the parent is copied.
+   *
+   * Infer knows that newProps is owned but doesn't know that newProps.mMap is owned.
    */
+  @ThreadSafe(enableChecks = false)
   public static TreeProps copy(TreeProps source) {
     final TreeProps newProps = ComponentsPools.acquireTreeProps();
     if (source != null) {
