@@ -279,3 +279,4 @@ const char* JniException::what() const noexcept {
 }
 
 void JniException::setJavaException() const noexcept {
+  setJavaExceptionAndAbortOnFailure(throwable_);
