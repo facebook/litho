@@ -640,3 +640,5 @@ class LayoutState {
           diffNode.setForeground(foregroundOutput);
         }
       }
+    }
+
