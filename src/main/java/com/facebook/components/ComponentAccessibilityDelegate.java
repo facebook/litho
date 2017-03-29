@@ -132,3 +132,6 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       // ExploreByTouchHelper insists that we set something.
       node.setContentDescription("");
       node.setBoundsInParent(getDefaultBounds());
+      return;
+    }
+

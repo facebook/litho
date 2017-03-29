@@ -112,3 +112,6 @@ public abstract class PagerBinder extends BaseBinder<
     getRangeController().notifyOnPageSelected(
         mCurrentItem,
         URFLAG_REFRESH_IN_RANGE | URFLAG_RELEASE_OUTSIDE_RANGE);
+  }
+
+  @Override
