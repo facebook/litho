@@ -212,3 +212,4 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
         ViewPredicates.isVisible());
   }
 
+  private ImmutableList<View> getPathToVisibleText(final String text) {
