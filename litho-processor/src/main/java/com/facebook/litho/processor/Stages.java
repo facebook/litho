@@ -1378,3 +1378,6 @@ public class Stages {
       ExecutableElement element,
       ClassName contextClassName,
       ClassName componentClassName) {
+    final List<VariableElement> eventParamElements =
+        Utils.getParametersWithAnnotation(element, Param.class);
+    final List<Parameter> eventParams = new ArrayList<>();
