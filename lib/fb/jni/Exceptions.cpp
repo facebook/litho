@@ -248,3 +248,4 @@ JniException::JniException(JniException &&rhs)
 
 JniException::JniException(const JniException &rhs)
     : what_(rhs.what_), isMessageExtracted_(rhs.isMessageExtracted_) {
+  throwable_ = make_global(rhs.throwable_);
