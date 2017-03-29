@@ -130,3 +130,4 @@ public abstract class SpecHelper implements Closeable {
         populateExtraStateMembers(),
         eventTypesElements,
         propJavadocs);
+
