@@ -150,3 +150,4 @@ public abstract class BaseBinder<
   public void notifyItemInserted(int position) {
     assertMainThread();
 
+    if (!hasContentSize()) {

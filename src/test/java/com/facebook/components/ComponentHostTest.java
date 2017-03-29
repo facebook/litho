@@ -753,3 +753,4 @@ public class ComponentHostTest {
         null,
         0,
         IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+    mHost.mount(index, viewMountItem, new Rect());
