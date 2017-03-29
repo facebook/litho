@@ -1387,3 +1387,6 @@ class MountState {
       view.setBackgroundDrawable(drawable);
     } else {
       view.setBackground(drawable);
+    }
+  }
+
