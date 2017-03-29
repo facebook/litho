@@ -2373,3 +2373,5 @@ public class LayoutStateCalculateTest {
     manager.setEnabled(true);
     manager.setTouchExplorationEnabled(true);
   }
+
+  private LayoutState calculateLayoutState(
