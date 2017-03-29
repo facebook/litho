@@ -655,3 +655,15 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public InternalNode positionPercent(YogaEdge edge, float percent) {
+    mPrivateFlags |= PFLAG_POSITION_IS_SET;
+    mYogaNode.setPositionPercent(edge, percent);
+    return this;
+  }
+
+  @Override
+  public InternalNode positionAttr(
+      YogaEdge edge,
+      @AttrRes int resId,
+      @DimenRes int defaultResId) {
+    return positionPx(edge, mResourceResolver.resolveDimenOffsetAttr(resId, defaultResId));
