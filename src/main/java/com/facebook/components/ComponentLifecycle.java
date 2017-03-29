@@ -171,3 +171,5 @@ public abstract class ComponentLifecycle implements EventDispatcher {
 
   void mount(ComponentContext c, Object convertContent, Component<?> component) {
     onMount(c, convertContent, component);
+  }
+
