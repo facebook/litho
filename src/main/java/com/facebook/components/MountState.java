@@ -1002,3 +1002,4 @@ class MountState {
       // 3. Setup click handler for the component, if applicable.
       setTouchHandler(nodeInfo.getTouchHandler(), view);
 
+      // 4. Set listeners for AccessibilityDelegate methods
