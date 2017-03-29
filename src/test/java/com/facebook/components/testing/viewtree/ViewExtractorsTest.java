@@ -46,3 +46,5 @@ public class ViewExtractorsTest {
     mGoneTextView.setText("gone");
     mGoneTextView.setVisibility(View.GONE);
 
+    mImageView = new ImageView(activity);
+    mImageView.setImageDrawable(mLithoDrawable);
