@@ -298,3 +298,9 @@ class EditTextSpec {
 
   @OnBind
   static void onBind(
+      ComponentContext c,
+      EditTextTextTextChangedEventHandler editText) {
+    editText.attachWatcher();
+  }
+
+  @OnUnbind
