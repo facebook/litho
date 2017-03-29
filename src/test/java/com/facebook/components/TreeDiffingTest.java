@@ -719,3 +719,7 @@ public class TreeDiffingTest {
         secondState.getDiffTree());
 
     assertEquals(LayoutOutput.STATE_DIRTY, thirdState.getMountableOutputAt(2).getUpdateState());
+  }
+
+  @Test
+  public void testLayoutOutputUpdateStateIdClash() {
