@@ -536,3 +536,6 @@ public class ComponentHost extends ViewGroup {
 
     if (mSuppressInvalidations) {
       mWasInvalidatedForAccessibilityWhileSuppressed = true;
+      return;
+    }
+
