@@ -14,3 +14,6 @@ import android.graphics.Color;
 
 import com.facebook.components.Component;
 import com.facebook.components.ComponentContext;
+import com.facebook.components.testing.testrunner.ComponentsTestRunner;
+import com.facebook.components.testing.ComponentsRule;
+import com.facebook.components.testing.TestDrawableComponent;

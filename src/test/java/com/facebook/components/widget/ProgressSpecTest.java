@@ -22,3 +22,4 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
+import static org.assertj.core.api.Assertions.assertThat;
