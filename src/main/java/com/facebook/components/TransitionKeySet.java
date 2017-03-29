@@ -272,3 +272,4 @@ class TransitionKeySet implements TransitionListener {
   }
 
   /**
+   * Start transitions for a key given its keyStatus. If you stopped half way through previous

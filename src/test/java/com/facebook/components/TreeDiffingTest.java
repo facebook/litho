@@ -507,3 +507,6 @@ public class TreeDiffingTest {
         .color(Color.WHITE)
         .build();
 
+    ComponentTree componentTree = ComponentTree.create(mContext, firstComponent)
+        .incrementalMount(false)
+        .build();
