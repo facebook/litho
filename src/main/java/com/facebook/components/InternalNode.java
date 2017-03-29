@@ -721,3 +721,72 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public InternalNode minWidthPx(@Px int minWidth) {
+    mPrivateFlags |= PFLAG_MIN_WIDTH_IS_SET;
+    mYogaNode.setMinWidth(minWidth);
+    return this;
+  }
+
+  @Override
+  public InternalNode minWidthPercent(float percent) {
+    mPrivateFlags |= PFLAG_MIN_WIDTH_IS_SET;
+    mYogaNode.setMinWidthPercent(percent);
+    return this;
+  }
+
+  @Override
+  public InternalNode minWidthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+    return minWidthPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
+  }
+
+  @Override
+  public InternalNode minWidthAttr(@AttrRes int resId) {
+    return minWidthAttr(resId, 0);
+  }
+
+  @Override
+  public InternalNode minWidthRes(@DimenRes int resId) {
+    return minWidthPx(mResourceResolver.resolveDimenSizeRes(resId));
+  }
+
+  @Override
+  public InternalNode minWidthDip(@Dimension(unit = DP) int minWidth) {
+    return minWidthPx(mResourceResolver.dipsToPixels(minWidth));
+  }
+
+  @Override
+  public InternalNode maxWidthPx(@Px int maxWidth) {
+    mPrivateFlags |= PFLAG_MAX_WIDTH_IS_SET;
+    mYogaNode.setMaxWidth(maxWidth);
+    return this;
+  }
+
+  @Override
+  public InternalNode maxWidthPercent(float percent) {
+    mPrivateFlags |= PFLAG_MAX_WIDTH_IS_SET;
+    mYogaNode.setMaxWidthPercent(percent);
+    return this;
+  }
+
+  @Override
+  public InternalNode maxWidthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+    return maxWidthPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
+  }
+
+  @Override
+  public InternalNode maxWidthAttr(@AttrRes int resId) {
+    return maxWidthAttr(resId, 0);
+  }
+
+  @Override
+  public InternalNode maxWidthRes(@DimenRes int resId) {
+    return maxWidthPx(mResourceResolver.resolveDimenSizeRes(resId));
+  }
+
+  @Override
+  public InternalNode maxWidthDip(@Dimension(unit = DP) int maxWidth) {
+    return maxWidthPx(mResourceResolver.dipsToPixels(maxWidth));
+  }
+
+  @Override
+  public InternalNode heightPx(@Px int height) {
