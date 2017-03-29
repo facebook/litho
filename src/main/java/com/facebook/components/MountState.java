@@ -1587,3 +1587,10 @@ class MountState {
     final Component<?> component = item.getComponent();
 
     if (isHostSpec(component)) {
+      final ComponentHost componentHost = (ComponentHost) content;
+      hostsByMarker.removeAt(hostsByMarker.indexOfValue(componentHost));
+      // We need to make sure to remove any disappearing items and clean up their state if we
+      // are unmounting its host.
+      if (componentHost.hasDisappearingItems()) {
+        mTransitionManager.cleanupDisappearingTransitions(componentHost.getDisappearingItemKeys());
+      }
