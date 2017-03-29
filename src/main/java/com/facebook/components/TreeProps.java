@@ -27,3 +27,4 @@ public class TreeProps {
     mMap.put(key, value);
   }
 
+  public <T> T get(Class key) {
