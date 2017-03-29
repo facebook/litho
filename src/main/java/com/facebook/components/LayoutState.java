@@ -552,3 +552,5 @@ class LayoutState {
           diffNode.setBackground(backgroundOutput);
         }
       }
+    }
+
