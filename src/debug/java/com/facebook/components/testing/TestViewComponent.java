@@ -93,3 +93,12 @@ public class TestViewComponent extends ComponentLifecycle {
   }
 
   @Override
+  protected Object onCreateMountContent(ComponentContext c) {
+    if (c instanceof TestComponentContextWithView) {
+      return ((TestComponentContextWithView) c).getTestView();
+    }
+    return new View(c);
+  }
+
+  @Override
+  protected void onMount(ComponentContext c, Object convertView, Component _stateObject) {

@@ -29,3 +29,4 @@ class LayoutOutput implements Cloneable {
   public static final int TYPE_FOREGROUND = 2;
   public static final int TYPE_HOST = 3;
   public static final int TYPE_BORDER = 4;
+

@@ -33,3 +33,10 @@ import static org.mockito.Mockito.verify;
  */
 @RunWith(ComponentsTestRunner.class)
 @Config(shadows = GlyphWarmerTest.ShadowPicture.class)
+public class GlyphWarmerTest {
+  private ShadowLooper mShadowLooper;
+  private GlyphWarmer mGlyphWarmer;
+
+  @Before
+  public void setup() {
+    mGlyphWarmer = GlyphWarmer.getInstance();

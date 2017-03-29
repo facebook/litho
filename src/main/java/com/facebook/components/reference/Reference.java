@@ -36,3 +36,5 @@ public abstract class Reference<L> {
     mLifecycle = lifecycle;
   }
 
+  /**
+   * Acquires a Reference of type T. It is responsibility of the caller to release the acquired

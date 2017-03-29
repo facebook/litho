@@ -44,3 +44,4 @@ class DrawableComponent<T extends Drawable> extends ComponentLifecycle {
   @Override
   protected void onMount(
       ComponentContext context,
+      Object content,

@@ -35,3 +35,4 @@ class MountItem {
   private Component<?> mComponent;
   private Object mContent;
   private ComponentHost mHost;
+  private boolean mIsBound;

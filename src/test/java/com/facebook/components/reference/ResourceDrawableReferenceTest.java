@@ -31,3 +31,7 @@ public class ResourceDrawableReferenceTest {
   public void setup() {
     mContext = new ComponentContext(RuntimeEnvironment.application);
   }
+
+  @Test
+  public void testAcquire() {
+    Drawable drawable = Reference.acquire(

@@ -38,3 +38,6 @@ public class ColorDrawableReferenceTest {
     mContext = new ComponentContext(RuntimeEnvironment.application);
   }
 
+  @Test
+  public void testAcquire() {
+    ColorDrawable drawable =  (ColorDrawable) Reference.acquire(
