@@ -599,3 +599,4 @@ public class ComponentTree {
         SIZE_UNINITIALIZED,
         false /* isAsync */,
         null /* output */);
+  }
