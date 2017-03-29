@@ -1950,3 +1950,8 @@ public class Stages {
       addCompareStatement(implInstanceName, v, equalsBuilder, true);
     }
 
+    equalsBuilder.addStatement("return true");
+
+    return equalsBuilder.build();
+  }
+
