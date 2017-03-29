@@ -61,3 +61,4 @@ class EditTextSpec {
   private static final int DEFAULT_HINT_COLOR = 0;
   private static final int[][] DEFAULT_HINT_COLOR_STATE_LIST_STATES = {{0}};
   private static final int[] DEFAULT_HINT_COLOR_STATE_LIST_COLORS = {Color.LTGRAY};
+  private static final int DEFAULT_GRAVITY = Gravity.CENTER_VERTICAL | Gravity.START;
