@@ -643,3 +643,19 @@ class LayoutState {
     }
 
     // 7. Add VisibilityOutputs if any visibility-related event handlers are present.
+    if (node.hasVisibilityHandlers()) {
+      final VisibilityOutput visibilityOutput = createVisibilityOutput(node, layoutState);
+      final long previousId =
+          shouldUseCachedOutputs ? currentDiffNode.getVisibilityOutput().getId() : -1;
+
+      layoutState.mLayoutStateOutputIdCalculator.calculateAndSetVisibilityOutputId(
+          visibilityOutput,
+          layoutState.mCurrentLevel,
+          previousId);
+      layoutState.mVisibilityOutputs.add(visibilityOutput);
+
+      if (diffNode != null) {
+        diffNode.setVisibilityOutput(visibilityOutput);
+      }
+    }
+
