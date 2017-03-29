@@ -517,3 +517,12 @@ public class RecyclerBinderTest {
   @Test
   public void testMoveRangeToEnd() {
     final List<ComponentInfo> components = prepareLoadedBinder();
+    final int newRangeStart = 99;
+    final int newRangeEnd = 99;
+    final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
+
+    mRecyclerBinder.onNewVisibleRange(newRangeStart, newRangeEnd);
+
+    TestComponentTreeHolder componentTreeHolder;
+
+    for (int i = 0; i < components.size(); i++) {
