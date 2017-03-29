@@ -3354,3 +3354,8 @@ static void YGRoundToPixelGrid(const YGNodeRef node, const float pointScaleFacto
   // Now we round width and height in the same way accounting for fractial leftovers from rounding position
   const float adjustedWidth = fractialLeft + node->layout.dimensions[YGDimensionWidth];
   const float adjustedHeight = fractialTop + node->layout.dimensions[YGDimensionHeight];
+  float roundedWidth = adjustedWidth - fmodf(adjustedWidth, pointScaleFactor);
+  float roundedHeight = adjustedHeight - fmodf(adjustedHeight, pointScaleFactor);
+
+  if (adjustedWidth - roundedWidth >= pointScaleFactor / 2.0f) {
+    roundedWidth += pointScaleFactor;
