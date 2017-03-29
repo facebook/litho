@@ -59,3 +59,4 @@ class TouchExpansionDelegate extends TouchDelegate {
     }
 
     final int valueIndex = mDelegates.indexOfKey(index);
+    final InnerTouchDelegate touchDelegate = mDelegates.valueAt(valueIndex);

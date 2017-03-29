@@ -17,3 +17,8 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnMount;
 import com.facebook.litho.annotations.ResType;
+
+/**
+ * A component that is able to render the card's shadow. Used in the
+ * implementation of {@link CardSpec}.
+ */

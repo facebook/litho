@@ -95,3 +95,5 @@ public final class DrawableMatrix extends Matrix {
 
       result.setScale(scale, scale);
       result.postTranslate(FastMath.round(dx), FastMath.round(dy));
+
+      result.mShouldClipRect = true;
