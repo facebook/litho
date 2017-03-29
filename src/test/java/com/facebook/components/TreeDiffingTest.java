@@ -454,3 +454,6 @@ public class TreeDiffingTest {
     MountItem mountItem = new MountItem();
     MountItem mountItem1 = new MountItem();
     MountItem mountItem2 = new MountItem();
+    hostHolder.mount(0, mountItem, new Rect());
+    hostHolder.mount(1, mountItem1, new Rect());
+    hostHolder.mount(2, mountItem2, new Rect());
