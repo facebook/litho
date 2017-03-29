@@ -538,3 +538,4 @@ public class ComponentsPools {
     sOutputPool.release(output);
   }
 
+  @ThreadSafe(enableChecks = false)
