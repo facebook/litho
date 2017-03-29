@@ -43,3 +43,6 @@
 
 #include <fb/visibility.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
