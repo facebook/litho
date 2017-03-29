@@ -256,3 +256,5 @@ class PropsBuilderMethodsSpecBuilder {
         .addMember("unit", "$T.DP", ClassNames.DIMENSION)
         .build();
 
+    return builder(
+        mPropParameter.parameter.name + "Dip",

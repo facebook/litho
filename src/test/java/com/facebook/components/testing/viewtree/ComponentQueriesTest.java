@@ -27,3 +27,4 @@ public class ComponentQueriesTest {
   @Before
   public void setup() {
     mContext = new ComponentContext(RuntimeEnvironment.application);
+  }
