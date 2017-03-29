@@ -36,3 +36,29 @@ public class ProgressSpecTest {
   public void setup() {
     mContext = new ComponentContext(RuntimeEnvironment.application);
   }
+
+  @Test
+  public void testDefault() {
+    ComponentView view = getMountedView();
+    assertThat(view.getMeasuredWidth()).isGreaterThan(0);
+    assertThat(view.getMeasuredHeight()).isGreaterThan(0);
+  }
+
+  /**
+   * Ignored because the first view.measure() fails to trigger onMeasure in ProgressSpec.
+   * CSSLayout bug?
+   */
+  @Test
+  @Ignore
+  public void testUnsetSize() {
+    ComponentView view = getMountedView();
+
+    view.measure(
+        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+
+    assertThat(view.getMeasuredWidth()).isEqualTo(ProgressSpec.DEFAULT_SIZE);
+    assertThat(view.getMeasuredHeight()).isEqualTo(ProgressSpec.DEFAULT_SIZE);
+  }
+
+  private ComponentView getMountedView() {

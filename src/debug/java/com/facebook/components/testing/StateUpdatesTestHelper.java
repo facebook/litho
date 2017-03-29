@@ -49,3 +49,5 @@ public class StateUpdatesTestHelper {
   }
 
   /**
+   * Call a state update as specified in {@link StateUpdater#performStateUpdate(ComponentContext)}
+   *   on the component and return the updated view with the option to incrementally mount.

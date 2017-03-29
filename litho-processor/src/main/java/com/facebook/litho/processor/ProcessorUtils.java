@@ -45,3 +45,11 @@ public class ProcessorUtils {
       }
     }
 
+    return null;
+  }
+
+  /**
+   * Convenience method to simplify extracting an AnnotationValue from an AnnotationMirror on a
+   * TypeElement
+   */
+  public static AnnotationValue getAnnotationValue(
