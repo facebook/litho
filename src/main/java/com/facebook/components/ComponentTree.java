@@ -1217,3 +1217,7 @@ public class ComponentTree {
     private Object layoutLock;
     private StateHandler stateHandler;
     private boolean asyncStateUpdates = true;
+
+    protected Builder() {
+    }
+
