@@ -1715,3 +1715,4 @@ public class Stages {
     final MethodSpec copyInterStage = generateCopyInterStageImpl(implClassName);
     if (copyInterStage != null) {
       implClassBuilder.addMethod(copyInterStage);
+    }
