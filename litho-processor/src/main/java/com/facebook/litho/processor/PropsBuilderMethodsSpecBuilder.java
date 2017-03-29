@@ -263,3 +263,7 @@ class PropsBuilderMethodsSpecBuilder {
   }
 
   private MethodSpec sipBuilder() {
+    AnnotationSpec spAnnotation = AnnotationSpec.builder(ClassNames.DIMENSION)
+        .addMember("unit", "$T.SP", ClassNames.DIMENSION)
+        .build();
+

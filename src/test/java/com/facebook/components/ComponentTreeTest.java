@@ -175,3 +175,4 @@ public class ComponentTreeTest {
         ComponentTree.create(mContext, mComponent)
             .incrementalMount(false)
             .build();
+    componentTree.setSizeSpecAsync(mWidthSpec, mHeightSpec);
