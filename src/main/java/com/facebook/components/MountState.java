@@ -921,3 +921,5 @@ class MountState {
     setViewAttributes(item);
 
     return item;
+  }
+
