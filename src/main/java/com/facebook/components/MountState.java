@@ -759,3 +759,4 @@ class MountState {
           // recursively unmounted.
           unmountItem(mContext, i, mHostsByMarker);
           mPrepareMountStats.unmountedCount++;
+        } else if (newPosition != i) {

@@ -694,3 +694,7 @@ public class ComponentsPools {
     @Override
     public void onActivityStopped(Activity activity) {
       // Do nothing.
+    }
+
+    @Override
+    public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
