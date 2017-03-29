@@ -200,3 +200,4 @@ class MountState {
             !isIncrementalMountEnabled ||
                 isMountedHostWithChildContent(currentMountItem) ||
                 Rect.intersects(localVisibleRect, layoutOutput.getBounds());
+
