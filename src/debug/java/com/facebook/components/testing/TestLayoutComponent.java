@@ -162,3 +162,9 @@ public class TestLayoutComponent extends ComponentLifecycle {
 
   public static class State extends TestComponent<TestLayoutComponent> implements Cloneable {
 
+    private State(
+        boolean callsShouldUpdateOnMount,
+        boolean isPureRender,
+        boolean hasMountSpecChild,
+        boolean isDelegate) {
+      super(get(callsShouldUpdateOnMount, isPureRender, hasMountSpecChild, isDelegate));

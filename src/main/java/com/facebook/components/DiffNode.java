@@ -29,3 +29,5 @@ class DiffNode implements Cloneable {
   private Component mComponent;
   private float mLastMeasuredWidth;
   private float mLastMeasuredHeight;
+  private int mLastWidthSpec;
+  private int mLastHeightSpec;

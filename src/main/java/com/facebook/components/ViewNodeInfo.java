@@ -107,3 +107,7 @@ class ViewNodeInfo {
       return;
     }
 
+    if (mExpandedTouchBounds != null) {
+      throw new IllegalStateException("ExpandedTouchBounds already initialized for this " +
+          "ViewNodeInfo.");
+    }

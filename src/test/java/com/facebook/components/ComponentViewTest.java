@@ -79,3 +79,4 @@ public class ComponentViewTest {
   private static long[] getInternalMountItems(ComponentView componentView) {
     MountState mountState = Whitebox.getInternalState(componentView, "mMountState");
     return Whitebox.getInternalState(mountState, "mLayoutOutputsIds");
+  }
