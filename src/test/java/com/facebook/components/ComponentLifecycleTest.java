@@ -367,3 +367,10 @@ public class ComponentLifecycleTest {
     public MountType getMountType() {
       return MountType.DRAWABLE;
     }
+
+    @Override
+    protected boolean canMeasure() {
+      return true;
+    }
+
+    @Override
