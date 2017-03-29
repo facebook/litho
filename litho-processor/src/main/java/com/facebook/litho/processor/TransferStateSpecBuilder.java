@@ -64,3 +64,7 @@ class TransferStateSpecBuilder {
         .addAnnotation(Override.class)
         .addModifiers(Modifier.PROTECTED)
         .addParameter(ParameterSpec.builder(mContextClassName, "context").build())
+        .addParameter(
+            ParameterSpec.builder(mStateContainerClassName, "prevStateContainer").build())
+        .addParameter(
+            ParameterSpec.builder(mComponentClassName, "component").build())

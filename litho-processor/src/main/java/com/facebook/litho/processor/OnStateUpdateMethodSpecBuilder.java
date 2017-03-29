@@ -120,3 +120,8 @@ class OnStateUpdateMethodSpecBuilder {
     codeBlockBuilder.add(");\n");
 
     builder.addCode(codeBlockBuilder.build());
+    if (mIsAsync) {
+      builder.addStatement("c.updateStateAsync(_stateUpdate)");
+    } else {
+      builder.addStatement("c.updateState(_stateUpdate)");
+    }
