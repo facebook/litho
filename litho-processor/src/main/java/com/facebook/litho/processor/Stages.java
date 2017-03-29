@@ -1016,3 +1016,11 @@ public class Stages {
       throw new ComponentsProcessingException(
           executableElement,
           "The @OnCreateInitialState method should have an " + contextClass +
+              "followed by Output parameters matching state parameters.");
+    }
+
+    final TypeName firstParamType = ClassName.get(parameters.get(0).asType());
+    if (!firstParamType.equals(contextClass)) {
+      throw new ComponentsProcessingException(
+          parameters.get(0),
+          "The first argument of the @OnCreateInitialState method should be an " +

@@ -718,3 +718,4 @@ public class ComponentsPools {
     sMountContentPoolsByContext.remove(activity);
 
     // Clear any context wrappers holding a reference to this activity.
+    final Iterator<Map.Entry<Context, SparseArray<PoolWithCount>>> it =
