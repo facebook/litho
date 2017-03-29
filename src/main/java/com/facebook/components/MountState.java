@@ -1620,3 +1620,4 @@ class MountState {
       lifecycle.onUnbind(context, content, component);
       item.setIsBound(false);
     }
+    lifecycle.unmount(context, content, component);
