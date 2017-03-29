@@ -1017,3 +1017,14 @@ public class TreeDiffingTest {
     TestComponent nestedLeaf1 = (TestComponent) layoutState.getMountableOutputAt(3).getComponent();
     assertFalse(nestedLeaf1.wasMeasureCalled());
     TestComponent nestedLeaf2 = (TestComponent) layoutState.getMountableOutputAt(4).getComponent();
+    assertFalse(nestedLeaf2.wasMeasureCalled());
+  }
+
+  @Test
+  public void testCachedMeasuresForCachedLayoutSpecWithMeasure() {
+    final ComponentContext c = new ComponentContext(RuntimeEnvironment.application);
+    final int widthSpecContainer = SizeSpec.makeSizeSpec(300, SizeSpec.EXACTLY);
+    final int heightSpec = SizeSpec.makeSizeSpec(40, SizeSpec.AT_MOST);
+    final int horizontalPadding = 20;
+    final int widthMeasuredComponent = SizeSpec.makeSizeSpec(
+        SizeSpec.getSize(widthSpecContainer) - horizontalPadding - horizontalPadding,
