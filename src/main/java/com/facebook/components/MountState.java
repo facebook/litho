@@ -928,3 +928,13 @@ class MountState {
 
     if (isHostSpec(component)) {
       return host.recycleHost();
+    }
+
+    return ComponentsPools.acquireMountContent(mContext, lifecycle.getId());
+  }
+
+  private static void applyBoundsToMountContent(
+      Object content,
+      int left,
+      int top,
+      int right,

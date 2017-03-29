@@ -1696,3 +1696,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
         paddingPx(BOTTOM, a.getDimensionPixelOffset(attr, 0));
       } else if (attr == R.styleable.ComponentLayout_android_paddingStart && SUPPORTS_RTL) {
         paddingPx(START, a.getDimensionPixelOffset(attr, 0));
+      } else if (attr == R.styleable.ComponentLayout_android_paddingEnd && SUPPORTS_RTL) {
