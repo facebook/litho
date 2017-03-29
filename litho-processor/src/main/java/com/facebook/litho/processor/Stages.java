@@ -2416,3 +2416,7 @@ public class Stages {
 
     final TypeMirror returnType =
         Utils.getAnnotationParameter(mProcessingEnv, eventDeclaration, Event.class, "returnType");
+    if (returnType != null) {
+      methodDescription.returnType = TypeName.get(returnType);
+    }
+
