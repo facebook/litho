@@ -166,3 +166,11 @@ public class InternalNodeTest {
   }
 
   @Test
+  public void testPositionFlag() {
+    mNode.positionPx(YogaEdge.ALL, 3);
+    assertTrue(isFlagSet(mNode, "PFLAG_POSITION_IS_SET"));
+    clearFlag(mNode, "PFLAG_POSITION_IS_SET");
+    assertEmptyFlags(mNode);
+  }
+
+  @Test
