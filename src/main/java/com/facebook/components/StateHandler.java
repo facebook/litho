@@ -96,3 +96,4 @@ public class StateHandler {
    * Assumed thread-safe because the one write is before all the reads.
    * @param component the new component
    */
+  @ThreadSafe(enableChecks = false)

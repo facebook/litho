@@ -32,3 +32,8 @@ public class ComponentContext extends ContextWrapper {
   private final StateHandler mStateHandler;
 
   // Hold a reference to the component which scope we are currently within.
+  private @ThreadConfined(ThreadConfined.ANY) Component<?> mComponentScope;
+  private @ThreadConfined(ThreadConfined.ANY) ResourceCache mResourceCache;
+  private @ThreadConfined(ThreadConfined.ANY) int mWidthSpec;
+  private @ThreadConfined(ThreadConfined.ANY) int mHeightSpec;
+  private @ThreadConfined(ThreadConfined.ANY) TreeProps mTreeProps;

@@ -98,3 +98,4 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
   private String mKey;
 
   private final L mLifecycle;
+  private @ThreadConfined(ThreadConfined.ANY) ComponentContext mScopedContext;
