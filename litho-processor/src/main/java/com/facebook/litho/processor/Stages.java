@@ -1342,3 +1342,4 @@ public class Stages {
         eventHandlerParams.add(
             "\n" + implInstanceName + ".$L,",
             v.getSimpleName().toString());
+      }
