@@ -326,3 +326,4 @@ FBEXPORT int fb_printLog(int prio, const char* tag, const char* fmt, ...)
   __android_log_vprint(prio, tag, fmt)
 
 #define fb_printAssert(cond, tag, fmt...) __android_log_assert(cond, tag, fmt)
+
