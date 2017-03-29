@@ -85,3 +85,11 @@ class LayoutOutput implements Cloneable {
     mBounds.set(l, t, r, b);
   }
 
+  void setHostTranslationX(int hostTranslationX) {
+    mHostTranslationX = hostTranslationX;
+  }
+
+  void setHostTranslationY(int hostTranslationY) {
+    mHostTranslationY = hostTranslationY;
+  }
+
