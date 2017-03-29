@@ -823,3 +823,5 @@ class MountState {
     // interactive we create a LayoutOutput without content in order to set up click handling.
     lifecycle.unmount(previousComponent.getScopedContext(), previousContent, previousComponent);
     lifecycle.mount(component.getScopedContext(), previousContent, component);
+  }
+

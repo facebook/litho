@@ -765,3 +765,46 @@ public class ComponentsPools {
      * @throws IllegalArgumentException If the max pool size is less than zero.
      */
     PoolWithCount(int maxPoolSize) {
+      super(maxPoolSize);
+      mSize = maxPoolSize;
+      mCount = 0;
+    }
+
+    @Override
+    public Object acquire() {
+      Object obj = super.acquire();
+      if (obj != null) {
+        mCount--;
+      }
+
+      return obj;
+    }
+
+    @Override
+    public boolean release(Object element) {
+      boolean inserted = super.release(element);
+      if (inserted) {
+        mCount++;
+      }
+
+      return inserted;
+    }
+
+    public boolean isFull() {
+      return mCount >= mSize;
+    }
+  }
+
+  public static DisplayListDrawable acquireDisplayListDrawable(
+      Drawable content,
+      DisplayList displayList) {
+    DisplayListDrawable displayListDrawable = sDisplayListDrawablePool.acquire();
+    if (displayListDrawable == null) {
+      displayListDrawable = new DisplayListDrawable(content, displayList);
+    } else {
+      displayListDrawable.setWrappedDrawable(content, displayList);
+    }
+
+    return displayListDrawable;
+  }
+
