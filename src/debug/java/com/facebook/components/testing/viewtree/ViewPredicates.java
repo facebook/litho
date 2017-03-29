@@ -36,3 +36,4 @@ final class ViewPredicates {
    * Returns a predicate that returns true if the applied on view's text is equal to the given
    * text.
    * substring.
+   * @param predicate the predicate with which to test the text
