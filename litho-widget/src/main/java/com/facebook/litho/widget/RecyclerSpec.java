@@ -215,3 +215,4 @@ class RecyclerSpec {
               "before unmounting");
     }
 
+    recyclerView.setId(RecyclerSpec.recyclerViewId);
