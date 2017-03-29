@@ -69,3 +69,8 @@ android_library(
     ],
     deps = [
         COMPONENTS_ANDROIDSUPPORT_TARGET,
+        COMPONENTS_JAVA_TARGET,
+        COMPONENTS_ROBOLECTRIC_TARGET,
+        COMPONENTS_YOGA_TARGET,
+    ],
+)

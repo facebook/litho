@@ -40,3 +40,13 @@ import static org.powermock.api.mockito.PowerMockito.mock;
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
 @RunWith(ComponentsTestRunner.class)
 public class LayoutStateRecyclingTest {
+
+  @Rule
+  public PowerMockRule mPowerMockRule = new PowerMockRule();
+
+  private int mUnspecifiedSizeSpec;
+
+  @Before
+  public void setUp() throws Exception {
+    mUnspecifiedSizeSpec = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
+  }
