@@ -697,3 +697,4 @@ public class ComponentsPools {
 
     @Override
     public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+      // Do nothing.
