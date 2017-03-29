@@ -561,3 +561,11 @@ public class ComponentHost extends ViewGroup {
   public List<CharSequence> getContentDescriptions() {
     final List<CharSequence> contentDescriptions = new ArrayList<>();
     for (int i = 0, size = mDrawableMountItems.size(); i < size; i++) {
+      final NodeInfo nodeInfo = mDrawableMountItems.valueAt(i).getNodeInfo();
+      if (nodeInfo == null) {
+        continue;
+      }
+
+      final CharSequence contentDescription = nodeInfo.getContentDescription();
+      if (contentDescription != null) {
+        contentDescriptions.add(contentDescription);
