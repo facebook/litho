@@ -64,3 +64,5 @@ public class MountStateViewTest {
           }
         });
 
+    final View child = componentView.getChildAt(0);
+    final Drawable background = child.getBackground();

@@ -51,3 +51,10 @@ public class TestDrawableComponent extends ComponentLifecycle {
           lifecycle.mImplementsAccessibility == implementsAccessibility &&
           lifecycle.mUsesDisplayList == usesDisplayList &&
           lifecycle.mIsMountSizeDependent == isMountSizeDependent) {
+        return lifecycle;
+      }
+    }
+
+    final TestDrawableComponent lifecycle = new TestDrawableComponent(
+        callsShouldUpdateOnMount,
+        isPureRender,

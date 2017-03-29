@@ -49,3 +49,7 @@ public class LayoutStateCalculateTopsAndBottomsTest {
                     .heightPx(20))
             .child(
                 TestDrawableComponent.create(c)
+                    .withLayout().flexShrink(0)
+                    .positionType(YogaPositionType.ABSOLUTE)
+                    .positionPx(YogaEdge.TOP, 10)
+                    .positionPx(YogaEdge.BOTTOM, 30))

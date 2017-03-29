@@ -42,3 +42,15 @@ public class MountStateBoundsTest {
 
   @Test
   public void testMountedDrawableBounds() {
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return TestDrawableComponent.create(c)
+                .withLayout().flexShrink(0)
+                .widthPx(10)
+                .heightPx(10)
+                .build();
+          }
+        });

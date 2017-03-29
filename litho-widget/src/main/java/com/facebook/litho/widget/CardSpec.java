@@ -90,3 +90,4 @@ class CardSpec {
                 .backgroundColor(cardBackgroundColor)
                 .child(content)
                 .child(
+                    CardClip.create(c)

@@ -62,3 +62,5 @@ public class TestLayoutComponent extends ComponentLifecycle {
     return lifecycle;
   }
 
+  private TestLayoutComponent(
+      boolean callsShouldUpdateOnMount,

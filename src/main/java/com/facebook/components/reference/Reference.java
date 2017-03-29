@@ -54,3 +54,4 @@ public abstract class Reference<L> {
    * An object that was released calling this function should not be retained or used in any way.
    */
   public static <T> void release(
+      ComponentContext context,

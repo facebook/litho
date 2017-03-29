@@ -209,3 +209,45 @@ public class LayoutDirectionTest {
 
     drawable1 = componentView.getDrawables().get(0);
     drawable2 = componentView.getDrawables().get(1);
+
+    assertEquals(new Rect(10, 0, 20, 10), drawable1.getBounds());
+    assertEquals(new Rect(0, 0, 10, 10), drawable2.getBounds());
+  }
+
+  /**
+   * Test that layout direction is propagated properly throughout a component hierarchy. This is the
+   * default behaviour of layout direction.
+   */
+  @Test
+  public void testInheritLayoutDirection() {
+    final TestComponent child1 = TestDrawableComponent.create(mContext)
+        .build();
+    final TestComponent child2 = TestDrawableComponent.create(mContext)
+        .build();
+
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+              @Override
+              protected ComponentLayout onCreateLayout(ComponentContext c) {
+                return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    .flexDirection(YogaFlexDirection.ROW)
+                    .layoutDirection(YogaDirection.RTL)
+                    .child(
+                        Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                            .flexDirection(YogaFlexDirection.ROW)
+                            .wrapInView()
+                            .child(
+                                Layout.create(c, child1).flexShrink(0)
+                                    .widthPx(10)
+                                    .heightPx(10))
+                            .child(
+                                Layout.create(c, child2).flexShrink(0)
+                                    .widthPx(10)
+                                    .heightPx(10)))
+                    .build();
+              }
+            },
+        20,
+        10);
+

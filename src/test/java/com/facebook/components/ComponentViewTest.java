@@ -35,3 +35,16 @@ public class ComponentViewTest {
 
   @Before
   public void setup() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return TestDrawableComponent.create(c)
+            .withLayout().flexShrink(0)
+            .widthPx(100)
+            .heightPx(100)
+            .build();
+      }
+    };
+
+    final ComponentContext c = new ComponentContext(RuntimeEnvironment.application);
+    final ComponentTree componentTree = ComponentTree.create(c, component)
