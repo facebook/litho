@@ -1300,3 +1300,4 @@ class LayoutState {
       // Transfer information from the holder node to the nested tree root before measurement.
       nestedTreeHolder.copyInto(root);
       diffTreeRoot = nestedTreeHolder.getDiffNode();
+    } else if (root.getStyleDirection() == com.facebook.yoga.YogaDirection.INHERIT
