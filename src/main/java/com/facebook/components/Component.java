@@ -180,3 +180,5 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
     try {
       Component<L> component = (Component<L>) super.clone();
       component.mIsLayoutStarted = false;
+
+      return component;
