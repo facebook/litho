@@ -1356,3 +1356,8 @@ public class LayoutStateCalculateTest {
 
     assertEquals(10, layoutState.getMountableOutputCount());
 
+    long hostMarkerRoot = layoutState.getMountableOutputAt(1).getHostMarker();
+    long hostMarkerOne = layoutState.getMountableOutputAt(3).getHostMarker();
+    long hostMarkerTwo = layoutState.getMountableOutputAt(6).getHostMarker();
+    long hostMarkerThree = layoutState.getMountableOutputAt(7).getHostMarker();
+    long hostMarkerFour = layoutState.getMountableOutputAt(9).getHostMarker();
