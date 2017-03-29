@@ -176,3 +176,5 @@ public class ComponentTreeTest {
             .incrementalMount(false)
             .build();
     componentTree.setSizeSpecAsync(mWidthSpec, mHeightSpec);
+
+    // Only fields changed but no layout is done yet.
