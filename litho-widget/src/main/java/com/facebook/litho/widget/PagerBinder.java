@@ -333,3 +333,6 @@ public abstract class PagerBinder extends BaseBinder<
 
       if (currentPosition < 0 || currentPosition >= getBinder().getCount()) {
         return;
+      }
+
+      // Set range position.
