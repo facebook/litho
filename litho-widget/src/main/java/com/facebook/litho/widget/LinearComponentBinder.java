@@ -31,3 +31,8 @@ public abstract class LinearComponentBinder extends
     this(context, layoutManager, new RecyclerComponentWorkingRangeController());
   }
 
+  public LinearComponentBinder(Context context, LinearLayoutManager layoutManager,
+      RecyclerComponentWorkingRangeController rangeController) {
+    super(context, layoutManager, rangeController);
+  }
+

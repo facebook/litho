@@ -52,3 +52,4 @@ class BinderTreeCollection {
    * shift all the elements on the right of "position" by 1.
    */
   void insert(int position, ComponentTree item) {
+    shiftRangeRight(position, getFirstPosition() + size() - position, 1);

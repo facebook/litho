@@ -47,3 +47,4 @@ class DrawableComponent<T extends Drawable> extends ComponentLifecycle {
       Object content,
       Component component) {
     MatrixDrawable drawable = (MatrixDrawable) content;
+    final State<T> state = (State) component;

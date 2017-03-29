@@ -37,3 +37,11 @@ public abstract class GridComponentBinder extends RecyclerComponentBinder<
   private int mInitFillCrossAxis;
 
   public GridComponentBinder(Context context, GridLayoutManager layoutManager) {
+    this(context, layoutManager, new RecyclerComponentWorkingRangeController());
+  }
+
+  public GridComponentBinder(
+      Context context,
+      GridLayoutManager layoutManager,
+      RecyclerComponentWorkingRangeController rangeController) {
+    super(context, layoutManager, rangeController);
