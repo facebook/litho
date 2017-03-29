@@ -119,3 +119,4 @@ class ImageSpec {
     }
   }
 
+  @OnBoundsDefined

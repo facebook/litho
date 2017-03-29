@@ -1111,3 +1111,8 @@ public class Stages {
       fromParams.add(new Parameter(from.parameterTypes[i], toParams.get(i).name));
     }
 
+    final List<PrintableException> errors = new ArrayList<>();
+    for (int i = 0; i < expectedTypes.size(); i++) {
+      if (!toParams.get(i).type.equals(expectedTypes.get(i))) {
+        errors.add(new ComponentsProcessingException(
+            to.getParameters().get(i),
