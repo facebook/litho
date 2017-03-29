@@ -408,3 +408,4 @@ class TextSpec {
     return newLayout;
   }
 
+  @OnBoundsDefined
