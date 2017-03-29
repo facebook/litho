@@ -1456,3 +1456,5 @@ public class Stages {
         .target(mSourceDelegateAccessorName)
         .toName(evenHandlerName)
         .toParams(getParams(element))
+        .fromReturnType(ClassName.get(element.getReturnType()))
+        .toReturnType(ClassName.get(element.getReturnType()))
