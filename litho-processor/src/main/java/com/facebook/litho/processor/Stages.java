@@ -1773,3 +1773,20 @@ public class Stages {
     for (String stateName : mStateMap.keySet()) {
       VariableElement v = mStateMap.get(stateName);
       stateContainerImplClassBuilder.addField(getPropFieldSpec(v, true));
+    }
+
+    writeInnerTypeSpec(stateContainerImplClassBuilder.build());
+  }
+
+  private static MethodSpec generateStateContainerGetter(ClassName stateContainerClassName) {
+    return MethodSpec.methodBuilder("getStateContainer")
+        .addModifiers(Modifier.PROTECTED)
+        .addAnnotation(Override.class)
+        .returns(stateContainerClassName)
+        .addStatement("return " + STATE_CONTAINER_IMPL_MEMBER)
+        .build();
+  }
+
+  public void generateReferenceImplClass(
+      Stages.StaticFlag isStatic,
+      TypeMirror referenceType) {
