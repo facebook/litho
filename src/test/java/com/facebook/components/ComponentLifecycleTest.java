@@ -53,3 +53,6 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 @RunWith(ComponentsTestRunner.class)
 public class ComponentLifecycleTest {
 
+  @Rule
+  public PowerMockRule mPowerMockRule = new PowerMockRule();
+
