@@ -354,3 +354,6 @@ class TextSpec {
         .setSingleLine(isSingleLine)
         .setText(text)
         .setTextSize(textSize)
+        .setWidth(
+            SizeSpec.getSize(widthSpec),
+            textMeasureMode);
