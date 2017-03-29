@@ -1015,3 +1015,4 @@ class MountState {
       // 7. Set setFocusable flag.
       setFocusable(view, nodeInfo.getFocusState());
     }
+
