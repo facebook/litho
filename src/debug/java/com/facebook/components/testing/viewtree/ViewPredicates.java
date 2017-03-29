@@ -186,3 +186,4 @@ final class ViewPredicates {
     return Predicates.and(isVisible(), hasDrawable(drawable));
   }
 
+  /** @return A Predicate which is true if the view is visible and has the given id. */
