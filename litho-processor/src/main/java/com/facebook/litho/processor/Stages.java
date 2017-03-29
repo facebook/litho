@@ -248,3 +248,4 @@ public class Stages {
     // Null stage is allowed and indicates prop
     int stageIndex = -1;
     if (stage != null) {
+      stageIndex = asList(mStageAnnotations).indexOf(stage);
