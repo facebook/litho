@@ -67,3 +67,6 @@ final class ViewPredicates {
     return hasTextMatchingPredicate(Predicates.equalTo(text));
   }
 
+  public static Predicate<View> hasTag(final int tagId, final Object tagValue) {
+    return new Predicate<View>() {
+      @Override
