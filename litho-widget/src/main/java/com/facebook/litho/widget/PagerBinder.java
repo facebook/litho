@@ -280,3 +280,7 @@ public abstract class PagerBinder extends BaseBinder<
 
     InternalOnPageChangeListener(PagerBinder binder) {
       mBinder = binder;
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
