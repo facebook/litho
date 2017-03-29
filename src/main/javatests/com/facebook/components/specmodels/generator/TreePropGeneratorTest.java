@@ -67,3 +67,8 @@ public class TreePropGeneratorTest {
                 null),
             MethodParamModelFactory.create(
                 TypeName.BOXED_BOOLEAN,
+                "prop",
+                ImmutableList.of(createAnnotation(Prop.class)),
+                new ArrayList<AnnotationSpec>(),
+                null),
+            MethodParamModelFactory.create(

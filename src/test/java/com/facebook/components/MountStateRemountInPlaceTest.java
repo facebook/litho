@@ -247,3 +247,4 @@ public class MountStateRemountInPlaceTest {
   }
 
   @Test
+  public void testMountUnmountWithNoShouldUpdateAndDifferentMeasures() {
