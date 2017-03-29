@@ -1058,3 +1058,22 @@ public class Stages {
       MethodDescription from,
       ExecutableElement to,
       ClassName propsClass) {
+    generateDelegate(
+        from,
+        to,
+        Collections.<TypeName>emptyList(),
+        Collections.<String, String>emptyMap(),
+        propsClass);
+  }
+
+  public void generateDelegate(
+      MethodDescription from,
+      ExecutableElement to,
+      List<TypeName> expectedTypes,
+      ClassName propsClass) {
+    generateDelegate(
+        from,
+        to,
+        expectedTypes,
+        Collections.<String, String>emptyMap(),
+        propsClass);
