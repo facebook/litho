@@ -866,3 +866,4 @@ class LayoutState {
       int widthSpec,
       int heightSpec,
       boolean shouldGenerateDiffTree,
+      DiffNode previousDiffTreeRoot) {
