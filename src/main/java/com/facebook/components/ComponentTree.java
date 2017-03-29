@@ -1244,3 +1244,4 @@ public class ComponentTree {
 
     /**
      * Whether or not to enable the incremental mount optimization. True by default.
+     * In order to use incremental mount you should disable mount diffing.
