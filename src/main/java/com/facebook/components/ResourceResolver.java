@@ -24,3 +24,21 @@ import android.support.annotation.StringRes;
 
 import com.facebook.litho.reference.Reference;
 import com.facebook.litho.reference.ResourceDrawableReference;
+
+public class ResourceResolver {
+  private ComponentContext mContext;
+  private Resources mResources;
+  private Resources.Theme mTheme;
+  private ResourceCache mResourceCache;
+
+  // Use for *Attr methods to retrieve attributes without needing to
+  // allocate a new int[] for each call.
+  private final int[] mAttrs = new int[1];
+
+  public final void init(ComponentContext context, ResourceCache resourceCache) {
+    mContext = context;
+    mResources = context.getResources();
+    mTheme = context.getTheme();
+    mResourceCache = resourceCache;
+  }
+

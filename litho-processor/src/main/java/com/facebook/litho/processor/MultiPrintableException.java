@@ -21,3 +21,8 @@ class MultiPrintableException extends PrintableException {
   }
 
   public void print(Messager messager) {
+    for (PrintableException e : exceptions) {
+      e.print(messager);
+    }
+  }
+}

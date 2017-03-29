@@ -20,3 +20,5 @@ import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaEdge;
+
+import static android.graphics.Color.GRAY;

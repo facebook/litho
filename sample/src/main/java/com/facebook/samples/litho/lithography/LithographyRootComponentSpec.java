@@ -20,3 +20,5 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.widget.Recycler;
 import com.facebook.litho.widget.RecyclerBinder;
 import com.facebook.yoga.YogaEdge;
+
+@LayoutSpec

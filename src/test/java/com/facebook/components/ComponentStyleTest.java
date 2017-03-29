@@ -19,3 +19,6 @@ import com.facebook.litho.R;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.Text;
 import com.facebook.litho.testing.ComponentsRule;
+import com.facebook.yoga.YogaEdge;
+
+import org.junit.Before;

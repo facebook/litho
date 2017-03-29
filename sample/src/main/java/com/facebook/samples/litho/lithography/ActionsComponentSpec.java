@@ -46,3 +46,4 @@ public class ActionsComponentSpec {
         .flexDirection(YogaFlexDirection.ROW)
         .child(FavouriteButton.create(c))
         .child(
+            Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)

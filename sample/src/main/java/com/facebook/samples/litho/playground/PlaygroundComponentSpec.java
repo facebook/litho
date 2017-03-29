@@ -20,3 +20,18 @@ import com.facebook.litho.Container;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.widget.Text;
+
+@LayoutSpec
+public class PlaygroundComponentSpec {
+
+  @OnCreateLayout
+  static ComponentLayout onCreateLayout(ComponentContext c) {
+    return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        .backgroundColor(Color.WHITE)
+        .child(
+            Text.create(c)
+                .textSizeSp(20)
+                .text("Playground sample"))
+        .build();
+  }
+}
