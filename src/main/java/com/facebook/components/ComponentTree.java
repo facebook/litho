@@ -805,3 +805,5 @@ public class ComponentTree {
       final boolean rootInitialized = root != null;
       final boolean widthSpecInitialized = widthSpec != SIZE_UNINITIALIZED;
       final boolean heightSpecInitialized = heightSpec != SIZE_UNINITIALIZED;
+
+      if (mHasViewMeasureSpec && !rootInitialized) {

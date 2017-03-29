@@ -517,3 +517,4 @@ class MountState {
           (Drawable) currentMountItem.getContent(),
           currentMountItem.getFlags(),
           currentMountItem.getNodeInfo());
+    }
