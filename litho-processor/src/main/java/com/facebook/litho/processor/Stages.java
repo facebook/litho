@@ -336,3 +336,7 @@ public class Stages {
     }
   }
 
+  private void validateStyleOutputs() {
+    final ExecutableElement delegateMethod = Utils.getAnnotatedMethod(
+        mSourceElement,
+        OnLoadStyle.class);
