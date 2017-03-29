@@ -1201,3 +1201,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public InternalNode contentDescription(@StringRes int stringId, Object... formatArgs) {
+    return contentDescription(mResources.getString(stringId, formatArgs));
+  }
+
+  @Override
