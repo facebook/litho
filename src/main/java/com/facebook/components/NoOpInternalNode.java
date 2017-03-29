@@ -689,3 +689,4 @@ class NoOpInternalNode extends InternalNode {
   @Override
   void setBaselineFunction(YogaBaselineFunction baselineFunction) {
   }
+}
