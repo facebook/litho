@@ -988,3 +988,4 @@ public class ComponentTree {
     }
   }
 
+  private void logLayoutCalculationStart(Component<?> root) {
