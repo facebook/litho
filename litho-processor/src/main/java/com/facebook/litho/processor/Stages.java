@@ -2645,3 +2645,6 @@ public class Stages {
     writeMethodSpec(MethodSpec.methodBuilder("create")
         .addModifiers(Modifier.PUBLIC)
         .returns(ClassName.bestGuess(INNER_IMPL_BUILDER_CLASS_NAME))
+        .addParameter(ClassNames.COMPONENT_CONTEXT, "context")
+        .addStatement(
+            "return new$L(context, new $T())",
