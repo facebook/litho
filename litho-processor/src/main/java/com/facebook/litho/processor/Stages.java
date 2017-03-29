@@ -1809,3 +1809,5 @@ public class Stages {
         MethodSpec.constructorBuilder()
             .addModifiers(Modifier.PRIVATE)
             .addStatement("super(get())")
+            .build());
+
