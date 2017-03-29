@@ -187,3 +187,4 @@ class MountItem {
         || mComponent.getLifecycle().implementsAccessibility();
   }
 
+  void release(Context context) {
