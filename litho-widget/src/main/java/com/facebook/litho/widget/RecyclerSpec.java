@@ -153,3 +153,4 @@ class RecyclerSpec {
       recyclerView.setItemAnimator(new NoUpdateItemAnimator());
     }
 
+    if (onScrollListener != null) {
