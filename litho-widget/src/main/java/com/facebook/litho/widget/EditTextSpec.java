@@ -161,3 +161,4 @@ class EditTextSpec {
       int heightSpec,
       Size size,
       @Prop(optional = true, resType = ResType.STRING) CharSequence text,
+      @Prop(optional = true, resType = ResType.STRING) CharSequence hint,
