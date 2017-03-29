@@ -119,3 +119,11 @@ public class ComponentHost extends ViewGroup {
     return mParentHostMarker;
   }
 
+  /**
+   * Mounts the given {@link MountItem} with unique index.
+   * @param index index of the {@link MountItem}. Guaranteed to be the same index as is passed for
+   * the corresponding {@code unmount(index, mountItem)} call.
+   * @param mountItem item to be mounted into the host.
+   * @param bounds the bounds of the item that is to be mounted into the host
+   */
+  public void mount(int index, MountItem mountItem, Rect bounds) {
