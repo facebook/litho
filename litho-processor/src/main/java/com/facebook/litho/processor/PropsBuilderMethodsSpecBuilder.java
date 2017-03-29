@@ -96,3 +96,7 @@ class PropsBuilderMethodsSpecBuilder {
         break;
       case BOOL:
         builders.add(regularBuilder());
+        builders.add(resBuilder(ClassNames.BOOL_RES, "resolveBool"));
+        builders.addAll(attrBuilders(ClassNames.BOOL_RES, "resolveBool"));
+        break;
+      case COLOR:
