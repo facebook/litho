@@ -202,3 +202,4 @@ void translatePendingCppExceptionToJavaException() noexcept {
       current = JArrayIndexOutOfBoundsException::create(ex.what());
     } catch(const std::system_error& ex) {
       current = JCppSystemErrorException::create(ex);
+    } catch(const std::runtime_error& ex) {
