@@ -3335,3 +3335,4 @@ static void YGRoundToPixelGrid(const YGNodeRef node, const float pointScaleFacto
   float roundedLeft = nodeLeft - fractialLeft;
   float roundedTop = nodeTop - fractialTop;
 
+  // To do the actual rounding we check if leftover fraction is bigger or equal than half of the grid step
