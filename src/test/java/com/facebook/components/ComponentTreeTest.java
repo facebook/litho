@@ -439,3 +439,8 @@ public class ComponentTreeTest {
 
     // Attach second view.
     ComponentView componentView2 = new ComponentView(mContext);
+
+    Assert.assertNull(getComponentTree(componentView2));
+
+    componentView2.setComponent(componentTree);
+
