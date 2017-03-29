@@ -267,3 +267,5 @@ class PropsBuilderMethodsSpecBuilder {
         .addMember("unit", "$T.SP", ClassNames.DIMENSION)
         .build();
 
+    return builder(
+        mPropParameter.parameter.name + "Sp",
