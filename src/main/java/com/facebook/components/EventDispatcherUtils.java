@@ -239,3 +239,22 @@ class EventDispatcherUtils {
     sOnPopulateAccessibilityEventEvent.host = null;
     sOnPopulateAccessibilityEventEvent.event = null;
     sOnPopulateAccessibilityEventEvent.superDelegate = null;
+  }
+
+  static boolean dispatchOnRequestSendAccessibilityEvent(
+      EventHandler<OnRequestSendAccessibilityEventEvent> eventHandler,
+      ViewGroup host,
+      View child,
+      AccessibilityEvent event,
+      AccessibilityDelegateCompat superDelegate) {
+    assertMainThread();
+
+    if (sOnRequestSendAccessibilityEventEvent == null) {
+      sOnRequestSendAccessibilityEventEvent = new OnRequestSendAccessibilityEventEvent();
+    }
+
+    sOnRequestSendAccessibilityEventEvent.host = host;
+    sOnRequestSendAccessibilityEventEvent.child = child;
+    sOnRequestSendAccessibilityEventEvent.event = event;
+    sOnRequestSendAccessibilityEventEvent.superDelegate = superDelegate;
+
