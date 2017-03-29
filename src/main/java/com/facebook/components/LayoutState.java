@@ -1418,3 +1418,5 @@ class LayoutState {
    * node.
    */
   private static void applyDiffNodeToLayoutNode(InternalNode layoutNode, DiffNode diffNode) {
+    final Component component = layoutNode.getComponent();
+    if (component != null) {
