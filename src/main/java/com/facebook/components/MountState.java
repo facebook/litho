@@ -1078,3 +1078,6 @@ class MountState {
     // Reset isLongClickable flag.
     view.setLongClickable(MountItem.isViewLongClickable(item.getFlags()));
 
+    // Reset setFocusable flag.
+    unsetFocusable(view, item);
+
