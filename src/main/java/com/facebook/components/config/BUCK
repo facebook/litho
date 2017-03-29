@@ -11,3 +11,4 @@ android_library(
     name = "config",
     srcs = glob(["*.java"]),
     visibility = ["PUBLIC"],
+    deps = [

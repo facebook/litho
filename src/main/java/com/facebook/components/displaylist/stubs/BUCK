@@ -10,3 +10,7 @@
 # may change this hidden API, callers should handle LinkageError gracefully.
 
 java_library(
+    name = "stubs",
+    srcs = glob([
+        "src/**/*.java",
+    ]),

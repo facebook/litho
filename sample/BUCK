@@ -10,3 +10,4 @@ android_binary(
     name = "sample",
     keystore = ":debug_keystore",
     manifest = "src/main/AndroidManifest.xml",
+    deps = [

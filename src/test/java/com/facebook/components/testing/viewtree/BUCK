@@ -4,3 +4,4 @@ components_robolectric_test(
     name = "viewtree",
     srcs = glob(["*Test.java"]),
     contacts = ["oncall+components_for_android@xmail.facebook.com"],
+    deps = [
