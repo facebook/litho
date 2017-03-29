@@ -120,3 +120,5 @@ class ProgressSpec {
     }
 
     progressBar.setIndeterminateDrawable(null);
+  }
+
