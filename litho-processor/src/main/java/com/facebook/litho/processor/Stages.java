@@ -2689,3 +2689,8 @@ public class Stages {
         .build());
   }
 
+  private void generateBuilder(
+      StaticFlag isStatic,
+      StyleableFlag isStylable,
+      ClassName propsClass,
+      TypeName genericType,
