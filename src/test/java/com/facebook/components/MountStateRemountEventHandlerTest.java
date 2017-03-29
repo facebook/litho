@@ -16,3 +16,4 @@ import com.facebook.components.testing.TestDrawableComponent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RuntimeEnvironment;

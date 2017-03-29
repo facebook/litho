@@ -23,3 +23,4 @@ import static android.os.Build.VERSION_CODES.HONEYCOMB;
 
 /**
  * A cache that holds Drawables retreived from Android {@link android.content.res.Resources} for
+ * each resId this class keeps a {@link android.support.v4.util.Pools.SynchronizedPool} of

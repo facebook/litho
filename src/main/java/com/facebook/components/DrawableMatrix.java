@@ -42,3 +42,31 @@ public final class DrawableMatrix extends Matrix {
    * @return The scale matrix or null if the drawable does not need to be scaled.
    */
   public static DrawableMatrix create(
+      final Drawable d,
+      ScaleType scaleType,
+      final int width,
+      final int height) {
+
+    if (scaleType == null) {
+      scaleType = ScaleType.FIT_CENTER;
+    }
+
+    if (d == null) {
+      return null;
+    }
+
+    final int intrinsicWidth = d.getIntrinsicWidth();
+    final int intrinsicHeight = d.getIntrinsicHeight();
+
+    if (intrinsicWidth <= 0
+        || intrinsicHeight <= 0
+        || ScaleType.FIT_XY == scaleType
+        || ScaleType.MATRIX == scaleType) {
+      return null;
+    }
+
+    if (width == intrinsicWidth && height == intrinsicHeight) {
+      // The bitmap fits exactly, no transform needed.
+      return null;
+    }
+

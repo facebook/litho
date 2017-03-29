@@ -13,3 +13,4 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.view.ViewGroup;
 
+import com.facebook.components.testing.ComponentTestHelper;

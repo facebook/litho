@@ -34,3 +34,9 @@ public class RequiredPropsTest {
     String error = "";
     try {
       Text.create(mContext)
+          .build();
+    } catch (IllegalStateException e) {
+      error = e.getMessage();
+    }
+    assertTrue(
+        "Error message did not mention the missing required prop",

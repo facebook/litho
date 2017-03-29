@@ -15,3 +15,5 @@ import android.text.Spannable;
 import android.text.style.ClickableSpan;
 import android.view.View;
 
+import com.facebook.components.ComponentContext;
+import com.facebook.components.testing.ComponentTestHelper;

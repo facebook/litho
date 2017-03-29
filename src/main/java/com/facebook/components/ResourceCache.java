@@ -34,3 +34,14 @@ class ResourceCache {
   };
 
   private ResourceCache(Configuration configuration) {
+    mConfiguration = configuration;
+  }
+
+  void put(int key, Object object) {
+    mCache.put(key, object);
+  }
+
+  <T> T get(int key) {
+    return (T) mCache.get(key);
+  }
+}
