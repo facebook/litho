@@ -176,3 +176,4 @@ class RecyclerSpec {
       @Prop Binder<RecyclerView> binder,
       @Prop(optional =  true) RecyclerEventsController recyclerEventsController,
       @Prop(optional = true) RecyclerView.OnScrollListener onScrollListener,
+      @FromBind ItemAnimator oldAnimator) {
