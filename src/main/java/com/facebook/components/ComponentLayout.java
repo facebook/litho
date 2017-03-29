@@ -341,3 +341,4 @@ public interface ComponentLayout {
     ContainerBuilder touchExpansionDip(
         YogaEdge edge,
         @Dimension(unit = DP) int value);
+
