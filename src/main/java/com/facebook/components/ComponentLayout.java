@@ -365,3 +365,4 @@ public interface ComponentLayout {
     ContainerBuilder foregroundAttr(@AttrRes int resId);
     ContainerBuilder foregroundRes(@DrawableRes int resId);
     ContainerBuilder foregroundColor(@ColorInt int foregroundColor);
+

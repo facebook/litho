@@ -177,3 +177,4 @@ public class Stages {
       TypeElement sourceElement,
       String qualifiedClassName,
       Class<Annotation>[] stageAnnotations,
+      Class<Annotation>[] interStagePropAnnotations,

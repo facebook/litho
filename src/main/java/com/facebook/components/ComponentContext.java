@@ -206,3 +206,4 @@ public class ComponentContext extends ContextWrapper {
     return new EventHandler(mComponentScope, id);
   }
 
+  <E> EventHandler<E> newEventHandler(int id, Object[] params) {
