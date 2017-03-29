@@ -115,3 +115,7 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
     final int innerDrawableTop = (mMatrix != null ? 0 : top);
 
     mDrawable.setBounds(
+        innerDrawableLeft,
+        innerDrawableTop,
+        innerDrawableLeft + mWidth,
+        innerDrawableTop + mHeight);
