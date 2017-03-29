@@ -1196,3 +1196,4 @@ class LayoutState {
         heightSpec,
         nestedTree.getLastMeasuredWidth(),
         nestedTree.getLastMeasuredHeight())) {
+      if (nestedTree != null) {
