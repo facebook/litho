@@ -1605,3 +1605,24 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
         yogaNode.setPadding(ALL, mNestedTreePadding.getRaw(Spacing.ALL));
       }
     }
+
+    if ((mPrivateFlags & PFLAG_BORDER_WIDTH_IS_SET) != 0L) {
+      if (mNestedTreeBorderWidth == null) {
+        throw new IllegalStateException("copyInto() must be used when resolving a nestedTree. " +
+            "If border width was set on the holder node, we must have a mNestedTreeBorderWidth " +
+            "instance");
+      }
+
+      final YogaNodeAPI yogaNode = node.mYogaNode;
+
+      node.mPrivateFlags |= PFLAG_BORDER_WIDTH_IS_SET;
+      yogaNode.setBorder(LEFT, mNestedTreeBorderWidth.getRaw(Spacing.LEFT));
+      yogaNode.setBorder(TOP, mNestedTreeBorderWidth.getRaw(Spacing.TOP));
+      yogaNode.setBorder(RIGHT, mNestedTreeBorderWidth.getRaw(Spacing.RIGHT));
+      yogaNode.setBorder(BOTTOM, mNestedTreeBorderWidth.getRaw(Spacing.BOTTOM));
+      yogaNode.setBorder(VERTICAL, mNestedTreeBorderWidth.getRaw(Spacing.VERTICAL));
+      yogaNode.setBorder(HORIZONTAL, mNestedTreeBorderWidth.getRaw(Spacing.HORIZONTAL));
+      yogaNode.setBorder(START, mNestedTreeBorderWidth.getRaw(Spacing.START));
+      yogaNode.setBorder(END, mNestedTreeBorderWidth.getRaw(Spacing.END));
+      yogaNode.setBorder(ALL, mNestedTreeBorderWidth.getRaw(Spacing.ALL));
+    }
