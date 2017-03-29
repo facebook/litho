@@ -1462,3 +1462,4 @@ public class Stages {
         .build());
   }
 
+  private void generateOnStateUpdateMethods(
