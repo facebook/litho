@@ -382,3 +382,4 @@ public class BaseBinderTest {
     }
 
     @Override
+    public void onUnmount(ViewGroup view) {
