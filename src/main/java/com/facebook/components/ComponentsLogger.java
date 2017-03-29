@@ -48,3 +48,25 @@ public interface ComponentsLogger {
   void eventAddParam(int eventId, Object object, String key, String value);
   void eventAddTag(int eventId, Object object, String tag);
   void softError(String message);
+
+  class LayoutOutputLog {
+
+    long currentId = -1;
+    String currentLifecycle;
+    int currentIndex = -1;
+    int currentLastDuplicatedIdIndex = -1;
+
+    long nextId = -1;
+    String nextLifecycle;
+    int nextIndex = -1;
+    int nextLastDuplicatedIdIndex = -1;
+
+    @Override
+    public String toString() {
+      return "id: [" + currentId + " - " + nextId + "], "
+          + "lifecycle: [" + currentLifecycle + " - " + nextLifecycle + "], "
+          + "index: [" + currentIndex + " - " + nextIndex + "], "
+          + "lastDuplicatedIdIndex: [" + currentLastDuplicatedIdIndex +
+          " - " + nextLastDuplicatedIdIndex + "]";
+    }
+  }
