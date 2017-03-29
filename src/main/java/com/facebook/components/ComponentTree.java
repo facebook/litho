@@ -1042,3 +1042,6 @@ public class ComponentTree {
     LayoutState mainThreadLayoutState;
     LayoutState backgroundLayoutState;
     synchronized (this) {
+      if (mComponentView != null) {
+        mComponentView.setComponent(null);
+      }
