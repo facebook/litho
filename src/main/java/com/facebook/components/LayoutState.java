@@ -939,3 +939,4 @@ class LayoutState {
       logger.eventEnd(EVENT_COLLECT_RESULTS, component, ACTION_SUCCESS);
     }
     ComponentsSystrace.endSection();
+
