@@ -194,3 +194,33 @@ public class PagerBinderTest {
     }
   }
 
+  @Test
+  public void testBootstrapWorkingRangeFromBeginning() {
+    mBinder = new TestPagerComponentBinder(mContext, 0, 1f);
+    mBinder.setSize(WIDTH, HEIGHT);
+
+    assertEquals(3, mBinder.getComponentCount());
+    assertEquals(0, mBinder.getFirstPosition());
+  }
+
+  @Test
+  public void testBootstrapWorkingRangeFromRandomPosition() {
+    mBinder = new TestPagerComponentBinder(mContext, 4, 0.5f);
+    mBinder.setSize(WIDTH, HEIGHT);
+
+    assertEquals(7, mBinder.getComponentCount());
+    assertEquals(1, mBinder.getFirstPosition());
+  }
+
+  @Test
+  public void testBootstrapWorkingRangeWithTrimming() {
+    mBinder = new TestPagerComponentBinder(mContext, 2, 0.5f);
+    mBinder.setSize(WIDTH, HEIGHT);
+
+    assertEquals(6, mBinder.getComponentCount());
+    assertEquals(0, mBinder.getFirstPosition());
+  }
+
+  private static int getPagerOffscreenLimit(PagerBinder binder) {
+    return Whitebox.getInternalState(binder, "mPagerOffscreenLimit");
+  }
