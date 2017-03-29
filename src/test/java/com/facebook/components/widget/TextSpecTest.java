@@ -81,3 +81,44 @@ public class TextSpecTest {
     verify(mountableCharSequence).onMount(drawable);
   }
 
+  @Test
+  public void testColorDefault() {
+    TextDrawable drawable = getMountedDrawableForText("Some text");
+    assertThat(drawable.getColor() == Color.BLACK);
+  }
+
+  @Test
+  public void testColorOverride() {
+    int[][] states = {{0}};
+    int[] colors = {Color.GREEN};
+    ColorStateList colorStateList = new ColorStateList(states, colors);
+    TextDrawable drawable = getMountedDrawableForTextWithColors(
+        "Some text",
+        Color.RED,
+        colorStateList);
+    assertThat(drawable.getColor() == Color.RED);
+  }
+
+  @Test
+  public void testColor()
+  {
+    TextDrawable drawable = getMountedDrawableForTextWithColors(
+        "Some text",
+        Color. RED,
+        null);
+    assertThat(drawable.getColor() == Color.RED);
+  }
+
+  @Test
+  public void testColorStateList()
+  {
+    int[][] states = {{0}};
+    int[] colors = {Color.GREEN};
+    ColorStateList colorStateList = new ColorStateList(states, colors);
+    TextDrawable drawable = getMountedDrawableForTextWithColors(
+        "Some text",
+        0,
+        colorStateList);
+    assertThat(drawable.getColor() == Color.RED);
+  }
+
