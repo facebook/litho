@@ -2203,3 +2203,4 @@ public class Stages {
         typeName = JPUtil.getTypeFromMirror(componentMember.asType());
       }
 
+      if (!typeName.equals(innerTypeName)) {
