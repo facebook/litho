@@ -329,3 +329,27 @@ public class ComponentsPools {
     return item;
   }
 
+  static TestOutput acquireTestOutput() {
+    if (sTestOutputPool == null) {
+      sTestOutputPool = new Pools.SynchronizedPool<>(64);
+    }
+    TestOutput output = sTestOutputPool.acquire();
+    if (output == null) {
+      output = new TestOutput();
+    }
+
+    return output;
+  }
+
+  static TestItem acquireTestItem() {
+    if (sTestItemPool == null) {
+      sTestItemPool = new Pools.SynchronizedPool<>(64);
+    }
+    TestItem item = sTestItemPool.acquire();
+    if (item == null) {
+      item = new TestItem();
+    }
+
+    return item;
+  }
+
