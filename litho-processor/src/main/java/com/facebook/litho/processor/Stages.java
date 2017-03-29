@@ -1314,3 +1314,4 @@ public class Stages {
     methodBuilder.beginControlFlow("switch($L)", "id");
 
     final String implInstanceName = "_" + getImplInstanceName();
+
