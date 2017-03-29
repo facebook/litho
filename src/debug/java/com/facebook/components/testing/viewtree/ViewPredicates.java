@@ -150,3 +150,5 @@ final class ViewPredicates {
     return shadowCanvas.getDescription();
   }
 
+  private static String extractString(final View view) {
+    if (!(view instanceof TextView)) {
