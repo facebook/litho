@@ -166,3 +166,4 @@ public class ComponentHost extends ViewGroup {
     releaseScrapDataStructuresIfNeeded();
     maybeInvalidateAccessibilityState(mountItem);
   }
+
