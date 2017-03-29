@@ -139,3 +139,6 @@ public final class ResourceDrawableReference extends ReferenceLifecycle<Drawable
       release();
 
       return state;
+    }
+  }
+}

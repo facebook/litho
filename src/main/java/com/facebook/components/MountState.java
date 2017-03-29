@@ -66,3 +66,5 @@ class MountState {
 
   // Holds the current list of mounted items.
   // Should always be used within a draw lock.
+  private final LongSparseArray<MountItem> mIndexToItemMap;
+

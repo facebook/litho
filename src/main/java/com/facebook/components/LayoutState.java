@@ -119,3 +119,4 @@ class LayoutState {
 
   private final List<LayoutOutput> mMountableOutputs = new ArrayList<>(8);
   private final List<VisibilityOutput> mVisibilityOutputs = new ArrayList<>(8);
+  private final LongSparseArray<Integer> mOutputsIdToPositionMap = new LongSparseArray<>(8);
