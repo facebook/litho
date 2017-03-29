@@ -40,3 +40,5 @@ public class InternalNodeResolvedPaddingTest {
 
   @Test
   public void testPaddingLeftWithUndefinedStartEnd() {
+    mInternalNode.paddingPx(YogaEdge.LEFT, 10);
+    setDirection(mInternalNode, YogaDirection.LTR);

@@ -17,3 +17,4 @@ import com.squareup.javapoet.ClassName;
 public interface ClassNames {
   ClassName OBJECT = ClassName.bestGuess("java.lang.Object");
   ClassName STRING = ClassName.bestGuess("java.lang.String");
+

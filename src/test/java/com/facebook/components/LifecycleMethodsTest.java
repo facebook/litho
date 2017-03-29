@@ -50,3 +50,4 @@ public class LifecycleMethodsTest {
     mLifecycle = new LifecycleMethodsComponent();
     mComponent = mLifecycle.create(10);
 
+    final ComponentContext c = new ComponentContext(RuntimeEnvironment.application);

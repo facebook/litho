@@ -31,3 +31,10 @@ import static org.junit.Assert.assertEquals;
 public class MountStateViewTagsTest {
   private static final int DUMMY_ID = 0x10000000;
 
+  private ComponentContext mContext;
+
+  @Before
+  public void setup() {
+    mContext = new ComponentContext(RuntimeEnvironment.application);
+  }
+

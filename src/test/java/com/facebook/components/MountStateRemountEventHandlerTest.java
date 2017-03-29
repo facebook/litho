@@ -30,3 +30,10 @@ import static junit.framework.Assert.assertTrue;
 @RunWith(ComponentsTestRunner.class)
 public class MountStateRemountEventHandlerTest {
 
+  private ComponentContext mContext;
+
+  @Before
+  public void setup() {
+    mContext = new ComponentContext(RuntimeEnvironment.application);
+  }
+

@@ -34,3 +34,6 @@ public class LayoutStateAddChildWithInputTest {
 
   @Test
   public void testNewEmptyLayout() {
+    InternalNode node = (InternalNode) Container.create(mContext).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        .child(TestLayoutComponent.create(mContext))
+        .child(TestLayoutComponent.create(mContext))

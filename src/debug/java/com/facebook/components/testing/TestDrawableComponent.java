@@ -36,3 +36,7 @@ public class TestDrawableComponent extends ComponentLifecycle {
   private final boolean mUsesDisplayList;
   private final boolean mImplementsAccessibility;
   private final boolean mIsMountSizeDependent;
+
+  private synchronized static TestDrawableComponent get(
+      boolean callsShouldUpdateOnMount,
+      boolean isPureRender,
