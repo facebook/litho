@@ -260,3 +260,4 @@ public class ComponentsPools {
   static Object acquireMountContent(Context context, int componentId) {
 
     if (context instanceof ComponentContext) {
+      context = ((ComponentContext) context).getBaseContext();
