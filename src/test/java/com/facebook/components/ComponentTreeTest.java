@@ -444,3 +444,5 @@ public class ComponentTreeTest {
 
     componentView2.setComponent(componentTree);
 
+    assertEquals(componentView2, getComponentView(componentTree));
+    assertEquals(componentTree, getComponentTree(componentView2));
