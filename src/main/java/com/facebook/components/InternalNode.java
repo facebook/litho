@@ -1052,3 +1052,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Override
   public InternalNode backgroundRes(@DrawableRes int resId) {
     if (resId == 0) {
+      return background((Reference<Drawable>) null);
