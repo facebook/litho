@@ -300,3 +300,36 @@ public class LayoutDirectionTest {
     final ComponentHost host = (ComponentHost) componentView.getChildAt(0);
     final Drawable drawable1 = host.getDrawables().get(0);
     final Drawable drawable2 = host.getDrawables().get(1);
+
+    assertEquals(new Rect(0, 0, 10, 10), drawable1.getBounds());
+    assertEquals(new Rect(10, 0, 20, 10), drawable2.getBounds());
+  }
+
+  /**
+   * Test that margins on START and END are correctly applied to the correct side of the component
+   * depending upon the applied layout direction.
+   */
+  @Test
+  public void testMargin() {
+    final TestComponent child = TestDrawableComponent.create(mContext)
+        .build();
+
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+              @Override
+              protected ComponentLayout onCreateLayout(ComponentContext c) {
+                return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    .layoutDirection(YogaDirection.LTR)
+                    .child(
+                        Layout.create(c, child).flexShrink(0)
+                            .widthPx(10)
+                            .heightPx(10)
+                            .marginPx(YogaEdge.START, 10)
+                            .marginPx(YogaEdge.END, 20))
+                    .build();
+              }
+            },
+        40,
+        10);
+

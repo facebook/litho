@@ -77,3 +77,7 @@ public class MountStateBoundsTest {
     assertEquals(
         new Rect(0, 0, 10, 10),
         new Rect(
+            mountedView.getLeft(),
+            mountedView.getTop(),
+            mountedView.getRight(),
+            mountedView.getBottom()));

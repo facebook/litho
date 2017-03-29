@@ -96,3 +96,6 @@ public class InternalNodeTouchExpansionTest {
 
   @Test
   public void testTouchExpansionLeftWithDefinedEndInRtl() {
+    setDirection(mInternalNode, YogaDirection.RTL);
+    mInternalNode.touchExpansionPx(YogaEdge.END, 5);
+    mInternalNode.touchExpansionPx(YogaEdge.LEFT, 10);

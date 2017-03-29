@@ -97,3 +97,4 @@ public class TestLayoutComponent extends ComponentLifecycle {
         TestDrawableComponent.create(c, false, true, true, false, false).build();
 
     if (mIsDelegate) {
+      return Layout.create(c, mountSpecComponent).flexShrink(0).build();

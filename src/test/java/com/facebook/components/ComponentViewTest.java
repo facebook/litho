@@ -51,3 +51,4 @@ public class ComponentViewTest {
         .incrementalMount(false)
         .build();
 
+    mComponentView = new ComponentView(RuntimeEnvironment.application);

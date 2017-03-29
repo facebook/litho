@@ -83,3 +83,19 @@ public class TestDrawableComponent extends ComponentLifecycle {
     mImplementsAccessibility = implementsAccessibility;
     mUsesDisplayList = usesDisplayList;
     mIsMountSizeDependent = isMountSizeDependent;
+  }
+
+  @Override
+  public boolean shouldUpdate(Component previous, Component next) {
+    return !next.equals(previous);
+  }
+
+  @Override
+  protected boolean callsShouldUpdateOnMount() {
+    return mCallsShouldUpdateOnMount;
+  }
+
+  @Override
+  protected boolean isPureRender() {
+    return mIsPureRender;
+  }

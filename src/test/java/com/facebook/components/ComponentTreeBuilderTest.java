@@ -94,3 +94,4 @@ public class ComponentTreeBuilderTest {
     Component root = TestLayoutComponent.create(mContext)
         .build();
 
+    mComponentTreeBuilder.init(mContext, root);

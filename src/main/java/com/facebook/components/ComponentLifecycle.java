@@ -77,3 +77,10 @@ public abstract class ComponentLifecycle implements EventDispatcher {
 
       size.width = initialValue;
       size.height = initialValue;
+      return size;
+    }
+
+    private void releaseSize(Size size) {
+      mSizePool.release(size);
+    }
+
