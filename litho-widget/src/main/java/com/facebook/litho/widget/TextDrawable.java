@@ -61,3 +61,4 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
   private int mSelectionStart;
   private int mSelectionEnd;
   private Path mSelectionPath;
+  private Path mTouchAreaPath;
