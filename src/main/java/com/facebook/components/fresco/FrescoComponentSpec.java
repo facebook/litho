@@ -61,3 +61,4 @@ class FrescoComponentSpec {
       DEFAULT_SCALE_TYPE;
 
   @OnMeasure
+  protected static void onMeasure(
