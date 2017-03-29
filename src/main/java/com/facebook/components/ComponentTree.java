@@ -478,3 +478,6 @@ public class ComponentTree {
     synchronized (this) {
       mIsMeasuring = true;
 
+      // This widthSpec/heightSpec is fixed until the view gets detached.
+      mWidthSpec = widthSpec;
+      mHeightSpec = heightSpec;
