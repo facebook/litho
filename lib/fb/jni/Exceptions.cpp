@@ -58,3 +58,6 @@ class JOutOfMemoryError : public JavaClass<JOutOfMemoryError, JThrowable> {
   }
 };
 
+class JArrayIndexOutOfBoundsException : public JavaClass<JArrayIndexOutOfBoundsException, JThrowable> {
+ public:
+  static auto constexpr kJavaDescriptor = "Ljava/lang/ArrayIndexOutOfBoundsException;";
