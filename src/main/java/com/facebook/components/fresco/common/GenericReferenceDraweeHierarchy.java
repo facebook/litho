@@ -18,3 +18,8 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.reference.Reference;
 import com.facebook.drawee.drawable.AutoRotateDrawable;
 import com.facebook.drawee.drawable.DrawableUtils;
+import com.facebook.drawee.drawable.ScalingUtils;
+import com.facebook.drawee.generic.GenericDraweeHierarchy;
+import com.facebook.drawee.generic.RoundingParams;
+import com.facebook.drawee.interfaces.SettableDraweeHierarchy;
+
