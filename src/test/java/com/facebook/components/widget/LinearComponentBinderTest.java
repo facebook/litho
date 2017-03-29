@@ -217,3 +217,4 @@ public class LinearComponentBinderTest {
     }
 
     @Override
+    public boolean isAsyncLayoutEnabled() {

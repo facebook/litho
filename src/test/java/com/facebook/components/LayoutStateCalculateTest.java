@@ -278,3 +278,4 @@ public class LayoutStateCalculateTest {
         totalHosts++;
       }
     }
+    assertEquals(3, totalHosts);
