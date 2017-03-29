@@ -933,3 +933,8 @@ public class Stages {
 
     if (initialized) {
       builder.initializer("new $T()", specTypeName);
+    }
+
+    mClassTypeSpec.addField(builder.build());
+  }
+
