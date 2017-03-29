@@ -45,3 +45,21 @@ public class LayoutOutputTest {
       return LIFECYCLE_TEST_ID;
     }
   };
+  private LayoutOutput mLayoutOutput;
+
+  @Before
+  public void setup() {
+    mLayoutOutput = new LayoutOutput();
+  }
+
+  @Test
+  public void testPositionAndSizeSet() {
+    mLayoutOutput.setBounds(0, 1, 3, 4);
+    assertEquals(0, mLayoutOutput.getBounds().left);
+    assertEquals(1, mLayoutOutput.getBounds().top);
+    assertEquals(3, mLayoutOutput.getBounds().right);
+    assertEquals(4, mLayoutOutput.getBounds().bottom);
+  }
+
+  @Test
+  public void testHostMarkerSet() {

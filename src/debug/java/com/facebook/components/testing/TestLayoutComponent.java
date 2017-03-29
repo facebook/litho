@@ -224,3 +224,4 @@ public class TestLayoutComponent extends ComponentLifecycle {
       mBuilderPool.release(this);
     }
   }
+}

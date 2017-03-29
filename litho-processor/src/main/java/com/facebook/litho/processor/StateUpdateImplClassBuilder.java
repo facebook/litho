@@ -52,3 +52,8 @@ public class StateUpdateImplClassBuilder {
   private ClassName mStateContainerClassName;
   private ClassName mStateContainerImplClassName;
 
+  StateUpdateImplClassBuilder withTarget(String target) {
+    mTarget = target;
+    return this;
+  }
+
