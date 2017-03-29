@@ -141,3 +141,4 @@ public class ComponentTreeHolder {
   @GuardedBy("this")
   private void ensureComponentTree(ComponentContext context) {
     if (mComponentTree == null) {
+      mComponentTree = ComponentTree.create(context, mComponentInfo.getComponent())

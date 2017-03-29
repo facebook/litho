@@ -152,3 +152,4 @@ public class RecyclerBinderTest {
     }
 
     for (int k = rangeTotal + 1; k < components.size(); k++) {
+      componentTreeHolder = mHoldersForComponents.get(components.get(k).getComponent());
