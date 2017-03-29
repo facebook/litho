@@ -89,3 +89,21 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
    * @param height The height of the drawable to be drawn.
    */
   public void bind(int width, int height) {
+    mWidth = width;
+    mHeight = height;
+    setInnerDrawableBounds(getBounds().left, getBounds().top);
+  }
+
+  @Override
+  public void setBounds(int left, int top, int right, int bottom) {
+    super.setBounds(left, top, right, bottom);
+    setInnerDrawableBounds(left, top);
+  }
+
+  @Override
+  public void setBounds(Rect bounds) {
+    super.setBounds(bounds);
+    setInnerDrawableBounds(bounds.left, bounds.top);
+  }
+
+  private void setInnerDrawableBounds(int left, int top) {
