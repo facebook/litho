@@ -571,3 +571,26 @@ public abstract class BaseBinder<
   }
 
   /**
+   * Returns the {@link WorkingRangeController} associated with the binder.
+   */
+  public R getRangeController() {
+    return mRangeController;
+  }
+
+  /**
+   * Sets a {@link WorkingRangeController} for the binder.
+   */
+  public void setRangeController(R rangeController) {
+    if (rangeController == null) {
+      throw new IllegalStateException("The range controller should not be null.");
+    }
+
+    if (mRangeController != null) {
+      mRangeController.setBinder(null);
+    }
+
+    mRangeController = rangeController;
+    mRangeController.setBinder(this);
+  }
+
+  /**
