@@ -35,3 +35,4 @@ public class DemoListItemComponentSpec {
   static ComponentLayout onCreateLayout(
       ComponentContext c,
       @Prop final String name) {
+    return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)

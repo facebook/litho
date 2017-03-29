@@ -70,3 +70,6 @@ class DrawableComponent<T extends Drawable> extends ComponentLifecycle {
       Component<?> component) {
     final State state = (State) component;
 
+    final MatrixDrawable matrixDrawable = (MatrixDrawable) mountedContent;
+    Reference.release(context, matrixDrawable.getMountedDrawable(), state.getDrawable());
+    matrixDrawable.unmount();

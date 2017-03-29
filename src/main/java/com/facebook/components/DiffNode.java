@@ -18,3 +18,4 @@ import java.util.List;
  */
 class DiffNode implements Cloneable {
 
+  static final int UNSPECIFIED = -1;
