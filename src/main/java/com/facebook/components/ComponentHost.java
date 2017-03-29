@@ -922,3 +922,11 @@ public class ComponentHost extends ViewGroup {
         ? contentDrawable
         : mountItem.getDisplayListDrawable();
 
+    if (ComponentHostUtils.existsScrapItemAt(index, mScrapDrawableMountItems)) {
+      mScrapDrawableMountItems.remove(index);
+    } else {
+      mDrawableMountItems.remove(index);
+    }
+
+    drawable.setCallback(null);
+
