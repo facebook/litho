@@ -75,3 +75,4 @@ public class ComponentLifecycleTest {
     Whitebox.setInternalState(mNode, "mYogaNode", cssNode);
     when(cssNode.getData()).thenReturn(mNode);
 
+    mockStatic(ComponentsPools.class);

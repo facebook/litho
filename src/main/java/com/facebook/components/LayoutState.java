@@ -394,3 +394,8 @@ class LayoutState {
             || (nodeInfo != null && !TextUtils.isEmpty(nodeInfo.getContentDescription()))
             || importantForAccessibility != IMPORTANT_FOR_ACCESSIBILITY_AUTO);
 
+    final boolean hasTouchEventHandlers = (nodeInfo != null && nodeInfo.hasTouchEventHandlers());
+    final boolean hasViewTag = (nodeInfo != null && nodeInfo.getViewTag() != null);
+    final boolean hasViewTags = (nodeInfo != null && nodeInfo.getViewTags() != null);
+    final boolean isFocusableSetTrue =
+        (nodeInfo != null && nodeInfo.getFocusState() == FOCUS_SET_TRUE);
