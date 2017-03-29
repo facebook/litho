@@ -928,3 +928,4 @@ class LayoutState {
 
     layoutState.mLayoutRoot = root;
 
+    ComponentsSystrace.beginSection("collectResults:" + component.getSimpleName());
