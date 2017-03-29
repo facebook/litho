@@ -198,3 +198,6 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
     mComponentContext = componentContext;
     mResources = resources;
+    mResourceResolver.init(
+        mComponentContext,
+        componentContext.getResourceCache());
