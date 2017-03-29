@@ -97,3 +97,9 @@ class EditTextSpec {
       Output<Integer> highlightColor,
       Output<Integer> textSize,
       Output<Layout.Alignment> textAlignment,
+      Output<Integer> textStyle,
+      Output<Float> shadowRadius,
+      Output<Float> shadowDx,
+      Output<Float> shadowDy,
+      Output<Integer> shadowColor,
+      Output<Integer> gravity) {
