@@ -197,3 +197,6 @@ public class ComponentsPools {
     }
 
     node.init(acquireYogaNode(), componentContext, resources);
+    return node;
+  }
+
