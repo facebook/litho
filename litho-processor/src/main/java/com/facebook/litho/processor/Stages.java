@@ -2896,3 +2896,15 @@ public class Stages {
       ClassName contextClass) {
     final String implInstanceName = getImplInstanceName();
     final ClassName stateClass = ClassName.bestGuess(getImplClassName());
+    final ParameterizedTypeName synchronizedPoolClass =
+        ParameterizedTypeName.get(
+            ClassNames.SYNCHRONIZED_POOL,
+            builder);
+
+    final FieldSpec.Builder poolField = FieldSpec.builder(synchronizedPoolClass, poolName)
+        .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
+        .initializer("new $T(2)", synchronizedPoolClass);
+
+    final MethodSpec.Builder factoryMethod = MethodSpec.methodBuilder("new" + builder.simpleName())
+        .addModifiers(Modifier.PRIVATE)
+        .returns(builder)
