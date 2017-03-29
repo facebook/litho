@@ -674,3 +674,6 @@ class MountState {
     if (mHostsByMarker.get(ROOT_HOST_ID) == null) {
       // Mounting always starts with the root host.
       registerHost(ROOT_HOST_ID, mComponentView);
+
+      // Root host is implicitly marked as mounted.
+      mIndexToItemMap.put(ROOT_HOST_ID, mRootHostMountItem);
