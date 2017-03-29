@@ -304,3 +304,10 @@ public class MountSpecHelper extends ComponentSpecHelper {
         ClassNames.COMPONENT);
   }
 
+  private TypeName getMountType() {
+    final ExecutableElement onCreateMountContent = Utils.getAnnotatedMethod(
+        mStages.getSourceElement(),
+        OnCreateMountContent.class);
+    return ClassName.get(onCreateMountContent.getReturnType());
+  }
+
