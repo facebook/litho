@@ -68,3 +68,6 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
         (Build.VERSION.SDK_INT < HONEYCOMB && mDrawable instanceof ColorDrawable) ||
         (mDrawable instanceof InsetDrawable);
 
+    invalidateSelf();
+  }
+
