@@ -283,3 +283,5 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return mLastWidthSpec;
   }
 
+  public void setLastWidthSpec(int widthSpec) {
+    mLastWidthSpec = widthSpec;
