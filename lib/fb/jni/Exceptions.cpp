@@ -37,3 +37,4 @@ class JRuntimeException : public JavaClass<JRuntimeException, JThrowable> {
 
   static local_ref<JRuntimeException> create() {
     return newInstance();
+  }
