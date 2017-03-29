@@ -511,3 +511,11 @@ public class MountStateRemountInPlaceTest {
         TestDrawableComponent.create(mContext)
             .build();
 
+    secondTree.setRoot(new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c)
+            .child(thirdComponent)
+            .build();
+      }
+    });
