@@ -17,3 +17,4 @@ import android.os.Looper;
 
 import com.facebook.components.ComponentLifecycle.StateContainer;
 import com.facebook.components.testing.ComponentTestHelper;
+import com.facebook.components.testing.testrunner.ComponentsTestRunner;

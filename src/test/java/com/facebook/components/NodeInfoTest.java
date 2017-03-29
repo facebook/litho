@@ -28,3 +28,4 @@ import static junit.framework.Assert.assertSame;
 import static junit.framework.Assert.fail;
 import static org.junit.Assert.assertTrue;
 
+@RunWith(ComponentsTestRunner.class)

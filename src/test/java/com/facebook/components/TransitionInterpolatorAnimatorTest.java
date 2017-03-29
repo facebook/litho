@@ -24,3 +24,4 @@ import org.robolectric.shadows.ShadowSystemClock;
 
 import static junit.framework.Assert.assertEquals;
 
+@RunWith(ComponentsTestRunner.class)

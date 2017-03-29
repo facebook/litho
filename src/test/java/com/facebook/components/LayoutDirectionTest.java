@@ -37,3 +37,4 @@ import static org.junit.Assert.assertEquals;
     shadows = {
         LayoutDirectionViewShadow.class,
         LayoutDirectionViewGroupShadow.class})
+@RunWith(ComponentsTestRunner.class)
