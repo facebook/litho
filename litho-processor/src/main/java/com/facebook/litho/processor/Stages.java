@@ -552,3 +552,6 @@ public class Stages {
                 ClassNames.COMPONENT_BUILDER_WITH_LAYOUT,
                 ClassNames.REFERENCE_BUILDER);
             if (illegalPropTypes.contains(typeName)) {
+              throw new ComponentsProcessingException(
+                  v,
+                  "Props may not be declared with the following types:" +
