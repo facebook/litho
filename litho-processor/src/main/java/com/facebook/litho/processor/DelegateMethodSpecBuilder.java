@@ -256,3 +256,4 @@ class DelegateMethodSpecBuilder {
         null;
     final String parameterName = translatedName != null ? translatedName : output.name;
 
+    for (Parameter parameter : mFromParams) {

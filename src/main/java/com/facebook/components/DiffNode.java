@@ -97,3 +97,4 @@ class DiffNode implements Cloneable {
     return mContent;
   }
 
+  void setContent(LayoutOutput content) {

@@ -103,3 +103,4 @@ public class ResourceResolver {
         return cached;
       }
 
+      int result = mResources.getInteger(resId);
