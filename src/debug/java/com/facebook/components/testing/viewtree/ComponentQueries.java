@@ -71,3 +71,5 @@ class ComponentQueries {
   }
 
   private static boolean hasDrawable(Drawable containingDrawable, Drawable drawable) {
+    while (containingDrawable instanceof MatrixDrawable) {
+      containingDrawable = ((MatrixDrawable) containingDrawable).getMountedDrawable();
