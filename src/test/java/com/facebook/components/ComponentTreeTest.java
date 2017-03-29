@@ -248,3 +248,4 @@ public class ComponentTreeTest {
 
     Size size = new Size();
 
+    componentTree.setSizeSpec(mWidthSpec, mHeightSpec, size);
