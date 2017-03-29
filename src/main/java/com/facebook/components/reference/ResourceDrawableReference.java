@@ -134,3 +134,4 @@ public final class ResourceDrawableReference extends ReferenceLifecycle<Drawable
 
     @Override
     public Reference<Drawable> build() {
+      State state = mState;

@@ -39,3 +39,4 @@ public class TestComponentTree extends ComponentTree {
   @Override
   protected LayoutState calculateLayoutState(
       @Nullable Object lock,
+      ComponentContext context,

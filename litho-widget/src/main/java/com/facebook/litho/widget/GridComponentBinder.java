@@ -122,3 +122,6 @@ public abstract class GridComponentBinder extends RecyclerComponentBinder<
     final int itemSpanCount = layoutManager.getSpanSizeLookup().getSpanSize(position);
 
     if (layoutManager.getOrientation() == OrientationHelper.VERTICAL) {
+      return SizeSpec.makeSizeSpec(
+          (SizeSpec.getSize(super.getWidthSpec(position)) / spanCount) * itemSpanCount,
+          EXACTLY);
