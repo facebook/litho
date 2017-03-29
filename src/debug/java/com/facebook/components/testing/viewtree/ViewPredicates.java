@@ -176,3 +176,9 @@ final class ViewPredicates {
         }
 
         final String drawnDrawableDescription = getDrawnDrawableDescription(drawable);
+        return !drawnDrawableDescription.isEmpty() &&
+            getDrawnViewDescription(input).contains(drawnDrawableDescription);
+      }
+    };
+  }
+
