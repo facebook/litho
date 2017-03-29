@@ -161,3 +161,4 @@ class ImageSpec {
     return new MatrixDrawable();
   }
 
+  @OnMount
