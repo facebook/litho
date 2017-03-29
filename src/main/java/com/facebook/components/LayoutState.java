@@ -1136,3 +1136,5 @@ class LayoutState {
       int heightSpec,
       DiffNode previousDiffTreeRoot) {
     final ComponentContext context = root.getContext();
+    final Component component = root.getComponent();
+    ComponentsSystrace.beginSection("measureTree:" + component.getSimpleName());
