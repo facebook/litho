@@ -20,3 +20,5 @@ import com.facebook.components.Diff;
 import com.facebook.components.DrawableMatrix;
 import com.facebook.components.MatrixDrawable;
 import com.facebook.components.Output;
+import com.facebook.components.Size;
+import com.facebook.components.SizeSpec;
