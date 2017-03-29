@@ -46,3 +46,4 @@ class RecyclerSpec {
   @PropDefault static final boolean nestedScrollingEnabled = true;
   @PropDefault static final ItemAnimator itemAnimator = new NoUpdateItemAnimator();
   @PropDefault static final int recyclerViewId = View.NO_ID;
+  @PropDefault static final int refreshProgressBarColor = Color.BLACK;
