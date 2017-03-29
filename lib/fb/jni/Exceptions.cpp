@@ -254,3 +254,5 @@ JniException::JniException(const JniException &rhs)
 JniException::~JniException() {
   ThreadScope ts;
   throwable_.reset();
+}
+
