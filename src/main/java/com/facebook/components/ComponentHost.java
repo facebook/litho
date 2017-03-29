@@ -708,3 +708,8 @@ public class ComponentHost extends ViewGroup {
       }
 
       parent = parent.getParent();
+    }
+
+    super.requestLayout();
+  }
+

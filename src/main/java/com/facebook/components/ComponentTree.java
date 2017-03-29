@@ -853,3 +853,6 @@ public class ComponentTree {
 
       if (heightSpecInitialized) {
         mHeightSpec = heightSpec;
+      }
+
+      if (rootInitialized) {
