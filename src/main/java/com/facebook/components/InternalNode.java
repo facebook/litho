@@ -1862,3 +1862,15 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   /**
+   * Adds an item to a possibly nulled list to defer the allocation as long as possible.
+   */
+  private static <A> List<A> addOrCreateList(@Nullable List<A> list, A item) {
+    if (list == null) {
+      list = new LinkedList<>();
+    }
+
+    list.add(item);
+
+    return list;
+  }
+
