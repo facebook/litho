@@ -915,3 +915,4 @@ class LayoutState {
         break;
     }
 
+    layoutState.mLayoutStateOutputIdCalculator.clear();
