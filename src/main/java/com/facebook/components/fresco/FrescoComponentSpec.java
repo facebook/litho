@@ -116,3 +116,4 @@ class FrescoComponentSpec {
         progressBarImage,
         progressBarImageScaleType,
         progressBarAutoRotateInterval);
+    draweeHierarchy.setRetryReference(retryImage, retryImageScaleType);
