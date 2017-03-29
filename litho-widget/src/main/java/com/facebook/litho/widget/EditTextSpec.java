@@ -65,3 +65,4 @@ class EditTextSpec {
 
   @PropDefault protected static final int minLines = Integer.MIN_VALUE;
   @PropDefault protected static final int maxLines = Integer.MAX_VALUE;
+  @PropDefault protected static final int maxLength = Integer.MAX_VALUE;
