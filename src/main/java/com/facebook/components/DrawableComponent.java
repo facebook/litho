@@ -112,3 +112,5 @@ private static class State<T extends Drawable> extends Component<DrawableCompone
     @Override
     public String getSimpleName() {
       return mDrawable.getSimpleName();
+    }
+
