@@ -2346,3 +2346,23 @@ public class LayoutStateCalculateTest {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            .child(TestDrawableComponent.create(c))
+            .borderWidthPx(YogaEdge.TOP, 10)
+            .borderColor(Color.GREEN)
+            .build();
+      }
+    };
+
+    LayoutState layoutState = calculateLayoutState(
+        RuntimeEnvironment.application,
+        component,
+        -1,
+        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
+        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
+
+    assertEquals(3, layoutState.getMountableOutputCount());
+
+    // Output at index 1 is BorderColorDrawable component.
+    assertTrue(getComponentAt(layoutState, 1) instanceof DrawableComponent);
+  }
+
