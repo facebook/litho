@@ -11,3 +11,5 @@ import android.graphics.drawable.Drawable;
 import com.facebook.litho.ComponentHost;
 import com.facebook.litho.MatrixDrawable;
 
+import com.google.common.base.Predicate;
+

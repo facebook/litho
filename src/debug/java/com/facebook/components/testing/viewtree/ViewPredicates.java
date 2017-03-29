@@ -37,3 +37,5 @@ final class ViewPredicates {
    * text.
    * substring.
    * @param predicate the predicate with which to test the text
+   * @return the predicate
+   */
