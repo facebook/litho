@@ -50,3 +50,6 @@ class ComponentQueries {
     }
 
     return false;
+  }
+
+  /**
