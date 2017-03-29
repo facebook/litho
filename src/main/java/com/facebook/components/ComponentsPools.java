@@ -668,3 +668,7 @@ public class ComponentsPools {
    */
   @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
   private static class PoolsActivityCallback
+      implements Application.ActivityLifecycleCallbacks {
+
+    @Override
+    public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
