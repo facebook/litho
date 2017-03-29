@@ -31,3 +31,6 @@ public class LayoutStateSpecTest {
   private LayoutState mLayoutState;
   private Component<?> mComponent;
   private ComponentContext mContext;
+
+  @Before
+  public void setup() {

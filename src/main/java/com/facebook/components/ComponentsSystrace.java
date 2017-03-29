@@ -41,3 +41,6 @@ public class ComponentsSystrace {
 
   public static void beginSection(String name) {
     getInstance().beginSection(name);
+  }
+
+  public static void endSection() {

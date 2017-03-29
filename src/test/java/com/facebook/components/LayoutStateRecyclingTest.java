@@ -31,3 +31,5 @@ import static junit.framework.Assert.assertNull;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.mock;
+
+@PrepareForTest(ComponentsPools.class)
