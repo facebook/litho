@@ -236,3 +236,4 @@ public class PagerBinderTest {
           .color(Color.RED)
           .measuredWidth(50)
           .measuredHeight(100)
+          .build();

@@ -790,3 +790,4 @@ public class TreeDiffingTest {
 
   @Test
   public void testDiffTreeUsedIfRootMeasureSpecsAreDifferentButChildHasSame() {
+    final TestComponent component = TestDrawableComponent.create(mContext)
