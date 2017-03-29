@@ -568,3 +568,7 @@ public class ComponentsPools {
           poolsArray.put(lifecycle.getId(), pool);
         }
       }
+
+      if (pool != null) {
+        pool.release(mountContent);
+      }
