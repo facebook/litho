@@ -185,3 +185,5 @@ class MountItem {
 
     return (mNodeInfo != null && mNodeInfo.hasAccessibilityHandlers())
         || mComponent.getLifecycle().implementsAccessibility();
+  }
+
