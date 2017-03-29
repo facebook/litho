@@ -556,3 +556,6 @@ public class ComponentHost extends ViewGroup {
     MountItem item = getAccessibleMountItem();
     return item != null
       && item.getComponent().getLifecycle().implementsExtraAccessibilityNodes();
+  }
+
+  public List<CharSequence> getContentDescriptions() {
