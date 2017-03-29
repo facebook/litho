@@ -212,3 +212,7 @@ final class ViewPredicates {
     try {
       final Method onDraw = view.getClass().getMethod("onDraw", Canvas.class);
       onDraw.invoke(view, canvas);
+      final ShadowCanvas shadowCanvas2 = Shadows.shadowOf(canvas);
+      return shadowCanvas2.getDescription();
+    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+      throw new RuntimeException(e);
