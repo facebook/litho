@@ -68,3 +68,4 @@ public class MountStateIncrementalMountTest {
    * Tests incremental mount behaviour of a vertical stack of components with a View mount type.
    */
   @Test
+  public void testIncrementalMountVerticalViewStackScrollUp() {

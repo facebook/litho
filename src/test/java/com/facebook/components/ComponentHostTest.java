@@ -57,3 +57,4 @@ import static org.mockito.Mockito.when;
  * Tests {@link ComponentHost}
  */
 @RunWith(ComponentsTestRunner.class)
+public class ComponentHostTest {

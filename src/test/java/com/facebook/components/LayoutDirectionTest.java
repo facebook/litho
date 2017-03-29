@@ -424,3 +424,4 @@ public class LayoutDirectionTest {
     final TestComponent child = TestViewComponent.create(mContext)
         .build();
 
+    ComponentView componentView = ComponentTestHelper.mountComponent(
