@@ -2382,3 +2382,4 @@ public class LayoutStateCalculateTest {
       int heightSpec) {
 
     return LayoutState.calculate(
+        new ComponentContext(context),
