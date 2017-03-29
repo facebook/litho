@@ -1152,3 +1152,4 @@ public class ComponentTree {
       Component<?> root,
       int widthSpec,
       int heightSpec,
+      boolean diffingEnabled,

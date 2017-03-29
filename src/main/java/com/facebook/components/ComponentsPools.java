@@ -687,3 +687,4 @@ public class ComponentsPools {
 
     @Override
     public void onActivityPaused(Activity activity) {
+      // Do nothing.
