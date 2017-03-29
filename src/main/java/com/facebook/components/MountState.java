@@ -764,3 +764,4 @@ class MountState {
           // in the outputs array has changed we need to update the position in the Host to ensure
           // the z-ordering.
           oldItem.getHost().moveItem(oldItem, i, newPosition);
+          mPrepareMountStats.movedCount++;
