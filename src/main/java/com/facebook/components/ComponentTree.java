@@ -1046,3 +1046,4 @@ public class ComponentTree {
         mComponentView.setComponent(null);
       }
       mRoot = null;
+
