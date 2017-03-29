@@ -1135,3 +1135,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode touchHandler(EventHandler touchHandler) {
+    getOrCreateNodeInfo().setTouchHandler(touchHandler);
