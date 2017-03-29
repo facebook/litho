@@ -513,3 +513,7 @@ public abstract class ComponentLifecycle implements EventDispatcher {
 
   /**
    * Call this to transfer the {@link com.facebook.litho.annotations.State} annotated values
+   * between two {@link Component} with the same global scope.
+   */
+  protected void transferState(
+      ComponentContext c,
