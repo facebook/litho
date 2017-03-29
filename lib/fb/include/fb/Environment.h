@@ -44,3 +44,4 @@ struct Environment {
  *      ERROR: detaching thread with interp frames (count=18)
  *    (More detail at https://groups.google.com/forum/#!topic/android-ndk/2H8z5grNqjo)
  *    ThreadScope won't do a detach if the thread was already attached before the guard is
+ *    instantiated, but there's probably some usage that could trip this up.

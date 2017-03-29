@@ -33,3 +33,5 @@ class JRuntimeException : public JavaClass<JRuntimeException, JThrowable> {
 
   static local_ref<JRuntimeException> create(const char* str) {
     return newInstance(make_jstring(str));
+  }
+
