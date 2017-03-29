@@ -1322,3 +1322,5 @@ public class LayoutStateCalculateTest {
                     .heightDip(30))
             .child(
                 TestDrawableComponent.create(c, true, true, true, true, false)
+                    .withLayout().flexShrink(0)
+                    .flex(1).flexBasisDip(0)

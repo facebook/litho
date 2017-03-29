@@ -308,3 +308,5 @@ class TextSpec {
       int shadowColor,
       boolean isSingleLine,
       CharSequence text,
+      int textColor,
+      ColorStateList textColorStateList,
