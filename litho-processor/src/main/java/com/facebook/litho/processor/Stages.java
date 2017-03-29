@@ -1141,3 +1141,4 @@ public class Stages {
         .fromParams(fromParams)
         .target(mSourceDelegateAccessorName)
         .toName(to.getSimpleName().toString())
+        .stateParams(mStateMap.keySet())
