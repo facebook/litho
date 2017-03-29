@@ -900,3 +900,22 @@ public class Stages {
               .initializer("null")
               .build());
 
+      mClassTypeSpec.addMethod(
+          MethodSpec.methodBuilder("get")
+              .addModifiers(Modifier.PUBLIC)
+              .addModifiers(Modifier.STATIC)
+              .addModifiers(Modifier.SYNCHRONIZED)
+              .returns(className)
+              .beginControlFlow("if ($L == null)", SPEC_INSTANCE_NAME)
+              .addStatement("$L = new $T()", SPEC_INSTANCE_NAME, className)
+              .endControlFlow()
+              .addStatement("return $L", SPEC_INSTANCE_NAME)
+              .build());
+    } else {
+      mClassTypeSpec.addMethod(
+          MethodSpec.methodBuilder("get")
+              .addModifiers(Modifier.PUBLIC)
+              .returns(className)
+              .addStatement("return this")
+              .build());
+    }
