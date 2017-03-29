@@ -370,3 +370,6 @@ class TextSpec {
       layoutBuilder.setMaxWidth(maxWidth);
     }
 
+    if (textColor != 0) {
+      layoutBuilder.setTextColor(textColor);
+    } else {
