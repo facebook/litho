@@ -1280,3 +1280,4 @@ public class Stages {
   public void generateEventHandlerFactories(
       ClassName contextClassName,
       ClassName componentClassName) {
+    for (ExecutableElement element : mOnEventMethods) {
