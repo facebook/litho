@@ -459,3 +459,4 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
     return this;
   }
 
+  private ImmutableList<View> getPathToVisibleWithDrawable(final Drawable drawable) {
