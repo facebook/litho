@@ -58,3 +58,5 @@ public class MountSpecHelper extends ComponentSpecHelper {
 
   private static final Class<Annotation>[] STAGE_ANNOTATIONS = new Class[] {
       /* Methods that can have inter-stage props - these MUST come first in this list */
+      OnPrepare.class,
+      OnMeasure.class,
