@@ -885,3 +885,4 @@ class LayoutState {
 
     final InternalNode root = createAndMeasureTreeForComponent(
         component.getScopedContext(),
+        component,
