@@ -1404,3 +1404,4 @@ public class Stages {
         .eventName(element.getSimpleName().toString())
         .contextClass(contextClassName)
         .eventHandlerClassName(
+            ParameterizedTypeName.get(ClassNames.EVENT_HANDLER, eventClassName))
