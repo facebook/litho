@@ -182,3 +182,4 @@ class PropsBuilderMethodsSpecBuilder {
         mPropParameter.parameter.name,
         Arrays.asList(parameter(mPropParameter.parameter.type, mPropParameter.parameter.name)),
         mPropParameter.parameter.name +
+            " == null ? null : " +
