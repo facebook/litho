@@ -1105,3 +1105,4 @@ public class TreeDiffingTest {
     // The nested root measure() was called in the first layout calculation.
     TestComponent prevNestedLeaf1 =
         (TestComponent) prevLayoutState.getMountableOutputAt(2).getComponent();
+    assertTrue(prevNestedLeaf1.wasMeasureCalled());
