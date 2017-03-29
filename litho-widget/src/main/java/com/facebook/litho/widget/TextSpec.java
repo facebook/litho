@@ -92,3 +92,4 @@ class TextSpec {
   @PropDefault protected static final int maxWidth = DEFAULT_MAX_WIDTH;
   @PropDefault protected static final int shadowColor = Color.GRAY;
   @PropDefault protected static final int textColor = DEFAULT_COLOR;
+  @PropDefault protected static final int linkColor = DEFAULT_COLOR;
