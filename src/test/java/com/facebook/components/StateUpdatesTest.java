@@ -151,3 +151,5 @@ public class StateUpdatesTest {
   @Before
   public void setup() throws Exception {
     mContext = new ComponentContext(RuntimeEnvironment.application);
+    mWidthSpec = makeSizeSpec(39, EXACTLY);
+    mHeightSpec = makeSizeSpec(41, EXACTLY);
