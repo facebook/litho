@@ -44,3 +44,4 @@ public class DecadeSeparatorSpec {
             .withLayout().flexShrink(0)
             .marginDip(YogaEdge.HORIZONTAL, 10)
             .flex(0).flexBasisDip(0))
+        .child(

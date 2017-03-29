@@ -83,3 +83,4 @@ public class StateValidation {
    *   <li>1. Method parameters annotated with {@link Param} don't have the same name as parameters
    *    annotated with {@link State} or {@link Prop}.</li>
    *   <li>2. Method parameters not annotated with {@link Param} must be of type
+   *    com.facebook.litho.StateValue.</li>

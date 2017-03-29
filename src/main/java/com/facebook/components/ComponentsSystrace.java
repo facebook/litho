@@ -10,3 +10,15 @@
 package com.facebook.litho;
 
 /**
+ * This is intended as a hook into {@code android.os.Trace}, but allows you to provide your own
+ * functionality.  Use it as
+ * <p>
+ *   {@code
+ *      ComponentsSystrace.beginSection("tag");
+ *      ...
+ *      ComponentsSystrace.endSection();
+ *   }
+ * </p>
+ *
+ * As a default, it simply calls {@code android.os.Trace} (see {@link DefaultComponentsSystrace}).
+ * You may supply your own with {@link ComponentsSystrace#provide(Systrace)}.

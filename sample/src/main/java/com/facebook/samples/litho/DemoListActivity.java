@@ -6,3 +6,4 @@
  * LICENSE-examples file in the root directory of this source tree.
  */
 
+package com.facebook.samples.litho;
