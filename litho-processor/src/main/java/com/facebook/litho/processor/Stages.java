@@ -2781,3 +2781,6 @@ public class Stages {
       initMethodSpec.addStatement("mRequired.clear()");
     }
 
+    propsBuilderClassBuilder.addMethod(initMethodSpec.build());
+
+    // If there are no type variables, then this class can always be static.
