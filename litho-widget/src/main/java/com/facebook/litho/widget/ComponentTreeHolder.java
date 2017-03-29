@@ -116,3 +116,11 @@ public class ComponentTreeHolder {
     return mComponentInfo.getSpanSize();
   }
 
+  synchronized boolean isTreeValid() {
+    return mIsTreeValid;
+  }
+
+  synchronized ComponentTree getComponentTree() {
+    return mComponentTree;
+  }
+
