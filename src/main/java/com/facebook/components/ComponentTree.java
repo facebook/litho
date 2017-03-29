@@ -539,3 +539,25 @@ public class ComponentTree {
 
     measureOutput[0] = mMainThreadLayoutState.getWidth();
     measureOutput[1] = mMainThreadLayoutState.getHeight();
+
+    int layoutScheduleType = SCHEDULE_NONE;
+    Component root = null;
+
+    synchronized (this) {
+      mIsMeasuring = false;
+
+      if (mScheduleLayoutAfterMeasure != SCHEDULE_NONE) {
+        layoutScheduleType = mScheduleLayoutAfterMeasure;
+        mScheduleLayoutAfterMeasure = SCHEDULE_NONE;
+        root = mRoot.makeShallowCopy();
+      }
+    }
+
+    if (layoutScheduleType != SCHEDULE_NONE) {
+      setRootAndSizeSpecInternal(
+          root,
+          SIZE_UNINITIALIZED,
+          SIZE_UNINITIALIZED,
+          layoutScheduleType == SCHEDULE_LAYOUT_ASYNC,
+          null /*output */);
+    }
