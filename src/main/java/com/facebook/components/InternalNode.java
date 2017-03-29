@@ -1786,3 +1786,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     mResolvedHeight = YogaConstants.UNDEFINED;
 
     mComponentContext = null;
+    mResources = null;
