@@ -1735,3 +1735,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
         contentDescription(a.getString(attr));
       } else if (attr == R.styleable.ComponentLayout_flex_direction) {
         flexDirection(YogaFlexDirection.fromInt(a.getInteger(attr, 0)));
+      } else if (attr == R.styleable.ComponentLayout_flex_wrap) {
