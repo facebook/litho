@@ -347,3 +347,10 @@ class TextSpec {
         throw new IllegalStateException("Unexpected size mode: " + SizeSpec.getMode(widthSpec));
     }
 
+    layoutBuilder
+        .setEllipsize(ellipsize)
+        .setMaxLines(maxLines)
+        .setShadowLayer(shadowRadius, shadowDx, shadowDy, shadowColor)
+        .setSingleLine(isSingleLine)
+        .setText(text)
+        .setTextSize(textSize)
