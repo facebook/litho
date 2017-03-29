@@ -17,3 +17,5 @@ import com.facebook.R;
 import com.facebook.components.ComponentContext;
 import com.facebook.components.ComponentLayout;
 import com.facebook.components.Diff;
+import com.facebook.components.DrawableMatrix;
+import com.facebook.components.MatrixDrawable;
