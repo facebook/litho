@@ -21,3 +21,11 @@ import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.widget.LinearLayoutInfo;
 import com.facebook.litho.widget.Recycler;
 import com.facebook.litho.widget.RecyclerBinder;
+
+@LayoutSpec
+public class DemoListComponentSpec {
+
+  private static final String MAIN_SCREEN = "main_screen";
+
+  @OnCreateLayout
+  static ComponentLayout onCreateLayout(ComponentContext c) {

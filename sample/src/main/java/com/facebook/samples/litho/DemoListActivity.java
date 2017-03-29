@@ -14,3 +14,12 @@ import android.support.v7.app.AppCompatActivity;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ComponentView;
+
+public class DemoListActivity extends AppCompatActivity {
+
+  @Override
+  public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+
+    final ComponentView componentView = new ComponentView(this);
+    final ComponentContext context = new ComponentContext(this);

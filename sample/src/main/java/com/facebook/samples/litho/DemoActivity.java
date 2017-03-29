@@ -19,3 +19,11 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ComponentView;
+
+public class DemoActivity extends AppCompatActivity {
+
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+
+    final ComponentContext context = new ComponentContext(this);

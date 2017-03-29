@@ -27,3 +27,4 @@ if COMPONENTS_IS_OSS_BUILD:
   )
 
   cxx_library(
+    name = 'jni',
