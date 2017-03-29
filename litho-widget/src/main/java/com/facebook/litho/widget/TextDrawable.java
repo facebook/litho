@@ -114,3 +114,4 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
         TypedValue.COMPLEX_UNIT_SP,
         DEFAULT_TOUCH_RADIUS_IN_SP,
         view.getResources().getDisplayMetrics());
+
