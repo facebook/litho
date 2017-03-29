@@ -1824,3 +1824,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
     mLastWidthSpec = DiffNode.UNSPECIFIED;
     mLastHeightSpec = DiffNode.UNSPECIFIED;
+    mLastMeasuredHeight = DiffNode.UNSPECIFIED;
+    mLastMeasuredWidth = DiffNode.UNSPECIFIED;
+    mDiffNode = null;
+    mCachedMeasuresValid = false;
