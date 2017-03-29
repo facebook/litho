@@ -159,3 +159,4 @@ public class Stages {
 
   // List of methods that have @OnEvent on it.
   private final List<ExecutableElement> mOnEventMethods;
+

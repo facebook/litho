@@ -250,3 +250,6 @@ public class ComponentTree {
       toRelease = setBestMainThreadLayoutAndReturnOldLayout();
       layoutStateUpdated = (mMainThreadLayoutState != oldMainThreadLayoutState);
       componentRootId = mRoot.getId();
+    }
+
+    if (toRelease != null) {
