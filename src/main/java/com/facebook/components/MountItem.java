@@ -130,3 +130,4 @@ class MountItem {
       Object content,
       DisplayList displayList,
       DisplayListDrawable convertDisplayListDrawable) {
+    if (displayList != null) {

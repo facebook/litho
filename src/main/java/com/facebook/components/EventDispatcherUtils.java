@@ -101,3 +101,14 @@ class EventDispatcherUtils {
     final EventDispatcher eventDispatcher =
         invisibleHandler.mHasEventDispatcher.getEventDispatcher();
     eventDispatcher.dispatchOnEvent(invisibleHandler, sInvisibleEvent);
+  }
+
+  static boolean dispatchOnLongClick(EventHandler<LongClickEvent> longClickHandler, View view) {
+    assertMainThread();
+
+    if (sLongClickEvent == null) {
+      sLongClickEvent = new LongClickEvent();
+    }
+
+    sLongClickEvent.view = view;
+
