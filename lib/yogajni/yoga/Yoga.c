@@ -744,3 +744,5 @@ static inline bool YGValueEqual(const YGValue a, const YGValue b) {
   return fabs(a.value - b.value) < 0.0001f;
 }
 
+static inline void YGResolveDimensions(YGNodeRef node) {
+  for (YGDimension dim = YGDimensionWidth; dim <= YGDimensionHeight; dim++) {
