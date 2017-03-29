@@ -123,3 +123,6 @@ int __android_log_print(int prio, const char *tag, const char *fmt, ...)
 #endif
 
 #define CONDITION(cond) (__builtin_expect((cond) != 0, 0))
+
+#ifndef FBLOGV_IF
+#if FBLOG_NDEBUG
