@@ -322,3 +322,4 @@ public class Stages {
         throw new ComponentsProcessingException(
             eventDeclaration,
             "Events must be declared with the @Event annotation, event is: " + eventDeclaration);
+      }
