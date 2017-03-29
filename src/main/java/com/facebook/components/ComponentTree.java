@@ -1011,3 +1011,4 @@ public class ComponentTree {
     final ComponentsLogger logger = mContext.getLogger();
     if (logger != null) {
       logger.eventEnd(EVENT_LAYOUT_CALCULATE, root, ACTION_SUCCESS);
+    }
