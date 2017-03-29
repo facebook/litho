@@ -332,3 +332,23 @@ public class RecyclerBinderTest {
   }
 
   @Test
+  public void testComponentWithDifferentSpanSize() {
+    Mockito.when(mLayoutInfo.getLayoutManager())
+        .thenReturn(new GridLayoutManager(mComponentContext, 2));
+    final List<ComponentInfo> components = new ArrayList<>();
+    for (int i = 0; i < 100; i++) {
+      components.add(ComponentInfo.create()
+          .component(mock(Component.class))
+          .spanSize((i == 0 || i % 3 == 0) ? 2 : 1)
+          .build());
+      mRecyclerBinder.insertItemAt(i, components.get(i));
+    }
+
+    for (int i = 0; i < 100; i++) {
+      Assert.assertNotNull(mHoldersForComponents.get(components.get(i).getComponent()));
+    }
+
+    Size size = new Size();
+    int widthSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
+    int heightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
+
