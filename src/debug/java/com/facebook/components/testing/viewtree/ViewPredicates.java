@@ -130,3 +130,13 @@ final class ViewPredicates {
     return new Predicate<View>() {
       @Override
       public boolean apply(final View input) {
+        return input.getVisibility() == View.VISIBLE;
+      }
+    };
+  }
+
+  @SuppressWarnings("unchecked")
+  public static Predicate<View> isClass(final Class<? extends View> clazz) {
+    return (Predicate<View>) (Predicate<?>) Predicates.instanceOf(clazz);
+  }
+
