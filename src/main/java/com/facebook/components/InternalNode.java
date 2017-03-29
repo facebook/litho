@@ -1214,3 +1214,6 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Override
   public InternalNode viewTags(SparseArray<Object> viewTags) {
     getOrCreateNodeInfo().setViewTags(viewTags);
+    return this;
+  }
+
