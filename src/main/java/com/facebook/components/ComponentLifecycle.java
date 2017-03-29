@@ -209,3 +209,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     populateTreeProps(component, parentTreeProps);
     context.setTreeProps(getTreePropsForChildren(context, component, parentTreeProps));
 
+    ComponentsSystrace.beginSection("createLayout:" + component.getSimpleName());
