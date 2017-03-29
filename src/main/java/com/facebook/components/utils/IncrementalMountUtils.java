@@ -101,3 +101,4 @@ public class IncrementalMountUtils {
         right <= scrollingParentWidth &&
         bottom <= scrollingParentHeight &&
         componentView.getPreviousMountBounds().width() == componentView.getWidth() &&
+        componentView.getPreviousMountBounds().height() == componentView.getHeight()) {
