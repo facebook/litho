@@ -1413,3 +1413,4 @@ public class Stages {
         .eventId(getElementId(element))
         .eventName(element.getSimpleName().toString())
         .contextClass(componentClassName)
+        .eventHandlerClassName(
