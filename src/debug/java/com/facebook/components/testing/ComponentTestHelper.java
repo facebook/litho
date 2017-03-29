@@ -160,3 +160,39 @@ public final class ComponentTestHelper {
         ComponentTree.create(context, component)
             .incrementalMount(incrementalMountEnabled)
             .build(),
+        makeMeasureSpec(width, EXACTLY),
+        makeMeasureSpec(height, EXACTLY));
+  }
+
+  /**
+   * Mount a component tree into a component view.
+   *
+   * @param componentView The view to mount the component tree into
+   * @param componentTree The component tree to mount
+   * @return A ComponentView with the component tree mounted in it.
+   */
+  public static ComponentView mountComponent(
+      ComponentView componentView,
+      ComponentTree componentTree) {
+    return mountComponent(
+        componentView,
+        componentTree,
+        makeMeasureSpec(100, EXACTLY),
+        makeMeasureSpec(100, EXACTLY));
+  }
+
+  /**
+   * Mount a component tree into a component view.
+   *
+   * @param componentView The view to mount the component tree into
+   * @param componentTree The component tree to mount
+   * @param widthSpec The width spec used to measure the resulting view
+   * @param heightSpec The height spec used to measure the resulting view
+   * @return A ComponentView with the component tree mounted in it.
+   */
+  public static ComponentView mountComponent(
+      ComponentView componentView,
+      ComponentTree componentTree,
+      int widthSpec,
+      int heightSpec) {
+    componentView.setComponent(componentTree);
