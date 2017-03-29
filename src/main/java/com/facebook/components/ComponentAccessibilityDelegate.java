@@ -197,3 +197,6 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
    */
   @Override
   public AccessibilityNodeProviderCompat getAccessibilityNodeProvider(View host) {
+    final MountItem mountItem = getAccessibleMountItem(mView);
+    if (mountItem != null
+        && mountItem.getComponent().getLifecycle().implementsExtraAccessibilityNodes()) {
