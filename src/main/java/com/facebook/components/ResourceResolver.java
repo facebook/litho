@@ -268,3 +268,4 @@ public class ResourceResolver {
     }
   }
 
+  protected final boolean resolveBoolAttr(@AttrRes int attrResId, @BoolRes int defResId) {

@@ -672,3 +672,14 @@ public class ComponentHostTest {
     return Whitebox.invokeMethod(drawableItems, "valueAt", index);
   }
 
+  private void testScrapHostsForComponent(
+      Component<?> component,
+      Class<? extends View> viewClass) {
+    View view = mock(viewClass);
+    MountItem mountItem = new MountItem();
+    mountItem.init(
+        component,
+        null,
+        view,
+        null,
+        null,
