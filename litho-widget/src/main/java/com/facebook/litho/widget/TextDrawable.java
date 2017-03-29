@@ -380,3 +380,4 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
 
     return clickableSpanAreaRegion.op(touchAreaRegion, Region.Op.INTERSECT);
   }
+}
