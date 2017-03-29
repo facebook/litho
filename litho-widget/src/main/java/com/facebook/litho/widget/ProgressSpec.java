@@ -104,3 +104,4 @@ class ProgressSpec {
   }
 
   @OnUnmount
+  static void onUnmount(
