@@ -745,3 +745,8 @@ public class ComponentHost extends ViewGroup {
       final Drawable drawable = (Drawable) mDrawableMountItems.valueAt(i).getContent();
       DrawableCompat.jumpToCurrentState(drawable);
     }
+  }
+
+  @Override
+  public void setVisibility(int visibility) {
+    super.setVisibility(visibility);
