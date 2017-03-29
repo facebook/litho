@@ -68,3 +68,7 @@ class EventHandlerFactoryMethodSpecBuilder {
     return this;
   }
 
+  MethodSpec build() {
+    final MethodSpec.Builder builder = MethodSpec.methodBuilder(mEventName)
+        .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+        .addParameter(mContextClass, "c")

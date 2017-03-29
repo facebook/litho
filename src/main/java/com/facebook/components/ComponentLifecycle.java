@@ -83,3 +83,5 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     @Override
     @SuppressLint("WrongCall")
     @SuppressWarnings("unchecked")
+    public long measure(
+        YogaNodeAPI cssNode,

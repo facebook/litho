@@ -33,3 +33,6 @@ public enum YogaDirection {
       case 1: return LTR;
       case 2: return RTL;
       default: throw new IllegalArgumentException("Unknown enum value: " + value);
+    }
+  }
+}

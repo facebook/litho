@@ -43,3 +43,6 @@ public enum YogaAlign {
       case 6: return SPACE_BETWEEN;
       case 7: return SPACE_AROUND;
       default: throw new IllegalArgumentException("Unknown enum value: " + value);
+    }
+  }
+}
