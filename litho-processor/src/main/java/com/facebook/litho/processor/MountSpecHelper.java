@@ -93,3 +93,21 @@ public class MountSpecHelper extends ComponentSpecHelper {
         specModel);
   }
 
+  @Override
+  protected void validate() {
+    if (mQualifiedClassName == null) {
+      throw new ComponentsProcessingException(
+          mSpecElement,
+          "You should either provide an explicit component name " +
+          "e.g. @MountSpec(\"MyComponent\"); or suffix your class name with " +
+          "\"Spec\" e.g. a \"MyComponentSpec\" class name generates a component named " +
+          "\"MyComponent\".");
+    }
+
+    if (Utils.getAnnotatedMethod(mStages.getSourceElement(), OnCreateMountContent.class) == null) {
+      throw new ComponentsProcessingException(
+          mSpecElement,
+          "You need to have a method annotated with @OnCreateMountContent in your spec");
+    }
+  }
+
