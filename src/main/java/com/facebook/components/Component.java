@@ -261,3 +261,5 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
 
   static boolean isLayoutSpec(Component<?> component) {
     return (component != null && component.mLifecycle.getMountType() == MountType.NONE);
+  }
+
