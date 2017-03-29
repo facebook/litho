@@ -66,3 +66,8 @@ public class ComponentTreeTest {
         (Looper) Whitebox.invokeMethod(
             ComponentTree.class,
             "getDefaultLayoutThreadLooper"));
+
+    mWidthSpec = makeSizeSpec(39, EXACTLY);
+    mWidthSpec2 = makeSizeSpec(40, EXACTLY);
+    mHeightSpec = makeSizeSpec(41, EXACTLY);
+    mHeightSpec2 = makeSizeSpec(42, EXACTLY);

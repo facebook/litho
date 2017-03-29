@@ -43,3 +43,5 @@ public class StateUpdatesTest {
   private static final int LIFECYCLE_TEST_ID = 1;
   private static final int INITIAL_COUNT_STATE_VALUE = 4;
 
+  private int mWidthSpec;
+  private int mHeightSpec;

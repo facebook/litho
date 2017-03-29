@@ -166,3 +166,7 @@ public class MountStateTestItemTest {
                     Text.create(c)
                         .text(MY_TEST_STRING_1)
                         .withLayout().flexShrink(0)
+                        .testKey(TEST_ID_1))
+                .child(
+                    Text.create(c)
+                        .text(MY_TEST_STRING_2)
