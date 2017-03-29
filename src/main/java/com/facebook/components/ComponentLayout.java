@@ -332,3 +332,4 @@ public interface ComponentLayout {
     ContainerBuilder aspectRatio(float aspectRatio);
 
     ContainerBuilder touchExpansionPx(YogaEdge edge, @Px int value);
+    ContainerBuilder touchExpansionAttr(

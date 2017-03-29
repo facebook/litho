@@ -267,3 +267,5 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
     return (component != null && component.mLifecycle.getMountType() == MountType.NONE);
   }
 
+  static boolean isMountSpec(Component<?> component) {
+    return (component != null && component.mLifecycle.getMountType() != MountType.NONE);
