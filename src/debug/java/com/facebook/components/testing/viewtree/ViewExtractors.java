@@ -25,3 +25,7 @@ final class ViewExtractors {
   private ViewExtractors() {}
 
   public static final Function<View, String> GET_TEXT_FUNCTION = new Function<View, String>() {
+    @Override
+    public String apply(@Nullable View input) {
+      CharSequence text = null;
+      if (input instanceof ComponentHost) {

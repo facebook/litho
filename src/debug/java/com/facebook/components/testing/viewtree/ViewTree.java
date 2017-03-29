@@ -18,3 +18,28 @@ import com.google.common.collect.ImmutableList;
  * Robolectric affords us.
  */
 public final class ViewTree {
+
+  private final View mView;
+
+  public static ViewTree of(View view) {
+    return new ViewTree(view);
+  }
+
+  private ViewTree(View view) {
+    mView = view;
+  }
+
+  /**
+   * @return the view group used to generate this tree
+   */
+  public View getRoot() {
+    return mView;
+  }
+
+  /**
+   * Find a view in the hierarchy for which the given predicate is true
+   *
+   * @param predicate the predicate to find a view upholding
+   * @return null if no such view is found, or a list showing the path in the hierarchy to the
+   * view for which the predicate holds
+   */

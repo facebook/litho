@@ -16,3 +16,5 @@ public class ViewTreeUtil {
     try {
       return RuntimeEnvironment
           .application
+          .getResources()
+          .getResourceEntryName(resourceId);
