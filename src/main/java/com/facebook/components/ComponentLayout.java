@@ -174,3 +174,6 @@ public interface ComponentLayout {
         YogaEdge edge,
         @AttrRes int resId,
         @DimenRes int defaultResId);
+    Builder touchExpansionAttr(YogaEdge edge, @AttrRes int resId);
+    Builder touchExpansionRes(YogaEdge edge, @DimenRes int resId);
+    Builder touchExpansionDip(YogaEdge edge, @Dimension(unit = DP) int value);
