@@ -374,3 +374,10 @@ class TextSpec {
       layoutBuilder.setTextColor(textColor);
     } else {
       layoutBuilder.setTextColor(textColorStateList);
+    }
+
+    if (typeface != DEFAULT_TYPEFACE) {
+      layoutBuilder.setTypeface(typeface);
+    } else {
+      layoutBuilder.setTextStyle(textStyle);
+    }
