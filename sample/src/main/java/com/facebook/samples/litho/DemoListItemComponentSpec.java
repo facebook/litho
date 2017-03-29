@@ -36,3 +36,6 @@ public class DemoListItemComponentSpec {
       ComponentContext c,
       @Prop final String name) {
     return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        .paddingDip(ALL, 16)
+        .child(
+            Text.create(c)

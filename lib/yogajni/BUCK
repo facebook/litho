@@ -42,3 +42,4 @@ if COMPONENTS_IS_OSS_BUILD:
     deps = [
       ":yoga",
       COMPONENTS_FBJNI_TARGET,
+    ],

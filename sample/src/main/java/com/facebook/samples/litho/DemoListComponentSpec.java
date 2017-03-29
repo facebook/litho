@@ -39,3 +39,7 @@ public class DemoListComponentSpec {
     return Recycler.create(c)
         .binder(recyclerBinder)
         .withLayout().flexShrink(0)
+        .testKey(MAIN_SCREEN)
+        .build();
+  }
+}
