@@ -91,3 +91,4 @@ public class LayoutOutputTest {
         LayoutOutput.TYPE_CONTENT,
         SEQ_TEST);
 
+    long stableIdSeq2 = LayoutStateOutputIdCalculator.calculateLayoutOutputId(
