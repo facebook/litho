@@ -25,3 +25,9 @@ import static org.junit.Assert.assertSame;
 
 @RunWith(ComponentsTestRunner.class)
 public class ResourceDrawableReferenceTest {
+  private ComponentContext mContext;
+
+  @Before
+  public void setup() {
+    mContext = new ComponentContext(RuntimeEnvironment.application);
+  }

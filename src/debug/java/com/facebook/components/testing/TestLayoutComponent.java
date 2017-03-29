@@ -47,3 +47,5 @@ public class TestLayoutComponent extends ComponentLifecycle {
           && lifecycle.mIsPureRender == isPureRender
           && lifecycle.mHasMountSpecChild == hasMountSpecChild
           && lifecycle.mIsDelegate == isDelegate) {
+        return lifecycle;
+      }

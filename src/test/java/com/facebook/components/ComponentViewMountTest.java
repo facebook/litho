@@ -33,3 +33,4 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(ComponentsTestRunner.class)
 public class ComponentViewMountTest {
+  private ComponentContext mContext;

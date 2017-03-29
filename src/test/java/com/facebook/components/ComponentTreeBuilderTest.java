@@ -47,3 +47,5 @@ public class ComponentTreeBuilderTest {
     mLooper = mock(Looper.class);
     mComponentsLogger = mock(ComponentsLogger.class);
     mContext = new ComponentContext(RuntimeEnvironment.application, mLogTag, mComponentsLogger);
+    mRoot = TestLayoutComponent.create(mContext)
+        .build();

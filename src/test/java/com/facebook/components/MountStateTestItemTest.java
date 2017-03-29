@@ -61,3 +61,4 @@ public class MountStateTestItemTest {
                 .child(TestDrawableComponent.create(c))
                 .child(
                     TestDrawableComponent.create(c)
+                        .withLayout().flexShrink(0)

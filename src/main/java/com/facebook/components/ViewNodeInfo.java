@@ -30,3 +30,4 @@ class ViewNodeInfo {
   private Reference<Drawable> mForeground;
   private Rect mPadding;
   private Rect mExpandedTouchBounds;
+  private YogaDirection mLayoutDirection;

@@ -102,3 +102,14 @@ public class TestViewComponent extends ComponentLifecycle {
 
   @Override
   protected void onMount(ComponentContext c, Object convertView, Component _stateObject) {
+    State state = (State) _stateObject;
+    state.onMountCalled();
+  }
+
+  @Override
+  protected void onUnmount(ComponentContext c, Object mountedContent, Component<?> component) {
+    State state = (State) component;
+    state.onUnmountCalled();
+  }
+
+  @Override

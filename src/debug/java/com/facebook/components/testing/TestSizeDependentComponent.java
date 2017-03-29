@@ -38,3 +38,4 @@ public class TestSizeDependentComponent extends ComponentLifecycle {
 
     final ComponentLayout.Builder builder1 =
         TestDrawableComponent.create(c, false, true, true, false, false)
+            .withLayout().flexShrink(0)

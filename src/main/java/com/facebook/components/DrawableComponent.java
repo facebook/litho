@@ -26,3 +26,14 @@ class DrawableComponent<T extends Drawable> extends ComponentLifecycle {
   }
 
   @Override
+  protected void onBoundsDefined(
+      ComponentContext c,
+      ComponentLayout layout,
+      Component<?> component) {
+    final State state = (State) component;
+
+    state.setDrawableWidth(layout.getWidth());
+    state.setDrawableHeight(layout.getHeight());
+  }
+
+  @Override
