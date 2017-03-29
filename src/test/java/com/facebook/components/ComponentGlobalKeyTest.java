@@ -97,3 +97,6 @@ public class ComponentGlobalKeyTest {
     int layoutSpecId = component.getLifecycle().getId();
     int nestedLayoutSpecId = layoutSpecId - 1;
 
+    ComponentTree componentTree = ComponentTree.create(mContext, component)
+        .incrementalMount(false)
+        .build();
