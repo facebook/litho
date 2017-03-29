@@ -794,3 +794,4 @@ public class TreeDiffingTest {
 
     final Component layoutComponent = new InlineLayoutSpec() {
       @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
