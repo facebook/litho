@@ -301,3 +301,74 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
   public boolean performAccessibilityAction(View host, int action, Bundle args) {
     if (mNodeInfo != null && mNodeInfo.getPerformAccessibilityActionHandler() != null) {
       return EventDispatcherUtils.dispatchPerformAccessibilityActionEvent(
+          mNodeInfo.getPerformAccessibilityActionHandler(),
+          host,
+          action,
+          args,
+          mSuperDelegate);
+    }
+
+    return super.performAccessibilityAction(host, action, args);
+  }
+
+  private static Rect getDefaultBounds() {
+    synchronized(sDefaultBounds) {
+      if (sDefaultBounds == null) {
+        sDefaultBounds = new Rect(0, 0, 1, 1);
+      }
+    }
+
+    return sDefaultBounds;
+  }
+
+  private class SuperDelegate extends AccessibilityDelegateCompat {
+
+    @Override
+    public boolean dispatchPopulateAccessibilityEvent(
+        View host, AccessibilityEvent event) {
+      return ComponentAccessibilityDelegate.super.dispatchPopulateAccessibilityEvent(host, event);
+    }
+
+    @Override
+    public void onInitializeAccessibilityEvent(
+        View host, AccessibilityEvent event) {
+      ComponentAccessibilityDelegate.super.onInitializeAccessibilityEvent(host, event);
+    }
+
+    @Override
+    public void onInitializeAccessibilityNodeInfo(
+        View host, AccessibilityNodeInfoCompat node) {
+      ComponentAccessibilityDelegate.super.onInitializeAccessibilityNodeInfo(host, node);
+    }
+
+    @Override
+    public void onPopulateAccessibilityEvent(
+        View host, AccessibilityEvent event) {
+      ComponentAccessibilityDelegate.super.onPopulateAccessibilityEvent(host, event);
+    }
+
+    @Override
+    public boolean onRequestSendAccessibilityEvent(
+        ViewGroup host, View child, AccessibilityEvent event) {
+      return ComponentAccessibilityDelegate.super.onRequestSendAccessibilityEvent(
+          host,
+          child,
+          event);
+    }
+
+    @Override
+    public boolean performAccessibilityAction(View host, int action, Bundle args) {
+      return ComponentAccessibilityDelegate.super.performAccessibilityAction(host, action, args);
+    }
+
+    @Override
+    public void sendAccessibilityEvent(View host, int eventType) {
+      ComponentAccessibilityDelegate.super.sendAccessibilityEvent(host, eventType);
+    }
+
+    @Override
+    public void sendAccessibilityEventUnchecked(
+        View host, AccessibilityEvent event) {
+      ComponentAccessibilityDelegate.super.sendAccessibilityEventUnchecked(host, event);
+    }
+  }
