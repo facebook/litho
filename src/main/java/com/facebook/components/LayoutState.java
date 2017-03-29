@@ -780,3 +780,6 @@ class LayoutState {
         isCachedOutputUpdated);
 
     addMountableOutput(layoutState, drawableLayoutOutput);
+    addLayoutOutputIdToPositionsMap(
+        layoutState.mOutputsIdToPositionMap,
+        drawableLayoutOutput,
