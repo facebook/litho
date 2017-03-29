@@ -486,3 +486,4 @@ class TextSpec {
               textStyle,
               typeface,
               textAlignment,
+              glyphWarming,
