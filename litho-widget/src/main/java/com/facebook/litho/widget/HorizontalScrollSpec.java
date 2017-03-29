@@ -16,3 +16,4 @@ import android.widget.HorizontalScrollView;
 
 import com.facebook.R;
 import com.facebook.components.ComponentContext;
+import com.facebook.components.ComponentTree;
