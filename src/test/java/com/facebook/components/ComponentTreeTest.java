@@ -181,3 +181,4 @@ public class ComponentTreeTest {
 
     Assert.assertTrue(componentTreeHasSizeSpec(componentTree));
     assertEquals(
+        mWidthSpec,

@@ -154,3 +154,4 @@ class LayoutState {
 
   LayoutState() {
     mLayoutStateOutputIdCalculator = new LayoutStateOutputIdCalculator();
+    mTestOutputs = ComponentsConfiguration.isEndToEndTestRun ? new ArrayList<TestOutput>(8) : null;

@@ -124,3 +124,4 @@ class PropsBuilderMethodsSpecBuilder {
         builders.add(dipBuilder());
         break;
       case FLOAT:
+        builders.add(regularBuilder());

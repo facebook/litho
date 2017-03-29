@@ -274,3 +274,4 @@ public class StateUpdatesTest {
   public void testTransferState() {
     mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate());
     mLayoutThreadShadowLooper.runOneTask();
+    mComponentTree.setSizeSpec(mWidthSpec, mHeightSpec);
