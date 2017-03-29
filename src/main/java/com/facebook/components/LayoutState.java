@@ -1412,3 +1412,9 @@ class LayoutState {
     return shouldUpdate;
   }
 
+  /**
+   * Copies the inter stage state (if any) from the DiffNode's component to the layout node's
+   * component, and declares that the cached measures on the diff node are valid for the layout
+   * node.
+   */
+  private static void applyDiffNodeToLayoutNode(InternalNode layoutNode, DiffNode diffNode) {
