@@ -742,3 +742,6 @@ public class ComponentsPools {
 
       if (baseContext == activity) {
         return true;
+      }
+    }
+
