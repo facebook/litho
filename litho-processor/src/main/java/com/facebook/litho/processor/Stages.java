@@ -964,3 +964,6 @@ public class Stages {
 
     for (String key : mImplMembers.keySet()) {
       final VariableElement element = mImplMembers.get(key);
+      final Name declaredClassName = Utils.getDeclaredClassNameWithoutGenerics(element);
+      if (declaredClassName != null &&
+          ClassName.bestGuess(declaredClassName.toString()).equals(listComponent)) {
