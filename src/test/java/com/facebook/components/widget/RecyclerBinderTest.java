@@ -449,3 +449,14 @@ public class RecyclerBinderTest {
 
     for (int i = 1; i < 2; i++) {
       componentTreeHolder = mHoldersForComponents.get(components.get(i).getComponent());
+
+      assertTrue(componentTreeHolder.isTreeValid());
+      assertTrue(componentTreeHolder.mLayoutAsyncCalled);
+      assertFalse(componentTreeHolder.mLayoutSyncCalled);
+    }
+
+    Assert.assertEquals(100, size.width);
+  }
+
+  @Test
+  public void testMoveRange() {
