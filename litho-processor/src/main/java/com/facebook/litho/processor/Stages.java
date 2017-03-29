@@ -1859,3 +1859,6 @@ public class Stages {
 
   public void generateListComponentImplClass(Stages.StaticFlag isStatic) {
     generateStateContainerImplClass(isStatic, SectionClassNames.STATE_CONTAINER_SECTION);
+
+    final ClassName stateContainerImplClass =
+        ClassName.bestGuess(getSimpleClassName() + STATE_CONTAINER_IMPL_NAME_SUFFIX);
