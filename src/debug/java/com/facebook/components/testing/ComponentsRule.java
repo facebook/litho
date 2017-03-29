@@ -8,3 +8,12 @@
  */
 
 package com.facebook.litho.testing;
+
+import android.app.Activity;
+
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
+import org.robolectric.Robolectric;
+
+import com.facebook.R;

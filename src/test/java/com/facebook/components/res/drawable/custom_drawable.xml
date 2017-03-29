@@ -9,3 +9,7 @@
   of patent rights can be found in the PATENTS file in the same directory.
 -->
 
+<bitmap
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:src="@drawable/litho"
+  />

@@ -10,3 +10,6 @@ include_defs("//COMPONENTS_DEFS")
 android_library(
     name = "testing",
     srcs = glob(["*.java"]),
+    provided_deps = [
+        COMPONENTS_ROBOLECTRIC_TARGET,
+    ],

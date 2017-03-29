@@ -19,3 +19,4 @@ import org.robolectric.RuntimeEnvironment;
 
 import static org.junit.Assert.assertTrue;
 
+@RunWith(ComponentsTestRunner.class)
