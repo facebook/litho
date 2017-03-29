@@ -37,3 +37,10 @@ public class IncrementalMountUtils {
 
   private static final Pools.SynchronizedPool<Rect> sRectPool =
       new Pools.SynchronizedPool<>(10);
+
+  /**
+   * Performs incremental mount on the children views of the given ViewGroup.
+   * @param scrollingViewParent ViewGroup container of views that will be incrementally mounted.
+   */
+  public static void performIncrementalMount(ViewGroup scrollingViewParent) {
+    assertMainThread();
