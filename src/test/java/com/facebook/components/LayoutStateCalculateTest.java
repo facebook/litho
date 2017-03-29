@@ -306,3 +306,25 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputMountBounds() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            .widthPx(30)
+            .heightPx(30)
+            .wrapInView()
+            .child(
+                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    .widthPx(10)
+                    .heightPx(10)
+                    .marginPx(YogaEdge.ALL, 10)
+                    .wrapInView()
+                    .child(
+                        TestDrawableComponent.create(c)
+                            .withLayout().flexShrink(0)
+                            .widthPx(10)
+                            .heightPx(10)))
+            .build();
+      }
+    };
+
