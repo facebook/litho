@@ -336,3 +336,7 @@ public class ComponentHost extends ViewGroup {
     return ComponentHostUtils.extractTextContent(
         ComponentHostUtils.extractContent(mMountItems));
   }
+
+  /**
+   * @return the image content that is mounted on this host.
+   */

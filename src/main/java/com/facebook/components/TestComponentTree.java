@@ -62,3 +62,4 @@ public class TestComponentTree extends ComponentTree {
       return;
     }
 
+    if (root.getChildCount() == 0) {
