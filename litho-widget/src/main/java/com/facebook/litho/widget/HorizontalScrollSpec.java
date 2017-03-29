@@ -177,3 +177,4 @@ class HorizontalScrollSpec {
   }
 
   @OnUnmount
+  static void onUnmount(

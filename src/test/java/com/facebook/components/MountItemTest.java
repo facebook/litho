@@ -42,3 +42,4 @@ public class MountItemTest {
   private EventHandler mLongClickHandler;
   private EventHandler mTouchHandler;
   private EventHandler mDispatchPopulateAccessibilityEventHandler;
+  private int mFlags;
