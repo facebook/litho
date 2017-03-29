@@ -350,3 +350,18 @@ public class InternalNodeTest {
   public void testContextSpecificComponentAssertionFailFormatting() {
     final Component testComponent = new TestComponent<>(mLifecycle);
     mNode.alignSelf(YogaAlign.AUTO);
+    mNode.flex(1f);
+    mNode.setComponent(testComponent);
+
+    String error = "";
+    try {
+      InternalNode.assertContextSpecificStyleNotSet(mNode);
+    } catch (IllegalStateException e) {
+      error = e.getMessage();
+    }
+
+    assertTrue(
+        "The error message contains the attributes set",
+        error.contains("alignSelf, flex"));
+  }
+
