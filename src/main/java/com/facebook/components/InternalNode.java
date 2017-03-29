@@ -1244,3 +1244,5 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   public InternalNode onInitializeAccessibilityNodeInfoHandler(
       EventHandler<OnInitializeAccessibilityNodeInfoEvent>
           onInitializeAccessibilityNodeInfoHandler) {
+    getOrCreateNodeInfo().setOnInitializeAccessibilityNodeInfoHandler(
+        onInitializeAccessibilityNodeInfoHandler);
