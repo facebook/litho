@@ -276,3 +276,5 @@ class DelegateMethodSpecBuilder {
     }
 
     throw new IllegalStateException("No matching parameter found " + output.name);
+  }
+}
