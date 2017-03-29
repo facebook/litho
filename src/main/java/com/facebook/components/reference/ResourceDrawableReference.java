@@ -110,3 +110,4 @@ public final class ResourceDrawableReference extends ReferenceLifecycle<Drawable
 
     private State mState;
     private ComponentContext mContext;
+

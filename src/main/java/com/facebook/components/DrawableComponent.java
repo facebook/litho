@@ -105,3 +105,7 @@ private static class State<T extends Drawable> extends Component<DrawableCompone
     int mDrawableHeight;
 
     protected State(Reference<T> drawable) {
+      super(get());
+      mDrawable = drawable;
+    }
+
