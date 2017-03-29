@@ -816,3 +816,8 @@ class MountState {
     }
 
     final Object previousContent = item.getContent();
+    final ComponentLifecycle lifecycle = component.getLifecycle();
+
+    // Call unmount and mount in sequence to make sure all the the resources are correctly
+    // de-allocated. It's possible for previousContent to equal null - when the root is
+    // interactive we create a LayoutOutput without content in order to set up click handling.

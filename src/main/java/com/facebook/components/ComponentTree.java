@@ -1066,3 +1066,5 @@ public class ComponentTree {
       backgroundLayoutState.releaseRef();
       backgroundLayoutState = null;
     }
+  }
+
