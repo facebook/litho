@@ -168,3 +168,15 @@ class BinderTreeCollection {
       return;
     }
 
+    for (int position = positionEnd; position >= positionStart; position--) {
+      final ComponentTree componentTree = mItems.get(position);
+      if (componentTree == null) {
+        mItems.remove(position + shiftByAmount);
+      } else {
+        mItems.put(position + shiftByAmount, mItems.get(position));
+        mItems.remove(position);
+      }
+    }
+
+    for (int position = positionStart + shiftByAmount - 1; position > positionEnd; position--) {
+      mItems.remove(position);

@@ -599,3 +599,7 @@ public class WorkingRangesTest {
 
     @Override
     public boolean isIncrementalMountEnabled() {
+      return true;
+    }
+
+    @Override

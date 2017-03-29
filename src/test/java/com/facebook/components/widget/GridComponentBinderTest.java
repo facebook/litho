@@ -71,3 +71,4 @@ public class GridComponentBinderTest {
     mContext = RuntimeEnvironment.application;
     ComponentsConfiguration.bootstrapBinderItems = true;
 
+    mRecyclerView = new RecyclerView(mContext);

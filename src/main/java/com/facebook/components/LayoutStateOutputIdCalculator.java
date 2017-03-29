@@ -137,3 +137,4 @@ class LayoutStateOutputIdCalculator {
    * {@link LayoutStateOutputIdCalculator#calculateLayoutOutputBaseId(LayoutOutput, int, int)} and
    * {@link LayoutStateOutputIdCalculator#calculateId(long, int)}.
    */
+  static long calculateLayoutOutputId(
