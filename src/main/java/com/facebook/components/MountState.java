@@ -1543,3 +1543,8 @@ class MountState {
       ComponentContext context,
       int index,
       LongSparseArray<ComponentHost> hostsByMarker) {
+    final MountItem item = getItemAt(index);
+
+    // The root host item should never be unmounted as it's a reference
+    // to the top-level ComponentView.
+    if (item == null || mLayoutOutputsIds[index] == ROOT_HOST_ID) {
