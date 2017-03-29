@@ -3365,3 +3365,123 @@ static void YGRoundToPixelGrid(const YGNodeRef node, const float pointScaleFacto
   }
   node->layout.dimensions[YGDimensionWidth] = roundedWidth;
   node->layout.dimensions[YGDimensionHeight] = roundedHeight;
+
+  const uint32_t childCount = YGNodeListCount(node->children);
+  for (uint32_t i = 0; i < childCount; i++) {
+    YGRoundToPixelGrid(YGNodeGetChild(node, i), pointScaleFactor);
+  }
+}
+
+void YGNodeCalculateLayout(const YGNodeRef node,
+                           const float parentWidth,
+                           const float parentHeight,
+                           const YGDirection parentDirection) {
+  // Increment the generation count. This will force the recursive routine to
+  // visit
+  // all dirty nodes at least once. Subsequent visits will be skipped if the
+  // input
+  // parameters don't change.
+  gCurrentGenerationCount++;
+
+  YGResolveDimensions(node);
+
+  float width = YGUndefined;
+  YGMeasureMode widthMeasureMode = YGMeasureModeUndefined;
+  if (YGNodeIsStyleDimDefined(node, YGFlexDirectionRow, parentWidth)) {
+    width = YGResolveValue(node->resolvedDimensions[dim[YGFlexDirectionRow]], parentWidth) +
+            YGNodeMarginForAxis(node, YGFlexDirectionRow, parentWidth);
+    widthMeasureMode = YGMeasureModeExactly;
+  } else if (YGResolveValue(&node->style.maxDimensions[YGDimensionWidth], parentWidth) >= 0.0f) {
+    width = YGResolveValue(&node->style.maxDimensions[YGDimensionWidth], parentWidth);
+    widthMeasureMode = YGMeasureModeAtMost;
+  } else {
+    width = parentWidth;
+    widthMeasureMode = YGFloatIsUndefined(width) ? YGMeasureModeUndefined : YGMeasureModeExactly;
+  }
+
+  float height = YGUndefined;
+  YGMeasureMode heightMeasureMode = YGMeasureModeUndefined;
+  if (YGNodeIsStyleDimDefined(node, YGFlexDirectionColumn, parentHeight)) {
+    height = YGResolveValue(node->resolvedDimensions[dim[YGFlexDirectionColumn]], parentHeight) +
+             YGNodeMarginForAxis(node, YGFlexDirectionColumn, parentWidth);
+    heightMeasureMode = YGMeasureModeExactly;
+  } else if (YGResolveValue(&node->style.maxDimensions[YGDimensionHeight], parentHeight) >=
+             0.0f) {
+    height = YGResolveValue(&node->style.maxDimensions[YGDimensionHeight], parentHeight);
+    heightMeasureMode = YGMeasureModeAtMost;
+  } else {
+    height = parentHeight;
+    heightMeasureMode = YGFloatIsUndefined(height) ? YGMeasureModeUndefined : YGMeasureModeExactly;
+  }
+
+  if (YGLayoutNodeInternal(node,
+                           width,
+                           height,
+                           parentDirection,
+                           widthMeasureMode,
+                           heightMeasureMode,
+                           parentWidth,
+                           parentHeight,
+                           true,
+                           "initial",
+                           node->config)) {
+    YGNodeSetPosition(node, node->layout.direction, parentWidth, parentHeight, parentWidth);
+
+    if (YGConfigIsExperimentalFeatureEnabled(node->config, YGExperimentalFeatureRounding)) {
+      YGRoundToPixelGrid(node, node->config->pointScaleFactor);
+    }
+
+    if (gPrintTree) {
+      YGNodePrint(node, YGPrintOptionsLayout | YGPrintOptionsChildren | YGPrintOptionsStyle);
+    }
+  }
+}
+
+void YGSetLogger(YGLogger logger) {
+  gLogger = logger;
+}
+
+void YGLog(YGLogLevel level, const char *format, ...) {
+  va_list args;
+  va_start(args, format);
+  gLogger(level, format, args);
+  va_end(args);
+}
+
+void YGConfigSetExperimentalFeatureEnabled(const YGConfigRef config,
+                                     const YGExperimentalFeature feature,
+                                     const bool enabled) {
+  config->experimentalFeatures[feature] = enabled;
+}
+
+inline bool YGConfigIsExperimentalFeatureEnabled(const YGConfigRef config,
+                                           const YGExperimentalFeature feature) {
+  return config->experimentalFeatures[feature];
+}
+
+void YGConfigSetUseWebDefaults(const YGConfigRef config, const bool enabled) {
+  config->useWebDefaults = enabled;
+}
+
+bool YGConfigGetUseWebDefaults(const YGConfigRef config) {
+  return config->useWebDefaults;
+}
+
+void YGSetMemoryFuncs(YGMalloc ygmalloc, YGCalloc yccalloc, YGRealloc ygrealloc, YGFree ygfree) {
+  YG_ASSERT(gNodeInstanceCount == 0, "Cannot set memory functions: all node must be freed first");
+  YG_ASSERT((ygmalloc == NULL && yccalloc == NULL && ygrealloc == NULL && ygfree == NULL) ||
+                (ygmalloc != NULL && yccalloc != NULL && ygrealloc != NULL && ygfree != NULL),
+            "Cannot set memory functions: functions must be all NULL or Non-NULL");
+
+  if (ygmalloc == NULL || yccalloc == NULL || ygrealloc == NULL || ygfree == NULL) {
+    gYGMalloc = &malloc;
+    gYGCalloc = &calloc;
+    gYGRealloc = &realloc;
+    gYGFree = &free;
+  } else {
+    gYGMalloc = ygmalloc;
+    gYGCalloc = yccalloc;
+    gYGRealloc = ygrealloc;
+    gYGFree = ygfree;
+  }
+}
