@@ -63,3 +63,4 @@ public class InternalNodeTest {
 
   @Test
   public void testLayoutDirectionFlag() {
+    mNode.layoutDirection(YogaDirection.INHERIT);

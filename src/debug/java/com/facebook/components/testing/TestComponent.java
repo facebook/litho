@@ -52,3 +52,66 @@ public abstract class TestComponent<L extends ComponentLifecycle> extends Compon
     mOnMeasureCalled = true;
   }
 
+  void onDefineBoundsCalled() {
+    mOnBoundsDefinedCalled = true;
+  }
+
+  void onBindCalled() {
+    mOnBindCalled = true;
+    mBound = true;
+  }
+
+  void onUnbindCalled() {
+    mOnUnbindCalled = true;
+    mBound = false;
+  }
+
+  /**
+   * @return Whether onMount has been called.
+   */
+  public boolean wasOnMountCalled() {
+    return mOnMountCalled;
+  }
+
+  /**
+   * @return Whether the component is currently mounted.
+   */
+  public boolean isMounted() {
+    return mMounted;
+  }
+
+  /**
+   * @return Whether onUnmount has been called.
+   */
+  public boolean wasOnUnmountCalled() {
+    return mOnUnmountCalled;
+  }
+
+  /**
+   * @return Whether onBoundsDefined has been called.
+   */
+  public boolean wasOnBoundsDefinedCalled() {
+    return mOnBoundsDefinedCalled;
+  }
+
+  /**
+   * @return Whether onBind has been called.
+   */
+  public boolean wasOnBindCalled() {
+    return mOnBindCalled;
+  }
+
+  /**
+   * @return Whether the component is bound.
+   */
+  public boolean isBound() {
+    return mBound;
+  }
+
+  /**
+   * @return Whether onUnbind has been called.
+   */
+  public boolean wasOnUnbindCalled() {
+    return mOnUnbindCalled;
+  }
+

@@ -92,3 +92,15 @@ public class TreeDiffingTest {
 
   @Test
   public void testDiffTreeEnabled() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c)
+            .child(TestDrawableComponent.create(c))
+            .child(
+                Container.create(c)
+                    .child(TestDrawableComponent.create(c)))
+            .build();
+      }
+    };
+
