@@ -73,3 +73,4 @@ import static com.facebook.yoga.YogaEdge.VERTICAL;
  * {@link com.facebook.litho.ComponentLayout.ContainerBuilder}.
  */
 @ThreadConfined(ThreadConfined.ANY)
+class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder {

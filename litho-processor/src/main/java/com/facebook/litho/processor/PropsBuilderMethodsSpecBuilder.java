@@ -34,3 +34,14 @@ class PropsBuilderMethodsSpecBuilder {
   private String mRequiredSetName;
   private TypeName mBuilderClass;
   private ClassName mComponentClass;
+
+  PropsBuilderMethodsSpecBuilder index(int index) {
+    this.mIndex = index;
+    return this;
+  }
+
+  PropsBuilderMethodsSpecBuilder propParameter(PropParameter propParameter) {
+    this.mPropParameter = propParameter;
+    return this;
+  }
+

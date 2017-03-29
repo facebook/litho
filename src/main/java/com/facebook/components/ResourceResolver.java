@@ -90,3 +90,5 @@ public class ResourceResolver {
       String[] result = mResources.getStringArray(resId);
       mResourceCache.put(resId, result);
 
+      return result;
+    }
