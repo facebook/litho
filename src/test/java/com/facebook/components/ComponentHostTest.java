@@ -420,3 +420,16 @@ public class ComponentHostTest {
   }
 
   @Test
+  public void testComponentTouchListener() {
+    assertNull(mHost.getComponentTouchListener());
+
+    ComponentTouchListener listener = new ComponentTouchListener();
+    mHost.setComponentTouchListener(listener);
+
+    assertEquals(listener, mHost.getComponentTouchListener());
+
+    mHost.setComponentTouchListener(null);
+    assertNull(mHost.getComponentTouchListener());
+  }
+
+  @Test
