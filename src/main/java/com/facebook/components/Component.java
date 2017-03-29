@@ -146,3 +146,33 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
    */
   // thread-safe because the one write is before all the reads
   @ThreadSafe(enableChecks = false)
+  private void setGlobalKey(String key) {
+    mGlobalKey = key;
+  }
+
+  /**
+   *
+   * @return a key that is local to the component's parent.
+   */
+  String getKey() {
+    return mKey;
+  }
+
+  /**
+   * Set a key that is local to the parent of this component.
+   * @param key key
+   */
+  void setKey(String key) {
+    mKey = key;
+  }
+
+  Component<L> makeCopyWithNullContext() {
+    try {
+      Component<L> component = (Component<L>) super.clone();
+      component.mScopedContext = null;
+      return component;
+    } catch (CloneNotSupportedException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
