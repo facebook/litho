@@ -85,3 +85,4 @@ class DiffNode implements Cloneable {
     mLastHeightSpec = heightSpec;
   }
 
+  List<DiffNode> getChildren() {

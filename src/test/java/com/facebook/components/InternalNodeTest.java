@@ -199,3 +199,4 @@ public class InternalNodeTest {
 
   @Test
   public void testHeightFlag() {
+    mNode.heightPx(4);

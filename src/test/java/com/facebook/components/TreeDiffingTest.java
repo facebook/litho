@@ -174,3 +174,5 @@ public class TreeDiffingTest {
 
     long output = measureInternalNode(
         node,
+        YogaConstants.UNDEFINED,
+        YogaConstants.UNDEFINED);
