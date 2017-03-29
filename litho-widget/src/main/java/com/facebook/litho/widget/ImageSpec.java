@@ -86,3 +86,12 @@ class ImageSpec {
       return;
     }
 
+    final Drawable drawable = Reference.acquire(c, src);
+    try {
+      if (drawable == null ||
+          drawable.getIntrinsicWidth() <= 0 ||
+          drawable.getIntrinsicHeight() <= 0) {
+        size.width = 0;
+        size.height = 0;
+        return;
+      }
