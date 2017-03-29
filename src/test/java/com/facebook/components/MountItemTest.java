@@ -60,3 +60,4 @@ public class MountItemTest {
     mComponentHost = new ComponentHost(RuntimeEnvironment.application);
     mContent = new View(RuntimeEnvironment.application);
     mContentDescription = "contentDescription";
+    mViewTag = "tag";
