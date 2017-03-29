@@ -135,3 +135,4 @@ public class Stages {
   private final String mQualifiedClassName;
   private final Class<Annotation>[] mStageAnnotations;
   private final Class<Annotation>[] mInterStagePropAnnotations;
+  private final Class<Annotation>[] mParameterAnnotations;
