@@ -150,3 +150,4 @@ public class ComponentGlobalKeyTest {
         return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(TestViewComponent.create(c).key("[TestViewComponent1]"))
             .child(
+                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)

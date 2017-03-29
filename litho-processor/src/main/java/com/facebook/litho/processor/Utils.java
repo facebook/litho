@@ -147,3 +147,4 @@ public class Utils {
    */
   public static TypeMirror getGenericTypeArgument(
       TypeMirror diffType,
+      ClassName outerClass) {
