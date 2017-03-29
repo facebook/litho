@@ -1682,3 +1682,4 @@ class MountState {
   }
 
   private void logPrepareMountParams(
+      ComponentsLogger logger, String logTag, ComponentTree component, PrepareMountStats stats) {

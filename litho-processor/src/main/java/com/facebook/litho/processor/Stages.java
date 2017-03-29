@@ -2107,3 +2107,4 @@ public class Stages {
       }
     }
 
+    final boolean hasDefaultValue = hasDefaultValue(v);
