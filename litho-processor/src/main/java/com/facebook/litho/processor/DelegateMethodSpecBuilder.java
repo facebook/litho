@@ -58,3 +58,6 @@ class DelegateMethodSpecBuilder {
 
   DelegateMethodSpecBuilder implParameters(List<Parameter> implParameters) {
     mImplParameters = implParameters;
+    return this;
+  }
+

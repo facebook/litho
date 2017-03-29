@@ -136,3 +136,4 @@ public class TestDrawableComponent extends ComponentLifecycle {
 
   @Override
   protected boolean canMeasure() {
+    return mCanMeasure;
