@@ -1585,3 +1585,4 @@ public class Stages {
 
   /**
    * Generate an onLoadStyle implementation.
+   */
