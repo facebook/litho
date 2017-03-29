@@ -1678,3 +1678,4 @@ public class LayoutStateCalculateTest {
     layoutState.getMountableOutputAt(2).getMountBounds(mountBounds);
     assertEquals(new Rect(18, 18, 68, 68), mountBounds);
     assertTrue(getComponentAt(layoutState, 3) instanceof TestViewComponent);
+    layoutState.getMountableOutputAt(3).getMountBounds(mountBounds);
