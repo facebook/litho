@@ -6,3 +6,11 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+
+package com.facebook.components;
+
+import java.util.concurrent.atomic.AtomicInteger;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.graphics.drawable.Drawable;

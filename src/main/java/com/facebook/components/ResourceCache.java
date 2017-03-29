@@ -12,3 +12,4 @@ package com.facebook.components;
 import android.content.res.Configuration;
 import android.support.v4.util.LruCache;
 
+class ResourceCache {

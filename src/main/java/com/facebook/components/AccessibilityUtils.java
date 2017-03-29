@@ -10,3 +10,4 @@
 package com.facebook.components;
 
 import android.content.Context;
+import android.support.v4.view.accessibility.AccessibilityManagerCompat;

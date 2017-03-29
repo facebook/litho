@@ -6,3 +6,11 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+
+package com.facebook.components;
+
+import java.util.List;
+
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;

@@ -42,3 +42,4 @@ public class ResourceResolver {
     mResourceCache = resourceCache;
   }
 
+  protected final int dipsToPixels(float dips) {
