@@ -22,3 +22,4 @@ class ComponentQueries {
    * Checks whether the given {@link ComponentHost} has the given text as it's text. It does not
    * look at the host's children.
    * @param host the component host
+   * @param predicate the predicate to test
