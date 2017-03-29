@@ -251,3 +251,6 @@ JniException::JniException(const JniException &rhs)
   throwable_ = make_global(rhs.throwable_);
 }
 
+JniException::~JniException() {
+  ThreadScope ts;
+  throwable_.reset();
