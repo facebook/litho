@@ -2067,3 +2067,18 @@ public class Stages {
     for (VariableElement v : mImplMembers.values()) {
       implClassBuilder.addField(getPropFieldSpec(v, false));
     }
+
+    if (mExtraStateMembers != null) {
+      for (String key : mExtraStateMembers.keySet()) {
+        final TypeMirror variableType = mExtraStateMembers.get(key);
+        final FieldSpec.Builder fieldBuilder = FieldSpec.builder(TypeName.get(variableType), key);
+        implClassBuilder.addField(fieldBuilder.build());
+      }
+    }
+
+    for (TypeElement event : mEventDeclarations) {
+      implClassBuilder.addField(FieldSpec.builder(
+          eventHandlerClassName,
+          getEventHandlerInstanceName(event.getSimpleName().toString()))
+          .build());
+    }
