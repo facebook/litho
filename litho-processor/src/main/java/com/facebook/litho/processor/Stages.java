@@ -2732,3 +2732,4 @@ public class Stages {
         .classBuilder(builderClassName)
         .addModifiers(Modifier.PUBLIC)
         .superclass(
+            ParameterizedTypeName.get(
