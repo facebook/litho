@@ -919,3 +919,22 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     }
 
     if (YogaConstants.isUndefined(mResolvedTouchExpansionLeft)) {
+      mResolvedTouchExpansionLeft = resolveHorizontalSpacing(mTouchExpansion, Spacing.LEFT);
+    }
+
+    return FastMath.round(mResolvedTouchExpansionLeft);
+  }
+
+  int getTouchExpansionTop() {
+    if (!shouldApplyTouchExpansion()) {
+      return 0;
+    }
+
+    return FastMath.round(mTouchExpansion.get(Spacing.TOP));
+  }
+
+  int getTouchExpansionRight() {
+    if (!shouldApplyTouchExpansion()) {
+      return 0;
+    }
+
