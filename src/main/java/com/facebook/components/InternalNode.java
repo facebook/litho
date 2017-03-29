@@ -1030,3 +1030,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   public InternalNode background(Reference<? extends Drawable> background) {
     mPrivateFlags |= PFLAG_BACKGROUND_IS_SET;
     mBackground = background;
+    setPaddingFromDrawableReference(background);

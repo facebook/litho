@@ -71,3 +71,5 @@ class EditTextSpec {
   @PropDefault protected static final ColorStateList textColorStateList =
       new ColorStateList(DEFAULT_TEXT_COLOR_STATE_LIST_STATES,DEFAULT_TEXT_COLOR_STATE_LIST_COLORS);
   @PropDefault protected static final int hintColor = DEFAULT_HINT_COLOR;
+  @PropDefault protected static final ColorStateList hintColorStateList =
+      new ColorStateList(DEFAULT_HINT_COLOR_STATE_LIST_STATES,DEFAULT_HINT_COLOR_STATE_LIST_COLORS);
