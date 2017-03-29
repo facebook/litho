@@ -1173,3 +1173,4 @@ class LayoutState {
     if (logger != null) {
       logger.eventEnd(EVENT_CSS_LAYOUT, component, ACTION_SUCCESS);
     }
+    ComponentsSystrace.endSection(/* measureTree */);
