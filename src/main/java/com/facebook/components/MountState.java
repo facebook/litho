@@ -109,3 +109,5 @@ class MountState {
     mVisibilityIdToItemMap = new LongSparseArray<>();
     mCanMountIncrementallyMountItems = new LongSparseArray<>();
     mContext = (ComponentContext) view.getContext();
+    mComponentView = view;
+    mIsDirty = true;
