@@ -220,3 +220,4 @@ public class ComponentTreeTest {
 
   @Test
   public void testSetSizeSpecAsyncThenSyncAfterRunningTask() {
+    ComponentTree componentTree =
