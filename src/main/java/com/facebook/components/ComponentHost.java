@@ -506,3 +506,21 @@ public class ComponentHost extends ViewGroup {
    * invalidations. Once the suppression is turned off, a single invalidation
    * will be triggered on the affected hosts.
    */
+  void suppressInvalidations(boolean suppressInvalidations) {
+    if (mSuppressInvalidations == suppressInvalidations) {
+      return;
+    }
+
+    mSuppressInvalidations = suppressInvalidations;
+
+    if (!mSuppressInvalidations) {
+      if (mWasInvalidatedWhileSuppressed) {
+        this.invalidate();
+        mWasInvalidatedWhileSuppressed = false;
+      }
+
+      if (mWasInvalidatedForAccessibilityWhileSuppressed) {
+        this.invalidateAccessibilityState();
+        mWasInvalidatedForAccessibilityWhileSuppressed = false;
+      }
+    }

@@ -96,3 +96,4 @@ public class StateUpdatesTestHelper {
         .incrementalMount(incrementalMountEnabled)
         .build();
 
+    final ComponentView componentView = new ComponentView(context);
