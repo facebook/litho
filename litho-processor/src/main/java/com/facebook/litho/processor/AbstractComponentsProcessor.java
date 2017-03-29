@@ -18,3 +18,5 @@ import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 
 import java.io.Closeable;
+import java.io.IOException;
+import java.util.ArrayList;

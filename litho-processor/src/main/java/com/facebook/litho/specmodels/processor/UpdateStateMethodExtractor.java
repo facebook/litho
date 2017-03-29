@@ -30,3 +30,65 @@ import com.facebook.litho.specmodels.model.UpdateStateMethodModel;
 import com.squareup.javapoet.TypeName;
 
 import static com.facebook.litho.specmodels.processor.MethodExtractorUtils.getMethodParams;
+
+/**
+ * Extracts methods annotated with {@link OnUpdateState} from the given input.
+ */
+public class UpdateStateMethodExtractor {
+
+  private static final List<Class<? extends Annotation>> METHOD_PARAM_ANNOTATIONS =
+      new ArrayList<>();
+  static {
+    METHOD_PARAM_ANNOTATIONS.add(Param.class);
+    METHOD_PARAM_ANNOTATIONS.add(Prop.class);
+    METHOD_PARAM_ANNOTATIONS.add(State.class);
+    METHOD_PARAM_ANNOTATIONS.add(TreeProp.class);
+  }
+
+  /**
+   * Get the delegate methods from the given {@link TypeElement}.
+   */
+  public static ImmutableList<UpdateStateMethodModel> getOnUpdateStateMethods(
+      TypeElement typeElement,
+      List<Class<? extends Annotation>> permittedInterStageInputAnnotations) {
+    final List<UpdateStateMethodModel> delegateMethods = new ArrayList<>();
+
+    for (Element enclosedElement : typeElement.getEnclosedElements()) {
+      if (enclosedElement.getKind() != ElementKind.METHOD) {
+        continue;
+      }
+
+      Annotation onUpdateStateAnnotation = enclosedElement.getAnnotation(OnUpdateState.class);
+
+      if (onUpdateStateAnnotation != null) {
+        final ExecutableElement executableElement = (ExecutableElement) enclosedElement;
+        final List<MethodParamModel> methodParams =
+            getMethodParams(
+                executableElement,
+                getPermittedMethodParamAnnotations(permittedInterStageInputAnnotations),
+                permittedInterStageInputAnnotations);
+
+        final UpdateStateMethodModel delegateMethod =
+            new UpdateStateMethodModel(
+                onUpdateStateAnnotation,
+                ImmutableList.copyOf(new ArrayList<>(executableElement.getModifiers())),
+                executableElement.getSimpleName(),
+                TypeName.get(executableElement.getReturnType()),
+                ImmutableList.copyOf(methodParams),
+                executableElement);
+        delegateMethods.add(delegateMethod);
+      }
+    }
+
+    return ImmutableList.copyOf(delegateMethods);
+  }
+
+  private static List<Class<? extends Annotation>> getPermittedMethodParamAnnotations(
+      List<Class<? extends Annotation>> permittedInterStageInputAnnotations) {
+    final List<Class<? extends Annotation>> permittedMethodParamAnnotations =
+        new ArrayList<>(METHOD_PARAM_ANNOTATIONS);
+    permittedMethodParamAnnotations.addAll(permittedInterStageInputAnnotations);
+
+    return permittedMethodParamAnnotations;
+  }
+}

@@ -33,3 +33,4 @@ public class RequiredPropsTest {
   public void testWithoutRequiredProps() {
     String error = "";
     try {
+      Text.create(mContext)
