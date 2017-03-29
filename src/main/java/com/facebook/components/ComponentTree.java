@@ -1211,3 +1211,4 @@ public class ComponentTree {
     private Component<?> root;
 
     // optional
+    private boolean incrementalMountEnabled = true;
