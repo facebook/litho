@@ -2420,3 +2420,9 @@ public class Stages {
       methodDescription.returnType = TypeName.get(returnType);
     }
 
+    generateEventDispatcher(
+        methodDescription,
+        eventDeclaration.getTypeParameters(),
+        eventDeclaration,
+        eventHandlerClassName,
+        lifecycleClassName);
