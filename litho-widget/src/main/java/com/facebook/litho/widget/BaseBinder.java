@@ -512,3 +512,9 @@ public abstract class BaseBinder<
   }
 
   @Override
+  public final ComponentTree getComponentAt(int position) {
+    synchronized (this) {
+      return mComponentTrees.get(position);
+    }
+  }
+

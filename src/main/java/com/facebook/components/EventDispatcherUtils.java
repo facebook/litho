@@ -263,3 +263,5 @@ class EventDispatcherUtils {
     final boolean returnValue = (boolean) eventDispatcher.dispatchOnEvent(
         eventHandler,
         sOnRequestSendAccessibilityEventEvent);
+
+    sOnRequestSendAccessibilityEventEvent.host = null;
