@@ -224,3 +224,4 @@ public class ComponentHost extends ViewGroup {
         newIndex);
   }
 
+  private void maybeRegisterTouchExpansion(int index, MountItem mountItem) {

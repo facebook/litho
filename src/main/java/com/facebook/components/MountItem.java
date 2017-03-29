@@ -146,3 +146,23 @@ class MountItem {
     return convertDisplayListDrawable;
   }
 
+  Component<?> getComponent() {
+    return mComponent;
+  }
+
+  ComponentHost getHost() {
+    return mHost;
+  }
+
+  Object getContent() {
+    return mContent;
+  }
+
+  int getFlags() {
+    return mFlags;
+  }
+
+  int getImportantForAccessibility() {
+    return mImportantForAccessibility;
+  }
+

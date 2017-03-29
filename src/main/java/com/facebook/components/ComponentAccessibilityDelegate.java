@@ -200,3 +200,9 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
     final MountItem mountItem = getAccessibleMountItem(mView);
     if (mountItem != null
         && mountItem.getComponent().getLifecycle().implementsExtraAccessibilityNodes()) {
+      return super.getAccessibilityNodeProvider(host);
+    }
+
+    return null;
+  }
+
