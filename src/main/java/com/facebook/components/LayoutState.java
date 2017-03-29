@@ -1189,3 +1189,4 @@ class LayoutState {
     InternalNode nestedTree = nestedTreeHolder.getNestedTree();
 
     if (nestedTree == null
+        || !hasCompatibleSizeSpec(
