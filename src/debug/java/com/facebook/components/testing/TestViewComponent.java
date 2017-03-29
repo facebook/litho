@@ -246,3 +246,4 @@ public class TestViewComponent extends ComponentLifecycle {
     }
   }
 
+  public static class Builder

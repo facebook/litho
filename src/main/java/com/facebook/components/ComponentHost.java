@@ -46,3 +46,9 @@ public class ComponentHost extends ViewGroup {
   private final SparseArrayCompat<MountItem> mViewMountItems = new SparseArrayCompat<>();
   private SparseArrayCompat<MountItem> mScrapViewMountItemsArray;
 
+  private final SparseArrayCompat<MountItem> mDrawableMountItems = new SparseArrayCompat<>();
+  private SparseArrayCompat<MountItem> mScrapDrawableMountItems;
+
+  private final SparseArrayCompat<Touchable> mTouchables = new SparseArrayCompat<>();
+  private SparseArrayCompat<Touchable> mScrapTouchables;
+

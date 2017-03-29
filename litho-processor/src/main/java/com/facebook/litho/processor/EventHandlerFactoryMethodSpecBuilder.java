@@ -74,3 +74,7 @@ class EventHandlerFactoryMethodSpecBuilder {
         .addParameter(mContextClass, "c")
         .returns(mEventHandlerClassName);
 
+    for (String typeParam : mTypeParameters) {
+      builder.addTypeVariable(TypeVariableName.get(typeParam));
+    }
+

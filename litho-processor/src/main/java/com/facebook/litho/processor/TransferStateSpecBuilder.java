@@ -25,3 +25,4 @@ class TransferStateSpecBuilder {
   private ClassName mStateContainerClassName;
   private ClassName mComponentClassName;
   private String mComponentImplClassName;
+  private String mStateContainerImplClassName;

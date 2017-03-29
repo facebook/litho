@@ -32,3 +32,11 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(ComponentsTestRunner.class)
 public class InternalNodeTest {
+  private static final int LIFECYCLE_TEST_ID = 1;
+
+  private final ComponentLifecycle mLifecycle = new ComponentLifecycle() {
+    @Override
+    int getId() {
+      return LIFECYCLE_TEST_ID;
+    }
+  };
