@@ -567,3 +567,4 @@ public class MountSpecHelper extends ComponentSpecHelper {
 
     mStages.generateDelegate(
         methodDescription,
+        getExtraAccessibilityNodeAt,

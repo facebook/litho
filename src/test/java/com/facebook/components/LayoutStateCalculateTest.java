@@ -2366,3 +2366,4 @@ public class LayoutStateCalculateTest {
     assertTrue(getComponentAt(layoutState, 1) instanceof DrawableComponent);
   }
 
+  private void enableAccessibility() {
