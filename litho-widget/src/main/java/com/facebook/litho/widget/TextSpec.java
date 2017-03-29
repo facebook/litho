@@ -434,3 +434,4 @@ class TextSpec {
       @Prop(optional = true) VerticalGravity verticalGravity,
       @Prop(optional = true) int textStyle,
       @Prop(optional = true) Typeface typeface,
+      @Prop(optional = true) Alignment textAlignment,
