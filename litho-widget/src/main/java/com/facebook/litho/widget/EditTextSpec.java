@@ -82,3 +82,5 @@ class EditTextSpec {
   @PropDefault protected static final int gravity = DEFAULT_GRAVITY;
   @PropDefault protected static final boolean editable = true;
   @PropDefault protected static final int selection = -1;
+
+  @OnLoadStyle
