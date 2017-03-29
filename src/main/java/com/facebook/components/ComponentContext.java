@@ -237,3 +237,4 @@ public class ComponentContext extends ContextWrapper {
     component.applyStateUpdates(this);
 
     final InternalNode node = (InternalNode) component.getLifecycle().createLayout(
+        component.getScopedContext(),
