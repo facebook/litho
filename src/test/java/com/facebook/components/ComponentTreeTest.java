@@ -89,3 +89,4 @@ public class ComponentTreeTest {
   }
 
   private void postSizeSpecChecks(
+      ComponentTree componentTree,
