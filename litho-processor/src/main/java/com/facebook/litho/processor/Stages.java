@@ -2924,3 +2924,5 @@ public class Stages {
                   implInstanceName +
                   ")",
               builder);
+    } else {
+      factoryMethod
