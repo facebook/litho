@@ -920,3 +920,4 @@ class LayoutState {
     // Reset markers before collecting layout outputs.
     layoutState.mCurrentHostMarker = -1;
 
+    final ComponentsLogger logger = c.getLogger();
