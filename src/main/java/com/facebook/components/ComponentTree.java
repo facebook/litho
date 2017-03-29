@@ -1154,3 +1154,8 @@ public class ComponentTree {
       int heightSpec,
       boolean diffingEnabled,
       @Nullable DiffNode diffNode) {
+    final ComponentContext contextWithStateHandler;
+    synchronized (this) {
+       contextWithStateHandler =
+          new ComponentContext(context, StateHandler.acquireNewInstance(mStateHandler));
+    }
