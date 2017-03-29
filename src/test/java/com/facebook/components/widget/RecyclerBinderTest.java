@@ -177,3 +177,10 @@ public class RecyclerBinderTest {
     for (int i = 0; i < components.size(); i++) {
       final TestComponentTreeHolder holder =
           mHoldersForComponents.get(components.get(i).getComponent());
+      assertFalse(holder.mLayoutAsyncCalled);
+      assertFalse(holder.mLayoutSyncCalled);
+    }
+  }
+
+  @Test
+  public void onBoundsDefinedWithDifferentSize() {
