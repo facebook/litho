@@ -358,3 +358,5 @@ public class Stages {
       throw new ComponentsProcessingException(
           parameters.get(0),
           "The first argument of the @OnLoadStyle method should be an ComponentContext.");
+    }
+
