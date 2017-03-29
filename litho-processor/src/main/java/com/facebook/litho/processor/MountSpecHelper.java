@@ -556,3 +556,5 @@ public class MountSpecHelper extends ComponentSpecHelper {
     methodDescription.parameterTypes = new TypeName[] {
         ClassName.INT,
         ClassName.INT,
+    };
+

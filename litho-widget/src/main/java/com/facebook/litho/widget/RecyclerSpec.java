@@ -116,3 +116,4 @@ class RecyclerSpec {
     recyclerView.setScrollBarStyle(scrollBarStyle);
     // TODO (t14949498) determine if this is necessary
     recyclerView.setId(recyclerViewId);
+
