@@ -1638,3 +1638,4 @@ public class Stages {
         mSourceDelegateAccessorName,
         delegateMethod.getSimpleName(),
         delegateParameters.build());
+
