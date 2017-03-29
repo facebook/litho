@@ -770,3 +770,4 @@ public class RecyclerBinder implements Binder<RecyclerView> {
       final int childrenHeightSpec = getActualChildrenHeightSpec(componentTreeHolder);
       if (!componentTreeHolder.isTreeValid()) {
         componentTreeHolder
+            .computeLayoutSync(mComponentContext, childrenWidthSpec, childrenHeightSpec, null);
