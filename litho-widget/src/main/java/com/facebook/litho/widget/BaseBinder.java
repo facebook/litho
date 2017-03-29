@@ -544,3 +544,7 @@ public abstract class BaseBinder<
    */
   protected abstract int getCount();
 
+  @Override
+  public void onBoundsDefined() {
+    updateRange(0, getCount(), URFLAG_REFRESH_IN_RANGE);
+  }
