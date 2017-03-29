@@ -1537,3 +1537,5 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       node.mFullImpressionHandler = mFullImpressionHandler;
     }
     if ((mPrivateFlags & PFLAG_INVISIBLE_HANDLER_IS_SET) != 0L) {
+      node.mInvisibleHandler = mInvisibleHandler;
+    }
