@@ -148,3 +148,4 @@ public class ComponentLifecycleTest {
         true /* isMountSpec */,
         false /* canMeasure */);
     componentLifecycle.createLayout(mContext, mInput, true);
+

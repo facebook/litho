@@ -353,3 +353,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
    */
   void markIsNestedTreeHolder(TreeProps currentTreeProps) {
     mIsNestedTreeHolder = true;
+    mPendingTreeProps = TreeProps.copy(currentTreeProps);
