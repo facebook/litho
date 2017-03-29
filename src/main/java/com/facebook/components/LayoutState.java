@@ -153,3 +153,4 @@ class LayoutState {
   private StateHandler mStateHandler;
 
   LayoutState() {
+    mLayoutStateOutputIdCalculator = new LayoutStateOutputIdCalculator();

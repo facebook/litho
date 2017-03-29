@@ -185,3 +185,5 @@ public interface ComponentLayout {
     Builder backgroundRes(@DrawableRes int resId);
     Builder backgroundColor(@ColorInt int backgroundColor);
 
+    Builder foreground(Reference<? extends Drawable> foreground);
+    Builder foreground(Reference.Builder<? extends Drawable> foregroundBuilder);

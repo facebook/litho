@@ -116,3 +116,4 @@ public abstract class BaseBinder<
   public final void notifyItemChanged(int position) {
     assertMainThread();
 
+    if (!hasContentSize()) {
