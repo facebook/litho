@@ -483,3 +483,15 @@ public class RecyclerBinder implements Binder<RecyclerView> {
           outSize.height = mRange.measuredSize;
         } else {
           outSize.height = SizeSpec.getSize(heightSpec);
+        }
+        break;
+    }
+
+    mMeasuredSize = new Size(outSize.width, outSize.height);
+    mIsMeasured.set(true);
+
+    if (mRange != null) {
+      computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+    }
+  }
+

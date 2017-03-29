@@ -303,3 +303,10 @@ public class RecyclerBinderTest {
     for (int i = 0; i < components.size(); i++) {
       final TestComponentTreeHolder holder =
           mHoldersForComponents.get(components.get(i).getComponent());
+      holder.mLayoutAsyncCalled = false;
+      holder.mLayoutSyncCalled = false;
+    }
+
+    int widthSpec = SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY);
+    int heightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
+
