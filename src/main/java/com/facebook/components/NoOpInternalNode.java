@@ -685,3 +685,7 @@ class NoOpInternalNode extends InternalNode {
 
   @Override
   void applyAttributes(TypedArray a) {}
+
+  @Override
+  void setBaselineFunction(YogaBaselineFunction baselineFunction) {
+  }
