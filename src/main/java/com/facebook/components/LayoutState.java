@@ -1398,3 +1398,4 @@ class LayoutState {
       // ensure that we always run for all children.
       boolean shouldUpdateChild =
           applyDiffNodeToUnchangedNodes(
+              layoutNode.getChildAt(i),
