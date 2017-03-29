@@ -39,3 +39,6 @@ public class ComponentTreeHolder {
   private StateHandler mStateHandler;
   @GuardedBy("this")
   private ComponentInfo mComponentInfo;
+  private boolean mIsTreeValid;
+  private LayoutHandler mLayoutHandler;
+

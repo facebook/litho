@@ -138,3 +138,8 @@ class DelegateMethodSpecBuilder {
     return this;
   }
 
+  public DelegateMethodSpecBuilder parameterTranslation(Map<String, String> parameterTranslation) {
+    mParameterTranslation = parameterTranslation;
+    return this;
+  }
+
