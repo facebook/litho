@@ -45,3 +45,4 @@ public class MountStateRemountInPlaceTest {
   }
 
   @Test
+  public void testMountUnmountWithShouldUpdate() {

@@ -43,3 +43,10 @@ class ViewNodeInfo {
 
   void setForeground(Reference<? extends Drawable> foreground) {
     mForeground = (Reference<Drawable>) foreground;
+  }
+
+  Reference<Drawable> getForeground() {
+    return mForeground;
+  }
+
+  int getPaddingLeft() {

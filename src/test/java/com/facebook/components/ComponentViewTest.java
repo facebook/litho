@@ -59,3 +59,5 @@ public class ComponentViewTest {
     mComponentView.layout(
         0,
         0,
+        mComponentView.getMeasuredWidth(),
+        mComponentView.getMeasuredHeight());

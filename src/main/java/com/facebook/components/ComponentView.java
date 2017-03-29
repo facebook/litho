@@ -88,3 +88,5 @@ public class ComponentView extends ComponentHost {
         child.layout(child.getLeft(), child.getTop(), child.getRight(), child.getBottom());
       }
 
+      if (child instanceof ComponentHost) {
+        performLayoutOnChildrenIfNecessary((ComponentHost) child);
