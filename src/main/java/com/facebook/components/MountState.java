@@ -533,3 +533,4 @@ class MountState {
       LongSparseArray<MountItem> indexToItemMap,
       long[] layoutOutputsIds,
       ComponentsLogger logger) {
+    final @LayoutOutput.UpdateState int updateState = layoutOutput.getUpdateState();
