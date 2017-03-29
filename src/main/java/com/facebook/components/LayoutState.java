@@ -805,3 +805,4 @@ class LayoutState {
       node.removeChildAt(i);
 
       releaseNodeTree(child, isNestedTree);
+    }
