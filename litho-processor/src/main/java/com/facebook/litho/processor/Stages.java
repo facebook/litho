@@ -1237,3 +1237,32 @@ public class Stages {
             "All state parameters must be of type com.facebook.litho.StateValue, " +
                 param.getSimpleName() + " is of type " +
                 param.asType());
+      }
+
+      VariableElement stateMatchingParam = mStateMap.get(param.getSimpleName().toString());
+
+      // Check #3
+      if (stateMatchingParam == null || stateMatchingParam.getAnnotation(State.class) == null) {
+        throw new ComponentsProcessingException(
+            param,
+            "Names of parameters of type StateValue must match the name of a parameter annotated " +
+                "with @State");
+      }
+
+      // Check #4
+      final List<TypeMirror> typeArguments =
+          (List<TypeMirror>) paramDeclaredType.getTypeArguments();
+      if (typeArguments.isEmpty()) {
+        throw new ComponentsProcessingException(
+            param,
+            "Type parameter for a parameter of type StateValue should match the type of " +
+                "a parameter with the same name annotated with @State");
+      }
+
+      final TypeMirror typeArgument = typeArguments.get(0);
+      final TypeName stateMatchingParamTypeName = ClassName.get(stateMatchingParam.asType());
+
+      if (stateMatchingParamTypeName.isPrimitive()) {
+        TypeName stateMatchingParamBoxedType = stateMatchingParamTypeName.box();
+        if (!stateMatchingParamBoxedType.equals(TypeName.get(typeArgument))) {
+          throw new ComponentsProcessingException(
