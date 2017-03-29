@@ -77,3 +77,4 @@ public interface ComponentLayout {
     Builder flexBasisRes(@DimenRes int resId);
     Builder flexBasisDip(@Dimension(unit = DP) int flexBasis);
     Builder flexBasisPercent(float percent);
+
