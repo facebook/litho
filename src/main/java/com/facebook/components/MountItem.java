@@ -235,3 +235,10 @@ class MountItem {
   }
 
   /**
+   * @return Whether the view associated with this MountItem is setFocusable.
+   */
+  static boolean isViewFocusable(int flags) {
+    return (flags & FLAG_VIEW_FOCUSABLE) == FLAG_VIEW_FOCUSABLE;
+  }
+
+  /**

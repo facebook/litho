@@ -320,3 +320,10 @@ public class ComponentHost extends ViewGroup {
    * @return list of drawables that are mounted on this host.
    */
   public List<Drawable> getDrawables() {
+    final List<Drawable> drawables = new ArrayList<>(mDrawableMountItems.size());
+    for (int i = 0, size = mDrawableMountItems.size(); i < size; i++) {
+      Drawable drawable = (Drawable) mDrawableMountItems.valueAt(i).getContent();
+      drawables.add(drawable);
+    }
+
+    return drawables;

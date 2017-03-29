@@ -131,3 +131,14 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
     return mId;
   }
 
+  /**
+   * Get a key that is unique to this component within its tree.
+   * @return
+   */
+  String getGlobalKey() {
+    return mGlobalKey;
+  }
+
+  /**
+   * Set a key for this component that is unique within its tree.
+   * @param key
