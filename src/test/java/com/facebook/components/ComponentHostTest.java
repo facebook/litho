@@ -150,3 +150,4 @@ public class ComponentHostTest {
     mount(1, new ColorDrawable());
     assertEquals(2, mHost.getMountItemCount());
 
+    MountItem mountItem3 = mount(2, new View(mContext));
