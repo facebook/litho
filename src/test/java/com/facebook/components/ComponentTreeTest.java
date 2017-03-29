@@ -142,3 +142,4 @@ public class ComponentTreeTest {
 
   @Test
   public void testCreate() {
+    ComponentTree componentTree =

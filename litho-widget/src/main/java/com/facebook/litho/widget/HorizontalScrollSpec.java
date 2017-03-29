@@ -165,3 +165,4 @@ class HorizontalScrollSpec {
 
   @OnMount
   static void onMount(
+      ComponentContext context,
