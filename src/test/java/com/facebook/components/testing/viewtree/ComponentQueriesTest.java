@@ -43,3 +43,8 @@ public class ComponentQueriesTest {
 
   @Test
   public void testTextOnComponent() {
+    final ComponentView view = ComponentTestHelper.mountComponent(
+        mContext,
+        Text.create(mContext)
+            .text("hello")
+            .build());
