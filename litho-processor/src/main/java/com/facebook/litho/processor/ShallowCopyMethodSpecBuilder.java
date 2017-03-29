@@ -6,3 +6,22 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+
+package com.facebook.components.processor;
+
+import javax.lang.model.element.Modifier;
+
+import java.util.List;
+
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterSpec;
+import com.squareup.javapoet.TypeName;
+
+/**
+ * Builder for the shallowCopy method of a Component
+ */
+class ShallowCopyMethodSpecBuilder {
+  private boolean mHasDeepCopy;
+  private String mImplClassName;
+  private List<String> mComponentsToCopy;

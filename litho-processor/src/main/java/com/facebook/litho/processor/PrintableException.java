@@ -11,3 +11,4 @@ package com.facebook.components.processor;
 
 import javax.annotation.processing.Messager;
 
+public abstract class PrintableException extends RuntimeException {

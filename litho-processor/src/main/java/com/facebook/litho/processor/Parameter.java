@@ -12,3 +12,5 @@ package com.facebook.components.processor;
 import com.squareup.javapoet.TypeName;
 
 public class Parameter {
+  public final TypeName type;
+  public final String name;

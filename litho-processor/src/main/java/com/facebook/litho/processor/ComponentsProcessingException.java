@@ -13,3 +13,4 @@ import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import javax.tools.Diagnostic;
 
+public class ComponentsProcessingException extends PrintableException {

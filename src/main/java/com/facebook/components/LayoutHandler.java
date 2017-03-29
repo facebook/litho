@@ -6,3 +6,15 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+
+package com.facebook.components;
+
+/**
+ * the Layout handler is responsible for scheduling layout computations on a {@link ComponentTree}.
+ * The default implementation uses a {@link android.os.Handler} with a {@link android.os.Looper}.
+ */
+public interface LayoutHandler {
+  boolean post(Runnable runnable);
+  void removeCallbacks(Runnable runnable);
+  void removeCallbacksAndMessages(Object token);
+}

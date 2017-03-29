@@ -6,3 +6,13 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+
+package com.facebook.components;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * A lightweight representation of a layout node, used to cache measurements between two Layout tree
+ * calculations.
+ */

@@ -6,3 +6,22 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+
+package com.facebook.components.processor;
+
+import javax.lang.model.element.Modifier;
+
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.TypeName;
+
+class IsMountSizeDependentMethodSpecBuilder {
+
+  MethodSpec build() {
+    return MethodSpec.methodBuilder("isMountSizeDependent")
+        .addAnnotation(Override.class)
+        .addModifiers(Modifier.PROTECTED)
+        .returns(TypeName.BOOLEAN)
+        .addStatement("return true")
+        .build();
+  }
+}

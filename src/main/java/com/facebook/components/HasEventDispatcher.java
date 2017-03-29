@@ -6,3 +6,12 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+
+package com.facebook.components;
+
+/**
+ * A class implementing this interface will expose a method to retrieve an {@link EventDispatcher}.
+ */
+public interface HasEventDispatcher {
+  EventDispatcher getEventDispatcher();
+}

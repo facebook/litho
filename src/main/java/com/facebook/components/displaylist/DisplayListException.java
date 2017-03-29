@@ -6,3 +6,12 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+
+package com.facebook.components.displaylist;
+
+public class DisplayListException extends Exception {
+
+  public DisplayListException(Exception originatingException) {
+    super(originatingException);
+  }
+}
