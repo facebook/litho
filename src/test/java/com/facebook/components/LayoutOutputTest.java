@@ -92,3 +92,20 @@ public class LayoutOutputTest {
         SEQ_TEST);
 
     long stableIdSeq2 = LayoutStateOutputIdCalculator.calculateLayoutOutputId(
+        mLayoutOutput,
+        LEVEL_TEST + 1,
+        LayoutOutput.TYPE_CONTENT,
+        SEQ_TEST + 1);
+
+    assertEquals("100000001000000000000000001", Long.toBinaryString(stableId));
+    assertEquals("100000010000000000000000010", Long.toBinaryString(stableIdSeq2));
+  }
+
+  @Test
+  public void testStableIdBackgroundType() {
+    ComponentLifecycle lifecycle = new ComponentLifecycle() {
+      @Override
+      int getId() {
+        return LIFECYCLE_TEST_ID;
+      }
+    };

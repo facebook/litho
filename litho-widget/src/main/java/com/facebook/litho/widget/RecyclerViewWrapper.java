@@ -117,3 +117,9 @@ public class RecyclerViewWrapper extends SwipeRefreshLayout {
     return null;
   }
 
+  @Override
+  protected void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+    mHasBeenDetachedFromWindow = true;
+  }
+

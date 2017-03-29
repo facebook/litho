@@ -134,3 +134,6 @@ class DiffNode implements Cloneable {
   }
 
   LayoutOutput getHost() {
+    return mHost;
+  }
+

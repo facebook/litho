@@ -301,3 +301,4 @@ public class GridComponentBinderTest {
     }
 
     @Override
+    public boolean isAsyncLayoutEnabled() {
