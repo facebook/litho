@@ -266,3 +266,9 @@ class TransitionKeySet implements TransitionListener {
       if (wasRunningDisappearTransition()) {
         resetViewPropertiesAfterDisappear();
       }
+    } else if (mAnimationRunningCounter < 0) {
+      throw new IllegalStateException("Wrong number of TransitionEnd received.");
+    }
+  }
+
+  /**

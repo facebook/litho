@@ -79,3 +79,5 @@ class MountItem {
       Component<?> component,
       ComponentHost host,
       Object content,
+      NodeInfo nodeInfo,
+      ViewNodeInfo viewNodeInfo,

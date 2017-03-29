@@ -475,3 +475,6 @@ public class BinderTreeCollectionTest {
         TestLayoutComponent.create(c)
             .build())
         .incrementalMount(false)
+        .build();
+  }
+}
