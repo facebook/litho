@@ -2928,3 +2928,14 @@ public class Stages {
       factoryMethod
           .addParameter(stateClass, implInstanceName)
           .addStatement("builder.init(context, " + implInstanceName + ")", builder);
+    }
+
+    factoryMethod.addStatement("return builder");
+
+    if (isStatic == StaticFlag.STATIC) {
+      factoryMethod.addModifiers(Modifier.STATIC);
+      poolField.addModifiers(Modifier.STATIC);
+    }
+
+    writeMethodSpec(factoryMethod.build());
+    writeFieldSpec(poolField.build());
