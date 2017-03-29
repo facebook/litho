@@ -34,3 +34,14 @@
     <attr name="android:maxEms" />
     <attr name="android:minWidth" />
     <attr name="android:maxWidth" />
+  </declare-styleable>
+
+  <declare-styleable name="Image">
+    <attr name="android:src" />
+    <attr name="android:scaleType" />
+  </declare-styleable>
+
+  <declare-styleable name="HorizontalScroll">
+    <attr name="android:scrollbars" />
+  </declare-styleable>
+

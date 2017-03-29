@@ -83,3 +83,7 @@ public final class MeasureUtils {
       if (ComponentsConfiguration.IS_INTERNAL_BUILD) {
         Log.d(
             "com.facebook.litho.utils.MeasureUtils",
+            "Default to size {0, 0} because both width and height are UNSPECIFIED");
+      }
+      return;
+    }
