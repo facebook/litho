@@ -464,3 +464,5 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     // At this point we might still not have a range. In this situation we should return the best
     // size we can detect from the size spec and update it when the first item comes in.
     // TODO 16207395.
+    switch (scrollDirection) {
+      case OrientationHelper.VERTICAL:
