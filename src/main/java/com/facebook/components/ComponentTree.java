@@ -660,3 +660,4 @@ public class ComponentTree {
   }
 
   void updateStateInternal(String key, StateUpdate stateUpdate, boolean isAsync) {
+
