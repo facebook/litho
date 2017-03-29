@@ -410,3 +410,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   public InternalNode alignSelf(YogaAlign alignSelf) {
     mPrivateFlags |= PFLAG_ALIGN_SELF_IS_SET;
     mYogaNode.setAlignSelf(alignSelf);
+    return this;
+  }
+
+  @Override
