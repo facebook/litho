@@ -975,3 +975,4 @@ class MountState {
    * Resolves the component host that will be used for the given layout output
    * being mounted.
    */
+  private static ComponentHost resolveComponentHost(

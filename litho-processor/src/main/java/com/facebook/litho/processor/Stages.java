@@ -1348,3 +1348,4 @@ public class Stages {
         eventHandlerParams.add("\n($T) eventHandler.params[$L],", ClassName.get(v.asType()), i);
         i++;
       }
+      eventHandlerParams.add("\n$L", "eventHandler.mHasEventDispatcher");
