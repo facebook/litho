@@ -46,3 +46,4 @@ public abstract class PagerBinder extends BaseBinder<
     this(context, DEFAULT_INITIAL_PAGE);
   }
 
+  public PagerBinder(Context context, int initialPage) {

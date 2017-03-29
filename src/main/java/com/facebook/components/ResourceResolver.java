@@ -290,3 +290,4 @@ public class ResourceResolver {
     }
   }
 
+  protected final int resolveDimenSizeAttr(@AttrRes int attrResId, @DimenRes int defResId) {
