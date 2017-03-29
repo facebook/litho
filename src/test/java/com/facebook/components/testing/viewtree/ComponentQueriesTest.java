@@ -63,3 +63,5 @@ public class ComponentQueriesTest {
 
     assertThat(view.getTextContent().getTextItems())
         .isEqualTo(ImmutableList.<CharSequence>of("hello"));
+  }
+}
