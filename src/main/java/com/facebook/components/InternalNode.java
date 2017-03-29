@@ -1309,3 +1309,113 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return mTestKey;
   }
 
+  void setMeasureFunction(YogaMeasureFunction measureFunction) {
+    mYogaNode.setMeasureFunction(measureFunction);
+  }
+
+  void setBaselineFunction(YogaBaselineFunction baselineFunction) {
+    // YogaNode is the only version of YogaNodeAPI with this support;
+    if (mYogaNode instanceof YogaNode) {
+      mYogaNode.setBaselineFunction(baselineFunction);
+    }
+  }
+
+  boolean hasNewLayout() {
+    return mYogaNode.hasNewLayout();
+  }
+
+  void markLayoutSeen() {
+    mYogaNode.markLayoutSeen();
+  }
+
+  float getStyleWidth() {
+    return mYogaNode.getWidth().value;
+  }
+
+  float getMinWidth() {
+    return mYogaNode.getMinWidth().value;
+  }
+
+  float getMaxWidth() {
+    return mYogaNode.getMaxWidth().value;
+  }
+
+  float getStyleHeight() {
+    return mYogaNode.getHeight().value;
+  }
+
+  float getMinHeight() {
+    return mYogaNode.getMinHeight().value;
+  }
+
+  float getMaxHeight() {
+    return mYogaNode.getMaxHeight().value;
+  }
+
+  void calculateLayout(float width, float height) {
+    final ComponentTree tree = mComponentContext == null
+        ? null
+        : mComponentContext.getComponentTree();
+    final ComponentsStethoManager stethoManager = tree == null ? null : tree.getStethoManager();
+    if (stethoManager != null) {
+      applyOverridesRecursive(stethoManager, this);
+    }
+
+    mYogaNode.calculateLayout(width, height);
+  }
+
+  private static void applyOverridesRecursive(
+      ComponentsStethoManager stethoManager,
+      InternalNode node) {
+    stethoManager.applyOverrides(node);
+    for (int i = 0, count = node.getChildCount(); i < count; i++) {
+      applyOverridesRecursive(stethoManager, node.getChildAt(i));
+    }
+    if (node.hasNestedTree()) {
+      applyOverridesRecursive(stethoManager, node.getNestedTree());
+    }
+  }
+
+  void calculateLayout() {
+    calculateLayout(YogaConstants.UNDEFINED, YogaConstants.UNDEFINED);
+  }
+
+  int getChildCount() {
+    return mYogaNode.getChildCount();
+  }
+
+  com.facebook.yoga.YogaDirection getStyleDirection() {
+    return mYogaNode.getStyleDirection();
+  }
+
+  InternalNode getChildAt(int index) {
+    if (mYogaNode.getChildAt(index) == null) {
+      return null;
+    }
+    return (InternalNode) mYogaNode.getChildAt(index).getData();
+  }
+
+  int getChildIndex(InternalNode child) {
+    for (int i = 0, count = mYogaNode.getChildCount(); i < count; i++) {
+      if (mYogaNode.getChildAt(i) == child.mYogaNode) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  InternalNode getParent() {
+    if (mYogaNode == null || mYogaNode.getParent() == null) {
+      return null;
+    }
+    return (InternalNode) mYogaNode.getParent().getData();
+  }
+
+  void addChildAt(InternalNode child, int index) {
+    mYogaNode.addChildAt(child.mYogaNode, index);
+  }
+
+  InternalNode removeChildAt(int index) {
+    return (InternalNode) mYogaNode.removeChildAt(index).getData();
+  }
+

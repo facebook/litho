@@ -1221,3 +1221,4 @@ public class ComponentTree {
     protected Builder() {
     }
 
+    protected Builder(ComponentContext context, Component<?> root) {
