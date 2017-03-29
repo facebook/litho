@@ -667,3 +667,6 @@ class LayoutState {
     }
 
     // All children for the given host have been added, restore the previous
+    // host, level, and duplicate parent state value in the recursive queue.
+    if (layoutState.mCurrentHostMarker != currentHostMarker) {
+      layoutState.mCurrentHostMarker = currentHostMarker;
