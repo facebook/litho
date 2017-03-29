@@ -671,3 +671,5 @@ class LayoutState {
     if (layoutState.mCurrentHostMarker != currentHostMarker) {
       layoutState.mCurrentHostMarker = currentHostMarker;
       layoutState.mCurrentHostOutputPosition = currentHostOutputPosition;
+      layoutState.mCurrentLevel--;
+    }

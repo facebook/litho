@@ -1402,3 +1402,4 @@ public class Stages {
     writeMethodSpec(new EventHandlerFactoryMethodSpecBuilder()
         .eventId(getElementId(element))
         .eventName(element.getSimpleName().toString())
+        .contextClass(contextClassName)
