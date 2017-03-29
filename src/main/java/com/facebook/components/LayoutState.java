@@ -716,3 +716,11 @@ class LayoutState {
       isOutputUpdated = !drawableComponent.getLifecycle().shouldComponentUpdate(
           recycle.getComponent(),
           drawableComponent);
+    } else {
+      isOutputUpdated = false;
+    }
+
+    final long previousId = recycle != null ? recycle.getId() : -1;
+    final LayoutOutput output = addDrawableLayoutOutput(
+        drawableComponent,
+        layoutState,
