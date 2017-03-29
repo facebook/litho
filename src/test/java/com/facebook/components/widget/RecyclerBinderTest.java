@@ -573,3 +573,10 @@ public class RecyclerBinderTest {
 
     TestComponentTreeHolder movedHolder =
         mHoldersForComponents.get(components.get(99).getComponent());
+    assertTrue(movedHolder.isTreeValid());
+    assertTrue(movedHolder.mLayoutAsyncCalled);
+    assertFalse(movedHolder.mLayoutSyncCalled);
+    assertFalse(movedHolder.mDidAcquireStateHandler);
+    final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
+
+    TestComponentTreeHolder holderMovedOutsideRange =
