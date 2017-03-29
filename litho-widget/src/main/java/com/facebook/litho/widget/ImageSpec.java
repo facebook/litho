@@ -164,3 +164,4 @@ class ImageSpec {
   @OnMount
   static void onMount(
       ComponentContext c,
+      MatrixDrawable matrixDrawable,
