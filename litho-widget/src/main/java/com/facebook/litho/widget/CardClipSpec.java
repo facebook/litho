@@ -30,3 +30,4 @@ class CardClipSpec {
 
   @OnMount
   static void onMount(
+      ComponentContext context,

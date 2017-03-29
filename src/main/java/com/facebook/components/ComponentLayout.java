@@ -106,3 +106,13 @@ public interface ComponentLayout {
     Builder paddingDip(YogaEdge edge, @Dimension(unit = DP) int padding);
     Builder paddingPercent(YogaEdge edge, float percent);
 
+    Builder borderWidthPx(YogaEdge edge, @Px int borderWidth);
+    Builder borderWidthAttr(
+        YogaEdge edge,
+        @AttrRes int resId,
+        @DimenRes int defaultResId);
+    Builder borderWidthAttr(
+        YogaEdge edge,
+        @AttrRes int resId);
+    Builder borderWidthRes(YogaEdge edge, @DimenRes int resId);
+    Builder borderWidthDip(YogaEdge edge, @Dimension(unit = DP) int borderWidth);
