@@ -156,3 +156,14 @@ int __android_log_print(int prio, const char *tag, const char *fmt, ...)
 #ifndef FBLOGI_IF
 #define FBLOGI_IF(cond, ...) \
   ((CONDITION(cond)) ? ((void)FBLOG(LOG_INFO, LOG_TAG, __VA_ARGS__)) : (void)0)
+#endif
+
+/*
+ * Simplified macro to send a warning log message using the current LOG_TAG.
+ */
+#ifndef FBLOGW
+#define FBLOGW(...) ((void)FBLOG(LOG_WARN, LOG_TAG, __VA_ARGS__))
+#endif
+
+#ifndef FBLOGW_IF
+#define FBLOGW_IF(cond, ...) \
