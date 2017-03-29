@@ -97,3 +97,9 @@ public class ComponentsPools {
   private static final Pools.SynchronizedPool<Output<?>> sOutputPool =
       new Pools.SynchronizedPool<>(20);
 
+  private static final Pools.SynchronizedPool<DiffNode> sDiffNodePool =
+      new Pools.SynchronizedPool<>(256);
+
+  private static final Pools.SynchronizedPool<Diff<?>> sDiffPool =
+      new Pools.SynchronizedPool<>(20);
+
