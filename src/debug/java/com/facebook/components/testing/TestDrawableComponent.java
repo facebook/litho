@@ -235,3 +235,6 @@ public class TestDrawableComponent extends ComponentLifecycle {
             implementsAccessibility,
             usesDisplayList,
             isMountSizeDependent));
+  }
+
+  public static Builder create(ComponentContext context) {

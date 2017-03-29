@@ -41,3 +41,6 @@ public class ComponentTreeTest {
   private int mHeightSpec;
   private int mHeightSpec2;
 
+  private Component mComponent;
+  private ShadowLooper mLayoutThreadShadowLooper;
+  private ComponentContext mContext;

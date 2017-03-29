@@ -135,3 +135,4 @@ public class InternalNodeTest {
 
   @Test
   public void testMarginFlag() {
+    mNode.marginPx(YogaEdge.ALL, 3);

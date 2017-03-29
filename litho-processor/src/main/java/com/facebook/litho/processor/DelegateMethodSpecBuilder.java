@@ -143,3 +143,34 @@ class DelegateMethodSpecBuilder {
     return this;
   }
 
+  MethodSpec build() {
+    final MethodSpec.Builder delegate = MethodSpec.methodBuilder(mFromName);
+
+    for (TypeName exception : mCheckedExceptions) {
+      delegate.addException(exception);
+    }
+
+    if (mOverridesSuper) {
+      delegate.addAnnotation(Override.class);
+    }
+
+    switch (mVisibility) {
+      case PACKAGE:
+        break;
+      case PRIVATE:
+        delegate.addModifiers(Modifier.PRIVATE);
+        break;
+      case PUBLIC:
+        delegate.addModifiers(Modifier.PUBLIC);
+        break;
+      case PROTECTED:
+        delegate.addModifiers(Modifier.PROTECTED);
+        break;
+    }
+
+    delegate.returns(mFromReturnType);
+
+    for (Parameter parameter : mFromParams) {
+      delegate.addParameter(parameter.type, parameter.name);
+    }
+

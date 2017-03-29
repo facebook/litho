@@ -136,3 +136,4 @@ public class TreeDiffingTest {
     return node;
   }
 
+  private long measureInternalNode(
