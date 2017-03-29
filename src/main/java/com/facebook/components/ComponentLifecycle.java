@@ -314,3 +314,5 @@ public abstract class ComponentLifecycle implements EventDispatcher {
    */
   protected ComponentLayout onCreateLayout(ComponentContext c, Component<?> component) {
     return Container.create(c).build();
+  }
+
