@@ -104,3 +104,8 @@ class FrescoComponentSpec {
     draweeHierarchy.setContext(c);
 
     draweeHierarchy.setPlaceholderReference(placeholderImage, placeholderImageScaleType);
+
+    if (placeholderImageScaleType == ScalingUtils.ScaleType.FOCUS_CROP) {
+      draweeHierarchy.setPlaceholderImageFocusPoint(placeholderImageFocusPoint);
+    }
+
