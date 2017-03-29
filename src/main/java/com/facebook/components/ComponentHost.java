@@ -542,3 +542,7 @@ public class ComponentHost extends ViewGroup {
     if (mComponentAccessibilityDelegate != null && implementsVirtualViews()) {
       mComponentAccessibilityDelegate.invalidateRoot();
     }
+  }
+
+  @Override
+  public boolean dispatchHoverEvent(MotionEvent event) {

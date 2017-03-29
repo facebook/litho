@@ -58,3 +58,5 @@ public class ComponentsPools {
 
   // FUTURE: tune pool max sizes
 
+  private static final Object mountContentLock = new Object();
+
