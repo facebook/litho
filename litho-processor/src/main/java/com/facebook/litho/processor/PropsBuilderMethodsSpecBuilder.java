@@ -188,3 +188,5 @@ class PropsBuilderMethodsSpecBuilder {
   }
 
   private MethodSpec regularBuilder(AnnotationSpec... extraAnnotations) {
+    return builder(
+        mPropParameter.parameter.name,
