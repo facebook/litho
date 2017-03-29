@@ -1071,3 +1071,35 @@ public class TreeDiffingTest {
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .paddingPx(YogaEdge.HORIZONTAL, horizontalPadding)
+            .child(sizeDependentComponentSpy2)
+            .build();
+      }
+    };
+
+    LayoutState prevLayoutState = LayoutState.calculate(
+        mContext,
+        rootContainer1,
+        -1,
+        widthSpecContainer,
+        heightSpec,
+        true,
+        null);
+
+    // Make sure we reused the cached layout and it wasn't released.
+    verify(sizeDependentComponentSpy1, never()).releaseCachedLayout();
+    verify(sizeDependentComponentSpy1, times(1)).clearCachedLayout();
+
+    LayoutState layoutState = LayoutState.calculate(
+        mContext,
+        rootContainer2,
+        -1,
+        widthSpecContainer,
+        heightSpec,
+        true,
+        prevLayoutState.getDiffTree());
+
+    // Make sure we reused the cached layout and it wasn't released.
+    verify(sizeDependentComponentSpy2, never()).releaseCachedLayout();
+    verify(sizeDependentComponentSpy2, never()).clearCachedLayout();
+
+    // The nested root measure() was called in the first layout calculation.
