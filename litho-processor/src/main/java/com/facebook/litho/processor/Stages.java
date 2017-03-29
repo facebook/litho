@@ -2479,3 +2479,4 @@ public class Stages {
       methodBuilder.addStatement("_eventState.$L = $L", variableName, variableName);
     }
 
+    methodBuilder.addStatement(
