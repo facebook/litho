@@ -2352,3 +2352,4 @@ public class Stages {
     return elementList;
   }
 
+  private static boolean isInterStageComponentVariable(VariableElement variableElement) {
