@@ -1791,3 +1791,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     mNestedTree = null;
     mNestedTreeHolder = null;
 
+    if (mNodeInfo != null) {
+      mNodeInfo.release();
+      mNodeInfo = null;
+    }
