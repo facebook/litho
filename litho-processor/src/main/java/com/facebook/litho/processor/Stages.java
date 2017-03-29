@@ -1767,3 +1767,4 @@ public class Stages {
 
     if (isStatic.equals(Stages.StaticFlag.STATIC)) {
       stateContainerImplClassBuilder.addModifiers(Modifier.STATIC, Modifier.PRIVATE);
+      stateContainerImplClassBuilder.addTypeVariables(mTypeVariables);
