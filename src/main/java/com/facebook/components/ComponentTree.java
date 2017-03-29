@@ -913,3 +913,4 @@ public class ComponentTree {
 
     logLayoutCalculationStart(root);
 
+    LayoutState localLayoutState = calculateLayoutState(
