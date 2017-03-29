@@ -84,3 +84,10 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
    */
   public ViewTreeAssert hasVisibleTextWithTag(final String text, final int tagId, final Object tagValue) {
     final ImmutableList<View> path = getPathToVisibleTextWithTag(text, tagId, tagValue);
+
+    Assertions.assertThat(path)
+        .overridingErrorMessage(
+            "Cannot find text \"%s\" with tagId \"%d\" and value:%s in view hierarchy:%n%s",
+            text,
+            tagId,
+            tagValue.toString(),
