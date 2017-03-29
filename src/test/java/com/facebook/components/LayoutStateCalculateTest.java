@@ -1782,3 +1782,10 @@ public class LayoutStateCalculateTest {
         SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY));
 
     assertEquals(0, layoutState.getMountableOutputCount());
+  }
+
+  @Test
+  public void testLayoutComponentForNestedTreeChildWithNullLayout() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
