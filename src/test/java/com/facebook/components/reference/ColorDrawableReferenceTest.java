@@ -55,3 +55,9 @@ public class ColorDrawableReferenceTest {
   @Test
   public void testReleaseAndAcquireDifferentColorAndAlpha() {
     Reference<Drawable> ref1 =
+        ColorDrawableReference.create(mContext)
+            .color(Color.BLACK)
+            .alpha(OTHER_ALPHA_VALUE)
+            .build();
+    ColorDrawable colorDrawable1 = (ColorDrawable) Reference.acquire(mContext, ref1);
+    Reference.release(mContext, colorDrawable1, ref1);

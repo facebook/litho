@@ -58,3 +58,15 @@ public class MountStateBoundsTest {
 
   @Test
   public void testMountedViewBounds() {
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return TestViewComponent.create(c)
+                .withLayout()
+                .widthPx(10)
+                .heightPx(10)
+                .build();
+          }
+        });

@@ -43,3 +43,10 @@ public class InternalNodeReleaseTest {
   public void testDefaultValues() {
     assertDefaultValues(mInternalNode);
 
+    mInternalNode.touchExpansionPx(YogaEdge.ALL, 1);
+    mInternalNode.touchExpansionPx(YogaEdge.LEFT, 1);
+    mInternalNode.touchExpansionPx(YogaEdge.TOP, 1);
+    mInternalNode.touchExpansionPx(YogaEdge.RIGHT, 1);
+    mInternalNode.touchExpansionPx(YogaEdge.BOTTOM, 1);
+    mInternalNode.touchExpansionPx(YogaEdge.START, 1);
+    mInternalNode.touchExpansionPx(YogaEdge.END, 1);
