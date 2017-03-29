@@ -40,3 +40,13 @@ public class ComponentStyleTest {
   @Rule
   public ComponentsRule mComponentsRule = new ComponentsRule();
 
+  @Before
+  public void setup() {
+    mContext = new ComponentContext(
+        new ContextThemeWrapper(RuntimeEnvironment.application, R.style.TestTheme));
+    mDimen = mContext.getResources().getDimensionPixelSize(R.dimen.test_dimen);
+    mLargeDimen = mContext.getResources().getDimensionPixelSize(R.dimen.test_large_dimen);
+  }
+
+  @Test
+  public void testStyleProp() {
