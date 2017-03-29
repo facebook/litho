@@ -1834,3 +1834,6 @@ public class Stages {
           .contextClassName(contextClassName)
           .componentClassName(componentClassName)
           .componentImplClassName(getImplClassName())
+          .stateContainerClassName(stateContainerClassName)
+          .stateContainerImplClassName(getStateContainerImplClassName())
+          .stateParameters(mStateMap.keySet())
