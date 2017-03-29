@@ -157,3 +157,4 @@ public class Stages {
 
   private final Map<String, TypeMirror> mExtraStateMembers;
 
+  // List of methods that have @OnEvent on it.

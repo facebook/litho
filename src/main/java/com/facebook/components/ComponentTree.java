@@ -242,3 +242,10 @@ public class ComponentTree {
     int componentRootId;
     synchronized (this) {
       if (mRoot == null) {
+        // We have been released. Abort.
+        return;
+      }
+
+      LayoutState oldMainThreadLayoutState = mMainThreadLayoutState;
+      toRelease = setBestMainThreadLayoutAndReturnOldLayout();
+      layoutStateUpdated = (mMainThreadLayoutState != oldMainThreadLayoutState);
