@@ -195,3 +195,9 @@ public abstract class ComponentLifecycle implements EventDispatcher {
    * @return New InternalNode associated with the given component.
    */
   ComponentLayout createLayout(
+      ComponentContext context,
+      Component<?> component,
+      boolean resolveNestedTree) {
+    final boolean deferNestedTreeResolution =
+        Component.isNestedTree(component) && !resolveNestedTree;
+
