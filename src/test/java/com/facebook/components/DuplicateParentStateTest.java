@@ -33,3 +33,5 @@ public class DuplicateParentStateTest {
     mUnspecifiedSizeSpec = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
   }
 
+  @Test
+  public void testDuplicateParentStateAvoidedIfRedundant() {

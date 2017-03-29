@@ -35,3 +35,4 @@ import static org.powermock.api.mockito.PowerMockito.mock;
 @PrepareForTest(ComponentsPools.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
 @RunWith(ComponentsTestRunner.class)
+public class LayoutStateRecyclingTest {

@@ -39,3 +39,5 @@ import com.squareup.javapoet.JavaFile;
 
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public abstract class AbstractComponentsProcessor extends AbstractProcessor {
+
+  @Override

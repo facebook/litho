@@ -13,3 +13,6 @@ import javax.lang.model.element.Modifier;
 
 import com.squareup.javapoet.TypeName;
 
+/**
+ * Describes a method signature.
+ *

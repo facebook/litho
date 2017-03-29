@@ -42,3 +42,20 @@ public class LayoutStateSizeTest {
     Whitebox.setInternalState(mLayoutState, "mWidth", WIDTH);
     Whitebox.setInternalState(mLayoutState, "mHeight", HEIGHT);
     Whitebox.setInternalState(mLayoutState, "mComponent", mComponent);
+  }
+
+  @Test
+  public void testCompatibleSize() {
+    assertTrue(mLayoutState.isCompatibleSize(WIDTH, HEIGHT));
+  }
+
+  @Test
+  public void testIncompatibleWidthSpec() {
+    assertFalse(mLayoutState.isCompatibleSize(WIDTH + 1000, HEIGHT));
+  }
+
+  @Test
+  public void testIncompatibleHeightSpec() {
+    assertFalse(mLayoutState.isCompatibleSize(WIDTH, HEIGHT + 1000));
+  }
+}
