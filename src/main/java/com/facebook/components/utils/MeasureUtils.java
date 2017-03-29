@@ -227,3 +227,8 @@ public final class MeasureUtils {
       outputSize.height = heightSize;
 
       if (widthMode == UNSPECIFIED || heightBasedWidth <= widthSize) {
+        outputSize.width = heightBasedWidth;
+      } else {
+        outputSize.width = widthSize;
+        if (ComponentsConfiguration.IS_INTERNAL_BUILD) {
+          Log.d(
