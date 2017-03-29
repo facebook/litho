@@ -49,3 +49,5 @@ components_robolectric_test(
 android_resource(
     name = "res",
     package = "com.facebook.litho",
+    res = "res",
+    visibility = [

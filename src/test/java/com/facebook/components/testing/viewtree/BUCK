@@ -16,3 +16,4 @@ components_robolectric_test(
         make_dep_path("src/debug/java/com/facebook/components/testing:testing"),
         make_dep_path("src/test/java/com/facebook/components:res"),
         make_dep_path("src/test/java/com/facebook/components:testutil"),
+    ],

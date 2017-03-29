@@ -13,3 +13,4 @@ android_library(
     provided_deps = [
         COMPONENTS_YOGA_TARGET,
     ],
+    visibility = [

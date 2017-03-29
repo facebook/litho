@@ -15,3 +15,5 @@ java_library(
     ),
     exported_deps = [
         COMPONENTS_ANNOTATIONS_TARGET,
+    ],
+    tests = [
