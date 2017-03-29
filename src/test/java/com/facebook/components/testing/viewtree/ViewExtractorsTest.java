@@ -34,3 +34,4 @@ public class ViewExtractorsTest {
   @Before
   public void setUp() {
     final Activity activity = Robolectric.buildActivity(Activity.class).create().get();
+

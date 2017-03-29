@@ -83,3 +83,12 @@ public class ViewTreeTest {
   @Test
   public void testGenerateString() {
     final String expected =
+        getString(mRoot) + " (" + mRoot.hashCode() + ")\n" +
+            "  " + getString(mChild1) + " (" + mChild1.hashCode() + ")\n" +
+            "  " + getString(mChildLayout) + " (" + mChildLayout.hashCode() + ")\n" +
+            "    " + getString(mGrandchild1) + " (" + mGrandchild1.hashCode() + ")\n" +
+            "    " + getString(mGrandchild2) + " (" + mGrandchild2.hashCode() + ")";
+
+    assertThat(mTree.makeString(new Function<View, String>() {
+
+      @Override

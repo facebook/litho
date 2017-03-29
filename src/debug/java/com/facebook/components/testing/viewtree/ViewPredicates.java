@@ -23,3 +23,8 @@ import com.facebook.litho.ComponentHost;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import org.robolectric.Shadows;
+import org.robolectric.shadows.ShadowCanvas;
+
+/**
+ * A collection of useful predicates over Android views for tests
+ */

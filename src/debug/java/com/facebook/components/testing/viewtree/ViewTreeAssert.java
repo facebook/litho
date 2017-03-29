@@ -21,3 +21,10 @@ import static com.facebook.litho.testing.viewtree.ViewPredicates.hasTextMatching
 import static com.facebook.litho.testing.viewtree.ViewPredicates.hasVisibleId;
 import static com.facebook.litho.testing.viewtree.ViewPredicates.isVisible;
 
+/**
+ * Assertions which require checking an entire view tree
+ *
+ * NOTE: Assertions looking for visible attributes are limited to checking the visibility of the
+ * nodes, but do not check actual layout. So a visible view might have 0 pixels available for it
+ * in actual app code and still pass the checks done here
+ */
