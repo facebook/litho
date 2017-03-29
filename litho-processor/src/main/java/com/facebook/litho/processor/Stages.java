@@ -497,3 +497,5 @@ public class Stages {
               throw new ComponentsProcessingException(
                   v,
                   "Inter-stage prop declared without source.");
+            }
+          }
