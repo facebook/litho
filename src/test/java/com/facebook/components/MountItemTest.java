@@ -123,3 +123,4 @@ public class MountItemTest {
         null,
         mComponentHost,
         mContent,
+        mNodeInfo,
