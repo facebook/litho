@@ -9,3 +9,5 @@
 
 package com.facebook.litho.processor;
 
+import javax.lang.model.element.Modifier;
+
