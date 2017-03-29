@@ -494,3 +494,5 @@ class MountState {
     if (shouldUpdate) {
       updateMountedContent(currentMountItem, layoutOutput, itemComponent);
       setViewAttributes(currentMountItem);
+    }
+
