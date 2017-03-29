@@ -172,3 +172,14 @@ class MountItem {
 
   ViewNodeInfo getViewNodeInfo() {
     return mViewNodeInfo;
+  }
+
+  boolean isAccessible() {
+    if (mComponent == null) {
+      return false;
+    }
+
+    if (mImportantForAccessibility == IMPORTANT_FOR_ACCESSIBILITY_NO) {
+      return false;
+    }
+
