@@ -61,3 +61,5 @@ class DelegateMethodSpecBuilder {
     return this;
   }
 
+  DelegateMethodSpecBuilder implParameter(Parameter implParameter) {
+    mImplParameters.add(implParameter);

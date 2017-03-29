@@ -86,3 +86,7 @@ class OnStateUpdateMethodSpecBuilder {
     for (String typeParam : mTypeParameters) {
       builder.addTypeVariable(TypeVariableName.get(typeParam));
     }
+    for (Parameter eventParam : mUpdateParams) {
+      builder.addParameter(eventParam.type, eventParam.name);
+    }
+

@@ -39,3 +39,9 @@ public class LayoutOutputTest {
     }
   }
 
+  private final ComponentLifecycle mLifecycle = new ComponentLifecycle() {
+    @Override
+    int getId() {
+      return LIFECYCLE_TEST_ID;
+    }
+  };

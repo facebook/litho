@@ -54,3 +54,8 @@ class TransferStateSpecBuilder {
     return this;
   }
 
+  TransferStateSpecBuilder stateContainerImplClassName(String stateContainerImplClassName) {
+    mStateContainerImplClassName = stateContainerImplClassName;
+    return this;
+  }
+

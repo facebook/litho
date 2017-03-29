@@ -48,3 +48,7 @@ public class StateUpdateImplClassBuilder {
   private ClassName mComponentStateUpdateInterface;
   private ClassName mComponentClassName;
   private Stages.StaticFlag mStaticFlag;
+  private final List<String> mTypeParameters = new ArrayList<>();
+  private ClassName mStateContainerClassName;
+  private ClassName mStateContainerImplClassName;
+
