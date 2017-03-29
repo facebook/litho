@@ -48,3 +48,7 @@ public abstract class TestComponent<L extends ComponentLifecycle> extends Compon
     mMounted = false;
   }
 
+  void onMeasureCalled() {
+    mOnMeasureCalled = true;
+  }
+

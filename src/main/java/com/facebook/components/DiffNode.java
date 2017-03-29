@@ -38,3 +38,6 @@ class DiffNode implements Cloneable {
   }
 
   int getChildCount() {
+    return mChildren == null ? 0 : mChildren.size();
+  }
+

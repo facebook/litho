@@ -87,3 +87,10 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
         false,
         null);
+
+    // Check diff tree is null.
+    assertNull(layoutState.getDiffTree());
+  }
+
+  @Test
+  public void testDiffTreeEnabled() {

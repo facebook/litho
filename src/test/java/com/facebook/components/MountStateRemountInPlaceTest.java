@@ -126,3 +126,27 @@ public class MountStateRemountInPlaceTest {
     assertFalse(secondComponent.wasOnMountCalled());
     assertTrue(secondComponent.wasOnBindCalled());
     assertFalse(firstComponent.wasOnUnmountCalled());
+  }
+
+  @Test
+  public void testMountUnmountWithNoShouldUpdateAndDifferentSize() {
+    final TestComponent firstComponent =
+        TestDrawableComponent
+            .create(
+                mContext,
+                0,
+                0,
+                true,
+                true,
+                true,
+                false,
+                false,
+                true /*isMountSizeDependent*/)
+            .measuredHeight(10)
+            .build();
+
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
