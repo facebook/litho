@@ -118,3 +118,4 @@ public class ComponentHost extends ViewGroup {
   long getParentHostMarker() {
     return mParentHostMarker;
   }
+

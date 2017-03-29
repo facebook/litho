@@ -251,3 +251,5 @@ public class ComponentView extends ComponentHost {
       if (mIsAttached) {
         rebind();
       }
+      return;
+    }
