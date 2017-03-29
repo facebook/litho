@@ -200,3 +200,32 @@ public class MountSpecHelper extends ComponentSpecHelper {
   }
 
   /**
+   * Generate an onMeasureBaseline implementation that delegates to the
+   * @OnMeasureBaseline-annotated method.
+   */
+  public void generateOnMeasureBaseline() {
+    final ExecutableElement onMeasureBaseline = Utils.getAnnotatedMethod(
+        mStages.getSourceElement(),
+        OnMeasureBaseline.class);
+    if (onMeasureBaseline == null) {
+      return;
+    }
+
+    final MethodDescription methodDescription = new MethodDescription();
+    methodDescription.annotations = new Class[] { Override.class };
+    methodDescription.accessType = Modifier.PROTECTED;
+    methodDescription.name = "onMeasureBaseline";
+    methodDescription.returnType = TypeName.INT;
+    methodDescription.parameterTypes = new TypeName[] {
+        ClassNames.COMPONENT_CONTEXT,
+        TypeName.INT,
+        TypeName.INT,
+    };
+
+    mStages.generateDelegate(
+        methodDescription,
+        onMeasureBaseline,
+        ClassNames.COMPONENT);
+  }
+
+  /**

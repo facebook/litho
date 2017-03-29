@@ -34,3 +34,9 @@ import static org.mockito.Mockito.verify;
 
 @RunWith(ComponentsTestRunner.class)
 public class TextSpecTest {
+  private ComponentContext mContext;
+
+  @Before
+  public void setup() {
+    mContext = new ComponentContext(RuntimeEnvironment.application);
+  }
