@@ -532,3 +532,4 @@ class TextSpec {
       @Prop(optional = true, resType = ResType.COLOR) int textColor,
       @Prop(optional = true, resType = ResType.COLOR) int highlightColor,
       @Prop(optional = true) ColorStateList textColorStateList,
+      @FromBoundsDefined Layout textLayout,
