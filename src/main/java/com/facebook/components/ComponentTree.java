@@ -219,3 +219,7 @@ public class ComponentTree {
       if (mComponentView != null) {
         mComponentView.setMountStateDirty();
       }
+
+      LayoutState toRelease = mMainThreadLayoutState;
+      mMainThreadLayoutState = mBackgroundLayoutState;
+      mBackgroundLayoutState = null;

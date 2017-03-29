@@ -145,3 +145,4 @@ public class Stages {
 
   private String mSourceDelegateAccessorName = DELEGATE_FIELD_NAME;
 
+  private List<VariableElement> mProps;
