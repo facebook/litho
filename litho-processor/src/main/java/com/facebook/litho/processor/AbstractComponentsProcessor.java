@@ -131,3 +131,4 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
         .build()
         .writeTo(processingEnv.getFiler());
   }
+}
