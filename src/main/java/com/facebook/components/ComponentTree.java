@@ -159,3 +159,5 @@ public class ComponentTree {
     mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
     mLayoutThreadHandler = builder.layoutThreadHandler;
     mLayoutLock = builder.layoutLock;
+    mIsAsyncUpdateStateEnabled = builder.asyncStateUpdates;
+

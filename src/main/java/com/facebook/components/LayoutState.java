@@ -150,3 +150,5 @@ class LayoutState {
   private AccessibilityManager mAccessibilityManager;
   private boolean mAccessibilityEnabled = false;
 
+  private StateHandler mStateHandler;
+

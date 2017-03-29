@@ -202,3 +202,24 @@ public class StateUpdateImplClassBuilder {
             .addModifiers(Modifier.PUBLIC)
             .addParameter(mStateContainerClassName, STATE_CONTAINER_PARAM_NAME)
             .addParameter(mComponentClassName, STATE_UPDATE_NEW_COMPONENT_NAME)
+            .addStatement(
+                "$T " + STATE_CONTAINER_IMPL_NAME + " = ($T) " + STATE_CONTAINER_PARAM_NAME,
+                mStateContainerImplClassName,
+                mStateContainerImplClassName)
+            .addStatement(
+                "$T " + newComponentImplName + " = ($T) " + STATE_UPDATE_NEW_COMPONENT_NAME,
+                mImplClassName,
+                mImplClassName);
+
+    for (Parameter stateParam : mStateValueParams) {
+      final String stateParamName = stateParam.name;
+      final TypeName stateParamType = stateParam.type;
+      updateStateMethodBuilder
+          .addStatement(
+              "$T " + stateParamName + " = new $T()",
+              stateParamType,
+              stateParamType)
+          .addStatement(
+              stateParamName + ".set(" + STATE_CONTAINER_IMPL_NAME + "." + stateParamName +")");
+    }
+
