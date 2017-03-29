@@ -1447,3 +1447,7 @@ class MountState {
     view.setLayoutDirection(View.LAYOUT_DIRECTION_INHERIT);
   }
 
+  private static void mountItemIncrementally(
+      MountItem item,
+      Rect itemBounds,
+      Rect localVisibleRect) {

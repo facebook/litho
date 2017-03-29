@@ -1348,3 +1348,12 @@ class LayoutState {
     return widthIsCompatible && heightIsCompatible;
   }
 
+  boolean isCompatibleAccessibility() {
+    return isAccessibilityEnabled(mAccessibilityManager) == mAccessibilityEnabled;
+  }
+
+  private static boolean isAccessibilityEnabled(AccessibilityManager accessibilityManager) {
+    return accessibilityManager.isEnabled() &&
+        AccessibilityManagerCompat.isTouchExplorationEnabled(accessibilityManager);
+  }
+
