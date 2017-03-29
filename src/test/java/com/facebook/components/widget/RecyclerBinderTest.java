@@ -299,3 +299,4 @@ public class RecyclerBinderTest {
 
   @Test
   public void onRemeasureWithDifferentSize() {
+    final List<ComponentInfo> components = prepareLoadedBinder();
