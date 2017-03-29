@@ -951,3 +951,11 @@ public class ComponentTree {
 
         // Set the new layout state, and remember the old layout state so we
         // can release it.
+        LayoutState tmp = mBackgroundLayoutState;
+        mBackgroundLayoutState = localLayoutState;
+        localLayoutState = tmp;
+        layoutStateUpdated = true;
+      }
+    }
+
+    if (localLayoutState != null) {
