@@ -149,3 +149,7 @@ public class Utils {
       TypeMirror diffType,
       ClassName outerClass) {
     if (diffType.getKind() == TypeKind.DECLARED) {
+      final DeclaredType parameterDeclaredType = (DeclaredType) diffType;
+      final TypeElement typeElement = (TypeElement) parameterDeclaredType.asElement();
+      if (typeElement.getQualifiedName().toString().equals(outerClass.toString())) {
+        final List<? extends TypeMirror> typeArguments = parameterDeclaredType.getTypeArguments();
