@@ -1224,3 +1224,6 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public InternalNode dispatchPopulateAccessibilityEventHandler(
+      EventHandler<DispatchPopulateAccessibilityEventEvent>
+          dispatchPopulateAccessibilityEventHandler) {
