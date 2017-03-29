@@ -163,3 +163,4 @@ public class ComponentLifecycleTest {
     componentLifecycle.createLayout(mContext, mInput, false);
 
     verify(componentLifecycle).onCreateLayout(mContext, mInput);
+    verify(mNode).setComponent(mInput);

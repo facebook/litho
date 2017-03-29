@@ -347,3 +347,6 @@ public interface ComponentLayout {
     ContainerBuilder justifyContent(YogaJustify justifyContent);
     ContainerBuilder alignItems(YogaAlign alignItems);
     ContainerBuilder alignContent(YogaAlign alignContent);
+    ContainerBuilder child(ComponentLayout child);
+    ContainerBuilder child(ComponentLayout.Builder childBuilder);
+    ContainerBuilder child(Component<?> component);
