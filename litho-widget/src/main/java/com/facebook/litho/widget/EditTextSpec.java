@@ -194,3 +194,6 @@ class EditTextSpec {
         editText,
         text,
         hint,
+        ellipsize,
+        minLines,
+        maxLines,
