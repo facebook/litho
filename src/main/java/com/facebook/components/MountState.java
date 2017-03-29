@@ -1710,3 +1710,4 @@ class MountState {
       ComponentsLogger logger,
       String logTag,
       ComponentTree component,
+      MountStats mountStats) {
