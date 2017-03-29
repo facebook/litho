@@ -212,3 +212,8 @@ public class LinearComponentBinderTest {
 
     public MyTestLinearComponentBinder(Context context, LinearLayoutManager layoutManager,
         List<Integer> items) {
+      super(context, layoutManager);
+      mItems = items;
+    }
+
+    @Override

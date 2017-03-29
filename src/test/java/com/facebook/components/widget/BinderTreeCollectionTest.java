@@ -122,3 +122,4 @@ public class BinderTreeCollectionTest {
     ComponentTree treeAtLastPosition = mBinderTreeCollection.get(originalSize);
 
     ComponentTree newComponentTree = createNewComponentTree();
+    mBinderTreeCollection.insert(originalSize + 1, newComponentTree);

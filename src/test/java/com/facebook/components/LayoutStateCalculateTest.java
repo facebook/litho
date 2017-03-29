@@ -272,3 +272,4 @@ public class LayoutStateCalculateTest {
 
     // Check quantity of HostComponents.
     int totalHosts = 0;
+    for (int i = 0; i < layoutState.getMountableOutputCount(); i++) {
