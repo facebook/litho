@@ -122,3 +122,4 @@ public class LifecycleMethodsTest {
 
     @Override
     protected void onBoundsDefined(
+        ComponentContext c,

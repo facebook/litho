@@ -56,3 +56,4 @@ public class InternalNodeTest {
 
   @Before
   public void setup() {
+    mNode = ComponentsPools.acquireInternalNode(

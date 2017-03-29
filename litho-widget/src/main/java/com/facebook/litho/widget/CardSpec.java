@@ -100,3 +100,4 @@ class CardSpec {
                 .shadowSizePx(elevation)
                 .withLayout()
                 .positionType(ABSOLUTE)
+                .positionPx(ALL, 0))
