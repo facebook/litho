@@ -437,3 +437,4 @@ public class ComponentTree {
     // It's possible that the view associated with this ComponentTree was recycled but was
     // never detached. In all cases we have to make sure that the old references between
     // componentView and componentTree are reset.
+    if (mIsAttached) {
