@@ -937,3 +937,13 @@ public class ComponentTree {
       // Make sure some other thread hasn't computed a compatible layout in the meantime.
       if (!hasCompatibleComponentAndSpec()
           && isCompatibleSpec(localLayoutState, mWidthSpec, mHeightSpec)) {
+
+        if (localLayoutState != null) {
+          final StateHandler layoutStateStateHandler =
+              localLayoutState.consumeStateHandler();
+          if (layoutStateStateHandler != null) {
+            if (mStateHandler != null) { // we could have been released
+              mStateHandler.commit(layoutStateStateHandler);
+            }
+            ComponentsPools.release(layoutStateStateHandler);
+          }
