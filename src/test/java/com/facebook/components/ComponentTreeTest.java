@@ -247,3 +247,4 @@ public class ComponentTreeTest {
             .build();
 
     Size size = new Size();
+

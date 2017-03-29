@@ -718,3 +718,4 @@ public class ComponentHostTest {
   }
 
   private MountItem mount(int index, Object content, int flags, CharSequence contentDescription) {
+    MountItem mountItem = new MountItem();
