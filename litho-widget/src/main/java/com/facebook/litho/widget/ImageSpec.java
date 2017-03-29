@@ -148,3 +148,11 @@ class ImageSpec {
             layout.getHeight() - verticalPadding);
 
         drawableMatrix.set(matrix);
+        drawableWidth.set(d.getIntrinsicWidth());
+        drawableHeight.set(d.getIntrinsicHeight());
+      }
+    } finally {
+      Reference.release(c, d, src);
+    }
+  }
+
