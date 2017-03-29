@@ -1885,3 +1885,4 @@ public class Stages {
         MethodSpec.constructorBuilder()
             .addModifiers(Modifier.PRIVATE)
             .addStatement("super(get())")
+            .addStatement(STATE_CONTAINER_IMPL_MEMBER + " = new $T()", stateContainerImplClass)
