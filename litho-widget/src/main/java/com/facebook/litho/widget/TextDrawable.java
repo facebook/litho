@@ -330,3 +330,4 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
   }
 
   private void setSelection(ClickableSpan span) {
+    final Spanned text = (Spanned) mText;

@@ -995,3 +995,4 @@ class MountState {
     if (nodeInfo != null) {
       // 1. Setup click handler for the component, if applicable.
       setClickHandler(nodeInfo.getClickHandler(), view);
+
