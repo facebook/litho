@@ -709,3 +709,5 @@ class LayoutState {
       Reference<? extends Drawable> reference,
       @LayoutOutput.LayoutOutputType int type) {
     final Component<DrawableComponent> drawableComponent = DrawableComponent.create(reference);
+    drawableComponent.setScopedContext(
+        ComponentContext.withComponentScope(node.getContext(), drawableComponent));
