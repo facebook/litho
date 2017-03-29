@@ -870,3 +870,4 @@ class LayoutState {
 
     // Detect errors internal to components
     component.markLayoutStarted();
+
