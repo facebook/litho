@@ -129,3 +129,8 @@ public final class ResourceDrawableReference extends ReferenceLifecycle<Drawable
 
     public PropsBuilder resId(int resId) {
       mState.mResId = resId;
+      return this;
+    }
+
+    @Override
+    public Reference<Drawable> build() {

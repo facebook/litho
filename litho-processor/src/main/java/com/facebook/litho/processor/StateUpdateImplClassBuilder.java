@@ -173,3 +173,5 @@ public class StateUpdateImplClassBuilder {
       for (String typeParam : mTypeParameters) {
         stateUpdateClassBuilder.addTypeVariable(TypeVariableName.get(typeParam));
       }
+    }
+
