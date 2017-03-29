@@ -206,3 +206,6 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     context.setTreeProps(getTreePropsForChildren(context, component, parentTreeProps));
 
     ComponentsSystrace.beginSection("createLayout:" + component.getSimpleName());
+    final InternalNode node;
+    if (deferNestedTreeResolution) {
+      node = ComponentsPools.acquireInternalNode(context, context.getResources());
