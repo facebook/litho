@@ -584,3 +584,27 @@ public class MountStateRemountInPlaceTest {
     assertTrue(secondComponent.wasOnBindCalled());
     assertTrue(firstComponent.wasOnUnmountCalled());
   }
+
+  @Test
+  public void testRemountSameSubTreeWithDifferentParentHost() {
+    final TestComponent firstComponent =
+        TestDrawableComponent.create(
+            mContext,
+            false,
+            true,
+            true,
+            false,
+            false)
+            .build();
+
+    InlineLayoutSpec firstLayout = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c)
+            .child(
+                Container.create(c)
+                    .clickHandler(c.newEventHandler(3))
+                    .child(
+                        Text.create(c).text("test")))
+            .child(
+                Container.create(c)
