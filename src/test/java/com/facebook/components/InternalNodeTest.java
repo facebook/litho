@@ -374,3 +374,12 @@ public class InternalNodeTest {
 
   private static void clearFlag(InternalNode internalNode, String flagName) {
     long flagPosition = Whitebox.getInternalState(InternalNode.class, flagName);
+    long flags = Whitebox.getInternalState(internalNode, "mPrivateFlags");
+    flags &= ~flagPosition;
+    Whitebox.setInternalState(internalNode, "mPrivateFlags", flags);
+  }
+
+  private static void assertEmptyFlags(InternalNode internalNode) {
+    assertTrue(((long) Whitebox.getInternalState(internalNode, "mPrivateFlags")) == 0);
+  }
+}

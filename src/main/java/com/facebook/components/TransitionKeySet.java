@@ -273,3 +273,9 @@ class TransitionKeySet implements TransitionListener {
 
   /**
    * Start transitions for a key given its keyStatus. If you stopped half way through previous
+   * transitions for this key, you can pass them as an argument and the new transitions will resume
+   * from where the old one stopped.
+   *
+   * @param keyStatus the status of the key to be animated.
+   * @param listener listener to be notified when the set of transitions finished.
+   * @param oldRunningTransitions previous running transitions to recover from their state.
