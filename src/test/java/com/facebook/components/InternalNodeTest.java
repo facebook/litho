@@ -150,3 +150,11 @@ public class InternalNodeTest {
   }
 
   @Test
+  public void testBorderWidthFlag() {
+    mNode.borderWidthPx(YogaEdge.ALL, 3);
+    assertTrue(isFlagSet(mNode, "PFLAG_BORDER_WIDTH_IS_SET"));
+    clearFlag(mNode, "PFLAG_BORDER_WIDTH_IS_SET");
+    assertEmptyFlags(mNode);
+  }
+
+  @Test

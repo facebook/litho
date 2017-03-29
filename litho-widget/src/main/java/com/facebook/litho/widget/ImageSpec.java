@@ -76,3 +76,6 @@ class ImageSpec {
   static void onMeasure(
       ComponentContext c,
       ComponentLayout layout,
+      int widthSpec,
+      int heightSpec,
+      Size size,

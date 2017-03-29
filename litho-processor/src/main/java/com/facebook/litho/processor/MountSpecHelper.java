@@ -61,3 +61,5 @@ public class MountSpecHelper extends ComponentSpecHelper {
       OnPrepare.class,
       OnMeasure.class,
       OnBoundsDefined.class,
+      OnBind.class,
+      /* Methods that do not support inter-stage props */

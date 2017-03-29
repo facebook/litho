@@ -251,3 +251,4 @@ public class TestDrawableComponent extends ComponentLifecycle {
     return create(
         context,
         0,
+        0,

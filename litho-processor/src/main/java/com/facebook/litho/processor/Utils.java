@@ -104,3 +104,5 @@ public class Utils {
    */
   public static <A extends Annotation> List<TypeElement> getAnnotatedClasses(
       TypeElement element, Class<A> annotation) {
+    final List<TypeElement> annotatedMethods = new ArrayList<>();
+    for (final Element enclosedElement : element.getEnclosedElements()) {
