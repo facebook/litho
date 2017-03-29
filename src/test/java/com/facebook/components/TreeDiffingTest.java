@@ -177,3 +177,7 @@ public class TreeDiffingTest {
 
     assertTrue(YogaMeasureOutput.getHeight(output) == (int) diffNode.getLastMeasuredHeight());
     assertTrue(YogaMeasureOutput.getWidth(output) == (int) diffNode.getLastMeasuredWidth());
+  }
+
+  @Test
+  public void tesLastConstraints() {

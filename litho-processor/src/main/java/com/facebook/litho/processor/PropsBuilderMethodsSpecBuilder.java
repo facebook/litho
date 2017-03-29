@@ -33,3 +33,4 @@ class PropsBuilderMethodsSpecBuilder {
   private String mImplName;
   private String mRequiredSetName;
   private TypeName mBuilderClass;
+  private ClassName mComponentClass;

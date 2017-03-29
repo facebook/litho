@@ -143,3 +143,4 @@ public abstract class RecyclerComponentBinder<L extends RecyclerView.LayoutManag
   }
 
   @Override
+  public void onBind(RecyclerView recyclerView) {

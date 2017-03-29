@@ -86,3 +86,6 @@ class DiffNode implements Cloneable {
   }
 
   List<DiffNode> getChildren() {
+    return mChildren;
+  }
+

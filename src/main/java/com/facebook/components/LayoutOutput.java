@@ -59,3 +59,6 @@ class LayoutOutput implements Cloneable {
   public LayoutOutput() {
     mUpdateState = STATE_UNKNOWN;
     mImportantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+    mHostMarker = -1L;
+  }
+
