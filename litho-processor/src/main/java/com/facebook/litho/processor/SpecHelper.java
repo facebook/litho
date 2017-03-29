@@ -35,3 +35,4 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 
+public abstract class SpecHelper implements Closeable {

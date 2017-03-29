@@ -19,3 +19,5 @@ public class EventHandler<E> {
     this(hasEventDispatcher, id, null);
   }
 
+  public EventHandler(HasEventDispatcher hasEventDispatcher, int id, Object[] params) {
+    this.mHasEventDispatcher = hasEventDispatcher;
