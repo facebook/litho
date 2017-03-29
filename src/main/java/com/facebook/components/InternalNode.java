@@ -1482,3 +1482,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return mNestedTree;
   }
 
+  InternalNode getNestedTreeHolder() {
+    return mNestedTreeHolder;
+  }
+
