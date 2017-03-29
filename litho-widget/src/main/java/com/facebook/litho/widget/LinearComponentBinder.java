@@ -19,3 +19,6 @@ import com.facebook.litho.utils.IncrementalMountUtils;
 
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 
+public abstract class LinearComponentBinder extends
+    RecyclerComponentBinder<
+        LinearLayoutManager,

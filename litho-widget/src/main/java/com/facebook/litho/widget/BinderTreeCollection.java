@@ -20,3 +20,4 @@ import com.facebook.litho.ComponentTree;
  * Right now we are operating on a SparseArray.
  * Shifting the SparseArray left and right is potentially bad. Each call uses a System.arraycopy()
  * this means shiftSparseArrayRight/Left is O(n*m), where n is (sparseArray.size() - fromPosition)
+ * and m is shiftByAmount. However we don't expect this to happen often and with the elastic ranges,
