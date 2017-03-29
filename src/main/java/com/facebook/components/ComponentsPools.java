@@ -504,3 +504,8 @@ public class ComponentsPools {
   }
 
   @ThreadSafe(enableChecks = false)
+  static void release(VisibilityOutput output) {
+    output.release();
+    sVisibilityOutputPool.release(output);
+  }
+
