@@ -268,3 +268,4 @@ class TextSpec {
     measureLayout.set(newLayout);
 
     size.width = SizeSpec.resolveSize(widthSpec, newLayout.getWidth());
+
