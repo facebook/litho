@@ -68,3 +68,6 @@ class ComponentQueries {
             return hasDrawable(input, drawable);
           }
         });
+  }
+
+  private static boolean hasDrawable(Drawable containingDrawable, Drawable drawable) {
