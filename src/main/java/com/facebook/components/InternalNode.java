@@ -1112,3 +1112,13 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public InternalNode wrapInView() {
+    mForceViewWrapping = true;
+    return this;
+  }
+
+  boolean isForceViewWrapping() {
+    return mForceViewWrapping;
+  }
+
+  @Override
