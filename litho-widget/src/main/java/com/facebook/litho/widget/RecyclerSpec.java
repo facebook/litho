@@ -135,3 +135,7 @@ class RecyclerSpec {
       @FromPrepare OnRefreshListener onRefreshListener,
       Output<ItemAnimator> oldAnimator) {
 
+    recyclerViewWrapper.setEnabled(onRefreshListener != null);
+    recyclerViewWrapper.setOnRefreshListener(onRefreshListener);
+
+    final RecyclerView recyclerView = recyclerViewWrapper.getRecyclerView();
