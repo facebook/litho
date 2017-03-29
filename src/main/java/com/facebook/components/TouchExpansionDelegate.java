@@ -26,3 +26,5 @@ import android.view.ViewConfiguration;
 class TouchExpansionDelegate extends TouchDelegate {
 
   private static final Rect IGNORED_RECT = new Rect();
+  private static final Pools.SimplePool<SparseArrayCompat<InnerTouchDelegate>>
+      sInnerTouchDelegateScrapArrayPool = new Pools.SimplePool<>(4);

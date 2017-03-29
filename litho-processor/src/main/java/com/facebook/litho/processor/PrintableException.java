@@ -21,3 +21,4 @@ public abstract class PrintableException extends RuntimeException {
     super(message);
   }
 
+  public abstract void print(Messager messager);

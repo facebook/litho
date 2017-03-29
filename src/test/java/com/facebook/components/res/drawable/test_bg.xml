@@ -9,3 +9,13 @@
   of patent rights can be found in the PATENTS file in the same directory.
 -->
 
+<shape
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle"
+    >
+  <solid android:color="#5500FF66"/>
+  <stroke
+      android:width="2dp"
+      android:color="#44009933"
+      />
+</shape>

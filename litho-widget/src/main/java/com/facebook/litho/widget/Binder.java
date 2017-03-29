@@ -8,3 +8,35 @@
  */
 
 package com.facebook.litho.widget;
+
+import android.content.Context;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.facebook.components.Component;
+import com.facebook.components.ComponentContext;
+import com.facebook.components.ComponentTree;
+import com.facebook.components.Size;
+
+import static com.facebook.components.ThreadUtils.assertMainThread;
+
+/**
+ * This binder class is used to asynchronously layout Components given a list of
+ * {@link Component} and attaching them to a {@link ViewGroup} through the
+ * {@link #bind(ViewGroup)} method.
+ */
+public interface Binder<V extends ViewGroup> {
+
+  /**
+   * Set the width and height of the {@link View} that will be passed to the subsequent
+   * {@link #mount(ViewGroup)}, {@link #bind(ViewGroup)} and {@link #unmount(ViewGroup)} calls.
+   * Can be called by any thread.
+   *
+   * @param width Usually the view width minus horizontal padding.
+   * @param height Usually the view height minus vertical padding.
+   */
+  void setSize(int width, int height);
+
+  /**
+   * Measure the content of this Binder. Call this method from the Component's onMeasure.
+   */

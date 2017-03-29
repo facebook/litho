@@ -27,3 +27,4 @@ public abstract class TestComponent<L extends ComponentLifecycle> extends Compon
   private boolean mBound;
   private boolean mOnUnbindCalled;
   protected boolean mIsUnique;
+  private boolean mOnMeasureCalled;

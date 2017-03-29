@@ -8,3 +8,13 @@
  */
 
 package com.facebook.components.testing;
+
+import android.content.Context;
+import android.view.View;
+
+import com.facebook.components.ComponentContext;
+
+public class TestComponentContextWithView extends ComponentContext {
+
+  private final View mTestView;
+
