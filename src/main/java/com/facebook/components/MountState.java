@@ -944,3 +944,5 @@ class MountState {
 
     if (content instanceof View) {
       View view = (View) content;
+      int width = right - left;
+      int height = bottom - top;
