@@ -279,3 +279,4 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
    * @return the assertions object
    */
   public ViewTreeAssert doesNotHaveVisibleText() {
+    final ImmutableList<View> path = getPathToVisibleMatchingText(".+");
