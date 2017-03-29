@@ -757,3 +757,4 @@ class MountState {
           // If the id is the same but the parent host is different we simply unmount the item and
           // re-mount it later. If the item to unmount is a ComponentHost, all the children will be
           // recursively unmounted.
+          unmountItem(mContext, i, mHostsByMarker);

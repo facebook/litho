@@ -545,3 +545,4 @@ public class ComponentsPools {
   }
 
   @ThreadSafe(enableChecks = false)
+  static void release(Context context, ComponentLifecycle lifecycle, Object mountContent) {
