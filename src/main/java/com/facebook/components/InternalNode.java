@@ -955,3 +955,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode touchExpansionPx(YogaEdge edge, @Px int touchExpansion) {
+    if (mTouchExpansion == null) {
+      mTouchExpansion = ComponentsPools.acquireSpacing();
+    }
+
+    mPrivateFlags |= PFLAG_TOUCH_EXPANSION_IS_SET;
