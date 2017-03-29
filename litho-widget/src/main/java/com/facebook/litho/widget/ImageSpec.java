@@ -120,3 +120,4 @@ class ImageSpec {
   }
 
   @OnBoundsDefined
+  static void onBoundsDefined(
