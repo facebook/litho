@@ -54,3 +54,5 @@ public class StateUpdatesTestHelper {
    * @param context context
    * @param component the component to update
    * @param stateUpdater implementation of {@link StateUpdater} that triggers the state update
+   * @param layoutThreadShadowLooper shadow looper to post messages to the main thread
+   * @param incrementalMountEnabled whether or not to enable incremental mount for the component
