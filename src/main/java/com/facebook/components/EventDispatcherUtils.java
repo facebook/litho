@@ -138,3 +138,25 @@ class EventDispatcherUtils {
     final EventDispatcher eventDispatcher = touchHandler.mHasEventDispatcher.getEventDispatcher();
     final boolean returnValue =
         (boolean) eventDispatcher.dispatchOnEvent(touchHandler, sTouchEvent);
+
+    sTouchEvent.view = null;
+    sTouchEvent.motionEvent = null;
+
+    return returnValue;
+  }
+
+  static boolean dispatchDispatchPopulateAccessibilityEvent(
+      EventHandler<DispatchPopulateAccessibilityEventEvent> eventHandler,
+      View host,
+      AccessibilityEvent event,
+      AccessibilityDelegateCompat superDelegate) {
+    assertMainThread();
+
+    if (sDispatchPopulateAccessibilityEventEvent == null) {
+      sDispatchPopulateAccessibilityEventEvent = new DispatchPopulateAccessibilityEventEvent();
+    }
+
+    sDispatchPopulateAccessibilityEventEvent.host = host;
+    sDispatchPopulateAccessibilityEventEvent.event = event;
+    sDispatchPopulateAccessibilityEventEvent.superDelegate = superDelegate;
+

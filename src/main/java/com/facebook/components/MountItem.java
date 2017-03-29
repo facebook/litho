@@ -141,3 +141,4 @@ class MountItem {
     } else if (convertDisplayListDrawable != null) {
       convertDisplayListDrawable.setWrappedDrawable
           ((Drawable) content, null);
+    }
