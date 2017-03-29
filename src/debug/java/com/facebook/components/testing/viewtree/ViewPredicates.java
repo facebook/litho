@@ -163,3 +163,4 @@ final class ViewPredicates {
     return new Predicate<View>() {
       @Override
       public boolean apply(@Nullable final View input) {
+        if (input instanceof ImageView) {
