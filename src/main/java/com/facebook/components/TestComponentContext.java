@@ -71,3 +71,4 @@ class TestComponentContext extends ComponentContext {
   TestComponentContext makeNewCopy() {
     return new TestComponentContext(this);
   }
+}

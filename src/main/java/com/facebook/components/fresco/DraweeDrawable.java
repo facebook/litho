@@ -60,3 +60,22 @@ public class DraweeDrawable<DH extends DraweeHierarchy>
     super.draw(canvas);
   }
 
+  @Override
+  public boolean onTouchEvent(MotionEvent event, View host) {
+    return mDraweeHolder.onTouchEvent(event);
+  }
+
+  @Override
+  public boolean shouldHandleTouchEvent(MotionEvent event) {
+    return true;
+  }
+
+  @Override
+  public List<Drawable> getImageItems() {
+    return Collections.<Drawable>singletonList(this);
+  }
+
+  public DraweeController getController() {
+    return mDraweeHolder.getController();
+  }
+

@@ -55,3 +55,5 @@ public class TestComponentTree extends ComponentTree {
         heightSpec,
         diffingEnabled,
         diffNode);
+  }
+
