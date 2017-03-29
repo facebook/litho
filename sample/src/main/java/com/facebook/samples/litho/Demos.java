@@ -49,3 +49,4 @@ public final class Demos {
 
   public static Component<?> getComponent(String name) {
     return demoModels.get(name);
+  }

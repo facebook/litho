@@ -49,3 +49,6 @@ public class DemoListItemComponentSpec {
       @Prop final String name) {
     final Intent intent = new Intent(c, DemoActivity.class);
     intent.putExtra("demoName", name);
+    c.startActivity(intent);
+  }
+}
