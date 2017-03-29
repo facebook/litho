@@ -144,3 +144,9 @@ public class InternalNodeTest {
   @Test
   public void testPaddingFlag() {
     mNode.paddingPx(YogaEdge.ALL, 3);
+    assertTrue(isFlagSet(mNode, "PFLAG_PADDING_IS_SET"));
+    clearFlag(mNode, "PFLAG_PADDING_IS_SET");
+    assertEmptyFlags(mNode);
+  }
+
+  @Test

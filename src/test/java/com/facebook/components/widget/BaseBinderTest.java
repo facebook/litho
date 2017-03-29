@@ -83,3 +83,7 @@ public class BaseBinderTest {
     Assert.assertEquals(0, mBinder.getComponentCount());
 
     mount();
+
+    Assert.assertEquals(mItems.get(0), getAdapterInputStringAtPosition(0));
+  }
+

@@ -70,3 +70,37 @@ public abstract class LinearComponentBinder extends
   protected int getHeightSpec(int position) {
     if (getLayoutManager().getOrientation() == LinearLayoutManager.VERTICAL) {
       return SizeSpec.makeSizeSpec(0, UNSPECIFIED);
+    } else {
+      return super.getHeightSpec(position);
+    }
+  }
+
+  @Override
+  protected boolean shouldContinueInitialization(
+      int position,
+      int itemWidth,
+      int itemHeight) {
+    final int itemMainAxisSize;
+    final int recyclerMainAxisSize;
+    // Assuming the range is starting always from the first position, the initial range consists
+    // of the visible viewport plus # viewports after depending by the WorkingRange size.
+    final int viewportsToInit = 1 + (RecyclerComponentWorkingRangeController.RANGE_SIZE - 1) / 2;
+    if (getInitializeStartPosition() == position) {
+      mInitFillMainAxis = 0;
+    }
+
+    if (getLayoutManager().getOrientation() == OrientationHelper.VERTICAL) {
+      itemMainAxisSize = itemHeight;
+      recyclerMainAxisSize = getHeight();
+    } else {
+      itemMainAxisSize = itemWidth;
+      recyclerMainAxisSize = getWidth();
+    }
+
+    mInitFillMainAxis += itemMainAxisSize;
+
+    // Check if the initial range is filled. The initial range consists of the viewport and the
+    // the items that should be loaded after the currently visible ones. Since the initial range
+    // always starts at the first position, there are no items before the viewport.
+    return mInitFillMainAxis < recyclerMainAxisSize * viewportsToInit;
+  }
