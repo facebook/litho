@@ -219,3 +219,10 @@ class LayoutState {
     final boolean isMountViewSpec = isMountViewSpec(component);
 
     final LayoutOutput layoutOutput = ComponentsPools.acquireLayoutOutput();
+    layoutOutput.setComponent(component);
+    layoutOutput.setImportantForAccessibility(importantForAccessibility);
+
+    // The mount operation will need both the marker for the target host and its matching
+    // parent host to ensure the correct hierarchy when nesting the host views.
+    layoutOutput.setHostMarker(layoutState.mCurrentHostMarker);
+

@@ -264,3 +264,4 @@ public class ComponentView extends ComponentHost {
     }
 
     mComponent = component;
+
