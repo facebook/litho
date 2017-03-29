@@ -1340,3 +1340,6 @@ public class LayoutStateCalculateTest {
                             .contentDescription("This is an image"))
                     .child(
                         TestDrawableComponent.create(c, true, true, true, true, false)
+                            .withLayout().flexShrink(0)
+                            .flex(1).flexBasisDip(0)
+                            .marginDip(YogaEdge.HORIZONTAL, 10)))
