@@ -57,3 +57,9 @@ public class InternalNodeTest {
   @Before
   public void setup() {
     mNode = ComponentsPools.acquireInternalNode(
+        new ComponentContext(RuntimeEnvironment.application),
+        RuntimeEnvironment.application.getResources());
+  }
+
+  @Test
+  public void testLayoutDirectionFlag() {

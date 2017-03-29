@@ -66,3 +66,13 @@ class ViewNodeInfo {
   }
 
   void setPadding(int l, int t, int r, int b) {
+    if (l == 0 && t == 0 && r == 0 && b == 0) {
+      return;
+    }
+
+    if (mPadding != null) {
+      throw new IllegalStateException("Padding already initialized for this " +
+          "ViewNodeInfo.");
+    }
+
+    mPadding = ComponentsPools.acquireRect();

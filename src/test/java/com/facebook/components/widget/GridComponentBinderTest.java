@@ -57,3 +57,4 @@ public class GridComponentBinderTest {
 
   private ShadowLooper mLayoutThreadShadowLooper;
 
+  @Before

@@ -47,3 +47,7 @@ public class BinderTreeCollectionTest {
     ComponentTree treeAtPos3 = mBinderTreeCollection.get(3);
 
     assertEquals(3, mBinderTreeCollection.getPositionOf(treeAtPos3));
+
+    ComponentTree newTreeAtPos5 = createNewComponentTree();
+    mBinderTreeCollection.put(5, newTreeAtPos5);
+

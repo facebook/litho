@@ -114,3 +114,9 @@ class BinderTreeCollection {
     final int firstPosition = getFirstPosition();
     shiftRangeLeft(firstPosition, position - firstPosition + 1, 1);
     mItems.put(position, item);
+  }
+
+  ComponentTree get(int position) {
+    return mItems.get(position);
+  }
+

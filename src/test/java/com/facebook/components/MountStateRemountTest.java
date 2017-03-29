@@ -233,3 +233,12 @@ public class MountStateRemountTest {
     }
     return false;
   }
+
+  private static void clearPool(String name) {
+    final Pools.SynchronizedPool<?> pool =
+        Whitebox.getInternalState(ComponentsPools.class, name);
+
+    while (pool.acquire() != null) {
+      // Run.
+    }
+  }
