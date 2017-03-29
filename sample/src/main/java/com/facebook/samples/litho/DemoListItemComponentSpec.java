@@ -51,3 +51,4 @@ public class DemoListItemComponentSpec {
       ComponentContext c,
       @FromEvent View view,
       @Prop final String name) {
+    final Intent intent = new Intent(c, DemoActivity.class);
