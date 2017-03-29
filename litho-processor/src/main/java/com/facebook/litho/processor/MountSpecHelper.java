@@ -333,3 +333,6 @@ public class MountSpecHelper extends ComponentSpecHelper {
     };
 
     generateMountCompliantMethod(onBind, methodDescription);
+  }
+
+  /**
