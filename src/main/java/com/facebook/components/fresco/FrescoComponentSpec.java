@@ -71,3 +71,9 @@ class FrescoComponentSpec {
     MeasureUtils.measureWithAspectRatio(widthSpec, heightSpec, aspectRatio, size);
   }
 
+  @OnCreateMountContent
+  protected static DraweeDrawable<GenericReferenceDraweeHierarchy> onCreateMountContent(
+      ComponentContext c) {
+    GenericReferenceDraweeHierarchy draweeHierarchy =
+        new GenericReferenceDraweeHierarchy(
+            GenericDraweeHierarchyBuilder.newInstance(c.getResources()).build());
