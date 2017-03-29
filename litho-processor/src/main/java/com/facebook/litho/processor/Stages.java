@@ -2941,3 +2941,16 @@ public class Stages {
     writeFieldSpec(poolField.build());
   }
 
+  private static String commaSeparateAndQuoteStrings(List<String> strings) {
+    final StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < strings.size(); i++) {
+      sb.append('"');
+      sb.append(strings.get(i));
+      sb.append('"');
+      if (i < strings.size() - 1) {
+        sb.append(", ");
+      }
+    }
+    return sb.toString();
+  }
+
