@@ -683,3 +683,4 @@ public class ComponentHostTest {
         view,
         null,
         null,
+        null,
