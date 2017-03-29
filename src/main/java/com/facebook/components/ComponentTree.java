@@ -175,3 +175,8 @@ public class ComponentTree {
     return mMainThreadLayoutState;
   }
 
+  @VisibleForTesting
+  protected LayoutState getBackgroundLayoutState() {
+    return mBackgroundLayoutState;
+  }
+
