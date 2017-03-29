@@ -1575,3 +1575,7 @@ class LayoutState {
       mAccessibilityManager = null;
       mAccessibilityEnabled = false;
 
+      if (mDiffTreeRoot != null) {
+        ComponentsPools.release(mDiffTreeRoot);
+        mDiffTreeRoot = null;
+      }
