@@ -354,3 +354,19 @@ public abstract class BaseBinder<
   public void notifyItemRangeRemoved(int positionStart, int itemCount) {
     assertMainThread();
 
+    if (!hasContentSize()) {
+      return;
+    }
+
+    boolean shouldRemoveItems = true;
+
+    synchronized (this) {
+      // If the removed items are all before the current range, then shift the range left.
+      if (positionStart + itemCount - 1 < mComponentTrees.getFirstPosition()) {
+        mComponentTrees.shiftAllLeft(itemCount);
+        shouldRemoveItems = false;
+      }
+    }
+
+    if (shouldRemoveItems) {
+      List<ComponentTree> treesToRelease = acquireList(itemCount);
