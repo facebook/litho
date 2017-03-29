@@ -455,3 +455,7 @@ class LayoutState {
           SizeSpec.makeSizeSpec(node.getWidth(), EXACTLY),
           SizeSpec.makeSizeSpec(node.getHeight(), EXACTLY));
 
+      if (nestedTree == NULL_LAYOUT) {
+        return;
+      }
+

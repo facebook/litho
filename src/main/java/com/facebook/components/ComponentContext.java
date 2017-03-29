@@ -241,3 +241,8 @@ public class ComponentContext extends ContextWrapper {
         component,
         false);
     component.getScopedContext().setTreeProps(null);
+
+    if (node != NULL_LAYOUT) {
+      applyStyle(node, defStyleAttr, defStyleRes);
+    }
+
