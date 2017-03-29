@@ -723,3 +723,18 @@ public class TreeDiffingTest {
 
   @Test
   public void testLayoutOutputUpdateStateIdClash() {
+    final Component component1 = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            .child(
+                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    .wrapInView()
+                    .child(TestDrawableComponent.create(c)))
+            .child(
+                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    .wrapInView()
+                    .child(TestDrawableComponent.create(c)))
+            .build();
+      }
+    };
