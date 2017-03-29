@@ -961,3 +961,24 @@ public class ComponentHost extends ViewGroup {
     // this change also in the Touchables SparseArray.
     ComponentHostUtils.moveItem(oldIndex, newIndex, mDrawableMountItems, mScrapDrawableMountItems);
     if (item.getContent() instanceof Touchable) {
+      ComponentHostUtils.moveItem(oldIndex, newIndex, mTouchables, mScrapTouchables);
+    }
+
+    // Drawing order changed, invalidate the whole view.
+    this.invalidate();
+
+    releaseScrapDataStructuresIfNeeded();
+  }
+
+  private void ensureScrapDrawableMountItemsArray() {
+    if (mScrapDrawableMountItems == null) {
+      mScrapDrawableMountItems = ComponentsPools.acquireScrapMountItemsArray();
+    }
+  }
+
+  private void ensureScrapTouchablesArray() {
+    if (mScrapTouchables == null) {
+      mScrapTouchables = ComponentsPools.acquireScrapTouchablesArray();
+    }
+  }
+

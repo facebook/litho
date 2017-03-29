@@ -1052,3 +1052,6 @@ public class ComponentTree {
 
       backgroundLayoutState = mBackgroundLayoutState;
       mBackgroundLayoutState = null;
+
+      // TODO t15532529
+      mStateHandler = null;
