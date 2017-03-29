@@ -406,3 +406,4 @@ public final class ComponentTestHelper {
     }
     treeProps.put(propClass, prop);
   }
+}
