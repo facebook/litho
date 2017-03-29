@@ -1123,3 +1123,7 @@ public class ComponentTree {
         && layoutState.isCompatibleAccessibility();
   }
 
+  public ComponentContext getContext() {
+    return mContext;
+  }
+
