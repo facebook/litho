@@ -38,3 +38,4 @@ import static android.view.View.MeasureSpec.makeMeasureSpec;
  * they are in real apps.
  */
 public final class ComponentTestHelper {
+
