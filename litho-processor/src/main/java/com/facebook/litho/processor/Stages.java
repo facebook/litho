@@ -92,3 +92,4 @@ public class Stages {
   private static final String REQUIRED_PROPS_NAMES = "REQUIRED_PROPS_NAMES";
   private static final String REQUIRED_PROPS_COUNT = "REQUIRED_PROPS_COUNT";
 
+  private static final int ON_STYLE_PROPS = 1;
