@@ -434,3 +434,4 @@ public class ComponentHost extends ViewGroup {
     if (content instanceof View) {
       finishTemporaryDetach(((View) content));
     }
+  }
