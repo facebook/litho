@@ -359,3 +359,5 @@ public class ComponentLifecycleTest {
         ComponentContext c, int widthSpec, int heightSpec, Component<?> component) {
       return mNode;
     }
+  }
+
