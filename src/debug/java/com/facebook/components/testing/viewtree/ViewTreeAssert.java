@@ -359,3 +359,4 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
    * @param resourceId the resource id of the drawable to look for
    * @return the assertions object
    */
+  public ViewTreeAssert doesNotHaveVisibleDrawable(final int resourceId) {
