@@ -39,3 +39,7 @@ class CardShadowSpec {
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float cornerRadius,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) float shadowSize) {
 
+    cardShadowDrawable.setShadowStartColor(shadowStartColor);
+    cardShadowDrawable.setShadowEndColor(shadowEndColor);
+    cardShadowDrawable.setCornerRadius(cornerRadius);
+    cardShadowDrawable.setShadowSize(shadowSize);

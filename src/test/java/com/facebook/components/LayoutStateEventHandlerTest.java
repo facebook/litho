@@ -34,3 +34,4 @@ public class LayoutStateEventHandlerTest {
       EventHandler eventHandler,
       int expectedId,
       Component<?> expectedInput) {
+    assertEquals(expectedInput, eventHandler.mHasEventDispatcher);

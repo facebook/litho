@@ -98,3 +98,45 @@ class TouchExpansionDelegate extends TouchDelegate {
     return false;
   }
 
+  /**
+   * Called when the MountItem this Delegate is referred to is moved to another position to also
+   * update the indexes of the TouchExpansionDelegate.
+   */
+  void moveTouchExpansionIndexes(int oldIndex, int newIndex) {
+    if (mDelegates.get(newIndex) != null) {
+      ensureScrapDelegates();
+      ComponentHostUtils.scrapItemAt(newIndex, mDelegates, mScrapDelegates);
+    }
+
+    ComponentHostUtils.moveItem(oldIndex, newIndex, mDelegates, mScrapDelegates);
+
+    releaseScrapDelegatesIfNeeded();
+  }
+
+  private void ensureScrapDelegates() {
+    if (mScrapDelegates == null) {
+      mScrapDelegates = acquireScrapTouchDelegatesArray();
+    }
+  }
+
+  private static SparseArrayCompat<InnerTouchDelegate> acquireScrapTouchDelegatesArray() {
+    SparseArrayCompat<InnerTouchDelegate> sparseArray = sInnerTouchDelegateScrapArrayPool.acquire();
+    if (sparseArray == null) {
+      sparseArray = new SparseArrayCompat<>(4);
+    }
+
+    return sparseArray;
+  }
+
+  private void releaseScrapDelegatesIfNeeded() {
+    if (mScrapDelegates != null && mScrapDelegates.size() == 0) {
+      releaseScrapTouchDelegatesArray(mScrapDelegates);
+      mScrapDelegates = null;
+    }
+  }
+
+  private static void releaseScrapTouchDelegatesArray(
+      SparseArrayCompat<InnerTouchDelegate> sparseArray) {
+    sInnerTouchDelegateScrapArrayPool.release(sparseArray);
+  }
+

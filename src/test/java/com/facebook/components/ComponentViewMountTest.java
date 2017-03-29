@@ -34,3 +34,9 @@ import static org.junit.Assert.assertEquals;
 @RunWith(ComponentsTestRunner.class)
 public class ComponentViewMountTest {
   private ComponentContext mContext;
+  private TestComponentView mComponentView;
+  private Component mComponent;
+  private ComponentTree mComponentTree;
+
+  @Before
+  public void setup() {

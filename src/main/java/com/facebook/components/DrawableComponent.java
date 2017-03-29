@@ -37,3 +37,9 @@ class DrawableComponent<T extends Drawable> extends ComponentLifecycle {
   }
 
   @Override
+  protected Object onCreateMountContent(ComponentContext c) {
+    return new MatrixDrawable();
+  }
+
+  @Override
+  protected void onMount(
