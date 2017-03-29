@@ -44,3 +44,8 @@ public class GridComponentBinderTest {
   private static final int GRID_WIDTH = 200;
   private static final int GRID_HEIGHT = 300;
 
+  private static final int[] COLORS = {
+      Color.BLACK, Color.BLUE, Color.CYAN, Color.GRAY, Color.GREEN, Color.RED, Color.MAGENTA
+  };
+
+  private List<Integer> mItems;

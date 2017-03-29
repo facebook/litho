@@ -567,3 +567,11 @@ public class WorkingRangesTest {
 
     @Override
     public void onMount(ViewGroup view) {
+      if (mView != null) {
+        throw new IllegalStateException("mView should be null!");
+      }
+
+      mView = view;
+    }
+
+    @Override

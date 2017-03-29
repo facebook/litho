@@ -46,3 +46,4 @@ public class BinderTreeCollectionTest {
   public void testPositionOf() {
     ComponentTree treeAtPos3 = mBinderTreeCollection.get(3);
 
+    assertEquals(3, mBinderTreeCollection.getPositionOf(treeAtPos3));
