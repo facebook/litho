@@ -649,3 +649,4 @@ public class Stages {
    */
   private void populateStateMap() {
     // We use a linked hash map to guarantee iteration order
+    final LinkedHashMap<String, VariableElement> variableNameToElementMap = new LinkedHashMap<>();
