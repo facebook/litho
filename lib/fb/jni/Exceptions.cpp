@@ -199,3 +199,4 @@ void translatePendingCppExceptionToJavaException() noexcept {
     } catch(const std::bad_alloc& ex) {
       current = JOutOfMemoryError::create(ex.what());
     } catch(const std::out_of_range& ex) {
+      current = JArrayIndexOutOfBoundsException::create(ex.what());
