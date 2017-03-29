@@ -293,3 +293,5 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   public void setLastHeightSpec(int heightSpec) {
     mLastHeightSpec = heightSpec;
+  }
+
