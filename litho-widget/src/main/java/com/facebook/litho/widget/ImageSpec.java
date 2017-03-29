@@ -80,3 +80,6 @@ class ImageSpec {
       int heightSpec,
       Size size,
       @Prop(resType = ResType.DRAWABLE) Reference<Drawable> src) {
+    if (src == null) {
+      size.width = 0;
+      size.height = 0;
