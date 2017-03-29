@@ -2625,3 +2625,4 @@ public class Stages {
         StyleableFlag.NOT_STYLEABLE,
         ClassNames.REFERENCE,
         genericType,
+        INNER_IMPL_BUILDER_CLASS_NAME,
