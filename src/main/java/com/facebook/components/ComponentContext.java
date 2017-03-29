@@ -82,3 +82,5 @@ public class ComponentContext extends ContextWrapper {
         : null;
     final boolean transferLogging = (componentContext != null && logTag == null && logger == null);
     final boolean transferStateHandler = (componentContext != null && stateHandler == null);
+
+    if (componentContext != null) {

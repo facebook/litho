@@ -226,3 +226,32 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
     return mLifecycle;
   }
 
+  /**
+   * Measure a component with the given {@link SizeSpec} constrain.
+   *
+   * @param c {@link ComponentContext}.
+   * @param widthSpec Width {@link SizeSpec} constrain.
+   * @param heightSpec Height {@link SizeSpec} constrain.
+   * @param outputSize Size object that will be set with the measured dimensions.
+   */
+  public void measure(ComponentContext c, int widthSpec, int heightSpec, Size outputSize) {
+    releaseCachedLayout();
+
+    mLastMeasuredLayout = LayoutState.createAndMeasureTreeForComponent(
+        c,
+        this,
+        widthSpec,
+        heightSpec);
+
+    // This component resolution won't be deferred nor onMeasure called if it's a layout spec.
+    // In that case it needs to manually save the latest saze specs.
+    // The size specs will be checked during the calculation (or collection) of the main tree.
+    if (Component.isLayoutSpec(this)) {
+      mLastMeasuredLayout.setLastWidthSpec(widthSpec);
+      mLastMeasuredLayout.setLastHeightSpec(heightSpec);
+    }
+
+    outputSize.width = mLastMeasuredLayout.getWidth();
+    outputSize.height = mLastMeasuredLayout.getHeight();
+  }
+
