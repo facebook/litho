@@ -1053,3 +1053,4 @@ public class ComponentHost extends ViewGroup {
       mCanvas = null;
     }
   }
+}
