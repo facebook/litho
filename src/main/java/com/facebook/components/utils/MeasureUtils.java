@@ -186,3 +186,23 @@ public final class MeasureUtils {
       if (ComponentsConfiguration.IS_INTERNAL_BUILD) {
         Log.d(
             "com.facebook.litho.utils.MeasureUtils",
+            "Default to size {0, 0} because both width and height are UNSPECIFIED");
+      }
+      return;
+    }
+
+    // Both modes are AT_MOST, find the largest possible size which respects both constraints.
+    if (widthMode == AT_MOST && heightMode == AT_MOST) {
+      if (widthBasedHeight > heightSize) {
+        outputSize.width = heightBasedWidth;
+        outputSize.height = heightSize;
+      } else {
+        outputSize.width = widthSize;
+        outputSize.height = widthBasedHeight;
+      }
+    }
+    // Width is set to exact measurement and the height is either unspecified or is allowed to be
+    // large enough to accommodate the given aspect ratio.
+    else if (widthMode == EXACTLY) {
+      outputSize.width = widthSize;
+
