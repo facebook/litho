@@ -103,3 +103,12 @@ public class ComponentInfo {
       return customAttribute(SPAN_SIZE, spanSize);
     }
 
+    public Builder customAttribute(String key, Object value) {
+      if (mCustomAttributes == null) {
+        mCustomAttributes = new SimpleArrayMap<>();
+      }
+      mCustomAttributes.put(key, value);
+
+      return this;
+    }
+
