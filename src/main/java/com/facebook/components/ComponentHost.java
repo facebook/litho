@@ -822,3 +822,11 @@ public class ComponentHost extends ViewGroup {
       final View child = getChildAt(i);
       if (child instanceof ComponentHost) {
         ((ComponentHost) child).refreshAccessibilityDelegatesIfNeeded(isAccessibilityEnabled);
+      } else {
+        final NodeInfo nodeInfo =
+            (NodeInfo) child.getTag(R.id.component_node_info);
+        if (nodeInfo != null) {
+          ViewCompat.setAccessibilityDelegate(
+              child,
+              isAccessibilityEnabled ? new ComponentAccessibilityDelegate(child, nodeInfo) : null);
+        }
