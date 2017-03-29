@@ -228,3 +228,5 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
     mGenericDraweeHierarchy.setProgressBarImage(
         progressBarDrawable,
         scaleType != null ? scaleType : DEFAULT_SCALE_TYPE);
+  }
+
