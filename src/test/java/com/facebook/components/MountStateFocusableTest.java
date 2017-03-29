@@ -30,3 +30,4 @@ import static org.junit.Assert.assertTrue;
 public class MountStateFocusableTest {
 
   private ComponentContext mContext;
+  private boolean mFocusableDefault;

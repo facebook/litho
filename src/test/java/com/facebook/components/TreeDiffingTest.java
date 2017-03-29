@@ -52,3 +52,7 @@ import static org.mockito.Mockito.verify;
 @RunWith(ComponentsTestRunner.class)
 public class TreeDiffingTest {
 
+  @Rule
+  public PowerMockRule mPowerMockRule = new PowerMockRule();
+
+  private int mUnspecifiedSpec;
