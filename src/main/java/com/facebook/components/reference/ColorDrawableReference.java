@@ -94,3 +94,10 @@ public final class ColorDrawableReference extends ReferenceLifecycle<Drawable> {
     if (CAN_RECYCLE) {
       sPool.release((ColorDrawable) drawable);
     }
+  }
+
+  private static class State extends Reference<Drawable> {
+
+    int mColor;
+    int mAlpha = DEFAULT_ALPHA;
+
