@@ -129,3 +129,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private static final long PFLAG_INVISIBLE_HANDLER_IS_SET = 1L << 23;
   // When this flag is set, touch expansion was explicitly set on this node.
   private static final long PFLAG_TOUCH_EXPANSION_IS_SET = 1L << 24;
+  // When this flag is set, border width was explicitly set on this node.
