@@ -154,3 +154,5 @@ public abstract class ComponentLifecycle implements EventDispatcher {
       node.setLastMeasuredHeight(outputHeight);
 
       ComponentsSystrace.endSection();
+
+      return YogaMeasureOutput.make(outputWidth, outputHeight);
