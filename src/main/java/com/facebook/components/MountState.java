@@ -938,3 +938,9 @@ class MountState {
       int left,
       int top,
       int right,
+      int bottom,
+      boolean force) {
+    assertMainThread();
+
+    if (content instanceof View) {
+      View view = (View) content;

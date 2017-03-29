@@ -261,3 +261,4 @@ class RecyclerSpec {
       setSupportsChangeAnimations(false);
     }
   }
+}
