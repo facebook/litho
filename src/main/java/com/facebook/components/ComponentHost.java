@@ -152,3 +152,6 @@ public class ComponentHost extends ViewGroup {
    * the corresponding {@code mount(index, mountItem)} call.
    * @param mountItem item to be unmounted from the host.
    */
+  public void unmount(int index, MountItem mountItem) {
+    final Object content = mountItem.getContent();
+    if (content instanceof Drawable) {
