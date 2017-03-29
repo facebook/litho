@@ -146,3 +146,4 @@ public class ComponentTree {
   public static Builder create(ComponentContext context, Component.Builder<?> root) {
     return create(context, root.build());
   }
+
