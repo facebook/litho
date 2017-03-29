@@ -43,3 +43,6 @@ public class ViewExtractorsTest {
     mTextView.setText("example");
 
     mGoneTextView = new TextView(activity);
+    mGoneTextView.setText("gone");
+    mGoneTextView.setVisibility(View.GONE);
+
