@@ -100,3 +100,9 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
 
   @Override
   public boolean onTouchEvent(MotionEvent event, View view) {
+    final int action = event.getActionMasked();
+    if (action == ACTION_CANCEL) {
+      clearSelection();
+      return false;
+    }
+
