@@ -2355,3 +2355,4 @@ public class Stages {
   private static boolean isInterStageComponentVariable(VariableElement variableElement) {
     final TypeMirror variableType = variableElement.asType();
     final TypeMirror outputTypeMirror = Utils.getGenericTypeArgument(
+        variableType,
