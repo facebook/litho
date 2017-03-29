@@ -1339,3 +1339,4 @@ public class LayoutStateCalculateTest {
                             .heightDip(30)
                             .contentDescription("This is an image"))
                     .child(
+                        TestDrawableComponent.create(c, true, true, true, true, false)
