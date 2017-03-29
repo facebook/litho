@@ -285,3 +285,12 @@ public abstract class PagerBinder extends BaseBinder<
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
       BaseBinder.performIncrementalMountOnChildren(mBinder.mViewPager);
+      if (mBinder.mClientOnPageChangeListener != null) {
+        mBinder.mClientOnPageChangeListener.onPageScrolled(
+            position, positionOffset, positionOffsetPixels);
+      }
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+      mBinder.mCurrentItem = position;
