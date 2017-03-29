@@ -43,3 +43,4 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
     super();
   }
 
+  public void mount(T drawable, DrawableMatrix matrix) {
