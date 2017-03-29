@@ -87,3 +87,26 @@ public class StateUpdatesTest {
   }
 
   static class TestComponent<L extends ComponentLifecycle>
+      extends Component<L> implements Cloneable {
+
+    private TestStateContainer mStateContainer;
+    private TestComponent shallowCopy;
+    private int mId;
+    private static final AtomicInteger sIdGenerator = new AtomicInteger(0);
+
+    public TestComponent(L component) {
+      super(component);
+      mStateContainer = new TestStateContainer();
+      mId = sIdGenerator.getAndIncrement();
+    }
+
+    @Override
+    public String getSimpleName() {
+      return "TestComponent";
+    }
+
+    int getCount() {
+      return mStateContainer.mCount;
+    }
+
+    @Override

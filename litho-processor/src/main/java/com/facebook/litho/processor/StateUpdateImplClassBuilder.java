@@ -39,3 +39,9 @@ public class StateUpdateImplClassBuilder {
   private static final String STATE_UPDATE_IS_LAZY_METHOD_NAME = "isLazyStateUpdate";
 
   private String mTarget;
+  private String mStateUpdateClassName;
+  private TypeName mImplClassName;
+  private final List<Parameter> mParamsForStateUpdate = new ArrayList<>();
+  private final List<Parameter> mStateValueParams = new ArrayList<>();
+  private final List<Parameter> mSpecOnUpdateStateMethodParams = new ArrayList<>();
+  private String mSpecOnUpdateStateMethodName;

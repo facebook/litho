@@ -174,3 +174,9 @@ class DelegateMethodSpecBuilder {
       delegate.addParameter(parameter.type, parameter.name);
     }
 
+    delegate.addParameter(mAbstractImplType, ABSTRACT_IMPL_INSTANCE_NAME);
+    delegate.addStatement(mImplClassName +
+        " " + IMPL_INSTANCE_NAME + " = (" +
+        mImplClassName +
+        ") " +
+        ABSTRACT_IMPL_INSTANCE_NAME);

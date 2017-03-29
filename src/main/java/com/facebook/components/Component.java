@@ -46,3 +46,4 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
         Component<L> component) {
       super.init(c, c.getResourceCache());
 
+      mComponent = component;
