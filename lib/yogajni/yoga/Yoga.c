@@ -2046,3 +2046,4 @@ static void YGNodelayoutImpl(const YGNodeRef node,
     availableInnerHeight = fmaxf(fminf(availableInnerHeight, maxInnerHeight), minInnerHeight);
   }
 
+  float availableInnerMainDim = isMainAxisRow ? availableInnerWidth : availableInnerHeight;
