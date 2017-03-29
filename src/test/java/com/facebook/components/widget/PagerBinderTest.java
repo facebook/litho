@@ -245,3 +245,4 @@ public class PagerBinderTest {
     }
 
     @Override
+    public boolean isAsyncLayoutEnabled() {
