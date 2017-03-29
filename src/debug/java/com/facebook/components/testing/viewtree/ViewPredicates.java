@@ -183,3 +183,6 @@ final class ViewPredicates {
   }
 
   public static Predicate<View> hasVisibleDrawable(final Drawable drawable) {
+    return Predicates.and(isVisible(), hasDrawable(drawable));
+  }
+
