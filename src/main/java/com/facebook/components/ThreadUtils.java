@@ -31,3 +31,23 @@ public class ThreadUtils {
       throw new IllegalStateException("This should run on the main thread.");
     }
   }
+
+  public static void assertHoldsLock(Object lock) {
+    if (!ComponentsConfiguration.IS_INTERNAL_BUILD) {
+      return;
+    }
+
+    if (!Thread.holdsLock(lock)) {
+      throw new IllegalStateException("This method should be called while holding the lock");
+    }
+  }
+
+  public static void assertDoesntHoldLock(Object lock) {
+    if (!ComponentsConfiguration.IS_INTERNAL_BUILD) {
+      return;
+    }
+
+    if (Thread.holdsLock(lock)) {
+      throw new IllegalStateException("This method should be called outside the lock.");
+    }
+  }
