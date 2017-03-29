@@ -56,3 +56,4 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
               processingEnv.getElementUtils(),
               typeElement,
               getDependencyInjectionGenerator(typeElement));
+        } else if (element.getAnnotation(MountSpec.class) != null) {

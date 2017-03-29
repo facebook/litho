@@ -87,3 +87,6 @@ public class MountStateRemountInPlaceTest {
 
   @Test
   public void testMountUnmountWithNoShouldUpdate() {
+    final TestComponent firstComponent =
+        TestDrawableComponent.create(mContext)
+            .build();

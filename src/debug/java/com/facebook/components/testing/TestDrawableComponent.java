@@ -161,3 +161,21 @@ public class TestDrawableComponent extends ComponentLifecycle {
   }
 
   @Override
+  protected void onBoundsDefined(
+      ComponentContext c,
+      ComponentLayout layout,
+      Component<?> component) {
+    State state = (State) component;
+    state.onDefineBoundsCalled();
+  }
+
+  @Override
+  protected void onBind(ComponentContext c, Object mountedContent, Component<?> component) {
+    State state = (State) component;
+    state.onBindCalled();
+  }
+
+  @Override
+  protected void onUnbind(ComponentContext c, Object mountedContent, Component<?> component) {
+    State state = (State) component;
+    state.onUnbindCalled();
