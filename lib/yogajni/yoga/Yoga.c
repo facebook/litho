@@ -2049,3 +2049,4 @@ static void YGNodelayoutImpl(const YGNodeRef node,
     // We want to make sure our available height does not violate min and max constraints
     availableInnerHeight = fmaxf(fminf(availableInnerHeight, maxInnerHeight), minInnerHeight);
   }
+
