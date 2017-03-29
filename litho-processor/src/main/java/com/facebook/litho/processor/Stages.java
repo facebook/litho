@@ -2132,3 +2132,15 @@ public class Stages {
 
   public void generateCallsShouldUpdateOnMount() {
     final MethodSpec.Builder isFast =
+        MethodSpec.methodBuilder("callsShouldUpdateOnMount")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(TypeName.BOOLEAN)
+            .addStatement("return true");
+
+    mClassTypeSpec.addMethod(isFast.build());
+  }
+
+  public void generateShouldUpdateMethod(
+      ExecutableElement shouldUpdateElement,
+      ClassName comparedInstancesClassName) {
