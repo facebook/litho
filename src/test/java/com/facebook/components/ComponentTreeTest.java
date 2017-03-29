@@ -340,3 +340,5 @@ public class ComponentTreeTest {
     // state synchronously, so the result should be in the background layout state
     postSizeSpecChecks(componentTree, "mBackgroundLayoutState");
   }
+
+  @Test
