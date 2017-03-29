@@ -96,3 +96,7 @@ class TextSpec {
   @PropDefault protected static final ColorStateList textColorStateList = new ColorStateList(
       DEFAULT_TEXT_COLOR_STATE_LIST_STATES,
       DEFAULT_TEXT_COLOR_STATE_LIST_COLORS);
+  @PropDefault protected static final int textSize = 13;
+  @PropDefault protected static final int textStyle = DEFAULT_TYPEFACE.getStyle();
+  @PropDefault protected static final Typeface typeface = DEFAULT_TYPEFACE;
+  @PropDefault protected static final float spacingMultiplier = 1.0f;

@@ -96,3 +96,5 @@ public class ComponentTree {
   };
 
   private final ComponentContext mContext;
+
+  // These variables are only accessed from the main thread.

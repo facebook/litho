@@ -319,3 +319,4 @@ public class ComponentView extends ComponentHost {
       mComponent.incrementalMountComponent();
     } else {
       throw new IllegalStateException("To perform incremental mounting, you need first to enable" +
+          " it when creating the ComponentTree.");
