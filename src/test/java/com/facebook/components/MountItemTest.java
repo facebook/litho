@@ -49,3 +49,7 @@ public class MountItemTest {
   @Before
   public void setup() throws Exception {
     mContext = new ComponentContext(RuntimeEnvironment.application);
+    mMountItem = new MountItem();
+
+    mComponent = new InlineLayoutSpec() {
+      @Override
