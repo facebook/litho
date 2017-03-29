@@ -68,3 +68,8 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Px
+  @Override
+  public int getHeight() {
+    return 0;
+  }
+
