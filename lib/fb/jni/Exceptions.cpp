@@ -71,3 +71,6 @@ class JUnknownCppException : public JavaClass<JUnknownCppException, JThrowable> 
  public:
   static auto constexpr kJavaDescriptor = "Lcom/facebook/jni/UnknownCppException;";
 
+  static local_ref<JUnknownCppException> create() {
+    return newInstance();
+  }
