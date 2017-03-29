@@ -98,3 +98,6 @@ public abstract class SpecHelper implements Closeable {
         // Javadoc returns a space at the start of every line.
         String javadocContents = JAVADOC_SANITIZER.matcher(javadoc).replaceAll("");
 
+        // Splitting the javadoc with "@prop ".
+        String[] keyValuePropJavadocs = javadocContents.split("@prop ");
+        propJavadocs = new HashMap<>(keyValuePropJavadocs.length);
