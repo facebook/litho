@@ -372,3 +372,4 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
+  public InternalNode widthDip(@Dimension(unit = DP) int width) {
