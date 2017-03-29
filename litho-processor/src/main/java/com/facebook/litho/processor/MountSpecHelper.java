@@ -401,3 +401,4 @@ public class MountSpecHelper extends ComponentSpecHelper {
       throw new ComponentsProcessingException(
           mountParameter,
           "Second parameter of " + methodDescription.name + " should be of same type " +
+          "of onCreateMountContent()'s return");

@@ -2371,3 +2371,4 @@ public class LayoutStateCalculateTest {
         (AccessibilityManager)
             RuntimeEnvironment.application.getSystemService(ACCESSIBILITY_SERVICE));
     manager.setEnabled(true);
+    manager.setTouchExplorationEnabled(true);
