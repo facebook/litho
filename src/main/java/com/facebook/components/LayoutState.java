@@ -534,3 +534,5 @@ class LayoutState {
     // 2. Add background if defined.
     final Reference<? extends Drawable> background = node.getBackground();
     if (background != null) {
+      if (layoutOutput != null && layoutOutput.hasViewNodeInfo()) {
+        layoutOutput.getViewNodeInfo().setBackground(background);
