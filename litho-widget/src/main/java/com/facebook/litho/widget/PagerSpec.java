@@ -55,3 +55,4 @@ class PagerSpec {
   }
 
   @OnCreateMountContent
+  static ViewPager onCreateMountContent(ComponentContext c) {
