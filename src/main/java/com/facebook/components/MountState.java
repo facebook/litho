@@ -869,3 +869,4 @@ class MountState {
     final MountItem item = mountContent(index, component, content, host, layoutOutput);
 
     // 5. Notify the component that mounting has completed
+    lifecycle.bind(component.getScopedContext(), content, component);
