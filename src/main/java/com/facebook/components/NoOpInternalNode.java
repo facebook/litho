@@ -287,3 +287,33 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
+  public InternalNode paddingPercent(YogaEdge edge, float percent) {
+    return this;
+  }
+
+  @Override
+  public InternalNode borderWidthPx(YogaEdge edge, @Px int borderWidth) {
+    return this;
+  }
+
+  @Override
+  public InternalNode borderWidthAttr(
+      YogaEdge edge,
+      @AttrRes int resId,
+      @DimenRes int defaultResId) {
+    return this;
+  }
+
+  @Override
+  public InternalNode borderWidthAttr(YogaEdge edge, @AttrRes int resId) {
+    return this;
+  }
+
+  @Override
+  public InternalNode borderWidthRes(YogaEdge edge,@DimenRes int resId) {
+    return this;
+  }
+
+  @Override
+  public InternalNode borderWidthDip(
+      YogaEdge edge,
