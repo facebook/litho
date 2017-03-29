@@ -546,3 +546,13 @@ public class ComponentHost extends ViewGroup {
 
   @Override
   public boolean dispatchHoverEvent(MotionEvent event) {
+    return (mComponentAccessibilityDelegate != null
+      && implementsVirtualViews()
+      && mComponentAccessibilityDelegate.dispatchHoverEvent(event))
+      || super.dispatchHoverEvent(event);
+  }
+
+  private boolean implementsVirtualViews() {
+    MountItem item = getAccessibleMountItem();
+    return item != null
+      && item.getComponent().getLifecycle().implementsExtraAccessibilityNodes();
