@@ -155,3 +155,45 @@ public class LinearComponentBinderTest {
     }
   }
 
+  @Test
+  public void testBootstrapWorkingRangeVertical() {
+    mBinder.getLayoutManager().setOrientation(LinearLayoutManager.VERTICAL);
+
+    mBinder.setSize(WIDTH, HEIGHT);
+    Assert.assertEquals(6, mBinder.getComponentCount());
+    Assert.assertEquals(0, mBinder.getFirstPosition());
+  }
+
+  @Test
+  public void testBootstrapWorkingRangeHorizontal() {
+    mBinder.getLayoutManager().setOrientation(LinearLayoutManager.HORIZONTAL);
+
+    mBinder.setSize(WIDTH, HEIGHT);
+    Assert.assertEquals(8, mBinder.getComponentCount());
+    Assert.assertEquals(0, mBinder.getFirstPosition());
+  }
+
+  @Test
+  public void testBootstrapWithTrimming() {
+    Mockito.doReturn(1000).when(mBinder).getHeight();
+
+    mBinder.setSize(WIDTH, 1000);
+
+    Assert.assertEquals(mItems.size(), mBinder.getComponentCount());
+    Assert.assertEquals(0, mBinder.getFirstPosition());
+  }
+
+  private void setupBinder() throws Exception {
+    mBinder.setSize(WIDTH, HEIGHT);
+    mBinder.mount(mView);
+
+    mLayoutThreadShadowLooper = Shadows.shadowOf(
+        (Looper) Whitebox.invokeMethod(
+            ComponentTree.class,
+            "getDefaultLayoutThreadLooper"));
+
+    // Set the first list of elements
+    performNotifyDataSetChanged();
+  }
+
+  private Integer getAdapterInputStringAtPosition(int position) {
