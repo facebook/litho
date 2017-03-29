@@ -348,3 +348,8 @@ public final class ComponentTestHelper {
   public static void measureAndLayout(View view) {
     view.measure(makeMeasureSpec(1000, EXACTLY), makeMeasureSpec(0, UNSPECIFIED));
     view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
+  }
+
+  private static ComponentContext getContext(Component.Builder builder) {
+    return Whitebox.getInternalState(builder, "mContext");
+  }
