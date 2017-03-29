@@ -151,3 +151,17 @@ public class ComponentGlobalKeyTest {
             .child(TestViewComponent.create(c).key("[TestViewComponent1]"))
             .child(
                 Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    .backgroundColor(color)
+                    .child(CardClip.create(c).key("[CardClip1]")))
+            .child(Text.create(c).text("Test").key("[Text1]"))
+            .build();
+      }
+    };
+
+    final Component testGlobalKeyChild = new InlineLayoutSpec() {
+
+      @Override
+      @OnCreateLayout
+      protected ComponentLayout onCreateLayout(
+          ComponentContext c) {
+
