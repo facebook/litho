@@ -555,3 +555,65 @@ public class ComponentHostTest {
   }
 
   @Test
+  public void testDisappearingItemDrawingOrder() {
+    View v1 = new View(mContext);
+    mount(5, v1);
+
+    View v2 = new View(mContext);
+    mount(2, v2);
+
+    View v3 = new View(mContext);
+    MountItem mountItem3 = mount(4, v3);
+
+    View v4 = new View(mContext);
+    MountItem mountItem4 = mount(0, v4);
+
+    assertEquals(3, mHost.getChildDrawingOrder(mHost.getChildCount(), 0));
+    assertEquals(1, mHost.getChildDrawingOrder(mHost.getChildCount(), 1));
+    assertEquals(2, mHost.getChildDrawingOrder(mHost.getChildCount(), 2));
+    assertEquals(0, mHost.getChildDrawingOrder(mHost.getChildCount(), 3));
+
+    assertEquals(4, mHost.getMountItemCount());
+    assertEquals(4, mHost.getChildCount());
+
+    // mountItem3 started disappearing
+    mHost.startUnmountDisappearingItem(4, mountItem3);
+
+    assertEquals(3, mHost.getMountItemCount());
+    assertEquals(4, mHost.getChildCount());
+
+    assertEquals(3, mHost.getChildDrawingOrder(mHost.getChildCount(), 0));
+    assertEquals(1, mHost.getChildDrawingOrder(mHost.getChildCount(), 1));
+    assertEquals(0, mHost.getChildDrawingOrder(mHost.getChildCount(), 2));
+    assertEquals(2, mHost.getChildDrawingOrder(mHost.getChildCount(), 3));
+
+    // mountItem4 started disappearing
+    mHost.startUnmountDisappearingItem(0, mountItem4);
+
+    assertEquals(2, mHost.getMountItemCount());
+    assertEquals(4, mHost.getChildCount());
+
+    assertEquals(1, mHost.getChildDrawingOrder(mHost.getChildCount(), 0));
+    assertEquals(0, mHost.getChildDrawingOrder(mHost.getChildCount(), 1));
+    assertEquals(3, mHost.getChildDrawingOrder(mHost.getChildCount(), 2));
+    assertEquals(2, mHost.getChildDrawingOrder(mHost.getChildCount(), 3));
+
+    // mountItem4 finished disappearing
+    mHost.unmountDisappearingItem(mountItem4);
+    assertEquals(2, mHost.getMountItemCount());
+    assertEquals(3, mHost.getChildCount());
+
+    assertEquals(1, mHost.getChildDrawingOrder(mHost.getChildCount(), 0));
+    assertEquals(0, mHost.getChildDrawingOrder(mHost.getChildCount(), 1));
+    assertEquals(2, mHost.getChildDrawingOrder(mHost.getChildCount(), 2));
+
+    // mountItem3 finished disappearing
+    mHost.unmountDisappearingItem(mountItem3);
+    assertEquals(2, mHost.getMountItemCount());
+    assertEquals(2, mHost.getChildCount());
+
+    assertEquals(1, mHost.getChildDrawingOrder(mHost.getChildCount(), 0));
+    assertEquals(0, mHost.getChildDrawingOrder(mHost.getChildCount(), 1));
+  }
+
+  @Test
