@@ -51,3 +51,5 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
 
   private Layout mLayout;
   private float mLayoutTranslationY;
+  private boolean mShouldHandleTouch;
+  private CharSequence mText;

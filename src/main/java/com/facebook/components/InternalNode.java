@@ -1122,3 +1122,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public InternalNode clickHandler(EventHandler clickHandler) {
