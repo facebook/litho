@@ -82,3 +82,15 @@ COMPONENTS_FRESCO_TARGETS = [
 COMPONENTS_FRESCO_PIPELINE_TARGET         = [make_dep_path('lib/fresco:imagepipeline')]
 COMPONENTS_FRESCO_CONTROLLER_TARGET       = []
 COMPONENTS_FRESCO_INTERFACES_TARGET       = []
+
+
+def components_robolectric_test(
+    name,
+    srcs,
+    powermock_srcs=None,
+    *args,
+    **kwargs):
+    """Tests that can successfully run from the library root folder."""
+    powermock_srcs = powermock_srcs or []
+    extra_vm_args = [
+        '-Drobolectric.dependency.dir=lib/android-all',

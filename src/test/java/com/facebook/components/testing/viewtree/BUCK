@@ -5,3 +5,8 @@ components_robolectric_test(
     srcs = glob(["*Test.java"]),
     contacts = ["oncall+components_for_android@xmail.facebook.com"],
     deps = [
+        COMPONENTS_GUAVA_TARGET,
+        COMPONENTS_JAVA_TARGET,
+        COMPONENTS_JSR_TARGET,
+        COMPONENTS_JUNIT_TARGET,
+        COMPONENTS_ROBOLECTRIC_TARGET,

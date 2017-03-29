@@ -36,3 +36,4 @@ public class EditTextSpecTest {
   public void testEditTextWithText() {
     final ComponentContext c = mComponentsRule.getContext();
     final ComponentView componentView = ComponentTestHelper.mountComponent(
+        EditText.create(c)
