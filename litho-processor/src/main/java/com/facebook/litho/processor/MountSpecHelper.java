@@ -180,3 +180,7 @@ public class MountSpecHelper extends ComponentSpecHelper {
     final ExecutableElement onBoundsDefined = Utils.getAnnotatedMethod(
         mStages.getSourceElement(),
         OnBoundsDefined.class);
+    if (onBoundsDefined == null) {
+      return;
+    }
+
