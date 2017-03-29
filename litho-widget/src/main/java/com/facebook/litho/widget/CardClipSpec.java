@@ -34,3 +34,4 @@ class CardClipSpec {
       CardClipDrawable cardClipDrawable,
       @Prop(optional = true, resType = ResType.COLOR) int clippingColor,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float cornerRadius) {
+
