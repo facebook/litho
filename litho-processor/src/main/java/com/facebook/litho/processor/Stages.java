@@ -2875,3 +2875,8 @@ public class Stages {
 
     propsBuilderClassBuilder.addMethod(buildMethodBuilder.build());
 
+    final String poolName = "m" + builderClassName + "Pool";
+    propsBuilderClassBuilder.addMethod(MethodSpec.methodBuilder("release")
+        .addAnnotation(Override.class)
+        .addModifiers(Modifier.PROTECTED)
+        .addStatement("super.release()")
