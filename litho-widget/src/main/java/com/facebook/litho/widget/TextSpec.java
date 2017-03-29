@@ -126,3 +126,4 @@ class TextSpec {
       Output<Integer> maxWidth,
       Output<Boolean> isSingleLine,
       Output<CharSequence> text,
+      Output<ColorStateList> textColorStateList,
