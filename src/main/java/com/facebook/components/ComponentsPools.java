@@ -464,3 +464,4 @@ public class ComponentsPools {
     sStateHandlerPool.release(stateHandler);
   }
 
+  @ThreadSafe(enableChecks = false)
