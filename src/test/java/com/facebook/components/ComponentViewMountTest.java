@@ -54,3 +54,6 @@ public class ComponentViewMountTest {
       }
     };
 
+    mComponentTree = ComponentTree.create(mContext, mComponent)
+        .incrementalMount(false)
+        .build();

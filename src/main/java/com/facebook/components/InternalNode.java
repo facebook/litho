@@ -17,3 +17,4 @@ import java.util.List;
 
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.Color;

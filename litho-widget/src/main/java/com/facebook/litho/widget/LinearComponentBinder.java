@@ -22,3 +22,5 @@ import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 public abstract class LinearComponentBinder extends
     RecyclerComponentBinder<
         LinearLayoutManager,
+        RecyclerComponentBinder.RecyclerComponentWorkingRangeController>
+    implements HasStickyHeader {
