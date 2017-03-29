@@ -102,3 +102,8 @@ class RecyclerSpec {
       @Prop(optional = true, resType = ResType.COLOR) int refreshProgressBarColor,
       @Prop(optional = true) @IdRes int recyclerViewId) {
     final RecyclerView recyclerView = recyclerViewWrapper.getRecyclerView();
+
+    if (recyclerView == null) {
+      throw new IllegalStateException(
+          "RecyclerView not found, it should not be removed from SwipeRefreshLayout");
+    }
