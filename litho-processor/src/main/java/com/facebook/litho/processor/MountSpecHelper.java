@@ -665,3 +665,10 @@ public class MountSpecHelper extends ComponentSpecHelper {
   public boolean callsShouldUpdateOnMount() {
     for (Element enclosedElement : mSpecElement.getEnclosedElements()) {
       final ShouldUpdate shouldUpdateAnnotation = enclosedElement.getAnnotation(ShouldUpdate.class);
+      if (shouldUpdateAnnotation != null) {
+        return shouldUpdateAnnotation.onMount();
+      }
+    }
+
+    return false;
+  }

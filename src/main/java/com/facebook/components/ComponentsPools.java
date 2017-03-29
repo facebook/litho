@@ -615,3 +615,7 @@ public class ComponentsPools {
   }
 
   @ThreadSafe(enableChecks = false)
+  static void releaseScrapTouchablesArray(SparseArrayCompat<Touchable> sparseArray) {
+    sTouchableScrapArrayPool.release(sparseArray);
+  }
+
