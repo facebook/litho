@@ -1388,3 +1388,4 @@ class LayoutState {
 
     final int layoutCount = layoutNode.getChildCount();
     final int diffCount = diffNode.getChildCount();
+
