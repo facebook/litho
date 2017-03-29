@@ -281,3 +281,14 @@ public class GridComponentBinderTest {
     MyTestGridComponentBinder(
         Context context,
         List<Integer> items,
+        GridLayoutManager layoutManager) {
+      super(context, layoutManager);
+      mItems = items;
+    }
+
+    @Override
+    public int getCount() {
+      return mItems.size();
+    }
+
+    @Override

@@ -77,3 +77,7 @@ class LayoutOutput implements Cloneable {
     outRect.bottom = mBounds.bottom - mHostTranslationY;
   }
 
+  Rect getBounds() {
+    return mBounds;
+  }
+

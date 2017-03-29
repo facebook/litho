@@ -327,3 +327,13 @@ public class TestDrawableComponent extends ComponentLifecycle {
       mState = state;
     }
 
+    public Builder measuredWidth(int width) {
+      mState.measuredWidth = width;
+      return this;
+    }
+
+    public Builder measuredHeight(int height) {
+      mState.measuredHeight = height;
+      return this;
+    }
+

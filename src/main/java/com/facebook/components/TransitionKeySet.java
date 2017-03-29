@@ -205,3 +205,6 @@ class TransitionKeySet implements TransitionListener {
             keyStatusToResume = KeyStatus.APPEARED;
           } else if (oldTransition.wasRunningChangeTransition()) {
             keyStatusToResume = KeyStatus.UNCHANGED;
+          } else {
+            throw new IllegalStateException("Trying to resume a transition with an invalid state.");
+          }

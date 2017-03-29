@@ -124,3 +124,4 @@ public class LinearComponentBinderTest {
 
   @Test
   public void testWorkingRangesTrimmedEnd() throws Exception {
+    setupBinder();

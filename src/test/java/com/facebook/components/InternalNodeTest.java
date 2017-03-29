@@ -263,3 +263,4 @@ public class InternalNodeTest {
         ComponentsPools.acquireInternalNode(
             new ComponentContext(RuntimeEnvironment.application),
             RuntimeEnvironment.application.getResources());
+
