@@ -24,3 +24,14 @@ import com.facebook.yoga.YogaMeasureOutput;
  */
 class TestComponentContext extends ComponentContext {
 
+  private static final YogaMeasureFunction FAKE_MEASURE_FUNCTION = new YogaMeasureFunction() {
+    @Override
+    public long measure(
+        YogaNodeAPI cssNode,
+        float width,
+        YogaMeasureMode widthMode,
+        float height,
+        YogaMeasureMode heightMode) {
+      return YogaMeasureOutput.make(1, 1);
+    }
+  };

@@ -81,3 +81,15 @@ public interface ComponentLayout {
     Builder importantForAccessibility(@ImportantForAccessibility int importantForAccessibility);
     Builder duplicateParentState(boolean duplicateParentState);
 
+    Builder marginPx(YogaEdge edge, @Px int margin);
+    Builder marginAttr(
+        YogaEdge edge,
+        @AttrRes int resId,
+        @DimenRes int defaultResId);
+    Builder marginAttr(
+        YogaEdge edge,
+        @AttrRes int resId);
+    Builder marginRes(YogaEdge edge, @DimenRes int resId);
+    Builder marginDip(YogaEdge edge, @Dimension(unit = DP) int margin);
+    Builder marginPercent(YogaEdge edge, float percent);
+    Builder marginAuto(YogaEdge edge);

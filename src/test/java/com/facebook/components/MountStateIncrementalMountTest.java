@@ -286,3 +286,26 @@ public class MountStateIncrementalMountTest {
   }
 
   /**
+   * Tests incremental mount behaviour of a view mount item in a nested hierarchy.
+   */
+  @Test
+  public void testIncrementalMountNestedView() {
+    final TestComponent child = TestViewComponent.create(mContext)
+        .build();
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                .flexDirection(COLUMN)
+                .wrapInView()
+                .paddingPx(ALL, 20)
+                .child(
+                    Layout.create(c, child).flexShrink(0)
+                        .widthPx(10)
+                        .heightPx(10))
+                .child(TestDrawableComponent.create(c))
+                .build();
+          }
+        });
