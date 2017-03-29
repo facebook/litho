@@ -25,3 +25,7 @@ import org.robolectric.shadows.ShadowSystemClock;
 import static junit.framework.Assert.assertEquals;
 
 @RunWith(ComponentsTestRunner.class)
+public class TransitionInterpolatorAnimatorTest {
+
+  private static final int DURATION = 3000;
+  private static final int START_DELAY = 600;

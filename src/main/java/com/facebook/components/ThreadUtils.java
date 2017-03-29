@@ -24,3 +24,4 @@ public class ThreadUtils {
     return Looper.getMainLooper().getThread() == Thread.currentThread();
   }
 
+  public static void assertMainThread() {

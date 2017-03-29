@@ -22,3 +22,7 @@ import com.facebook.litho.reference.Reference;
  * Additional information passed between {@link LayoutState} and {@link MountState}
  * used on a {@link View}.
  */
+class ViewNodeInfo {
+
+  private final AtomicInteger mReferenceCount = new AtomicInteger(0);
+

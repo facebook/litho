@@ -22,3 +22,9 @@ import org.powermock.reflect.Whitebox;
 import static com.facebook.litho.NodeInfo.FOCUS_SET_FALSE;
 import static com.facebook.litho.NodeInfo.FOCUS_SET_TRUE;
 import static com.facebook.litho.NodeInfo.FOCUS_UNSET;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertSame;
+import static junit.framework.Assert.fail;
+import static org.junit.Assert.assertTrue;
+

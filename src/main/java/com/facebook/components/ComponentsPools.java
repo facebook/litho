@@ -12,3 +12,7 @@ package com.facebook.litho;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import android.annotation.TargetApi;
+import android.app.Activity;
+import android.app.Application;

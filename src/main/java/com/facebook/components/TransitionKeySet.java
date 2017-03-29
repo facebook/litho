@@ -22,3 +22,18 @@ import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
 import static com.facebook.litho.Transition.TransitionType.APPEAR;
 import static com.facebook.litho.Transition.TransitionType.CHANGE;
 import static com.facebook.litho.Transition.TransitionType.DISAPPEAR;
+
+/**
+ * Holds all the defined {@link Transition}s for a given transition key.
+ * It's also responsible to start, stop and resume those transitions on a target View.
+ */
+// TODO(t16207387): After finished iterating on this class, it needs tests.
+@TargetApi(ICE_CREAM_SANDWICH)
+class TransitionKeySet implements TransitionListener {
+
+  interface TransitionKeySetListener {
+    void onTransitionKeySetStart(String key, View view);
+    void onTransitionKeySetStop(String key, View view);
+    void onTransitionKeySetEnd(String key, View view);
+  }
+

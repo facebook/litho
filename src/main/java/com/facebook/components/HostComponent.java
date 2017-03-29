@@ -13,3 +13,5 @@ class HostComponent extends ComponentLifecycle {
 
   private static final HostComponent sInstance = new HostComponent();
   private static final int HOST_POOL_SIZE = 30;
+
+  @Override

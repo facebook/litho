@@ -26,3 +26,6 @@ import static com.facebook.litho.Transition.TransitionType.APPEAR;
 import static com.facebook.litho.Transition.TransitionType.CHANGE;
 import static com.facebook.litho.Transition.TransitionType.DISAPPEAR;
 import static com.facebook.litho.Transition.TransitionType.UNDEFINED;
+
+/**
+ * A Transition is an animation running on a Component or ComponentLayout with the matching
