@@ -48,3 +48,4 @@ public class ComponentQueriesTest {
         Text.create(mContext)
             .text("hello")
             .build());
+
