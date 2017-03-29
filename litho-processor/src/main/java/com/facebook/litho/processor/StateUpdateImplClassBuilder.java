@@ -170,3 +170,6 @@ public class StateUpdateImplClassBuilder {
 
     if (mStaticFlag == Stages.StaticFlag.STATIC) {
       stateUpdateClassBuilder.addModifiers(Modifier.STATIC);
+      for (String typeParam : mTypeParameters) {
+        stateUpdateClassBuilder.addTypeVariable(TypeVariableName.get(typeParam));
+      }

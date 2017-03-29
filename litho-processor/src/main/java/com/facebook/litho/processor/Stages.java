@@ -84,3 +84,7 @@ import static javax.lang.model.type.TypeKind.VOID;
 public class Stages {
 
   public static final String IMPL_CLASS_NAME_SUFFIX = "Impl";
+  private static final String INNER_IMPL_BUILDER_CLASS_NAME = "Builder";
+  private static final String STATE_UPDATE_IMPL_NAME_SUFFIX = "StateUpdate";
+  public static final String STATE_CONTAINER_IMPL_NAME_SUFFIX = "StateContainerImpl";
+  public static final String STATE_CONTAINER_IMPL_MEMBER = "mStateContainerImpl";
