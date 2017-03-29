@@ -2292,3 +2292,7 @@ public class Stages {
             method,
             "The first argument of an @OnCreateTreeProp method should be the "
                 + contextClassName.simpleName());
+      }
+    }
+  }
+
