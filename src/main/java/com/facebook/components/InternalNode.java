@@ -1040,3 +1040,15 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public InternalNode backgroundAttr(@AttrRes int resId, @DrawableRes int defaultResId) {
+    return backgroundRes(mResourceResolver.resolveResIdAttr(resId, defaultResId));
+  }
+
+  @Override
+  public InternalNode backgroundAttr(@AttrRes int resId) {
+    return backgroundAttr(resId, 0);
+  }
+
+  @Override
+  public InternalNode backgroundRes(@DrawableRes int resId) {
+    if (resId == 0) {
