@@ -427,3 +427,5 @@ public class BaseBinderTest {
     int getComponentCount() {
       return ((BinderTreeCollection) Whitebox.getInternalState(this, "mComponentTrees")).size();
     }
+
+    static class MyTestWorkingRangeController extends WorkingRangeController { }

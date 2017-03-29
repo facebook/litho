@@ -391,3 +391,78 @@ public class BinderTreeCollectionTest {
     assertEquals(originalSize - 3, mBinderTreeCollection.size());
     assertEquals(treeAtPosition4, mBinderTreeCollection.get(1));
     assertEquals(treeAtPosition5, mBinderTreeCollection.get(2));
+    assertNull(mBinderTreeCollection.get(4));
+    assertNull(mBinderTreeCollection.get(5));
+    assertEquals(treeAtPosition6, mBinderTreeCollection.get(6));
+    assertEquals(treeAtPositionLast, mBinderTreeCollection.get(originalSize));
+  }
+
+  @Test
+  public void testShiftRangeLeftStartBeforeFirstPosition() throws Exception {
+    int originalSize = mBinderTreeCollection.size();
+    int positionStart = 0;
+    int itemCount = 4;
+    int shiftBy = 2;
+
+    ComponentTree treeAtPosition2 = mBinderTreeCollection.get(2);
+    ComponentTree treeAtPosition3 = mBinderTreeCollection.get(3);
+    ComponentTree treeAtPosition4 = mBinderTreeCollection.get(4);
+    ComponentTree treeAtPosition5 = mBinderTreeCollection.get(5);
+    ComponentTree treeAtPositionLast = mBinderTreeCollection.get(originalSize);
+
+    Whitebox.invokeMethod(
+        mBinderTreeCollection,
+        "shiftRangeLeft",
+        positionStart,
+        itemCount,
+        shiftBy);
+
+    assertEquals(originalSize - 1, mBinderTreeCollection.size());
+    assertEquals(treeAtPosition2, mBinderTreeCollection.get(0));
+    assertEquals(treeAtPosition3, mBinderTreeCollection.get(1));
+    assertNull(mBinderTreeCollection.get(2));
+    assertNull(mBinderTreeCollection.get(3));
+    assertEquals(treeAtPosition4, mBinderTreeCollection.get(4));
+    assertEquals(treeAtPosition5, mBinderTreeCollection.get(5));
+    assertEquals(treeAtPositionLast, mBinderTreeCollection.get(originalSize));
+  }
+
+  @Test
+  public void testShiftRangeLeftStartAfterLastPosition() throws Exception {
+    int originalSize = mBinderTreeCollection.size();
+    int positionStart = 11;
+    int itemCount = 4;
+    int shiftBy = 2;
+
+    ComponentTree treeAtPosition1 = mBinderTreeCollection.get(1);
+    ComponentTree treeAtPosition8 = mBinderTreeCollection.get(8);
+
+    Whitebox.invokeMethod(
+        mBinderTreeCollection,
+        "shiftRangeLeft",
+        positionStart,
+        itemCount,
+        shiftBy);
+
+    assertEquals(originalSize - 2, mBinderTreeCollection.size());
+    assertEquals(treeAtPosition1, mBinderTreeCollection.get(1));
+    assertEquals(treeAtPosition8, mBinderTreeCollection.get(8));
+    assertNull(mBinderTreeCollection.get(originalSize - 1));
+    assertNull(mBinderTreeCollection.get(originalSize));
+  }
+
+  @Test
+  public void testRemoveInexistentKey() throws Exception {
+    SparseArrayCompat array = Whitebox.getInternalState(mBinderTreeCollection, "mItems");
+    int originalSize = array.size();
+
+    array.remove(-1);
+
+    assertEquals(originalSize, array.size());
+  }
+
+  void assertContiguous() {
+    SparseArrayCompat items = Whitebox.getInternalState(mBinderTreeCollection, "mItems");
+    for (int i = 0; i < items.size() - 1; i++) {
+      assertEquals(items.keyAt(i) + 1, items.keyAt(i + 1));
+    }

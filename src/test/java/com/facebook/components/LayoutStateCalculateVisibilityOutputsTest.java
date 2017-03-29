@@ -181,3 +181,36 @@ public class LayoutStateCalculateVisibilityOutputsTest {
                     .child(
                         TestLayoutComponent.create(c)
                             .withLayout().flexShrink(0)
+                            .invisibleHandler(c.newEventHandler(1)))
+                    .visibleHandler(c.newEventHandler(2)))
+            .wrapInView()
+            .build();
+      }
+    };
+
+    LayoutState layoutState = calculateLayoutState(
+        RuntimeEnvironment.application,
+        component,
+        -1,
+        SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
+        SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY));
+
+    // Check total layout outputs.
+    assertEquals(4, layoutState.getVisibilityOutputCount());
+
+    // Check number of Components with VisibleEvent handlers.
+    int visibleHandlerCount = 0;
+    for (int i = 0; i < layoutState.getVisibilityOutputCount(); i++) {
+      if (layoutState.getVisibilityOutputAt(i).getVisibleEventHandler() != null) {
+        visibleHandlerCount += 1;
+      }
+    }
+
+    assertEquals(2, visibleHandlerCount);
+  }
+
+  @Test
+  public void testLayoutOutputsForForceWrappedComponent() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {

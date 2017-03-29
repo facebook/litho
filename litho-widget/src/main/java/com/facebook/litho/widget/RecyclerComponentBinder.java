@@ -271,3 +271,72 @@ public abstract class RecyclerComponentBinder<L extends RecyclerView.LayoutManag
       mRecyclerComponentBinder.onScrolled(recyclerView, dx, dy);
     }
   }
+
+  /**
+   * The default, static WorkingRangeController for the {@link RecyclerComponentBinder}. Any custom
+   * WorkingRangeControllers for subclasses of the {@link RecyclerComponentBinder} must extend this
+   * class.
+   */
+  public static class RecyclerComponentWorkingRangeController extends WorkingRangeController {
+
+    /**
+     * The size of a range measured in viewports (i.e. the range will consist of
+     * RANGE_SIZE * N rows/columns, where N is the number of rows/columns that are currently
+     * visible).
+     */
+    static final int RANGE_SIZE = 3;
+    private static final int EMPTY_INDEX = -1;
+
+    private int mPreviousFirstVisiblePosition = EMPTY_INDEX;
+    private int mPreviousVisibleItemCount = 0;
+
+    /**
+     * Method called after each scroll event. It decides whether or not the visible range has
+     * changed since the last time it was called and if it should update the working range.
+     * @param currentFirstVisiblePosition the index of the first visible item
+     * @param currentVisibleItemCount the number of visible items
+     */
+    public void notifyOnScroll(int currentFirstVisiblePosition, int currentVisibleItemCount) {
+      validateCurrentPosition(currentFirstVisiblePosition, currentVisibleItemCount);
+
+      // Do not take any action if the same items are visible on the screen.
+      if (mPreviousFirstVisiblePosition == currentFirstVisiblePosition &&
+          mPreviousVisibleItemCount == currentVisibleItemCount) {
+        return;
+      }
+
+      mPreviousFirstVisiblePosition = currentFirstVisiblePosition;
+      mPreviousVisibleItemCount = currentVisibleItemCount;
+
+      // Determine the number of items that should be included in the range before and after the
+      // view port. We will load RANGE_SIZE * currentVisibleItemCount items in total, including
+      // the ones within the view port. This means that (RANGE_SIZE-1) * currentVisibleItemCount
+      // items, besides the ones within the view port, will be included in the range. They will be
+      // split equally before and after the view port.
+      final int notVisibleItemsToPrepareCount = (RANGE_SIZE - 1) * currentVisibleItemCount;
+      final int rangeItemsBeforeViewPortCount = notVisibleItemsToPrepareCount / 2;
+      final int rangeItemsAfterViewPortCount = notVisibleItemsToPrepareCount -
+          rangeItemsBeforeViewPortCount;
+
+      // Set range position.
+      final int start = Math.max(0, currentFirstVisiblePosition - rangeItemsBeforeViewPortCount);
+      final int end = Math.min(
+          currentFirstVisiblePosition + (currentVisibleItemCount - 1) +
+              rangeItemsAfterViewPortCount,
+          getBinder().getCount() - 1);
+      final int count = end - start + 1;
+
+      updateWorkingRange(start, count);
+    }
+
+    private void validateCurrentPosition(int firstVisiblePosition, int itemCount) {
+      if (firstVisiblePosition < 0 || firstVisiblePosition >= getBinder().getCount()) {
+        throw new IllegalStateException(firstVisiblePosition + " is not a valid value for the " +
+            "first visible item position.");
+      }
+
+      if (itemCount < 0 || itemCount > getBinder().getCount()) {
+        throw new IllegalStateException(itemCount + " is not a valid value for the item count.");
+      }
+    }
+  }
