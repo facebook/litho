@@ -104,3 +104,4 @@ public class ViewPredicatesTest {
     assertThat(matchesHello.apply(mTextViewWithEmptyString)).isFalse();
     assertThat(matchesHello.apply(mTextViewWithHello)).isTrue();
     assertThat(matchesHello.apply(mTextViewWithWorld)).isFalse();
+    assertThat(matchesHello.apply(mComponentViewWithText)).isTrue();
