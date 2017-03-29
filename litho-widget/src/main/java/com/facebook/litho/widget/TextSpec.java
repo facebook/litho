@@ -448,3 +448,11 @@ class TextSpec {
       return;
     }
 
+    final float layoutWidth =
+        layout.getWidth() - layout.getPaddingLeft() - layout.getPaddingRight();
+    final float layoutHeight =
+        layout.getHeight() - layout.getPaddingTop() - layout.getPaddingBottom();
+
+    if (measureLayout != null &&
+        measuredWidth == layoutWidth &&
+        measuredHeight == layoutHeight) {
