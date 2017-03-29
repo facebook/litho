@@ -385,3 +385,4 @@ public class MountSpecHelper extends ComponentSpecHelper {
 
   private void generateMountCompliantMethod(
       ExecutableElement method,
+      MethodDescription methodDescription) {
