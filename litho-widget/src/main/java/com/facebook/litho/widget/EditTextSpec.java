@@ -237,3 +237,4 @@ class EditTextSpec {
   static void onMount(
       final ComponentContext c,
       EditTextTextTextChangedEventHandler editTextView,
+      @Prop(optional = true, resType = ResType.STRING) CharSequence text,
