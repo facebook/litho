@@ -85,3 +85,15 @@ class EditTextSpec {
 
   @OnLoadStyle
   static void onLoadStyle(
+      ComponentContext c,
+      Output<TextUtils.TruncateAt> ellipsize,
+      Output<Float> spacingMultiplier,
+      Output<Integer> minLines,
+      Output<Integer> maxLines,
+      Output<Boolean> isSingleLine,
+      Output<CharSequence> text,
+      Output<ColorStateList> textColorStateList,
+      Output<Integer> linkColor,
+      Output<Integer> highlightColor,
+      Output<Integer> textSize,
+      Output<Layout.Alignment> textAlignment,

@@ -1207,3 +1207,4 @@ public class ComponentTree {
   public static class Builder {
 
     // required
+    private ComponentContext context;
