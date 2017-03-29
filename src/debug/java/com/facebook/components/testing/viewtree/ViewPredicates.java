@@ -129,3 +129,4 @@ final class ViewPredicates {
   public static Predicate<View> isVisible() {
     return new Predicate<View>() {
       @Override
+      public boolean apply(final View input) {
