@@ -489,3 +489,15 @@ public class ComponentHost extends ViewGroup {
    * @param listener The listener to set on this host.
    */
   void setComponentTouchListener(ComponentTouchListener listener) {
+    mOnTouchListener = listener;
+    setOnTouchListener(listener);
+  }
+
+  /**
+   * @return The previous set touch listener.
+   */
+  public ComponentTouchListener getComponentTouchListener() {
+    return mOnTouchListener;
+  }
+
+  /**
