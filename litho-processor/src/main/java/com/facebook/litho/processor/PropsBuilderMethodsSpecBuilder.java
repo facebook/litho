@@ -134,3 +134,8 @@ class PropsBuilderMethodsSpecBuilder {
         builders.addAll(attrBuilders(ClassNames.DRAWABLE_RES, "resolveDrawable"));
         break;
       case NONE:
+        if (mPropParameter.parameter.type.equals(mComponentClass)) {
+          builders.add(componentBuilder());
+        } else {
+          builders.add(regularBuilder());
+        }
