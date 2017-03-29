@@ -81,3 +81,6 @@ class ComponentQueries {
     }
 
     final String drawnDrawableDescription = ViewPredicates.getDrawnDrawableDescription(drawable);
+    if (!drawnDrawableDescription.isEmpty()) {
+      return ViewPredicates.getDrawnDrawableDescription(containingDrawable)
+          .contains(drawnDrawableDescription);

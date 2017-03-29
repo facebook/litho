@@ -954,3 +954,4 @@ public class Stages {
         .componentsInImpl(componentsInImpl)
         .interStageVariables(interStageComponentVariables)
         .implClassName(implClassName)
+        .hasDeepCopy(hasDeepCopy)
