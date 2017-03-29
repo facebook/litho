@@ -531,3 +531,6 @@ public class ComponentHost extends ViewGroup {
    */
   void invalidateAccessibilityState() {
     if (!mIsComponentAccessibilityDelegateSet) {
+      return;
+    }
+

@@ -187,3 +187,4 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
 
   public void unmount() {
     mLayout = null;
+    mLayoutTranslationY = 0;
