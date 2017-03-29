@@ -1146,3 +1146,47 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public InternalNode visibleHandler(EventHandler visibleHandler) {
+    mPrivateFlags |= PFLAG_VISIBLE_HANDLER_IS_SET;
+    mVisibleHandler = visibleHandler;
+    return this;
+  }
+
+  EventHandler getVisibleHandler() {
+    return mVisibleHandler;
+  }
+
+  @Override
+  public InternalNode focusedHandler(EventHandler focusedHandler) {
+    mPrivateFlags |= PFLAG_FOCUSED_HANDLER_IS_SET;
+    mFocusedHandler = focusedHandler;
+    return this;
+  }
+
+  EventHandler getFocusedHandler() {
+    return mFocusedHandler;
+  }
+
+  @Override
+  public InternalNode fullImpressionHandler(EventHandler fullImpressionHandler) {
+    mPrivateFlags |= PFLAG_FULL_IMPRESSION_HANDLER_IS_SET;
+    mFullImpressionHandler = fullImpressionHandler;
+    return this;
+  }
+
+  EventHandler getFullImpressionHandler() {
+    return mFullImpressionHandler;
+  }
+
+  @Override
+  public InternalNode invisibleHandler(EventHandler invisibleHandler) {
+    mPrivateFlags |= PFLAG_INVISIBLE_HANDLER_IS_SET;
+    mInvisibleHandler = invisibleHandler;
+    return this;
+  }
+
+  EventHandler getInvisibleHandler() {
+    return mInvisibleHandler;
+  }
+
+  @Override
