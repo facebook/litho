@@ -1283,3 +1283,4 @@ class MountState {
     }
   }
 
+  private static void unsetViewTag(View view) {
