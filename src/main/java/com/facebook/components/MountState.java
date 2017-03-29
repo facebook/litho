@@ -596,3 +596,8 @@ class MountState {
           return true;
         }
 
+        return false;
+      } else if (updateState == LayoutOutput.STATE_DIRTY) {
+        return true;
+      }
+    }
