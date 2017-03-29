@@ -8,3 +8,16 @@
  */
 
 package com.facebook.litho;
+
+import java.util.List;
+
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
+import android.annotation.TargetApi;
+import android.os.SystemClock;
+import android.support.annotation.VisibleForTesting;
+import android.view.View;
+import android.view.animation.Interpolator;
+

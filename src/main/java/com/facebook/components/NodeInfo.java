@@ -8,3 +8,11 @@
  */
 
 package com.facebook.litho;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import android.support.annotation.IntDef;
+import android.util.SparseArray;
+
