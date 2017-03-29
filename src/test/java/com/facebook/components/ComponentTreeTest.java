@@ -409,3 +409,4 @@ public class ComponentTreeTest {
     ComponentView componentView1 = new ComponentView(mContext);
     componentView1.setComponent(componentTree);
     componentView1.onAttachedToWindow();
+

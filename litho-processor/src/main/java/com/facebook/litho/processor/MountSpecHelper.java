@@ -512,3 +512,7 @@ public class MountSpecHelper extends ComponentSpecHelper {
       throw new ComponentsProcessingException(
           onPopulateAccessibilityNode,
           methodDescription.name + "'s return type should be void");
+    }
+
+    mStages.generateDelegate(
+        methodDescription,
