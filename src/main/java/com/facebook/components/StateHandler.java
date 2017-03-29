@@ -94,3 +94,5 @@ public class StateHandler {
    * Sets the initial value for a state or transfers the previous state value to the new component,
    * then applies all the states updates that have been enqueued for the new component's global key.
    * Assumed thread-safe because the one write is before all the reads.
+   * @param component the new component
+   */

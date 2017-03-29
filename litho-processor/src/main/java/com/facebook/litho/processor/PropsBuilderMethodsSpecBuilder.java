@@ -50,3 +50,5 @@ class PropsBuilderMethodsSpecBuilder {
     return this;
   }
 
+  PropsBuilderMethodsSpecBuilder implName(String implName) {
+    this.mImplName = implName;
