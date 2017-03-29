@@ -44,3 +44,6 @@ class DebugDraw {
 
   static void draw(ComponentHost host, Canvas canvas) {
     if (ComponentsConfiguration.debugHighlightInteractiveBounds) {
+      highlightInteractiveBounds(host, canvas);
+    }
+

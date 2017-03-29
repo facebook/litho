@@ -192,3 +192,4 @@ class LayoutOutput implements Cloneable {
     mBounds.setEmpty();
     mHostTranslationX = 0;
     mHostTranslationY = 0;
+    mFlags = 0;

@@ -57,3 +57,4 @@ import static com.facebook.components.ThreadUtils.assertMainThread;
  * by recycling existing UI elements e.g. {@link Drawable}s.
  *
  * @see #mount(LayoutState, Rect)
+ * @see ComponentView
