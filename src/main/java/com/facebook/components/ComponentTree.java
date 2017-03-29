@@ -1119,3 +1119,5 @@ public class ComponentTree {
       LayoutState layoutState, int componentId, int width, int height) {
     return layoutState != null
         && layoutState.isComponentId(componentId)
+        && layoutState.isCompatibleSize(width, height)
+        && layoutState.isCompatibleAccessibility();
