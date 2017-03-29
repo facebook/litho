@@ -100,3 +100,5 @@ public class ComponentHost extends ViewGroup {
     setChildrenDrawingOrderEnabled(true);
 
     mLogger = context.getLogger();
+    mComponentAccessibilityDelegate = new ComponentAccessibilityDelegate(this);
+    refreshAccessibilityDelegatesIfNeeded(isAccessibilityEnabled(context));
