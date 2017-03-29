@@ -858,3 +858,10 @@ public class ComponentHost extends ViewGroup {
     final int viewMountItemCount = mViewMountItems.size();
     for (int i = 0, size = viewMountItemCount; i < size; i++) {
       final View child = (View) mViewMountItems.valueAt(i).getContent();
+      mChildDrawingOrder[index++] = indexOfChild(child);
+    }
+
+    // Draw disappearing items on top of mounted views.
+    for (int i = 0, size = mDisappearingItems.size(); i < size; i++) {
+      final View child = (View) mDisappearingItems.valueAt(i).getContent();
+      mChildDrawingOrder[index++] = indexOfChild(child);
