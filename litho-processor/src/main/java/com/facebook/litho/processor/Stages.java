@@ -333,3 +333,6 @@ public class Stages {
               "Event fields must be declared as public non-final");
         }
       }
+    }
+  }
+

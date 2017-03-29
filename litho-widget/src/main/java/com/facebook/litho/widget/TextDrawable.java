@@ -64,3 +64,6 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
   private Path mTouchAreaPath;
   private boolean mSelectionPathNeedsUpdate;
   private Paint mHighlightPaint;
+
+  @Override
+  public void draw(Canvas canvas) {
