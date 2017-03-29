@@ -1101,3 +1101,4 @@ public class LayoutStateCalculateTest {
     assertEquals(hostMarkerRoot, layoutState.getMountableOutputAt(1).getHostMarker());
 
     // Second output is the child of the inner host
+    assertEquals(hostMarkerOne, layoutState.getMountableOutputAt(2).getHostMarker());

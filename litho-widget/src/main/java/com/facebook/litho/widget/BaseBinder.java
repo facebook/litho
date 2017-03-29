@@ -750,3 +750,4 @@ public abstract class BaseBinder<
     }
   }
 
+  private synchronized boolean isInRange(int position) {
