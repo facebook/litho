@@ -1406,3 +1406,4 @@ public class Stages {
         .eventHandlerClassName(
             ParameterizedTypeName.get(ClassNames.EVENT_HANDLER, eventClassName))
         .eventParams(eventParams)
+        .typeParameters(typeParameters)
