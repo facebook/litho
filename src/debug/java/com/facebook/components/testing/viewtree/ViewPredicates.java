@@ -188,3 +188,6 @@ final class ViewPredicates {
 
   /** @return A Predicate which is true if the view is visible and has the given id. */
   public static Predicate<View> hasVisibleId(final int viewId) {
+    return Predicates.and(isVisible(), hasId(viewId));
+  }
+
