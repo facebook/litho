@@ -199,3 +199,4 @@ public class StateUpdatesTest {
                     .child(child1))
             .child(
                 Container.create(c)
+                    .child(child1))

@@ -208,3 +208,8 @@ class TransitionKeySet implements TransitionListener {
           } else {
             throw new IllegalStateException("Trying to resume a transition with an invalid state.");
           }
+          oldTransitionToResumeFrom = oldTransition.mRunningTransitionsPointer;
+        } else {
+          // For different endValues do not resume from old transition, but start new one using
+          // the values where the previous one was interrupted.
+          keyStatusToResume = KeyStatus.UNCHANGED;

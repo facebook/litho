@@ -125,3 +125,11 @@ class DiffNode implements Cloneable {
     mForeground = foreground;
   }
 
+  LayoutOutput getBorder() {
+    return mBorder;
+  }
+
+  void setBorder(LayoutOutput border) {
+    mBorder = border;
+  }
+
