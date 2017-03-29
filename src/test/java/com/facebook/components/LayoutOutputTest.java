@@ -217,3 +217,8 @@ public class LayoutOutputTest {
 
     mLayoutOutput.setId(
         LayoutStateOutputIdCalculator.calculateLayoutOutputId(
+            mLayoutOutput,
+            LEVEL_TEST,
+            LayoutOutput.TYPE_CONTENT,
+            MAX_SEQ_TEST));
+
