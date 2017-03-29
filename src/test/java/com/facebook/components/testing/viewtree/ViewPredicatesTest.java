@@ -51,3 +51,11 @@ public class ViewPredicatesTest {
   public void setUp() {
     final Activity activity = Robolectric.buildActivity(Activity.class).create().get();
 
+    mView = new View(activity);
+    mTextViewWithNull = new TextView(activity);
+    mTextViewWithEmptyString = new TextView(activity);
+    mTextViewWithHello = new TextView(activity);
+    mTextViewWithWorld = new TextView(activity);
+    mImagelessView = new ImageView(activity);
+    mOtherImageView = new ImageView(activity);
+    mImageView = new ImageView(activity);
