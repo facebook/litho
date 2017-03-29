@@ -837,3 +837,4 @@ class LayoutState {
 
     // The component of the hostLayoutOutput will be set later after all the
     // children got processed.
+    addMountableOutput(layoutState, hostLayoutOutput);
