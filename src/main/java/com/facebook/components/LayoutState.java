@@ -868,3 +868,4 @@ class LayoutState {
       boolean shouldGenerateDiffTree,
       DiffNode previousDiffTreeRoot) {
 
+    // Detect errors internal to components
