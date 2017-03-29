@@ -306,3 +306,4 @@ class MountState {
               visibilityOutputBounds,
               sTempRect)) {
             visibilityItem.setIsInFocusedRange();
+            EventDispatcherUtils.dispatchOnFocused(focusedHandler);
