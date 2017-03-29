@@ -620,3 +620,4 @@ public class Stages {
         throw new ComponentsProcessingException(
             stage,
             "Method " + stage.getSimpleName() + " in " + mSourceElement.getQualifiedName() +
+                " must be static");
