@@ -300,3 +300,4 @@ public final class ComponentTestHelper {
       int heightSpec) {
     final TestComponentTree componentTree =
         TestComponentTree.create(context, component)
+            .incrementalMount(false)
