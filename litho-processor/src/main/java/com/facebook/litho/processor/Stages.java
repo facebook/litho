@@ -654,3 +654,4 @@ public class Stages {
     for (ExecutableElement stage : mStages) {
       for (VariableElement v : getState(stage)) {
 
+        final String variableName = v.getSimpleName().toString();

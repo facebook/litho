@@ -685,3 +685,4 @@ public class ComponentTree {
     }
 
     setRootAndSizeSpecInternal(
+        root,
