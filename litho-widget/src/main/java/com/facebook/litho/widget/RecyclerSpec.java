@@ -147,3 +147,4 @@ class RecyclerSpec {
     }
 
     oldAnimator.set(recyclerView.getItemAnimator());
+    if (itemAnimator != RecyclerSpec.itemAnimator) {
