@@ -225,3 +225,7 @@ class TextSpec {
       @Prop(optional = true) Typeface typeface,
       @Prop(optional = true) Alignment textAlignment,
       @Prop(optional = true) boolean glyphWarming,
+      @Prop(optional = true) TextDirectionHeuristicCompat textDirection,
+      Output<Layout> measureLayout,
+      Output<Integer> measuredWidth,
+      Output<Integer> measuredHeight) {
