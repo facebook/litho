@@ -155,3 +155,4 @@ final class ViewPredicates {
       return "";
     }
 
+    final CharSequence text = ((TextView) view).getText();
