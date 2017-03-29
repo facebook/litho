@@ -632,3 +632,10 @@ class LayoutState {
         final LayoutOutput foregroundOutput = addDrawableComponent(
             node,
             layoutState,
+            convertForeground,
+            foreground,
+            LayoutOutput.TYPE_FOREGROUND);
+
+        if (diffNode != null) {
+          diffNode.setForeground(foregroundOutput);
+        }
