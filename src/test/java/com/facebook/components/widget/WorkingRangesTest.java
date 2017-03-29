@@ -551,3 +551,13 @@ public class WorkingRangesTest {
 
   private static class MyTestComponentBinder extends BaseBinder<ViewGroup,
         MyTestComponentBinder.MyTestRangeController> {
+
+    private ViewGroup mView;
+    private final List<String> mItems;
+
+    public MyTestComponentBinder(Context context, List<String> items) {
+      super(context, new MyTestRangeController());
+      mItems = items;
+    }
+
+    @Override

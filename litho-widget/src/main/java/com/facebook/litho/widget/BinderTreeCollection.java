@@ -105,3 +105,7 @@ class BinderTreeCollection {
   }
 
   /**
+   * Inserts a new item in the list at a given position. All the items preceding that position are
+   * shifted left.
+   * @param position the position at which the new item is inserted
+   * @param item the new item

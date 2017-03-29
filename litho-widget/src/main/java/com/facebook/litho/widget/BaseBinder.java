@@ -71,3 +71,4 @@ public abstract class BaseBinder<
     this(context, null, rangeController);
   }
 
+  public BaseBinder(Context context, Looper layoutLooper, R rangeController) {
