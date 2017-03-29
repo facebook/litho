@@ -1275,3 +1275,7 @@ class LayoutState {
     c.setWidthSpec(widthSpec);
     c.setHeightSpec(heightSpec);
 
+    if (hasNestedTreeHolder) {
+      c.setTreeProps(nestedTreeHolder.getPendingTreeProps());
+    }
+
