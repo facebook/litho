@@ -1027,3 +1027,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public InternalNode background(Reference<? extends Drawable> background) {
