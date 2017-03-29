@@ -606,3 +606,4 @@ public class Stages {
         throw new ComponentsProcessingException(
             element,
             "Field " + element.getSimpleName() + " in " + mSourceElement.getQualifiedName() +
+                " must be static");

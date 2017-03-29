@@ -39,3 +39,4 @@ import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.ShouldUpdate;
 
+@MountSpec(canMountIncrementally = true, isPureRender = true, events = {PTRRefreshEvent.class})
