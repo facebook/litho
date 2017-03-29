@@ -953,3 +953,4 @@ public class Stages {
     return new ShallowCopyMethodSpecBuilder()
         .componentsInImpl(componentsInImpl)
         .interStageVariables(interStageComponentVariables)
+        .implClassName(implClassName)
