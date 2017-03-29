@@ -132,3 +132,5 @@ public class ComponentTreeHolder {
   synchronized void release() {
     releaseTree();
     clearStateHandler();
+    mComponentInfo.release();
+    mComponentInfo = null;

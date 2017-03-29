@@ -269,3 +269,4 @@ public class RecyclerBinder implements Binder<RecyclerView> {
    * immediately computed on the UiThread.
    */
   @UiThread
+  public final void updateItemAt(int position, ComponentInfo componentInfo) {
