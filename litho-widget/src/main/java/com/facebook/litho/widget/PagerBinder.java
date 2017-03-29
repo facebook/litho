@@ -130,3 +130,6 @@ public abstract class PagerBinder extends BaseBinder<
 
   @Override
   public void onUnbind(ViewPager viewPager) {
+  }
+
+  @Override
