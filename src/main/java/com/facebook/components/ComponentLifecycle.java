@@ -479,3 +479,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
    * @param y y co-ordinate within the mounted component
    * @param component the {@link Component} for this component
    * @return the extra virtual view id if one is found, otherwise
+   *         {@code ExploreByTouchHelper#INVALID_ID}
