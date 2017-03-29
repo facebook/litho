@@ -76,3 +76,9 @@ public class InternalNodeReleaseTest {
     assertDefaultValues(mInternalNode);
 
     setup();
+    assertDefaultValues(mInternalNode);
+  }
+
+  @Test(expected=IllegalStateException.class)
+  public void testAttachedNode() {
+    assertDefaultValues(mInternalNode);

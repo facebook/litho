@@ -16,3 +16,6 @@ import com.squareup.javapoet.TypeName;
 /**
  * Describes a method signature.
  *
+ * We use method descriptions to refer to abstract methods defined in {@link ComponentLifecycle},
+ * so that we can define implementations that delegate to client-declared methods with annotated
+ * props.

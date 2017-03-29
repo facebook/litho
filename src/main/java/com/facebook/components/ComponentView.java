@@ -69,3 +69,4 @@ public class ComponentView extends ComponentHost {
   }
 
   public ComponentView(ComponentContext context, AttributeSet attrs) {
+    super(context, attrs);

@@ -109,3 +109,7 @@ public class TestLayoutComponent extends ComponentLifecycle {
     return containerBuilder.build();
   }
 
+  @Override
+  public MountType getMountType() {
+    return MountType.NONE;
+  }

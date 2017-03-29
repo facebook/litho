@@ -123,3 +123,10 @@ public class LifecycleMethodsTest {
     @Override
     protected void onBoundsDefined(
         ComponentContext c,
+        ComponentLayout layout,
+        Component<?> component) {
+      LifecycleMethodsInstance instance = (LifecycleMethodsInstance) component;
+      instance.setCurrentStep(LifecycleStep.ON_BOUNDS_DEFINED);
+    }
+
+    @Override
