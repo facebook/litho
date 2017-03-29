@@ -85,3 +85,4 @@ class TextSpec {
   private static final String TAG = "TextSpec";
 
   @PropDefault protected static final int minLines = Integer.MIN_VALUE;
+  @PropDefault protected static final int maxLines = Integer.MAX_VALUE;
