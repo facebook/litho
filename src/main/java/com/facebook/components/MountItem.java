@@ -44,3 +44,4 @@ class MountItem {
   private int mFlags;
 
   void init(
+      Component<?> component,

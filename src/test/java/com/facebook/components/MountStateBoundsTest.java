@@ -74,3 +74,6 @@ public class MountStateBoundsTest {
         });
 
     final View mountedView = componentView.getChildAt(0);
+    assertEquals(
+        new Rect(0, 0, 10, 10),
+        new Rect(

@@ -75,3 +75,5 @@ public class LayoutStateEventHandlerTest {
         mUnspecifiedSizeSpec,
         false,
         null);
+  }
+}

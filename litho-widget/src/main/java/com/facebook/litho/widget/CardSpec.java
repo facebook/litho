@@ -98,3 +98,5 @@ class CardSpec {
                         .positionPx(ALL, 0)))
         .child(
             CardShadow.create(c)
+                .shadowStartColor(shadowStartColor)
+                .shadowEndColor(shadowEndColor)
