@@ -779,3 +779,4 @@ class LayoutState {
         previousId,
         isCachedOutputUpdated);
 
+    addMountableOutput(layoutState, drawableLayoutOutput);
