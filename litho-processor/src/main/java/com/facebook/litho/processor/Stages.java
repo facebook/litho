@@ -1266,3 +1266,6 @@ public class Stages {
         TypeName stateMatchingParamBoxedType = stateMatchingParamTypeName.box();
         if (!stateMatchingParamBoxedType.equals(TypeName.get(typeArgument))) {
           throw new ComponentsProcessingException(
+              param,
+              "Type parameter for a parameter of type StateValue should match the type of " +
+                  "a parameter with the same name annotated with @State");
