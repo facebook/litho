@@ -1806,3 +1806,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     mInvisibleHandler = null;
     mPrivateFlags = 0L;
     mTransitionKey = null;
+    mBorderColor = Color.TRANSPARENT;
