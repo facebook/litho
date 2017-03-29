@@ -92,3 +92,4 @@ class RecyclerSpec {
   @OnMount
   static void onMount(
       ComponentContext c,
+      RecyclerViewWrapper recyclerViewWrapper,
