@@ -677,3 +677,4 @@ public class ComponentsPools {
 
     @Override
     public void onActivityStarted(Activity activity) {
+      // Do nothing.

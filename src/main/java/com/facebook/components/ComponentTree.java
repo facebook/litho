@@ -1147,3 +1147,4 @@ public class ComponentTree {
   }
 
   protected LayoutState calculateLayoutState(
+      @Nullable Object lock,
