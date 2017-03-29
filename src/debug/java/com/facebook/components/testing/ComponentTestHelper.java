@@ -329,3 +329,4 @@ public final class ComponentTestHelper {
   public static <T extends ComponentLifecycle> Component<T> getSubComponent(
       Component.Builder component,
       Class<T> componentClass) {
+    List<SubComponent> subComponents = getSubComponents(component);
