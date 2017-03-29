@@ -1652,3 +1652,4 @@ public class Stages {
       methodBuilder.beginControlFlow("if ($L.get() != null)", name);
       methodBuilder.addStatement(
           "$L.$L = $L.get()",
+          implInstanceName,
