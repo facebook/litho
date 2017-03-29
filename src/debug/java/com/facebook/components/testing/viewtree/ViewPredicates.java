@@ -156,3 +156,6 @@ final class ViewPredicates {
     }
 
     final CharSequence text = ((TextView) view).getText();
+    return text != null ? text.toString() : "";
+  }
+
