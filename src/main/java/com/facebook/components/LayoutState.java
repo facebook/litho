@@ -799,3 +799,8 @@ class LayoutState {
       if (isNestedTree && node.hasNewLayout()) {
         node.markLayoutSeen();
       }
+
+      // A node must be detached from its parent *before* being released (otherwise the parent would
+      // retain a reference to a node that may get re-used by another thread)
+      node.removeChildAt(i);
+
