@@ -200,3 +200,5 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
    */
   public void setProgressBarReference(
       @Nullable Reference<Drawable> progressBarReference,
+      @Nullable ScalingUtils.ScaleType scaleType,
+      int autoRotateInterval) {
