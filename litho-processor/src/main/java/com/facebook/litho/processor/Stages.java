@@ -562,3 +562,4 @@ public class Stages {
           variableNameToElementMap.put(variableName, v);
         } catch (PrintableException e) {
           exceptions.add(e);
+        }
