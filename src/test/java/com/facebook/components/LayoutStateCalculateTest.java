@@ -1275,3 +1275,10 @@ public class LayoutStateCalculateTest {
     assertTrue(getComponentAt(layoutState, 1) instanceof TestDrawableComponent);
 
     assertEquals(FOCUS_SET_TRUE, layoutState.getMountableOutputAt(0).getNodeInfo().getFocusState());
+  }
+
+  @Test
+  public void testLayoutOutputsForFocusable() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {

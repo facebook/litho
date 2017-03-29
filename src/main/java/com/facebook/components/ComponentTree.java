@@ -524,3 +524,8 @@ public class ComponentTree {
       final StateHandler layoutStateStateHandler =
           localLayoutState.consumeStateHandler();
       synchronized (this) {
+        if (layoutStateStateHandler != null) {
+          mStateHandler.commit(layoutStateStateHandler);
+          ComponentsPools.release(layoutStateStateHandler);
+        }
+
