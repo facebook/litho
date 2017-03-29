@@ -580,3 +580,4 @@ public class RecyclerBinderTest {
     final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
 
     TestComponentTreeHolder holderMovedOutsideRange =
+        mHoldersForComponents.get(components.get(rangeTotal).getComponent());
