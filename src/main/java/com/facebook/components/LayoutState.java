@@ -1547,3 +1547,7 @@ class LayoutState {
       mCurrentY = 0;
       mCurrentHostMarker = -1;
       mCurrentHostOutputPosition = -1;
+      mComponentTreeId = -1;
+
+      mShouldDuplicateParentState = true;
+
