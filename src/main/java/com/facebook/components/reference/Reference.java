@@ -67,3 +67,12 @@ public abstract class Reference<L> {
    * This is implemented by default calling {@link Reference#equals(Object)}. When defining a custom
    * reference it's possible to provide custom logic for the comparison implementing a method
    * annotated with the {@link com.facebook.litho.annotations.ShouldUpdate} annotation.
+   */
+  public static <T> boolean shouldUpdate(Reference<T> previous, Reference<T> next) {
+    if (previous != null) {
+      return previous.mLifecycle.shouldReferenceUpdate(previous, next);
+    } else {
+      return next != null;
+    }
+  }
+}
