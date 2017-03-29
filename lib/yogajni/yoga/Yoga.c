@@ -749,3 +749,4 @@ static inline void YGResolveDimensions(YGNodeRef node) {
     if (node->style.maxDimensions[dim].unit != YGUnitUndefined &&
         YGValueEqual(node->style.maxDimensions[dim], node->style.minDimensions[dim])) {
       node->resolvedDimensions[dim] = &node->style.maxDimensions[dim];
+    } else {
