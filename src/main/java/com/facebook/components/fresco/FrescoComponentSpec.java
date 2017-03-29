@@ -80,3 +80,4 @@ class FrescoComponentSpec {
     return new DraweeDrawable<>(c, draweeHierarchy);
   }
 
+  @OnMount

@@ -817,3 +817,8 @@ public class ComponentHost extends ViewGroup {
         this,
         isAccessibilityEnabled ? mComponentAccessibilityDelegate : null);
     mIsComponentAccessibilityDelegateSet = isAccessibilityEnabled;
+
+    for (int i = 0, size = getChildCount(); i < size; i++) {
+      final View child = getChildAt(i);
+      if (child instanceof ComponentHost) {
+        ((ComponentHost) child).refreshAccessibilityDelegatesIfNeeded(isAccessibilityEnabled);
