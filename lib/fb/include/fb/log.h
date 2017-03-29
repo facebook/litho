@@ -309,3 +309,4 @@ int __android_log_print(int prio, const char *tag, const char *fmt, ...)
 #endif
 
 typedef void (*LogHandler)(int priority, const char* tag, const char* message);
+FBEXPORT void setLogHandler(LogHandler logHandler);
