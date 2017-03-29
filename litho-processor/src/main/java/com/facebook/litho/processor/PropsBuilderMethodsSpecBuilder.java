@@ -285,3 +285,7 @@ class PropsBuilderMethodsSpecBuilder {
   }
 
   private TypeName[] getBuilderGenericTypes() {
+    final List<TypeName> typeParameters = JPUtil.getTypeParameters(mPropParameter.parameter.type);
+    final TypeName typeParameter = typeParameters == null
+        ? WildcardTypeName.subtypeOf(ClassNames.COMPONENT_LIFECYCLE)
+        : typeParameters.get(0);

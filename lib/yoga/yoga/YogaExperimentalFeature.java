@@ -16,3 +16,18 @@ public enum YogaExperimentalFeature {
   ROUNDING(0),
   WEB_FLEX_BASIS(1),
   MIN_FLEX_FIX(2);
+
+  private int mIntValue;
+
+  YogaExperimentalFeature(int intValue) {
+    mIntValue = intValue;
+  }
+
+  public int intValue() {
+    return mIntValue;
+  }
+
+  public static YogaExperimentalFeature fromInt(int value) {
+    switch (value) {
+      case 0: return ROUNDING;
+      case 1: return WEB_FLEX_BASIS;

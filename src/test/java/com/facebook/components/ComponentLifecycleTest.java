@@ -48,3 +48,4 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
     DiffNode.class,
     LayoutState.class,
     ComponentsPools.class,
+    YogaNodeAPI.class})
