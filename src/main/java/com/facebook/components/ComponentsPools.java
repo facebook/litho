@@ -526,3 +526,4 @@ public class ComponentsPools {
     sTestItemPool.release(testItem);
   }
 
+  @ThreadSafe(enableChecks = false)
