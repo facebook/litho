@@ -1460,3 +1460,5 @@ class LayoutState {
     return true;
   }
 
+  boolean isCompatibleComponentAndSpec(
+      int componentId,
