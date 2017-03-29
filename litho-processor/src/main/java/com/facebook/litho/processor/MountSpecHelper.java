@@ -150,3 +150,9 @@ public class MountSpecHelper extends ComponentSpecHelper {
     methodDescription.annotations = new Class[] { Override.class };
     methodDescription.accessType = Modifier.PROTECTED;
     methodDescription.name = "onMeasure";
+    methodDescription.parameterTypes = new TypeName[] {
+        ClassNames.COMPONENT_CONTEXT,
+        ClassNames.COMPONENT_LAYOUT,
+        ClassName.INT,
+        ClassName.INT,
+        ClassNames.SIZE,
