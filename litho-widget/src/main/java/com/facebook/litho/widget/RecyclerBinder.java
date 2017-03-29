@@ -749,3 +749,20 @@ public class RecyclerBinder implements Binder<RecyclerView> {
               new RecyclerView.LayoutParams(
                   ViewGroup.LayoutParams.WRAP_CONTENT,
                   ViewGroup.LayoutParams.MATCH_PARENT));
+      }
+    }
+  }
+
+  private class InternalAdapter extends RecyclerView.Adapter {
+
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+      return new ComponentViewHolder(new ComponentView(mComponentContext));
+    }
+
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+      final ComponentView componentView = (ComponentView) holder.itemView;
+      // We can ignore the synchronization here. We'll only add to this from the UiThread.
+      // This read only happens on the UiThread as well and we are never writing this here.
+      final ComponentTreeHolder componentTreeHolder = mComponentTreeHolders.get(position);
