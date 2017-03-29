@@ -1703,3 +1703,8 @@ public class Stages {
 
     implClassBuilder.addMethod(
         MethodSpec.methodBuilder("getSimpleName")
+            .addModifiers(Modifier.PUBLIC)
+            .addAnnotation(Override.class)
+            .returns(ClassNames.STRING)
+            .addStatement("return \"" + getSimpleClassName() + "\"")
+            .build());
