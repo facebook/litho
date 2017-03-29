@@ -324,3 +324,4 @@ class EditTextSpec {
       TextUtils.TruncateAt ellipsize,
       int minLines,
       int maxLines,
+      int maxLength,
