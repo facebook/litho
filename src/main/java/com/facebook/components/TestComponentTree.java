@@ -44,3 +44,4 @@ public class TestComponentTree extends ComponentTree {
       int widthSpec,
       int heightSpec,
       boolean diffingEnabled,
+      @Nullable DiffNode diffNode) {

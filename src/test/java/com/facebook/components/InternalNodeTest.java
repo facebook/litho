@@ -365,3 +365,4 @@ public class InternalNodeTest {
   //       error.contains("alignSelf, flex"));
   // }
 
+  private static boolean isFlagSet(InternalNode internalNode, String flagName) {
