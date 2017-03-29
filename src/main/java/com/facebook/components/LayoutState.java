@@ -1706,3 +1706,8 @@ class LayoutState {
     return (mTransitionContext != null);
   }
 
+  private static void addMountableOutput(LayoutState layoutState, LayoutOutput layoutOutput) {
+    layoutState.mMountableOutputs.add(layoutOutput);
+    layoutState.mMountableOutputTops.add(layoutOutput);
+    layoutState.mMountableOutputBottoms.add(layoutOutput);
+  }
