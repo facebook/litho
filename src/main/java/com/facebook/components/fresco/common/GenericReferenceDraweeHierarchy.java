@@ -179,3 +179,17 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
     mGenericDraweeHierarchy.setFailureImage(
         DrawableUtils.cloneDrawable(mFailure),
         scaleType != null ? scaleType : DEFAULT_SCALE_TYPE);
+  }
+
+  /**
+   * Set the progress bar image of the wrapped GenericDraweeHierarchythrough the use of a
+   * reference.
+   *
+   * @param progressBarReference
+   *    The reference which references the progress bar drawable to use. Accepts null which will
+   *    remove the current progress bar image. Make sure to call release() to release this
+   *    reference.
+   *
+   * @param scaleType
+   *    The scale type of the progress bar drawable. Accepts null which will use the default
+   *    scale type defined by GenericDraweeHierarchy.
