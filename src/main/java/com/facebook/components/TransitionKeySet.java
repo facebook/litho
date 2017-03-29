@@ -332,3 +332,7 @@ class TransitionKeySet implements TransitionListener {
                 ? mStartValues
                 : interruptedValues;
 
+        t.start(
+            mTargetView,
+            startValues,
+            mEndValues);
