@@ -36,3 +36,4 @@ public class DuplicateParentStateTest {
   public void setUp() throws Exception {
     mUnspecifiedSizeSpec = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
   }
+

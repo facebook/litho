@@ -99,3 +99,4 @@ public class MountStateViewClickTest {
 
     assertEquals(0, componentView.getChildCount());
     assertTrue(componentView.isClickable());
+  }
