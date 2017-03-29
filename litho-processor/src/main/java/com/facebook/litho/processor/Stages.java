@@ -323,3 +323,13 @@ public class Stages {
             eventDeclaration,
             "Events must be declared with the @Event annotation, event is: " + eventDeclaration);
       }
+
+      final List<? extends VariableElement> fields = Utils.getEnclosedFields(eventDeclaration);
+      for (VariableElement field : fields) {
+        if (!field.getModifiers().contains(Modifier.PUBLIC) ||
+            field.getModifiers().contains(Modifier.FINAL)) {
+          throw new ComponentsProcessingException(
+              field,
+              "Event fields must be declared as public non-final");
+        }
+      }
