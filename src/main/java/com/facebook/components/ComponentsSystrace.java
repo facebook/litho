@@ -44,3 +44,8 @@ public class ComponentsSystrace {
   }
 
   public static void endSection() {
+    getInstance().endSection();
+  }
+
+  private static Systrace getInstance() {
+    if (sInstance == null) {

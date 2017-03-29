@@ -15,3 +15,22 @@ android_binary(
         COMPONENTS_YOGAPREBUILT_TARGET,
     ],
 )
+
+android_resource(
+    name = "res",
+    package = "com.facebook.samples.litho",
+    res = "src/main/res",
+    visibility = [
+        "PUBLIC",
+    ],
+)
+
+keystore(
+    name = "debug_keystore",
+    properties = "debug.keystore.properties",
+    store = "debug.keystore",
+)
+
+project_config(
+    src_target = ":sample",
+)
