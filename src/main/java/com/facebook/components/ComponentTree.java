@@ -516,3 +516,5 @@ public class ComponentTree {
           mLayoutLock,
           mContext,
           component,
+          widthSpec,
+          heightSpec,
