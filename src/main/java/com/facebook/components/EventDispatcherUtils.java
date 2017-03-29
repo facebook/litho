@@ -160,3 +160,4 @@ class EventDispatcherUtils {
     sDispatchPopulateAccessibilityEventEvent.event = event;
     sDispatchPopulateAccessibilityEventEvent.superDelegate = superDelegate;
 
+    final EventDispatcher eventDispatcher = eventHandler.mHasEventDispatcher.getEventDispatcher();
