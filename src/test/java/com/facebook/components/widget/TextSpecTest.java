@@ -31,3 +31,4 @@ import static org.mockito.Mockito.verify;
 /**
  * Tests {@link Text} component.
  */
+
