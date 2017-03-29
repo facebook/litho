@@ -232,3 +232,7 @@ public class LifecycleMethodsTest {
               mCurrentStep == LifecycleStep.ON_MEASURE);
           break;
 
+        case ON_CREATE_MOUNT_CONTENT:
+          assertTrue(
+              mCurrentStep == LifecycleStep.ON_BOUNDS_DEFINED);
+

@@ -56,3 +56,14 @@ public class RecyclerBinderTest {
   @Rule
   public PowerMockRule mPowerMockRule = new PowerMockRule();
 
+  private static final float RANGE_RATIO = 2.0f;
+  private static final int RANGE_SIZE = 3;
+  private final Map<Component, TestComponentTreeHolder> mHoldersForComponents = new HashMap<>();
+  private RecyclerBinder mRecyclerBinder;
+  private LayoutInfo mLayoutInfo;
+  private ComponentContext mComponentContext;
+
+  private final Answer<ComponentTreeHolder> mComponentTreeHolderAnswer =
+      new Answer<ComponentTreeHolder>() {
+        @Override
+        public ComponentTreeHolder answer(InvocationOnMock invocation) throws Throwable {
