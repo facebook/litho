@@ -42,3 +42,4 @@ import com.facebook.components.utils.MeasureUtils;
  */
 @MountSpec(isPureRender = true)
 class ProgressSpec {
+

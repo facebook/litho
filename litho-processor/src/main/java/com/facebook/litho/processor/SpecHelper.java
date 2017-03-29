@@ -176,3 +176,4 @@ public abstract class SpecHelper implements Closeable {
       try {
         JavaFile.builder(Utils.getPackageName(mQualifiedClassName), mTypeSpec.build())
             .skipJavaLangImports(true)
+            .addFileComment("Copyright 2004-present Facebook. All Rights Reserved.")
