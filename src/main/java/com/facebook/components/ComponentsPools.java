@@ -500,3 +500,4 @@ public class ComponentsPools {
   @ThreadSafe(enableChecks = false)
   static void release(LayoutOutput output) {
     output.release();
+    sLayoutOutputPool.release(output);
