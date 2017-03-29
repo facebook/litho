@@ -128,3 +128,4 @@ void throwCppExceptionIf(bool condition) {
     return;
   }
 
+  auto env = Environment::current();
