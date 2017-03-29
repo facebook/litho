@@ -259,3 +259,10 @@ class LayoutState {
       viewNodeInfo.setExpandedTouchBounds(node, l, t, r, b);
       layoutOutput.setViewNodeInfo(viewNodeInfo);
       viewNodeInfo.release();
+    } else {
+      l += paddingLeft;
+      t += paddingTop;
+      r -= paddingRight;
+      b -= paddingBottom;
+    }
+
