@@ -66,3 +66,7 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
 
           final MountSpecHelper mountSpecHelper =
               new MountSpecHelper(processingEnv, (TypeElement) element, mountSpecModel);
+          closeable = mountSpecHelper;
+          generate(mountSpecHelper);
+        }
+
