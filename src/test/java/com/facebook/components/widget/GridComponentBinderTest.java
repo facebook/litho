@@ -49,3 +49,6 @@ public class GridComponentBinderTest {
   };
 
   private List<Integer> mItems;
+  private MyTestGridComponentBinder mBinder;
+  private RecyclerView mRecyclerView;
+

@@ -67,3 +67,5 @@ public class ComponentViewTest {
 
     // Attaching will automatically mount since we already have a layout fitting our size.
     ShadowView shadow = Shadows.shadowOf(mComponentView);
+    shadow.callOnAttachedToWindow();
+
