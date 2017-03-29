@@ -2267,3 +2267,102 @@ public class LayoutStateCalculateTest {
   }
 
   @Test
+  public void testLayoutOutputsForComponentWithBorderColorNoBorderWidth() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c)
+            .child(TestDrawableComponent.create(c))
+            .borderColor(Color.GREEN)
+            .build();
+      }
+    };
+
+    LayoutState layoutState = calculateLayoutState(
+        RuntimeEnvironment.application,
+        component,
+        -1,
+        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
+        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
+
+    // No layout output generated related with borders
+    // if borderColor is supplied but not borderWidth.
+    assertEquals(2, layoutState.getMountableOutputCount());
+  }
+
+  @Test
+  public void testLayoutOutputsForComponentWithBorderWidthNoBorderColor() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c)
+            .child(TestDrawableComponent.create(c))
+            .borderWidthPx(YogaEdge.ALL, 10)
+            .build();
+      }
+    };
+
+    LayoutState layoutState = calculateLayoutState(
+        RuntimeEnvironment.application,
+        component,
+        -1,
+        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
+        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
+
+    // No layout output generated related with borders
+    // if borderWidth supplied but not borderColor.
+    assertEquals(2, layoutState.getMountableOutputCount());
+  }
+
+  @Test
+  public void testLayoutOutputsForComponentWithBorderWidthAllAndBorderColor() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c)
+            .child(TestDrawableComponent.create(c))
+            .borderWidthPx(YogaEdge.ALL, 10)
+            .borderColor(Color.GREEN)
+            .build();
+      }
+    };
+
+    LayoutState layoutState = calculateLayoutState(
+        RuntimeEnvironment.application,
+        component,
+        -1,
+        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
+        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
+
+    assertEquals(3, layoutState.getMountableOutputCount());
+
+    // Output at index 1 is BorderColorDrawable component.
+    assertTrue(getComponentAt(layoutState, 1) instanceof DrawableComponent);
+  }
+
+  @Test
+  public void testLayoutOutputsForComponentWithBorderWidthTopAndBorderColor() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c)
+            .child(TestDrawableComponent.create(c))
+            .borderWidthPx(YogaEdge.TOP, 10)
+            .borderColor(Color.GREEN)
+            .build();
+      }
+    };
+
+    LayoutState layoutState = calculateLayoutState(
+        RuntimeEnvironment.application,
+        component,
+        -1,
+        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
+        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
+
+    assertEquals(3, layoutState.getMountableOutputCount());
+
+    // Output at index 1 is BorderColorDrawable component.
+    assertTrue(getComponentAt(layoutState, 1) instanceof DrawableComponent);
+  }
+
