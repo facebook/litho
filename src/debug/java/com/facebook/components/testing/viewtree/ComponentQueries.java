@@ -106,3 +106,4 @@ class ComponentQueries {
   }
 
   /**
+   * Checks whether the given {@link ComponentHost} satisfy the given Predicate.
