@@ -2410,3 +2410,4 @@ public class Stages {
     // Override the method that the component will call to fire the event.
     final MethodDescription methodDescription = new MethodDescription();
     methodDescription.annotations = new Class[] {};
+    methodDescription.accessType = Modifier.STATIC;
