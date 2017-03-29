@@ -145,3 +145,6 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
       throw new IllegalStateException("Child already has a parent, it must be removed first.");
     }
 
+    if (mChildren == null) {
+      mChildren = new ArrayList<>(4);
+    }

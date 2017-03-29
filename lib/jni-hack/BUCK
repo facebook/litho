@@ -16,3 +16,4 @@ cxx_library(
     force_static = True,
     header_namespace = "",
     visibility = [COMPONENTS_VISIBILITY],
+)

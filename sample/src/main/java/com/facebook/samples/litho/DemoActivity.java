@@ -7,3 +7,23 @@
  */
 
 package com.facebook.samples.litho;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+
+import com.facebook.components.Component;
+import com.facebook.components.ComponentContext;
+import com.facebook.components.ComponentLifecycle;
+import com.facebook.components.ComponentTree;
+import com.facebook.components.ComponentView;
+
+public class DemoActivity extends AppCompatActivity {
+
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+
+    final ComponentContext context = new ComponentContext(this);
