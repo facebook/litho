@@ -78,3 +78,5 @@ class FrescoComponentSpec {
         new GenericReferenceDraweeHierarchy(
             GenericDraweeHierarchyBuilder.newInstance(c.getResources()).build());
     return new DraweeDrawable<>(c, draweeHierarchy);
+  }
+
