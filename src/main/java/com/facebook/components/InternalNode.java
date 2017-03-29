@@ -1531,3 +1531,5 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       node.mVisibleHandler = mVisibleHandler;
     }
     if ((mPrivateFlags & PFLAG_FOCUSED_HANDLER_IS_SET) != 0L) {
+      node.mFocusedHandler = mFocusedHandler;
+    }
