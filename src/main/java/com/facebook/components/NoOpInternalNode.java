@@ -249,3 +249,14 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
+  public InternalNode marginPercent(YogaEdge edge, float percent) {
+    return this;
+  }
+
+  @Override
+  public InternalNode marginAuto(YogaEdge edge) {
+    return this;
+  }
+
+  @Override
+  public InternalNode paddingPx(YogaEdge edge, @Px int padding) {
