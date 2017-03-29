@@ -1650,3 +1650,5 @@ public class Stages {
       final VariableElement v = parameters.get(i);
       final String name = v.getSimpleName().toString();
       methodBuilder.beginControlFlow("if ($L.get() != null)", name);
+      methodBuilder.addStatement(
+          "$L.$L = $L.get()",
