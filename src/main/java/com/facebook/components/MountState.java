@@ -1046,3 +1046,13 @@ class MountState {
     final View view = (View) item.getContent();
     final NodeInfo nodeInfo = item.getNodeInfo();
 
+    if (nodeInfo != null) {
+      // Reset the click handler.
+      if (nodeInfo.getClickHandler() != null) {
+        unsetClickHandler(view);
+      }
+
+      // Reset the click handler.
+      if (nodeInfo.getLongClickHandler() != null) {
+        unsetLongClickHandler(view);
+      }
