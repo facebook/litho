@@ -19,3 +19,4 @@ public @interface Prop {
   ResType resType() default ResType.NONE;
   String docString() default "";
 
+}

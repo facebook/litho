@@ -17,3 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
+
+import static junit.framework.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
