@@ -78,3 +78,5 @@ public class ComponentHost extends ViewGroup {
 
   private ComponentClickListener mOnClickListener;
   private ComponentLongClickListener mOnLongClickListener;
+  private ComponentTouchListener mOnTouchListener;
+
