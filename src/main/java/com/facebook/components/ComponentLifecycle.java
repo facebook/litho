@@ -375,3 +375,5 @@ public abstract class ComponentLifecycle implements EventDispatcher {
       Size size,
       Component<?> component) {
     throw new IllegalStateException(
+        "You must override onMeasure() if you return true in canMeasure(), " +
+            "ComponentLifecycle is: " + component.getLifecycle());
