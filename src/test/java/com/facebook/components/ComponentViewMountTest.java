@@ -80,3 +80,4 @@ public class ComponentViewMountTest {
   }
 
   @Test
+  public void testSetSameSizeComponentAndAttachRequestsLayout() {

@@ -50,3 +50,4 @@ public class ComponentViewTest {
     final ComponentTree componentTree = ComponentTree.create(c, component)
         .incrementalMount(false)
         .build();
+

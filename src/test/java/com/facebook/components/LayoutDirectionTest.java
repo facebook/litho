@@ -297,3 +297,6 @@ public class LayoutDirectionTest {
         20,
         10);
 
+    final ComponentHost host = (ComponentHost) componentView.getChildAt(0);
+    final Drawable drawable1 = host.getDrawables().get(0);
+    final Drawable drawable2 = host.getDrawables().get(1);

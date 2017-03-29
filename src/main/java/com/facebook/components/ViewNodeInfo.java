@@ -51,3 +51,6 @@ class ViewNodeInfo {
 
   int getPaddingLeft() {
     return (mPadding != null) ? mPadding.left : 0;
+  }
+
+  int getPaddingTop() {

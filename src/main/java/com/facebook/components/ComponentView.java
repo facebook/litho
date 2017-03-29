@@ -37,3 +37,15 @@ public class ComponentView extends ComponentHost {
 
   private boolean mForceLayout;
 
+  private final AccessibilityManager mAccessibilityManager;
+
+  private final AccessibilityStateChangeListenerCompat mAccessibilityStateChangeListener =
+      new AccessibilityStateChangeListenerCompat() {
+        @Override
+        public void onAccessibilityStateChanged(boolean enabled) {
+          refreshAccessibilityDelegatesIfNeeded(enabled);
+
+          requestLayout();
+        }
+      };
+

@@ -43,3 +43,4 @@ class MountItem {
   // the behaviour of this item when mounted.
   private int mFlags;
 
+  void init(
