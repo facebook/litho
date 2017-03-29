@@ -128,3 +128,6 @@ public class TextSpecTest {
         Text.create(mContext)
             .text(text)
             .build())
+        .getDrawables()
+        .get(0);
+  }
