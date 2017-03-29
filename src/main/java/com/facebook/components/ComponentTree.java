@@ -1164,3 +1164,4 @@ public class ComponentTree {
       synchronized (lock) {
         return LayoutState.calculate(
             contextWithStateHandler,
+            root,
