@@ -348,3 +348,9 @@ class LayoutState {
         && (applicationInfo.flags & ApplicationInfo.FLAG_SUPPORTS_RTL) != 0) {
 
       int layoutDirection = getLayoutDirection(context);
+      return layoutDirection == View.LAYOUT_DIRECTION_RTL;
+    }
+
+    return false;
+  }
+
