@@ -1240,3 +1240,6 @@ public class ComponentTree {
       layoutLock = null;
       stateHandler = null;
       asyncStateUpdates = true;
+    }
+
+    /**
