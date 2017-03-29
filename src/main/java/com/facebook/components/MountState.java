@@ -1482,3 +1482,21 @@ class MountState {
       final ViewGroup viewGroup = (ViewGroup) view;
 
       for (int i = 0; i < viewGroup.getChildCount(); i++) {
+        final View childView = viewGroup.getChildAt(i);
+
+        if (localVisibleRect.intersects(
+            childView.getLeft(),
+            childView.getTop(),
+            childView.getRight(),
+            childView.getBottom())) {
+          final Rect rect = ComponentsPools.acquireRect();
+          rect.set(
+              Math.max(0, localVisibleRect.left - childView.getLeft()),
+              Math.max(0, localVisibleRect.top - childView.getTop()),
+              childView.getWidth() - Math.max(0, childView.getRight() - localVisibleRect.right),
+              childView.getHeight() - Math.max(0, childView.getBottom() - localVisibleRect.bottom));
+
+          mountViewIncrementally(childView, rect);
+
+          ComponentsPools.release(rect);
+        }
