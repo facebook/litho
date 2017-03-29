@@ -143,3 +143,5 @@ final class ViewPredicates {
   /**
    * Tries to extract the description of a drawn drawable from a canvas
    */
+  static String getDrawnDrawableDescription(final Drawable drawable) {
+    final Canvas canvas = new Canvas();
