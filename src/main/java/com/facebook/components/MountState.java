@@ -120,3 +120,9 @@ class MountState {
     // is always automatically mounted.
     mRootHostMountItem = ComponentsPools.acquireRootHostMountItem(
         HostComponent.create(),
+        mComponentView,
+        mComponentView);
+  }
+
+  /**
+   * To be called whenever the components needs to start the mount process from scratch

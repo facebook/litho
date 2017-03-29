@@ -201,3 +201,11 @@ public class TreeDiffingTest {
 
     assertTrue(YogaMeasureOutput.getHeight(output) == (int) diffNode.getLastMeasuredHeight());
     assertTrue(YogaMeasureOutput.getWidth(output) == (int) diffNode.getLastMeasuredWidth());
+
+    int lastWidthSpec = node.getLastWidthSpec();
+    int lastHeightSpec = node.getLastHeightSpec();
+
+    assertTrue(SizeSpec.getMode(lastWidthSpec) == SizeSpec.EXACTLY);
+    assertTrue(SizeSpec.getMode(lastHeightSpec) == SizeSpec.EXACTLY);
+    assertTrue(SizeSpec.getSize(lastWidthSpec) == 10);
+    assertTrue(SizeSpec.getSize(lastHeightSpec) == 5);

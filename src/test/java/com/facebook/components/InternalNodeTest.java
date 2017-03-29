@@ -272,3 +272,4 @@ public class InternalNodeTest {
     assertEquals(
         YogaDirection.INHERIT,
         holderNode.getStyleDirection());
+    assertEquals(

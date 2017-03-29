@@ -153,3 +153,12 @@ public abstract class RecyclerComponentBinder<L extends RecyclerView.LayoutManag
   @Override
   public void onUnmount(RecyclerView recyclerView) {
     mRecyclerView.clearOnScrollListeners();
+    mRecyclerView.setLayoutManager(null);
+    mRecyclerView.setAdapter(null);
+    mRecyclerView = null;
+  }
+
+  protected L getLayoutManager() {
+    return mLayoutManager;
+  }
+

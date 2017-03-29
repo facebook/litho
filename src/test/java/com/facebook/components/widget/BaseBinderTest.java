@@ -339,3 +339,5 @@ public class BaseBinderTest {
     mBinder.unmount(newView);
   }
 
+  private String getAdapterInputStringAtPosition(int position) {
+    return Whitebox.getInternalState(
