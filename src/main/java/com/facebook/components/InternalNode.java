@@ -1425,3 +1425,5 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   private float resolveHorizontalSpacing(Spacing spacing, int index) {
+    final boolean isRtl =
+        (mYogaNode.getLayoutDirection() == YogaDirection.RTL);
