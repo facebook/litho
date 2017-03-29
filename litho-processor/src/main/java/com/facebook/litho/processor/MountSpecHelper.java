@@ -426,3 +426,4 @@ public class MountSpecHelper extends ComponentSpecHelper {
       returnType = returnElement.getSuperclass();
     }
 
+    return MountType.NONE;

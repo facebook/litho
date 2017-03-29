@@ -186,3 +186,6 @@ public final class ColorDrawableReference extends ReferenceLifecycle<Drawable> {
     public Reference<Drawable> build() {
       State state = mState;
 
+      release();
+
+      return state;
