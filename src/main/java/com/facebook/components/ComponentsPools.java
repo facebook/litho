@@ -60,3 +60,8 @@ public class ComponentsPools {
 
   private static final Object mountContentLock = new Object();
 
+  private static final Pools.SynchronizedPool<LayoutState> sLayoutStatePool =
+      new Pools.SynchronizedPool<>(64);
+
+  private static final Pools.SynchronizedPool<InternalNode> sInternalNodePool =
+      new Pools.SynchronizedPool<>(256);

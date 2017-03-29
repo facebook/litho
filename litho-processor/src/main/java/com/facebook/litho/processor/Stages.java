@@ -220,3 +220,4 @@ public class Stages {
     if (mSupportState) {
       populateStateMap();
     }
+    validatePropDefaults();
