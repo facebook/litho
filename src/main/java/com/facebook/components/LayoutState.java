@@ -1698,3 +1698,11 @@ class LayoutState {
     return mOutputsIdToPositionMap.get(layoutOutputId, -1);
   }
 
+  TransitionContext getTransitionContext() {
+    return mTransitionContext;
+  }
+
+  boolean hasTransitionContext() {
+    return (mTransitionContext != null);
+  }
+
