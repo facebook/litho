@@ -1143,3 +1143,5 @@ class MountState {
       setComponentClickListener(view, listener);
     }
 
+    listener.setEventHandler(clickHandler);
+    view.setClickable(true);
