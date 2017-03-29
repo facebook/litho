@@ -48,3 +48,4 @@ public class TestSizeDependentComponent extends ComponentLifecycle {
       builder1
           .widthPx(50)
           .heightPx(50);
+      builder2

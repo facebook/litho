@@ -64,3 +64,6 @@ public class TestLayoutComponent extends ComponentLifecycle {
 
   private TestLayoutComponent(
       boolean callsShouldUpdateOnMount,
+      boolean isPureRender,
+      boolean hasMountSpecChild,
+      boolean isDelegate) {
