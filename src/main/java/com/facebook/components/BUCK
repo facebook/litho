@@ -27,3 +27,6 @@ android_library(
         COMPONENTS_YOGA_TARGET,
         COMPONENTS_JSR_TARGET,
     ],
+    tests = [
+        COMPONENTS_TEST_TARGET,
+    ],
