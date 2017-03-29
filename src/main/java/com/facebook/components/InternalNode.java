@@ -1107,3 +1107,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   public InternalNode foregroundColor(@ColorInt int foregroundColor) {
     return foreground(
         ColorDrawableReference.create(mComponentContext)
+            .color(foregroundColor)
+            .build());
+  }
+
+  @Override
