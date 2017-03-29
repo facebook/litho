@@ -841,3 +841,4 @@ public class ComponentHost extends ViewGroup {
     // We cannot compare against mComponentAccessibilityDelegate directly, since it is not the
     // delegate that we receive here. Instead, we'll set this to true at the point that we set that
     // delegate explicitly.
+    mIsComponentAccessibilityDelegateSet = false;
