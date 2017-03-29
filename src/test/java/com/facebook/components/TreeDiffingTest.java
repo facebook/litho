@@ -613,3 +613,4 @@ public class TreeDiffingTest {
         true,
         state.getDiffTree());
 
+    assertEquals(secondState.getMountableOutputCount(), 5);
