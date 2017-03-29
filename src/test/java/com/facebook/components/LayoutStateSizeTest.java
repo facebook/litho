@@ -29,3 +29,4 @@ public class LayoutStateSizeTest {
 
   private LayoutState mLayoutState;
   private Component<?> mComponent;
+  private ComponentContext mContext;

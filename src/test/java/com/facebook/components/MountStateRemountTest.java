@@ -45,3 +45,11 @@ public class MountStateRemountTest {
 
   @Test
   public void testRemountSameLayoutState() {
+    final TestComponent component1 = TestDrawableComponent.create(mContext)
+        .build();
+    final TestComponent component2 = TestDrawableComponent.create(mContext)
+        .build();
+    final TestComponent component3 = TestDrawableComponent.create(mContext)
+        .build();
+    final TestComponent component4 = TestDrawableComponent.create(mContext)
+        .build();
