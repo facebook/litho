@@ -483,3 +483,4 @@ public class Stages {
             // We haven't see a parameter with this name yet. Therefore it must be either @Prop,
             // @State or an output.
             final boolean isFromProp = getParameterAnnotation(v, PROP_ANNOTATIONS) != null;
+            final boolean isFromState = getParameterAnnotation(v, STATE_ANNOTATIONS) != null;

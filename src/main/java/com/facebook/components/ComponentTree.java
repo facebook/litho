@@ -627,3 +627,9 @@ public class ComponentTree {
   }
 
   public void setRootAsync(Component<?> rootComponent) {
+    if (rootComponent == null) {
+      throw new IllegalArgumentException("Root component can't be null");
+    }
+
+    setRootAndSizeSpecInternal(
+        rootComponent,
