@@ -1129,3 +1129,5 @@ public class LayoutStateCalculateTest {
         SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
 
     assertEquals(4, layoutState.getMountableOutputCount());
+
+    // First and third output are the background and the foreground
