@@ -843,3 +843,7 @@ public class LayoutStateCalculateTest {
     assertNotEquals(
         layoutState1.getMountableOutputAt(1).getId(),
         layoutState2.getMountableOutputAt(1).getId());
+  }
+
+  @Test
+  public void testLayoutOutputsWithInteractiveLayoutSpecAsLeafs() {
