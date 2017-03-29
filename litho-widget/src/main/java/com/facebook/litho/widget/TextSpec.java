@@ -330,3 +330,5 @@ class TextSpec {
     if (layoutBuilder == null) {
       layoutBuilder = new TextLayoutBuilder();
       layoutBuilder.setShouldCacheLayout(false);
+    }
+
