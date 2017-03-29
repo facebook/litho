@@ -35,3 +35,5 @@ public class ComponentView extends ComponentHost {
   private boolean mIsAttached;
   private final Rect mPreviousMountBounds = new Rect();
 
+  private boolean mForceLayout;
+
