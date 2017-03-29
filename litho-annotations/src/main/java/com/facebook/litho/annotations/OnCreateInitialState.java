@@ -28,3 +28,10 @@ import java.lang.annotation.RetentionPolicy;
  *   @OnCreateInitialState
  *   protected void onCreateInitialState(
  *     ComponentContext c,
+ *     Output<SomeState> someState) {
+       someState.set(new SomeState());
+ *   }
+ * }
+ * }
+ * </pre>
+ */
