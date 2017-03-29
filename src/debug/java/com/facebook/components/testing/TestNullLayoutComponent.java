@@ -13,3 +13,7 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.ComponentLifecycle;
+
+public class TestNullLayoutComponent extends Component {
+
+  private static class Lifecycle extends ComponentLifecycle {
