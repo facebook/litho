@@ -121,3 +121,5 @@ class ImageSpec {
 
   @OnBoundsDefined
   static void onBoundsDefined(
+      ComponentContext c,
+      ComponentLayout layout,
