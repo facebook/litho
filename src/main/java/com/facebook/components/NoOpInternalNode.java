@@ -642,3 +642,13 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
+  public InternalNode contentDescription(CharSequence contentDescription) {
+    return this;
+  }
+
+  @Override
+  public InternalNode contentDescription(@StringRes int stringId) {
+    return this;
+  }
+
+  @Override
