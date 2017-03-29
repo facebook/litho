@@ -800,3 +800,9 @@ public class RecyclerBinderTest {
     private boolean mLayoutSyncCalled;
     private boolean mDidAcquireStateHandler;
     private boolean mReleased;
+    private int mChildWidth;
+    private int mChildHeight;
+
+    private TestComponentTreeHolder(ComponentInfo componentInfo) {
+      mComponentInfo = componentInfo;
+    }
