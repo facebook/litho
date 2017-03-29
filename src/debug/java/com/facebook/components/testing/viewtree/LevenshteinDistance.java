@@ -9,3 +9,4 @@ public class LevenshteinDistance {
    * @param s String
    * @param t String
    * @param maxAllowedEditDistance int
+   * @return min(LD(s, t), maxAllowedEditDistance + 1)
