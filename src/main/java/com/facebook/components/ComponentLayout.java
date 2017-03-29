@@ -265,3 +265,14 @@ public interface ComponentLayout {
     ContainerBuilder marginPercent(YogaEdge edge, float percent);
     ContainerBuilder marginAuto(YogaEdge edge);
 
+    ContainerBuilder paddingPx(YogaEdge edge, @Px int padding);
+    ContainerBuilder paddingAttr(
+        YogaEdge edge,
+        @AttrRes int resId,
+        @DimenRes int defaultResId);
+    ContainerBuilder paddingAttr(
+        YogaEdge edge,
+        @AttrRes int resId);
+    ContainerBuilder paddingRes(YogaEdge edge, @DimenRes int resId);
+    ContainerBuilder paddingDip(YogaEdge edge, @Dimension(unit = DP) int padding);
+    ContainerBuilder paddingPercent(YogaEdge edge, float percent);
