@@ -1289,3 +1289,12 @@ public class ComponentTree {
     }
 
     /**
+     * Specify a lock to be acquired during layout. This is an advanced feature
+     * that can lead to deadlock if you don't know what you are doing.
+     */
+    public Builder layoutLock(Object layoutLock) {
+      this.layoutLock = layoutLock;
+      return this;
+    }
+
+    /**
