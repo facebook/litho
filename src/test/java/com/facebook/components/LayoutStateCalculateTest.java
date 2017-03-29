@@ -341,3 +341,5 @@ public class LayoutStateCalculateTest {
     assertEquals(new Rect(0, 0, 30, 30), mountBounds);
 
     layoutState.getMountableOutputAt(1).getMountBounds(mountBounds);
+    assertEquals(new Rect(10, 10, 20, 20), mountBounds);
+

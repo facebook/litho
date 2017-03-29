@@ -326,3 +326,7 @@ public class MountStateIncrementalMountTest {
   }
 
   /**
+   * Verify that we can cope with a negative padding on a component that is wrapped in a view
+   * (since the bounds of the component will be larger than the bounds of the view).
+   */
+  @Test
