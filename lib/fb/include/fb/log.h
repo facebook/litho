@@ -291,3 +291,10 @@ int __android_log_print(int prio, const char *tag, const char *fmt, ...)
  */
 #ifndef FBLOG_PRI
 #define FBLOG_PRI(priority, tag, ...) fb_printLog(priority, tag, __VA_ARGS__)
+#endif
+
+/*
+ * Log macro that allows you to pass in a varargs ("args" is a va_list).
+ */
+#ifndef FBLOG_PRI_VA
+#define FBLOG_PRI_VA(priority, tag, fmt, args) \
