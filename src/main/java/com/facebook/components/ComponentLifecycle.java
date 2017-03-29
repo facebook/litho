@@ -438,3 +438,6 @@ public abstract class ComponentLifecycle implements EventDispatcher {
   }
 
   protected void onUnbind(ComponentContext c, Object mountedContent, Component<?> component) {
+    // Do nothing by default.
+  }
+
