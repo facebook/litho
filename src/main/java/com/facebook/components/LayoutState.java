@@ -1564,3 +1564,10 @@ class LayoutState {
       }
       mVisibilityOutputs.clear();
 
+      if (mTestOutputs != null) {
+        for (int i = 0, size = mTestOutputs.size(); i < size; i++) {
+          ComponentsPools.release(mTestOutputs.get(i));
+        }
+        mTestOutputs.clear();
+      }
+
