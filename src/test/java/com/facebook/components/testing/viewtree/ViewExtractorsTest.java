@@ -22,3 +22,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests {@link ViewExtractors}
  */
 @RunWith(ComponentsTestRunner.class)
+public class ViewExtractorsTest {
+
+  private View mView;
+  private TextView mTextView;
+  private TextView mGoneTextView;
+  private ImageView mImageView;
+  private ImageView mGoneImageView;

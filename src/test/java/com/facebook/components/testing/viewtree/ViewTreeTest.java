@@ -24,3 +24,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests {@link ViewTree}
  */
 @RunWith(ComponentsTestRunner.class)
+public class ViewTreeTest {
+
+  private ViewGroup mRoot;
+  private ViewGroup mChildLayout;
+  private View mChild1;
+  private View mGrandchild1;
+  private View mGrandchild2;
+  private ViewTree mTree;
+
+  @Before
+  public void setUp() {
