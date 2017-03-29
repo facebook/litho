@@ -177,3 +177,4 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
     } else {
       mColorStateList = colorStateList != null ? colorStateList : TextSpec.textColorStateList;
       mUserColor = mColorStateList.getDefaultColor();
+      if (mLayout != null) {
