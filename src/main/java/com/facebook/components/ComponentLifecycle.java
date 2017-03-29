@@ -201,3 +201,7 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     final boolean deferNestedTreeResolution =
         Component.isNestedTree(component) && !resolveNestedTree;
 
+    final TreeProps parentTreeProps = context.getTreeProps();
+    populateTreeProps(component, parentTreeProps);
+    context.setTreeProps(getTreePropsForChildren(context, component, parentTreeProps));
+
