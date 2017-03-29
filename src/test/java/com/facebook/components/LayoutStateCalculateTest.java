@@ -1323,3 +1323,4 @@ public class LayoutStateCalculateTest {
             .child(
                 TestDrawableComponent.create(c, true, true, true, true, false)
                     .withLayout()
+                    .flex(1)
