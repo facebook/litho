@@ -60,3 +60,5 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
   }
 
   /**
+   * Set the context to be used to acquire and release references.
+   *
