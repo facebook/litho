@@ -1234,3 +1234,4 @@ public class ComponentTree {
       context = null;
       root = null;
 
+      incrementalMountEnabled = true;
