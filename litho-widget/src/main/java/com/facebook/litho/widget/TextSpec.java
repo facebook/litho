@@ -440,3 +440,4 @@ class TextSpec {
       @FromMeasure Layout measureLayout,
       @FromMeasure Integer measuredWidth,
       @FromMeasure Integer measuredHeight,
+      Output<Layout> textLayout,
