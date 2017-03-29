@@ -107,3 +107,8 @@ public class ComponentTreeHolder {
 
     synchronized (this) {
       if (mComponentTree == componentTree && component == mComponentInfo.getComponent()) {
+        mIsTreeValid = true;
+      }
+    }
+  }
+
