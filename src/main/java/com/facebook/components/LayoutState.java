@@ -541,3 +541,4 @@ class LayoutState {
             ? currentDiffNode.getBackground()
             : null;
 
+        final LayoutOutput backgroundOutput = addDrawableComponent(
