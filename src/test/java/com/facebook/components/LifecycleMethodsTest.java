@@ -60,3 +60,4 @@ public class LifecycleMethodsTest {
   @Test
   public void testLifecycle() {
     mComponentView.onAttachedToWindow();
+    ComponentTestHelper.measureAndLayout(mComponentView);

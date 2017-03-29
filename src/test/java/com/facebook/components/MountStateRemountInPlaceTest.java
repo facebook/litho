@@ -39,3 +39,4 @@ import static org.mockito.Mockito.verify;
 
 @RunWith(ComponentsTestRunner.class)
 public class MountStateRemountInPlaceTest {
+  private ComponentContext mContext;

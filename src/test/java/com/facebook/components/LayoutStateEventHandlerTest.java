@@ -41,3 +41,25 @@ public class LayoutStateEventHandlerTest {
   @Before
   public void setup() {
     mUnspecifiedSizeSpec = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
+    mRootComponent = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        assertCorrectEventHandler(c.newEventHandler(1), 1, mRootComponent);
+        Layout.create(c, mNestedComponent).flexShrink(0).build();
+        assertCorrectEventHandler(c.newEventHandler(2), 2, mRootComponent);
+        Layout.create(c, mNestedComponent).flexShrink(0).build();
+        assertCorrectEventHandler(c.newEventHandler(3), 3, mRootComponent);
+
+        return TestLayoutComponent.create(c)
+            .buildWithLayout();
+      }
+    };
+    mNestedComponent = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        assertCorrectEventHandler(c.newEventHandler(1), 1, mNestedComponent);
+
+        return TestLayoutComponent.create(c)
+            .buildWithLayout();
+      }
+    };

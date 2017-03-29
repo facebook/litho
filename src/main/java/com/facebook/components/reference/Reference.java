@@ -50,3 +50,5 @@ public abstract class Reference<L> {
 
   /**
    * Releases the object previously acquired by calling
+   * {@link Reference#acquire(ComponentContext, Reference)}.
+   * An object that was released calling this function should not be retained or used in any way.

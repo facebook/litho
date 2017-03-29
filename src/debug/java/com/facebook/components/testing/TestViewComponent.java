@@ -119,3 +119,4 @@ public class TestViewComponent extends ComponentLifecycle {
 
   @Override
   protected void onMeasure(
+      ComponentContext c,

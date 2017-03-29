@@ -44,3 +44,6 @@ public class TestDrawableComponent extends ComponentLifecycle {
       boolean implementsAccessibility,
       boolean usesDisplayList,
       boolean isMountSizeDependent) {
+    for (TestDrawableComponent lifecycle : sInstances) {
+      if (lifecycle.mCallsShouldUpdateOnMount == callsShouldUpdateOnMount &&
+          lifecycle.mIsPureRender == isPureRender &&

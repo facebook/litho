@@ -33,3 +33,10 @@ import static org.junit.Assert.assertEquals;
 @RunWith(ComponentsTestRunner.class)
 public class MountStateBoundsTest {
 
+  private ComponentContext mContext;
+
+  @Before
+  public void setup() {
+    mContext = new ComponentContext(RuntimeEnvironment.application);
+  }
+

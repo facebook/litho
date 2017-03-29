@@ -57,3 +57,6 @@ public class ComponentViewMountTest {
     mComponentTree = ComponentTree.create(mContext, mComponent)
         .incrementalMount(false)
         .build();
+    mComponentTree.setSizeSpec(
+        SizeSpec.makeSizeSpec(100, EXACTLY),
+        SizeSpec.makeSizeSpec(100, EXACTLY));

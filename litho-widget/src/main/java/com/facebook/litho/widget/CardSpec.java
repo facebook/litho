@@ -83,3 +83,7 @@ class CardSpec {
 
     return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
         .child(
+            Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                .marginPx(HORIZONTAL, shadowHorizontal)
+                .marginPx(TOP, shadowTop)
+                .marginPx(BOTTOM, shadowBottom)

@@ -67,3 +67,4 @@ public final class ResourceDrawableReference extends ReferenceLifecycle<Drawable
 
   @Override
   protected void onRelease(
+      ComponentContext context,
