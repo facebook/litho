@@ -267,3 +267,6 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
       mPlaceholderReference = null;
       mPlaceholder = null;
       mGenericDraweeHierarchy.setPlaceholderImage(null);
+    }
+    if (mRetryReference != null) {
+      Reference.release(mContext, mRetry, mRetryReference);
