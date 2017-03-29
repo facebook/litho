@@ -223,3 +223,13 @@ public class LayoutOutputTest {
             MAX_SEQ_TEST));
 
     assertEquals(LayoutStateOutputIdCalculator.getSequenceFromId(mLayoutOutput.getId()), MAX_SEQ_TEST);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void levelOutOfRangeTest() {
+    ComponentLifecycle lifecycle = new ComponentLifecycle() {
+      @Override
+      int getId() {
+        return LIFECYCLE_TEST_ID;
+      }
+    };
