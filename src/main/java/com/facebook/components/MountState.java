@@ -848,3 +848,9 @@ class MountState {
     final ComponentLifecycle lifecycle = component.getLifecycle();
 
     // 2. Generate the component's mount state (this might also be a ComponentHost View).
+    Object content = acquireMountContent(component, host);
+    if (content == null) {
+      content = lifecycle.createMountContent(mContext);
+    }
+
+    lifecycle.mount(
