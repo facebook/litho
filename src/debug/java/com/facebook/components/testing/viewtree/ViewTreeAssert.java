@@ -132,3 +132,8 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
   }
 
   /**
+   * Tests if any view hierarchy under the root has the given view tag and value.
+   * @param tagId the id to look for
+   * @param tagValue the value that the id should have
+   * @return the assertions object
+   */
