@@ -38,3 +38,4 @@ android_library(
         COMPONENTS_RES_TARGET,
         COMPONENTS_VIEWCOMPATCREATOR_TARGET,
     ],
+)
