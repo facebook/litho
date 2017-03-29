@@ -807,3 +807,7 @@ class LayoutState {
       releaseNodeTree(child, isNestedTree);
     }
 
+    if (node.hasNestedTree() && node.getNestedTree() != NULL_LAYOUT) {
+      releaseNodeTree(node.getNestedTree(), true);
+    }
+
