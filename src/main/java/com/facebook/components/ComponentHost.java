@@ -735,3 +735,4 @@ public class ComponentHost extends ViewGroup {
           (Drawable) mountItem.getContent(),
           mountItem.getFlags(),
           mountItem.getNodeInfo());
+    }
