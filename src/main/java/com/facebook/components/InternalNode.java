@@ -1919,3 +1919,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     //       + node.getComponent().getLifecycle());
     // }
   }
+
+  public TreeProps getPendingTreeProps() {
+    return mPendingTreeProps;
+  }
