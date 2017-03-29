@@ -370,3 +370,6 @@ class EditTextSpec {
     editText.setClickable(editable);
     editText.setLongClickable(editable);
     editText.setCursorVisible(editable);
+    if (selection > -1) {
+      editText.setSelection(selection);
+    }
