@@ -303,3 +303,4 @@ class PropsBuilderMethodsSpecBuilder {
       builder.addAnnotation(annotation);
     }
 
+    for (AnnotationSpec annotation : extraAnnotations) {
