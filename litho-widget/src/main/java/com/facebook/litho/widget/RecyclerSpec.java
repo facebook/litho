@@ -178,3 +178,4 @@ class RecyclerSpec {
       @Prop(optional = true) RecyclerView.OnScrollListener onScrollListener,
       @FromBind ItemAnimator oldAnimator) {
     final RecyclerView recyclerView = recyclerViewWrapper.getRecyclerView();
+
