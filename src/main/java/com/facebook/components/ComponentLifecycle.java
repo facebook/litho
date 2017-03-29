@@ -91,3 +91,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
         YogaMeasureMode heightMode) {
       final InternalNode node = (InternalNode) cssNode.getData();
       final DiffNode diffNode = node.areCachedMeasuresValid() ? node.getDiffNode() : null;
+      final Component<?> component = node.getComponent();
