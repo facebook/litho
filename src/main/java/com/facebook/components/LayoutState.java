@@ -938,3 +938,4 @@ class LayoutState {
     if (logger != null) {
       logger.eventEnd(EVENT_COLLECT_RESULTS, component, ACTION_SUCCESS);
     }
+    ComponentsSystrace.endSection();
