@@ -569,3 +569,4 @@ public class ComponentTree {
   boolean layout() {
     assertMainThread();
 
+    return mountComponentIfDirty();
