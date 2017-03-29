@@ -38,3 +38,4 @@ public class ComponentTreeHolder {
   @GuardedBy("this")
   private StateHandler mStateHandler;
   @GuardedBy("this")
+  private ComponentInfo mComponentInfo;

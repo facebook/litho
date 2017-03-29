@@ -36,3 +36,5 @@ import com.facebook.litho.SizeSpec;
 import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.utils.IncrementalMountUtils;
 
+import static android.support.v7.widget.OrientationHelper.HORIZONTAL;
+import static android.support.v7.widget.OrientationHelper.VERTICAL;

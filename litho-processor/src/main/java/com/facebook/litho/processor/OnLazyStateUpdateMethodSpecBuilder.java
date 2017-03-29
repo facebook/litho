@@ -130,3 +130,9 @@ class OnLazyStateUpdateMethodSpecBuilder {
             "." + mStateName +
             " = " + mStateName + ".get()");
 
+    final MethodSpec.Builder isLazyStateUpdate =
+        MethodSpec.methodBuilder(STATE_UPDATE_IS_LAZY_METHOD_NAME)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(TypeName.BOOLEAN)
+            .addStatement("return true");
+
