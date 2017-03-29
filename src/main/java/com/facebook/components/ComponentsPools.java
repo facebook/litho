@@ -534,3 +534,8 @@ public class ComponentsPools {
   }
 
   @ThreadSafe(enableChecks = false)
+  static void release(Output output) {
+    output.release();
+    sOutputPool.release(output);
+  }
+
