@@ -144,3 +144,20 @@ public class MountStateTestItemTest {
                     Text.create(c)
                         .text(MY_TEST_STRING_1)
                         .withLayout().flexShrink(0)
+                        .testKey(TEST_ID_1))
+                .build();
+          }
+        });
+
+    ComponentViewAssert.assertThat(componentView).containsTestKey(TEST_ID_1);
+    final TestItem item1 = ComponentViewTestHelper.findTestItem(componentView, TEST_ID_1);
+    assertThat(item1.getTextContent()).isEqualTo(MY_TEST_STRING_1);
+  }
+
+  @Test
+  public void testMultipleTextItemsTextContents() {
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {

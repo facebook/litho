@@ -90,3 +90,5 @@ public class DuplicateParentStateTest {
         new ComponentContext(RuntimeEnvironment.application),
         component,
         -1,
+        mUnspecifiedSizeSpec,
+        mUnspecifiedSizeSpec,

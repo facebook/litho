@@ -33,3 +33,5 @@ import org.robolectric.RuntimeEnvironment;
 import static org.junit.Assert.assertEquals;
 
 @PrepareForTest({Component.class})
+@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
+@RunWith(ComponentsTestRunner.class)
