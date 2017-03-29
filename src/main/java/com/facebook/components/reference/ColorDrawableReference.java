@@ -106,3 +106,37 @@ public final class ColorDrawableReference extends ReferenceLifecycle<Drawable> {
       return "ColorDrawableReference";
     }
 
+    protected State() {
+      super(get());
+    }
+
+    @Override
+    public int hashCode() {
+      int result = mColor;
+      result = 31 * result + mAlpha;
+      return result;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+
+      State state = (State) o;
+
+      if (mColor != state.mColor) {
+        return false;
+      }
+
+      return mAlpha == state.mAlpha;
+    }
+  }
+
+  public static class PropsBuilder extends Reference.Builder<Drawable> {
+
+    private State mState;
