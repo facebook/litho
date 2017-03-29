@@ -29,3 +29,4 @@ import com.facebook.drawee.view.DraweeHolder;
 /**
  * A Drawable that draws images using Drawee.
  */
+public class DraweeDrawable<DH extends DraweeHierarchy>

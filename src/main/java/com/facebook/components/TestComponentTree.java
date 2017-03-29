@@ -45,3 +45,4 @@ public class TestComponentTree extends ComponentTree {
       int heightSpec,
       boolean diffingEnabled,
       @Nullable DiffNode diffNode) {
+    return LayoutState.calculate(
