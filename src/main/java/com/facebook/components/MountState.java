@@ -1470,3 +1470,10 @@ class MountState {
     mountViewIncrementally(view, rect);
 
     ComponentsPools.release(rect);
+  }
+
+  private static void mountViewIncrementally(View view, Rect localVisibleRect) {
+    assertMainThread();
+
+    if (view instanceof ComponentView) {
+      final ComponentView componentView = (ComponentView) view;
