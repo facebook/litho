@@ -764,3 +764,4 @@ public class ComponentsPools {
      * @param maxPoolSize The max pool size.
      * @throws IllegalArgumentException If the max pool size is less than zero.
      */
+    PoolWithCount(int maxPoolSize) {
