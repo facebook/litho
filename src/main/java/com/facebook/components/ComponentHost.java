@@ -259,3 +259,4 @@ public class ComponentHost extends ViewGroup {
     mTouchExpansionDelegate.unregisterTouchExpansion(index);
   }
 
+  /**
