@@ -365,3 +365,6 @@ public class BaseBinderTest {
       }
 
       mView = view;
+    }
+
+    @Override

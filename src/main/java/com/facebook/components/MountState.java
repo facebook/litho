@@ -147,3 +147,4 @@ class MountState {
    * @param layoutState
    * @param localVisibleRect If this variable is null, then mount everything, since incremental
    *                         mount is not enabled.
+   *                         Otherwise mount only what the rect (in local coordinates) contains
