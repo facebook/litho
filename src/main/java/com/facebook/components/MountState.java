@@ -953,3 +953,5 @@ class MountState {
             makeMeasureSpec(bottom - top, MeasureSpec.EXACTLY));
       }
 
+      if (force ||
+          view.getLeft() != left ||
