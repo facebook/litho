@@ -353,3 +353,9 @@ public class ComponentLifecycleTest {
     protected ComponentLayout onCreateLayout(ComponentContext c, Component<?> input) {
       return mNode;
     }
+
+    @Override
+    protected ComponentLayout onCreateLayoutWithSizeSpec(
+        ComponentContext c, int widthSpec, int heightSpec, Component<?> component) {
+      return mNode;
+    }

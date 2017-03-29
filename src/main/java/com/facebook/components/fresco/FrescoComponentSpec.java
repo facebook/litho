@@ -63,3 +63,4 @@ class FrescoComponentSpec {
   @OnMeasure
   protected static void onMeasure(
       ComponentContext c,
+      ComponentLayout layout,
