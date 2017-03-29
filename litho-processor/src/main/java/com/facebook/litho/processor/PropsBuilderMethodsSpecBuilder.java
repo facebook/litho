@@ -187,3 +187,4 @@ class PropsBuilderMethodsSpecBuilder {
             ".makeShallowCopy()");
   }
 
+  private MethodSpec regularBuilder(AnnotationSpec... extraAnnotations) {
