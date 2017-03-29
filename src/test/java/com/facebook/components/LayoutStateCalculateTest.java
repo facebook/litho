@@ -430,3 +430,4 @@ public class LayoutStateCalculateTest {
 
     //Check all the Layouts are in the correct position.
     assertTrue(isHostComponent(getComponentAt(layoutState, 0)));
+    assertTrue(getComponentAt(layoutState, 1) instanceof DrawableComponent);

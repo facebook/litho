@@ -520,3 +520,8 @@ public class ComponentHostTest {
     mount(2, v1);
 
     View v2 = new View(mContext);
+    MountItem mountItem2 = mount(0, v2);
+
+    assertEquals(1, mHost.getChildDrawingOrder(mHost.getChildCount(), 0));
+    assertEquals(0, mHost.getChildDrawingOrder(mHost.getChildCount(), 1));
+

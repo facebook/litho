@@ -178,3 +178,4 @@ class LayoutState {
         layoutState,
         node,
         true /* useNodePadding */,
+        node.getImportantForAccessibility(),
