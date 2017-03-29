@@ -128,3 +128,5 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
       } else if (action == ACTION_DOWN) {
         setSelection(clickedSpan);
       }
+
+      return true;
