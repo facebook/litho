@@ -281,3 +281,5 @@ public class ComponentLifecycleTest {
   public void testMountSpecYogaMeasureOutputNotSet() {
     ComponentLifecycle componentLifecycle = new TestMountSpecWithEmptyOnMeasure();
     YogaMeasureFunction measureFunction = getMeasureFunction();
+    when(mInput.getLifecycle()).thenReturn(componentLifecycle);
+    Whitebox.setInternalState(mInput, "mLifecycle", componentLifecycle);
