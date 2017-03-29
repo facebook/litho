@@ -1098,3 +1098,5 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     }
 
     return foreground(
+        ResourceDrawableReference.create(mComponentContext)
+            .resId(resId)
