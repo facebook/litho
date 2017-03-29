@@ -101,3 +101,4 @@ class FrescoComponentSpec {
       @Prop(optional = true) ColorFilter colorFilter) {
 
     GenericReferenceDraweeHierarchy draweeHierarchy = draweeDrawable.getDraweeHierarchy();
+    draweeHierarchy.setContext(c);
