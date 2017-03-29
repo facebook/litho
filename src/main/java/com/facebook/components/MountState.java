@@ -60,3 +60,4 @@ import static com.facebook.litho.ThreadUtils.assertMainThread;
  * @see ComponentView
  * @see LayoutState
  */
+class MountState {

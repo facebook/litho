@@ -200,3 +200,27 @@ public class TestDrawableComponent extends ComponentLifecycle {
       boolean callsShouldUpdateOnMount,
       boolean isPureRender,
       boolean canMeasure,
+      boolean implementsAccessibility,
+      boolean usesDisplayList) {
+    return create(
+        context,
+        defStyleAttr,
+        defStyleRes,
+        callsShouldUpdateOnMount,
+        isPureRender,
+        canMeasure,
+        implementsAccessibility,
+        usesDisplayList,
+        false);
+  }
+
+  public static Builder create(
+      ComponentContext context,
+      @AttrRes int defStyleAttr,
+      @StyleRes int defStyleRes,
+      boolean callsShouldUpdateOnMount,
+      boolean isPureRender,
+      boolean canMeasure,
+      boolean implementsAccessibility,
+      boolean usesDisplayList,
+      boolean isMountSizeDependent) {

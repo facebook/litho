@@ -115,3 +115,7 @@ class LayoutStateOutputIdCalculator {
   void clear() {
     mLayoutCurrentSequenceForBaseId.clear();
     mVisibilityCurrentSequenceForBaseId.clear();
+  }
+  
+  /**
+   * Calculates the final id for a LayoutOutput based on the baseId see
