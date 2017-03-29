@@ -647,3 +647,21 @@ public class ComponentHost extends ViewGroup {
     mDispatchDraw.end();
 
     DebugDraw.draw(this, canvas);
+  }
+
+  @Override
+  protected int getChildDrawingOrder(int childCount, int i) {
+    updateChildDrawingOrderIfNeeded();
+
+    // This method is called in very different contexts within a ViewGroup
+    // e.g. when handling input events, drawing, etc. We only want to call
+    // the draw methods if the InterleavedDispatchDraw is active.
+    if (mDispatchDraw.isRunning()) {
+      mDispatchDraw.drawNext();
+    }
+
+    return mChildDrawingOrder[i];
+  }
+
+  @Override
+  public boolean onTouchEvent(MotionEvent event) {
