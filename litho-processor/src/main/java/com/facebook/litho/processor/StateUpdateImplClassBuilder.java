@@ -244,3 +244,12 @@ public class StateUpdateImplClassBuilder {
     }
 
     stateUpdateClassBuilder.addMethod(updateStateMethodBuilder.build());
+
+    final MethodSpec.Builder isLazyStateStateUpdateMethodBuilder =
+        MethodSpec.methodBuilder(STATE_UPDATE_IS_LAZY_METHOD_NAME)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(TypeName.BOOLEAN)
+            .addStatement("return false");
+
+    stateUpdateClassBuilder.addMethod(isLazyStateStateUpdateMethodBuilder.build());
+

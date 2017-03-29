@@ -119,3 +119,4 @@ public class RecyclerBinderTest {
 
   @Test
   public void testOnMeasureAfterAddingItems() {
+    final List<ComponentInfo> components = new ArrayList<>();

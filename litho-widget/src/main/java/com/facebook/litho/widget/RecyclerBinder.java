@@ -223,3 +223,6 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     final int childrenWidthSpec, childrenHeightSpec;
     synchronized (this) {
       mComponentTreeHolders.add(position, holder);
+
+      childrenWidthSpec = getActualChildrenWidthSpec(holder);
+      childrenHeightSpec = getActualChildrenHeightSpec(holder);
