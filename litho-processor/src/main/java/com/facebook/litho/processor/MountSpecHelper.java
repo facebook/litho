@@ -318,3 +318,4 @@ public class MountSpecHelper extends ComponentSpecHelper {
     final ExecutableElement onBind = Utils.getAnnotatedMethod(
         mStages.getSourceElement(),
         OnBind.class);
+    if (onBind == null) {
