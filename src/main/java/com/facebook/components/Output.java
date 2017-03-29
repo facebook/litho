@@ -22,3 +22,7 @@ public class Output<T> {
    * Assumed thread-safe because the one write is before all the reads
    */
   @ThreadSafe(enableChecks = false)
+  public void set(T t) {
+    mT = t;
+  }
+
