@@ -7,3 +7,9 @@
 
 include_defs("//COMPONENTS_DEFS")
 
+android_library(
+    name = "testrunner",
+    srcs = glob(["*.java"]),
+    visibility = [
+        "PUBLIC",
+    ],

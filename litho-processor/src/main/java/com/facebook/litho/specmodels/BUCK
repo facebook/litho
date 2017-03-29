@@ -9,3 +9,20 @@ include_defs("//COMPONENTS_DEFS")
 
 java_library(
     name = "specmodels",
+    exported_deps = [
+        ":specmodels-bare",
+        make_dep_path("src/main/java/com/facebook/components/javapoet:javapoet"),
+        COMPONENTS_JAVAPOET_TARGET,
+        COMPONENTS_FBCORE_TARGET,
+        COMPONENTS_JSR_TARGET,
+    ],
+    tests = [
+        "//javatests/com/facebook/components/specmodels:specmodels",
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+)
+
+java_library(
+    name = "specmodels-bare",

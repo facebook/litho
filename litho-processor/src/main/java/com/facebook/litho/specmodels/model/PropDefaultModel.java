@@ -18,3 +18,4 @@ import com.squareup.javapoet.TypeName;
 
 /**
  * Model that is a simple base representation of a
+ * {@link com.facebook.litho.annotations.PropDefault}.

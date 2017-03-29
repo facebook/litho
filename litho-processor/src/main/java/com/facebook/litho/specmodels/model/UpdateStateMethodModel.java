@@ -20,3 +20,4 @@ import com.squareup.javapoet.TypeName;
 
 /**
  * Model that is an abstract representation of a method annotated with
+ * {@link com.facebook.litho.annotations.OnUpdateState}.

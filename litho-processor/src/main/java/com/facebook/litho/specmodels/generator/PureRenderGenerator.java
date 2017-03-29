@@ -14,3 +14,4 @@ import javax.lang.model.element.Modifier;
 
 import java.lang.annotation.Annotation;
 
+import com.facebook.litho.annotations.ShouldUpdate;

@@ -20,3 +20,4 @@ import com.squareup.javapoet.TypeName;
 
 /**
  * Model that is an abstract representation of a
+ * {@link com.facebook.litho.annotations.TreeProp}.

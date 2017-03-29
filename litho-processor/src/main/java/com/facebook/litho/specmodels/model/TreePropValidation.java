@@ -12,3 +12,4 @@ package com.facebook.components.specmodels.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.facebook.litho.annotations.OnCreateTreeProp;

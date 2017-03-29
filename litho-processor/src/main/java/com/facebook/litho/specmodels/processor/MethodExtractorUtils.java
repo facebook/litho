@@ -30,3 +30,4 @@ import com.squareup.javapoet.TypeName;
  * Extracts methods from the given input.
  */
 public class MethodExtractorUtils {
+  private static final String COMPONENTS_PACKAGE = "com.facebook.litho";

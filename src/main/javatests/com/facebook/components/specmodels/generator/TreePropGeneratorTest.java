@@ -15,3 +15,6 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 
 import com.facebook.common.internal.ImmutableList;
+import com.facebook.litho.annotations.OnCreateTreeProp;
+import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.annotations.State;

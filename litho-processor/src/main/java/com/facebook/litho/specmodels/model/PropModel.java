@@ -15,3 +15,4 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 
 import com.facebook.common.internal.ImmutableList;
+import com.facebook.litho.annotations.ResType;

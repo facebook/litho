@@ -29,3 +29,4 @@ components_robolectric_test(
     deps = [
         ":res",
         ":testutil",
+        COMPONENTS_ANDROIDSUPPORT_TARGET,

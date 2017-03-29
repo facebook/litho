@@ -11,3 +11,5 @@ package com.facebook.samples.litho;
 import android.app.Application;
 
 import com.facebook.components.ComponentsDescriptorProvider;
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.soloader.SoLoader;

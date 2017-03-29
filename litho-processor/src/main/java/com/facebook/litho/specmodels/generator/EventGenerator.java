@@ -11,3 +11,5 @@ package com.facebook.components.specmodels.generator;
 
 import javax.lang.model.element.Modifier;
 
+import com.facebook.litho.annotations.FromEvent;
+import com.facebook.litho.annotations.Param;

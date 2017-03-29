@@ -13,3 +13,4 @@ import javax.annotation.concurrent.Immutable;
 import javax.lang.model.element.Modifier;
 
 import com.facebook.common.internal.ImmutableList;
+import com.facebook.litho.annotations.OnEvent;
