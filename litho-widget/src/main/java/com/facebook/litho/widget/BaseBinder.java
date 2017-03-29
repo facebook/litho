@@ -208,3 +208,26 @@ public abstract class BaseBinder<
       return;
     }
 
+    List<Component<?>> componentList;
+    boolean shouldInsertItems = true;
+
+    synchronized (this) {
+      if (positionStart < mComponentTrees.getFirstPosition()) {
+        // If the new items are inserted before the current range, than shift right the range.
+        mComponentTrees.shiftAllRight(itemCount);
+
+        shouldInsertItems = false;
+      }
+
+      // Do nothing if the items are inserted after the current range.
+      if (positionStart > mComponentTrees.getFirstPosition() + mComponentTrees.size()) {
+        shouldInsertItems = false;
+      }
+    }
+
+    if (shouldInsertItems) {
+      componentList = acquireList(itemCount);
+      // This must remain outside the synchronized block to maintain thread safety.
+      for (int i = positionStart, size = positionStart + itemCount; i < size; i++) {
+        componentList.add(createComponent(mContext, i));
+      }
