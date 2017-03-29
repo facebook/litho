@@ -53,3 +53,4 @@ class FrescoComponentSpec {
   @PropDefault protected static final ScalingUtils.ScaleType failureImageScaleType =
       DEFAULT_SCALE_TYPE;
   @PropDefault protected static final PointF placeholderImageFocusPoint = new PointF(0.5f, 0.5f);
+  @PropDefault protected static final ScalingUtils.ScaleType placeholderImageScaleType =
