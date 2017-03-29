@@ -78,3 +78,8 @@ public abstract class GridComponentBinder extends RecyclerComponentBinder<
     final int firstItemPosition = layoutManager.findFirstVisibleItemPosition();
     final int lastItemPosition = layoutManager.findLastVisibleItemPosition();
 
+    if (firstItemPosition == RecyclerView.NO_POSITION ||
+        lastItemPosition == RecyclerView.NO_POSITION) {
+      return;
+    }
+
