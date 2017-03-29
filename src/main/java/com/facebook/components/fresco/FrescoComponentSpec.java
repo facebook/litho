@@ -111,3 +111,4 @@ class FrescoComponentSpec {
 
     draweeHierarchy.setActualImageScaleType(actualImageScaleType);
     draweeHierarchy.setFadeDuration(fadeDuration);
+    draweeHierarchy.setFailureReference(failureImage, failureImageScaleType);
