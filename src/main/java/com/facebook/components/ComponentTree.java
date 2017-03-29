@@ -323,3 +323,5 @@ public class ComponentTree {
 
     if (needsAndroidLayout || mComponentView.isMountStateDirty()) {
       mComponentView.requestLayout();
+    } else {
+      mComponentView.rebind();

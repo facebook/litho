@@ -291,3 +291,5 @@ class EventDispatcherUtils {
 
     final EventDispatcher eventDispatcher = eventHandler.mHasEventDispatcher.getEventDispatcher();
     final boolean returnValue = (boolean) eventDispatcher.dispatchOnEvent(
+        eventHandler,
+        sPerformAccessibilityActionEvent);
