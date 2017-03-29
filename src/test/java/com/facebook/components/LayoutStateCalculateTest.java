@@ -2024,3 +2024,4 @@ public class LayoutStateCalculateTest {
     verify(componentSpy, times(1)).clearCachedLayout();
 
     // Check total layout outputs.
+    assertEquals(2, layoutState.getMountableOutputCount());
