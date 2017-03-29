@@ -174,3 +174,4 @@ public class ComponentsPools {
         sShouldUseCSSNodeJNI = ComponentsConfiguration.shouldUseCSSNodeJNI;
       }
 
+      if (sShouldUseCSSNodeJNI) {
