@@ -430,3 +430,7 @@ public class ComponentHost extends ViewGroup {
     ComponentHostUtils.moveItem(oldIndex, newIndex, mMountItems, mScrapMountItemsArray);
 
     releaseScrapDataStructuresIfNeeded();
+
+    if (content instanceof View) {
+      finishTemporaryDetach(((View) content));
+    }
