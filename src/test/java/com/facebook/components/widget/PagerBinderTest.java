@@ -136,3 +136,18 @@ public class PagerBinderTest {
   public void testBinderUpdateWith3QuarterWidthPageAndPage5() {
     mBinder = new TestPagerComponentBinder(mContext, 0, .75f);
     mBinder.getRangeController().notifyOnPageSelected(5);
+
+    for (int i = 0; i < 2; i++) {
+      assertNull(mBinder.getComponentAt(i));
+    }
+
+    for (int i = 2; i < 9; i++) {
+      assertNotNull(mBinder.getComponentAt(i));
+    }
+
+    assertNull(mBinder.getComponentAt(9));
+  }
+
+  @Test
+  public void testBinderUpdateWithhalfWidthPageAndPage5() {
+    mBinder = new TestPagerComponentBinder(mContext, 0, .5f);

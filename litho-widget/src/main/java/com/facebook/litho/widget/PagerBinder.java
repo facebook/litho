@@ -139,3 +139,5 @@ public abstract class PagerBinder extends BaseBinder<
       mViewPager.setAdapter(null);
       mViewPager = null;
     }
+  }
+
