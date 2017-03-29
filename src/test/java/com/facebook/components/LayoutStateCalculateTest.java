@@ -1135,3 +1135,5 @@ public class LayoutStateCalculateTest {
     assertTrue(getComponentAt(layoutState, 3) instanceof DrawableComponent);
   }
 
+  @Test
+  public void testLayoutOutputsForNonComponentClickableNode() {
