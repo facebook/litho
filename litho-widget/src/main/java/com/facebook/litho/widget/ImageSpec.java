@@ -185,3 +185,5 @@ class ImageSpec {
       MatrixDrawable convertDrawable,
       @Prop(resType = ResType.DRAWABLE) Reference<Drawable> src) {
     Reference.release(c, convertDrawable.getMountedDrawable(), src);
+    convertDrawable.unmount();
+  }
