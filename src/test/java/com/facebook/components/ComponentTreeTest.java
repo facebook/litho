@@ -351,3 +351,5 @@ public class ComponentTreeTest {
         .incrementalMount(false)
         .build();
 
+    Component component2 = TestDrawableComponent.create(mContext)
+        .build();
