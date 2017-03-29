@@ -70,3 +70,4 @@ public class TextSpecTest {
 
   @Test(expected = IllegalStateException.class)
   public void testTextIsRequired() throws Exception {
+    Text.create(mContext).build();
