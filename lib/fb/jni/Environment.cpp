@@ -12,3 +12,7 @@
 #include <fb/StaticInitialized.h>
 #include <fb/ThreadLocal.h>
 #include <fb/Environment.h>
+#include <fb/fbjni/CoreClasses.h>
+#include <fb/fbjni/NativeRunnable.h>
+
+#include <functional>

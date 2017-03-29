@@ -10,3 +10,4 @@
 #include <jni/Countable.h>
 #include <fb/Environment.h>
 #include <fb/fbjni.h>
+#include <fb/fbjni/NativeRunnable.h>

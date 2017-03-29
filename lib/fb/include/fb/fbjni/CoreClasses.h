@@ -212,3 +212,4 @@ protected:
   /// the Java class actually has (i.e. with static create() functions).
   template<typename... Args>
   static local_ref<T> newInstance(Args... args) {
+    return detail::newInstance<T>(args...);

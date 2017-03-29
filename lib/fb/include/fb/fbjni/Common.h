@@ -29,3 +29,14 @@
 # endif
 #endif
 
+// If a pending JNI Java exception is found, wraps it in a JniException object and throws it as
+// a C++ exception.
+#define FACEBOOK_JNI_THROW_PENDING_EXCEPTION() \
+  ::facebook::jni::throwPendingJniExceptionAsCppException()
+
+// If the condition is true, throws a JniException object, which wraps the pending JNI Java
+// exception if any. If no pending exception is found, throws a JniException object that wraps a
+// RuntimeException throwable. 
+#define FACEBOOK_JNI_THROW_EXCEPTION_IF(CONDITION) \
+  ::facebook::jni::throwCppExceptionIf(CONDITION)
+

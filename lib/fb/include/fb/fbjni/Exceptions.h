@@ -29,3 +29,5 @@
 #include <fb/visibility.h>
 
 #include "Common.h"
+#include "References.h"
+#include "CoreClasses.h"
