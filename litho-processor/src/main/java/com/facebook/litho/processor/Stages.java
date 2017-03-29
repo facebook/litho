@@ -2207,3 +2207,7 @@ public class Stages {
         throw new ComponentsProcessingException(
             variableElement,
             "Diff Type parameter does not match Prop " + componentMember);
+      }
+
+      shouldUpdateComponent
+          .addStatement(
