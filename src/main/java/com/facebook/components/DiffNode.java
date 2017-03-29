@@ -144,3 +144,7 @@ class DiffNode implements Cloneable {
   void release() {
     mComponent = null;
 
+    mContent = null;
+    mBackground = null;
+    mForeground = null;
+    mHost = null;

@@ -269,3 +269,9 @@ public class TreeDiffingTest {
     InternalNode layoutTreeRoot = LayoutState.createTree(
         component2,
         mContext);
+    LayoutState.applyDiffNodeToUnchangedNodes(layoutTreeRoot, node);
+    checkAllComponentsHaveMeasureCache(layoutTreeRoot);
+  }
+
+  @Test
+  public void testPartiallyCachedMeasures() {
