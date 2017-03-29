@@ -408,3 +408,7 @@ public class ComponentHost extends ViewGroup {
     if (content instanceof Drawable) {
       moveDrawableItem(item, oldIndex, newIndex);
     } else if (content instanceof View) {
+      mIsChildDrawingOrderDirty = true;
+
+      startTemporaryDetach(((View) content));
+
