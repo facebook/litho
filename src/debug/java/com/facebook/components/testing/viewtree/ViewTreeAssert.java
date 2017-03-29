@@ -62,3 +62,13 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
         actual.makeString(GET_TEXT_FUNCTION));
 
     final ImmutableList<View> similarPath = getPathToVisibleSimilarText(text);
+    if (similarPath != null) {
+      errorMsg += String.format(
+          "\nHowever, a near-match was found: \"%s\"",
+          GET_TEXT_FUNCTION.apply(similarPath.get(similarPath.size() - 1)));
+    } else {
+      errorMsg += "\nNo near-match was found.";
+    }
+    return errorMsg;
+  }
+
