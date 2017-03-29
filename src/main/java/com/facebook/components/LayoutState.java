@@ -1579,3 +1579,4 @@ class LayoutState {
         ComponentsPools.release(mDiffTreeRoot);
         mDiffTreeRoot = null;
       }
+      mLayoutStateOutputIdCalculator.clear();
