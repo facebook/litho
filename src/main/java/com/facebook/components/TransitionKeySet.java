@@ -292,3 +292,4 @@ class TransitionKeySet implements TransitionListener {
       return false;
     }
 
+    mTransitionKeySetListener = listener;
