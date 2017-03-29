@@ -138,3 +138,7 @@ public class ComponentTreeTest {
             mComponent.getId(),
             widthSpec,
             heightSpec));
+  }
+
+  @Test
+  public void testCreate() {
