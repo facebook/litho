@@ -524,3 +524,4 @@ class TextSpec {
     return new TextDrawable();
   }
 
+  @OnMount

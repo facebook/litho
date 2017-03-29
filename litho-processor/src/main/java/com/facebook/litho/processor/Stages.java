@@ -636,3 +636,8 @@ public class Stages {
       for (VariableElement v : getProps(stage)) {
         // Validation unnecessary - already handled by validateAnnotatedParameters
         final String variableName = v.getSimpleName().toString();
+        variableNameToElementMap.put(variableName, v);
+      }
+    }
+
+    mProps = new ArrayList<>(variableNameToElementMap.values());
