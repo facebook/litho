@@ -200,3 +200,15 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
     return mClickableSpans;
   }
 
+  @Override
+  public void setAlpha(int alpha) {
+  }
+
+  @Override
+  public void setColorFilter(ColorFilter cf) {
+  }
+
+  @Override
+  public int getOpacity() {
+    return 0;
+  }
