@@ -1491,3 +1491,11 @@ class LayoutState {
     return mMountableOutputBottoms;
   }
 
+  int getVisibilityOutputCount() {
+    return mVisibilityOutputs.size();
+  }
+
+  VisibilityOutput getVisibilityOutputAt(int index) {
+    return mVisibilityOutputs.get(index);
+  }
+
