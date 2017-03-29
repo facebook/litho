@@ -148,3 +148,4 @@ public abstract class SpecHelper implements Closeable {
   }
 
   /**
+   * @return true if this spec supports {@link com.facebook.litho.annotations.State} parameters
