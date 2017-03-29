@@ -87,3 +87,8 @@ final class ViewPredicates {
           return contentDescriptions.contains(contentDescription);
         }
 
+        return contentDescription.equals(input.getContentDescription());
+      }
+    };
+  }
+
