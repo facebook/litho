@@ -558,3 +558,8 @@ public class MountSpecHelper extends ComponentSpecHelper {
         ClassName.INT,
     };
 
+    final TypeName returnType = ClassName.get(getExtraAccessibilityNodeAt.getReturnType());
+    if (!returnType.equals(ClassName.INT)) {
+      throw new ComponentsProcessingException(
+          getExtraAccessibilityNodeAt,
+          methodDescription.name + "'s return type should be int");
