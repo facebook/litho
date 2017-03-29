@@ -231,3 +231,5 @@ public class ComponentLifecycleTest {
 
     verify(componentLifecycle).onCreateLayoutWithSizeSpec(
         mContext,
+        mNestedTreeWidthSpec,
+        mNestedTreeHeightSpec,
