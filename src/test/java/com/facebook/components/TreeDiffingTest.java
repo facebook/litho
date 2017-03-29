@@ -585,3 +585,8 @@ public class TreeDiffingTest {
             .child(TestDrawableComponent.create(c))
             .child(
                 Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    .child(TestDrawableComponent.create(c)))
+            .build();
+      }
+    };
+
