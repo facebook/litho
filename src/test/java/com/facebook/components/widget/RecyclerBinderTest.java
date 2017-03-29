@@ -460,3 +460,4 @@ public class RecyclerBinderTest {
 
   @Test
   public void testMoveRange() {
+    final List<ComponentInfo> components = prepareLoadedBinder();
