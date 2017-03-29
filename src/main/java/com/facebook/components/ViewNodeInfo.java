@@ -91,3 +91,4 @@ class ViewNodeInfo {
     return mLayoutDirection;
   }
 
+  void setExpandedTouchBounds(InternalNode node, int l, int t, int r, int b) {
