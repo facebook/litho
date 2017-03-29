@@ -1344,3 +1344,7 @@ public class Stages {
             v.getSimpleName().toString());
       }
 
+      for (VariableElement v : Utils.getParametersWithAnnotation(element, Param.class)) {
+        eventHandlerParams.add("\n($T) eventHandler.params[$L],", ClassName.get(v.asType()), i);
+        i++;
+      }
