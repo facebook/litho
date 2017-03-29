@@ -163,3 +163,6 @@ public class ComponentHost extends ViewGroup {
     }
 
     ComponentHostUtils.removeItem(index, mMountItems, mScrapMountItemsArray);
+    releaseScrapDataStructuresIfNeeded();
+    maybeInvalidateAccessibilityState(mountItem);
+  }
