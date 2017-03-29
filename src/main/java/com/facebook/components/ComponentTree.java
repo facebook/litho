@@ -1069,3 +1069,4 @@ public class ComponentTree {
   }
 
   private boolean isCompatibleComponentAndSpec(LayoutState layoutState) {
+    assertHoldsLock(this);
