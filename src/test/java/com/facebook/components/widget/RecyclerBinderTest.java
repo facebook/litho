@@ -300,3 +300,4 @@ public class RecyclerBinderTest {
   @Test
   public void onRemeasureWithDifferentSize() {
     final List<ComponentInfo> components = prepareLoadedBinder();
+    for (int i = 0; i < components.size(); i++) {
