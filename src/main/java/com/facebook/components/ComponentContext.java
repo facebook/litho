@@ -69,3 +69,15 @@ public class ComponentContext extends ContextWrapper {
       String logTag,
       ComponentsLogger logger,
       StateHandler stateHandler) {
+    super((context instanceof ComponentContext)
+        ? ((ComponentContext) context).getBaseContext()
+        : context);
+
+    if (logger != null && logTag == null) {
+      throw new IllegalStateException("When a ComponentsLogger is set, a LogTag must be set");
+    }
+
+    final ComponentContext componentContext = (context instanceof ComponentContext)
+        ? (ComponentContext) context
+        : null;
+    final boolean transferLogging = (componentContext != null && logTag == null && logger == null);

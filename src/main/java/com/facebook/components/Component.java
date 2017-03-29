@@ -194,3 +194,22 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
     return component;
   }
 
+  boolean hasCachedLayout() {
+    return (mLastMeasuredLayout != null);
+  }
+
+  InternalNode getCachedLayout() {
+    return mLastMeasuredLayout;
+  }
+
+  void releaseCachedLayout() {
+    if (mLastMeasuredLayout != null) {
+      LayoutState.releaseNodeTree(mLastMeasuredLayout, true /* isNestedTree */);
+      mLastMeasuredLayout = null;
+    }
+  }
+
+  void clearCachedLayout() {
+    mLastMeasuredLayout = null;
+  }
+

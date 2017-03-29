@@ -697,3 +697,13 @@ public class TreeDiffingTest {
         null);
 
     assertEquals(LayoutOutput.STATE_UNKNOWN, state.getMountableOutputAt(2).getUpdateState());
+
+    LayoutState secondState = componentTree.calculateLayoutState(
+        null,
+        mContext,
+        component2,
+        SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
+        SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
+        true,
+        state.getDiffTree());
+
