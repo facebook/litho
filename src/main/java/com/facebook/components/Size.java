@@ -14,3 +14,4 @@ import com.facebook.infer.annotation.ThreadConfined;
 /**
  * Public API for MeasureOutput.
  */
+@ThreadConfined(ThreadConfined.ANY)

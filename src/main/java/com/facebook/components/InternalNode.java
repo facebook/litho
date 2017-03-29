@@ -36,3 +36,4 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.reference.ColorDrawableReference;
 import com.facebook.litho.reference.Reference;
 import com.facebook.litho.reference.ResourceDrawableReference;
+import com.facebook.infer.annotation.ThreadConfined;
