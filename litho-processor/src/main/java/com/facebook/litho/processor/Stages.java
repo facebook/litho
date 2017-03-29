@@ -2445,3 +2445,4 @@ public class Stages {
     final List<? extends VariableElement> parameters = Utils.getEnclosedFields(element);
     final MethodSpec.Builder methodBuilder =
         MethodSpec.methodBuilder(fixedMethod.name);
+
