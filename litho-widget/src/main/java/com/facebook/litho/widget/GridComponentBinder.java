@@ -83,3 +83,7 @@ public abstract class GridComponentBinder extends RecyclerComponentBinder<
       return;
     }
 
+    getRangeController().notifyOnScroll(
+        firstItemPosition,
+        lastItemPosition - firstItemPosition + 1);
+
