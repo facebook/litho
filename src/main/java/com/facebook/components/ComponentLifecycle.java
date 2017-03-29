@@ -606,3 +606,13 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     return new EventHandler<E>(c, id, params);
   }
 
+  public interface StateUpdate {
+    void updateState(StateContainer stateContainer, Component newComponent);
+  }
+
+  /**
+   * @return true if the Component is using state, false otherwise.
+   */
+  protected boolean hasState() {
+    return false;
+  }
