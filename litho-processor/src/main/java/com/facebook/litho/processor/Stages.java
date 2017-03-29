@@ -621,3 +621,7 @@ public class Stages {
             stage,
             "Method " + stage.getSimpleName() + " in " + mSourceElement.getQualifiedName() +
                 " must be static");
+      }
+    }
+  }
+

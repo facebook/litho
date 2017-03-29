@@ -121,3 +121,9 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
       clickedSpan = getClickableSpanInProximityToClick(x, y, touchRadius);
     }
 
+    if (clickedSpan != null) {
+      if (action == ACTION_UP) {
+        clearSelection();
+        clickedSpan.onClick(view);
+      } else if (action == ACTION_DOWN) {
+        setSelection(clickedSpan);
