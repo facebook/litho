@@ -2580,3 +2580,4 @@ public class Stages {
         .implName(getImplMemberInstanceName())
         .requiredSetName("mRequired")
         .builderClass(propsBuilderClassName)
+        .componentClassName(componentClassName)
