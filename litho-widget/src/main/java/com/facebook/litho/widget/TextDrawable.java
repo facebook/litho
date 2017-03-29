@@ -117,3 +117,6 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
 
     ClickableSpan clickedSpan = getClickableSpanInCoords(x, y);
 
+    if (clickedSpan == null) {
+      clickedSpan = getClickableSpanInProximityToClick(x, y, touchRadius);
+    }
