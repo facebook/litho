@@ -206,3 +206,11 @@ public class ComponentTreeTest {
 
     componentTree.setSizeSpecAsync(mWidthSpec, mHeightSpec);
     componentTree.setSizeSpec(mWidthSpec2, mHeightSpec2);
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    // Since this happens post creation, it's not in general safe to update the main thread layout
+    // state synchronously, so the result should be in the background layout state
+    postSizeSpecChecks(
+        componentTree,
+        "mBackgroundLayoutState",
