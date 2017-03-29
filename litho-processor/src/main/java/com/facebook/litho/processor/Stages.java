@@ -1444,3 +1444,5 @@ public class Stages {
 
     for (VariableElement v : fromParamElements) {
       fromParams.add(new Parameter(ClassName.get(v.asType()), v.getSimpleName().toString()));
+    }
+
