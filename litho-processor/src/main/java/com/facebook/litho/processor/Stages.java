@@ -1470,3 +1470,9 @@ public class Stages {
 
     final List<VariableElement> updateMethodParamElements =
         Utils.getParametersWithAnnotation(element, Param.class);
+
+    final OnStateUpdateMethodSpecBuilder builder = new OnStateUpdateMethodSpecBuilder()
+        .componentClass(componentClass)
+        .lifecycleImplClass(mSimpleClassName)
+        .stateUpdateClassName(getStateUpdateClassName(element));
+
