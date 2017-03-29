@@ -206,3 +206,4 @@ public class BaseBinderTest {
 
   @Test
   public void testNotifyItemMovedFromBeforeCollection() {
+    mount();

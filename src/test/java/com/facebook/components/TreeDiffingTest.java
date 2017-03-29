@@ -160,3 +160,6 @@ public class TreeDiffingTest {
   public void testCachedMeasureFunction() {
     final Component component = TestDrawableComponent.create(mContext)
         .build();
+
+    InternalNode node = createInternalNodeForMeasurableComponent(component);
+    DiffNode diffNode = new DiffNode();

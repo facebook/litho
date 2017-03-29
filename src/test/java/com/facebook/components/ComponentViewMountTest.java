@@ -142,3 +142,5 @@ public class ComponentViewMountTest {
     mComponentView.onAttachedToWindow();
 
     assertEquals(1, mComponentView.getRequestLayoutInvocationCount());
+
+    ComponentTree newComponentTree =
