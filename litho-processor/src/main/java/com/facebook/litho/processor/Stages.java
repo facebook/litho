@@ -2704,3 +2704,4 @@ public class Stages {
     final String implClassName = getImplClassName();
     final String implInstanceName = getImplInstanceName();
     final String implMemberInstanceName = getImplMemberInstanceName();
+    final String contextMemberInstanceName = "mContext";
