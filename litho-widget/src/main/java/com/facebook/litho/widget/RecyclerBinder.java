@@ -482,3 +482,4 @@ public class RecyclerBinder implements Binder<RecyclerView> {
             || SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED)) {
           outSize.height = mRange.measuredSize;
         } else {
+          outSize.height = SizeSpec.getSize(heightSpec);
