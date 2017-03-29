@@ -121,3 +121,5 @@ class LayoutState {
   private final List<VisibilityOutput> mVisibilityOutputs = new ArrayList<>(8);
   private final LongSparseArray<Integer> mOutputsIdToPositionMap = new LongSparseArray<>(8);
   private final LayoutStateOutputIdCalculator mLayoutStateOutputIdCalculator;
+  private final ArrayList<LayoutOutput> mMountableOutputTops = new ArrayList<>();
+  private final ArrayList<LayoutOutput> mMountableOutputBottoms = new ArrayList<>();

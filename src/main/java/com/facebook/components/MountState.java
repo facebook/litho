@@ -74,3 +74,6 @@ class MountState {
   // map.
   private final LongSparseArray<VisibilityItem> mVisibilityIdToItemMap;
 
+  // Holds a list of MountItems that are currently mounted which can mount incrementally.
+  private final LongSparseArray<MountItem> mCanMountIncrementallyMountItems;
+
