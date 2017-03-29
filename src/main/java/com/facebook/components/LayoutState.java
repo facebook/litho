@@ -625,3 +625,6 @@ class LayoutState {
       if (layoutOutput != null && layoutOutput.hasViewNodeInfo() && SDK_INT >= M) {
         layoutOutput.getViewNodeInfo().setForeground(foreground);
       } else {
+        final LayoutOutput convertForeground = (currentDiffNode != null)
+            ? currentDiffNode.getForeground()
+            : null;
