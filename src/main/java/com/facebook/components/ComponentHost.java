@@ -1046,3 +1046,4 @@ public class ComponentHost extends ViewGroup {
         ComponentsSystrace.endSection();
       }
 
+      mDrawIndex = mItemsToDraw;
