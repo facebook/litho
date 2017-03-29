@@ -23,3 +23,5 @@ class TransferStateSpecBuilder {
   private Set<String> mStateParameters = new LinkedHashSet<>();
   private ClassName mContextClassName;
   private ClassName mStateContainerClassName;
+  private ClassName mComponentClassName;
+  private String mComponentImplClassName;

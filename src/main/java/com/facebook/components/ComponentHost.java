@@ -34,3 +34,6 @@ import static com.facebook.litho.AccessibilityUtils.isAccessibilityEnabled;
 import static com.facebook.litho.ComponentHostUtils.maybeInvalidateAccessibilityState;
 
 /**
+ * A {@link ViewGroup} that can host the mounted state of a {@link Component}. This is used
+ * by {@link MountState} to wrap mounted drawables to handle click events and update drawable
+ * states accordingly.

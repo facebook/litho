@@ -55,3 +55,4 @@ public class MountStateRemountEventHandlerTest {
     final ComponentClickListener clickListener =
         MountState.getComponentClickListener(componentView);
     assertNotNull(clickListener);
+

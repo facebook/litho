@@ -71,3 +71,6 @@ public final class ResourceDrawableReference extends ReferenceLifecycle<Drawable
       Drawable drawable,
       Reference reference) {
     mDrawableResourcesCache.release(drawable, ((State) reference).mResId);
+  }
+
+  private static class State extends Reference<Drawable> {

@@ -47,3 +47,5 @@ public class MountStateRemountInPlaceTest {
     mComponentsLogger = mock(ComponentsLogger.class);
     mContext = new ComponentContext(RuntimeEnvironment.application, "tag", mComponentsLogger);
   }
+
+  @Test
