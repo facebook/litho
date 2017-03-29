@@ -126,3 +126,4 @@ public class ComponentTreeHolder {
 
   synchronized void setComponentInfo(ComponentInfo componentInfo) {
     invalidateTree();
+    mComponentInfo = componentInfo;

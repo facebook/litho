@@ -279,3 +279,8 @@ public class RecyclerBinder implements Binder<RecyclerView> {
       holder = mComponentTreeHolders.get(position);
       shouldComputeLayout = mRange != null && position >= mCurrentFirstVisiblePosition &&
           position < mCurrentFirstVisiblePosition + mRange.estimatedViewportCount;
+
+      holder.setComponentInfo(componentInfo);
+
+      childrenWidthSpec = getActualChildrenWidthSpec(holder);
+      childrenHeightSpec = getActualChildrenHeightSpec(holder);
