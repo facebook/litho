@@ -815,3 +815,4 @@ public class TreeDiffingTest {
 
     assertTrue(component.wasMeasureCalled());
 
+    final TestComponent secondComponent = TestDrawableComponent.create(mContext)
