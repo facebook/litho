@@ -308,3 +308,16 @@ class LayoutState {
       handlerComponent = (Component<?>) fullImpressionHandler.mHasEventDispatcher;
     } else {
       handlerComponent = (Component<?>) invisibleHandler.mHasEventDispatcher;
+    }
+
+    visibilityOutput.setComponent(handlerComponent);
+
+    visibilityOutput.setBounds(l, t, r, b);
+    visibilityOutput.setVisibleEventHandler(visibleHandler);
+    visibilityOutput.setFocusedEventHandler(focusedHandler);
+    visibilityOutput.setFullImpressionEventHandler(fullImpressionHandler);
+    visibilityOutput.setInvisibleEventHandler(invisibleHandler);
+
+    return visibilityOutput;
+  }
+

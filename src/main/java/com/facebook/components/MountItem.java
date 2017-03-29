@@ -221,3 +221,10 @@ class MountItem {
   }
 
   /**
+   * @return Whether the view associated with this MountItem is clickable.
+   */
+  static boolean isViewClickable(int flags) {
+    return (flags & FLAG_VIEW_CLICKABLE) == FLAG_VIEW_CLICKABLE;
+  }
+
+  /**

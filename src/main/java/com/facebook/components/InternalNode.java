@@ -295,3 +295,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     mLastHeightSpec = heightSpec;
   }
 
+  public boolean hasVisibilityHandlers() {
+    return mVisibleHandler != null
+        || mFocusedHandler != null
+        || mFullImpressionHandler != null
+        || mInvisibleHandler != null;
+  }
+
