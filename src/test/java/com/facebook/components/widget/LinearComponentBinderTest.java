@@ -24,3 +24,8 @@ import com.facebook.litho.ComponentTree;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.TestDrawableComponent;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;

@@ -88,3 +88,11 @@ class VisibilityOutput {
 
   void release() {
     mComponent = null;
+    mVisibleEventHandler = null;
+    mFocusedEventHandler = null;
+    mFullImpressionEventHandler = null;
+    mInvisibleEventHandler = null;
+
+    mBounds.setEmpty();
+  }
+}

@@ -20,3 +20,9 @@ public abstract class WorkingRangeController {
 
   /**
    * Sets the {@link Binder} that the range controller is associated with.
+   */
+  public void setBinder(BaseBinder binder) {
+    mBinder = binder;
+  }
+
+  /**

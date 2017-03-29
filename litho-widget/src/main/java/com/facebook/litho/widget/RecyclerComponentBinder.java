@@ -30,3 +30,6 @@ import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 /**
  * A component binder for {@link RecyclerView}.
  */
+public abstract class RecyclerComponentBinder<L extends RecyclerView.LayoutManager,
+    R extends RecyclerComponentBinder.RecyclerComponentWorkingRangeController>
+    extends BaseBinder<RecyclerView, R> {
