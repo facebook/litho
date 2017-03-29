@@ -134,3 +134,29 @@ public class TestLayoutComponent extends ComponentLifecycle {
         defStyleAttr,
         defStyleRes,
         new State(callsShouldUpdateOnMount, isPureRender, hasMountSpecChild, isDelegate));
+  }
+
+  public static Builder create(ComponentContext context) {
+    return create(context, 0, 0, true, true, false, false);
+  }
+
+  public static Builder create(
+      ComponentContext context,
+      boolean callsShouldUpdateOnMount,
+      boolean isPureRender) {
+    return create(context, 0, 0, callsShouldUpdateOnMount, isPureRender, false, false);
+  }
+
+  private static Builder newBuilder(
+      ComponentContext context,
+      @AttrRes int defStyleAttr,
+      @StyleRes int defStyleRes,
+      State state) {
+    Builder builder = mBuilderPool.acquire();
+    if (builder == null) {
+      builder = new Builder();
+    }
+    builder.init(context, defStyleAttr, defStyleRes, state);
+    return builder;
+  }
+

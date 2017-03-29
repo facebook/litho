@@ -282,3 +282,4 @@ public class TestViewComponent extends ComponentLifecycle {
       super.setKey(key);
       return this;
     }
+  }

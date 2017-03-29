@@ -36,3 +36,4 @@ public class Utils {
 
   public static String getGenClassName(TypeElement specElement, String name) {
     if (name.isEmpty()) {
+      final String className = specElement.getSimpleName().toString();

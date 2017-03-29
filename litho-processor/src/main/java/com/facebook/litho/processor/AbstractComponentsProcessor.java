@@ -47,3 +47,5 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
     }
 
     for (Element element : roundEnv.getRootElements()) {
+      try {
+        Closeable closeable = null;

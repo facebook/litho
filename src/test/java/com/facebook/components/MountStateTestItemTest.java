@@ -120,3 +120,4 @@ public class MountStateTestItemTest {
                         .testKey(null))
                 .child(
                     TestDrawableComponent.create(c)
+                        .withLayout().flexShrink(0)

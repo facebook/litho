@@ -39,3 +39,49 @@ public class DuplicateParentStateTest {
 
   @Test
   public void testDuplicateParentStateAvoidedIfRedundant() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            .duplicateParentState(true)
+            .clickHandler(c.newEventHandler(1))
+            .child(
+                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    .duplicateParentState(false)
+                    .child(
+                        TestDrawableComponent.create(c)
+                            .withLayout().flexShrink(0)
+                            .duplicateParentState(true)))
+            .child(
+                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    .duplicateParentState(true)
+                    .child(
+                        TestDrawableComponent.create(c)
+                            .withLayout().flexShrink(0)
+                            .duplicateParentState(true)))
+            .child(
+                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    .clickHandler(c.newEventHandler(2))
+                    .child(
+                        TestDrawableComponent.create(c)
+                            .withLayout().flexShrink(0)
+                            .duplicateParentState(true)))
+            .child(
+                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    .clickHandler(c.newEventHandler(3))
+                    .child(
+                        TestDrawableComponent.create(c)
+                            .withLayout().flexShrink(0)
+                            .duplicateParentState(false)))
+            .child(
+                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    .clickHandler(c.newEventHandler(3))
+                    .backgroundColor(Color.RED)
+                    .foregroundColor(Color.RED))
+            .child(
+                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    .backgroundColor(Color.BLUE)
+                    .foregroundColor(Color.BLUE))
+            .build();
+      }
+    };

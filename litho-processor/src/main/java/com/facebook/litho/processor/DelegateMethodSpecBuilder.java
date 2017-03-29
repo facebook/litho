@@ -53,3 +53,6 @@ class DelegateMethodSpecBuilder {
 
   DelegateMethodSpecBuilder abstractImplType(TypeName abstractImplType) {
     mAbstractImplType = abstractImplType;
+    return this;
+  }
+
