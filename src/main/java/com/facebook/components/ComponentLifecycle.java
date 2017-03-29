@@ -99,3 +99,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
       final int widthSpec;
       final int heightSpec;
 
+      ComponentsSystrace.beginSection("measure:" + component.getSimpleName());
