@@ -807,3 +807,7 @@ class MountState {
   }
 
   private void updateMountedContent(
+      MountItem item,
+      LayoutOutput layoutOutput,
+      Component previousComponent) {
+    final Component<?> component = layoutOutput.getComponent();
