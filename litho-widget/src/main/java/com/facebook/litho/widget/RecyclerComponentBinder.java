@@ -254,3 +254,20 @@ public abstract class RecyclerComponentBinder<L extends RecyclerView.LayoutManag
   private static class ComponentViewHolder extends RecyclerView.ViewHolder {
 
     public ComponentViewHolder(View view) {
+      super(view);
+    }
+  }
+
+  private static class InternalOnScrollListener extends RecyclerView.OnScrollListener {
+
+    private final RecyclerComponentBinder mRecyclerComponentBinder;
+
+    InternalOnScrollListener(RecyclerComponentBinder recyclerComponentBinder) {
+      mRecyclerComponentBinder = recyclerComponentBinder;
+    }
+
+    @Override
+    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+      mRecyclerComponentBinder.onScrolled(recyclerView, dx, dy);
+    }
+  }
