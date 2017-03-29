@@ -153,3 +153,4 @@ public final class ColorDrawableReference extends ReferenceLifecycle<Drawable> {
       super.release();
 
       mState = null;
+      mContext = null;

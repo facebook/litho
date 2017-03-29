@@ -2376,3 +2376,9 @@ public class LayoutStateCalculateTest {
 
   private LayoutState calculateLayoutState(
       Context context,
+      Component<?> component,
+      int componentTreeId,
+      int widthSpec,
+      int heightSpec) {
+
+    return LayoutState.calculate(

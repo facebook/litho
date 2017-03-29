@@ -231,3 +231,5 @@ class MountState {
         ComponentsSystrace.endSection();
       }
 
+      if (isIncrementalMountEnabled) {
+        setupPreviousMountableOutputData(layoutState, localVisibleRect);
