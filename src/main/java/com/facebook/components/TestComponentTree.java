@@ -68,3 +68,10 @@ public class TestComponentTree extends ComponentTree {
         output.add(testSubcomponent.getWrappedComponent());
       }
 
+      return;
+    }
+
+    for (DiffNode child : root.getChildren()) {
+      extractSubComponents(child, output);
+    }
+  }
