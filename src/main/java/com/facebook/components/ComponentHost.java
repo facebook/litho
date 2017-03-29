@@ -95,3 +95,7 @@ public class ComponentHost extends ViewGroup {
   }
 
   public ComponentHost(ComponentContext context, AttributeSet attrs) {
+    super(context, attrs);
+    setWillNotDraw(false);
+    setChildrenDrawingOrderEnabled(true);
+

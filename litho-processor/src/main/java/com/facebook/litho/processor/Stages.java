@@ -83,3 +83,4 @@ import static javax.lang.model.type.TypeKind.VOID;
 
 public class Stages {
 
+  public static final String IMPL_CLASS_NAME_SUFFIX = "Impl";
