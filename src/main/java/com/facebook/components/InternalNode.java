@@ -1515,3 +1515,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
         || node.mImportantForAccessibility == ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
       node.mImportantForAccessibility = mImportantForAccessibility;
     }
+    if ((mPrivateFlags & PFLAG_DUPLICATE_PARENT_STATE_IS_SET) != 0L) {
