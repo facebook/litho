@@ -65,3 +65,4 @@ class FBEXPORT JniException : public std::exception {
   JniException();
   ~JniException();
 
+  explicit JniException(alias_ref<jthrowable> throwable);

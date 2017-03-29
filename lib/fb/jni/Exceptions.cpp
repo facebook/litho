@@ -29,3 +29,4 @@ namespace jni {
 namespace {
 class JRuntimeException : public JavaClass<JRuntimeException, JThrowable> {
  public:
+  static auto constexpr kJavaDescriptor = "Ljava/lang/RuntimeException;";
