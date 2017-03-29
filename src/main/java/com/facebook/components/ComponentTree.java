@@ -473,3 +473,4 @@ public class ComponentTree {
   void measure(int widthSpec, int heightSpec, int[] measureOutput, boolean forceLayout) {
     assertMainThread();
 
+    Component component = null;
