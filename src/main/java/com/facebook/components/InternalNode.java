@@ -1512,3 +1512,6 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       node.layoutDirection(getResolvedLayoutDirection());
     }
     if ((node.mPrivateFlags & PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET) == 0L
+        || node.mImportantForAccessibility == ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
+      node.mImportantForAccessibility = mImportantForAccessibility;
+    }
