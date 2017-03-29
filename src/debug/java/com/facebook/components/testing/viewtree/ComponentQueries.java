@@ -64,3 +64,4 @@ class ComponentQueries {
         host,
         new Predicate<Drawable>() {
           @Override
+          public boolean apply(final Drawable input) {
