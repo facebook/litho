@@ -2200,3 +2200,4 @@ public class Stages {
       if (componentMember.asType().getKind().isPrimitive()) {
         typeName = JPUtil.getTypeFromMirror(componentMember.asType()).box();
       } else {
+        typeName = JPUtil.getTypeFromMirror(componentMember.asType());
