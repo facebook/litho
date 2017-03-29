@@ -246,3 +246,6 @@ public interface ComponentLayout {
     ContainerBuilder flexBasisDip(@Dimension(unit = DP) int flexBasis);
     ContainerBuilder flexBasisPercent(float percent);
 
+    ContainerBuilder importantForAccessibility(
+        @ImportantForAccessibility int importantForAccessibility
+    );
