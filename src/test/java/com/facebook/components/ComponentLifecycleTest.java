@@ -58,3 +58,5 @@ public class ComponentLifecycleTest {
 
   private static final int A_HEIGHT = 11;
   private static final int A_WIDTH = 12;
+  private int mNestedTreeWidthSpec;
+  private int mNestedTreeHeightSpec;
