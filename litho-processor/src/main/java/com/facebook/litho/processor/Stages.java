@@ -2749,3 +2749,4 @@ public class Stages {
 
     if (numRequiredProps > 0) {
       final FieldSpec.Builder requiredPropsNamesBuilder =
+          FieldSpec.builder(
