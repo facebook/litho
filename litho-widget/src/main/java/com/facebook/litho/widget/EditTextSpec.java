@@ -305,3 +305,9 @@ class EditTextSpec {
 
   @OnUnbind
   static void onUnbind(
+      ComponentContext c,
+      EditTextTextTextChangedEventHandler editText) {
+    editText.detachWatcher();
+  }
+
+  @OnUnmount
