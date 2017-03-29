@@ -76,3 +76,4 @@ public class ComponentLifecycleTest {
     when(cssNode.getData()).thenReturn(mNode);
 
     mockStatic(ComponentsPools.class);
+

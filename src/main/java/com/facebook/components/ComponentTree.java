@@ -106,3 +106,6 @@ public class ComponentTree {
   private ComponentView mComponentView;
   private LayoutHandler mLayoutThreadHandler;
 
+  @GuardedBy("this")
+  private boolean mHasViewMeasureSpec;
+
