@@ -203,3 +203,4 @@ public interface ComponentLayout {
     Builder invisibleHandler(EventHandler<InvisibleEvent> invisibleHandler);
     Builder contentDescription(CharSequence contentDescription);
     Builder contentDescription(@StringRes int stringId);
+    Builder contentDescription(@StringRes int stringId, Object... formatArgs);

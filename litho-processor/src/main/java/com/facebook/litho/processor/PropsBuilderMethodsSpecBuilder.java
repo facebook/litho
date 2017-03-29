@@ -205,3 +205,19 @@ class PropsBuilderMethodsSpecBuilder {
         resolver + "Res");
   }
 
+  private MethodSpec resWithVarargsBuilder(
+      ClassName annotationClassName,
+      String resolver,
+      TypeName varargsType,
+      String varargsName) {
+    return getMethodSpecBuilder(
+        mPropParameter.parameter.name + "Res",
+        Arrays.asList(
+            parameter(TypeName.INT, "resId", annotation(annotationClassName)),
+            ParameterSpec.builder(ArrayTypeName.of(varargsType), varargsName).build()),
+        "$L(resId, " + varargsName + ")",
+        resolver + "Res")
+        .varargs(true)
+        .build();
+  }
+
