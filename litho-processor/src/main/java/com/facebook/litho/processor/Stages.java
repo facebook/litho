@@ -2470,3 +2470,6 @@ public class Stages {
     // This should come from a pool.
     final ClassName className = ClassName.get(element);
     methodBuilder.addStatement(
+        "$T _eventState = new $T()",
+        className,
+        className);
