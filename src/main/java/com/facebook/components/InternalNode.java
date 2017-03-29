@@ -1635,3 +1635,14 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   void setStyleWidthFromSpec(int widthSpec) {
+    switch (SizeSpec.getMode(widthSpec)) {
+      case SizeSpec.UNSPECIFIED:
+        mYogaNode.setWidth(YogaConstants.UNDEFINED);
+        break;
+      case SizeSpec.AT_MOST:
+        mYogaNode.setMaxWidth(SizeSpec.getSize(widthSpec));
+        break;
+      case SizeSpec.EXACTLY:
+        mYogaNode.setWidth(SizeSpec.getSize(widthSpec));
+        break;
+    }
