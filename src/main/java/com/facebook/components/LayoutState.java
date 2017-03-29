@@ -1471,3 +1471,5 @@ class LayoutState {
     return mWidth == width && mHeight == height;
   }
 
+  boolean isComponentId(int componentId) {
+    return mComponent.getId() == componentId;
