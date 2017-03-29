@@ -538,3 +538,12 @@ class MountState {
     final ComponentLifecycle currentLifecycle = currentComponent.getLifecycle();
     final Component nextComponent = layoutOutput.getComponent();
     final ComponentLifecycle nextLifecycle = nextComponent.getLifecycle();
+
+    // If the two components have different sizes and the mounted content depends on the size we
+    // just return true immediately.
+    if (!sameSize(layoutOutput, currentMountItem) && nextLifecycle.isMountSizeDependent()) {
+      return true;
+    }
+
+    if (useUpdateValueFromLayoutOutput) {
+      if (updateState == LayoutOutput.STATE_UPDATED) {
