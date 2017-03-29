@@ -149,3 +149,6 @@ class DiffNode implements Cloneable {
     mForeground = null;
     mHost = null;
     mVisibilityOutput = null;
+
+    mLastMeasuredWidth = UNSPECIFIED;
+    mLastMeasuredHeight = UNSPECIFIED;
