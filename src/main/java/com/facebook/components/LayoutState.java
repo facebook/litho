@@ -768,3 +768,7 @@ class LayoutState {
         node,
         drawableComponent);
 
+    final LayoutOutput drawableLayoutOutput = createDrawableLayoutOutput(
+        drawableComponent,
+        layoutState,
+        node);
