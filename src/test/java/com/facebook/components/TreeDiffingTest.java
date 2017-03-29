@@ -684,3 +684,6 @@ public class TreeDiffingTest {
       }
     };
 
+    ComponentTree componentTree = ComponentTree.create(mContext, component1)
+        .incrementalMount(false)
+        .build();

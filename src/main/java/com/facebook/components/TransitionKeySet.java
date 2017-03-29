@@ -373,3 +373,18 @@ class TransitionKeySet implements TransitionListener {
   private boolean wasRunningChangeTransition() {
     return (mRunningTransitionsPointer == mChangeTransitions);
   }
+
+  boolean wasRunningDisappearTransition() {
+    return (mRunningTransitionsPointer == mDisappearTransitions);
+  }
+
+  void setTransitionCleanupListener(TransitionCleanupListener listener) {
+    mTransitionCleanupListener = listener;
+  }
+
+  void cleanupAfterDisappear() {
+    if (mTransitionCleanupListener != null) {
+      mTransitionCleanupListener.onTransitionCleanup();
+    }
+    resetViewPropertiesAfterDisappear();
+  }
