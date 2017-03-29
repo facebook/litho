@@ -182,3 +182,6 @@ public class StateUpdatesTest {
             .build();
       }
     };
+    final ComponentTree componentTree = ComponentTree.create(mContext, component)
+        .incrementalMount(false)
+        .build();

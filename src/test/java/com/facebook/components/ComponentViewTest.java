@@ -95,3 +95,5 @@ public class ComponentViewTest {
         ComponentTree.create(
             new ComponentContext(RuntimeEnvironment.application),
             component)
+            .incrementalMount(false)
+            .build());

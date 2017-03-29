@@ -94,3 +94,26 @@ public class RecyclerViewWrapper extends SwipeRefreshLayout {
   }
 
   @Override
+  protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+    super.onLayout(changed, left, top, right, bottom);
+
+    if (mStickyHeader.getVisibility() == View.GONE) {
+      return;
+    }
+
+    int stickyHeaderLeft = left + getPaddingLeft();
+    int stickyHeaderTop = top + getPaddingTop();
+    mStickyHeader.layout(
+        stickyHeaderLeft,
+        stickyHeaderTop,
+        stickyHeaderLeft + mStickyHeader.getMeasuredWidth(),
+        stickyHeaderTop + mStickyHeader.getMeasuredHeight());
+  }
+
+  static RecyclerViewWrapper getParentWrapper(RecyclerView recyclerView) {
+    if (recyclerView.getParent() instanceof RecyclerViewWrapper) {
+      return (RecyclerViewWrapper) recyclerView.getParent();
+    }
+    return null;
+  }
+
