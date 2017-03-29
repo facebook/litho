@@ -46,3 +46,5 @@
     <attr name="android:foreground" />
     <attr name="android:importantForAccessibility" />
     <attr name="android:duplicateParentState" />
+  </declare-styleable>
+

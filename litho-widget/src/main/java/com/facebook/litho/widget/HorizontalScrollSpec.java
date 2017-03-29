@@ -120,3 +120,6 @@ class HorizontalScrollSpec {
         ? measuredWidth
         : SizeSpec.getSize(widthSpec);
     size.height = measuredHeight;
+  }
+
+  @OnBoundsDefined

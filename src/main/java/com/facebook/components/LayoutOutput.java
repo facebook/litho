@@ -83,3 +83,5 @@ class LayoutOutput implements Cloneable {
 
   void setBounds(int l, int t, int r, int b) {
     mBounds.set(l, t, r, b);
+  }
+
