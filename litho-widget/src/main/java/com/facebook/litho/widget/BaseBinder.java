@@ -638,3 +638,36 @@ public abstract class BaseBinder<
           if (componentTree == null) {
             // Create a new ComponentTree if we don't have it at the given position.
             componentTree = buildComponentTree(component);
+            if (isAsyncLayoutEnabled()) {
+              componentTree.setSizeSpecAsync(getWidthSpec(i), getHeightSpec(i));
+            } else {
+              componentTree.setSizeSpec(getWidthSpec(i), getHeightSpec(i));
+            }
+
+            mComponentTrees.put(i, componentTree);
+
+          } else if (isRefreshingInRange) {
+            // Or just change component in the ComponentTree we already have.
+            if (isAsyncLayoutEnabled()) {
+              componentTree.setRootAndSizeSpecAsync(
+                  component,
+                  getWidthSpec(i),
+                  getHeightSpec(i));
+            } else {
+              componentTree.setRootAndSizeSpec(
+                  component,
+                  getWidthSpec(i),
+                  getHeightSpec(i));
+            }
+          }
+        }
+      }
+    }
+    releaseList(componentList);
+
+    for (int i = 0, size = componentTreesToRelease.size(); i < size; i++) {
+      componentTreesToRelease.get(i).release();
+    }
+    releaseList(componentTreesToRelease);
+  }
+
