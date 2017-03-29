@@ -126,3 +126,7 @@ public class ComponentsPools {
 
   private static final Pools.SynchronizedPool<TransitionContext> sTransitionContextPool =
       new Pools.SynchronizedPool<>(2);
+
+  private static final Pools.SimplePool<TransitionManager> sTransitionManagerPool =
+      new Pools.SimplePool<>(2);
+
