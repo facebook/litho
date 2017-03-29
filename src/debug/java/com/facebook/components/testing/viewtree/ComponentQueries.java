@@ -9,3 +9,4 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
 import com.facebook.components.ComponentHost;
+import com.facebook.components.MatrixDrawable;
