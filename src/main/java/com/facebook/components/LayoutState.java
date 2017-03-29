@@ -544,3 +544,10 @@ class LayoutState {
         final LayoutOutput backgroundOutput = addDrawableComponent(
             node,
             layoutState,
+            convertBackground,
+            background,
+            LayoutOutput.TYPE_BACKGROUND);
+
+        if (diffNode != null) {
+          diffNode.setBackground(backgroundOutput);
+        }
