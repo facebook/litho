@@ -236,3 +236,5 @@ const std::string JniException::kExceptionMessageFailure_ = "Unable to get excep
 
 JniException::JniException() : JniException(JRuntimeException::create()) { }
 
+JniException::JniException(alias_ref<jthrowable> throwable) : isMessageExtracted_(false) {
+  throwable_ = make_global(throwable);
