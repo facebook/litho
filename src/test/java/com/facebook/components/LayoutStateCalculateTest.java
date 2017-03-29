@@ -295,3 +295,5 @@ public class LayoutStateCalculateTest {
     assertEquals("textRight1", getTextFromTextComponent(layoutState, 4));
     assertEquals("textLeft2", getTextFromTextComponent(layoutState, 6));
 
+    Rect textLayoutBounds = layoutState.getMountableOutputAt(6).getBounds();
+    Rect textBackgroundBounds = layoutState.getMountableOutputAt(5).getBounds();

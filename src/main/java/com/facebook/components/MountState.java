@@ -68,3 +68,9 @@ class MountState {
   // Should always be used within a draw lock.
   private final LongSparseArray<MountItem> mIndexToItemMap;
 
+  // Holds a list with information about the components linked to the VisibilityOutputs that are
+  // stored in LayoutState. An item is inserted in this map if its corresponding component is
+  // visible. When the component exits the viewport, the item associated with it is removed from the
+  // map.
+  private final LongSparseArray<VisibilityItem> mVisibilityIdToItemMap;
+
