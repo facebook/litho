@@ -1777,3 +1777,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     mYogaNode = null;
 
     mResourceResolver.internalRelease();
+
