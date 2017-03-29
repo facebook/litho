@@ -70,3 +70,4 @@ class MountItem {
         acquireDisplayListDrawableIfNeeded(
             content,
             layoutOutput.getDisplayList(),
+            displayListDrawable),

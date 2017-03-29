@@ -74,3 +74,5 @@ class EventDispatcherUtils {
       sFocusedVisibleEvent = new FocusedVisibleEvent();
     }
 
+    final EventDispatcher eventDispatcher = focusedHandler.mHasEventDispatcher.getEventDispatcher();
+    eventDispatcher.dispatchOnEvent(focusedHandler, sFocusedVisibleEvent);
