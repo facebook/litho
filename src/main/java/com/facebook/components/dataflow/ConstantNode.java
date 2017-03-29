@@ -8,3 +8,25 @@
  */
 
 package com.facebook.litho.dataflow;
+
+/**
+ * A dataflow node that returns a constant value.
+ */
+public class ConstantNode<T> extends ValueNode<T> {
+
+  private final T mValue;
+
+  public ConstantNode(T value) {
+    mValue = value;
+  }
+
+  @Override
+  public T calculateValue(long frameTimeNanos) {
+    return mValue;
+  }
+
+  @Override
+  public T initialize() {
+    return mValue;
+  }
+}

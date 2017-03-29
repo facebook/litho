@@ -8,3 +8,25 @@
  */
 
 package com.facebook.litho.dataflow;
+
+/**
+ * Test node that allows setting of its next value.
+ */
+public class SettableNode extends ValueNode<Float> {
+
+  private float mValue;
+
+  public void setValue(float value) {
+    mValue = value;
+  }
+
+  @Override
+  protected Float calculateValue(long frameTimeNanos) {
+    return mValue;
+  }
+
+  @Override
+  protected Float initialize() {
+    return mValue;
+  }
+}

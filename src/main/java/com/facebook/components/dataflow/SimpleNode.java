@@ -8,3 +8,19 @@
  */
 
 package com.facebook.litho.dataflow;
+
+/**
+ * A node that passes through its input value to its outputs.
+ */
+public class SimpleNode<T> extends ValueNode<T> {
+
+  @Override
+  public T calculateValue(long frameTimeNanos) {
+    return (T) getInput().getValue();
+  }
+
+  @Override
+  public T initialize() {
+    return (T) getInput().getValue();
+  }
+}

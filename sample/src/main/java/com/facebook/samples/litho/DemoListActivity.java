@@ -7,3 +7,7 @@
  */
 
 package com.facebook.samples.litho;
+
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+

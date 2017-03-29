@@ -10,3 +10,4 @@ include_defs("//COMPONENTS_DEFS")
 # This target is only used in open source and will break the monobuild
 # because we cannot define `soname` multiple times.
 if COMPONENTS_IS_OSS_BUILD:
+  cxx_library(
