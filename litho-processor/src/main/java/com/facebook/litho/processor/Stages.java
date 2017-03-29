@@ -655,3 +655,18 @@ public class Stages {
       for (VariableElement v : getState(stage)) {
 
         final String variableName = v.getSimpleName().toString();
+
+        if (mStateMap.containsKey(variableName)) {
+          VariableElement existingType = mStateMap.get(variableName);
+          final State existingPropAnnotation = existingType.getAnnotation(State.class);
+          if (existingPropAnnotation != null) {
+            if (!hasSameAnnotations(v, existingType)) {
+              throw new ComponentsProcessingException(
+                  v,
+                  "The state '" + variableName + "' is configured differently for different " +
+                      "methods. Ensure each instance of this state is declared identically.");
+            }
+          }
+        }
+
+        mStateMap.put(
