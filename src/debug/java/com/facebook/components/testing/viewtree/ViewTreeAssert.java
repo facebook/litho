@@ -468,3 +468,4 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
   private ImmutableList<View> getPathToVisibleWithId(final int viewId) {
     return actual.findChild(hasVisibleId(viewId), isVisible());
   }
+}
