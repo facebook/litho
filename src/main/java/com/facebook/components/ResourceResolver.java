@@ -152,3 +152,5 @@ public class ResourceResolver {
       }
 
       int result = mResources.getColor(resId);
+      mResourceCache.put(resId, result);
+
