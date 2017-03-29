@@ -1192,3 +1192,13 @@ public class ComponentTree {
   }
 
   /**
+   * A default {@link LayoutHandler} that will use a {@link Handler} with a {@link Thread}'s
+   * {@link Looper}.
+   */
+  private static class DefaultLayoutHandler extends Handler implements LayoutHandler {
+    private DefaultLayoutHandler(Looper threadLooper) {
+      super(threadLooper);
+    }
+  }
+
+  /**
