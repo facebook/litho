@@ -561,3 +561,5 @@ public class ComponentTree {
           layoutScheduleType == SCHEDULE_LAYOUT_ASYNC,
           null /*output */);
     }
+  }
+
