@@ -267,3 +267,5 @@ public class ComponentLifecycleTest {
   public void testOnMeasureNotOverriden() {
     setUpComponentForCreateLayout(true, true);
     YogaMeasureFunction measureFunction = getMeasureFunction();
+
+    try {
