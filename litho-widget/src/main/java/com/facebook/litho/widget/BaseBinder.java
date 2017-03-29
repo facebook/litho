@@ -760,3 +760,24 @@ public abstract class BaseBinder<
     final int positionLast = Math.max(0, positionStart + itemCount - 1);
 
     return positionLast >= currentStart && positionStart <= currentLast;
+  }
+
+  public static void performIncrementalMountOnChildren(ViewGroup viewGroup) {
+    for (int i = 0, count = viewGroup.getChildCount(); i < count; i++) {
+      ComponentView componentView = (ComponentView) viewGroup.getChildAt(i);
+
+      if (componentView.isIncrementalMountEnabled()) {
+        componentView.performIncrementalMount();
+      }
+    }
+  }
+
+  private static <T> List<T> acquireList(int capacity) {
+    List<T> list = sListPool.acquire();
+    if (list == null) {
+      list = new ArrayList<>(capacity);
+    }
+
+    return list;
+  }
+
