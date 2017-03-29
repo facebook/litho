@@ -324,3 +324,4 @@ public class ResourceResolver {
   }
 
   @Nullable
+  protected final Reference<Drawable> resolveDrawableAttr(
