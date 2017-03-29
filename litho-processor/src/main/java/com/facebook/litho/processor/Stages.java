@@ -1586,3 +1586,7 @@ public class Stages {
   /**
    * Generate an onLoadStyle implementation.
    */
+  public void generateOnLoadStyle() {
+    final ExecutableElement delegateMethod = Utils.getAnnotatedMethod(
+        mSourceElement,
+        OnLoadStyle.class);
