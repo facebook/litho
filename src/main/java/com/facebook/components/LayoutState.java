@@ -1592,3 +1592,5 @@ class LayoutState {
         releaseNodeTree(mLayoutRoot, false /* isNestedTree */);
         mLayoutRoot = null;
       }
+
+      ComponentsPools.release(this);
