@@ -1730,3 +1730,7 @@ public class Stages {
 
     final MethodSpec makeShallowCopy =
         generateMakeShallowCopy(ClassNames.COMPONENT, /* hasDeepCopy */ false);
+    if (makeShallowCopy != null) {
+      implClassBuilder.addMethod(makeShallowCopy);
+    }
+
