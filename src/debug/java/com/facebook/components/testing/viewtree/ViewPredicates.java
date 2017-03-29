@@ -112,3 +112,4 @@ final class ViewPredicates {
         if (pattern.matcher(extractString(input)).find()) {
           return true;
         }
+

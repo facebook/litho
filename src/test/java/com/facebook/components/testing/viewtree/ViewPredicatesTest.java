@@ -184,3 +184,8 @@ public class ViewPredicatesTest {
     final Resources resources = RuntimeEnvironment.application.getResources();
     final Drawable customDrawable = resources.getDrawable(R.drawable.custom_drawable);
     final Predicate<View> hasVisibleDrawable = ViewPredicates.hasVisibleDrawable(customDrawable);
+
+    assertThat(hasVisibleDrawable.apply(mImageViewWithCustomDrawable)).isTrue();
+    mImageViewWithCustomDrawable.setVisibility(View.GONE);
+    assertThat(hasVisibleDrawable.apply(mImageViewWithCustomDrawable)).isFalse();
+  }
