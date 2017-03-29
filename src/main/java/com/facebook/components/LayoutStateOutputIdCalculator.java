@@ -218,3 +218,4 @@ class LayoutStateOutputIdCalculator {
 
     return 0L | componentShifted | levelShifted;
   }
+}

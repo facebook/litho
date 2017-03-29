@@ -88,3 +88,4 @@ class MountState {
   private boolean mIsDirty;
 
   // Holds the list of known component hosts during a mount pass.
+  private final LongSparseArray<ComponentHost> mHostsByMarker = new LongSparseArray<>();

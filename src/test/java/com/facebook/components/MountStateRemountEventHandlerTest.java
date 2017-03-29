@@ -260,3 +260,4 @@ public class MountStateRemountEventHandlerTest {
     final ComponentClickListener listener = MountState.getComponentClickListener(componentView);
     assertNotNull(listener);
     assertNotNull(listener.getEventHandler());
+  }
