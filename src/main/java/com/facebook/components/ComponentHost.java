@@ -365,3 +365,4 @@ public class ComponentHost extends ViewGroup {
   public void setContentDescription(CharSequence contentDescription) {
     mContentDescription = contentDescription;
     invalidateAccessibilityState();
+  }

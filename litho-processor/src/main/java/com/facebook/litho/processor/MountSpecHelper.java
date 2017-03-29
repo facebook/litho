@@ -193,3 +193,6 @@ public class MountSpecHelper extends ComponentSpecHelper {
         ClassNames.COMPONENT_LAYOUT,
     };
 
+    mStages.generateDelegate(
+        methodDescription,
+        onBoundsDefined,
