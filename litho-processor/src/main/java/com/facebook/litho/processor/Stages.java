@@ -1390,3 +1390,12 @@ public class Stages {
       }
     }
 
+    final DeclaredType eventClass = Utils.getAnnotationParameter(
+        mProcessingEnv,
+        element,
+        OnEvent.class,
+        "value");
+
+    final TypeName eventClassName =
+        ClassName.bestGuess(((TypeElement) eventClass.asElement()).getQualifiedName().toString());
+

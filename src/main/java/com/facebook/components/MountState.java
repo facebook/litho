@@ -1127,3 +1127,8 @@ class MountState {
   }
 
   /**
+   * Installs the click listeners that will dispatch the click handler
+   * defined in the component's props. Unconditionally set the clickable
+   * flag on the view.
+   */
+  private static void setClickHandler(EventHandler clickHandler, View view) {
