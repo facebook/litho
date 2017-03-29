@@ -771,3 +771,5 @@ public class RecyclerBinderTest {
     }
   }
 
+  private List<ComponentInfo> prepareLoadedBinder() {
+    final List<ComponentInfo> components = new ArrayList<>();
