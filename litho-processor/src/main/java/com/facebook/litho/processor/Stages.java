@@ -2598,3 +2598,8 @@ public class Stages {
         "Expected parameter of one of types" + Arrays.toString(types) +  ". Found " + elementType);
   }
 
+  private List<ClassName> getNonComponentAnnotations(VariableElement element) {
+    final List<? extends AnnotationMirror> annotationMirrors = element.getAnnotationMirrors();
+    final List<ClassName> annotations = new ArrayList<>();
+
+    for (AnnotationMirror annotationMirror : annotationMirrors) {
