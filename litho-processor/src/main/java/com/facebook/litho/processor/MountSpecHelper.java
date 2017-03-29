@@ -115,3 +115,6 @@ public class MountSpecHelper extends ComponentSpecHelper {
    * Generate an onPrepare implementation that delegates to the @OnPrepare-annotated method.
    */
   public void generateOnPrepare() {
+    final ExecutableElement onPrepare = Utils.getAnnotatedMethod(
+        mStages.getSourceElement(),
+        OnPrepare.class);

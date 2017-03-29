@@ -61,3 +61,4 @@ class PagerSpec {
 
   @OnMount
   static void onMount(
+      ComponentContext context,
