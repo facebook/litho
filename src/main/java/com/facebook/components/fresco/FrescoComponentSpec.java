@@ -82,3 +82,4 @@ class FrescoComponentSpec {
 
   @OnMount
   protected static void onMount(
+      ComponentContext c,
