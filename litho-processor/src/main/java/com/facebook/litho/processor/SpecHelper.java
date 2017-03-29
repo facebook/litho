@@ -54,3 +54,5 @@ public abstract class SpecHelper implements Closeable {
       String name,
       boolean isPublic,
       Class<Annotation>[] stageAnnotations,
+      Class<Annotation>[] interStageInputAnnotations,
+      SpecModel specModel) {
