@@ -72,3 +72,4 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
     return errorMsg;
   }
 
+  /**
