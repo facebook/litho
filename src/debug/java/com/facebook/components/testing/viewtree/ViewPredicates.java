@@ -159,3 +159,6 @@ final class ViewPredicates {
     return text != null ? text.toString() : "";
   }
 
+  public static Predicate<View> hasDrawable(final Drawable drawable) {
+    return new Predicate<View>() {
+      @Override
