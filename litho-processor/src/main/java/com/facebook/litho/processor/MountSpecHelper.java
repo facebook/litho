@@ -445,3 +445,5 @@ public class MountSpecHelper extends ComponentSpecHelper {
             OnPopulateExtraAccessibilityNode.class);
 
     final ExecutableElement getExtraAccessibilityNodeAt =
+        Utils.getAnnotatedMethod(
+            mStages.getSourceElement(),
