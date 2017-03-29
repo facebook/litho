@@ -1320,3 +1320,15 @@ class LayoutState {
 
     diffNode.setLastWidthSpec(node.getLastWidthSpec());
     diffNode.setLastHeightSpec(node.getLastHeightSpec());
+    diffNode.setLastMeasuredWidth(node.getLastMeasuredWidth());
+    diffNode.setLastMeasuredHeight(node.getLastMeasuredHeight());
+    diffNode.setComponent(node.getComponent());
+    if (parent != null) {
+      parent.addChild(diffNode);
+    }
+
+    ComponentsSystrace.endSection();
+
+    return diffNode;
+  }
+
