@@ -1529,3 +1529,9 @@ public class Stages {
   }
 
   public static List<Parameter> getParams(ExecutableElement e) {
+    final List<Parameter> params = new ArrayList<>();
+    for (VariableElement v : e.getParameters()) {
+      params.add(new Parameter(ClassName.get(v.asType()), v.getSimpleName().toString()));
+    }
+
+    return params;
