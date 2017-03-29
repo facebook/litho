@@ -85,3 +85,5 @@ public class DuplicateParentStateTest {
             .build();
       }
     };
+
+    LayoutState layoutState = LayoutState.calculate(

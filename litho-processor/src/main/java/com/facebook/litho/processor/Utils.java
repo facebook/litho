@@ -37,3 +37,35 @@ public class Utils {
   public static String getGenClassName(TypeElement specElement, String name) {
     if (name.isEmpty()) {
       final String className = specElement.getSimpleName().toString();
+      if (!className.endsWith(SPEC_SUFFIX)) {
+        return null;
+      }
+
+      name = className.substring(0, className.length() - SPEC_SUFFIX.length());
+    }
+
+    return Utils.getPackageName(specElement.getQualifiedName().toString()) + "." + name;
+  }
+
+  /**
+   * Get the correct String for representing the given TypeMirror in source code.
+   *
+   * Right now this always delegates to toString. If this is truly sufficient we should remove this
+   * method.
+   */
+  public static String getTypeName(TypeMirror typeMirror) {
+    // TypeMirror.toString() is documented to return a form suitable for representing this type in
+    // source code - if possible.
+    return typeMirror.toString();
+  }
+
+  /**
+   * Gather a list of parameters from the given element that have a particular annotation.
+   *
+   * @param element The executable element.
+   * @param annotation The required annotation.
+   * @return List of parameters with the annotation.
+   */
+  public static List<VariableElement> getParametersWithAnnotation(
+      ExecutableElement element,
+      Class<? extends Annotation> annotation) {
