@@ -15,3 +15,6 @@ import java.util.List;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Looper;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+

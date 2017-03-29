@@ -20,3 +20,21 @@ import com.facebook.litho.Container;
 import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.litho.ComponentContext;
 import com.facebook.yoga.YogaEdge;
+
+public class TestSizeDependentComponent extends ComponentLifecycle {
+  public static TestSizeDependentComponent sInstance = null;
+  private static final Pools.SynchronizedPool<Builder> sBuilderPool =
+      new Pools.SynchronizedPool<>(2);
+
+  private TestSizeDependentComponent() {}
+
+  @Override
+  protected ComponentLayout onCreateLayoutWithSizeSpec(
+      ComponentContext c,
+      int widthSpec,
+      int heightSpec,
+      Component _stateObject) {
+    final State state = ((State) _stateObject);
+
+    final ComponentLayout.Builder builder1 =
+        TestDrawableComponent.create(c, false, true, true, false, false)

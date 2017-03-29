@@ -44,3 +44,6 @@ public class ComponentTreeBuilderTest {
 
   @Before
   public void setup() throws Exception {
+    mLooper = mock(Looper.class);
+    mComponentsLogger = mock(ComponentsLogger.class);
+    mContext = new ComponentContext(RuntimeEnvironment.application, mLogTag, mComponentsLogger);

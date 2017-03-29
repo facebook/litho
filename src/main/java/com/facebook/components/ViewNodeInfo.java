@@ -28,3 +28,5 @@ class ViewNodeInfo {
 
   private Reference<Drawable> mBackground;
   private Reference<Drawable> mForeground;
+  private Rect mPadding;
+  private Rect mExpandedTouchBounds;

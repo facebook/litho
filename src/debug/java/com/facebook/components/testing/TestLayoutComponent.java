@@ -43,3 +43,7 @@ public class TestLayoutComponent extends ComponentLifecycle {
       boolean hasMountSpecChild,
       boolean isDelegate) {
     for (TestLayoutComponent lifecycle : sInstances) {
+      if (lifecycle.mCallsShouldUpdateOnMount == callsShouldUpdateOnMount
+          && lifecycle.mIsPureRender == isPureRender
+          && lifecycle.mHasMountSpecChild == hasMountSpecChild
+          && lifecycle.mIsDelegate == isDelegate) {

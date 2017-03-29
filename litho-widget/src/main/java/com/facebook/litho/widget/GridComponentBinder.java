@@ -32,3 +32,8 @@ import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 public abstract class GridComponentBinder extends RecyclerComponentBinder<
     GridLayoutManager,
     RecyclerComponentBinder.RecyclerComponentWorkingRangeController> {
+
+  private int mInitFillMainAxis;
+  private int mInitFillCrossAxis;
+
+  public GridComponentBinder(Context context, GridLayoutManager layoutManager) {
