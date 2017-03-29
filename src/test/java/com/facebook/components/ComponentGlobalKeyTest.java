@@ -95,3 +95,4 @@ public class ComponentGlobalKeyTest {
     Component component = getMultipleChildrenComponent();
 
     int layoutSpecId = component.getLifecycle().getId();
+    int nestedLayoutSpecId = layoutSpecId - 1;

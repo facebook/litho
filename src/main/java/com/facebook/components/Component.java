@@ -47,3 +47,12 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
       super.init(c, c.getResourceCache());
 
       mComponent = component;
+      mContext = c;
+      mDefStyleAttr = defStyleAttr;
+      mDefStyleRes = defStyleRes;
+
+      if (defStyleAttr != 0 || defStyleRes != 0) {
+        component.mLifecycle.loadStyle(c, defStyleAttr, defStyleRes, component);
+      }
+    }
+

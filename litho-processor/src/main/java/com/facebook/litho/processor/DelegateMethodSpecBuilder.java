@@ -180,3 +180,42 @@ class DelegateMethodSpecBuilder {
         mImplClassName +
         ") " +
         ABSTRACT_IMPL_INSTANCE_NAME);
+
+    for (Parameter parameter : mToParams) {
+      if (isOutputType(parameter.type)) {
+        delegate.addStatement("$T $L = acquireOutput()", parameter.type, parameter.name);
+      }
+    }
+
+    final CodeBlock.Builder delegation = CodeBlock.builder();
+    if (mFromReturnType.equals(TypeName.VOID)) {
+      delegation.add("$L.$L(\n", mTarget, mToName);
+    } else {
+      delegation.add(
+          "$T _result = ($T) $L.$L(\n",
+          mFromReturnType,
+          mToReturnType,
+          mTarget,
+          mToName);
+    }
+
+    delegation.indent();
+    for (Parameter parameter : mToParams) {
+      if (isOutputType(parameter.type)) {
+        delegation.add("$L", parameter.name);
+      } else {
+        delegation.add("($T) $L", parameter.type, getMatchingInput(parameter));
+      }
+
+      final boolean isLast = parameter == mToParams.get(mToParams.size() - 1);
+      if (!isLast) {
+        delegation.add(",\n");
+      }
+    }
+    delegation.add(");\n");
+    delegation.unindent();
+
+    delegate.addCode(delegation.build());
+
+    for (Parameter parameter : mToParams) {
+      if (isOutputType(parameter.type)) {
