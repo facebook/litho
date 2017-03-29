@@ -990,3 +990,4 @@ class MountState {
     }
 
     final View view = (View) item.getContent();
+    final NodeInfo nodeInfo = item.getNodeInfo();
