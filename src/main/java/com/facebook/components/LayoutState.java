@@ -1519,3 +1519,14 @@ class LayoutState {
     return mHeight;
   }
 
+  /**
+   * @return The id of the {@link ComponentTree} that generated this {@link LayoutState}
+   */
+  int getComponentTreeId() {
+    return mComponentTreeId;
+  }
+
+  /**
+   * See {@link LayoutState#acquireRef} Call this when you are done using the reference to the
+   * LayoutState.
+   */
