@@ -81,3 +81,8 @@ public final class ResourceDrawableReference extends ReferenceLifecycle<Drawable
     }
 
     @Override
+    public String getSimpleName() {
+      return "ResourceDrawableReference";
+    }
+
+    @Override

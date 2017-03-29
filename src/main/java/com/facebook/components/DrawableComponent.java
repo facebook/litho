@@ -86,3 +86,4 @@ class DrawableComponent<T extends Drawable> extends ComponentLifecycle {
   }
 
   public static Component create(Reference<? extends Drawable> drawable) {
+    return new State<>(drawable);
