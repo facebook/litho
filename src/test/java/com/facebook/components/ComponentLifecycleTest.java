@@ -77,3 +77,4 @@ public class ComponentLifecycleTest {
 
     mockStatic(ComponentsPools.class);
 
+    when(mNode.getLastWidthSpec()).thenReturn(-1);
