@@ -169,3 +169,5 @@ public class ComponentTree {
     mStateHandler = builderStateHandler == null
         ? StateHandler.acquireNewInstance(null)
         : builderStateHandler;
+  }
+
