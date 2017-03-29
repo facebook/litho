@@ -17,3 +17,4 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.components.reference.ColorDrawableReference;
 
 import static android.widget.ImageView.ScaleType.FIT_XY;
+import static com.facebook.litho.annotations.ResType.COLOR;

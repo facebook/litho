@@ -23,3 +23,22 @@ public class FeedItemComponentSpec {
   @OnCreateLayout
   static ComponentLayout onCreateLayout(
       ComponentContext c,
+      @Prop final Artist artist,
+      @Prop final RecyclerBinder binder) {
+    return Container.create(c)
+        .child(
+            Container.create(c)
+                .child(
+                    Recycler.create(c)
+                        .binder(binder)
+                        .withLayout()
+                        .aspectRatio(2))
+                .child(
+                    TitleComponent.create(c)
+                        .title(artist.name))
+                .child(
+                    ActionsComponent.create(c)))
+        .child(
+            FooterComponent.create(c)
+                .text(artist.biography))
+        .build();

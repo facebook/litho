@@ -24,3 +24,14 @@ COMPONENTS_COMPONENTS_FRESCO_COMMON_TARGET = make_dep_path('src/main/java/com/fa
 # Test source
 COMPONENTS_TEST_TARGET                     = make_dep_path('src/test/java/com/facebook/components:components')
 
+# Java source with local upstream
+COMPONENTS_PROGUARDANNOTATIONS_TARGET = make_dep_path('src/main/java/com/facebook/proguard/annotations:annotations')
+
+# Resources
+COMPONENTS_RES_TARGET               = make_dep_path(':res')
+
+# Libraries
+COMPONENTS_INFERANNOTATIONS_TARGET            = make_dep_path('lib/infer-annotations:infer-annotations')
+COMPONENTS_JSR_TARGET                         = make_dep_path('lib/jsr-305:jsr-305')
+COMPONENTS_ANDROIDSUPPORT_TARGET              = make_dep_path('lib/android-support:android-support')
+COMPONENTS_ANDROIDSUPPORT_RECYCLERVIEW_TARGET = make_dep_path('lib/android-support:android-support-recyclerview')
