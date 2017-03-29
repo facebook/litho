@@ -166,3 +166,4 @@ class TextSpec {
         isSingleLine.set(a.getBoolean(attr, false));
       } else if (attr == R.styleable.Text_android_textColorLink) {
         linkColor.set(a.getColor(attr, 0));
+      } else if (attr == R.styleable.Text_android_textColorHighlight) {
