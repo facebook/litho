@@ -139,3 +139,16 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
    */
   public ViewTreeAssert hasViewTag(final int tagId, final Object tagValue) {
     final ImmutableList<View> path = getPathToViewTag(tagId, tagValue);
+
+    Assertions.assertThat(path)
+        .overridingErrorMessage(
+            "Cannot find tag id \"%d\" with tag value \"%s\" in view hierarchy:%n%s",
+            tagId,
+            tagValue,
+            actual.makeString(ViewExtractors.generateGetViewTagFunction(tagId)))
+        .isNotNull();
+
+    return this;
+  }
+
+  /**

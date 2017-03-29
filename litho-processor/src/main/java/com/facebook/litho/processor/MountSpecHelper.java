@@ -506,3 +506,4 @@ public class MountSpecHelper extends ComponentSpecHelper {
     methodDescription.name = "onPopulateAccessibilityNode";
     methodDescription.returnType = ClassName.VOID;
     methodDescription.parameterTypes = new TypeName[] {ClassNames.ACCESSIBILITY_NODE};
+
