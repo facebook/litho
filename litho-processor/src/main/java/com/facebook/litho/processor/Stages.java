@@ -1147,3 +1147,8 @@ public class Stages {
         .build());
   }
 
+  /**
+   * Returns {@code true} if the given types match.
+   */
+  public boolean isSameType(TypeMirror a, TypeMirror b) {
+    return mProcessingEnv.getTypeUtils().isSameType(a, b);
