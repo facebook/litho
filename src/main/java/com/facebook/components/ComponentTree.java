@@ -875,3 +875,16 @@ public class ComponentTree {
    * Calculates the layout.
    * @param output a destination where the size information should be saved
    */
+  private void calculateLayout(Size output) {
+    int widthSpec;
+    int heightSpec;
+    Component<?> root;
+    LayoutState previousLayoutState = null;
+
+    // Cancel any scheduled requests we might have in the background queue since we are starting
+    // a new layout computation.
+    mLayoutThreadHandler.removeCallbacksAndMessages(null);
+
+    synchronized (this) {
+      // Can't compute a layout if specs or root are missing
+      if (!hasSizeSpec() || mRoot == null) {
