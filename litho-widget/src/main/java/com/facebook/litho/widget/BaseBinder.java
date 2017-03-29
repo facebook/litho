@@ -671,3 +671,10 @@ public abstract class BaseBinder<
     releaseList(componentTreesToRelease);
   }
 
+  private ComponentTree buildComponentTree(Component<?> component) {
+    return ComponentTree.create(mContext, component)
+        .incrementalMount(isIncrementalMountEnabled())
+        .layoutThreadLooper(mLayoutLooper)
+        .build();
+  }
+
