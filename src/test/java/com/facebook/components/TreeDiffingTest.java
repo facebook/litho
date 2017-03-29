@@ -540,3 +540,9 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
         true,
         secondState.getDiffTree());
+
+    assertOutputsState(thirdState, LayoutOutput.STATE_DIRTY);
+  }
+
+  @Test
+  public void testLayoutOutputUpdateStateWithBackground() {
