@@ -71,3 +71,9 @@ class MountItem {
             content,
             layoutOutput.getDisplayList(),
             displayListDrawable),
+        layoutOutput.getFlags(),
+        layoutOutput.getImportantForAccessibility());
+  }
+
+  void init(
+      Component<?> component,

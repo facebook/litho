@@ -40,3 +40,5 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
   ComponentAccessibilityDelegate(View view, NodeInfo nodeInfo) {
     super(view);
     mView = view;
+    mNodeInfo = nodeInfo;
+    mSuperDelegate = new SuperDelegate();
