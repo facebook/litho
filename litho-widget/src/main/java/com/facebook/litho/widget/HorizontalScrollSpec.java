@@ -110,3 +110,9 @@ class HorizontalScrollSpec {
 
     releaseSize(contentSize);
     contentSize = null;
+
+    measuredComponentWidth.set(measuredWidth);
+    measuredComponentHeight.set(measuredHeight);
+
+    // If size constraints were not explicitly defined, just fallback to the
+    // component dimensions instead.
