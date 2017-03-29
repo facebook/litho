@@ -140,3 +140,6 @@ public abstract class ComponentLifecycle implements EventDispatcher {
             node.getDiffNode().setLastHeightSpec(heightSpec);
             node.getDiffNode().setLastMeasuredWidth(outputWidth);
             node.getDiffNode().setLastMeasuredHeight(outputHeight);
+          }
+        } finally {
+          releaseSize(size);
