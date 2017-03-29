@@ -1769,3 +1769,11 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
    * Reset all attributes to default values. Intended to facilitate recycling.
    */
   void release() {
+    if (mYogaNode.getParent() != null || mYogaNode.getChildCount() > 0) {
+      throw new IllegalStateException("You should not free an attached Internalnode");
+    }
+
+    ComponentsPools.release(mYogaNode);
+    mYogaNode = null;
+
+    mResourceResolver.internalRelease();
