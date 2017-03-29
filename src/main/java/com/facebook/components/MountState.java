@@ -1072,3 +1072,6 @@ class MountState {
       }
     }
 
+    // Reset isClickable flag.
+    view.setClickable(MountItem.isViewClickable(item.getFlags()));
+
