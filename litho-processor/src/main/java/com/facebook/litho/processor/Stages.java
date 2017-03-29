@@ -603,3 +603,6 @@ public class Stages {
     for (Element element : mSourceElement.getEnclosedElements()) {
       if (element.getKind() == ElementKind.FIELD &&
           !element.getModifiers().contains(Modifier.STATIC)) {
+        throw new ComponentsProcessingException(
+            element,
+            "Field " + element.getSimpleName() + " in " + mSourceElement.getQualifiedName() +
