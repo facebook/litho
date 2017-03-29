@@ -25,3 +25,5 @@ public class TestComponentTree extends ComponentTree {
     return new Builder(context, root);
   }
 
+  private TestComponentTree(ComponentTree.Builder builder) {
+    super(builder);
