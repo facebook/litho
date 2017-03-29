@@ -159,3 +159,4 @@ class HorizontalScrollSpec {
   }
 
   @OnCreateMountContent
+  static HorizontalScrollComponentView onCreateMountContent(ComponentContext c) {
