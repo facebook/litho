@@ -707,3 +707,6 @@ public class Stages {
       mStages.addAll(mOnEventMethods);
     }
     mStages.addAll(mOnCreateTreePropsMethods);
+  }
+
+  /**
