@@ -52,3 +52,7 @@ final class ViewPredicates {
         }
 
         return false;
+      }
+    };
+  }
+
