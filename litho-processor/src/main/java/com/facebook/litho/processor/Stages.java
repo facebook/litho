@@ -107,3 +107,9 @@ public class Stages {
     NOT_STYLEABLE
   }
 
+  // Using these names in props might cause conflicts with the method names in the
+  // component's generated layout builder class so we trigger a more user-friendly
+  // error if the component tries to use them. This list should be kept in sync
+  // with BaseLayoutBuilder.
+  private static final String[] RESERVED_PROP_NAMES = new String[] {
+      "withLayout",

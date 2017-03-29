@@ -242,3 +242,6 @@ public class ComponentView extends ComponentHost {
   }
 
   public ComponentTree getComponent() {
+    return mComponent;
+  }
+
