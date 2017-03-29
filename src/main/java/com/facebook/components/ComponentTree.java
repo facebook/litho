@@ -52,3 +52,4 @@ import static com.facebook.litho.ThreadUtils.isMainThread;
  * root component and recursively invokes its OnCreateLayout to create a tree of components.
  * ComponentTree is responsible for refreshing the mounted state of a component with new props.
  *
+ * The usual use case for {@link ComponentTree} is:

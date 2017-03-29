@@ -56,3 +56,4 @@ public class ComponentTreeTest {
     }
   }
 
+  @Before
