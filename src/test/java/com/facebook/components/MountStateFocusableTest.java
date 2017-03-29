@@ -31,3 +31,4 @@ public class MountStateFocusableTest {
   @Before
   public void setup() {
     mContext = new ComponentContext(RuntimeEnvironment.application);
+    mFocusableDefault = new ComponentHost(mContext).isFocusable();

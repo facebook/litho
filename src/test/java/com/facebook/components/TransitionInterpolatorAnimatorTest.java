@@ -79,3 +79,4 @@ public class TransitionInterpolatorAnimatorTest {
     assertEquals(START_DELAY, mAnimator.getStartDelay());
     assertEquals(mInterpolator, mAnimator.getInterpolator());
     assertEquals(1, mAnimator.getListeners().size());
+    assertEquals(mListenerAdapter, mAnimator.getListeners().get(0));

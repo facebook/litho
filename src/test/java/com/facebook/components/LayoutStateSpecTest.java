@@ -35,3 +35,5 @@ public class LayoutStateSpecTest {
   @Before
   public void setup() {
     mContext = new ComponentContext(RuntimeEnvironment.application);
+    mWidthSpec = SizeSpec.makeSizeSpec(39, SizeSpec.EXACTLY);
+    mHeightSpec = SizeSpec.makeSizeSpec(41, SizeSpec.EXACTLY);

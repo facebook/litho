@@ -21,3 +21,6 @@ import android.support.v7.widget.RecyclerView;
 import com.facebook.components.Component;
 import com.facebook.components.ComponentContext;
 import com.facebook.components.ComponentTree;
+import com.facebook.components.config.ComponentsConfiguration;
+import com.facebook.components.testing.testrunner.ComponentsTestRunner;
+import com.facebook.components.testing.TestDrawableComponent;
