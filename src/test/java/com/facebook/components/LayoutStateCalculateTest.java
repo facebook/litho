@@ -1718,3 +1718,17 @@ public class LayoutStateCalculateTest {
     assertEquals(new Rect(5, 5, 55, 55), mountBounds);
     assertTrue(getComponentAt(layoutState, 3) instanceof TestViewComponent);
     layoutState.getMountableOutputAt(3).getMountBounds(mountBounds);
+    assertEquals(new Rect(8, 58, 342, 78), mountBounds);
+  }
+
+  @Test
+  public void testLayoutOutputRootWithPaddingOverridingDelegateNestedTreeComponent() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        final Component<TestSizeDependentComponent> nestedTreeRootComponent =
+            TestSizeDependentComponent.create(c)
+                .setFixSizes(true)
+                .setDelegate(false)
+                .build();
+
