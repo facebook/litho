@@ -103,3 +103,8 @@ final class ViewPredicates {
     return Predicates.and(hasVisibleText(text), hasTag(tagId, tagValue));
   }
 
+  public static Predicate<View> matchesText(final String text) {
+    final Pattern pattern = Pattern.compile(text);
+
+    return new Predicate<View>() {
+      @Override
