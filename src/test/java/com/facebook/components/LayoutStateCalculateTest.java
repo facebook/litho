@@ -880,3 +880,4 @@ public class LayoutStateCalculateTest {
   }
 
   private static CharSequence getTextFromTextComponent(LayoutState layoutState, int index) {
+    return Whitebox.getInternalState(layoutState.getMountableOutputAt(index).getComponent(), "text");
