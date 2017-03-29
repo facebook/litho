@@ -1003,3 +1003,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public InternalNode child(ComponentLayout.Builder child) {
