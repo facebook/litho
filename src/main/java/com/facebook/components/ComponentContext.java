@@ -99,3 +99,69 @@ public class ComponentContext extends ContextWrapper {
     mStateHandler = transferStateHandler ? componentContext.mStateHandler : stateHandler;
   }
 
+  static ComponentContext withComponentTree(
+      ComponentContext context,
+      ComponentTree componentTree) {
+    ComponentContext componentContext = new ComponentContext(
+        context,
+        ComponentsPools.acquireStateHandler());
+    componentContext.mComponentTree = componentTree;
+
+    return componentContext;
+  }
+
+  /**
+   * Creates a new ComponentContext instance scoped to the given component and sets it on the
+   *  component.
+   * @param context context scoped to the parent component
+   * @param scope component associated with the newly created scoped context
+   * @return a new ComponentContext instance scoped to the given component
+   */
+  static ComponentContext withComponentScope(ComponentContext context, Component scope) {
+    ComponentContext componentContext = context.makeNewCopy();
+    componentContext.mComponentScope = scope;
+    componentContext.mComponentTree = context.mComponentTree;
+
+    return componentContext;
+  }
+
+  ComponentContext makeNewCopy() {
+    return new ComponentContext(this);
+  }
+
+  public Component getComponentScope() {
+    return mComponentScope;
+  }
+
+  /**
+   * Notify the Component Tree that it needs to synchronously perform a state update.
+   * @param stateUpdate state update to perform
+   */
+  public void updateState(ComponentLifecycle.StateUpdate stateUpdate) {
+    if (mComponentTree == null) {
+      return;
+    }
+
+    mComponentTree.updateState(mComponentScope.getGlobalKey(), stateUpdate);
+  }
+
+  /**
+   * Notify the Component Tree that it needs to asynchronously perform a state update.
+   * @param stateUpdate state update to perform
+   */
+  public void updateStateAsync(ComponentLifecycle.StateUpdate stateUpdate) {
+    if (mComponentTree == null) {
+      return;
+    }
+
+    mComponentTree.updateStateAsync(mComponentScope.getGlobalKey(), stateUpdate);
+  }
+
+  public void updateStateLazy(ComponentLifecycle.StateUpdate stateUpdate) {
+    if (mComponentTree == null) {
+      return;
+    }
+
+    mComponentTree.updateStateLazy(mComponentScope.getGlobalKey(), stateUpdate);
+  }
+

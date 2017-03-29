@@ -440,3 +440,4 @@ class LayoutState {
   private static void collectResults(
       InternalNode node,
       LayoutState layoutState,
+      DiffNode parentDiffNode) {

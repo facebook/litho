@@ -131,3 +131,6 @@ public class ComponentTree {
   @GuardedBy("this")
   private LayoutState mBackgroundLayoutState;
 
+  @GuardedBy("this")
+  private StateHandler mStateHandler;
+
