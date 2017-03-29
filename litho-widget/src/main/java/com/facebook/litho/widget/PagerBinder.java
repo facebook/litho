@@ -358,3 +358,4 @@ public abstract class PagerBinder extends BaseBinder<
     mPageWidth = pageWidth;
     mPagerOffscreenLimit = (int) Math.ceil(1 / mPageWidth);
   }
+}
