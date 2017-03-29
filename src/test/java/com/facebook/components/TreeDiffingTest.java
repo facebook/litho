@@ -676,3 +676,5 @@ public class TreeDiffingTest {
             .foregroundRes(android.R.drawable.btn_default)
             .child(TestDrawableComponent.create(c)
                 .withLayout().flexShrink(0)
+                .backgroundColor(Color.RED))
+            .child(
