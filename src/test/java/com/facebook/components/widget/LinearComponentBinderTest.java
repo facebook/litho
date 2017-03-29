@@ -207,3 +207,4 @@ public class LinearComponentBinderTest {
   }
 
   public static class MyTestLinearComponentBinder extends LinearComponentBinder {
+

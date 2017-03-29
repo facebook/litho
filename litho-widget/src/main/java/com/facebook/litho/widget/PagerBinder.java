@@ -23,3 +23,6 @@ import com.facebook.components.SizeSpec;
 /**
  * A component binder for {@link ViewPager}.
  */
+public abstract class PagerBinder extends BaseBinder<
+    ViewPager,
+    PagerBinder.PagerWorkingRangeController> {

@@ -119,3 +119,4 @@ public class BinderTreeCollectionTest {
   public void testInsertAsLast() {
     int originalSize = mBinderTreeCollection.size();
 
+    ComponentTree treeAtLastPosition = mBinderTreeCollection.get(originalSize);
