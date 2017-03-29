@@ -23,3 +23,5 @@ import com.facebook.drawee.generic.GenericDraweeHierarchy;
 import com.facebook.drawee.generic.RoundingParams;
 import com.facebook.drawee.interfaces.SettableDraweeHierarchy;
 
+import static com.facebook.drawee.generic.GenericDraweeHierarchyBuilder.DEFAULT_SCALE_TYPE;
+

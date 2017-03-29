@@ -78,3 +78,5 @@ public final class ComponentTestHelper {
    */
   public static ComponentView mountComponent(ComponentContext context, Component component) {
     return mountComponent(context, component, 100, 100);
+  }
+
