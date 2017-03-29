@@ -214,3 +214,21 @@ public final class ComponentTestHelper {
   }
 
   /**
+   * Unmounts a component tree from a component view.
+   * @param componentView the view to unmount
+   */
+  public static void unmountComponent(ComponentView componentView) {
+    if (!componentView.isIncrementalMountEnabled()) {
+      throw new IllegalArgumentException(
+          "In order to test unmounting a Component, it needs to be mounted with " +
+              "incremental mount enabled. Please use a mountComponent() variation that " +
+              "accepts an incrementalMountEnabled argument");
+    }
+
+    // Unmounting the component by running incremental mount to a Rect that we certain won't
+    // contain the component.
+    Rect rect = new Rect(99999, 99999, 999999, 999999);
+    componentView.performIncrementalMount(rect);
+  }
+
+  /**
