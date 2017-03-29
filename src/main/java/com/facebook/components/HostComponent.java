@@ -18,3 +18,8 @@ class HostComponent extends ComponentLifecycle {
   protected Object onCreateMountContent(ComponentContext c) {
     return new ComponentHost(c);
   }
+
+  @Override
+  public MountType getMountType() {
+    return MountType.VIEW;
+  }

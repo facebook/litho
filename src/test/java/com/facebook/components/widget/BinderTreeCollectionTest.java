@@ -12,3 +12,4 @@ package com.facebook.litho.widget;
 import android.support.v4.util.SparseArrayCompat;
 
 import com.facebook.components.ComponentContext;
+import com.facebook.components.ComponentTree;

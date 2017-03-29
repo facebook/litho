@@ -31,3 +31,14 @@ public class TransitionInterpolatorAnimatorTest {
   private static final int START_DELAY = 600;
   private Interpolator mInterpolator;
   private Animator.AnimatorListener mListenerAdapter;
+  private static final List<PropertyChangeHolder> PROPERTY_CHANGE_HOLDERS = new LinkedList<>();
+  static {
+    PROPERTY_CHANGE_HOLDERS.add(PropertyChangeHolder.create(PropertyType.ALPHA, 0, 1));
+  }
+
+  private ObjectAnimator mAnimator;
+  private View mView;
+
+  @Before
+  public void setUp() {
+    mAnimator = new ObjectAnimator();
