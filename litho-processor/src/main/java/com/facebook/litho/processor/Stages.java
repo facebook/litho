@@ -2654,3 +2654,7 @@ public class Stages {
         .build());
   }
 
+  public void generateListBuilder(StaticFlag isStatic, TypeName genericType) {
+    generateBuilder(
+        isStatic,
+        StyleableFlag.NOT_STYLEABLE,
