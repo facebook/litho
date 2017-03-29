@@ -544,3 +544,5 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
         mNestedTreePadding = ComponentsPools.acquireSpacing();
       }
 
+      mNestedTreePadding.set(edge.intValue(), padding);
+      setIsPaddingPercent(edge, false);
