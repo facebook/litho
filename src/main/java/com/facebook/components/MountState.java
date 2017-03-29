@@ -1343,3 +1343,7 @@ class MountState {
 
   private static void setViewPadding(View view, ViewNodeInfo viewNodeInfo) {
     if (!viewNodeInfo.hasPadding()) {
+      return;
+    }
+
+    view.setPadding(
