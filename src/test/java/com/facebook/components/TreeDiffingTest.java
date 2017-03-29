@@ -424,3 +424,10 @@ public class TreeDiffingTest {
         true,
         prevLayoutState.getDiffTree());
 
+    assertNotEquals(
+        prevLayoutState.getMountableOutputCount(),
+        layoutState.getMountableOutputCount());
+    for (int i = 0, count = prevLayoutState.getMountableOutputCount(); i < count; i++) {
+      assertEquals(
+          prevLayoutState.getMountableOutputAt(i).getId(),
+          layoutState.getMountableOutputAt(i).getId());
