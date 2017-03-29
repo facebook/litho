@@ -168,3 +168,4 @@ class HorizontalScrollSpec {
       ComponentContext context,
       HorizontalScrollComponentView horizontalScrollComponentView,
       @Prop(optional = true, resType = ResType.BOOL) boolean scrollbarEnabled,
+      @FromPrepare ComponentTree contentComponent,

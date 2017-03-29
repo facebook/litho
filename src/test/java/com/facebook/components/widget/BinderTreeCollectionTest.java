@@ -220,3 +220,6 @@ public class BinderTreeCollectionTest {
 
     ComponentTree treeAtPosition1 = mBinderTreeCollection.get(1);
     ComponentTree treeAtPositionLast = mBinderTreeCollection.get(originalSize);
+
+    mBinderTreeCollection.removeShiftingLeft(removePositionStart, removeItemCount);
+
