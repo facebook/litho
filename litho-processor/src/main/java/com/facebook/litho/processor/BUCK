@@ -25,3 +25,9 @@ java_library(
         COMPONENTS_FBCORE_TARGET,
         COMPONENTS_JAVAPOET_TARGET,
     ],
+    tests = [
+        "//javatests/com/facebook/components/processor:processor",
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
