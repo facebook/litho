@@ -131,3 +131,5 @@ class LayoutOutput implements Cloneable {
     }
   }
 
+  NodeInfo getNodeInfo() {
+    return mNodeInfo;
