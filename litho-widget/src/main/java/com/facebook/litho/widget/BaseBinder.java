@@ -501,3 +501,13 @@ public abstract class BaseBinder<
 
     synchronized (this) {
       componentTreesToRelease = acquireList(mComponentTrees.size());
+      mComponentTrees.addAllTo(componentTreesToRelease);
+      mComponentTrees.clear();
+    }
+
+    for (int i = 0, size = componentTreesToRelease.size(); i < size; i++) {
+      componentTreesToRelease.get(i).release();
+    }
+    releaseList(componentTreesToRelease);
+  }
+
