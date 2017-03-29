@@ -59,3 +59,4 @@ class ComponentQueries {
    * @param drawable the drawable to look for
    * @return true if the given host contains the drawable.
    */
+  static boolean hasDrawable(final ComponentHost host, final Drawable drawable) {
