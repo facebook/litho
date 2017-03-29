@@ -962,3 +962,4 @@ class MountState {
       }
     } else if (content instanceof Drawable) {
       ((Drawable) content).setBounds(left, top, right, bottom);
+    } else {
