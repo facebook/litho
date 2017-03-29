@@ -290,3 +290,7 @@ public class ComponentLifecycleTest {
     } catch (Exception e) {
       assertThat(e).isExactlyInstanceOf(IllegalStateException.class);
       assertThat(e.getMessage()).contains("MeasureOutput not set");
+    }
+  }
+
+  @Test
