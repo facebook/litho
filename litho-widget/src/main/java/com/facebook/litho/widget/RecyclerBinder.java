@@ -215,3 +215,4 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     ThreadUtils.assertMainThread();
 
     final ComponentTreeHolder holder = ComponentTreeHolder.acquire(
+        componentInfo,

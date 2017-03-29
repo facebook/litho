@@ -127,3 +127,7 @@ public class ComponentInfo {
     private void release() {
       mComponent = null;
       mCustomAttributes = null;
+      sBuilderPool.release(this);
+    }
+  }
+}
