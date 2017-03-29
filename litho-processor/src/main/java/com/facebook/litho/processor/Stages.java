@@ -2784,3 +2784,7 @@ public class Stages {
     propsBuilderClassBuilder.addMethod(initMethodSpec.build());
 
     // If there are no type variables, then this class can always be static.
+    // If the component implementation class is static, and there are type variables, then this
+    // class can be static but must shadow the type variables from the class.
+    // If the component implementation class is not static, and there are type variables, then this
+    // class is not static and we get the type variables from the class.
