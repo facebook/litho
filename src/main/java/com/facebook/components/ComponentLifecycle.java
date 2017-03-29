@@ -596,3 +596,7 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     return null;
   }
 
+  protected static <E> EventHandler<E> newEventHandler(
+      ComponentContext c,
+      int id,
+      Object[] params) {
