@@ -109,3 +109,6 @@ class TextSpec {
   private static final Rect sTempRect = new Rect();
   private static final RectF sTempRectF = new RectF();
 
+  private static final SynchronizedPool<TextLayoutBuilder> sTextLayoutBuilderPool =
+      new SynchronizedPool<>(2);
+
