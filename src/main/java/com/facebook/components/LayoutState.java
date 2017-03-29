@@ -1294,3 +1294,5 @@ class LayoutState {
       return root;
     }
 
+    // If measuring a ComponentTree with a LayoutSpecWithSizeSpec at the root, the nested tree
+    // holder argument will be null.
