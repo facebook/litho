@@ -697,3 +697,4 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   // We cache the jmethodid for this method in Yoga code. This means that even if a subclass
   // were to override measure, we'd still call this implementation from layout code since the
   // overriding method will have a different jmethodid. This is final to prevent that mistake.
+  @DoNotStrip
