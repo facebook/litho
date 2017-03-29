@@ -825,3 +825,7 @@ class LayoutState {
       InternalNode node,
       LayoutState layoutState,
       DiffNode diffNode) {
+    final Component<?> component = node.getComponent();
+
+    // Only the root host is allowed to wrap view mount specs as a layout output
+    // is unconditionally added for it.
