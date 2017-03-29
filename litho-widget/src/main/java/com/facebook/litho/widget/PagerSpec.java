@@ -95,3 +95,5 @@ class PagerSpec {
       ViewPager mountedView,
       @Prop PagerBinder binder) {
     binder.unmount(mountedView);
+  }
+}
