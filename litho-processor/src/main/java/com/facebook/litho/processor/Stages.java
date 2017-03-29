@@ -1791,3 +1791,5 @@ public class Stages {
       Stages.StaticFlag isStatic,
       TypeMirror referenceType) {
 
+    final TypeSpec.Builder implClassBuilder =
+        TypeSpec.classBuilder(getImplClassName())
