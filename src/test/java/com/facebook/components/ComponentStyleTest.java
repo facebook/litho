@@ -32,3 +32,8 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(ComponentsTestRunner.class)
 @org.junit.Ignore("t16280359")
+public class ComponentStyleTest {
+  private int mDimen;
+  private int mLargeDimen;
+  private ComponentContext mContext;
+
