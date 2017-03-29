@@ -643,3 +643,6 @@ public class MountSpecHelper extends ComponentSpecHelper {
         OnCreateMountContent.class);
 
     if (getMountType(onCreateMountContent.getReturnType()) != MountType.DRAWABLE) {
+      throw new ComponentsProcessingException(
+          mSpecElement,
+          "shouldUseDisplayList = true can only be used on MountSpecs that mount a drawable.");
