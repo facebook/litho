@@ -41,3 +41,4 @@ import com.facebook.litho.utils.MeasureUtils;
  * Renders an infinitely spinning progress bar.
  */
 @MountSpec(isPureRender = true)
+class ProgressSpec {
