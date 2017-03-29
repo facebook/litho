@@ -182,3 +182,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private DiffNode mDiffNode;
 
   private boolean mCachedMeasuresValid;
+  private TreeProps mPendingTreeProps;
