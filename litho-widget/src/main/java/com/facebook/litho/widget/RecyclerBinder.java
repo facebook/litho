@@ -472,3 +472,8 @@ public class RecyclerBinder implements Binder<RecyclerView> {
           outSize.width = mRange.measuredSize;
         } else {
           outSize.width = SizeSpec.getSize(widthSpec);
+        }
+        outSize.height = SizeSpec.getSize(heightSpec);
+        break;
+      case OrientationHelper.HORIZONTAL:
+        outSize.width = SizeSpec.getSize(widthSpec);
