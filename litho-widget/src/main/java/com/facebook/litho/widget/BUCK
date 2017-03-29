@@ -41,3 +41,8 @@ android_library(
     visibility = [
         "PUBLIC",
     ],
+    deps =
+        COMPONENTS_TEXTLAYOUTBUILDER_UTILS_TARGET + [
+            COMPONENTS_WIDGET_ACCESSIBILITIES_TARGET,
+            COMPONENTS_RES_TARGET,
+        ],

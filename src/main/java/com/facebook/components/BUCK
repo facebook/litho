@@ -16,3 +16,7 @@ android_library(
         "reference/*.java",
     ]),
     exported_deps = [
+        COMPONENTS_ANNOTATIONS_TARGET,
+        COMPONENTS_CONFIG_TARGET,
+        COMPONENTS_CSSLAYOUT_TARGET,
+        COMPONENTS_PROGUARDANNOTATIONS_TARGET,
