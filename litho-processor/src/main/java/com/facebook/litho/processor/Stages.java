@@ -2316,3 +2316,7 @@ public class Stages {
     final String implInstanceName = getImplInstanceName();
     final MethodSpec.Builder copyInterStageComponentBuilder = MethodSpec
         .methodBuilder("copyInterStageImpl")
+        .addAnnotation(Override.class)
+        .addModifiers(Modifier.PROTECTED)
+        .returns(TypeName.VOID)
+        .addParameter(
