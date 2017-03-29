@@ -324,3 +324,15 @@ class PropsBuilderMethodsSpecBuilder {
             .addModifiers(Modifier.PUBLIC)
             .returns(mBuilderClass)
             .addCode("this.$L.$L = ", mImplName, mPropParameter.parameter.name)
+            .addStatement(statement, formatObjects);
+
+    for (ParameterSpec param : parameters) {
+      builder.addParameter(param);
+    }
+
+    if (!mPropParameter.optional) {
+      builder.addStatement("$L.set($L)", mRequiredSetName, mIndex);
+    }
+
+    builder.addStatement("return this");
+
