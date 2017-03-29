@@ -17,3 +17,5 @@ import com.facebook.components.ComponentContext;
 import com.facebook.components.testing.testrunner.ComponentsTestRunner;
 import com.facebook.components.testing.ComponentsRule;
 import com.facebook.components.testing.TestDrawableComponent;
+
+import org.junit.Before;
