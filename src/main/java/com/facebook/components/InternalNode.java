@@ -978,3 +978,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Override
   public InternalNode touchExpansionAttr(
       YogaEdge edge,
+      @AttrRes int resId) {
