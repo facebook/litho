@@ -347,3 +347,4 @@ class LayoutState {
     if ((SDK_INT >= JELLY_BEAN_MR1)
         && (applicationInfo.flags & ApplicationInfo.FLAG_SUPPORTS_RTL) != 0) {
 
+      int layoutDirection = getLayoutDirection(context);

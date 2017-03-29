@@ -115,3 +115,24 @@ private static class State<T extends Drawable> extends Component<DrawableCompone
     }
 
     private Reference<T> getDrawable() {
+      return mDrawable;
+    }
+
+    @Override
+    public int hashCode() {
+      return mDrawable.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+
+      State state = (State) o;
+
+      return mDrawable.equals(state.mDrawable);
