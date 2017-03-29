@@ -140,3 +140,6 @@ public class ComponentView extends ComponentHost {
       AccessibilityManagerCompat.addAccessibilityStateChangeListener(
           mAccessibilityManager,
           mAccessibilityStateChangeListener);
+    }
+  }
+

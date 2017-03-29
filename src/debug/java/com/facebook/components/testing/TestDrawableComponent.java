@@ -248,3 +248,6 @@ public class TestDrawableComponent extends ComponentLifecycle {
       boolean canMeasure,
       boolean implementsAccessibility,
       boolean usesDisplayList) {
+    return create(
+        context,
+        0,

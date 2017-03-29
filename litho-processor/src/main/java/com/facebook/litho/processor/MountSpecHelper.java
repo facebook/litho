@@ -60,3 +60,4 @@ public class MountSpecHelper extends ComponentSpecHelper {
       /* Methods that can have inter-stage props - these MUST come first in this list */
       OnPrepare.class,
       OnMeasure.class,
+      OnBoundsDefined.class,
