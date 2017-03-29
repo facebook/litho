@@ -377,3 +377,15 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     throw new IllegalStateException(
         "You must override onMeasure() if you return true in canMeasure(), " +
             "ComponentLifecycle is: " + component.getLifecycle());
+  }
+
+  /**
+   * Whether this {@link ComponentLifecycle} mounts views that contain component-based
+   * content that can be incrementally mounted e.g. if the mounted view has a
+   * ComponentView with incremental mount enabled.
+   */
+  protected boolean canMountIncrementally() {
+    return false;
+  }
+
+  /**
