@@ -317,3 +317,4 @@ class TextSpec {
       int textStyle,
       Typeface typeface,
       Alignment textAlignment,
+      boolean glyphWarming,
