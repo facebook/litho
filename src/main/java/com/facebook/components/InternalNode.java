@@ -907,3 +907,14 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   boolean hasTouchExpansion() {
     return ((mPrivateFlags & PFLAG_TOUCH_EXPANSION_IS_SET) != 0L);
+  }
+
+  Spacing getTouchExpansion() {
+    return mTouchExpansion;
+  }
+
+  int getTouchExpansionLeft() {
+    if (!shouldApplyTouchExpansion()) {
+      return 0;
+    }
+

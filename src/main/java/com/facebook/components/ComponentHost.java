@@ -501,3 +501,8 @@ public class ComponentHost extends ViewGroup {
   }
 
   /**
+   * This is used to collapse all invalidation calls on hosts during mount.
+   * While invalidations are suppressed, the hosts will simply bail on
+   * invalidations. Once the suppression is turned off, a single invalidation
+   * will be triggered on the affected hosts.
+   */
