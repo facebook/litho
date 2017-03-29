@@ -203,3 +203,4 @@ public abstract class BaseBinder<
   @Override
   public void notifyItemRangeInserted(int positionStart, int itemCount) {
     assertMainThread();
+

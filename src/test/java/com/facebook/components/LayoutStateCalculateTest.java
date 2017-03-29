@@ -532,3 +532,4 @@ public class LayoutStateCalculateTest {
         SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY));
 
     // Check total layout outputs.
+    assertEquals(18, layoutState.getMountableOutputCount());
