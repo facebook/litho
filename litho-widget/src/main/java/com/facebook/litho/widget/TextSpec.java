@@ -329,3 +329,4 @@ class TextSpec {
     TextLayoutBuilder layoutBuilder = sTextLayoutBuilderPool.acquire();
     if (layoutBuilder == null) {
       layoutBuilder = new TextLayoutBuilder();
+      layoutBuilder.setShouldCacheLayout(false);
