@@ -367,3 +367,4 @@ class LayoutState {
    */
   private static boolean hasViewContent(InternalNode node, LayoutState layoutState) {
     final Component<?> component = node.getComponent();
+    final NodeInfo nodeInfo = node.getNodeInfo();

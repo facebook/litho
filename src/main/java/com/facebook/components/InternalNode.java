@@ -371,3 +371,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode layoutDirection(YogaDirection direction) {
+    mPrivateFlags |= PFLAG_LAYOUT_DIRECTION_IS_SET;
