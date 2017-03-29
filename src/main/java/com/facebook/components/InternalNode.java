@@ -1910,3 +1910,5 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     }
     if ((node.mPrivateFlags & PFLAG_MARGIN_IS_SET) != 0L) {
       errorTypes = addOrCreateList(errorTypes, "margin");
+    }
+
