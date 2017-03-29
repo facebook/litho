@@ -112,3 +112,5 @@ class LayoutState {
   private ComponentContext mContext;
   private TransitionContext mTransitionContext;
 
+  private Component<?> mComponent;
+
