@@ -105,3 +105,5 @@ class ProgressSpec {
 
   @OnUnmount
   static void onUnmount(
+      ComponentContext c,
+      ProgressBar progressBar,
