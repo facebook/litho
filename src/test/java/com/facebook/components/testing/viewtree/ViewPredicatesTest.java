@@ -72,3 +72,6 @@ public class ViewPredicatesTest {
     mComponentViewWithText = ComponentTestHelper.mountComponent(
         Text.create(context)
             .text("Hello"));
+  }
+
+  @Test
