@@ -318,3 +318,4 @@ public class ComponentLifecycleTest {
     when(nestedTree.getHeight()).thenReturn(nestedTreeHeight);
 
     when(LayoutState.resolveNestedTree(eq(mNode), anyInt(), anyInt())).thenReturn(nestedTree);
+
