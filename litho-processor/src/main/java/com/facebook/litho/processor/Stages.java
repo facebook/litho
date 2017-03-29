@@ -556,3 +556,9 @@ public class Stages {
                   v,
                   "Props may not be declared with the following types:" +
                       illegalPropTypes);
+            }
+          }
+
+          variableNameToElementMap.put(variableName, v);
+        } catch (PrintableException e) {
+          exceptions.add(e);
