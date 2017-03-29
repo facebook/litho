@@ -2886,3 +2886,9 @@ public class Stages {
         .build());
 
     writeInnerTypeSpec(propsBuilderClassBuilder.build());
+  }
+
+  private void generateBuilderPool(
+      ClassName builder,
+      String poolName,
+      StaticFlag isStatic,
