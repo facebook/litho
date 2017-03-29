@@ -2498,3 +2498,6 @@ public class Stages {
   /**
    * Generate a builder method for a given declared parameters.
    */
+  private Collection<MethodSpec> generatePropsBuilderMethods(
+      VariableElement element,
+      TypeName propsBuilderClassName,
