@@ -95,3 +95,4 @@ public class IncrementalMountUtils {
     final int bottom = view.getBottom() + translationY;
     final int left = view.getLeft() + translationX;
     final int right = view.getRight() + translationX;
+
