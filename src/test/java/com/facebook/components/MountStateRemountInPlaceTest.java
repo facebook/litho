@@ -256,3 +256,12 @@ public class MountStateRemountInPlaceTest {
         TestDrawableComponent.create(mContext)
             .build();
 
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        new ComponentView(mContext),
+        ComponentTree.create(mContext, new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                .child(firstComponent)
+                .build();
+          }

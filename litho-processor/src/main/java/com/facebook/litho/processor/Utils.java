@@ -89,3 +89,4 @@ public class Utils {
     final List<ExecutableElement> annotatedMethods = new ArrayList<>();
     for (final Element enclosedElement : element.getEnclosedElements()) {
       if (enclosedElement.getKind() == ElementKind.METHOD) {
+        final ExecutableElement executableElement = (ExecutableElement) enclosedElement;
