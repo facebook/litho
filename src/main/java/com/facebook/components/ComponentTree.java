@@ -353,3 +353,4 @@ public class ComponentTree {
         mountComponent(null);
       }
 
+      return true;
