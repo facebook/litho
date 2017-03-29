@@ -152,3 +152,4 @@ public class ComponentTree {
   }
 
   protected ComponentTree(Builder builder) {
+    mContext = ComponentContext.withComponentTree(builder.context, this);

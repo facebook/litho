@@ -175,3 +175,29 @@ public class StateUpdateImplClassBuilder {
       }
     }
 
+    // Add constructor and member fields.
+    MethodSpec.Builder constructor = MethodSpec.constructorBuilder();
+
+    for (Parameter param : mParamsForStateUpdate) {
+      final String paramName = param.name.toString();
+      final String memberName = getMemberName(paramName);
+
+      stateUpdateClassBuilder.addField(param.type, memberName, Modifier.PRIVATE);
+      constructor
+          .addParameter(
+              param.type,
+              param.name)
+          .addStatement(memberName + " = " + paramName);
+    }
+    stateUpdateClassBuilder.addMethod(constructor.build());
+
+    // Generate updateState method.
+    final String oldComponentImplName =
+        STATE_UPDATE_OLD_COMPONENT_NAME + STATE_UPDATE_IMPL_NAME_SUFFIX;
+    final String newComponentImplName =
+        STATE_UPDATE_NEW_COMPONENT_NAME + STATE_UPDATE_IMPL_NAME_SUFFIX;
+
+    MethodSpec.Builder updateStateMethodBuilder =
+        MethodSpec.methodBuilder(STATE_UPDATE_METHOD_NAME)
+            .addModifiers(Modifier.PUBLIC)
+            .addParameter(mStateContainerClassName, STATE_CONTAINER_PARAM_NAME)

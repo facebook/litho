@@ -46,3 +46,6 @@ public class TestComponentTree extends ComponentTree {
       boolean diffingEnabled,
       @Nullable DiffNode diffNode) {
     return LayoutState.calculate(
+        new TestComponentContext(
+            ComponentContext.withComponentTree(new TestComponentContext(context), this),
+            new StateHandler()),
