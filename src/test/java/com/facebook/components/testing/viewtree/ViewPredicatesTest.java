@@ -83,3 +83,4 @@ public class ViewPredicatesTest {
     assertThat(hasHello.apply(mTextViewWithEmptyString)).isFalse();
     assertThat(hasHello.apply(mTextViewWithHello)).isTrue();
     assertThat(hasHello.apply(mTextViewWithWorld)).isFalse();
+    assertThat(hasHello.apply(mComponentViewWithText)).isTrue();
