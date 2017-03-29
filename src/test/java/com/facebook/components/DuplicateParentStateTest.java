@@ -30,3 +30,9 @@ import static junit.framework.Assert.assertTrue;
 @RunWith(ComponentsTestRunner.class)
 public class DuplicateParentStateTest {
 
+  private int mUnspecifiedSizeSpec;
+
+  @Before
+  public void setUp() throws Exception {
+    mUnspecifiedSizeSpec = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
+  }

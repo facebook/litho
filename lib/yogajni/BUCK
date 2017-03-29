@@ -40,3 +40,5 @@ if COMPONENTS_IS_OSS_BUILD:
       '-std=c++11',
     ],
     deps = [
+      ":yoga",
+      COMPONENTS_FBJNI_TARGET,
