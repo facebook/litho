@@ -47,3 +47,4 @@ public class ComponentTreeHolder {
     if (componentTreeHolder == null) {
       componentTreeHolder = new ComponentTreeHolder();
     }
+    componentTreeHolder.mComponentInfo = componentInfo;

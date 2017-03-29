@@ -79,3 +79,6 @@ public class RecyclerBinderTest {
   public void setup() {
     mComponentContext = new ComponentContext(RuntimeEnvironment.application);
     PowerMockito.mockStatic(ComponentTreeHolder.class);
+    PowerMockito.when(ComponentTreeHolder.acquire(
+        any(ComponentInfo.class),
+        any(LayoutHandler.class)))
