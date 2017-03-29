@@ -182,3 +182,5 @@ public class Stages {
       List<TypeVariableName> typeVariables,
       boolean supportState,
       Map<String, TypeMirror> extraStateMembers,
+      List<TypeElement> eventDeclarations,
+      Map<String, String> propJavadocs) {

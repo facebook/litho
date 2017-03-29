@@ -91,3 +91,4 @@ public abstract class SpecHelper implements Closeable {
       eventTypesElements = Collections.<TypeElement>emptyList();
     }
 
+    Map<String, String> propJavadocs = null;
