@@ -2788,3 +2788,6 @@ public class Stages {
     // class can be static but must shadow the type variables from the class.
     // If the component implementation class is not static, and there are type variables, then this
     // class is not static and we get the type variables from the class.
+    final boolean isBuilderStatic = mTypeVariables.isEmpty() ||
+        isStatic.equals(StaticFlag.STATIC);
+    if (isBuilderStatic) {
