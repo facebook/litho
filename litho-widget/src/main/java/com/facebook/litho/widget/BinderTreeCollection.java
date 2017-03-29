@@ -14,3 +14,9 @@ import java.util.List;
 import android.support.v4.util.SparseArrayCompat;
 
 import com.facebook.litho.ComponentTree;
+
+/**
+ * BinderTreeCollection hide the structure used to operate on ComponentTrees used by the Binder.
+ * Right now we are operating on a SparseArray.
+ * Shifting the SparseArray left and right is potentially bad. Each call uses a System.arraycopy()
+ * this means shiftSparseArrayRight/Left is O(n*m), where n is (sparseArray.size() - fromPosition)

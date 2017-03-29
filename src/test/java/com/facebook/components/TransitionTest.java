@@ -12,3 +12,14 @@ package com.facebook.litho;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.Transition.TransitionType;
 import com.facebook.litho.TransitionProperties.PropertyType;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
+

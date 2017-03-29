@@ -21,3 +21,4 @@ import android.view.View;
 import com.facebook.litho.TransitionProperties.PropertyChangeHolder;
 import com.facebook.litho.TransitionProperties.PropertySetHolder;
 import com.facebook.litho.TransitionProperties.PropertyType;
+

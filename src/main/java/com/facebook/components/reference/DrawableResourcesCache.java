@@ -74,3 +74,12 @@ class DrawableResourcesCache {
       mDrawableCache.put(resId, drawablesPool);
     }
 
+    // Reset a stateful drawable, and its animations, before being released.
+    if (drawable.isStateful()) {
+      drawable.setState(StateSet.WILD_CARD);
+
+      if (SDK_INT >= HONEYCOMB) {
+        drawable.jumpToCurrentState();
+      }
+    }
+

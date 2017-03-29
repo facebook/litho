@@ -17,3 +17,5 @@ import com.facebook.litho.Transition.TransitionListener;
 import com.facebook.litho.TransitionManager.KeyStatus;
 import com.facebook.litho.TransitionProperties.PropertySetHolder;
 import com.facebook.litho.TransitionProperties.PropertyType;
+
+import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;

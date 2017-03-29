@@ -20,3 +20,12 @@ import com.facebook.litho.utils.IncrementalMountUtils;
 
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
+
+/**
+ * WARNING: In order to benefit from async layout, all the items in a row need to have
+ *          the same height. If items in the same row have different heights, the layout will
+ *          be recomputed on the main thread.
+ *          The use of {@link android.support.v7.widget.RecyclerView.ItemDecoration} will
+ *          also prevent the layout pass to be computed in the background but it will run
+ *          on the main thread.
+ */
