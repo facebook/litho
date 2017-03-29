@@ -179,3 +179,13 @@ public abstract class BaseBinder<
             position == mComponentTrees.getFirstPosition() + mComponentTrees.size()) {
 
           final ComponentTree componentTree = buildComponentTree(component);
+
+          if (isAsyncLayoutEnabled()) {
+            componentTree.setSizeSpecAsync(getWidthSpec(position), getHeightSpec(position));
+          } else {
+            componentTree.setSizeSpec(getWidthSpec(position), getHeightSpec(position));
+          }
+
+          // Move right the successive ComponentTree positions and insert the new item.
+          mComponentTrees.insert(position, componentTree);
+        }
