@@ -32,3 +32,4 @@ public class SingleImageComponentSpec {
         .setUri(image)
         .build();
     return FrescoComponent.create(c)
+        .controller(controller)
