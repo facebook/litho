@@ -146,3 +146,4 @@ public class ComponentView extends ComponentHost {
   private void onDetach() {
     if (mIsAttached) {
       mIsAttached = false;
+
