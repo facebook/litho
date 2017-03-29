@@ -236,3 +236,4 @@ class EditTextSpec {
   @OnMount
   static void onMount(
       final ComponentContext c,
+      EditTextTextTextChangedEventHandler editTextView,
