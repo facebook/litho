@@ -193,3 +193,4 @@ public class Stages {
     mTypeVariables = typeVariables;
     mEventDeclarations = eventDeclarations;
     mPropJavadocs = propJavadocs;
+
