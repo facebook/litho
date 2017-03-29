@@ -224,3 +224,4 @@ public class StateUpdateImplClassBuilder {
     }
 
     final String target = mStaticFlag == Stages.StaticFlag.STATIC ?
+        SPEC_INSTANCE_NAME + "." + mTarget :

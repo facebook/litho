@@ -38,3 +38,7 @@ public class DraweeDrawable<DH extends DraweeHierarchy>
   private final DraweeHolder<DH> mDraweeHolder;
 
   public DraweeDrawable(Context context, DH draweeHierarchy) {
+    super(null);
+
+    setCurrent(mNoOpDrawable);
+    mDraweeHolder = DraweeHolder.create(draweeHierarchy, context);
