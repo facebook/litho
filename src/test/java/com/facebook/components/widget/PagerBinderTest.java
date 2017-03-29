@@ -231,3 +231,4 @@ public class PagerBinderTest {
     }
 
     @Override
+    public Component<?> createComponent(ComponentContext context, int position) {
