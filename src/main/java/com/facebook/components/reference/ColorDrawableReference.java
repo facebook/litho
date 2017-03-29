@@ -75,3 +75,9 @@ public final class ColorDrawableReference extends ReferenceLifecycle<Drawable> {
       drawable = sPool.acquire();
     }
 
+    if (drawable == null) {
+      drawable = new ColorDrawable(((State) reference).mColor);
+    } else {
+      drawable.setColor(((State) reference).mColor);
+    }
+

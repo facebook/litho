@@ -1811,3 +1811,10 @@ public class LayoutStateCalculateTest {
   }
 
   @Test
+  public void testMeasure() {
+    final int width = 50;
+    final int height = 30;
+    final ComponentContext c = new ComponentContext(RuntimeEnvironment.application);
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
