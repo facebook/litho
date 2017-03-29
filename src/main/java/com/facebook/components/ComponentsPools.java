@@ -539,3 +539,8 @@ public class ComponentsPools {
   }
 
   @ThreadSafe(enableChecks = false)
+  static void release(Diff diff) {
+    diff.release();
+    sDiffPool.release(diff);
+  }
+
