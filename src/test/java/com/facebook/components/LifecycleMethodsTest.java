@@ -266,3 +266,12 @@ public class LifecycleMethodsTest {
 
     @Override
     public Component<LifecycleMethodsComponent> makeShallowCopy() {
+      return this;
+    }
+  }
+
+  private static class LifecycleMethodsDrawable extends Drawable {
+
+    private LifecycleMethodsInstance mComponent;
+
+    private LifecycleMethodsDrawable(LifecycleMethodsInstance component) {

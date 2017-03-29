@@ -129,3 +129,5 @@ class LayoutOutput implements Cloneable {
     } else if (nodeInfo != null) {
       mNodeInfo = nodeInfo.acquireRef();
     }
+  }
+
