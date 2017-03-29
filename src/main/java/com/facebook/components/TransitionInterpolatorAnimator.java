@@ -97,3 +97,4 @@ public class TransitionInterpolatorAnimator
   public boolean restoreState(TransitionInterpolatorAnimator interpolatorAnimator) {
     mStartTime = interpolatorAnimator.mStartTime;
     mPlayedTime = interpolatorAnimator.mPlayedTime;
+    return true;

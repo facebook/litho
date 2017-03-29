@@ -19,3 +19,4 @@ import android.support.v4.util.SimpleArrayMap;
  */
 class TransitionContext {
 
+  // User defined transitions

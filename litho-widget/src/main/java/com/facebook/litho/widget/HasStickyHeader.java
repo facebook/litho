@@ -8,3 +8,22 @@
  */
 
 package com.facebook.litho.widget;
+
+interface HasStickyHeader {
+
+  /**
+   * @return the adapter position of the first visible view.
+   */
+  int findFirstVisibleItemPosition();
+
+  /**
+   * @return the adapter position of the last visible view.
+   */
+  int findLastVisibleItemPosition();
+
+  /**
+   * @param position
+   * @return Whether the item at given position is *sticky*
+   */
+  boolean isSticky(int position);
+}

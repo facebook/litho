@@ -30,3 +30,4 @@ class LayoutOutput implements Cloneable {
   public static final int TYPE_HOST = 3;
   public static final int TYPE_BORDER = 4;
 
+  @IntDef({TYPE_CONTENT, TYPE_BACKGROUND, TYPE_FOREGROUND, TYPE_HOST, TYPE_BORDER})

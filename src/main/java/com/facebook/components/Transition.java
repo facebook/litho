@@ -41,3 +41,10 @@ public class Transition {
     void setListener(TransitionListener listener);
     void start(View targetView, List<PropertyChangeHolder> propertyChangeHolders);
     T stop();
+    /**
+     * Restore state from previous transition. If this type of animator cannot restore its state it
+     * should return false.
+     *
+     * @return whether this animator can restore state.
+     */
+    boolean restoreState(T savedBundle);
