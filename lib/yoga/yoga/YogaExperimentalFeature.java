@@ -31,3 +31,4 @@ public enum YogaExperimentalFeature {
     switch (value) {
       case 0: return ROUNDING;
       case 1: return WEB_FLEX_BASIS;
+      case 2: return MIN_FLEX_FIX;
