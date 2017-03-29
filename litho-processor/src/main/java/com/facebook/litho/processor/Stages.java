@@ -1708,3 +1708,4 @@ public class Stages {
             .returns(ClassNames.STRING)
             .addStatement("return \"" + getSimpleClassName() + "\"")
             .build());
+
