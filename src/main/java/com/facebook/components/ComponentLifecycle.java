@@ -128,3 +128,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
               component);
 
           if (size.width < 0 || size.height < 0) {
+            throw new IllegalStateException(
