@@ -279,3 +279,5 @@ public class LayoutStateCalculateTest {
       }
     }
     assertEquals(3, totalHosts);
+
+    //Check all the Layouts are in the correct position.
