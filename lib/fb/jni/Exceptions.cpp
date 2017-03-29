@@ -53,3 +53,7 @@ class JOutOfMemoryError : public JavaClass<JOutOfMemoryError, JThrowable> {
  public:
   static auto constexpr kJavaDescriptor = "Ljava/lang/OutOfMemoryError;";
 
+  static local_ref<JOutOfMemoryError> create(const char* str) {
+    return newInstance(make_jstring(str));
+  }
+};
