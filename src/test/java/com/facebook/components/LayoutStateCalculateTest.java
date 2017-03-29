@@ -2383,3 +2383,10 @@ public class LayoutStateCalculateTest {
 
     return LayoutState.calculate(
         new ComponentContext(context),
+        component,
+        componentTreeId,
+        widthSpec,
+        heightSpec,
+        false,
+        null);
+  }
