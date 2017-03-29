@@ -30,3 +30,4 @@ public class ComponentContext extends ContextWrapper {
   private final String mLogTag;
   private final ComponentsLogger mLogger;
   private final StateHandler mStateHandler;
+

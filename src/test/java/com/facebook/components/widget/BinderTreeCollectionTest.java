@@ -87,3 +87,4 @@ public class BinderTreeCollectionTest {
 
     ComponentTree newComponentTree = createNewComponentTree();
     mBinderTreeCollection.put(originalSize + 1, newComponentTree);
+
