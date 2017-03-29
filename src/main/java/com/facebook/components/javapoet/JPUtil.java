@@ -141,3 +141,14 @@ public class JPUtil {
     }
     return CodeBlock.builder().add(rep, value).build();
   }
+
+  public static TypeName getRawType(TypeName type) {
+    return type instanceof ParameterizedTypeName
+        ? ((ParameterizedTypeName) type).rawType
+        : type;
+  }
+
+  public static List<TypeName> getTypeParameters(TypeName type) {
+    return type instanceof ParameterizedTypeName
+        ? ((ParameterizedTypeName) type).typeArguments : null;
+  }

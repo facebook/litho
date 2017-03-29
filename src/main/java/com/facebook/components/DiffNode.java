@@ -53,3 +53,4 @@ class DiffNode implements Cloneable {
     mComponent = component;
   }
 
+  float getLastMeasuredWidth() {

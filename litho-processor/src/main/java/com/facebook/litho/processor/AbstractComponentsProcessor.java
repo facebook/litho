@@ -75,3 +75,4 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
           generate(specModel);
         }
 
+        if (closeable != null) {

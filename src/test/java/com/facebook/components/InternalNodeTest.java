@@ -71,3 +71,4 @@ public class InternalNodeTest {
 
   @Test
   public void testAlignSelfFlag() {
+    mNode.alignSelf(YogaAlign.STRETCH);
