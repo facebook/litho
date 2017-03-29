@@ -56,3 +56,13 @@ import com.facebook.components.processor.GetTreePropsForChildrenMethodBuilder.Cr
 import com.facebook.components.specmodels.model.ClassNames;
 import com.facebook.components.specmodels.model.PropDefaultModel;
 import com.facebook.components.specmodels.processor.PropDefaultsExtractor;
+
+import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.CodeBlock;
+import com.squareup.javapoet.FieldSpec;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
+import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;

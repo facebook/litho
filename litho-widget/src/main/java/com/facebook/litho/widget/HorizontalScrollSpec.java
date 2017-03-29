@@ -60,3 +60,4 @@ class HorizontalScrollSpec {
 
     final TypedArray a = c.obtainStyledAttributes(
         R.styleable.HorizontalScroll,
+        0);

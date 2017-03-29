@@ -45,3 +45,6 @@ import com.facebook.components.specmodels.model.ClassNames;
 import com.facebook.components.specmodels.model.SpecModel;
 
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.TypeName;
+
