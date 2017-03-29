@@ -62,3 +62,7 @@ class JArrayIndexOutOfBoundsException : public JavaClass<JArrayIndexOutOfBoundsE
  public:
   static auto constexpr kJavaDescriptor = "Ljava/lang/ArrayIndexOutOfBoundsException;";
 
+  static local_ref<JArrayIndexOutOfBoundsException> create(const char* str) {
+    return newInstance(make_jstring(str));
+  }
+};
