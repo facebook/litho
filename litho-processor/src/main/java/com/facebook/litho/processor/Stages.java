@@ -1837,3 +1837,9 @@ public class Stages {
           .stateContainerClassName(stateContainerClassName)
           .stateContainerImplClassName(getStateContainerImplClassName())
           .stateParameters(mStateMap.keySet())
+          .build();
+
+      mClassTypeSpec.addMethod(methodSpec);
+    }
+  }
+
