@@ -527,3 +527,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
 
   @Override
   public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
+    // Do nothing by default.
