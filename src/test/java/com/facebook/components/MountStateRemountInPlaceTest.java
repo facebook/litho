@@ -525,3 +525,7 @@ public class MountStateRemountInPlaceTest {
     assertTrue(thirdComponent.wasOnMountCalled());
     assertTrue(thirdComponent.wasOnBindCalled());
     assertTrue(firstComponent.wasOnUnmountCalled());
+  }
+
+  @Test
+  public void testSkipShouldUpdateAndRemountForUnsupportedComponent() {
