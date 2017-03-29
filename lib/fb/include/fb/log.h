@@ -47,3 +47,6 @@
 extern "C" {
 #endif
 
+#ifdef ANDROID
+#include <android/log.h>
+#else
