@@ -207,3 +207,6 @@ final class ViewPredicates {
     final ShadowCanvas shadowCanvas = Shadows.shadowOf(canvas);
     if (!shadowCanvas.getDescription().isEmpty()) {
       return shadowCanvas.getDescription();
+    }
+
+    try {
