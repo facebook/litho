@@ -31,3 +31,4 @@ import com.facebook.litho.annotations.ShouldUpdate;
  * in a {@link ViewPager}.
  */
 @MountSpec(canMountIncrementally = true, isPureRender = true)
+class PagerSpec {
