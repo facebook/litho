@@ -164,3 +164,4 @@ final class ViewPredicates {
       @Override
       public boolean apply(@Nullable final View input) {
         if (input instanceof ImageView) {
+          final Drawable imageDrawable = ((ImageView) input).getDrawable();
