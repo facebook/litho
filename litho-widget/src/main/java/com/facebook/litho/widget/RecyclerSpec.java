@@ -51,3 +51,6 @@ class RecyclerSpec {
   @OnMeasure
   static void onMeasure(
       ComponentContext context,
+      ComponentLayout layout,
+      int widthSpec,
+      int heightSpec,
