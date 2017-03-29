@@ -1517,3 +1517,4 @@ public class Stages {
     return typeVarArguments;
   }
 
+  public static List<TypeMirror> getGenericTypeArguments(TypeMirror diffType) {
