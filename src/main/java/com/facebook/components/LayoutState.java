@@ -694,3 +694,11 @@ class LayoutState {
       hostOutput.setUpdateState(LayoutOutput.STATE_DIRTY);
     } else {
       layoutState.mLayoutStateOutputIdCalculator.calculateAndSetLayoutOutputIdAndUpdateState(
+          hostOutput,
+          layoutState.mCurrentLevel,
+          LayoutOutput.TYPE_HOST,
+          -1,
+          isCachedOutputUpdated);
+    }
+  }
+
