@@ -207,3 +207,4 @@ public class Stages {
     mOnEventMethods = Utils.getAnnotatedMethods(mSourceElement, OnEvent.class);
     mOnUpdateStateMethods = Utils.getAnnotatedMethods(mSourceElement, OnUpdateState.class);
     mOnCreateTreePropsMethods = Utils.getAnnotatedMethods(mSourceElement, OnCreateTreeProp.class);
+
