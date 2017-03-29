@@ -136,3 +136,4 @@ private static class State<T extends Drawable> extends Component<DrawableCompone
       State state = (State) o;
 
       return mDrawable.equals(state.mDrawable);
+    }
