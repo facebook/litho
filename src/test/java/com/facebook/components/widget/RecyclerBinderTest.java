@@ -376,3 +376,8 @@ public class RecyclerBinderTest {
   }
 
   @Test
+  public void testAddItemsAfterMeasuring() {
+    final Size size = new Size();
+    final int widthSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
+    final int heightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
+

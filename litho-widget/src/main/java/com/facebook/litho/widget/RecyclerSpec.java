@@ -216,3 +216,8 @@ class RecyclerSpec {
     }
 
     recyclerView.setId(RecyclerSpec.recyclerViewId);
+
+    if (itemDecoration != null) {
+      recyclerView.removeItemDecoration(itemDecoration);
+    }
+
