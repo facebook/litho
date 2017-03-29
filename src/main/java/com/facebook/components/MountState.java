@@ -27,3 +27,5 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
+
+import com.facebook.R;

@@ -25,3 +25,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 
 import static android.content.Context.ACCESSIBILITY_SERVICE;
 import static com.facebook.litho.AccessibilityUtils.isAccessibilityEnabled;
+
+/**
+ * A {@link ViewGroup} that can host the mounted state of a {@link Component}.
+ */

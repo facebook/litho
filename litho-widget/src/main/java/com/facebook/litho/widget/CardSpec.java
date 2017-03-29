@@ -82,3 +82,4 @@ class CardSpec {
     final int shadowHorizontal = getShadowHorizontal(elevation);
 
     return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        .child(

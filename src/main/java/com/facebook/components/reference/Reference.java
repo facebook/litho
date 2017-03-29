@@ -45,3 +45,4 @@ public abstract class Reference<L> {
   public static <T> T acquire(
       ComponentContext context,
       Reference<T> reference) {
+    return reference.mLifecycle.onAcquire(context, reference);

@@ -35,3 +35,4 @@ public class InternalNodeReleaseTest {
     assertEquals(false, node.isForceViewWrapping());
 
     assertNull(node.getNodeInfo());
+    assertNull(node.getTouchExpansion());

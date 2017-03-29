@@ -37,3 +37,10 @@ public class LayoutStateAddChildWithInputTest {
     InternalNode node = (InternalNode) Container.create(mContext).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
         .child(TestLayoutComponent.create(mContext))
         .child(TestLayoutComponent.create(mContext))
+        .build();
+
+    assertEquals(2, node.getChildCount());
+    assertEquals(0, node.getChildAt(0).getChildCount());
+    assertEquals(0, node.getChildAt(1).getChildCount());
+  }
+}

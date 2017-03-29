@@ -40,3 +40,4 @@ public class TestDrawableComponent extends ComponentLifecycle {
   private synchronized static TestDrawableComponent get(
       boolean callsShouldUpdateOnMount,
       boolean isPureRender,
+      boolean canMeasure,
