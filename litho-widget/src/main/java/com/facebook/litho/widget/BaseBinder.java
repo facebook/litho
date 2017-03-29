@@ -594,3 +594,11 @@ public abstract class BaseBinder<
   }
 
   /**
+   * Update the range of ComponentTrees held by this binder.
+   *
+   * @param start Starting position of the new range.
+   * @param count Item count of the new range.
+   * @param flags {@link #URFLAG_REFRESH_IN_RANGE} to refresh existing componentTrees
+   *              still in range. {@link #URFLAG_RELEASE_OUTSIDE_RANGE} to release existing
+   *              componentTrees outside the new range.
+   */

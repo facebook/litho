@@ -513,3 +513,5 @@ class LayoutState {
     layoutState.mShouldDuplicateParentState =
         needsHostView || (shouldDuplicateParentState && node.isDuplicateParentStateEnabled());
 
+    // Generate the layoutOutput for the given node.
+    final LayoutOutput layoutOutput = createGenericLayoutOutput(node, layoutState);
