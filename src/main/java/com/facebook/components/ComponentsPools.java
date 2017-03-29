@@ -809,3 +809,7 @@ public class ComponentsPools {
   }
 
   @ThreadSafe(enableChecks = false)
+  public static void release(DisplayListDrawable displayListDrawable) {
+    displayListDrawable.release();
+    sDisplayListDrawablePool.release(displayListDrawable);
+  }
