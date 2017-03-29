@@ -32,3 +32,20 @@ public final class Demos {
   private Demos() {
   }
 
+  public static void initialize(ComponentContext c) {
+    final RecyclerBinder recyclerBinder = new RecyclerBinder(
+        c,
+        4.0f,
+        new LinearLayoutInfo(c, OrientationHelper.VERTICAL, false));
+    DataModel.populateBinderWithSampleData(recyclerBinder, c);
+    demoModels = new LinkedHashMap<>();
+    demoModels.put(
+        "Lithography",
+        LithographyRootComponent.create(c)
+            .recyclerBinder(recyclerBinder)
+            .build());
+    demoModels.put("Playground", PlaygroundComponent.create(c).build());
+  }
+
+  public static Component<?> getComponent(String name) {
+    return demoModels.get(name);

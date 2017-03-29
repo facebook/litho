@@ -50,3 +50,4 @@ public class DemoListItemComponentSpec {
   static void onClick(
       ComponentContext c,
       @FromEvent View view,
+      @Prop final String name) {

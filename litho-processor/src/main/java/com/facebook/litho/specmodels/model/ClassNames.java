@@ -82,3 +82,4 @@ public interface ClassNames {
       ClassName.bestGuess("com.facebook.litho.ComponentLifecycle.StateContainer");
 
   ClassName EVENT_DISPATCHER =
+      ClassName.bestGuess("com.facebook.litho.EventDispatcher");

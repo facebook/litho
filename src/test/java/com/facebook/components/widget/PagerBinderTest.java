@@ -12,3 +12,8 @@ package com.facebook.litho.widget;
 import android.content.Context;
 import android.graphics.Color;
 
+import com.facebook.litho.Component;
+import com.facebook.litho.ComponentContext;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.ComponentsRule;
+import com.facebook.litho.testing.TestDrawableComponent;
