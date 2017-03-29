@@ -291,3 +291,5 @@ class PropsBuilderMethodsSpecBuilder {
         : typeParameters.get(0);
 
     return new TypeName[]{typeParameter};
+  }
+
