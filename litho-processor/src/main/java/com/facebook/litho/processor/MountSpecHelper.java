@@ -177,3 +177,6 @@ public class MountSpecHelper extends ComponentSpecHelper {
    * @OnBoundsDefined-annotated method.
    */
   public void generateOnBoundsDefined() {
+    final ExecutableElement onBoundsDefined = Utils.getAnnotatedMethod(
+        mStages.getSourceElement(),
+        OnBoundsDefined.class);

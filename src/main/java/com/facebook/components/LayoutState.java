@@ -491,3 +491,4 @@ class LayoutState {
     final boolean needsHostView = needsHostView(node, layoutState);
 
     final long currentHostMarker = layoutState.mCurrentHostMarker;
+    final int currentHostOutputPosition = layoutState.mCurrentHostOutputPosition;
