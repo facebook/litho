@@ -94,3 +94,5 @@ class RecyclerSpec {
       ComponentContext c,
       RecyclerViewWrapper recyclerViewWrapper,
       @Prop Binder<RecyclerView> binder,
+      @Prop(optional = true) boolean hasFixedSize,
+      @Prop(optional = true) boolean clipToPadding,

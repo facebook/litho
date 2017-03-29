@@ -1084,3 +1084,4 @@ public class ComponentTree {
   }
 
   private boolean hasSizeSpec() {
+    assertHoldsLock(this);
