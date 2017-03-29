@@ -216,3 +216,4 @@ class BinderTreeCollection {
         }
         mItems.remove(position);
       }
+    }

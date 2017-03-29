@@ -83,3 +83,4 @@ public class BinderTreeCollectionTest {
   public void testPutAsNewInsertion() {
     int originalSize = mBinderTreeCollection.size();
 
+    assertNull(mBinderTreeCollection.get(originalSize + 1));

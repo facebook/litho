@@ -224,3 +224,30 @@ public class MountStateVisibilityEventsTest {
     assertEquals(1, getVisibilityItemMapSize());
 
     mMountState.mount(layoutState, new Rect(LEFT, 0, RIGHT, 5));
+    verify(mockLifecycle, times(1)).dispatchOnEvent(
+        eq(invisibleHandler),
+        isA(InvisibleEvent.class));
+    assertEquals(0, getVisibilityItemMapSize());
+  }
+
+  @Test
+  public void testBothVisibilityEvents() {
+    ComponentLifecycle mockLifecycle = createLifecycleMock();
+    Component<?> content = TestViewComponent.create(mContext).build();
+    Whitebox.setInternalState(content, "mLifecycle", mockLifecycle);
+
+    final EventHandler visibleHandler = createEventHandler(content, VISIBLE);
+    final EventHandler invisibleHandler = createEventHandler(content, INVISIBLE);
+
+    final List<VisibilityOutput> visibilityOutputs = new ArrayList<>();
+    visibilityOutputs.add(createVisibilityOutput(
+        content,
+        new Rect(LEFT, 5, RIGHT, 10),
+        visibleHandler,
+        null,
+        null,
+        invisibleHandler));
+
+    final LayoutState layoutState = new LayoutState();
+    Whitebox.setInternalState(layoutState, "mVisibilityOutputs", visibilityOutputs);
+
