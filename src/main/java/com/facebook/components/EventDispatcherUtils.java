@@ -300,3 +300,20 @@ class EventDispatcherUtils {
     sPerformAccessibilityActionEvent.superDelegate = null;
 
     return returnValue;
+  }
+
+  static void dispatchSendAccessibilityEvent(
+      EventHandler<SendAccessibilityEventEvent> eventHandler,
+      View host,
+      int eventType,
+      AccessibilityDelegateCompat superDelegate) {
+    assertMainThread();
+
+    if (sSendAccessibilityEventEvent == null) {
+      sSendAccessibilityEventEvent = new SendAccessibilityEventEvent();
+    }
+
+    sSendAccessibilityEventEvent.host = host;
+    sSendAccessibilityEventEvent.eventType = eventType;
+    sSendAccessibilityEventEvent.superDelegate = superDelegate;
+

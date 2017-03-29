@@ -381,3 +381,23 @@ public interface ComponentLayout {
     ContainerBuilder viewTag(Object viewTag);
     ContainerBuilder viewTags(SparseArray<Object> viewTags);
     ContainerBuilder transitionKey(String key);
+    ContainerBuilder dispatchPopulateAccessibilityEventHandler(
+        EventHandler<DispatchPopulateAccessibilityEventEvent>
+            dispatchPopulateAccessibilityEventHandler);
+    ContainerBuilder onInitializeAccessibilityEventHandler(
+        EventHandler<OnInitializeAccessibilityEventEvent> onInitializeAccessibilityEventHandler);
+    ContainerBuilder onInitializeAccessibilityNodeInfoHandler(
+        EventHandler<OnInitializeAccessibilityNodeInfoEvent>
+            onInitializeAccessibilityNodeInfoHandler);
+    ContainerBuilder onPopulateAccessibilityEventHandler(
+        EventHandler<OnPopulateAccessibilityEventEvent> onPopulateAccessibilityEventHandler);
+    ContainerBuilder onRequestSendAccessibilityEventHandler(
+        EventHandler<OnRequestSendAccessibilityEventEvent>
+            onRequestSendAccessibilityEventHandler);
+    ContainerBuilder performAccessibilityActionHandler(
+        EventHandler<PerformAccessibilityActionEvent>
+            performAccessibilityActionHandler);
+    ContainerBuilder sendAccessibilityEventHandler(
+        EventHandler<SendAccessibilityEventEvent> sendAccessibilityEventHandler);
+    ContainerBuilder sendAccessibilityEventUncheckedHandler(
+        EventHandler<SendAccessibilityEventUncheckedEvent> sendAccessibilityEventUncheckedHandler);
