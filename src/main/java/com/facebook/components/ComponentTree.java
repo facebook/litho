@@ -345,3 +345,4 @@ public class ComponentTree {
     return mIsMounting;
   }
 
+  private boolean mountComponentIfDirty() {
