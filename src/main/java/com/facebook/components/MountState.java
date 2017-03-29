@@ -1680,3 +1680,5 @@ class MountState {
   MountItem getItemAt(int i) {
     return mIndexToItemMap.get(mLayoutOutputsIds[i]);
   }
+
+  private void logPrepareMountParams(
