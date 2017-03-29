@@ -458,3 +458,10 @@ class TextSpec {
         measuredHeight == layoutHeight) {
       textLayout.set(measureLayout);
     } else {
+      if (measureLayout != null) {
+        Log.w(
+            TAG,
+            "Remeasuring Text component.  This is expensive: consider changing parent layout " +
+                "so that double measurement is not necessary.");
+          }
+
