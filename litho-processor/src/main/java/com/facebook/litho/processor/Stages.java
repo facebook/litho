@@ -2918,3 +2918,9 @@ public class Stages {
       factoryMethod
           .addParameter(int.class, "defStyleAttr")
           .addParameter(int.class, "defStyleRes")
+          .addParameter(stateClass, implInstanceName)
+          .addStatement(
+              "builder.init(context, defStyleAttr, defStyleRes, " +
+                  implInstanceName +
+                  ")",
+              builder);
