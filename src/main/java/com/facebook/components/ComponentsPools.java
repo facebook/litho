@@ -154,3 +154,7 @@ public class ComponentsPools {
    * the value is only read once.
    * Once any InternalNode uses any of CSSNodeDEPRECATED or
    * YogaNode all future InternalNodes must do the same as to not mix and match.
+   */
+  private static Boolean sShouldUseCSSNodeJNI = null;
+
+  static LayoutState acquireLayoutState(ComponentContext context) {
