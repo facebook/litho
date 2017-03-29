@@ -79,3 +79,32 @@ public class TestComponentTree extends ComponentTree {
   public static class Builder extends ComponentTree.Builder {
 
     private Builder(ComponentContext context, Component<?> root) {
+      super(context, root);
+    }
+
+    @Override
+    public Builder incrementalMount(boolean isEnabled) {
+      return (Builder) super.incrementalMount(isEnabled);
+    }
+
+    @Override
+    public Builder layoutDiffing(boolean enabled) {
+      return (Builder) super.layoutDiffing(enabled);
+    }
+
+    @Override
+    public Builder layoutThreadLooper(Looper looper) {
+      return (Builder) super.layoutThreadLooper(looper);
+    }
+
+    @Override
+    public Builder layoutLock(Object layoutLock) {
+      return (Builder) super.layoutLock(layoutLock);
+    }
+
+    @Override
+    public TestComponentTree build() {
+
+      return new TestComponentTree(this);
+    }
+  }
