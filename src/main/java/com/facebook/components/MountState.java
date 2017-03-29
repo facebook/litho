@@ -243,3 +243,11 @@ class MountState {
 
     processVisibilityOutputs(layoutState, localVisibleRect);
 
+    if (mTransitionManager != null) {
+      recordMountedItemsWithTransitionKeys(
+          mTransitionManager,
+          mIndexToItemMap,
+          false /* isPreMount */);
+      mTransitionManager.processTransitions();
+    }
+
