@@ -1655,3 +1655,4 @@ class LayoutState {
    *    smaller that the maximum size the new measureSpec will allow.
    * 4) Both measure specs are AT_MOST. The old measure spec allows a bigger size than the new and
    *    the old measured size is smaller than the allowed max size for the new sizeSpec.
+   */
