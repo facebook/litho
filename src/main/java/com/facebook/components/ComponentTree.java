@@ -812,3 +812,5 @@ public class ComponentTree {
         // that can cause this to happen. In such race conditions, ignoring the setSizeSpec call is
         // the right thing to do.
         return;
+      }
+
