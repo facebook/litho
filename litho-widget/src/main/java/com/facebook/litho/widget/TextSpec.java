@@ -112,3 +112,4 @@ class TextSpec {
   private static final SynchronizedPool<TextLayoutBuilder> sTextLayoutBuilderPool =
       new SynchronizedPool<>(2);
 
+  @OnLoadStyle

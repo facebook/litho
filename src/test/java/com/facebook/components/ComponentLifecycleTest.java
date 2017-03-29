@@ -71,3 +71,7 @@ public class ComponentLifecycleTest {
   public void setUp() {
     mDiffNode = mock(DiffNode.class);
     mNode = mock(InternalNode.class);
+    final YogaNodeAPI cssNode = mock(YogaNodeAPI.class);
+    Whitebox.setInternalState(mNode, "mYogaNode", cssNode);
+    when(cssNode.getData()).thenReturn(mNode);
+
