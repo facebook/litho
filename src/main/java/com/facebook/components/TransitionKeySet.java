@@ -182,3 +182,14 @@ class TransitionKeySet implements TransitionListener {
   }
 
   /**
+   * Resume transitions, if needed, given the previous running transitions and the new key status.
+   *
+   * @param oldTransition previously running transitions.
+   * @param newKeyStatus
+   * @param listener
+   * @return true if new transitions started.
+   */
+  boolean resumeFrom(
+      TransitionKeySet oldTransition,
+      int newKeyStatus,
+      TransitionKeySetListener listener) {

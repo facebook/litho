@@ -169,3 +169,4 @@ public class ComponentView extends ComponentHost {
       mTemporaryDetachedComponent = null;
     }
 
+    if (mComponent != null) {

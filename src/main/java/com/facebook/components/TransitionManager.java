@@ -196,3 +196,27 @@ class TransitionManager implements TransitionKeySetListener {
       final TransitionKeySet transitionKeySet = removeRunningTransition(transitionKeys.get(i));
       transitionKeySet.cleanupAfterDisappear();
     }
+  }
+
+  void reset() {
+    mPostMountKeys.clear();
+    mKeysStatus.clear();
+    mTransitions.clear();
+    mRunningTransitions.clear();
+  }
+
+  /**
+   * Set the clipChildren properties to all Views in the same tree branch from the given one, up to
+   * the top ComponentView.
+   */
+  private void recursivelySetChildClipping(View view, boolean clipChildren) {
+    if (view instanceof ComponentHost) {
+      ((ComponentHost) view).setClipChildren(clipChildren);
+    }
+
+    final ViewParent parent = view.getParent();
+    if (parent instanceof ComponentHost) {
+      recursivelySetChildClipping((View) parent, clipChildren);
+    }
+  }
+}

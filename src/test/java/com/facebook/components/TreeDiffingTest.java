@@ -129,3 +129,4 @@ public class TreeDiffingTest {
   }
 
   private InternalNode createInternalNodeForMeasurableComponent(Component component) {
+    InternalNode node = LayoutState.createTree(
