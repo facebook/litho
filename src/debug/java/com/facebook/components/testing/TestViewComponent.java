@@ -248,3 +248,32 @@ public class TestViewComponent extends ComponentLifecycle {
 
   public static class Builder
       extends com.facebook.litho.Component.Builder<TestViewComponent> {
+    State mState;
+
+    private void init(
+        ComponentContext context,
+        @AttrRes int defStyleAttr,
+        @StyleRes int defStyleRes,
+        State state) {
+      super.init(context, defStyleAttr, defStyleRes, state);
+      mState = state;
+    }
+
+    public Builder unique() {
+      mState.mIsUnique = true;
+      return this;
+    }
+
+    @Override
+    public TestComponent<TestViewComponent> build() {
+      State state = mState;
+      release();
+      return state;
+    }
+
+    @Override
+    protected void release() {
+      super.release();
+      mState = null;
+      mBuilderPool.release(this);
+    }

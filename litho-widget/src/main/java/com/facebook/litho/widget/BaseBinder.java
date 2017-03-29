@@ -57,3 +57,4 @@ public abstract class BaseBinder<
     void onItemRangeRemoved(int positionStart, int itemCount);
   }
 
+  private final ComponentContext mContext;

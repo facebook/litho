@@ -85,3 +85,22 @@ public class MountStateBoundsTest {
 
   @Test
   public void testInnerComponentHostBounds() {
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                .child(
+                    Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                        .widthPx(20)
+                        .heightPx(20)
+                        .wrapInView()
+                        .child(
+                            TestDrawableComponent.create(c)
+                                .withLayout().flexShrink(0)
+                                .widthPx(10)
+                                .heightPx(10)))
+                .build();
+          }
+        });

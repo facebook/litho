@@ -69,3 +69,15 @@ public class MountStateRemountTest {
     assertTrue(component1.isMounted());
     assertTrue(component2.isMounted());
 
+    ComponentTestHelper.mountComponent(
+        mContext,
+        componentView,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                .child(component3)
+                .child(component4)
+                .build();
+          }
+        });

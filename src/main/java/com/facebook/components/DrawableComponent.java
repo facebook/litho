@@ -68,3 +68,4 @@ class DrawableComponent<T extends Drawable> extends ComponentLifecycle {
       ComponentContext context,
       Object mountedContent,
       Component<?> component) {
+    final State state = (State) component;

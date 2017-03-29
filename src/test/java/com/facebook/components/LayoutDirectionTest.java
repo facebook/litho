@@ -334,3 +334,25 @@ public class LayoutDirectionTest {
         10);
 
     Drawable drawable = componentView.getDrawables().get(0);
+    assertEquals(new Rect(10, 0, 20, 10), drawable.getBounds());
+
+    ComponentTestHelper.mountComponent(
+        mContext,
+        componentView,
+        new InlineLayoutSpec() {
+              @Override
+              protected ComponentLayout onCreateLayout(ComponentContext c) {
+                return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    .layoutDirection(YogaDirection.RTL)
+                    .child(
+                        Layout.create(c, child).flexShrink(0)
+                            .widthPx(10)
+                            .heightPx(10)
+                            .marginPx(YogaEdge.START, 10)
+                            .marginPx(YogaEdge.END, 20))
+                    .build();
+              }
+            },
+        40,
+        10);
+

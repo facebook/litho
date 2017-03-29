@@ -100,3 +100,4 @@ public class TestLayoutComponent extends ComponentLifecycle {
       return Layout.create(c, mountSpecComponent).flexShrink(0).build();
     }
 
+    ComponentLayout.ContainerBuilder containerBuilder = Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START);

@@ -95,3 +95,4 @@ public class LifecycleMethodsTest {
     }
 
     @Override
+    protected void onPrepare(ComponentContext c, Component<?> component) {

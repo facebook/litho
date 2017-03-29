@@ -100,3 +100,4 @@ public class TestDrawableComponent extends ComponentLifecycle {
     return mIsPureRender;
   }
 
+  @Override

@@ -71,3 +71,5 @@ public class MountStateViewTagsTest {
     final View innerHost1 = componentView.getChildAt(0);
     final View innerHost2 = componentView.getChildAt(1);
 
+    assertEquals(tag1, innerHost1.getTag(DUMMY_ID));
+    assertEquals(tag2, innerHost2.getTag(DUMMY_ID));
