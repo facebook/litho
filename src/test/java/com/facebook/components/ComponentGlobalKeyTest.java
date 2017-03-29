@@ -111,3 +111,4 @@ public class ComponentGlobalKeyTest {
     // CardClip in child
     Assert.assertEquals(layoutSpecId + "" + nestedLayoutSpecId + "[CardClip1]", getComponentAt(componentView, 3).getGlobalKey());
     // Text in child
+    Assert.assertEquals(layoutSpecId + "" + nestedLayoutSpecId + "[Text1]", getComponentAt(componentView, 4).getGlobalKey());

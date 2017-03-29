@@ -271,3 +271,7 @@ class DelegateMethodSpecBuilder {
             : "";
         return CodeBlock.builder()
             .add(IMPL_INSTANCE_NAME + stateContainerMember + ".$L", parameter.name)
+            .build();
+      }
+    }
+

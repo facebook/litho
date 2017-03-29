@@ -21,3 +21,4 @@ import android.view.View;
 import com.facebook.litho.ImageContent;
 import com.facebook.litho.Touchable;
 import com.facebook.litho.fresco.common.NoOpDrawable;
+import com.facebook.drawee.drawable.ForwardingDrawable;

@@ -52,3 +52,21 @@ class PropsBuilderMethodsSpecBuilder {
 
   PropsBuilderMethodsSpecBuilder implName(String implName) {
     this.mImplName = implName;
+    return this;
+  }
+
+  PropsBuilderMethodsSpecBuilder requiredSetName(String requiredSetName) {
+    this.mRequiredSetName = requiredSetName;
+    return this;
+  }
+
+  PropsBuilderMethodsSpecBuilder builderClass(TypeName builderClass) {
+    this.mBuilderClass = builderClass;
+    return this;
+  }
+
+  List<MethodSpec> build() {
+    final List<MethodSpec> builders = new ArrayList<>();
+
+    switch (mPropParameter.resType) {
+      case STRING:

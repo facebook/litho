@@ -273,3 +273,5 @@ public class InternalNodeTest {
         YogaDirection.INHERIT,
         holderNode.getStyleDirection());
     assertEquals(
+        YogaDirection.RTL,
+        nestedTree.getStyleDirection());
