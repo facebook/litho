@@ -193,3 +193,4 @@ class EditTextSpec {
     initEditText(
         editText,
         text,
+        hint,
