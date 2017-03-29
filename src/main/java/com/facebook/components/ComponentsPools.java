@@ -305,3 +305,7 @@ public class ComponentsPools {
     if (output == null) {
       output = new LayoutOutput();
     }
+
+    return output;
+  }
+
