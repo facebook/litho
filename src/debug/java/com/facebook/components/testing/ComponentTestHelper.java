@@ -282,3 +282,19 @@ public final class ComponentTestHelper {
       int widthSpec,
       int heightSpec) {
     return getSubComponents(getContext(component), component.build(), widthSpec, heightSpec);
+  }
+
+  /**
+   * Get the subcomponents of a component
+   *
+   * @param context A components context
+   * @param component The component which to get the subcomponents of
+   * @param widthSpec The width to measure the component with
+   * @param heightSpec The height to measure the component with
+   * @return The subcomponents of the given component
+   */
+  public static List<SubComponent> getSubComponents(
+      ComponentContext context,
+      Component component,
+      int widthSpec,
+      int heightSpec) {
