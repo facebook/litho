@@ -348,3 +348,5 @@ public class ComponentView extends ComponentHost {
     return mPreviousMountBounds;
   }
 
+  void setMountStateDirty() {
+    mMountState.setDirty();
