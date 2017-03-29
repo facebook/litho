@@ -32,3 +32,7 @@ public class InternalNodeResolvedPaddingTest {
             RuntimeEnvironment.application.getResources());
   }
 
+  private static void setDirection(InternalNode node, YogaDirection direction) {
+    node.layoutDirection(direction);
+    node.calculateLayout();
+    node.markLayoutSeen();

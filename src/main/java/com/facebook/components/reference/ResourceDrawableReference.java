@@ -36,3 +36,4 @@ public final class ResourceDrawableReference extends ReferenceLifecycle<Drawable
     if (sInstance == null) {
       sInstance = new ResourceDrawableReference();
     }
+

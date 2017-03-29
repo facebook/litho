@@ -25,3 +25,6 @@ import com.facebook.components.Size;
 import com.facebook.components.SizeSpec;
 
 public class TestViewComponent extends ComponentLifecycle {
+  private static final List<TestViewComponent> sInstances = new ArrayList<>();
+  private static final Pools.SynchronizedPool<Builder> mBuilderPool =
+      new Pools.SynchronizedPool<>(2);

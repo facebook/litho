@@ -22,3 +22,4 @@ import com.facebook.components.ResourceResolver;
  */
 public abstract class Reference<L> {
 
+  public static abstract class Builder<L> extends ResourceResolver {

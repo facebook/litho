@@ -63,3 +63,4 @@ public class DrawableResourcesCacheTest {
 
   @Test
   public void testReleaseAndGet() {
+    Resources resources = RuntimeEnvironment.application.getResources();

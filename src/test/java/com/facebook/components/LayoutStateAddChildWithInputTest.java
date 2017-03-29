@@ -25,3 +25,4 @@ public class LayoutStateAddChildWithInputTest {
 
   @Before
   public void setup() {
+    mContext = new ComponentContext(RuntimeEnvironment.application);

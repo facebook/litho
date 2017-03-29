@@ -79,3 +79,19 @@ public final class DrawableMatrix extends Matrix {
           FastMath.round((height - intrinsicHeight) * 0.5f));
 
       result.mShouldClipRect = (intrinsicWidth > width || intrinsicHeight > height);
+    } else if (ScaleType.CENTER_CROP == scaleType) {
+
+      final float scale;
+      float dx = 0;
+      float dy = 0;
+
+      if (intrinsicWidth * height > width * intrinsicHeight) {
+        scale = (float) height / (float) intrinsicHeight;
+        dx = (width - intrinsicWidth * scale) * 0.5f;
+      } else {
+        scale = (float) width / (float) intrinsicWidth;
+        dy = (height - intrinsicHeight * scale) * 0.5f;
+      }
+
+      result.setScale(scale, scale);
+      result.postTranslate(FastMath.round(dx), FastMath.round(dy));
