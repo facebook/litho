@@ -311,3 +311,5 @@ public class InternalNodeTest {
     holderNode.copyInto(nestedTree);
 
     assertEquals(
+        YogaDirection.RTL,
+        nestedTree.getStyleDirection());

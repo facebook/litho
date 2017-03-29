@@ -143,3 +143,6 @@ class HorizontalScrollSpec {
 
       Size contentSize = acquireSize();
       contentComponent.setSizeSpec(
+          SizeSpec.makeSizeSpec(0, UNSPECIFIED),
+          SizeSpec.makeSizeSpec(layout.getHeight(), EXACTLY),
+          contentSize);
