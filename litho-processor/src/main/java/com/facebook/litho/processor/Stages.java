@@ -1605,3 +1605,4 @@ public class Stages {
         .addParameter(
             ParameterSpec.builder(
                 ParameterizedTypeName.get(
+                    ClassNames.COMPONENT,
