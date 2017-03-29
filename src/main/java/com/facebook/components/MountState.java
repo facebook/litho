@@ -1551,3 +1551,9 @@ class MountState {
       return;
     }
 
+    final Object content = item.getContent();
+
+    // Recursively unmount mounted children items.
+    // This is the case when mountDiffing is enabled and unmountOrMoveOldItems() has a matching
+    // sub tree. However, traversing the tree bottom-up, it needs to unmount a node holding that
+    // sub tree, that will still have mounted items. (Different sequence number on LayoutOutput id)
