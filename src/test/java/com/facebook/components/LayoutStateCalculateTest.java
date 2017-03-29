@@ -457,3 +457,5 @@ public class LayoutStateCalculateTest {
         layoutState.getMountableOutputAt(2).getBounds(),
         layoutState.getMountableOutputAt(6).getBounds());
 
+    Rect textLayoutBounds = layoutState.getMountableOutputAt(9).getBounds();
+    Rect textBackgroundBounds = layoutState.getMountableOutputAt(8).getBounds();
