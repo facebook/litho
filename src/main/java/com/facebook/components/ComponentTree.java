@@ -747,3 +747,5 @@ public class ComponentTree {
       throw new IllegalArgumentException("Root component can't be null");
     }
 
+    setRootAndSizeSpecInternal(
+        root,
