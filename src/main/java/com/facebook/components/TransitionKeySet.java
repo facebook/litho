@@ -288,3 +288,7 @@ class TransitionKeySet implements TransitionListener {
       TransitionKeySetListener listener,
       SimpleArrayMap<Integer, ? extends Transition> oldRunningTransitions,
       PropertySetHolder interruptedValues) {
+    if (oldRunningTransitions == null && areStartEndValuesEqual()) {
+      return false;
+    }
+

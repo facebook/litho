@@ -196,3 +196,14 @@ class LayoutState {
     return hostOutput;
   }
 
+  private static LayoutOutput createDrawableLayoutOutput(
+      Component<?> component,
+      LayoutState layoutState,
+      InternalNode node) {
+    return createLayoutOutput(
+        component,
+        layoutState,
+        node,
+        false /* useNodePadding */,
+        IMPORTANT_FOR_ACCESSIBILITY_NO,
+        layoutState.mShouldDuplicateParentState);
