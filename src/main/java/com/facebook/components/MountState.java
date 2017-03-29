@@ -727,3 +727,20 @@ class MountState {
     // all its mounted children.
     for (int i = 0; i < mLayoutOutputsIds.length; i++) {
       final int newPosition = newLayoutState.getLayoutOutputPositionForId(mLayoutOutputsIds[i]);
+      final MountItem oldItem = getItemAt(i);
+
+      if (isItemDisappearing(oldItem, newLayoutState.getTransitionContext())) {
+
+        startUnmountDisappearingItem(i, oldItem.getViewNodeInfo().getTransitionKey());
+
+        final int lastDescendantOfItem = findLastDescendantOfItem(i, oldItem);
+        // Disassociate disappearing items from current mounted items. The layout tree will not
+        // contain disappearing items anymore, however they are kept separately in their hosts.
+        removeDisappearingItemMappings(i, lastDescendantOfItem);
+
+        // Skip this disappearing item and all its descendants. Do not unmount or move them yet.
+        // We will unmount them after animation is completed.
+        i = lastDescendantOfItem;
+        continue;
+      }
+
