@@ -29,3 +29,5 @@ class ComponentQueries {
     for (final CharSequence foundText : host.getTextContent().getTextItems()) {
       if (predicate.apply(foundText.toString())) {
         return true;
+      }
+    }

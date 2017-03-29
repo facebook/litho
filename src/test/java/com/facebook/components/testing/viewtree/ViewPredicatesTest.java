@@ -122,3 +122,11 @@ public class ViewPredicatesTest {
   @Test
   public void testHasVisibleMatchingText() throws Exception {
     final Predicate<View> hasHello = ViewPredicates.hasVisibleMatchingText(".*o.*");
+
+    assertThat(hasHello.apply(mTextViewWithHello)).isTrue();
+    mTextViewWithHello.setVisibility(View.GONE);
+    assertThat(hasHello.apply(mTextViewWithHello)).isFalse();
+  }
+
+  @Test
+  public void testIsVisible() throws Exception {
