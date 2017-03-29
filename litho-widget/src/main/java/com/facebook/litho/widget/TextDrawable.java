@@ -106,3 +106,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
       return false;
     }
 
+    final Rect bounds = getBounds();
+    final int x = (int) event.getX() - bounds.left;
+    final int y = (int) event.getY() - bounds.top;
+
