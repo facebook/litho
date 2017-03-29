@@ -291,3 +291,6 @@ public class ComponentHost extends ViewGroup {
     return mMountItems.size();
   }
 
+  /**
+   * @return the {@link MountItem} that was mounted with the given index.
+   */

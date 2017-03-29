@@ -311,3 +311,7 @@ public class ComponentView extends ComponentHost {
   }
 
   public void performIncrementalMount() {
+    if (mComponent == null) {
+      return;
+    }
+

@@ -208,3 +208,4 @@ class MountItem {
       mViewNodeInfo = null;
     }
 
+    mComponent = null;
