@@ -148,3 +148,4 @@ public class Stages {
   private List<VariableElement> mProps;
   private List<VariableElement> mOnCreateInitialStateDefinedProps;
   private ImmutableList<PropDefaultModel> mPropDefaults;
+  private List<VariableElement> mTreeProps;

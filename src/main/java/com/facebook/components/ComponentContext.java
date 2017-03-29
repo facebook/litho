@@ -190,3 +190,11 @@ public class ComponentContext extends ContextWrapper {
     return mComponentTree;
   }
 
+  protected void setTreeProps(TreeProps treeProps) {
+    mTreeProps = treeProps;
+  }
+
+  protected @Nullable TreeProps getTreeProps() {
+    return mTreeProps;
+  }
+

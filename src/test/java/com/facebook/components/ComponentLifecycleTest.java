@@ -140,3 +140,6 @@ public class ComponentLifecycleTest {
     verify(componentLifecycle).onCreateLayout(mContext, mComponentWithNullLayout);
     verify(mNode).setComponent(mComponentWithNullLayout);
     verify(componentLifecycle).onPrepare(mContext, mComponentWithNullLayout);
+  }
+
+  @Test
