@@ -25,3 +25,4 @@ package com.facebook.components;
  */
 public class ComponentsSystrace {
 
+  private static volatile Systrace sInstance = null;

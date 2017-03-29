@@ -16,3 +16,5 @@ import java.util.concurrent.atomic.AtomicInteger;
 import android.support.annotation.IntDef;
 import android.util.SparseArray;
 
+import com.facebook.infer.annotation.ThreadConfined;
+

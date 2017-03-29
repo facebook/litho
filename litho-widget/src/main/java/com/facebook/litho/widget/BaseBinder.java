@@ -25,3 +25,4 @@ import com.facebook.components.ComponentView;
 import com.facebook.components.config.ComponentsConfiguration;
 import com.facebook.components.Size;
 import com.facebook.components.SizeSpec;
+import com.facebook.infer.annotation.ThreadSafe;
