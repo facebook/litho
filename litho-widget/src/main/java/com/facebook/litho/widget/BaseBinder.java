@@ -284,3 +284,4 @@ public abstract class BaseBinder<
         // shift the range right, or left, accordingly.
         final int firstPosition = mComponentTrees.getFirstPosition();
         final int lastPosition = firstPosition + mComponentTrees.size() - 1;
+

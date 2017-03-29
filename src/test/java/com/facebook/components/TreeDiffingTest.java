@@ -663,3 +663,11 @@ public class TreeDiffingTest {
                 .backgroundColor(Color.BLACK))
             .child(
                 Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    .child(TestDrawableComponent.create(c)))
+            .build();
+      }
+    };
+
+    final Component component3 = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
