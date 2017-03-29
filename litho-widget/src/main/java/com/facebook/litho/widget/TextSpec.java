@@ -548,3 +548,4 @@ class TextSpec {
     if (text instanceof MountableCharSequence) {
       ((MountableCharSequence) text).onMount(textDrawable);
     }
+  }
