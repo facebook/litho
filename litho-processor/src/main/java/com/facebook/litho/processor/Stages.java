@@ -2446,3 +2446,4 @@ public class Stages {
     final MethodSpec.Builder methodBuilder =
         MethodSpec.methodBuilder(fixedMethod.name);
 
+    if (fixedMethod.annotations != null) {
