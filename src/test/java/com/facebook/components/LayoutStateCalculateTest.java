@@ -918,3 +918,43 @@ public class LayoutStateCalculateTest {
                 Layout.create(c, innerComponent).flexShrink(0)
                     .widthPx(100)
                     .heightPx(100))
+            .build();
+      }
+    };
+
+    calculateLayoutState(
+        RuntimeEnvironment.application,
+        component,
+        -1,
+        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
+        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
+
+    assertFalse(innerComponent.wasMeasureCalled());
+  }
+
+  @Test
+  public void testNoMeasureOnNestedComponentWithNewMeasureSpecExact() {
+    final ComponentContext c = new ComponentContext(RuntimeEnvironment.application);
+
+    final Size size = new Size();
+    final TestComponent innerComponent =
+        TestDrawableComponent.create(c, 0, 0, false, true, true, false, false).build();
+    final int widthSpec = SizeSpec.makeSizeSpec(100, SizeSpec.AT_MOST);
+    final int heightSpec = SizeSpec.makeSizeSpec(100, SizeSpec.AT_MOST);
+    innerComponent.measure(
+        c,
+        widthSpec,
+        heightSpec,
+        size);
+
+    InternalNode internalNode = ((Component) innerComponent).getCachedLayout();
+    internalNode.setLastWidthSpec(widthSpec);
+    internalNode.setLastHeightSpec(heightSpec);
+    internalNode.setLastMeasuredWidth(100);
+    internalNode.setLastMeasuredHeight(100);
+
+    innerComponent.resetInteractions();
+
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
