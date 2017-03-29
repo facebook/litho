@@ -78,3 +78,6 @@ public class ComponentLifecycleTest {
     mockStatic(ComponentsPools.class);
 
     when(mNode.getLastWidthSpec()).thenReturn(-1);
+    when(mNode.getDiffNode()).thenReturn(mDiffNode);
+    when(mDiffNode.getLastMeasuredWidth()).thenReturn(-1f);
+    when(mDiffNode.getLastMeasuredHeight()).thenReturn(-1f);
