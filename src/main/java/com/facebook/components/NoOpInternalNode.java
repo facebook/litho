@@ -622,3 +622,23 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
+  public InternalNode visibleHandler(EventHandler visibleHandler) {
+    return this;
+  }
+
+  @Override
+  public InternalNode focusedHandler(EventHandler focusedHandler) {
+    return this;
+  }
+
+  @Override
+  public InternalNode fullImpressionHandler(EventHandler fullImpressionHandler) {
+    return this;
+  }
+
+  @Override
+  public InternalNode invisibleHandler(EventHandler invisibleHandler) {
+    return this;
+  }
+
+  @Override
