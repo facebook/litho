@@ -117,3 +117,7 @@ public class Stages {
       "loadingEventHandler",
   };
 
+  private static final Class<Annotation>[] TREE_PROP_ANNOTATIONS = new Class[] {
+      TreeProp.class,
+  };
+

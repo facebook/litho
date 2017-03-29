@@ -47,3 +47,5 @@ public class DraweeDrawable<DH extends DraweeHierarchy>
   public void mount() {
     setDrawable(mDraweeHolder.getTopLevelDrawable());
     mDraweeHolder.onAttach();
+  }
+
