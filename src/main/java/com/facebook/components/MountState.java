@@ -413,3 +413,10 @@ class MountState {
 
       if (invisibleHandler != null) {
         EventDispatcherUtils.dispatchOnInvisible(invisibleHandler);
+      }
+
+      mVisibilityIdToItemMap.removeAt(i);
+      ComponentsPools.release(visibilityItem);
+    }
+  }
+
