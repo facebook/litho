@@ -22,3 +22,4 @@ import android.os.Build;
 import android.view.MotionEvent;
 import android.view.View;
 
+import static android.os.Build.VERSION_CODES.HONEYCOMB;
