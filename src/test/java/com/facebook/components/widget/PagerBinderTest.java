@@ -102,3 +102,5 @@ public class PagerBinderTest {
   }
 
   @Test
+  public void testSimpleBinderUpdate() {
+    mBinder = new TestPagerComponentBinder(mContext, 0, 1f);
