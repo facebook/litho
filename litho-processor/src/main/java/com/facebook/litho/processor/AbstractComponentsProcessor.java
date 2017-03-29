@@ -77,3 +77,4 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
 
         if (closeable != null) {
           closeable.close();
+        }

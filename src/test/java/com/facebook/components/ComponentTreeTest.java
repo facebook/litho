@@ -44,3 +44,4 @@ public class ComponentTreeTest {
   private Component mComponent;
   private ShadowLooper mLayoutThreadShadowLooper;
   private ComponentContext mContext;
+
