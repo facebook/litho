@@ -1694,3 +1694,9 @@ public class Stages {
 
     generateComponentClassProps(implClassBuilder, ClassNames.EVENT_HANDLER);
 
+    MethodSpec.Builder constructorBuilder = MethodSpec.constructorBuilder()
+        .addModifiers(Modifier.PRIVATE)
+        .addStatement("super(get())")
+        .addStatement(STATE_CONTAINER_IMPL_MEMBER + " = new $T()", stateContainerImplClass);
+
+    implClassBuilder.addMethod(constructorBuilder.build());
