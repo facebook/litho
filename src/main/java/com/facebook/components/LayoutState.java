@@ -1557,3 +1557,5 @@ class LayoutState {
       mMountableOutputs.clear();
       mMountableOutputTops.clear();
       mMountableOutputBottoms.clear();
+      mOutputsIdToPositionMap.clear();
+
