@@ -547,3 +547,4 @@ public class ComponentsPools {
   @ThreadSafe(enableChecks = false)
   static void release(Context context, ComponentLifecycle lifecycle, Object mountContent) {
 
+    if (context instanceof ComponentContext) {
