@@ -146,3 +146,4 @@ final class ViewPredicates {
   static String getDrawnDrawableDescription(final Drawable drawable) {
     final Canvas canvas = new Canvas();
     drawable.draw(canvas);
+    final ShadowCanvas shadowCanvas = Shadows.shadowOf(canvas);
