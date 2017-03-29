@@ -843,3 +843,4 @@ public class Stages {
       VariableElement element,
       Class<Annotation>[] possibleAnnotations) {
     final ArrayList<Annotation> annotations = new ArrayList<>();
+    for (Class<Annotation> annotationClass : possibleAnnotations) {

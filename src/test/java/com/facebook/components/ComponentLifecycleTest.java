@@ -336,3 +336,4 @@ public class ComponentLifecycleTest {
     when(componentLifecycle.getMountType()).thenReturn(
         isMountSpec ? ComponentLifecycle.MountType.DRAWABLE : ComponentLifecycle.MountType.NONE);
     when(mInput.getLifecycle()).thenReturn(componentLifecycle);
+
