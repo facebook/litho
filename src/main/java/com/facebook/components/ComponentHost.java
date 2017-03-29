@@ -539,3 +539,6 @@ public class ComponentHost extends ViewGroup {
       return;
     }
 
+    if (mComponentAccessibilityDelegate != null && implementsVirtualViews()) {
+      mComponentAccessibilityDelegate.invalidateRoot();
+    }
