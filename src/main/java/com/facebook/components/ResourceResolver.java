@@ -144,3 +144,4 @@ public class ResourceResolver {
     return false;
   }
 
+  protected final int resolveColorRes(@ColorRes int resId) {
