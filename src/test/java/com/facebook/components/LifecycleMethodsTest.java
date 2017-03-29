@@ -275,3 +275,4 @@ public class LifecycleMethodsTest {
     private LifecycleMethodsInstance mComponent;
 
     private LifecycleMethodsDrawable(LifecycleMethodsInstance component) {
+      assertEquals(LifecycleStep.ON_CREATE_MOUNT_CONTENT, component.getCurrentStep());
