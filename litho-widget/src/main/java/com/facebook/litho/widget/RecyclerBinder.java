@@ -445,3 +445,4 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     mLastWidthSpec = widthSpec;
     mLastHeightSpec = heightSpec;
 
+    // Width and Height specs here are all for span size 1
