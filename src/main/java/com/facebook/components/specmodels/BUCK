@@ -18,3 +18,8 @@ java_library(
     ],
     tests = [
         "//javatests/com/facebook/components/specmodels:specmodels",
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [

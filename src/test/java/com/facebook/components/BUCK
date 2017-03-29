@@ -53,3 +53,4 @@ android_resource(
     visibility = [
         make_dep_path("src/test/..."),
         "//javatests/com/facebook/components/...",
+    ],

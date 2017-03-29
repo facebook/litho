@@ -15,3 +15,5 @@ android_library(
     ],
     visibility = [
         COMPONENTS_VISIBILITY,
+    ],
+    deps = [

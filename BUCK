@@ -14,3 +14,7 @@ android_library(
         COMPONENTS_JAVA_TARGET,
         COMPONENTS_YOGAPREBUILT_TARGET,
         COMPONENTS_ANDROIDSUPPORT_TARGET,
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
