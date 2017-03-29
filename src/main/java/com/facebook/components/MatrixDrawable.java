@@ -78,3 +78,7 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
    * @param drawable The drawable to be drawn.
    */
   public void mount(T drawable) {
+    mount(drawable, null);
+  }
+
+  /**

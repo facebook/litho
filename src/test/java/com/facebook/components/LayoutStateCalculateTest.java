@@ -1506,3 +1506,22 @@ public class LayoutStateCalculateTest {
   }
 
   @Test
+  public void testLayoutOutputsForLongClickHandlerAndViewTagsOnRoot() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c)
+            .child(TestDrawableComponent.create(c))
+            .longClickHandler(c.newEventHandler(1))
+            .viewTags(new SparseArray<>())
+            .build();
+      }
+    };
+
+    LayoutState layoutState = calculateLayoutState(
+        RuntimeEnvironment.application,
+        component,
+        -1,
+        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
+        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
+
