@@ -226,3 +226,9 @@ public abstract class ComponentLifecycle implements EventDispatcher {
       return ComponentContext.NULL_LAYOUT;
     }
 
+    // Set component on the root node of the generated tree so that the mount calls use
+    // those (see Controller.mountNodeTree()). Handle the case where the component simply
+    // delegates its layout creation to another component i.e. the root node belongs to
+    // another component.
+    if (node.getComponent() == null) {
+      node.setComponent(component);
