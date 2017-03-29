@@ -98,3 +98,4 @@ public class StateUpdateImplClassBuilder {
   /**
    * Set the parameters that are used to calculate the new value of a state.
    * @param params params used to update the state, annotated with {@link Param} in the
+   *  {@link com.facebook.litho.annotations.OnUpdateState} method declaration

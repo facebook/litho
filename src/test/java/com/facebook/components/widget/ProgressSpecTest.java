@@ -11,3 +11,7 @@ package com.facebook.litho.widget;
 
 import android.view.View;
 
+import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentView;
+import com.facebook.litho.testing.ComponentTestHelper;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;

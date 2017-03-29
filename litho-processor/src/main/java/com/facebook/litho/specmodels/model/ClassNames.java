@@ -73,3 +73,4 @@ public interface ClassNames {
   ClassName REFERENCE_LIFECYCLE =
       ClassName.bestGuess("com.facebook.litho.reference.ReferenceLifecycle");
 
+  ClassName TREE_PROPS = ClassName.bestGuess("com.facebook.litho.TreeProps");
