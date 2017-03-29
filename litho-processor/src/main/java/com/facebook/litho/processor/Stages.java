@@ -1628,3 +1628,4 @@ public class Stages {
 
     delegateParameters.add("\n_context");
 
+    for (int i = ON_STYLE_PROPS, size = parameters.size(); i < size; i++) {
