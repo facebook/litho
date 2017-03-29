@@ -1677,3 +1677,6 @@ public class Stages {
         ClassName.bestGuess(getSimpleClassName() + STATE_CONTAINER_IMPL_NAME_SUFFIX);
     final TypeSpec.Builder implClassBuilder =
         TypeSpec.classBuilder(implClassName)
+            .addModifiers(Modifier.PRIVATE)
+            .superclass(
+                ParameterizedTypeName.get(
