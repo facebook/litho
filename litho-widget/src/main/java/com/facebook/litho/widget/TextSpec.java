@@ -438,3 +438,5 @@ class TextSpec {
       @Prop(optional = true) boolean glyphWarming,
       @Prop(optional = true) TextDirectionHeuristicCompat textDirection,
       @FromMeasure Layout measureLayout,
+      @FromMeasure Integer measuredWidth,
+      @FromMeasure Integer measuredHeight,
