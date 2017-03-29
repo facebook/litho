@@ -1602,3 +1602,6 @@ public class Stages {
         .addAnnotation(Override.class)
         .addModifiers(Modifier.PROTECTED)
         .addParameter(ClassNames.COMPONENT_CONTEXT, "_context")
+        .addParameter(
+            ParameterSpec.builder(
+                ParameterizedTypeName.get(
