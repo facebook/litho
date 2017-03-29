@@ -187,3 +187,17 @@ public class ComponentView extends ComponentHost {
     if (mComponent != null) {
       boolean wasMountTriggered = mComponent.layout();
 
+      final boolean isRectSame = mPreviousMountBounds != null
+          && mPreviousMountBounds.left == left
+          && mPreviousMountBounds.top == top
+          && mPreviousMountBounds.right == right
+          && mPreviousMountBounds.bottom == bottom;
+
+      // If this happens the ComponentView might have moved on Screen without a scroll event
+      // triggering incremental mount. We trigger one here to be sure all the content is visible.
+      if (!wasMountTriggered
+          && !isRectSame
+          && isIncrementalMountEnabled()) {
+        performIncrementalMount();
+      }
+

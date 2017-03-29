@@ -238,3 +238,4 @@ public class TestDrawableComponent extends ComponentLifecycle {
   }
 
   public static Builder create(ComponentContext context) {
+    return create(context, 0, 0, true, true, true, false, false, false);

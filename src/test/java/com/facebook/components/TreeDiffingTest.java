@@ -137,3 +137,6 @@ public class TreeDiffingTest {
   }
 
   private long measureInternalNode(
+      InternalNode node,
+      float widthConstranint,
+      float heightConstraint) {

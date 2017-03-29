@@ -22,3 +22,6 @@ import java.lang.annotation.RetentionPolicy;
  * mounted. This method can be called multiple times after onMount with the same mounted content.
  */
 @Retention(RetentionPolicy.CLASS)
+public @interface OnBind {
+
+}
