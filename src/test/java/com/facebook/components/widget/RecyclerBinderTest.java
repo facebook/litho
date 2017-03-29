@@ -301,3 +301,5 @@ public class RecyclerBinderTest {
   public void onRemeasureWithDifferentSize() {
     final List<ComponentInfo> components = prepareLoadedBinder();
     for (int i = 0; i < components.size(); i++) {
+      final TestComponentTreeHolder holder =
+          mHoldersForComponents.get(components.get(i).getComponent());
