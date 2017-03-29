@@ -30,3 +30,6 @@ import static com.facebook.drawee.generic.GenericDraweeHierarchyBuilder.DEFAULT_
  * manages references.
  */
 public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy {
+
+  private final GenericDraweeHierarchy mGenericDraweeHierarchy;
+
