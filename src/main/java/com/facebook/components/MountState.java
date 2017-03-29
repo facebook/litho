@@ -1683,3 +1683,30 @@ class MountState {
 
   private void logPrepareMountParams(
       ComponentsLogger logger, String logTag, ComponentTree component, PrepareMountStats stats) {
+
+    logger.eventAddParam(
+        EVENT_PREPARE_MOUNT,
+        component,
+        PARAM_LOG_TAG,
+        logTag);
+    logger.eventAddParam(
+        EVENT_PREPARE_MOUNT,
+        component,
+        PARAM_UNMOUNTED_COUNT,
+        String.valueOf(stats.unmountedCount));
+    logger.eventAddParam(
+        EVENT_PREPARE_MOUNT,
+        component,
+        PARAM_MOVED_COUNT,
+        String.valueOf(stats.movedCount));
+    logger.eventAddParam(
+        EVENT_PREPARE_MOUNT,
+        component,
+        PARAM_UNCHANGED_COUNT,
+        String.valueOf(stats.unchangedCount));
+  }
+
+  private void logMountEnd(
+      ComponentsLogger logger,
+      String logTag,
+      ComponentTree component,
