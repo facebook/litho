@@ -1298,3 +1298,20 @@ public class ComponentTree {
     }
 
     /**
+     * Specify an initial state handler object that the ComponentTree can use to set the current
+     * values for states.
+     */
+    public Builder stateHandler(StateHandler stateHandler) {
+      this.stateHandler = stateHandler;
+      return this;
+    }
+
+    /**
+     * Specify whether the ComponentTree allows async state updates. This is enabled by default.
+     */
+    public Builder asyncStateUpdates(boolean enabled) {
+      this.asyncStateUpdates = enabled;
+      return this;
+    }
+
+    /**
