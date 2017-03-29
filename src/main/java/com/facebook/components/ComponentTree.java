@@ -959,3 +959,4 @@ public class ComponentTree {
     }
 
     if (localLayoutState != null) {
+      localLayoutState.releaseRef();
