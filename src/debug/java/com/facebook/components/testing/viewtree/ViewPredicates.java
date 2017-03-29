@@ -31,3 +31,5 @@ import org.robolectric.shadows.ShadowCanvas;
 final class ViewPredicates {
 
   private ViewPredicates() {}
+
+  /**

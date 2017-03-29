@@ -117,3 +117,5 @@ final class ViewExtractors {
     }
   };
 
+  private static String getDrawableString(ImageView input) {
+    Drawable drawable = input.getDrawable();
