@@ -722,3 +722,7 @@ class MountState {
       return mPrepareMountStats;
     }
 
+    // Traversing from the beginning since mLayoutOutputsIds unmounting won't remove entries there
+    // but only from mIndexToItemMap. If an host changes we're going to unmount it and recursively
+    // all its mounted children.
+    for (int i = 0; i < mLayoutOutputsIds.length; i++) {
