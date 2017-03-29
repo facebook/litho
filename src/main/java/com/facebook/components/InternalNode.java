@@ -236,3 +236,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Px
   @Override
   public int getHeight() {
+    if (YogaConstants.isUndefined(mResolvedHeight)) {
+      mResolvedHeight = mYogaNode.getLayoutHeight();
+    }
+
+    return (int) mResolvedHeight;
