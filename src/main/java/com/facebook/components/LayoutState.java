@@ -601,3 +601,7 @@ class LayoutState {
 
         if (transition != null) {
           layoutState.getOrCreateTransitionContext().add(transition);
+        }
+      }
+    }
+
