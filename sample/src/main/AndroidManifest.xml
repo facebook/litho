@@ -37,3 +37,4 @@
     </activity>
 
     <activity android:name=".DemoActivity"></activity>
+  </application>

@@ -30,3 +30,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
+
+import static junit.framework.Assert.assertNull;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.verify;
