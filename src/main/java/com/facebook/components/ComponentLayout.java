@@ -65,3 +65,15 @@ public interface ComponentLayout {
   YogaDirection getResolvedLayoutDirection();
 
   interface Builder {
+    Builder layoutDirection(YogaDirection direction);
+    Builder alignSelf(YogaAlign alignSelf);
+    Builder positionType(YogaPositionType positionType);
+    Builder flex(float flex);
+    Builder flexGrow(float flexGrow);
+    Builder flexShrink(float flexShrink);
+    Builder flexBasisPx(@Px int flexBasis);
+    Builder flexBasisAttr(@AttrRes int resId, @DimenRes int defaultResId);
+    Builder flexBasisAttr(@AttrRes int resId);
+    Builder flexBasisRes(@DimenRes int resId);
+    Builder flexBasisDip(@Dimension(unit = DP) int flexBasis);
+    Builder flexBasisPercent(float percent);
