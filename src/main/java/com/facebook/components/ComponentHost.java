@@ -645,3 +645,5 @@ public class ComponentHost extends ViewGroup {
     }
 
     mDispatchDraw.end();
+
+    DebugDraw.draw(this, canvas);
