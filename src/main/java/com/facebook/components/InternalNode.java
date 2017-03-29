@@ -279,3 +279,5 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     mCachedMeasuresValid = valid;
   }
 
+  public int getLastWidthSpec() {
+    return mLastWidthSpec;
