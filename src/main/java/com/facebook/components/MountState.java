@@ -1720,3 +1720,4 @@ class MountState {
         EVENT_MOUNT,
         component,
         PARAM_MOUNTED_COUNT,
+        String.valueOf(mountStats.mountedCount));

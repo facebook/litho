@@ -1359,3 +1359,4 @@ class LayoutState {
 
   /**
    * Traverses the layoutTree and the diffTree recursively. If a layoutNode has a compatible host
+   * type {@link LayoutState#hostIsCompatible} it assigns the DiffNode to the layout node in order
