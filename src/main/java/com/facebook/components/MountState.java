@@ -1500,3 +1500,7 @@ class MountState {
 
           ComponentsPools.release(rect);
         }
+      }
+    }
+  }
+
