@@ -593,3 +593,11 @@ public class MountSpecHelper extends ComponentSpecHelper {
         ClassNames.COMPONENT);
   }
 
+  private void generatePopulatesAccessibilityTrue() {
+    mTypeSpec.addMethod(
+        MethodSpec.methodBuilder("implementsAccessibility")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(TypeName.BOOLEAN)
+            .addStatement("return true")
+            .build());
