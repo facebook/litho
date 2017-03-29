@@ -444,3 +444,7 @@ public class ComponentTree {
         detach();
       }
     } else if (mComponentView != null) {
+      // Remove the ComponentTree reference from a previous view if any.
+      mComponentView.clearComponentTree();
+    }
+
