@@ -5,3 +5,24 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
+include_defs("//COMPONENTS_DEFS")
+
+java_library(
+    name = "mockito",
+    exported_deps = [
+        ":mockito-core-prebuilt",
+        make_dep_path("lib/objenesis:objenesis"),
+    ],
+    visibility = ["PUBLIC"],
+)
+
+prebuilt_jar(
+    name = "mockito-core-prebuilt",
+    binary_jar = ":mockito-core.jar",
+)
+
+remote_file(
+    name = "mockito-core.jar",
+    sha1 = "c3264abeea62c4d2f367e21484fbb40c7e256393",
+    url = "mvn:org.mockito:mockito-core:jar:1.9.5",
+)

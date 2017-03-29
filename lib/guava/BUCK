@@ -1,0 +1,18 @@
+java_library(
+    name = "guava",
+    exported_deps = [
+        ":guava-prebuilt",
+    ],
+    visibility = ["PUBLIC"],
+)
+
+prebuilt_jar(
+    name = "guava-prebuilt",
+    binary_jar = ":guava.jar",
+)
+
+remote_file(
+    name = "guava.jar",
+    sha1 = "89507701249388e1ed5ddcf8c41f4ce1be7831ef",
+    url = "mvn:com.google.guava:guava:jar:20.0",
+)

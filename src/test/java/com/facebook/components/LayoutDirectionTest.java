@@ -11,3 +11,4 @@ package com.facebook.litho;
 
 import com.facebook.yoga.YogaAlign;
 
+import android.graphics.Rect;
