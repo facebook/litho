@@ -96,3 +96,5 @@ public class MountStateRemountTest {
     assertFalse(containsRef(components, component2));
     assertTrue(containsRef(components, component3));
     assertTrue(containsRef(components, component4));
+  }
+
