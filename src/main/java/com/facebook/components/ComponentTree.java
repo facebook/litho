@@ -438,3 +438,9 @@ public class ComponentTree {
     // never detached. In all cases we have to make sure that the old references between
     // componentView and componentTree are reset.
     if (mIsAttached) {
+      if (mComponentView != null) {
+        mComponentView.setComponent(null);
+      } else {
+        detach();
+      }
+    } else if (mComponentView != null) {
