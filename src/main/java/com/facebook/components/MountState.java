@@ -720,3 +720,5 @@ class MountState {
 
     if (mLayoutOutputsIds == null) {
       return mPrepareMountStats;
+    }
+
