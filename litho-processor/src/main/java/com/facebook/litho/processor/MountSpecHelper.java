@@ -350,3 +350,4 @@ public class MountSpecHelper extends ComponentSpecHelper {
     methodDescription.annotations = new Class[] { Override.class };
     methodDescription.accessType = Modifier.PROTECTED;
     methodDescription.returnType = ClassName.VOID;
+    methodDescription.name = "onUnbind";
