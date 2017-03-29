@@ -38,3 +38,4 @@ public class BinderTreeCollectionTest {
     mBinderTreeCollection = new BinderTreeCollection();
 
     for (int i = 0; i < 10; i++) {
+      mBinderTreeCollection.put(i + 1, createNewComponentTree());

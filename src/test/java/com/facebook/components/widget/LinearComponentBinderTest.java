@@ -24,3 +24,8 @@ import com.facebook.components.ComponentTree;
 import com.facebook.components.config.ComponentsConfiguration;
 import com.facebook.components.testing.testrunner.ComponentsTestRunner;
 import com.facebook.components.testing.TestDrawableComponent;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;

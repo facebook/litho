@@ -89,3 +89,16 @@ class BinderTreeCollection {
    * Remove a range of ComponentTrees and shift left all the successive ones. This will remove
    * itemsToRemoveCount items starting from positionStart.
    */
+  void removeShiftingLeft(int positionStart, int itemsToRemoveCount) {
+    if (positionStart + itemsToRemoveCount < getFirstPosition() + size()) {
+      final int start = Math.max(positionStart + itemsToRemoveCount, getFirstPosition());
+      shiftRangeLeft(start, getFirstPosition() + size() - start, itemsToRemoveCount);
+    } else {
+      // E.g. mItems.keys = [3, 4, 5], positionStart = 4 and itemsToRemoveCount = 3. The expected
+      // result should be mItems.keys = [3]. In this case, we will not shift anything, but rather
+      // just remove the items at the end of the collection.
+      final int positionEnd = getFirstPosition() + size() - 1;
+      for (int position = positionStart; position <= positionEnd; position++) {
+        mItems.remove(position);
+      }
+    }

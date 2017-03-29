@@ -100,3 +100,30 @@ public class MountStateVisibilityEventsTest {
     assertEquals(0, getVisibilityItemMapSize());
 
     mMountState.mount(layoutState, new Rect(LEFT, 5, RIGHT, 10));
+    verify(mockLifecycle, times(1)).dispatchOnEvent(
+        eq(visibleHandler),
+        isA(VisibleEvent.class));
+    assertEquals(1, getVisibilityItemMapSize());
+  }
+
+  @Test
+  public void testFocusedOccupiesHalfViewport() {
+    ComponentLifecycle mockLifecycle = createLifecycleMock();
+    Component<?> content = TestViewComponent.create(mContext).build();
+    Whitebox.setInternalState(content, "mLifecycle", mockLifecycle);
+
+    final EventHandler focusedHandler = createEventHandler(content, FOCUSED);
+
+    final List<VisibilityOutput> visibilityOutputs = new ArrayList<>();
+
+    visibilityOutputs.add(createVisibilityOutput(
+        content,
+        new Rect(LEFT, 5, RIGHT, 10),
+        null,
+        focusedHandler,
+        null,
+        null));
+
+    final LayoutState layoutState = new LayoutState();
+    Whitebox.setInternalState(layoutState, "mVisibilityOutputs", visibilityOutputs);
+
