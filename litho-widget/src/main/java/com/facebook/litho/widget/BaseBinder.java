@@ -759,3 +759,4 @@ public abstract class BaseBinder<
     final int currentLast = Math.max(0, currentStart + mComponentTrees.size() - 1);
     final int positionLast = Math.max(0, positionStart + itemCount - 1);
 
+    return positionLast >= currentStart && positionStart <= currentLast;
