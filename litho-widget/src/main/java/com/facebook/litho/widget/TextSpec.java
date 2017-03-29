@@ -131,3 +131,8 @@ class TextSpec {
       Output<Integer> highlightColor,
       Output<Integer> textSize,
       Output<Alignment> textAlignment,
+      Output<Integer> textStyle,
+      Output<Float> shadowRadius,
+      Output<Float> shadowDx,
+      Output<Float> shadowDy,
+      Output<Integer> shadowColor) {
