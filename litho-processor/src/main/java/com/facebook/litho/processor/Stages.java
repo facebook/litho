@@ -2926,3 +2926,5 @@ public class Stages {
               builder);
     } else {
       factoryMethod
+          .addParameter(stateClass, implInstanceName)
+          .addStatement("builder.init(context, " + implInstanceName + ")", builder);
