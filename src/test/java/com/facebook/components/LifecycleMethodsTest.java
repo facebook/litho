@@ -143,3 +143,4 @@ public class LifecycleMethodsTest {
         Component<?> component) {
       LifecycleMethodsInstance instance = (LifecycleMethodsInstance) component;
       instance.setCurrentStep(LifecycleStep.ON_MOUNT);
+      final LifecycleMethodsDrawable d = (LifecycleMethodsDrawable) convertContent;

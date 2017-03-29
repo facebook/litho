@@ -36,3 +36,11 @@ class TransferStateSpecBuilder {
     if (stateParameters != null) {
       mStateParameters = stateParameters;
     }
+    return this;
+  }
+
+  TransferStateSpecBuilder componentClassName(ClassName componentClassName) {
+    mComponentClassName = componentClassName;
+    return this;
+  }
+

@@ -68,3 +68,4 @@ import static org.mockito.Mockito.verify;
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
 @RunWith(ComponentsTestRunner.class)
 public class LayoutStateCalculateTest {
+

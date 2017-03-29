@@ -61,3 +61,4 @@ public class ComponentHostTest {
 
   private Component<?> mViewGroupHost;
 
+  private TestableComponentHost mHost;

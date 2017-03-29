@@ -92,3 +92,4 @@ public class MountStateRemountTest {
         Whitebox.getInternalState(mountState,"mIndexToItemMap");
 
     final List<Component> components = new ArrayList<>();
+    for (int i = 0; i < indexToItemMap.size(); i++) {
