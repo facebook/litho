@@ -15,3 +15,5 @@ import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.components.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.CardClip;
 import com.facebook.litho.widget.Text;
+import com.facebook.components.testing.TestDrawableComponent;
+import com.facebook.components.testing.TestViewComponent;

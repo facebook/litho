@@ -34,3 +34,4 @@ public class EditTextSpecTest {
 
   @Test
   public void testEditTextWithText() {
+    final ComponentContext c = mComponentsRule.getContext();

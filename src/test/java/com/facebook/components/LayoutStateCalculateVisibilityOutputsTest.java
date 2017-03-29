@@ -18,3 +18,4 @@ import com.facebook.components.testing.TestNullLayoutComponent;
 import com.facebook.yoga.YogaEdge;
 
 import org.junit.Before;
+import org.junit.Rule;
