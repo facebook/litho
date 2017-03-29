@@ -2586,3 +2586,4 @@ public class Stages {
 
   private void assertOfType(VariableElement element, TypeName... types) {
     final TypeName elementType = JPUtil.getTypeFromMirror(element.asType());
+
