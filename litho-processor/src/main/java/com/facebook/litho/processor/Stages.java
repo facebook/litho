@@ -2131,3 +2131,4 @@ public class Stages {
   }
 
   public void generateCallsShouldUpdateOnMount() {
+    final MethodSpec.Builder isFast =
