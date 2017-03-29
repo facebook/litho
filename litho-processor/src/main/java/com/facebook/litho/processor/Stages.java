@@ -2842,3 +2842,11 @@ public class Stages {
               .buildLoadingEventHandlerSetter());
     }
 
+    final MethodSpec.Builder buildMethodBuilder = MethodSpec.methodBuilder("build")
+        .addAnnotation(Override.class)
+        .addModifiers(Modifier.PUBLIC)
+        .returns(ParameterizedTypeName.get(propsClass, genericType));
+
+    if (numRequiredProps > 0) {
+      buildMethodBuilder
+          .beginControlFlow(
