@@ -127,3 +127,4 @@ public class RecyclerBinder implements Binder<RecyclerView> {
    * being updated after a layout calculation has been completed for the new {@link Component}.
    */
   @UiThread
+  public final void updateItemAtAsync(int position, ComponentInfo componentInfo) {
