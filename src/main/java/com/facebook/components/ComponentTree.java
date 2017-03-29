@@ -925,3 +925,5 @@ public class ComponentTree {
     if (output != null) {
       output.width = localLayoutState.getWidth();
       output.height = localLayoutState.getHeight();
+    }
+

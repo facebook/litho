@@ -634,3 +634,12 @@ public class ComponentsPools {
     sRectFPool.release(rect);
   }
 
+  static Rect acquireRect() {
+    Rect rect = sRectPool.acquire();
+    if (rect == null) {
+      rect = new Rect();
+    }
+
+    return rect;
+  }
+
