@@ -227,3 +227,10 @@ void translatePendingCppExceptionToJavaException() noexcept {
   } catch (...) {
     FBLOGE("unexpected exception in translatePendingCppExceptionToJavaException");
     throw;
+  }
+}
+
+// JniException ////////////////////////////////////////////////////////////////////////////////////
+
+const std::string JniException::kExceptionMessageFailure_ = "Unable to get exception message.";
+
