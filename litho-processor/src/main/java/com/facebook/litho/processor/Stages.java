@@ -594,3 +594,12 @@ public class Stages {
     return true;
   }
 
+  public void validateStatic() {
+    validateStaticFields();
+    validateStaticMethods();
+  }
+
+  private void validateStaticFields() {
+    for (Element element : mSourceElement.getEnclosedElements()) {
+      if (element.getKind() == ElementKind.FIELD &&
+          !element.getModifiers().contains(Modifier.STATIC)) {

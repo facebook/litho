@@ -110,3 +110,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
     final int x = (int) event.getX() - bounds.left;
     final int y = (int) event.getY() - bounds.top;
 
+    float touchRadius = TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_SP,
+        DEFAULT_TOUCH_RADIUS_IN_SP,
+        view.getResources().getDisplayMetrics());
