@@ -468,3 +468,4 @@ public class ComponentTreeTest {
       // Need to hold the lock on componentTree here otherwise the invocation of hasCssSpec
       // will fail.
       synchronized (componentTree) {
+        hasCssSpec = Whitebox.invokeMethod(componentTree, ComponentTree.class, "hasSizeSpec");
