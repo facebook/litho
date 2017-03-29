@@ -83,3 +83,4 @@ class HorizontalScrollSpec {
   }
 
   @OnMeasure
+  static void onMeasure(

@@ -122,3 +122,4 @@ public class LayoutStateCalculateTest {
   }
 
   @Test
+  public void testLayoutOutputsForSpecsWithClickHandling() {
