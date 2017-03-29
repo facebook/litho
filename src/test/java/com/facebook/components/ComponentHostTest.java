@@ -173,3 +173,4 @@ public class ComponentHostTest {
     assertNull(mHost.getMountItemAt(2));
 
     MountItem mountItem1 = mount(0, new ColorDrawable());
+    MountItem mountItem2 = mount(1, new View(mContext));

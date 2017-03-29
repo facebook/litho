@@ -34,3 +34,6 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
 
   public static abstract class Builder<L extends ComponentLifecycle>
       extends ResourceResolver {
+    private ComponentContext mContext;
+    private @AttrRes int mDefStyleAttr;
+    private @StyleRes int mDefStyleRes;
