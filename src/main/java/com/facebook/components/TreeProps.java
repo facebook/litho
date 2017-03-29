@@ -22,3 +22,4 @@ import com.facebook.infer.annotation.ThreadConfined;
 public class TreeProps {
 
   private final SimpleArrayMap<Class, Object> mMap = new SimpleArrayMap<>();
+

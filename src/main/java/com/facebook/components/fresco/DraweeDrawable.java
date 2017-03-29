@@ -32,3 +32,4 @@ import com.facebook.drawee.view.DraweeHolder;
 public class DraweeDrawable<DH extends DraweeHierarchy>
     extends ForwardingDrawable
     implements ImageContent, Touchable {
+
