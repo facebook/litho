@@ -36,3 +36,7 @@ import java.lang.annotation.RetentionPolicy;
  * public class MyComponentSpec {
  *
  *   @OnMount
+ *   protected MyDrawable onMount(
+ *       ComponentContext context,
+ *       MyDrawable convertDrawable,
+ *       @Prop MyProp prop) {
