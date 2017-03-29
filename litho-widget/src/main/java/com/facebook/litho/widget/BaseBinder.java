@@ -493,3 +493,5 @@ public abstract class BaseBinder<
    */
   public int getWidth() {
     return SizeSpec.getSize(mContentWidthSpec);
+  }
+

@@ -314,3 +314,9 @@ public class ComponentTree {
       return;
     }
 
+    final boolean needsAndroidLayout =
+        !isCompatibleComponentAndSize(
+            mMainThreadLayoutState,
+            componentRootId,
+            viewWidth,
+            viewHeight);
