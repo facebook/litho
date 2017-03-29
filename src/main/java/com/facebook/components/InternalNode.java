@@ -1717,3 +1717,21 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       } else if (attr == R.styleable.ComponentLayout_android_importantForAccessibility &&
           SDK_INT >= JELLY_BEAN) {
         importantForAccessibility(a.getInt(attr, 0));
+      } else if (attr == R.styleable.ComponentLayout_android_duplicateParentState) {
+        duplicateParentState(a.getBoolean(attr, false));
+      } else if (attr == R.styleable.ComponentLayout_android_background) {
+        if (TypedArrayUtils.isColorAttribute(a, R.styleable.ComponentLayout_android_background)) {
+          backgroundColor(a.getColor(attr, 0));
+        } else {
+          backgroundRes(a.getResourceId(attr, -1));
+        }
+      } else if (attr == R.styleable.ComponentLayout_android_foreground) {
+        if (TypedArrayUtils.isColorAttribute(a, R.styleable.ComponentLayout_android_foreground)) {
+          foregroundColor(a.getColor(attr, 0));
+        } else {
+          foregroundRes(a.getResourceId(attr, -1));
+        }
+      } else if (attr == R.styleable.ComponentLayout_android_contentDescription) {
+        contentDescription(a.getString(attr));
+      } else if (attr == R.styleable.ComponentLayout_flex_direction) {
+        flexDirection(YogaFlexDirection.fromInt(a.getInteger(attr, 0)));
