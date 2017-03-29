@@ -109,3 +109,13 @@ class MountItem {
       mViewNodeInfo = viewNodeInfo.acquireRef();
     }
 
+    if (mContent instanceof View) {
+      final View view = (View) mContent;
+
+      if (view.isClickable()) {
+        mFlags |= FLAG_VIEW_CLICKABLE;
+      }
+
+      if (view.isLongClickable()) {
+        mFlags |= FLAG_VIEW_LONG_CLICKABLE;
+      }
