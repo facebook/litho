@@ -1582,3 +1582,8 @@ class MountState {
     final ComponentHost host = item.getHost();
     host.unmount(index, item);
 
+    unsetViewAttributes(item);
+
+    final Component<?> component = item.getComponent();
+
+    if (isHostSpec(component)) {
