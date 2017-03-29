@@ -143,3 +143,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
           }
         } finally {
           releaseSize(size);
+        }
