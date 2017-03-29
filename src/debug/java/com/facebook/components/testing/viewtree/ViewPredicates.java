@@ -152,3 +152,6 @@ final class ViewPredicates {
 
   private static String extractString(final View view) {
     if (!(view instanceof TextView)) {
+      return "";
+    }
+
