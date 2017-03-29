@@ -783,3 +783,13 @@ public class RecyclerBinder implements Binder<RecyclerView> {
       return mComponentTreeHolders.size();
     }
   }
+
+  private class GridSpanSizeLookup extends GridLayoutManager.SpanSizeLookup {
+
+    @SuppressWarnings("InvalidAccessToGuardedField")
+    @Override
+    public int getSpanSize(int position) {
+      // Synchronization is ignored here because this is accessed from the UiThread by the framework
+      return mComponentTreeHolders.get(position).getSpanSize();
+    }
+  }

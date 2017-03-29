@@ -385,3 +385,4 @@ public class RecyclerBinderTest {
 
     Assert.assertEquals(200, size.width);
 
+    final List<ComponentInfo> components = new ArrayList<>();
