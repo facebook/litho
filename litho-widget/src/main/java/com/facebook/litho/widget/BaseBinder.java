@@ -781,3 +781,5 @@ public abstract class BaseBinder<
     return list;
   }
 
+  // t16407516: Infer does yet understand when a method takes ownership.
+  @ThreadSafe(enableChecks = false)
