@@ -45,3 +45,7 @@
     <attr name="android:scrollbars" />
   </declare-styleable>
 
+  <declare-styleable name="Progress">
+    <attr name="android:indeterminateDrawable" />
+  </declare-styleable>
+
