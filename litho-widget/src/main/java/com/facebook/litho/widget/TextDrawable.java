@@ -30,3 +30,5 @@ import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.facebook.litho.TextContent;
+import com.facebook.litho.Touchable;
