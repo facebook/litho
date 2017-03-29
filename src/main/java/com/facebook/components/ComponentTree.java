@@ -699,3 +699,6 @@ public class ComponentTree {
    */
   public void setSizeSpec(int widthSpec, int heightSpec) {
     setSizeSpec(widthSpec, heightSpec, null);
+  }
+
+  /**
