@@ -530,3 +530,11 @@ public abstract class BaseBinder<
   int getComponentPosition(ComponentTree componentTree) {
     synchronized (this) {
       return mComponentTrees.getPositionOf(componentTree);
+    }
+  }
+
+  protected final void setListener(Listener listener) {
+    mListener = listener;
+  }
+
+  /**
