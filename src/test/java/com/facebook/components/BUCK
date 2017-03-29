@@ -47,3 +47,4 @@ components_robolectric_test(
 )
 
 android_resource(
+    name = "res",

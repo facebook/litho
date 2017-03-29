@@ -8,3 +8,10 @@
 include_defs("//COMPONENTS_DEFS")
 
 cxx_library(
+    name = "jni-hack",
+    exported_headers = [
+        "jni.h",
+        "real/jni.h",
+    ],
+    force_static = True,
+    header_namespace = "",

@@ -8,3 +8,5 @@
 include_defs("//COMPONENTS_DEFS")
 
 android_library(
+    name = "components",
+    exported_deps = [

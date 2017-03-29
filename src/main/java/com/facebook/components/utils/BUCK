@@ -8,3 +8,12 @@
 include_defs("//COMPONENTS_DEFS")
 
 android_library(
+    name = "utils",
+    srcs = glob(["*.java"]),
+    tests = [
+        "//javatests/com/facebook/components/utils:utils",
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
