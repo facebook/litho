@@ -16,3 +16,4 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.widget.ProgressBar;
 
+import com.facebook.R;
