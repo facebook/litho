@@ -1105,3 +1105,7 @@ public class Stages {
       visibility = Visibility.PACKAGE;
     }
 
+    final List<Parameter> toParams = getParams(to);
+    final List<Parameter> fromParams = new ArrayList<>();
+    for (int i = 0; i < from.parameterTypes.length; i++) {
+      fromParams.add(new Parameter(from.parameterTypes[i], toParams.get(i).name));

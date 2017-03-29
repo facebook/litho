@@ -1507,3 +1507,5 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
         node.mNodeInfo.updateWith(mNodeInfo);
       }
     }
+    if ((node.mPrivateFlags & PFLAG_LAYOUT_DIRECTION_IS_SET) == 0L
+        || node.getResolvedLayoutDirection() == YogaDirection.INHERIT) {
