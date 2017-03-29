@@ -31,3 +31,5 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowLooper;
 
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;

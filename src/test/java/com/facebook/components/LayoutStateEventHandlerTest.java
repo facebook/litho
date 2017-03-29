@@ -69,3 +69,4 @@ public class LayoutStateEventHandlerTest {
   public void testNestedEventHandlerInput() {
     LayoutState.calculate(
         new ComponentContext(RuntimeEnvironment.application),
+        mRootComponent,

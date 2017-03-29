@@ -91,3 +91,4 @@ class CardSpec {
                 .child(content)
                 .child(
                     CardClip.create(c)
+                        .clippingColor(clippingColor)
