@@ -133,3 +133,4 @@ public class ComponentHost extends ViewGroup {
     } else if (content instanceof View) {
       mViewMountItems.put(index, mountItem);
       mountView((View) content, mountItem.getFlags());
+      maybeRegisterTouchExpansion(index, mountItem);

@@ -239,3 +239,5 @@ public class ComponentView extends ComponentHost {
     }
 
     return super.shouldRequestLayout();
+  }
+
