@@ -1581,3 +1581,8 @@ class LayoutState {
       }
       mLayoutStateOutputIdCalculator.clear();
 
+      if (mTransitionContext != null) {
+        ComponentsPools.release(mTransitionContext);
+        mTransitionContext = null;
+      }
+
