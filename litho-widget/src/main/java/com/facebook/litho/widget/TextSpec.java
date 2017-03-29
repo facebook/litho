@@ -223,3 +223,4 @@ class TextSpec {
       @Prop(optional = true, resType = ResType.FLOAT) float spacingMultiplier,
       @Prop(optional = true) int textStyle,
       @Prop(optional = true) Typeface typeface,
+      @Prop(optional = true) Alignment textAlignment,
