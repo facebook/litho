@@ -331,3 +331,15 @@ public abstract class BaseBinder<
 
     ComponentTree componentTreeToRecycle = null;
 
+    synchronized (this) {
+      // If the removed item is before the current range, then shift the range left.
+      if (position < mComponentTrees.getFirstPosition()) {
+        mComponentTrees.shiftAllLeft(1);
+      } else if (isInRange(position)) {
+        componentTreeToRecycle = mComponentTrees.get(position);
+        mComponentTrees.removeShiftingLeft(position);
+      }
+    }
+
+    if (componentTreeToRecycle != null) {
+      componentTreeToRecycle.release();
