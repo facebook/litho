@@ -292,3 +292,6 @@ public class ComponentTreeTest {
   @Test
   public void testSetCompatibleSizeSpecWithDifferentRoot() {
     ComponentTree componentTree =
+        ComponentTree.create(mContext, mComponent)
+            .incrementalMount(false)
+            .build();
