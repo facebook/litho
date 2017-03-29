@@ -1850,3 +1850,88 @@ class MountState {
     }
   }
 
+  /**
+   * @return true if this method did all the work that was necessary and there is no other
+   * content that needs mounting/unmounting in this mount step. If false then a full mount step
+   * should take place.
+   */
+  private boolean performIncrementalMount(LayoutState layoutState, Rect localVisibleRect) {
+    if (mPreviousLocalVisibleRect.isEmpty()) {
+      return false;
+    }
+
+    if (localVisibleRect.left != mPreviousLocalVisibleRect.left ||
+        localVisibleRect.right != mPreviousLocalVisibleRect.right) {
+      return false;
+    }
+
+    final ArrayList<LayoutOutput> layoutOutputTops = layoutState.getMountableOutputTops();
+    final ArrayList<LayoutOutput> layoutOutputBottoms = layoutState.getMountableOutputBottoms();
+    final int count = layoutState.getMountableOutputCount();
+
+    if (localVisibleRect.top > 0 || mPreviousLocalVisibleRect.top > 0) {
+      // View is going on/off the top of the screen. Check the bottoms to see if there is anything
+      // that has moved on/off the top of the screen.
+      while (mPreviousBottomsIndex < count &&
+          localVisibleRect.top >=
+              layoutOutputBottoms.get(mPreviousBottomsIndex).getBounds().bottom) {
+        final long id = layoutOutputBottoms.get(mPreviousBottomsIndex).getId();
+        unmountItem(mContext, layoutState.getLayoutOutputPositionForId(id), mHostsByMarker);
+        mPreviousBottomsIndex++;
+      }
+
+      while (mPreviousBottomsIndex > 0 &&
+         localVisibleRect.top <
+             layoutOutputBottoms.get(mPreviousBottomsIndex - 1).getBounds().bottom) {
+        mPreviousBottomsIndex--;
+        final LayoutOutput layoutOutput = layoutOutputBottoms.get(mPreviousBottomsIndex);
+        final int layoutOutputIndex =
+            layoutState.getLayoutOutputPositionForId(layoutOutput.getId());
+        if (getItemAt(layoutOutputIndex) == null) {
+          mountLayoutOutput(
+              layoutState.getLayoutOutputPositionForId(layoutOutput.getId()),
+              layoutOutput,
+              layoutState);
+        }
+      }
+    }
+
+    final int height = mComponentView.getHeight();
+    if (localVisibleRect.bottom < height || mPreviousLocalVisibleRect.bottom < height) {
+      // View is going on/off the bottom of the screen. Check the tops to see if there is anything
+      // that has changed.
+      while (mPreviousTopsIndex < count &&
+           localVisibleRect.bottom > layoutOutputTops.get(mPreviousTopsIndex).getBounds().top) {
+        final LayoutOutput layoutOutput = layoutOutputTops.get(mPreviousTopsIndex);
+        final int layoutOutputIndex =
+            layoutState.getLayoutOutputPositionForId(layoutOutput.getId());
+        if (getItemAt(layoutOutputIndex) == null) {
+          mountLayoutOutput(
+              layoutState.getLayoutOutputPositionForId(layoutOutput.getId()),
+              layoutOutput,
+              layoutState);
+        }
+        mPreviousTopsIndex++;
+      }
+
+      while (mPreviousTopsIndex > 0 &&
+           localVisibleRect.bottom <=
+               layoutOutputTops.get(mPreviousTopsIndex - 1).getBounds().top) {
+        mPreviousTopsIndex--;
+        final long id = layoutOutputTops.get(mPreviousTopsIndex).getId();
+        unmountItem(mContext, layoutState.getLayoutOutputPositionForId(id), mHostsByMarker);
+      }
+    }
+
+    for (int i = 0, size = mCanMountIncrementallyMountItems.size(); i < size; i++) {
+      final MountItem mountItem = mCanMountIncrementallyMountItems.valueAt(i);
+      mountItemIncrementally(
+          mountItem,
+          layoutState.getMountableOutputAt(
+              (int) mCanMountIncrementallyMountItems.keyAt(i)).getBounds(),
+          localVisibleRect);
+    }
+
+    return true;
+  }
+

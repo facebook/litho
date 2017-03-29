@@ -2360,3 +2360,7 @@ public class Stages {
     return outputTypeMirror != null;
   }
 
+  private static boolean isStateProp(VariableElement variableElement) {
+    return variableElement.getAnnotation(State.class) != null;
+  }
+
