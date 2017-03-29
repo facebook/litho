@@ -767,3 +767,5 @@ class MountState {
           mPrepareMountStats.movedCount++;
         } else {
           mPrepareMountStats.unchangedCount++;
+        }
+      }
