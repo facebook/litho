@@ -515,3 +515,5 @@ class MountState {
       maybeSetDrawableState(
           currentMountItem.getHost(),
           (Drawable) currentMountItem.getContent(),
+          currentMountItem.getFlags(),
+          currentMountItem.getNodeInfo());
