@@ -55,3 +55,9 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
 
     mDrawable = drawable;
 
+    if (mDrawable != null) {
+      mDrawable.setCallback(this);
+    }
+
+    mMatrix = matrix;
+
