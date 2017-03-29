@@ -170,3 +170,9 @@ public abstract class SpecHelper implements Closeable {
     return mSpecModel;
   }
 
+  @Override
+  public void close() throws IOException {
+    if (mOpen.compareAndSet(true, false)) {
+      try {
+        JavaFile.builder(Utils.getPackageName(mQualifiedClassName), mTypeSpec.build())
+            .skipJavaLangImports(true)
