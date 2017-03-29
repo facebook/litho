@@ -207,3 +207,6 @@ public class MountItemTest {
   @Test
   public void testRelease() {
     mMountItem.release(RuntimeEnvironment.application);
+    assertThat(mMountItem.getComponent()).isNull();
+    assertThat(mMountItem.getHost()).isNull();
+    assertThat(mMountItem.getContent()).isNull();
