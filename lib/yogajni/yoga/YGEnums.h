@@ -57,3 +57,4 @@ typedef YG_ENUM_BEGIN(YGEdge) {
   YGEdgeAll,
 } YG_ENUM_END(YGEdge);
 
+#define YGExperimentalFeatureCount 3
