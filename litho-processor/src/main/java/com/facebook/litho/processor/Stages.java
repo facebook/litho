@@ -1865,3 +1865,6 @@ public class Stages {
 
     final TypeSpec.Builder stateClassBuilder =
         TypeSpec.classBuilder(getImplClassName())
+            .addModifiers(Modifier.PRIVATE)
+            .superclass(
+                ParameterizedTypeName.get(
