@@ -1543,3 +1543,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       node.mTestKey = mTestKey;
     }
     if ((mPrivateFlags & PFLAG_PADDING_IS_SET) != 0L) {
+      if (mNestedTreePadding == null) {
+        throw new IllegalStateException("copyInto() must be used when resolving a nestedTree. " +
+            "If padding was set on the holder node, we must have a mNestedTreePadding instance");
+      }
+
