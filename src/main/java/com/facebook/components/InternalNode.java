@@ -271,3 +271,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return mBackground;
   }
 
+  public Reference<? extends Drawable> getForeground() {
