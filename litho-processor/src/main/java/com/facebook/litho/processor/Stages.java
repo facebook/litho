@@ -1224,3 +1224,4 @@ public class Stages {
         throw new ComponentsProcessingException(
             param,
             "Parameters not annotated with @Param must be of type " +
+                "com.facebook.litho.StateValue");
