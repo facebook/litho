@@ -7,3 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 package com.facebook.litho.dataflow;
+
+/**
+ * Exception thrown when a runtime cycle is detected.
+ */
+public class DetectedCycleException extends BadGraphSetupException {
+
+  public DetectedCycleException(String detailMessage) {
+    super(detailMessage);
+  }
+}

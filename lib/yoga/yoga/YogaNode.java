@@ -130,3 +130,4 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
 
   @Override
   public int getChildCount() {
+    return mChildren == null ? 0 : mChildren.size();
