@@ -563,3 +563,4 @@ public class MountStateRemountInPlaceTest {
             mContext,
             false,
             true,
+            true,

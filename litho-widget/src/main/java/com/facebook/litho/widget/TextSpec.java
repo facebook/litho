@@ -127,3 +127,4 @@ class TextSpec {
       Output<Boolean> isSingleLine,
       Output<CharSequence> text,
       Output<ColorStateList> textColorStateList,
+      Output<Integer> linkColor,

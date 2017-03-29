@@ -167,3 +167,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private Spacing mNestedTreePadding;
   private Spacing mNestedTreeBorderWidth;
   private boolean[] mIsPaddingPercent;
+
