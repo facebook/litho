@@ -8,3 +8,22 @@
  */
 
 package com.facebook.components.testing;
+
+import com.facebook.components.Component;
+import com.facebook.components.ComponentLifecycle;
+
+/**
+ * Base class for test components which expose lifecycle information.
+ *
+ * @param <L>
+ */
+public abstract class TestComponent<L extends ComponentLifecycle> extends Component<L> {
+
+  private boolean mOnMountCalled;
+  private boolean mMounted;
+  private boolean mOnUnmountCalled;
+  private boolean mOnBoundsDefinedCalled;
+  private boolean mOnBindCalled;
+  private boolean mBound;
+  private boolean mOnUnbindCalled;
+  protected boolean mIsUnique;

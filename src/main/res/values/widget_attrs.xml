@@ -9,3 +9,6 @@
   of patent rights can be found in the PATENTS file in the same directory.
 -->
 
+<resources>
+
+  <declare-styleable name="Text">

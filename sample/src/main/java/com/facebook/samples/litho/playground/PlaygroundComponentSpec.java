@@ -7,3 +7,9 @@
  */
 
 package com.facebook.samples.litho.playground;
+
+import android.graphics.Color;
+
+import com.facebook.components.ComponentLayout;
+import com.facebook.components.ComponentContext;
+import com.facebook.components.Container;

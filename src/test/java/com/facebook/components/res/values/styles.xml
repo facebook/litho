@@ -9,3 +9,27 @@
   of patent rights can be found in the PATENTS file in the same directory.
 -->
 
+    <style name="TestTheme" parent="android:style/Theme">
+        <item name="attr/testAttrDimen">@dimen/test_dimen</item>
+        <item name="attr/testAttrDrawable">@drawable/test_bg</item>
+        <item name="attr/testAttrLargeText">@style/TextLargeSizeStyle</item>
+        <item name="attr/testAttrLargePadding">@style/PaddingStyleLarge</item>
+    </style>
+
+    <style name="TextLargeSizeStyle">
+        <item name="android:textSize">@dimen/test_large_dimen</item>
+    </style>
+
+    <style name="PaddingStyleLarge">
+        <item name="android:padding">@dimen/test_large_dimen</item>
+    </style>
+
+    <style name="TextSizeStyle">
+        <item name="android:textSize">@dimen/test_dimen</item>
+    </style>
+
+    <style name="PaddingStyle">
+        <item name="android:padding">@dimen/test_dimen</item>
+    </style>
+
+</resources>

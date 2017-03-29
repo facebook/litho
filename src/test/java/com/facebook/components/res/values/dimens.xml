@@ -9,3 +9,7 @@
   of patent rights can be found in the PATENTS file in the same directory.
 -->
 
+    <dimen name="test_dimen">10dp</dimen>
+    <dimen name="test_large_dimen">20dp</dimen>
+    <dimen name="default_dimen">10dp</dimen>
+</resources>

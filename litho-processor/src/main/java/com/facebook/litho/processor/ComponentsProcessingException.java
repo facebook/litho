@@ -14,3 +14,5 @@ import javax.lang.model.element.Element;
 import javax.tools.Diagnostic;
 
 public class ComponentsProcessingException extends PrintableException {
+  private final Element element;
+

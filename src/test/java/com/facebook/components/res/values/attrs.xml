@@ -9,3 +9,12 @@
   of patent rights can be found in the PATENTS file in the same directory.
 -->
 
+    <declare-styleable name="TestTheme">
+        <attr name="testAttrDimen" format="reference" />
+        <attr name="testAttrLargeText" format="reference" />
+        <attr name="testAttrLargePadding" format="reference" />
+        <attr name="testAttrDrawable" format="reference" />
+        <attr name="undefinedAttrDimen" format="reference" />
+        <attr name="undefinedAttrDrawable" format="reference" />
+    </declare-styleable>
+</resources>

@@ -13,3 +13,4 @@ import android.graphics.drawable.Drawable;
 import android.view.ContextThemeWrapper;
 
 import com.facebook.litho.R;
+import com.facebook.components.reference.Reference;
