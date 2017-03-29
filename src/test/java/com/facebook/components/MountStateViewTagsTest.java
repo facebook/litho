@@ -90,3 +90,4 @@ public class MountStateViewTagsTest {
           }
         });
 
+    assertEquals(tag, componentView.getTag(DUMMY_ID));

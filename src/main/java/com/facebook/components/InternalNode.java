@@ -31,3 +31,6 @@ import android.support.v4.view.ViewCompat;
 import android.text.TextUtils;
 import android.util.SparseArray;
 
+import com.facebook.R;
+import com.facebook.components.config.ComponentsConfiguration;
+import com.facebook.components.reference.ColorDrawableReference;
