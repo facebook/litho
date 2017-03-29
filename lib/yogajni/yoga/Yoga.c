@@ -746,3 +746,6 @@ static inline bool YGValueEqual(const YGValue a, const YGValue b) {
 
 static inline void YGResolveDimensions(YGNodeRef node) {
   for (YGDimension dim = YGDimensionWidth; dim <= YGDimensionHeight; dim++) {
+    if (node->style.maxDimensions[dim].unit != YGUnitUndefined &&
+        YGValueEqual(node->style.maxDimensions[dim], node->style.minDimensions[dim])) {
+      node->resolvedDimensions[dim] = &node->style.maxDimensions[dim];
