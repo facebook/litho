@@ -186,3 +186,7 @@ public class ComponentContext extends ContextWrapper {
     return mLogger;
   }
 
+  ComponentTree getComponentTree() {
+    return mComponentTree;
+  }
+
