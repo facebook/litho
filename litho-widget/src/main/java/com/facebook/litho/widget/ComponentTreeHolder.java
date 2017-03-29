@@ -106,3 +106,4 @@ public class ComponentTreeHolder {
     componentTree.setRootAndSizeSpecAsync(component, widthSpec, heightSpec);
 
     synchronized (this) {
+      if (mComponentTree == componentTree && component == mComponentInfo.getComponent()) {
