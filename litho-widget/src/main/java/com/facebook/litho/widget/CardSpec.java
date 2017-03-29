@@ -80,3 +80,6 @@ class CardSpec {
     return Container.create(c)
         .child(
             Container.create(c)
+                .marginPx(HORIZONTAL, shadowHorizontal)
+                .marginPx(TOP, shadowTop)
+                .marginPx(BOTTOM, shadowBottom)

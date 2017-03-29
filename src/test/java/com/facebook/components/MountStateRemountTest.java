@@ -78,3 +78,7 @@ public class MountStateRemountTest {
           }
         });
 
+    assertTrue(component1.isMounted());
+    assertTrue(component2.isMounted());
+    assertFalse(component3.isMounted());
+    assertFalse(component4.isMounted());

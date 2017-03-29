@@ -75,3 +75,8 @@ public class TestDrawableComponent extends ComponentLifecycle {
       boolean implementsAccessibility,
       boolean usesDisplayList,
       boolean isMountSizeDependent) {
+    super();
+
+    mCallsShouldUpdateOnMount = callsShouldUpdateOnMount;
+    mIsPureRender = isPureRender;
+    mCanMeasure = canMeasure;

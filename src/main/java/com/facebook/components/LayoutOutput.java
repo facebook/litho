@@ -47,3 +47,5 @@ class LayoutOutput implements Cloneable {
   private long mId;
   private Component<?> mComponent;
   private final Rect mBounds = new Rect();
+  private int mHostTranslationX;
+  private int mHostTranslationY;
