@@ -67,3 +67,22 @@ class BinderTreeCollection {
     } else {
       shiftRangeLeft(fromPosition + 1, toPosition - fromPosition, 1);
     }
+
+    put(toPosition, movingComponentTree);
+  }
+
+  /**
+   * Simply remove the ComponentTree at the given position without shifting the rest.
+   */
+  void remove(int position) {
+    mItems.remove(position);
+  }
+
+  /**
+   * Remove the ComponentTree at position and shift left all the successive ones.
+   */
+  void removeShiftingLeft(int position) {
+    removeShiftingLeft(position, 1);
+  }
+
+  /**
