@@ -38,3 +38,8 @@ public class TestNullLayoutComponent extends Component {
   public TestNullLayoutComponent() {
     super(sLifecycle);
   }
+
+  @Override
+  public String getSimpleName() {
+    return "TestNullLayoutComponent";
+  }
