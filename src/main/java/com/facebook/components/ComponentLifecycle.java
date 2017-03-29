@@ -317,3 +317,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
    * @param component The component to create the {@link ComponentLayout} tree from.
    */
   protected ComponentLayout onCreateLayout(ComponentContext c, Component<?> component) {
+    return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START).build();
