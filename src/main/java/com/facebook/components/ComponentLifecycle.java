@@ -324,3 +324,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     return Container.create(c).build();
   }
 
+  protected void onPrepare(ComponentContext c, Component<?> component) {
