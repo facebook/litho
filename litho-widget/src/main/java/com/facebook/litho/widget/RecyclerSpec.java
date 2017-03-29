@@ -167,3 +167,5 @@ class RecyclerSpec {
       recyclerView.requestLayout();
       recyclerViewWrapper.setHasBeenDetachedFromWindow(false);
     }
+  }
+

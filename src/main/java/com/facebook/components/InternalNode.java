@@ -1287,3 +1287,18 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return this;
   }
 
+  @Override
+  public ContainerBuilder transitionKey(String key) {
+    if (SDK_INT >= ICE_CREAM_SANDWICH) {
+      mPrivateFlags |= PFLAG_TRANSITION_KEY_IS_SET;
+      mTransitionKey = key;
+      wrapInView();
+    }
+
+    return this;
+  }
+
+  String getTransitionKey() {
+    return mTransitionKey;
+  }
+
