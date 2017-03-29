@@ -318,3 +318,7 @@ class TextSpec {
       Typeface typeface,
       Alignment textAlignment,
       boolean glyphWarming,
+      YogaDirection layoutDirection,
+      int minEms,
+      int maxEms,
+      int minWidth,
