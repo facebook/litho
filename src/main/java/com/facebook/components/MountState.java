@@ -1749,3 +1749,4 @@ class MountState {
     private int movedCount = 0;
     private int unchangedCount = 0;
 
+    private PrepareMountStats() {}

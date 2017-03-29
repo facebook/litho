@@ -1389,3 +1389,11 @@ class LayoutState {
     final int layoutCount = layoutNode.getChildCount();
     final int diffCount = diffNode.getChildCount();
 
+    // Layout node needs to be updated if:
+    //   - it has a different number of children.
+    //   - one of its children needs updating.
+    //   - the node itself declares that it needs updating.
+    boolean shouldUpdate = layoutCount != diffCount;
+    for (int i = 0; i < layoutCount && i < diffCount; i++) {
+      // ensure that we always run for all children.
+      boolean shouldUpdateChild =
