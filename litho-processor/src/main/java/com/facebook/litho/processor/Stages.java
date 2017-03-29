@@ -2466,3 +2466,4 @@ public class Stages {
       methodBuilder.addParameter(ClassName.get(v.asType()), v.getSimpleName().toString());
     }
 
+    // Add the event parameters to a implParameters.
