@@ -410,3 +410,4 @@ class TextSpec {
 
   @OnBoundsDefined
   static void onBoundsDefined(
+      ComponentContext c,
