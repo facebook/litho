@@ -1243,3 +1243,4 @@ public class ComponentTree {
     }
 
     /**
+     * Whether or not to enable the incremental mount optimization. True by default.
