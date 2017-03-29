@@ -118,3 +118,5 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
    * @param text the text to search for
    * @return the assertions object
    */
+  public ViewTreeAssert doesNotHaveVisibleText(final String text) {
+    final ImmutableList<View> path = getPathToVisibleText(text);
