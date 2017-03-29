@@ -50,3 +50,4 @@ class DiffNode implements Cloneable {
   }
 
   void setComponent(Component component) {
+    mComponent = component;

@@ -220,3 +220,14 @@ public class MountStateRemountEventHandlerTest {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            .child(TestDrawableComponent.create(c))
+            .child(TestDrawableComponent.create(c))
+            .build();
+      }
+    });
+
+    final ComponentTouchListener listener = MountState.getComponentTouchListener(componentView);
+    assertNull(listener.getEventHandler());
+  }
+
+  @Test
