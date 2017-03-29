@@ -290,3 +290,4 @@ public class ComponentHost extends ViewGroup {
   int getMountItemCount() {
     return mMountItems.size();
   }
+

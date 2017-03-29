@@ -365,3 +365,5 @@ class LayoutState {
    *
    * @see #needsHostView(InternalNode, LayoutState)
    */
+  private static boolean hasViewContent(InternalNode node, LayoutState layoutState) {
+    final Component<?> component = node.getComponent();
