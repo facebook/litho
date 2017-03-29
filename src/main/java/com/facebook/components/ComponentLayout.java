@@ -334,3 +334,5 @@ public interface ComponentLayout {
     ContainerBuilder touchExpansionPx(YogaEdge edge, @Px int value);
     ContainerBuilder touchExpansionAttr(
         YogaEdge edge,
+        @AttrRes int resId,
+        @DimenRes int defaultResId);
