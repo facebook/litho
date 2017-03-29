@@ -38,3 +38,5 @@ import com.facebook.components.reference.Reference;
 import com.facebook.components.reference.ResourceDrawableReference;
 import com.facebook.components.utils.MeasureUtils;
 
+import static com.facebook.components.SizeSpec.UNSPECIFIED;
+
