@@ -928,3 +928,5 @@ public class Stages {
 
   public void generateSourceDelegate(boolean initialized, TypeName specTypeName) {
     final FieldSpec.Builder builder = FieldSpec
+        .builder(specTypeName, DELEGATE_FIELD_NAME)
+        .addModifiers(Modifier.PRIVATE);
