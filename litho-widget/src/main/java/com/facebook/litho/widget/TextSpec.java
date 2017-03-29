@@ -78,3 +78,6 @@ class TextSpec {
   private static final int DEFAULT_EMS = -1;
   private static final int DEFAULT_MIN_WIDTH = 0;
   private static final int DEFAULT_MAX_WIDTH = Integer.MAX_VALUE;
+
+  private static final int[][] DEFAULT_TEXT_COLOR_STATE_LIST_STATES = {{0}};
+  private static final int[] DEFAULT_TEXT_COLOR_STATE_LIST_COLORS = {Color.BLACK};
