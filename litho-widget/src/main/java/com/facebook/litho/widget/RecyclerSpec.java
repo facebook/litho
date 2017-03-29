@@ -172,3 +172,4 @@ class RecyclerSpec {
   @OnUnbind
   static void onUnbind(
       ComponentContext context,
+      RecyclerViewWrapper recyclerViewWrapper,
