@@ -1004,3 +1004,7 @@ public class ComponentTree {
         EVENT_LAYOUT_CALCULATE,
         root,
         PARAM_IS_BACKGROUND_LAYOUT,
+        String.valueOf(!ThreadUtils.isMainThread()));
+  }
+
+  private void logLayoutCalculationFinish(Component<?> root) {

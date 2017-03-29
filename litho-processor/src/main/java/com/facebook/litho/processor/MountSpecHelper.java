@@ -563,3 +563,7 @@ public class MountSpecHelper extends ComponentSpecHelper {
       throw new ComponentsProcessingException(
           getExtraAccessibilityNodeAt,
           methodDescription.name + "'s return type should be int");
+    }
+
+    mStages.generateDelegate(
+        methodDescription,
