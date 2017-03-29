@@ -296,3 +296,4 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
       return "";
     }
 
+    final View last = path.get(path.size() - 1);
