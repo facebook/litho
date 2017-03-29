@@ -974,3 +974,13 @@ public class Stages {
     return componentsInImpl;
   }
 
+  /**
+   * Generate a private constructor to enforce singleton-ity.
+   */
+  public void generateConstructor() {
+    mClassTypeSpec.addMethod(
+        MethodSpec.constructorBuilder()
+            .addModifiers(Modifier.PRIVATE)
+            .build());
+  }
+
