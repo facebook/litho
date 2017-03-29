@@ -470,3 +470,4 @@ public class Stages {
             // prop. In the future, we may want to allow stages to modify outputs from previous
             // stages, but for now we disallow it.
 
+            // Enforce #1 and #2
