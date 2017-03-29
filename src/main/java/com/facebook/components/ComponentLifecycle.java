@@ -408,3 +408,6 @@ public abstract class ComponentLifecycle implements EventDispatcher {
   protected Object onCreateMountContent(ComponentContext context) {
     throw new RuntimeException(
         "Trying to mount a MountSpec that doesn't implement @OnCreateMountContent");
+  }
+
+  /**
