@@ -311,3 +311,4 @@ public class TreeDiffingTest {
     DiffNode node = prevLayoutState.getDiffTree();
 
     InternalNode layoutTreeRoot = LayoutState.createTree(
+        component2,

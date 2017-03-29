@@ -135,3 +135,4 @@ public class ResourceResolver {
         return cached;
       }
 
+      boolean result = mResources.getBoolean(resId);

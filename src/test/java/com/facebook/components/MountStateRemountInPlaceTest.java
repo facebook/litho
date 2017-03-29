@@ -468,3 +468,7 @@ public class MountStateRemountInPlaceTest {
 
   @Test
   public void testMountUnmountDoesNotSkipShouldUpdateAndRemount() {
+    final TestComponent firstComponent =
+        TestDrawableComponent.create(mContext)
+            .unique()
+            .build();
