@@ -1349,3 +1349,4 @@ public class Stages {
         i++;
       }
       eventHandlerParams.add("\n$L", "eventHandler.mHasEventDispatcher");
+      eventHandlerParams.unindent();
