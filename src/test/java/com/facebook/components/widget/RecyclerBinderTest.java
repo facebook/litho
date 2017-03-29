@@ -787,3 +787,11 @@ public class RecyclerBinderTest {
     int heightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
 
     mRecyclerBinder.measure(size, widthSpec, heightSpec);
+
+    return components;
+  }
+
+  private static class TestComponentTreeHolder extends ComponentTreeHolder {
+
+    private boolean mTreeValid;
+    private ComponentTree mComponentTree;
