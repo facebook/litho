@@ -258,3 +258,4 @@ class EventDispatcherUtils {
     sOnRequestSendAccessibilityEventEvent.event = event;
     sOnRequestSendAccessibilityEventEvent.superDelegate = superDelegate;
 
+    final EventDispatcher eventDispatcher = eventHandler.mHasEventDispatcher.getEventDispatcher();

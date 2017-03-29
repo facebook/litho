@@ -495,3 +495,4 @@ public abstract class BaseBinder<
     return SizeSpec.getSize(mContentWidthSpec);
   }
 
+  @Override
