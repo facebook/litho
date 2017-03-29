@@ -233,3 +233,5 @@ class MountState {
 
       if (isIncrementalMountEnabled) {
         setupPreviousMountableOutputData(layoutState, localVisibleRect);
+      }
+    }
