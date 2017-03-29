@@ -884,3 +884,5 @@ public class TreeDiffingTest {
         mContext,
         secondLayoutComponent,
         0,
+        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
+        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
