@@ -121,3 +121,4 @@ public class RecyclerBinderTest {
   public void testOnMeasureAfterAddingItems() {
     final List<ComponentInfo> components = new ArrayList<>();
     for (int i = 0; i < 100; i++) {
+      components.add(ComponentInfo.create().component(mock(Component.class)).build());
