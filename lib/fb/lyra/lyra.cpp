@@ -108,3 +108,13 @@ ostream& operator<<(ostream& out, const StackTraceElement& elm) {
 ostream& operator<<(ostream& out, const vector<StackTraceElement>& trace) {
   IosFlagsSaver flags{out};
 
+  auto i = 0;
+  out << "Backtrace:\n";
+  for (auto& elm : trace) {
+    out << "    #" << dec << setfill('0') << setw(2) << i++ << " " << elm << '\n';
+  }
+
+  return out;
+}
+}
+}
