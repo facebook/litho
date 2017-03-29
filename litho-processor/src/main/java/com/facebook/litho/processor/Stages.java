@@ -442,3 +442,10 @@ public class Stages {
             outputVariableToStage.put(variableName, stageAnnotation);
           }
 
+          // Enforce #3
+          if (interStagePropAnnotation != null) {
+            final Class<? extends Annotation> outputStage = outputVariableToStage.get(variableName);
+            if (!doesInterStagePropAnnotationMatchStage(
+                interStagePropAnnotation.annotationType(), outputStage)) {
+              throw new ComponentsProcessingException(
+                  v,

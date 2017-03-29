@@ -382,3 +382,11 @@ class TextSpec {
       layoutBuilder.setTextStyle(textStyle);
     }
 
+    if (textDirection != null) {
+      layoutBuilder.setTextDirection(textDirection);
+    } else {
+      layoutBuilder.setTextDirection(layoutDirection == YogaDirection.RTL
+          ? TextDirectionHeuristicsCompat.FIRSTSTRONG_RTL
+          : TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR);
+    }
+
