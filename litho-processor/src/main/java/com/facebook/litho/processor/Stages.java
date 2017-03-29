@@ -1641,3 +1641,4 @@ public class Stages {
 
     final String implClassName = getImplClassName();
     final String implInstanceName = "_" + getImplInstanceName();
+    methodBuilder.addStatement(
