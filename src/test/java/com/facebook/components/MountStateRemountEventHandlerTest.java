@@ -259,3 +259,36 @@ public class MountStateRemountEventHandlerTest {
   }
 
   @Test
+  public void testSetLongClickHandler() {
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Container.create(c)
+                .child(TestDrawableComponent.create(c))
+                .child(TestDrawableComponent.create(c))
+                .build();
+          }
+        });
+
+    assertNull(MountState.getComponentLongClickListener(componentView));
+
+    componentView.getComponent().setRoot(new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c)
+            .longClickHandler(c.newEventHandler(1))
+            .child(TestDrawableComponent.create(c))
+            .child(TestDrawableComponent.create(c))
+            .build();
+      }
+    });
+
+    final ComponentLongClickListener listener =
+        MountState.getComponentLongClickListener(componentView);
+    assertNotNull(listener);
+    assertNotNull(listener.getEventHandler());
+  }
+
+  @Test

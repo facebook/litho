@@ -34,3 +34,5 @@ import static android.support.annotation.Dimension.DP;
 
 /**
  * Represents a {@link Component}'s computed layout state. The computed bounds will be
+ * used by the framework to define the size and position of the component's mounted
+ * {@link android.view.View}s and {@link android.graphics.drawable.Drawable}s returned.

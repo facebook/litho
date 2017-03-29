@@ -160,3 +160,11 @@ public class LifecycleMethodsTest {
     @Override
     protected void onBind(
         ComponentContext c,
+        Object mountedContent,
+        Component<?> component) {
+      LifecycleMethodsInstance instance = (LifecycleMethodsInstance) component;
+      instance.setCurrentStep(LifecycleStep.ON_BIND);
+    }
+
+    @Override
+    protected void onUnbind(
