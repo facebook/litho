@@ -202,3 +202,13 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
       @Nullable Reference<Drawable> progressBarReference,
       @Nullable ScalingUtils.ScaleType scaleType,
       int autoRotateInterval) {
+    if (mProgressBarReference != null) {
+      if (!Reference.shouldUpdate(mProgressBarReference, progressBarReference)) {
+        return;
+      } else {
+        Reference.release(mContext, mProgressBar, mProgressBarReference);
+        mProgressBarReference = null;
+        mProgressBar = null;
+      }
+    }
+
