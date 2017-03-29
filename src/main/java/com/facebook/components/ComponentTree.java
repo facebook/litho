@@ -844,3 +844,6 @@ public class ComponentTree {
           output.height = mostRecentLayoutState.getHeight();
           output.width = mostRecentLayoutState.getWidth();
         }
+        return;
+      }
+

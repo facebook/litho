@@ -777,3 +777,6 @@ public class Stages {
   }
 
   /**
+   * Gather a list of parameters from the given element that are defined by the spec. That is, they
+   * aren't one of the parameters predefined for a given method. For example, OnCreateLayout has a
+   * predefined parameter of type LayoutContext. Spec-defined parameters are annotated with one of
