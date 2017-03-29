@@ -25,3 +25,9 @@ public interface ComponentsLogger {
   int EVENT_PRE_ALLOCATE_MOUNT_CONTENT = 9;
   int EVENT_STETHO_UPDATE_COMPONENT = 10;
   int EVENT_STETHO_INSPECT_COMPONENT = 11;
+
+  int ACTION_SUCCESS = 1 << 4;
+
+  String PARAM_LOG_TAG = "log_tag";
+  String PARAM_TREE_DIFF_ENABLED = "tree_diff_enabled";
+  String PARAM_IS_ASYNC_PREPARE = "is_async_prepare";

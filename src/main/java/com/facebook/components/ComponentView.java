@@ -211,3 +211,23 @@ public class ComponentView extends ComponentHost {
     }
   }
 
+  /**
+   * CONSULT THE COMPONENTS TEAM BEFORE USING THIS.
+   *
+   * Indicates if the children of this view should be laid regardless to a mount step being
+   * triggered on layout. This step can be important when some of the children in the hierarchy
+   * are changed (e.g. resized) but the parent wasn't.
+   *
+   * Since the framework doesn't expect its children to resize after being mounted, this should be
+   * used only for extreme cases where the underline views are complex and need this behavior.
+   * The {@link com.facebook.feedplugins.video.RichVideoAttachmentView}, used in
+   * OlderRichVideoAttachmentComponentSpec is
+   * the only view that currently needs this. Once it fixed - this method should be removed.
+   *
+   * @return boolean Returns true if the children of this view should be laid out even when a mount
+   *    step was not needed.
+   */
+  protected boolean shouldAlwaysLayoutChildren() {
+    return false;
+  }
+

@@ -52,3 +52,23 @@ public final class ComponentTestHelper {
   /**
    * Mount a component into a component view.
    *
+   * @param component The component builder to mount
+   * @param incrementalMountEnabled States whether incremental mount is enabled
+   * @return A ComponentView with the component mounted in it.
+   */
+  public static ComponentView mountComponent(
+      Component.Builder component,
+      boolean incrementalMountEnabled) {
+    ComponentContext context = getContext(component);
+    return mountComponent(
+        context,
+        new ComponentView(context),
+        component.build(),
+        incrementalMountEnabled,
+        100,
+        100);
+  }
+
+  /**
+   * Mount a component into a component view.
+   *
