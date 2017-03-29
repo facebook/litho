@@ -1158,3 +1158,4 @@ public class Stages {
    * Generate an onEvent implementation that delegates to the @OnEvent-annotated method.
    */
   public void generateOnEventHandlers(ClassName componentClassName, ClassName contextClassName) {
+    for (ExecutableElement element : mOnEventMethods) {
