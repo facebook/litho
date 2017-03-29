@@ -22,3 +22,4 @@ import com.facebook.litho.widget.Text;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 
+import org.junit.Before;

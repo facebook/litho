@@ -45,3 +45,4 @@ public class DecadeSeparatorSpec {
             .marginDip(YogaEdge.HORIZONTAL, 10)
             .flex(0).flexBasisDip(0))
         .child(
+            Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)

@@ -21,3 +21,4 @@ import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaJustify;
 
+import org.junit.Before;

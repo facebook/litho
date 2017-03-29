@@ -32,3 +32,5 @@ public class TestLayoutComponent extends ComponentLifecycle {
   private static final Pools.SynchronizedPool<Builder> mBuilderPool =
       new Pools.SynchronizedPool<>(2);
 
+  private final boolean mCallsShouldUpdateOnMount;
+  private final boolean mIsPureRender;

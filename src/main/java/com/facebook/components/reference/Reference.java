@@ -22,3 +22,4 @@ import com.facebook.litho.ResourceResolver;
  */
 public abstract class Reference<L> {
 
+  public static abstract class Builder<L> extends ResourceResolver {

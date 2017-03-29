@@ -21,3 +21,7 @@ public class ComponentsProcessingException extends PrintableException {
   }
 
   public ComponentsProcessingException(Element element, String message) {
+    super(message);
+    this.element = element;
+  }
+

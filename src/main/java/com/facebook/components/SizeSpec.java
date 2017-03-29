@@ -82,3 +82,8 @@ public class SizeSpec {
   @Retention(RetentionPolicy.SOURCE)
   public @interface MeasureSpecMode {}
 
+  /**
+   * Creates a size specification based on the supplied size and mode.
+   *
+   * The mode must always be one of the following:
+   * <ul>

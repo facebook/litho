@@ -35,3 +35,4 @@ public class FeedItemComponentSpec {
                 .child(
                     Recycler.create(c)
                         .binder(binder)
+                        .withLayout().flexShrink(0)
