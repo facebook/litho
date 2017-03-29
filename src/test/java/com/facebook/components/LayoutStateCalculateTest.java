@@ -875,3 +875,4 @@ public class LayoutStateCalculateTest {
     assertTrue(isHostComponent(getComponentAt(layoutState, 2)));
   }
 
+  private static ComponentLifecycle getComponentAt(LayoutState layoutState, int index) {
