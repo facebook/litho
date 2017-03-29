@@ -1435,3 +1435,6 @@ public class Stages {
     final String evenHandlerName = element.getSimpleName().toString();
     final List<Parameter> fromParams = new ArrayList<>();
 
+    fromParams.add(new Parameter(
+        contextClassName,
+        element.getParameters().get(0).getSimpleName().toString()));
