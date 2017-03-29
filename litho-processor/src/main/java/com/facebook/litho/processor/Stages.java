@@ -2346,3 +2346,6 @@ public class Stages {
     for (VariableElement v : mImplMembers.values()) {
       if (isInterStageComponentVariable(v)) {
         elementList.add(v.getSimpleName().toString());
+      }
+    }
+

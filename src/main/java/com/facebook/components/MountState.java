@@ -1772,3 +1772,21 @@ class MountState {
     }
   }
 
+  /**
+   * Unbinds all the MountItems currently mounted on this MountState. Unbinding a MountItem means
+   * calling unbind on its {@link Component}. The MountItem is not yet unmounted after unbind is
+   * called and can be re-used in place to re-mount another {@link Component} with the same
+   * {@link ComponentLifecycle}.
+   */
+  void unbind() {
+    if (mLayoutOutputsIds == null) {
+      return;
+    }
+
+    for (int i = 0, size = mLayoutOutputsIds.length; i < size; i++) {
+      MountItem mountItem = getItemAt(i);
+
+      if (mountItem == null || !mountItem.isBound()) {
+        continue;
+      }
+
