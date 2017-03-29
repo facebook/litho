@@ -350,3 +350,4 @@ public class ComponentLifecycleTest {
 
   private class TestBaseComponent extends ComponentLifecycle {
     @Override
+    protected ComponentLayout onCreateLayout(ComponentContext c, Component<?> input) {
