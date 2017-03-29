@@ -255,3 +255,13 @@ public abstract class BaseBinder<
       if (componentList != null) {
         releaseList(componentList);
       }
+    }
+
+    // There might be componentTrees outside the range now but for simplicity we just keep them,
+    // they will be released in a successive updateRange call.
+
+    if (mListener != null) {
+      mListener.onItemRangeInserted(positionStart, itemCount);
+    }
+  }
+
