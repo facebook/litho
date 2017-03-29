@@ -44,3 +44,4 @@ public class ResourceDrawableReferenceTest {
 
   @Test
   public void testReleaseAndAcquire() {
+    Reference<Drawable> ref1 =

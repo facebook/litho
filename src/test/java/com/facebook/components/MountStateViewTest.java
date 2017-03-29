@@ -43,3 +43,5 @@ public class MountStateViewTest {
     mContext = new ComponentContext(RuntimeEnvironment.application);
   }
 
+  @Test
+  public void testViewPaddingAndBackground() {

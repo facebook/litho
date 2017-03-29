@@ -178,3 +178,5 @@ public class LayoutDirectionTest {
         20,
         10);
 
+    Drawable drawable1 = componentView.getDrawables().get(0);
+    Drawable drawable2 = componentView.getDrawables().get(1);

@@ -38,3 +38,4 @@ public class MountStateRemountEventHandlerTest {
   }
 
   @Test
+  public void testReuseClickListenerOnSameView() {

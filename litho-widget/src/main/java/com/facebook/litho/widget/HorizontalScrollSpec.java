@@ -54,3 +54,4 @@ class HorizontalScrollSpec {
       new SynchronizedPool<>(2);
 
   @OnLoadStyle
+  static void onLoadStyle(

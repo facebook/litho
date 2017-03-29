@@ -18,3 +18,6 @@ public interface ClassNames {
   ClassName OBJECT = ClassName.bestGuess("java.lang.Object");
   ClassName STRING = ClassName.bestGuess("java.lang.String");
 
+  ClassName VIEW = ClassName.bestGuess("android.view.View");
+  ClassName DRAWABLE =
+      ClassName.bestGuess("android.graphics.drawable.Drawable");
