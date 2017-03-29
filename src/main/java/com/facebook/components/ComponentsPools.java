@@ -80,3 +80,7 @@ public class ComponentsPools {
 
   private static final Map<Context, SparseArray<PoolWithCount>>
       sMountContentPoolsByContext = new ConcurrentHashMap<>(4);
+
+  private static final Pools.SynchronizedPool<LayoutOutput> sLayoutOutputPool =
+      new Pools.SynchronizedPool<>(256);
+
