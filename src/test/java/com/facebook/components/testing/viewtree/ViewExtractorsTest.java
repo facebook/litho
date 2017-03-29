@@ -42,3 +42,4 @@ public class ViewExtractorsTest {
     mTextView = new TextView(activity);
     mTextView.setText("example");
 
+    mGoneTextView = new TextView(activity);
