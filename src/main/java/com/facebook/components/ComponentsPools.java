@@ -599,3 +599,4 @@ public class ComponentsPools {
     return sparseArray;
   }
 
+  @ThreadSafe(enableChecks = false)
