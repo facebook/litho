@@ -960,3 +960,4 @@ public class ComponentHost extends ViewGroup {
     // Move the MountItem in the new position. If the mount item was a Touchable we need to reflect
     // this change also in the Touchables SparseArray.
     ComponentHostUtils.moveItem(oldIndex, newIndex, mDrawableMountItems, mScrapDrawableMountItems);
+    if (item.getContent() instanceof Touchable) {
