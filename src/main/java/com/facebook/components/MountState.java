@@ -749,3 +749,4 @@ class MountState {
         mPrepareMountStats.unmountedCount++;
       } else {
         final long newHostMarker = newLayoutState.getMountableOutputAt(newPosition).getHostMarker();
+
