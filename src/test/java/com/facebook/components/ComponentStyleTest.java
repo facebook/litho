@@ -51,3 +51,101 @@ public class ComponentStyleTest {
   @Test
   public void testStyleProp() {
     Component<Text> component =
+        Text.create(mContext, 0, R.style.TextSizeStyle)
+            .text("text")
+            .build();
+    assertEquals(mDimen, Whitebox.getInternalState(component, "textSize"));
+  }
+
+  @Test
+  public void testOverrideStyleProp() {
+    Component<Text> component =
+        Text.create(mContext, 0, R.style.TextSizeStyle)
+            .text("text")
+            .textSizePx(2 * mDimen)
+            .build();
+    assertEquals(2 * mDimen, Whitebox.getInternalState(component, "textSize"));
+  }
+
+  @Test
+  public void testStyleLayout() {
+    InternalNode node = (InternalNode)
+        Text.create(mContext, 0, R.style.PaddingStyle)
+            .text("text")
+            .buildWithLayout();
+    node.calculateLayout();
+    assertEquals(mDimen, node.getPaddingLeft());
+  }
+
+  @Test
+  public void testOverrideStyleLayout() {
+    InternalNode node = (InternalNode)
+        Text.create(mContext, 0, R.style.PaddingStyle)
+            .text("text")
+            .withLayout().flexShrink(0)
+            .paddingPx(YogaEdge.ALL, mDimen * 2)
+            .build();
+    node.calculateLayout();
+    assertEquals(2 * mDimen, node.getPaddingLeft());
+  }
+
+  @Test
+  public void testAttributeStyleProp() {
+    Component<Text> component =
+        Text.create(mContext, R.attr.testAttrLargeText, 0)
+            .text("text")
+            .build();
+    assertEquals(mLargeDimen, Whitebox.getInternalState(component, "textSize"));
+  }
+
+  @Test
+  public void testOverrideAttributeStyleProp() {
+    Component<Text> component =
+        Text.create(mContext, R.attr.testAttrLargeText, 0)
+            .text("text")
+            .textSizePx(mDimen)
+            .build();
+    assertEquals(mDimen, Whitebox.getInternalState(component, "textSize"));
+  }
+
+  @Test
+  public void testAttributeStyleLayout() {
+    InternalNode node = (InternalNode)
+        Text.create(mContext, R.attr.testAttrLargePadding, 0)
+            .text("text")
+            .buildWithLayout();
+    node.calculateLayout();
+    assertEquals(mLargeDimen, node.getPaddingLeft());
+  }
+
+  @Test
+  public void testOverrideAttributeStyleLayout() {
+    InternalNode node = (InternalNode)
+        Text.create(mContext, R.attr.testAttrLargePadding, 0)
+            .text("text")
+            .withLayout().flexShrink(0)
+            .paddingPx(YogaEdge.ALL, mDimen * 2)
+            .build();
+    node.calculateLayout();
+    assertEquals(2 * mDimen, node.getPaddingLeft());
+  }
+
+  @Test
+  public void testStyleResOverridenByAttrResForProp() {
+    Component<Text> component =
+        Text.create(mContext, R.attr.testAttrLargeText, R.style.TextSizeStyle)
+            .text("text")
+            .build();
+    assertEquals(mLargeDimen, Whitebox.getInternalState(component, "textSize"));
+  }
+
+  @Test
+  public void testStyleResOverridenByAttrResForLayout() {
+    InternalNode node = (InternalNode)
+        Text.create(mContext, R.attr.testAttrLargePadding, R.style.PaddingStyle)
+            .text("text")
+            .buildWithLayout();
+    node.calculateLayout();
+    assertEquals(mLargeDimen, node.getPaddingLeft());
+  }
+}
