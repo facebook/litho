@@ -129,3 +129,4 @@ public class ResourceResolver {
   }
 
   protected final boolean resolveBoolRes(@BoolRes int resId) {
+    if (resId != 0) {
