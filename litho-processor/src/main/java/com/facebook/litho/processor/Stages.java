@@ -392,3 +392,5 @@ public class Stages {
       }
 
       if (!matchesProp) {
+        throw new ComponentsProcessingException(
+            v,
