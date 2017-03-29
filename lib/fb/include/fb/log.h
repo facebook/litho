@@ -131,3 +131,15 @@ int __android_log_print(int prio, const char *tag, const char *fmt, ...)
 #define FBLOGV_IF(cond, ...)                                            \
   ((CONDITION(cond)) ? ((void)FBLOG(LOG_VERBOSE, LOG_TAG, __VA_ARGS__)) \
                      : (void)0)
+#endif
+#endif
+
+/*
+ * Simplified macro to send a debug log message using the current LOG_TAG.
+ */
+#ifndef FBLOGD
+#define FBLOGD(...) ((void)FBLOG(LOG_DEBUG, LOG_TAG, __VA_ARGS__))
+#endif
+
+#ifndef FBLOGD_IF
+#define FBLOGD_IF(cond, ...) \
