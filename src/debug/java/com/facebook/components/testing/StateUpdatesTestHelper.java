@@ -46,3 +46,6 @@ public class StateUpdatesTestHelper {
         stateUpdater,
         layoutThreadShadowLooper,
         false);
+  }
+
+  /**
