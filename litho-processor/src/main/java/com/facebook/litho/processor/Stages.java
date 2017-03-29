@@ -1797,3 +1797,6 @@ public class Stages {
             .superclass(
                 ParameterizedTypeName.get(
                     ClassNames.REFERENCE,
+                    ClassName.get(referenceType)));
+
+    if (isStatic.equals(Stages.StaticFlag.STATIC)) {
