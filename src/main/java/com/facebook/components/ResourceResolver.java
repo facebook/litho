@@ -104,3 +104,5 @@ public class ResourceResolver {
       }
 
       int result = mResources.getInteger(resId);
+      mResourceCache.put(resId, result);
+

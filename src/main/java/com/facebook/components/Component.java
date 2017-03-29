@@ -86,3 +86,4 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
       final int defStyleAttr = mDefStyleAttr;
       final int defStyleRes = mDefStyleRes;
 
+      return Layout.create(context, build(), defStyleAttr, defStyleRes);

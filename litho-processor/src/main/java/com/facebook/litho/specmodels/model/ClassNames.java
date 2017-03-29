@@ -76,3 +76,4 @@ public interface ClassNames {
   ClassName TREE_PROPS = ClassName.bestGuess("com.facebook.litho.TreeProps");
 
   ClassName STATE_VALUE = ClassName.bestGuess("com.facebook.litho.StateValue");
+  ClassName COMPONENT_STATE_UPDATE =
