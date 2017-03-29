@@ -218,3 +218,29 @@ public class GridComponentBinderTest {
     }
   }
 
+  @Test
+  public void testBootstrapWorkingRangeVertical() {
+    setupBinder(GridLayoutManager.VERTICAL);
+
+    Assert.assertEquals(11, mBinder.getComponentCount());
+    Assert.assertEquals(0, mBinder.getFirstPosition());
+  }
+
+  @Test
+  public void testBootstrapWorkingRangeHorizontal() {
+    setupBinder(GridLayoutManager.HORIZONTAL);
+
+    Assert.assertEquals(15, mBinder.getComponentCount());
+    Assert.assertEquals(0, mBinder.getFirstPosition());
+  }
+
+  @Test
+  public void testBootstrapWithTrimming() {
+    setupBinder(GridLayoutManager.VERTICAL);
+
+    mBinder.setSize(GRID_WIDTH, 1000);
+
+    Assert.assertEquals(mItems.size(), mBinder.getComponentCount());
+    Assert.assertEquals(0, mBinder.getFirstPosition());
+  }
+

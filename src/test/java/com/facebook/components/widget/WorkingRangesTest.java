@@ -619,3 +619,11 @@ public class WorkingRangesTest {
           .build();
     }
 
+    @Override
+    protected boolean shouldContinueInitialization(
+        int position,
+        int itemWidth,
+        int itemHeight) {
+      return false;
+    }
+

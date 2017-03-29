@@ -75,3 +75,4 @@ public class LinearComponentBinderTest {
     Mockito.doReturn(WIDTH).when(mBinder).getWidth();
   }
 
+  private void performNotifyDataSetChanged() throws Exception {

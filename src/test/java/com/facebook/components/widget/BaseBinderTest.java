@@ -117,3 +117,30 @@ public class BaseBinderTest {
   @Test
   public void testNotifyItemRangeChanged() {
     mount();
+
+    List<String> newRange = new ArrayList<>();
+    newRange.add("10");
+    newRange.add("11");
+    newRange.add("12");
+
+    int positionStart = 4;
+    for (int i = positionStart; i < positionStart + newRange.size(); i++) {
+      mItems.set(i, newRange.get(i - positionStart));
+    }
+
+    mBinder.notifyItemRangeChanged(positionStart, newRange.size());
+    mLayoutThreadShadowLooper.runOneTask();
+
+    Assert.assertEquals(mItems.size(), mBinder.getComponentCount());
+    for (int i = 0; i < newRange.size(); i++) {
+      Assert.assertEquals(newRange.get(i), getAdapterInputStringAtPosition(positionStart + i));
+    }
+
+    int firstOriginalItemAfterRange = positionStart + newRange.size();
+    Assert.assertEquals(
+        mItems.get(firstOriginalItemAfterRange),
+        getAdapterInputStringAtPosition(firstOriginalItemAfterRange));
+  }
+
+  @Test
+  public void testNotifyItemInserted() {
