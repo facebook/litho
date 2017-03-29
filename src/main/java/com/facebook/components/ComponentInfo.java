@@ -78,3 +78,4 @@ public class ComponentInfo {
 
   private void init(Builder builder) {
     mComponent = builder.mComponent;
+    mCustomAttributes = builder.mCustomAttributes;

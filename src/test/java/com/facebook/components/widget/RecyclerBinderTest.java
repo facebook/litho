@@ -70,3 +70,12 @@ public class RecyclerBinderTest {
           final ComponentInfo componentInfo = (ComponentInfo) invocation.getArguments()[0];
           final TestComponentTreeHolder holder = new TestComponentTreeHolder(componentInfo);
           mHoldersForComponents.put(componentInfo.getComponent(), holder);
+
+          return holder;
+        }
+      };
+
+  @Before
+  public void setup() {
+    mComponentContext = new ComponentContext(RuntimeEnvironment.application);
+    PowerMockito.mockStatic(ComponentTreeHolder.class);
