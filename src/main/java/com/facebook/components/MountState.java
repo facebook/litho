@@ -1426,3 +1426,16 @@ class MountState {
 
     final int viewLayoutDirection;
     switch (viewNodeInfo.getLayoutDirection()) {
+      case LTR:
+        viewLayoutDirection = View.LAYOUT_DIRECTION_LTR;
+        break;
+      case RTL:
+        viewLayoutDirection = View.LAYOUT_DIRECTION_RTL;
+        break;
+      default:
+        viewLayoutDirection = View.LAYOUT_DIRECTION_INHERIT;
+    }
+
+    view.setLayoutDirection(viewLayoutDirection);
+  }
+
