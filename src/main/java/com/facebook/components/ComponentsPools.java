@@ -150,3 +150,7 @@ public class ComponentsPools {
   static boolean sIsManualCallbacks;
 
   /**
+   * Local cache of ComponentsConfiguration.shouldUseCSSNodeJNI which ensures
+   * the value is only read once.
+   * Once any InternalNode uses any of CSSNodeDEPRECATED or
+   * YogaNode all future InternalNodes must do the same as to not mix and match.
