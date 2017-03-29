@@ -39,3 +39,5 @@ struct Environment {
  * Potential concerns:
  *  - Attaching to the JVM is fast (~100us on MotoG), but ideally you would attach while the
  *    app is not busy.
+ *  - Having a thread detach at arbitrary points is not safe in Dalvik; you need to be sure that
+ *    there is no Java code on the current stack or you run the risk of a crash like:
