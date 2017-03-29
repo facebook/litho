@@ -586,3 +586,4 @@ public class ComponentHost extends ViewGroup {
 
     // A host has been recycled and is already attached.
     if (view instanceof ComponentHost && view.getParent() == this) {
+      finishTemporaryDetach(view);
