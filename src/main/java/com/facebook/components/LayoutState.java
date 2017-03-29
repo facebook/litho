@@ -459,3 +459,7 @@ class LayoutState {
         return;
       }
 
+      // Account for position of the holder node.
+      layoutState.mCurrentX += node.getX();
+      layoutState.mCurrentY += node.getY();
+

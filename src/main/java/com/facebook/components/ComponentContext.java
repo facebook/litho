@@ -256,3 +256,19 @@ public class ComponentContext extends ContextWrapper {
     return newLayoutBuilder(componentBuilder.build(), defStyleAttr, defStyleRes);
   }
 
+  int getWidthSpec() {
+    return mWidthSpec;
+  }
+
+  void setWidthSpec(int widthSpec) {
+    mWidthSpec = widthSpec;
+  }
+
+  int getHeightSpec() {
+    return mHeightSpec;
+  }
+
+  void setHeightSpec(int heightSpec) {
+    mHeightSpec = heightSpec;
+  }
+
