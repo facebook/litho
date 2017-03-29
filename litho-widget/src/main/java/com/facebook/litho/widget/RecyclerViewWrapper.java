@@ -71,3 +71,23 @@ public class RecyclerViewWrapper extends SwipeRefreshLayout {
     return mStickyHeader;
   }
 
+  public void setVerticalOffset(int verticalOffset) {
+    mStickyHeader.setTranslationY(verticalOffset);
+  }
+
+  public void showStickyHeader() {
+    mStickyHeader.setVisibility(View.VISIBLE);
+  }
+
+  public void hideStickyHeader() {
+    mStickyHeader.setVisibility(View.GONE);
+  }
+
+  public boolean isStickyHeaderHidden() {
+    return mStickyHeader.getVisibility() == View.GONE;
+  }
+
+  @Override
+  public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    measureChild(mStickyHeader, widthMeasureSpec, heightMeasureSpec);
