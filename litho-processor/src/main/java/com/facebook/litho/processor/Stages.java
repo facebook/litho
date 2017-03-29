@@ -315,3 +315,5 @@ public class Stages {
   /**
    * Ensures that the declared events don't clash with the predefined ones.
    */
+  private void validateEventDeclarations() {
+    for (TypeElement eventDeclaration : mEventDeclarations) {
