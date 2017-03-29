@@ -2369,3 +2369,5 @@ public class Stages {
       generateEvent(
           event,
           ClassNames.EVENT_HANDLER,
+          SectionClassNames.SECTION_LIFECYCLE,
+          SectionClassNames.SECTION_CONTEXT,
