@@ -410,3 +410,5 @@ public class Stages {
    *   <li>4. Inter-stage prop parameters come from previous stages. i.e. It is illegal to declare
    *   a @FromMeasure parameter in @OnInflate</li>
    *   <li>5. Inter-stage parameters don't have duplicate annotations (and that outputs aren't
+   *   annotated as inter-stage props)</li>
+   *   <li>6. Ensure props don't use reserved words as names.</li>
