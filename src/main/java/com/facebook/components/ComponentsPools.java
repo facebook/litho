@@ -186,3 +186,15 @@ public class ComponentsPools {
       }
     }
 
+    return node;
+  }
+
+  static synchronized InternalNode acquireInternalNode(
+      ComponentContext componentContext,
+      Resources resources) {
+    InternalNode node = sInternalNodePool.acquire();
+    if (node == null) {
+      node = new InternalNode();
+    }
+
+    node.init(acquireYogaNode(), componentContext, resources);
