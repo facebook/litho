@@ -363,3 +363,5 @@ public class ComponentHost extends ViewGroup {
    */
   @Override
   public void setContentDescription(CharSequence contentDescription) {
+    mContentDescription = contentDescription;
+    invalidateAccessibilityState();

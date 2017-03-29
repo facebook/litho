@@ -205,3 +205,4 @@ public class Stages {
     mSupportState = supportState;
     mSimpleClassName = Utils.getSimpleClassName(mQualifiedClassName);
     mOnEventMethods = Utils.getAnnotatedMethods(mSourceElement, OnEvent.class);
+    mOnUpdateStateMethods = Utils.getAnnotatedMethods(mSourceElement, OnUpdateState.class);
