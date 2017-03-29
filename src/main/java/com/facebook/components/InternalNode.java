@@ -1218,3 +1218,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public InternalNode testKey(String testKey) {
+    mTestKey = testKey;
+    return this;
+  }
+
+  @Override
