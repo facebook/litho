@@ -686,3 +686,5 @@ class MountState {
 
     for (int i = 0; i < outputCount; i++) {
       mLayoutOutputsIds[i] = layoutState.getMountableOutputAt(i).getId();
+    }
+
