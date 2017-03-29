@@ -770,3 +770,10 @@ public class Stages {
   }
 
   /**
+   * Gather a list of parameters from the given element that are state to this component.
+   */
+  private static List<VariableElement> getState(ExecutableElement element) {
+    return Utils.getParametersWithAnnotation(element, State.class);
+  }
+
+  /**
