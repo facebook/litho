@@ -744,3 +744,4 @@ public class RecyclerBinderTest {
 
   @Test
   public void testRemoveFromRange() {
+    final List<ComponentInfo> components = prepareLoadedBinder();
