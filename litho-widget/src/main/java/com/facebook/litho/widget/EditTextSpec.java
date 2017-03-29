@@ -267,3 +267,4 @@ class EditTextSpec {
         com.facebook.litho.widget.EditText.getTextChangedEventHandler(c));
 
     initEditText(
+        editTextView,
