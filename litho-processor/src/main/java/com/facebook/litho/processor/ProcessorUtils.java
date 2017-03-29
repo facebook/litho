@@ -18,3 +18,8 @@ import java.util.Map;
 
 import com.squareup.javapoet.ClassName;
 
+public class ProcessorUtils {
+
+  /**
+   * @return the AnnotationMirror of class clazz if typeElement is annotated with that class.
+   */

@@ -15,3 +15,4 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentView;
 import com.facebook.litho.testing.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+
