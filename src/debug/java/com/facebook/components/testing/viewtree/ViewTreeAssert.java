@@ -178,3 +178,5 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
    */
   public ViewTreeAssert doesNotHaveVisibleText(final int resourceId) {
     return doesNotHaveVisibleText(
+        RuntimeEnvironment
+            .application
