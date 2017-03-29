@@ -95,3 +95,4 @@ class JCppSystemErrorException : public JavaClass<JCppSystemErrorException, JThr
 
 void setJavaExceptionAndAbortOnFailure(alias_ref<JThrowable> throwable) {
   auto env = Environment::current();
+  if (throwable) {
