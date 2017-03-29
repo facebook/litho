@@ -205,3 +205,4 @@ public class MountItemTest {
   }
 
   @Test
+  public void testRelease() {

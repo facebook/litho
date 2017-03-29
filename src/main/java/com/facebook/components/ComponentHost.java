@@ -366,3 +366,4 @@ public class ComponentHost extends ViewGroup {
     mContentDescription = contentDescription;
     invalidateAccessibilityState();
   }
+
