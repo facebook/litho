@@ -45,3 +45,6 @@ public class ColorDrawableReferenceTest {
         ColorDrawableReference.create(mContext)
             .color(Color.BLACK)
             .alpha(DEFAULT_ALPHA_VALUE)
+            .build());
+
+    assertEquals(drawable.getColor(), Color.BLACK);

@@ -66,3 +66,4 @@ public class LayoutStateEventHandlerTest {
     LayoutState.calculate(
         new ComponentContext(RuntimeEnvironment.application),
         mRootComponent,
+        -1,

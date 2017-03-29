@@ -21,3 +21,26 @@ class LayoutStateOutputIdCalculator {
   private final LongSparseArray<Integer> mLayoutCurrentSequenceForBaseId = new LongSparseArray<>(8);
   private final LongSparseArray<Integer> mVisibilityCurrentSequenceForBaseId =
       new LongSparseArray<>(8);
+
+  private static final int MAX_SEQUENCE = 65535; // (2^16 - 1)
+  private static final int MAX_LEVEL = 255; // (2^8 - 1)
+
+  // 16 bits are for sequence, 2 for type and 8 for level.
+  private static final short COMPONENT_ID_SHIFT = 26;
+  // 16 bits are sequence and then 2 for type.
+  private static final short LEVEL_SHIFT = 18;
+  // Last 16 bits are for sequence.
+  private static final short TYPE_SHIFT = 16;
+
+  void calculateAndSetLayoutOutputIdAndUpdateState(
+      LayoutOutput layoutOutput,
+      int level,
+      @LayoutOutput.LayoutOutputType int type,
+      long previousId,
+      boolean isCachedOutputUpdated) {
+
+    // We need to assign an id to this LayoutOutput. We want the ids to be as consistent as possible
+    // between different layout calculations. For this reason the id generation is a function based
+    // on the component of the LayoutOutput, the output type {@link LayoutOutput#LayoutOutputType}
+    // the depth of this output in the view hierarchy and an incremental sequence number for
+    // LayoutOutputs that have all the other parameters in common.

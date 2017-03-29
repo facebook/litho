@@ -44,3 +44,4 @@ public abstract class Reference<L> {
    */
   public static <T> T acquire(
       ComponentContext context,
+      Reference<T> reference) {

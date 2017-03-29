@@ -35,3 +35,4 @@ public class TestDrawableComponent extends ComponentLifecycle {
   private final boolean mCanMeasure;
   private final boolean mUsesDisplayList;
   private final boolean mImplementsAccessibility;
+  private final boolean mIsMountSizeDependent;
