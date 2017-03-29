@@ -71,3 +71,8 @@ public final class MeasureUtils {
    * prevent it.
    */
   public static void measureWithEqualDimens(int widthSpec, int heightSpec, Size outputSize) {
+    final int widthMode = SizeSpec.getMode(widthSpec);
+    final int widthSize = SizeSpec.getSize(widthSpec);
+    final int heightMode = SizeSpec.getMode(heightSpec);
+    final int heightSize = SizeSpec.getSize(heightSpec);
+

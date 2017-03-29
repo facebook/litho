@@ -57,3 +57,10 @@ public class ProcessorUtils {
       ClassName className,
       String key) {
     final AnnotationMirror mirror = getAnnotationMirror(typeElement, className);
+    if (mirror == null) {
+      return null;
+    }
+
+    return getAnnotationValue(mirror, key);
+  }
+}
