@@ -552,3 +552,4 @@ class TextSpec {
 
   @OnUnmount
   static void onUnmount(
+      ComponentContext c,
