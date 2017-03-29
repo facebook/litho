@@ -657,3 +657,8 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
+  public InternalNode viewTag(Object viewTag) {
+    return this;
+  }
+
+  @Override
