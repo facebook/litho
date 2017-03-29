@@ -20,3 +20,4 @@ import static com.facebook.components.testing.viewtree.ViewExtractors.GET_TEXT_F
 import static com.facebook.components.testing.viewtree.ViewPredicates.hasTextMatchingPredicate;
 import static com.facebook.components.testing.viewtree.ViewPredicates.hasVisibleId;
 import static com.facebook.components.testing.viewtree.ViewPredicates.isVisible;
+
