@@ -1025,3 +1025,10 @@ public class Stages {
           parameters.get(0),
           "The first argument of the @OnCreateInitialState method should be an " +
               contextClass + ".");
+    }
+
+    for (int i = ON_CREATE_INITIAL_STATE, size = parameters.size(); i < size; i++) {
+      final VariableElement element = parameters.get(i);
+      final TypeMirror elementInnerClassType =
+          Utils.getGenericTypeArgument(element.asType(), ClassNames.OUTPUT);
+
