@@ -2892,3 +2892,5 @@ public class Stages {
       ClassName builder,
       String poolName,
       StaticFlag isStatic,
+      StyleableFlag isStylable,
+      ClassName contextClass) {
