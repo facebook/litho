@@ -38,3 +38,6 @@ public class Transition {
   }
 
   interface TransitionAnimator<T extends TransitionAnimator<? super T>> extends Cloneable {
+    void setListener(TransitionListener listener);
+    void start(View targetView, List<PropertyChangeHolder> propertyChangeHolders);
+    T stop();

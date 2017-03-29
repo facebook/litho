@@ -24,3 +24,8 @@ import org.junit.runner.RunWith;
 import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
+import org.robolectric.shadows.ShadowView;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+

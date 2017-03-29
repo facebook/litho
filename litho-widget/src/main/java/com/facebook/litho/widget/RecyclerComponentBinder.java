@@ -11,3 +11,6 @@ package com.facebook.litho.widget;
 
 import android.content.Context;
 import android.os.Build;
+import android.os.Looper;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.Adapter;

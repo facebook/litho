@@ -10,3 +10,21 @@
 package com.facebook.litho;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import android.animation.Animator;
+import android.view.View;
+
+/**
+ * Container for a list of {@link Transition}.
+ */
+public class TransitionSet extends Transition {
+
+  final private List<Transition> mTransitions;
+
+  TransitionSet(Transition... transitions) {
+    super(null, TransitionType.UNDEFINED);
+    mTransitions = Arrays.asList(transitions);
+  }
+

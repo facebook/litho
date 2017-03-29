@@ -24,3 +24,10 @@ public abstract class LinearComponentBinder extends
         LinearLayoutManager,
         RecyclerComponentBinder.RecyclerComponentWorkingRangeController>
     implements HasStickyHeader {
+
+  private int mInitFillMainAxis;
+
+  public LinearComponentBinder(Context context, LinearLayoutManager layoutManager) {
+    this(context, layoutManager, new RecyclerComponentWorkingRangeController());
+  }
+
