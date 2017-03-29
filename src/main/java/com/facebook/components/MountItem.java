@@ -228,3 +228,10 @@ class MountItem {
   }
 
   /**
+   * @return Whether the view associated with this MountItem is long clickable.
+   */
+  static boolean isViewLongClickable(int flags) {
+    return (flags & FLAG_VIEW_LONG_CLICKABLE) == FLAG_VIEW_LONG_CLICKABLE;
+  }
+
+  /**
