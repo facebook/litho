@@ -337,3 +337,5 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
    * @param drawable the drawable to look for
    * @return the assertions object
    */
+  public ViewTreeAssert hasVisibleDrawable(final Drawable drawable) {
+    final ImmutableList<View> path = getPathToVisibleWithDrawable(drawable);
