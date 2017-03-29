@@ -156,3 +156,5 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
    * @param contentDescription the contentDescription to search for
    * @return the assertions object
    */
+  public ViewTreeAssert hasContentDescription(final String contentDescription) {
+    final ImmutableList<View> path = getPathToContentDescription(contentDescription);
