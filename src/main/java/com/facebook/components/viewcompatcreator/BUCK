@@ -11,3 +11,4 @@ android_library(
     visibility = [
         "PUBLIC",
     ],
+)
