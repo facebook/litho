@@ -809,3 +809,4 @@ public class ComponentHost extends ViewGroup {
   }
 
   protected void refreshAccessibilityDelegatesIfNeeded(boolean isAccessibilityEnabled) {
+    if (isAccessibilityEnabled == mIsComponentAccessibilityDelegateSet) {
