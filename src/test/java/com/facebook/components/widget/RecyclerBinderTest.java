@@ -721,3 +721,6 @@ public class RecyclerBinderTest {
 
     mRecyclerBinder.insertItemAt(rangeTotal + 1, newComponentInfo);
 
+    final TestComponentTreeHolder holder =
+        mHoldersForComponents.get(newComponentInfo.getComponent());
+
