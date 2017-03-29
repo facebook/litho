@@ -1511,3 +1511,11 @@ class LayoutState {
     return mDiffTreeRoot;
   }
 
+  int getWidth() {
+    return mWidth;
+  }
+
+  int getHeight() {
+    return mHeight;
+  }
+
