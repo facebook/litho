@@ -268,3 +268,4 @@ public class TreeDiffingTest {
 
     InternalNode layoutTreeRoot = LayoutState.createTree(
         component2,
+        mContext);
