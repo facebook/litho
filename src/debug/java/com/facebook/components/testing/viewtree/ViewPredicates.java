@@ -44,3 +44,5 @@ final class ViewPredicates {
       @Override
       public boolean apply(final View input) {
         if (predicate.apply(extractString(input))) {
+          return true;
+        }
