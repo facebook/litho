@@ -162,3 +162,17 @@ public final class ColorDrawableReference extends ReferenceLifecycle<Drawable> {
       return this;
     }
 
+    public PropsBuilder colorRes(@ColorRes int resId) {
+      mState.mColor = resolveColorRes(resId);
+      return this;
+    }
+
+    public PropsBuilder colorAttr(@AttrRes int attrResId, @ColorRes int defResId) {
+      mState.mColor = resolveColorAttr(attrResId, defResId);
+      return this;
+    }
+
+    public PropsBuilder colorAttr(@AttrRes int attrResId) {
+      mState.mColor = resolveColorAttr(attrResId, 0);
+      return this;
+    }
