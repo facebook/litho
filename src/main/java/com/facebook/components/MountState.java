@@ -1596,3 +1596,20 @@ class MountState {
       }
     }
 
+    unbindAndUnmountLifecycle(context, item);
+
+    mIndexToItemMap.remove(mLayoutOutputsIds[index]);
+    if (component.getLifecycle().canMountIncrementally()) {
+      mCanMountIncrementallyMountItems.delete(index);
+    }
+
+    ComponentsPools.release(context, item);
+
+    mMountStats.unmountedCount++;
+  }
+
+  private void unbindAndUnmountLifecycle(
+      ComponentContext context,
+      MountItem item) {
+    final Component component = item.getComponent();
+    final Object content = item.getContent();
