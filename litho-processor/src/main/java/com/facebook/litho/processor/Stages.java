@@ -2963,3 +2963,5 @@ public class Stages {
     // We use a linked hash map to guarantee iteration order
     final LinkedHashMap<String, VariableElement> variableNameToElementMap = new LinkedHashMap<>();
 
+    final List<VariableElement> specDefinedParameters = new ArrayList<>();
+
