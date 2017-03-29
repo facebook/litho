@@ -857,3 +857,4 @@ public class Stages {
       throw new ComponentsProcessingException(
           element,
           "Duplicate parameter annotation: '" + annotations.get(0) + "' and '" +
+              annotations.get(1) + "'");

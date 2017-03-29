@@ -903,3 +903,4 @@ public class ComponentHost extends ViewGroup {
     mDrawableMountItems.put(index, mountItem);
     final Drawable drawable = (Drawable) mountItem.getContent();
     final DisplayListDrawable displayListDrawable = mountItem.getDisplayListDrawable();
+
