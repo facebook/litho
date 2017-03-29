@@ -284,3 +284,5 @@ public class ComponentTree {
   }
 
   void attach() {
+    assertMainThread();
+
