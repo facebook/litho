@@ -1621,3 +1621,4 @@ class MountState {
       item.setIsBound(false);
     }
     lifecycle.unmount(context, content, component);
+  }
