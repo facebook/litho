@@ -74,3 +74,12 @@ class OnStateUpdateMethodSpecBuilder {
     return this;
   }
 
+  OnStateUpdateMethodSpecBuilder async(boolean isAsync) {
+    mIsAsync = isAsync;
+    return this;
+  }
+
+  MethodSpec build() {
+    final MethodSpec.Builder builder = MethodSpec.methodBuilder(mUpdateMethodName)
+        .addModifiers(Modifier.PROTECTED, Modifier.STATIC)
+        .addParameter(mContextClass, "c");

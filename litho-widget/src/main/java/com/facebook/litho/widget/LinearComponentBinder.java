@@ -48,3 +48,5 @@ public abstract class LinearComponentBinder extends
       return;
     }
 
+    if (isIncrementalMountEnabled()) {
+      IncrementalMountUtils.performIncrementalMount(recyclerView);

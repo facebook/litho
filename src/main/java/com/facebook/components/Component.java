@@ -32,3 +32,5 @@ import com.facebook.infer.annotation.ThreadSafe;
  */
 public abstract class Component<L extends ComponentLifecycle> implements HasEventDispatcher {
 
+  public static abstract class Builder<L extends ComponentLifecycle>
+      extends ResourceResolver {
