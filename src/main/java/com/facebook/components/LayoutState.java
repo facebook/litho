@@ -1126,3 +1126,13 @@ class LayoutState {
       logger.eventEnd(EVENT_CREATE_LAYOUT, context, ACTION_SUCCESS);
     }
 
+    return root;
+  }
+
+  @VisibleForTesting
+  static void measureTree(
+      InternalNode root,
+      int widthSpec,
+      int heightSpec,
+      DiffNode previousDiffTreeRoot) {
+    final ComponentContext context = root.getContext();
