@@ -113,3 +113,4 @@ class RecyclerSpec {
     recyclerView.setClipToPadding(clipToPadding);
     recyclerView.setNestedScrollingEnabled(nestedScrollingEnabled);
     recyclerViewWrapper.setNestedScrollingEnabled(nestedScrollingEnabled);
+    recyclerView.setScrollBarStyle(scrollBarStyle);

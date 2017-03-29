@@ -467,3 +467,7 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     switch (scrollDirection) {
       case OrientationHelper.VERTICAL:
         if (mRange != null
+            && (SizeSpec.getMode(widthSpec) == SizeSpec.AT_MOST
+            || SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED)) {
+          outSize.width = mRange.measuredSize;
+        } else {
