@@ -129,3 +129,4 @@ public final class ComponentTestHelper {
       int width,
       int height) {
     return mountComponent(
+        context,
