@@ -317,3 +317,4 @@ class NoOpInternalNode extends InternalNode {
   @Override
   public InternalNode borderWidthDip(
       YogaEdge edge,
+      @Dimension(unit = DP) int borderWidth) {
