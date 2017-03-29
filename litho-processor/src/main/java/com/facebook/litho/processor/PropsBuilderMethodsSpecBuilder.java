@@ -274,3 +274,14 @@ class PropsBuilderMethodsSpecBuilder {
   }
 
   private MethodSpec builderBuilder(ClassName builderClass) {
+
+    return builder(
+        mPropParameter.parameter.name,
+        Arrays.asList(parameter(
+            ParameterizedTypeName.get(builderClass, getBuilderGenericTypes()),
+            mPropParameter.parameter.name + "Builder")),
+        "$L.build()",
+        mPropParameter.parameter.name + "Builder");
+  }
+
+  private TypeName[] getBuilderGenericTypes() {

@@ -89,3 +89,6 @@ public class StateUpdatesTestHelper {
       StateUpdater stateUpdater,
       ShadowLooper[] loopers,
       boolean incrementalMountEnabled) throws Exception {
+    // This is for working around component immutability, to be able to retrieve the updated
+    // instance of the component.
+    Whitebox.invokeMethod(component, "setKey", "bogusKeyForTest");
