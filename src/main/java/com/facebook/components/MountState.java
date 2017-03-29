@@ -1016,3 +1016,4 @@ class MountState {
       setFocusable(view, nodeInfo.getFocusState());
     }
 
+    // 8. Set important for accessibility flag
