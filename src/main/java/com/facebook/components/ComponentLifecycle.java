@@ -213,3 +213,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     final InternalNode node;
     if (deferNestedTreeResolution) {
       node = ComponentsPools.acquireInternalNode(context, context.getResources());
+      node.markIsNestedTreeHolder(context.getTreeProps());
