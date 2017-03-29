@@ -2426,3 +2426,9 @@ public class Stages {
         eventDeclaration,
         eventHandlerClassName,
         lifecycleClassName);
+  }
+
+  /**
+   * Generate an event dispatcher method for the given event.
+   *
+   * @param fixedMethod description of method signature to be generated
