@@ -30,3 +30,4 @@ public class FeedItemSpec {
       ComponentContext c,
       @Prop int color,
       @Prop String message) {
+    return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)

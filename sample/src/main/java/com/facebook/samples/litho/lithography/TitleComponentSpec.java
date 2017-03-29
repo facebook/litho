@@ -35,3 +35,4 @@ public class TitleComponentSpec {
         .text(title)
         .textStyle(BOLD)
         .textSizeDip(24)
+        .withLayout().flexShrink(0)

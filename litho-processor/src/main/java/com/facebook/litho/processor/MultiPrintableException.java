@@ -8,3 +8,15 @@
  */
 
 package com.facebook.litho.processor;
+
+import javax.annotation.processing.Messager;
+
+import java.util.List;
+
+class MultiPrintableException extends PrintableException {
+  private final List<PrintableException> exceptions;
+
+  MultiPrintableException(List<PrintableException> exceptions) {
+    this.exceptions = exceptions;
+  }
+

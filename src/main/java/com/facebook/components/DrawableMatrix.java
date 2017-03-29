@@ -8,3 +8,12 @@
  */
 
 package com.facebook.litho;
+
+import android.graphics.Matrix;
+import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
+import android.widget.ImageView.ScaleType;
+
+/**
+ * Static class containing a factory method for creating a matrix to apply to a drawable.
+ */

@@ -8,3 +8,7 @@
  */
 
 package com.facebook.litho.processor;
+
+import com.squareup.javapoet.TypeName;
+
+public class Parameter {

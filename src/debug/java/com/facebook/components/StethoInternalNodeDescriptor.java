@@ -8,3 +8,9 @@
  */
 
 package com.facebook.litho;
+
+import java.lang.reflect.Field;
+
+import android.graphics.Rect;
+import android.view.View;
+

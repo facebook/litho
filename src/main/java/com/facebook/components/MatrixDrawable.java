@@ -8,3 +8,9 @@
  */
 
 package com.facebook.litho;
+
+import android.annotation.TargetApi;
+import android.graphics.Canvas;
+import android.graphics.ColorFilter;
+import android.graphics.Rect;
+import android.graphics.Region;

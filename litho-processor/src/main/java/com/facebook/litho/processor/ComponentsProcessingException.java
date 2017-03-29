@@ -8,3 +8,8 @@
  */
 
 package com.facebook.litho.processor;
+
+import javax.annotation.processing.Messager;
+import javax.lang.model.element.Element;
+import javax.tools.Diagnostic;
+

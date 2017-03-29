@@ -8,3 +8,8 @@
  */
 
 package com.facebook.litho;
+
+interface ComponentsStethoManager {
+
+  void applyOverrides(InternalNode internalNode);
+}

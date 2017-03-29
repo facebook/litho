@@ -8,3 +8,17 @@
  */
 
 package com.facebook.litho;
+
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.ArrayRes;
+import android.support.annotation.AttrRes;
+import android.support.annotation.BoolRes;
+import android.support.annotation.ColorRes;
+import android.support.annotation.DimenRes;
+import android.support.annotation.DrawableRes;
+import android.support.annotation.IntegerRes;
+import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
+

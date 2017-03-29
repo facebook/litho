@@ -8,3 +8,14 @@
  */
 
 package com.facebook.litho;
+
+public abstract class InlineLayoutSpec extends Component implements Cloneable {
+
+  private static class Lifecycle extends ComponentLifecycle {
+
+    @Override
+    protected ComponentLayout onCreateLayout(ComponentContext c, Component<?> component) {
+      return ((InlineLayoutSpec) component).onCreateLayout(c);
+    }
+
+    @Override

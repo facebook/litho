@@ -8,3 +8,10 @@
  */
 
 package com.facebook.litho.processor;
+
+public enum Visibility {
+  PACKAGE,
+  PRIVATE,
+  PUBLIC,
+  PROTECTED,
+}

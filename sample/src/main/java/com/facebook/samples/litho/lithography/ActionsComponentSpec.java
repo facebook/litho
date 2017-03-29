@@ -36,3 +36,4 @@ public class ActionsComponentSpec {
   static ComponentLayout onCreateLayout(
       ComponentContext c,
       @State boolean snapToLeft) {
+    return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)

@@ -37,3 +37,4 @@ public class FavouriteButtonSpec {
   static ComponentLayout onCreateLayout(
       ComponentContext c,
       @State boolean favourited) {
+    return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
