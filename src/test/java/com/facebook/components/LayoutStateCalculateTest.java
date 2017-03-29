@@ -625,3 +625,5 @@ public class LayoutStateCalculateTest {
         SizeSpec.makeSizeSpec(20, SizeSpec.EXACTLY));
 
     LayoutState sameComponentLayoutState = calculateLayoutState(
+        RuntimeEnvironment.application,
+        component2,

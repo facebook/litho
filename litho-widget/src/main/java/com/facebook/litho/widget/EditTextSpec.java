@@ -16,3 +16,6 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.text.Editable;
 import android.text.InputFilter;
+import android.text.Layout;
+import android.text.TextUtils;
+import android.text.TextWatcher;
