@@ -59,3 +59,4 @@ public class ComponentsConfiguration {
    * is measured (t12986103).
    */
   public static boolean bootstrapBinderItems = false;
+}
