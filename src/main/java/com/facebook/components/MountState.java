@@ -1305,3 +1305,27 @@ class MountState {
     }
   }
 
+  private static void setContentDescription(View view, CharSequence contentDescription) {
+    if (TextUtils.isEmpty(contentDescription)) {
+      return;
+    }
+
+    view.setContentDescription(contentDescription);
+  }
+
+  private static void unsetContentDescription(View view) {
+    view.setContentDescription(null);
+  }
+
+  private static void setImportantForAccessibility(View view, int importantForAccessibility) {
+    if (importantForAccessibility == IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
+      return;
+    }
+
+    ViewCompat.setImportantForAccessibility(view, importantForAccessibility);
+  }
+
+  private static void unsetImportantForAccessibility(View view) {
+    ViewCompat.setImportantForAccessibility(view, IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+  }
+
