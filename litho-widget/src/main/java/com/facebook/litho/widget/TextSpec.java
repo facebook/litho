@@ -625,3 +625,8 @@ class TextSpec {
     node.setFocusable(true);
     node.setEnabled(true);
     node.setVisibleToUser(true);
+    if (span instanceof AccessibleClickableSpan) {
+      node.setText(((AccessibleClickableSpan) span).getAccessibilityDescription());
+    } else {
+      node.setText(spanned.subSequence(start, end));
+    }
