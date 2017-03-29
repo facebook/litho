@@ -167,3 +167,4 @@ int __android_log_print(int prio, const char *tag, const char *fmt, ...)
 
 #ifndef FBLOGW_IF
 #define FBLOGW_IF(cond, ...) \
+  ((CONDITION(cond)) ? ((void)FBLOG(LOG_WARN, LOG_TAG, __VA_ARGS__)) : (void)0)
