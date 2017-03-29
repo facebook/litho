@@ -423,3 +423,7 @@ public class BaseBinderTest {
     public void setIncrementalMountEnabled(boolean incrementalMountEnabled) {
       mIncrementalMountEnabled = incrementalMountEnabled;
     }
+
+    int getComponentCount() {
+      return ((BinderTreeCollection) Whitebox.getInternalState(this, "mComponentTrees")).size();
+    }

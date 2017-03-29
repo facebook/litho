@@ -157,3 +157,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   private NodeInfo mNodeInfo;
   private boolean mForceViewWrapping;
+  private String mTransitionKey;

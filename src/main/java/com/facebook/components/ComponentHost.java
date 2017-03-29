@@ -65,3 +65,4 @@ public class ComponentHost extends ViewGroup {
   private final InterleavedDispatchDraw mDispatchDraw = new InterleavedDispatchDraw();
 
   private final List<ComponentHost> mScrapHosts = new ArrayList<>(3);
+  private final ComponentsLogger mLogger;
