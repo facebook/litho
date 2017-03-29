@@ -50,3 +50,4 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
   private static final float DEFAULT_TOUCH_RADIUS_IN_SP = 18f;
 
   private Layout mLayout;
+  private float mLayoutTranslationY;

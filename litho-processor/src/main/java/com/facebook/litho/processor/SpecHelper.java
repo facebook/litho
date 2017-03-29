@@ -166,3 +166,7 @@ public abstract class SpecHelper implements Closeable {
     return mTypeSpec;
   }
 
+  public SpecModel getSpecModel() {
+    return mSpecModel;
+  }
+
