@@ -33,3 +33,4 @@ import com.facebook.components.reference.Reference;
 import static android.support.annotation.Dimension.DP;
 
 /**
+ * Represents a {@link Component}'s computed layout state. The computed bounds will be
