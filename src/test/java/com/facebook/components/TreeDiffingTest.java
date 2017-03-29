@@ -55,3 +55,8 @@ public class TreeDiffingTest {
 
   private int mUnspecifiedSpec;
 
+  private ComponentContext mContext;
+
+  @Before
+  public void setup() throws Exception {
+    mContext = new ComponentContext(RuntimeEnvironment.application);

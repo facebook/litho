@@ -27,3 +27,4 @@ import org.robolectric.shadows.ShadowLooper;
 import static com.facebook.components.SizeSpec.AT_MOST;
 import static com.facebook.components.SizeSpec.EXACTLY;
 import static com.facebook.components.SizeSpec.makeSizeSpec;
+import static junit.framework.Assert.assertEquals;

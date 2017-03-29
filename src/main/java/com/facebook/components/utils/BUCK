@@ -22,3 +22,4 @@ android_library(
         COMPONENTS_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
         COMPONENTS_JSR_TARGET,
     ],
+)

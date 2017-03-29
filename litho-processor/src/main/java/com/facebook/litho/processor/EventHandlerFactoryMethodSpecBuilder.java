@@ -73,3 +73,4 @@ class EventHandlerFactoryMethodSpecBuilder {
         .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
         .addParameter(mContextClass, "c")
         .returns(mEventHandlerClassName);
+

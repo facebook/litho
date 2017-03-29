@@ -53,3 +53,6 @@ import static org.mockito.Mockito.when;
 public class MountStateIncrementalMountTest {
   private ComponentContext mContext;
   private ComponentsLogger mComponentsLogger;
+
+  @Before
+  public void setup() {
