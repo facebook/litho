@@ -59,3 +59,4 @@ public class ViewPredicatesTest {
     mImagelessView = new ImageView(activity);
     mOtherImageView = new ImageView(activity);
     mImageView = new ImageView(activity);
+    mImageViewWithCustomDrawable = new ImageView(activity);

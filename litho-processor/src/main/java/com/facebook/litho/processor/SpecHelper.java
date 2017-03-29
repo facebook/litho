@@ -115,3 +115,6 @@ public abstract class SpecHelper implements Closeable {
         mTypeSpec
             .addJavadoc(keyValuePropJavadocs[0])
             .addJavadoc("<p>\n");
+      }
+    }
+
