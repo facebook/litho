@@ -75,3 +75,4 @@ public class ComponentsProcessor extends AbstractComponentsProcessor {
     StateGenerator.generate(specModel).addToTypeSpec(typeSpec);
     BuilderGenerator.generate(specModel).addToTypeSpec(typeSpec);
   }
+

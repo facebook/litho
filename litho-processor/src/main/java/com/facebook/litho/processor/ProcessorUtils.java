@@ -27,3 +27,6 @@ public class ProcessorUtils {
     final String classSimpleName = className.simpleName();
     for (AnnotationMirror m : typeElement.getAnnotationMirrors()) {
       if (m.getAnnotationType().asElement().getSimpleName().toString().equals(classSimpleName)) {
+        return m;
+      }
+    }
