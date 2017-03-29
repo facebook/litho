@@ -267,3 +267,16 @@ public abstract class BaseBinder<
 
   @Override
   public void notifyItemMoved(int fromPosition, int toPosition) {
+    assertMainThread();
+
+    if (!hasContentSize()) {
+      return;
+    }
+
+    Component component = createComponent(mContext, toPosition);
+
+    synchronized (this) {
+      boolean isFromInRange = isInRange(fromPosition);
+      boolean isToInRange = isInRange(toPosition);
+
+      if (!isFromInRange && !isToInRange) {
