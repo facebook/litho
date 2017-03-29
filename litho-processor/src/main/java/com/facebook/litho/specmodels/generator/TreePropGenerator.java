@@ -106,3 +106,32 @@ public class TreePropGenerator {
               onCreateTreePropsMethod.returnType,
               delegateName,
               onCreateTreePropsMethod.name)
+          .indent()
+          .indent();
+
+      for (int i = 0, size = onCreateTreePropsMethod.methodParams.size(); i < size; i++) {
+        if (i == 0) {
+          block.add("($T) $L", specModel.getContextClass(), "c");
+        } else {
+          block.add(
+              "($T) _impl.$L",
+              onCreateTreePropsMethod.methodParams.get(i).getType(),
+              onCreateTreePropsMethod.methodParams.get(i).getName());
+        }
+
+        if (i < size - 1) {
+          block.add(",\n");
+        }
+      }
+
+      builder.addCode(block.add("));\n")
+          .unindent()
+          .unindent()
+          .build());
+    }
+
+    builder.addStatement("return childTreeProps");
+
+    return TypeSpecDataHolder.newBuilder().addMethod(builder.build()).build();
+  }
+}

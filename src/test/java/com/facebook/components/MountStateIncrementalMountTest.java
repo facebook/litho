@@ -346,3 +346,14 @@ public class MountStateIncrementalMountTest {
                         .heightPx(10)
                         .clickHandler(c.newEventHandler(1))
                         .marginDip(YogaEdge.TOP, -10))
+                .build();
+          }
+        });
+
+    verifyLoggingAndResetLogger(2, 0);
+
+    componentView.getComponent().mountComponent(new Rect(0, -10, 10, -5));
+    verifyLoggingAndResetLogger(0, 0);
+  }
+
+  /**
