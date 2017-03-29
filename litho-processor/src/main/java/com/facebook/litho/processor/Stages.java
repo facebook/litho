@@ -1538,3 +1538,4 @@ public class Stages {
   }
 
   /**
+   * Generates a class that implements {@link com.facebook.litho.ComponentLifecycle} given
