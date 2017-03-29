@@ -1697,3 +1697,4 @@ class LayoutState {
   int getLayoutOutputPositionForId(long layoutOutputId) {
     return mOutputsIdToPositionMap.get(layoutOutputId, -1);
   }
+
