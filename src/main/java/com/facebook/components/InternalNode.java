@@ -196,3 +196,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
     mYogaNode = yogaNode;
 
+    mComponentContext = componentContext;
