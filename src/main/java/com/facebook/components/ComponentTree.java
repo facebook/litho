@@ -49,3 +49,6 @@ import static com.facebook.litho.ThreadUtils.isMainThread;
 
 /**
  * Represents a tree of components and controls their life cycle. ComponentTree takes in a single
+ * root component and recursively invokes its OnCreateLayout to create a tree of components.
+ * ComponentTree is responsible for refreshing the mounted state of a component with new props.
+ *

@@ -47,3 +47,5 @@ import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 @MountSpec(isPureRender = true, poolSize = 30)
 class ImageSpec {
 
+  private static final ScaleType[] SCALE_TYPE = ScaleType.values();
+

@@ -73,3 +73,4 @@ public class Utils {
     final ArrayList<VariableElement> props = new ArrayList<>();
     for (final VariableElement v : params) {
       if (v.getAnnotation(annotation) != null) {
+        props.add(v);
