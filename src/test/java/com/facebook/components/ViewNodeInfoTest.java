@@ -30,3 +30,6 @@ public class ViewNodeInfoTest {
 
   private ViewNodeInfo mViewNodeInfo;
   private LayoutOutput mLayoutOutput;
+
+  @Before
+  public void setup() {

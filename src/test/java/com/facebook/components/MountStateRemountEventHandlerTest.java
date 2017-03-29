@@ -67,3 +67,36 @@ public class MountStateRemountEventHandlerTest {
   }
 
   @Test
+  public void testReuseLongClickListenerOnSameView() {
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Container.create(c)
+                .longClickHandler(c.newEventHandler(1))
+                .child(TestDrawableComponent.create(c))
+                .child(TestDrawableComponent.create(c))
+                .build();
+          }
+        });
+
+    final ComponentLongClickListener longClickListener =
+        MountState.getComponentLongClickListener(componentView);
+    assertNotNull(longClickListener);
+
+    componentView.getComponent().setRoot(new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c)
+            .longClickHandler(c.newEventHandler(1))
+            .child(TestDrawableComponent.create(c))
+            .child(TestDrawableComponent.create(c))
+            .build();
+      }
+    });
+
+    assertTrue(longClickListener == MountState.getComponentLongClickListener(componentView));
+  }
+
+  @Test

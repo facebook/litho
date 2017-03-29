@@ -54,3 +54,9 @@ public class LifecycleMethodsTest {
     mComponentTree = ComponentTree.create(c, mComponent)
         .incrementalMount(false)
         .build();
+    mComponentView.setComponent(mComponentTree);
+  }
+
+  @Test
+  public void testLifecycle() {
+    mComponentView.onAttachedToWindow();

@@ -31,3 +31,9 @@ import android.view.ViewGroup;
 import com.facebook.R;
 import com.facebook.components.config.ComponentsConfiguration;
 import com.facebook.components.reference.Reference;
+
+import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+import static android.view.View.MeasureSpec.makeMeasureSpec;
+import static com.facebook.components.Component.isHostSpec;
+import static com.facebook.components.Component.isMountViewSpec;
+import static com.facebook.components.ComponentHostUtils.maybeInvalidateAccessibilityState;

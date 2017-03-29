@@ -43,3 +43,5 @@ class CardShadowSpec {
     cardShadowDrawable.setShadowEndColor(shadowEndColor);
     cardShadowDrawable.setCornerRadius(cornerRadius);
     cardShadowDrawable.setShadowSize(shadowSize);
+  }
+}
