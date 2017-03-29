@@ -311,3 +311,13 @@ public abstract class BaseBinder<
         }
 
         // Both From and To positions are in range.
+      } else {
+        mComponentTrees.move(fromPosition, toPosition);
+      }
+    }
+
+    if (mListener != null) {
+      mListener.onItemMoved(fromPosition, toPosition);
+    }
+  }
+

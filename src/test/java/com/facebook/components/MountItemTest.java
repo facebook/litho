@@ -68,3 +68,11 @@ public class MountItemTest {
     mDispatchPopulateAccessibilityEventHandler = new EventHandler(mComponent, 7);
     mFlags = 114;
 
+    mNodeInfo = NodeInfo.acquire();
+    mNodeInfo.setContentDescription(mContentDescription);
+    mNodeInfo.setClickHandler(mClickHandler);
+    mNodeInfo.setLongClickHandler(mLongClickHandler);
+    mNodeInfo.setTouchHandler(mTouchHandler);
+    mNodeInfo.setViewTag(mViewTag);
+    mNodeInfo.setViewTags(mViewTags);
+

@@ -400,3 +400,8 @@ class LayoutState {
     final boolean isFocusableSetTrue =
         (nodeInfo != null && nodeInfo.getFocusState() == FOCUS_SET_TRUE);
 
+    return hasTouchEventHandlers
+        || hasViewTag
+        || hasViewTags
+        || hasAccessibilityContent
+        || isFocusableSetTrue;
