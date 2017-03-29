@@ -1458,3 +1458,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return mComponent;
   }
 
+  int getBorderColor() {
+    return mBorderColor;
+  }
+
+  boolean shouldDrawBorders() {
+    return mBorderColor != Color.TRANSPARENT
