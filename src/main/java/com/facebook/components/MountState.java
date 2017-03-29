@@ -236,3 +236,8 @@ class MountState {
       }
     }
 
+    mIsDirty = false;
+    if (localVisibleRect != null) {
+      mPreviousLocalVisibleRect.set(localVisibleRect);
+    }
+
