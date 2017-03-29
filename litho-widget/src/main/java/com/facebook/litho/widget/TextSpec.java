@@ -494,3 +494,4 @@ class TextSpec {
               maxWidth,
               textDirection));
     }
+
