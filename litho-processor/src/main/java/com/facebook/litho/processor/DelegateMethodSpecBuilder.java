@@ -258,3 +258,9 @@ class DelegateMethodSpecBuilder {
 
     for (Parameter parameter : mFromParams) {
       if (parameter.name.equals(parameterName)) {
+        return CodeBlock.builder()
+            .add("$L", parameter.name)
+            .build();
+      }
+    }
+
