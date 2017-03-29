@@ -425,3 +425,27 @@ class MountState {
     mHostsByMarker.put(id, host);
   }
 
+  /**
+   * Returns true if the component has entered the focused visible range.
+   */
+  static boolean hasEnteredFocusedRange(
+      int viewportWidth,
+      int viewportHeight,
+      Rect componentBounds,
+      Rect componentVisibleBounds) {
+    final int halfViewportArea = viewportWidth * viewportHeight / 2;
+    final int totalComponentArea = computeRectArea(componentBounds);
+    final int visibleComponentArea = computeRectArea(componentVisibleBounds);
+
+    // The component has entered the focused range either if it is larger than half of the viewport
+    // and it occupies at least half of the viewport or if it is smaller than half of the viewport
+    // and it is fully visible.
+    return (totalComponentArea >= halfViewportArea)
+        ? (visibleComponentArea >= halfViewportArea)
+        : componentBounds.equals(componentVisibleBounds);
+  }
+
+  private static int computeRectArea(Rect rect) {
+    return rect.isEmpty() ? 0 : (rect.width() * rect.height());
+  }
+

@@ -132,3 +132,4 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
     mWidth = mHeight = 0;
   }
 
+  public T getMountedDrawable() {
