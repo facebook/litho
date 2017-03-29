@@ -1797,3 +1797,5 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     }
     mImportantForAccessibility = ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
     mDuplicateParentState = false;
+    mBackground = null;
+    mForeground = null;
