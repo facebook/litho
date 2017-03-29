@@ -27,3 +27,31 @@ public abstract class WorkingRangeController {
 
   /**
    * Returns the {@link Binder} corresponding to this range controller instance.
+   */
+  public BaseBinder getBinder() {
+    return mBinder;
+  }
+
+  /**
+   * Updates the working range for the underlying binder.
+   * @param start the position of the first item included in the range
+   * @param count the number of items included in the range
+   */
+  public void updateWorkingRange(int start, int count) {
+    updateWorkingRange(start, count, BaseBinder.URFLAG_RELEASE_OUTSIDE_RANGE);
+  }
+
+  /**
+   * Updates the working range for the underlying binder.
+   * @param start the position of the first item included in the range
+   * @param count the number of items included in the range
+   * @param flags special options for the action executed on the range
+   */
+  public void updateWorkingRange(int start, int count, int flags) {
+    // Update the range according to the newly computed position.
+    mBinder.updateRange(
+        start,
+        count,
+        flags);
+  }
+}
