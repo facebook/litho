@@ -2173,3 +2173,5 @@ public class Stages {
     delegateParameters.indent();
     int i = 0;
     final CodeBlock.Builder releaseDiffs = CodeBlock.builder();
+
+    for (VariableElement variableElement : shouldUpdateParams) {
