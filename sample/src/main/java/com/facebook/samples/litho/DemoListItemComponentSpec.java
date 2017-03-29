@@ -40,3 +40,13 @@ public class DemoListItemComponentSpec {
         .child(
             Text.create(c)
                 .text(name)
+                .textSizeSp(18)
+                .build())
+        .clickHandler(DemoListItemComponent.onClick(c))
+        .build();
+  }
+
+  @OnEvent(ClickEvent.class)
+  static void onClick(
+      ComponentContext c,
+      @FromEvent View view,
