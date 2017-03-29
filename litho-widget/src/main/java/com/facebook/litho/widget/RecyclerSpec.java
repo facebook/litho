@@ -151,3 +151,5 @@ class RecyclerSpec {
       recyclerView.setItemAnimator(itemAnimator);
     } else {
       recyclerView.setItemAnimator(new NoUpdateItemAnimator());
+    }
+
