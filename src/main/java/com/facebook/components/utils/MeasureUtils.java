@@ -206,3 +206,4 @@ public final class MeasureUtils {
     else if (widthMode == EXACTLY) {
       outputSize.width = widthSize;
 
+      if (heightMode == UNSPECIFIED || widthBasedHeight <= heightSize) {

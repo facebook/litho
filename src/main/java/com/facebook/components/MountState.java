@@ -149,3 +149,4 @@ class MountState {
    *                         mount is not enabled.
    *                         Otherwise mount only what the rect (in local coordinates) contains
    */
+  void mount(LayoutState layoutState, Rect localVisibleRect) {
