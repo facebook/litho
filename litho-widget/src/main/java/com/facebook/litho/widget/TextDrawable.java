@@ -181,3 +181,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
         mLayout.getPaint().setColor(mColorStateList.getColorForState(getState(), mUserColor));
       }
     }
+
+    invalidateSelf();
+  }
+
