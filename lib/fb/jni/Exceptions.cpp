@@ -242,3 +242,9 @@ JniException::JniException(alias_ref<jthrowable> throwable) : isMessageExtracted
 
 JniException::JniException(JniException &&rhs)
     : throwable_(std::move(rhs.throwable_)),
+      what_(std::move(rhs.what_)),
+      isMessageExtracted_(rhs.isMessageExtracted_) {
+}
+
+JniException::JniException(const JniException &rhs)
+    : what_(rhs.what_), isMessageExtracted_(rhs.isMessageExtracted_) {
