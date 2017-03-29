@@ -76,3 +76,5 @@ public class ComponentHost extends ViewGroup {
   private ComponentAccessibilityDelegate mComponentAccessibilityDelegate;
   private boolean mIsComponentAccessibilityDelegateSet = false;
 
+  private ComponentClickListener mOnClickListener;
+  private ComponentLongClickListener mOnLongClickListener;

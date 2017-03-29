@@ -148,3 +148,5 @@ class LayoutState {
   private int mComponentTreeId = -1;
 
   private AccessibilityManager mAccessibilityManager;
+  private boolean mAccessibilityEnabled = false;
+

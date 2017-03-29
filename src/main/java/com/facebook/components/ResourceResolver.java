@@ -209,3 +209,4 @@ public class ResourceResolver {
   }
 
   @Nullable
+  protected final Reference<Drawable> resolveDrawableRes(@DrawableRes int resId) {
