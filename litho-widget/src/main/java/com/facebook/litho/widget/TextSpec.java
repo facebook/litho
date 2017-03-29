@@ -560,3 +560,7 @@ class TextSpec {
     if (text instanceof MountableCharSequence) {
       ((MountableCharSequence) text).onUnmount(textDrawable);
     }
+  }
+
+  @OnPopulateAccessibilityNode
+  static void onPopulateAccessibilityNode(
