@@ -1190,3 +1190,6 @@ class LayoutState {
 
     if (nestedTree == null
         || !hasCompatibleSizeSpec(
+        nestedTree.getLastWidthSpec(),
+        nestedTree.getLastHeightSpec(),
+        widthSpec,
