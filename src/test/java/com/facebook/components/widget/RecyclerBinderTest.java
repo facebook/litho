@@ -745,3 +745,8 @@ public class RecyclerBinderTest {
   @Test
   public void testRemoveFromRange() {
     final List<ComponentInfo> components = prepareLoadedBinder();
+    final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
+
+    mRecyclerBinder.removeItemAt(rangeTotal);
+
+    final TestComponentTreeHolder holder =
