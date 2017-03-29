@@ -58,3 +58,4 @@ import static com.facebook.litho.ThreadUtils.isMainThread;
  * myHostView.setRoot(component);
  * <code/>
  */
+public class ComponentTree {

@@ -135,3 +135,15 @@ public abstract class TestComponent<L extends ComponentLifecycle> extends Compon
     }
     return false;
   }
+
+  /**
+   * Reset the tracking of which methods have been called on this component.
+   */
+  public void resetInteractions() {
+    mOnMeasureCalled = false;
+    mOnBoundsDefinedCalled = false;
+    mOnBindCalled = false;
+    mOnMountCalled = false;
+    mOnUnbindCalled = false;
+    mOnUnmountCalled = false;
+  }

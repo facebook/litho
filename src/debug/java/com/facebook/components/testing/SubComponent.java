@@ -19,3 +19,4 @@ import com.facebook.litho.ComponentLifecycle;
 public class SubComponent {
 
   public static SubComponent of(Class<? extends ComponentLifecycle> componentType) {
+    return new SubComponent(componentType, null);

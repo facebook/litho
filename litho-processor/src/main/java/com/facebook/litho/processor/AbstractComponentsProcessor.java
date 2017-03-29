@@ -65,3 +65,4 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
           validate(mountSpecModel);
 
           final MountSpecHelper mountSpecHelper =
+              new MountSpecHelper(processingEnv, (TypeElement) element, mountSpecModel);
