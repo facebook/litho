@@ -259,3 +259,10 @@ class TransitionKeySet implements TransitionListener {
   @Override
   public void onTransitionEnd() {
     if (--mAnimationRunningCounter == 0) {
+      mTransitionKeySetListener.onTransitionKeySetEnd(mKey, mTargetView);
+      if (mTransitionCleanupListener != null) {
+        mTransitionCleanupListener.onTransitionCleanup();
+      }
+      if (wasRunningDisappearTransition()) {
+        resetViewPropertiesAfterDisappear();
+      }
