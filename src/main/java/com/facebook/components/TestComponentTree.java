@@ -58,3 +58,7 @@ public class TestComponentTree extends ComponentTree {
   }
 
   private static void extractSubComponents(DiffNode root, List<Component> output) {
+    if (root == null) {
+      return;
+    }
+
