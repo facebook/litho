@@ -280,3 +280,14 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
    */
   public ViewTreeAssert doesNotHaveVisibleText() {
     final ImmutableList<View> path = getPathToVisibleMatchingText(".+");
+
+    Assertions.assertThat(path)
+        .overridingErrorMessage(
+            "Found text \"%s\" in view hierarchy for path: %s",
+            getTextProof(path),
+            makeString(path))
+        .isNull();
+
+    return this;
+  }
+
