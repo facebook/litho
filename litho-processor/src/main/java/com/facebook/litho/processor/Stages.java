@@ -373,3 +373,13 @@ public class Stages {
 
       final Types typeUtils = mProcessingEnv.getTypeUtils();
       final String name = v.getSimpleName().toString();
+
+      boolean matchesProp = false;
+      for (Element prop : mProps) {
+        if (!prop.getSimpleName().toString().equals(name)) {
+          continue;
+        }
+
+        matchesProp = true;
+
+        if (!typeUtils.isAssignable(prop.asType(), outputType)) {
