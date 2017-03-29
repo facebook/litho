@@ -899,3 +899,4 @@ public class ComponentHost extends ViewGroup {
     }
   }
 
+  private void mountDrawable(int index, MountItem mountItem, Rect bounds) {
