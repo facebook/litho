@@ -520,3 +520,4 @@ class TextSpec {
   }
 
   @OnCreateMountContent
+  static TextDrawable onCreateMountContent(ComponentContext c) {
