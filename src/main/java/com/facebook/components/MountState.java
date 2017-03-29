@@ -1439,3 +1439,4 @@ class MountState {
     view.setLayoutDirection(viewLayoutDirection);
   }
 
+  private static void unsetViewLayoutDirection(View view, ViewNodeInfo viewNodeInfo) {
