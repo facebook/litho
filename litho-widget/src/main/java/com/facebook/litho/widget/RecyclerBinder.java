@@ -412,3 +412,4 @@ public class RecyclerBinder implements Binder<RecyclerView> {
                 " either OrientationHelper.HORIZONTAL or OrientationHelper.VERTICAL");
     }
 
+    if (mLastWidthSpec != UNINITIALIZED) {
