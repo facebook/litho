@@ -40,3 +40,12 @@ public class LayoutStateCalculateVisibilityOutputsTest {
   @Rule
   public PowerMockRule mPowerMockRule = new PowerMockRule();
 
+  @Before
+  public void setup() throws Exception {
+  }
+
+  @Test
+  public void testNoUnnecessaryVisibilityOutputs() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {

@@ -99,3 +99,4 @@ public class DuplicateParentStateTest {
 
     assertTrue(
         "Clickable root output has duplicate state",
+        MountItem.isDuplicateParentState(layoutState.getMountableOutputAt(0).getFlags()));
