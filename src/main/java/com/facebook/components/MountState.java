@@ -467,3 +467,7 @@ class MountState {
     final boolean shouldUpdate = shouldUpdateMountItem(
         layoutOutput,
         currentMountItem,
+        useUpdateValueFromLayoutOutput,
+        mIndexToItemMap,
+        mLayoutOutputsIds,
+        logger);

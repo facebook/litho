@@ -280,3 +280,4 @@ public class ComponentsPools {
         ((Application) context.getApplicationContext())
             .registerActivityLifecycleCallbacks(sActivityCallbacks);
       }
+
