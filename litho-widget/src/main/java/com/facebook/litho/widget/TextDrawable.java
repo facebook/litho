@@ -217,3 +217,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
     return mText;
   }
 
+  public int getColor() {
+    return mLayout.getPaint().getColor();
+  }
+
