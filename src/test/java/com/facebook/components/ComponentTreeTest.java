@@ -323,3 +323,4 @@ public class ComponentTreeTest {
     Component component = TestLayoutComponent.create(mContext)
         .build();
 
+    ComponentTree componentTree =
