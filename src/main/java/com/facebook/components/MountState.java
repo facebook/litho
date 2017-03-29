@@ -1827,3 +1827,5 @@ class MountState {
       }
 
       final Component component = mountItem.getComponent();
+      final Object content = mountItem.getContent();
+
