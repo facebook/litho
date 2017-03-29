@@ -712,3 +712,4 @@ public class Stages {
   /**
    * @param prop The prop to determine if it has a default or not.
    * @return Returns true if the prop has a default, false otherwise.
+   */
