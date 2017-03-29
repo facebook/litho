@@ -65,3 +65,4 @@ public abstract class SpecHelper implements Closeable {
       name = Utils.getSimpleClassName(mQualifiedClassName);
     }
 
+    mTypeSpec = TypeSpec.classBuilder(name).superclass(getSuperclassClass());
