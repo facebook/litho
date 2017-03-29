@@ -423,3 +423,6 @@ public class Stages {
     final Map<String, Class<? extends Annotation>> outputVariableToStage = new HashMap<>();
 
     for (Class<? extends Annotation> stageAnnotation : mStageAnnotations) {
+      final ExecutableElement stage = Utils.getAnnotatedMethod(
+          mSourceElement,
+          stageAnnotation);

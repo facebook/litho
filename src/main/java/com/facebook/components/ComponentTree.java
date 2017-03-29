@@ -485,3 +485,4 @@ public class ComponentTree {
 
       toRelease = setBestMainThreadLayoutAndReturnOldLayout();
 
+      if (forceLayout || !isCompatibleComponentAndSpec(mMainThreadLayoutState)) {
