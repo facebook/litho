@@ -504,3 +504,10 @@ public abstract class ComponentLifecycle implements EventDispatcher {
   }
 
   /**
+   * Whether this component will populate any accessibility nodes or events that are passed to it.
+   * @return true if the component implements accessibility info
+   */
+  protected boolean implementsAccessibility() {
+    return false;
+  }
+
