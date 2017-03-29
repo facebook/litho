@@ -2039,3 +2039,6 @@ static void YGNodelayoutImpl(const YGNodeRef node,
     // We want to make sure our available width does not violate min and max constraints
     availableInnerWidth = fmaxf(fminf(availableInnerWidth, maxInnerWidth), minInnerWidth);
   }
+
+  float availableInnerHeight = availableHeight - marginAxisColumn - paddingAndBorderAxisColumn;
+  if (!YGFloatIsUndefined(availableInnerHeight)) {
