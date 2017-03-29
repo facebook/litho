@@ -107,3 +107,8 @@ public class MountItemTest {
     assertThat(mMountItem.getFlags()).isEqualTo(mFlags);
     assertThat(mMountItem.getImportantForAccessibility())
         .isEqualTo(IMPORTANT_FOR_ACCESSIBILITY_YES);
+  }
+
+  @Test
+  public void testFlags() {
+    mFlags =
