@@ -1063,3 +1063,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode backgroundColor(@ColorInt int backgroundColor) {
+    return background(
