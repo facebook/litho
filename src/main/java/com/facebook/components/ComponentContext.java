@@ -85,3 +85,14 @@ public class ComponentContext extends ContextWrapper {
 
     if (componentContext != null) {
       mTreeProps = componentContext.mTreeProps;
+      mResourceCache = componentContext.mResourceCache;
+      mWidthSpec = componentContext.mWidthSpec;
+      mHeightSpec = componentContext.mHeightSpec;
+      mComponentScope = componentContext.mComponentScope;
+      mComponentTree = componentContext.mComponentTree;
+    } else {
+      mResourceCache = ResourceCache.getLatest(context.getResources().getConfiguration());
+    }
+
+    mLogger = transferLogging ? componentContext.mLogger : logger;
+    mLogTag = transferLogging ? componentContext.mLogTag : logTag;

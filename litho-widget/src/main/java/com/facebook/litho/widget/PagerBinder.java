@@ -209,3 +209,4 @@ public abstract class PagerBinder extends BaseBinder<
 
     @Override
     public int getItemPosition(Object object) {
+      final ComponentTree component = ((ComponentView) object).getComponent();
