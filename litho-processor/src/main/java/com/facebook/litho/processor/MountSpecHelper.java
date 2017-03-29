@@ -197,3 +197,6 @@ public class MountSpecHelper extends ComponentSpecHelper {
         methodDescription,
         onBoundsDefined,
         ClassNames.COMPONENT);
+  }
+
+  /**

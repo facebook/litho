@@ -371,3 +371,9 @@ public interface ComponentLayout {
     ContainerBuilder longClickHandler(EventHandler<LongClickEvent> clickHandler);
     ContainerBuilder touchHandler(EventHandler<TouchEvent> touchHandler);
     ContainerBuilder focusable(boolean isFocusable);
+    ContainerBuilder visibleHandler(EventHandler<VisibleEvent> visibleHandler);
+    ContainerBuilder focusedHandler(EventHandler<FocusedVisibleEvent> focusedHandler);
+    ContainerBuilder fullImpressionHandler(
+        EventHandler<FullImpressionVisibleEvent> fullImpressionHandler);
+    ContainerBuilder invisibleHandler(EventHandler<InvisibleEvent> invisibleHandler);
+    ContainerBuilder contentDescription(CharSequence contentDescription);

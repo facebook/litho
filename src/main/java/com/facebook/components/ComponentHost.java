@@ -367,3 +367,5 @@ public class ComponentHost extends ViewGroup {
     invalidateAccessibilityState();
   }
 
+  @Override
+  public void setImportantForAccessibility(int mode) {
