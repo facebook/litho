@@ -1030,3 +1030,4 @@ class MountState {
       setViewPadding(view, viewNodeInfo);
 
       // 11. Set view foreground, if applicable.
+      setViewForeground(view, viewNodeInfo);
