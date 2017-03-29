@@ -31,3 +31,6 @@ import static com.facebook.yoga.YogaEdge.ALL;
 import static com.facebook.yoga.YogaEdge.BOTTOM;
 import static com.facebook.yoga.YogaEdge.HORIZONTAL;
 import static com.facebook.yoga.YogaEdge.TOP;
+import static com.facebook.litho.widget.CardShadowDrawable.getShadowBottom;
+import static com.facebook.litho.widget.CardShadowDrawable.getShadowHorizontal;
+import static com.facebook.litho.widget.CardShadowDrawable.getShadowTop;

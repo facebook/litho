@@ -21,3 +21,7 @@ import android.util.Property;
 import android.view.View;
 
 import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
+import static com.facebook.litho.TransitionProperties.PropertyType.ALPHA;
+import static com.facebook.litho.TransitionProperties.PropertyType.NONE;
+import static com.facebook.litho.TransitionProperties.PropertyType.TRANSLATION_X;
+import static com.facebook.litho.TransitionProperties.PropertyType.TRANSLATION_Y;

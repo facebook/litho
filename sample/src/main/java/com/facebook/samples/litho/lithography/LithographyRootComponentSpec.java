@@ -27,3 +27,7 @@ public class LithographyRootComponentSpec {
   private static final String MAIN_SCREEN = "main_screen";
 
   @OnCreateLayout
+  static ComponentLayout onCreateLayout(
+      ComponentContext c,
+      @Prop final RecyclerBinder recyclerBinder) {
+

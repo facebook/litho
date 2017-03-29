@@ -12,3 +12,4 @@ package com.facebook.litho;
 import android.support.v4.util.Pools;
 import android.util.SparseArray;
 
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;

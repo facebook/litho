@@ -36,3 +36,13 @@ public class FeedItemComponentSpec {
                     Recycler.create(c)
                         .binder(binder)
                         .withLayout().flexShrink(0)
+                        .aspectRatio(2))
+                .child(
+                    TitleComponent.create(c)
+                        .title(artist.name))
+                .child(
+                    ActionsComponent.create(c)))
+        .child(
+            FooterComponent.create(c)
+                .text(artist.biography))
+        .build();

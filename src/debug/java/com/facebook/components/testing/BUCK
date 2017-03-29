@@ -17,3 +17,4 @@ android_library(
         "PUBLIC",
     ],
     deps = [
+        COMPONENTS_ANDROIDSUPPORT_TARGET,

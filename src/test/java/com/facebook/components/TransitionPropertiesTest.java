@@ -13,3 +13,7 @@ import java.util.List;
 
 import android.view.View;
 
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.TransitionProperties.PropertyChangeHolder;
+import com.facebook.litho.TransitionProperties.PropertySetHolder;
+import com.facebook.litho.TransitionProperties.PropertyType;

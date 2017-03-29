@@ -87,3 +87,5 @@ public class SizeSpec {
    *
    * The mode must always be one of the following:
    * <ul>
+   *  <li>{@link com.facebook.litho.SizeSpec#UNSPECIFIED}</li>
+   *  <li>{@link com.facebook.litho.SizeSpec#EXACTLY}</li>

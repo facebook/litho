@@ -12,3 +12,6 @@ import android.view.View;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.TransitionProperties.PropertyChangeHolder;
+import com.facebook.litho.TransitionProperties.PropertyType;

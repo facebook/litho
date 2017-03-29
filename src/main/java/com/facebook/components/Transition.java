@@ -18,3 +18,6 @@ import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 import android.view.View;
 
+import com.facebook.litho.TransitionProperties.PropertyChangeHolder;
+import com.facebook.litho.TransitionProperties.PropertySetHolder;
+import com.facebook.litho.TransitionProperties.PropertyType;

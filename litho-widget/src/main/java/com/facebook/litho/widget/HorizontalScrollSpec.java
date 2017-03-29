@@ -38,3 +38,5 @@ import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.Size;
 
+import static com.facebook.litho.SizeSpec.EXACTLY;
+import static com.facebook.litho.SizeSpec.UNSPECIFIED;

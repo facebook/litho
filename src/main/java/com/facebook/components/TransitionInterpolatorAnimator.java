@@ -21,3 +21,6 @@ import android.support.annotation.VisibleForTesting;
 import android.view.View;
 import android.view.animation.Interpolator;
 
+import com.facebook.litho.Transition.TransitionAnimator;
+import com.facebook.litho.Transition.TransitionListener;
+import com.facebook.litho.TransitionProperties.PropertyChangeHolder;
