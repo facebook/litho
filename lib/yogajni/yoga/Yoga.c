@@ -2051,3 +2051,35 @@ static void YGNodelayoutImpl(const YGNodeRef node,
   }
 
   float availableInnerMainDim = isMainAxisRow ? availableInnerWidth : availableInnerHeight;
+  const float availableInnerCrossDim = isMainAxisRow ? availableInnerHeight : availableInnerWidth;
+
+  // If there is only one child with flexGrow + flexShrink it means we can set the
+  // computedFlexBasis to 0 instead of measuring and shrinking / flexing the child to exactly
+  // match the remaining space
+  YGNodeRef singleFlexChild = NULL;
+  if (measureModeMainDim == YGMeasureModeExactly) {
+    for (uint32_t i = 0; i < childCount; i++) {
+      const YGNodeRef child = YGNodeGetChild(node, i);
+      if (singleFlexChild) {
+        if (YGNodeIsFlex(child)) {
+          // There is already a flexible child, abort.
+          singleFlexChild = NULL;
+          break;
+        }
+      } else if (YGResolveFlexGrow(child) > 0.0f && YGNodeResolveFlexShrink(child) > 0.0f) {
+        singleFlexChild = child;
+      }
+    }
+  }
+
+  float totalFlexBasis = 0;
+
+  // STEP 3: DETERMINE FLEX BASIS FOR EACH ITEM
+  for (uint32_t i = 0; i < childCount; i++) {
+    const YGNodeRef child = YGNodeListGet(node->children, i);
+    if (child->style.display == YGDisplayNone) {
+      YGZeroOutLayoutRecursivly(child);
+      child->hasNewLayout = true;
+      child->isDirty = false;
+      continue;
+    }
