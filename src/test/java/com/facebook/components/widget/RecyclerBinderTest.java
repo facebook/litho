@@ -715,3 +715,5 @@ public class RecyclerBinderTest {
   @Test
   public void testInsertOusideRange() {
     prepareLoadedBinder();
+    final ComponentInfo newComponentInfo =
+        ComponentInfo.create().component(mock(Component.class)).build();
