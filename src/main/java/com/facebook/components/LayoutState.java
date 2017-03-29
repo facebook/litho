@@ -1530,3 +1530,4 @@ class LayoutState {
    * See {@link LayoutState#acquireRef} Call this when you are done using the reference to the
    * LayoutState.
    */
+  @ThreadSafe(enableChecks = false)
