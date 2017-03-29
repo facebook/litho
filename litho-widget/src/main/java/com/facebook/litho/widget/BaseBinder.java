@@ -549,3 +549,7 @@ public abstract class BaseBinder<
     updateRange(0, getCount(), URFLAG_REFRESH_IN_RANGE);
   }
 
+  @Override
+  public boolean isAsyncLayoutEnabled() {
+    return false;
+  }

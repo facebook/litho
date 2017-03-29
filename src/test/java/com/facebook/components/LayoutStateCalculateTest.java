@@ -888,3 +888,28 @@ public class LayoutStateCalculateTest {
   }
 
   @Test
+  public void testNoMeasureOnNestedComponentWithSameSpecs() {
+    final ComponentContext c = new ComponentContext(RuntimeEnvironment.application);
+
+    final Size size = new Size();
+    final TestComponent innerComponent =
+        TestDrawableComponent.create(c, 0, 0, false, true, true, false, false).build();
+    final int widthSpec = SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY);
+    final int heightSpec = SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY);
+    innerComponent.measure(
+        c,
+        widthSpec,
+        heightSpec,
+        size);
+
+    InternalNode internalNode = ((Component) innerComponent).getCachedLayout();
+    internalNode.setLastWidthSpec(widthSpec);
+    internalNode.setLastHeightSpec(heightSpec);
+    internalNode.setLastMeasuredWidth(internalNode.getWidth());
+    internalNode.setLastMeasuredHeight(internalNode.getHeight());
+
+    innerComponent.resetInteractions();
+
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
