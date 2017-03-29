@@ -679,3 +679,8 @@ class LayoutState {
     Collections.sort(layoutState.mMountableOutputBottoms, sBottomsComparator);
   }
 
+  private static void calculateAndSetHostOutputIdAndUpdateState(
+      InternalNode node,
+      LayoutOutput hostOutput,
+      LayoutState layoutState,
+      boolean isCachedOutputUpdated) {
