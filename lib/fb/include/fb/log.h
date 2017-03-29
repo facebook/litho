@@ -305,3 +305,4 @@ int __android_log_print(int prio, const char *tag, const char *fmt, ...)
  * Conditional given a desired logging priority and tag.
  */
 #ifndef IF_FBLOG
+#define IF_FBLOG(priority, tag) if (fb_testLog(ANDROID_##priority, tag))
