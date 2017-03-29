@@ -620,3 +620,4 @@ class LayoutState {
     layoutState.mCurrentY -= node.getY();
 
     // 6. Add foreground if defined.
+    final Reference<? extends Drawable> foreground = node.getForeground();
