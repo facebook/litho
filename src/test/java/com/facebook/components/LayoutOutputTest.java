@@ -180,3 +180,7 @@ public class LayoutOutputTest {
     mLayoutOutput.setComponent(component);
     mLayoutOutput.setId(
         LayoutStateOutputIdCalculator.calculateLayoutOutputId(
+            mLayoutOutput,
+            LEVEL_TEST,
+            LayoutOutput.TYPE_HOST,
+            SEQ_TEST));

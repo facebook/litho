@@ -680,3 +680,4 @@ class MountState {
     }
 
     int outputCount = layoutState.getMountableOutputCount();
+    if (mLayoutOutputsIds == null || outputCount != mLayoutOutputsIds.length) {
