@@ -233,3 +233,15 @@ public interface ComponentLayout {
   }
 
   interface ContainerBuilder extends Builder {
+    ContainerBuilder layoutDirection(YogaDirection direction);
+    ContainerBuilder alignSelf(YogaAlign alignSelf);
+    ContainerBuilder positionType(YogaPositionType positionType);
+    ContainerBuilder flex(float flex);
+    ContainerBuilder flexGrow(float flexGrow);
+    ContainerBuilder flexShrink(float flexShrink);
+    ContainerBuilder flexBasisPx(@Px int flexBasis);
+    ContainerBuilder flexBasisAttr(@AttrRes int resId, @DimenRes int defaultResId);
+    ContainerBuilder flexBasisAttr(@AttrRes int resId);
+    ContainerBuilder flexBasisRes(@DimenRes int resId);
+    ContainerBuilder flexBasisDip(@Dimension(unit = DP) int flexBasis);
+    ContainerBuilder flexBasisPercent(float percent);

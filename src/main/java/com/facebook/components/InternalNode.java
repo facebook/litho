@@ -252,3 +252,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Px
   @Override
   public int getPaddingTop() {
+    return FastMath.round(mYogaNode.getLayoutPadding(TOP));
