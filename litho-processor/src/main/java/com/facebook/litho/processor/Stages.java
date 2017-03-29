@@ -2810,3 +2810,5 @@ public class Stages {
       if (!v.getAnnotation(Prop.class).optional()) {
         requiredPropIndex++;
       }
+    }
+
