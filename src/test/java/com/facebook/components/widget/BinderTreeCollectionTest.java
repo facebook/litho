@@ -44,3 +44,5 @@ public class BinderTreeCollectionTest {
 
   @Test
   public void testPositionOf() {
+    ComponentTree treeAtPos3 = mBinderTreeCollection.get(3);
+

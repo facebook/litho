@@ -92,3 +92,15 @@ class ViewNodeInfo {
   }
 
   void setExpandedTouchBounds(InternalNode node, int l, int t, int r, int b) {
+    if (!node.hasTouchExpansion()) {
+      return;
+    }
+
+    final int touchExpansionLeft = node.getTouchExpansionLeft();
+    final int touchExpansionTop = node.getTouchExpansionTop();
+    final int touchExpansionRight = node.getTouchExpansionRight();
+    final int touchExpansionBottom = node.getTouchExpansionBottom();
+    if (touchExpansionLeft == 0
+        && touchExpansionTop == 0
+        && touchExpansionRight == 0
+        && touchExpansionBottom == 0) {

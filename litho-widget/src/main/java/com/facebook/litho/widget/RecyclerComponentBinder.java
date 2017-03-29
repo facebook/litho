@@ -50,3 +50,5 @@ public abstract class RecyclerComponentBinder<L extends RecyclerView.LayoutManag
       R rangeController,
       Looper layoutLooper) {
     super(context, layoutLooper, rangeController);
+
+    mLayoutManager = layoutManager;

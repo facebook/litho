@@ -69,3 +69,5 @@ public abstract class BaseBinder<
 
   public BaseBinder(Context context, R rangeController) {
     this(context, null, rangeController);
+  }
+
