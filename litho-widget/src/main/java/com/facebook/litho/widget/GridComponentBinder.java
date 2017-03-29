@@ -139,3 +139,6 @@ public abstract class GridComponentBinder extends RecyclerComponentBinder<
     if (layoutManager.getOrientation() == OrientationHelper.VERTICAL) {
       return SizeSpec.makeSizeSpec(0, UNSPECIFIED);
     } else {
+      return SizeSpec.makeSizeSpec(
+          (SizeSpec.getSize(super.getHeightSpec(position)) / spanCount) * itemSpanCount,
+          EXACTLY);

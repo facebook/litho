@@ -471,3 +471,6 @@ public class BinderTreeCollectionTest {
   private static ComponentTree createNewComponentTree() {
     final ComponentContext c = new ComponentContext(RuntimeEnvironment.application);
     return ComponentTree.create(
+        c,
+        TestLayoutComponent.create(c)
+            .build())
