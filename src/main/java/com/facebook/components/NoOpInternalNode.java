@@ -92,3 +92,37 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Px
+  @Override
+  public int getPaddingBottom() {
+    return 0;
+  }
+
+  @Override
+  public void setCachedMeasuresValid(boolean valid) {}
+
+  @Override
+  public int getLastWidthSpec() {
+    return 0;
+  }
+
+  @Override
+  public void setLastWidthSpec(int widthSpec) {}
+
+  @Override
+  public int getLastHeightSpec() {
+    return 0;
+  }
+
+  @Override
+  public void setLastHeightSpec(int heightSpec) {}
+
+  @Override
+  void setLastMeasuredWidth(float lastMeasuredWidth) {}
+
+  @Override
+  void setLastMeasuredHeight(float lastMeasuredHeight) {}
+
+  @Override
+  void setDiffNode(DiffNode diffNode) {}
+
+  @Override
