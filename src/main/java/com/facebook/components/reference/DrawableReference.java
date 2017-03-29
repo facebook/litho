@@ -51,3 +51,8 @@ public final class DrawableReference extends ReferenceLifecycle<Drawable> {
     Drawable mDrawable;
 
     @Override
+    public String getSimpleName() {
+      return "DrawableReference";
+    }
+
+    @Override

@@ -60,3 +60,5 @@ public abstract class Reference<L> {
     reference.mLifecycle.onRelease(context, value, reference);
   }
 
+  public abstract String getSimpleName();
+
