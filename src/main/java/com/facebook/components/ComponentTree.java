@@ -82,3 +82,9 @@ public class ComponentTree {
   @GuardedBy("ComponentTree.class")
   private static volatile Looper sDefaultLayoutThreadLooper;
 
+  // Helpers to track view visibility when we are incrementally
+  // mounting and partially invalidating
+  private static final int[] sCurrentLocation = new int[2];
+  private static final int[] sParentLocation = new int[2];
+  private static final Rect sParentBounds = new Rect();
+

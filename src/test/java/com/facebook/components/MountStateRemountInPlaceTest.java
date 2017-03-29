@@ -290,3 +290,7 @@ public class MountStateRemountInPlaceTest {
       }
     });
 
+    assertTrue(componentView.isLayoutRequested());
+    assertFalse(secondComponent.wasOnMountCalled());
+    assertFalse(secondComponent.wasOnBindCalled());
+    assertFalse(firstComponent.wasOnUnmountCalled());

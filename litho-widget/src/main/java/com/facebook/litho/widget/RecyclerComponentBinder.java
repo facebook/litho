@@ -131,3 +131,6 @@ public abstract class RecyclerComponentBinder<L extends RecyclerView.LayoutManag
 
     if (recyclerView.getLayoutManager() == null) {
       recyclerView.setLayoutManager(mLayoutManager);
+    } else if (recyclerView.getLayoutManager() != mLayoutManager) {
+      throw new IllegalStateException("The LayoutManager used in the Binder constructor must be " +
+          "the same one assigned to the RecyclerView associated to that Binder.");

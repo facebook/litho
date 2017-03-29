@@ -150,3 +150,9 @@ public class ComponentView extends ComponentHost {
       if (mComponent != null) {
         mMountState.detach();
 
+        mComponent.detach();
+      }
+
+      AccessibilityManagerCompat.removeAccessibilityStateChangeListener(
+          mAccessibilityManager,
+          mAccessibilityStateChangeListener);
