@@ -167,3 +167,4 @@ class HorizontalScrollSpec {
   static void onMount(
       ComponentContext context,
       HorizontalScrollComponentView horizontalScrollComponentView,
+      @Prop(optional = true, resType = ResType.BOOL) boolean scrollbarEnabled,
