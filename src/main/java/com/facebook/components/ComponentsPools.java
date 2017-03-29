@@ -554,3 +554,5 @@ public class ComponentsPools {
       if (context instanceof ComponentContext) {
         throw new IllegalStateException("Double wrapped ComponentContext.");
       }
+    }
+

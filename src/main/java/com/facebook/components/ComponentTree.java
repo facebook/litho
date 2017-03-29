@@ -911,3 +911,5 @@ public class ComponentTree {
       }
     }
 
+    logLayoutCalculationStart(root);
+
