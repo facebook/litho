@@ -59,3 +59,5 @@ class FrescoComponentSpec {
       DEFAULT_SCALE_TYPE;
   @PropDefault protected static final ScalingUtils.ScaleType retryImageScaleType =
       DEFAULT_SCALE_TYPE;
+
+  @OnMeasure
