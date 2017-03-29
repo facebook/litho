@@ -1487,3 +1487,5 @@ public class Stages {
           builder.typeParameter(genericArg.toString());
         }
       }
+    }
+
