@@ -119,3 +119,4 @@ class ComponentQueries {
       }
     }
 
+    for (final Drawable drawable : host.getImageContent().getImageItems()) {
