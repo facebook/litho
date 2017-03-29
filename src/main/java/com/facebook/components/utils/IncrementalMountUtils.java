@@ -53,3 +53,16 @@ public class IncrementalMountUtils {
           scrollingViewParent.getChildAt(i));
     }
   }
+  /**
+   * Returns a scroll listener that performs incremental mount.  This is needed
+   * for feeds that do not use a ScrollingViewProxy, but rather directly use a
+   * RecyclerView.
+  */
+  public static RecyclerView.OnScrollListener createRecyclerViewListener() {
+    return new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+          performIncrementalMount(recyclerView);
+        }
+    };
+  }
