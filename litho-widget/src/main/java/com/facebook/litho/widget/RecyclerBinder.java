@@ -451,3 +451,4 @@ public class RecyclerBinder implements Binder<RecyclerView> {
 
     // We now need to compute the size of the non scrolling side. We try to do this by using the
     // calculated range (if we have one) or computing one.
+    if (mRange == null && mCurrentFirstVisiblePosition < mComponentTreeHolders.size()) {
