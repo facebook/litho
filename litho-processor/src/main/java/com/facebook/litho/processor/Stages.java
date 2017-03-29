@@ -454,3 +454,10 @@ public class Stages {
             }
           }
 
+          // Enforce #4
+          if (interStagePropAnnotation != null
+              && !isInterStagePropAnnotationValidInStage(
+              interStagePropAnnotation.annotationType(), stageAnnotation)) {
+            throw new ComponentsProcessingException(
+                v,
+                "Inter-stage create must refer to previous stages.");
