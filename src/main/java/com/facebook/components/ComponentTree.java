@@ -387,3 +387,4 @@ public class ComponentTree {
     if (viewParent instanceof View) {
       View parent = (View) viewParent;
       getLocationAndBoundsOnScreen(parent, sParentLocation, sParentBounds);
+      if (!visibleBounds.setIntersect(visibleBounds, sParentBounds)) {
