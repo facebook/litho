@@ -262,3 +262,7 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
         true,
         null);
+
+    // Check diff tree is consistent.
+    DiffNode node = prevLayoutState.getDiffTree();
+
