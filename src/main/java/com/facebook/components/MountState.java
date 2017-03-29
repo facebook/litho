@@ -923,3 +923,4 @@ class MountState {
     return item;
   }
 
+  private Object acquireMountContent(Component<?> component, ComponentHost host) {

@@ -203,3 +203,4 @@ class RecyclerSpec {
 
   @OnUnmount
   static void onUnmount(
+      ComponentContext context,
