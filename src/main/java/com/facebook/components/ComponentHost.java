@@ -713,3 +713,8 @@ public class ComponentHost extends ViewGroup {
     super.requestLayout();
   }
 
+  protected boolean shouldRequestLayout() {
+    // Don't bubble during layout.
+    return !mInLayout;
+  }
+
