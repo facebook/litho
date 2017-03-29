@@ -2432,3 +2432,4 @@ public class Stages {
    * Generate an event dispatcher method for the given event.
    *
    * @param fixedMethod description of method signature to be generated
+   * @param typeParameters

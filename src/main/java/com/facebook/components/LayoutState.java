@@ -1595,3 +1595,23 @@ class LayoutState {
 
       ComponentsPools.release(this);
     }
+  }
+
+  /**
+   * The lifecycle of LayoutState is generally controlled by ComponentTree. Since sometimes we need
+   * an old LayoutState to be passed to a new LayoutState to implement Tree diffing, We use
+   * reference counting to avoid releasing a LayoutState that is not used by ComponentTree anymore
+   * but could be used by another LayoutState. The rule is that whenever you need to pass the
+   * LayoutState outside of ComponentTree, you acquire a reference and then you release it as soon
+   * as you are done with it
+   *
+   * @return The same LayoutState instance with an higher reference count.
+   */
+  LayoutState acquireRef() {
+    if (mReferenceCount.getAndIncrement() == 0) {
+      throw new IllegalStateException("Trying to use a released LayoutState");
+    }
+
+    return this;
+  }
+
