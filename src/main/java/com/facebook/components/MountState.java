@@ -679,3 +679,4 @@ class MountState {
       mIndexToItemMap.put(ROOT_HOST_ID, mRootHostMountItem);
     }
 
+    int outputCount = layoutState.getMountableOutputCount();
