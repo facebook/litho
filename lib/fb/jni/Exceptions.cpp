@@ -23,3 +23,6 @@
 #include <jni.h>
 
 
+namespace facebook {
+namespace jni {
+

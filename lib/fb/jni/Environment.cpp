@@ -54,3 +54,63 @@ JNIEnv* Environment::current() {
     if (g_vm->GetEnv((void**) &env, JNI_VERSION_1_6) != JNI_OK) {
       FBLOGE("Error retrieving JNI Environment, thread is probably not attached to JVM");
       // TODO(cjhopman): This should throw an exception.
+      env = nullptr;
+    } else {
+      g_env->reset(env);
+    }
+  }
+  return env;
+}
+
+/* static */
+void Environment::detachCurrentThread() {
+  auto env = g_env->get();
+  if (env) {
+    FBASSERT(g_vm);
+    g_vm->DetachCurrentThread();
+    g_env->reset();
+  }
+}
+
+struct EnvironmentInitializer {
+  EnvironmentInitializer(JavaVM* vm) {
+      FBASSERT(!g_vm);
+      FBASSERT(vm);
+      g_vm = vm;
+      g_env.initialize([] (void*) {});
+  }
+};
+
+/* static */
+void Environment::initialize(JavaVM* vm) {
+  static EnvironmentInitializer init(vm);
+}
+
+/* static */
+JNIEnv* Environment::ensureCurrentThreadIsAttached() {
+  auto env = g_env->get();
+  if (!env) {
+    FBASSERT(g_vm);
+    g_vm->AttachCurrentThread(&env, nullptr);
+    g_env->reset(env);
+  }
+  return env;
+}
+
+ThreadScope::ThreadScope()
+    : attachedWithThisScope_(false) {
+  JNIEnv* env = nullptr;
+  if (g_vm->GetEnv((void**) &env, JNI_VERSION_1_6) != JNI_EDETACHED) {
+    return;
+  }
+  env = facebook::jni::Environment::ensureCurrentThreadIsAttached();
+  FBASSERT(env);
+  attachedWithThisScope_ = true;
+}
+
+ThreadScope::~ThreadScope() {
+  if (attachedWithThisScope_) {
+    Environment::detachCurrentThread();
+  }
+}
+

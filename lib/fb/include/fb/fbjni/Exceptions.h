@@ -49,3 +49,17 @@ class JCppException : public JavaClass<JCppException, JThrowable> {
     return newInstance(make_jstring(ex.what()));
   }
 };
+
+// JniException ////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * This class wraps a Java exception into a C++ exception; if the exception is routed back
+ * to the Java side, it can be unwrapped and just look like a pure Java interaction. The class
+ * is resilient to errors while creating the exception, falling back to some pre-allocated
+ * exceptions if a new one cannot be allocated or populated.
+ *
+ * Note: the what() method of this class is not thread-safe (t6900503).
+ */
+class FBEXPORT JniException : public std::exception {
+ public:
+  JniException();
