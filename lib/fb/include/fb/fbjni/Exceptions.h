@@ -64,3 +64,4 @@ class FBEXPORT JniException : public std::exception {
  public:
   JniException();
   ~JniException();
+

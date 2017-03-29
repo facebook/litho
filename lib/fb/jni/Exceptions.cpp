@@ -28,3 +28,4 @@ namespace jni {
 
 namespace {
 class JRuntimeException : public JavaClass<JRuntimeException, JThrowable> {
+ public:

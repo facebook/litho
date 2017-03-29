@@ -128,3 +128,5 @@ void ThreadScope::WithClassLoader(std::function<void()>&& runnable) {
   JThreadScopeSupport::runStdFunction(std::move(runnable));
 }
 
+} }
+

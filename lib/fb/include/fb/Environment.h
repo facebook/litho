@@ -38,3 +38,4 @@ struct Environment {
  *
  * Potential concerns:
  *  - Attaching to the JVM is fast (~100us on MotoG), but ideally you would attach while the
+ *    app is not busy.
