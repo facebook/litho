@@ -205,3 +205,5 @@ class RecyclerSpec {
   static void onUnmount(
       ComponentContext context,
       RecyclerViewWrapper recyclerViewWrapper,
+      @Prop Binder<RecyclerView> binder,
+      @Prop(optional = true) RecyclerView.ItemDecoration itemDecoration) {
