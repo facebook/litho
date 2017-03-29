@@ -1718,3 +1718,4 @@ class LayoutState {
     }
     return mTransitionContext;
   }
+}
