@@ -54,3 +54,6 @@ public class ComponentViewTest {
     mComponentView = new ComponentView(RuntimeEnvironment.application);
     mComponentView.setComponent(componentTree);
   }
+
+  @Test
+  public void measureBeforeBeingAttached() {

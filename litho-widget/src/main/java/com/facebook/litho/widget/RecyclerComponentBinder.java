@@ -33,3 +33,7 @@ import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 public abstract class RecyclerComponentBinder<L extends RecyclerView.LayoutManager,
     R extends RecyclerComponentBinder.RecyclerComponentWorkingRangeController>
     extends BaseBinder<RecyclerView, R> {
+
+  private final L mLayoutManager;
+  private final InternalAdapter mAdapter;
+  private final RecyclerView.OnScrollListener mOnScrollListener;

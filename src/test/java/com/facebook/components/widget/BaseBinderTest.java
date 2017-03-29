@@ -36,3 +36,5 @@ import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 @RunWith(ComponentsTestRunner.class)
+public class BaseBinderTest {
+

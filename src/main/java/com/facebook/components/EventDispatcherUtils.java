@@ -25,3 +25,18 @@ import static com.facebook.litho.ThreadUtils.assertMainThread;
  */
 class EventDispatcherUtils {
 
+  private static ClickEvent sClickEvent;
+  private static LongClickEvent sLongClickEvent;
+  private static TouchEvent sTouchEvent;
+  private static VisibleEvent sVisibleEvent;
+  private static InvisibleEvent sInvisibleEvent;
+  private static FocusedVisibleEvent sFocusedVisibleEvent;
+  private static FullImpressionVisibleEvent sFullImpressionVisibleEvent;
+  private static DispatchPopulateAccessibilityEventEvent sDispatchPopulateAccessibilityEventEvent;
+  private static OnInitializeAccessibilityEventEvent sOnInitializeAccessibilityEventEvent;
+  private static OnInitializeAccessibilityNodeInfoEvent sOnInitializeAccessibilityNodeInfoEvent;
+  private static OnPopulateAccessibilityEventEvent sOnPopulateAccessibilityEventEvent;
+  private static OnRequestSendAccessibilityEventEvent sOnRequestSendAccessibilityEventEvent;
+  private static PerformAccessibilityActionEvent sPerformAccessibilityActionEvent;
+  private static SendAccessibilityEventEvent sSendAccessibilityEventEvent;
+  private static SendAccessibilityEventUncheckedEvent sSendAccessibilityEventUncheckedEvent;

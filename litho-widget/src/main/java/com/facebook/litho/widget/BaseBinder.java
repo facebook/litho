@@ -35,3 +35,25 @@ import static com.facebook.litho.ThreadUtils.assertMainThread;
 public abstract class BaseBinder<
     V extends ViewGroup,
     R extends WorkingRangeController> implements Binder<V>, BinderOperations<V> {
+
+  private static final Pools.SynchronizedPool<List> sListPool =
+      new Pools.SynchronizedPool<>(8);
+
+  protected static final int URFLAG_REFRESH_IN_RANGE = 0x1;
+  protected static final int URFLAG_RELEASE_OUTSIDE_RANGE = 0x2;
+
+  protected interface Listener {
+    void onDataSetChanged();
+
+    void onItemInserted(int position);
+    void onItemRangeInserted(int positionStart, int itemCount);
+
+    void onItemChanged(int position);
+    void onItemRangeChanged(int positionStart, int itemCount);
+
+    void onItemMoved(int fromPosition, int toPosition);
+
+    void onItemRemoved(int position);
+    void onItemRangeRemoved(int positionStart, int itemCount);
+  }
+
