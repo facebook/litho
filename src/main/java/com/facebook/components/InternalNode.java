@@ -1912,3 +1912,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       errorTypes = addOrCreateList(errorTypes, "margin");
     }
 
+    // TODO(16963569) Temporarily remove this assertion while codemoding flexbox defaults
+    // if (errorTypes != null) {
+    //   final CharSequence errorStr = TextUtils.join(", ", errorTypes);
+    //   throw new IllegalStateException("You should not set " + errorStr + " to a root layout in "
+    //       + node.getComponent().getLifecycle());
+    // }
