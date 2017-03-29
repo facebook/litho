@@ -978,3 +978,8 @@ class MountState {
   private static ComponentHost resolveComponentHost(
       LayoutOutput layoutOutput,
       LongSparseArray<ComponentHost> hostsByMarker) {
+    final long hostMarker = layoutOutput.getHostMarker();
+
+    return hostsByMarker.get(hostMarker);
+  }
+
