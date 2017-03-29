@@ -416,3 +416,7 @@ class TextSpec {
       @Prop(optional = true) TruncateAt ellipsize,
       @Prop(optional = true, resType = ResType.BOOL) boolean shouldIncludeFontPadding,
       @Prop(optional = true, resType = ResType.INT) int maxLines,
+      @Prop(optional = true, resType = ResType.INT) int minEms,
+      @Prop(optional = true, resType = ResType.INT) int maxEms,
+      @Prop(optional = true, resType = ResType.INT) int minWidth,
+      @Prop(optional = true, resType = ResType.INT) int maxWidth,
