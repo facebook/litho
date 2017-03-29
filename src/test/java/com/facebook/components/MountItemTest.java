@@ -206,3 +206,4 @@ public class MountItemTest {
 
   @Test
   public void testRelease() {
+    mMountItem.release(RuntimeEnvironment.application);
