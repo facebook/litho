@@ -208,3 +208,10 @@ class RecyclerSpec {
       @Prop Binder<RecyclerView> binder,
       @Prop(optional = true) RecyclerView.ItemDecoration itemDecoration) {
     final RecyclerView recyclerView = recyclerViewWrapper.getRecyclerView();
+
+    if (recyclerView == null) {
+      throw new IllegalStateException(
+          "RecyclerView not found, it should not be removed from SwipeRefreshLayout " +
+              "before unmounting");
+    }
+
