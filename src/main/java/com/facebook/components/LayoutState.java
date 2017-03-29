@@ -612,3 +612,5 @@ class LayoutState {
     for (int i = 0, size = node.getChildCount(); i < size; i++) {
       collectResults(
           node.getChildAt(i),
+          layoutState,
+          diffNode);
