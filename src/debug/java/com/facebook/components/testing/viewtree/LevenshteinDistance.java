@@ -58,3 +58,21 @@ public class LevenshteinDistance {
       // actual edit distance for some substring of t, makes no sense. So,
       if (j == m) {
         min = d[n] > maxAllowedEditDistance ? maxAllowedEditDistance + 1 : d[n];
+      }
+      // Terminate, when the minEditdistance exceeds max allowed distance for speed up.
+      if (min > maxAllowedEditDistance) {
+        return min;
+      }
+
+      // copy current distance counts to 'previous row' distance counts
+      _d = p;
+      p = d;
+      d = _d;
+    }
+
+    // our last action in the above loop was to switch d and p, so p now
+    // actually has the most recent cost counts
+    return p[n];
+  }
+
+}
