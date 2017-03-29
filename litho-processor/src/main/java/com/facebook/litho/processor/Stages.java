@@ -845,3 +845,12 @@ public class Stages {
     final ArrayList<Annotation> annotations = new ArrayList<>();
     for (Class<Annotation> annotationClass : possibleAnnotations) {
       final Annotation annotation = element.getAnnotation(annotationClass);
+      if (annotation != null) {
+        annotations.add(annotation);
+      }
+    }
+    if (annotations.isEmpty()) {
+      return null;
+    } else if (annotations.size() == 1) {
+      return annotations.get(0);
+    } else {

@@ -1012,3 +1012,7 @@ public class ComponentTree {
     if (logger != null) {
       logger.eventEnd(EVENT_LAYOUT_CALCULATE, root, ACTION_SUCCESS);
     }
+  }
+
+  /**
+   * Transfer mBackgroundLayoutState to mMainThreadLayoutState. This will proxy
