@@ -784,3 +784,7 @@ class LayoutState {
         layoutState.mOutputsIdToPositionMap,
         drawableLayoutOutput,
         layoutState.mMountableOutputs.size() - 1);
+
+    return drawableLayoutOutput;
+  }
+
