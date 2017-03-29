@@ -221,3 +221,4 @@ class PropsBuilderMethodsSpecBuilder {
         .build();
   }
 
+  private List<MethodSpec> attrBuilders(ClassName annotationClassName, String resolver) {
