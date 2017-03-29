@@ -254,3 +254,6 @@ public class ComponentsPools {
     }
 
     item.init(component, host, content, layoutOutput, null);
+    return item;
+  }
+
