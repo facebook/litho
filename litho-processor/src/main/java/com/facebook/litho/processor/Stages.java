@@ -1450,3 +1450,6 @@ public class Stages {
         .implClassName(getImplClassName())
         .abstractImplType(ClassNames.HAS_EVENT_DISPATCHER_CLASSNAME)
         .implParameters(mImplParameters)
+        .visibility(PRIVATE)
+        .fromName("do" + capitalize(evenHandlerName))
+        .fromParams(fromParams)
