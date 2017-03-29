@@ -247,3 +247,15 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
             "Cannot find text matching \"%s\" in view hierarchy:%n%s",
             pattern,
             actual.makeString(GET_TEXT_FUNCTION))
+        .isNotNull();
+
+    return this;
+  }
+
+  /**
+   * Tests that all views in the hierarchy under the root, for which the path is visible, do not
+   * have text that matches against the given regular expression
+   *
+   * @param pattern the regular expression to match against
+   * @return the assertions object(
+   */
