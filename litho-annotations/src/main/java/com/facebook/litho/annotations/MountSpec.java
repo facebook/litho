@@ -12,3 +12,8 @@ package com.facebook.litho.annotations;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+/**
+ * A class that is annotated with this annotation will be used to create a component that renders
+ * something, in the form of either a Drawable or a View.
+ * <p>A class that is annotated with {@link MountSpec} must implement a method with the
+ * {@link OnMount} annotation. It may also implement methods with the following annotations:
