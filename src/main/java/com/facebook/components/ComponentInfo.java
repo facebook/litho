@@ -112,3 +112,17 @@ public class ComponentInfo {
       return this;
     }
 
+    public ComponentInfo build() {
+      ComponentInfo componentInfo = sComponentInfoPool.acquire();
+      if (componentInfo == null) {
+        componentInfo = new ComponentInfo();
+      }
+      componentInfo.init(this);
+
+      release();
+
+      return componentInfo;
+    }
+
+    private void release() {
+      mComponent = null;
