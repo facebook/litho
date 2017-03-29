@@ -88,3 +88,4 @@ class BinderTreeCollection {
   /**
    * Remove a range of ComponentTrees and shift left all the successive ones. This will remove
    * itemsToRemoveCount items starting from positionStart.
+   */

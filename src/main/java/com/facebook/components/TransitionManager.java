@@ -125,3 +125,39 @@ class TransitionManager implements TransitionKeySetListener {
       }
     }
     // 1.3 Appeared keys.
+    for (String newKey : mPostMountKeys) {
+      mKeysStatus.put(newKey, KeyStatus.APPEARED);
+    }
+
+    // 2. Process running transitions to resume or remove them.
+    for (int i = mRunningTransitions.size() - 1; i >= 0; i--) {
+      final String key = mRunningTransitions.keyAt(i);
+      final TransitionKeySet runningTransitions = mRunningTransitions.removeAt(i);
+
+      final TransitionKeySet newTransitions = mTransitions.remove(key);
+      // Bail if there's not defined transition in the new layout for the same key.
+      if (newTransitions == null) {
+        continue;
+      }
+
+      if (newTransitions.resumeFrom(runningTransitions, mKeysStatus.get(key), this)) {
+        mRunningTransitions.put(key, newTransitions);
+      }
+    }
+
+    // 3. Start new transitions if needed.
+    for (int i = mTransitions.size() - 1; i >= 0; i--) {
+      final String key = mTransitions.keyAt(i);
+      final TransitionKeySet transition = mTransitions.removeAt(i);
+      final @KeyStatus Integer keyStatus = mKeysStatus.get(key);
+
+      if (keyStatus == null) {
+        continue;
+      }
+
+      if (transition.start(keyStatus, this)) {
+        mRunningTransitions.put(key, transition);
+      }
+    }
+  }
+

@@ -122,3 +122,6 @@ public class TestLayoutComponent extends ComponentLifecycle {
       @AttrRes int defStyleAttr,
       @StyleRes int defStyleRes,
       boolean callsShouldUpdateOnMount,
+      boolean isPureRender,
+      boolean hasMountSpecChild,
+      boolean isDelegate) {

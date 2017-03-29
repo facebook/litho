@@ -47,3 +47,48 @@ public class ViewNodeInfoTest {
   }
 
   @Test
+  public void testRefCountAcquiringReleasedNode() {
+    ViewNodeInfo viewNodeInfo = ViewNodeInfo.acquire();
+
+    viewNodeInfo.acquireRef();
+    viewNodeInfo.release();
+    viewNodeInfo.release(); // Now it should be back in the pool.
+
+    try {
+      viewNodeInfo.acquireRef();
+      fail("Acquiring ref of a ViewNodeInfo already released to the pool.");
+    } catch (Exception e) {
+      // Expected exception.
+    }
+
+    // Drain pool of bad ViewNodeInfo instances for subsequent tests.
+    clearViewNodeInfoPool();
+  }
+
+  @Test
+  public void testRefCountDoubleReleasingToPool() {
+    ViewNodeInfo viewNodeInfo = ViewNodeInfo.acquire();
+
+    viewNodeInfo.acquireRef();
+    viewNodeInfo.release();
+    viewNodeInfo.release(); // Now it should be back in the pool.
+
+    try {
+      viewNodeInfo.release();
+      fail("Releasing a ViewNodeInfo that is already in the pool.");
+    } catch (Exception e) {
+      // Expected exception.
+    }
+
+    // Drain pool of bad ViewNodeInfo instances for subsequent tests.
+    clearViewNodeInfoPool();
+  }
+
+  private static void clearViewNodeInfoPool() {
+    final Pools.SynchronizedPool<NodeInfo> viewNodeInfoPool =
+        Whitebox.getInternalState(ComponentsPools.class, "sViewNodeInfoPool");
+
+    while (viewNodeInfoPool.acquire() != null) {
+      // Run.
+    }
+  }
