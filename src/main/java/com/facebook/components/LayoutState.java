@@ -673,3 +673,4 @@ class LayoutState {
       layoutState.mCurrentHostOutputPosition = currentHostOutputPosition;
       layoutState.mCurrentLevel--;
     }
+    layoutState.mShouldDuplicateParentState = shouldDuplicateParentState;
