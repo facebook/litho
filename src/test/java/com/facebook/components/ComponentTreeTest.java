@@ -423,3 +423,5 @@ public class ComponentTreeTest {
   public void testSettingNewViewToTree() {
     Component component = TestDrawableComponent.create(mContext)
         .build();
+
+    ComponentTree componentTree = ComponentTree.create(
