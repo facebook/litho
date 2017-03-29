@@ -210,3 +210,8 @@ class TextSpec {
       @Prop(optional = true, resType = ResType.INT) int maxEms,
       @Prop(optional = true, resType = ResType.INT) int minWidth,
       @Prop(optional = true, resType = ResType.INT) int maxWidth,
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float shadowRadius,
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float shadowDx,
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float shadowDy,
+      @Prop(optional = true, resType = ResType.COLOR) int shadowColor,
+      @Prop(optional = true, resType = ResType.BOOL) boolean isSingleLine,

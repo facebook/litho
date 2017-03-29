@@ -360,3 +360,8 @@ public class ComponentTree {
   }
 
   void incrementalMountComponent() {
+    assertMainThread();
+
+    if (!mIncrementalMountEnabled) {
+      throw new IllegalStateException("Calling incrementalMountComponent() but incremental mount" +
+          " is not enabled");
