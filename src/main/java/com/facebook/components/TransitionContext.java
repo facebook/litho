@@ -23,3 +23,6 @@ class TransitionContext {
   private final SimpleArrayMap<String, TransitionKeySet> mKeyToTransitionKeySets =
       new SimpleArrayMap<>();
 
+  // Transition keys of given layout tree
+  private final HashSet<String> mTransitionKeys = new HashSet<>(8);
+

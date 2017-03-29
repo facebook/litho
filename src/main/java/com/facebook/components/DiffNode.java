@@ -23,3 +23,4 @@ class DiffNode implements Cloneable {
   private LayoutOutput mContent;
   private LayoutOutput mBackground;
   private LayoutOutput mForeground;
+  private LayoutOutput mBorder;

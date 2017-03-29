@@ -52,3 +52,5 @@ public class ComponentHost extends ViewGroup {
   private final SparseArrayCompat<Touchable> mTouchables = new SparseArrayCompat<>();
   private SparseArrayCompat<Touchable> mScrapTouchables;
 
+  private final SparseArrayCompat<MountItem> mDisappearingItems = new SparseArrayCompat<>();
+

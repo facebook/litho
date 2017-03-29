@@ -87,3 +87,4 @@ public class ComponentViewMountTest {
   @Test
   public void testSetComponentTwiceWithResetAndAttachRequestsLayout() {
     ComponentTree ct = ComponentTree.create(mContext, mComponent)
+        .incrementalMount(false)
