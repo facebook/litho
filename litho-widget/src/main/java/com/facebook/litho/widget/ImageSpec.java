@@ -117,3 +117,5 @@ class ImageSpec {
     } finally {
       Reference.release(c, drawable, src);
     }
+  }
+
