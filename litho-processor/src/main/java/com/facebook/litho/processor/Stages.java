@@ -388,3 +388,7 @@ public class Stages {
               "Searching for prop \"" + name + "\" of type " + ClassName.get(outputType) +
                   " but found prop with the same name of type " +
                   ClassName.get(prop.asType()));
+        }
+      }
+
+      if (!matchesProp) {
