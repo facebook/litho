@@ -2239,3 +2239,8 @@ static void YGNodelayoutImpl(const YGNodeRef node,
       } else if (!YGFloatIsUndefined(maxInnerMainDim) && sizeConsumedOnCurrentLine > maxInnerMainDim) {
         availableInnerMainDim = maxInnerMainDim;
       } else if (YGConfigIsExperimentalFeatureEnabled(node->config, YGExperimentalFeatureMinFlexFix)) {
+        // TODO: this needs to be moved out of experimental feature, as this is legitimate fix
+        // If the measurement isn't exact, we want to use as little space as possible
+        availableInnerMainDim = sizeConsumedOnCurrentLine;
+      }
+    }
