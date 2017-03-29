@@ -133,3 +133,4 @@ class MountState {
     assertMainThread();
 
     mIsDirty = true;
+    mPreviousLocalVisibleRect.setEmpty();

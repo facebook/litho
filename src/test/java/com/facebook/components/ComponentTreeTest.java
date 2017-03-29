@@ -133,3 +133,4 @@ public class ComponentTreeTest {
     }
 
     Assert.assertNull(nullLayoutState);
+    Assert.assertTrue(
