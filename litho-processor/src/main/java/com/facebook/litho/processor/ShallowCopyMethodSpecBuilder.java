@@ -26,3 +26,4 @@ class ShallowCopyMethodSpecBuilder {
   private String mImplClassName;
   private List<String> mComponentsToCopy;
   private List<String> mInterStageVariables;
+  private String mStateContainerImplClassName;
