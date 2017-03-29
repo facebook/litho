@@ -748,3 +748,4 @@ public class RecyclerBinder implements Binder<RecyclerView> {
           componentView.setLayoutParams(
               new RecyclerView.LayoutParams(
                   ViewGroup.LayoutParams.WRAP_CONTENT,
+                  ViewGroup.LayoutParams.MATCH_PARENT));
