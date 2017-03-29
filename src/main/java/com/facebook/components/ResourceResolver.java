@@ -280,3 +280,13 @@ public class ResourceResolver {
   }
 
   protected final int resolveColorAttr(@AttrRes int attrResId, @ColorRes int defResId) {
+    mAttrs[0] = attrResId;
+    TypedArray a = mTheme.obtainStyledAttributes(mAttrs);
+
+    try {
+      return a.getColor(0, resolveColorRes(defResId));
+    } finally {
+      a.recycle();
+    }
+  }
+
