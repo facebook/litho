@@ -48,3 +48,6 @@ public class TestDrawableComponent extends ComponentLifecycle {
       if (lifecycle.mCallsShouldUpdateOnMount == callsShouldUpdateOnMount &&
           lifecycle.mIsPureRender == isPureRender &&
           lifecycle.mCanMeasure == canMeasure &&
+          lifecycle.mImplementsAccessibility == implementsAccessibility &&
+          lifecycle.mUsesDisplayList == usesDisplayList &&
+          lifecycle.mIsMountSizeDependent == isMountSizeDependent) {

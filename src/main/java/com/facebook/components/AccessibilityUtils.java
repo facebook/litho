@@ -18,3 +18,11 @@ import static android.content.Context.ACCESSIBILITY_SERVICE;
 class AccessibilityUtils {
   private static final boolean ACCESSIBILITY_ENABLED =
       Boolean.getBoolean("is_accessibility_enabled");
+
+  /**
+   * @returns True if accessibility touch exploration is currently enabled
+   * in the framework.
+   */
+  public static boolean isAccessibilityEnabled(Context context) {
+    final AccessibilityManager manager =
+        (AccessibilityManager) context.getSystemService(ACCESSIBILITY_SERVICE);

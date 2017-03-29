@@ -60,3 +60,10 @@ public class ComponentViewMountTest {
     mComponentTree.setSizeSpec(
         SizeSpec.makeSizeSpec(100, EXACTLY),
         SizeSpec.makeSizeSpec(100, EXACTLY));
+  }
+
+  @Test
+  public void testNothingCalledUntilMeasured() {
+    mComponentView.setComponent(mComponentTree);
+    mComponentView.onAttachedToWindow();
+

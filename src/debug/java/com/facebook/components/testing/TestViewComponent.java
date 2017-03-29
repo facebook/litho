@@ -120,3 +120,19 @@ public class TestViewComponent extends ComponentLifecycle {
   @Override
   protected void onMeasure(
       ComponentContext c,
+      ComponentLayout layout,
+      int widthSpec,
+      int heightSpec,
+      Size size,
+      Component<?> component) {
+    int width = SizeSpec.getSize(widthSpec);
+    int height = SizeSpec.getSize(heightSpec);
+
+    size.height = height;
+    size.width = width;
+
+    State state = (State) component;
+    state.onMeasureCalled();
+  }
+
+  @Override
