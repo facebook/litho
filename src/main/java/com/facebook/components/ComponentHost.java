@@ -1047,3 +1047,9 @@ public class ComponentHost extends ViewGroup {
       }
 
       mDrawIndex = mItemsToDraw;
+    }
+
+    private void end() {
+      mCanvas = null;
+    }
+  }
