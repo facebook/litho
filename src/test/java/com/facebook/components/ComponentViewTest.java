@@ -58,3 +58,5 @@ public class ComponentViewTest {
   @Test
   public void measureBeforeBeingAttached() {
     mComponentView.measure(
+        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));

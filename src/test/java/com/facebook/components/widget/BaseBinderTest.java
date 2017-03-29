@@ -40,3 +40,8 @@ public class BaseBinderTest {
 
   private static final int WIDTH = 200;
   private static final int HEIGHT = 400;
+
+  private List<String> mItems;
+  private MyTestComponentBinder mBinder;
+  private ShadowLooper mLayoutThreadShadowLooper;
+

@@ -58,3 +58,6 @@ public abstract class BaseBinder<
   }
 
   private final ComponentContext mContext;
+  private final BinderTreeCollection mComponentTrees;
+  private final Looper mLayoutLooper;
+

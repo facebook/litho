@@ -80,3 +80,50 @@ public class TransitionInterpolatorAnimatorTest {
     assertEquals(mInterpolator, mAnimator.getInterpolator());
     assertEquals(1, mAnimator.getListeners().size());
     assertEquals(mListenerAdapter, mAnimator.getListeners().get(0));
+  }
+
+  @Test
+  public void testRestoreStateFromAnimatorHalfWayThroughStartDelay() {
+    final long startTime = 300;
+    final long resumeTime = 600;
+    final TransitionInterpolatorAnimator
+        transitionAnimator = new TransitionInterpolatorAnimator(mAnimator, startTime, 0);
+
+    transitionAnimator.setDuration(DURATION);
+    transitionAnimator.setStartDelay(START_DELAY);
+    transitionAnimator.setListener(new Transition.TransitionListener() {
+      @Override
+      public void onTransitionEnd() {
+      }
+    });
+
+    ShadowSystemClock.setCurrentTimeMillis(resumeTime);
+    transitionAnimator.start(mView, PROPERTY_CHANGE_HOLDERS);
+
+    assertEquals(DURATION, mAnimator.getDuration());
+    assertEquals(START_DELAY - (resumeTime - startTime), mAnimator.getStartDelay());
+  }
+
+  @Test
+  public void testRestoreStateFromAnimatorWithStartDelayHalfWayThroughPlaying() {
+    final long startTime = 300;
+    final long playedTime = 1000;
+    final TransitionInterpolatorAnimator transitionAnimator =
+        new TransitionInterpolatorAnimator(mAnimator, startTime, playedTime);
+
+    transitionAnimator.setDuration(DURATION);
+    transitionAnimator.setStartDelay(START_DELAY);
+    transitionAnimator.setListener(new Transition.TransitionListener() {
+      @Override
+      public void onTransitionEnd() {
+      }
+    });
+
+    ShadowSystemClock.setCurrentTimeMillis(startTime + START_DELAY);
+    transitionAnimator.start(mView, PROPERTY_CHANGE_HOLDERS);
+
+    assertEquals(DURATION, mAnimator.getDuration());
+    assertEquals(0, mAnimator.getStartDelay());
+    assertEquals(playedTime, mAnimator.getCurrentPlayTime());
+  }
+}

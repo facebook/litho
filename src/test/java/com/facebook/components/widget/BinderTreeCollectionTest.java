@@ -29,3 +29,12 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(ComponentsTestRunner.class)
+public class BinderTreeCollectionTest {
+
+  private BinderTreeCollection mBinderTreeCollection;
+
+  @Before
+  public void setup() {
+    mBinderTreeCollection = new BinderTreeCollection();
+
+    for (int i = 0; i < 10; i++) {
