@@ -1709,3 +1709,4 @@ public class Stages {
             .addStatement("return \"" + getSimpleClassName() + "\"")
             .build());
 
+    final MethodSpec equalsBuilder = generateEqualsMethodDefinition(true);
