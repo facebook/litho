@@ -2175,3 +2175,5 @@ public class Stages {
     final CodeBlock.Builder releaseDiffs = CodeBlock.builder();
 
     for (VariableElement variableElement : shouldUpdateParams) {
+      final Name variableElementName = variableElement.getSimpleName();
+      final TypeMirror variableElementType = variableElement.asType();
