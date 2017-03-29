@@ -2447,3 +2447,5 @@ public class Stages {
         MethodSpec.methodBuilder(fixedMethod.name);
 
     if (fixedMethod.annotations != null) {
+      for (Class annotation : fixedMethod.annotations) {
+        methodBuilder.addAnnotation(annotation);
