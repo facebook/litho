@@ -142,3 +142,4 @@ class HorizontalScrollSpec {
       final int measuredHeight;
 
       Size contentSize = acquireSize();
+      contentComponent.setSizeSpec(

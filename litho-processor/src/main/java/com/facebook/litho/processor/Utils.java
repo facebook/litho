@@ -143,3 +143,5 @@ public class Utils {
 
   /**
    * If the type is outerClass, return the type argument.
+   * Otherwise return null.
+   */
