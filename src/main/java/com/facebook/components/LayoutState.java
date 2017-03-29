@@ -773,3 +773,9 @@ class LayoutState {
         layoutState,
         node);
     layoutState.mLayoutStateOutputIdCalculator.calculateAndSetLayoutOutputIdAndUpdateState(
+        drawableLayoutOutput,
+        layoutState.mCurrentLevel,
+        layoutOutputType,
+        previousId,
+        isCachedOutputUpdated);
+

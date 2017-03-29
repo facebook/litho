@@ -1492,3 +1492,4 @@ public class Stages {
     writeMethodSpec(builder
         .updateMethodName(methodName)
         .async(false)
+        .contextClass(contextClass)
