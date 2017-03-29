@@ -162,3 +162,4 @@ public class ComponentsPools {
     if (state == null) {
       state = new LayoutState();
     }
+    state.init(context);
