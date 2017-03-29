@@ -726,3 +726,4 @@ class MountState {
     // but only from mIndexToItemMap. If an host changes we're going to unmount it and recursively
     // all its mounted children.
     for (int i = 0; i < mLayoutOutputsIds.length; i++) {
+      final int newPosition = newLayoutState.getLayoutOutputPositionForId(mLayoutOutputsIds[i]);
