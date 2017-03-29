@@ -1218,3 +1218,18 @@ class LayoutState {
                 heightSpec,
                 cachedLayout.getLastMeasuredWidth(),
                 cachedLayout.getLastMeasuredHeight())) {
+          nestedTree = cachedLayout;
+          component.clearCachedLayout();
+        } else {
+          component.releaseCachedLayout();
+        }
+      }
+
+      if (nestedTree == null) {
+        nestedTree = createAndMeasureTreeForComponent(
+            context,
+            component,
+            nestedTreeHolder,
+            widthSpec,
+            heightSpec,
+            nestedTreeHolder.getDiffNode()); // Previously set while traversing the holder's tree.
