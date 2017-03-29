@@ -107,3 +107,8 @@ public abstract class BaseBinder<
       updateRange(0, getCount(), URFLAG_REFRESH_IN_RANGE | URFLAG_RELEASE_OUTSIDE_RANGE);
     }
 
+    if (mListener != null) {
+      mListener.onDataSetChanged();
+    }
+  }
+

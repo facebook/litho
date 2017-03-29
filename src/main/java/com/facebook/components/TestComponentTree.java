@@ -51,3 +51,5 @@ public class TestComponentTree extends ComponentTree {
             new StateHandler()),
         root,
         mId,
+        widthSpec,
+        heightSpec,
