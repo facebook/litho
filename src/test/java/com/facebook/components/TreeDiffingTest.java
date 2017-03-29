@@ -902,3 +902,11 @@ public class TreeDiffingTest {
                     .setDelegate(true)
                     .withLayout()
                     .marginPx(YogaEdge.ALL, 11))
+            .build();
+      }
+    };
+
+    final Component component2 = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c)
