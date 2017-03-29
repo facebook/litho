@@ -377,3 +377,69 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
+  public InternalNode widthPercent(float percent) {
+    return this;
+  }
+
+  @Override
+  public InternalNode minWidthPx(@Px int minWidth) {
+    return this;
+  }
+
+  @Override
+  public InternalNode minWidthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+    return this;
+  }
+
+  @Override
+  public InternalNode minWidthAttr(@AttrRes int resId) {
+    return this;
+  }
+
+  @Override
+  public InternalNode minWidthRes(@DimenRes int resId) {
+    return this;
+  }
+
+  @Override
+  public InternalNode minWidthDip(@Dimension(unit = DP) int minWidth) {
+    return this;
+  }
+
+  @Override
+  public InternalNode minWidthPercent(float percent) {
+    return this;
+  }
+
+  @Override
+  public InternalNode maxWidthPx(@Px int maxWidth) {
+    return this;
+  }
+
+  @Override
+  public InternalNode maxWidthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+    return this;
+  }
+
+  @Override
+  public InternalNode maxWidthAttr(@AttrRes int resId) {
+    return this;
+  }
+
+  @Override
+  public InternalNode maxWidthRes(@DimenRes int resId) {
+    return this;
+  }
+
+  @Override
+  public InternalNode maxWidthDip(@Dimension(unit = DP) int maxWidth) {
+    return this;
+  }
+
+  @Override
+  public InternalNode maxWidthPercent(float percent) {
+    return this;
+  }
+
+  @Override
+  public InternalNode heightPx(@Px int height) {
