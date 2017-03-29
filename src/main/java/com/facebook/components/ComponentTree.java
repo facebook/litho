@@ -836,3 +836,4 @@ public class ComponentTree {
               mostRecentLayoutState.getWidth(),
               mostRecentLayoutState.getHeight()));
       final boolean rootDidntChange = !rootInitialized || root.getId() == mRoot.getId();
+
