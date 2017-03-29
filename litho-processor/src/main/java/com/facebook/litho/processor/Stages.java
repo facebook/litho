@@ -2581,3 +2581,8 @@ public class Stages {
         .requiredSetName("mRequired")
         .builderClass(propsBuilderClassName)
         .componentClassName(componentClassName)
+        .build();
+  }
+
+  private void assertOfType(VariableElement element, TypeName... types) {
+    final TypeName elementType = JPUtil.getTypeFromMirror(element.asType());
