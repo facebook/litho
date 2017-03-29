@@ -30,3 +30,4 @@ import java.util.regex.Pattern;
 import com.facebook.components.specmodels.model.SpecModel;
 import com.facebook.components.specmodels.processor.TypeVariablesExtractor;
 
+import com.squareup.javapoet.JavaFile;
