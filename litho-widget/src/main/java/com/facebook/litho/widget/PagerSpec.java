@@ -81,3 +81,5 @@ class PagerSpec {
     binder.bind(mountedView);
   }
 
+  @OnUnbind
+  static void onUnbind(
