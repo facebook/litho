@@ -356,3 +356,32 @@ public class MountStateRemountInPlaceTest {
         })
             .incrementalMount(false)
             .build(),
+        makeMeasureSpec(100, EXACTLY),
+        makeMeasureSpec(100, EXACTLY));
+
+    assertTrue(firstComponent.wasOnMountCalled());
+    assertTrue(firstComponent.wasOnBindCalled());
+    assertFalse(firstComponent.wasOnUnmountCalled());
+
+    final TestComponent secondComponent =
+        TestDrawableComponent.create(mContext)
+            .build();
+
+    componentView.getComponent().setRoot(new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c)
+            .child(secondComponent)
+            .widthPx(10)
+            .heightPx(10)
+            .build();
+      }
+    });
+
+    assertFalse(componentView.isLayoutRequested());
+    assertFalse(secondComponent.wasOnMountCalled());
+    assertTrue(secondComponent.wasOnBindCalled());
+    assertFalse(firstComponent.wasOnUnmountCalled());
+  }
+
+  @Test
