@@ -56,3 +56,10 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
       }
     }
 
+    /**
+     * Set a key on the component that is local to its parent.
+     */
+    protected void setKey(String key) {
+      mComponent.setKey(key);
+    }
+

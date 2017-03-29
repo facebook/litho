@@ -111,3 +111,43 @@ public class StateUpdatesTest {
 
     @Override
     public Component makeShallowCopy() {
+      return this;
+    }
+
+    @Override
+    Component makeShallowCopyWithNewId() {
+      shallowCopy = (TestComponent) super.makeShallowCopy();
+      shallowCopy.mId = sIdGenerator.getAndIncrement();
+      return shallowCopy;
+    }
+
+    TestComponent getComponentForStateUpdate() {
+      if (shallowCopy == null) {
+        return this;
+      }
+      return shallowCopy.getComponentForStateUpdate();
+    }
+
+    @Override
+    protected int getId() {
+      return mId;
+    }
+
+    @Override
+    protected StateContainer getStateContainer() {
+      return mStateContainer;
+    }
+  }
+
+  static class TestStateContainer implements StateContainer {
+    protected int mCount;
+  }
+
+  private ShadowLooper mLayoutThreadShadowLooper;
+  private ComponentContext mContext;
+  private TestComponent mTestComponent;
+  private ComponentTree mComponentTree;
+
+  @Before
+  public void setup() throws Exception {
+    mContext = new ComponentContext(RuntimeEnvironment.application);

@@ -126,3 +126,6 @@ class OnStateUpdateMethodSpecBuilder {
       builder.addStatement("c.updateState(_stateUpdate)");
     }
 
+    return builder.build();
+  }
+}
