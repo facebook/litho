@@ -660,3 +660,9 @@ class LayoutState {
     }
 
     // 8. If we're in a testing environment, maintain an additional data structure with
+    // information about nodes that we can query later.
+    if (layoutState.mTestOutputs != null && !TextUtils.isEmpty(node.getTestKey())) {
+      final TestOutput testOutput = createTestOutput(node, layoutState, layoutOutput);
+      layoutState.mTestOutputs.add(testOutput);
+    }
+
