@@ -343,3 +343,9 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
     if (Color.alpha(mHighlightColor) == 0 ||
         (mSelectionStart == selectionStart && mSelectionEnd == selectionEnd)) {
       return;
+    }
+
+    mSelectionStart = selectionStart;
+    mSelectionEnd = selectionEnd;
+
+    if (mHighlightPaint == null) {
