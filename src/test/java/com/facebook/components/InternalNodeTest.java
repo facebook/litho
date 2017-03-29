@@ -275,3 +275,7 @@ public class InternalNodeTest {
     assertEquals(
         YogaDirection.RTL,
         nestedTree.getStyleDirection());
+  }
+
+  @Test
+  public void testCopyIntoTrasferLayoutDirectionIfNotSetOnTheHolderOrOnTheNestedTree() {
