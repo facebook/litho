@@ -257,3 +257,18 @@ public class TestDrawableComponent extends ComponentLifecycle {
         canMeasure,
         implementsAccessibility,
         usesDisplayList);
+  }
+
+  private static Builder newBuilder(
+      ComponentContext context,
+      @AttrRes int defStyleAttr,
+      @StyleRes int defStyleRes,
+      State state) {
+    Builder builder = mBuilderPool.acquire();
+    if (builder == null) {
+      builder = new Builder();
+    }
+    builder.init(context, defStyleAttr, defStyleRes, state);
+    return builder;
+  }
+

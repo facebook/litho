@@ -81,3 +81,4 @@ class DiffNode implements Cloneable {
     mLastWidthSpec = widthSpec;
   }
 
+  void setLastHeightSpec(int heightSpec) {

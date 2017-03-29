@@ -166,3 +166,4 @@ class ViewNodeInfo {
 
     mBackground = null;
     mForeground = null;
+    mLayoutDirection = YogaDirection.INHERIT;

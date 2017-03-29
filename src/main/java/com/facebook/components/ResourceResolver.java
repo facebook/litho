@@ -93,3 +93,6 @@ public class ResourceResolver {
       return result;
     }
 
+    return null;
+  }
+
