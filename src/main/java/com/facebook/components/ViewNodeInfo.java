@@ -178,3 +178,5 @@ class ViewNodeInfo {
       ComponentsPools.release(mExpandedTouchBounds);
       mExpandedTouchBounds = null;
     }
+
+    ComponentsPools.release(this);

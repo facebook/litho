@@ -203,3 +203,4 @@ class TransitionKeySet implements TransitionListener {
           mStartValues = oldTransition.mStartValues;
           if (oldTransition.wasRunningAppearTransition()) {
             keyStatusToResume = KeyStatus.APPEARED;
+          } else if (oldTransition.wasRunningChangeTransition()) {
