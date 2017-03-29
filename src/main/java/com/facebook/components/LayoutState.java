@@ -726,3 +726,9 @@ class LayoutState {
         layoutState,
         node,
         type,
+        previousId,
+        isOutputUpdated);
+
+    return output;
+  }
+
