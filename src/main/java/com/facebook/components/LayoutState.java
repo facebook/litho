@@ -804,3 +804,4 @@ class LayoutState {
       // retain a reference to a node that may get re-used by another thread)
       node.removeChildAt(i);
 
+      releaseNodeTree(child, isNestedTree);
