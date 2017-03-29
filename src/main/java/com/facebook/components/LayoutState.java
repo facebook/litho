@@ -355,3 +355,7 @@ class LayoutState {
   }
 
   @TargetApi(JELLY_BEAN_MR1)
+  private static int getLayoutDirection(Context context) {
+    return context.getResources().getConfiguration().getLayoutDirection();
+  }
+
