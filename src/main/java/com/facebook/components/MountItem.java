@@ -212,3 +212,4 @@ class MountItem {
     mHost = null;
     mContent = null;
     mFlags = 0;
+    mIsBound = false;
