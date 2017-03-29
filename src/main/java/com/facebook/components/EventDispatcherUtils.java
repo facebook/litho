@@ -120,3 +120,18 @@ class EventDispatcherUtils {
     sLongClickEvent.view = null;
 
     return returnValue;
+  }
+
+  static boolean dispatchOnTouch(
+      EventHandler<TouchEvent> touchHandler,
+      View view,
+      MotionEvent event) {
+    assertMainThread();
+
+    if (sTouchEvent == null) {
+      sTouchEvent = new TouchEvent();
+    }
+
+    sTouchEvent.view = view;
+    sTouchEvent.motionEvent = event;
+

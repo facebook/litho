@@ -135,3 +135,5 @@ class MountItem {
         convertDisplayListDrawable.setWrappedDrawable((Drawable) content, displayList);
       } else  {
         convertDisplayListDrawable = ComponentsPools.acquireDisplayListDrawable(
+            (Drawable) content, displayList);
+      }
