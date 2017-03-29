@@ -1371,3 +1371,4 @@ class LayoutState {
    *
    * @return true if the layout node requires updating, false if it can re-use the measurements
    *              from the diff node.
+   */
