@@ -517,3 +517,5 @@ class TextSpec {
           text.length() - 1,
           ClickableSpan.class));
     }
+  }
+
