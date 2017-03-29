@@ -946,3 +946,11 @@ public class TreeDiffingTest {
     assertTrue(prevNestedRoot.wasMeasureCalled());
 
     TestComponent nestedRoot = (TestComponent) layoutState.getMountableOutputAt(2).getComponent();
+    assertFalse(nestedRoot.wasMeasureCalled());
+  }
+
+  @Test
+  public void testCachedMeasuresForNestedTreeComponentWithUndefinedSize() {
+    final Component component1 = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
