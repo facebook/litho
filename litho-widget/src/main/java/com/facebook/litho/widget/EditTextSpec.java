@@ -173,3 +173,5 @@ class EditTextSpec {
       @Prop(optional = true, resType = ResType.BOOL) boolean isSingleLine,
       @Prop(optional = true, resType = ResType.COLOR) int textColor,
       @Prop(optional = true) ColorStateList textColorStateList,
+      @Prop(optional = true, resType = ResType.COLOR) int hintColor,
+      @Prop(optional = true) ColorStateList hintColorStateList,
