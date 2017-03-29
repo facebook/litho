@@ -114,3 +114,20 @@ public class LayoutOutputTest {
     mLayoutOutput.setComponent(component);
     mLayoutOutput.setId(
         LayoutStateOutputIdCalculator.calculateLayoutOutputId(
+            mLayoutOutput,
+            LEVEL_TEST,
+            LayoutOutput.TYPE_BACKGROUND,
+            SEQ_TEST));
+
+    long stableId = mLayoutOutput.getId();
+    assertEquals("100000001010000000000000001", Long.toBinaryString(stableId));
+  }
+
+  @Test
+  public void testStableIdForegroundType() {
+    ComponentLifecycle lifecycle = new ComponentLifecycle() {
+      @Override
+      int getId() {
+        return LIFECYCLE_TEST_ID;
+      }
+    };

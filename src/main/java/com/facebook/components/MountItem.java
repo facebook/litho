@@ -137,3 +137,7 @@ class MountItem {
         convertDisplayListDrawable = ComponentsPools.acquireDisplayListDrawable(
             (Drawable) content, displayList);
       }
+      convertDisplayListDrawable.suppressInvalidations(true);
+    } else if (convertDisplayListDrawable != null) {
+      convertDisplayListDrawable.setWrappedDrawable
+          ((Drawable) content, null);

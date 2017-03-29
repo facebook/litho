@@ -67,3 +67,10 @@ class PagerSpec {
     binder.mount(viewPager);
   }
 
+  @ShouldUpdate(onMount = true)
+  protected static boolean shouldUpdate(
+      Diff<PagerBinder> binder) {
+    return binder.getNext() != binder.getPrevious();
+  }
+
+  @OnBind

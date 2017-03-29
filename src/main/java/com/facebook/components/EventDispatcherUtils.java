@@ -135,3 +135,6 @@ class EventDispatcherUtils {
     sTouchEvent.view = view;
     sTouchEvent.motionEvent = event;
 
+    final EventDispatcher eventDispatcher = touchHandler.mHasEventDispatcher.getEventDispatcher();
+    final boolean returnValue =
+        (boolean) eventDispatcher.dispatchOnEvent(touchHandler, sTouchEvent);

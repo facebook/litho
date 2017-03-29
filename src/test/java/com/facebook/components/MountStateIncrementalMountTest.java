@@ -485,3 +485,4 @@ public class MountStateIncrementalMountTest {
         new TestComponentContextWithView(mContext, mountedView);
 
     final ComponentView componentView = ComponentTestHelper.mountComponent(
+        TestViewComponent.create(testComponentContext));
