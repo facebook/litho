@@ -286,3 +286,5 @@ public class ComponentTree {
   void attach() {
     assertMainThread();
 
+    if (mComponentView == null) {
+      throw new IllegalStateException("Trying to attach a ComponentTree without a set View");
