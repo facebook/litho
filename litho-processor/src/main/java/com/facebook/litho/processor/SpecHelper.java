@@ -59,3 +59,4 @@ public abstract class SpecHelper implements Closeable {
     mProcessingEnv = processingEnv;
     mSpecElement = specElement;
     mQualifiedClassName = Utils.getGenClassName(specElement, name);
+    mSpecModel = specModel;

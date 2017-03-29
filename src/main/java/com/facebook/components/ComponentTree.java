@@ -148,3 +148,4 @@ public class ComponentTree {
   }
 
   public static Builder create(ComponentContext context, Component<?> root) {
+    return ComponentsPools.acquireComponentTreeBuilder(context, root);

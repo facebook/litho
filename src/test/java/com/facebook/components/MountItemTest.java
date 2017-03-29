@@ -67,3 +67,4 @@ public class MountItemTest {
     mTouchHandler = new EventHandler(mComponent, 1);
     mDispatchPopulateAccessibilityEventHandler = new EventHandler(mComponent, 7);
     mFlags = 114;
+
