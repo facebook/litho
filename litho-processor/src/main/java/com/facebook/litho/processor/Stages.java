@@ -1876,3 +1876,4 @@ public class Stages {
       stateClassBuilder.addModifiers(Modifier.STATIC);
     }
 
+    stateClassBuilder.addField(stateContainerImplClass, STATE_CONTAINER_IMPL_MEMBER);
