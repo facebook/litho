@@ -122,3 +122,5 @@ public class ResourceResolver {
       int[] result = mResources.getIntArray(resId);
       mResourceCache.put(resId, result);
 
+      return result;
+    }
