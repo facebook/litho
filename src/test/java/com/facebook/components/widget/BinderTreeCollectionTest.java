@@ -89,3 +89,4 @@ public class BinderTreeCollectionTest {
     mBinderTreeCollection.put(originalSize + 1, newComponentTree);
 
     assertContiguous();
+    assertEquals(originalSize + 1, mBinderTreeCollection.size());

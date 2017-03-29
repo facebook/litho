@@ -136,3 +136,4 @@ public abstract class RecyclerComponentBinder<L extends RecyclerView.LayoutManag
           "the same one assigned to the RecyclerView associated to that Binder.");
     }
 
+    recyclerView.setAdapter(mAdapter);

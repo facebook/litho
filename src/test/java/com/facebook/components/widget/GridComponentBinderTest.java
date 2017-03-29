@@ -277,3 +277,6 @@ public class GridComponentBinderTest {
   private static class MyTestGridComponentBinder extends GridComponentBinder {
 
     private final List<Integer> mItems;
+
+    MyTestGridComponentBinder(
+        Context context,

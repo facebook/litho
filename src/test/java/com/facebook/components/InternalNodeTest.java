@@ -222,3 +222,19 @@ public class InternalNodeTest {
   }
 
   @Test
+  public void testBackgroundFlag() {
+    mNode.backgroundColor(0xFFFF0000);
+    assertTrue(isFlagSet(mNode, "PFLAG_BACKGROUND_IS_SET"));
+    clearFlag(mNode, "PFLAG_BACKGROUND_IS_SET");
+    assertEmptyFlags(mNode);
+  }
+
+  @Test
+  public void testForegroundFlag() {
+    mNode.foregroundColor(0xFFFF0000);
+    assertTrue(isFlagSet(mNode, "PFLAG_FOREGROUND_IS_SET"));
+    clearFlag(mNode, "PFLAG_FOREGROUND_IS_SET");
+    assertEmptyFlags(mNode);
+  }
+
+  @Test

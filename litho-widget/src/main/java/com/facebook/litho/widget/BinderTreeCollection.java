@@ -227,3 +227,7 @@ class BinderTreeCollection {
     shiftRangeLeft(getFirstPosition(), size(), shiftByAmount);
   }
 
+  int size() {
+    return mItems.size();
+  }
+}
