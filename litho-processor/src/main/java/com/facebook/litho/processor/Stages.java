@@ -1388,3 +1388,5 @@ public class Stages {
       for (TypeMirror typeParam : getTypeVarArguments(e.asType())) {
         typeParameters.add(typeParam.toString());
       }
+    }
+
