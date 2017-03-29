@@ -576,3 +576,9 @@ public class WorkingRangesTest {
 
     @Override
     public void onBind(ViewGroup view) {
+      if (mView == null) {
+        throw new IllegalStateException("onBind called before onMount");
+      }
+    }
+
+    @Override

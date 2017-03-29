@@ -61,3 +61,11 @@ public class GridComponentBinderTest {
   public void setup() throws Exception {
     mItems = new ArrayList<>();
 
+    // 20 items that are spread across 10 span groups. The first item occupies two spans.
+    // The last span group will only contain one element.
+    for (int i = 0; i < 20; i++) {
+      final int index = i % COLORS.length;
+      mItems.add(COLORS[index]);
+    }
+
+    mContext = RuntimeEnvironment.application;

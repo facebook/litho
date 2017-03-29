@@ -119,3 +119,6 @@ class LayoutStateOutputIdCalculator {
   
   /**
    * Calculates the final id for a LayoutOutput based on the baseId see
+   * {@link LayoutStateOutputIdCalculator#calculateLayoutOutputBaseId(LayoutOutput, int, int)} and
+   * on a sequence number. The sequence number must be guaranteed to be unique for LayoutOutputs
+   * with the same baseId.
