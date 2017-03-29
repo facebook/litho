@@ -200,3 +200,5 @@ class RecyclerSpec {
 
     recyclerViewWrapper.setOnRefreshListener(null);
   }
+
+  @OnUnmount

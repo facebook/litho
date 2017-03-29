@@ -748,3 +748,19 @@ public class ComponentsPools {
 
     return false;
   }
+
+  /**
+   * A {@link android.support.v4.util.Pools.SimplePool} that keeps track of the number of items
+   * that have been added to the Pool.
+   */
+  private static class PoolWithCount extends Pools.SynchronizedPool {
+
+    private int mCount;
+    private final int mSize;
+
+    /**
+     * Creates a new instance.
+     *
+     * @param maxPoolSize The max pool size.
+     * @throws IllegalArgumentException If the max pool size is less than zero.
+     */
