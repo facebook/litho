@@ -429,3 +429,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     // Do nothing by default.
   }
 
+  protected void onBind(ComponentContext c, Object mountedContent, Component<?> component) {
