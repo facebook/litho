@@ -2718,3 +2718,5 @@ public class Stages {
           .addStatement("super.init(context, defStyleAttr, defStyleRes, " +
               implInstanceName +
               ")");
+    } else {
+      initMethodSpec
