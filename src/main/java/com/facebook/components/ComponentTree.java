@@ -310,3 +310,7 @@ public class ComponentTree {
     int viewWidth = mComponentView.getMeasuredWidth();
     int viewHeight = mComponentView.getMeasuredHeight();
     if (viewWidth == 0 && viewHeight == 0) {
+      // The host view has not been measured yet.
+      return;
+    }
+

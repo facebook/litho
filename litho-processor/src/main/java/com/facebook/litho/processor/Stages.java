@@ -238,3 +238,5 @@ public class Stages {
     // This logic relies on the fact that there are prop annotations for each stage (except for
     // some number at the end)
     return interStagePropIndex < stageIndex;
+  }
+
