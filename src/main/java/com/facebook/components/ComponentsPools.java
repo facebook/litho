@@ -30,3 +30,4 @@ import android.util.SparseArray;
 
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.displaylist.DisplayList;
+import com.facebook.infer.annotation.ThreadSafe;

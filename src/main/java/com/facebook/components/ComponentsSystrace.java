@@ -49,3 +49,8 @@ public class ComponentsSystrace {
 
   private static Systrace getInstance() {
     if (sInstance == null) {
+      synchronized (ComponentsSystrace.class) {
+        if (sInstance == null) {
+          sInstance = new DefaultComponentsSystrace();
+        }
+      }
