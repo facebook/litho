@@ -6,3 +6,5 @@
 
 include_defs("//COMPONENTS_DEFS")
 
+android_library(
+    name = "litho",
