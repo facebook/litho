@@ -863,3 +863,5 @@ class LayoutState {
       ComponentContext c,
       Component<T> component,
       int componentTreeId,
+      int widthSpec,
+      int heightSpec,
