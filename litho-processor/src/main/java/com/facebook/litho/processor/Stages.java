@@ -1360,3 +1360,6 @@ public class Stages {
         methodBuilder.addStatement(
             "do$L($L)",
             capitalize(element.getSimpleName().toString()),
+            eventHandlerParams.build());
+        methodBuilder.addStatement("return null");
+      }
