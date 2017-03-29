@@ -227,3 +227,9 @@ class EditTextSpec {
     size.height = editText.getMeasuredHeight();
   }
 
+  @OnCreateMountContent
+  protected static EditTextTextTextChangedEventHandler onCreateMountContent(
+      ComponentContext c) {
+    return new EditTextTextTextChangedEventHandler(c);
+  }
+
