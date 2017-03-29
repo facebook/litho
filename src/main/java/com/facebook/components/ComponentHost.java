@@ -390,3 +390,4 @@ public class ComponentHost extends ViewGroup {
    * by subsequent calls to either {@link ComponentHost#unmount(int, MountItem)} or
    * {@link ComponentHost#moveItem(MountItem, int, int)}.
    *
+   * @param item The item that has been moved.
