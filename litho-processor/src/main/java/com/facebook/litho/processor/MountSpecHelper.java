@@ -84,3 +84,5 @@ public class MountSpecHelper extends ComponentSpecHelper {
       TypeElement specElement,
       SpecModel specModel) {
     super(
+        processingEnv,
+        specElement,
