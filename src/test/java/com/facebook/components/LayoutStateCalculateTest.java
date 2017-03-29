@@ -1102,3 +1102,5 @@ public class LayoutStateCalculateTest {
 
     // Second output is the child of the inner host
     assertEquals(hostMarkerOne, layoutState.getMountableOutputAt(2).getHostMarker());
+
+    // Third and fourth outputs are children of the root view.
