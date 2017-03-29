@@ -163,3 +163,4 @@ public abstract class PagerBinder extends BaseBinder<
     private final Context mContext;
     private final SimplePool<ComponentView> mComponentViewPool = new SimplePool<>(VIEW_POOL_SIZE);
 
+    InternalAdapter(PagerBinder binder, Context context) {

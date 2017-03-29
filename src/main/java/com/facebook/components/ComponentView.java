@@ -366,3 +366,4 @@ public class ComponentView extends ComponentHost {
   Deque<TestItem> findTestItems(String testKey) {
     return mMountState.findTestItems(testKey);
   }
+}
