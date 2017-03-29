@@ -390,3 +390,5 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
   }
 
   /** Whether there is a visible view in the hierarchy with the given id. */
+  public ViewTreeAssert hasVisibleViewWithId(final int viewId) {
+    final ImmutableList<View> path = getPathToVisibleWithId(viewId);
