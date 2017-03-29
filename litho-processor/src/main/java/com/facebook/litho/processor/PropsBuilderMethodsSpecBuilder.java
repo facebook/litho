@@ -72,3 +72,8 @@ class PropsBuilderMethodsSpecBuilder {
       case STRING:
         builders.add(regularBuilder());
         builders.add(resBuilder(ClassNames.STRING_RES, "resolveString"));
+        builders.add(resWithVarargsBuilder(
+            ClassNames.STRING_RES,
+            "resolveString",
+            TypeName.OBJECT,
+            "formatArgs"));
