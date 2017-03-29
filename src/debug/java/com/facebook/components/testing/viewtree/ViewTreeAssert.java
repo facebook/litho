@@ -56,3 +56,8 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
   }
 
   private String getHasVisibleTextErrorMessage(final String text) {
+    String errorMsg = String.format(
+        "Cannot find text \"%s\" in view hierarchy:%n%s. ",
+        text,
+        actual.makeString(GET_TEXT_FUNCTION));
+

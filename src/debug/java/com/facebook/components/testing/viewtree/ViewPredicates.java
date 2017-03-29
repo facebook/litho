@@ -39,3 +39,4 @@ final class ViewPredicates {
    * @param predicate the predicate with which to test the text
    * @return the predicate
    */
+  public static Predicate<View> hasTextMatchingPredicate(final Predicate<String> predicate) {
