@@ -1601,3 +1601,4 @@ public class Stages {
                 .addMember("value", "$S", "unchecked").build())
         .addAnnotation(Override.class)
         .addModifiers(Modifier.PROTECTED)
+        .addParameter(ClassNames.COMPONENT_CONTEXT, "_context")
