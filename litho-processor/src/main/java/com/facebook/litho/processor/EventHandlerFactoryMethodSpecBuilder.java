@@ -78,3 +78,11 @@ class EventHandlerFactoryMethodSpecBuilder {
       builder.addTypeVariable(TypeVariableName.get(typeParam));
     }
 
+    for (Parameter eventParam : mEventParams) {
+      builder.addParameter(eventParam.type, eventParam.name);
+    }
+
+    final CodeBlock.Builder paramsBlock = CodeBlock.builder();
+
+      paramsBlock.add("new Object[] {\n");
+      paramsBlock.indent();

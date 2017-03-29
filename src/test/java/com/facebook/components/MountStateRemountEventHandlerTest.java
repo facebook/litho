@@ -149,3 +149,12 @@ public class MountStateRemountEventHandlerTest {
 
     assertNotNull(MountState.getComponentClickListener(componentView));
 
+    componentView.getComponent().setRoot(new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c)
+            .child(TestDrawableComponent.create(c))
+            .child(TestDrawableComponent.create(c))
+            .build();
+      }
+    });
