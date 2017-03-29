@@ -98,3 +98,4 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
       mGenericDraweeHierarchy.setPlaceholderImage(null);
       return;
     }
+
