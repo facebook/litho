@@ -49,3 +49,4 @@ public interface ComponentLayout {
   int getY();
 
   @Px
+  int getWidth();
