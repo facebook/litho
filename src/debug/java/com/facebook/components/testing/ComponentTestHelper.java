@@ -262,3 +262,22 @@ public final class ComponentTestHelper {
    * @return The subcomponents of the given component
    */
   public static List<SubComponent> getSubComponents(ComponentContext context, Component component) {
+    return getSubComponents(
+        context,
+        component,
+        makeMeasureSpec(1000, EXACTLY),
+        makeMeasureSpec(0, UNSPECIFIED));
+  }
+
+  /**
+   * Get the subcomponents of a component
+   *
+   * @param component The component which to get the subcomponents of
+   * @param widthSpec The width to measure the component with
+   * @param heightSpec The height to measure the component with
+   * @return The subcomponents of the given component
+   */
+  public static List<SubComponent> getSubComponents(
+      Component.Builder component,
+      int widthSpec,
+      int heightSpec) {
