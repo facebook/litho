@@ -134,3 +134,14 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     // nothing will really happen until we compute the first range.
     if (!mIsMeasured.get()) {
       updateItemAt(position, componentInfo);
+      return;
+    }
+
+    //TODO t15827349 implement async operations in RecyclerBinder.
+  }
+
+  /**
+   * Inserts an item at position. The {@link RecyclerView} will only be notified of the item being
+   * inserted after a layout calculation has been completed for the new {@link Component}.
+   */
+  @UiThread

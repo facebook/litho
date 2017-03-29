@@ -107,3 +107,4 @@ public class RecyclerBinderTest {
   @Test
   public void testComponentTreeHolderCreation() {
     final List<ComponentInfo> components = new ArrayList<>();
+    for (int i = 0; i < 100; i++) {
