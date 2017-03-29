@@ -579,3 +579,7 @@ public class ComponentTree {
     return mIncrementalMountEnabled;
   }
 
+  synchronized Component getRoot() {
+    return mRoot;
+  }
+
