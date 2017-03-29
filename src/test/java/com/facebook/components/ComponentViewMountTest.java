@@ -113,3 +113,7 @@ public class ComponentViewMountTest {
 
   @Test
   public void testAttachAndSetSameSizeComponentRequestsLayout() {
+    mComponentView.setMeasured(100, 100);
+    mComponentView.onAttachedToWindow();
+    mComponentView.setComponent(mComponentTree);
+

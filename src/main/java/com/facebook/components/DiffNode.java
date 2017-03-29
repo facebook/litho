@@ -26,3 +26,6 @@ class DiffNode implements Cloneable {
   private LayoutOutput mBorder;
   private LayoutOutput mHost;
   private VisibilityOutput mVisibilityOutput;
+  private Component mComponent;
+  private float mLastMeasuredWidth;
+  private float mLastMeasuredHeight;

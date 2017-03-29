@@ -30,3 +30,4 @@ import com.facebook.infer.annotation.ThreadSafe;
  * returns a builder that allows you to set values for individual props. {@link Component}
  * instances are immutable after creation.
  */
+public abstract class Component<L extends ComponentLifecycle> implements HasEventDispatcher {

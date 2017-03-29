@@ -23,3 +23,6 @@ import java.lang.annotation.RetentionPolicy;
  * not on the screen anymore but it's not been unmounted yet (to re-use items in place for example).
  */
 @Retention(RetentionPolicy.CLASS)
+public @interface OnUnbind {
+
+}
