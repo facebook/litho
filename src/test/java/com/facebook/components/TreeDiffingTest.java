@@ -842,3 +842,8 @@ public class TreeDiffingTest {
   @Test
   public void testDiffTreeUsedIfMeasureSpecsAreSame() {
     final TestComponent component = TestDrawableComponent.create(mContext)
+        .color(Color.BLACK)
+        .build();
+
+    final Component layoutComponent = new InlineLayoutSpec() {
+      @Override
