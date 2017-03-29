@@ -458,3 +458,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
    */
   protected void onPopulateAccessibilityNode(
       AccessibilityNodeInfoCompat accessibilityNode,
+      Component<?> component) {
