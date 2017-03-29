@@ -1369,3 +1369,6 @@ public class Stages {
 
     methodBuilder.addStatement("default: \nreturn null");
 
+    methodBuilder.endControlFlow();
+
+    writeMethodSpec(methodBuilder.build());
