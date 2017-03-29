@@ -2661,3 +2661,4 @@ public class Stages {
         SectionClassNames.SECTION,
         genericType,
         INNER_IMPL_BUILDER_CLASS_NAME,
+        new TypeName[]{genericType},
