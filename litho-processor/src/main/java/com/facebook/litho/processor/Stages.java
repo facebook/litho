@@ -192,3 +192,4 @@ public class Stages {
     mClassTypeSpec = typeSpec;
     mTypeVariables = typeVariables;
     mEventDeclarations = eventDeclarations;
+    mPropJavadocs = propJavadocs;

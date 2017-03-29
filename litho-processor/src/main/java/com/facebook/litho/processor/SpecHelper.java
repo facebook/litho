@@ -97,3 +97,4 @@ public abstract class SpecHelper implements Closeable {
       if (javadoc != null && !javadoc.isEmpty()) {
         // Javadoc returns a space at the start of every line.
         String javadocContents = JAVADOC_SANITIZER.matcher(javadoc).replaceAll("");
+
