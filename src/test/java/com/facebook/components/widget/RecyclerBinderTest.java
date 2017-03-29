@@ -53,3 +53,6 @@ import static org.mockito.Mockito.when;
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
 public class RecyclerBinderTest {
 
+  @Rule
+  public PowerMockRule mPowerMockRule = new PowerMockRule();
+
