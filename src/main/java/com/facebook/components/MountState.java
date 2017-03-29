@@ -159,3 +159,5 @@ class MountState {
 
     if (logger != null) {
       logger.eventStart(EVENT_MOUNT, componentTree);
+    }
+
