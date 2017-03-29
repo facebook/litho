@@ -515,3 +515,4 @@ public class ComponentTree {
       LayoutState localLayoutState = calculateLayoutState(
           mLayoutLock,
           mContext,
+          component,
