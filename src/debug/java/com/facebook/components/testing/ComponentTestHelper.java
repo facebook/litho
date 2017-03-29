@@ -15,3 +15,4 @@ import java.util.List;
 import android.graphics.Rect;
 import android.view.View;
 
+import com.facebook.components.Component;

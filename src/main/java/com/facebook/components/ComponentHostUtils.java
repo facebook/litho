@@ -118,3 +118,61 @@ class ComponentHostUtils {
     maybeSetDrawableState(view, drawable, flags, nodeInfo);
     view.invalidate(bounds);
   }
+
+  static List<?> extractContent(SparseArrayCompat<MountItem> items) {
+    if (items.size() == 1) {
+      return Collections.singletonList(items.valueAt(0).getContent());
+    }
+
+    final List<Object> content = new ArrayList<>();
+
+    for (int i = 0; i < items.size(); i++) {
+      content.add(items.valueAt(i).getContent());
+    }
+
+    return content;
+  }
+
+  static TextContent extractTextContent(List<?> items) {
+    if (items.size() == 1) {
+      Object item = items.get(0);
+      return item instanceof TextContent ? (TextContent) item : TextContent.EMPTY;
+    }
+
+    final List<CharSequence> textContent = new ArrayList<>();
+
+    for (Object item : items) {
+      if (item instanceof TextContent) {
+        textContent.addAll(((TextContent) item).getTextItems());
+      }
+    }
+
+    return new TextContent() {
+      @Override
+      public List<CharSequence> getTextItems() {
+        return textContent;
+      }
+    };
+  }
+
+  static ImageContent extractImageContent(List<?> items) {
+    if (items.size() == 1) {
+      Object item = items.get(0);
+      return item instanceof ImageContent ? (ImageContent) item : ImageContent.EMPTY;
+    }
+
+    final List<Drawable> imageContent = new ArrayList<>();
+
+    for (Object item : items) {
+      if (item instanceof ImageContent) {
+        imageContent.addAll(((ImageContent) item).getImageItems());
+      }
+    }
+
+    return new ImageContent() {
+      @Override
+      public List<Drawable> getImageItems() {
+        return imageContent;
+      }
+    };
+  }
