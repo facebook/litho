@@ -272,3 +272,4 @@ class LayoutState {
     if (duplicateParentState) {
       flags |= FLAG_DUPLICATE_PARENT_STATE;
     }
+

@@ -107,3 +107,15 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
 
   abstract public String getSimpleName();
 
+  protected StateContainer getStateContainer() {
+    return null;
+  }
+
+  public ComponentContext getScopedContext() {
+    return mScopedContext;
+  }
+
+  public void setScopedContext(ComponentContext scopedContext) {
+    mScopedContext = scopedContext;
+  }
+

@@ -44,3 +44,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
  * Tests {@link ComponentLifecycle}
  */
 @PrepareForTest({
+    InternalNode.class,
+    DiffNode.class,
+    LayoutState.class,
+    ComponentsPools.class,
