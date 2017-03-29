@@ -246,3 +246,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Px
   @Override
   public int getPaddingLeft() {
+    return FastMath.round(mYogaNode.getLayoutPadding(LEFT));

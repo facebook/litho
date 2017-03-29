@@ -483,3 +483,44 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputsForMegaDeepLayoutSpecs() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c)
+            .child(
+                Container.create(c)
+                    .child(TestDrawableComponent.create(c))
+                    .child(TestDrawableComponent.create(c))
+                    .wrapInView())
+            .child(
+                Container.create(c)
+                    .child(
+                        TestDrawableComponent.create(c)
+                            .withLayout()
+                            .wrapInView())
+                    .child(
+                        Container.create(c)
+                            .child(TestDrawableComponent.create(c))
+                            .child(TestDrawableComponent.create(c))
+                            .wrapInView())
+                    .wrapInView())
+            .child(
+                Container.create(c)
+                    .child(TestDrawableComponent.create(c))
+                    .child(
+                        Container.create(c)
+                            .child(TestDrawableComponent.create(c))
+                            .child(TestDrawableComponent.create(c)))
+                    .wrapInView())
+            .child(
+                Container.create(c)
+                    .child(TestDrawableComponent.create(c))
+                    .child(
+                        Container.create(c)
+                            .child(TestDrawableComponent.create(c))
+                            .child(TestViewComponent.create(c)))
+                    .wrapInView())
+            .build();
+      }
+    };
+
