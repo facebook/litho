@@ -636,3 +636,7 @@ public class RecyclerBinderTest {
   public void testMoveWithinRange() {
     final List<ComponentInfo> components = prepareLoadedBinder();
 
+    final TestComponentTreeHolder movedHolderOne =
+        mHoldersForComponents.get(components.get(0).getComponent());
+    final TestComponentTreeHolder movedHolderTwo =
+        mHoldersForComponents.get(components.get(1).getComponent());
