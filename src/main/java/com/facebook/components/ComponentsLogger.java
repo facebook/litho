@@ -33,3 +33,16 @@ public interface ComponentsLogger {
   String PARAM_IS_ASYNC_PREPARE = "is_async_prepare";
   String PARAM_IS_BACKGROUND_LAYOUT = "is_background_layout";
   String PARAM_IS_BACKGROUND_LAYOUT_ENABLED = "is_background_layout_enabled";
+  String PARAM_UNMOUNTED_COUNT = "unmounted_count";
+  String PARAM_MOVED_COUNT = "moved_count";
+  String PARAM_UNCHANGED_COUNT = "unchanged_count";
+  String PARAM_MOUNTED_COUNT = "mounted_count";
+  String PARAM_UPDATED_COUNT = "updated_count";
+  String PARAM_NO_OP_COUNT = "no_op_count";
+  String PARAM_IS_DIRTY = "is_dirty";
+
+  void eventStart(int eventId, Object object);
+  void eventStart(int eventId, Object object, String key, String value);
+  void eventEnd(int eventId, Object object, int actionId);
+  void eventCancel(int eventId, Object object);
+  void eventAddParam(int eventId, Object object, String key, String value);
