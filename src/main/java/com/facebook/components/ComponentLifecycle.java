@@ -133,3 +133,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
 
           if (size.width < 0 || size.height < 0) {
             throw new IllegalStateException(
+                "MeasureOutput not set, ComponentLifecycle is: " + component.getLifecycle());
