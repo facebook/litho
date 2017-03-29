@@ -265,3 +265,4 @@ public class ComponentLifecycleTest {
 
   @Test
   public void testOnMeasureNotOverriden() {
+    setUpComponentForCreateLayout(true, true);
