@@ -54,3 +54,4 @@ class CardSpec {
 
   @OnCreateLayout
   static ComponentLayout onCreateLayout(
+      ComponentContext c,

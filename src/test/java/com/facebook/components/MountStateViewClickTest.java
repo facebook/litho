@@ -49,3 +49,5 @@ public class MountStateViewClickTest {
           }
         });
 
+    assertEquals(1, componentView.getChildCount());
+    assertFalse(componentView.isClickable());

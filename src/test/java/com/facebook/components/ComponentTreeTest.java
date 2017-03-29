@@ -25,3 +25,4 @@ import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowLooper;
 
 import static com.facebook.components.SizeSpec.AT_MOST;
+import static com.facebook.components.SizeSpec.EXACTLY;

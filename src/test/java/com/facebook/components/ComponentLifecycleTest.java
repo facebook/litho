@@ -12,3 +12,5 @@ package com.facebook.components;
 import android.content.res.Resources;
 
 import com.facebook.components.testing.testrunner.ComponentsTestRunner;
+import com.facebook.yoga.YogaMeasureFunction;
+import com.facebook.yoga.YogaMeasureOutput;

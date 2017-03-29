@@ -51,3 +51,4 @@ import static org.mockito.Mockito.when;
 
 @RunWith(ComponentsTestRunner.class)
 public class MountStateIncrementalMountTest {
+  private ComponentContext mContext;

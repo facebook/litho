@@ -20,3 +20,10 @@ import android.view.ViewGroup;
 import com.facebook.components.ComponentContext;
 import com.facebook.components.ComponentView;
 
+import static android.view.ViewGroup.LayoutParams;
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+
+import static com.facebook.components.SizeSpec.getMode;
+import static com.facebook.components.SizeSpec.UNSPECIFIED;
+

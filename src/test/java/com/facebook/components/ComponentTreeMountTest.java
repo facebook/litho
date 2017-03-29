@@ -36,3 +36,9 @@ public class ComponentTreeMountTest {
   @Rule
   public PowerMockRule mPowerMockRule = new PowerMockRule();
 
+  private ComponentContext mContext;
+
+  @Before
+  public void setup() {
+    mContext = new ComponentContext(RuntimeEnvironment.application);
+  }

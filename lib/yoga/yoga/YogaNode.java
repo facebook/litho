@@ -148,3 +148,26 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
     if (mChildren == null) {
       mChildren = new ArrayList<>(4);
     }
+    mChildren.add(i, child);
+    child.mParent = this;
+    jni_YGNodeInsertChild(mNativePointer, child.mNativePointer, i);
+  }
+
+  private native void jni_YGNodeRemoveChild(long nativePointer, long childPointer);
+  @Override
+  public YogaNode removeChildAt(int i) {
+
+    final YogaNode child = mChildren.remove(i);
+    child.mParent = null;
+    jni_YGNodeRemoveChild(mNativePointer, child.mNativePointer);
+    return child;
+  }
+
+  @Override
+  public @Nullable
+  YogaNode getParent() {
+    return mParent;
+  }
+
+  @Override
+  public int indexOf(YogaNode child) {
