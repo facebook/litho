@@ -11,3 +11,15 @@
 
 <resources>
 
+  <declare-styleable name="ComponentLayout">
+    <attr name="flex_direction" />
+    <attr name="flex_layoutDirection" />
+    <attr name="flex_justifyContent" />
+    <attr name="flex_alignItems" />
+    <attr name="flex_alignSelf" />
+    <attr name="flex_positionType" />
+    <attr name="flex_wrap" />
+    <attr name="flex_left" />
+    <attr name="flex_top" />
+    <attr name="flex_right" />
+    <attr name="flex_bottom" />

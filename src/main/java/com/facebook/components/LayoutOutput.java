@@ -62,3 +62,8 @@ class LayoutOutput implements Cloneable {
     mHostMarker = -1L;
   }
 
+  Component<?> getComponent() {
+    return mComponent;
+  }
+
+  void setComponent(Component<?> component) {

@@ -176,3 +176,10 @@ public class ComponentView extends ComponentHost {
 
       width = sLayoutSize[0];
       height = sLayoutSize[1];
+    }
+
+    setMeasuredDimension(width, height);
+  }
+
+  @Override
+  protected void performLayout(boolean changed, int left, int top, int right, int bottom) {
