@@ -365,3 +365,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public YogaDirection getResolvedLayoutDirection() {
+    return mYogaNode.getLayoutDirection();
+  }
+
+  @Override
+  public InternalNode layoutDirection(YogaDirection direction) {
