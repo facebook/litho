@@ -24,3 +24,7 @@ public class GridLayoutInfo implements LayoutInfo {
     mGridLayoutManager = new GridLayoutManager(context, spanCount, orientation, reverseLayout);
   }
 
+  public GridLayoutInfo(Context context, int spanCount) {
+    this(context, spanCount, OrientationHelper.VERTICAL, false);
+  }
+
