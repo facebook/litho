@@ -17,3 +17,4 @@ import com.google.common.collect.ImmutableList;
  * verify predicates on its nodes within the narrow abilities that
  * Robolectric affords us.
  */
+public final class ViewTree {

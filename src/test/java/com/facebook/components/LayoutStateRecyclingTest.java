@@ -83,3 +83,5 @@ public class LayoutStateRecyclingTest {
         new ComponentContext(RuntimeEnvironment.application),
         input,
         -1,
+        mUnspecifiedSizeSpec,
+        mUnspecifiedSizeSpec,

@@ -22,3 +22,6 @@ import com.google.common.base.Strings;
  */
 final class ViewExtractors {
 
+  private ViewExtractors() {}
+
+  public static final Function<View, String> GET_TEXT_FUNCTION = new Function<View, String>() {

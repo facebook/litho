@@ -17,3 +17,4 @@ android_library(
         make_dep_path("src/debug/java/com/facebook/components/testing/viewtree:viewtree"),
         make_dep_path("src/debug/java/com/facebook/components/testing:testing"),
     ],
+)

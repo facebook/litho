@@ -36,3 +36,4 @@ android_library(
     ],
     tests = [
         "//instrumentation_tests/com/facebook/components/widget:widget",
+        "//libraries/components/src/test/java/com/facebook/components/widget:widget",
