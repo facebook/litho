@@ -14,3 +14,5 @@ import com.facebook.proguard.annotations.DoNotStrip;
 @DoNotStrip
 public enum YogaExperimentalFeature {
   ROUNDING(0),
+  WEB_FLEX_BASIS(1),
+  MIN_FLEX_FIX(2);

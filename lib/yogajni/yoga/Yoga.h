@@ -221,3 +221,5 @@ YG_NODE_LAYOUT_EDGE_PROPERTY(float, Padding);
 WIN_EXPORT void YGSetLogger(YGLogger logger);
 WIN_EXPORT void YGLog(YGLogLevel level, const char *message, ...);
 
+// Set this to number of pixels in 1 point to round calculation results
+// If you want to avoid rounding - set PointScaleFactor to 0
