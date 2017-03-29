@@ -798,3 +798,8 @@ public class TreeDiffingTest {
         return Container.create(c)
             .alignItems(YogaAlign.FLEX_START)
             .child(Layout.create(c, component).heightPx(50))
+            .build();
+      }
+    };
+
+    LayoutState firstLayoutState = LayoutState.calculate(
