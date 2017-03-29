@@ -2452,3 +2452,8 @@ public class Stages {
       }
     }
 
+    for (TypeParameterElement typeParameterElement : typeParameters) {
+      methodBuilder.addTypeVariable(
+          TypeVariableName.get(typeParameterElement.getSimpleName().toString()));
+    }
+
