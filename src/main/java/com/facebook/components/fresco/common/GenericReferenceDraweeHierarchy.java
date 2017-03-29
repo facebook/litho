@@ -276,3 +276,6 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
     }
     if (mFailureReference != null) {
       Reference.release(mContext, mFailure, mFailureReference);
+      mFailure = null;
+      mFailureReference = null;
+      mGenericDraweeHierarchy.setFailureImage(null);
