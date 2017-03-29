@@ -1897,3 +1897,16 @@ public class LayoutStateCalculateTest {
     assertEquals(new Rect(0, 0, 300, sizeOutput.height), mountBounds);
     assertTrue(getComponentAt(layoutState, 1) instanceof TestDrawableComponent);
     layoutState.getMountableOutputAt(1).getMountBounds(mountBounds);
+    assertEquals(new Rect(20, 0, 20, 0), mountBounds);
+
+    Mockito.validateMockitoUsage();
+  }
+
+  @Test
+  public void testLayoutOutputWithCachedLayoutSpecWithMeasure() {
+    final ComponentContext c = new ComponentContext(RuntimeEnvironment.application);
+    final int widthSpecContainer = SizeSpec.makeSizeSpec(300, SizeSpec.EXACTLY);
+    final int heightSpec = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
+    final int horizontalPadding = 20;
+    final int widthMeasuredComponent = SizeSpec.makeSizeSpec(
+        SizeSpec.getSize(widthSpecContainer) - horizontalPadding - horizontalPadding,
