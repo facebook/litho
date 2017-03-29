@@ -168,3 +168,5 @@ class LayoutState {
       LayoutState layoutState) {
     final Component<?> component = node.getComponent();
 
+    // Skip empty nodes and layout specs because they don't mount anything.
+    if (component == null || component.getLifecycle().getMountType() == NONE) {
