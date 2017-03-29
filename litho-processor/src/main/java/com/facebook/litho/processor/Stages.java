@@ -2695,3 +2695,4 @@ public class Stages {
       ClassName propsClass,
       TypeName genericType,
       String builderClassName,
+      TypeName[] builderGenericTypes,
