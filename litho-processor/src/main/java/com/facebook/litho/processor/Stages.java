@@ -2475,3 +2475,4 @@ public class Stages {
         className);
 
     for (VariableElement v : parameters) {
+      final String variableName = v.getSimpleName().toString();
