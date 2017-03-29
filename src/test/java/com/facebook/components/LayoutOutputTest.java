@@ -222,3 +222,4 @@ public class LayoutOutputTest {
             LayoutOutput.TYPE_CONTENT,
             MAX_SEQ_TEST));
 
+    assertEquals(LayoutStateOutputIdCalculator.getSequenceFromId(mLayoutOutput.getId()), MAX_SEQ_TEST);
