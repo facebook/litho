@@ -136,3 +136,9 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
       return;
     }
 
+    mRetryReference = retryReference;
+    mRetry = Reference.acquire(mContext, retryReference);
+
+    mGenericDraweeHierarchy.setRetryImage(
+        DrawableUtils.cloneDrawable(mRetry),
+        scaleType != null ? scaleType : DEFAULT_SCALE_TYPE);

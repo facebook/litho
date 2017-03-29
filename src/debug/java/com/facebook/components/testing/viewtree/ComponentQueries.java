@@ -84,3 +84,21 @@ class ComponentQueries {
     if (!drawnDrawableDescription.isEmpty()) {
       return ViewPredicates.getDrawnDrawableDescription(containingDrawable)
           .contains(drawnDrawableDescription);
+    }
+
+    // Some Drawables do not have a description. However they can be compared directly.
+
+    // The drawable being compared is a Robolectric shadow drawable whose bounds are not set.
+    // However, the containingDrawable in its mounted state has its bounds set in the components
+    // testing environment. Therefore, the bounds must be set to 0 for comparison.
+    containingDrawable = containingDrawable.mutate();
+    containingDrawable.setBounds(0, 0, 0, 0);
+
+    if (drawable.equals(containingDrawable)) {
+      return true;
+    }
+
+    // The drawable being compared might have pre-set bounds.
+    drawable = drawable.mutate();
+    drawable.setBounds(0, 0, 0, 0);
+
