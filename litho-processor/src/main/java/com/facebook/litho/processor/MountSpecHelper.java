@@ -427,3 +427,5 @@ public class MountSpecHelper extends ComponentSpecHelper {
     }
 
     return MountType.NONE;
+  }
+
