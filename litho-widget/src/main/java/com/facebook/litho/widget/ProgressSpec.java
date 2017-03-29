@@ -94,3 +94,6 @@ class ProgressSpec {
 
     if (resolvedIndeterminateDrawable != null) {
       progressBar.setIndeterminateDrawable(Reference.acquire(c, resolvedIndeterminateDrawable));
+    }
+
+    if (color != Color.TRANSPARENT && progressBar.getIndeterminateDrawable() != null) {
