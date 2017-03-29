@@ -141,3 +141,18 @@ public abstract class PagerBinder extends BaseBinder<
     }
   }
 
+  @Override
+  protected boolean shouldContinueInitialization(
+      int position,
+      int itemWidth,
+      int itemHeight) {
+
+    // The end of the initialization range.
+    final int endRange = mCurrentItem + getRangeController().getHalfWorkingRangeSize();
+
+    // Check if the initial range is filled. The initial range consists of the viewport and the
+    // the items that should be loaded before and after the currently visible ones.
+    return position < endRange;
+  }
+
+  private static class InternalAdapter extends PagerAdapter implements BaseBinder.Listener {
