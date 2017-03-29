@@ -475,3 +475,4 @@ class MountState {
     // 2. Reset all the properties like click handler, content description and tags related to
     // this item if it needs to be updated. the update mount item will re-set the new ones.
     if (shouldUpdate) {
+      unsetViewAttributes(currentMountItem);
