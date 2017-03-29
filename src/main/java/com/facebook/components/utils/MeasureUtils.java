@@ -66,3 +66,5 @@ public final class MeasureUtils {
   }
 
   /**
+   * Set the {@param outputSize} to respect both Specs and try to keep both width and height equal.
+   * This will only not guarantee equal width and height if thes Specs use modes and sizes which
