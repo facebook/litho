@@ -2992,3 +2992,19 @@ public class Stages {
     List<VariableElement> specDefinedParameters = new ArrayList<>();
 
     for (ExecutableElement stage : mStages) {
+      specDefinedParameters.addAll(getSpecDefinedParameters(stage));
+    }
+
+    addCreateInitialStateDefinedProps(specDefinedParameters);
+
+    for (VariableElement v : specDefinedParameters) {
+      final TypeMirror diffInnerType = Utils.getGenericTypeArgument(v.asType(), ClassNames.DIFF);
+
+      final Parameter componentParameter =
+          new Parameter(
+              diffInnerType != null ? ClassName.get(diffInnerType) : ClassName.get(v.asType()),
+              v.getSimpleName().toString());
+
+      if (!componentParameters.contains(componentParameter)) {
+        componentParameters.add(componentParameter);
+      }
