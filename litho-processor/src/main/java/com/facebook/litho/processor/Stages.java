@@ -1306,3 +1306,4 @@ public class Stages {
         .addAnnotation(Override.class)
         .returns(TypeName.OBJECT)
         .addParameter(
+            ParameterSpec.builder(ClassNames.EVENT_HANDLER, "eventHandler", Modifier.FINAL).build())
