@@ -1413,3 +1413,9 @@ public class LayoutStateCalculateTest {
                             .withLayout().flexShrink(0)
                             .widthDip(30)
                             .heightDip(30)
+                            .importantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_YES)
+                            .contentDescription("This is an image")))
+            .build();
+      }
+    };
+
