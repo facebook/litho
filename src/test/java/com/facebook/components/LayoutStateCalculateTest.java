@@ -271,3 +271,4 @@ public class LayoutStateCalculateTest {
     assertEquals(8, layoutState.getMountableOutputCount());
 
     // Check quantity of HostComponents.
+    int totalHosts = 0;

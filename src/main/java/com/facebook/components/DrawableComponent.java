@@ -99,3 +99,4 @@ class DrawableComponent<T extends Drawable> extends ComponentLifecycle {
 
 private static class State<T extends Drawable> extends Component<DrawableComponent>
     implements Cloneable {
+
