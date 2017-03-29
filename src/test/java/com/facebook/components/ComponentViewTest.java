@@ -80,3 +80,18 @@ public class ComponentViewTest {
     MountState mountState = Whitebox.getInternalState(componentView, "mMountState");
     return Whitebox.getInternalState(mountState, "mLayoutOutputsIds");
   }
+
+  @Test
+  public void testNullComponentViewDimensions() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return null;
+      }
+    };
+
+    ComponentView nullComponentView = new ComponentView(RuntimeEnvironment.application);
+    nullComponentView.setComponent(
+        ComponentTree.create(
+            new ComponentContext(RuntimeEnvironment.application),
+            component)
