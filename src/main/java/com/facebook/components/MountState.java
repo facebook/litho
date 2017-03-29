@@ -255,3 +255,5 @@ class MountState {
 
     suppressInvalidationsOnHosts(false);
 
+    mLastMountedComponentTreeId = componentTreeId;
+
