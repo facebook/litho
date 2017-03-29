@@ -1142,3 +1142,4 @@ class MountState {
       listener = new ComponentClickListener();
       setComponentClickListener(view, listener);
     }
+

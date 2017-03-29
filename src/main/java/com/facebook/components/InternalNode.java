@@ -1795,3 +1795,5 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       mNodeInfo.release();
       mNodeInfo = null;
     }
+    mImportantForAccessibility = ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+    mDuplicateParentState = false;
