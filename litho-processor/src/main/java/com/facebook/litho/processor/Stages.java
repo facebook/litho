@@ -480,3 +480,5 @@ public class Stages {
                       "' and '" + v.asType() + "'");
             }
           } else if (existingType == null) {
+            // We haven't see a parameter with this name yet. Therefore it must be either @Prop,
+            // @State or an output.
