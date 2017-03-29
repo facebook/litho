@@ -73,3 +73,10 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
       mDefStyleAttr = 0;
       mDefStyleRes = 0;
       mComponent = null;
+    }
+
+    public final ComponentLayout buildWithLayout() {
+      return this.withLayout().flexShrink(0).build();
+    }
+
+    public final ComponentLayout.Builder withLayout() {
