@@ -464,3 +464,4 @@ public class ComponentsPools {
   }
 
   @ThreadSafe(enableChecks = false)
+  static void release(LayoutState state) {
