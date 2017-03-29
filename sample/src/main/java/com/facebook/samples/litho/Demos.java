@@ -24,3 +24,6 @@ import com.facebook.samples.litho.playground.PlaygroundComponent;
 
 /**
  * The list of Litho demos -- Add your demos below!
+ */
+public final class Demos {
+

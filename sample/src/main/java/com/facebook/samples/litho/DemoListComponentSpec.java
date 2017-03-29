@@ -32,3 +32,4 @@ public class DemoListComponentSpec {
 
     Demos.addAllToBinder(recyclerBinder, c);
 
+    return Recycler.create(c)

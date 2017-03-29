@@ -36,3 +36,4 @@
       </intent-filter>
     </activity>
 
+    <activity android:name=".DemoActivity"></activity>

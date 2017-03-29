@@ -11,3 +11,5 @@ android_library(
     name = "components",
     srcs = glob([
         "*.java",
+        "dataflow/**/*.java",
+        "displaylist/*.java",
