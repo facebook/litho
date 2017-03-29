@@ -816,3 +816,22 @@ public class ComponentTree {
 
       final boolean widthSpecDidntChange = !widthSpecInitialized || widthSpec == mWidthSpec;
       final boolean heightSpecDidntChange = !heightSpecInitialized || heightSpec == mHeightSpec;
+      final boolean sizeSpecDidntChange = widthSpecDidntChange && heightSpecDidntChange;
+      final LayoutState mostRecentLayoutState =
+          mBackgroundLayoutState != null ? mBackgroundLayoutState : mMainThreadLayoutState;
+      final boolean allSpecsWereInitialized =
+          widthSpecInitialized &&
+          heightSpecInitialized &&
+          mWidthSpec != SIZE_UNINITIALIZED &&
+          mHeightSpec != SIZE_UNINITIALIZED;
+      final boolean sizeSpecsAreCompatible =
+          sizeSpecDidntChange ||
+          (allSpecsWereInitialized &&
+          mostRecentLayoutState != null &&
+          LayoutState.hasCompatibleSizeSpec(
+              mWidthSpec,
+              mHeightSpec,
+              widthSpec,
+              heightSpec,
+              mostRecentLayoutState.getWidth(),
+              mostRecentLayoutState.getHeight()));
