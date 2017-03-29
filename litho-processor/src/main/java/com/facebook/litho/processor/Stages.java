@@ -2676,3 +2676,7 @@ public class Stages {
             : StaticFlag.NOT_STATIC,
         StyleableFlag.NOT_STYLEABLE,
         SectionClassNames.SECTION_CONTEXT);
+
+    writeMethodSpec(MethodSpec.methodBuilder("create")
+        .addModifiers(Modifier.PUBLIC)
+        .returns(ClassName.bestGuess(INNER_IMPL_BUILDER_CLASS_NAME))
