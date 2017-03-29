@@ -126,3 +126,4 @@ class RecyclerSpec {
 
   @OnBind
   protected static void onBind(
+      ComponentContext context,
