@@ -45,3 +45,12 @@ public class LevenshteinDistance {
       t_j = t.charAt(j - 1);
       d[0] = j;
       min = maxAllowedEditDistance + 1;
+
+      for (i = 1; i <= n; i++) {
+        cost = s.charAt(i - 1) == t_j ? 0 : 1;
+        // minimum of cell to the left+1, to the top+1, diagonally left and up +cost
+        d[i] = Math.min(Math.min(d[i - 1] + 1, p[i] + 1), p[i - 1] + cost);
+        if (min > d[i]) {
+          min = d[i];
+        }
+      }
