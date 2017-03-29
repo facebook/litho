@@ -722,3 +722,7 @@ public class ComponentHostTest {
     NodeInfo nodeInfo = NodeInfo.acquire();
     nodeInfo.setContentDescription(contentDescription);
 
+    mountItem.init(
+        content instanceof Drawable ? mDrawableComponent : mViewComponent,
+        null,
+        content,

@@ -270,3 +270,5 @@ class LayoutState {
 
     int flags = 0;
     if (duplicateParentState) {
+      flags |= FLAG_DUPLICATE_PARENT_STATE;
+    }
