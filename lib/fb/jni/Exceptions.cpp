@@ -207,3 +207,4 @@ void translatePendingCppExceptionToJavaException() noexcept {
     } catch(const std::exception& ex) {
       current = JCppException::create(ex.what());
     } catch(const char* msg) {
+      current = JUnknownCppException::create(msg);
