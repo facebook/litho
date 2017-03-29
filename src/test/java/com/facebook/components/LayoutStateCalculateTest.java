@@ -1179,3 +1179,5 @@ public class LayoutStateCalculateTest {
     assertEquals(hostMarkerZero, layoutState.getMountableOutputAt(6).getHostMarker());
     assertEquals(hostMarkerThree, layoutState.getMountableOutputAt(8).getHostMarker());
 
+    assertTrue(isHostComponent(getComponentAt(layoutState, 0)));
+    assertTrue(isHostComponent(getComponentAt(layoutState, 1)));
