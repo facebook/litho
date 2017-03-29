@@ -109,3 +109,6 @@ class ProgressSpec {
       ProgressBar progressBar,
       @Prop(optional = true, resType = ResType.COLOR) int color,
       @FromPrepare Reference<Drawable> resolvedIndeterminateDrawable) {
+
+    // restore the color first, since it acts on the indeterminateDrawable
+    if (color != Color.TRANSPARENT && progressBar.getIndeterminateDrawable() != null) {
