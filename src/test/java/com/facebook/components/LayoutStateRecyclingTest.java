@@ -50,3 +50,4 @@ public class LayoutStateRecyclingTest {
   public void setUp() throws Exception {
     mUnspecifiedSizeSpec = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
   }
+

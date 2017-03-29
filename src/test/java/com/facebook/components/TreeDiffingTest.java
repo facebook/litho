@@ -83,3 +83,4 @@ public class TreeDiffingTest {
         mContext,
         component,
         -1,
+        SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),

@@ -152,3 +152,7 @@ public class MountStateBoundsTest {
 
     final ComponentHost host = (ComponentHost) componentView.getChildAt(0);
     final ComponentHost nestedHost = (ComponentHost) host.getChildAt(0);
+
+    assertEquals(
+        new Rect(100, 100, 200, 200),
+        new Rect(

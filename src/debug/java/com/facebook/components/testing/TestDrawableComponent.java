@@ -151,3 +151,10 @@ public class TestDrawableComponent extends ComponentLifecycle {
     int height = SizeSpec.getSize(heightSpec);
     State state = (State) component;
     state.onMeasureCalled();
+
+    size.width = (state.measuredWidth != -1)
+        ? SizeSpec.resolveSize(widthSpec, state.measuredWidth)
+        : width;
+    size.height = (state.measuredHeight != -1)
+        ? SizeSpec.resolveSize(heightSpec, state.measuredHeight)
+        : height;
