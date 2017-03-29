@@ -749,3 +749,17 @@ public class Stages {
   }
 
   /**
+   * @return true if the given prop default matches the name and type of a prop, false otherwise.
+   */
+  private boolean hasValidNameAndType(PropDefaultModel propDefault) {
+    for (VariableElement prop : mProps) {
+      if (prop.getSimpleName().toString().equals(propDefault.mName)
+          && TypeName.get(prop.asType()).equals(propDefault.mType)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
