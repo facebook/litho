@@ -147,3 +147,5 @@ public class MountSpecHelper extends ComponentSpecHelper {
     }
 
     final MethodDescription methodDescription = new MethodDescription();
+    methodDescription.annotations = new Class[] { Override.class };
+    methodDescription.accessType = Modifier.PROTECTED;
