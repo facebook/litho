@@ -301,3 +301,4 @@ public class ResourceResolver {
     }
   }
 
+  protected final int resolveDimenOffsetAttr(@AttrRes int attrResId, @DimenRes int defResId) {
