@@ -702,3 +702,4 @@ class LayoutState {
     }
   }
 
+  private static LayoutOutput addDrawableComponent(
