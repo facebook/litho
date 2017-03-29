@@ -107,3 +107,4 @@ class ProgressSpec {
   static void onUnmount(
       ComponentContext c,
       ProgressBar progressBar,
+      @Prop(optional = true, resType = ResType.COLOR) int color,
