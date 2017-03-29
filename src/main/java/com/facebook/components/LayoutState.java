@@ -859,3 +859,4 @@ class LayoutState {
     return hostOutputPosition;
   }
 
+  static <T extends ComponentLifecycle> LayoutState calculate(
