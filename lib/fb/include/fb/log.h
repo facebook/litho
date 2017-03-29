@@ -53,3 +53,4 @@ extern "C" {
 // These declarations are needed for our internal use even on non-Android
 // builds.
 // (they are borrowed from <android/log.h>)
+
