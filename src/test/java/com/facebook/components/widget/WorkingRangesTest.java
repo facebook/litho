@@ -582,3 +582,4 @@ public class WorkingRangesTest {
     }
 
     @Override
+    public void onUnbind(ViewGroup view) {
