@@ -96,3 +96,4 @@ class FrescoComponentSpec {
       @Prop(optional = true) ScalingUtils.ScaleType progressBarImageScaleType,
       @Prop(optional = true) int progressBarAutoRotateInterval,
       @Prop(optional = true, resType = DRAWABLE) Reference<Drawable> retryImage,
+      @Prop(optional = true) ScalingUtils.ScaleType retryImageScaleType,

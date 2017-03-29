@@ -171,3 +171,4 @@ class ImageSpec {
   }
 
   @OnBind
+  static void onBind(
