@@ -85,3 +85,4 @@ class PropsBuilderMethodsSpecBuilder {
         builders.addAll(attrBuilders(ClassNames.ARRAY_RES, "resolveStringArray"));
         break;
       case INT:
+        builders.add(regularBuilder());
