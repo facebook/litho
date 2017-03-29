@@ -753,3 +753,4 @@ class MountState {
         if (oldItem == null) {
           // This was previously unmounted.
           mPrepareMountStats.unmountedCount++;
+        } else if (oldItem.getHost() != mHostsByMarker.get(newHostMarker)) {
