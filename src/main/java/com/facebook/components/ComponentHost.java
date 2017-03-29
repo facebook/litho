@@ -283,3 +283,5 @@ public class ComponentHost extends ViewGroup {
 
     return null;
   }
+
+  /**

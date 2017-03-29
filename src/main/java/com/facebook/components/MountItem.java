@@ -192,3 +192,4 @@ class MountItem {
     if (!(mContent instanceof ComponentHost)) {
       ComponentsPools.release(context, mComponent.getLifecycle(), mContent);
     }
+

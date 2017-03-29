@@ -763,3 +763,7 @@ public class ComponentHostTest {
   }
 
   private static class TestableComponentHost extends ComponentHost {
+
+    private int mInvalidationCount = 0;
+    private Rect mInvalidationRect = null;
+
