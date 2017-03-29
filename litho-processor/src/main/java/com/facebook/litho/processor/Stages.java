@@ -232,3 +232,6 @@ public class Stages {
     final int interStagePropIndex = asList(mInterStagePropAnnotations).indexOf(interStageProp);
     final int stageIndex = asList(mStageAnnotations).indexOf(stage);
     if (interStagePropIndex < 0 || stageIndex < 0) {
+      throw new IllegalArgumentException(); // indicates bug in the annotation processor
+    }
+
