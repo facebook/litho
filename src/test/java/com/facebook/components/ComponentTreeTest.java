@@ -214,3 +214,5 @@ public class ComponentTreeTest {
     postSizeSpecChecks(
         componentTree,
         "mBackgroundLayoutState",
+        mWidthSpec2,
+        mHeightSpec2);
