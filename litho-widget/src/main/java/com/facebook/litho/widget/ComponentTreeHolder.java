@@ -142,3 +142,29 @@ public class ComponentTreeHolder {
   private void ensureComponentTree(ComponentContext context) {
     if (mComponentTree == null) {
       mComponentTree = ComponentTree.create(context, mComponentInfo.getComponent())
+          .layoutDiffing(true)
+          .layoutThreadHandler(mLayoutHandler)
+          .stateHandler(mStateHandler)
+          .build();
+    }
+  }
+
+  @GuardedBy("this")
+  private void releaseTree() {
+    if (mComponentTree != null) {
+      mComponentTree.release();
+      mComponentTree = null;
+    }
+
+    mIsTreeValid = false;
+  }
+
+  @GuardedBy("this")
+  private void acquireStateHandler() {
+    if (mComponentTree == null) {
+      return;
+    }
+
+    mStateHandler = mComponentTree.getStateHandler();
+  }
+}

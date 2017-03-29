@@ -284,3 +284,39 @@ public class RecyclerBinder implements Binder<RecyclerView> {
 
       childrenWidthSpec = getActualChildrenWidthSpec(holder);
       childrenHeightSpec = getActualChildrenHeightSpec(holder);
+    }
+
+    // If we are updating an item that is currently visible we need to calculate a layout
+    // synchronously.
+    if (shouldComputeLayout) {
+      holder.computeLayoutSync(mComponentContext, childrenWidthSpec, childrenHeightSpec, null);
+    }
+
+    mInternalAdapter.notifyItemChanged(position);
+    computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+  }
+
+  /**
+   * Moves an item from fromPosition to toPosition. If the new position of the item is within the
+   * currently visible range, a layout is calculated immediately on the UI Thread.
+   */
+  @UiThread
+  public final void moveItem(int fromPosition, int toPosition) {
+    ThreadUtils.assertMainThread();
+
+    final ComponentTreeHolder holder;
+    final boolean isNewPositionInRange, isNewPositionInVisibleRange;
+    final int childrenWidthSpec, childrenHeightSpec;
+    synchronized (this) {
+      holder = mComponentTreeHolders.remove(fromPosition);
+      mComponentTreeHolders.add(toPosition, holder);
+      final int mRangeSize = mRange != null ? mRange.estimatedViewportCount : -1;
+
+      isNewPositionInRange = mRangeSize > 0 &&
+          toPosition >= mCurrentFirstVisiblePosition - (mRangeSize * mRangeRatio) &&
+          toPosition <= mCurrentFirstVisiblePosition + mRangeSize + (mRangeSize * mRangeRatio);
+
+      isNewPositionInVisibleRange = mRangeSize > 0 &&
+          toPosition >= mCurrentFirstVisiblePosition &&
+          toPosition <= mCurrentFirstVisiblePosition + mRangeSize;
+
