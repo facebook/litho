@@ -131,3 +131,14 @@ public class Utils {
           if (annotatedMethod != null) {
             throw new ComponentsProcessingException(
                 element,
+                "Duplicate " + annotation + " methods detected in " + element);
+          }
+          annotatedMethod = executableElement;
+        }
+      }
+    }
+
+    return annotatedMethod;
+  }
+
+  /**
