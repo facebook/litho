@@ -112,3 +112,9 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
   }
 
   /**
+   * Tests that all views in the hierarchy under the root, for which the path is visible, do not
+   * have text equal to the given string
+   *
+   * @param text the text to search for
+   * @return the assertions object
+   */
