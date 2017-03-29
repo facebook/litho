@@ -46,3 +46,4 @@ final class ViewPredicates {
         if (predicate.apply(extractString(input))) {
           return true;
         }
+
