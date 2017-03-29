@@ -87,3 +87,7 @@ public class ComponentsPools {
   private static final Pools.SynchronizedPool<VisibilityOutput> sVisibilityOutputPool =
       new Pools.SynchronizedPool<>(64);
 
+  // These are lazily initialized as they are only needed when we're in a test environment.
+  private static Pools.SynchronizedPool<TestOutput> sTestOutputPool = null;
+  private static Pools.SynchronizedPool<TestItem> sTestItemPool = null;
+
