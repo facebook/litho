@@ -74,3 +74,6 @@ public class Utils {
     for (final VariableElement v : params) {
       if (v.getAnnotation(annotation) != null) {
         props.add(v);
+      }
+    }
+

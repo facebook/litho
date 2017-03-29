@@ -50,3 +50,7 @@ public class LayoutStateSpecTest {
   @Test
   public void testCompatibleInputAndSpec() {
     assertTrue(mLayoutState.isCompatibleComponentAndSpec(COMPONENT_ID, mWidthSpec, mHeightSpec));
+  }
+
+  @Test
+  public void testIncompatibleInput() {
