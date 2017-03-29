@@ -29,3 +29,6 @@ import static com.facebook.components.SizeSpec.UNSPECIFIED;
  *          also prevent the layout pass to be computed in the background but it will run
  *          on the main thread.
  */
+public abstract class GridComponentBinder extends RecyclerComponentBinder<
+    GridLayoutManager,
+    RecyclerComponentBinder.RecyclerComponentWorkingRangeController> {

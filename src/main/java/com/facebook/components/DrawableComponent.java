@@ -13,3 +13,4 @@ import android.graphics.drawable.Drawable;
 
 import com.facebook.components.reference.Reference;
 
+class DrawableComponent<T extends Drawable> extends ComponentLifecycle {

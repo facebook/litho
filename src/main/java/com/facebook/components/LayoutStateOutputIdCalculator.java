@@ -16,3 +16,4 @@ import android.support.v4.util.LongSparseArray;
  * {@link LayoutState}. It keeps track of all the {@link LayoutOutput}s with the same baseId
  * in order to generate unique ids even if the baseId is shared by multiple LayoutOutputs.
  */
+class LayoutStateOutputIdCalculator {

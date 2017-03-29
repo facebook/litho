@@ -19,3 +19,6 @@ import com.facebook.components.utils.IncrementalMountUtils;
 
 import static com.facebook.components.SizeSpec.UNSPECIFIED;
 
+public abstract class LinearComponentBinder extends
+    RecyclerComponentBinder<
+        LinearLayoutManager,

@@ -11,3 +11,4 @@ package com.facebook.components;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.view.View;
