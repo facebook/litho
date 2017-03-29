@@ -36,3 +36,5 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
   private T mDrawable;
   private DrawableMatrix mMatrix;
   private boolean mShouldClipRect;
+  private int mWidth;
+  private int mHeight;
