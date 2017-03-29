@@ -698,3 +698,11 @@ public class Stages {
       final ExecutableElement stage = Utils.getAnnotatedMethod(
           mSourceElement,
           stageAnnotation);
+      if (stage != null) {
+        mStages.add(stage);
+      }
+    }
+
+    if (mOnEventMethods != null) {
+      mStages.addAll(mOnEventMethods);
+    }
