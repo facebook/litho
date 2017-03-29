@@ -339,3 +339,23 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
    */
   public ViewTreeAssert hasVisibleDrawable(final Drawable drawable) {
     final ImmutableList<View> path = getPathToVisibleWithDrawable(drawable);
+
+    Assertions.assertThat(path)
+        .overridingErrorMessage(
+            "Did not find drawable %s in view hierarchy:%n%s",
+            drawable,
+            actual.makeString(ViewExtractors.GET_DRAWABLE_FUNCTION))
+        .isNotNull();
+
+    return this;
+  }
+
+  /**
+   * Tests all views in the hierarchy under the root, for which the path is visible, do not have
+   * the requested drawable by the given resource id.
+   * For this assertion to work, Robolectric must be immediately available and be able to load the
+   * drawable corresponding to this resource id.
+   *
+   * @param resourceId the resource id of the drawable to look for
+   * @return the assertions object
+   */
