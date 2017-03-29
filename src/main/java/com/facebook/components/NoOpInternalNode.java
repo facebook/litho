@@ -162,3 +162,7 @@ class NoOpInternalNode extends InternalNode {
 
   @Override
   public InternalNode positionType(YogaPositionType positionType) {
+    return this;
+  }
+
+  @Override
