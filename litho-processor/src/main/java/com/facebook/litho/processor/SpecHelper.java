@@ -125,3 +125,6 @@ public abstract class SpecHelper implements Closeable {
         stageAnnotations,
         interStageInputAnnotations,
         mTypeSpec,
+        typeVariables,
+        isStateSupported(),
+        populateExtraStateMembers(),
