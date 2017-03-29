@@ -194,3 +194,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
    *                          call.
    * @return New InternalNode associated with the given component.
    */
+  ComponentLayout createLayout(
