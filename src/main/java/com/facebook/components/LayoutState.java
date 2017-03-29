@@ -1410,3 +1410,5 @@ class LayoutState {
     }
 
     return shouldUpdate;
+  }
+
