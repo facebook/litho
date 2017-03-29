@@ -46,3 +46,10 @@ struct JThreadScopeSupport : JavaClass<JThreadScopeSupport> {
   }
 };
 }
+
+/* static */
+JNIEnv* Environment::current() {
+  JNIEnv* env = g_env->get();
+  if ((env == nullptr) && (g_vm != nullptr)) {
+    if (g_vm->GetEnv((void**) &env, JNI_VERSION_1_6) != JNI_OK) {
+      FBLOGE("Error retrieving JNI Environment, thread is probably not attached to JVM");

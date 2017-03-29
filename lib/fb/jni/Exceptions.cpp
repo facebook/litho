@@ -11,3 +11,14 @@
 
 #include <fb/assert.h>
 #include <fb/log.h>
+
+#include <alloca.h>
+#include <cstdlib>
+#include <ios>
+#include <stdexcept>
+#include <stdio.h>
+#include <string>
+#include <system_error>
+
+#include <jni.h>
+

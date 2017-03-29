@@ -231,3 +231,82 @@ size_t utf16toUTF8Length(const uint16_t* utf16String, size_t utf16StringLen) {
 }
 
 std::string utf16toUTF8(const uint16_t* utf16String, size_t utf16StringLen) noexcept {
+  if (!utf16String || utf16StringLen <= 0) {
+    return "";
+  }
+
+  std::string utf8String(utf16toUTF8Length(utf16String, utf16StringLen), '\0');
+  auto idx8 = utf8String.begin();
+  auto idx16 = utf16String;
+  auto utf16StringEnd = utf16String + utf16StringLen;
+  while (idx16 < utf16StringEnd) {
+    auto ch = *idx16++;
+    if (ch < kUtf8OneByteBoundary) {
+      *idx8++ = (ch & 0x7F);
+    } else if (ch < kUtf8TwoBytesBoundary) {
+      *idx8++ = 0b11000000 | (ch >> 6);
+      *idx8++ = 0b10000000 | (ch & 0x3F);
+    } else if (
+        (ch >= kUtf16HighSubLowBoundary) && (ch < kUtf16HighSubHighBoundary) &&
+        (idx16 < utf16StringEnd) &&
+        (*idx16 >= kUtf16HighSubHighBoundary) && (*idx16 < kUtf16LowSubHighBoundary)) {
+      auto ch2 = *idx16++;
+      uint8_t trunc_byte = (((ch >> 6) & 0x0F) + 1);
+      *idx8++ = 0b11110000 | (trunc_byte >> 2);
+      *idx8++ = 0b10000000 | ((trunc_byte & 0x03) << 4) | ((ch >> 2) & 0x0F);
+      *idx8++ = 0b10000000 | ((ch & 0x03) << 4) | ((ch2 >> 6) & 0x0F);
+      *idx8++ = 0b10000000 | (ch2 & 0x3F);
+    } else {
+      *idx8++ = 0b11100000 | (ch >> 12);
+      *idx8++ = 0b10000000 | ((ch >> 6) & 0x3F);
+      *idx8++ = 0b10000000 | (ch & 0x3F);
+    }
+  }
+
+  return utf8String;
+}
+
+}
+
+LocalString::LocalString(const std::string& str)
+{
+  size_t modlen = detail::modifiedLength(str);
+  if (modlen == str.size()) {
+    // no supplementary characters, build jstring from input buffer
+    m_string = Environment::current()->NewStringUTF(str.data());
+    return;
+  }
+  auto modified = std::vector<char>(modlen + 1); // allocate extra byte for \0
+  detail::utf8ToModifiedUTF8(
+    reinterpret_cast<const uint8_t*>(str.data()), str.size(),
+    reinterpret_cast<uint8_t*>(modified.data()), modified.size());
+  m_string = Environment::current()->NewStringUTF(modified.data());
+}
+
+LocalString::LocalString(const char* str)
+{
+  size_t len;
+  size_t modlen = detail::modifiedLength(reinterpret_cast<const uint8_t*>(str), &len);
+  if (modlen == len) {
+    // no supplementary characters, build jstring from input buffer
+    m_string = Environment::current()->NewStringUTF(str);
+    return;
+  }
+  auto modified = std::vector<char>(modlen + 1); // allocate extra byte for \0
+  detail::utf8ToModifiedUTF8(
+    reinterpret_cast<const uint8_t*>(str), len,
+    reinterpret_cast<uint8_t*>(modified.data()), modified.size());
+  m_string = Environment::current()->NewStringUTF(modified.data());
+}
+
+LocalString::~LocalString() {
+  Environment::current()->DeleteLocalRef(m_string);
+}
+
+std::string fromJString(JNIEnv* env, jstring str) {
+  auto utf16String = JStringUtf16Extractor(env, str);
+  auto length = env->GetStringLength(str);
+  return detail::utf16toUTF8(utf16String, length);
+}
+
+} }

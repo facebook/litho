@@ -54,3 +54,53 @@ template<typename... Args>
 [[noreturn]] void throwNewJavaException(const char* throwableName, const char* fmt, Args... args);
 
 
+/**
+ * This needs to be called at library load time, typically in your JNI_OnLoad method.
+ *
+ * The intended use is to return the result of initialize() directly
+ * from JNI_OnLoad and to do nothing else there. Library specific
+ * initialization code should go in the function passed to initialize
+ * (which can be, and probably should be, a C++ lambda). This approach
+ * provides correct error handling and translation errors during
+ * initialization into Java exceptions when appropriate.
+ *
+ * Failure to call this will cause your code to crash in a remarkably
+ * unhelpful way (typically a segfault) while trying to handle an exception
+ * which occurs later.
+ */
+FBEXPORT jint initialize(JavaVM*, std::function<void()>&&) noexcept;
+
+namespace internal {
+
+/**
+ * Retrieve a pointer the JNI environment of the current thread.
+ *
+ * @pre The current thread must be attached to the VM
+ */
+inline JNIEnv* getEnv() noexcept {
+  // TODO(T6594868) Benchmark against raw JNI access
+  return Environment::current();
+}
+
+// Define to get extremely verbose logging of references and to enable reference stats
+#ifdef FBJNI_DEBUG_REFS
+template<typename... Args>
+inline void dbglog(const char* msg, Args... args) {
+# ifdef __ANDROID__
+  __android_log_print(ANDROID_LOG_VERBOSE, "fbjni_dbg", msg, args...);
+# else
+  std::fprintf(stderr, msg, args...);
+# endif
+}
+
+#else
+
+template<typename... Args>
+inline void dbglog(const char*, Args...) {
+}
+
+#endif
+
+}}}
+
+/// @endcond
