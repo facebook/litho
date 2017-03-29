@@ -956,3 +956,11 @@ public class Stages {
         .implClassName(implClassName)
         .hasDeepCopy(hasDeepCopy)
         .stateContainerImplClassName(getStateContainerImplClassName())
+        .build();
+  }
+
+  private List<String> findComponentsInImpl(ClassName listComponent) {
+    final List<String> componentsInImpl = new ArrayList<>();
+
+    for (String key : mImplMembers.keySet()) {
+      final VariableElement element = mImplMembers.get(key);
