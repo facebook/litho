@@ -44,3 +44,4 @@ import com.facebook.components.utils.MeasureUtils;
 class ProgressSpec {
 
   static final int DEFAULT_SIZE = 50;
+
