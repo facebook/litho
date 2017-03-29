@@ -71,3 +71,9 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
     invalidateSelf();
   }
 
+  /**
+   * Sets the necessary artifacts to display the given drawable.
+   * This method should be called in your component's @OnMount method.
+   *
+   * @param drawable The drawable to be drawn.
+   */
