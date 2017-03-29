@@ -476,3 +476,6 @@ public class TreeDiffingTest {
     hostHolder.mount(0, mountItem, new Rect());
     hostHolder.mount(1, mountItem1, new Rect());
     hostHolder.mount(2, mountItem2, new Rect());
+    assertEquals(hostHolder.getMountItemAt(0), mountItem);
+    assertEquals(hostHolder.getMountItemAt(1), mountItem1);
+    assertEquals(hostHolder.getMountItemAt(2), mountItem2);
