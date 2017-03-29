@@ -114,3 +114,5 @@ public class LayoutStateCalculateVisibilityOutputsTest {
         return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(
                 Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    .child(
+                        TestDrawableComponent.create(c)

@@ -106,3 +106,4 @@ public class BinderTreeCollectionTest {
     ComponentTree newComponentTree = createNewComponentTree();
     mBinderTreeCollection.insert(insertPosition, newComponentTree);
 
+    assertContiguous();
