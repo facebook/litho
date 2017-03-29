@@ -52,3 +52,5 @@ class TestComponentContext extends ComponentContext {
   @Override
   public ComponentLayout.Builder newLayoutBuilder(Component<?> component) {
     final InternalNode node = ComponentsPools.acquireInternalNode(this, getResources());
+    component.applyStateUpdates(this);
+

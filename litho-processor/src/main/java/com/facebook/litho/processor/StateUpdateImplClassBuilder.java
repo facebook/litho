@@ -167,3 +167,4 @@ public class StateUpdateImplClassBuilder {
         TypeSpec.classBuilder(mStateUpdateClassName)
             .addModifiers(Modifier.PRIVATE)
             .addSuperinterface(mComponentStateUpdateInterface);
+
