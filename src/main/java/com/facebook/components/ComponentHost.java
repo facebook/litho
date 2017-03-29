@@ -718,3 +718,12 @@ public class ComponentHost extends ViewGroup {
     return !mInLayout;
   }
 
+  @Override
+  @SuppressLint("MissingSuperCall")
+  protected boolean verifyDrawable(Drawable who) {
+    return true;
+  }
+
+  @Override
+  protected void drawableStateChanged() {
+    super.drawableStateChanged();
