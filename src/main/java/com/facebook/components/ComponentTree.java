@@ -78,3 +78,6 @@ public class ComponentTree {
 
   private static final AtomicInteger sIdGenerator = new AtomicInteger(0);
   private static final Handler sMainThreadHandler = new ComponentMainThreadHandler();
+  // Do not access sDefaultLayoutThreadLooper directly, use getDefaultLayoutThreadLooper().
+  @GuardedBy("ComponentTree.class")
+  private static volatile Looper sDefaultLayoutThreadLooper;

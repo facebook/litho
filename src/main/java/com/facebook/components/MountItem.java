@@ -170,3 +170,5 @@ class MountItem {
     return mNodeInfo;
   }
 
+  ViewNodeInfo getViewNodeInfo() {
+    return mViewNodeInfo;
