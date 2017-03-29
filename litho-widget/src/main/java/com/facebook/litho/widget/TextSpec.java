@@ -278,3 +278,4 @@ class TextSpec {
       final int lineHeight =
           Math.round(paint.getFontMetricsInt(null) * spacingMultiplier + extraSpacing);
       preferredHeight += lineHeight * (minLines - lineCount);
+    }
