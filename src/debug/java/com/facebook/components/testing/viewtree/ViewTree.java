@@ -119,3 +119,28 @@ public final class ViewTree {
 
   @Nullable
   private ImmutableList<View> findChild(
+      View root,
+      Predicate<View> predicate,
+      Predicate<? super ViewGroup> shouldCheckChildren) {
+
+    if (predicate.apply(root)) {
+      return ImmutableList.of(root);
+    }
+
+    if (root instanceof ViewGroup && shouldCheckChildren.apply((ViewGroup) root)) {
+      ViewGroup viewGroup = (ViewGroup) root;
+      for (int i = 0; i < viewGroup.getChildCount(); i++) {
+        View child = viewGroup.getChildAt(i);
+        ImmutableList<View> result = findChild(child, predicate, shouldCheckChildren);
+        if (result != null) {
+          return ImmutableList.<View>builder()
+              .add(root)
+              .addAll(result)
+              .build();
+        }
+      }
+    }
+
+    return null;
+  }
+}

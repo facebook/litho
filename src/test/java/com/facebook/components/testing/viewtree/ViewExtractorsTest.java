@@ -36,3 +36,4 @@ public class ViewExtractorsTest {
     final Activity activity = Robolectric.buildActivity(Activity.class).create().get();
 
     mLithoDrawable = activity.getResources().getDrawable(R.drawable.litho);
+

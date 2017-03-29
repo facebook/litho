@@ -29,3 +29,4 @@ import static com.facebook.litho.testing.viewtree.ViewPredicates.isVisible;
  * in actual app code and still pass the checks done here
  */
 public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTree> {
+
