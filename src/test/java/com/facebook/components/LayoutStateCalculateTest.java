@@ -2267,3 +2267,7 @@ public class LayoutStateCalculateTest {
   }
 
   @Test
+  public void testLayoutOutputsForComponentWithBorderColorNoBorderWidth() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
