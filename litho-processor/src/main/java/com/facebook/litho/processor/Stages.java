@@ -2461,3 +2461,4 @@ public class Stages {
       methodBuilder.addModifiers(fixedMethod.accessType);
     }
 
+    methodBuilder.addParameter(eventHandlerClassName, "_eventHandler");

@@ -1690,3 +1690,10 @@ class LayoutState {
   }
 
   /**
+   * @return the position of the {@link LayoutOutput} with id layoutOutputId in the
+   * {@link LayoutState} list of outputs or -1 if no {@link LayoutOutput} with that id exists in
+   * the {@link LayoutState}
+   */
+  int getLayoutOutputPositionForId(long layoutOutputId) {
+    return mOutputsIdToPositionMap.get(layoutOutputId, -1);
+  }
