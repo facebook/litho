@@ -259,3 +259,7 @@ class PropsBuilderMethodsSpecBuilder {
     return builder(
         mPropParameter.parameter.name + "Dip",
         Arrays.asList(parameter(TypeName.FLOAT, "dips", dipAnnotation)),
+        "dipsToPixels(dips)");
+  }
+
+  private MethodSpec sipBuilder() {
