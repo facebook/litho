@@ -132,3 +132,5 @@ public abstract class ComponentLifecycle implements EventDispatcher {
                 "MeasureOutput not set, ComponentLifecycle is: " + component.getLifecycle());
           }
 
+          outputWidth = size.width;
+          outputHeight = size.height;
