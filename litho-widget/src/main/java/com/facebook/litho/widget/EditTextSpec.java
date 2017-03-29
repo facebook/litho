@@ -292,3 +292,5 @@ class EditTextSpec {
         typeface,
         textAlignment,
         gravity,
+        editable,
+        selection);
