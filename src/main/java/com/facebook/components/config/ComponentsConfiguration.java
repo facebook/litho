@@ -17,3 +17,11 @@ import com.facebook.litho.BuildConfig;
  * Configuration for the Components library.
  */
 public class ComponentsConfiguration {
+
+  /**
+   * Indicates whether this is an internal build.
+   * Note that the implementation of {@link BuildConfig} that this class is compiled against may not
+   * be the one that is included in the APK. See: <a
+   * href="http://facebook.github.io/buck/rule/android_build_config.html">android_build_config</a>.
+   */
+  public static final boolean IS_INTERNAL_BUILD = BuildConfig.IS_INTERNAL_BUILD;
