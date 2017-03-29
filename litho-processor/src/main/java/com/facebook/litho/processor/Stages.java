@@ -1191,3 +1191,36 @@ public class Stages {
    *    annotated with {@link State} or {@link Prop}.</li>
    *   <li>2. Method parameters not annotated with {@link Param} must be of type
    *    com.facebook.litho.StateValue.</li>
+   *   <li>3. Names of method parameters not annotated with {@link Param} must match the name of
+   *    a parameter annotated with {@link State}.</li>
+   *   <li>4. Type of method parameters not annotated with {@link Param} must match the type of
+   *    a parameter with the same name annotated with {@link State}.</li>
+   * </ul>
+   */
+  private void validateOnStateUpdateMethodDeclaration(ExecutableElement element) {
+    final List<VariableElement> annotatedParams =
+        Utils.getParametersWithAnnotation(element, Param.class);
+
+    // Check #1
+    for (VariableElement annotatedParam : annotatedParams) {
+      if (mStateMap.get(annotatedParam.getSimpleName().toString()) != null) {
+        throw new ComponentsProcessingException(
+            annotatedParam,
+            "Parameters annotated with @Param should not have the same name as a parameter " +
+                "annotated with @State or @Prop");
+      }
+    }
+
+    final List<VariableElement> params = (List<VariableElement>) element.getParameters();
+
+    for (VariableElement param : params) {
+      if (annotatedParams.contains(param)) {
+        continue;
+      }
+      final TypeMirror paramType = param.asType();
+
+      // Check #2
+      if (paramType.getKind() != DECLARED) {
+        throw new ComponentsProcessingException(
+            param,
+            "Parameters not annotated with @Param must be of type " +
