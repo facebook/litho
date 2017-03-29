@@ -133,3 +133,12 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
   }
 
   public T getMountedDrawable() {
+    return mDrawable;
+  }
+
+  @Override
+  public void draw(Canvas canvas) {
+    if (mDrawable == null) {
+      return;
+    }
+
