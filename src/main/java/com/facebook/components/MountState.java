@@ -209,3 +209,4 @@ class MountState {
           if (isIncrementalMountEnabled && canMountIncrementally(component)) {
             mountItemIncrementally(currentMountItem, layoutOutput.getBounds(), localVisibleRect);
           }
+
