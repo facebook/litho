@@ -285,3 +285,19 @@ public class Stages {
                 ", since that is what " + eventClass + " expects.");
       }
 
+      final List<? extends VariableElement> parameters =
+          Utils.getEnclosedFields((TypeElement) eventClass.asElement());
+
+      for (VariableElement v : Utils.getParametersWithAnnotation(element, FromEvent.class)) {
+        boolean hasMatchingParameter = false;
+        for (VariableElement parameter : parameters) {
+          if (parameter.getSimpleName().equals(v.getSimpleName()) &&
+              parameter.asType().toString().equals(v.asType().toString())) {
+            hasMatchingParameter = true;
+            break;
+          }
+        }
+
+        if (!hasMatchingParameter) {
+          throw new ComponentsProcessingException(
+              v,

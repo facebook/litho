@@ -238,3 +238,4 @@ class TextSpec {
     }
 
     Layout newLayout = createTextLayout(
+        widthSpec,
