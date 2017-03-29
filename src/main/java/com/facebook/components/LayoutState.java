@@ -537,3 +537,6 @@ class LayoutState {
       if (layoutOutput != null && layoutOutput.hasViewNodeInfo()) {
         layoutOutput.getViewNodeInfo().setBackground(background);
       } else {
+        final LayoutOutput convertBackground = (currentDiffNode != null)
+            ? currentDiffNode.getBackground()
+            : null;

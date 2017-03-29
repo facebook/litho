@@ -381,3 +381,4 @@ public class ComponentTreeTest {
     ComponentTree componentTree = ComponentTree.create(
         mContext,
         component)
+        .incrementalMount(false)
