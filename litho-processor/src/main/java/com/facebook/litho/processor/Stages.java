@@ -2955,3 +2955,4 @@ public class Stages {
   }
 
   /**
+   * Gather a list of VariableElement that should form the members of the generated Impl class
