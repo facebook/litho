@@ -629,3 +629,4 @@ class LayoutState {
             ? currentDiffNode.getForeground()
             : null;
 
+        final LayoutOutput foregroundOutput = addDrawableComponent(
