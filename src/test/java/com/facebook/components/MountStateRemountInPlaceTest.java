@@ -617,3 +617,8 @@ public class MountStateRemountInPlaceTest {
                         Text.create(c).text("test2"))
                     .child(
                         Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                            .clickHandler(c.newEventHandler(1))
+                            .child(
+                                firstComponent)
+                            .child(
+                                SolidColor.create(c).color(Color.GREEN))))
