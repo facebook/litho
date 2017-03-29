@@ -66,3 +66,5 @@ public class ViewPredicatesTest {
     mTextViewWithWorld.setText("World");
     mOtherImageView.setImageResource(R.drawable.background);
     mImageView.setImageResource(R.drawable.litho);
+    mImageViewWithCustomDrawable.setImageResource(R.drawable.custom_drawable);
+

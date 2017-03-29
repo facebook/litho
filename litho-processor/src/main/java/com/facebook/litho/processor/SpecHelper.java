@@ -128,3 +128,5 @@ public abstract class SpecHelper implements Closeable {
         typeVariables,
         isStateSupported(),
         populateExtraStateMembers(),
+        eventTypesElements,
+        propJavadocs);
