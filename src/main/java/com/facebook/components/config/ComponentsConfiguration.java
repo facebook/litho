@@ -37,3 +37,9 @@ public class ComponentsConfiguration {
   public static boolean debugHighlightMountBounds = false;
 
   /**
+   * Populates additional metadata to find mounted components at runtime. Defaults to the presence
+   * of an <pre>IS_TESTING</pre> system property at startup but can be overridden at runtime.
+   */
+  public static boolean isEndToEndTestRun = System.getProperty("IS_TESTING") != null;
+
+  /**
