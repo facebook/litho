@@ -176,3 +176,11 @@ public final class ColorDrawableReference extends ReferenceLifecycle<Drawable> {
       mState.mColor = resolveColorAttr(attrResId, 0);
       return this;
     }
+
+    public PropsBuilder alpha(int alpha) {
+      mState.mAlpha = alpha;
+      return this;
+    }
+
+    @Override
+    public Reference<Drawable> build() {

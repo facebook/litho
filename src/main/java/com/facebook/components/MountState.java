@@ -292,3 +292,4 @@ class MountState {
           mVisibilityIdToItemMap.put(visibilityOutputId, visibilityItem);
 
           if (visibleHandler != null) {
+            EventDispatcherUtils.dispatchOnVisible(visibleHandler);
