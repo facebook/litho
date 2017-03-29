@@ -37,3 +37,5 @@ public class ComponentQueriesTest {
             .text("goodbye")
         .build());
 
+    assertThat(ComponentQueries.hasTextMatchingPredicate(view, Predicates.equalTo("hello")))
+        .isFalse();

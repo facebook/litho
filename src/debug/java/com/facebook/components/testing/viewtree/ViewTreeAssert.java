@@ -91,3 +91,4 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
             text,
             tagId,
             tagValue.toString(),
+            actual.makeString(GET_TEXT_FUNCTION))
