@@ -539,3 +539,4 @@ class TextSpec {
     textDrawable.mount(
         text,
         textLayout,
+        textLayoutTranslationY == null ? 0 : textLayoutTranslationY,
