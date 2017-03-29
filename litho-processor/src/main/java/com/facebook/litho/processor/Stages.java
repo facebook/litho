@@ -862,3 +862,8 @@ public class Stages {
   }
 
   /**
+   * Generate javadoc block describing component props.
+   */
+  public void generateJavadoc() {
+    for (VariableElement v : mProps) {
+      final Prop propAnnotation = v.getAnnotation(Prop.class);
