@@ -1687,3 +1687,6 @@ class LayoutState {
     return layoutState.isLayoutRoot(node)
         || (!isMountViewSpec(node.getComponent())
             && (hasViewContent(node, layoutState) || node.isForceViewWrapping()));
+  }
+
+  /**
