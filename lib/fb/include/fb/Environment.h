@@ -35,3 +35,5 @@ struct Environment {
  * exits will cause a crash, as will calling Detach an extra time, and this guard class helps
  * keep that straight. In addition, it remembers whether it performed the attach or not, so it
  * is safe to nest it with itself or with non-fbjni code that manages the attachment correctly.
+ *
+ * Potential concerns:

@@ -89,3 +89,20 @@ void getStackTraceSymbols(vector<StackTraceElement>& symbols,
 ostream& operator<<(ostream& out, const StackTraceElement& elm) {
   IosFlagsSaver flags{out};
 
+  // TODO(t10748683): Add build id to the output
+  out << "{dso=" << elm.libraryName() << " offset=" << hex
+      << showbase << elm.libraryOffset();
+
+  if (!elm.functionName().empty()) {
+    out << " func=" << elm.functionName() << "()+" << elm.functionOffset();
+  }
+
+  out << " build-id=" << hex << setw(8) << 0
+      << "}";
+
+  return out;
+}
+
+// TODO(t10737667): The implement a tool that parse the stack trace and
+// symbolicate it
+ostream& operator<<(ostream& out, const vector<StackTraceElement>& trace) {
