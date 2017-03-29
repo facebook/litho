@@ -295,3 +295,6 @@ class TextSpec {
 
     measuredWidth.set(size.width);
     measuredHeight.set(size.height);
+  }
+
+  private static Layout createTextLayout(
