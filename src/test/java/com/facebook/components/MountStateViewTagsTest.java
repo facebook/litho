@@ -81,3 +81,15 @@ public class MountStateViewTagsTest {
     final SparseArray<Object> tags = new SparseArray<>(1);
     tags.put(DUMMY_ID, tag);
 
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                .viewTags(tags)
+                .child(TestDrawableComponent.create(c))
+                .child(TestDrawableComponent.create(c))
+                .build();
+          }
+        });

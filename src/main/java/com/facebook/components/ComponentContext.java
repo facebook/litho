@@ -18,3 +18,10 @@ import android.support.annotation.StyleRes;
 
 import com.facebook.R;
 import com.facebook.infer.annotation.ThreadConfined;
+
+/**
+ * A Context subclass for use within the Components framework. Contains extra bookkeeping
+ * information used internally in the library.
+ */
+public class ComponentContext extends ContextWrapper {
+

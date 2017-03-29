@@ -75,3 +75,4 @@ public class InternalNodeReleaseTest {
     mInternalNode.release();
     assertDefaultValues(mInternalNode);
 
+    setup();
