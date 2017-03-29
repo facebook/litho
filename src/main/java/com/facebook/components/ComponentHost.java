@@ -930,3 +930,4 @@ public class ComponentHost extends ViewGroup {
 
     drawable.setCallback(null);
 
+    if (contentDrawable instanceof Touchable) {
