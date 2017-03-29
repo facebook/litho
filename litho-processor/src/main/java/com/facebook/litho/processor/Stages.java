@@ -1518,3 +1518,4 @@ public class Stages {
   }
 
   public static List<TypeMirror> getGenericTypeArguments(TypeMirror diffType) {
+    if (diffType.getKind() == DECLARED) {
