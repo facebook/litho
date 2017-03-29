@@ -170,3 +170,5 @@ public class ComponentViewMountTest {
       mRequestLayoutInvocationCount++;
     }
 
+    public int getRequestLayoutInvocationCount() {
+      return mRequestLayoutInvocationCount;

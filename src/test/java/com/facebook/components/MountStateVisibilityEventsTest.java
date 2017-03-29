@@ -261,3 +261,4 @@ public class MountStateVisibilityEventsTest {
         isA(VisibleEvent.class));
     assertEquals(1, getVisibilityItemMapSize());
 
+    mMountState.mount(layoutState, new Rect(LEFT, 10, RIGHT, 15));
