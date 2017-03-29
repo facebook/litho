@@ -225,3 +225,4 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
       progressBarDrawable = new AutoRotateDrawable(progressBarDrawable, autoRotateInterval);
     }
 
+    mGenericDraweeHierarchy.setProgressBarImage(
