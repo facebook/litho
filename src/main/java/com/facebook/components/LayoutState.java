@@ -450,3 +450,7 @@ class LayoutState {
     if (node.isNestedTreeHolder()) {
       // If the nested tree is defined, it has been resolved during a measure call during
       // layout calculation.
+      InternalNode nestedTree = resolveNestedTree(
+          node,
+          SizeSpec.makeSizeSpec(node.getWidth(), EXACTLY),
+          SizeSpec.makeSizeSpec(node.getHeight(), EXACTLY));
