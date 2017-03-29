@@ -645,3 +645,5 @@ public class Stages {
   }
 
   /**
+   * Gather a list of VariableElement that are the state to this component
+   */
