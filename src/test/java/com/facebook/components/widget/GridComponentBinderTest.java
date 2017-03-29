@@ -245,3 +245,14 @@ public class GridComponentBinderTest {
   }
 
   private void setupBinder(int orientation) {
+    mGridLayoutManager = new GridLayoutManager(mContext, SPAN_COUNT, orientation, false);
+    mGridLayoutManager.setSpanSizeLookup(
+        new GridLayoutManager.SpanSizeLookup() {
+          @Override
+          public int getSpanSize(int position) {
+            return
+                (position == 0)
+                    ? 2
+                    : 1;
+          }
+        });

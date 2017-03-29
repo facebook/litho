@@ -272,3 +272,4 @@ public class TestDrawableComponent extends ComponentLifecycle {
     return builder;
   }
 
+  public static class State extends TestComponent<TestDrawableComponent> implements Cloneable {

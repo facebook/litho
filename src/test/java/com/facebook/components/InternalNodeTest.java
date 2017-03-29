@@ -176,3 +176,9 @@ public class InternalNodeTest {
   @Test
   public void testWidthFlag() {
     mNode.widthPx(4);
+    assertTrue(isFlagSet(mNode, "PFLAG_WIDTH_IS_SET"));
+    clearFlag(mNode, "PFLAG_WIDTH_IS_SET");
+    assertEmptyFlags(mNode);
+  }
+
+  @Test

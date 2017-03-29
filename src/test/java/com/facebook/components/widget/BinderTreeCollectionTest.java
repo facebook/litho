@@ -84,3 +84,5 @@ public class BinderTreeCollectionTest {
     int originalSize = mBinderTreeCollection.size();
 
     assertNull(mBinderTreeCollection.get(originalSize + 1));
+
+    ComponentTree newComponentTree = createNewComponentTree();

@@ -105,3 +105,4 @@ public class LinearComponentBinderTest {
 
   @Test
   public void testWorkingRangesTrimmedBeginning() throws Exception {
+    setupBinder();
