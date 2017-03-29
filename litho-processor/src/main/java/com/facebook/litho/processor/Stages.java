@@ -2894,3 +2894,5 @@ public class Stages {
       StaticFlag isStatic,
       StyleableFlag isStylable,
       ClassName contextClass) {
+    final String implInstanceName = getImplInstanceName();
+    final ClassName stateClass = ClassName.bestGuess(getImplClassName());
