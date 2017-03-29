@@ -1460,3 +1460,4 @@ public class LayoutStateCalculateTest {
         layoutState.getMountableOutputAt(3).getImportantForAccessibility(),
         IMPORTANT_FOR_ACCESSIBILITY_NO);
     assertEquals(
+        layoutState.getMountableOutputAt(4).getImportantForAccessibility(),
