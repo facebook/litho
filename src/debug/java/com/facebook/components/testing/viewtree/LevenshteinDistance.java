@@ -54,3 +54,7 @@ public class LevenshteinDistance {
           min = d[i];
         }
       }
+      // If this is the last iteration, then minEditdistance which may be less than
+      // actual edit distance for some substring of t, makes no sense. So,
+      if (j == m) {
+        min = d[n] > maxAllowedEditDistance ? maxAllowedEditDistance + 1 : d[n];
