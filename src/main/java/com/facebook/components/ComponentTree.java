@@ -291,3 +291,4 @@ public class ComponentTree {
     }
 
     LayoutState toRelease;
+    int componentRootId;
