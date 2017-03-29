@@ -1141,3 +1141,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public ContainerBuilder focusable(boolean isFocusable) {
+    getOrCreateNodeInfo().setFocusable(isFocusable);
