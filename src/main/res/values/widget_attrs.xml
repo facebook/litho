@@ -25,3 +25,8 @@
     <attr name="android:text" />
     <attr name="android:includeFontPadding" />
     <attr name="android:singleLine" />
+    <attr name="android:shadowColor" />
+    <attr name="android:shadowDx" />
+    <attr name="android:shadowDy" />
+    <attr name="android:shadowRadius" />
+    <attr name="android:gravity" />
