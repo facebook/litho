@@ -1399,3 +1399,4 @@ public class Stages {
     final TypeName eventClassName =
         ClassName.bestGuess(((TypeElement) eventClass.asElement()).getQualifiedName().toString());
 
+    writeMethodSpec(new EventHandlerFactoryMethodSpecBuilder()

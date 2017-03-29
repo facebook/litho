@@ -1789,3 +1789,5 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     mResources = null;
     mComponent = null;
     mNestedTree = null;
+    mNestedTreeHolder = null;
+
