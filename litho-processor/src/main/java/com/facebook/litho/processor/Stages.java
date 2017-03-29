@@ -1152,3 +1152,8 @@ public class Stages {
    */
   public boolean isSameType(TypeMirror a, TypeMirror b) {
     return mProcessingEnv.getTypeUtils().isSameType(a, b);
+  }
+
+  /**
+   * Generate an onEvent implementation that delegates to the @OnEvent-annotated method.
+   */
