@@ -2733,3 +2733,4 @@ public class Stages {
         .addModifiers(Modifier.PUBLIC)
         .superclass(
             ParameterizedTypeName.get(
+                ClassName.get(propsClass.packageName(), propsClass.simpleName(), builderClassName),
