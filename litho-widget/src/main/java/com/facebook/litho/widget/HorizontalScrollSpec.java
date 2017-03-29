@@ -236,3 +236,4 @@ class HorizontalScrollSpec {
       mComponentHeight = 0;
     }
   }
+
