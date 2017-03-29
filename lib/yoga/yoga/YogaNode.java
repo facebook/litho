@@ -692,3 +692,5 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
     jni_YGNodeSetHasMeasureFunc(mNativePointer, measureFunction != null);
   }
 
+  // Implementation Note: Why this method needs to stay final
+  //
