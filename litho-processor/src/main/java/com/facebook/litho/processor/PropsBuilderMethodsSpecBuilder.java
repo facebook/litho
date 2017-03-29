@@ -177,3 +177,8 @@ class PropsBuilderMethodsSpecBuilder {
         .build();
   }
 
+  private MethodSpec componentBuilder() {
+    return builder(
+        mPropParameter.parameter.name,
+        Arrays.asList(parameter(mPropParameter.parameter.type, mPropParameter.parameter.name)),
+        mPropParameter.parameter.name +

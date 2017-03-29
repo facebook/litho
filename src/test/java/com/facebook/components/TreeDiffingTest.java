@@ -480,3 +480,22 @@ public class TreeDiffingTest {
     assertEquals(hostHolder.getMountItemAt(1), mountItem1);
     assertEquals(hostHolder.getMountItemAt(2), mountItem2);
     hostHolder.moveItem(mountItem2, 2, 0);
+    assertEquals(hostHolder.getMountItemAt(0), mountItem2);
+    assertEquals(hostHolder.getMountItemAt(1), mountItem1);
+
+    assertEquals(
+        ((SparseArrayCompat<MountItem>) Whitebox
+            .getInternalState(hostHolder, "mScrapMountItemsArray")).size(),
+        1);
+
+    hostHolder.unmount(0, mountItem);
+
+    assertEquals(
+        ((SparseArrayCompat<MountItem>) Whitebox
+            .getInternalState(hostHolder, "mMountItems")).size(),
+        2);
+    assertNull(Whitebox.getInternalState(hostHolder, "mScrapMountItemsArray"));
+  }
+
+  @Test
+  public void testLayoutOutputUpdateState() {
