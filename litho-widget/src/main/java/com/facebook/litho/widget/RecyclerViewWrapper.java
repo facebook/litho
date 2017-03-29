@@ -23,3 +23,4 @@ import com.facebook.litho.ComponentView;
 /**
  * Wrapper that encapsulates all the features {@link RecyclerSpec} provides such as
  * sticky header and pull-to-refresh
+ */

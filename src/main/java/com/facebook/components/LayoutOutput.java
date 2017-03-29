@@ -31,3 +31,14 @@ class LayoutOutput implements Cloneable {
   public static final int TYPE_BORDER = 4;
 
   @IntDef({TYPE_CONTENT, TYPE_BACKGROUND, TYPE_FOREGROUND, TYPE_HOST, TYPE_BORDER})
+  @Retention(RetentionPolicy.SOURCE)
+  @interface LayoutOutputType {}
+
+  public static final int STATE_UNKNOWN = 0;
+  public static final int STATE_UPDATED = 1;
+  public static final int STATE_DIRTY = 2;
+
+  @IntDef({STATE_UPDATED, STATE_UNKNOWN, STATE_DIRTY})
+  @Retention(RetentionPolicy.SOURCE)
+  @interface UpdateState {}
+

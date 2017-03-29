@@ -32,3 +32,6 @@ import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 import static com.facebook.litho.ThreadUtils.assertDoesntHoldLock;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 
+public abstract class BaseBinder<
+    V extends ViewGroup,
+    R extends WorkingRangeController> implements Binder<V>, BinderOperations<V> {
