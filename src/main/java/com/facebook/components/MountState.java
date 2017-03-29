@@ -891,3 +891,4 @@ class MountState {
     mMountStats.mountedCount++;
   }
 
+  // The content might be null because it's the LayoutSpec for the root host
