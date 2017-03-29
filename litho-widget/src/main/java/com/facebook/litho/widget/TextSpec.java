@@ -326,3 +326,6 @@ class TextSpec {
       TextDirectionHeuristicCompat textDirection) {
     Layout newLayout;
 
+    TextLayoutBuilder layoutBuilder = sTextLayoutBuilderPool.acquire();
+    if (layoutBuilder == null) {
+      layoutBuilder = new TextLayoutBuilder();

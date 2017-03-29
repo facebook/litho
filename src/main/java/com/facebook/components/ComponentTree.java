@@ -422,3 +422,7 @@ public class ComponentTree {
 
     synchronized (this) {
       mIsAttached = false;
+      mHasViewMeasureSpec = false;
+    }
+  }
+
