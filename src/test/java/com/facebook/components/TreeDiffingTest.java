@@ -1122,3 +1122,15 @@ public class TreeDiffingTest {
     assertEquals(layoutState.getMountableOutputAt(0).getUpdateState(), LayoutOutput.STATE_DIRTY);
     for (int i = 1; i < layoutState.getMountableOutputCount(); i++) {
       LayoutOutput output = layoutState.getMountableOutputAt(i);
+      assertEquals(output.getUpdateState(), state);
+    }
+  }
+
+  private static void assertCachedMeasurementsDefined(InternalNode node) {
+    float diffHeight = node.getDiffNode() == null ? -1 : node.getDiffNode().getLastMeasuredHeight();
+    float diffWidth = node.getDiffNode() == null ? -1 : node.getDiffNode().getLastMeasuredWidth();
+    assertTrue(diffHeight != -1);
+    assertTrue(diffWidth != -1);
+    assertTrue(node.areCachedMeasuresValid());
+  }
+}

@@ -208,3 +208,4 @@ public class Stages {
     mOnUpdateStateMethods = Utils.getAnnotatedMethods(mSourceElement, OnUpdateState.class);
     mOnCreateTreePropsMethods = Utils.getAnnotatedMethods(mSourceElement, OnCreateTreeProp.class);
 
+    mExtraStateMembers = extraStateMembers;

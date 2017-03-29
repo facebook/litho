@@ -407,3 +407,4 @@ public class ComponentHost extends ViewGroup {
     final Object content = item.getContent();
     if (content instanceof Drawable) {
       moveDrawableItem(item, oldIndex, newIndex);
+    } else if (content instanceof View) {
