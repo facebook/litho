@@ -2503,3 +2503,58 @@ public class Stages {
       TypeName propsBuilderClassName,
       int requiredIndex,
       ClassName componentClassName) {
+
+    final Prop propAnnotation = element.getAnnotation(Prop.class);
+    final ResType resType = propAnnotation.resType();
+
+    switch (resType) {
+      case STRING:
+        assertOfType(element, TypeName.get(String.class), TypeName.get(CharSequence.class));
+        break;
+      case STRING_ARRAY:
+        assertOfType(element, TypeName.get(String[].class));
+        break;
+      case INT:
+        assertOfType(element, TypeName.get(int.class), TypeName.get(Integer.class));
+        break;
+      case INT_ARRAY:
+        assertOfType(element, TypeName.get(int[].class));
+        break;
+      case BOOL:
+        assertOfType(element, TypeName.get(boolean.class), TypeName.get(Boolean.class));
+        break;
+      case COLOR:
+        assertOfType(element, TypeName.get(int.class), TypeName.get(Integer.class));
+        break;
+      case DIMEN_SIZE:
+        assertOfType(
+            element,
+            TypeName.get(int.class),
+            TypeName.get(Integer.class),
+            TypeName.get(float.class),
+            TypeName.get(Float.class));
+        break;
+      case DIMEN_TEXT:
+        assertOfType(
+            element,
+            TypeName.get(int.class),
+            TypeName.get(Integer.class),
+            TypeName.get(float.class),
+            TypeName.get(Float.class));
+        break;
+      case DIMEN_OFFSET:
+        assertOfType(
+            element,
+            TypeName.get(int.class),
+            TypeName.get(Integer.class),
+            TypeName.get(float.class),
+            TypeName.get(Float.class));
+        break;
+      case FLOAT:
+        assertOfType(element, TypeName.get(float.class), TypeName.get(Float.class));
+        break;
+      case DRAWABLE:
+        assertOfType(element, ParameterizedTypeName.get(ClassNames.REFERENCE, ClassNames.DRAWABLE));
+        break;
+    }
+
