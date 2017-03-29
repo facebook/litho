@@ -518,3 +518,4 @@ public class ComponentTree {
           component,
           widthSpec,
           heightSpec,
+          mIsLayoutDiffingEnabled,

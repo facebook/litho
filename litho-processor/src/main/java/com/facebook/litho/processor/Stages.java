@@ -486,3 +486,10 @@ public class Stages {
             final boolean isFromState = getParameterAnnotation(v, STATE_ANNOTATIONS) != null;
             final boolean isFromTreeProp
                 = getParameterAnnotation(v, TREE_PROP_ANNOTATIONS) != null;
+
+            if (isFromState && !mSupportState) {
+              throw new ComponentsProcessingException(
+                  v,
+                  "State is not supported in this kind of Spec.");
+            }
+
