@@ -284,3 +284,9 @@ public class ComponentsPools {
       SparseArray<PoolWithCount> poolsArray =
           sMountContentPoolsByContext.get(context);
 
+      if (poolsArray == null) {
+        // The context is created here because we are sure the Activity is alive at this point in
+        // contrast of the release call where the Activity might by gone.
+        sMountContentPoolsByContext.put(context, new SparseArray<PoolWithCount>());
+        return null;
+      }
