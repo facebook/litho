@@ -229,3 +229,5 @@ class TextSpec {
       Output<Layout> measureLayout,
       Output<Integer> measuredWidth,
       Output<Integer> measuredHeight) {
+
+    if (TextUtils.isEmpty(text)) {
