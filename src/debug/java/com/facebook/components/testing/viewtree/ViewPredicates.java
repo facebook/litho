@@ -47,3 +47,4 @@ final class ViewPredicates {
           return true;
         }
 
+        if (input instanceof ComponentHost) {
