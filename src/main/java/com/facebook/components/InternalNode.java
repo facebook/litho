@@ -1551,3 +1551,56 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       final YogaNodeAPI yogaNode = node.mYogaNode;
 
       node.mPrivateFlags |= PFLAG_PADDING_IS_SET;
+      if (isPaddingPercent(LEFT)) {
+        yogaNode.setPaddingPercent(LEFT, mNestedTreePadding.getRaw(Spacing.LEFT));
+      } else {
+        yogaNode.setPadding(LEFT, mNestedTreePadding.getRaw(Spacing.LEFT));
+      }
+
+      if (isPaddingPercent(TOP)) {
+        yogaNode.setPaddingPercent(TOP, mNestedTreePadding.getRaw(Spacing.TOP));
+      } else {
+        yogaNode.setPadding(TOP, mNestedTreePadding.getRaw(Spacing.TOP));
+      }
+
+      if (isPaddingPercent(RIGHT)) {
+        yogaNode.setPaddingPercent(RIGHT, mNestedTreePadding.getRaw(Spacing.RIGHT));
+      } else {
+        yogaNode.setPadding(RIGHT, mNestedTreePadding.getRaw(Spacing.RIGHT));
+      }
+
+      if (isPaddingPercent(BOTTOM)) {
+        yogaNode.setPaddingPercent(BOTTOM, mNestedTreePadding.getRaw(Spacing.BOTTOM));
+      } else {
+        yogaNode.setPadding(BOTTOM, mNestedTreePadding.getRaw(Spacing.BOTTOM));
+      }
+
+      if (isPaddingPercent(VERTICAL)) {
+        yogaNode.setPaddingPercent(VERTICAL, mNestedTreePadding.getRaw(Spacing.VERTICAL));
+      } else {
+        yogaNode.setPadding(VERTICAL, mNestedTreePadding.getRaw(Spacing.VERTICAL));
+      }
+
+      if (isPaddingPercent(HORIZONTAL)) {
+        yogaNode.setPaddingPercent(HORIZONTAL, mNestedTreePadding.getRaw(Spacing.HORIZONTAL));
+      } else {
+        yogaNode.setPadding(HORIZONTAL, mNestedTreePadding.getRaw(Spacing.HORIZONTAL));
+      }
+
+      if (isPaddingPercent(START)) {
+        yogaNode.setPaddingPercent(START, mNestedTreePadding.getRaw(Spacing.START));
+      } else {
+        yogaNode.setPadding(START, mNestedTreePadding.getRaw(Spacing.START));
+      }
+
+      if (isPaddingPercent(END)) {
+        yogaNode.setPaddingPercent(END, mNestedTreePadding.getRaw(Spacing.END));
+      } else {
+        yogaNode.setPadding(END, mNestedTreePadding.getRaw(Spacing.END));
+      }
+
+      if (isPaddingPercent(ALL)) {
+        yogaNode.setPaddingPercent(ALL, mNestedTreePadding.getRaw(Spacing.ALL));
+      } else {
+        yogaNode.setPadding(ALL, mNestedTreePadding.getRaw(Spacing.ALL));
+      }
