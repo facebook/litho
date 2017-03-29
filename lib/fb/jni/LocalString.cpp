@@ -230,3 +230,4 @@ size_t utf16toUTF8Length(const uint16_t* utf16String, size_t utf16StringLen) {
   return utf8StringLen;
 }
 
+std::string utf16toUTF8(const uint16_t* utf16String, size_t utf16StringLen) noexcept {

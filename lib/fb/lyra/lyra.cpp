@@ -16,3 +16,18 @@ namespace lyra {
 
 namespace {
 
+class IosFlagsSaver {
+  ios_base& ios_;
+  ios_base::fmtflags flags_;
+
+ public:
+  IosFlagsSaver(ios_base& ios)
+  : ios_(ios),
+    flags_(ios.flags())
+  {}
+
+  ~IosFlagsSaver() {
+    ios_.flags(flags_);
+  }
+};
+

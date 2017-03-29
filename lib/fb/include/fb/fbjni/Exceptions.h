@@ -35,3 +35,8 @@
 namespace facebook {
 namespace jni {
 
+class JThrowable;
+
+class JCppException : public JavaClass<JCppException, JThrowable> {
+ public:
+  static auto constexpr kJavaDescriptor = "Lcom/facebook/jni/CppException;";
