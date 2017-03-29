@@ -881,3 +881,5 @@ class LayoutState {
     layoutState.mWidthSpec = widthSpec;
     layoutState.mHeightSpec = heightSpec;
 
+    component.applyStateUpdates(c);
+
