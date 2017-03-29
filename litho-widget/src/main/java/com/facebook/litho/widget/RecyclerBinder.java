@@ -741,3 +741,4 @@ public class RecyclerBinder implements Binder<RecyclerView> {
         case OrientationHelper.VERTICAL:
             componentView.setLayoutParams(
             new RecyclerView.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
