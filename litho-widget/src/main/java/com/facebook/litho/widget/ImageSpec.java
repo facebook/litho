@@ -189,3 +189,4 @@ class ImageSpec {
   }
 
   @ShouldUpdate(onMount = true)
+  static boolean shouldUpdate(

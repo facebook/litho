@@ -1191,3 +1191,4 @@ public class ComponentTree {
     mStethoManager = stethoManager;
   }
 
+  /**
