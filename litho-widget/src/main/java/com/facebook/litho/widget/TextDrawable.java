@@ -308,3 +308,25 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
     return result;
   }
 
+  private Path getSelectionPath() {
+    if (mSelectionStart == mSelectionEnd) {
+      return null;
+    }
+
+    if (Color.alpha(mHighlightColor) == 0) {
+      return null;
+    }
+
+    if (mSelectionPathNeedsUpdate) {
+      if (mSelectionPath == null) {
+        mSelectionPath = new Path();
+      }
+
+      mLayout.getSelectionPath(mSelectionStart, mSelectionEnd, mSelectionPath);
+      mSelectionPathNeedsUpdate = false;
+    }
+
+    return mSelectionPath;
+  }
+
+  private void setSelection(ClickableSpan span) {
