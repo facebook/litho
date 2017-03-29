@@ -1400,3 +1400,4 @@ public class Stages {
         ClassName.bestGuess(((TypeElement) eventClass.asElement()).getQualifiedName().toString());
 
     writeMethodSpec(new EventHandlerFactoryMethodSpecBuilder()
+        .eventId(getElementId(element))
