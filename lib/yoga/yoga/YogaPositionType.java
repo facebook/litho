@@ -31,3 +31,6 @@ public enum YogaPositionType {
       case 0: return RELATIVE;
       case 1: return ABSOLUTE;
       default: throw new IllegalArgumentException("Unknown enum value: " + value);
+    }
+  }
+}

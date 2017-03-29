@@ -45,3 +45,9 @@ public class ComponentTreeMountTest {
 
   @Test
   public void testRemountsWithNewInputOnSameLayout() {
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        TestDrawableComponent.create(mContext)
+          .color(Color.BLACK)
+          .build());
+    Shadows.shadowOf(componentView).callOnAttachedToWindow();

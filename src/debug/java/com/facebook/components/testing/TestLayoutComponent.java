@@ -73,3 +73,23 @@ public class TestLayoutComponent extends ComponentLifecycle {
     mIsPureRender = isPureRender;
     mHasMountSpecChild = hasMountSpecChild;
     mIsDelegate = isDelegate;
+  }
+
+  @Override
+  public boolean shouldUpdate(Component previous, Component next) {
+    return !next.equals(previous);
+  }
+
+  @Override
+  protected boolean callsShouldUpdateOnMount() {
+    return mCallsShouldUpdateOnMount;
+  }
+
+  @Override
+  protected boolean isPureRender() {
+    return mIsPureRender;
+  }
+
+  @Override
+  protected ComponentLayout onCreateLayout(ComponentContext c, Component _stateObject) {
+    super.onCreateLayout(c, _stateObject);

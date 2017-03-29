@@ -97,3 +97,4 @@ class CardSpec {
                         .positionType(ABSOLUTE)
                         .positionPx(ALL, 0)))
         .child(
+            CardShadow.create(c)

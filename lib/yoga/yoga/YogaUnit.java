@@ -35,3 +35,6 @@ public enum YogaUnit {
       case 2: return PERCENT;
       case 3: return AUTO;
       default: throw new IllegalArgumentException("Unknown enum value: " + value);
+    }
+  }
+}

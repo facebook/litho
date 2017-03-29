@@ -56,3 +56,6 @@ public class TestSizeDependentComponent extends ComponentLifecycle {
       return builder1.build();
     }
 
+    return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        .flexDirection(YogaFlexDirection.COLUMN)
+        .paddingPx(YogaEdge.ALL, 5)
