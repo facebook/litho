@@ -23,3 +23,4 @@ import com.facebook.components.ComponentView;
 import com.facebook.components.ComponentsPools;
 import com.facebook.components.EventHandler;
 import com.facebook.components.TestComponentTree;
+import com.facebook.components.TreeProps;
