@@ -210,3 +210,4 @@ final class ViewPredicates {
     }
 
     try {
+      final Method onDraw = view.getClass().getMethod("onDraw", Canvas.class);
