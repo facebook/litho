@@ -105,3 +105,4 @@ public class IncrementalMountUtils {
     }
 
     sTmpRect.set(
+        Math.max(0, -left),
