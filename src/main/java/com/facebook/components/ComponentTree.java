@@ -807,3 +807,8 @@ public class ComponentTree {
       final boolean heightSpecInitialized = heightSpec != SIZE_UNINITIALIZED;
 
       if (mHasViewMeasureSpec && !rootInitialized) {
+        // It doesn't make sense to specify the width/height while the HostView is attached and it
+        // has been measured. We do not throw an Exception only because there can be race conditions
+        // that can cause this to happen. In such race conditions, ignoring the setSizeSpec call is
+        // the right thing to do.
+        return;
