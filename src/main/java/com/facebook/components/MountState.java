@@ -1008,3 +1008,4 @@ class MountState {
       // 5. Setup view tags for the component, if applicable.
       setViewTag(view, nodeInfo.getViewTag());
       setViewTags(view, nodeInfo.getViewTags());
+
