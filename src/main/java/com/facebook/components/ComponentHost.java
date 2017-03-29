@@ -870,3 +870,32 @@ public class ComponentHost extends ViewGroup {
     for (int i = 0, size = mScrapHosts.size(); i < size; i++) {
       final View child = mScrapHosts.get(i);
       mChildDrawingOrder[index++] = indexOfChild(child);
+    }
+
+    mIsChildDrawingOrderDirty = false;
+  }
+
+  private void ensureScrapViewMountItemsArray() {
+    if (mScrapViewMountItemsArray == null) {
+      mScrapViewMountItemsArray = ComponentsPools.acquireScrapMountItemsArray();
+    }
+  }
+
+  private void ensureScrapMountItemsArray() {
+    if (mScrapMountItemsArray == null) {
+      mScrapMountItemsArray = ComponentsPools.acquireScrapMountItemsArray();
+    }
+  }
+
+  private void releaseScrapDataStructuresIfNeeded() {
+    if (mScrapMountItemsArray != null && mScrapMountItemsArray.size() == 0) {
+      ComponentsPools.releaseScrapMountItemsArray(mScrapMountItemsArray);
+      mScrapMountItemsArray = null;
+    }
+
+    if (mScrapViewMountItemsArray != null && mScrapViewMountItemsArray.size() == 0) {
+      ComponentsPools.releaseScrapMountItemsArray(mScrapViewMountItemsArray);
+      mScrapViewMountItemsArray = null;
+    }
+  }
+
