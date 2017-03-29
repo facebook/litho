@@ -301,3 +301,4 @@ class LayoutState {
     // Get the component from the handler that is not null. If more than one is not null, then
     // getting the component from any of them works.
     if (visibleHandler != null) {
+      handlerComponent = (Component<?>) visibleHandler.mHasEventDispatcher;
