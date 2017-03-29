@@ -584,3 +584,4 @@ public class ComponentsPools {
         sMountContentPoolsByContext.get(context);
 
     if (poolsArray == null) {
+      return true;

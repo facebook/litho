@@ -139,3 +139,11 @@ class RecyclerSpec {
     recyclerViewWrapper.setOnRefreshListener(onRefreshListener);
 
     final RecyclerView recyclerView = recyclerViewWrapper.getRecyclerView();
+
+    if (recyclerView == null) {
+      throw new IllegalStateException(
+          "RecyclerView not found, it should not be removed from SwipeRefreshLayout " +
+              "before unmounting");
+    }
+
+    oldAnimator.set(recyclerView.getItemAnimator());
