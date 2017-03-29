@@ -1248,3 +1248,26 @@ public class ComponentTree {
      *
      * @Deprecated We will remove this option soon, please consider turning it on (which is on by
      * default)
+     */
+    public Builder incrementalMount(boolean isEnabled) {
+      incrementalMountEnabled = isEnabled;
+      return this;
+    }
+
+    /**
+     * Whether or not to enable layout tree diffing. This will reduce the cost of
+     * updates at the expense of using extra memory.
+     */
+    public Builder layoutDiffing(boolean enabled) {
+      isLayoutDiffingEnabled = enabled;
+      return this;
+    }
+
+    /**
+     * Specify the looper to use for running layouts on. Note that in rare cases
+     * layout must run on the UI thread. For example, if you rotate the screen,
+     * we must measure on the UI thread. If you don't specify a Looper here, the
+     * Components default Looper will be used.
+     */
+    public Builder layoutThreadLooper(Looper looper) {
+      if (looper != null) {
