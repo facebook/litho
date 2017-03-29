@@ -838,3 +838,9 @@ public class ComponentTree {
       final boolean rootDidntChange = !rootInitialized || root.getId() == mRoot.getId();
 
       if (rootDidntChange && sizeSpecsAreCompatible) {
+        // The spec and the root haven't changed. Either we have a layout already, or we're
+        // currently computing one on another thread.
+        if (output != null) {
+          output.height = mostRecentLayoutState.getHeight();
+          output.width = mostRecentLayoutState.getWidth();
+        }
