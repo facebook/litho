@@ -13,3 +13,8 @@ import com.facebook.components.MatrixDrawable;
 
 import com.google.common.base.Predicate;
 
+/**
+ * Utility APIs to query the state of components.
+ */
+class ComponentQueries {
+

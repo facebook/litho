@@ -137,3 +137,4 @@ public class Stages {
   private final Class<Annotation>[] mInterStagePropAnnotations;
   private final Class<Annotation>[] mParameterAnnotations;
   private final TypeSpec.Builder mClassTypeSpec;
+  private final List<TypeVariableName> mTypeVariables;
