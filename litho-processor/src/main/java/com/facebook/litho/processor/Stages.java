@@ -1624,3 +1624,4 @@ public class Stages {
           "acquireOutput()");
     }
 
+    final CodeBlock.Builder delegateParameters = CodeBlock.builder().indent();
