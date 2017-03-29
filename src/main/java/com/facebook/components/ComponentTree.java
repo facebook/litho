@@ -294,3 +294,4 @@ public class ComponentTree {
     int componentRootId;
     synchronized (this) {
       // We need to track that we are attached regardless...
+      mIsAttached = true;
