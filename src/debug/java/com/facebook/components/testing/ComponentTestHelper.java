@@ -314,3 +314,8 @@ public final class ComponentTestHelper {
     final List<SubComponent> subComponents = new ArrayList<>(components.size());
     for (Component lifecycle : components) {
       subComponents.add(SubComponent.of(lifecycle));
+    }
+
+    return subComponents;
+  }
+
