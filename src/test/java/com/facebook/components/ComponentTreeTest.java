@@ -411,3 +411,4 @@ public class ComponentTreeTest {
     componentView1.onAttachedToWindow();
 
     // Attach second view.
+    ComponentView componentView2 = new ComponentView(mContext);
