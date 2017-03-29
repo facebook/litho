@@ -1793,3 +1793,6 @@ public class Stages {
 
     final TypeSpec.Builder implClassBuilder =
         TypeSpec.classBuilder(getImplClassName())
+            .addModifiers(Modifier.PRIVATE)
+            .superclass(
+                ParameterizedTypeName.get(
