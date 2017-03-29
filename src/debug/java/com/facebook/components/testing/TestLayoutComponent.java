@@ -156,3 +156,4 @@ public class TestLayoutComponent extends ComponentLifecycle {
     return builder;
   }
 
+  public static class State extends TestComponent<TestLayoutComponent> implements Cloneable {

@@ -42,3 +42,5 @@ public abstract class RecyclerComponentBinder<L extends RecyclerView.LayoutManag
 
   public RecyclerComponentBinder(Context context, L layoutManager, R rangeController) {
     this(context, layoutManager, rangeController, null);
+  }
+

@@ -39,3 +39,7 @@ public class BinderTreeCollectionTest {
 
     for (int i = 0; i < 10; i++) {
       mBinderTreeCollection.put(i + 1, createNewComponentTree());
+    }
+  }
+
+  @Test
