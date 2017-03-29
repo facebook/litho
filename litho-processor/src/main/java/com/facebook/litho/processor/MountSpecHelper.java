@@ -158,3 +158,10 @@ public class MountSpecHelper extends ComponentSpecHelper {
         ClassNames.SIZE,
     };
 
+    mTypeSpec.addMethod(
+        MethodSpec.methodBuilder("canMeasure")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PROTECTED)
+            .returns(TypeName.BOOLEAN)
+            .addStatement("return true")
+            .build());
