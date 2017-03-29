@@ -1744,3 +1744,7 @@ class MountState {
     logger.eventEnd(EVENT_MOUNT, component, ACTION_SUCCESS);
   }
 
+  private static class PrepareMountStats {
+    private int unmountedCount = 0;
+    private int movedCount = 0;
+    private int unchangedCount = 0;
