@@ -295,3 +295,16 @@ public abstract class PagerBinder extends BaseBinder<
     public void onPageSelected(int position) {
       mBinder.mCurrentItem = position;
       mBinder.getRangeController().notifyOnPageSelected(position);
+      if (mBinder.mClientOnPageChangeListener != null) {
+        mBinder.mClientOnPageChangeListener.onPageSelected(position);
+      }
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+      // Do nothing.  Report to listener
+      if (mBinder.mClientOnPageChangeListener != null) {
+        mBinder.mClientOnPageChangeListener.onPageScrollStateChanged(state);
+      }
+    }
+  }
