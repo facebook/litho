@@ -1132,3 +1132,8 @@ class MountState {
    * flag on the view.
    */
   private static void setClickHandler(EventHandler clickHandler, View view) {
+    if (clickHandler == null) {
+      return;
+    }
+
+    ComponentClickListener listener = getComponentClickListener(view);
