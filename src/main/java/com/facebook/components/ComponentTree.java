@@ -193,3 +193,4 @@ public class ComponentTree {
     // If everything matches perfectly then we prefer mMainThreadLayoutState
     // because that means we don't need to remount.
     boolean isMainThreadLayoutBest;
+    if (isCompatibleComponentAndSpec(mMainThreadLayoutState)) {

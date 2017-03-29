@@ -604,3 +604,36 @@ public abstract class BaseBinder<
    */
   protected void updateRange(int start, int count, int flags) {
     assertDoesntHoldLock(this);
+
+    final boolean isRefreshingInRange = (flags & URFLAG_REFRESH_IN_RANGE) != 0;
+    final boolean isReleasingOutsideRange = (flags & URFLAG_RELEASE_OUTSIDE_RANGE) != 0;
+    final List<ComponentTree> componentTreesToRelease = acquireList(getCount());
+    final List<Component<?>> componentList = acquireList(getCount());
+
+    // This must remain outside the synchronized block to maintain thread safety
+    for (int i = start, size = start + count; i < size; i++) {
+      componentList.add(createComponent(mContext, i));
+    }
+
+    synchronized (this) {
+      final int currentStart = mComponentTrees.getFirstPosition();
+      final int currentCount = mComponentTrees.size();
+      final int minPositionToProcess = Math.max(0, Math.min(start, currentStart));
+      final int maxPositionToProcess = Math.max(start + count, currentStart + currentCount);
+
+      for (int i = minPositionToProcess; i < maxPositionToProcess; i++) {
+        ComponentTree componentTree = mComponentTrees.get(i);
+
+        // ComponentTree outside the range: check if it needs to be released.
+        if (componentTree != null
+            && isReleasingOutsideRange
+            && (i < start || i >= start + count)) {
+          componentTreesToRelease.add(componentTree);
+          mComponentTrees.remove(i);
+
+          // If we are within the new range.
+        } else if (i >= start && i < start + count) {
+          final Component<?> component = componentList.get(i - start);
+
+          if (componentTree == null) {
+            // Create a new ComponentTree if we don't have it at the given position.
