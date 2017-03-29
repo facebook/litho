@@ -42,3 +42,4 @@ import com.facebook.litho.utils.MeasureUtils;
  */
 @MountSpec(isPureRender = true)
 class ProgressSpec {
+
