@@ -2756,3 +2756,4 @@ public class Stages {
               .initializer("new String[] {$L}", commaSeparateAndQuoteStrings(requiredPropNames))
               .addModifiers(Modifier.FINAL);
 
+      if (isStatic.equals(StaticFlag.STATIC)) {
