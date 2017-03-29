@@ -276,3 +276,4 @@ public interface ComponentLayout {
     ContainerBuilder paddingRes(YogaEdge edge, @DimenRes int resId);
     ContainerBuilder paddingDip(YogaEdge edge, @Dimension(unit = DP) int padding);
     ContainerBuilder paddingPercent(YogaEdge edge, float percent);
+
