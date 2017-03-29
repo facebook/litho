@@ -1333,3 +1333,11 @@ class MountState {
     if (focusState == NodeInfo.FOCUS_SET_TRUE) {
       view.setFocusable(true);
     } else if (focusState == NodeInfo.FOCUS_SET_FALSE) {
+      view.setFocusable(false);
+    }
+  }
+
+  private static void unsetFocusable(View view, MountItem mountItem) {
+    view.setFocusable(MountItem.isViewFocusable(mountItem.getFlags()));
+  }
+
