@@ -311,3 +311,7 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
     mGenericDraweeHierarchy.setActualImageScaleType(actualImageScaleType);
   }
 
+  public void setActualImageColorFilter(ColorFilter colorfilter) {
+    mGenericDraweeHierarchy.setActualImageColorFilter(colorfilter);
+  }
+
