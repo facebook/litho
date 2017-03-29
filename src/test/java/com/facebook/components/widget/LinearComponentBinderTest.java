@@ -232,3 +232,6 @@ public class LinearComponentBinderTest {
           .color(mItems.get(position))
           .measuredWidth(50)
           .measuredHeight(100)
+          .build();
+    }
+

@@ -126,3 +126,51 @@ public class BinderTreeCollectionTest {
 
     assertContiguous();
     assertEquals(originalSize + 1, mBinderTreeCollection.size());
+    assertEquals(treeAtLastPosition, mBinderTreeCollection.get(originalSize));
+    assertEquals(newComponentTree, mBinderTreeCollection.get(originalSize + 1));
+  }
+
+  @Test
+  public void testMoveFromBeforeTo() {
+    int originalSize = mBinderTreeCollection.size();
+
+    ComponentTree treeAtPosition2 = mBinderTreeCollection.get(2);
+    ComponentTree treeAtPosition3 = mBinderTreeCollection.get(3);
+    ComponentTree treeAtPosition4 = mBinderTreeCollection.get(4);
+    ComponentTree treeAtPosition5 = mBinderTreeCollection.get(5);
+    ComponentTree treeAtPosition6 = mBinderTreeCollection.get(6);
+    ComponentTree treeAtPosition7 = mBinderTreeCollection.get(7);
+
+    mBinderTreeCollection.move(3, 6);
+
+    assertContiguous();
+    assertEquals(originalSize, mBinderTreeCollection.size());
+    assertEquals(treeAtPosition2, mBinderTreeCollection.get(2));
+    assertEquals(treeAtPosition4, mBinderTreeCollection.get(3));
+    assertEquals(treeAtPosition5, mBinderTreeCollection.get(4));
+    assertEquals(treeAtPosition6, mBinderTreeCollection.get(5));
+    assertEquals(treeAtPosition3, mBinderTreeCollection.get(6));
+    assertEquals(treeAtPosition7, mBinderTreeCollection.get(7));
+  }
+
+  @Test
+  public void testMoveFromAfterTo() {
+    int originalSize = mBinderTreeCollection.size();
+
+    ComponentTree treeAtPosition2 = mBinderTreeCollection.get(2);
+    ComponentTree treeAtPosition3 = mBinderTreeCollection.get(3);
+    ComponentTree treeAtPosition4 = mBinderTreeCollection.get(4);
+    ComponentTree treeAtPosition5 = mBinderTreeCollection.get(5);
+    ComponentTree treeAtPosition6 = mBinderTreeCollection.get(6);
+    ComponentTree treeAtPosition7 = mBinderTreeCollection.get(7);
+
+    mBinderTreeCollection.move(6, 3);
+
+    assertContiguous();
+    assertEquals(originalSize, mBinderTreeCollection.size());
+    assertEquals(treeAtPosition2, mBinderTreeCollection.get(2));
+    assertEquals(treeAtPosition6, mBinderTreeCollection.get(3));
+    assertEquals(treeAtPosition3, mBinderTreeCollection.get(4));
+    assertEquals(treeAtPosition4, mBinderTreeCollection.get(5));
+    assertEquals(treeAtPosition5, mBinderTreeCollection.get(6));
+    assertEquals(treeAtPosition7, mBinderTreeCollection.get(7));
