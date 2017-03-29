@@ -115,3 +115,14 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       // ExploreByTouchHelper insists that we set something.
       node.setContentDescription("");
       node.setBoundsInParent(getDefaultBounds());
+      return;
+    }
+
+    final Drawable drawable = (Drawable) mountItem.getContent();
+    final Rect bounds = drawable.getBounds();
+
+    final Component<?> component = mountItem.getComponent();
+    final ComponentLifecycle lifecycle = component.getLifecycle();
+
+    node.setClassName(lifecycle.getClass().getName());
+
