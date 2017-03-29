@@ -85,3 +85,21 @@ public class ComponentInfo {
 
     private Component mComponent;
     private SimpleArrayMap<String, Object> mCustomAttributes;
+
+    private Builder() {
+      mComponent = null;
+    }
+
+    public Builder component(Component component) {
+      mComponent = component;
+      return this;
+    }
+
+    public Builder isSticky(boolean isSticky) {
+      return customAttribute(IS_STICKY, isSticky);
+    }
+
+    public Builder spanSize(int spanSize) {
+      return customAttribute(SPAN_SIZE, spanSize);
+    }
+
