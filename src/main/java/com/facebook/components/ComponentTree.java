@@ -1137,3 +1137,11 @@ public class ComponentTree {
       switch (msg.what) {
         case MESSAGE_WHAT_BACKGROUND_LAYOUT_STATE_UPDATED:
           ComponentTree that = (ComponentTree) msg.obj;
+
+          that.backgroundLayoutStateUpdated();
+          break;
+        default:
+          throw new IllegalArgumentException();
+      }
+    }
+  }
