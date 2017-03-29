@@ -45,3 +45,12 @@ public abstract class SpecHelper implements Closeable {
   protected final String mQualifiedClassName;
   protected final TypeElement mSpecElement;
   protected final SpecModel mSpecModel;
+
+  private final AtomicBoolean mOpen = new AtomicBoolean(true);
+
+  public SpecHelper(
+      ProcessingEnvironment processingEnv,
+      TypeElement specElement,
+      String name,
+      boolean isPublic,
+      Class<Annotation>[] stageAnnotations,
