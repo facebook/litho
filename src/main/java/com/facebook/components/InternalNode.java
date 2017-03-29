@@ -183,3 +183,15 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   private boolean mCachedMeasuresValid;
   private TreeProps mPendingTreeProps;
+
+  void init(YogaNodeAPI yogaNode, ComponentContext componentContext, Resources resources) {
+    yogaNode.setData(this);
+    yogaNode.setOverflow(YogaOverflow.HIDDEN);
+    yogaNode.setMeasureFunction(null);
+
+    // YogaNode is the only version of YogaNodeAPI with this support;
+    if (yogaNode instanceof YogaNode) {
+      yogaNode.setBaselineFunction(null);
+    }
+
+    mYogaNode = yogaNode;

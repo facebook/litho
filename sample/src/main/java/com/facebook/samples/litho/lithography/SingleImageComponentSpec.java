@@ -22,3 +22,7 @@ import com.facebook.drawee.interfaces.DraweeController;
 public class SingleImageComponentSpec {
   @PropDefault
   protected static final float aspectRatio = 1f;
+
+  @OnCreateLayout
+  static ComponentLayout onCreateLayout(
+      ComponentContext c,
