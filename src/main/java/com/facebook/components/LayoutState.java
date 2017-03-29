@@ -408,3 +408,6 @@ class LayoutState {
   }
 
   /**
+   * Collects layout outputs and release the layout tree. The layout outputs hold necessary
+   * information to be used by {@link MountState} to mount components into a {@link ComponentHost}.
+   * <p/>
