@@ -960,3 +960,6 @@ public class LayoutStateCalculateTest {
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(
+                Layout.create(c, innerComponent).flexShrink(0)
+                    .widthPx(100)
+                    .heightPx(100))
