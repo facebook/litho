@@ -772,3 +772,69 @@ public class ComponentHostTest {
     }
 
     public TestableComponentHost(Context context) {
+      super(context);
+    }
+
+    @Override
+    public void invalidate(Rect dirty) {
+      super.invalidate(dirty);
+
+      trackInvalidation(
+          dirty.left,
+          dirty.top,
+          dirty.right,
+          dirty.bottom);
+    }
+
+    @Override
+    public void invalidate(int l, int t, int r, int b) {
+      super.invalidate(l, t, r, b);
+
+      trackInvalidation(l, t, r, b);
+    }
+
+    @Override
+    public void invalidate() {
+      super.invalidate();
+
+      trackInvalidation(0, 0, getWidth(), getHeight());
+    }
+
+    @Override
+    public void addView(View child, int index, LayoutParams params) {
+      super.addView(child, index, params);
+
+      trackInvalidation(
+          child.getLeft(),
+          child.getTop(),
+          child.getRight(),
+          child.getBottom());
+    }
+
+    @Override
+    public void removeView(View child) {
+      super.removeView(child);
+
+      trackInvalidation(
+          child.getLeft(),
+          child.getTop(),
+          child.getRight(),
+          child.getBottom());
+    }
+
+    int getInvalidationCount() {
+      return mInvalidationCount;
+    }
+
+    Rect getInvalidationRect() {
+      return mInvalidationRect;
+    }
+
+    private void trackInvalidation(int l, int t, int r, int b) {
+      mInvalidationCount++;
+
+      mInvalidationRect = new Rect();
+      mInvalidationRect.set(l, t, r, b);
+    }
+  }
+}
