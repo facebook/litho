@@ -96,3 +96,5 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
   private int mId = sIdGenerator.getAndIncrement();
   private String mGlobalKey;
   private String mKey;
+
+  private final L mLifecycle;
