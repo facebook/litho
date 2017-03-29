@@ -1212,3 +1212,9 @@ class LayoutState {
         // Transfer the cached layout to the node without releasing it if it's compatible.
         if (hasCompatibleLayoutDirection &&
             hasCompatibleSizeSpec(
+                cachedLayout.getLastWidthSpec(),
+                cachedLayout.getLastHeightSpec(),
+                widthSpec,
+                heightSpec,
+                cachedLayout.getLastMeasuredWidth(),
+                cachedLayout.getLastMeasuredHeight())) {
