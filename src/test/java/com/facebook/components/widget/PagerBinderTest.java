@@ -165,3 +165,5 @@ public class PagerBinderTest {
   @Test
   public void testSimpleBinderUpdateWithSimulatedScrollRight() {
     mBinder = new TestPagerComponentBinder(mContext, 0, 1f);
+    mBinder.getRangeController().notifyOnPageSelected(5);
+

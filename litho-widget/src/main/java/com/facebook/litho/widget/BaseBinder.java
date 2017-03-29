@@ -285,3 +285,8 @@ public abstract class BaseBinder<
         final int firstPosition = mComponentTrees.getFirstPosition();
         final int lastPosition = firstPosition + mComponentTrees.size() - 1;
 
+        if (toPosition < firstPosition && fromPosition > lastPosition) {
+          mComponentTrees.shiftAllRight(1);
+        } else if (toPosition > lastPosition && fromPosition < firstPosition) {
+          mComponentTrees.shiftAllLeft(1);
+        }
