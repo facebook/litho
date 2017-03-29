@@ -378,3 +378,10 @@ public class MountSpecHelper extends ComponentSpecHelper {
     methodDescription.parameterTypes = new TypeName[] {
         ClassNames.COMPONENT_CONTEXT,
         ClassName.OBJECT,
+    };
+
+    generateMountCompliantMethod(onUnmount, methodDescription);
+  }
+
+  private void generateMountCompliantMethod(
+      ExecutableElement method,
