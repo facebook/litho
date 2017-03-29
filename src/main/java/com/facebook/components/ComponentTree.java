@@ -59,3 +59,5 @@ import static com.facebook.litho.ThreadUtils.isMainThread;
  * <code/>
  */
 public class ComponentTree {
+
+  private static final String TAG = ComponentTree.class.getSimpleName();

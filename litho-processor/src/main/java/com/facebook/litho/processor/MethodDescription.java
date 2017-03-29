@@ -24,3 +24,4 @@ public class MethodDescription {
   public Class[] annotations;
   public Modifier accessType;
   public TypeName returnType;
+  public String name;

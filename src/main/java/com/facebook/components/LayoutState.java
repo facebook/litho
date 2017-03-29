@@ -70,3 +70,4 @@ import static com.facebook.litho.SizeSpec.EXACTLY;
  * mountable outputs and visibility outputs. A centerpiece of the class is {@link
  * #collectResults(InternalNode, LayoutState, DiffNode)} which prepares the before-mentioned outputs
  * based on the provided {@link InternalNode} for later use in {@link MountState}.
+ */

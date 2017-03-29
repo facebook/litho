@@ -85,3 +85,4 @@ public class LayoutStateRecyclingTest {
 
     LayoutState layoutState = LayoutState.calculate(
         new ComponentContext(RuntimeEnvironment.application),
+        input,
