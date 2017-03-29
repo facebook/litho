@@ -825,3 +825,7 @@ public class Stages {
    */
   private Annotation getInterStagePropAnnotation(VariableElement element) {
     return getParameterAnnotation(element, mInterStagePropAnnotations);
+  }
+
+  /**
+   * Get the annotation, if any, present on a parameter. Annotations are restricted to our whitelist
