@@ -70,3 +70,5 @@ final class ViewPredicates {
   public static Predicate<View> hasTag(final int tagId, final Object tagValue) {
     return new Predicate<View>() {
       @Override
+      public boolean apply(final View input) {
+        final Object tag = input.getTag(tagId);
