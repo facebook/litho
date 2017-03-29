@@ -87,3 +87,9 @@ public class TestViewComponent extends ComponentLifecycle {
     return mIsPureRender;
   }
 
+  @Override
+  protected boolean canMountIncrementally() {
+    return mCanMountIncrementally;
+  }
+
+  @Override

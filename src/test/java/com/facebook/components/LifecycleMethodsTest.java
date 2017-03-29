@@ -46,3 +46,4 @@ public class LifecycleMethodsTest {
 
   @Before
   public void setup() throws Exception {
+    mComponentView = new ComponentView(RuntimeEnvironment.application);

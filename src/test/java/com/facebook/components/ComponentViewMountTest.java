@@ -36,3 +36,17 @@ public class ComponentViewMountTest {
 
   @Before
   public void setup() {
+    mContext = new ComponentContext(RuntimeEnvironment.application);
+
+    mComponentView = new TestComponentView(mContext);
+    mComponent = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return TestDrawableComponent.create(c)
+            .withLayout()
+            .widthPx(100)
+            .heightPx(100)
+            .build();
+      }
+    };
+

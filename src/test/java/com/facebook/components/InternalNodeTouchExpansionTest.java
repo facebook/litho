@@ -55,3 +55,4 @@ public class InternalNodeTouchExpansionTest {
   @Test
   public void testTouchExpansionRightWithoutTouchHandling() {
     mInternalNode.touchHandler(null);
+    mInternalNode.touchExpansionPx(YogaEdge.RIGHT, 10);

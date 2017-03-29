@@ -40,3 +40,4 @@ public class TestSizeDependentComponent extends ComponentLifecycle {
             .backgroundColor(0xFFFF0000);
     final ComponentLayout.Builder builder2 = TestViewComponent.create(c, false, true, true, false)
         .withLayout()
+        .marginPx(YogaEdge.ALL, 3);

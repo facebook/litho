@@ -24,3 +24,4 @@ import com.facebook.components.ComponentTree;
 import com.facebook.components.ComponentView;
 import com.facebook.components.config.ComponentsConfiguration;
 import com.facebook.components.Size;
+import com.facebook.components.SizeSpec;

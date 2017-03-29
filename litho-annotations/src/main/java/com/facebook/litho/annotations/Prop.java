@@ -16,3 +16,6 @@ import java.lang.annotation.RetentionPolicy;
 public @interface Prop {
 
   boolean optional() default false;
+  ResType resType() default ResType.NONE;
+  String docString() default "";
+
