@@ -1420,3 +1420,8 @@ class MountState {
   }
 
   private static void setViewLayoutDirection(View view, ViewNodeInfo viewNodeInfo) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
+      return;
+    }
+
+    final int viewLayoutDirection;
