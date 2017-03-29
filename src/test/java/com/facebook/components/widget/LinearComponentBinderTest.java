@@ -70,3 +70,4 @@ public class LinearComponentBinderTest {
     mView.setLayoutManager(mLayoutManager);
 
     mBinder = Mockito.spy(new MyTestLinearComponentBinder(context, mLayoutManager, mItems));
+
