@@ -187,3 +187,4 @@ public abstract class PagerBinder extends BaseBinder<
       }
 
       componentView.setComponent(component);
+

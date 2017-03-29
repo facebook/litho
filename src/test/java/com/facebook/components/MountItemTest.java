@@ -64,3 +64,4 @@ public class MountItemTest {
     mViewTags = new SparseArray<>();
     mClickHandler = new EventHandler(mComponent, 5);
     mLongClickHandler = new EventHandler(mComponent, 3);
+    mTouchHandler = new EventHandler(mComponent, 1);
