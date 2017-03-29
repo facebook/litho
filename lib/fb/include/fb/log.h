@@ -117,3 +117,8 @@ int __android_log_print(int prio, const char *tag, const char *fmt, ...)
 #ifndef FBLOGV
 #if FBLOG_NDEBUG
 #define FBLOGV(...) ((void)0)
+#else
+#define FBLOGV(...) ((void)FBLOG(LOG_VERBOSE, LOG_TAG, __VA_ARGS__))
+#endif
+#endif
+
