@@ -216,3 +216,20 @@ class EventDispatcherUtils {
     sOnInitializeAccessibilityNodeInfoEvent.host = null;
     sOnInitializeAccessibilityNodeInfoEvent.info = null;
     sOnInitializeAccessibilityNodeInfoEvent.superDelegate = null;
+  }
+
+  static void dispatchOnPopulateAccessibilityEvent(
+      EventHandler<OnPopulateAccessibilityEventEvent> eventHandler,
+      View host,
+      AccessibilityEvent event,
+      AccessibilityDelegateCompat superDelegate) {
+    assertMainThread();
+
+    if (sOnPopulateAccessibilityEventEvent == null) {
+      sOnPopulateAccessibilityEventEvent = new OnPopulateAccessibilityEventEvent();
+    }
+
+    sOnPopulateAccessibilityEventEvent.host = host;
+    sOnPopulateAccessibilityEventEvent.event = event;
+    sOnPopulateAccessibilityEventEvent.superDelegate = superDelegate;
+
