@@ -37,3 +37,4 @@ import static android.view.View.MeasureSpec.makeMeasureSpec;
  * Allows simple and short creation of views that are created and mounted in a similar way to how
  * they are in real apps.
  */
+public final class ComponentTestHelper {
