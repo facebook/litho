@@ -1021,3 +1021,7 @@ class LayoutState {
           final LayoutOutput clickableOutput = findInteractiveRoot(layoutState, output);
           boolean isStateEnabled = false;
 
+          if (clickableOutput != null && clickableOutput.getNodeInfo() != null) {
+            final NodeInfo nodeInfo = clickableOutput.getNodeInfo();
+
+            if (nodeInfo.hasTouchEventHandlers() || nodeInfo.getFocusState() == FOCUS_SET_TRUE) {
