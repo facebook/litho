@@ -38,3 +38,7 @@ java_library(
         COMPONENTS_JAVAPOET_TARGET,
         COMPONENTS_FBCORE_TARGET,
         COMPONENTS_JSR_TARGET,
+    ],
+    visibility = [
+        "PUBLIC",
+    ],

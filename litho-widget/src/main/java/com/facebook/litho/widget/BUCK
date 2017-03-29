@@ -34,3 +34,5 @@ android_library(
         COMPONENTS_JSR_TARGET,
         COMPONENTS_TEXTLAYOUTBUILDER_TARGET,
     ],
+    tests = [
+        "//instrumentation_tests/com/facebook/components/widget:widget",
