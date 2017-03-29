@@ -1150,3 +1150,15 @@ class LayoutState {
       ComponentsSystrace.beginSection("applyDiffNode");
       applyDiffNodeToUnchangedNodes(root, previousDiffTreeRoot);
       ComponentsSystrace.endSection(/* applyDiffNode */);
+    }
+
+    final ComponentsLogger logger = context.getLogger();
+    if (logger != null) {
+      logger.eventStart(EVENT_CSS_LAYOUT, component, PARAM_LOG_TAG, context.getLogTag());
+      logger.eventAddParam(
+          EVENT_CSS_LAYOUT,
+          component,
+          PARAM_TREE_DIFF_ENABLED,
+          String.valueOf(previousDiffTreeRoot != null));
+    }
+
