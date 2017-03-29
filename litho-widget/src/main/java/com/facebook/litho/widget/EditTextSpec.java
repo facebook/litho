@@ -154,3 +154,4 @@ class EditTextSpec {
   }
 
   @OnMeasure
+  static void onMeasure(
