@@ -67,3 +67,4 @@ public class TestComponentTree extends ComponentTree {
         TestComponent testSubcomponent = (TestComponent) root.getComponent();
         output.add(testSubcomponent.getWrappedComponent());
       }
+
