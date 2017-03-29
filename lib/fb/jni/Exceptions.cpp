@@ -67,3 +67,6 @@ class JArrayIndexOutOfBoundsException : public JavaClass<JArrayIndexOutOfBoundsE
   }
 };
 
+class JUnknownCppException : public JavaClass<JUnknownCppException, JThrowable> {
+ public:
+  static auto constexpr kJavaDescriptor = "Lcom/facebook/jni/UnknownCppException;";
