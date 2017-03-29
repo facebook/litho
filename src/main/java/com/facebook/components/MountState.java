@@ -709,3 +709,9 @@ class MountState {
   }
 
   /**
+   * Go over all the mounted items from the leaves to the root and unmount only the items that are
+   * not present in the new LayoutOutputs.
+   * If an item is still present but in a new position move the item inside its host.
+   * The condition where an item changed host doesn't need any special treatment here since we
+   * mark them as removed and re-added when calculating the new LayoutOutputs
+   */
