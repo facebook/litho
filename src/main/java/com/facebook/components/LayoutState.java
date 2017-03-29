@@ -190,3 +190,4 @@ class LayoutState {
         false /* useNodePadding */,
         node.getImportantForAccessibility(),
         node.isDuplicateParentStateEnabled());
+
