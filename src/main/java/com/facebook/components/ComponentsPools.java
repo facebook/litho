@@ -664,3 +664,7 @@ public class ComponentsPools {
     sSpacingPool.release(spacing);
   }
 
+  /**
+   * Empty implementation of the {@link Application.ActivityLifecycleCallbacks} interface
+   */
+  @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
