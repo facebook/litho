@@ -2204,3 +2204,5 @@ public class Stages {
       }
 
       if (!typeName.equals(innerTypeName)) {
+        throw new ComponentsProcessingException(
+            variableElement,
