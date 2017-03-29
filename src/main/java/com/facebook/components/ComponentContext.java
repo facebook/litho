@@ -61,3 +61,11 @@ public class ComponentContext extends ContextWrapper {
    * @param logger Specify the lifecycle logger to be used.
    */
   public ComponentContext(Context context, String logTag, ComponentsLogger logger) {
+   this(context, logTag, logger, null);
+  }
+
+  private ComponentContext(
+      Context context,
+      String logTag,
+      ComponentsLogger logger,
+      StateHandler stateHandler) {
