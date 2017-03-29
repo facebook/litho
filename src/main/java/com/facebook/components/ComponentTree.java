@@ -743,3 +743,7 @@ public class ComponentTree {
    * Compute a new layout with the given component root and sizes
    */
   public void setRootAndSizeSpec(Component<?> root, int widthSpec, int heightSpec) {
+    if (root == null) {
+      throw new IllegalArgumentException("Root component can't be null");
+    }
+
