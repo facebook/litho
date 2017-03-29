@@ -129,3 +129,4 @@ class RecyclerSpec {
       ComponentContext context,
       RecyclerViewWrapper recyclerViewWrapper,
       @Prop(optional = true) ItemAnimator itemAnimator,
+      @Prop Binder<RecyclerView> binder,
