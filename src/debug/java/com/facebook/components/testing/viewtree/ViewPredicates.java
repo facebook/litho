@@ -118,3 +118,14 @@ final class ViewPredicates {
         }
 
         return false;
+      }
+    };
+  }
+
+  public static Predicate<View> hasVisibleMatchingText(final String text) {
+    return Predicates.and(isVisible(), matchesText(text));
+  }
+
+  public static Predicate<View> isVisible() {
+    return new Predicate<View>() {
+      @Override
