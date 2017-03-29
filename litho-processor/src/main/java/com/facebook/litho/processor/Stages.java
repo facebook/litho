@@ -1466,3 +1466,7 @@ public class Stages {
       ExecutableElement element,
       ClassName contextClass,
       ClassName componentClass) {
+    final String methodName = element.getSimpleName().toString();
+
+    final List<VariableElement> updateMethodParamElements =
+        Utils.getParametersWithAnnotation(element, Param.class);
