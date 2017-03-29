@@ -648,3 +648,5 @@ class MountState {
         sTempRect.left,
         sTempRect.top,
         sTempRect.right,
+        sTempRect.bottom,
+        forceTraversal /* force */);
