@@ -208,3 +208,5 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   @Override
   public void copyStyle(YogaNode srcNode) {
     jni_YGNodeCopyStyle(mNativePointer, srcNode.mNativePointer);
+  }
+

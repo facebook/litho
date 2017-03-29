@@ -619,3 +619,5 @@ static inline const YGValue *YGNodeResolveFlexBasisPtr(const YGNodeRef node) {
     }                                                                                         \
   }                                                                                           \
                                                                                               \
+  WIN_STRUCT(type) YGNodeStyleGet##name(const YGNodeRef node, const YGEdge edge) {            \
+    return WIN_STRUCT_REF(node->style.instanceName[edge]);                                    \
