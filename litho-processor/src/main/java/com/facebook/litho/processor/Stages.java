@@ -2714,3 +2714,7 @@ public class Stages {
       initMethodSpec
           .addParameter(int.class, "defStyleAttr")
           .addParameter(int.class, "defStyleRes")
+          .addParameter(implClass, implInstanceName)
+          .addStatement("super.init(context, defStyleAttr, defStyleRes, " +
+              implInstanceName +
+              ")");
