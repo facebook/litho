@@ -192,3 +192,20 @@ public class TestLayoutComponent extends ComponentLifecycle {
 
   public static class Builder
       extends com.facebook.litho.Component.Builder<TestLayoutComponent> {
+    State mState;
+
+    private void init(
+        ComponentContext context,
+        @AttrRes int defStyleAttr,
+        @StyleRes int defStyleRes,
+        State state) {
+      super.init(context, defStyleAttr, defStyleRes, state);
+      mState = state;
+    }
+
+    public Builder unique() {
+      mState.mIsUnique = true;
+      return this;
+    }
+
+    @Override

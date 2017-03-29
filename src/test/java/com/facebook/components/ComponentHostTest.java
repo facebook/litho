@@ -68,3 +68,6 @@ public class ComponentHostTest {
 
   @Before
   public void setup() throws Exception {
+    mContext = new ComponentContext(RuntimeEnvironment.application);
+    mViewComponent = TestViewComponent.create(mContext).build();
+    mDrawableComponent = TestDrawableComponent.create(mContext).build();

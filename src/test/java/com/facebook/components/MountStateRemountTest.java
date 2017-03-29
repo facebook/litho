@@ -108,3 +108,4 @@ public class MountStateRemountTest {
    * as view layout outputs and mount items were being re-used for drawables.
    */
   @Test
+  public void testRemountDifferentMountType() throws IllegalAccessException, NoSuchFieldException {

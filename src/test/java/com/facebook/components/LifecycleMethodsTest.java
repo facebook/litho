@@ -159,3 +159,4 @@ public class LifecycleMethodsTest {
 
     @Override
     protected void onBind(
+        ComponentContext c,
