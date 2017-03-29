@@ -326,3 +326,5 @@ public abstract class ComponentLifecycle implements EventDispatcher {
       int heightSpec,
       Component<?> component) {
     return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START).build();
+  }
+
