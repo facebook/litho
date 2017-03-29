@@ -109,3 +109,5 @@ class FrescoComponentSpec {
       draweeHierarchy.setPlaceholderImageFocusPoint(placeholderImageFocusPoint);
     }
 
+    draweeHierarchy.setActualImageScaleType(actualImageScaleType);
+    draweeHierarchy.setFadeDuration(fadeDuration);
