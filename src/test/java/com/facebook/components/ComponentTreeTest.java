@@ -259,3 +259,5 @@ public class ComponentTreeTest {
   }
 
   @Test
+  public void testSetCompatibleSizeSpec() {
+    ComponentTree componentTree =
