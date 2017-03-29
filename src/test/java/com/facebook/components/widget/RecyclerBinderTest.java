@@ -724,3 +724,11 @@ public class RecyclerBinderTest {
     final TestComponentTreeHolder holder =
         mHoldersForComponents.get(newComponentInfo.getComponent());
 
+    assertFalse(holder.isTreeValid());
+    assertFalse(holder.mLayoutSyncCalled);
+    assertFalse(holder.mLayoutAsyncCalled);
+    assertFalse(holder.mDidAcquireStateHandler);
+  }
+
+  @Test
+  public void testRemoveItem() {
