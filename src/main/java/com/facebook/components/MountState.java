@@ -177,3 +177,8 @@ class MountState {
     if (mIsDirty) {
       suppressInvalidationsOnHosts(true);
 
+      // Prepare the data structure for the new LayoutState and removes mountItems
+      // that are not present anymore if isUpdateMountInPlace is enabled.
+      prepareMount(layoutState);
+    }
+

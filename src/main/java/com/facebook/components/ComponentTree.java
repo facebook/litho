@@ -717,3 +717,12 @@ public class ComponentTree {
   public void setSizeSpecAsync(int widthSpec, int heightSpec) {
     setRootAndSizeSpecInternal(
         null,
+        widthSpec,
+        heightSpec,
+        true /* isAsync */,
+        null /* output */);
+  }
+
+  /**
+   * Compute asynchronously a new layout with the given component root and sizes
+   */
