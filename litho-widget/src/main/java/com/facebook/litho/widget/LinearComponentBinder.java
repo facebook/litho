@@ -62,3 +62,4 @@ public abstract class LinearComponentBinder extends
     if (getLayoutManager().getOrientation() == LinearLayoutManager.VERTICAL) {
       return super.getWidthSpec(position);
     } else {
+      return SizeSpec.makeSizeSpec(0, UNSPECIFIED);

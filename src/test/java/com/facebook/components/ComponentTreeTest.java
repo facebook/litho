@@ -62,3 +62,4 @@ public class ComponentTreeTest {
     mComponent = TestDrawableComponent.create(mContext)
         .build();
 
+    mLayoutThreadShadowLooper = Shadows.shadowOf(

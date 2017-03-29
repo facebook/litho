@@ -94,3 +94,27 @@ public class InternalNodeTest {
   }
 
   @Test
+  public void testFlexGrowFlag() {
+    mNode.flexGrow(1.5f);
+    assertTrue(isFlagSet(mNode, "PFLAG_FLEX_GROW_IS_SET"));
+    clearFlag(mNode, "PFLAG_FLEX_GROW_IS_SET");
+    assertEmptyFlags(mNode);
+  }
+
+  @Test
+  public void testFlexShrinkFlag() {
+    mNode.flexShrink(1.5f);
+    assertTrue(isFlagSet(mNode, "PFLAG_FLEX_SHRINK_IS_SET"));
+    clearFlag(mNode, "PFLAG_FLEX_SHRINK_IS_SET");
+    assertEmptyFlags(mNode);
+  }
+
+  @Test
+  public void testFlexBasisFlag() {
+    mNode.flexBasisPx(1);
+    assertTrue(isFlagSet(mNode, "PFLAG_FLEX_BASIS_IS_SET"));
+    clearFlag(mNode, "PFLAG_FLEX_BASIS_IS_SET");
+    assertEmptyFlags(mNode);
+  }
+
+  @Test

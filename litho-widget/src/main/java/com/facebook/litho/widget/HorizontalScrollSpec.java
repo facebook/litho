@@ -75,3 +75,4 @@ class HorizontalScrollSpec {
 
   @OnPrepare
   static void onPrepare(
+      ComponentContext context,
