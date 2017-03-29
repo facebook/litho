@@ -88,3 +88,8 @@ class JCppSystemErrorException : public JavaClass<JCppSystemErrorException, JThr
     return newInstance(make_jstring(e.what()), e.code().value());
   }
 };
+
+// Exception throwing & translating functions //////////////////////////////////////////////////////
+
+// Functions that throw Java exceptions
+
