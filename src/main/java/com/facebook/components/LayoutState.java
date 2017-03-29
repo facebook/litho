@@ -811,3 +811,6 @@ class LayoutState {
       releaseNodeTree(node.getNestedTree(), true);
     }
 
+    ComponentsPools.release(node);
+  }
+
