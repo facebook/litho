@@ -276,3 +276,15 @@ public class LifecycleMethodsTest {
 
     private LifecycleMethodsDrawable(LifecycleMethodsInstance component) {
       assertEquals(LifecycleStep.ON_CREATE_MOUNT_CONTENT, component.getCurrentStep());
+    }
+
+    void setComponent(LifecycleMethodsInstance component) {
+      mComponent = component;
+      assertEquals(LifecycleStep.ON_MOUNT, mComponent.getCurrentStep());
+    }
+
+    @Override
+    public void setBounds(int l, int t, int r, int b) {
+      super.setBounds(l, t, r, b);
+
+      assertTrue(
