@@ -1653,3 +1653,5 @@ public class Stages {
       methodBuilder.addStatement(
           "$L.$L = $L.get()",
           implInstanceName,
+          name,
+          name);
