@@ -1301,3 +1301,4 @@ public class Stages {
    */
   public void generateDispatchOnEvent(
       ClassName contextClassName) {
+    final MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder("dispatchOnEvent")
