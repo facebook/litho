@@ -2296,3 +2296,26 @@ public class LayoutStateCalculateTest {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            .child(TestDrawableComponent.create(c))
+            .borderWidthPx(YogaEdge.ALL, 10)
+            .build();
+      }
+    };
+
+    LayoutState layoutState = calculateLayoutState(
+        RuntimeEnvironment.application,
+        component,
+        -1,
+        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
+        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
+
+    // No layout output generated related with borders
+    // if borderWidth supplied but not borderColor.
+    assertEquals(2, layoutState.getMountableOutputCount());
+  }
+
+  @Test
+  public void testLayoutOutputsForComponentWithBorderWidthAllAndBorderColor() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
