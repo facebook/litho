@@ -305,3 +305,5 @@ public abstract class ComponentLifecycle implements EventDispatcher {
   }
 
   /**
+   * Generate a tree of {@link ComponentLayout} representing the layout structure of
+   * the {@link Component} and its sub-components. You should use
