@@ -173,3 +173,10 @@ public class ViewPredicatesTest {
     final Resources resources = RuntimeEnvironment.application.getResources();
     final Drawable noAvatar = resources.getDrawable(R.drawable.litho);
     final Predicate<View> hasVisibleDrawable = ViewPredicates.hasVisibleDrawable(noAvatar);
+
+    assertThat(hasVisibleDrawable.apply(mImageView)).isTrue();
+    mImageView.setVisibility(View.GONE);
+    assertThat(hasVisibleDrawable.apply(mImageView)).isFalse();
+  }
+
+  @Test
