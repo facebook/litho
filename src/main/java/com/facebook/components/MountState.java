@@ -38,3 +38,6 @@ import static com.facebook.components.Component.isHostSpec;
 import static com.facebook.components.Component.isMountViewSpec;
 import static com.facebook.components.ComponentHostUtils.maybeInvalidateAccessibilityState;
 import static com.facebook.components.ComponentHostUtils.maybeSetDrawableState;
+import static com.facebook.components.ComponentsLogger.ACTION_SUCCESS;
+import static com.facebook.components.ComponentsLogger.EVENT_MOUNT;
+import static com.facebook.components.ComponentsLogger.EVENT_PREPARE_MOUNT;
