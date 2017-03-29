@@ -2473,3 +2473,5 @@ public class Stages {
         "$T _eventState = new $T()",
         className,
         className);
+
+    for (VariableElement v : parameters) {
