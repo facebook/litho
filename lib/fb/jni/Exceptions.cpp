@@ -262,3 +262,4 @@ local_ref<JThrowable> JniException::getThrowable() const noexcept {
 
 // TODO 6900503: consider making this thread-safe.
 void JniException::populateWhat() const noexcept {
+  ThreadScope ts;
