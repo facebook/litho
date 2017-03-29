@@ -85,3 +85,7 @@ class MountItem {
       int flags,
       int importantForAccessibility) {
     mComponent = component;
+    mContent = content;
+    mHost = host;
+    mFlags = flags;
+    mImportantForAccessibility = importantForAccessibility;

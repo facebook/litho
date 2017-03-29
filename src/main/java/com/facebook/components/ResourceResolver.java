@@ -246,3 +246,4 @@ public class ResourceResolver {
     }
   }
 
+  protected final int resolveIntAttr(@AttrRes int attrResId, @IntegerRes int defResId) {
