@@ -1452,3 +1452,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   ComponentContext getContext() {
     return mComponentContext;
+  }
+
+  Component getComponent() {
+    return mComponent;
+  }
+
