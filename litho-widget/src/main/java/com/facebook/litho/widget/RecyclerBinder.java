@@ -322,3 +322,69 @@ public class RecyclerBinder implements Binder<RecyclerView> {
 
       childrenWidthSpec = getActualChildrenWidthSpec(holder);
       childrenHeightSpec = getActualChildrenHeightSpec(holder);
+    }
+    final boolean isTreeValid = holder.isTreeValid();
+
+    if (isTreeValid && !isNewPositionInRange) {
+      holder.acquireStateHandlerAndReleaseTree();
+    } else if (isNewPositionInVisibleRange && !isTreeValid) {
+      holder.computeLayoutSync(mComponentContext, childrenWidthSpec, childrenHeightSpec, null);
+    }
+
+    mInternalAdapter.notifyItemMoved(fromPosition, toPosition);
+    computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+  }
+
+  /**
+   * Removes an item from index position.
+   */
+  @UiThread
+  public final void removeItemAt(int position) {
+    ThreadUtils.assertMainThread();
+    final ComponentTreeHolder holder;
+    synchronized (this) {
+      holder = mComponentTreeHolders.remove(position);
+    }
+    mInternalAdapter.notifyItemRemoved(position);
+    holder.release();
+    computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+  }
+
+  /**
+   * Returns the {@link ComponentTree} for the item at index position. TODO 16212132 remove
+   * getComponentAt from binder
+   */
+  @Nullable
+  @Override
+  public final synchronized ComponentTree getComponentAt(int position) {
+    return mComponentTreeHolders.get(position).getComponentTree();
+  }
+
+  @Override
+  public void bind(RecyclerView view) {
+    // Nothing to do here.
+  }
+
+  @Override
+  public void unbind(RecyclerView view) {
+    // Nothing to do here.
+  }
+
+  /**
+   * A component mounting a RecyclerView can use this method to determine its size. A Recycler that
+   * scrolls horizontally will leave the width unconstrained and will measure its children with a
+   * sizeSpec for the height matching the heightSpec passed to this method.
+   *
+   * If padding is defined on the parent component it should be subtracted from the parent size
+   * specs before passing them to this method.
+   *
+   * Currently we can't support the equivalent of MATCH_PARENT on the scrollDirection (so for
+   * example we don't support MATCH_PARENT on width in an horizontal RecyclerView). This is mainly
+   * because we don't have the equivalent of LayoutParams in components. We can extend the api of
+   * the binder in the future to provide some more layout hints in order to support this.
+   *
+   * @param outSize will be populated with the measured dimensions for this Binder.
+   * @param widthSpec the widthSpec to be used to measure the RecyclerView.
+   * @param heightSpec the heightSpec to be used to measure the RecyclerView.
+   */
+  @Override
