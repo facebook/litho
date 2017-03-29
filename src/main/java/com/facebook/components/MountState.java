@@ -609,3 +609,26 @@ class MountState {
     return currentLifecycle.shouldComponentUpdate(
         currentComponent,
         nextComponent);
+  }
+
+  private static boolean sameSize(LayoutOutput layoutOutput, MountItem item) {
+    final Rect layoutOutputBounds = layoutOutput.getBounds();
+    final Object mountedContent = item.getContent();
+
+    return layoutOutputBounds.width() == getWidthForMountedContent(mountedContent) &&
+        layoutOutputBounds.height() == getHeightForMountedContent(mountedContent);
+  }
+
+  private static int getWidthForMountedContent(Object content) {
+    return content instanceof Drawable ?
+        ((Drawable) content).getBounds().width() :
+        ((View) content).getWidth();
+  }
+
+  private static int getHeightForMountedContent(Object content) {
+    return content instanceof Drawable ?
+        ((Drawable) content).getBounds().height() :
+        ((View) content).getHeight();
+  }
+
+  private void updateBoundsForMountedLayoutOutput(LayoutOutput layoutOutput, MountItem item) {
