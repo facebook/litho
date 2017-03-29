@@ -467,3 +467,68 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
+  public InternalNode heightPercent(float percent) {
+    return this;
+  }
+
+  @Override
+  public InternalNode minHeightPx(@Px int minHeight) {
+    return this;
+  }
+
+  @Override
+  public InternalNode minHeightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+    return this;
+  }
+
+  @Override
+  public InternalNode minHeightAttr(@AttrRes int resId) {
+    return this;
+  }
+
+  @Override
+  public InternalNode minHeightRes(@DimenRes int resId) {
+    return this;
+  }
+
+  @Override
+  public InternalNode minHeightDip(@Dimension(unit = DP) int minHeight) {
+    return this;
+  }
+
+  @Override
+  public InternalNode minHeightPercent(float percent) {
+    return this;
+  }
+
+  @Override
+  public InternalNode maxHeightPx(@Px int maxHeight) {
+    return this;
+  }
+
+  @Override
+  public InternalNode maxHeightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+    return this;
+  }
+
+  @Override
+  public InternalNode maxHeightAttr(@AttrRes int resId) {
+    return this;
+  }
+
+  @Override
+  public InternalNode maxHeightRes(@DimenRes int resId) {
+    return this;
+  }
+
+  @Override
+  public InternalNode maxHeightDip(@Dimension(unit = DP) int maxHeight) {
+    return this;
+  }
+
+  @Override
+  public InternalNode maxHeightPercent(float percent) {
+    return this;
+  }
+
+  @Override
