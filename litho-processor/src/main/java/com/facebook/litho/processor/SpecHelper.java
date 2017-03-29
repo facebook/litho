@@ -69,3 +69,8 @@ public abstract class SpecHelper implements Closeable {
     final List<TypeVariableName> typeVariables =
         TypeVariablesExtractor.getTypeVariables(specElement);
     mTypeSpec.addTypeVariables(typeVariables);
+
+    if (isPublic) {
+      mTypeSpec.addModifiers(Modifier.PUBLIC);
+    }
+
