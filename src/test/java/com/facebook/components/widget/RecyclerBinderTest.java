@@ -625,3 +625,12 @@ public class RecyclerBinderTest {
     final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
     final TestComponentTreeHolder holderMovedInsideRange =
         mHoldersForComponents.get(components.get(rangeTotal + 1).getComponent());
+
+    assertTrue(holderMovedInsideRange.isTreeValid());
+    assertTrue(holderMovedInsideRange.mLayoutAsyncCalled);
+    assertFalse(holderMovedInsideRange.mLayoutSyncCalled);
+    assertFalse(holderMovedInsideRange.mDidAcquireStateHandler);
+  }
+
+  @Test
+  public void testMoveWithinRange() {
