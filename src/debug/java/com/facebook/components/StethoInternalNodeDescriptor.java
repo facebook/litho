@@ -166,7 +166,7 @@ public final class StethoInternalNodeDescriptor
 
   private static boolean isPrimitiveField(Field field) {
     return field.getType().isPrimitive() ||
-        field.getType().isAssignableFrom(CharSequence.class);
+        CharSequence.class.isAssignableFrom(field.getType());
   }
 
   protected void onSetStyle(

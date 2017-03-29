@@ -465,7 +465,7 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
         field.set(o, Byte.parseByte(value));
       } else if (type.equals(char.class)) {
         field.set(o, value.charAt(0));
-      } else if (type.isAssignableFrom(CharSequence.class)) {
+      } else if (CharSequence.class.isAssignableFrom(type)) {
         field.set(o, value);
       }
     } catch (Exception ignored) {}
