@@ -1444,3 +1444,19 @@ class LayoutState {
     } else if (a == null || b == null) {
       return false;
     }
+    return a.getLifecycle().getClass().equals(b.getLifecycle().getClass());
+  }
+
+  private static boolean shouldComponentUpdate(InternalNode layoutNode, DiffNode diffNode) {
+    if (diffNode == null) {
+      return true;
+    }
+
+    final Component component = layoutNode.getComponent();
+    if (component != null) {
+      return component.getLifecycle().shouldComponentUpdate(component, diffNode.getComponent());
+    }
+
+    return true;
+  }
+
