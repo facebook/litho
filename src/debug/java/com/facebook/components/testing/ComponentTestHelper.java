@@ -130,3 +130,4 @@ public final class ComponentTestHelper {
       int height) {
     return mountComponent(
         context,
+        componentView,
