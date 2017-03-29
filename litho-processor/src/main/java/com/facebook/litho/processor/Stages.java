@@ -257,3 +257,12 @@ public class Stages {
     return interStagePropIndex == stageIndex;
   }
 
+  private void validateOnEventMethods() {
+    final Map<String, Boolean> existsMap = new HashMap<>();
+    for (ExecutableElement element : mOnEventMethods) {
+      if (existsMap.containsKey(element.getSimpleName().toString())) {
+        throw new ComponentsProcessingException(
+            element,
+            "@OnEvent declared methods must have unique names");
+      }
+
