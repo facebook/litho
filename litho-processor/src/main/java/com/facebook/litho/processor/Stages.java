@@ -245,3 +245,4 @@ public class Stages {
       Class<? extends Annotation> stage) {
     final int interStagePropIndex = asList(mInterStagePropAnnotations).indexOf(interStageProp);
 
+    // Null stage is allowed and indicates prop
