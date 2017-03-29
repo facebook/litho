@@ -628,3 +628,8 @@ public class ComponentsPools {
   }
 
   @ThreadSafe(enableChecks = false)
+  static void releaseRectF(RectF rect) {
+    rect.setEmpty();
+    sRectFPool.release(rect);
+  }
+
