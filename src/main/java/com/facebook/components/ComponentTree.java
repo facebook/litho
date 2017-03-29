@@ -1029,3 +1029,6 @@ public class ComponentTree {
       // to invoke backgroundLayoutStateUpdated.
       sMainThreadHandler.obtainMessage(MESSAGE_WHAT_BACKGROUND_LAYOUT_STATE_UPDATED, this)
           .sendToTarget();
+    }
+  }
+
