@@ -2493,3 +2493,8 @@ public class Stages {
     }
 
     writeMethodSpec(methodBuilder.build());
+  }
+
+  /**
+   * Generate a builder method for a given declared parameters.
+   */
