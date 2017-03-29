@@ -41,3 +41,4 @@ struct Environment {
  *    app is not busy.
  *  - Having a thread detach at arbitrary points is not safe in Dalvik; you need to be sure that
  *    there is no Java code on the current stack or you run the risk of a crash like:
+ *      ERROR: detaching thread with interp frames (count=18)
