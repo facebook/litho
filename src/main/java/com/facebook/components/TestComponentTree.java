@@ -13,3 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.os.Looper;
+import android.support.annotation.Nullable;
+
+/**
+ * A {@link ComponentTree} for testing purposes. Leverages test classes to create component layouts
+ * and exposes additional information useful for testing.
+ */
+public class TestComponentTree extends ComponentTree {
+

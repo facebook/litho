@@ -29,3 +29,4 @@ final class ViewExtractors {
     public String apply(@Nullable View input) {
       CharSequence text = null;
       if (input instanceof ComponentHost) {
+        List<CharSequence> strings = ((ComponentHost) input).getTextContent().getTextItems();
