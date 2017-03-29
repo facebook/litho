@@ -56,3 +56,9 @@ public class StateUpdatesTestHelper {
    * @param stateUpdater implementation of {@link StateUpdater} that triggers the state update
    * @param layoutThreadShadowLooper shadow looper to post messages to the main thread
    * @param incrementalMountEnabled whether or not to enable incremental mount for the component
+   * @return the updated ComponentView after the state update was applied
+   */
+  public static ComponentView getViewAfterStateUpdate(
+      ComponentContext context,
+      Component component,
+      StateUpdater stateUpdater,
