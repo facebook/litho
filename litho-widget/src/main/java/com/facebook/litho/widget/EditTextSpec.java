@@ -311,3 +311,4 @@ class EditTextSpec {
   }
 
   @OnUnmount
+  static void onUnmount(
