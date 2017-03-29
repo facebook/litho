@@ -516,3 +516,4 @@ public class RecyclerBinderTest {
 
   @Test
   public void testMoveRangeToEnd() {
+    final List<ComponentInfo> components = prepareLoadedBinder();
