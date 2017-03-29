@@ -125,3 +125,4 @@ public abstract class GridComponentBinder extends RecyclerComponentBinder<
       return SizeSpec.makeSizeSpec(
           (SizeSpec.getSize(super.getWidthSpec(position)) / spanCount) * itemSpanCount,
           EXACTLY);
+    } else {

@@ -64,3 +64,4 @@ class MountState {
 
   static final int ROOT_HOST_ID = 0;
 
+  // Holds the current list of mounted items.
