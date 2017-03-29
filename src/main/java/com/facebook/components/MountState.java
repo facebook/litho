@@ -1292,3 +1292,4 @@ class MountState {
     }
   }
 
+  private static void unsetViewTags(View view, SparseArray<Object> viewTags) {
