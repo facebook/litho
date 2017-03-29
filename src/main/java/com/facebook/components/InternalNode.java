@@ -1837,3 +1837,20 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       mPendingTreeProps = null;
     }
   }
+
+  private NodeInfo getOrCreateNodeInfo() {
+    if (mNodeInfo == null) {
+      mNodeInfo = NodeInfo.acquire();
+    }
+
+    return mNodeInfo;
+  }
+
+  /**
+   * Check that the root of the nested tree we are going to use, has valid layout directions
+   * with its main tree holder node.
+   */
+  static boolean hasValidLayoutDirectionInNestedTree(
+      InternalNode nestedTreeHolder,
+      InternalNode nestedTree) {
+    final boolean nestedTreeHasExplicitDirection =
