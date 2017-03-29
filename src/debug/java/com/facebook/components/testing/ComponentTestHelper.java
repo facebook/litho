@@ -112,3 +112,4 @@ public final class ComponentTestHelper {
     return mountComponent(context, componentView, component, 100, 100);
   }
 
+  /**
