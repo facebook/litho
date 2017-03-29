@@ -711,3 +711,5 @@ class LayoutState {
     final Component<DrawableComponent> drawableComponent = DrawableComponent.create(reference);
     drawableComponent.setScopedContext(
         ComponentContext.withComponentScope(node.getContext(), drawableComponent));
+    final boolean isOutputUpdated;
+    if (recycle != null) {
