@@ -215,3 +215,4 @@ public class Stages {
     populateStages();
     validateAnnotatedParameters();
     populateOnCreateInitialStateDefinedProps();
+    populateProps();
