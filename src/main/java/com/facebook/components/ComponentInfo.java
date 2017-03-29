@@ -33,3 +33,36 @@ public class ComponentInfo {
   private Component mComponent;
   private SimpleArrayMap<String, Object> mCustomAttributes;
 
+  public static Builder create() {
+    Builder builder = sBuilderPool.acquire();
+    if (builder == null) {
+      builder = new Builder();
+    }
+
+    return builder;
+  }
+
+  private ComponentInfo() {
+    mComponent = null;
+  }
+
+  public Component getComponent() {
+    return mComponent;
+  }
+
+  public boolean isSticky() {
+    if (mCustomAttributes == null || !mCustomAttributes.containsKey(IS_STICKY)) {
+      return false;
+    }
+
+    return (boolean) mCustomAttributes.get(IS_STICKY);
+  }
+
+  public int getSpanSize() {
+    if (mCustomAttributes == null || !mCustomAttributes.containsKey(SPAN_SIZE)) {
+      return 1;
+    }
+
+    return (int) mCustomAttributes.get(SPAN_SIZE);
+  }
+

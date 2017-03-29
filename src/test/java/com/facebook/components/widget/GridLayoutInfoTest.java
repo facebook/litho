@@ -13,3 +13,12 @@ import android.support.v7.widget.GridLayoutManager;
 
 import com.facebook.components.SizeSpec;
 import com.facebook.components.testing.testrunner.ComponentsTestRunner;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RuntimeEnvironment;
+
+import static android.support.v7.widget.OrientationHelper.HORIZONTAL;
+import static android.support.v7.widget.OrientationHelper.VERTICAL;
+import static com.facebook.components.SizeSpec.EXACTLY;
+import static com.facebook.components.SizeSpec.UNSPECIFIED;

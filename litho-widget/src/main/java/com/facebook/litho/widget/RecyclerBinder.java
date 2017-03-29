@@ -36,3 +36,5 @@ import com.facebook.components.SizeSpec;
 import com.facebook.components.ThreadUtils;
 import com.facebook.components.utils.IncrementalMountUtils;
 
+import static android.support.v7.widget.OrientationHelper.HORIZONTAL;
+import static android.support.v7.widget.OrientationHelper.VERTICAL;

@@ -12,3 +12,15 @@ package com.facebook.litho.widget;
 import android.content.Context;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.OrientationHelper;
+import android.support.v7.widget.RecyclerView;
+
+import com.facebook.components.SizeSpec;
+
+public class GridLayoutInfo implements LayoutInfo {
+
+  private final GridLayoutManager mGridLayoutManager;
+
+  public GridLayoutInfo(Context context, int spanCount, int orientation, boolean reverseLayout) {
+    mGridLayoutManager = new GridLayoutManager(context, spanCount, orientation, reverseLayout);
+  }
+
