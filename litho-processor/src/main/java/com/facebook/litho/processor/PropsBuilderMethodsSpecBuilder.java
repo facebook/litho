@@ -101,3 +101,26 @@ class PropsBuilderMethodsSpecBuilder {
         break;
       case COLOR:
         builders.add(regularBuilder(annotation(ClassNames.COLOR_INT)));
+        builders.add(resBuilder(ClassNames.COLOR_RES, "resolveColor"));
+        builders.addAll(attrBuilders(ClassNames.COLOR_RES, "resolveColor"));
+        break;
+      case DIMEN_SIZE:
+        builders.add(pxBuilder());
+        builders.add(resBuilder(ClassNames.DIMEN_RES, "resolveDimenSize"));
+        builders.addAll(attrBuilders(ClassNames.DIMEN_RES, "resolveDimenSize"));
+        builders.add(dipBuilder());
+        break;
+      case DIMEN_TEXT:
+        builders.add(pxBuilder());
+        builders.add(resBuilder(ClassNames.DIMEN_RES, "resolveDimenSize"));
+        builders.addAll(attrBuilders(ClassNames.DIMEN_RES, "resolveDimenSize"));
+        builders.add(dipBuilder());
+        builders.add(sipBuilder());
+        break;
+      case DIMEN_OFFSET:
+        builders.add(pxBuilder());
+        builders.add(resBuilder(ClassNames.DIMEN_RES, "resolveDimenOffset"));
+        builders.addAll(attrBuilders(ClassNames.DIMEN_RES, "resolveDimenOffset"));
+        builders.add(dipBuilder());
+        break;
+      case FLOAT:

@@ -165,3 +165,4 @@ public class ResourceResolver {
       Integer cached = mResourceCache.get(resId);
       if (cached != null) {
         return cached;
+      }
