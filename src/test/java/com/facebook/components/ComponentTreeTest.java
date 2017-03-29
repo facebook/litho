@@ -73,3 +73,4 @@ public class ComponentTreeTest {
     mHeightSpec2 = makeSizeSpec(42, EXACTLY);
   }
 
+  private void creationCommonChecks(ComponentTree componentTree) {

@@ -69,3 +69,5 @@ import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 import com.squareup.javapoet.WildcardTypeName;
 
+import static com.facebook.components.processor.Utils.capitalize;
+import static com.facebook.components.processor.Visibility.PRIVATE;
