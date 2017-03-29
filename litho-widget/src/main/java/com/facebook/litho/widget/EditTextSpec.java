@@ -21,3 +21,11 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.widget.EditText;
+
+import com.facebook.R;
+import com.facebook.components.ComponentContext;
+import com.facebook.components.ComponentLayout;
+import com.facebook.components.EventHandler;
+import com.facebook.components.Output;
+import com.facebook.components.Size;
