@@ -536,3 +536,4 @@ class TextSpec {
       @FromBoundsDefined Float textLayoutTranslationY,
       @FromBoundsDefined ClickableSpan[] clickableSpans) {
 
+    textDrawable.mount(
