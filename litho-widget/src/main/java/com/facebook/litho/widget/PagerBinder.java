@@ -19,3 +19,7 @@ import android.view.ViewGroup;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ComponentView;
 import com.facebook.litho.SizeSpec;
+
+/**
+ * A component binder for {@link ViewPager}.
+ */

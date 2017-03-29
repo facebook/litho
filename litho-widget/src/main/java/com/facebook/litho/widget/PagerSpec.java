@@ -25,3 +25,8 @@ import com.facebook.litho.annotations.OnUnbind;
 import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ShouldUpdate;
+
+/**
+ * A component that takes a list of component inputs to render them as items
+ * in a {@link ViewPager}.
+ */
