@@ -15,3 +15,7 @@ import com.facebook.components.ComponentContext;
 import com.facebook.components.Diff;
 
 /**
+ * ReferenceLifecycle objects which are able retreive resources at runtime without needing to keep
+ * them constantly in memory. References should be used any time it's necessary to include a large
+ * Object into a {@link com.facebook.components.Component} in order to limit the amount of
+ * retained memory in ComponentTree.

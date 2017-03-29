@@ -25,3 +25,10 @@ public final class DrawableMatrix extends Matrix {
   }
 
   /**
+   * @return True if this Matrix requires a clipRect() on the bounds of the drawable.
+   */
+  public boolean shouldClipRect() {
+    return mShouldClipRect;
+  }
+
+  /**

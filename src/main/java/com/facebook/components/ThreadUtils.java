@@ -13,3 +13,6 @@ import android.os.Looper;
 
 import com.facebook.components.config.ComponentsConfiguration;
 
+/**
+ * Thread assertion utilities.
+ */

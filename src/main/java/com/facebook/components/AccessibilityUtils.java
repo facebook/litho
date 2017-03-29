@@ -15,3 +15,4 @@ import android.view.accessibility.AccessibilityManager;
 
 import static android.content.Context.ACCESSIBILITY_SERVICE;
 
+class AccessibilityUtils {

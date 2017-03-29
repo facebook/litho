@@ -12,3 +12,10 @@ package com.facebook.components;
 import android.graphics.Rect;
 
 import com.facebook.components.testing.testrunner.ComponentsTestRunner;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import static junit.framework.Assert.assertEquals;
+

@@ -15,3 +15,4 @@ import android.support.v4.util.LruCache;
 class ResourceCache {
   private static ResourceCache latest;
 
+  static synchronized ResourceCache getLatest(Configuration configuration) {

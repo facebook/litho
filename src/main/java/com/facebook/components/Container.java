@@ -12,3 +12,5 @@ package com.facebook.components;
 import android.support.annotation.AttrRes;
 import android.support.annotation.StyleRes;
 
+/**
+ * Utility class to create a new container builder in the same way component layouts

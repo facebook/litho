@@ -13,3 +13,5 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import android.support.annotation.AttrRes;
 import android.support.annotation.StyleRes;
+
+import com.facebook.components.ComponentLifecycle.MountType;
