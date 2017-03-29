@@ -921,3 +921,10 @@ class LayoutState {
     layoutState.mCurrentHostMarker = -1;
 
     final ComponentsLogger logger = c.getLogger();
+
+    if (root == NULL_LAYOUT) {
+      return layoutState;
+    }
+
+    layoutState.mLayoutRoot = root;
+
