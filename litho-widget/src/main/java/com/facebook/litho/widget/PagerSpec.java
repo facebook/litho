@@ -90,3 +90,4 @@ class PagerSpec {
   }
 
   @OnUnmount
+  static void onUnmount(
