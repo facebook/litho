@@ -2415,3 +2415,4 @@ public class Stages {
     methodDescription.parameterTypes = new TypeName[] { ClassName.bestGuess(mQualifiedClassName) };
 
     final TypeMirror returnType =
+        Utils.getAnnotationParameter(mProcessingEnv, eventDeclaration, Event.class, "returnType");
