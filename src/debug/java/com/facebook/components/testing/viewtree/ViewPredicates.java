@@ -171,3 +171,7 @@ final class ViewPredicates {
           }
         }
 
+        if (input instanceof ComponentHost) {
+          return ComponentQueries.hasDrawable((ComponentHost) input, drawable);
+        }
+
