@@ -243,3 +243,4 @@ class HorizontalScrollSpec {
       size = new Size();
     }
 
+    return size;
