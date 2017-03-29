@@ -890,3 +890,9 @@ public class TreeDiffingTest {
     assertFalse(secondComponent.wasMeasureCalled());
   }
 
+  @Test
+  public void testCachedMeasuresForNestedTreeComponentDelegateWithUndefinedSize() {
+    final Component component1 = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c)

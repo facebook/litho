@@ -119,3 +119,4 @@ public class ComponentTree {
   private int mWidthSpec = SIZE_UNINITIALIZED;
 
   @GuardedBy("this")
+  private int mHeightSpec = SIZE_UNINITIALIZED;
