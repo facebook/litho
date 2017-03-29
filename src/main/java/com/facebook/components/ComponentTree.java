@@ -637,3 +637,5 @@ public class ComponentTree {
         SIZE_UNINITIALIZED,
         true /* isAsync */,
         null /* output */);
+  }
+
