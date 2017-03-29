@@ -75,3 +75,4 @@ class PagerSpec {
 
   @OnBind
   static void onBind(
+      ComponentContext context,
