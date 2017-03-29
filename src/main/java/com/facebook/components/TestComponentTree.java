@@ -41,3 +41,5 @@ public class TestComponentTree extends ComponentTree {
       @Nullable Object lock,
       ComponentContext context,
       Component<?> root,
+      int widthSpec,
+      int heightSpec,
