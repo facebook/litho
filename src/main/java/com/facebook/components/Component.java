@@ -142,3 +142,4 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
   /**
    * Set a key for this component that is unique within its tree.
    * @param key
+   *

@@ -52,3 +52,10 @@ public class DraweeDrawable<DH extends DraweeHierarchy>
   public void unmount() {
     mDraweeHolder.onDetach();
     setDrawable(mNoOpDrawable);
+  }
+
+  @Override
+  public void draw(Canvas canvas) {
+    mDraweeHolder.onDraw();
+    super.draw(canvas);
+  }
