@@ -392,3 +392,7 @@ public class BaseBinderTest {
 
     @Override
     public boolean isIncrementalMountEnabled() {
+      return mIncrementalMountEnabled;
+    }
+
+    @Override
