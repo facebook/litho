@@ -81,3 +81,4 @@ public class ComponentContext extends ContextWrapper {
         ? (ComponentContext) context
         : null;
     final boolean transferLogging = (componentContext != null && logTag == null && logger == null);
+    final boolean transferStateHandler = (componentContext != null && stateHandler == null);
