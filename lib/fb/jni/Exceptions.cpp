@@ -172,3 +172,21 @@ void rethrow_if_nested() {
 // reverse order, i.e. innermost first).
 void denest(std::function<void()> func) {
   try {
+    throw;
+  } catch (const std::exception& e) {
+    try {
+      rethrow_if_nested();
+    } catch (...) {
+      denest(func);
+    }
+    func();
+  } catch (...) {
+    func();
+  }
+}
+}
+
+void translatePendingCppExceptionToJavaException() noexcept {
+  local_ref<JThrowable> previous;
+  auto func = [&previous] () {
+    local_ref<JThrowable> current;
