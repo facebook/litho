@@ -194,3 +194,4 @@ class TextSpec {
     a.recycle();
   }
 
+  @OnMeasure
