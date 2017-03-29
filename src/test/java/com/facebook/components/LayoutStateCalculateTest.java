@@ -1611,3 +1611,15 @@ public class LayoutStateCalculateTest {
                     .setDelegate(true)
                     .withLayout().flexShrink(0)
                     .marginPx(YogaEdge.ALL, 11))
+            .build();
+      }
+    };
+
+    LayoutState layoutState = calculateLayoutState(
+        RuntimeEnvironment.application,
+        component,
+        -1,
+        SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
+        SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY));
+
+    // Check total layout outputs.
