@@ -501,3 +501,5 @@ public class ComponentsPools {
   static void release(LayoutOutput output) {
     output.release();
     sLayoutOutputPool.release(output);
+  }
+
