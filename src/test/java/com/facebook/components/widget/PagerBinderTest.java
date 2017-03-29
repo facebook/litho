@@ -158,3 +158,10 @@ public class PagerBinderTest {
     assertNull(mBinder.getComponentAt(9));
 
     for (int i = 2; i < 9; i++) {
+      assertNotNull(mBinder.getComponentAt(i));
+    }
+  }
+
+  @Test
+  public void testSimpleBinderUpdateWithSimulatedScrollRight() {
+    mBinder = new TestPagerComponentBinder(mContext, 0, 1f);
