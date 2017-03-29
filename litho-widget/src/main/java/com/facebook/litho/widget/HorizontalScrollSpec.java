@@ -163,3 +163,4 @@ class HorizontalScrollSpec {
     return new HorizontalScrollComponentView(c);
   }
 
+  @OnMount

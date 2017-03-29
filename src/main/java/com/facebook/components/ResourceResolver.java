@@ -160,3 +160,4 @@ public class ResourceResolver {
     return 0;
   }
 
+  protected final int resolveDimenSizeRes(@DimenRes int resId) {
