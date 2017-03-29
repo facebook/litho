@@ -608,3 +608,5 @@ public class ComponentHost extends ViewGroup {
     mIsChildDrawingOrderDirty = true;
 
     if (view instanceof ComponentHost) {
+      final ComponentHost componentHost = (ComponentHost) view;
+
