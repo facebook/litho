@@ -1709,3 +1709,5 @@ public class LayoutStateCalculateTest {
     layoutState.getMountableOutputAt(0).getMountBounds(mountBounds);
     assertEquals(new Rect(0, 0, 350, 200), mountBounds);
     assertEquals(0, layoutState.getMountableOutputAt(0).getHostMarker());
+    // Check NestedTree
+    assertTrue(getComponentAt(layoutState, 1) instanceof DrawableComponent);
