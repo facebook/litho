@@ -394,3 +394,7 @@ public class MountSpecHelper extends ComponentSpecHelper {
 
     final VariableElement mountParameter = method.getParameters().get(1);
     final TypeMirror mountParameterType = mountParameter.asType();
+
+    // The return type of onMount() and the second parameter on onUnmount()
+    // should have the same type.
+    if (!mStages.isSameType(mountParameterType, mountReturnType)) {
