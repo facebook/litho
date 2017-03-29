@@ -821,3 +821,5 @@ public class TreeDiffingTest {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Container.create(c)
+            .alignItems(YogaAlign.FLEX_START)
+            .child(Layout.create(c, secondComponent).heightPx(50))

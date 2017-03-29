@@ -138,3 +138,17 @@ private static class State<T extends Drawable> extends Component<DrawableCompone
       return mDrawable.equals(state.mDrawable);
     }
 
+    private void setDrawableWidth(int drawableWidth) {
+      mDrawableWidth = drawableWidth;
+    }
+
+    private int getDrawableWidth() {
+      return mDrawableWidth;
+    }
+
+    private void setDrawableHeight(int drawableHeight) {
+      mDrawableHeight = drawableHeight;
+    }
+
+    private int getDrawableHeight() {
+      return mDrawableHeight;
