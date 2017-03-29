@@ -2167,3 +2167,5 @@ public class Stages {
               "$L nextImpl = ($L) next",
               implClass,
               implClass);
+    }
+
