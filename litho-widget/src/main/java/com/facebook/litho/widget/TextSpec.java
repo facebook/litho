@@ -409,3 +409,4 @@ class TextSpec {
   }
 
   @OnBoundsDefined
+  static void onBoundsDefined(
