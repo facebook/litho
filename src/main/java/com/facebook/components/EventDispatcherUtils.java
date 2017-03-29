@@ -346,3 +346,5 @@ class EventDispatcherUtils {
     sSendAccessibilityEventUncheckedEvent.host = null;
     sSendAccessibilityEventUncheckedEvent.event = null;
     sSendAccessibilityEventUncheckedEvent.superDelegate = null;
+  }
+}
