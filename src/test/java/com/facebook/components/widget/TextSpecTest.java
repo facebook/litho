@@ -19,3 +19,4 @@ import com.facebook.components.ComponentContext;
 import com.facebook.components.testing.ComponentTestHelper;
 import com.facebook.components.testing.testrunner.ComponentsTestRunner;
 
+import org.junit.Before;

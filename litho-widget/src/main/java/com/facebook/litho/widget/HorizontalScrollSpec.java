@@ -15,3 +15,4 @@ import android.support.v4.util.Pools.SynchronizedPool;
 import android.widget.HorizontalScrollView;
 
 import com.facebook.R;
+import com.facebook.components.ComponentContext;

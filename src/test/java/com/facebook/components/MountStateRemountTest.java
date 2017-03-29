@@ -21,3 +21,4 @@ import com.facebook.components.testing.TestComponent;
 import com.facebook.components.testing.TestDrawableComponent;
 import com.facebook.components.testing.TestViewComponent;
 
+import org.junit.Before;

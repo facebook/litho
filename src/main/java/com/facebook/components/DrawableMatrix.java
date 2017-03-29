@@ -71,3 +71,9 @@ public final class DrawableMatrix extends Matrix {
     }
 
     final DrawableMatrix result = new DrawableMatrix();
+
+    if (ScaleType.CENTER == scaleType) {
+      // Center bitmap in view, no scaling.
+      result.setTranslate(
+          FastMath.round((width - intrinsicWidth) * 0.5f),
+          FastMath.round((height - intrinsicHeight) * 0.5f));

@@ -24,3 +24,6 @@ import com.facebook.components.ComponentContext;
 import com.facebook.components.Layout;
 
 public class TestLayoutComponent extends ComponentLifecycle {
+  private static final List<TestLayoutComponent> sInstances = new ArrayList<>();
+  private static final Pools.SynchronizedPool<Builder> mBuilderPool =
+      new Pools.SynchronizedPool<>(2);

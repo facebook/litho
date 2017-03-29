@@ -21,3 +21,4 @@ import com.facebook.components.testing.TestDrawableComponent;
 import com.facebook.components.testing.TestViewComponent;
 import com.facebook.yoga.YogaEdge;
 
+import org.junit.Before;
