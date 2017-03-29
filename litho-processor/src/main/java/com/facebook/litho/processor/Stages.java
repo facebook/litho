@@ -2388,3 +2388,4 @@ public class Stages {
       ClassName contextClassName,
       String scopeMethodName) {
     final String eventName = eventDeclaration.getSimpleName().toString();
+
