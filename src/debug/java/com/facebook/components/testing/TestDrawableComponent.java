@@ -25,3 +25,4 @@ import com.facebook.components.ComponentContext;
 import com.facebook.components.Size;
 import com.facebook.components.SizeSpec;
 
+public class TestDrawableComponent extends ComponentLifecycle {

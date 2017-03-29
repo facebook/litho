@@ -33,3 +33,16 @@ public class LifecycleMethodsTest {
     ON_MEASURE,
     ON_BOUNDS_DEFINED,
     ON_CREATE_MOUNT_CONTENT,
+    ON_MOUNT,
+    ON_BIND,
+    ON_UNBIND,
+    ON_UNMOUNT
+  }
+
+  private ComponentView mComponentView;
+  private ComponentTree mComponentTree;
+  private LifecycleMethodsComponent mLifecycle;
+  private LifecycleMethodsInstance mComponent;
+
+  @Before
+  public void setup() throws Exception {

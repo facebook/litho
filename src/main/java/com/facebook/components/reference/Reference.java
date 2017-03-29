@@ -28,3 +28,4 @@ public abstract class Reference<L> {
     public final void init(ComponentContext c, Reference<L> reference) {
       super.init(c, c.getResourceCache());
     }
+  }

@@ -29,3 +29,4 @@ import static com.facebook.yoga.YogaFlexDirection.COLUMN;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(ComponentsTestRunner.class)
+public class MountStateBoundsTest {

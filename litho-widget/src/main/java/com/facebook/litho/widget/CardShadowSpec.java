@@ -24,3 +24,4 @@ import com.facebook.litho.annotations.ResType;
  */
 @MountSpec(isPublic = false, isPureRender = true)
 class CardShadowSpec {
+

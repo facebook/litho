@@ -11,3 +11,4 @@ package com.facebook.litho.widget;
 
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.widget.ImageView.ScaleType;
