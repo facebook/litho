@@ -487,3 +487,7 @@ public class ComponentsPools {
   }
 
   @ThreadSafe(enableChecks = false)
+  static void release(ViewNodeInfo viewNodeInfo) {
+    sViewNodeInfoPool.release(viewNodeInfo);
+  }
+
