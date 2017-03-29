@@ -2197,3 +2197,5 @@ public class Stages {
 
       final TypeName typeName;
       final TypeName innerTypeName = JPUtil.getTypeFromMirror(innerType);
+      if (componentMember.asType().getKind().isPrimitive()) {
+        typeName = JPUtil.getTypeFromMirror(componentMember.asType()).box();
