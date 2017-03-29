@@ -252,3 +252,15 @@ public interface ComponentLayout {
 
     ContainerBuilder duplicateParentState(boolean duplicateParentState);
 
+    ContainerBuilder marginPx(YogaEdge edge, @Px int margin);
+    ContainerBuilder marginAttr(
+        YogaEdge edge,
+        @AttrRes int resId,
+        @DimenRes int defaultResId);
+    ContainerBuilder marginAttr(
+        YogaEdge edge,
+        @AttrRes int resId);
+    ContainerBuilder marginRes(YogaEdge edge, @DimenRes int resId);
+    ContainerBuilder marginDip(YogaEdge edge, @Dimension(unit = DP) int margin);
+    ContainerBuilder marginPercent(YogaEdge edge, float percent);
+    ContainerBuilder marginAuto(YogaEdge edge);
