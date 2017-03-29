@@ -149,3 +149,10 @@ public class LayoutStateCalculateTest {
     assertNotNull(nodeInfo.getClickHandler());
     assertNull(nodeInfo.getLongClickHandler());
     assertNull(nodeInfo.getTouchHandler());
+  }
+
+  @Test
+  public void testLayoutOutputsForSpecsWithLongClickHandling() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {

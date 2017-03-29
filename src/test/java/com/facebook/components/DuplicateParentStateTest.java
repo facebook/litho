@@ -116,3 +116,6 @@ public class DuplicateParentStateTest {
     assertFalse(
         "Drawable doesn't duplicate clickable parent state",
         MountItem.isDuplicateParentState(layoutState.getMountableOutputAt(6).getFlags()));
+
+    assertTrue(
+        "Background should duplicate clickable node state",
