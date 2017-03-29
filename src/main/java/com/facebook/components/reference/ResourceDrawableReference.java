@@ -26,3 +26,13 @@ public final class ResourceDrawableReference extends ReferenceLifecycle<Drawable
   private static final Pools.SynchronizedPool<PropsBuilder> mBuilderPool =
       new Pools.SynchronizedPool<PropsBuilder>(2);
 
+  private final DrawableResourcesCache mDrawableResourcesCache;
+
+  private ResourceDrawableReference() {
+    mDrawableResourcesCache = new DrawableResourcesCache();
+  }
+
+  public static synchronized ResourceDrawableReference get() {
+    if (sInstance == null) {
+      sInstance = new ResourceDrawableReference();
+    }

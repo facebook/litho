@@ -83,3 +83,40 @@ class DrawableResourcesCache {
       }
     }
 
+    drawablesPool.release(drawable);
+  }
+
+  private static class SimplePoolWithCount<T> extends Pools.SynchronizedPool<T> {
+
+    private AtomicInteger mPoolSize;
+
+    public SimplePoolWithCount(int maxPoolSize) {
+      super(maxPoolSize);
+      mPoolSize = new AtomicInteger(0);
+    }
+
+    @Override
+    public T acquire() {
+      T item = super.acquire();
+      if (item != null) {
+        mPoolSize.decrementAndGet();
+      }
+
+      return item;
+    }
+
+    @Override
+    public boolean release(T instance) {
+      boolean added = super.release(instance);
+      if (added) {
+        mPoolSize.incrementAndGet();
+      }
+
+      return added;
+    }
+
+    public int getPoolSize() {
+      return mPoolSize.get();
+    }
+  }
+}

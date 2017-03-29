@@ -23,3 +23,4 @@ import com.facebook.litho.Diff;
  * ReferenceLifecycle is the base class from which all the Reference types should inherit.
  * A ReferenceLifecycle should take care of both acquiring a resource given its {@link Reference}
  * and releasing/caching it for future use.
+ */

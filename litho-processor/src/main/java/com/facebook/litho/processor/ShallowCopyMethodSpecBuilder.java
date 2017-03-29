@@ -27,3 +27,19 @@ class ShallowCopyMethodSpecBuilder {
   private List<String> mComponentsToCopy;
   private List<String> mInterStageVariables;
   private String mStateContainerImplClassName;
+
+  ShallowCopyMethodSpecBuilder implClassName(String implClassName) {
+    mImplClassName = implClassName;
+    return this;
+  }
+
+  ShallowCopyMethodSpecBuilder hasDeepCopy(boolean hasDeepCopy) {
+    mHasDeepCopy = hasDeepCopy;
+    return this;
+  }
+
+  ShallowCopyMethodSpecBuilder componentsInImpl(List<String> componentsInImpl) {
+    mComponentsToCopy = componentsInImpl;
+    return this;
+  }
+

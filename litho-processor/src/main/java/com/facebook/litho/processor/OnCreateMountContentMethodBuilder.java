@@ -40,3 +40,6 @@ class OnCreateMountContentMethodBuilder {
             ParameterSpec.builder(ClassNames.COMPONENT_CONTEXT, "context").build())
         .returns(ClassName.OBJECT)
         .addStatement("return this.$L.$L(context)", mTarget, mDelegateMethodName)
+        .build();
+  }
+}
