@@ -660,3 +660,8 @@ class MountState {
     final ComponentTree component = mComponentView.getComponent();
     final ComponentsLogger logger = component.getContext().getLogger();
     final String logTag = component.getContext().getLogTag();
+
+    if (logger != null) {
+      logger.eventStart(EVENT_PREPARE_MOUNT, component);
+    }
+

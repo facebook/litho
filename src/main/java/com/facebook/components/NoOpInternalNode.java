@@ -652,3 +652,8 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
+  public InternalNode contentDescription(@StringRes int stringId, Object... formatArgs) {
+    return this;
+  }
+
+  @Override
