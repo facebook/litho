@@ -693,3 +693,4 @@ class LayoutState {
       hostOutput.setHostMarker(ROOT_HOST_ID);
       hostOutput.setUpdateState(LayoutOutput.STATE_DIRTY);
     } else {
+      layoutState.mLayoutStateOutputIdCalculator.calculateAndSetLayoutOutputIdAndUpdateState(

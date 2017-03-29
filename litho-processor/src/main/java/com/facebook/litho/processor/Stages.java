@@ -1318,3 +1318,8 @@ public class Stages {
     for (ExecutableElement element : mOnEventMethods) {
       methodBuilder.beginControlFlow("case $L:", getElementId(element));
 
+      final DeclaredType eventClass = Utils.getAnnotationParameter(
+          mProcessingEnv,
+          element,
+          OnEvent.class,
+          "value");
