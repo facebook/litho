@@ -385,3 +385,4 @@ public class ComponentsPools {
       componentTreeBuilder = new ComponentTree.Builder();
     }
 
+    componentTreeBuilder.init(c, root);
