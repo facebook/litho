@@ -178,3 +178,5 @@ public interface ComponentLayout {
     Builder touchExpansionRes(YogaEdge edge, @DimenRes int resId);
     Builder touchExpansionDip(YogaEdge edge, @Dimension(unit = DP) int value);
 
+    Builder background(Reference<? extends Drawable> background);
+    Builder background(Reference.Builder<? extends Drawable> backgroundBuilder);

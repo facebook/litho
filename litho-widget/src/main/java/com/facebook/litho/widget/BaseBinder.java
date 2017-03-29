@@ -106,3 +106,4 @@ public abstract class BaseBinder<
     } else {
       updateRange(0, getCount(), URFLAG_REFRESH_IN_RANGE | URFLAG_RELEASE_OUTSIDE_RANGE);
     }
+
