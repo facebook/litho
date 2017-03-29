@@ -947,3 +947,4 @@ public class ComponentTree {
             }
             ComponentsPools.release(layoutStateStateHandler);
           }
+        }
