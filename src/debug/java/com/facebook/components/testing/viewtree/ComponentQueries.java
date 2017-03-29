@@ -32,3 +32,4 @@ class ComponentQueries {
       }
     }
 
+    return false;
