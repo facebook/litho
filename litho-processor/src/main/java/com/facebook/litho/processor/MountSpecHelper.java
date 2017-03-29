@@ -631,3 +631,5 @@ public class MountSpecHelper extends ComponentSpecHelper {
   @Override
   public Class getSpecAnnotationClass() {
     return MountSpec.class;
+  }
+
