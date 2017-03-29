@@ -374,3 +374,6 @@ class EditTextSpec {
       editText.setSelection(selection);
     }
 
+    if (textColor != 0) {
+      editText.setTextColor(textColor);
+    } else {
