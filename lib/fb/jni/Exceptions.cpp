@@ -8,3 +8,5 @@
  */
 
 #include <fb/fbjni/CoreClasses.h>
+
+#include <fb/assert.h>

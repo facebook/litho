@@ -213,3 +213,134 @@ protected:
   template<typename... Args>
   static local_ref<T> newInstance(Args... args) {
     return detail::newInstance<T>(args...);
+  }
+
+  javaobject self() const noexcept;
+};
+
+/// Wrapper to provide functionality to jclass references
+struct NativeMethod;
+
+class FBEXPORT JClass : public JavaClass<JClass, JObject, jclass> {
+ public:
+  /// Java type descriptor
+  static constexpr const char* kJavaDescriptor = "Ljava/lang/Class;";
+
+  /// Get a @local_ref to the super class of this class
+  local_ref<JClass> getSuperclass() const noexcept;
+
+  /// Register native methods for the class.  Usage looks like this:
+  ///
+  /// classRef->registerNatives({
+  ///     makeNativeMethod("nativeMethodWithAutomaticDescriptor",
+  ///                      methodWithAutomaticDescriptor),
+  ///     makeNativeMethod("nativeMethodWithExplicitDescriptor",
+  ///                      "(Lcom/facebook/example/MyClass;)V",
+  ///                      methodWithExplicitDescriptor),
+  ///  });
+  ///
+  /// By default, C++ exceptions raised will be converted to Java exceptions.
+  /// To avoid this and get the "standard" JNI behavior of a crash when a C++
+  /// exception is crashing out of the JNI method, declare the method noexcept.
+  void registerNatives(std::initializer_list<NativeMethod> methods);
+
+  /// Check to see if the class is assignable from another class
+  /// @pre cls != nullptr
+  bool isAssignableFrom(alias_ref<JClass> cls) const noexcept;
+
+  /// Convenience method to lookup the constructor with descriptor as specified by the
+  /// type arguments
+  template<typename F>
+  JConstructor<F> getConstructor() const;
+
+  /// Convenience method to lookup the constructor with specified descriptor
+  template<typename F>
+  JConstructor<F> getConstructor(const char* descriptor) const;
+
+  /// Look up the method with given name and descriptor as specified with the type arguments
+  template<typename F>
+  JMethod<F> getMethod(const char* name) const;
+
+  /// Look up the method with given name and descriptor
+  template<typename F>
+  JMethod<F> getMethod(const char* name, const char* descriptor) const;
+
+  /// Lookup the field with the given name and deduced descriptor
+  template<typename T>
+  JField<enable_if_t<IsJniScalar<T>(), T>> getField(const char* name) const;
+
+  /// Lookup the field with the given name and descriptor
+  template<typename T>
+  JField<enable_if_t<IsJniScalar<T>(), T>> getField(const char* name, const char* descriptor) const;
+
+  /// Lookup the static field with the given name and deduced descriptor
+  template<typename T>
+  JStaticField<enable_if_t<IsJniScalar<T>(), T>> getStaticField(const char* name) const;
+
+  /// Lookup the static field with the given name and descriptor
+  template<typename T>
+  JStaticField<enable_if_t<IsJniScalar<T>(), T>> getStaticField(
+      const char* name,
+      const char* descriptor) const;
+
+  /// Get the primitive value of a static field
+  template<typename T>
+  T getStaticFieldValue(JStaticField<T> field) const noexcept;
+
+  /// Get and wrap the value of a field in a @ref local_ref
+  template<typename T>
+  local_ref<T*> getStaticFieldValue(JStaticField<T*> field) noexcept;
+
+  /// Set the value of field. Any Java type is accepted, including the primitive types
+  /// and raw reference types.
+  template<typename T>
+  void setStaticFieldValue(JStaticField<T> field, T value) noexcept;
+
+  /// Allocates a new object and invokes the specified constructor
+  template<typename R, typename... Args>
+  local_ref<R> newObject(JConstructor<R(Args...)> constructor, Args... args) const;
+
+  /// Look up the static method with given name and descriptor as specified with the type arguments
+  template<typename F>
+  JStaticMethod<F> getStaticMethod(const char* name) const;
+
+  /// Look up the static method with given name and descriptor
+  template<typename F>
+  JStaticMethod<F> getStaticMethod(const char* name, const char* descriptor) const;
+
+  /// Look up the non virtual method with given name and descriptor as specified with the
+  /// type arguments
+  template<typename F>
+  JNonvirtualMethod<F> getNonvirtualMethod(const char* name) const;
+
+  /// Look up the non virtual method with given name and descriptor
+  template<typename F>
+  JNonvirtualMethod<F> getNonvirtualMethod(const char* name, const char* descriptor) const;
+
+private:
+  jclass self() const noexcept;
+};
+
+// Convenience method to register methods on a class without holding
+// onto the class object.
+void registerNatives(const char* name, std::initializer_list<NativeMethod> methods);
+
+/// Wrapper to provide functionality to jstring references
+class FBEXPORT JString : public JavaClass<JString, JObject, jstring> {
+ public:
+  /// Java type descriptor
+  static constexpr const char* kJavaDescriptor = "Ljava/lang/String;";
+
+  /// Convenience method to convert a jstring object to a std::string
+  std::string toStdString() const;
+};
+
+/// Convenience functions to convert a std::string or const char* into a @ref local_ref to a
+/// jstring
+FBEXPORT local_ref<JString> make_jstring(const char* modifiedUtf8);
+FBEXPORT local_ref<JString> make_jstring(const std::string& modifiedUtf8);
+
+/// Wrapper to provide functionality to jthrowable references
+class FBEXPORT JThrowable : public JavaClass<JThrowable, JObject, jthrowable> {
+ public:
+  static constexpr const char* kJavaDescriptor = "Ljava/lang/Throwable;";

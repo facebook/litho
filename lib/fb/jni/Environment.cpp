@@ -16,3 +16,7 @@
 #include <fb/fbjni/NativeRunnable.h>
 
 #include <functional>
+
+namespace facebook {
+namespace jni {
+

@@ -157,3 +157,76 @@ void utf8ToModifiedUTF8(const uint8_t* utf8, size_t len, uint8_t* modified, size
 }
 
 std::string modifiedUTF8ToUTF8(const uint8_t* modified, size_t len) noexcept {
+  // Converting from modified utf8 to utf8 will always shrink, so this will always be sufficient
+  std::string utf8(len, 0);
+  size_t j = 0;
+  for (size_t i = 0; i < len; ) {
+    // surrogate pair: 1101 10xx  xxxx xxxx  1101 11xx  xxxx xxxx
+    // encoded pair: 1110 1101  1010 xxxx  10xx xxxx  1110 1101  1011 xxxx  10xx xxxx
+
+    if (len >= i + 6 &&
+        modified[i] == 0xed &&
+        (modified[i + 1] & 0xf0) == 0xa0 &&
+        modified[i + 3] == 0xed &&
+        (modified[i + 4] & 0xf0) == 0xb0) {
+      // Valid surrogate pair
+      char32_t pair1 = decode3ByteUTF8(modified + i);
+      char32_t pair2 = decode3ByteUTF8(modified + i + 3);
+      char32_t ch = 0x10000 + (((pair1 & 0x3ff) << 10) |
+                               ( pair2 & 0x3ff));
+      encode4ByteUTF8(ch, utf8, j);
+      i += 6;
+      j += 4;
+      continue;
+    } else if (len >= i + 2 &&
+               modified[i] == 0xc0 &&
+               modified[i + 1] == 0x80) {
+      utf8[j] = 0;
+      i += 2;
+      j += 1;
+      continue;
+    }
+
+    // copy one byte.  This might be a one, two, or three-byte encoding.  It might be an invalid
+    // encoding of some sort, but garbage in garbage out is ok.
+
+    utf8[j] = (char) modified[i];
+    i++;
+    j++;
+  }
+
+  utf8.resize(j);
+
+  return utf8;
+}
+
+// Calculate how many bytes are needed to convert an UTF16 string into UTF8
+// UTF16 string
+size_t utf16toUTF8Length(const uint16_t* utf16String, size_t utf16StringLen) {
+  if (!utf16String || utf16StringLen == 0) {
+    return 0;
+  }
+
+  uint32_t utf8StringLen = 0;
+  auto utf16StringEnd = utf16String + utf16StringLen;
+  auto idx16 = utf16String;
+  while (idx16 < utf16StringEnd) {
+    auto ch = *idx16++;
+    if (ch < kUtf8OneByteBoundary) {
+      utf8StringLen++;
+    } else if (ch < kUtf8TwoBytesBoundary) {
+      utf8StringLen += 2;
+    } else if (
+        (ch >= kUtf16HighSubLowBoundary) && (ch < kUtf16HighSubHighBoundary) &&
+        (idx16 < utf16StringEnd) &&
+        (*idx16 >= kUtf16HighSubHighBoundary) && (*idx16 < kUtf16LowSubHighBoundary)) {
+      utf8StringLen += 4;
+      idx16++;
+    } else {
+      utf8StringLen += 3;
+    }
+  }
+
+  return utf8StringLen;
+}
+

@@ -31,3 +31,7 @@
 #include "Common.h"
 #include "References.h"
 #include "CoreClasses.h"
+
+namespace facebook {
+namespace jni {
+

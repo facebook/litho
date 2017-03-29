@@ -29,3 +29,7 @@ class AContext : public JavaClass<AContext> {
     static auto method = getClass()->getMethod<JFile::javaobject()>("getFilesDir");
     return method(self());
   }
+};
+
+}
+}
