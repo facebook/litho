@@ -33,3 +33,4 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
 
   public static final int UNSET = -1;
 
+  private T mDrawable;
