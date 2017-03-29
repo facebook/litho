@@ -160,3 +160,6 @@ public abstract class PagerBinder extends BaseBinder<
     private static final int VIEW_POOL_SIZE = 5;
 
     private final PagerBinder mBinder;
+    private final Context mContext;
+    private final SimplePool<ComponentView> mComponentViewPool = new SimplePool<>(VIEW_POOL_SIZE);
+
