@@ -213,3 +213,8 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
 
     return ((ComponentHost) view).getAccessibleMountItem();
   }
+
+  @Override
+  public void onInitializeAccessibilityEvent(
+      View host, AccessibilityEvent event) {
+    if (mNodeInfo != null && mNodeInfo.getOnInitializeAccessibilityEventHandler() != null) {

@@ -170,3 +170,20 @@ class EventDispatcherUtils {
     sDispatchPopulateAccessibilityEventEvent.superDelegate = null;
 
     return returnValue;
+  }
+
+  static void dispatchOnInitializeAccessibilityEvent(
+      EventHandler<OnInitializeAccessibilityEventEvent> eventHandler,
+      View host,
+      AccessibilityEvent event,
+      AccessibilityDelegateCompat superDelegate) {
+    assertMainThread();
+
+    if (sOnInitializeAccessibilityEventEvent == null) {
+      sOnInitializeAccessibilityEventEvent = new OnInitializeAccessibilityEventEvent();
+    }
+
+    sOnInitializeAccessibilityEventEvent.host = host;
+    sOnInitializeAccessibilityEventEvent.event = event;
+    sOnInitializeAccessibilityEventEvent.superDelegate = superDelegate;
+
