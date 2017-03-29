@@ -1329,3 +1329,4 @@ public class Stages {
           "$L $L = ($L) $L",
           eventName,
           implInstanceName,
+          eventName,
