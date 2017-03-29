@@ -2160,3 +2160,6 @@ public class Stages {
     if (shouldUpdateParamSize > 0) {
       shouldUpdateComponent
           .addStatement(
+              "$L previousImpl = ($L) previous",
+              implClass,
+              implClass)
