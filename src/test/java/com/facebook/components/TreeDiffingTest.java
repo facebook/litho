@@ -821,3 +821,7 @@ public class TreeDiffingTest {
 
     final Component secondLayoutComponent = new InlineLayoutSpec() {
       @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            .alignItems(YogaAlign.FLEX_START)
+            .child(Layout.create(c, secondComponent).flexShrink(0).heightPx(50))

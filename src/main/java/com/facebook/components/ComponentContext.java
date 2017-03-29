@@ -198,3 +198,8 @@ public class ComponentContext extends ContextWrapper {
     return mTreeProps;
   }
 
+  public ResourceCache getResourceCache() {
+    return mResourceCache;
+  }
+
+  EventHandler newEventHandler(int id) {
