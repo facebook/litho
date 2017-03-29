@@ -90,3 +90,4 @@ class RecyclerSpec {
   }
 
   @OnMount
+  static void onMount(
