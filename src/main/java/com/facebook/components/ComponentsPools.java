@@ -109,3 +109,9 @@ public class ComponentsPools {
   private static final Pools.SynchronizedPool<StateHandler> sStateHandlerPool =
       new Pools.SynchronizedPool<>(10);
 
+  private static final Pools.SimplePool<SparseArrayCompat<MountItem>> sMountItemScrapArrayPool =
+      new Pools.SimplePool<>(8);
+
+  private static final Pools.SimplePool<SparseArrayCompat<Touchable>> sTouchableScrapArrayPool =
+      new Pools.SimplePool<>(4);
+
