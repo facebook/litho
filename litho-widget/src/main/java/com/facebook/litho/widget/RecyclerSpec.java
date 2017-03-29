@@ -70,3 +70,4 @@ class RecyclerSpec {
   }
 
   @OnCreateMountContent
+  static RecyclerViewWrapper onCreateMountContent(ComponentContext c) {
