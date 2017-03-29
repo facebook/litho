@@ -1334,3 +1334,6 @@ public class LayoutStateCalculateTest {
                     .contentDescription("This is a container")
                     .child(
                         TestDrawableComponent.create(c)
+                            .withLayout().flexShrink(0)
+                            .widthDip(30)
+                            .heightDip(30)
