@@ -796,3 +796,4 @@ public class ComponentTree {
       Size output) {
 
     synchronized (this) {
+
