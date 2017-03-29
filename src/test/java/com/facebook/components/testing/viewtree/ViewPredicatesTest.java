@@ -110,3 +110,9 @@ public class ViewPredicatesTest {
   @Test
   public void testMatchesTextPartOfString() throws Exception {
     final Predicate<View> matchesPartOfHello = ViewPredicates.matchesText(".*o.*");
+
+    assertThat(matchesPartOfHello.apply(mView)).isFalse();
+    assertThat(matchesPartOfHello.apply(mTextViewWithNull)).isFalse();
+    assertThat(matchesPartOfHello.apply(mTextViewWithEmptyString)).isFalse();
+    assertThat(matchesPartOfHello.apply(mTextViewWithHello)).isTrue();
+    assertThat(matchesPartOfHello.apply(mTextViewWithWorld)).isTrue();
