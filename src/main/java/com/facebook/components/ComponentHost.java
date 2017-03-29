@@ -681,3 +681,17 @@ public class ComponentHost extends ViewGroup {
     }
 
     return handled;
+  }
+
+  void performLayout(boolean changed, int l, int t, int r, int b) {
+  }
+
+  @Override
+  protected final void onLayout(boolean changed, int l, int t, int r, int b) {
+    mInLayout = true;
+    performLayout(changed, l, t, r, b);
+    mInLayout = false;
+  }
+
+  @Override
+  public void requestLayout() {
