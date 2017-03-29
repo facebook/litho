@@ -366,3 +366,13 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
             .getResources()
             .getDrawable(resourceId)
     );
+    return this;
+  }
+
+  /**
+   * Tests all views in the hierarchy under the root, for which the path is visible, are not
+   * displaying the requested drawable
+   *
+   * @param drawable the drawable to look for
+   * @return the assertions object
+   */
