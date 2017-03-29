@@ -491,3 +491,4 @@ public class ComponentsPools {
     sViewNodeInfoPool.release(viewNodeInfo);
   }
 
+  @ThreadSafe(enableChecks = false)
