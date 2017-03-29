@@ -2629,3 +2629,6 @@ public class Stages {
         new TypeName[]{genericType},
         ClassNames.COMPONENT_CONTEXT,
         null,
+        null,
+        false,
+        false);
