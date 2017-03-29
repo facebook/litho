@@ -166,3 +166,7 @@ class EventDispatcherUtils {
         sDispatchPopulateAccessibilityEventEvent);
 
     sDispatchPopulateAccessibilityEventEvent.host = null;
+    sDispatchPopulateAccessibilityEventEvent.event = null;
+    sDispatchPopulateAccessibilityEventEvent.superDelegate = null;
+
+    return returnValue;
