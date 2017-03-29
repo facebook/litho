@@ -221,3 +221,6 @@ public class TreeDiffingTest {
         node,
         YogaConstants.UNDEFINED,
         YogaConstants.UNDEFINED);
+
+    node.setCachedMeasuresValid(false);
+    DiffNode diffNode = LayoutState.createDiffNode(node, null);

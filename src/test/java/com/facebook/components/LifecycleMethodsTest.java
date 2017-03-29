@@ -237,3 +237,6 @@ public class LifecycleMethodsTest {
               mCurrentStep == LifecycleStep.ON_BOUNDS_DEFINED);
 
         case ON_MOUNT:
+          assertTrue(
+              mCurrentStep == LifecycleStep.ON_BOUNDS_DEFINED ||
+              mCurrentStep == LifecycleStep.ON_CREATE_MOUNT_CONTENT);

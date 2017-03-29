@@ -414,3 +414,4 @@ public class MountStateRemountInPlaceTest {
         TestDrawableComponent.create(mContext)
             .color(Color.BLACK)
             .build();
+
