@@ -151,3 +151,25 @@ public class ComponentHostTest {
     assertEquals(2, mHost.getMountItemCount());
 
     MountItem mountItem3 = mount(2, new View(mContext));
+    assertEquals(3, mHost.getMountItemCount());
+
+    unmount(0, mountItem1);
+    assertEquals(2, mHost.getMountItemCount());
+
+    MountItem mountItem4 = mount(1, new ColorDrawable());
+    assertEquals(2, mHost.getMountItemCount());
+
+    unmount(2, mountItem3);
+    assertEquals(1, mHost.getMountItemCount());
+
+    unmount(1, mountItem4);
+    assertEquals(0, mHost.getMountItemCount());
+  }
+
+  @Test
+  public void testGetMountItemAt() {
+    assertNull(mHost.getMountItemAt(0));
+    assertNull(mHost.getMountItemAt(1));
+    assertNull(mHost.getMountItemAt(2));
+
+    MountItem mountItem1 = mount(0, new ColorDrawable());

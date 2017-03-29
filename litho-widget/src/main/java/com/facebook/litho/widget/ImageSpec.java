@@ -65,3 +65,10 @@ class ImageSpec {
             .resId(a.getResourceId(attr, 0))
             .build());
       } else if (attr == R.styleable.Image_android_scaleType) {
+        scaleType.set(SCALE_TYPE[a.getInteger(attr, -1)]);
+      }
+    }
+
+    a.recycle();
+  }
+
