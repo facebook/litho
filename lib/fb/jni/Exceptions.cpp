@@ -195,3 +195,4 @@ void translatePendingCppExceptionToJavaException() noexcept {
     } catch(const JniException& ex) {
       current = ex.getThrowable();
     } catch(const std::ios_base::failure& ex) {
+      current = JIOException::create(ex.what());
