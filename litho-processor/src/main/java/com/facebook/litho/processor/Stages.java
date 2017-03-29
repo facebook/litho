@@ -2501,3 +2501,5 @@ public class Stages {
   private Collection<MethodSpec> generatePropsBuilderMethods(
       VariableElement element,
       TypeName propsBuilderClassName,
+      int requiredIndex,
+      ClassName componentClassName) {
