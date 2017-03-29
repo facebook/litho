@@ -518,3 +518,16 @@ class LayoutState {
     if (layoutOutput != null) {
       final long previousId = shouldUseCachedOutputs ? currentDiffNode.getContent().getId() : -1;
       layoutState.mLayoutStateOutputIdCalculator.calculateAndSetLayoutOutputIdAndUpdateState(
+          layoutOutput,
+          layoutState.mCurrentLevel,
+          LayoutOutput.TYPE_CONTENT,
+          previousId,
+          isCachedOutputUpdated);
+    }
+
+    // If we don't need to update this output we can safely re-use the display list from the
+    // previous output.
+    if (isCachedOutputUpdated) {
+      layoutOutput.setDisplayList(currentDiffNode.getContent().getDisplayList());
+    }
+
