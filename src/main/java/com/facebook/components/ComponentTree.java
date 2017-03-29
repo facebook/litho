@@ -1008,3 +1008,6 @@ public class ComponentTree {
   }
 
   private void logLayoutCalculationFinish(Component<?> root) {
+    final ComponentsLogger logger = mContext.getLogger();
+    if (logger != null) {
+      logger.eventEnd(EVENT_LAYOUT_CALCULATE, root, ACTION_SUCCESS);
