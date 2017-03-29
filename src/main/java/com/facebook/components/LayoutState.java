@@ -1400,3 +1400,4 @@ class LayoutState {
           applyDiffNodeToUnchangedNodes(
               layoutNode.getChildAt(i),
               diffNode.getChildAt(i));
+      shouldUpdate |= shouldUpdateChild;
