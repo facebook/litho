@@ -116,3 +116,4 @@ class ComponentHostUtils {
     drawable.setVisible(view.getVisibility() == View.VISIBLE, false);
     drawable.setCallback(view);
     maybeSetDrawableState(view, drawable, flags, nodeInfo);
+    view.invalidate(bounds);

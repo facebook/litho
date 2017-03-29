@@ -82,3 +82,6 @@ public class ResourceResolver {
 
   private final String[] resolveStringArrayRes(@ArrayRes int resId) {
     if (resId != 0) {
+      String[] cached = mResourceCache.get(resId);
+      if (cached != null) {
+        return cached;
