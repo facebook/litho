@@ -101,3 +101,6 @@ class MountState {
   private int mPreviousTopsIndex;
   private int mPreviousBottomsIndex;
   private int mLastMountedComponentTreeId;
+
+  private final MountItem mRootHostMountItem;
+

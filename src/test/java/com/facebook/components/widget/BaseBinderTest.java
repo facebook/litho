@@ -305,3 +305,5 @@ public class BaseBinderTest {
   }
 
   @Test
+  public void testIncrementalMountEnabled() {
+    mBinder.setIncrementalMountEnabled(true);
