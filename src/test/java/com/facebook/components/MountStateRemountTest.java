@@ -50,3 +50,17 @@ public class MountStateRemountTest {
     final TestComponent component4 = TestDrawableComponent.create(mContext)
         .build();
 
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Container.create(c)
+                .child(component1)
+                .child(component2)
+                .build();
+          }
+        });
+
+    assertTrue(component1.isMounted());
+    assertTrue(component2.isMounted());

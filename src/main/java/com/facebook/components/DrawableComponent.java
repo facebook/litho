@@ -54,3 +54,4 @@ class DrawableComponent<T extends Drawable> extends ComponentLifecycle {
 
   @Override
   protected void onBind(
+      ComponentContext c,

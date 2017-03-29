@@ -61,3 +61,11 @@ public class ComponentView extends ComponentHost {
   }
 
   public ComponentView(Context context, AttributeSet attrs) {
+    this(new ComponentContext(context), attrs);
+  }
+
+  public ComponentView(ComponentContext context) {
+    this(context, null);
+  }
+
+  public ComponentView(ComponentContext context, AttributeSet attrs) {
