@@ -83,3 +83,6 @@ class ImageSpec {
     if (src == null) {
       size.width = 0;
       size.height = 0;
+      return;
+    }
+

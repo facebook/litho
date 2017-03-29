@@ -766,3 +766,4 @@ class MountState {
           oldItem.getHost().moveItem(oldItem, i, newPosition);
           mPrepareMountStats.movedCount++;
         } else {
+          mPrepareMountStats.unchangedCount++;
