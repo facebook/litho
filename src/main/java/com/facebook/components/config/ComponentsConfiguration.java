@@ -35,3 +35,5 @@ public class ComponentsConfiguration {
    * Debug option to highlight mount bounds of mounted components.
    */
   public static boolean debugHighlightMountBounds = false;
+
+  /**
