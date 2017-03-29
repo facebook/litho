@@ -2587,3 +2587,12 @@ public class Stages {
   private void assertOfType(VariableElement element, TypeName... types) {
     final TypeName elementType = JPUtil.getTypeFromMirror(element.asType());
 
+    for (TypeName type : types) {
+      if (type.toString().equals(elementType.toString())) {
+        return;
+      }
+    }
+
+    throw new ComponentsProcessingException(
+        element,
+        "Expected parameter of one of types" + Arrays.toString(types) +  ". Found " + elementType);
