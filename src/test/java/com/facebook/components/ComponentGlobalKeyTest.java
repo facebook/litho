@@ -112,3 +112,38 @@ public class ComponentGlobalKeyTest {
     Assert.assertEquals(layoutSpecId + "" + nestedLayoutSpecId + "[CardClip1]", getComponentAt(componentView, 3).getGlobalKey());
     // Text in child
     Assert.assertEquals(layoutSpecId + "" + nestedLayoutSpecId + "[Text1]", getComponentAt(componentView, 4).getGlobalKey());
+    // background
+    Assert.assertNull(getComponentAt(componentView, 5).getGlobalKey());
+    // CardClip
+    Assert.assertEquals(layoutSpecId + "[CardClip2]", getComponentAt(componentView, 6).getGlobalKey());
+    // TestViewComponent
+    Assert.assertEquals(layoutSpecId + "[TestViewComponent2]", getComponentAt(componentView, 7).getGlobalKey());
+  }
+
+  private static Component getComponentAt(ComponentView componentView, int index) {
+    return componentView.getMountItemAt(index).getComponent();
+  }
+
+  private ComponentView getComponentView(ComponentTree componentTree) {
+    ComponentView componentView = new ComponentView(mContext);
+    componentView.setComponent(componentTree);
+    componentView.measure(
+        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+    componentView.layout(
+        0,
+        0,
+        componentView.getMeasuredWidth(),
+        componentView.getMeasuredHeight());
+    return componentView;
+  }
+
+  private static Component getMultipleChildrenComponent() {
+    final int color = 0xFFFF0000;
+    final Component testGlobalKeyChildComponent = new InlineLayoutSpec() {
+
+      @Override
+      @OnCreateLayout
+      protected ComponentLayout onCreateLayout(
+          ComponentContext c) {
+

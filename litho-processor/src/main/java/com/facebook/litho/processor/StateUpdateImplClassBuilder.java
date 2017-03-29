@@ -130,3 +130,5 @@ public class StateUpdateImplClassBuilder {
     return this;
   }
 
+  /**
+   * Set the params of the method annotated with

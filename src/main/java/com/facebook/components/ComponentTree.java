@@ -102,3 +102,4 @@ public class ComponentTree {
   private boolean mIncrementalMountEnabled;
   private boolean mIsLayoutDiffingEnabled;
   private boolean mIsAttached;
+  private boolean mIsAsyncUpdateStateEnabled;
