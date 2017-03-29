@@ -1559,3 +1559,8 @@ class LayoutState {
       mMountableOutputBottoms.clear();
       mOutputsIdToPositionMap.clear();
 
+      for (int i = 0, size = mVisibilityOutputs.size(); i < size; i++) {
+        ComponentsPools.release(mVisibilityOutputs.get(i));
+      }
+      mVisibilityOutputs.clear();
+

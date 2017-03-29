@@ -1797,3 +1797,5 @@ class MountState {
           component);
       mountItem.setIsBound(false);
     }
+
+    clearVisibilityItems();
