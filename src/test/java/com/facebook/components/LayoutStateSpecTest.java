@@ -22,3 +22,7 @@ import static junit.framework.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(ComponentsTestRunner.class)
+public class LayoutStateSpecTest {
+
+  private static final int COMPONENT_ID = 37;
+

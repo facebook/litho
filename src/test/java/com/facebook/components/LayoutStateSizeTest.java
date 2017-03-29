@@ -22,3 +22,9 @@ import static junit.framework.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(ComponentsTestRunner.class)
+public class LayoutStateSizeTest {
+  private static final int COMPONENT_ID = 37;
+  private static final int WIDTH = 49;
+  private static final int HEIGHT = 51;
+
+  private LayoutState mLayoutState;

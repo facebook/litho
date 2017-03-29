@@ -18,3 +18,4 @@ import com.squareup.javapoet.TypeName;
  * we provide class name constants instead.
  */
 public class SectionClassNames {
+
