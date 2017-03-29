@@ -42,3 +42,4 @@ public class PopulateTreePropsMethodBuilder {
             lifecycleImplClass,
             "_abstractImpl");
     for (Parameter treeProp : treeProps) {
+      builder.addStatement("_impl.$L = treeProps.get($L.class)", treeProp.name, treeProp.type);

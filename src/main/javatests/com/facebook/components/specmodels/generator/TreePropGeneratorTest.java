@@ -66,3 +66,4 @@ public class TreePropGeneratorTest {
                 new ArrayList<AnnotationSpec>(),
                 null),
             MethodParamModelFactory.create(
+                TypeName.BOXED_BOOLEAN,

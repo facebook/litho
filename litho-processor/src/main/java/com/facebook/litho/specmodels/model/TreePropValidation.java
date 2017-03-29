@@ -31,3 +31,14 @@ class TreePropValidation {
                 "@OnCreateTreeProp methods cannot return void."));
       }
 
+      if (onCreateTreePropMethod.returnType.isPrimitive() ||
+          onCreateTreePropMethod.returnType.toString().startsWith("java.lang.") ||
+          onCreateTreePropMethod.returnType.toString().startsWith("java.util.")) {
+        validationErrors.add(
+            new SpecModelValidationError(
+                onCreateTreePropMethod.representedObject,
+                "Returning a common JAVA class or a primitive is against the design" +
+                    "of tree props, as they will be keyed on their specific types. Consider " +
+                    "creating your own wrapper classes instead."));
+      }
+
