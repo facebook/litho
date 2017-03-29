@@ -133,3 +133,4 @@ public class ResourceResolver {
       Boolean cached = mResourceCache.get(resId);
       if (cached != null) {
         return cached;
+      }

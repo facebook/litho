@@ -158,3 +158,4 @@ public class ComponentTreeTest {
 
   @Test
   public void testSetSizeSpec() {
+    ComponentTree componentTree =
