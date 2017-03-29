@@ -898,3 +898,6 @@ class MountState {
       Component<?> component,
       Object content,
       ComponentHost host,
+      LayoutOutput layoutOutput) {
+
+    final MountItem item = ComponentsPools.acquireMountItem(
