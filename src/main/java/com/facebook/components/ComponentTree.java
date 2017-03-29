@@ -788,3 +788,5 @@ public class ComponentTree {
     return StateHandler.acquireNewInstance(mStateHandler);
   }
 
+  private void setRootAndSizeSpecInternal(
+      Component<?> root,

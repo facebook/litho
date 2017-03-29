@@ -87,3 +87,5 @@ class RecyclerSpec {
         }
       });
     }
+  }
+
