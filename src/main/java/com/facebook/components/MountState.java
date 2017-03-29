@@ -30,3 +30,4 @@ import android.view.ViewGroup;
 
 import com.facebook.R;
 import com.facebook.components.config.ComponentsConfiguration;
+import com.facebook.components.reference.Reference;

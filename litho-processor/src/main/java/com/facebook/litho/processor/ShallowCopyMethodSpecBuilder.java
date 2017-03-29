@@ -57,3 +57,4 @@ class ShallowCopyMethodSpecBuilder {
     MethodSpec.Builder builder = MethodSpec.methodBuilder("makeShallowCopy")
         .addModifiers(Modifier.PUBLIC)
         .addAnnotation(Override.class)
+        .returns(ClassName.bestGuess(mImplClassName));

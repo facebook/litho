@@ -56,3 +56,5 @@ public class ResourceDrawableReferenceTest {
             .resId(R.drawable.background)
             .build();
     Drawable drawable2 = Reference.acquire(mContext, ref2);
+
+    assertSame(drawable1, drawable2);

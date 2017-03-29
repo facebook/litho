@@ -53,3 +53,5 @@ public class ColorDrawableReferenceTest {
   }
 
   @Test
+  public void testReleaseAndAcquireDifferentColorAndAlpha() {
+    Reference<Drawable> ref1 =

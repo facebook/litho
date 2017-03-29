@@ -63,3 +63,7 @@ public class MountStateRemountEventHandlerTest {
       }
     });
 
+    assertTrue(clickListener == MountState.getComponentClickListener(componentView));
+  }
+
+  @Test

@@ -29,3 +29,5 @@ import com.facebook.infer.annotation.ThreadSafe;
 
 import static com.facebook.components.SizeSpec.EXACTLY;
 import static com.facebook.components.SizeSpec.UNSPECIFIED;
+import static com.facebook.components.ThreadUtils.assertDoesntHoldLock;
+import static com.facebook.components.ThreadUtils.assertMainThread;
