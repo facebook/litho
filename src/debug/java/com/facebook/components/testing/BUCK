@@ -25,3 +25,5 @@ android_library(
         COMPONENTS_POWERMOCK_REFLECT_TARGET,
         COMPONENTS_YOGA_TARGET,
         COMPONENTS_WIDGET_TARGET,
+    ],
+)
