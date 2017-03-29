@@ -918,3 +918,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       return 0;
     }
 
+    if (YogaConstants.isUndefined(mResolvedTouchExpansionLeft)) {

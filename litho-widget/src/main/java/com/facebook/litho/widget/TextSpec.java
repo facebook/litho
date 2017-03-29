@@ -162,3 +162,4 @@ class TextSpec {
         minLines.set(a.getInteger(attr, -1));
       } else if (attr == R.styleable.Text_android_maxLines) {
         maxLines.set(a.getInteger(attr, -1));
+      } else if (attr == R.styleable.Text_android_singleLine) {
