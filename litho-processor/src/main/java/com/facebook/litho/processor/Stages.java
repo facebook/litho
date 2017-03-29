@@ -2231,3 +2231,4 @@ public class Stages {
 
     shouldUpdateComponent.addStatement(
         "boolean shouldUpdate = $L.$L(\n$L)",
+        mSourceDelegateAccessorName,

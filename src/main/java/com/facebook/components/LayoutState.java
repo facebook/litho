@@ -1542,3 +1542,4 @@ class LayoutState {
 
       mWidth = 0;
       mHeight = 0;
+
