@@ -341,3 +341,4 @@ public class ResourceResolver {
     }
   }
 
+  final int resolveResIdAttr(@AttrRes int attrResId, int defResId) {
