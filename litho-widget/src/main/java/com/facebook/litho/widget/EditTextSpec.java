@@ -291,3 +291,4 @@ class EditTextSpec {
         textStyle,
         typeface,
         textAlignment,
+        gravity,
