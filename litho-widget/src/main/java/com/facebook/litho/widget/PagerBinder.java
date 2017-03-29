@@ -164,3 +164,24 @@ public abstract class PagerBinder extends BaseBinder<
     private final SimplePool<ComponentView> mComponentViewPool = new SimplePool<>(VIEW_POOL_SIZE);
 
     InternalAdapter(PagerBinder binder, Context context) {
+      mBinder = binder;
+      mContext = context;
+    }
+
+    @Override
+    public Object instantiateItem(ViewGroup container, int position) {
+      ComponentView componentView = mComponentViewPool.acquire();
+      if (componentView == null) {
+        componentView = new ComponentView(mContext);
+      }
+
+      final ComponentTree component = mBinder.getComponentAt(position);
+      // When the viewPager get bound, we cannot set the current item immediately but setAdapter()
+      // will try to initialize the first few pages that will be null if the intended initial item
+      // is != 0. However if we don't have a component while the currentItems of the viewPager
+      // and of the binder are matching, there is probably a bug somewhere!
+      if (component == null &&
+          mBinder.mViewPager != null &&
+          mBinder.getCurrentItem() == mBinder.mViewPager.getCurrentItem()) {
+        throw new IllegalStateException("Null component while initializing a new page.");
+      }
