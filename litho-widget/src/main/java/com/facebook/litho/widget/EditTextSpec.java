@@ -197,3 +197,4 @@ class EditTextSpec {
         ellipsize,
         minLines,
         maxLines,
+        maxLength,
