@@ -1370,3 +1370,4 @@ public class LayoutStateCalculateTest {
     assertEquals(hostMarkerFour, layoutState.getMountableOutputAt(9).getHostMarker());
 
     assertTrue(isHostComponent(getComponentAt(layoutState, 0)));
+    assertTrue(getComponentAt(layoutState, 1) instanceof TestDrawableComponent);
