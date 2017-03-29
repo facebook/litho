@@ -2808,3 +2808,5 @@ public class Stages {
               requiredPropIndex,
               componentClassName));
       if (!v.getAnnotation(Prop.class).optional()) {
+        requiredPropIndex++;
+      }
