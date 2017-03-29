@@ -298,3 +298,5 @@ public final class ComponentTestHelper {
       Component component,
       int widthSpec,
       int heightSpec) {
+    final TestComponentTree componentTree =
+        TestComponentTree.create(context, component)
