@@ -581,3 +581,11 @@ public class RecyclerBinderTest {
 
     TestComponentTreeHolder holderMovedOutsideRange =
         mHoldersForComponents.get(components.get(rangeTotal).getComponent());
+
+    assertFalse(holderMovedOutsideRange.isTreeValid());
+    assertFalse(holderMovedOutsideRange.mLayoutAsyncCalled);
+    assertFalse(holderMovedOutsideRange.mLayoutSyncCalled);
+  }
+
+  @Test
+  public void testMoveItemInsideVisibleRange() {
