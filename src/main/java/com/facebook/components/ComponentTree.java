@@ -477,3 +477,4 @@ public class ComponentTree {
     LayoutState toRelease;
     synchronized (this) {
       mIsMeasuring = true;
+
