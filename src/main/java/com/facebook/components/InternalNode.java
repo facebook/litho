@@ -1427,3 +1427,19 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private float resolveHorizontalSpacing(Spacing spacing, int index) {
     final boolean isRtl =
         (mYogaNode.getLayoutDirection() == YogaDirection.RTL);
+
+    final int resolvedIndex;
+    switch (index) {
+      case Spacing.LEFT:
+        resolvedIndex = (isRtl ? Spacing.END : Spacing.START);
+        break;
+
+      case Spacing.RIGHT:
+        resolvedIndex = (isRtl ? Spacing.START : Spacing.END);
+        break;
+
+      default:
+        throw new IllegalArgumentException("Not an horizontal padding index: " + index);
+    }
+
+    float result = spacing.getRaw(resolvedIndex);

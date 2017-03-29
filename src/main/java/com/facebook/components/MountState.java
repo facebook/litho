@@ -847,3 +847,4 @@ class MountState {
     final Component<?> component = layoutOutput.getComponent();
     final ComponentLifecycle lifecycle = component.getLifecycle();
 
+    // 2. Generate the component's mount state (this might also be a ComponentHost View).
