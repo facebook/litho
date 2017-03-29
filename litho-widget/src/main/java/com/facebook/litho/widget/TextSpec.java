@@ -528,3 +528,4 @@ class TextSpec {
   static void onMount(
       ComponentContext c,
       TextDrawable textDrawable,
+      @Prop(resType = ResType.STRING) CharSequence text,
