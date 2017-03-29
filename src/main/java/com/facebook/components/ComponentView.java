@@ -201,3 +201,10 @@ public class ComponentView extends ComponentHost {
         performIncrementalMount();
       }
 
+      if (!wasMountTriggered || shouldAlwaysLayoutChildren()) {
+        // If the layout() call on the component didn't trigger a mount step,
+        // we might need to perform an inner layout traversal on children that
+        // requested it as certain complex child views (e.g. ViewPager,
+        // RecyclerView, etc) rely on that.
+        performLayoutOnChildrenIfNecessary(this);
+      }
