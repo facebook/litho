@@ -289,3 +289,4 @@ public class LifecycleMethodsTest {
 
       assertTrue(
           mComponent.getCurrentStep() == LifecycleStep.ON_BIND ||
+              mComponent.getCurrentStep() == LifecycleStep.ON_UNBIND);

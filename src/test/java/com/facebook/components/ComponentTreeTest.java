@@ -143,3 +143,6 @@ public class ComponentTreeTest {
   @Test
   public void testCreate() {
     ComponentTree componentTree =
+        ComponentTree.create(mContext, mComponent)
+            .incrementalMount(false)
+            .build();

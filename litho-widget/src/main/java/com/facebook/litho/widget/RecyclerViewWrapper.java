@@ -123,3 +123,7 @@ public class RecyclerViewWrapper extends SwipeRefreshLayout {
     mHasBeenDetachedFromWindow = true;
   }
 
+  /**
+   * This is needed to solve a launch-blocker t14789523 and work around a framework bug t14809560.
+   */
+  @Override
