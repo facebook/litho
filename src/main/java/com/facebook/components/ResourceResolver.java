@@ -210,3 +210,12 @@ public class ResourceResolver {
 
   @Nullable
   protected final Reference<Drawable> resolveDrawableRes(@DrawableRes int resId) {
+    if (resId == 0) {
+      return null;
+    }
+
+    return ResourceDrawableReference.create(mContext)
+        .resId(resId)
+        .build();
+  }
+
