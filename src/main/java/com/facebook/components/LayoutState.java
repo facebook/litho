@@ -608,3 +608,4 @@ class LayoutState {
     layoutState.mCurrentX += node.getX();
     layoutState.mCurrentY += node.getY();
 
+    // We must process the nodes in order so that the layout state output order is correct.
