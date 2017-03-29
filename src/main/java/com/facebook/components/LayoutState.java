@@ -1507,3 +1507,7 @@ class LayoutState {
     return mTestOutputs == null ? null : mTestOutputs.get(index);
   }
 
+  public DiffNode getDiffTree() {
+    return mDiffTreeRoot;
+  }
+

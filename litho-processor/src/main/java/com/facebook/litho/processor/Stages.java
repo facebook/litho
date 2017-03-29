@@ -2358,3 +2358,5 @@ public class Stages {
         variableType,
         ClassNames.OUTPUT);
     return outputTypeMirror != null;
+  }
+
