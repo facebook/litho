@@ -704,3 +704,13 @@ public class ComponentHostTest {
     assertEquals(1, mHost.getChildCount());
 
     assertNull(mHost.recycleHost());
+
+    verify(view).setVisibility(View.GONE);
+    verify(view).setVisibility(View.VISIBLE);
+  }
+
+  private MountItem mount(int index, Object content) {
+    return mount(index, content, 0);
+  }
+
+  private MountItem mount(int index, Object content, int flags) {

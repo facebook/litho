@@ -236,3 +236,5 @@ public class ComponentView extends ComponentHost {
     // Don't bubble up layout requests while mounting.
     if (mComponent != null && mComponent.isMounting()) {
       return false;
+    }
+
