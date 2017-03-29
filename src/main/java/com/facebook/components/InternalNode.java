@@ -999,3 +999,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     if (child != null && child != NULL_LAYOUT) {
       addChildAt((InternalNode) child, mYogaNode.getChildCount());
     }
+    return this;
+  }
+
+  @Override
