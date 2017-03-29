@@ -1302,3 +1302,4 @@ class LayoutState {
       diffTreeRoot = nestedTreeHolder.getDiffNode();
     } else if (root.getStyleDirection() == com.facebook.yoga.YogaDirection.INHERIT
         && LayoutState.isLayoutDirectionRTL(c)) {
+      root.layoutDirection(YogaDirection.RTL);
