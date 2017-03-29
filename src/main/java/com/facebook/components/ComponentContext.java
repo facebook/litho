@@ -183,3 +183,6 @@ public class ComponentContext extends ContextWrapper {
   }
 
   public @Nullable ComponentsLogger getLogger() {
+    return mLogger;
+  }
+

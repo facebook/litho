@@ -390,3 +390,10 @@ public abstract class BaseBinder<
         treesToRelease.get(i).release();
       }
       releaseList(treesToRelease);
+    }
+
+    if (mListener != null) {
+      mListener.onItemRangeRemoved(positionStart, itemCount);
+    }
+  }
+
