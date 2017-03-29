@@ -302,3 +302,10 @@ public abstract class BaseBinder<
           componentTree.setSizeSpec(getWidthSpec(toPosition), getHeightSpec(toPosition));
         }
 
+        // If fromPosition is before the range, the elements preceding toPosition need to be shifted
+        // left.
+        if (fromPosition < mComponentTrees.getFirstPosition()) {
+          mComponentTrees.insertShiftingLeft(toPosition, componentTree);
+        } else {
+          mComponentTrees.insert(toPosition, componentTree);
+        }

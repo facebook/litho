@@ -635,3 +635,4 @@ public class LayoutStateCalculateTest {
         layoutState.getMountableOutputCount(),
         sameComponentLayoutState.getMountableOutputCount());
 
+    for (int i = 0; i < layoutState.getMountableOutputCount(); i++) {
