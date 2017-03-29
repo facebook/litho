@@ -1115,3 +1115,5 @@ public class ComponentTree {
         && layoutState.isCompatibleAccessibility();
   }
 
+  private static boolean isCompatibleComponentAndSize(
+      LayoutState layoutState, int componentId, int width, int height) {
