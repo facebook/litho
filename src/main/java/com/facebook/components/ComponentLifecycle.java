@@ -478,3 +478,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
   }
 
   /**
+   * Get extra accessibility node id at a given point within the component.
