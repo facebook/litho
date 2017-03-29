@@ -341,3 +341,4 @@ class EditTextSpec {
       float spacingMultiplier,
       int textStyle,
       Typeface typeface,
+      Layout.Alignment textAlignment,
