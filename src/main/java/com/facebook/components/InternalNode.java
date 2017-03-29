@@ -1078,3 +1078,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode foreground(Reference.Builder<? extends Drawable> builder) {
+    return foreground(builder.build());
+  }
+
+  @Override
