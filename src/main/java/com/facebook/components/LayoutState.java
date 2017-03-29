@@ -470,3 +470,21 @@ class LayoutState {
 
       return;
     }
+
+    final boolean shouldGenerateDiffTree = layoutState.mShouldGenerateDiffTree;
+    final DiffNode currentDiffNode = node.getDiffNode();
+    final boolean shouldUseCachedOutputs =
+        isMountSpec(component) && currentDiffNode != null;
+
+    final boolean isCachedOutputUpdated = shouldUseCachedOutputs && node.areCachedMeasuresValid();
+
+    final DiffNode diffNode;
+    if (shouldGenerateDiffTree) {
+      diffNode = createDiffNode(node, parentDiffNode);
+      if (parentDiffNode == null) {
+        layoutState.mDiffTreeRoot = diffNode;
+      }
+    } else {
+      diffNode = null;
+    }
+

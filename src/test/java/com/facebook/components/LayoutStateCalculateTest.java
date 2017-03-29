@@ -883,3 +883,5 @@ public class LayoutStateCalculateTest {
     return Whitebox.getInternalState(layoutState.getMountableOutputAt(index).getComponent(), "text");
   }
 
+  private static boolean isHostComponent(ComponentLifecycle component) {
+    return component instanceof HostComponent;
