@@ -970,3 +970,21 @@ public class ComponentTree {
     logLayoutCalculationFinish(root);
   }
 
+  private void logPreAllocationStart() {
+    final ComponentsLogger logger = mContext.getLogger();
+    if (logger != null) {
+      logger.eventStart(
+          EVENT_PRE_ALLOCATE_MOUNT_CONTENT,
+          this,
+          PARAM_LOG_TAG,
+          mContext.getLogTag());
+    }
+  }
+
+  private void logPreAllocationFinish() {
+    final ComponentsLogger logger = mContext.getLogger();
+    if (logger != null) {
+      logger.eventEnd(EVENT_PRE_ALLOCATE_MOUNT_CONTENT, this, ACTION_SUCCESS);
+    }
+  }
+

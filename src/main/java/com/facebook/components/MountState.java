@@ -261,3 +261,5 @@ class MountState {
       final String logTag = componentTree.getContext().getLogTag();
       logMountEnd(logger, logTag, componentTree, mMountStats);
     }
+
+    ComponentsSystrace.endSection();
