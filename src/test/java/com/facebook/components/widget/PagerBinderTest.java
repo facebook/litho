@@ -172,3 +172,12 @@ public class PagerBinderTest {
     }
 
     mBinder.getRangeController().notifyOnPageSelected(6);
+    assertNull(mBinder.getComponentAt(3));
+    for (int i = 4; i < 9; i++) {
+      assertNotNull(mBinder.getComponentAt(i));
+    }
+  }
+
+  @Test
+  public void testSimpleBinderUpdateWithSimulatedScrollLeft() {
+    mBinder = new TestPagerComponentBinder(mContext, 0, 1f);

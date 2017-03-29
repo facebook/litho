@@ -188,3 +188,24 @@ public abstract class PagerBinder extends BaseBinder<
 
       componentView.setComponent(component);
 
+      container.addView(componentView);
+
+      return componentView;
+    }
+
+    @Override
+    public void destroyItem(ViewGroup container, int position, Object object) {
+      final ComponentView componentView = (ComponentView) object;
+      componentView.setComponent(null);
+      container.removeView((View) object);
+
+      mComponentViewPool.release(componentView);
+    }
+
+    @Override
+    public boolean isViewFromObject(View view, Object object) {
+      return view == object;
+    }
+
+    @Override
+    public int getItemPosition(Object object) {
