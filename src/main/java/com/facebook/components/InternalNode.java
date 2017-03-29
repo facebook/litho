@@ -1912,3 +1912,6 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       errorTypes = addOrCreateList(errorTypes, "margin");
     }
 
+    if (errorTypes != null) {
+      final CharSequence errorStr = TextUtils.join(", ", errorTypes);
+      throw new IllegalStateException("You should not set " + errorStr + " to a root layout in "
