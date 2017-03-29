@@ -88,3 +88,8 @@ public abstract class BaseBinder<
 
   @Override
   public void measure(Size outSize, int widthSpec, int heightSpec) {
+    throw new IllegalStateException("Recycler must have sizes spec set " +
+        "when using the old binder implementation.");
+  }
+
+  @Override

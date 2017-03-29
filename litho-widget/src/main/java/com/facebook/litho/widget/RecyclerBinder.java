@@ -229,3 +229,7 @@ public class RecyclerBinder implements Binder<RecyclerView> {
 
       if (mIsMeasured.get()) {
         if (mRange == null) {
+          initRange(
+              mMeasuredSize.width,
+              mMeasuredSize.height,
+              position,

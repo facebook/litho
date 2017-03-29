@@ -154,3 +154,4 @@ public class RecyclerViewWrapper extends SwipeRefreshLayout {
       getParent().requestDisallowInterceptTouchEvent(disallowIntercept);
     }
   }
+}

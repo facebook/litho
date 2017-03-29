@@ -41,3 +41,11 @@ public interface Binder<V extends ViewGroup> {
    * Measure the content of this Binder. Call this method from the Component's onMeasure.
    */
   void measure(Size outSize, int widthSpec, int heightSpec);
+
+  /**
+   * Returns the component at the given position in the binder.
+   */
+  ComponentTree getComponentAt(int position);
+
+  /**
+   * Call this method before the {@link View} is mounted, i.e. within
