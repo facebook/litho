@@ -164,3 +164,4 @@ public class ComponentLifecycleTest {
 
     verify(componentLifecycle).onCreateLayout(mContext, mInput);
     verify(mNode).setComponent(mInput);
+    verify(mNode, never()).setMeasureFunction(any(YogaMeasureFunction.class));
