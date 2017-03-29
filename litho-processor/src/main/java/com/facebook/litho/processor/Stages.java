@@ -1317,3 +1317,4 @@ public class Stages {
 
     for (ExecutableElement element : mOnEventMethods) {
       methodBuilder.beginControlFlow("case $L:", getElementId(element));
+
