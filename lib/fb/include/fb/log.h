@@ -242,3 +242,39 @@ int __android_log_print(int prio, const char *tag, const char *fmt, ...)
 
 #define FBLOG_ALWAYS_FATAL(...) \
   (((void)fb_printAssert(NULL, LOG_TAG, __VA_ARGS__)))
+
+/*
+ * Versions of LOG_ALWAYS_FATAL_IF and LOG_ALWAYS_FATAL that
+ * are stripped out of release builds.
+ */
+#if FBLOG_NDEBUG
+
+#define FBLOG_FATAL_IF(cond, ...) ((void)0)
+#define FBLOG_FATAL(...) ((void)0)
+
+#else
+
+#define FBLOG_FATAL_IF(cond, ...) FBLOG_ALWAYS_FATAL_IF(cond, __VA_ARGS__)
+#define FBLOG_FATAL(...) FBLOG_ALWAYS_FATAL(__VA_ARGS__)
+
+#endif
+
+/*
+ * Assertion that generates a log message when the assertion fails.
+ * Stripped out of release builds.  Uses the current LOG_TAG.
+ */
+#define FBLOG_ASSERT(cond, ...) FBLOG_FATAL_IF(!(cond), __VA_ARGS__)
+//#define LOG_ASSERT(cond) LOG_FATAL_IF(!(cond), "Assertion failed: " #cond)
+
+// ---------------------------------------------------------------------
+
+/*
+ * Basic log message macro.
+ *
+ * Example:
+ *  FBLOG(LOG_WARN, NULL, "Failed with error %d", errno);
+ *
+ * The second argument may be NULL or "" to indicate the "global" tag.
+ */
+#ifndef FBLOG
+#define FBLOG(priority, tag, ...) \
