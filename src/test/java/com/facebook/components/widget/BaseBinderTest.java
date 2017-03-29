@@ -145,3 +145,20 @@ public class BaseBinderTest {
   @Test
   public void testNotifyItemInserted() {
     mount();
+
+    String newItem = "20";
+    int position = 6;
+    String prevItemAtInsertedPosition = mItems.get(position);
+
+    mItems.add(position, newItem);
+
+    mBinder.notifyItemInserted(position);
+    mLayoutThreadShadowLooper.runOneTask();
+
+    Assert.assertEquals(mItems.size(), mBinder.getComponentCount());
+    Assert.assertEquals(newItem, getAdapterInputStringAtPosition(position));
+    Assert.assertEquals(prevItemAtInsertedPosition, getAdapterInputStringAtPosition(position + 1));
+  }
+
+  @Test
+  public void testNotifyRangeInserted() {

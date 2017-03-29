@@ -157,3 +157,10 @@ class ViewNodeInfo {
   }
 
   void release() {
+    final int count = mReferenceCount.decrementAndGet();
+    if (count < 0) {
+      throw new IllegalStateException("Trying to release a recycled ViewNodeInfo.");
+    } else if (count > 0) {
+      return;
+    }
+

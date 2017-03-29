@@ -198,3 +198,4 @@ public class InternalNodeTest {
   }
 
   @Test
+  public void testHeightFlag() {
