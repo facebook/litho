@@ -146,3 +146,5 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private Component mComponent;
   private int mImportantForAccessibility = ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
   private boolean mDuplicateParentState;
+  private boolean mIsNestedTreeHolder;
+  private InternalNode mNestedTree;
