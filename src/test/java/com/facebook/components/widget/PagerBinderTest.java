@@ -237,3 +237,7 @@ public class PagerBinderTest {
           .measuredWidth(50)
           .measuredHeight(100)
           .build();
+    }
+
+    @Override
+    public int getCount() {
