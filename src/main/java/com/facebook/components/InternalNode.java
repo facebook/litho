@@ -164,3 +164,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private EventHandler mInvisibleHandler;
   private String mTestKey;
   private Spacing mTouchExpansion;
+  private Spacing mNestedTreePadding;
