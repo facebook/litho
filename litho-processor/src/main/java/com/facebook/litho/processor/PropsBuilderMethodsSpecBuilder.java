@@ -153,3 +153,18 @@ class PropsBuilderMethodsSpecBuilder {
     return builders;
   }
 
+  MethodSpec buildKeySetter() {
+    return MethodSpec.methodBuilder("key")
+        .addModifiers(Modifier.PUBLIC)
+        .addParameter(ClassNames.STRING, "key")
+        .addStatement("super.setKey(key)")
+        .addStatement("return this")
+        .returns(mBuilderClass)
+        .build();
+  }
+
+  MethodSpec buildLoadingEventHandlerSetter() {
+    return MethodSpec.methodBuilder("loadingEventHandler")
+        .addModifiers(Modifier.PUBLIC)
+        .addParameter(
+            ParameterizedTypeName.get(

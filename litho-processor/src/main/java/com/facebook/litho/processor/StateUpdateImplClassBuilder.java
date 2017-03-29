@@ -157,3 +157,12 @@ public class StateUpdateImplClassBuilder {
     return this;
   }
 
+  StateUpdateImplClassBuilder typeParameter(String typeParam) {
+    mTypeParameters.add(typeParam);
+    return this;
+  }
+
+  TypeSpec build() {
+    final TypeSpec.Builder stateUpdateClassBuilder =
+        TypeSpec.classBuilder(mStateUpdateClassName)
+            .addModifiers(Modifier.PRIVATE)
