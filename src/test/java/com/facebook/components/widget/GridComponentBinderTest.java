@@ -305,3 +305,9 @@ public class GridComponentBinderTest {
       return true;
     }
 
+    int getFirstPosition() {
+      return ((BinderTreeCollection) Whitebox.getInternalState(
+          this,
+          "mComponentTrees")).getFirstPosition();
+    }
+

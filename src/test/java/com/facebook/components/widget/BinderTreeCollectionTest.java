@@ -107,3 +107,8 @@ public class BinderTreeCollectionTest {
     mBinderTreeCollection.insert(insertPosition, newComponentTree);
 
     assertContiguous();
+    assertEquals(originalSize + 1, mBinderTreeCollection.size());
+    assertEquals(treeAtPosition3, mBinderTreeCollection.get(3));
+    assertEquals(newComponentTree, mBinderTreeCollection.get(4));
+    assertEquals(treeAtPosition4, mBinderTreeCollection.get(5));
+    assertEquals(treeAtPosition6, mBinderTreeCollection.get(7));
