@@ -1734,3 +1734,35 @@ public class LayoutStateCalculateTest {
 
         return Layout.create(c, nestedTreeRootComponent).flexShrink(0)
             .paddingPx(YogaEdge.ALL, 10)
+            .build();
+      }
+    };
+
+    LayoutState layoutState = calculateLayoutState(
+        RuntimeEnvironment.application,
+        component,
+        -1,
+        SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
+        SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY));
+
+    // Check total layout outputs.
+    assertEquals(4, layoutState.getMountableOutputCount());
+    Rect mountBounds = new Rect();
+    // Check host.
+    assertTrue(isHostComponent(getComponentAt(layoutState, 0)));
+    layoutState.getMountableOutputAt(0).getMountBounds(mountBounds);
+    assertEquals(new Rect(0, 0, 350, 200), mountBounds);
+    assertEquals(0, layoutState.getMountableOutputAt(0).getHostMarker());
+    // Check NestedTree
+    assertTrue(getComponentAt(layoutState, 1) instanceof DrawableComponent);
+    layoutState.getMountableOutputAt(1).getMountBounds(mountBounds);
+    assertEquals(new Rect(10, 10, 60, 60), mountBounds);
+    assertTrue(getComponentAt(layoutState, 2) instanceof TestDrawableComponent);
+    layoutState.getMountableOutputAt(2).getMountBounds(mountBounds);
+    assertEquals(new Rect(10, 10, 60, 60), mountBounds);
+    assertTrue(getComponentAt(layoutState, 3) instanceof TestViewComponent);
+    layoutState.getMountableOutputAt(3).getMountBounds(mountBounds);
+    assertEquals(new Rect(13, 63, 337, 83), mountBounds);
+  }
+
+  @Test
