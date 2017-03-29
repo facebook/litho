@@ -1616,3 +1616,4 @@ class MountState {
     final ComponentLifecycle lifecycle = component.getLifecycle();
 
     // Call the component's unmount() method.
+    if (item.isBound()) {

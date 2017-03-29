@@ -2156,3 +2156,7 @@ public class Stages {
 
     final List<? extends VariableElement> shouldUpdateParams = shouldUpdateElement.getParameters();
     final int shouldUpdateParamSize = shouldUpdateParams.size();
+
+    if (shouldUpdateParamSize > 0) {
+      shouldUpdateComponent
+          .addStatement(
