@@ -79,3 +79,7 @@ public class MountSpecHelper extends ComponentSpecHelper {
       FromBind.class,
   };
 
+  public MountSpecHelper(
+      ProcessingEnvironment processingEnv,
+      TypeElement specElement,
+      SpecModel specModel) {

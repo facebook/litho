@@ -201,3 +201,6 @@ public class MountStateIncrementalMountTest {
           }
         });
 
+    verifyLoggingAndResetLogger(2, 0);
+
+    componentView.getComponent().mountComponent(new Rect( -10, 0, -5, 10));
