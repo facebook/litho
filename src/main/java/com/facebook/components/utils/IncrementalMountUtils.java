@@ -119,3 +119,20 @@ public class IncrementalMountUtils {
       return;
     }
 
+    componentView.performIncrementalMount(rect);
+
+    release(rect);
+  }
+
+  private static Rect acquireRect() {
+    Rect rect = sRectPool.acquire();
+    if (rect == null) {
+      rect = new Rect();
+    }
+
+    return rect;
+  }
+
+  private static void release(Rect rect) {
+    rect.setEmpty();
+    sRectPool.release(rect);
