@@ -665,3 +665,4 @@ class MountState {
       logger.eventStart(EVENT_PREPARE_MOUNT, component);
     }
 
+    PrepareMountStats stats = unmountOrMoveOldItems(layoutState);
