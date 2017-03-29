@@ -449,3 +449,4 @@ public class ComponentHost extends ViewGroup {
    * @param viewTags the map containing the tags by id.
    */
   public void setViewTags(SparseArray<Object> viewTags) {
+    mViewTags = viewTags;
