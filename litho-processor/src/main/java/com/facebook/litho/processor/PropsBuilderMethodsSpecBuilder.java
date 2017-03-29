@@ -45,3 +45,8 @@ class PropsBuilderMethodsSpecBuilder {
     return this;
   }
 
+  PropsBuilderMethodsSpecBuilder componentClassName(ClassName componentClass) {
+    this.mComponentClass = componentClass;
+    return this;
+  }
+

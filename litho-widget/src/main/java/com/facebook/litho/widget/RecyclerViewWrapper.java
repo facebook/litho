@@ -91,3 +91,6 @@ public class RecyclerViewWrapper extends SwipeRefreshLayout {
   public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     measureChild(mStickyHeader, widthMeasureSpec, heightMeasureSpec);
+  }
+
+  @Override
