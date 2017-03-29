@@ -484,3 +484,5 @@ public class Stages {
             // @State or an output.
             final boolean isFromProp = getParameterAnnotation(v, PROP_ANNOTATIONS) != null;
             final boolean isFromState = getParameterAnnotation(v, STATE_ANNOTATIONS) != null;
+            final boolean isFromTreeProp
+                = getParameterAnnotation(v, TREE_PROP_ANNOTATIONS) != null;
