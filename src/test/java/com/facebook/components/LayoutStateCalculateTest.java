@@ -269,3 +269,5 @@ public class LayoutStateCalculateTest {
         SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY));
     // Check total layout outputs.
     assertEquals(8, layoutState.getMountableOutputCount());
+
+    // Check quantity of HostComponents.

@@ -120,3 +120,5 @@ public class BinderTreeCollectionTest {
     int originalSize = mBinderTreeCollection.size();
 
     ComponentTree treeAtLastPosition = mBinderTreeCollection.get(originalSize);
+
+    ComponentTree newComponentTree = createNewComponentTree();
