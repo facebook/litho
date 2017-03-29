@@ -59,3 +59,4 @@ class HorizontalScrollSpec {
       Output<Boolean> scrollbarEnabled) {
 
     final TypedArray a = c.obtainStyledAttributes(
+        R.styleable.HorizontalScroll,

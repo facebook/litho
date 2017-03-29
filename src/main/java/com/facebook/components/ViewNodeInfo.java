@@ -104,3 +104,6 @@ class ViewNodeInfo {
         && touchExpansionTop == 0
         && touchExpansionRight == 0
         && touchExpansionBottom == 0) {
+      return;
+    }
+
