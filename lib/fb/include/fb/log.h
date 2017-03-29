@@ -80,3 +80,39 @@ int __android_log_write(int prio, const char *tag, const char *text);
 int __android_log_print(int prio, const char *tag, const char *fmt, ...)
 #if defined(__GNUC__)
     __attribute__((format(printf, 3, 4)))
+#endif
+    ;
+
+#endif
+
+// ---------------------------------------------------------------------
+
+/*
+ * Normally we strip FBLOGV (VERBOSE messages) from release builds.
+ * You can modify this (for example with "#define FBLOG_NDEBUG 0"
+ * at the top of your source file) to change that behavior.
+ */
+#ifndef FBLOG_NDEBUG
+#ifdef NDEBUG
+#define FBLOG_NDEBUG 1
+#else
+#define FBLOG_NDEBUG 0
+#endif
+#endif
+
+/*
+ * This is the local tag used for the following simplified
+ * logging macros.  You can change this preprocessor definition
+ * before using the other macros to change the tag.
+ */
+#ifndef LOG_TAG
+#define LOG_TAG NULL
+#endif
+
+// ---------------------------------------------------------------------
+
+/*
+ * Simplified macro to send a verbose log message using the current LOG_TAG.
+ */
+#ifndef FBLOGV
+#if FBLOG_NDEBUG
