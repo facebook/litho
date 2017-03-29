@@ -858,3 +858,5 @@ class MountState {
         content,
         component);
 
+    // 3. If it's a ComponentHost, add the mounted View to the list of Hosts.
+    if (isHostSpec(component)) {
