@@ -830,3 +830,14 @@ public class ComponentHost extends ViewGroup {
               child,
               isAccessibilityEnabled ? new ComponentAccessibilityDelegate(child, nodeInfo) : null);
         }
+      }
+    }
+  }
+
+  @Override
+  public void setAccessibilityDelegate(AccessibilityDelegate accessibilityDelegate) {
+    super.setAccessibilityDelegate(accessibilityDelegate);
+
+    // We cannot compare against mComponentAccessibilityDelegate directly, since it is not the
+    // delegate that we receive here. Instead, we'll set this to true at the point that we set that
+    // delegate explicitly.
