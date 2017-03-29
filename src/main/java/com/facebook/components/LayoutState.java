@@ -405,3 +405,6 @@ class LayoutState {
         || hasViewTags
         || hasAccessibilityContent
         || isFocusableSetTrue;
+  }
+
+  /**
