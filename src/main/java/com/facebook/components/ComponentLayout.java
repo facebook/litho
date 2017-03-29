@@ -264,3 +264,4 @@ public interface ComponentLayout {
     ContainerBuilder marginDip(YogaEdge edge, @Dimension(unit = DP) int margin);
     ContainerBuilder marginPercent(YogaEdge edge, float percent);
     ContainerBuilder marginAuto(YogaEdge edge);
+

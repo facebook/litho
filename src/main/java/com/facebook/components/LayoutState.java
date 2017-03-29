@@ -393,3 +393,4 @@ class LayoutState {
         && (implementsAccessibility
             || (nodeInfo != null && !TextUtils.isEmpty(nodeInfo.getContentDescription()))
             || importantForAccessibility != IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+
