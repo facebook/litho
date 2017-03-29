@@ -1634,3 +1634,16 @@ class MountState {
       throw new RuntimeException("Only host components can be used as disappearing items");
     }
 
+    final ComponentHost host = item.getHost();
+    host.startUnmountDisappearingItem(index, item);
+    mTransitionManager.getTransitionKeySet(key).setTransitionCleanupListener(
+        new TransitionKeySet.TransitionCleanupListener() {
+          @Override
+          public void onTransitionCleanup() {
+            endUnmountDisappearingItem(mContext, item);
+          }
+        });
+  }
+
+  private void endUnmountDisappearingItem(ComponentContext context, MountItem item) {
+    final ComponentHost content = (ComponentHost) item.getContent();
