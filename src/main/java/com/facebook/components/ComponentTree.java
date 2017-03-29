@@ -292,3 +292,5 @@ public class ComponentTree {
 
     LayoutState toRelease;
     int componentRootId;
+    synchronized (this) {
+      // We need to track that we are attached regardless...

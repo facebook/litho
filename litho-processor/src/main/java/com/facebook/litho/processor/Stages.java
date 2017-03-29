@@ -165,3 +165,15 @@ public class Stages {
 
   private final List<ExecutableElement> mOnCreateTreePropsMethods;
 
+  // List of methods that define stages (e.g. OnCreateLayout)
+  private List<ExecutableElement> mStages;
+
+  public TypeElement getSourceElement() {
+    return mSourceElement;
+  }
+
+  public Stages(
+      ProcessingEnvironment processingEnv,
+      TypeElement sourceElement,
+      String qualifiedClassName,
+      Class<Annotation>[] stageAnnotations,
