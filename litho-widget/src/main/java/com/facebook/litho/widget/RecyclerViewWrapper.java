@@ -28,3 +28,9 @@ public class RecyclerViewWrapper extends SwipeRefreshLayout {
 
   private final ComponentView mStickyHeader;
   private final RecyclerView mRecyclerView;
+  /**
+   * Indicates whether {@link RecyclerView} has been detached. In such case we need to make sure
+   * to relayout its children eventually.
+   */
+  private boolean mHasBeenDetachedFromWindow = false;
+

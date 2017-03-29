@@ -82,3 +82,4 @@ public class StateUpdatesTest {
     }
   }
 
+  static class TestComponent<L extends ComponentLifecycle>

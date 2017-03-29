@@ -99,3 +99,7 @@ public class ComponentView extends ComponentHost {
     requestLayout();
   }
 
+  public void startTemporaryDetach() {
+    mTemporaryDetachedComponent = mComponent;
+  }
+
