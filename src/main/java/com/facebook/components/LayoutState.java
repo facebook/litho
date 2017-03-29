@@ -877,3 +877,6 @@ class LayoutState {
     layoutState.mAccessibilityManager =
         (AccessibilityManager) c.getSystemService(ACCESSIBILITY_SERVICE);
     layoutState.mAccessibilityEnabled = isAccessibilityEnabled(layoutState.mAccessibilityManager);
+    layoutState.mComponent = component;
+    layoutState.mWidthSpec = widthSpec;
+    layoutState.mHeightSpec = heightSpec;
