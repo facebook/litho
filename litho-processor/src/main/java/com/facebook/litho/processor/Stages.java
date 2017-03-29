@@ -154,3 +154,4 @@ public class Stages {
   // Map of name to VariableElement, for members of the inner implementation class, in order
   private LinkedHashMap<String, VariableElement> mImplMembers;
   private List<Parameter> mImplParameters;
+
