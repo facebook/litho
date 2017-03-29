@@ -250,3 +250,14 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
       }
     }
 
+    if (overlayImageReference == null) {
+      mGenericDraweeHierarchy.setOverlayImage(null);
+      return;
+    }
+
+    mOverlayImageReference = overlayImageReference;
+    mOverlayImage = Reference.acquire(mContext, overlayImageReference);
+
+    mGenericDraweeHierarchy.setOverlayImage(DrawableUtils.cloneDrawable(mOverlayImage));
+  }
+
