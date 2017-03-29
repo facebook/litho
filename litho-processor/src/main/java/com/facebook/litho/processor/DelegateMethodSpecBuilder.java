@@ -226,3 +226,28 @@ class DelegateMethodSpecBuilder {
             IMPL_INSTANCE_NAME + stateContainerMember + ".$L = $L.get()",
             parameter.name,
             parameter.name);
+        delegate.addStatement("releaseOutput($L)", parameter.name);
+      }
+    }
+
+    if (!mFromReturnType.equals(TypeName.VOID)) {
+      delegate.addStatement("return _result");
+    }
+
+    return delegate.build();
+  }
+
+  private boolean isOutputType(TypeName type) {
+    if (type.equals(ClassNames.OUTPUT)) {
+      return true;
+    } else if (type instanceof ParameterizedTypeName) {
+      final ParameterizedTypeName parameterizedType = (ParameterizedTypeName) type;
+      if (parameterizedType.rawType.equals(ClassNames.OUTPUT)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private CodeBlock getMatchingInput(Parameter output) {

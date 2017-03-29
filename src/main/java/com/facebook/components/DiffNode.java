@@ -93,3 +93,4 @@ class DiffNode implements Cloneable {
     mChildren.add(node);
   }
 
+  LayoutOutput getContent() {

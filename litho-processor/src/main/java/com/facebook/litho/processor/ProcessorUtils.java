@@ -24,3 +24,4 @@ public class ProcessorUtils {
    * @return the AnnotationMirror of class clazz if typeElement is annotated with that class.
    */
   public static AnnotationMirror getAnnotationMirror(TypeElement typeElement, ClassName className) {
+    final String classSimpleName = className.simpleName();
