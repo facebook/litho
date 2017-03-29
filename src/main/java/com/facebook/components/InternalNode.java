@@ -1809,3 +1809,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     mBorderColor = Color.TRANSPARENT;
     mIsPaddingPercent = null;
 
+    if (mTouchExpansion != null) {
+      ComponentsPools.release(mTouchExpansion);
+      mTouchExpansion = null;
+    }
