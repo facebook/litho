@@ -30,3 +30,4 @@ import static com.facebook.litho.testing.viewtree.ViewPredicates.isVisible;
  */
 public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTree> {
 
+  private ViewTreeAssert(final ViewTree actual) {

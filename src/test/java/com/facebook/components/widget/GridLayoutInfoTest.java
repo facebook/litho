@@ -24,3 +24,4 @@ import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@RunWith(ComponentsTestRunner.class)
