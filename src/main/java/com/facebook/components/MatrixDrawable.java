@@ -82,3 +82,4 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
   }
 
   /**
+   * Applies the given dimensions to the drawable.
