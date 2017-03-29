@@ -407,3 +407,15 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
   /** Whether there is not a visible view in the hierarchy with the given id. */
   public ViewTreeAssert doesNotHaveVisibleViewWithId(final int viewId) {
     final ImmutableList<View> path = getPathToVisibleWithId(viewId);
+
+    Assertions.assertThat(path)
+        .overridingErrorMessage(
+            "Found visible view with id \"%s=%d\":%n%s",
+            ViewTreeUtil.getResourceName(viewId),
+            viewId,
+            actual.makeString(ViewExtractors.GET_VIEW_ID_FUNCTION))
+        .isNull();
+
+    return this;
+  }
+
