@@ -198,3 +198,5 @@ class PropsBuilderMethodsSpecBuilder {
   }
 
   private MethodSpec resBuilder(ClassName annotationClassName, String resolver) {
+    return builder(
+        mPropParameter.parameter.name + "Res",

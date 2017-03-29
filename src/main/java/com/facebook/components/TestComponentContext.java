@@ -62,3 +62,5 @@ class TestComponentContext extends ComponentContext {
   @Override
   public ComponentLayout.Builder newLayoutBuilder(
       Component<?> component,
+      @AttrRes int defStyleAttr,
+      @StyleRes int defStyleRes) {
