@@ -92,3 +92,51 @@ public class ComponentLifecycleTest {
     };
     mNestedTreeWidthSpec = SizeSpec.makeSizeSpec(400, SizeSpec.EXACTLY);
     mNestedTreeHeightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
+  }
+
+  @Test
+  public void testCreateLayoutWithNullComponentWithLayoutSpecCannotMeasure() {
+    ComponentLifecycle componentLifecycle = setUpComponentForCreateLayout(
+        false /* isMountSpec */,
+        false /* canMeasure */);
+    componentLifecycle.createLayout(mContext, mComponentWithNullLayout, false);
+
+    verify(componentLifecycle).onCreateLayout(mContext, mComponentWithNullLayout);
+    verify(mNode).setComponent(mComponentWithNullLayout);
+    verify(componentLifecycle).onPrepare(mContext, mComponentWithNullLayout);
+  }
+
+  @Test
+  public void testCreateLayoutWithNullComponentWithLayoutSpecCanMeasure() {
+    ComponentLifecycle componentLifecycle = setUpComponentForCreateLayout(
+        false /* isMountSpec */,
+        true /* canMeasure */);
+    componentLifecycle.createLayout(mContext, mComponentWithNullLayout, false);
+
+    verify(componentLifecycle).onCreateLayout(mContext, mComponentWithNullLayout);
+    verify(mNode).setComponent(mComponentWithNullLayout);
+    verify(componentLifecycle).onPrepare(mContext, mComponentWithNullLayout);
+  }
+
+  @Test
+  public void testCreateLayoutWithNullComponentWithMountSpecCannotMeasure() {
+    ComponentLifecycle componentLifecycle = setUpComponentForCreateLayout(
+        true /* isMountSpec */,
+        false /* canMeasure */);
+    componentLifecycle.createLayout(mContext, mComponentWithNullLayout, false);
+
+    verify(componentLifecycle).onCreateLayout(mContext, mComponentWithNullLayout);
+    verify(mNode).setComponent(mComponentWithNullLayout);
+    verify(componentLifecycle).onPrepare(mContext, mComponentWithNullLayout);
+  }
+
+  @Test
+  public void testCreateLayoutWithNullComponentWithMountSpecCanMeasure() {
+    ComponentLifecycle componentLifecycle = setUpComponentForCreateLayout(
+        true /* isMountSpec */,
+        true /* canMeasure */);
+    componentLifecycle.createLayout(mContext, mComponentWithNullLayout, false);
+
+    verify(componentLifecycle).onCreateLayout(mContext, mComponentWithNullLayout);
+    verify(mNode).setComponent(mComponentWithNullLayout);
+    verify(componentLifecycle).onPrepare(mContext, mComponentWithNullLayout);
