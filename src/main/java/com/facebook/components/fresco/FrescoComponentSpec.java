@@ -152,3 +152,4 @@ class FrescoComponentSpec {
       ComponentContext c,
       DraweeDrawable<GenericReferenceDraweeHierarchy> mountedDrawable) {
     mountedDrawable.unmount();
+    mountedDrawable.getDraweeHierarchy().releaseReferences();
