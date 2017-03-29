@@ -1248,3 +1248,7 @@ public class LayoutStateCalculateTest {
   }
 
   @Test
+  public void testLayoutOutputsForFocusableOnRoot() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
