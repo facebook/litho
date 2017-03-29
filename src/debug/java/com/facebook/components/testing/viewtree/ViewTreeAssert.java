@@ -195,3 +195,5 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
             .application
             .getResources()
             .getString(resourceId));
+  }
+
