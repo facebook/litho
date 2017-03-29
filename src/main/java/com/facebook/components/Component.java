@@ -273,3 +273,5 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
 
   static boolean isMountDrawableSpec(Component<?> component) {
     return (component != null && component.mLifecycle.getMountType() == MountType.DRAWABLE);
+  }
+
