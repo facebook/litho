@@ -225,3 +225,9 @@ public class ComponentHost extends ViewGroup {
   }
 
   private void maybeRegisterTouchExpansion(int index, MountItem mountItem) {
+    final ViewNodeInfo viewNodeInfo = mountItem.getViewNodeInfo();
+    if (viewNodeInfo == null) {
+      return;
+    }
+
+    final Rect expandedTouchBounds = viewNodeInfo.getExpandedTouchBounds();

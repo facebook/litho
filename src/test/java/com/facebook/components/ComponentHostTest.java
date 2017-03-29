@@ -752,3 +752,4 @@ public class ComponentHostTest {
         viewNodeInfo,
         null,
         0,
+        IMPORTANT_FOR_ACCESSIBILITY_AUTO);

@@ -286,3 +286,9 @@ public class ComponentView extends ComponentHost {
     mMountState.unbind();
   }
 
+  /**
+   * Called from the ComponentTree when a new view want to use the same ComponentTree.
+   */
+  void clearComponentTree() {
+    if (mIsAttached) {
+      throw new IllegalStateException("Trying to clear the ComponentTree while attached.");
