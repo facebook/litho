@@ -1274,3 +1274,4 @@ public class LayoutStateCalculateTest {
     assertTrue(isHostComponent(getComponentAt(layoutState, 0)));
     assertTrue(getComponentAt(layoutState, 1) instanceof TestDrawableComponent);
 
+    assertEquals(FOCUS_SET_TRUE, layoutState.getMountableOutputAt(0).getNodeInfo().getFocusState());
