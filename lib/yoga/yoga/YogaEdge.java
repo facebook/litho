@@ -44,3 +44,4 @@ public enum YogaEdge {
       case 6: return HORIZONTAL;
       case 7: return VERTICAL;
       case 8: return ALL;
+      default: throw new IllegalArgumentException("Unknown enum value: " + value);

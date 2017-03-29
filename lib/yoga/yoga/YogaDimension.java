@@ -30,3 +30,4 @@ public enum YogaDimension {
     switch (value) {
       case 0: return WIDTH;
       case 1: return HEIGHT;
+      default: throw new IllegalArgumentException("Unknown enum value: " + value);

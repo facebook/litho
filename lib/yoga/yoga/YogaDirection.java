@@ -32,3 +32,4 @@ public enum YogaDirection {
       case 0: return INHERIT;
       case 1: return LTR;
       case 2: return RTL;
+      default: throw new IllegalArgumentException("Unknown enum value: " + value);

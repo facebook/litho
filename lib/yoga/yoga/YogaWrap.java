@@ -32,3 +32,4 @@ public enum YogaWrap {
       case 0: return NO_WRAP;
       case 1: return WRAP;
       case 2: return WRAP_REVERSE;
+      default: throw new IllegalArgumentException("Unknown enum value: " + value);
