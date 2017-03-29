@@ -295,3 +295,4 @@ public class ComponentLifecycleTest {
 
   @Test
   public void testMountSpecYogaMeasureOutputSet() {
+    ComponentLifecycle componentLifecycle = new TestMountSpecSettingSizesInOnMeasure();
