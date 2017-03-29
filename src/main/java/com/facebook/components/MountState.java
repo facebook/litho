@@ -827,3 +827,19 @@ class MountState {
 
   private void mountLayoutOutput(int index, LayoutOutput layoutOutput, LayoutState layoutState) {
     // 1. Resolve the correct host to mount our content to.
+    ComponentHost host = resolveComponentHost(layoutOutput, mHostsByMarker);
+
+    if (host == null) {
+      // Host has not yet been mounted - mount it now.
+      for (int hostMountIndex = 0, size = mLayoutOutputsIds.length;
+           hostMountIndex < size;
+           hostMountIndex++) {
+        if (mLayoutOutputsIds[hostMountIndex] == layoutOutput.getHostMarker()) {
+          final LayoutOutput hostLayoutOutput = layoutState.getMountableOutputAt(hostMountIndex);
+          mountLayoutOutput(hostMountIndex, hostLayoutOutput, layoutState);
+          break;
+        }
+      }
+
+      host = resolveComponentHost(layoutOutput, mHostsByMarker);
+    }
