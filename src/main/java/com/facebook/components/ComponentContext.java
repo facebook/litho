@@ -214,3 +214,23 @@ public class ComponentContext extends ContextWrapper {
     return newLayoutBuilder(0, 0);
   }
 
+  ComponentLayout.Builder newLayoutBuilder(Component<?> component) {
+    return newLayoutBuilder(component, 0, 0);
+  }
+
+  ComponentLayout.Builder newLayoutBuilder(Component.Builder componentBuilder) {
+    return newLayoutBuilder(componentBuilder.build(), 0, 0);
+  }
+
+  ComponentLayout.ContainerBuilder newLayoutBuilder(
+      @AttrRes int defStyleAttr,
+      @StyleRes int defStyleRes) {
+    final InternalNode node = ComponentsPools.acquireInternalNode(this, getResources());
+    applyStyle(node, defStyleAttr, defStyleRes);
+    return node;
+  }
+
+  ComponentLayout.Builder newLayoutBuilder(
+      Component<?> component,
+      @AttrRes int defStyleAttr,
+      @StyleRes int defStyleRes) {
