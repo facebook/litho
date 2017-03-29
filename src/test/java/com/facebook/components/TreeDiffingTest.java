@@ -431,3 +431,22 @@ public class TreeDiffingTest {
       assertEquals(
           prevLayoutState.getMountableOutputAt(i).getId(),
           layoutState.getMountableOutputAt(i).getId());
+    }
+  }
+
+  private void assertCachedMeasurementsNotDefined(InternalNode node) {
+    assertFalse(node.areCachedMeasuresValid());
+  }
+
+  private void checkAllComponentsHaveMeasureCache(InternalNode node) {
+    if (node.getComponent() != null && node.getComponent().getLifecycle().canMeasure()) {
+      assertCachedMeasurementsDefined(node);
+    }
+    int numChildren = node.getChildCount();
+    for (int i = 0; i < numChildren; i++) {
+      checkAllComponentsHaveMeasureCache((InternalNode) node.getChildAt(i));
+    }
+  }
+
+  @Test
+  public void testComponentHostMoveItem() {

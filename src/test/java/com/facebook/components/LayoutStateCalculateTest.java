@@ -422,3 +422,11 @@ public class LayoutStateCalculateTest {
     int totalHosts = 0;
     for (int i = 0; i < layoutState.getMountableOutputCount(); i++) {
       ComponentLifecycle lifecycle = getComponentAt(layoutState, i);
+      if (isHostComponent(lifecycle)) {
+        totalHosts++;
+      }
+    }
+    assertEquals(3, totalHosts);
+
+    //Check all the Layouts are in the correct position.
+    assertTrue(isHostComponent(getComponentAt(layoutState, 0)));
