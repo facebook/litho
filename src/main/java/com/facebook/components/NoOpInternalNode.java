@@ -353,3 +353,22 @@ class NoOpInternalNode extends InternalNode {
 
   @Override
   public InternalNode widthPx(@Px int width) {
+    return this;
+  }
+
+  @Override
+  public InternalNode widthRes(@DimenRes int resId) {
+    return this;
+  }
+
+  @Override
+  public InternalNode widthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+    return this;
+  }
+
+  @Override
+  public InternalNode widthAttr(@AttrRes int resId) {
+    return this;
+  }
+
+  @Override
