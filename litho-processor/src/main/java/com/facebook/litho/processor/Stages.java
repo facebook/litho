@@ -930,3 +930,5 @@ public class Stages {
     final FieldSpec.Builder builder = FieldSpec
         .builder(specTypeName, DELEGATE_FIELD_NAME)
         .addModifiers(Modifier.PRIVATE);
+
+    if (initialized) {
