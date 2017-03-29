@@ -1435,3 +1435,4 @@ class LayoutState {
       return false;
     }
 
+    return isSameComponentType(node.getComponent(), diffNode.getComponent());
