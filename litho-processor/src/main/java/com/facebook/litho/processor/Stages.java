@@ -1610,3 +1610,4 @@ public class Stages {
                 "_component")
                 .build());
 
+    final List<? extends VariableElement> parameters = delegateMethod.getParameters();
