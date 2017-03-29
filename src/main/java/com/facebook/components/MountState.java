@@ -493,3 +493,4 @@ class MountState {
     // 5. If the mount item is not valid for this component update its content and view attributes.
     if (shouldUpdate) {
       updateMountedContent(currentMountItem, layoutOutput, itemComponent);
+      setViewAttributes(currentMountItem);
