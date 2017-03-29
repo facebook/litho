@@ -181,3 +181,6 @@ public class ViewPredicatesTest {
 
   @Test
   public void testHasVisibleCustomDrawable() {
+    final Resources resources = RuntimeEnvironment.application.getResources();
+    final Drawable customDrawable = resources.getDrawable(R.drawable.custom_drawable);
+    final Predicate<View> hasVisibleDrawable = ViewPredicates.hasVisibleDrawable(customDrawable);
