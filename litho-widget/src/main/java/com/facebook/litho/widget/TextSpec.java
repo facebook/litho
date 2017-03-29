@@ -381,3 +381,4 @@ class TextSpec {
     } else {
       layoutBuilder.setTextStyle(textStyle);
     }
+
