@@ -24,3 +24,4 @@ android_library(
     provided_deps = [
         COMPONENTS_ANDROIDSUPPORT_TARGET,
         COMPONENTS_DISPLAYLISTSUBS_TARGET,
+        COMPONENTS_YOGA_TARGET,
