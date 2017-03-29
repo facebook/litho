@@ -193,3 +193,8 @@ class MountItem {
       ComponentsPools.release(context, mComponent.getLifecycle(), mContent);
     }
 
+    if (mDisplayListDrawable != null) {
+      ComponentsPools.release(mDisplayListDrawable);
+      mDisplayListDrawable = null;
+    }
+
