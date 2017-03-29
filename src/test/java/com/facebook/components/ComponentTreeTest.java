@@ -473,3 +473,5 @@ public class ComponentTreeTest {
       return hasCssSpec;
     } catch (Exception e) {
       throw new IllegalArgumentException("Failed to invoke hasSizeSpec on ComponentTree for: "+e);
+    }
+  }
