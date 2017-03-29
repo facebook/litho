@@ -1944,3 +1944,4 @@ public class Stages {
       if (!isState(v)) {
         addCompareStatement(implInstanceName, v, equalsBuilder, false);
       }
+    }

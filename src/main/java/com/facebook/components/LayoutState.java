@@ -991,3 +991,21 @@ class LayoutState {
 
     for (int i = 0, count = layoutState.getMountableOutputCount(); i < count; i++) {
       final LayoutOutput output = layoutState.getMountableOutputAt(i);
+      final Component component = output.getComponent();
+      final ComponentLifecycle lifecycle = component.getLifecycle();
+
+      if (lifecycle.shouldUseDisplayList()) {
+        output.getMountBounds(rect);
+
+        if (output.getDisplayList() != null && output.getDisplayList().isValid()) {
+          // This output already has a valid DisplayList from diffing. No need to re-create it.
+          // Just update its bounds.
+          try {
+            output.getDisplayList().setBounds(rect.left, rect.top, rect.right, rect.bottom);
+            continue;
+          } catch (DisplayListException e) {
+            // Nothing to do here.
+          }
+        }
+
+        final DisplayList displayList = DisplayList.createDisplayList(
