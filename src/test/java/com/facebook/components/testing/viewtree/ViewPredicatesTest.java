@@ -64,3 +64,5 @@ public class ViewPredicatesTest {
     mTextViewWithEmptyString.setText("");
     mTextViewWithHello.setText("Hello");
     mTextViewWithWorld.setText("World");
+    mOtherImageView.setImageResource(R.drawable.background);
+    mImageView.setImageResource(R.drawable.litho);
