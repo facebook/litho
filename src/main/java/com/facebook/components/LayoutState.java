@@ -147,3 +147,4 @@ class LayoutState {
   private boolean mShouldGenerateDiffTree = false;
   private int mComponentTreeId = -1;
 
+  private AccessibilityManager mAccessibilityManager;

@@ -49,3 +49,4 @@ public class SubComponent {
     }
 
     SubComponent that = (SubComponent) o;
+    return that.mComponentType.equals(mComponentType) && arePropsEqual(that.mComponent, mComponent);

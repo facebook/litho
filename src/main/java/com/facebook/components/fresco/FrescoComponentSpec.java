@@ -29,3 +29,6 @@ import com.facebook.litho.annotations.ResType;
 import com.facebook.components.fresco.common.GenericReferenceDraweeHierarchy;
 import com.facebook.components.reference.Reference;
 import com.facebook.components.utils.MeasureUtils;
+import com.facebook.drawee.drawable.ScalingUtils;
+import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
+import com.facebook.drawee.generic.RoundingParams;
