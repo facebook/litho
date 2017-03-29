@@ -365,3 +365,6 @@ public class Stages {
       final TypeMirror outputType = Utils.getGenericTypeArgument(v.asType(), ClassNames.OUTPUT);
 
       if (outputType == null) {
+        throw new ComponentsProcessingException(
+            parameters.get(i),
+            "The @OnLoadStyle method should have only have Output arguments matching " +

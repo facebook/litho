@@ -262,3 +262,5 @@ class TextSpec {
         minEms,
         maxEms,
         minWidth,
+        maxWidth,
+        textDirection);
