@@ -544,3 +544,10 @@ public class Stages {
             }
 
             // Enforce #10
+            final List<ClassName> illegalPropTypes = Arrays.asList(
+                ClassNames.COMPONENT_LAYOUT,
+                ClassNames.COMPONENT_LAYOUT_BUILDER,
+                ClassNames.COMPONENT_LAYOUT_CONTAINER_BUILDER,
+                ClassNames.COMPONENT_BUILDER,
+                ClassNames.COMPONENT_BUILDER_WITH_LAYOUT,
+                ClassNames.REFERENCE_BUILDER);

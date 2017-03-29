@@ -300,3 +300,4 @@ public class ComponentLifecycleTest {
     when(mInput.getLifecycle()).thenReturn(componentLifecycle);
     Whitebox.setInternalState(mInput, "mLifecycle", componentLifecycle);
 
+    long output = measureFunction.measure(mNode.mYogaNode, 0, EXACTLY, 0, EXACTLY);
