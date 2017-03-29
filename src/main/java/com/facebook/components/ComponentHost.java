@@ -450,3 +450,4 @@ public class ComponentHost extends ViewGroup {
    */
   public void setViewTags(SparseArray<Object> viewTags) {
     mViewTags = viewTags;
+  }
