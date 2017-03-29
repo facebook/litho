@@ -323,3 +323,4 @@ class PropsBuilderMethodsSpecBuilder {
         MethodSpec.methodBuilder(name)
             .addModifiers(Modifier.PUBLIC)
             .returns(mBuilderClass)
+            .addCode("this.$L.$L = ", mImplName, mPropParameter.parameter.name)

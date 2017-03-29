@@ -45,3 +45,8 @@ public class ComponentContext extends ContextWrapper {
   private @ThreadConfined(ThreadConfined.ANY) @AttrRes int mDefStyleAttr = 0;
 
   public ComponentContext(Context context) {
+    this(context, null, null, null);
+  }
+
+  public ComponentContext(Context context, StateHandler stateHandler) {
+    this(context, null, null, stateHandler);
