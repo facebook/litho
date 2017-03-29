@@ -100,3 +100,4 @@ class RecyclerSpec {
       @Prop(optional = true) int scrollBarStyle,
       @Prop(optional = true) RecyclerView.ItemDecoration itemDecoration,
       @Prop(optional = true, resType = ResType.COLOR) int refreshProgressBarColor,
+      @Prop(optional = true) @IdRes int recyclerViewId) {
