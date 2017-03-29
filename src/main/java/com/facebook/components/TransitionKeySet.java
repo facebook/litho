@@ -320,3 +320,14 @@ class TransitionKeySet implements TransitionListener {
       for (int i = 0, size = mRunningTransitionsPointer.size(); i < size; i++) {
         final Transition t = mRunningTransitionsPointer.valueAt(i);
         final Integer valueFlags = t.getValuesFlag();
+
+        boolean canRestoreState = oldRunningTransitions != null
+                && oldRunningTransitions.containsKey(valueFlags);
+
+        // Copy over a previous state of the same transition if possible.
+        canRestoreState = canRestoreState && t.restoreState(oldRunningTransitions.get(valueFlags));
+
+        final PropertySetHolder startValues =
+            canRestoreState || interruptedValues == null
+                ? mStartValues
+                : interruptedValues;
