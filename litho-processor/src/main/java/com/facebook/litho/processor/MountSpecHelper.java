@@ -518,3 +518,7 @@ public class MountSpecHelper extends ComponentSpecHelper {
         methodDescription,
         onPopulateAccessibilityNode,
         ClassNames.COMPONENT);
+  }
+
+  private void generateOnPopulateExtraAccessibilityNode(
+      ExecutableElement onPopulateExtraAccessibilityNode) {
