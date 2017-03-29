@@ -96,3 +96,10 @@ final class ViewPredicates {
     return Predicates.and(isVisible(), hasText(text));
   }
 
+  public static Predicate<View> hasVisibleTextWithTag(
+      final String text,
+      final int tagId,
+      final Object tagValue) {
+    return Predicates.and(hasVisibleText(text), hasTag(tagId, tagValue));
+  }
+
