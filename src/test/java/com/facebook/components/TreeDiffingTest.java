@@ -678,3 +678,4 @@ public class TreeDiffingTest {
                 .withLayout().flexShrink(0)
                 .backgroundColor(Color.RED))
             .child(
+                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)

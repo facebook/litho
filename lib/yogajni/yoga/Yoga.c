@@ -621,3 +621,126 @@ static inline const YGValue *YGNodeResolveFlexBasisPtr(const YGNodeRef node) {
                                                                                               \
   WIN_STRUCT(type) YGNodeStyleGet##name(const YGNodeRef node, const YGEdge edge) {            \
     return WIN_STRUCT_REF(node->style.instanceName[edge]);                                    \
+  }
+
+#define YG_NODE_STYLE_EDGE_PROPERTY_IMPL(type, name, paramName, instanceName)                 \
+  void YGNodeStyleSet##name(const YGNodeRef node, const YGEdge edge, const float paramName) { \
+    if (node->style.instanceName[edge].value != paramName ||                                  \
+        node->style.instanceName[edge].unit != YGUnitPoint) {                                 \
+      node->style.instanceName[edge].value = paramName;                                       \
+      node->style.instanceName[edge].unit =                                                   \
+          YGFloatIsUndefined(paramName) ? YGUnitUndefined : YGUnitPoint;                      \
+      YGNodeMarkDirtyInternal(node);                                                          \
+    }                                                                                         \
+  }                                                                                           \
+                                                                                              \
+  float YGNodeStyleGet##name(const YGNodeRef node, const YGEdge edge) {                       \
+    return node->style.instanceName[edge].value;                                              \
+  }
+
+#define YG_NODE_LAYOUT_PROPERTY_IMPL(type, name, instanceName) \
+  type YGNodeLayoutGet##name(const YGNodeRef node) {           \
+    return node->layout.instanceName;                          \
+  }
+
+#define YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(type, name, instanceName)                    \
+  type YGNodeLayoutGet##name(const YGNodeRef node, const YGEdge edge) {                    \
+    YG_ASSERT(edge <= YGEdgeEnd, "Cannot get layout properties of multi-edge shorthands"); \
+                                                                                           \
+    if (edge == YGEdgeLeft) {                                                              \
+      if (node->layout.direction == YGDirectionRTL) {                                      \
+        return node->layout.instanceName[YGEdgeEnd];                                       \
+      } else {                                                                             \
+        return node->layout.instanceName[YGEdgeStart];                                     \
+      }                                                                                    \
+    }                                                                                      \
+                                                                                           \
+    if (edge == YGEdgeRight) {                                                             \
+      if (node->layout.direction == YGDirectionRTL) {                                      \
+        return node->layout.instanceName[YGEdgeStart];                                     \
+      } else {                                                                             \
+        return node->layout.instanceName[YGEdgeEnd];                                       \
+      }                                                                                    \
+    }                                                                                      \
+                                                                                           \
+    return node->layout.instanceName[edge];                                                \
+  }
+
+YG_NODE_PROPERTY_IMPL(void *, Context, context, context);
+YG_NODE_PROPERTY_IMPL(YGPrintFunc, PrintFunc, printFunc, print);
+YG_NODE_PROPERTY_IMPL(bool, HasNewLayout, hasNewLayout, hasNewLayout);
+
+YG_NODE_STYLE_PROPERTY_IMPL(YGDirection, Direction, direction, direction);
+YG_NODE_STYLE_PROPERTY_IMPL(YGFlexDirection, FlexDirection, flexDirection, flexDirection);
+YG_NODE_STYLE_PROPERTY_IMPL(YGJustify, JustifyContent, justifyContent, justifyContent);
+YG_NODE_STYLE_PROPERTY_IMPL(YGAlign, AlignContent, alignContent, alignContent);
+YG_NODE_STYLE_PROPERTY_IMPL(YGAlign, AlignItems, alignItems, alignItems);
+YG_NODE_STYLE_PROPERTY_IMPL(YGAlign, AlignSelf, alignSelf, alignSelf);
+YG_NODE_STYLE_PROPERTY_IMPL(YGPositionType, PositionType, positionType, positionType);
+YG_NODE_STYLE_PROPERTY_IMPL(YGWrap, FlexWrap, flexWrap, flexWrap);
+YG_NODE_STYLE_PROPERTY_IMPL(YGOverflow, Overflow, overflow, overflow);
+YG_NODE_STYLE_PROPERTY_IMPL(YGDisplay, Display, display, display);
+
+YG_NODE_STYLE_PROPERTY_IMPL(float, Flex, flex, flex);
+YG_NODE_STYLE_PROPERTY_SETTER_IMPL(float, FlexGrow, flexGrow, flexGrow);
+YG_NODE_STYLE_PROPERTY_SETTER_IMPL(float, FlexShrink, flexShrink, flexShrink);
+YG_NODE_STYLE_PROPERTY_UNIT_AUTO_IMPL(YGValue, FlexBasis, flexBasis, flexBasis);
+
+YG_NODE_STYLE_EDGE_PROPERTY_UNIT_IMPL(YGValue, Position, position, position);
+YG_NODE_STYLE_EDGE_PROPERTY_UNIT_IMPL(YGValue, Margin, margin, margin);
+YG_NODE_STYLE_EDGE_PROPERTY_UNIT_AUTO_IMPL(YGValue, Margin, margin);
+YG_NODE_STYLE_EDGE_PROPERTY_UNIT_IMPL(YGValue, Padding, padding, padding);
+YG_NODE_STYLE_EDGE_PROPERTY_IMPL(float, Border, border, border);
+
+YG_NODE_STYLE_PROPERTY_UNIT_AUTO_IMPL(YGValue, Width, width, dimensions[YGDimensionWidth]);
+YG_NODE_STYLE_PROPERTY_UNIT_AUTO_IMPL(YGValue, Height, height, dimensions[YGDimensionHeight]);
+YG_NODE_STYLE_PROPERTY_UNIT_IMPL(YGValue, MinWidth, minWidth, minDimensions[YGDimensionWidth]);
+YG_NODE_STYLE_PROPERTY_UNIT_IMPL(YGValue, MinHeight, minHeight, minDimensions[YGDimensionHeight]);
+YG_NODE_STYLE_PROPERTY_UNIT_IMPL(YGValue, MaxWidth, maxWidth, maxDimensions[YGDimensionWidth]);
+YG_NODE_STYLE_PROPERTY_UNIT_IMPL(YGValue, MaxHeight, maxHeight, maxDimensions[YGDimensionHeight]);
+
+// Yoga specific properties, not compatible with flexbox specification
+YG_NODE_STYLE_PROPERTY_IMPL(float, AspectRatio, aspectRatio, aspectRatio);
+
+YG_NODE_LAYOUT_PROPERTY_IMPL(float, Left, position[YGEdgeLeft]);
+YG_NODE_LAYOUT_PROPERTY_IMPL(float, Top, position[YGEdgeTop]);
+YG_NODE_LAYOUT_PROPERTY_IMPL(float, Right, position[YGEdgeRight]);
+YG_NODE_LAYOUT_PROPERTY_IMPL(float, Bottom, position[YGEdgeBottom]);
+YG_NODE_LAYOUT_PROPERTY_IMPL(float, Width, dimensions[YGDimensionWidth]);
+YG_NODE_LAYOUT_PROPERTY_IMPL(float, Height, dimensions[YGDimensionHeight]);
+YG_NODE_LAYOUT_PROPERTY_IMPL(YGDirection, Direction, direction);
+
+YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(float, Margin, margin);
+YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(float, Border, border);
+YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(float, Padding, padding);
+
+uint32_t gCurrentGenerationCount = 0;
+
+bool YGLayoutNodeInternal(const YGNodeRef node,
+                          const float availableWidth,
+                          const float availableHeight,
+                          const YGDirection parentDirection,
+                          const YGMeasureMode widthMeasureMode,
+                          const YGMeasureMode heightMeasureMode,
+                          const float parentWidth,
+                          const float parentHeight,
+                          const bool performLayout,
+                          const char *reason,
+                          const YGConfigRef config);
+
+inline bool YGFloatIsUndefined(const float value) {
+  return isnan(value);
+}
+
+static inline bool YGValueEqual(const YGValue a, const YGValue b) {
+  if (a.unit != b.unit) {
+    return false;
+  }
+
+  if (a.unit == YGUnitUndefined) {
+    return true;
+  }
+
+  return fabs(a.value - b.value) < 0.0001f;
+}
+
