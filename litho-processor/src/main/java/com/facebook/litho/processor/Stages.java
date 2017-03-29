@@ -1285,3 +1285,6 @@ public class Stages {
           element,
           contextClassName,
           componentClassName);
+    }
+  }
+
