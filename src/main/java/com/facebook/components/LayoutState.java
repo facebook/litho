@@ -677,3 +677,5 @@ class LayoutState {
 
     Collections.sort(layoutState.mMountableOutputTops, sTopsComparator);
     Collections.sort(layoutState.mMountableOutputBottoms, sBottomsComparator);
+  }
+
