@@ -77,3 +77,5 @@ class MountItem {
 
   void init(
       Component<?> component,
+      ComponentHost host,
+      Object content,

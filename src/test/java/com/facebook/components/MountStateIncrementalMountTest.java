@@ -414,3 +414,19 @@ public class MountStateIncrementalMountTest {
     verifyLoggingAndResetLogger(0, 1);
   }
 
+  /**
+   * Tests incremental mount behaviour of a child component that mounts incrementally.
+   */
+  @Test
+  public void testChildViewCanIncrementallyMount() {
+    final TestComponentView mountedView = new TestComponentView(mContext);
+
+    final TestComponentContextWithView testComponentContext =
+        new TestComponentContextWithView(mContext, mountedView);
+    final TestComponent child2 = TestViewComponent.create(testComponentContext).build();
+
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        testComponentContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
