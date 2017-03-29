@@ -18,3 +18,12 @@ public class TestComponentContextWithView extends ComponentContext {
 
   private final View mTestView;
 
+  public TestComponentContextWithView(Context c) {
+    super(c);
+    if (c instanceof TestComponentContextWithView) {
+      mTestView = ((TestComponentContextWithView) c).getTestView();
+    } else {
+      mTestView = new View(c);
+    }
+  }
+

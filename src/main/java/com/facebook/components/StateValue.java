@@ -6,3 +6,13 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+
+package com.facebook.components;
+
+/**
+ * Used to represent the value of a Component's State. Must be used to pass State as parameter
+ * in methods annotated with @OnUpdateState.
+ */
+public class StateValue<T> extends Output<T> {
+
+}

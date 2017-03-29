@@ -15,3 +15,4 @@ import android.support.annotation.AttrRes;
 import android.support.annotation.StyleRes;
 
 import com.facebook.components.ComponentLifecycle.MountType;
+import com.facebook.components.ComponentLifecycle.StateContainer;
