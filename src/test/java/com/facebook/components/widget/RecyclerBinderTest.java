@@ -668,3 +668,7 @@ public class RecyclerBinderTest {
     final ComponentInfo newComponentInfo =
         ComponentInfo.create().component(mock(Component.class)).build();
 
+    mRecyclerBinder.insertItemAt(1, newComponentInfo);
+    final TestComponentTreeHolder holder =
+        mHoldersForComponents.get(newComponentInfo.getComponent());
+
