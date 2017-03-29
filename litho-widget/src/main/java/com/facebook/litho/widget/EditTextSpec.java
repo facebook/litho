@@ -386,3 +386,43 @@ class EditTextSpec {
       editText.setHintTextColor(hintColorStateList);
     }
 
+    switch (textAlignment) {
+      case ALIGN_NORMAL:
+        if (SDK_INT >= JELLY_BEAN_MR1) {
+          editText.setTextAlignment(TEXT_ALIGNMENT_TEXT_START);
+        } else {
+          editText.setGravity(gravity | Gravity.LEFT);
+        }
+        break;
+      case ALIGN_OPPOSITE:
+        if (SDK_INT >= JELLY_BEAN_MR1) {
+          editText.setTextAlignment(TEXT_ALIGNMENT_TEXT_END);
+        } else {
+          editText.setGravity(gravity | Gravity.RIGHT);
+        }
+        break;
+      case ALIGN_CENTER:
+        if (SDK_INT >= JELLY_BEAN_MR1) {
+          editText.setTextAlignment(TEXT_ALIGNMENT_CENTER);
+        } else {
+          editText.setGravity(gravity | Gravity.CENTER_HORIZONTAL);
+        }
+        break;
+    }
+  }
+
+  static class EditTextTextTextChangedEventHandler extends EditText {
+    private final TextWatcher mTextWatcher;
+    private EventHandler mEventHandler;
+
+    EditTextTextTextChangedEventHandler(Context context) {
+      super(context);
+      this.mTextWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+        @Override
+        public void afterTextChanged(Editable s) {
