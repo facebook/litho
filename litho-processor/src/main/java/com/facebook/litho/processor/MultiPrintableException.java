@@ -20,3 +20,4 @@ class MultiPrintableException extends PrintableException {
     this.exceptions = exceptions;
   }
 
+  public void print(Messager messager) {

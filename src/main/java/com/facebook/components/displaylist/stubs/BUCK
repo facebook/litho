@@ -5,3 +5,8 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
+# This is a package of stubs, to allow the calling of a hidden DisplayList
+# methods. They must be referenced as provided_deps. Since future platforms
+# may change this hidden API, callers should handle LinkageError gracefully.
+
+java_library(

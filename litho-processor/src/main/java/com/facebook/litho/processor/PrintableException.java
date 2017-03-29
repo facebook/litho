@@ -11,3 +11,4 @@ package com.facebook.litho.processor;
 
 import javax.annotation.processing.Messager;
 
+public abstract class PrintableException extends RuntimeException {
