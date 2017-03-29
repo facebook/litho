@@ -684,3 +684,4 @@ public class ComponentTree {
       root = mRoot.makeShallowCopy();
     }
 
+    setRootAndSizeSpecInternal(

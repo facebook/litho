@@ -653,3 +653,4 @@ public class Stages {
 
     for (ExecutableElement stage : mStages) {
       for (VariableElement v : getState(stage)) {
+
