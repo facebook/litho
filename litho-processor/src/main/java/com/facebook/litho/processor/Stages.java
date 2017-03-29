@@ -1645,3 +1645,4 @@ public class Stages {
         "$L " + implInstanceName + "= ($L) _component",
         implClassName,
         implClassName);
+
