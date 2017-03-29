@@ -145,3 +145,4 @@ class FrescoComponentSpec {
     if (controller != null) {
       controller.onViewportVisibilityHint(false);
     }
+  }
