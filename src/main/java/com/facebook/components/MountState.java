@@ -420,3 +420,4 @@ class MountState {
     }
   }
 
+  private void registerHost(long id, ComponentHost host) {
