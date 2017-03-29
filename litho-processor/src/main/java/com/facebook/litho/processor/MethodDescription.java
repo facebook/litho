@@ -27,3 +27,4 @@ public class MethodDescription {
   public String name;
   public TypeName[] parameterTypes;
   public TypeName[] exceptions;
+}

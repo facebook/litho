@@ -62,3 +62,7 @@ public class LayoutStateSpecTest {
   public void testIncompatibleWidthSpec() {
     assertFalse(mLayoutState.isCompatibleComponentAndSpec(
             COMPONENT_ID, mWidthSpec + 1000, mHeightSpec));
+  }
+
+  @Test
+  public void testIncompatibleHeightSpec() {

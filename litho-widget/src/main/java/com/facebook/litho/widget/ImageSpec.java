@@ -72,3 +72,4 @@ class ImageSpec {
     a.recycle();
   }
 
+  @OnMeasure
