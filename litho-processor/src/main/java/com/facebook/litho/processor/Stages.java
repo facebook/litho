@@ -967,3 +967,10 @@ public class Stages {
       final Name declaredClassName = Utils.getDeclaredClassNameWithoutGenerics(element);
       if (declaredClassName != null &&
           ClassName.bestGuess(declaredClassName.toString()).equals(listComponent)) {
+        componentsInImpl.add(element.getSimpleName().toString());
+      }
+    }
+
+    return componentsInImpl;
+  }
+
