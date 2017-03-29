@@ -11,6 +11,7 @@ package com.facebook.litho;
 
 import javax.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -143,7 +144,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   YogaNodeAPI mYogaNode;
   private ComponentContext mComponentContext;
   private Resources mResources;
-  private Component mComponent;
+  private List<Component> mComponents = new ArrayList(1);
   private int mImportantForAccessibility = ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
   private boolean mDuplicateParentState;
   private boolean mIsNestedTreeHolder;
@@ -1454,8 +1455,17 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return mComponentContext;
   }
 
-  Component getComponent() {
-    return mComponent;
+  /**
+   * Return the list of components contributing to this InternalNode. We have no need for this
+   * in production but it is useful information to have while debugging. Therefor this list
+   * will only container the root component if running in production mode.
+   */
+  List<Component> getComponents() {
+    return mComponents;
+  }
+
+  Component getRootComponent() {
+   return mComponents.size() == 0 ? null : mComponents.get(0);
   }
 
   int getBorderColor() {
@@ -1470,8 +1480,16 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
             || mYogaNode.getLayoutBorder(BOTTOM) != 0);
   }
 
-  void setComponent(Component component) {
-    mComponent = component;
+  /**
+   * Set the root component associated with this internal node. This is the component which created
+   * this internal node. If we are in debug mode we also keep track of any delegate components
+   * which may have altered anything about this internal node. This is useful when understanding
+   * the hierarchy of components in the debugger as well as in stetho.
+   */
+  void appendComponent(Component component) {
+    if (mComponents.size() == 0 || ComponentsConfiguration.IS_INTERNAL_BUILD) {
+      mComponents.add(component);
+    }
   }
 
   boolean hasNestedTree() {
@@ -1787,7 +1805,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
     mComponentContext = null;
     mResources = null;
-    mComponent = null;
+    mComponents.clear();
     mNestedTree = null;
     mNestedTreeHolder = null;
 

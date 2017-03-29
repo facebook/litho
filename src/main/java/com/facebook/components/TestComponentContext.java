@@ -54,7 +54,7 @@ class TestComponentContext extends ComponentContext {
     final InternalNode node = ComponentsPools.acquireInternalNode(this, getResources());
     component.applyStateUpdates(this);
 
-    node.setComponent(new TestComponent(component));
+    node.appendComponent(new TestComponent(component));
 
     return node;
   }

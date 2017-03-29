@@ -166,7 +166,7 @@ class LayoutState {
   private static LayoutOutput createGenericLayoutOutput(
       InternalNode node,
       LayoutState layoutState) {
-    final Component<?> component = node.getComponent();
+    final Component<?> component = node.getRootComponent();
 
     // Skip empty nodes and layout specs because they don't mount anything.
     if (component == null || component.getLifecycle().getMountType() == NONE) {
@@ -366,7 +366,7 @@ class LayoutState {
    * @see #needsHostView(InternalNode, LayoutState)
    */
   private static boolean hasViewContent(InternalNode node, LayoutState layoutState) {
-    final Component<?> component = node.getComponent();
+    final Component<?> component = node.getRootComponent();
     final NodeInfo nodeInfo = node.getNodeInfo();
 
     final boolean implementsAccessibility =
@@ -444,7 +444,7 @@ class LayoutState {
     if (node.hasNewLayout()) {
       node.markLayoutSeen();
     }
-    final Component<?> component = node.getComponent();
+    final Component<?> component = node.getRootComponent();
 
     // Early return if collecting results of a node holding a nested tree.
     if (node.isNestedTreeHolder()) {
@@ -825,7 +825,7 @@ class LayoutState {
       InternalNode node,
       LayoutState layoutState,
       DiffNode diffNode) {
-    final Component<?> component = node.getComponent();
+    final Component<?> component = node.getRootComponent();
 
     // Only the root host is allowed to wrap view mount specs as a layout output
     // is unconditionally added for it.
@@ -1136,7 +1136,7 @@ class LayoutState {
       int heightSpec,
       DiffNode previousDiffTreeRoot) {
     final ComponentContext context = root.getContext();
-    final Component component = root.getComponent();
+    final Component component = root.getRootComponent();
     ComponentsSystrace.beginSection("measureTree:" + component.getSimpleName());
 
     if (YogaConstants.isUndefined(root.getStyleWidth())) {
@@ -1184,7 +1184,7 @@ class LayoutState {
       int widthSpec,
       int heightSpec) {
     final ComponentContext context = nestedTreeHolder.getContext();
-    final Component<?> component = nestedTreeHolder.getComponent();
+    final Component<?> component = nestedTreeHolder.getRootComponent();
 
     InternalNode nestedTree = nestedTreeHolder.getNestedTree();
 
@@ -1322,7 +1322,7 @@ class LayoutState {
     diffNode.setLastHeightSpec(node.getLastHeightSpec());
     diffNode.setLastMeasuredWidth(node.getLastMeasuredWidth());
     diffNode.setLastMeasuredHeight(node.getLastMeasuredHeight());
-    diffNode.setComponent(node.getComponent());
+    diffNode.setComponent(node.getRootComponent());
     if (parent != null) {
       parent.addChild(diffNode);
     }
@@ -1375,7 +1375,7 @@ class LayoutState {
   static boolean applyDiffNodeToUnchangedNodes(InternalNode layoutNode, DiffNode diffNode) {
     // Root of the main tree or of a nested tree.
     final boolean isTreeRoot = layoutNode.getParent() == null;
-    if (isLayoutSpecWithSizeSpec(layoutNode.getComponent()) && !isTreeRoot) {
+    if (isLayoutSpecWithSizeSpec(layoutNode.getRootComponent()) && !isTreeRoot) {
       layoutNode.setDiffNode(diffNode);
       return true;
     }
@@ -1418,7 +1418,7 @@ class LayoutState {
    * node.
    */
   private static void applyDiffNodeToLayoutNode(InternalNode layoutNode, DiffNode diffNode) {
-    final Component component = layoutNode.getComponent();
+    final Component component = layoutNode.getRootComponent();
     if (component != null) {
       component.copyInterStageImpl(diffNode.getComponent());
     }
@@ -1435,7 +1435,7 @@ class LayoutState {
       return false;
     }
 
-    return isSameComponentType(node.getComponent(), diffNode.getComponent());
+    return isSameComponentType(node.getRootComponent(), diffNode.getComponent());
   }
 
   private static boolean isSameComponentType(Component a, Component b) {
@@ -1452,7 +1452,7 @@ class LayoutState {
       return true;
     }
 
-    final Component component = layoutNode.getComponent();
+    final Component component = layoutNode.getRootComponent();
     if (component != null) {
       return component.getLifecycle().shouldComponentUpdate(component, diffNode.getComponent());
     }
@@ -1685,7 +1685,7 @@ class LayoutState {
    */
   private static boolean needsHostView(InternalNode node, LayoutState layoutState) {
     return layoutState.isLayoutRoot(node)
-        || (!isMountViewSpec(node.getComponent())
+        || (!isMountViewSpec(node.getRootComponent())
             && (hasViewContent(node, layoutState) || node.isForceViewWrapping()));
   }
 

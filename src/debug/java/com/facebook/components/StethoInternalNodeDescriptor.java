@@ -28,7 +28,7 @@ public final class StethoInternalNodeDescriptor
 
   @Override
   protected String onGetNodeName(StethoInternalNode element) {
-    final Component component = element.node.getComponent();
+    final Component component = element.node.getRootComponent();
     return component == null
         ? Container.class.getName()
         : component.getLifecycle().getClass().getName();
@@ -63,7 +63,7 @@ public final class StethoInternalNodeDescriptor
         final Component component = mountItem == null ? null : mountItem.getComponent();
 
         if (component != null &&
-            component == element.node.getComponent() &&
+            component == element.node.getRootComponent() &&
             Component.isMountSpec(component)) {
           children.store(mountItem.getContent());
         }
@@ -121,7 +121,7 @@ public final class StethoInternalNodeDescriptor
       String ruleName,
       StyleAccumulator accumulator) {
 
-    final Component component = element.node.getComponent();
+    final Component component = element.node.getRootComponent();
     if (component == null) {
       return;
     }

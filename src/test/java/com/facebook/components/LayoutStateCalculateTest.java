@@ -1864,7 +1864,7 @@ public class LayoutStateCalculateTest {
     final InternalNode cachedLayout = componentSpy.getCachedLayout();
     assertEquals(1, cachedLayout.getChildCount());
     assertTrue(((InternalNode) cachedLayout.getChildAt(0))
-        .getComponent().getLifecycle() instanceof TestDrawableComponent);
+        .getRootComponent().getLifecycle() instanceof TestDrawableComponent);
 
     // Now embed the measured component in another container and calculate a layout.
     final Component rootContainer = new InlineLayoutSpec() {
@@ -1929,9 +1929,9 @@ public class LayoutStateCalculateTest {
     final InternalNode cachedLayout = sizeDependentComponentSpy.getCachedLayout();
     assertEquals(2, cachedLayout.getChildCount());
     assertTrue(((InternalNode) cachedLayout.getChildAt(0))
-        .getComponent().getLifecycle() instanceof TestDrawableComponent);
+        .getRootComponent().getLifecycle() instanceof TestDrawableComponent);
     assertTrue(((InternalNode) cachedLayout.getChildAt(1))
-        .getComponent().getLifecycle() instanceof TestViewComponent);
+        .getRootComponent().getLifecycle() instanceof TestViewComponent);
 
     // Now embed the measured component in another container and calculate a layout.
     final Component rootContainer = new InlineLayoutSpec() {
@@ -1999,7 +1999,7 @@ public class LayoutStateCalculateTest {
     assertTrue(componentSpy.hasCachedLayout());
     final InternalNode cachedLayout = componentSpy.getCachedLayout();
     assertEquals(0, cachedLayout.getChildCount());
-    assertTrue(cachedLayout.getComponent().getLifecycle() instanceof TestDrawableComponent);
+    assertTrue(cachedLayout.getRootComponent().getLifecycle() instanceof TestDrawableComponent);
 
     // Now embed the measured component in another container and calculate a layout.
     final Component rootContainer = new InlineLayoutSpec() {
@@ -2063,7 +2063,7 @@ public class LayoutStateCalculateTest {
     assertTrue(sizeDependentComponentSpy.hasCachedLayout());
     final InternalNode cachedLayout = sizeDependentComponentSpy.getCachedLayout();
     assertEquals(0, cachedLayout.getChildCount());
-    assertTrue(cachedLayout.getComponent().getLifecycle() instanceof TestDrawableComponent);
+    assertTrue(cachedLayout.getRootComponent().getLifecycle() instanceof TestDrawableComponent);
 
     // Now embed the measured component in another container and calculate a layout.
     final Component rootContainer = new InlineLayoutSpec() {

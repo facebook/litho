@@ -45,8 +45,7 @@ class NoOpInternalNode extends InternalNode {
   void init(YogaNodeAPI cssNode, ComponentContext componentContext, Resources resources) {}
 
   @Override
-  void setComponent(Component component) {
-
+  void appendComponent(Component component) {
   }
 
   @Px

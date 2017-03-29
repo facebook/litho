@@ -102,7 +102,7 @@ public class ComponentLifecycleTest {
     componentLifecycle.createLayout(mContext, mComponentWithNullLayout, false);
 
     verify(componentLifecycle).onCreateLayout(mContext, mComponentWithNullLayout);
-    verify(mNode).setComponent(mComponentWithNullLayout);
+    verify(mNode).appendComponent(mComponentWithNullLayout);
     verify(componentLifecycle).onPrepare(mContext, mComponentWithNullLayout);
   }
 
@@ -114,7 +114,7 @@ public class ComponentLifecycleTest {
     componentLifecycle.createLayout(mContext, mComponentWithNullLayout, false);
 
     verify(componentLifecycle).onCreateLayout(mContext, mComponentWithNullLayout);
-    verify(mNode).setComponent(mComponentWithNullLayout);
+    verify(mNode).appendComponent(mComponentWithNullLayout);
     verify(componentLifecycle).onPrepare(mContext, mComponentWithNullLayout);
   }
 
@@ -126,7 +126,7 @@ public class ComponentLifecycleTest {
     componentLifecycle.createLayout(mContext, mComponentWithNullLayout, false);
 
     verify(componentLifecycle).onCreateLayout(mContext, mComponentWithNullLayout);
-    verify(mNode).setComponent(mComponentWithNullLayout);
+    verify(mNode).appendComponent(mComponentWithNullLayout);
     verify(componentLifecycle).onPrepare(mContext, mComponentWithNullLayout);
   }
 
@@ -138,7 +138,7 @@ public class ComponentLifecycleTest {
     componentLifecycle.createLayout(mContext, mComponentWithNullLayout, false);
 
     verify(componentLifecycle).onCreateLayout(mContext, mComponentWithNullLayout);
-    verify(mNode).setComponent(mComponentWithNullLayout);
+    verify(mNode).appendComponent(mComponentWithNullLayout);
     verify(componentLifecycle).onPrepare(mContext, mComponentWithNullLayout);
   }
 
@@ -150,7 +150,7 @@ public class ComponentLifecycleTest {
     componentLifecycle.createLayout(mContext, mInput, true);
 
     verify(componentLifecycle).onCreateLayout(mContext, mInput);
-    verify(mNode).setComponent(mInput);
+    verify(mNode).appendComponent(mInput);
     verify(mNode, never()).setMeasureFunction(any(YogaMeasureFunction.class));
     verify(componentLifecycle).onPrepare(mContext, mInput);
   }
@@ -163,7 +163,7 @@ public class ComponentLifecycleTest {
     componentLifecycle.createLayout(mContext, mInput, false);
 
     verify(componentLifecycle).onCreateLayout(mContext, mInput);
-    verify(mNode).setComponent(mInput);
+    verify(mNode).appendComponent(mInput);
     verify(mNode, never()).setMeasureFunction(any(YogaMeasureFunction.class));
     verify(componentLifecycle).onPrepare(mContext, mInput);
   }
@@ -176,7 +176,7 @@ public class ComponentLifecycleTest {
     componentLifecycle.createLayout(mContext, mInput, true);
 
     verify(componentLifecycle).onCreateLayout(mContext, mInput);
-    verify(mNode).setComponent(mInput);
+    verify(mNode).appendComponent(mInput);
     verify(mNode).setMeasureFunction(any(YogaMeasureFunction.class));
     verify(componentLifecycle).onPrepare(mContext, mInput);
   }
@@ -189,7 +189,7 @@ public class ComponentLifecycleTest {
     componentLifecycle.createLayout(mContext, mInput, false);
 
     verify(componentLifecycle).onCreateLayout(mContext, mInput);
-    verify(mNode).setComponent(mInput);
+    verify(mNode).appendComponent(mInput);
     verify(mNode).setMeasureFunction(any(YogaMeasureFunction.class));
     verify(componentLifecycle).onPrepare(mContext, mInput);
   }
@@ -202,7 +202,7 @@ public class ComponentLifecycleTest {
     componentLifecycle.createLayout(mContext, mInput, true);
 
     verify(componentLifecycle).onCreateLayout(mContext, mInput);
-    verify(mNode).setComponent(mInput);
+    verify(mNode).appendComponent(mInput);
     verify(mNode, never()).setMeasureFunction(any(YogaMeasureFunction.class));
     verify(componentLifecycle).onPrepare(mContext, mInput);
   }
@@ -215,7 +215,7 @@ public class ComponentLifecycleTest {
     componentLifecycle.createLayout(mContext, mInput, false);
 
     verify(componentLifecycle).onCreateLayout(mContext, mInput);
-    verify(mNode).setComponent(mInput);
+    verify(mNode).appendComponent(mInput);
     verify(mNode, never()).setMeasureFunction(any(YogaMeasureFunction.class));
     verify(componentLifecycle).onPrepare(mContext, mInput);
   }
@@ -234,7 +234,7 @@ public class ComponentLifecycleTest {
         mNestedTreeWidthSpec,
         mNestedTreeHeightSpec,
         mInput);
-    verify(mNode).setComponent(mInput);
+    verify(mNode).appendComponent(mInput);
     verify(mNode, never()).setMeasureFunction(any(YogaMeasureFunction.class));
     verify(componentLifecycle).onPrepare(mContext, mInput);
   }
@@ -257,7 +257,7 @@ public class ComponentLifecycleTest {
         anyInt(),
         anyInt(),
         any(Component.class));
-    verify(mNode).setComponent(mInput);
+    verify(mNode).appendComponent(mInput);
     verify(mNode).setMeasureFunction(any(YogaMeasureFunction.class));
     verify(componentLifecycle, never())
         .onPrepare(any(ComponentContext.class), any(Component.class));
@@ -343,7 +343,7 @@ public class ComponentLifecycleTest {
   }
 
   private YogaMeasureFunction getMeasureFunction() {
-    when(mNode.getComponent()).thenReturn(mInput);
+    when(mNode.getRootComponent()).thenReturn(mInput);
 
     return Whitebox.getInternalState(ComponentLifecycle.class, "sMeasureFunction");
   }

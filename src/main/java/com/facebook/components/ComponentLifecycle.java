@@ -58,7 +58,7 @@ public abstract class ComponentLifecycle implements EventDispatcher {
   private static final YogaBaselineFunction sBaselineFunction = new YogaBaselineFunction() {
     public float baseline(YogaNodeAPI cssNode, float width, float height) {
       final InternalNode node = (InternalNode) cssNode.getData();
-      return node.getComponent()
+      return node.getRootComponent()
           .getLifecycle()
           .onMeasureBaseline(node.getContext(), (int) width, (int) height);
     }
@@ -95,7 +95,7 @@ public abstract class ComponentLifecycle implements EventDispatcher {
         YogaMeasureMode heightMode) {
       final InternalNode node = (InternalNode) cssNode.getData();
       final DiffNode diffNode = node.areCachedMeasuresValid() ? node.getDiffNode() : null;
-      final Component<?> component = node.getComponent();
+      final Component<?> component = node.getRootComponent();
       final int widthSpec;
       final int heightSpec;
 
@@ -234,8 +234,7 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     // those (see Controller.mountNodeTree()). Handle the case where the component simply
     // delegates its layout creation to another component i.e. the root node belongs to
     // another component.
-    if (node.getComponent() == null) {
-      node.setComponent(component);
+    if (node.getRootComponent() == null) {
       node.setBaselineFunction(sBaselineFunction);
 
       final boolean isMountSpecWithMeasure = canMeasure() && Component.isMountSpec(component);
@@ -244,6 +243,8 @@ public abstract class ComponentLifecycle implements EventDispatcher {
         node.setMeasureFunction(sMeasureFunction);
       }
     }
+
+    node.appendComponent(component);
 
     if (!deferNestedTreeResolution) {
       onPrepare(context, component);

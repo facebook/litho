@@ -419,7 +419,7 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
     }
 
     if (mPropOverrides.containsKey(nodeKey)) {
-      final Component component = node.getComponent();
+      final Component component = node.getRootComponent();
       if (component != null) {
         final SimpleArrayMap<String, String> props = mPropOverrides.get(nodeKey);
         for (int i = 0, size = props.size(); i < size; i++) {
@@ -430,7 +430,7 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
     }
 
     if (mStateOverrides.containsKey(nodeKey)) {
-      final Component component = node.getComponent();
+      final Component component = node.getRootComponent();
       final ComponentLifecycle.StateContainer stateContainer =
           component == null ? null : component.getStateContainer();
       if (stateContainer != null) {
