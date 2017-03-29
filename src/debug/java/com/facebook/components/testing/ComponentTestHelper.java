@@ -196,3 +196,4 @@ public final class ComponentTestHelper {
       int widthSpec,
       int heightSpec) {
     componentView.setComponent(componentTree);
+
