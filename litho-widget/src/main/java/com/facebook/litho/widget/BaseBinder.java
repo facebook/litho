@@ -129,3 +129,5 @@ public abstract class BaseBinder<
     }
   }
 
+  @Override
+  public void notifyItemRangeChanged(int positionStart, int itemCount) {

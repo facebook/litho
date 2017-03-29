@@ -485,3 +485,4 @@ public class ComponentHostTest {
 
   @Test
   public void testNoScrapHosts() {
+    assertNull(mHost.recycleHost());
