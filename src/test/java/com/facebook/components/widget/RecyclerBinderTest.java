@@ -862,3 +862,8 @@ public class RecyclerBinderTest {
     protected synchronized ComponentTree getComponentTree() {
       return mComponentTree;
     }
+
+    @Override
+    synchronized int getSpanSize() {
+      return mComponentInfo.getSpanSize();
+    }
