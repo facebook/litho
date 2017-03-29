@@ -1854,3 +1854,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       InternalNode nestedTreeHolder,
       InternalNode nestedTree) {
     final boolean nestedTreeHasExplicitDirection =
+        ((nestedTree.mPrivateFlags & PFLAG_LAYOUT_DIRECTION_IS_SET) != 0L);
