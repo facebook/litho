@@ -19,3 +19,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.reflect.Whitebox;
 
+import static com.facebook.litho.NodeInfo.FOCUS_SET_FALSE;
+import static com.facebook.litho.NodeInfo.FOCUS_SET_TRUE;
+import static com.facebook.litho.NodeInfo.FOCUS_UNSET;

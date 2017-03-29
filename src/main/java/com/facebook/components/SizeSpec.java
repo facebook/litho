@@ -110,3 +110,5 @@ public class SizeSpec {
    * Extracts the mode from the supplied size specification.
    *
    * @param sizeSpec the size specification to extract the mode from
+   * @return {@link com.facebook.litho.SizeSpec#UNSPECIFIED} or
+   *         {@link com.facebook.litho.SizeSpec#EXACTLY}

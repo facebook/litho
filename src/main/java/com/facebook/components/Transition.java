@@ -22,3 +22,7 @@ import com.facebook.litho.TransitionProperties.PropertyChangeHolder;
 import com.facebook.litho.TransitionProperties.PropertySetHolder;
 import com.facebook.litho.TransitionProperties.PropertyType;
 
+import static com.facebook.litho.Transition.TransitionType.APPEAR;
+import static com.facebook.litho.Transition.TransitionType.CHANGE;
+import static com.facebook.litho.Transition.TransitionType.DISAPPEAR;
+import static com.facebook.litho.Transition.TransitionType.UNDEFINED;

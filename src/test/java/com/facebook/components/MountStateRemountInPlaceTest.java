@@ -30,3 +30,5 @@ import org.robolectric.RuntimeEnvironment;
 import static android.view.View.MeasureSpec.AT_MOST;
 import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
+import static com.facebook.litho.ComponentsLogger.EVENT_PREPARE_MOUNT;
+import static com.facebook.litho.ComponentsLogger.PARAM_MOVED_COUNT;
