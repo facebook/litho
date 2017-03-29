@@ -55,3 +55,9 @@ class EditTextSpec {
   private static final Layout.Alignment[] ALIGNMENT = Layout.Alignment.values();
   private static final TextUtils.TruncateAt[] TRUNCATE_AT = TextUtils.TruncateAt.values();
   private static final Typeface DEFAULT_TYPEFACE = Typeface.DEFAULT;
+  private static final int DEFAULT_COLOR = 0;
+  private static final int[][] DEFAULT_TEXT_COLOR_STATE_LIST_STATES = {{0}};
+  private static final int[] DEFAULT_TEXT_COLOR_STATE_LIST_COLORS = {Color.BLACK};
+  private static final int DEFAULT_HINT_COLOR = 0;
+  private static final int[][] DEFAULT_HINT_COLOR_STATE_LIST_STATES = {{0}};
+  private static final int[] DEFAULT_HINT_COLOR_STATE_LIST_COLORS = {Color.LTGRAY};

@@ -131,3 +131,20 @@ public class TextSpecTest {
         .getDrawables()
         .get(0);
   }
+
+  private TextDrawable getMountedDrawableForTextWithColors(
+      CharSequence text,
+      int color,
+      ColorStateList colorStateList) {
+    Text.Builder builder = Text.create(mContext).text(text);
+    if (color != 0) {
+      builder.textColor(color);
+    }
+    if (colorStateList != null) {
+      builder.textColorStateList(colorStateList);
+    }
+    return (TextDrawable) ComponentTestHelper.mountComponent(
+          mContext, builder.build())
+        .getDrawables()
+        .get(0);
+  }
