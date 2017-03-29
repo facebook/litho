@@ -513,3 +513,4 @@ public class Stages {
             }
 
             // Enforce #7
+            final boolean hasDefaultValue = hasDefaultValue(v);

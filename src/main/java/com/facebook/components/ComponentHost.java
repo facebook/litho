@@ -808,3 +808,4 @@ public class ComponentHost extends ViewGroup {
     super.invalidate();
   }
 
+  protected void refreshAccessibilityDelegatesIfNeeded(boolean isAccessibilityEnabled) {
