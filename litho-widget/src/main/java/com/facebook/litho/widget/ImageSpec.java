@@ -187,3 +187,5 @@ class ImageSpec {
     Reference.release(c, convertDrawable.getMountedDrawable(), src);
     convertDrawable.unmount();
   }
+
+  @ShouldUpdate(onMount = true)

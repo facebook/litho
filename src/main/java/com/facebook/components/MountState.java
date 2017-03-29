@@ -744,3 +744,5 @@ class MountState {
         continue;
       }
 
+      if (newPosition == -1) {
+        unmountItem(mContext, i, mHostsByMarker);
