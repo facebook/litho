@@ -15,3 +15,17 @@ import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 
 import com.facebook.litho.annotations.Event;
+
+/**
+ * Components should implement an event of this type in order to receive callbacks to
+ * {@link
+ * android.support.v4.view.AccessibilityDelegateCompat#onRequestSendAccessibilityEvent(
+ * ViewGroup, View, AccessibilityEvent)}
+ */
+@Event(returnType = boolean.class)
+public class OnRequestSendAccessibilityEventEvent {
+  public ViewGroup host;
+  public View child;
+  public AccessibilityEvent event;
+  public AccessibilityDelegateCompat superDelegate;
+}

@@ -19,3 +19,4 @@ import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.support.v4.view.accessibility.AccessibilityNodeProviderCompat;
 import android.support.v4.widget.ExploreByTouchHelper;
 import android.util.Log;
+import android.view.MotionEvent;

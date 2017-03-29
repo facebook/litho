@@ -38,3 +38,4 @@ import static com.facebook.components.ComponentHostUtils.maybeInvalidateAccessib
  * by {@link MountState} to wrap mounted drawables to handle click events and update drawable
  * states accordingly.
  */
+public class ComponentHost extends ViewGroup {

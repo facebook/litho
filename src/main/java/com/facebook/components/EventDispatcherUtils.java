@@ -24,3 +24,4 @@ import static com.facebook.components.ThreadUtils.assertMainThread;
  * (click, touch, accessibility, etc.) to {@link EventHandler} instances' {@link Component}s
  */
 class EventDispatcherUtils {
+

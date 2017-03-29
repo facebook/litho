@@ -26,3 +26,5 @@ class AccessibilityUtils {
   public static boolean isAccessibilityEnabled(Context context) {
     final AccessibilityManager manager =
         (AccessibilityManager) context.getSystemService(ACCESSIBILITY_SERVICE);
+    return ACCESSIBILITY_ENABLED
+        || (manager.isEnabled() && AccessibilityManagerCompat.isTouchExplorationEnabled(manager));
