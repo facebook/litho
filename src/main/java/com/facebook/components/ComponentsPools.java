@@ -475,3 +475,4 @@ public class ComponentsPools {
     sYogaNodePool.release(node);
   }
 
+  @ThreadSafe(enableChecks = false)
