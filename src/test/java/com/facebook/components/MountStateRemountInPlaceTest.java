@@ -648,3 +648,4 @@ public class MountStateRemountInPlaceTest {
     };
 
     ComponentTree tree = ComponentTree.create(mContext, firstLayout)
+        .incrementalMount(false)

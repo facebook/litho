@@ -286,3 +286,5 @@ class TransitionKeySet implements TransitionListener {
   private boolean start(
       @KeyStatus int keyStatus,
       TransitionKeySetListener listener,
+      SimpleArrayMap<Integer, ? extends Transition> oldRunningTransitions,
+      PropertySetHolder interruptedValues) {

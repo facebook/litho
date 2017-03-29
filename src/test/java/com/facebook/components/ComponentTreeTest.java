@@ -159,3 +159,6 @@ public class ComponentTreeTest {
   @Test
   public void testSetSizeSpec() {
     ComponentTree componentTree =
+        ComponentTree.create(mContext, mComponent)
+            .incrementalMount(false)
+            .build();
