@@ -658,3 +658,5 @@ class MountState {
   @SuppressWarnings("unchecked")
   private void prepareMount(LayoutState layoutState) {
     final ComponentTree component = mComponentView.getComponent();
+    final ComponentsLogger logger = component.getContext().getLogger();
+    final String logTag = component.getContext().getLogTag();
