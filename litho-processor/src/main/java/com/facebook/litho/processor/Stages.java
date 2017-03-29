@@ -433,3 +433,11 @@ public class Stages {
       // Enforce #5: getSpecDefinedParameters will verify that parameters don't have duplicate
       // annotations
       for (VariableElement v : getSpecDefinedParameters(stage)) {
+        try {
+          final String variableName = v.getSimpleName().toString();
+          final Annotation interStagePropAnnotation = getInterStagePropAnnotation(v);
+          final boolean isOutput =
+              Utils.getGenericTypeArgument(v.asType(), ClassNames.OUTPUT) != null;
+          if (isOutput) {
+            outputVariableToStage.put(variableName, stageAnnotation);
+          }

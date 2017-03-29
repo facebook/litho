@@ -298,3 +298,4 @@ class TextSpec {
   }
 
   private static Layout createTextLayout(
+      int widthSpec,
