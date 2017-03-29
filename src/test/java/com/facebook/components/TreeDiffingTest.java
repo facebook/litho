@@ -152,3 +152,7 @@ public class TreeDiffingTest {
         EXACTLY,
         heightConstraint,
         EXACTLY);
+  }
+
+  @Test
+  public void testCachedMeasureFunction() {
