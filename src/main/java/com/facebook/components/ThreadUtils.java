@@ -28,3 +28,6 @@ public class ThreadUtils {
     if (!ComponentsConfiguration.IS_INTERNAL_BUILD || ComponentsConfiguration.isEndToEndTestRun) {
       return;
     } else if (!isMainThread()) {
+      throw new IllegalStateException("This should run on the main thread.");
+    }
+  }

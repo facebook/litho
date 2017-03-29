@@ -130,3 +130,9 @@ class LayoutState {
   // Reference count will be initialized to 1 in init().
   private final AtomicInteger mReferenceCount = new AtomicInteger(-1);
 
+  private int mWidth;
+  private int mHeight;
+
+  private int mCurrentX;
+  private int mCurrentY;
+
