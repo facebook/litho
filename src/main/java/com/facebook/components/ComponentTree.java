@@ -224,3 +224,18 @@ public class ComponentTree {
       mMainThreadLayoutState = mBackgroundLayoutState;
       mBackgroundLayoutState = null;
 
+      return toRelease;
+    }
+  }
+
+  private void backgroundLayoutStateUpdated() {
+    assertMainThread();
+
+    // If we aren't attached, then we have nothing to do. We'll handle
+    // everything in onAttach.
+    if (!mIsAttached) {
+      return;
+    }
+
+    LayoutState toRelease;
+    boolean layoutStateUpdated;

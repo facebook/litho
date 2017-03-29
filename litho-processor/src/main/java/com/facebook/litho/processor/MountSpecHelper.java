@@ -128,3 +128,4 @@ public class MountSpecHelper extends ComponentSpecHelper {
     methodDescription.returnType = null;
     methodDescription.name = "onPrepare";
     methodDescription.parameterTypes = new TypeName[] {ClassNames.COMPONENT_CONTEXT};
+
