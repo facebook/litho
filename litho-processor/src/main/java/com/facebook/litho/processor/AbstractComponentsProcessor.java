@@ -78,3 +78,12 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
         if (closeable != null) {
           closeable.close();
         }
+      } catch (PrintableException e) {
+        e.print(processingEnv.getMessager());
+      } catch (Exception e) {
+        processingEnv.getMessager().printMessage(
+            Diagnostic.Kind.ERROR,
+            "Unexpected error thrown when generating this component spec. " +
+                "Please report stack trace to the components team.",
+            element);
+        e.printStackTrace();

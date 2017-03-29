@@ -50,3 +50,9 @@ import com.squareup.javapoet.TypeName;
 
 public class MountSpecHelper extends ComponentSpecHelper {
 
+  private enum MountType {
+    NONE,
+    DRAWABLE,
+    VIEW,
+  }
+
