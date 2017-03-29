@@ -67,3 +67,4 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
     mShouldClipRect = (mMatrix != null && mMatrix.shouldClipRect()) ||
         (Build.VERSION.SDK_INT < HONEYCOMB && mDrawable instanceof ColorDrawable) ||
         (mDrawable instanceof InsetDrawable);
+
