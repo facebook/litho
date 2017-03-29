@@ -242,3 +242,4 @@ class EditTextSpec {
       @Prop(optional = true) TextUtils.TruncateAt ellipsize,
       @Prop(optional = true, resType = ResType.INT) int minLines,
       @Prop(optional = true, resType = ResType.INT) int maxLines,
+      @Prop(optional = true, resType = ResType.INT) int maxLength,
