@@ -1493,3 +1493,27 @@ public class Stages {
         .updateMethodName(methodName)
         .async(false)
         .contextClass(contextClass)
+        .build());
+
+    writeMethodSpec(builder
+        .updateMethodName(methodName + "Async")
+        .async(true)
+        .contextClass(contextClass)
+        .build());
+  }
+
+  static List<TypeMirror> getTypeVarArguments(TypeMirror diffType) {
+    List<TypeMirror> typeVarArguments = new ArrayList<>();
+    if (diffType.getKind() == DECLARED) {
+      final DeclaredType parameterDeclaredType = (DeclaredType) diffType;
+      final List<? extends TypeMirror> typeArguments = parameterDeclaredType.getTypeArguments();
+
+      for (TypeMirror typeArgument : typeArguments) {
+        if (typeArgument.getKind() == TYPEVAR) {
+          typeVarArguments.add(typeArgument);
+        }
+      }
+    }
+    return typeVarArguments;
+  }
+
