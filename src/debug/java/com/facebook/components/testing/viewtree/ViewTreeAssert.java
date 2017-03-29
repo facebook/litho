@@ -464,3 +464,4 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
         ViewPredicates.hasVisibleDrawable(drawable),
         ViewPredicates.isVisible());
   }
+
