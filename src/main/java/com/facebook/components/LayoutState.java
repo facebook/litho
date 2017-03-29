@@ -1402,3 +1402,11 @@ class LayoutState {
               diffNode.getChildAt(i));
       shouldUpdate |= shouldUpdateChild;
     }
+
+    shouldUpdate |= shouldComponentUpdate(layoutNode, diffNode);
+
+    if (!shouldUpdate) {
+      applyDiffNodeToLayoutNode(layoutNode, diffNode);
+    }
+
+    return shouldUpdate;
