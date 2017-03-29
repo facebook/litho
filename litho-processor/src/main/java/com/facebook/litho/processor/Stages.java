@@ -1277,3 +1277,6 @@ public class Stages {
   /**
    * Generate an EventHandler factory methods
    */
+  public void generateEventHandlerFactories(
+      ClassName contextClassName,
+      ClassName componentClassName) {
