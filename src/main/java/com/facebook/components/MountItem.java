@@ -119,3 +119,7 @@ class MountItem {
       if (view.isLongClickable()) {
         mFlags |= FLAG_VIEW_LONG_CLICKABLE;
       }
+
+      if (view.isFocusable()) {
+        mFlags |= FLAG_VIEW_FOCUSABLE;
+      }
