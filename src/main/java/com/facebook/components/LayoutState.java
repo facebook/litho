@@ -216,3 +216,4 @@ class LayoutState {
       boolean useNodePadding,
       int importantForAccessibility,
       boolean duplicateParentState) {
+    final boolean isMountViewSpec = isMountViewSpec(component);

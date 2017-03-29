@@ -140,3 +140,4 @@ public class ComponentHost extends ViewGroup {
 
     maybeInvalidateAccessibilityState(mountItem);
   }
+

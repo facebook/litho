@@ -231,3 +231,5 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     }
 
     return (int) mResolvedWidth;
+  }
+
