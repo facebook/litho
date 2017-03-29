@@ -1034,3 +1034,4 @@ public class Stages {
 
       if (elementInnerClassType != null) {
         final String paramName = element.getSimpleName().toString();
+        VariableElement implParameter = mStateMap.get(paramName);
