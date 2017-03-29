@@ -23,3 +23,4 @@ import com.facebook.litho.annotations.ResType;
 @MountSpec(isPureRender = true)
 class CardClipSpec {
 
+  @OnCreateMountContent

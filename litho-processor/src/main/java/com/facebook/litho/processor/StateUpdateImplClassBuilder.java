@@ -229,3 +229,4 @@ public class StateUpdateImplClassBuilder {
 
     // Call the spec's update method.
     updateStateMethodBuilder.addStatement(
+        target + "." +
