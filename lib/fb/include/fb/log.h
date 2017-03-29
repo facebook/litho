@@ -68,3 +68,4 @@ typedef enum android_LogPriority {
   ANDROID_LOG_FATAL,
   ANDROID_LOG_SILENT, /* only for SetMinPriority(); must be last */
 } android_LogPriority;
+
