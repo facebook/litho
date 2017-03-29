@@ -916,3 +916,8 @@ public class ComponentTree {
     LayoutState localLayoutState = calculateLayoutState(
         mLayoutLock,
         mContext,
+        root,
+        widthSpec,
+        heightSpec,
+        mIsLayoutDiffingEnabled,
+        previousLayoutState != null ? previousLayoutState.getDiffTree() : null);

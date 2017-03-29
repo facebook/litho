@@ -567,3 +567,4 @@ public class ComponentsPools {
           pool = new PoolWithCount(lifecycle.poolSize());
           poolsArray.put(lifecycle.getId(), pool);
         }
+      }
