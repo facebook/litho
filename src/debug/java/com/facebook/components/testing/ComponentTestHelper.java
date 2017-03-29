@@ -116,3 +116,16 @@ public final class ComponentTestHelper {
    * Mount a component into a component view.
    *
    * @param context A components context
+   * @param componentView The view to mount the component into
+   * @param component The component to mount
+   * @param width The width of the resulting view
+   * @param height The height of the resulting view
+   * @return A ComponentView with the component mounted in it.
+   */
+  public static ComponentView mountComponent(
+      ComponentContext context,
+      ComponentView componentView,
+      Component component,
+      int width,
+      int height) {
+    return mountComponent(
