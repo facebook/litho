@@ -2459,3 +2459,5 @@ public class Stages {
 
     if (fixedMethod.accessType != null) {
       methodBuilder.addModifiers(fixedMethod.accessType);
+    }
+
