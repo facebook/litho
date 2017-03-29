@@ -571,3 +571,18 @@ public class ComponentHost extends ViewGroup {
         contentDescriptions.add(contentDescription);
       }
     }
+    final CharSequence hostContentDescription = getContentDescription();
+    if (hostContentDescription != null) {
+      contentDescriptions.add(hostContentDescription);
+    }
+
+    return contentDescriptions;
+  }
+
+  private void mountView(View view, int flags) {
+    view.setDuplicateParentStateEnabled(MountItem.isDuplicateParentState(flags));
+
+    mIsChildDrawingOrderDirty = true;
+
+    // A host has been recycled and is already attached.
+    if (view instanceof ComponentHost && view.getParent() == this) {
