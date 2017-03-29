@@ -158,3 +158,4 @@ class MountState {
     final ComponentsLogger logger = componentTree.getContext().getLogger();
 
     if (logger != null) {
+      logger.eventStart(EVENT_MOUNT, componentTree);
