@@ -84,3 +84,4 @@ class MountItem {
       DisplayListDrawable displayListDrawable,
       int flags,
       int importantForAccessibility) {
+    mComponent = component;

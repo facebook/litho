@@ -111,3 +111,5 @@ public class ComponentHost extends ViewGroup {
   void setParentHostMarker(long parentHostMarker) {
     mParentHostMarker = parentHostMarker;
   }
+
+  /**

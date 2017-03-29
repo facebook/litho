@@ -169,3 +169,4 @@ class PropsBuilderMethodsSpecBuilder {
         .addParameter(
             ParameterizedTypeName.get(
                 ClassNames.EVENT_HANDLER,
+                SectionClassNames.LOADING_EVENT_HANDLER),
