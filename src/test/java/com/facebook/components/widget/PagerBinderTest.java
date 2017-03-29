@@ -243,3 +243,5 @@ public class PagerBinderTest {
     public int getCount() {
       return 10;
     }
+
+    @Override
