@@ -50,3 +50,4 @@ class ImageSpec {
   private static final ScaleType[] SCALE_TYPE = ScaleType.values();
 
   @OnLoadStyle
+  static void onLoadStyle(

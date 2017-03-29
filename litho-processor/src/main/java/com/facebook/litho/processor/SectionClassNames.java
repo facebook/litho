@@ -32,3 +32,4 @@ public class SectionClassNames {
   public static final ClassName LIST = ClassName.bestGuess("java.util.List");
   public static final ClassName SECTION_STATE_UPDATE =
       ClassName.bestGuess("com.facebook.litho.list.SectionLifecycle.StateUpdate");
+  public static final ClassName LOADING_EVENT_HANDLER =

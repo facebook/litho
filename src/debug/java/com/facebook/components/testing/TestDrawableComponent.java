@@ -181,3 +181,8 @@ public class TestDrawableComponent extends ComponentLifecycle {
     state.onUnbindCalled();
   }
 
+  @Override
+  public MountType getMountType() {
+    return MountType.DRAWABLE;
+  }
+

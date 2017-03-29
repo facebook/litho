@@ -30,3 +30,7 @@ class TestComponent extends Component {
     return mWrappedComponent.getSimpleName();
   }
 
+  Component<?> getWrappedComponent() {
+    return mWrappedComponent;
+  }
+}
