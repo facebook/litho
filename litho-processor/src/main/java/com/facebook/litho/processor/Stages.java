@@ -1139,3 +1139,4 @@ public class Stages {
         .fromName(from.name)
         .fromReturnType(from.returnType == null ? TypeName.VOID : from.returnType)
         .fromParams(fromParams)
+        .target(mSourceDelegateAccessorName)
