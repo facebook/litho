@@ -1486,3 +1486,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return mNestedTreeHolder;
   }
 
+  /**
+   * Set the nested tree before measuring it in order to transfer over important information
+   * such as layout direction needed during measurement.
+   */
+  void setNestedTree(InternalNode nestedTree) {
