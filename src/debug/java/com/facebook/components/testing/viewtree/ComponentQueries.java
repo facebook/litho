@@ -127,3 +127,4 @@ class ComponentQueries {
 
     return false;
   }
+}
