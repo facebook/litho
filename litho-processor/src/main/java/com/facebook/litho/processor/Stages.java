@@ -371,3 +371,5 @@ public class Stages {
                 "component create.");
       }
 
+      final Types typeUtils = mProcessingEnv.getTypeUtils();
+      final String name = v.getSimpleName().toString();
