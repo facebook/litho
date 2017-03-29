@@ -166,3 +166,5 @@ class LayoutState {
   private static LayoutOutput createGenericLayoutOutput(
       InternalNode node,
       LayoutState layoutState) {
+    final Component<?> component = node.getComponent();
+

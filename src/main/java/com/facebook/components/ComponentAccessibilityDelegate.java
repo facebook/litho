@@ -38,3 +38,5 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
   private static Rect sDefaultBounds;
 
   ComponentAccessibilityDelegate(View view, NodeInfo nodeInfo) {
+    super(view);
+    mView = view;

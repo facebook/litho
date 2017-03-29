@@ -433,3 +433,55 @@ public class ComponentHostTest {
   }
 
   @Test
+  public void testSuppressInvalidations() {
+    mHost.layout(0, 0, 100, 100);
+
+    mHost.invalidate();
+    assertEquals(new Rect(0, 0, 100, 100), mHost.getInvalidationRect());
+
+    mHost.suppressInvalidations(true);
+
+    mHost.invalidate();
+    mHost.invalidate(0, 0, 5, 5);
+
+    mHost.suppressInvalidations(false);
+
+    assertEquals(new Rect(0, 0, 100, 100), mHost.getInvalidationRect());
+  }
+
+  @Test
+  public void testSuppressInvalidationsWithCoordinates() {
+    mHost.layout(0, 0, 100, 100);
+
+    mHost.invalidate(0, 0, 20, 20);
+    assertEquals(new Rect(0, 0, 20, 20), mHost.getInvalidationRect());
+
+    mHost.suppressInvalidations(true);
+
+    mHost.invalidate(0, 0, 10, 10);
+    mHost.invalidate(0, 0, 5, 5);
+
+    mHost.suppressInvalidations(false);
+
+    assertEquals(new Rect(0, 0, 100, 100), mHost.getInvalidationRect());
+  }
+
+  @Test
+  public void testSuppressInvalidationsWithRect() {
+    mHost.layout(0, 0, 100, 100);
+
+    mHost.invalidate(new Rect(0, 0, 20, 20));
+    assertEquals(new Rect(0, 0, 20, 20), mHost.getInvalidationRect());
+
+    mHost.suppressInvalidations(true);
+
+    mHost.invalidate(new Rect(0, 0, 10, 10));
+    mHost.invalidate(new Rect(0, 0, 5, 5));
+
+    mHost.suppressInvalidations(false);
+
+    assertEquals(new Rect(0, 0, 100, 100), mHost.getInvalidationRect());
+  }
+
+  @Test
+  public void testNoScrapHosts() {
