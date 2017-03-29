@@ -126,3 +126,4 @@ class NoOpInternalNode extends InternalNode {
   void setDiffNode(DiffNode diffNode) {}
 
   @Override
+  public InternalNode layoutDirection(YogaDirection direction) {
