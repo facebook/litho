@@ -699,3 +699,42 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   // overriding method will have a different jmethodid. This is final to prevent that mistake.
   @DoNotStrip
   public final long measure(float width, int widthMode, float height, int heightMode) {
+    if (!isMeasureDefined()) {
+      throw new RuntimeException("Measure function isn't defined!");
+    }
+
+    return mMeasureFunction.measure(
+          this,
+          width,
+          YogaMeasureMode.fromInt(widthMode),
+          height,
+          YogaMeasureMode.fromInt(heightMode));
+  }
+
+  private native void jni_YGNodeSetHasBaselineFunc(long nativePointer, boolean hasMeasureFunc);
+  @Override
+  public void setBaselineFunction(YogaBaselineFunction baselineFunction) {
+    mBaselineFunction = baselineFunction;
+    jni_YGNodeSetHasBaselineFunc(mNativePointer, baselineFunction != null);
+  }
+
+  @DoNotStrip
+  public final float baseline(float width, float height) {
+    return mBaselineFunction.baseline(this, width, height);
+  }
+
+  @Override
+  public boolean isMeasureDefined() {
+    return mMeasureFunction != null;
+  }
+
+  @Override
+  public void setData(Object data) {
+    mData = data;
+  }
+
+  @Override
+  public Object getData() {
+    return mData;
+  }
+}
