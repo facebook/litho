@@ -302,3 +302,5 @@ public class LayoutStateCalculateTest {
     assertEquals(textBackgroundBounds.top , textLayoutBounds.top - paddingSize);
     assertEquals(textBackgroundBounds.right , textLayoutBounds.right + paddingSize);
     assertEquals(textBackgroundBounds.bottom , textLayoutBounds.bottom + paddingSize);
+  }
+
