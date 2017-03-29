@@ -1113,3 +1113,5 @@ class LayoutState {
     final ComponentsLogger logger = context.getLogger();
 
     if (logger != null) {
+      logger.eventStart(EVENT_CREATE_LAYOUT, context, PARAM_LOG_TAG, context.getLogTag());
+      logger.eventAddTag(EVENT_CREATE_LAYOUT, context, component.getSimpleName());
