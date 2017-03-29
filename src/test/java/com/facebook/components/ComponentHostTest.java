@@ -338,3 +338,4 @@ public class ComponentHostTest {
     Drawable d2 = new ColorDrawable();
     mount(1, d2);
 
+    MountItem mountItem3 = mount(2, new View(mContext));

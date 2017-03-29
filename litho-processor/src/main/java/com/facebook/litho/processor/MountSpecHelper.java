@@ -76,3 +76,4 @@ public class MountSpecHelper extends ComponentSpecHelper {
       FromPrepare.class,
       FromMeasure.class,
       FromBoundsDefined.class,
+      FromBind.class,

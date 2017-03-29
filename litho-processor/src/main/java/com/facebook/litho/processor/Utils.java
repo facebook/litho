@@ -124,3 +124,4 @@ public class Utils {
       TypeElement element,
       Class<A> annotation) {
     ExecutableElement annotatedMethod = null;
+    for (final Element enclosedElement : element.getEnclosedElements()) {

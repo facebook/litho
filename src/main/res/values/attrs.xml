@@ -23,3 +23,4 @@
     <attr name="flex_top" />
     <attr name="flex_right" />
     <attr name="flex_bottom" />
+    <attr name="flex" />
