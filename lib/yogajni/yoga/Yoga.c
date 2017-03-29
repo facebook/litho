@@ -3322,3 +3322,5 @@ void YGConfigSetPointScaleFactor(const YGConfigRef config, const float pixelsInP
   }
 }
 
+static void YGRoundToPixelGrid(const YGNodeRef node, const float pointScaleFactor) {
+  if (pointScaleFactor == 0.0f) {
