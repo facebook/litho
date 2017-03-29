@@ -119,3 +119,11 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
     mScopedContext = scopedContext;
   }
 
+  synchronized void markLayoutStarted() {
+    if (mIsLayoutStarted) {
+      throw new IllegalStateException("Duplicate layout of a component: " + this);
+    }
+    mIsLayoutStarted = true;
+  }
+
+  // Get an id that is identical across cloned instances, but otherwise unique

@@ -273,3 +273,8 @@ class LayoutState {
       flags |= FLAG_DUPLICATE_PARENT_STATE;
     }
 
+    layoutOutput.setFlags(flags);
+
+    return layoutOutput;
+  }
+
