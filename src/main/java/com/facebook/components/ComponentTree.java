@@ -499,3 +499,4 @@ public class ComponentTree {
     }
 
     if (component != null) {
+      // TODO: We should re-use the existing CSSNodeDEPRECATED tree instead of re-creating it.

@@ -474,3 +474,9 @@ public class Stages {
             if ((getInterStagePropAnnotation(v) == null ||
                 Utils.getGenericTypeArgument(existingType.asType(), ClassNames.OUTPUT) == null) &&
                 Utils.getGenericTypeArgument(existingType.asType(), ClassNames.DIFF) == null) {
+              throw new ComponentsProcessingException(
+                  v,
+                  "Inconsistent type for '" + variableName + "': '" + existingType.asType() +
+                      "' and '" + v.asType() + "'");
+            }
+          } else if (existingType == null) {
