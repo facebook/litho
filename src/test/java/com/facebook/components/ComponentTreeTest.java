@@ -396,3 +396,5 @@ public class ComponentTreeTest {
 
   @Test
   public void testsetTreeToTwoViewsBothAttached() {
+    Component component = TestDrawableComponent.create(mContext)
+        .build();
