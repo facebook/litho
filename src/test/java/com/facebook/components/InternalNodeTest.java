@@ -118,3 +118,20 @@ public class InternalNodeTest {
   }
 
   @Test
+  public void testImportantForAccessibilityFlag() {
+    mNode.importantForAccessibility(ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+    assertTrue(isFlagSet(mNode, "PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET"));
+    clearFlag(mNode, "PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET");
+    assertEmptyFlags(mNode);
+  }
+
+  @Test
+  public void testDuplicateParentStateFlag() {
+    mNode.duplicateParentState(false);
+    assertTrue(isFlagSet(mNode, "PFLAG_DUPLICATE_PARENT_STATE_IS_SET"));
+    clearFlag(mNode, "PFLAG_DUPLICATE_PARENT_STATE_IS_SET");
+    assertEmptyFlags(mNode);
+  }
+
+  @Test
+  public void testMarginFlag() {

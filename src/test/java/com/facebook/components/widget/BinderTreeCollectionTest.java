@@ -66,3 +66,6 @@ public class BinderTreeCollectionTest {
     assertNotNull(mBinderTreeCollection.get(2));
 
     ComponentTree secondItem = mBinderTreeCollection.get(2);
+
+    ComponentTree newComponentTree = createNewComponentTree();
+

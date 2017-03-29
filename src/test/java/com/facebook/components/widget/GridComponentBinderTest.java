@@ -72,3 +72,5 @@ public class GridComponentBinderTest {
     ComponentsConfiguration.bootstrapBinderItems = true;
 
     mRecyclerView = new RecyclerView(mContext);
+    mRecyclerView.setPadding(1, 2, 3, 4);
+

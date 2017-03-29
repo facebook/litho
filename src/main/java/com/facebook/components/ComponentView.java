@@ -174,3 +174,5 @@ public class ComponentView extends ComponentHost {
       mForceLayout = false;
       mComponent.measure(widthMeasureSpec, heightMeasureSpec, sLayoutSize, forceRelayout);
 
+      width = sLayoutSize[0];
+      height = sLayoutSize[1];
