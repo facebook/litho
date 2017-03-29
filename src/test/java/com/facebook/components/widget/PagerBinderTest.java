@@ -105,3 +105,7 @@ public class PagerBinderTest {
   public void testSimpleBinderUpdate() {
     mBinder = new TestPagerComponentBinder(mContext, 0, 1f);
     mBinder.getRangeController().notifyOnPageSelected(0);
+    for (int i = 0; i < 3; i++) {
+      assertNotNull(mBinder.getComponentAt(i));
+    }
+
