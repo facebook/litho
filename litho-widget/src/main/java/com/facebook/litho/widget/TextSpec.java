@@ -73,3 +73,4 @@ class TextSpec {
   private static final Alignment[] ALIGNMENT = Alignment.values();
   private static final TruncateAt[] TRUNCATE_AT = TruncateAt.values();
 
+  private static final Typeface DEFAULT_TYPEFACE = Typeface.DEFAULT;

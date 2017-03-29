@@ -20,3 +20,4 @@ import static com.facebook.litho.testing.viewtree.ViewExtractors.GET_TEXT_FUNCTI
 import static com.facebook.litho.testing.viewtree.ViewPredicates.hasTextMatchingPredicate;
 import static com.facebook.litho.testing.viewtree.ViewPredicates.hasVisibleId;
 import static com.facebook.litho.testing.viewtree.ViewPredicates.isVisible;
+
