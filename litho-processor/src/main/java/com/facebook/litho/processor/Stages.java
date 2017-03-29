@@ -607,3 +607,9 @@ public class Stages {
             element,
             "Field " + element.getSimpleName() + " in " + mSourceElement.getQualifiedName() +
                 " must be static");
+      }
+    }
+  }
+
+  private void validateStaticMethods() {
+    for (Class<? extends Annotation> stageAnnotation : mStageAnnotations) {
