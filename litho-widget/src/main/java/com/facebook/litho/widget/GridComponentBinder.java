@@ -90,3 +90,12 @@ public abstract class GridComponentBinder extends RecyclerComponentBinder<
     if (isIncrementalMountEnabled()) {
       IncrementalMountUtils.performIncrementalMount(recyclerView);
     }
+  }
+
+  /**
+   * Returns the index of the span in which the item at the position given as parameter is
+   * situated.
+   */
+  public int getSpanIndex(int position) {
+    GridLayoutManager layoutManager = getLayoutManager();
+    return layoutManager.getSpanSizeLookup().getSpanIndex(position, layoutManager.getSpanCount());
