@@ -16,3 +16,6 @@ import android.graphics.Rect;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.view.accessibility.AccessibilityManagerCompat;
 import android.support.v4.view.accessibility.AccessibilityManagerCompat.AccessibilityStateChangeListenerCompat;
+import android.util.AttributeSet;
+import android.view.View;
+import android.view.ViewGroup;

@@ -30,3 +30,6 @@ public class InternalNodeTouchExpansionTest {
         ComponentsPools.acquireInternalNode(
             new ComponentContext(RuntimeEnvironment.application),
             RuntimeEnvironment.application.getResources());
+    mInternalNode.touchHandler(new EventHandler(null, 1));
+  }
+

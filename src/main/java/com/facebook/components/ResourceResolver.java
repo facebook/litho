@@ -60,3 +60,4 @@ public class ResourceResolver {
     return dipsToPixels((float) dips);
   }
 
+  protected final String resolveStringRes(@StringRes int resId) {

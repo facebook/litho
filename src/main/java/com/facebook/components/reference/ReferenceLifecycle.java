@@ -20,3 +20,6 @@ import com.facebook.litho.Diff;
  * Object into a {@link com.facebook.litho.Component} in order to limit the amount of
  * retained memory in ComponentTree.
  *
+ * ReferenceLifecycle is the base class from which all the Reference types should inherit.
+ * A ReferenceLifecycle should take care of both acquiring a resource given its {@link Reference}
+ * and releasing/caching it for future use.

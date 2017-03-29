@@ -57,3 +57,4 @@ class TouchExpansionDelegate extends TouchDelegate {
     if (maybeUnregisterFromScrap(index)) {
       return;
     }
+

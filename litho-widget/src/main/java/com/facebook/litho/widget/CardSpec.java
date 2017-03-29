@@ -34,3 +34,7 @@ import static com.facebook.yoga.YogaEdge.TOP;
 import static com.facebook.litho.widget.CardShadowDrawable.getShadowBottom;
 import static com.facebook.litho.widget.CardShadowDrawable.getShadowHorizontal;
 import static com.facebook.litho.widget.CardShadowDrawable.getShadowTop;
+
+/**
+ * A component that renders a given component into a card border with shadow.
+ */

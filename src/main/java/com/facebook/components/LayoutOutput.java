@@ -17,3 +17,9 @@ import android.support.annotation.IntDef;
 
 import com.facebook.litho.displaylist.DisplayList;
 
+import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+
+/**
+ * The output of a layout pass for a given {@link Component}. It's used by
+ * {@link MountState} to mount a component.
+ */
