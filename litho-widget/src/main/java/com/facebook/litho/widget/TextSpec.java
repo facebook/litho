@@ -398,3 +398,4 @@ class TextSpec {
 
     newLayout = layoutBuilder.build();
 
+    layoutBuilder.setText(null);
