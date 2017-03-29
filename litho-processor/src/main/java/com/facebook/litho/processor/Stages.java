@@ -1790,3 +1790,4 @@ public class Stages {
   public void generateReferenceImplClass(
       Stages.StaticFlag isStatic,
       TypeMirror referenceType) {
+

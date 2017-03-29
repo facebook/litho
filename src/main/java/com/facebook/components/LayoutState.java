@@ -845,3 +845,15 @@ class LayoutState {
       diffNode.setHost(hostLayoutOutput);
     }
 
+    calculateAndSetHostOutputIdAndUpdateState(
+        node,
+        hostLayoutOutput,
+        layoutState,
+        false);
+
+    addLayoutOutputIdToPositionsMap(
+        layoutState.mOutputsIdToPositionMap,
+        hostLayoutOutput,
+        hostOutputPosition);
+
+    return hostOutputPosition;
