@@ -130,3 +130,4 @@ class TextSpec {
       Output<Integer> linkColor,
       Output<Integer> highlightColor,
       Output<Integer> textSize,
+      Output<Alignment> textAlignment,
