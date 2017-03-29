@@ -51,3 +51,25 @@ public class LayoutStateRecyclingTest {
     mUnspecifiedSizeSpec = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
   }
 
+  @Test
+  public void testNodeRecycling() {
+    Pools.SynchronizedPool<InternalNode> internalNodePool = mock(Pools.SynchronizedPool.class);
+
+    Whitebox.setInternalState(
+        ComponentsPools.class,
+        "sInternalNodePool",
+        internalNodePool);
+
+    // We want to verify that we never recycle a node with a non-null parent, since that would
+    // mean that the parent retains a dangling reference to a recycled node.
+    Mockito.doAnswer(
+        new Answer<Void>() {
+          @Override
+          public Void answer(InvocationOnMock invocation) throws Throwable {
+            InternalNode node = (InternalNode) invocation.getArguments()[0];
+            assertNull("Internal node parent must be null before releasing", node.getParent());
+            return null;
+          }
+        }).when(internalNodePool).release(Matchers.<InternalNode>any());
+
+    // Create a layout state and release it.

@@ -72,3 +72,4 @@ public class Utils {
     final List<? extends VariableElement> params = element.getParameters();
     final ArrayList<VariableElement> props = new ArrayList<>();
     for (final VariableElement v : params) {
+      if (v.getAnnotation(annotation) != null) {

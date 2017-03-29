@@ -48,3 +48,4 @@ import static com.facebook.litho.ThreadUtils.assertMainThread;
 import static com.facebook.litho.ThreadUtils.isMainThread;
 
 /**
+ * Represents a tree of components and controls their life cycle. ComponentTree takes in a single

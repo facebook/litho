@@ -12,3 +12,9 @@ package com.facebook.litho;
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadSafe;
 
+/**
+ * Type for parameters that are logical outputs.
+ */
+public class Output<T> {
+  private T mT;
+

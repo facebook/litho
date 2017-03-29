@@ -73,3 +73,4 @@ public class BaseBinderTest {
     mBinder = new MyTestComponentBinder(context, mItems);
 
     mLayoutThreadShadowLooper = Shadows.shadowOf(
+        (Looper) Whitebox.invokeMethod(
