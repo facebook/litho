@@ -392,3 +392,5 @@ public class MountSpecHelper extends ComponentSpecHelper {
 
     final TypeMirror mountReturnType = onCreateMountContent.getReturnType();
 
+    final VariableElement mountParameter = method.getParameters().get(1);
+    final TypeMirror mountParameterType = mountParameter.asType();
