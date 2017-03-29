@@ -1424,3 +1424,5 @@ class LayoutState {
     }
 
     layoutNode.setCachedMeasuresValid(true);
+  }
+
