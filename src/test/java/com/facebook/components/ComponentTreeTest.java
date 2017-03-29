@@ -353,3 +353,4 @@ public class ComponentTreeTest {
 
     Component component2 = TestDrawableComponent.create(mContext)
         .build();
+    ComponentTree componentTree2 = ComponentTree.create(
