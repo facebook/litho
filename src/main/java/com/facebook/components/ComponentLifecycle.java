@@ -343,3 +343,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
    * @param component The {@link Component} for this component.
    */
   protected void onBoundsDefined(
+      ComponentContext c,
