@@ -122,3 +122,7 @@ public abstract class RecyclerComponentBinder<L extends RecyclerView.LayoutManag
   // TODO(12986103): Remove onBoundsDefined once the experiment proved to be ok.
   @Override
   public void onBoundsDefined() {
+    updateRange(0, getCount(), URFLAG_REFRESH_IN_RANGE | URFLAG_RELEASE_OUTSIDE_RANGE);
+  }
+
+  @Override
