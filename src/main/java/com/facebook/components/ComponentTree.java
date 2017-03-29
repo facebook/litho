@@ -994,3 +994,5 @@ public class ComponentTree {
       return;
     }
 
+    logger.eventStart(EVENT_LAYOUT_CALCULATE, root, PARAM_LOG_TAG, mContext.getLogTag());
+    logger.eventAddParam(
