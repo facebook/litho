@@ -246,3 +246,4 @@ public class ComponentTreeTest {
             .incrementalMount(false)
             .build();
 
+    Size size = new Size();

@@ -488,3 +488,4 @@ public class MountStateIncrementalMountTest {
     final TestComponentContextWithView testComponentContext =
         new TestComponentContextWithView(mContext, mountedView);
 
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
