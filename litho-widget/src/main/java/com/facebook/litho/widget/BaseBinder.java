@@ -383,3 +383,6 @@ public abstract class BaseBinder<
           }
 
           mComponentTrees.removeShiftingLeft(positionStart, itemCount);
+        }
+      }
+
