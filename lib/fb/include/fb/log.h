@@ -284,3 +284,9 @@ int __android_log_print(int prio, const char *tag, const char *fmt, ...)
 #ifndef FBLOG_BY_DELIMS
 #define FBLOG_BY_DELIMS(priority, tag, delims, msg, ...) \
   logPrintByDelims(ANDROID_##priority, tag, delims, msg, ##__VA_ARGS__)
+#endif
+
+/*
+ * Log macro that allows you to specify a number for the priority.
+ */
+#ifndef FBLOG_PRI
