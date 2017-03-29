@@ -57,3 +57,4 @@ class JOutOfMemoryError : public JavaClass<JOutOfMemoryError, JThrowable> {
     return newInstance(make_jstring(str));
   }
 };
+
