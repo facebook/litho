@@ -73,3 +73,12 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
   }
 
   /**
+   * Tests if any view in the hierarchy under the root, for which the path is visible, has the
+   * requested piece of text as its text and has a tag set on that TextView with the given tag id
+   * and tag value.
+   *
+   * @param text the text to search for
+   * @param tagId the tag to look for on the TextView containing the searched text
+   * @param tagValue the expected value of the tag associated with tagId
+   * @return the assertions object
+   */
