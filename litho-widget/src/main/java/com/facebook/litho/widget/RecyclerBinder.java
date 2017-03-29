@@ -588,3 +588,30 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     if (mLayoutInfo.getSpanCount() > 1) {
       ((GridLayoutManager) mLayoutInfo.getLayoutManager()).setSpanSizeLookup(mGridSpanSizeLookup);
     }
+    if (mCurrentFirstVisiblePosition != RecyclerView.NO_POSITION &&
+        mCurrentFirstVisiblePosition > 0) {
+      view.scrollToPosition(mCurrentFirstVisiblePosition);
+    }
+  }
+
+  /**
+   * Call from the owning {@link Component}'s onUnmount. This is where the adapter is removed from
+   * the {@link RecyclerView}.
+   *
+   * @param view the {@link RecyclerView} being unmounted.
+   */
+  @UiThread
+  @Override
+  public void unmount(RecyclerView view) {
+    ThreadUtils.assertMainThread();
+
+    // We might have already unmounted this view when calling mount with a different view. In this
+    // case we can just return here.
+    if (mMountedView != view) {
+      return;
+    }
+
+    mMountedView = null;
+    view.removeOnScrollListener(mRangeScrollListener);
+    view.setAdapter(null);
+    view.setLayoutManager(null);
