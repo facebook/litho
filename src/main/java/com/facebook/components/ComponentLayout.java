@@ -340,3 +340,4 @@ public interface ComponentLayout {
     ContainerBuilder touchExpansionRes(YogaEdge edge, @DimenRes int resId);
     ContainerBuilder touchExpansionDip(
         YogaEdge edge,
+        @Dimension(unit = DP) int value);
