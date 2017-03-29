@@ -736,3 +736,10 @@ public class ComponentsPools {
     sMountContentPoolsByContext.clear();
   }
 
+  private static boolean isActivityWrapper(Context context, Activity activity) {
+    Context baseContext = context;
+    while (baseContext instanceof ContextWrapper) {
+      baseContext = ((ContextWrapper) baseContext).getBaseContext();
+
+      if (baseContext == activity) {
+        return true;
