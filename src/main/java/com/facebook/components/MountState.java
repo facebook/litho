@@ -694,3 +694,18 @@ class MountState {
   }
 
   /**
+   * Determine whether to apply disappear animation to the given {@link MountItem}
+   */
+  private static boolean isItemDisappearing(
+      MountItem mountItem,
+      TransitionContext transitionContext) {
+    if (mountItem == null
+        || mountItem.getViewNodeInfo() == null
+        || transitionContext == null) {
+      return false;
+    }
+
+    return transitionContext.isDisappearingKey(mountItem.getViewNodeInfo().getTransitionKey());
+  }
+
+  /**
