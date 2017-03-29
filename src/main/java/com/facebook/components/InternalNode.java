@@ -1474,3 +1474,11 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     mComponent = component;
   }
 
+  boolean hasNestedTree() {
+    return mNestedTree != null;
+  }
+
+  @Nullable InternalNode getNestedTree() {
+    return mNestedTree;
+  }
+

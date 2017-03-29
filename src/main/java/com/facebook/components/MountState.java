@@ -863,3 +863,4 @@ class MountState {
       ComponentHost componentHost = (ComponentHost) content;
       componentHost.setParentHostMarker(layoutOutput.getHostMarker());
       registerHost(layoutOutput.getId(), componentHost);
+    }
