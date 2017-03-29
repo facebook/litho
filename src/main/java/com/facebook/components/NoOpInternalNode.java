@@ -18,3 +18,6 @@ import android.support.annotation.DimenRes;
 import android.support.annotation.Dimension;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Px;
+import android.support.annotation.StringRes;
+import android.util.SparseArray;
+

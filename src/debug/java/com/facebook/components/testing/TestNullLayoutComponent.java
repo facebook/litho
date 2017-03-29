@@ -23,3 +23,18 @@ public class TestNullLayoutComponent extends Component {
       return true;
     }
 
+    @Override
+    protected ComponentLayout onCreateLayoutWithSizeSpec(
+        ComponentContext c,
+        int widthSpec,
+        int heightSpec,
+        Component object) {
+      return null;
+    }
+  }
+
+  private static final ComponentLifecycle sLifecycle = new Lifecycle();
+
+  public TestNullLayoutComponent() {
+    super(sLifecycle);
+  }
