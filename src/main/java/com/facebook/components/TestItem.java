@@ -53,3 +53,4 @@ public class TestItem {
 
   @VisibleForTesting
   public String getTextContent() {
+    final List<CharSequence> textItems = getTextItems();

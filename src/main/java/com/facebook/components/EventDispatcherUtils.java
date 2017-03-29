@@ -7,3 +7,19 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+package com.facebook.components;
+
+import android.os.Bundle;
+import android.support.v4.view.AccessibilityDelegateCompat;
+import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityEvent;
+
+import static com.facebook.components.ThreadUtils.assertMainThread;
+
+/**
+ * This class contains utility methods to send pre-defined events
+ * (click, touch, accessibility, etc.) to {@link EventHandler} instances' {@link Component}s
+ */

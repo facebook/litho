@@ -6,3 +6,10 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+
+package com.facebook.components;
+
+import android.support.v4.view.AccessibilityDelegateCompat;
+import android.view.View;
+import android.view.accessibility.AccessibilityEvent;
+
