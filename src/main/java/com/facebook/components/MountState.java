@@ -1632,3 +1632,5 @@ class MountState {
 
     if (!(item.getContent() instanceof ComponentHost)) {
       throw new RuntimeException("Only host components can be used as disappearing items");
+    }
+
