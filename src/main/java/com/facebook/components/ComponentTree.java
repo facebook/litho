@@ -448,3 +448,4 @@ public class ComponentTree {
       mComponentView.clearComponentTree();
     }
 
+    if (!hasSameBaseContext(view.getContext(), mContext)) {

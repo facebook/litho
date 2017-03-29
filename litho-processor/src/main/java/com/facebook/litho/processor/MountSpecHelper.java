@@ -398,3 +398,5 @@ public class MountSpecHelper extends ComponentSpecHelper {
     // The return type of onMount() and the second parameter on onUnmount()
     // should have the same type.
     if (!mStages.isSameType(mountParameterType, mountReturnType)) {
+      throw new ComponentsProcessingException(
+          mountParameter,
