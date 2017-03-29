@@ -114,3 +114,5 @@ public class MountStateBoundsTest {
             host.getBottom()));
   }
 
+  @Test
+  public void testDoubleInnerComponentHostBounds() {
