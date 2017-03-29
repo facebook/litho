@@ -465,3 +465,4 @@ public class MountSpecHelper extends ComponentSpecHelper {
         getExtraAccessibilityNodeAt != null ||
         getNumExtraAccessibilityNodes != null) &&
         (onPopulateExtraAccessibilityNode == null ||
+            getExtraAccessibilityNodeAt == null ||
