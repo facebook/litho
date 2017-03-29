@@ -221,3 +221,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     }
 
     ComponentsSystrace.endSection();
+
