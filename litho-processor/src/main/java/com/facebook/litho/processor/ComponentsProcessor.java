@@ -61,3 +61,4 @@ public class ComponentsProcessor extends AbstractComponentsProcessor {
     mountSpecHelper.generateOnMount();
     mountSpecHelper.generateOnBind();
     mountSpecHelper.generateOnUnbind();
+    mountSpecHelper.generateOnUnmount();

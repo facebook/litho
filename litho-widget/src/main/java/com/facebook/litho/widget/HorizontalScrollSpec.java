@@ -90,3 +90,9 @@ class HorizontalScrollSpec {
       int heightSpec,
       Size size,
       @FromPrepare ComponentTree contentComponent,
+      Output<Integer> measuredComponentWidth,
+      Output<Integer> measuredComponentHeight) {
+
+    final int measuredWidth;
+    final int measuredHeight;
+

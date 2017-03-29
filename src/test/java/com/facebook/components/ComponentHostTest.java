@@ -339,3 +339,23 @@ public class ComponentHostTest {
     mount(1, d2);
 
     MountItem mountItem3 = mount(2, new View(mContext));
+
+    List<Drawable> drawables = mHost.getDrawables();
+    assertEquals(2, drawables.size());
+    assertEquals(d1, drawables.get(0));
+    assertEquals(d2, drawables.get(1));
+
+    unmount(0, mountItem1);
+
+    drawables = mHost.getDrawables();
+    assertEquals(1, drawables.size());
+    assertEquals(d2, drawables.get(0));
+
+    unmount(2, mountItem3);
+
+    drawables = mHost.getDrawables();
+    assertEquals(1, drawables.size());
+    assertEquals(d2, drawables.get(0));
+  }
+
+  @Test
