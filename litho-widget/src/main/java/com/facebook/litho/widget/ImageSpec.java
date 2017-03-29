@@ -55,3 +55,4 @@ class ImageSpec {
       Output<Reference<Drawable>> src,
       Output<ScaleType> scaleType) {
 
+    final TypedArray a = c.obtainStyledAttributes(R.styleable.Image, 0);
