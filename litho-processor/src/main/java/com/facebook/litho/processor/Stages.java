@@ -2356,3 +2356,5 @@ public class Stages {
     final TypeMirror variableType = variableElement.asType();
     final TypeMirror outputTypeMirror = Utils.getGenericTypeArgument(
         variableType,
+        ClassNames.OUTPUT);
+    return outputTypeMirror != null;
