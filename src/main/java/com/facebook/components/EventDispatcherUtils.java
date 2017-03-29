@@ -76,3 +76,13 @@ class EventDispatcherUtils {
 
     final EventDispatcher eventDispatcher = focusedHandler.mHasEventDispatcher.getEventDispatcher();
     eventDispatcher.dispatchOnEvent(focusedHandler, sFocusedVisibleEvent);
+  }
+
+  static void dispatchOnFullImpression(
+      EventHandler<FullImpressionVisibleEvent> fullImpressionHandler) {
+    assertMainThread();
+
+    if (sFullImpressionVisibleEvent == null) {
+      sFullImpressionVisibleEvent = new FullImpressionVisibleEvent();
+    }
+

@@ -44,3 +44,17 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
     mSuperDelegate = new SuperDelegate();
   }
 
+  ComponentAccessibilityDelegate(View view) {
+    this(view, null);
+  }
+
+  /**
+   * {@link ComponentHost} contains the logic for setting the {@link NodeInfo} containing the
+   * {@link EventHandler}s for its delegate instance whenever it is set/unset
+   *
+   * @see ComponentHost#setTag(int, Object)
+   */
+  void setNodeInfo(NodeInfo nodeInfo) {
+    mNodeInfo = nodeInfo;
+  }
+
