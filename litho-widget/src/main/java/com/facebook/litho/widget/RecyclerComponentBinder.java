@@ -85,3 +85,15 @@ public abstract class RecyclerComponentBinder<L extends RecyclerView.LayoutManag
   }
 
   /**
+   * Return the stable ID for the component at <code>position</code>. If {@link #hasStableIds()}
+   * would return false this method should return {@link RecyclerView#NO_ID}. The default
+   * implementation of this method returns {@link RecyclerView#NO_ID}.
+   *
+   * @param position Binder position to query
+   * @return the stable ID of the component at position
+   */
+  public long getComponentId(int position) {
+    return RecyclerView.NO_ID;
+  }
+
+  /**

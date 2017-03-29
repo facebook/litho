@@ -55,3 +55,10 @@ public abstract class LinearComponentBinder extends
     getRangeController().notifyOnScroll(
         firstViewPosition,
         lastViewPosition - firstViewPosition + 1);
+  }
+
+  @Override
+  protected int getWidthSpec(int position) {
+    if (getLayoutManager().getOrientation() == LinearLayoutManager.VERTICAL) {
+      return super.getWidthSpec(position);
+    } else {

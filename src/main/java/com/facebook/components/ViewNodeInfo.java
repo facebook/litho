@@ -128,3 +128,31 @@ class ViewNodeInfo {
     return mExpandedTouchBounds;
   }
 
+  void setTransitionKey(String key) {
+    mTransitionKey = key;
+  }
+
+  String getTransitionKey() {
+    return mTransitionKey;
+  }
+
+  static ViewNodeInfo acquire() {
+    final ViewNodeInfo viewNodeInfo = ComponentsPools.acquireViewNodeInfo();
+
+    if (viewNodeInfo.mReferenceCount.getAndSet(1) != 0) {
+      throw new IllegalStateException("The ViewNodeInfo reference acquired from the pool " +
+          " wasn't correctly released.");
+    }
+
+    return viewNodeInfo;
+  }
+
+  ViewNodeInfo acquireRef() {
+    if (mReferenceCount.getAndIncrement() < 1) {
+      throw new IllegalStateException("The ViewNodeInfo being acquired" +
+          " wasn't correctly initialized.");
+    }
+
+    return this;
+  }
+
