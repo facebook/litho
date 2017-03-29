@@ -185,3 +185,4 @@ public class RecyclerBinderTest {
   @Test
   public void onBoundsDefinedWithDifferentSize() {
     final List<ComponentInfo> components = prepareLoadedBinder();
+    for (int i = 0; i < components.size(); i++) {

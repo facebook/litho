@@ -478,3 +478,7 @@ public class RecyclerBinder implements Binder<RecyclerView> {
       case OrientationHelper.HORIZONTAL:
         outSize.width = SizeSpec.getSize(widthSpec);
         if (mRange != null
+            && (SizeSpec.getMode(heightSpec) == SizeSpec.AT_MOST
+            || SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED)) {
+          outSize.height = mRange.measuredSize;
+        } else {
