@@ -463,3 +463,8 @@ public class ComponentTreeTest {
   }
 
   private static boolean componentTreeHasSizeSpec(ComponentTree componentTree) {
+    try {
+      boolean hasCssSpec;
+      // Need to hold the lock on componentTree here otherwise the invocation of hasCssSpec
+      // will fail.
+      synchronized (componentTree) {
