@@ -265,3 +265,30 @@ class MountState {
     ComponentsSystrace.endSection();
   }
 
+  private void processVisibilityOutputs(LayoutState layoutState, Rect localVisibleRect) {
+    if (localVisibleRect == null) {
+      return;
+    }
+
+    for (int j = 0, size = layoutState.getVisibilityOutputCount(); j < size; j++) {
+      final VisibilityOutput visibilityOutput = layoutState.getVisibilityOutputAt(j);
+
+      final EventHandler visibleHandler = visibilityOutput.getVisibleEventHandler();
+      final EventHandler focusedHandler = visibilityOutput.getFocusedEventHandler();
+      final EventHandler fullImpressionHandler = visibilityOutput.getFullImpressionEventHandler();
+      final EventHandler invisibleHandler = visibilityOutput.getInvisibleEventHandler();
+      final long visibilityOutputId = visibilityOutput.getId();
+      final Rect visibilityOutputBounds = visibilityOutput.getBounds();
+
+      sTempRect.set(visibilityOutputBounds);
+      final boolean isCurrentlyVisible = sTempRect.intersect(localVisibleRect);
+
+      VisibilityItem visibilityItem = mVisibilityIdToItemMap.get(visibilityOutputId);
+
+      if (isCurrentlyVisible) {
+        // The component is visible now, but used to be outside the viewport.
+        if (visibilityItem == null) {
+          visibilityItem = ComponentsPools.acquireVisibilityItem(invisibleHandler);
+          mVisibilityIdToItemMap.put(visibilityOutputId, visibilityItem);
+
+          if (visibleHandler != null) {
