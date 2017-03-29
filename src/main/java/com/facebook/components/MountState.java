@@ -1796,3 +1796,4 @@ class MountState {
           mountItem.getContent(),
           component);
       mountItem.setIsBound(false);
+    }

@@ -2212,3 +2212,22 @@ public class Stages {
       shouldUpdateComponent
           .addStatement(
               "$L $L = acquireDiff(previousImpl.$L, nextImpl.$L)",
+              variableElementType,
+              variableElementName,
+              variableElementName,
+              variableElementName);
+
+      if (i != 0) {
+        delegateParameters.add(",\n");
+      }
+      delegateParameters.add(variableElementName.toString());
+      i++;
+
+      releaseDiffs.addStatement(
+          "releaseDiff($L)",
+          variableElementName);
+    }
+    delegateParameters.unindent();
+
+    shouldUpdateComponent.addStatement(
+        "boolean shouldUpdate = $L.$L(\n$L)",
