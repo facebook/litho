@@ -29,3 +29,37 @@ import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
+public class ComponentGlobalKeyTest {
+
+  private ComponentContext mContext;
+
+  @Before
+  public void setup() {
+    mContext = new ComponentContext(RuntimeEnvironment.application);
+  }
+
+  @Test
+  public void testComponentKey() {
+    Component component = TestDrawableComponent
+        .create(mContext)
+        .build();
+    Assert.assertEquals(component.getKey(), component.getLifecycle().getId() + "");
+    Assert.assertNull(component.getGlobalKey());
+  }
+
+  @Test
+  public void testComponentManualKey() {
+    Component component = TestDrawableComponent
+        .create(mContext)
+        .key("someKey")
+        .build();
+    Assert.assertEquals(component.getKey(), "someKey");
+    Assert.assertNull(component.getGlobalKey());
+  }
+
+  @Test
+  public void testComponentGlobalKey() {
+    Component component = TestDrawableComponent
+        .create(mContext)
+        .build();
+    System.out.println(component.getLifecycle().getId());

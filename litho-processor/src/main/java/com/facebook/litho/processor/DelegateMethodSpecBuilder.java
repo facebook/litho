@@ -46,3 +46,10 @@ class DelegateMethodSpecBuilder {
   private Set<String> mStateParamNames = new LinkedHashSet<>();
   private Map<String, String> mParameterTranslation;
 
+  DelegateMethodSpecBuilder implClassName(String implClassName) {
+    mImplClassName = implClassName;
+    return this;
+  }
+
+  DelegateMethodSpecBuilder abstractImplType(TypeName abstractImplType) {
+    mAbstractImplType = abstractImplType;

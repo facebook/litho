@@ -29,3 +29,4 @@ class OnStateUpdateMethodSpecBuilder {
   private ClassName mComponentClass;
   private String mLifecycleImplClass;
 
+  private final List<Parameter> mUpdateParams = new ArrayList<>();

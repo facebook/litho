@@ -24,3 +24,5 @@ import com.squareup.javapoet.TypeVariableName;
 
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.SPEC_INSTANCE_NAME;
 
+/**
+ * Provides a Builder for generating an implementation of
