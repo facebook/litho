@@ -110,3 +110,4 @@ public class DuplicateParentStateTest {
         MountItem.isDuplicateParentState(layoutState.getMountableOutputAt(4).getFlags()));
 
     assertFalse(
+        "Drawable doesn't duplicate clickable parent state",

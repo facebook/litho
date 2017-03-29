@@ -96,3 +96,4 @@ public class ResourceResolver {
     return null;
   }
 
+  protected final int resolveIntRes(@IntegerRes int resId) {
