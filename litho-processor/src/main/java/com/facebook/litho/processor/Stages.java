@@ -2170,3 +2170,5 @@ public class Stages {
     }
 
     final CodeBlock.Builder delegateParameters = CodeBlock.builder();
+    delegateParameters.indent();
+    int i = 0;
