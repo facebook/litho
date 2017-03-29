@@ -1646,3 +1646,6 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
         mYogaNode.setWidth(SizeSpec.getSize(widthSpec));
         break;
     }
+  }
+
+  void setStyleHeightFromSpec(int heightSpec) {

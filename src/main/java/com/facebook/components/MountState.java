@@ -992,3 +992,6 @@ class MountState {
     final View view = (View) item.getContent();
     final NodeInfo nodeInfo = item.getNodeInfo();
 
+    if (nodeInfo != null) {
+      // 1. Setup click handler for the component, if applicable.
+      setClickHandler(nodeInfo.getClickHandler(), view);
