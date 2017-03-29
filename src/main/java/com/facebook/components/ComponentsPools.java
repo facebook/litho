@@ -175,3 +175,11 @@ public class ComponentsPools {
       }
 
       if (sShouldUseCSSNodeJNI) {
+        if (sYogaConfig == null) {
+          sYogaConfig = new YogaConfig();
+          sYogaConfig.setExperimentalFeatureEnabled(YogaExperimentalFeature.ROUNDING, true);
+        }
+        node = new YogaNode(sYogaConfig);
+      } else {
+        node = new CSSNodeDEPRECATED();
+      }
