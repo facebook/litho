@@ -534,3 +534,4 @@ class TextSpec {
       @Prop(optional = true) ColorStateList textColorStateList,
       @FromBoundsDefined Layout textLayout,
       @FromBoundsDefined Float textLayoutTranslationY,
+      @FromBoundsDefined ClickableSpan[] clickableSpans) {
