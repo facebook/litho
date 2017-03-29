@@ -2387,3 +2387,4 @@ public class Stages {
       ClassName lifecycleClassName,
       ClassName contextClassName,
       String scopeMethodName) {
+    final String eventName = eventDeclaration.getSimpleName().toString();
