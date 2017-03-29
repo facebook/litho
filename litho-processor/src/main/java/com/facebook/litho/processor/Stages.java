@@ -321,3 +321,4 @@ public class Stages {
       if (eventAnnotation == null) {
         throw new ComponentsProcessingException(
             eventDeclaration,
+            "Events must be declared with the @Event annotation, event is: " + eventDeclaration);
