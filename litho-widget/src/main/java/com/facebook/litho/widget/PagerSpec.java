@@ -84,3 +84,8 @@ class PagerSpec {
   @OnUnbind
   static void onUnbind(
       ComponentContext context,
+      ViewPager mountedView,
+      @Prop PagerBinder binder) {
+    binder.unbind(mountedView);
+  }
+

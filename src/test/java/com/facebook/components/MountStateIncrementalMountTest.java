@@ -535,3 +535,16 @@ public class MountStateIncrementalMountTest {
     verify(childView2).performIncrementalMount(any(Rect.class));
     verify(childView3).performIncrementalMount(any(Rect.class));
   }
+
+  /**
+   * Tests incremental mount behaviour of a vertical stack of components with a View mount type.
+   */
+  @Test
+  public void testIncrementalMountDoesNotCauseMultipleUpdates() {
+    final TestComponent child1 = TestViewComponent.create(mContext)
+        .build();
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
