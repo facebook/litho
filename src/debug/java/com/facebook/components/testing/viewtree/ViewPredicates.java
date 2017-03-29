@@ -10,3 +10,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import android.annotation.TargetApi;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;

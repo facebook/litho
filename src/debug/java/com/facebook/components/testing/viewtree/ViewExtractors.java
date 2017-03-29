@@ -21,3 +21,4 @@ import com.google.common.base.Strings;
  * Function objects used for extracting specific information out of Android classes
  */
 final class ViewExtractors {
+
