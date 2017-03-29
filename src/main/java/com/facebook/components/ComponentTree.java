@@ -298,3 +298,4 @@ public class ComponentTree {
 
       // ... and then we do state transfer
       toRelease = setBestMainThreadLayoutAndReturnOldLayout();
+      componentRootId = mRoot.getId();

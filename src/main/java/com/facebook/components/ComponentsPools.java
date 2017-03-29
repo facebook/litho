@@ -115,3 +115,5 @@ public class ComponentsPools {
   private static final Pools.SimplePool<SparseArrayCompat<Touchable>> sTouchableScrapArrayPool =
       new Pools.SimplePool<>(4);
 
+  private static final Pools.SynchronizedPool<RectF> sRectFPool =
+      new Pools.SynchronizedPool<>(4);
