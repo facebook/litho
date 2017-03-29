@@ -156,3 +156,5 @@ public class MountSpecHelper extends ComponentSpecHelper {
         ClassName.INT,
         ClassName.INT,
         ClassNames.SIZE,
+    };
+
