@@ -45,3 +45,5 @@ public final class ComponentTestHelper {
    * @param component The component builder to mount
    * @return A ComponentView with the component mounted in it.
    */
+  public static ComponentView mountComponent(Component.Builder component) {
+    return mountComponent(getContext(component), component.build());

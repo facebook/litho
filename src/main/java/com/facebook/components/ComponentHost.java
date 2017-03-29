@@ -344,3 +344,5 @@ public class ComponentHost extends ViewGroup {
     return ComponentHostUtils.extractImageContent(
         ComponentHostUtils.extractContent(mMountItems));
   }
+
+  /**
