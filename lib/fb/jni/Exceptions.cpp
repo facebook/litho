@@ -171,3 +171,4 @@ void rethrow_if_nested() {
 // will be called with that exception as the currently handled exception (in
 // reverse order, i.e. innermost first).
 void denest(std::function<void()> func) {
+  try {
