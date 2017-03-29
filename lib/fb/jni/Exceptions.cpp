@@ -49,3 +49,6 @@ class JIOException : public JavaClass<JIOException, JThrowable> {
   }
 };
 
+class JOutOfMemoryError : public JavaClass<JOutOfMemoryError, JThrowable> {
+ public:
+  static auto constexpr kJavaDescriptor = "Ljava/lang/OutOfMemoryError;";
