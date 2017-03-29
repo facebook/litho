@@ -116,3 +116,5 @@ class MountState {
         ? new HashMap<String, Deque<TestItem>>()
         : null;
 
+    // The mount item representing the top-level ComponentView which
+    // is always automatically mounted.

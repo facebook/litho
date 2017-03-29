@@ -82,3 +82,5 @@ class MountItem {
       NodeInfo nodeInfo,
       ViewNodeInfo viewNodeInfo,
       DisplayListDrawable displayListDrawable,
+      int flags,
+      int importantForAccessibility) {

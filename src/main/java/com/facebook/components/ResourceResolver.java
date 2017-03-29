@@ -219,3 +219,4 @@ public class ResourceResolver {
         .build();
   }
 
+  protected final String resolveStringAttr(@AttrRes int attrResId, @StringRes int defResId) {
