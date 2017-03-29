@@ -2959,3 +2959,4 @@ public class Stages {
    * for this component. This list is stored in the form of a LinkedHashMap, to preserve ordering,
    * and to allow easy lookup of type information for a given variable.
    */
+  private void populateImplMembers() {
