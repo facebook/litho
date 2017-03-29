@@ -232,3 +232,10 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
     return actual.findChild(ViewPredicates.hasContentDescription(contentDescription));
   }
 
+  /**
+   * Tests if any view in the hierarchy under the root, for which the path is visible, has text that
+   * matches the given regular expression
+   *
+   * @param pattern the regular expression to match against
+   * @return the assertions object
+   */
