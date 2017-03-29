@@ -341,3 +341,8 @@ public class InternalNodeTest {
     assertFalse(textComponent.hasCachedLayout());
   }
 
+  @Test
+  public void testContextSpecificComponentAssertionPasses() {
+    InternalNode.assertContextSpecificStyleNotSet(mNode);
+  }
+

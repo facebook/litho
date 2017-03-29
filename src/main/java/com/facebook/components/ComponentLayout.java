@@ -78,3 +78,4 @@ public interface ComponentLayout {
     Builder flexBasisDip(@Dimension(unit = DP) int flexBasis);
     Builder flexBasisPercent(float percent);
 
+    Builder importantForAccessibility(@ImportantForAccessibility int importantForAccessibility);
