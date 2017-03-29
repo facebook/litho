@@ -47,3 +47,4 @@ public interface ComponentsLogger {
   void eventCancel(int eventId, Object object);
   void eventAddParam(int eventId, Object object, String key, String value);
   void eventAddTag(int eventId, Object object, String tag);
+  void softError(String message);
