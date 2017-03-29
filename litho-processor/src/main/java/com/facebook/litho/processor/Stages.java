@@ -1633,3 +1633,5 @@ public class Stages {
     }
     delegateParameters.unindent();
 
+    methodBuilder.addStatement(
+        "this.$L.$L($L)",
