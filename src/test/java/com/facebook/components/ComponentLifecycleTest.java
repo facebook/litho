@@ -286,3 +286,6 @@ public class ComponentLifecycleTest {
 
     try {
       measureFunction.measure(mNode.mYogaNode, 0, EXACTLY, 0, EXACTLY);
+      fail();
+    } catch (Exception e) {
+      assertThat(e).isExactlyInstanceOf(IllegalStateException.class);
