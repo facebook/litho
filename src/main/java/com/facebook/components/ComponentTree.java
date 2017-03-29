@@ -1153,3 +1153,4 @@ public class ComponentTree {
       int widthSpec,
       int heightSpec,
       boolean diffingEnabled,
+      @Nullable DiffNode diffNode) {
