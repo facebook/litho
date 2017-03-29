@@ -388,3 +388,8 @@ class LayoutState {
     // so that such flag is applied in the resulting view hierarchy after the component
     // tree is mounted. Click handling is also considered accessibility content but
     // this is already covered separately i.e. click handler is not null.
+    final boolean hasAccessibilityContent = layoutState.mAccessibilityEnabled
+        && importantForAccessibility != IMPORTANT_FOR_ACCESSIBILITY_NO
+        && (implementsAccessibility
+            || (nodeInfo != null && !TextUtils.isEmpty(nodeInfo.getContentDescription()))
+            || importantForAccessibility != IMPORTANT_FOR_ACCESSIBILITY_AUTO);
