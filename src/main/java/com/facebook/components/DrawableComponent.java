@@ -152,3 +152,6 @@ private static class State<T extends Drawable> extends Component<DrawableCompone
 
     private int getDrawableHeight() {
       return mDrawableHeight;
+    }
+  }
+}
