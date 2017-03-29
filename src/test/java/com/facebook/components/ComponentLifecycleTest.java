@@ -62,3 +62,4 @@ public class ComponentLifecycleTest {
   private int mNestedTreeHeightSpec;
 
   private InternalNode mNode;
+  private DiffNode mDiffNode;

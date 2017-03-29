@@ -307,3 +307,4 @@ class LayoutState {
     } else if (fullImpressionHandler != null) {
       handlerComponent = (Component<?>) fullImpressionHandler.mHasEventDispatcher;
     } else {
+      handlerComponent = (Component<?>) invisibleHandler.mHasEventDispatcher;
