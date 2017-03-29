@@ -796,3 +796,7 @@ public class LayoutStateCalculateTest {
         layoutState2.getMountableOutputAt(1).getId());
     assertEquals(3, layoutState1.getMountableOutputCount());
     assertEquals(4, layoutState2.getMountableOutputCount());
+  }
+
+  @Test
+  public void testDifferentIds() {

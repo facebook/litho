@@ -511,3 +511,4 @@ public abstract class BaseBinder<
     releaseList(componentTreesToRelease);
   }
 
+  @Override
