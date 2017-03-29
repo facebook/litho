@@ -345,3 +345,7 @@ public class ComponentLifecycleTest {
   private YogaMeasureFunction getMeasureFunction() {
     when(mNode.getComponent()).thenReturn(mInput);
 
+    return Whitebox.getInternalState(ComponentLifecycle.class, "sMeasureFunction");
+  }
+
+  private class TestBaseComponent extends ComponentLifecycle {
