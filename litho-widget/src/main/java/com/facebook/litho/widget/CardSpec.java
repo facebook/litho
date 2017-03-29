@@ -13,3 +13,6 @@ import com.facebook.yoga.YogaAlign;
 
 import com.facebook.yoga.YogaFlexDirection;
 
+import android.content.res.Resources;
+import android.graphics.Color;
+

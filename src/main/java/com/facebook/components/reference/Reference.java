@@ -14,3 +14,4 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.ResourceResolver;
 
 /**
+ * Represents a unique instance of a reference that is driven by its matching

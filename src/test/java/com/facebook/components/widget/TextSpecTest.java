@@ -11,3 +11,7 @@ package com.facebook.litho.widget;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.text.Spannable;
+import android.text.style.ClickableSpan;
+import android.view.View;
+

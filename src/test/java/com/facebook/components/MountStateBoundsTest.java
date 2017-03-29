@@ -11,3 +11,6 @@ package com.facebook.litho;
 
 import com.facebook.yoga.YogaFlexDirection;
 
+import android.graphics.Rect;
+import android.view.View;
+

@@ -12,3 +12,7 @@ package com.facebook.litho;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;

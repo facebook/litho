@@ -41,3 +41,4 @@ public final class DrawableMatrix extends Matrix {
    * @param height The height of the drawable's container.
    * @return The scale matrix or null if the drawable does not need to be scaled.
    */
+  public static DrawableMatrix create(

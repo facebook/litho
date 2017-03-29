@@ -21,3 +21,25 @@ import com.facebook.litho.config.ComponentsConfiguration;
 
 import static com.facebook.litho.Component.isHostSpec;
 import static com.facebook.litho.Component.isMountViewSpec;
+
+/**
+ * Draw operations used in developer options.
+ */
+class DebugDraw {
+
+  private static final int INTERACTIVE_VIEW_COLOR = 0x66C29BFF;
+  private static final int TOUCH_DELEGATE_COLOR = 0x44D3FFCE;
+
+  private static final int MOUNT_BORDER_COLOR = 0x99FF0000;
+  private static final int MOUNT_BORDER_COLOR_HOST = 0x99FF00FF;
+  private static final int MOUNT_CORNER_COLOR = 0xFF0000FF;
+  private static final int MOUNT_CORNER_COLOR_HOST = 0xFF00FFFF;
+
+  private static Paint sInteractiveViewPaint;
+  private static Paint sTouchDelegatePaint;
+
+  private static Rect sMountBoundsRect;
+  private static Paint sMountBoundsBorderPaint;
+  private static Paint sMountBoundsCornerPaint;
+
+  static void draw(ComponentHost host, Canvas canvas) {

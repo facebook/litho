@@ -15,3 +15,5 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.Diff;
 
 /**
+ * ReferenceLifecycle objects which are able retreive resources at runtime without needing to keep
+ * them constantly in memory. References should be used any time it's necessary to include a large

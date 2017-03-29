@@ -47,3 +47,4 @@ public class ResourceResolver {
     return FastMath.round(dips * scale);
   }
 
+  final int dipsToPixels(int dips) {
