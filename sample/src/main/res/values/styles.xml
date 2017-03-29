@@ -10,3 +10,6 @@
 
 <resources>
   <style name="NoTitleBarWhiteBG" parent="Theme.AppCompat.Light">
+    <item name="android:textColor">#000000</item>
+  </style>
+</resources>
