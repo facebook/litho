@@ -376,3 +376,9 @@ public class BaseBinderTest {
 
     @Override
     public void onUnbind(ViewGroup view) {
+      if (mView == null) {
+        throw new IllegalStateException("onUnbind called before onMount");
+      }
+    }
+
+    @Override

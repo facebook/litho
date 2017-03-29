@@ -40,3 +40,4 @@ public class MountItemTest {
   private SparseArray<Object> mViewTags;
   private EventHandler mClickHandler;
   private EventHandler mLongClickHandler;
+  private EventHandler mTouchHandler;
