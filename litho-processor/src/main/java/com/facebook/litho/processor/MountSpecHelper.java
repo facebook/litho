@@ -319,3 +319,6 @@ public class MountSpecHelper extends ComponentSpecHelper {
         mStages.getSourceElement(),
         OnBind.class);
     if (onBind == null) {
+      return;
+    }
+
