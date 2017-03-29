@@ -58,3 +58,26 @@ class ShallowCopyMethodSpecBuilder {
         .addModifiers(Modifier.PUBLIC)
         .addAnnotation(Override.class)
         .returns(ClassName.bestGuess(mImplClassName));
+
+    String deepCopy = mHasDeepCopy ? "deepCopy" : "";
+
+    if (mHasDeepCopy) {
+      builder.addParameter(ParameterSpec.builder(TypeName.BOOLEAN, "deepCopy").build());
+    }
+
+    builder.addStatement(
+        "$L $L = ($L) super.makeShallowCopy($L)",
+        mImplClassName,
+        "component",
+        mImplClassName,
+        deepCopy);
+
+    for (String element : mComponentsToCopy) {
+      builder.addStatement(
+          "component.$L = component.$L != null ? component.$L.makeShallowCopy($L) : null",
+          element,
+          element,
+          element,
+          deepCopy);
+    }
+

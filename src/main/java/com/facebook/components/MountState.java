@@ -37,3 +37,4 @@ import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static com.facebook.components.Component.isHostSpec;
 import static com.facebook.components.Component.isMountViewSpec;
 import static com.facebook.components.ComponentHostUtils.maybeInvalidateAccessibilityState;
+import static com.facebook.components.ComponentHostUtils.maybeSetDrawableState;

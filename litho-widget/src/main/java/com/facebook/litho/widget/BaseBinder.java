@@ -32,3 +32,6 @@ import static com.facebook.components.SizeSpec.UNSPECIFIED;
 import static com.facebook.components.ThreadUtils.assertDoesntHoldLock;
 import static com.facebook.components.ThreadUtils.assertMainThread;
 
+public abstract class BaseBinder<
+    V extends ViewGroup,
+    R extends WorkingRangeController> implements Binder<V>, BinderOperations<V> {

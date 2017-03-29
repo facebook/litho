@@ -39,3 +39,10 @@ import static com.facebook.components.ComponentHostUtils.maybeInvalidateAccessib
  * states accordingly.
  */
 public class ComponentHost extends ViewGroup {
+
+  private final SparseArrayCompat<MountItem> mMountItems = new SparseArrayCompat<>();
+  private SparseArrayCompat<MountItem> mScrapMountItemsArray;
+
+  private final SparseArrayCompat<MountItem> mViewMountItems = new SparseArrayCompat<>();
+  private SparseArrayCompat<MountItem> mScrapViewMountItemsArray;
+

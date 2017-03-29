@@ -57,3 +57,4 @@ public class TestLayoutComponent extends ComponentLifecycle {
 
     return lifecycle;
   }
+

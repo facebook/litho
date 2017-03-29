@@ -34,3 +34,5 @@ public class SectionClassNames {
       ClassName.bestGuess("com.facebook.components.list.SectionLifecycle.StateUpdate");
   public static final ClassName LOADING_EVENT_HANDLER =
       ClassName.bestGuess("com.facebook.components.list.LoadingEvent");
+  public static final ClassName CHILDREN =
+      ClassName.bestGuess("com.facebook.components.list.Children");
