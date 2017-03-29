@@ -117,3 +117,4 @@ public class ComponentsPools {
 
   private static final Pools.SynchronizedPool<RectF> sRectFPool =
       new Pools.SynchronizedPool<>(4);
+
