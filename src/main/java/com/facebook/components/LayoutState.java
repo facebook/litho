@@ -616,3 +616,6 @@ class LayoutState {
           diffNode);
     }
 
+    layoutState.mCurrentX -= node.getX();
+    layoutState.mCurrentY -= node.getY();
+

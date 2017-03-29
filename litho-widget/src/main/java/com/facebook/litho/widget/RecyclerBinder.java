@@ -768,3 +768,5 @@ public class RecyclerBinder implements Binder<RecyclerView> {
       final ComponentTreeHolder componentTreeHolder = mComponentTreeHolders.get(position);
       final int childrenWidthSpec = getActualChildrenWidthSpec(componentTreeHolder);
       final int childrenHeightSpec = getActualChildrenHeightSpec(componentTreeHolder);
+      if (!componentTreeHolder.isTreeValid()) {
+        componentTreeHolder
