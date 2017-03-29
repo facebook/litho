@@ -249,3 +249,8 @@ public class MountSpecHelper extends ComponentSpecHelper {
         MethodSpec.methodBuilder("getMountType")
             .addAnnotation(Override.class)
             .addModifiers(Modifier.PUBLIC)
+            .returns(ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE)
+            .addStatement(
+                "return $T.$L",
+                ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE,
+                componentMountType)
