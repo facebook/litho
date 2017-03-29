@@ -311,3 +311,5 @@ public class RecyclerBinderTest {
     int heightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
 
     mRecyclerBinder.measure(new Size(), widthSpec, heightSpec);
+    final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
+
