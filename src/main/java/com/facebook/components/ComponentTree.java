@@ -521,3 +521,5 @@ public class ComponentTree {
           mIsLayoutDiffingEnabled,
           null);
 
+      final StateHandler layoutStateStateHandler =
+          localLayoutState.consumeStateHandler();
