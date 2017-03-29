@@ -32,3 +32,6 @@ import static org.junit.Assert.assertNull;
 @RunWith(ComponentsTestRunner.class)
 public class PagerBinderTest {
 
+  private static final int WIDTH = 200;
+  private static final int HEIGHT = 300;
+

@@ -216,3 +216,7 @@ public class ComponentTreeTest {
         "mBackgroundLayoutState",
         mWidthSpec2,
         mHeightSpec2);
+  }
+
+  @Test
+  public void testSetSizeSpecAsyncThenSyncAfterRunningTask() {
