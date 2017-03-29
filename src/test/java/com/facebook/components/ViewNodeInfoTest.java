@@ -18,3 +18,5 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.reflect.Whitebox;
+
+import static junit.framework.Assert.assertEquals;

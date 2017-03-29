@@ -40,3 +40,8 @@ import static com.facebook.litho.widget.CardShadowDrawable.getShadowTop;
  */
 @LayoutSpec (isPureRender = true)
 class CardSpec {
+
+  private static final int DEFAULT_CORNER_RADIUS_DP = 2;
+  private static final int DEFAULT_SHADOW_SIZE_DP = 2;
+
+  @PropDefault static final int cardBackgroundColor = Color.WHITE;

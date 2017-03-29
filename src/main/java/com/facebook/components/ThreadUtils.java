@@ -21,3 +21,6 @@ public class ThreadUtils {
   }
 
   public static boolean isMainThread() {
+    return Looper.getMainLooper().getThread() == Thread.currentThread();
+  }
+

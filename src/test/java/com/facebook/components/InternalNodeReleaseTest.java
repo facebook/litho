@@ -21,3 +21,8 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
 
 @RunWith(ComponentsTestRunner.class)
+public class InternalNodeReleaseTest {
+  private InternalNode mInternalNode;
+
+  @Before
+  public void setup() {

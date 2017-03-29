@@ -25,3 +25,10 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(ComponentsTestRunner.class)
+public class LifecycleMethodsTest {
+
+  private enum LifecycleStep {
+    ON_CREATE_LAYOUT,
+    ON_PREPARE,
+    ON_MEASURE,
+    ON_BOUNDS_DEFINED,
