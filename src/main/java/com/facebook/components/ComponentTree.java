@@ -1173,3 +1173,4 @@ public class ComponentTree {
       }
     } else {
       return LayoutState.calculate(
+          contextWithStateHandler,
