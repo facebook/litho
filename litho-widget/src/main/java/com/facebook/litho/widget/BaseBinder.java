@@ -205,3 +205,6 @@ public abstract class BaseBinder<
     assertMainThread();
 
     if (!hasContentSize()) {
+      return;
+    }
+

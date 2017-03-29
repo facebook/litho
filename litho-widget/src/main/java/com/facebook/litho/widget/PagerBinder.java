@@ -124,3 +124,4 @@ public abstract class PagerBinder extends BaseBinder<
     viewPager.setOffscreenPageLimit(mPagerOffscreenLimit);
   }
 
+  @Override
