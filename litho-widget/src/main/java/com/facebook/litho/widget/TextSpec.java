@@ -395,3 +395,4 @@ class TextSpec {
     layoutBuilder.setTextSpacingMultiplier(spacingMultiplier);
     layoutBuilder.setAlignment(textAlignment);
     layoutBuilder.setLinkColor(linkColor);
+

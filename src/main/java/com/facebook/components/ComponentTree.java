@@ -489,3 +489,4 @@ public class ComponentTree {
         // Neither layout was compatible and we have to perform a layout.
         // Since outputs get set on the same object during the lifecycle calls,
         // we need to copy it in order to use it concurrently.
+        component = mRoot.makeShallowCopy();
