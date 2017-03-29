@@ -106,3 +106,4 @@ public class ComponentViewTest {
     assertTrue(nullComponentView.getMeasuredHeight() == 0
         && nullComponentView.getMeasuredWidth() == 0);
   }
+}

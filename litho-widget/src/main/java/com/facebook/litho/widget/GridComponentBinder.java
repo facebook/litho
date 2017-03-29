@@ -127,3 +127,13 @@ public abstract class GridComponentBinder extends RecyclerComponentBinder<
           EXACTLY);
     } else {
       return SizeSpec.makeSizeSpec(0, UNSPECIFIED);
+    }
+  }
+
+  @Override
+  protected int getHeightSpec(int position) {
+    final GridLayoutManager layoutManager = getLayoutManager();
+    final int spanCount = layoutManager.getSpanCount();
+    final int itemSpanCount = layoutManager.getSpanSizeLookup().getSpanSize(position);
+
+    if (layoutManager.getOrientation() == OrientationHelper.VERTICAL) {
