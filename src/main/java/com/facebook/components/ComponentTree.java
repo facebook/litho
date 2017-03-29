@@ -1063,3 +1063,4 @@ public class ComponentTree {
     }
 
     if (backgroundLayoutState != null) {
+      backgroundLayoutState.releaseRef();
