@@ -273,3 +273,6 @@ public abstract class PagerBinder extends BaseBinder<
     public void onItemRangeRemoved(int positionStart, int itemCount) {
       onDataSetChanged();
     }
+  }
+
+  private static class InternalOnPageChangeListener implements ViewPager.OnPageChangeListener {
