@@ -408,3 +408,5 @@ public class Stages {
    *   <li>3. Declared inter-stage prop parameters from previous stages (i.e. not
    *   {@link Prop}) correspond to outputs from that stage</li>
    *   <li>4. Inter-stage prop parameters come from previous stages. i.e. It is illegal to declare
+   *   a @FromMeasure parameter in @OnInflate</li>
+   *   <li>5. Inter-stage parameters don't have duplicate annotations (and that outputs aren't

@@ -474,3 +474,5 @@ public class ComponentTree {
     assertMainThread();
 
     Component component = null;
+    LayoutState toRelease;
+    synchronized (this) {
