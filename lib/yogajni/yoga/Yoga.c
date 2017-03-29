@@ -2238,3 +2238,4 @@ static void YGNodelayoutImpl(const YGNodeRef node,
         availableInnerMainDim = minInnerMainDim;
       } else if (!YGFloatIsUndefined(maxInnerMainDim) && sizeConsumedOnCurrentLine > maxInnerMainDim) {
         availableInnerMainDim = maxInnerMainDim;
+      } else if (YGConfigIsExperimentalFeatureEnabled(node->config, YGExperimentalFeatureMinFlexFix)) {
