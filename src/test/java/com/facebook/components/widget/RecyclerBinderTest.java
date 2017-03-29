@@ -780,3 +780,9 @@ public class RecyclerBinderTest {
 
     for (int i = 0; i < 100; i++) {
       Assert.assertNotNull(mHoldersForComponents.get(components.get(i).getComponent()));
+    }
+
+    Size size = new Size();
+    int widthSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
+    int heightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
+
