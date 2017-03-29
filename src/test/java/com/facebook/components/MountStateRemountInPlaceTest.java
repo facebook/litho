@@ -533,3 +533,8 @@ public class MountStateRemountInPlaceTest {
 
   @Test
   public void testSkipShouldUpdateAndRemountForUnsupportedComponent() {
+    final TestComponent firstComponent =
+        TestDrawableComponent.create(
+            mContext,
+            false,
+            true,

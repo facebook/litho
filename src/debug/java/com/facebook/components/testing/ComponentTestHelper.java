@@ -39,3 +39,9 @@ import static android.view.View.MeasureSpec.makeMeasureSpec;
  */
 public final class ComponentTestHelper {
 
+  /**
+   * Mount a component into a component view.
+   *
+   * @param component The component builder to mount
+   * @return A ComponentView with the component mounted in it.
+   */
