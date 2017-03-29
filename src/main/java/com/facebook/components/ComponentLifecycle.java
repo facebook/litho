@@ -620,3 +620,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
   protected boolean hasState() {
     return false;
   }
+}
