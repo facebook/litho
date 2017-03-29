@@ -232,3 +232,8 @@ public abstract class BaseBinder<
         componentList.add(createComponent(mContext, i));
       }
 
+      synchronized (this) {
+        // We need to check again because we exited the synchronized block and since the last check
+        // the result might have changed.
+        if (positionStart >= mComponentTrees.getFirstPosition() &&
+            positionStart <= mComponentTrees.getFirstPosition() + mComponentTrees.size()) {

@@ -302,3 +302,4 @@ class LayoutState {
     // getting the component from any of them works.
     if (visibleHandler != null) {
       handlerComponent = (Component<?>) visibleHandler.mHasEventDispatcher;
+    } else if (focusedHandler != null) {
