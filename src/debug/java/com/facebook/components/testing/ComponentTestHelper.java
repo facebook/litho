@@ -394,3 +394,13 @@ public final class ComponentTestHelper {
    * the given Context (unless a child overwrites its).
    */
   public static void setTreeProp(ComponentContext context, Class propClass, Object prop) {
+    TreeProps treeProps;
+    try {
+      treeProps = Whitebox.invokeMethod(context, "getTreeProps");
+      if (treeProps == null) {
+        treeProps = ComponentsPools.acquireTreeProps();
+        Whitebox.invokeMethod(context, "setTreeProps", treeProps);
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
