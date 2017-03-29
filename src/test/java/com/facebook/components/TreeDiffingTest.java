@@ -1116,3 +1116,6 @@ public class TreeDiffingTest {
     assertFalse(nestedLeaf2.wasMeasureCalled());
   }
 
+  private static void assertOutputsState(
+      LayoutState layoutState,
+      @LayoutOutput.UpdateState int state) {
