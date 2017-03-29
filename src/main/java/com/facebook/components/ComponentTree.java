@@ -626,3 +626,4 @@ public class ComponentTree {
     toPrePopulate.releaseRef();
   }
 
+  public void setRootAsync(Component<?> rootComponent) {
