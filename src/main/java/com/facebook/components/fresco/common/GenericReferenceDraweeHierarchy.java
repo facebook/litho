@@ -46,3 +46,9 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
   private Drawable mFailure;
   private Drawable mProgressBar;
   private Drawable mOverlayImage;
+
+  public GenericReferenceDraweeHierarchy(GenericDraweeHierarchy genericDraweeHierarchy) {
+    mGenericDraweeHierarchy = genericDraweeHierarchy;
+  }
+
+  /**
