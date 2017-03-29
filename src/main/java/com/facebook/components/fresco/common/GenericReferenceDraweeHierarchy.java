@@ -193,3 +193,7 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
    * @param scaleType
    *    The scale type of the progress bar drawable. Accepts null which will use the default
    *    scale type defined by GenericDraweeHierarchy.
+   *
+   * @param autoRotateInterval
+   *    The period at which the progressBarReference's drawable will rotate about itself,
+   *    measured in milliseconds.
