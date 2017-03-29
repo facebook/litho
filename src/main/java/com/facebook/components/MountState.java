@@ -529,3 +529,7 @@ class MountState {
   private static boolean shouldUpdateMountItem(
       LayoutOutput layoutOutput,
       MountItem currentMountItem,
+      boolean useUpdateValueFromLayoutOutput,
+      LongSparseArray<MountItem> indexToItemMap,
+      long[] layoutOutputsIds,
+      ComponentsLogger logger) {
