@@ -2202,3 +2202,4 @@ public class Stages {
       } else {
         typeName = JPUtil.getTypeFromMirror(componentMember.asType());
       }
+
