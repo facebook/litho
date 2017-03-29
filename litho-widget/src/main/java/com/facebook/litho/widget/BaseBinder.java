@@ -377,3 +377,9 @@ public abstract class BaseBinder<
           for (int i = positionStart, size = positionStart + itemCount; i < size; i++) {
             ComponentTree componentTree = getComponentAt(i);
 
+            if (componentTree != null) {
+              treesToRelease.add(componentTree);
+            }
+          }
+
+          mComponentTrees.removeShiftingLeft(positionStart, itemCount);
