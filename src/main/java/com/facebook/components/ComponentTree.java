@@ -1060,3 +1060,5 @@ public class ComponentTree {
     if (mainThreadLayoutState != null) {
       mainThreadLayoutState.releaseRef();
       mainThreadLayoutState = null;
+    }
+
