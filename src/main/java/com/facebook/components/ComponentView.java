@@ -292,3 +292,5 @@ public class ComponentView extends ComponentHost {
   void clearComponentTree() {
     if (mIsAttached) {
       throw new IllegalStateException("Trying to clear the ComponentTree while attached.");
+    }
+
