@@ -1050,3 +1050,5 @@ public class ComponentTree {
       mainThreadLayoutState = mMainThreadLayoutState;
       mMainThreadLayoutState = null;
 
+      backgroundLayoutState = mBackgroundLayoutState;
+      mBackgroundLayoutState = null;

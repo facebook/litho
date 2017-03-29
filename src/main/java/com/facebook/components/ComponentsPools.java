@@ -703,3 +703,11 @@ public class ComponentsPools {
 
     @Override
     public void onActivityDestroyed(Activity activity) {
+      ComponentsPools.onActivityDestroyed(activity);
+    }
+  }
+
+  static void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+    if (sMountContentPoolsByContext.containsKey(activity)) {
+      throw new IllegalStateException("The MountContentPools has a reference to an activity" +
+          "that has just been created");
