@@ -217,3 +217,6 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
       return;
     }
 
+    mProgressBarReference = progressBarReference;
+    mProgressBar = Reference.acquire(mContext, progressBarReference);
+
