@@ -142,3 +142,14 @@ void throwNewJavaException(jthrowable throwable) {
 }
 
 void throwNewJavaException(const char* throwableName, const char* msg) {
+  // If anything of the fbjni calls fail, an exception of a suitable
+  // form will be thrown, which is what we want.
+  auto throwableClass = findClassLocal(throwableName);
+  auto throwable = throwableClass->newObject(
+    throwableClass->getConstructor<jthrowable(jstring)>(),
+    make_jstring(msg).release());
+  throwNewJavaException(throwable.get());
+}
+
+// Translate C++ to Java Exception
+
