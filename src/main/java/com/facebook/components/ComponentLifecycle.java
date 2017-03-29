@@ -43,3 +43,9 @@ public abstract class ComponentLifecycle implements EventDispatcher {
 
   private boolean mPreallocationDone;
 
+  public enum MountType {
+    NONE,
+    DRAWABLE,
+    VIEW,
+  }
+

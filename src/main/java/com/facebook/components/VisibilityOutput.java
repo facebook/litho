@@ -87,3 +87,4 @@ class VisibilityOutput {
   }
 
   void release() {
+    mComponent = null;

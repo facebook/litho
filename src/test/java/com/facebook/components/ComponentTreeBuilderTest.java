@@ -77,3 +77,4 @@ public class ComponentTreeBuilderTest {
     assertTrue(componentTree.isIncrementalMountEnabled());
     assertEquals(mComponentsLogger, mContext.getLogger());
     assertEquals(mLogTag, mContext.getLogTag());
+
