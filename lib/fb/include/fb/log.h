@@ -299,3 +299,9 @@ int __android_log_print(int prio, const char *tag, const char *fmt, ...)
 #ifndef FBLOG_PRI_VA
 #define FBLOG_PRI_VA(priority, tag, fmt, args) \
   fb_vprintLog(priority, NULL, tag, fmt, args)
+#endif
+
+/*
+ * Conditional given a desired logging priority and tag.
+ */
+#ifndef IF_FBLOG
