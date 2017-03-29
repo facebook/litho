@@ -758,3 +758,4 @@ class LayoutState {
   private static LayoutOutput addDrawableLayoutOutput(
       Component<DrawableComponent> drawableComponent,
       LayoutState layoutState,
+      InternalNode node,
