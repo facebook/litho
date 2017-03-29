@@ -1120,3 +1120,4 @@ public class Stages {
       }
     }
 
+    if (!errors.isEmpty()) {
