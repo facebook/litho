@@ -2828,3 +2828,17 @@ public class Stages {
               .build());
     }
 
+    if (hasKeySetter) {
+      propsBuilderClassBuilder.addMethod(
+          new PropsBuilderMethodsSpecBuilder()
+              .builderClass(propsBuilderClassName)
+              .buildKeySetter());
+    }
+
+    if (hasLoadingEventHandlerSetter) {
+      propsBuilderClassBuilder.addMethod(
+          new PropsBuilderMethodsSpecBuilder()
+              .builderClass(propsBuilderClassName)
+              .buildLoadingEventHandlerSetter());
+    }
+
