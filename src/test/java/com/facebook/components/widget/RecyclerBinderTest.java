@@ -571,3 +571,5 @@ public class RecyclerBinderTest {
     final List<ComponentInfo> components = prepareLoadedBinder();
     mRecyclerBinder.moveItem(99, 4);
 
+    TestComponentTreeHolder movedHolder =
+        mHoldersForComponents.get(components.get(99).getComponent());
