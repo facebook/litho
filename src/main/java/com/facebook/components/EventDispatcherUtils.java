@@ -266,3 +266,7 @@ class EventDispatcherUtils {
 
     sOnRequestSendAccessibilityEventEvent.host = null;
     sOnRequestSendAccessibilityEventEvent.child = null;
+    sOnRequestSendAccessibilityEventEvent.event = null;
+    sOnRequestSendAccessibilityEventEvent.superDelegate = null;
+
+    return returnValue;
