@@ -2079,3 +2079,4 @@ static void YGNodelayoutImpl(const YGNodeRef node,
       child->isDirty = false;
       continue;
     }
+    YGResolveDimensions(child);
