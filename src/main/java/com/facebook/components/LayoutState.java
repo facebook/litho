@@ -759,3 +759,4 @@ class LayoutState {
       Component<DrawableComponent> drawableComponent,
       LayoutState layoutState,
       InternalNode node,
+      @LayoutOutput.LayoutOutputType int layoutOutputType,
