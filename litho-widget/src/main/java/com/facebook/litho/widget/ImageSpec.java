@@ -141,3 +141,10 @@ class ImageSpec {
         drawableWidth.set(layout.getWidth() - horizontalPadding);
         drawableHeight.set(layout.getHeight() - verticalPadding);
       } else {
+        final DrawableMatrix matrix = DrawableMatrix.create(
+            d,
+            scaleType,
+            layout.getWidth() - horizontalPadding,
+            layout.getHeight() - verticalPadding);
+
+        drawableMatrix.set(matrix);

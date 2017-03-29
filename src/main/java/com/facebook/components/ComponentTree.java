@@ -1097,3 +1097,4 @@ public class ComponentTree {
       defaultThread.start();
       sDefaultLayoutThreadLooper = defaultThread.getLooper();
     }
+
