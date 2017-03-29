@@ -166,3 +166,6 @@ public class MountSpecHelper extends ComponentSpecHelper {
             .addStatement("return true")
             .build());
 
+    mStages.generateDelegate(
+        methodDescription,
+        onMeasure,

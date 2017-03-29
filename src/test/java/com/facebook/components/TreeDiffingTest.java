@@ -835,3 +835,4 @@ public class TreeDiffingTest {
         0,
         SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(90, SizeSpec.EXACTLY),
+        true,
