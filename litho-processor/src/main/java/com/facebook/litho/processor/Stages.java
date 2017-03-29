@@ -1945,3 +1945,8 @@ public class Stages {
         addCompareStatement(implInstanceName, v, equalsBuilder, false);
       }
     }
+
+    for (VariableElement v : mStateMap.values()) {
+      addCompareStatement(implInstanceName, v, equalsBuilder, true);
+    }
+
