@@ -171,3 +171,9 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
     mClickableSpans = clickableSpans;
     mShouldHandleTouch = (clickableSpans != null && clickableSpans.length > 0);
     mHighlightColor = highlightColor;
+    if (userColor != 0) {
+      mColorStateList = null;
+      mUserColor = userColor;
+    } else {
+      mColorStateList = colorStateList != null ? colorStateList : TextSpec.textColorStateList;
+      mUserColor = mColorStateList.getDefaultColor();
