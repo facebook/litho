@@ -2705,3 +2705,4 @@ public class Stages {
     final String implInstanceName = getImplInstanceName();
     final String implMemberInstanceName = getImplMemberInstanceName();
     final String contextMemberInstanceName = "mContext";
+    final ClassName implClass = ClassName.bestGuess(implClassName);
