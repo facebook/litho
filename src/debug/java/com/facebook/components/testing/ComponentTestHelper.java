@@ -197,3 +197,15 @@ public final class ComponentTestHelper {
       int heightSpec) {
     componentView.setComponent(componentTree);
 
+    try {
+      Whitebox.invokeMethod(componentView, "onAttach");
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+
+    componentView.measure(widthSpec, heightSpec);
+    componentView.layout(
+        0,
+        0,
+        componentView.getMeasuredWidth(),
+        componentView.getMeasuredHeight());

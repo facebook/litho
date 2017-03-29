@@ -33,3 +33,9 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
 
   private final GenericDraweeHierarchy mGenericDraweeHierarchy;
 
+  private ComponentContext mContext;
+
+  private Reference<Drawable> mPlaceholderReference;
+  private Reference<Drawable> mRetryReference;
+  private Reference<Drawable> mFailureReference;
+  private Reference<Drawable> mProgressBarReference;
