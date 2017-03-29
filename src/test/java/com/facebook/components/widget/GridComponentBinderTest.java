@@ -37,3 +37,4 @@ import org.robolectric.shadows.ShadowLooper;
 
 import static junit.framework.Assert.assertEquals;
 
+@RunWith(ComponentsTestRunner.class)

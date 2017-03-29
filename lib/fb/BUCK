@@ -29,3 +29,4 @@ if COMPONENTS_IS_OSS_BUILD:
     deps = [
       COMPONENTS_JNI_TARGET,
     ],
+    visibility = [COMPONENTS_VISIBILITY],

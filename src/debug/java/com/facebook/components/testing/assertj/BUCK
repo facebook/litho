@@ -11,3 +11,8 @@ android_library(
         make_dep_path("src/test/..."),
     ],
     deps = [
+        COMPONENTS_ANDROIDSUPPORT_TARGET,
+        COMPONENTS_JAVA_TARGET,
+        COMPONENTS_POWERMOCK_REFLECT_TARGET,
+        make_dep_path("src/debug/java/com/facebook/components/testing/viewtree:viewtree"),
+        make_dep_path("src/debug/java/com/facebook/components/testing:testing"),
