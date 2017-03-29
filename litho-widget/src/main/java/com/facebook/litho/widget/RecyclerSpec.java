@@ -117,3 +117,8 @@ class RecyclerSpec {
     // TODO (t14949498) determine if this is necessary
     recyclerView.setId(recyclerViewId);
 
+    if (itemDecoration != null) {
+      recyclerView.addItemDecoration(itemDecoration);
+    }
+
+    binder.mount(recyclerView);
