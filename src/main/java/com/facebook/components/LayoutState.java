@@ -814,3 +814,5 @@ class LayoutState {
     ComponentsPools.release(node);
   }
 
+  /**
+   * If we have an interactive LayoutSpec or a MountSpec Drawable, we need to insert an
