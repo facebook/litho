@@ -130,3 +130,5 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
     mMatrix = null;
     mShouldClipRect = false;
     mWidth = mHeight = 0;
+  }
+
