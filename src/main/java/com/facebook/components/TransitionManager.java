@@ -120,3 +120,5 @@ class TransitionManager implements TransitionKeySetListener {
         // 1.2 Disappeared keys.
         mKeysStatus.put(key, KeyStatus.DISAPPEARED);
       } else {
+        // NOTE: If we have a running disappear transition, we keep the key to continue the
+        // animation.

@@ -28,3 +28,11 @@ public class TransitionSet extends Transition {
     mTransitions = Arrays.asList(transitions);
   }
 
+  TransitionSet(Transition.Builder... transitionBuilders) {
+    super(null, TransitionType.UNDEFINED);
+    mTransitions = new ArrayList<>();
+    for (int i = 0, size = transitionBuilders.length; i < size; i++) {
+      mTransitions.add(transitionBuilders[i].build());
+    }
+  }
+

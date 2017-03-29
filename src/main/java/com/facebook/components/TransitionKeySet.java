@@ -63,3 +63,5 @@ class TransitionKeySet implements TransitionListener {
   // Cumulative ValuesFlag to track across all the transitions for a given key.
   private @PropertyType int mTrackedValuesFlag;
   private View mTargetView;
+  private TransitionKeySetListener mTransitionKeySetListener;
+  private TransitionCleanupListener mTransitionCleanupListener;

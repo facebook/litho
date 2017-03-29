@@ -21,3 +21,5 @@ import com.facebook.components.ComponentTree;
 import com.facebook.components.ComponentView;
 
 /**
+ * Wrapper that encapsulates all the features {@link RecyclerSpec} provides such as
+ * sticky header and pull-to-refresh

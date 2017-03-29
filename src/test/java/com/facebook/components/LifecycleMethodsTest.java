@@ -51,3 +51,6 @@ public class LifecycleMethodsTest {
     mComponent = mLifecycle.create(10);
 
     final ComponentContext c = new ComponentContext(RuntimeEnvironment.application);
+    mComponentTree = ComponentTree.create(c, mComponent)
+        .incrementalMount(false)
+        .build();
