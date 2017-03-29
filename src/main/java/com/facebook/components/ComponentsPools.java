@@ -379,3 +379,4 @@ public class ComponentsPools {
     return diff;
   }
 
+  static ComponentTree.Builder acquireComponentTreeBuilder(ComponentContext c, Component<?> root) {
