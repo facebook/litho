@@ -103,3 +103,37 @@ class EditTextSpec {
       Output<Float> shadowDy,
       Output<Integer> shadowColor,
       Output<Integer> gravity) {
+
+    final TypedArray a = c.obtainStyledAttributes(R.styleable.Text, 0);
+
+    for (int i = 0, size = a.getIndexCount(); i < size; i++) {
+      final int attr = a.getIndex(i);
+
+      if (attr == R.styleable.Text_android_text) {
+        text.set(a.getString(attr));
+      } else if (attr == R.styleable.Text_android_textColor) {
+        textColorStateList.set(a.getColorStateList(attr));
+      } else if (attr == R.styleable.Text_android_textSize) {
+        textSize.set(a.getDimensionPixelSize(attr, 0));
+      } else if (attr == R.styleable.Text_android_ellipsize) {
+        final int index = a.getInteger(attr, 0);
+        if (index > 0) {
+          ellipsize.set(TRUNCATE_AT[index - 1]);
+        }
+      } else if (SDK_INT >= JELLY_BEAN_MR1 &&
+          attr == R.styleable.Text_android_textAlignment) {
+        textAlignment.set(ALIGNMENT[a.getInteger(attr, 0)]);
+      } else if (attr == R.styleable.Text_android_minLines) {
+        minLines.set(a.getInteger(attr, -1));
+      } else if (attr == R.styleable.Text_android_maxLines) {
+        maxLines.set(a.getInteger(attr, -1));
+      } else if (attr == R.styleable.Text_android_singleLine) {
+        isSingleLine.set(a.getBoolean(attr, false));
+      } else if (attr == R.styleable.Text_android_textColorLink) {
+        linkColor.set(a.getColor(attr, 0));
+      } else if (attr == R.styleable.Text_android_textColorHighlight) {
+        highlightColor.set(a.getColor(attr, 0));
+      } else if (attr == R.styleable.Text_android_textStyle) {
+        textStyle.set(a.getInteger(attr, 0));
+      } else if (attr == R.styleable.Text_android_lineSpacingMultiplier) {
+        spacingMultiplier.set(a.getFloat(attr, 0));
