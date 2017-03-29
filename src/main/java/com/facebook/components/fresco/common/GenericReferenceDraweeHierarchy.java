@@ -292,3 +292,14 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
       mOverlayImageReference = null;
       mGenericDraweeHierarchy.setOverlayImage(null);
     }
+    mContext = null;
+  }
+
+  public void setRoundingParams(RoundingParams roundingParams) {
+    mGenericDraweeHierarchy.setRoundingParams(roundingParams);
+  }
+
+  public void setPlaceholderImageFocusPoint(PointF placeholderImageFocusPoint) {
+    mGenericDraweeHierarchy.setPlaceholderImageFocusPoint(placeholderImageFocusPoint);
+  }
+
