@@ -225,3 +225,6 @@ public class ComponentTreeTest {
             .incrementalMount(false)
             .build();
     componentTree.setSizeSpecAsync(mWidthSpec, mHeightSpec);
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+

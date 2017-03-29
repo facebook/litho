@@ -198,3 +198,13 @@ class MountItem {
       mDisplayListDrawable = null;
     }
 
+    if (mNodeInfo != null) {
+      mNodeInfo.release();
+      mNodeInfo = null;
+    }
+
+    if (mViewNodeInfo != null) {
+      mViewNodeInfo.release();
+      mViewNodeInfo = null;
+    }
+
