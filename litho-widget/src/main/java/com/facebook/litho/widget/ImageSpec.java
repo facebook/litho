@@ -180,3 +180,4 @@ class ImageSpec {
   }
 
   @OnUnmount
+  static void onUnmount(

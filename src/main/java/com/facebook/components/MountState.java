@@ -715,3 +715,5 @@ class MountState {
    * The condition where an item changed host doesn't need any special treatment here since we
    * mark them as removed and re-added when calculating the new LayoutOutputs
    */
+  private PrepareMountStats unmountOrMoveOldItems(LayoutState newLayoutState) {
+    mPrepareMountStats.reset();
