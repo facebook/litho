@@ -115,3 +115,6 @@ public class IncrementalMountUtils {
       return;
     }
 
+    componentView.performIncrementalMount(sTmpRect);
+  }
+}
