@@ -316,3 +316,4 @@ FBEXPORT void setLogHandler(LogHandler logHandler);
  *
  * The stuff in the rest of this file should not be used directly.
  */
+FBEXPORT int fb_printLog(int prio, const char* tag, const char* fmt, ...)
