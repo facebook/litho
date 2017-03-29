@@ -189,3 +189,7 @@ class EditTextSpec {
 
     // TODO(11759579) - don't allocate a new EditText in every measure.
     final EditText editText = new EditText(c);
+
+    initEditText(
+        editText,
+        text,
