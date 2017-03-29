@@ -187,3 +187,18 @@ class BinderTreeCollection {
     shiftRangeRight(getFirstPosition(), size(), shiftByAmount);
   }
 
+  /**
+   * Shifts a range of items to the left. The elements next to the left side of the given range
+   * will be discarded. The empty positions that will be created next to the right side of the given
+   * range should be filled after the call to shiftRangeLeft.
+   * @param positionStart the beginning of the range that will be shifted
+   * @param itemCount the number of items that will be shifted
+   * @param shiftByAmount the amount by which the range will be shifted
+   */
+  private void shiftRangeLeft(int positionStart, int itemCount, int shiftByAmount) {
+    final int positionEnd = positionStart + itemCount - 1;
+
+    // Nothing to do if the collection is empty or if the range that is to be shifted is not
+    // contained in the collection.
+    if (mItems.size() == 0 || getFirstPosition() + size() - 1 < positionStart - shiftByAmount ||
+        positionEnd < getFirstPosition()) {

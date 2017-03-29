@@ -147,3 +147,16 @@ class LayoutStateOutputIdCalculator {
   }
 
   /**
+   * Calculates an id for a {@link VisibilityOutput}. See
+   * {@link LayoutStateOutputIdCalculator#calculateVisibilityOutputBaseId(VisibilityOutput, int)}
+   * and {@link LayoutStateOutputIdCalculator#calculateId(long, int)}.
+   */
+  static long calculateVisibilityOutputId(
+      VisibilityOutput visibilityOutput,
+      int level,
+      int sequence) {
+    final long baseId = calculateVisibilityOutputBaseId(visibilityOutput, level);
+    return calculateId(baseId, sequence);
+  }
+
+  /**

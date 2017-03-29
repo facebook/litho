@@ -194,3 +194,28 @@ public class MountStateVisibilityEventsTest {
     checkNoVisibilityEventsDispatched(mockLifecycle);
 
     mMountState.mount(layoutState, new Rect(LEFT, 9, RIGHT, 14));
+    verify(mockLifecycle, times(1)).dispatchOnEvent(
+        eq(fullImpressionHandler),
+        isA(FullImpressionVisibleEvent.class));
+  }
+
+  @Test
+  public void testInvisibleEvent() {
+    ComponentLifecycle mockLifecycle = createLifecycleMock();
+    Component<?> content = TestViewComponent.create(mContext).build();
+    Whitebox.setInternalState(content, "mLifecycle", mockLifecycle);
+
+    final EventHandler invisibleHandler = createEventHandler(content, INVISIBLE);
+
+    final List<VisibilityOutput> visibilityOutputs = new ArrayList<>();
+    visibilityOutputs.add(createVisibilityOutput(
+        content,
+        new Rect(LEFT, 5, RIGHT, 10),
+        null,
+        null,
+        null,
+        invisibleHandler));
+
+    final LayoutState layoutState = new LayoutState();
+    Whitebox.setInternalState(layoutState, "mVisibilityOutputs", visibilityOutputs);
+

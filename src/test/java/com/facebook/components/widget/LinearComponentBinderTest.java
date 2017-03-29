@@ -73,3 +73,5 @@ public class LinearComponentBinderTest {
 
     Mockito.doReturn(HEIGHT).when(mBinder).getHeight();
     Mockito.doReturn(WIDTH).when(mBinder).getWidth();
+  }
+

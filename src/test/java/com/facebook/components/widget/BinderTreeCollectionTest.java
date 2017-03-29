@@ -73,3 +73,4 @@ public class BinderTreeCollectionTest {
 
     mBinderTreeCollection.put(1, newComponentTree);
 
+    assertContiguous();
