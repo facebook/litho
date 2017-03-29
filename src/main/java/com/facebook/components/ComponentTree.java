@@ -188,3 +188,4 @@ public class ComponentTree {
   @CheckReturnValue
   @ReturnsOwnership
   private LayoutState setBestMainThreadLayoutAndReturnOldLayout() {
+    assertHoldsLock(this);
