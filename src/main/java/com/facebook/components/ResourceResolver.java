@@ -80,3 +80,4 @@ public class ResourceResolver {
     return resId != 0 ? mResources.getString(resId, formatArgs) : null;
   }
 
+  private final String[] resolveStringArrayRes(@ArrayRes int resId) {

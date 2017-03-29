@@ -311,3 +311,5 @@ public class BaseBinderTest {
 
     for (int i = 0, count = mBinder.getComponentCount(); i < count; i++) {
       assertTrue(mBinder.getComponentAt(i).isIncrementalMountEnabled());
+    }
+

@@ -104,3 +104,4 @@ class HorizontalScrollSpec {
         SizeSpec.makeSizeSpec(0, UNSPECIFIED),
         heightSpec,
         contentSize);
+

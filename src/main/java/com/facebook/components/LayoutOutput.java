@@ -68,3 +68,12 @@ class LayoutOutput implements Cloneable {
 
   void setComponent(Component<?> component) {
     mComponent = component;
+  }
+
+  void getMountBounds(Rect outRect) {
+    outRect.left = mBounds.left - mHostTranslationX;
+    outRect.top = mBounds.top - mHostTranslationY;
+    outRect.right = mBounds.right - mHostTranslationX;
+    outRect.bottom = mBounds.bottom - mHostTranslationY;
+  }
+
