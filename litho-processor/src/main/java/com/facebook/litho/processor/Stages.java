@@ -2730,3 +2730,4 @@ public class Stages {
 
     final TypeSpec.Builder propsBuilderClassBuilder = TypeSpec
         .classBuilder(builderClassName)
+        .addModifiers(Modifier.PUBLIC)
