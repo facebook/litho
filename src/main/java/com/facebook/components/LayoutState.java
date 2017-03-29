@@ -982,3 +982,4 @@ class LayoutState {
 
   private static void collectDisplayLists(LayoutState layoutState) {
     final Rect rect = new Rect();
+    final ComponentContext context = layoutState.mContext;
