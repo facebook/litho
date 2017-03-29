@@ -117,3 +117,17 @@ public interface ComponentLayout {
     Builder borderWidthRes(YogaEdge edge, @DimenRes int resId);
     Builder borderWidthDip(YogaEdge edge, @Dimension(unit = DP) int borderWidth);
     Builder borderColor(@ColorInt int borderColor);
+
+    Builder positionPx(YogaEdge edge, @Px int value);
+    Builder positionAttr(YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId);
+    Builder positionAttr(YogaEdge edge, @AttrRes int resId);
+    Builder positionRes(YogaEdge edge, @DimenRes int resId);
+    Builder positionDip(YogaEdge edge, @Dimension(unit = DP) int value);
+    Builder positionPercent(YogaEdge edge, float percent);
+
+    Builder widthPx(@Px int width);
+    Builder widthAttr(@AttrRes int resId, @DimenRes int defaultResId);
+    Builder widthAttr(@AttrRes int resId);
+    Builder widthRes(@DimenRes int resId);
+    Builder widthDip(@Dimension(unit = DP) int width);
+    Builder widthPercent(float percent);
