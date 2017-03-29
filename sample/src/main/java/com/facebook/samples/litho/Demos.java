@@ -61,3 +61,4 @@ public final class Demos {
       recyclerBinder.insertItemAt(recyclerBinder.getItemCount(), componentInfoBuilder.build());
     }
   }
+}
