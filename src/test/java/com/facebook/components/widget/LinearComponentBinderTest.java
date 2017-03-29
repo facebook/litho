@@ -241,3 +241,8 @@ public class LinearComponentBinderTest {
           "mComponentTrees")).getFirstPosition();
     }
 
+    int getComponentCount() {
+      return ((BinderTreeCollection) Whitebox.getInternalState(this, "mComponentTrees")).size();
+    }
+  }
+}

@@ -184,3 +184,39 @@ public class BinderTreeCollectionTest {
 
     ComponentTree treeAtPosition1 = mBinderTreeCollection.get(1);
     ComponentTree treeAtPosition5 = mBinderTreeCollection.get(5);
+    ComponentTree treeAtPositionLast = mBinderTreeCollection.get(originalSize);
+
+    mBinderTreeCollection.removeShiftingLeft(removePositionStart, removeItemCount);
+
+    assertContiguous();
+    assertEquals(originalSize - 3, mBinderTreeCollection.size());
+    assertEquals(treeAtPosition1, mBinderTreeCollection.get(1));
+    assertEquals(treeAtPosition5, mBinderTreeCollection.get(2));
+    assertEquals(treeAtPositionLast, mBinderTreeCollection.get(mBinderTreeCollection.size()));
+  }
+
+  @Test
+  public void testRemoveRangeStartBeforeFirstPosition() {
+    int originalSize = mBinderTreeCollection.size();
+    int removePositionStart = 0;
+    int removeItemCount = 3;
+
+    ComponentTree treeAtPosition3 = mBinderTreeCollection.get(3);
+    ComponentTree treeAtPositionLast = mBinderTreeCollection.get(originalSize);
+
+    mBinderTreeCollection.removeShiftingLeft(removePositionStart, removeItemCount);
+
+    assertContiguous();
+    assertEquals(originalSize - 2, mBinderTreeCollection.size());
+    assertEquals(treeAtPosition3, mBinderTreeCollection.get(0));
+    assertEquals(treeAtPositionLast, mBinderTreeCollection.get(mBinderTreeCollection.size() - 1));
+  }
+
+  @Test
+  public void testRemoveRangeBeforeCollection() {
+    int originalSize = mBinderTreeCollection.size();
+    int removePositionStart = 0;
+    int removeItemCount = 1;
+
+    ComponentTree treeAtPosition1 = mBinderTreeCollection.get(1);
+    ComponentTree treeAtPositionLast = mBinderTreeCollection.get(originalSize);
