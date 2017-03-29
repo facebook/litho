@@ -140,3 +140,6 @@ final class ViewPredicates {
     return (Predicate<View>) (Predicate<?>) Predicates.instanceOf(clazz);
   }
 
+  /**
+   * Tries to extract the description of a drawn drawable from a canvas
+   */
