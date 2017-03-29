@@ -166,3 +166,5 @@ public class MountItemTest {
             true,
             true, /* implementsAccessibility */
             false).build(),
+        mComponentHost,
+        mContent,

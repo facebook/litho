@@ -531,3 +531,4 @@ class LayoutState {
       layoutOutput.setDisplayList(currentDiffNode.getContent().getDisplayList());
     }
 
+    // 2. Add background if defined.
