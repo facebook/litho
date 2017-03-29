@@ -168,3 +168,4 @@ class PropsBuilderMethodsSpecBuilder {
         .addModifiers(Modifier.PUBLIC)
         .addParameter(
             ParameterizedTypeName.get(
+                ClassNames.EVENT_HANDLER,

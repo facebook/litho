@@ -462,3 +462,10 @@ public class TreeDiffingTest {
     assertEquals(hostHolder.getMountItemAt(2), mountItem2);
     hostHolder.moveItem(mountItem, 0, 2);
     hostHolder.moveItem(mountItem2, 2, 0);
+    assertEquals(hostHolder.getMountItemAt(0), mountItem2);
+    assertEquals(hostHolder.getMountItemAt(1), mountItem1);
+    assertEquals(hostHolder.getMountItemAt(2), mountItem);
+  }
+
+  @Test
+  public void testComponentHostMoveItemPartial() {

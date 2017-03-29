@@ -270,3 +270,12 @@ public class RecyclerBinder implements Binder<RecyclerView> {
    */
   @UiThread
   public final void updateItemAt(int position, ComponentInfo componentInfo) {
+    ThreadUtils.assertMainThread();
+
+    final ComponentTreeHolder holder;
+    final boolean shouldComputeLayout;
+    final int childrenWidthSpec, childrenHeightSpec;
+    synchronized (this) {
+      holder = mComponentTreeHolders.get(position);
+      shouldComputeLayout = mRange != null && position >= mCurrentFirstVisiblePosition &&
+          position < mCurrentFirstVisiblePosition + mRange.estimatedViewportCount;
