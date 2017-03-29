@@ -355,3 +355,4 @@ class EditTextSpec {
     editText.setEllipsize(ellipsize);
     editText.setMinLines(minLines);
     editText.setMaxLines(maxLines);
+    editText.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLength)});
