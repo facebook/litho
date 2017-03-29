@@ -1617,3 +1617,4 @@ class MountState {
 
     // Call the component's unmount() method.
     if (item.isBound()) {
+      lifecycle.onUnbind(context, content, component);
