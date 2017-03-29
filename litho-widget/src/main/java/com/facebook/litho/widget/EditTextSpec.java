@@ -312,3 +312,11 @@ class EditTextSpec {
 
   @OnUnmount
   static void onUnmount(
+      ComponentContext c,
+      EditTextTextTextChangedEventHandler editText) {
+    editText.setEventHandler(null);
+  }
+
+  private static void initEditText(
+      EditText editText,
+      CharSequence text,
