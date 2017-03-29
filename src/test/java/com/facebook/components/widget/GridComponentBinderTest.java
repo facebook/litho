@@ -280,3 +280,4 @@ public class GridComponentBinderTest {
 
     MyTestGridComponentBinder(
         Context context,
+        List<Integer> items,

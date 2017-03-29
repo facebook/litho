@@ -101,3 +101,11 @@ class DiffNode implements Cloneable {
     mContent = content;
   }
 
+  VisibilityOutput getVisibilityOutput() {
+    return mVisibilityOutput;
+  }
+
+  void setVisibilityOutput(VisibilityOutput visibilityOutput) {
+    mVisibilityOutput = visibilityOutput;
+  }
+
