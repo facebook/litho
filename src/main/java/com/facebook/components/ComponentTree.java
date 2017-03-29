@@ -755,3 +755,16 @@ public class ComponentTree {
         null /* output */);
   }
 
+  public void setRootAndSizeSpec(Component<?> root, int widthSpec, int heightSpec, Size output) {
+    if (root == null) {
+      throw new IllegalArgumentException("Root component can't be null");
+    }
+
+    setRootAndSizeSpecInternal(
+        root,
+        widthSpec,
+        heightSpec,
+        false /* isAsync */,
+        output);
+  }
+
