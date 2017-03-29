@@ -212,3 +212,7 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
       }
     }
 
+    if (progressBarReference == null) {
+      mGenericDraweeHierarchy.setProgressBarImage(null);
+      return;
+    }
