@@ -161,3 +161,7 @@ class BinderTreeCollection {
   private void shiftRangeRight(int positionStart, int itemCount, int shiftByAmount) {
     final int positionEnd = positionStart + itemCount - 1;
 
+    // Nothing to do if the collection is empty or if the range that is to be shifted is not
+    // contained in the collection.
+    if (mItems.size() == 0 || getFirstPosition() + size() - 1 < positionStart ||
+        positionEnd + shiftByAmount < getFirstPosition()) {

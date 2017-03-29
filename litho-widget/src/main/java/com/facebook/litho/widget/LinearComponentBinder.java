@@ -51,3 +51,7 @@ public abstract class LinearComponentBinder extends
     if (isIncrementalMountEnabled()) {
       IncrementalMountUtils.performIncrementalMount(recyclerView);
     }
+
+    getRangeController().notifyOnScroll(
+        firstViewPosition,
+        lastViewPosition - firstViewPosition + 1);

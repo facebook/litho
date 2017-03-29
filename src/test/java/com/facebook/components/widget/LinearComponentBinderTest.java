@@ -60,3 +60,5 @@ public class LinearComponentBinderTest {
     mItems.add(Color.LTGRAY);
     mItems.add(Color.RED);
     mItems.add(Color.MAGENTA);
+
+    Context context = RuntimeEnvironment.application;
