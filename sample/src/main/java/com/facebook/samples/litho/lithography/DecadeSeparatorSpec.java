@@ -26,3 +26,4 @@ public class DecadeSeparatorSpec {
   static ComponentLayout onCreateLayout(
       ComponentContext c,
       @Prop final Decade decade) {
+    return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
