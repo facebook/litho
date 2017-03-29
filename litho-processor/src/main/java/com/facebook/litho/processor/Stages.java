@@ -2064,3 +2064,4 @@ public class Stages {
   private void generateComponentClassProps(
       TypeSpec.Builder implClassBuilder,
       ClassName eventHandlerClassName) {
+    for (VariableElement v : mImplMembers.values()) {
