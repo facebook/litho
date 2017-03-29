@@ -69,3 +69,4 @@ public abstract class PagerBinder extends BaseBinder<
     setListener(mAdapter);
   }
 
+  /**
