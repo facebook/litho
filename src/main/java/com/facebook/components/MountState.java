@@ -1293,3 +1293,7 @@ class MountState {
   }
 
   private static void unsetViewTags(View view, SparseArray<Object> viewTags) {
+    if (view instanceof ComponentHost) {
+      final ComponentHost host = (ComponentHost) view;
+      host.setViewTags(null);
+    } else {
