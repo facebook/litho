@@ -2641,3 +2641,6 @@ public class Stages {
             : StaticFlag.NOT_STATIC,
         StyleableFlag.NOT_STYLEABLE,
         ClassNames.COMPONENT_CONTEXT);
+
+    writeMethodSpec(MethodSpec.methodBuilder("create")
+        .addModifiers(Modifier.PUBLIC)
