@@ -23,3 +23,4 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Tests {@link ViewTree}
  */
+@RunWith(ComponentsTestRunner.class)
