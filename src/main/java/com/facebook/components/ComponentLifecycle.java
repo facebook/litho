@@ -219,3 +219,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     } else {
       node = (InternalNode) onCreateLayout(context, component);
     }
+
