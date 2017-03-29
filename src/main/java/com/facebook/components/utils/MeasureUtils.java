@@ -185,3 +185,4 @@ public final class MeasureUtils {
 
       if (ComponentsConfiguration.IS_INTERNAL_BUILD) {
         Log.d(
+            "com.facebook.litho.utils.MeasureUtils",

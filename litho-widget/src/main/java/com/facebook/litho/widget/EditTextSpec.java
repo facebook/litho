@@ -68,3 +68,5 @@ class EditTextSpec {
   @PropDefault protected static final int maxLength = Integer.MAX_VALUE;
   @PropDefault protected static final int shadowColor = Color.GRAY;
   @PropDefault protected static final int textColor = DEFAULT_COLOR;
+  @PropDefault protected static final ColorStateList textColorStateList =
+      new ColorStateList(DEFAULT_TEXT_COLOR_STATE_LIST_STATES,DEFAULT_TEXT_COLOR_STATE_LIST_COLORS);
