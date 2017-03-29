@@ -275,3 +275,14 @@ public class ComponentView extends ComponentHost {
   }
 
   public void rebind() {
+    mMountState.rebind();
+  }
+
+  /**
+   * To be called this when the ComponentView is about to become inactive. This means that either
+   * the view is about to be recycled or moved off-screen.
+   */
+  public void unbind() {
+    mMountState.unbind();
+  }
+

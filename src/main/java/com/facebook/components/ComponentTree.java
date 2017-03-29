@@ -67,3 +67,6 @@ public class ComponentTree {
   private static final String DEFAULT_LAYOUT_THREAD_NAME = "ComponentLayoutThread";
   private static final int DEFAULT_LAYOUT_THREAD_PRIORITY = Process.THREAD_PRIORITY_BACKGROUND;
 
+  private static final int SCHEDULE_NONE = 0;
+  private static final int SCHEDULE_LAYOUT_ASYNC = 1;
+  private static final int SCHEDULE_LAYOUT_SYNC = 2;
