@@ -209,3 +209,5 @@ public class ComponentView extends ComponentHost {
         performLayoutOnChildrenIfNecessary(this);
       }
     }
+  }
+
