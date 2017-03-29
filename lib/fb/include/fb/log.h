@@ -331,3 +331,4 @@ FBEXPORT int fb_printLog(int prio, const char* tag, const char* fmt, ...)
 
 #define fb_bWriteLog(tag, payload, len) __android_log_bwrite(tag, payload, len)
 #define fb_btWriteLog(tag, type, payload, len) \
+  __android_log_btwrite(tag, type, payload, len)
