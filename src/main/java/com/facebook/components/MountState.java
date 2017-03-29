@@ -908,3 +908,4 @@ class MountState {
 
     // Create and keep a MountItem even for the layoutSpec with null content
     // that sets the root host interactions.
+    mIndexToItemMap.put(mLayoutOutputsIds[index], item);
