@@ -931,3 +931,23 @@ public class ComponentHost extends ViewGroup {
     drawable.setCallback(null);
 
     if (contentDrawable instanceof Touchable) {
+      if (ComponentHostUtils.existsScrapItemAt(index, mScrapTouchables)) {
+        mScrapTouchables.remove(index);
+      } else {
+        mTouchables.remove(index);
+      }
+    }
+
+    this.invalidate(drawable.getBounds());
+
+    releaseScrapDataStructuresIfNeeded();
+  }
+
+  private void moveDrawableItem(MountItem item, int oldIndex, int newIndex) {
+    // When something is already present in newIndex position we need to keep track of it.
+    if (mDrawableMountItems.get(newIndex) != null) {
+      ensureScrapDrawableMountItemsArray();
+
+      ComponentHostUtils.scrapItemAt(newIndex, mDrawableMountItems, mScrapDrawableMountItems);
+    }
+
