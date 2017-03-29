@@ -73,3 +73,4 @@ class TransferStateSpecBuilder {
             mStateContainerImplClassName,
             mStateContainerImplClassName)
         .addStatement(
+            "$L componentImpl = ($L) component",

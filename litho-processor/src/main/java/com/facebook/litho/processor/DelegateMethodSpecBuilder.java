@@ -219,3 +219,10 @@ class DelegateMethodSpecBuilder {
 
     for (Parameter parameter : mToParams) {
       if (isOutputType(parameter.type)) {
+        final String stateContainerMember = mStateParamNames.contains(parameter.name)
+            ? "." + Stages.STATE_CONTAINER_IMPL_MEMBER
+            : "";
+        delegate.addStatement(
+            IMPL_INSTANCE_NAME + stateContainerMember + ".$L = $L.get()",
+            parameter.name,
+            parameter.name);

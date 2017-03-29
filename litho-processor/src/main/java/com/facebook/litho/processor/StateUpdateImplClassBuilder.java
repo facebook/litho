@@ -88,3 +88,13 @@ public class StateUpdateImplClassBuilder {
   /**
    * Set the name of the method annotated with
    *  {@link com.facebook.litho.annotations.OnUpdateState}
+   * @param name method name
+   */
+  public StateUpdateImplClassBuilder withSpecOnUpdateStateMethodName(String name) {
+    this.mSpecOnUpdateStateMethodName = name;
+    return this;
+  }
+
+  /**
+   * Set the parameters that are used to calculate the new value of a state.
+   * @param params params used to update the state, annotated with {@link Param} in the
