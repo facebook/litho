@@ -768,3 +768,8 @@ public class ComponentHost extends ViewGroup {
 
   @Override
   public Object getTag(int key) {
+    if (mViewTags != null) {
+      final Object value = mViewTags.get(key);
+      if (value != null) {
+        return value;
+      }
