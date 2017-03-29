@@ -291,3 +291,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     ComponentsPools.release(diff);
   }
 
+  /**
