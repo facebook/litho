@@ -384,3 +384,7 @@ public class ComponentHost extends ViewGroup {
   }
 
   /**
+   * Moves the MountItem associated to oldIndex in the newIndex position. This happens when a
+   * ComponentView needs to re-arrange the internal order of its items. If an item is already
+   * present in newIndex the item is guaranteed to be either unmounted or moved to a different index
+   * by subsequent calls to either {@link ComponentHost#unmount(int, MountItem)} or
