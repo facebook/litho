@@ -749,3 +749,5 @@ public class ComponentHostTest {
         null,
         content,
         null,
+        viewNodeInfo,
+        null,
