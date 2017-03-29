@@ -588,3 +588,4 @@ public class ComponentTree {
    * we will run a layout and then proxy a message to the main thread to cause a
    * relayout/invalidate.
    */
+  public void setRoot(Component<?> rootComponent) {
