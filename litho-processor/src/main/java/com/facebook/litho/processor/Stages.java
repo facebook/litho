@@ -1172,3 +1172,21 @@ public class Stages {
       ClassName stateContainerClassName,
       ClassName stateUpdateInterface,
       Stages.StaticFlag staticFlag) {
+    for (ExecutableElement element : mOnUpdateStateMethods) {
+      validateOnStateUpdateMethodDeclaration(element);
+      generateStateUpdateClass(
+          element,
+          componentClassName,
+          stateContainerClassName,
+          stateUpdateInterface,
+          staticFlag);
+      generateOnStateUpdateMethods(element, contextClass, componentClassName);
+    }
+  }
+
+  /**
+   * Validate that the declaration of a method annotated with {@link OnUpdateState} is correct:
+   * <ul>
+   *   <li>1. Method parameters annotated with {@link Param} don't have the same name as parameters
+   *    annotated with {@link State} or {@link Prop}.</li>
+   *   <li>2. Method parameters not annotated with {@link Param} must be of type
