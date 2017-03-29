@@ -790,3 +790,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode heightPx(@Px int height) {
+    mPrivateFlags |= PFLAG_HEIGHT_IS_SET;
