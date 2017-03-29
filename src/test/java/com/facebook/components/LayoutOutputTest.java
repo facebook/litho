@@ -252,3 +252,4 @@ public class LayoutOutputTest {
         return LIFECYCLE_TEST_ID;
       }
     };
+    Component component = new TestComponent(lifecycle) {};
