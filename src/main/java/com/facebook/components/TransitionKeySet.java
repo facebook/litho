@@ -249,3 +249,8 @@ class TransitionKeySet implements TransitionListener {
         break;
     }
 
+    return start(
+        keyStatusToResume,
+        listener,
+        oldTransitionToResumeFrom,
+        oldTransition != null ? oldTransition.mInterruptedValues : null);
