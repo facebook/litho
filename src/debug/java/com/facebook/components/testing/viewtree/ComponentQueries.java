@@ -60,3 +60,7 @@ class ComponentQueries {
    * @return true if the given host contains the drawable.
    */
   static boolean hasDrawable(final ComponentHost host, final Drawable drawable) {
+    return satisfiesPredicate(
+        host,
+        new Predicate<Drawable>() {
+          @Override
