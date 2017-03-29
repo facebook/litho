@@ -291,3 +291,4 @@ public class ComponentContext extends ContextWrapper {
       setDefStyle(0, 0);
     }
   }
+}
