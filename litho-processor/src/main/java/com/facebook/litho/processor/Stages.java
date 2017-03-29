@@ -1646,3 +1646,6 @@ public class Stages {
         implClassName,
         implClassName);
 
+    for (int i = ON_STYLE_PROPS, size = parameters.size(); i < size; i++) {
+      final VariableElement v = parameters.get(i);
+      final String name = v.getSimpleName().toString();
