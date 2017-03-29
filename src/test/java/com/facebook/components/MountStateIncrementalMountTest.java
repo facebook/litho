@@ -253,3 +253,36 @@ public class MountStateIncrementalMountTest {
                     Layout.create(c, child2).flexShrink(0)
                         .widthPx(10)
                         .heightPx(10))
+                .build();
+          }
+        });
+
+    verifyLoggingAndResetLogger(2, 0);
+
+    componentView.getComponent().mountComponent(new Rect(0, -10, 10, -5));
+    assertFalse(child1.isMounted());
+    assertFalse(child2.isMounted());
+    verifyLoggingAndResetLogger(0, 2);
+
+    componentView.getComponent().mountComponent(new Rect(0, 0, 10, 5));
+    assertTrue(child1.isMounted());
+    assertFalse(child2.isMounted());
+    verifyLoggingAndResetLogger(1, 0);
+
+    componentView.getComponent().mountComponent(new Rect(0, 5, 10, 15));
+    assertTrue(child1.isMounted());
+    assertTrue(child2.isMounted());
+    verifyLoggingAndResetLogger(1, 0);
+
+    componentView.getComponent().mountComponent(new Rect(0, 15, 10, 25));
+    assertFalse(child1.isMounted());
+    assertTrue(child2.isMounted());
+    verifyLoggingAndResetLogger(0, 1);
+
+    componentView.getComponent().mountComponent(new Rect(0, 20, 10, 30));
+    assertFalse(child1.isMounted());
+    assertFalse(child2.isMounted());
+    verifyLoggingAndResetLogger(0, 1);
+  }
+
+  /**

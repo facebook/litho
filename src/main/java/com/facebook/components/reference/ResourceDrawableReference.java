@@ -115,3 +115,4 @@ public final class ResourceDrawableReference extends ReferenceLifecycle<Drawable
       super.init(context, state);
 
       mState = state;
+      mContext = context;
