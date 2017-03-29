@@ -55,3 +55,8 @@ public class ComponentQueriesTest {
 
   @Test
   public void testExtractTextFromTextComponent() {
+    final ComponentView view = ComponentTestHelper.mountComponent(
+        mContext,
+        Text.create(mContext)
+            .text("hello")
+            .build());

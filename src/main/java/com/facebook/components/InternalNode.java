@@ -991,3 +991,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   public InternalNode touchExpansionDip(
       YogaEdge edge,
       @Dimension(unit = DP) int touchExpansion) {
+    return touchExpansionPx(edge, mResourceResolver.dipsToPixels(touchExpansion));
