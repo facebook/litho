@@ -50,3 +50,4 @@ public class BaseBinderTest {
   private ComponentView mComponentView2;
 
   @Before
+  public void setup() throws Exception {

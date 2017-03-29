@@ -34,3 +34,4 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.fail;
 
 @RunWith(ComponentsTestRunner.class)
+public class ComponentTreeTest {

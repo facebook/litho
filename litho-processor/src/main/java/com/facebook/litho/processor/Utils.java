@@ -30,3 +30,9 @@ import java.util.Map;
 
 import com.squareup.javapoet.ClassName;
 
+public class Utils {
+
+  private static final String SPEC_SUFFIX = "Spec";
+
+  public static String getGenClassName(TypeElement specElement, String name) {
+    if (name.isEmpty()) {

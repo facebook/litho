@@ -19,3 +19,5 @@ import com.squareup.javapoet.TypeName;
  * We use method descriptions to refer to abstract methods defined in {@link ComponentLifecycle},
  * so that we can define implementations that delegate to client-declared methods with annotated
  * props.
+ */
+public class MethodDescription {
