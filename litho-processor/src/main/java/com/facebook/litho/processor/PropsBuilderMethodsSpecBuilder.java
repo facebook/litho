@@ -125,3 +125,7 @@ class PropsBuilderMethodsSpecBuilder {
         break;
       case FLOAT:
         builders.add(regularBuilder());
+        builders.add(resBuilder(ClassNames.DIMEN_RES, "resolveFloat"));
+        builders.addAll(attrBuilders(ClassNames.DIMEN_RES, "resolveFloat"));
+        break;
+      case DRAWABLE:
