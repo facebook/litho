@@ -1735,3 +1735,5 @@ public class Stages {
     }
 
     writeInnerTypeSpec(implClassBuilder.build());
+  }
+
