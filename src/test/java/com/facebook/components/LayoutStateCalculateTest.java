@@ -1301,3 +1301,6 @@ public class LayoutStateCalculateTest {
     assertEquals(3, layoutState.getMountableOutputCount());
     assertNull(layoutState.getMountableOutputAt(0).getNodeInfo());
     assertEquals(FOCUS_SET_TRUE, layoutState.getMountableOutputAt(1).getNodeInfo().getFocusState());
+  }
+
+  @Test
