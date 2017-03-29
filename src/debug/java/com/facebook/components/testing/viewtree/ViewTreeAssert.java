@@ -225,3 +225,6 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
   }
 
   private ImmutableList<View> getPathToViewTag(final int tagId, final Object tagValue) {
+    return actual.findChild(ViewPredicates.hasTag(tagId, tagValue));
+  }
+
