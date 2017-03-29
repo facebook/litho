@@ -301,3 +301,8 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
   }
 
   private ImmutableList<View> getPathToVisibleMatchingText(final String pattern) {
+    return actual.findChild(
+        ViewPredicates.hasVisibleMatchingText(pattern),
+        ViewPredicates.isVisible());
+  }
+
