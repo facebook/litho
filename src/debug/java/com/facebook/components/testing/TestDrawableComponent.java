@@ -71,3 +71,4 @@ public class TestDrawableComponent extends ComponentLifecycle {
   private TestDrawableComponent(
       boolean callsShouldUpdateOnMount,
       boolean isPureRender,
+      boolean canMeasure,

@@ -45,3 +45,5 @@ class LayoutOutput implements Cloneable {
   private NodeInfo mNodeInfo;
   private ViewNodeInfo mViewNodeInfo;
   private long mId;
+  private Component<?> mComponent;
+  private final Rect mBounds = new Rect();

@@ -72,3 +72,6 @@ public class LifecycleMethodsTest {
 
     mComponentTree.setRoot(mLifecycle.create(20));
     ComponentTestHelper.measureAndLayout(mComponentView);
+    assertEquals(LifecycleStep.ON_UNMOUNT, mComponent.getCurrentStep());
+
+    mComponentTree.setRoot(mComponent);
