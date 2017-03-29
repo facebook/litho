@@ -641,3 +641,4 @@ public class Stages {
     }
 
     mProps = new ArrayList<>(variableNameToElementMap.values());
+    addCreateInitialStateDefinedProps(mProps);
