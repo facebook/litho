@@ -84,3 +84,7 @@ public class ViewPredicatesTest {
     assertThat(hasHello.apply(mTextViewWithHello)).isTrue();
     assertThat(hasHello.apply(mTextViewWithWorld)).isFalse();
     assertThat(hasHello.apply(mComponentViewWithText)).isTrue();
+  }
+
+  @Test
+  public void testHasVisibleText() throws Exception {
