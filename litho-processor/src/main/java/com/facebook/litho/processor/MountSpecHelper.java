@@ -547,3 +547,5 @@ public class MountSpecHelper extends ComponentSpecHelper {
         ClassNames.COMPONENT);
   }
 
+  private void generateGetExtraAccessibilityNodeAt(ExecutableElement getExtraAccessibilityNodeAt) {
+    final MethodDescription methodDescription = new MethodDescription();
