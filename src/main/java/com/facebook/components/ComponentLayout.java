@@ -366,3 +366,4 @@ public interface ComponentLayout {
     ContainerBuilder foregroundRes(@DrawableRes int resId);
     ContainerBuilder foregroundColor(@ColorInt int foregroundColor);
 
+    ContainerBuilder wrapInView();
