@@ -330,3 +330,4 @@ public class MountStateIncrementalMountTest {
    * (since the bounds of the component will be larger than the bounds of the view).
    */
   @Test
+  public void testIncrementalMountVerticalDrawableStackNegativeMargin() {
