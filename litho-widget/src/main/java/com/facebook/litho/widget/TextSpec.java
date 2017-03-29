@@ -34,3 +34,4 @@ import com.facebook.R;
 import com.facebook.components.ComponentContext;
 import com.facebook.components.ComponentLayout;
 import com.facebook.components.ComponentsLogger;
+import com.facebook.components.config.ComponentsConfiguration;

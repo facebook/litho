@@ -70,3 +70,4 @@ class PropsBuilderMethodsSpecBuilder {
 
     switch (mPropParameter.resType) {
       case STRING:
+        builders.add(regularBuilder());
