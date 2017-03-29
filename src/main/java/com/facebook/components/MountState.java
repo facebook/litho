@@ -1594,3 +1594,5 @@ class MountState {
       if (componentHost.hasDisappearingItems()) {
         mTransitionManager.cleanupDisappearingTransitions(componentHost.getDisappearingItemKeys());
       }
+    }
+
