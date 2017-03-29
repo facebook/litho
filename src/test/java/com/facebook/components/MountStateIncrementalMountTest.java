@@ -331,3 +331,10 @@ public class MountStateIncrementalMountTest {
    */
   @Test
   public void testIncrementalMountVerticalDrawableStackNegativeMargin() {
+    final TestComponent child1 = TestDrawableComponent.create(mContext)
+        .build();
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {

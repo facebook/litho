@@ -82,3 +82,21 @@ public class TreePropGenerator {
             specModel.getDependencyInjectionHelper()
                 .getSourceDelegateAccessorMethod(specModel));
 
+    final MethodSpec.Builder builder = MethodSpec.methodBuilder("getTreePropsForChildren")
+        .addAnnotation(Override.class)
+        .addModifiers(Modifier.PROTECTED)
+        .returns(ClassNames.TREE_PROPS)
+        .addParameter(specModel.getContextClass(), "c")
+        .addParameter(specModel.getComponentClass(), "_abstractImpl")
+        .addParameter(ClassNames.TREE_PROPS, "parentTreeProps")
+        .addStatement(
+            "final $L _impl = ($L) _abstractImpl",
+            ComponentImplGenerator.getImplClassName(specModel),
+            ComponentImplGenerator.getImplClassName(specModel))
+        .addStatement(
+            "final $T childTreeProps = $T.copy(parentTreeProps)",
+            ClassNames.TREE_PROPS,
+            ClassNames.TREE_PROPS);
+
+    for (DelegateMethodModel onCreateTreePropsMethod : onCreateTreePropsMethods) {
+      final CodeBlock.Builder block = CodeBlock.builder();

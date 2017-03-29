@@ -155,3 +155,7 @@ public class ComponentTree {
     mContext = ComponentContext.withComponentTree(builder.context, this);
     mRoot = builder.root;
 
+    mIncrementalMountEnabled = builder.incrementalMountEnabled;
+    mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
+    mLayoutThreadHandler = builder.layoutThreadHandler;
+    mLayoutLock = builder.layoutLock;
