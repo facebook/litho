@@ -388,3 +388,4 @@ class TransitionKeySet implements TransitionListener {
     }
     resetViewPropertiesAfterDisappear();
   }
+}

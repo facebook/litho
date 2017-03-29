@@ -206,3 +206,4 @@ public interface ComponentLayout {
     Builder contentDescription(@StringRes int stringId, Object... formatArgs);
     Builder viewTag(Object viewTag);
     Builder viewTags(SparseArray<Object> viewTags);
+    Builder transitionKey(String key);
