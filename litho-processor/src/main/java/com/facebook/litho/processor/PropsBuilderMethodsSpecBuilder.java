@@ -130,3 +130,7 @@ class PropsBuilderMethodsSpecBuilder {
         break;
       case DRAWABLE:
         builders.add(regularBuilder());
+        builders.add(resBuilder(ClassNames.DRAWABLE_RES, "resolveDrawable"));
+        builders.addAll(attrBuilders(ClassNames.DRAWABLE_RES, "resolveDrawable"));
+        break;
+      case NONE:
