@@ -70,3 +70,8 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
           generate(mountSpecHelper);
         }
 
+        if (specModel != null) {
+          validate(specModel);
+          generate(specModel);
+        }
+

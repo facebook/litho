@@ -163,3 +163,4 @@ public class MountStateVisibilityEventsTest {
     mMountState.mount(layoutState, new Rect(LEFT, 2, RIGHT, 7));
     checkNoVisibilityEventsDispatched(mockLifecycle);
 
+    mMountState.mount(layoutState, new Rect(LEFT, 3, RIGHT, 8));
