@@ -899,3 +899,4 @@ public class Stages {
               .builder(className, SPEC_INSTANCE_NAME, Modifier.PRIVATE, Modifier.STATIC)
               .initializer("null")
               .build());
+
