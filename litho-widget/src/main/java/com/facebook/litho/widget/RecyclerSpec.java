@@ -45,3 +45,4 @@ class RecyclerSpec {
   @PropDefault static final boolean hasFixedSize = true;
   @PropDefault static final boolean nestedScrollingEnabled = true;
   @PropDefault static final ItemAnimator itemAnimator = new NoUpdateItemAnimator();
+  @PropDefault static final int recyclerViewId = View.NO_ID;
