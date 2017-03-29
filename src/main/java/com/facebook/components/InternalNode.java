@@ -1519,3 +1519,5 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       node.mDuplicateParentState = mDuplicateParentState;
     }
     if ((mPrivateFlags & PFLAG_BACKGROUND_IS_SET) != 0L) {
+      node.mBackground = mBackground;
+    }
