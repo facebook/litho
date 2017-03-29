@@ -1128,3 +1128,9 @@ public class Stages {
         .implClassName(getImplClassName())
         .abstractImplType(propsClass)
         .implParameters(mImplParameters)
+        .checkedExceptions(
+            from.exceptions == null ?
+                new ArrayList<TypeName>() :
+                Arrays.asList(from.exceptions))
+        .overridesSuper(
+            from.annotations != null && Arrays.asList(from.annotations).contains(Override.class))
