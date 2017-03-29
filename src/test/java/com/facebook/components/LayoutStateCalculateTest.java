@@ -1094,3 +1094,5 @@ public class LayoutStateCalculateTest {
 
     assertEquals(5, layoutState.getMountableOutputCount());
 
+    long hostMarkerRoot = layoutState.getMountableOutputAt(0).getId();
+    long hostMarkerOne = layoutState.getMountableOutputAt(1).getId();
