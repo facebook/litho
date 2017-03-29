@@ -527,3 +527,5 @@ public abstract class BaseBinder<
     return 0;
   }
 
+  int getComponentPosition(ComponentTree componentTree) {
+    synchronized (this) {
