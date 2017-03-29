@@ -2144,3 +2144,4 @@ public class Stages {
   public void generateShouldUpdateMethod(
       ExecutableElement shouldUpdateElement,
       ClassName comparedInstancesClassName) {
+    final ClassName implClass = ClassName.bestGuess(getImplClassName());
