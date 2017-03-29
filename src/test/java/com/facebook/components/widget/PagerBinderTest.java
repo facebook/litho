@@ -246,3 +246,15 @@ public class PagerBinderTest {
 
     @Override
     public boolean isAsyncLayoutEnabled() {
+      return true;
+    }
+
+    int getFirstPosition() {
+      return ((BinderTreeCollection) Whitebox.getInternalState(
+          this,
+          "mComponentTrees")).getFirstPosition();
+    }
+
+    int getComponentCount() {
+      return ((BinderTreeCollection) Whitebox.getInternalState(this, "mComponentTrees")).size();
+    }
