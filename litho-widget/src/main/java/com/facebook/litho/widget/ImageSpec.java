@@ -123,3 +123,4 @@ class ImageSpec {
   static void onBoundsDefined(
       ComponentContext c,
       ComponentLayout layout,
+      @Prop(resType = ResType.DRAWABLE) Reference<Drawable> src,
