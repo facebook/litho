@@ -17,3 +17,9 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.view.ViewGroup;
 
+import com.facebook.litho.testing.ComponentTestHelper;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.TestComponent;
+import com.facebook.litho.testing.TestComponentContextWithView;
+import com.facebook.litho.testing.TestDrawableComponent;
+import com.facebook.litho.testing.TestViewComponent;

@@ -11,3 +11,6 @@ package com.facebook.samples.litho;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentTree;
+import com.facebook.litho.ComponentView;

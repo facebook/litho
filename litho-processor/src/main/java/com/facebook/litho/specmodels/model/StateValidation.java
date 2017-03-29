@@ -133,3 +133,4 @@ public class StateValidation {
                   methodParam.getRepresentedObject(),
                   "Only state parameters and parameters annotated with @Param are permitted in " +
                       "@OnUpdateState method, and all state parameters must be of type " +
+                      "com.facebook.litho.StateValue, but " + methodParam.getName() +

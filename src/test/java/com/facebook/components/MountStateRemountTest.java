@@ -19,3 +19,8 @@ import java.util.List;
 import android.support.v4.util.LongSparseArray;
 import android.support.v4.util.Pools;
 
+import com.facebook.litho.testing.ComponentTestHelper;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.TestComponent;
+import com.facebook.litho.testing.TestDrawableComponent;
+import com.facebook.litho.testing.TestViewComponent;

@@ -14,3 +14,8 @@ import java.lang.reflect.Method;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import com.facebook.litho.Component;
+import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentLifecycle;
+import com.facebook.litho.ComponentTree;
+import com.facebook.litho.ComponentView;

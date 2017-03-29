@@ -49,3 +49,6 @@ public class DecadeSeparatorSpec {
                 .heightPx(1)
                 .backgroundColor(0xFFAAAAAA)
                 .flex(1).flexBasisDip(0))
+        .build();
+  }
+}

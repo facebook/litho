@@ -32,3 +32,4 @@ public class LithographyRootComponentSpec {
       @Prop final RecyclerBinder recyclerBinder) {
 
     return Recycler.create(c)
+        .binder(recyclerBinder)
