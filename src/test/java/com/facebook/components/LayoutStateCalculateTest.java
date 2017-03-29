@@ -1464,3 +1464,5 @@ public class LayoutStateCalculateTest {
         IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
     assertEquals(
         layoutState.getMountableOutputAt(5).getImportantForAccessibility(),
+        IMPORTANT_FOR_ACCESSIBILITY_YES);
+    assertEquals(

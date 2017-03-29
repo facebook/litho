@@ -253,3 +253,5 @@ class MountState {
 
     processTestOutputs(layoutState);
 
+    suppressInvalidationsOnHosts(false);
+
