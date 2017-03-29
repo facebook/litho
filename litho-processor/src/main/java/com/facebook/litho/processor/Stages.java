@@ -2066,3 +2066,4 @@ public class Stages {
       ClassName eventHandlerClassName) {
     for (VariableElement v : mImplMembers.values()) {
       implClassBuilder.addField(getPropFieldSpec(v, false));
+    }
