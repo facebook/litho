@@ -292,3 +292,4 @@ public class GridComponentBinderTest {
     }
 
     @Override
+    public Component<?> createComponent(ComponentContext c, int position) {

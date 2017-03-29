@@ -314,3 +314,46 @@ public class MountStateRemountInPlaceTest {
         })
             .incrementalMount(false)
             .build(),
+        makeMeasureSpec(100, EXACTLY),
+        makeMeasureSpec(100, EXACTLY));
+
+    assertTrue(firstComponent.wasOnMountCalled());
+    assertTrue(firstComponent.wasOnBindCalled());
+    assertFalse(firstComponent.wasOnUnmountCalled());
+
+    final TestComponent secondComponent =
+        TestDrawableComponent.create(mContext)
+            .build();
+
+    componentView.getComponent().setRoot(new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            .child(secondComponent)
+            .widthPx(10)
+            .heightPx(10)
+            .build();
+      }
+    });
+
+    assertFalse(componentView.isLayoutRequested());
+    assertTrue(secondComponent.wasOnMountCalled());
+    assertTrue(secondComponent.wasOnBindCalled());
+    assertTrue(firstComponent.wasOnUnmountCalled());
+  }
+
+  @Test
+  public void testRebindWithNoShouldUpdateAndSameMeasures() {
+    final TestComponent firstComponent =
+        TestDrawableComponent.create(mContext)
+            .build();
+
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        new ComponentView(mContext),
+        ComponentTree.create(mContext, new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                .child(firstComponent)
+                .build();
+          }
