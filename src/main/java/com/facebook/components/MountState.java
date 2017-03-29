@@ -960,3 +960,4 @@ class MountState {
           view.getBottom() != bottom) {
         view.layout(left, top, right, bottom);
       }
+    } else if (content instanceof Drawable) {
