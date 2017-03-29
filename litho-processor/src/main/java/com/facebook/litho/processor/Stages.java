@@ -71,3 +71,5 @@ import com.squareup.javapoet.WildcardTypeName;
 
 import static com.facebook.components.processor.Utils.capitalize;
 import static com.facebook.components.processor.Visibility.PRIVATE;
+import static com.facebook.components.specmodels.generator.GeneratorConstants.DELEGATE_FIELD_NAME;
+import static com.facebook.components.specmodels.generator.GeneratorConstants.SPEC_INSTANCE_NAME;

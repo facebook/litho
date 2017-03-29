@@ -123,3 +123,4 @@ class HorizontalScrollSpec {
   }
 
   @OnBoundsDefined
+  static void onBoundsDefined(
