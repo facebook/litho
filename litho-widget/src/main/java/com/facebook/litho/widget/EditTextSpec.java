@@ -377,3 +377,6 @@ class EditTextSpec {
     if (textColor != 0) {
       editText.setTextColor(textColor);
     } else {
+      editText.setTextColor(textColorStateList);
+    }
+
