@@ -124,3 +124,5 @@ public class ComponentsPools {
   private static final Pools.SynchronizedPool<Spacing> sSpacingPool =
       new Pools.SynchronizedPool<>(30);
 
+  private static final Pools.SynchronizedPool<TransitionContext> sTransitionContextPool =
+      new Pools.SynchronizedPool<>(2);

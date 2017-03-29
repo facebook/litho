@@ -630,3 +630,18 @@ public class ComponentHost extends ViewGroup {
     return mTouchExpansionDelegate;
   }
 
+  @Override
+  public void dispatchDraw(Canvas canvas) {
+    mDispatchDraw.start(canvas);
+
+    super.dispatchDraw(canvas);
+
+    // Cover the case where the host has no child views, in which case
+    // getChildDrawingOrder() will not be called and the draw index will not
+    // be incremented. This will also cover the case where drawables must be
+    // painted after the last child view in the host.
+    if (mDispatchDraw.isRunning()) {
+      mDispatchDraw.drawNext();
+    }
+
+    mDispatchDraw.end();
