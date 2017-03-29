@@ -1424,3 +1424,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return this;
   }
 
+  private float resolveHorizontalSpacing(Spacing spacing, int index) {

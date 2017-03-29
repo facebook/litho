@@ -843,3 +843,6 @@ class MountState {
 
       host = resolveComponentHost(layoutOutput, mHostsByMarker);
     }
+
+    final Component<?> component = layoutOutput.getComponent();
+    final ComponentLifecycle lifecycle = component.getLifecycle();
