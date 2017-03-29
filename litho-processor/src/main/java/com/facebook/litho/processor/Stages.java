@@ -360,3 +360,6 @@ public class Stages {
           "The first argument of the @OnLoadStyle method should be an ComponentContext.");
     }
 
+    for (int i = ON_STYLE_PROPS, size = parameters.size(); i < size; i++) {
+      final VariableElement v = parameters.get(i);
+      final TypeMirror outputType = Utils.getGenericTypeArgument(v.asType(), ClassNames.OUTPUT);
