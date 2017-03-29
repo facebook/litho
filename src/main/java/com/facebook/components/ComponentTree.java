@@ -1212,3 +1212,4 @@ public class ComponentTree {
 
     // optional
     private boolean incrementalMountEnabled = true;
+    private boolean isLayoutDiffingEnabled;
