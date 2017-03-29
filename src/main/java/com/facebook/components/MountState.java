@@ -671,3 +671,5 @@ class MountState {
       logPrepareMountParams(logger, logTag, component, stats);
     }
 
+    if (mHostsByMarker.get(ROOT_HOST_ID) == null) {
+      // Mounting always starts with the root host.
