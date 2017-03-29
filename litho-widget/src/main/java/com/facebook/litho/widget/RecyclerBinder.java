@@ -388,3 +388,4 @@ public class RecyclerBinder implements Binder<RecyclerView> {
    * @param heightSpec the heightSpec to be used to measure the RecyclerView.
    */
   @Override
+  public synchronized void measure(Size outSize, int widthSpec, int heightSpec) {
