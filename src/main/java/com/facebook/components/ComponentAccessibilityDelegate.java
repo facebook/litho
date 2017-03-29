@@ -110,3 +110,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       AccessibilityNodeInfoCompat node) {
     final MountItem mountItem = getAccessibleMountItem(mView);
     if (mountItem == null) {
+      Log.e(TAG, "No accessible mount item found for view: " + mView);
+
+      // ExploreByTouchHelper insists that we set something.
+      node.setContentDescription("");

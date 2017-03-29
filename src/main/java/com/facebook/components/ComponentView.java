@@ -270,3 +270,4 @@ public class ComponentView extends ComponentHost {
 
       if (mIsAttached) {
         mComponent.attach();
+      }
