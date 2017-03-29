@@ -656,3 +656,5 @@ class MountState {
    * Prepare the {@link MountState} to mount a new {@link LayoutState}.
    */
   @SuppressWarnings("unchecked")
+  private void prepareMount(LayoutState layoutState) {
+    final ComponentTree component = mComponentView.getComponent();
