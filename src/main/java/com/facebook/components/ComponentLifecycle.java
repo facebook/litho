@@ -250,3 +250,6 @@ public abstract class ComponentLifecycle implements EventDispatcher {
       context.setTreeProps(parentTreeProps);
     }
 
+    return node;
+  }
+
