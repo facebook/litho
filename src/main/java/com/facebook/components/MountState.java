@@ -1415,3 +1415,7 @@ class MountState {
           (ComponentContext) view.getContext(),
           view.getForeground(),
           foregroundReference);
+      view.setForeground(null);
+    }
+  }
+
