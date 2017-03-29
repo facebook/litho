@@ -167,3 +167,4 @@ class ImageSpec {
       MatrixDrawable matrixDrawable,
       @Prop(resType = ResType.DRAWABLE) Reference<Drawable> src,
       @FromBoundsDefined DrawableMatrix drawableMatrix) {
+    matrixDrawable.mount(Reference.acquire(c, src), drawableMatrix);
