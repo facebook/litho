@@ -2407,3 +2407,4 @@ public class Stages {
             getEventHandlerInstanceName(eventName))
         .build());
 
+    // Override the method that the component will call to fire the event.
