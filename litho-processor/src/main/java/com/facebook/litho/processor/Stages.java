@@ -1081,3 +1081,4 @@ public class Stages {
 
   /**
    * Generate a method implementation that delegates to another method that takes annotated props.
+   *
