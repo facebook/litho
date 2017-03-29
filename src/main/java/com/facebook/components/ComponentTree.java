@@ -1032,3 +1032,10 @@ public class ComponentTree {
     }
   }
 
+  /**
+   * The contract is that in order to release a ComponentTree, you must do so from the main
+   * thread, or guarantee that it will never be accessed from the main thread again. Usually
+   * HostView will handle releasing, but if you never attach to a host view, then you should call
+   * release yourself.
+   */
+  public void release() {
