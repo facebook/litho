@@ -2792,3 +2792,7 @@ public class Stages {
         isStatic.equals(StaticFlag.STATIC);
     if (isBuilderStatic) {
       propsBuilderClassBuilder.addModifiers(Modifier.STATIC);
+
+      if (!mTypeVariables.isEmpty()) {
+        propsBuilderClassBuilder.addTypeVariables(mTypeVariables);
+      }
