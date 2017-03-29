@@ -2735,3 +2735,6 @@ public class Stages {
             ParameterizedTypeName.get(
                 ClassName.get(propsClass.packageName(), propsClass.simpleName(), builderClassName),
                 builderGenericTypes))
+        .addField(implClass, implMemberInstanceName)
+        .addField(contextClass, "mContext");
+
