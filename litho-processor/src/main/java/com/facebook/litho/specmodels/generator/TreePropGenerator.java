@@ -59,3 +59,7 @@ public class TreePropGenerator {
             ComponentImplGenerator.getImplClassName(specModel));
 
     for (TreePropModel treeProp : specModel.getTreeProps()) {
+      method.addStatement(
+          "_impl.$L = treeProps.get($L.class)",
+          treeProp.getName(),
+          treeProp.getType());

@@ -59,3 +59,9 @@ class GetTreePropsForChildrenMethodBuilder {
 
     for (CreateTreePropMethodData method : createTreePropMethods) {
       CodeBlock.Builder block = CodeBlock.builder();
+      block
+          .add(
+          "childTreeProps.put($L.class, $L.$L(\n",
+          method.returnType,
+          delegateName,
+          method.name)
