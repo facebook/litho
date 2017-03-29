@@ -927,3 +927,4 @@ public class Stages {
   }
 
   public void generateSourceDelegate(boolean initialized, TypeName specTypeName) {
+    final FieldSpec.Builder builder = FieldSpec
