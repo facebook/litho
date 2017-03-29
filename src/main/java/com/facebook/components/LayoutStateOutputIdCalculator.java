@@ -18,3 +18,6 @@ import android.support.v4.util.LongSparseArray;
  */
 class LayoutStateOutputIdCalculator {
 
+  private final LongSparseArray<Integer> mLayoutCurrentSequenceForBaseId = new LongSparseArray<>(8);
+  private final LongSparseArray<Integer> mVisibilityCurrentSequenceForBaseId =
+      new LongSparseArray<>(8);

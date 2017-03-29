@@ -8,3 +8,6 @@
  */
 
 package com.facebook.litho.widget;
+
+/**
+ * The RangeController used to calculate the range for which the ComponentTrees will be created. A
