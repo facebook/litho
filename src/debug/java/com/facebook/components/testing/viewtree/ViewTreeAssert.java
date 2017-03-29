@@ -307,3 +307,16 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
   }
 
   private String makeString(final Iterable<View> path) {
+    return path != null ? Joiner.on(" -> ").join(path) : "";
+  }
+
+  /**
+   * Tests if any view in the hierarchy under the root, for which the path is visible, is displaying
+   * the requested drawable by the given resource id.
+   *
+   * For this assertion to work, Robolectric must be immediately available and be able to load the
+   * drawable corresponding to this resource id.
+   *
+   * @param resourceId the resource id of the drawable to look for
+   * @return the assertions object
+   */
