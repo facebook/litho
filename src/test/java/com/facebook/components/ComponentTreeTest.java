@@ -382,3 +382,16 @@ public class ComponentTreeTest {
         mContext,
         component)
         .incrementalMount(false)
+        .build();
+
+    ComponentView componentView = new ComponentView(mContext);
+    componentView.setComponent(componentTree);
+
+    assertEquals(componentView.getComponent(), componentTree);
+
+    componentTree.release();
+
+    assertNull(componentView.getComponent());
+  }
+
+  @Test
