@@ -241,3 +241,4 @@ public class ComponentTreeTest {
 
   @Test
   public void testSetSizeSpecWithOutput() {
+    ComponentTree componentTree =

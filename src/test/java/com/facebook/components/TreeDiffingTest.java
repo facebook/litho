@@ -536,3 +536,4 @@ public class TreeDiffingTest {
 
     LayoutState thirdState = componentTree.calculateLayoutState(
         null,
+        mContext,
