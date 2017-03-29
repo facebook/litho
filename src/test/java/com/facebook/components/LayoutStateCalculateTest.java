@@ -827,3 +827,5 @@ public class LayoutStateCalculateTest {
     };
 
     LayoutState layoutState1 = calculateLayoutState(
+        RuntimeEnvironment.application,
+        component1,
