@@ -1539,3 +1539,6 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     if ((mPrivateFlags & PFLAG_INVISIBLE_HANDLER_IS_SET) != 0L) {
       node.mInvisibleHandler = mInvisibleHandler;
     }
+    if (mTestKey != null) {
+      node.mTestKey = mTestKey;
+    }
