@@ -9,3 +9,5 @@
 
 package com.facebook.components;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
