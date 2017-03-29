@@ -944,3 +944,11 @@ public class Stages {
 
     if (componentsInImpl.isEmpty() &&
         interStageComponentVariables.isEmpty() &&
+        mOnUpdateStateMethods.isEmpty()) {
+      return null;
+    }
+
+    final String implClassName = getImplClassName();
+
+    return new ShallowCopyMethodSpecBuilder()
+        .componentsInImpl(componentsInImpl)
