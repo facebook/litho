@@ -38,3 +38,31 @@ public final class MeasureUtils {
   }
 
   /**
+   * Set the {@param outputSize} to respect both Specs and the desired width and height.
+   * The desired size is usually the necessary pixels to render the inner content.
+   */
+  public static void measureWithDesiredPx(
+      int widthSpec,
+      int heightSpec,
+      int desiredWidthPx,
+      int desiredHeightPx,
+      Size outputSize) {
+    outputSize.width = getResultSizePxWithSpecAndDesiredPx(widthSpec, desiredWidthPx);
+    outputSize.height = getResultSizePxWithSpecAndDesiredPx(heightSpec, desiredHeightPx);
+  }
+
+  private static int getResultSizePxWithSpecAndDesiredPx(int spec, int desiredSize) {
+    final int mode = SizeSpec.getMode(spec);
+    switch (mode) {
+      case SizeSpec.UNSPECIFIED:
+        return desiredSize;
+      case SizeSpec.AT_MOST:
+        return Math.min(SizeSpec.getSize(spec), desiredSize);
+      case SizeSpec.EXACTLY:
+        return SizeSpec.getSize(spec);
+      default:
+        throw new IllegalStateException("Unexpected size spec mode");
+    }
+  }
+
+  /**
