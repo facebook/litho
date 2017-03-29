@@ -173,3 +173,7 @@ public abstract class RecyclerComponentBinder<L extends RecyclerView.LayoutManag
 
     InternalAdapter(Context context, RecyclerComponentBinder binder) {
       mContext = context;
+      mBinder = binder;
+    }
+
+    @Override

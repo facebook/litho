@@ -208,3 +208,4 @@ public class LinearComponentBinderTest {
 
   public static class MyTestLinearComponentBinder extends LinearComponentBinder {
 
+    private final List<Integer> mItems;
