@@ -69,3 +69,7 @@ public final class ColorDrawableReference extends ReferenceLifecycle<Drawable> {
   protected Drawable onAcquire(
       ComponentContext context,
       Reference reference) {
+    ColorDrawable drawable = null;
+
+    if (CAN_RECYCLE) {
+      drawable = sPool.acquire();
