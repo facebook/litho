@@ -31,3 +31,6 @@ public abstract class ReferenceLifecycle<T> {
 
   protected abstract T onAcquire(
       ComponentContext context,
+      Reference<T> reference);
+
+  protected void onRelease(

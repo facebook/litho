@@ -22,3 +22,4 @@ import com.facebook.litho.annotations.ResType;
  * A component that is able to render the card's shadow. Used in the
  * implementation of {@link CardSpec}.
  */
+@MountSpec(isPublic = false, isPureRender = true)

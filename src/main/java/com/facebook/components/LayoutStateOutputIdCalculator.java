@@ -17,3 +17,4 @@ import android.support.v4.util.LongSparseArray;
  * in order to generate unique ids even if the baseId is shared by multiple LayoutOutputs.
  */
 class LayoutStateOutputIdCalculator {
+

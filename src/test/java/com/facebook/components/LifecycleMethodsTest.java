@@ -32,3 +32,4 @@ public class LifecycleMethodsTest {
     ON_PREPARE,
     ON_MEASURE,
     ON_BOUNDS_DEFINED,
+    ON_CREATE_MOUNT_CONTENT,

@@ -37,3 +37,6 @@ public final class ResourceDrawableReference extends ReferenceLifecycle<Drawable
       sInstance = new ResourceDrawableReference();
     }
 
+    return sInstance;
+  }
+

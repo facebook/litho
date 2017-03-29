@@ -64,3 +64,17 @@ public class DrawableResourcesCacheTest {
   @Test
   public void testReleaseAndGet() {
     Resources resources = RuntimeEnvironment.application.getResources();
+
+    ColorDrawable drawable = new ColorDrawable();
+    ColorDrawable drawable2 = new ColorDrawable();
+    ColorDrawable drawable3 = new ColorDrawable();
+    mCache.release(drawable, 1);
+    mCache.release(drawable2, 1);
+    mCache.release(drawable3, 1);
+
+    assertEquals(drawable, mCache.get(1, resources));
+    assertEquals(drawable2, mCache.get(1, resources));
+    assertEquals(drawable3, mCache.get(1, resources));
+  }
+
+}
