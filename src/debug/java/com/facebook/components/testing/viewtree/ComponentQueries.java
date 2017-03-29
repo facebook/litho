@@ -66,3 +66,4 @@ class ComponentQueries {
           @Override
           public boolean apply(final Drawable input) {
             return hasDrawable(input, drawable);
+          }
