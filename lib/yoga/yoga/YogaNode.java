@@ -171,3 +171,4 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
 
   @Override
   public int indexOf(YogaNode child) {
+    return mChildren == null ? -1 : mChildren.indexOf(child);

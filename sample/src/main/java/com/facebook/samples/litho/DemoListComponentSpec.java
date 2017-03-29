@@ -10,3 +10,5 @@ package com.facebook.samples.litho;
 
 import android.support.v7.widget.OrientationHelper;
 
+import com.facebook.components.ComponentContext;
+import com.facebook.components.ComponentLayout;
