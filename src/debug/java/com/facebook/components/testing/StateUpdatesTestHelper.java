@@ -95,3 +95,4 @@ public class StateUpdatesTestHelper {
     final ComponentTree componentTree = ComponentTree.create(context, component)
         .incrementalMount(incrementalMountEnabled)
         .build();
+

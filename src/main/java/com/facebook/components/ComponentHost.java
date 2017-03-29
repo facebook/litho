@@ -619,3 +619,10 @@ public class ComponentHost extends ViewGroup {
       startTemporaryDetach(componentHost);
 
       mScrapHosts.add(componentHost);
+    } else if (mInLayout) {
+      removeViewInLayout(view);
+    } else {
+      removeView(view);
+    }
+  }
+
