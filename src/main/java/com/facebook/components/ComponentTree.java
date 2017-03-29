@@ -800,3 +800,6 @@ public class ComponentTree {
       final Map<String, List<StateUpdate>> pendingStateUpdates =
           mStateHandler.getPendingStateUpdates();
       if (pendingStateUpdates != null && pendingStateUpdates.size() > 0 && root != null) {
+        root = root.makeShallowCopyWithNewId();
+      }
+      final boolean rootInitialized = root != null;
