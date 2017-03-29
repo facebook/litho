@@ -98,3 +98,5 @@ class HorizontalScrollSpec {
 
     Size contentSize = acquireSize();
 
+    // Measure the component with undefined width spec, as the contents of the
+    // hscroll have unlimited horizontal space.

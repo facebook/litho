@@ -64,3 +64,7 @@ public class MountSpecHelper extends ComponentSpecHelper {
       OnBind.class,
       /* Methods that do not support inter-stage props */
       OnMount.class,
+      OnPopulateAccessibilityNode.class,
+      GetExtraAccessibilityNodesCount.class,
+      OnPopulateExtraAccessibilityNode.class,
+      GetExtraAccessibilityNodeAt.class,

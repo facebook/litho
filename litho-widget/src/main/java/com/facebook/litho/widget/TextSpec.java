@@ -59,3 +59,4 @@ import com.facebook.fbui.textlayoutbuilder.TextLayoutBuilder;
 import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
 import com.facebook.widget.accessibility.delegates.AccessibleClickableSpan;
 
+import static android.support.v4.widget.ExploreByTouchHelper.INVALID_ID;
