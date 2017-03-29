@@ -445,3 +445,4 @@ public class ComponentsPools {
     sTransitionManagerPool.release(transitionManager);
   }
 
+  @ThreadSafe(enableChecks = false)
