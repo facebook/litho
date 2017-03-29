@@ -28,3 +28,5 @@ import static android.os.Build.VERSION_CODES.LOLLIPOP;
 /**
  * A Drawable that wraps another drawable.
  */
+public class MatrixDrawable<T extends Drawable> extends Drawable
+    implements Drawable.Callback, Touchable {
