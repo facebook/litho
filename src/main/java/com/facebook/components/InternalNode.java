@@ -115,3 +115,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private static final long PFLAG_MIN_HEIGHT_IS_SET = 1L << 16;
   // When this flag is set, maxHeight was explicitly set on this node.
   private static final long PFLAG_MAX_HEIGHT_IS_SET = 1L << 17;
+  // When this flag is set, background was explicitly set on this node.

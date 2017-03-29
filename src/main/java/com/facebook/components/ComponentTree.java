@@ -113,3 +113,4 @@ public class ComponentTree {
   // We will need to ensure there are no background threads referencing mComponent. We'll need
   // to keep a reference count or something. :-/
   @GuardedBy("this")
+  private Component<?> mRoot;
