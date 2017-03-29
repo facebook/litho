@@ -228,3 +228,4 @@ public class ComponentsPools {
       item = new MountItem();
     }
 
+    final ViewNodeInfo viewNodeInfo = ViewNodeInfo.acquire();
