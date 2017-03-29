@@ -97,3 +97,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private static final long PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET = 1L << 7;
   // When this flag is set, duplicateParentState was explicitly set on this node.
   private static final long PFLAG_DUPLICATE_PARENT_STATE_IS_SET = 1L << 8;
+  // When this flag is set, margin was explicitly set on this node.

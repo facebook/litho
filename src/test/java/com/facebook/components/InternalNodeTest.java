@@ -316,3 +316,8 @@ public class InternalNodeTest {
   }
 
   @Test
+  public void testComponentCreateAndRetrieveCachedLayout() {
+    final ComponentContext c = new ComponentContext(RuntimeEnvironment.application);
+    final int unspecifiedSizeSpec = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
+    final int exactSizeSpec = SizeSpec.makeSizeSpec(50, SizeSpec.EXACTLY);
+    final Component<Text> textComponent = Text.create(c)

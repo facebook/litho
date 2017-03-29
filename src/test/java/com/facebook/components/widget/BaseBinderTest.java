@@ -309,3 +309,5 @@ public class BaseBinderTest {
     mBinder.setIncrementalMountEnabled(true);
     mount();
 
+    for (int i = 0, count = mBinder.getComponentCount(); i < count; i++) {
+      assertTrue(mBinder.getComponentAt(i).isIncrementalMountEnabled());
