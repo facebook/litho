@@ -172,3 +172,4 @@ class ImageSpec {
 
   @OnBind
   static void onBind(
+      ComponentContext c,
