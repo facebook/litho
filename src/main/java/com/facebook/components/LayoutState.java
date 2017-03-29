@@ -22,3 +22,4 @@ import android.content.ContextWrapper;
 import android.content.pm.ApplicationInfo;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;

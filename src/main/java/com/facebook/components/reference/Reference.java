@@ -46,3 +46,7 @@ public abstract class Reference<L> {
       ComponentContext context,
       Reference<T> reference) {
     return reference.mLifecycle.onAcquire(context, reference);
+  }
+
+  /**
+   * Releases the object previously acquired by calling

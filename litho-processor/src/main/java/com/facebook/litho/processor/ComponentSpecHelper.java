@@ -55,3 +55,29 @@ public abstract class ComponentSpecHelper extends SpecHelper {
       mStages.generateShouldUpdateMethod(
           onShouldUpdate,
           ClassNames.COMPONENT);
+    }
+  }
+
+  /**
+   * Generate a createInitialState that delegates to the method in the Spec annotated with
+   * {@link OnCreateInitialState} annotation.
+   */
+  public void generateCreateInitialState() {
+    final ExecutableElement onCreateInitialState = Utils.getAnnotatedMethod(
+        mStages.getSourceElement(),
+        OnCreateInitialState.class);
+    if (onCreateInitialState == null) {
+      return;
+    }
+
+    mStages.generateCreateInitialState(
+        onCreateInitialState,
+        ClassNames.COMPONENT_CONTEXT,
+        ClassNames.COMPONENT);
+  }
+
+  @Override
+  protected boolean isStateSupported() {
+    return true;
+  }
+}

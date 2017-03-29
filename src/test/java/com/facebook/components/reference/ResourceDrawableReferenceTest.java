@@ -38,3 +38,9 @@ public class ResourceDrawableReferenceTest {
         mContext,
         ResourceDrawableReference.create(mContext)
             .resId(R.drawable.background)
+            .build());
+    assertNotNull(drawable);
+  }
+
+  @Test
+  public void testReleaseAndAcquire() {

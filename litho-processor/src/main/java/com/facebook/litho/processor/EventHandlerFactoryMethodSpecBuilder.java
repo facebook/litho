@@ -54,3 +54,7 @@ class EventHandlerFactoryMethodSpecBuilder {
   }
 
   EventHandlerFactoryMethodSpecBuilder eventHandlerClassName(TypeName eventHandlerClassName) {
+    mEventHandlerClassName = eventHandlerClassName;
+    return this;
+  }
+

@@ -37,3 +37,4 @@ public class MountStateRemountEventHandlerTest {
     mContext = new ComponentContext(RuntimeEnvironment.application);
   }
 
+  @Test
