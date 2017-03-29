@@ -353,3 +353,8 @@ public class Stages {
               "followed by Output parameters matching component create.");
     }
 
+    final TypeName firstParamType = ClassName.get(parameters.get(0).asType());
+    if (!firstParamType.equals(ClassNames.COMPONENT_CONTEXT)) {
+      throw new ComponentsProcessingException(
+          parameters.get(0),
+          "The first argument of the @OnLoadStyle method should be an ComponentContext.");
