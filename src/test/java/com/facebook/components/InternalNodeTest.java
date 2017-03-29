@@ -41,3 +41,14 @@ public class InternalNodeTest {
     }
   };
 
+  private static class TestComponent<L extends ComponentLifecycle> extends Component<L> {
+    public TestComponent(L component) {
+      super(component);
+    }
+
+    @Override
+    public String getSimpleName() {
+      return "TestComponent";
+    }
+  }
+
