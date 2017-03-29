@@ -50,3 +50,15 @@ final class ViewExtractors {
   };
 
   public static final Function<View, String> GET_DRAWABLE_FUNCTION = new Function<View, String>() {
+    @Override
+    public String apply(@Nullable View input) {
+      if (!(input instanceof ImageView)) {
+        return "No drawable found";
+      }
+      return String.format(
+          "Found drawable: \"%s\", view is %s",
+          getDrawableString((ImageView) input),
+          getVisibilityString(input.getVisibility()));
+    }
+  };
+

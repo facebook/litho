@@ -30,3 +30,6 @@ public class ViewExtractorsTest {
   private ImageView mImageView;
   private ImageView mGoneImageView;
   private Drawable mLithoDrawable;
+
+  @Before
+  public void setUp() {

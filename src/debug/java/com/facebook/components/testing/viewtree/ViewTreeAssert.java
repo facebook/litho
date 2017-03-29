@@ -31,3 +31,6 @@ import static com.facebook.components.testing.viewtree.ViewPredicates.isVisible;
 public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTree> {
 
   private ViewTreeAssert(final ViewTree actual) {
+    super(actual, ViewTreeAssert.class);
+  }
+
