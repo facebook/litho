@@ -1677,3 +1677,5 @@ class LayoutState {
     return  widthIsCompatible && heightIsCompatible;
   }
 
+
+  /**
