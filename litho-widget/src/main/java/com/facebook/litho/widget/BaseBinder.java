@@ -154,3 +154,20 @@ public abstract class BaseBinder<
       return;
     }
 
+    boolean shouldInsertItem = true;
+
+    synchronized (this) {
+      // Check if the inserted item is inside the range or adjacent to it.
+      if (!isInRange(position) &&
+          position != mComponentTrees.getFirstPosition() + mComponentTrees.size()) {
+        // If the new item is inserted before the current range, than shift right the range.
+        if (position < mComponentTrees.getFirstPosition()) {
+          mComponentTrees.shiftAllRight(1);
+        }
+
+        shouldInsertItem = false;
+      }
+    }
+
+    if (shouldInsertItem) {
+      Component component = createComponent(mContext, position);
