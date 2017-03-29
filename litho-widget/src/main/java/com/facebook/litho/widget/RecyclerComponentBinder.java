@@ -183,3 +183,4 @@ public abstract class RecyclerComponentBinder<L extends RecyclerView.LayoutManag
 
     @Override
     public void onBindViewHolder(ComponentViewHolder holder, int position) {
+      final ComponentView componentView = (ComponentView) holder.itemView;
