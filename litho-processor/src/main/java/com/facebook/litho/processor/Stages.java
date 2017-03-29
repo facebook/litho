@@ -2664,3 +2664,4 @@ public class Stages {
         new TypeName[]{genericType},
         SectionClassNames.SECTION_CONTEXT,
         ClassNames.EVENT_HANDLER,
+        SectionClassNames.SECTION,
