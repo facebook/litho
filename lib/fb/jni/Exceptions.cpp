@@ -74,3 +74,4 @@ class JUnknownCppException : public JavaClass<JUnknownCppException, JThrowable> 
   static local_ref<JUnknownCppException> create() {
     return newInstance();
   }
+
