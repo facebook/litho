@@ -48,3 +48,4 @@ import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUT
  * this we will tend to expand all buffers to the largest size needed.
  */
 public class ComponentsPools {
+
