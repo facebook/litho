@@ -736,3 +736,8 @@ public class ComponentHost extends ViewGroup {
           mountItem.getFlags(),
           mountItem.getNodeInfo());
     }
+  }
+
+  @Override
+  public void jumpDrawablesToCurrentState() {
+    super.jumpDrawablesToCurrentState();
