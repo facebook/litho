@@ -554,3 +554,4 @@ public class ComponentHostTest {
     assertEquals(1, mHost.getChildDrawingOrder(mHost.getChildCount(), 1));
   }
 
+  @Test

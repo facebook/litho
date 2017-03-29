@@ -230,3 +230,17 @@ public class StateUpdateImplClassBuilder {
     // Call the spec's update method.
     updateStateMethodBuilder.addStatement(
         target + "." +
+            mSpecOnUpdateStateMethodName.toString() + "("  +
+            getParamsForSpecUpdateMethodCall() + ")");
+
+    // Set the new value of the state.
+    for (Parameter stateParam : mStateValueParams) {
+      updateStateMethodBuilder
+          .addStatement(
+              newComponentImplName +
+                  "." + Stages.STATE_CONTAINER_IMPL_MEMBER +
+                  "." + stateParam.name +
+                  " = " + stateParam.name + ".get()");
+    }
+
+    stateUpdateClassBuilder.addMethod(updateStateMethodBuilder.build());
