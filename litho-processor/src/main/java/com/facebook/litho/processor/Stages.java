@@ -317,3 +317,7 @@ public class Stages {
    */
   private void validateEventDeclarations() {
     for (TypeElement eventDeclaration : mEventDeclarations) {
+      final Event eventAnnotation = eventDeclaration.getAnnotation(Event.class);
+      if (eventAnnotation == null) {
+        throw new ComponentsProcessingException(
+            eventDeclaration,
