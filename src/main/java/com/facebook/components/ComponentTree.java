@@ -704,3 +704,4 @@ public class ComponentTree {
   /**
    * Same as {@link #setSizeSpec(int, int)} but fetches the resulting width/height
    * in the given {@link Size}.
+   */

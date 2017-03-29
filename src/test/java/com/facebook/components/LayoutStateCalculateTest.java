@@ -1401,3 +1401,6 @@ public class LayoutStateCalculateTest {
                     .flex(1)
                     .backgroundColor(Color.RED)
                     .marginDip(YogaEdge.HORIZONTAL, 10)
+                    .importantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO))
+            .child(
+                Container.create(c)
