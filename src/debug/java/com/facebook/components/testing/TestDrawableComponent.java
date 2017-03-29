@@ -365,3 +365,4 @@ public class TestDrawableComponent extends ComponentLifecycle {
       super.setKey(key);
       return this;
     }
+  }

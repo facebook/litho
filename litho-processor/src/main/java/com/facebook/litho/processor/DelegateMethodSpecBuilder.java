@@ -269,3 +269,4 @@ class DelegateMethodSpecBuilder {
         final String stateContainerMember = mStateParamNames.contains(parameter.name)
             ? "." + Stages.STATE_CONTAINER_IMPL_MEMBER
             : "";
+        return CodeBlock.builder()
