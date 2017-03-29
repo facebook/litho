@@ -208,3 +208,4 @@ public class ComponentHost extends ViewGroup {
     return keys;
   }
 
+  private void maybeMoveTouchExpansionIndexes(MountItem item, int oldIndex, int newIndex) {
