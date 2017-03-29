@@ -2411,3 +2411,4 @@ public class Stages {
     final MethodDescription methodDescription = new MethodDescription();
     methodDescription.annotations = new Class[] {};
     methodDescription.accessType = Modifier.STATIC;
+    methodDescription.name = "dispatch" + eventName;
