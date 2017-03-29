@@ -140,3 +140,4 @@ class LayoutState {
 
   // Holds the current host marker in the layout tree.
   private long mCurrentHostMarker = -1;
+  private int mCurrentHostOutputPosition = -1;

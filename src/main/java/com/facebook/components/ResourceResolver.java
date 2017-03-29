@@ -145,3 +145,4 @@ public class ResourceResolver {
   }
 
   protected final int resolveColorRes(@ColorRes int resId) {
+    if (resId != 0) {

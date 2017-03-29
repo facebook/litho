@@ -526,3 +526,6 @@ public class MountStateRemountInPlaceTest {
 
     ComponentTestHelper.mountComponent(firstComponentView, secondTree);
 
+    assertTrue(thirdComponent.wasOnMountCalled());
+    assertTrue(thirdComponent.wasOnBindCalled());
+    assertTrue(firstComponent.wasOnUnmountCalled());
