@@ -8,3 +8,8 @@
  */
 
 package com.facebook.litho.widget;
+
+import android.graphics.Canvas;
+import android.graphics.Picture;
+import android.text.Layout;
+

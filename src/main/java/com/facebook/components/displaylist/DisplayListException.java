@@ -8,3 +8,10 @@
  */
 
 package com.facebook.litho.displaylist;
+
+public class DisplayListException extends Exception {
+
+  public DisplayListException(Exception originatingException) {
+    super(originatingException);
+  }
+}

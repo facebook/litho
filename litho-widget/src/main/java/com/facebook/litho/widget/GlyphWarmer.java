@@ -8,3 +8,15 @@
  */
 
 package com.facebook.litho.widget;
+
+import java.lang.ref.WeakReference;
+
+import android.graphics.Canvas;
+import android.graphics.Picture;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
+import android.os.Message;
+import android.support.annotation.VisibleForTesting;
+import android.text.Layout;
+

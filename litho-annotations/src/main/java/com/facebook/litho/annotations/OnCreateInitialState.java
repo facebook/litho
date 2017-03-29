@@ -8,3 +8,10 @@
  */
 
 package com.facebook.litho.annotations;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+/**
+ * A method annotated with this annotation will be responsible to create the initial value for
+ * params annotated with the {@link State} annotation in this spec. This method will take as

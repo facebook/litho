@@ -8,3 +8,10 @@
  */
 
 package com.facebook.litho;
+
+/**
+ * A class implementing this interface will expose a method to retrieve an {@link EventDispatcher}.
+ */
+public interface HasEventDispatcher {
+  EventDispatcher getEventDispatcher();
+}

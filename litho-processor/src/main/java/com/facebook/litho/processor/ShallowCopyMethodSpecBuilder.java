@@ -8,3 +8,20 @@
  */
 
 package com.facebook.litho.processor;
+
+import javax.lang.model.element.Modifier;
+
+import java.util.List;
+
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterSpec;
+import com.squareup.javapoet.TypeName;
+
+/**
+ * Builder for the shallowCopy method of a Component
+ */
+class ShallowCopyMethodSpecBuilder {
+  private boolean mHasDeepCopy;
+  private String mImplClassName;
+  private List<String> mComponentsToCopy;

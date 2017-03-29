@@ -8,3 +8,10 @@
  */
 
 package com.facebook.litho.annotations;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+/**
+ * The method annotated with this annotation will be called to instantiate the mount content for
+ * the {@link MountSpec}. The onCreateMountContent method can only take a

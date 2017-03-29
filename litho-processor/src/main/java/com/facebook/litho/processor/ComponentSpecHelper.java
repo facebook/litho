@@ -8,3 +8,10 @@
  */
 
 package com.facebook.litho.processor;
+
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
+
+import java.lang.annotation.Annotation;
+

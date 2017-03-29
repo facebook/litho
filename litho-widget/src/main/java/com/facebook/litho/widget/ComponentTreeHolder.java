@@ -8,3 +8,9 @@
  */
 
 package com.facebook.litho.widget;
+
+import javax.annotation.concurrent.GuardedBy;
+import javax.annotation.concurrent.ThreadSafe;
+
+import android.support.v4.util.Pools;
+

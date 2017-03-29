@@ -8,3 +8,11 @@
  */
 
 package com.facebook.litho.reference;
+
+import java.util.concurrent.atomic.AtomicInteger;
+
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.Nullable;
+import android.support.v4.util.LruCache;
+import android.support.v4.util.Pools;
