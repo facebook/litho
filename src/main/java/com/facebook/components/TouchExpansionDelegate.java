@@ -8,3 +8,21 @@
  */
 
 package com.facebook.litho;
+
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.support.v4.util.Pools;
+import android.support.v4.util.SparseArrayCompat;
+import android.view.MotionEvent;
+import android.view.TouchDelegate;
+import android.view.View;
+import android.view.ViewConfiguration;
+
+/**
+ * Compound touch delegate that forward touch events to recyclable
+ * inner touch delegates.
+ */
+class TouchExpansionDelegate extends TouchDelegate {
+
+  private static final Rect IGNORED_RECT = new Rect();
