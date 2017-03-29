@@ -117,3 +117,6 @@ public class MountStateTestItemTest {
                 .child(
                     TestDrawableComponent.create(c)
                         .withLayout().flexShrink(0)
+                        .testKey(null))
+                .child(
+                    TestDrawableComponent.create(c)
