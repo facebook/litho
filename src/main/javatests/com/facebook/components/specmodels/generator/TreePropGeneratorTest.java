@@ -73,3 +73,36 @@ public class TreePropGeneratorTest {
                 null),
             MethodParamModelFactory.create(
                 TypeName.BOXED_INT,
+                "state",
+                ImmutableList.of(createAnnotation(State.class)),
+                new ArrayList<AnnotationSpec>(),
+                null)),
+        null);
+
+    when(mTreeProp.getName()).thenReturn("treeProp");
+    when(mTreeProp.getType()).thenReturn(TypeName.INT);
+
+    when(mSpecModel.getContextClass()).thenReturn(ClassNames.COMPONENT_CONTEXT);
+    when(mSpecModel.getComponentClass()).thenReturn(ClassNames.COMPONENT);
+    when(mSpecModel.getComponentName()).thenReturn("Test");
+    when(mSpecModel.getDelegateMethods())
+        .thenReturn(ImmutableList.of(mOnCreateTreePropMethodModel));
+    when(mSpecModel.getTreeProps()).thenReturn(ImmutableList.of(mTreeProp));
+  }
+
+  @Test
+  public void testGenerate() {
+    TypeSpecDataHolder typeSpecDataHolder =
+        TreePropGenerator.generate(mSpecModel);
+
+    assertThat(typeSpecDataHolder.getFieldSpecs()).isEmpty();
+    assertThat(typeSpecDataHolder.getMethodSpecs()).hasSize(2);
+    assertThat(typeSpecDataHolder.getTypeSpecs()).isEmpty();
+
+    assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString()).isEqualTo(
+        "@java.lang.Override\n" +
+            "protected void populateTreeProps(com.facebook.components.Component _abstractImpl, com.facebook.components.TreeProps treeProps) {\n" +
+            "  if (treeProps == null) {\n" +
+            "    return;\n" +
+            "  }\n" +
+            "  final TestImpl _impl = (TestImpl) _abstractImpl;\n" +

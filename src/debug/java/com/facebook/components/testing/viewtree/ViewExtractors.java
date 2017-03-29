@@ -81,3 +81,26 @@ final class ViewExtractors {
     }
   };
 
+  /**
+   * Generates a function that extracts information about view tags from the given view.
+   * @param key key that identifies the tag
+   * @return function that extracts information about view tags
+   */
+  public static Function<View, String> generateGetViewTagFunction(final int key) {
+    return new Function<View, String>() {
+      @Override
+      public String apply(View input) {
+        if (input.getTag(key) == null) {
+          return String.format(
+              "No view tag found, view is %s",
+              getVisibilityString(input.getVisibility()));
+        }
+
+        return String.format(
+            "Found view tag: \"%s\", view is %s",
+            input.getTag(key),
+            getVisibilityString(input.getVisibility()));
+      }
+    };
+  }
+
