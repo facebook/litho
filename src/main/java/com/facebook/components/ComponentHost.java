@@ -802,3 +802,9 @@ public class ComponentHost extends ViewGroup {
   public void invalidate() {
     if (mSuppressInvalidations) {
       mWasInvalidatedWhileSuppressed = true;
+      return;
+    }
+
+    super.invalidate();
+  }
+
