@@ -361,3 +361,5 @@ class EditTextSpec {
     editText.setLinkTextColor(linkColor);
     editText.setHighlightColor(highlightColor);
     editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+    editText.setLineSpacing(extraSpacing, spacingMultiplier);
+    editText.setTypeface(typeface, textStyle);
