@@ -1594,3 +1594,4 @@ class LayoutState {
       }
 
       ComponentsPools.release(this);
+    }
