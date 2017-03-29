@@ -2371,3 +2371,19 @@ public class Stages {
           ClassNames.EVENT_HANDLER,
           SectionClassNames.SECTION_LIFECYCLE,
           SectionClassNames.SECTION_CONTEXT,
+          "getSectionScope");
+    }
+  }
+
+  private static String getEventHandlerInstanceName(String eventHandlerClassName) {
+    return Character.toLowerCase(eventHandlerClassName.charAt(0)) +
+        eventHandlerClassName.substring(1) +
+        "Handler";
+  }
+
+  private void generateEvent(
+      TypeElement eventDeclaration,
+      ClassName eventHandlerClassName,
+      ClassName lifecycleClassName,
+      ClassName contextClassName,
+      String scopeMethodName) {
