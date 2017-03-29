@@ -406,3 +406,21 @@ public class ComponentsPools {
     return acquireStateHandler(null);
   }
 
+  static TransitionContext acquireTransitionContext() {
+    TransitionContext transitionContext = sTransitionContextPool.acquire();
+    if (transitionContext == null) {
+      transitionContext = new TransitionContext();
+    }
+
+    return transitionContext;
+  }
+
+  static TransitionManager acquireTransitionManager() {
+    TransitionManager transitionManager = sTransitionManagerPool.acquire();
+    if (transitionManager == null) {
+      transitionManager = new TransitionManager();
+    }
+
+    return transitionManager;
+  }
+
