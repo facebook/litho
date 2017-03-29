@@ -616,3 +616,4 @@ public class MountStateRemountInPlaceTest {
                     .child(
                         Text.create(c).text("test2"))
                     .child(
+                        Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
