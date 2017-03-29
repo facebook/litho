@@ -133,3 +133,10 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
     }
 
     clearSelection();
+    return false;
+  }
+
+  @Override
+  public boolean shouldHandleTouchEvent(MotionEvent event) {
+    final int action = event.getActionMasked();
+
