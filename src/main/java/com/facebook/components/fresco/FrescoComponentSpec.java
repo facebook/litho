@@ -92,3 +92,5 @@ class FrescoComponentSpec {
       @Prop(optional = true, resType = DRAWABLE) Reference<Drawable> placeholderImage,
       @Prop(optional = true) PointF placeholderImageFocusPoint,
       @Prop(optional = true) ScalingUtils.ScaleType placeholderImageScaleType,
+      @Prop(optional = true, resType = DRAWABLE) Reference<Drawable> progressBarImage,
+      @Prop(optional = true) ScalingUtils.ScaleType progressBarImageScaleType,
