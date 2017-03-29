@@ -593,3 +593,12 @@ class TextSpec {
     final int startLine = textLayout.getLineForOffset(start);
     final int endLine = textLayout.getLineForOffset(end);
 
+    // The bounds for multi-line strings should *only* include the first line.  This is because
+    // Talkback triggers its click at the center point of these bounds, and if that center point
+    // is outside the spannable, it will click on something else.  There is no harm in not outlining
+    // the wrapped part of the string, as the text for the whole string will be read regardless of
+    // the bounding box.
+    final int selectionPathEnd =
+        startLine == endLine ? end : textLayout.getLineVisibleEnd(startLine);
+
+    textLayout.getSelectionPath(start, selectionPathEnd, sTempPath);
