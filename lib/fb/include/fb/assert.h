@@ -26,3 +26,4 @@ namespace facebook {
 #define FBCRASH(msg, ...) facebook::assertInternal("Fatal error (%s:%d): " msg, __FILE__, __LINE__, ##__VA_ARGS__)
 #define FBUNREACHABLE() facebook::assertInternal("This code should be unreachable (%s:%d)", __FILE__, __LINE__)
 
+FBEXPORT void assertInternal(const char* formatstr, ...) __attribute__((noreturn));

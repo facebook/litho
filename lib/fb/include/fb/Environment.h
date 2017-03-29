@@ -70,3 +70,8 @@ class FBEXPORT ThreadScope {
   static void WithClassLoader(std::function<void()>&& runnable);
 
   static void OnLoad();
+ private:
+  bool attachedWithThisScope_;
+};
+}
+}
