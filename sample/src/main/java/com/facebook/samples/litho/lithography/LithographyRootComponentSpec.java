@@ -20,3 +20,5 @@ import com.facebook.yoga.YogaEdge;
 @LayoutSpec
 public class LithographyRootComponentSpec {
 
+  private static final String MAIN_SCREEN = "main_screen";
+

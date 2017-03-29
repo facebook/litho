@@ -12,3 +12,4 @@ package com.facebook.components;
 import android.graphics.Rect;
 import android.support.v4.util.Pools;
 
+import com.facebook.components.testing.testrunner.ComponentsTestRunner;

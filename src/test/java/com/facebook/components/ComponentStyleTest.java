@@ -26,3 +26,4 @@ import org.robolectric.RuntimeEnvironment;
 
 import static org.junit.Assert.assertEquals;
 
+@RunWith(ComponentsTestRunner.class)

@@ -17,3 +17,4 @@ import android.support.annotation.ColorRes;
 import android.support.v4.util.Pools;
 
 import com.facebook.components.ComponentContext;
+import com.facebook.components.config.ComponentsConfiguration;

@@ -28,3 +28,4 @@ import static junit.framework.Assert.assertTrue;
 /**
  * Tests for {@link LinearLayoutInfo}
  */
+@RunWith(ComponentsTestRunner.class)

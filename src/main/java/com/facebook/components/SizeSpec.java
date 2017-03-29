@@ -78,3 +78,7 @@ public class SizeSpec {
    */
   public static final int AT_MOST = View.MeasureSpec.AT_MOST;
 
+  @IntDef({UNSPECIFIED, EXACTLY, AT_MOST})
+  @Retention(RetentionPolicy.SOURCE)
+  public @interface MeasureSpecMode {}
+

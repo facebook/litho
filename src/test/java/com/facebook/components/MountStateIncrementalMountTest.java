@@ -14,3 +14,9 @@ import android.graphics.Rect;
 import android.view.ViewGroup;
 
 import com.facebook.components.testing.ComponentTestHelper;
+import com.facebook.components.testing.testrunner.ComponentsTestRunner;
+import com.facebook.components.testing.TestComponent;
+import com.facebook.components.testing.TestComponentContextWithView;
+import com.facebook.components.testing.TestDrawableComponent;
+import com.facebook.components.testing.TestViewComponent;
+import com.facebook.yoga.YogaEdge;
