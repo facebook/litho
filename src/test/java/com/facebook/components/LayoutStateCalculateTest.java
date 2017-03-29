@@ -1849,3 +1849,5 @@ public class LayoutStateCalculateTest {
     final int widthMeasuredComponent = SizeSpec.makeSizeSpec(
         SizeSpec.getSize(widthSpecContainer) - horizontalPadding - horizontalPadding,
         SizeSpec.EXACTLY);
+
+    final Component<?> componentSpy = PowerMockito.spy(
