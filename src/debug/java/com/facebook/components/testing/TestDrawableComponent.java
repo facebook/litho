@@ -255,3 +255,5 @@ public class TestDrawableComponent extends ComponentLifecycle {
         callsShouldUpdateOnMount,
         isPureRender,
         canMeasure,
+        implementsAccessibility,
+        usesDisplayList);

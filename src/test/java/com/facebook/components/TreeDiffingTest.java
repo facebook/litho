@@ -171,3 +171,4 @@ public class TreeDiffingTest {
     node.setDiffNode(diffNode);
 
     long output = measureInternalNode(
+        node,

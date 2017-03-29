@@ -160,3 +160,20 @@ class LayoutStateOutputIdCalculator {
   }
 
   /**
+   * @return the sequence part of an id.
+   */
+  static int getSequenceFromId(long id) {
+    return (int) id & 0x00FFFF;
+  }
+
+  /**
+   * @return the level part of an id.
+   */
+  static int getLevelFromId(long id) {
+    return (int) ((id >> LEVEL_SHIFT) & 0xFF);
+  }
+
+  /**
+   * Calculates a base id for an {@link LayoutOutput} based on the {@link Component}, the depth
+   * in the View hierarchy, and the type of output see {@link LayoutOutput.LayoutOutputType}.
+   */
