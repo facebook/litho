@@ -536,3 +536,5 @@ public class TreeDiffingTest {
         null,
         mContext,
         thirdComponent,
+        SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
+        SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),

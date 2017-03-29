@@ -150,3 +150,5 @@ class MountState {
    *                         Otherwise mount only what the rect (in local coordinates) contains
    */
   void mount(LayoutState layoutState, Rect localVisibleRect) {
+    assertMainThread();
+
