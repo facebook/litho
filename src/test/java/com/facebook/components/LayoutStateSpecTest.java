@@ -39,3 +39,4 @@ public class LayoutStateSpecTest {
     mHeightSpec = SizeSpec.makeSizeSpec(41, SizeSpec.EXACTLY);
     mComponent = TestLayoutComponent.create(mContext)
         .build();
+    Whitebox.setInternalState(mComponent, "mId", COMPONENT_ID);

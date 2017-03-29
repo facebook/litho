@@ -139,3 +139,7 @@ public class LifecycleMethodsTest {
     @Override
     protected void onMount(
         ComponentContext c,
+        Object convertContent,
+        Component<?> component) {
+      LifecycleMethodsInstance instance = (LifecycleMethodsInstance) component;
+      instance.setCurrentStep(LifecycleStep.ON_MOUNT);

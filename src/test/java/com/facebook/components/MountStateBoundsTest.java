@@ -109,3 +109,10 @@ public class MountStateBoundsTest {
     assertEquals(new Rect(0, 0, 10, 10), host.getDrawables().get(0).getBounds());
     assertEquals(
         new Rect(0, 0, 20, 20),
+        new Rect(
+            host.getLeft(),
+            host.getTop(),
+            host.getRight(),
+            host.getBottom()));
+  }
+

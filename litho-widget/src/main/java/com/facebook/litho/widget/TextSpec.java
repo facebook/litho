@@ -22,3 +22,6 @@ import android.support.v4.text.TextDirectionHeuristicsCompat;
 import android.support.v4.util.Pools.SynchronizedPool;
 import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.text.Layout;
+import android.text.Layout.Alignment;
+import android.text.Spanned;
+import android.text.TextPaint;
