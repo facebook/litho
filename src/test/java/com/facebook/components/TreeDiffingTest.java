@@ -422,3 +422,4 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
         true,
+        prevLayoutState.getDiffTree());
