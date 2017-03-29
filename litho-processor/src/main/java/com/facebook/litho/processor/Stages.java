@@ -1092,3 +1092,4 @@ public class Stages {
       ExecutableElement to,
       List<TypeName> expectedTypes,
       Map<String, String> parameterTranslation,
+      ClassName propsClass) {
