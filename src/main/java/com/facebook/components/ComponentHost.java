@@ -1018,3 +1018,31 @@ public class ComponentHost extends ViewGroup {
 
     private boolean isRunning() {
       return (mCanvas != null && mDrawIndex < mItemsToDraw);
+    }
+
+    private void drawNext() {
+      if (mCanvas == null) {
+        return;
+      }
+
+      for (int i = mDrawIndex, size = mMountItems.size(); i < size; i++) {
+        final MountItem mountItem = mMountItems.valueAt(i);
+
+        final Object content = mountItem.getDisplayListDrawable() != null ?
+            mountItem.getDisplayListDrawable() :
+            mountItem.getContent();
+
+        // During a ViewGroup's dispatchDraw() call with children drawing order enabled,
+        // getChildDrawingOrder() will be called before each child view is drawn. This
+        // method will only draw the drawables "between" the child views and the let
+        // the host draw its children as usual. This is why views are skipped here.
+        if (content instanceof View) {
+          mDrawIndex = i + 1;
+          return;
+        }
+
+        ComponentsSystrace.beginSection(mountItem.getComponent().getSimpleName());
+        ((Drawable) content).draw(mCanvas);
+        ComponentsSystrace.endSection();
+      }
+
