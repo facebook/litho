@@ -1590,3 +1590,7 @@ public class Stages {
     final ExecutableElement delegateMethod = Utils.getAnnotatedMethod(
         mSourceElement,
         OnLoadStyle.class);
+    if (delegateMethod == null) {
+      return;
+    }
+

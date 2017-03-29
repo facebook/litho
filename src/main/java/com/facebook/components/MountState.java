@@ -1189,3 +1189,32 @@ class MountState {
       listener.setEventHandler(longClickHandler);
 
       view.setLongClickable(true);
+    }
+  }
+
+  private static void unsetLongClickHandler(View view) {
+    final ComponentLongClickListener listener = getComponentLongClickListener(view);
+
+    if (listener != null) {
+      listener.setEventHandler(null);
+    }
+  }
+
+  static ComponentLongClickListener getComponentLongClickListener(View v) {
+    if (v instanceof ComponentHost) {
+      return ((ComponentHost) v).getComponentLongClickListener();
+    } else {
+      return (ComponentLongClickListener) v.getTag(R.id.component_long_click_listener);
+    }
+  }
+
+  static void setComponentLongClickListener(View v, ComponentLongClickListener listener) {
+    if (v instanceof ComponentHost) {
+      ((ComponentHost) v).setComponentLongClickListener(listener);
+    } else {
+      v.setOnLongClickListener(listener);
+      v.setTag(R.id.component_long_click_listener, listener);
+    }
+  }
+
+  /**
