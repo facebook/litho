@@ -323,3 +323,7 @@ public class ComponentView extends ComponentHost {
     }
   }
 
+  public boolean isIncrementalMountEnabled() {
+    return (mComponent != null && mComponent.isIncrementalMountEnabled());
+  }
+
