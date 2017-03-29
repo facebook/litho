@@ -160,3 +160,19 @@ public class Utils {
     return null;
   }
 
+  /**
+   * If the type is declared, return the class name without any generics.
+   * Otherwise return null.
+   */
+  public static Name getDeclaredClassNameWithoutGenerics(VariableElement variableElement) {
+    TypeMirror type = variableElement.asType();
+    if (type.getKind() == TypeKind.DECLARED) {
+      final DeclaredType parameterDeclaredType = (DeclaredType) type;
+      final TypeElement typeElement = (TypeElement) parameterDeclaredType.asElement();
+
+      return typeElement.getQualifiedName();
+    }
+
+    return null;
+  }
+

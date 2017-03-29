@@ -78,3 +78,4 @@ public interface ClassNames {
   ClassName STATE_VALUE = ClassName.bestGuess("com.facebook.litho.StateValue");
   ClassName COMPONENT_STATE_UPDATE =
       ClassName.bestGuess("com.facebook.litho.ComponentLifecycle.StateUpdate");
+  ClassName STATE_CONTAINER_COMPONENT =

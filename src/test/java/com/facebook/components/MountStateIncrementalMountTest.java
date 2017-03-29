@@ -230,3 +230,16 @@ public class MountStateIncrementalMountTest {
   }
 
   /**
+   * Tests incremental mount behaviour of a vertical stack of components with a Drawable mount type.
+   */
+  @Test
+  public void testIncrementalMountVerticalDrawableStack() {
+    final TestComponent child1 = TestDrawableComponent.create(mContext)
+        .build();
+    final TestComponent child2 = TestDrawableComponent.create(mContext)
+        .build();
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
