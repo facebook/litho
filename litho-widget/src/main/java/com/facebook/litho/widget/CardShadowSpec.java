@@ -30,3 +30,4 @@ class CardShadowSpec {
     return new CardShadowDrawable();
   }
 
+  @OnMount

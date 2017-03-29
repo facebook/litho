@@ -16,3 +16,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
+import android.content.ContextWrapper;
+import android.content.res.Resources;

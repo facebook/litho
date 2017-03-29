@@ -42,3 +42,4 @@ import com.facebook.yoga.YogaMeasureOutput;
  * it directly when implementing new component types.
  */
 public abstract class ComponentLifecycle implements EventDispatcher {
+  private static final AtomicInteger sComponentId = new AtomicInteger();

@@ -50,3 +50,10 @@ class CardSpec {
   @PropDefault static final int shadowEndColor = 0x03000000;
   @PropDefault static final float cornerRadius = -1;
   @PropDefault static final float elevation = -1;
+
+  private static float pixels(Resources resources, int dips) {
+    final float scale = resources.getDisplayMetrics().density;
+    return dips * scale + 0.5f;
+  }
+
+  @OnCreateLayout

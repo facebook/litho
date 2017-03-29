@@ -29,3 +29,6 @@ public class InternalNodeReleaseTest {
     mInternalNode = ComponentsPools.acquireInternalNode(
         new ComponentContext(RuntimeEnvironment.application),
         RuntimeEnvironment.application.getResources());
+  }
+
+  private static void assertDefaultValues(InternalNode node) {

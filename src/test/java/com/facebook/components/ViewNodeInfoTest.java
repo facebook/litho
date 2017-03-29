@@ -21,3 +21,4 @@ import org.powermock.reflect.Whitebox;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.fail;
+

@@ -49,3 +49,4 @@ import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 class HorizontalScrollSpec {
 
   @PropDefault static final boolean scrollbarEnabled = true;
+
