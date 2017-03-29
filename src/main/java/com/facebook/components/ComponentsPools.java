@@ -495,3 +495,5 @@ public class ComponentsPools {
   static void release(Context context, MountItem item) {
     item.release(context);
     sMountItemPool.release(item);
+  }
+
