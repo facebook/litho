@@ -739,3 +739,8 @@ public class RecyclerBinderTest {
 
     final TestComponentTreeHolder holder =
         mHoldersForComponents.get(components.get(rangeTotal + 1).getComponent());
+    assertTrue(holder.mReleased);
+  }
+
+  @Test
+  public void testRemoveFromRange() {
