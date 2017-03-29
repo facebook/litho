@@ -88,3 +88,6 @@ public class ComponentTree {
   private static final int[] sParentLocation = new int[2];
   private static final Rect sParentBounds = new Rect();
 
+  private final Runnable mCalculateLayoutRunnable = new Runnable() {
+    @Override
+    public void run() {
