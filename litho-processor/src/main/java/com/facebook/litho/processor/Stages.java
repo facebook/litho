@@ -2413,3 +2413,4 @@ public class Stages {
     methodDescription.accessType = Modifier.STATIC;
     methodDescription.name = "dispatch" + eventName;
     methodDescription.parameterTypes = new TypeName[] { ClassName.bestGuess(mQualifiedClassName) };
+
