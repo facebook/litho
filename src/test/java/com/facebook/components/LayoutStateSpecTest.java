@@ -26,3 +26,5 @@ public class LayoutStateSpecTest {
 
   private static final int COMPONENT_ID = 37;
 
+  private int mWidthSpec;
+  private int mHeightSpec;

@@ -33,3 +33,4 @@ import org.robolectric.shadows.ShadowLooper;
 
 import static org.mockito.Mockito.mock;
 
+@RunWith(ComponentsTestRunner.class)

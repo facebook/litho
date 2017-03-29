@@ -95,3 +95,28 @@ def components_robolectric_test(
     extra_vm_args = [
         '-Drobolectric.dependency.dir=lib/android-all',
         '-Dcom.facebook.litho.is_oss=true',
+    ]
+    kwargs['vm_args'] = extra_vm_args
+    kwargs['use_cxx_libraries'] = True
+    kwargs['cxx_library_whitelist'] = [
+        '//lib/yoga:yoga',
+        '//lib/yogajni:jni',
+        '//lib/fb:jni',
+    ]
+
+    # Run normal tests first, excluding powermock
+    robolectric_test(
+        name=name,
+        srcs=glob(srcs, excludes=powermock_srcs),
+        *args,
+        **kwargs)
+
+    # Now run the powermock tests in series as they require a separate class
+    # loader to not conflict with Yoga.
+    for src in powermock_srcs:
+      pname = name + '_powermock_' + src.replace(".java", "").replace("/", "_")
+      robolectric_test(
+          name=pname,
+          srcs=[src],
+          *args,
+          **kwargs)
