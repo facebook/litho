@@ -425,3 +425,4 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
         ViewPredicates.isVisible(),
         (Predicate<View>) predicate);
 
+    final ImmutableList<View> path = actual.findChild(
