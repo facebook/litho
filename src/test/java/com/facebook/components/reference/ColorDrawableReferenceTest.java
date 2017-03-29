@@ -43,3 +43,4 @@ public class ColorDrawableReferenceTest {
     ColorDrawable drawable =  (ColorDrawable) Reference.acquire(
         mContext,
         ColorDrawableReference.create(mContext)
+            .color(Color.BLACK)

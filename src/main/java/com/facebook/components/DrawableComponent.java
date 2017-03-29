@@ -46,3 +46,4 @@ class DrawableComponent<T extends Drawable> extends ComponentLifecycle {
       ComponentContext context,
       Object content,
       Component component) {
+    MatrixDrawable drawable = (MatrixDrawable) content;

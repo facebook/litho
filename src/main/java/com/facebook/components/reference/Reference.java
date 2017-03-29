@@ -39,3 +39,7 @@ public abstract class Reference<L> {
   /**
    * Acquires a Reference of type T. It is responsibility of the caller to release the acquired
    * object by calling {@link Reference#release(ComponentContext, Object, Reference)}.
+   * Calling acquire twice with the same reference does not guarantee that the same instance will
+   * be returned twice.
+   */
+  public static <T> T acquire(

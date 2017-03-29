@@ -45,3 +45,4 @@ public class TestLayoutComponent extends ComponentLifecycle {
           && lifecycle.mIsDelegate == isDelegate) {
         return lifecycle;
       }
+    }

@@ -51,3 +51,6 @@ public abstract class ComponentSpecHelper extends SpecHelper {
     final ExecutableElement onShouldUpdate = Utils.getAnnotatedMethod(
         mStages.getSourceElement(),
         ShouldUpdate.class);
+    if (onShouldUpdate != null) {
+      mStages.generateShouldUpdateMethod(
+          onShouldUpdate,

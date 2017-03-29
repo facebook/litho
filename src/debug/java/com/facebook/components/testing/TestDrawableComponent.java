@@ -33,3 +33,4 @@ public class TestDrawableComponent extends ComponentLifecycle {
   private final boolean mCallsShouldUpdateOnMount;
   private final boolean mIsPureRender;
   private final boolean mCanMeasure;
+  private final boolean mUsesDisplayList;

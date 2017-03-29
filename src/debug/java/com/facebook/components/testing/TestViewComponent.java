@@ -113,3 +113,4 @@ public class TestViewComponent extends ComponentLifecycle {
   }
 
   @Override
+  protected boolean canMeasure() {
