@@ -1005,3 +1005,6 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Override
   public InternalNode child(ComponentLayout.Builder child) {
     if (child != null && child != NULL_LAYOUT) {
+      child(child.build());
+    }
+    return this;
