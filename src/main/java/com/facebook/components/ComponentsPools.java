@@ -516,3 +516,8 @@ public class ComponentsPools {
   }
 
   @ThreadSafe(enableChecks = false)
+  static void release(TestOutput testOutput) {
+    testOutput.release();
+    sTestOutputPool.release(testOutput);
+  }
+
