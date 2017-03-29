@@ -279,3 +279,6 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
       mFailure = null;
       mFailureReference = null;
       mGenericDraweeHierarchy.setFailureImage(null);
+    }
+    if (mProgressBarReference != null) {
+      Reference.release(mContext, mProgressBar, mProgressBarReference);
