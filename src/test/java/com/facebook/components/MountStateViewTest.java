@@ -41,3 +41,21 @@ public class MountStateViewTest {
 
   @Test
   public void testViewPaddingAndBackground() {
+    final int color = 0xFFFF0000;
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Container.create(c)
+                .child(
+                    TestViewComponent.create(c)
+                        .withLayout()
+                        .paddingPx(LEFT, 5)
+                        .paddingPx(TOP, 6)
+                        .paddingPx(RIGHT, 7)
+                        .paddingPx(BOTTOM, 8)
+                        .backgroundColor(color))
+                .build();
+          }
+        });

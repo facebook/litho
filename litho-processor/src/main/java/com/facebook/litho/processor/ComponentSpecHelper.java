@@ -54,3 +54,4 @@ public abstract class ComponentSpecHelper extends SpecHelper {
     if (onShouldUpdate != null) {
       mStages.generateShouldUpdateMethod(
           onShouldUpdate,
+          ClassNames.COMPONENT);

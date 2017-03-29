@@ -43,3 +43,4 @@ public abstract class Reference<L> {
    * be returned twice.
    */
   public static <T> T acquire(
+      ComponentContext context,

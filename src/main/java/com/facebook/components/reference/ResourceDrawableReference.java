@@ -70,3 +70,4 @@ public final class ResourceDrawableReference extends ReferenceLifecycle<Drawable
       ComponentContext context,
       Drawable drawable,
       Reference reference) {
+    mDrawableResourcesCache.release(drawable, ((State) reference).mResId);

@@ -179,3 +179,4 @@ public class SizeSpec {
 
     return makeSizeSpec(FastMath.round(cssSize), mode);
   }
+}
