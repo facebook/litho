@@ -274,3 +274,4 @@ class TextSpec {
     final int lineCount = newLayout.getLineCount();
     if (lineCount < minLines) {
       final TextPaint paint = newLayout.getPaint();
+
