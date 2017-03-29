@@ -1365,3 +1365,5 @@ public class Stages {
       }
 
       methodBuilder.endControlFlow();
+    }
+
