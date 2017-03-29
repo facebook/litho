@@ -81,3 +81,11 @@ class ShallowCopyMethodSpecBuilder {
           deepCopy);
     }
 
+    if (mHasDeepCopy) {
+      builder.beginControlFlow("if (!deepCopy)");
+    }
+
+    for (String s : mInterStageVariables) {
+      builder.addStatement("component.$L = null", s);
+    }
+

@@ -154,3 +154,10 @@ public class TestViewComponent extends ComponentLifecycle {
   protected void onUnbind(ComponentContext c, Object mountedContent, Component<?> component) {
     State state = (State) component;
     state.onUnbindCalled();
+  }
+
+  @Override
+  public MountType getMountType() {
+    return MountType.VIEW;
+  }
+

@@ -100,3 +100,33 @@ public class MountStateRemountEventHandlerTest {
   }
 
   @Test
+  public void testReuseTouchListenerOnSameView() {
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Container.create(c)
+                .touchHandler(c.newEventHandler(1))
+                .child(TestDrawableComponent.create(c))
+                .child(TestDrawableComponent.create(c))
+                .build();
+          }
+        });
+
+    final ComponentTouchListener touchListener =
+        MountState.getComponentTouchListener(componentView);
+    assertNotNull(touchListener);
+
+    componentView.getComponent().setRoot(new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c)
+            .touchHandler(c.newEventHandler(2))
+            .child(TestDrawableComponent.create(c))
+            .child(TestDrawableComponent.create(c))
+            .build();
+      }
+    });
+
+    assertEquals(touchListener, MountState.getComponentTouchListener(componentView));

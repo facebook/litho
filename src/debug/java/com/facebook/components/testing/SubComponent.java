@@ -9,3 +9,4 @@
 
 package com.facebook.components.testing;
 
+import com.facebook.components.Component;

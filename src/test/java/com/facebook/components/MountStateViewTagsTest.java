@@ -66,3 +66,4 @@ public class MountStateViewTagsTest {
 
     final View innerHost1 = componentView.getChildAt(0);
     final View innerHost2 = componentView.getChildAt(1);
+
