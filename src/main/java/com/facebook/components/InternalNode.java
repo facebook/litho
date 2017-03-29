@@ -1058,3 +1058,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return background(
         ResourceDrawableReference.create(mComponentContext)
             .resId(resId)
+            .build());
+  }
+
+  @Override
