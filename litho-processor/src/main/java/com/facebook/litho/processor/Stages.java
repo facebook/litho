@@ -568,3 +568,6 @@ public class Stages {
 
     if (!exceptions.isEmpty()) {
       throw new MultiPrintableException(exceptions);
+    }
+  }
+
