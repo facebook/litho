@@ -2046,3 +2046,26 @@ public class LayoutStateCalculateTest {
     final int widthMeasuredComponent = SizeSpec.makeSizeSpec(
         SizeSpec.getSize(widthSpecContainer) - horizontalPadding - horizontalPadding,
         SizeSpec.EXACTLY);
+
+    final Component<?> sizeDependentComponentSpy = PowerMockito.spy(
+        TestSizeDependentComponent.create(c)
+            .setFixSizes(false)
+            .setDelegate(true)
+            .build());
+    Size sizeOutput = new Size();
+    sizeDependentComponentSpy.measure(
+        c,
+        widthMeasuredComponent,
+        heightSpec,
+        sizeOutput);
+
+    // Check the cached measured component tree
+    assertTrue(sizeDependentComponentSpy.hasCachedLayout());
+    final InternalNode cachedLayout = sizeDependentComponentSpy.getCachedLayout();
+    assertEquals(0, cachedLayout.getChildCount());
+    assertTrue(cachedLayout.getComponent().getLifecycle() instanceof TestDrawableComponent);
+
+    // Now embed the measured component in another container and calculate a layout.
+    final Component rootContainer = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
