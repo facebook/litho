@@ -114,3 +114,4 @@ public class TreePropGeneratorTest {
         "protected com.facebook.components.TreeProps getTreePropsForChildren(com.facebook.components.ComponentContext c, com.facebook.components.Component _abstractImpl, com.facebook.components.TreeProps parentTreeProps) {\n" +
         "  final TestImpl _impl = (TestImpl) _abstractImpl;\n" +
         "  final com.facebook.components.TreeProps childTreeProps = com.facebook.components.TreeProps.copy(parentTreeProps);\n" +
+        "  childTreeProps.put(java.class.Boolean.class, mSpec.onCreateTreeProp(\n" +
