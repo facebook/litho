@@ -3038,3 +3038,25 @@ public class Stages {
     mSourceDelegateAccessorName = sourceDelegateAccessorName;
   }
 
+  private String getImplClassName() {
+    return getSimpleClassName() + IMPL_CLASS_NAME_SUFFIX;
+  }
+
+  private String getImplInstanceName() {
+    String outerClassName = getSimpleClassName();
+    return outerClassName.substring(0, 1).toLowerCase() +
+        outerClassName.substring(1) +
+        IMPL_CLASS_NAME_SUFFIX;
+  }
+
+  private static String getStateUpdateClassName(ExecutableElement updateMethod) {
+    String methodName = updateMethod.getSimpleName().toString();
+    return methodName.substring(0, 1).toUpperCase() +
+        methodName.substring(1) +
+        STATE_UPDATE_IMPL_NAME_SUFFIX;
+  }
+
+  private String getImplMemberInstanceName() {
+    return "m" + getSimpleClassName() + IMPL_CLASS_NAME_SUFFIX;
+  }
+
