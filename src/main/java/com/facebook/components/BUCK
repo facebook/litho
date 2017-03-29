@@ -20,3 +20,5 @@ android_library(
         COMPONENTS_CONFIG_TARGET,
         COMPONENTS_CSSLAYOUT_TARGET,
         COMPONENTS_PROGUARDANNOTATIONS_TARGET,
+    ],
+    provided_deps = [
