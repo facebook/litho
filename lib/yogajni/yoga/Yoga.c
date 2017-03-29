@@ -3334,3 +3334,5 @@ static void YGRoundToPixelGrid(const YGNodeRef node, const float pointScaleFacto
   const float nodeTop = node->layout.position[YGEdgeTop];
 
   // To round correctly to the pixel grid, first we calculate left and top coordinates
+  float fractialLeft = fmodf(nodeLeft, pointScaleFactor);
+  float fractialTop = fmodf(nodeTop, pointScaleFactor);
