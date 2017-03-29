@@ -1363,3 +1363,4 @@ class MountState {
 
   private static void setViewBackground(View view, ViewNodeInfo viewNodeInfo) {
     final Reference<Drawable> backgroundReference = viewNodeInfo.getBackground();
+    if (backgroundReference != null) {
