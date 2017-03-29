@@ -1799,3 +1799,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     mDuplicateParentState = false;
     mBackground = null;
     mForeground = null;
+    mForceViewWrapping = false;
