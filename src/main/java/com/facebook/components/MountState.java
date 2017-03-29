@@ -632,3 +632,10 @@ class MountState {
   }
 
   private void updateBoundsForMountedLayoutOutput(LayoutOutput layoutOutput, MountItem item) {
+    // MountState should never update the bounds of the top-level host as this
+    // should be done by the ViewGroup containing the ComponentView.
+    if (layoutOutput.getId() == ROOT_HOST_ID) {
+      return;
+    }
+
+    layoutOutput.getMountBounds(sTempRect);

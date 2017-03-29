@@ -932,3 +932,4 @@ public class Stages {
         .addModifiers(Modifier.PRIVATE);
 
     if (initialized) {
+      builder.initializer("new $T()", specTypeName);
