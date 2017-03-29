@@ -200,3 +200,4 @@ final class ViewPredicates {
    *
    * @param view the view to draw
    */
+  @TargetApi(Build.VERSION_CODES.KITKAT)
