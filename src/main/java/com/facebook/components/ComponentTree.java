@@ -92,3 +92,6 @@ public class ComponentTree {
     @Override
     public void run() {
       calculateLayout(null);
+    }
+  };
+
