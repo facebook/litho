@@ -108,3 +108,4 @@ final class ViewPredicates {
 
     return new Predicate<View>() {
       @Override
+      public boolean apply(final View input) {
