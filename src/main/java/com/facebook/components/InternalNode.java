@@ -36,3 +36,4 @@ import com.facebook.components.config.ComponentsConfiguration;
 import com.facebook.components.reference.ColorDrawableReference;
 import com.facebook.components.reference.Reference;
 import com.facebook.components.reference.ResourceDrawableReference;
+import com.facebook.infer.annotation.ThreadConfined;

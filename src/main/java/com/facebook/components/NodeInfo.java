@@ -22,3 +22,4 @@ import com.facebook.infer.annotation.ThreadConfined;
  * NodeInfo holds information that are set to the {@link InternalNode} and needs to be used
  * while mounting a {@link MountItem} in {@link MountState}.
  */
+@ThreadConfined(ThreadConfined.ANY)

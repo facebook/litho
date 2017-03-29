@@ -9,3 +9,5 @@
 
 package com.facebook.components;
 
+import com.facebook.infer.annotation.ReturnsOwnership;
+import com.facebook.infer.annotation.ThreadSafe;

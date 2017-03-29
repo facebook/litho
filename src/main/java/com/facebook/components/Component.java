@@ -17,3 +17,4 @@ import android.support.annotation.StyleRes;
 import com.facebook.components.ComponentLifecycle.MountType;
 import com.facebook.components.ComponentLifecycle.StateContainer;
 import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.infer.annotation.ThreadSafe;

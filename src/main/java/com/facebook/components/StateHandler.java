@@ -19,3 +19,4 @@ import java.util.Set;
 import android.support.v4.util.Pools;
 
 import com.facebook.components.ComponentLifecycle.StateContainer;
+import com.facebook.infer.annotation.ThreadSafe;

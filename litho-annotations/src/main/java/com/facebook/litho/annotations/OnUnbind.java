@@ -22,3 +22,4 @@ import java.lang.annotation.RetentionPolicy;
  * been unmounted yet. This happens for example when a ComponentView can be in a state where it's
  * not on the screen anymore but it's not been unmounted yet (to re-use items in place for example).
  */
+@Retention(RetentionPolicy.CLASS)
