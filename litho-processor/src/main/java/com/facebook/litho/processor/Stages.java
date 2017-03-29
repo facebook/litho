@@ -2147,3 +2147,10 @@ public class Stages {
     final ClassName implClass = ClassName.bestGuess(getImplClassName());
 
     final MethodSpec.Builder shouldUpdateComponent =
+        MethodSpec.methodBuilder("shouldUpdate")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(TypeName.BOOLEAN)
+            .addParameter(comparedInstancesClassName, "previous")
+            .addParameter(comparedInstancesClassName, "next");
+

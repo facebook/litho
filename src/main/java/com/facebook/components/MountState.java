@@ -1579,3 +1579,4 @@ class MountState {
       }
     }
 
+    final ComponentHost host = item.getHost();
