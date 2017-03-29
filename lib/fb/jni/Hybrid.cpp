@@ -32,3 +32,34 @@ void HybridData::setNativePointer(std::unique_ptr<BaseHybridClass> new_value) {
   // ownership of it, to HybridData which is managed by the java GC.  The
   // finalizer on hybridData calls resetNative which will delete the object, if
   // resetNative has not already been called.
+  setFieldValue(pointerField, reinterpret_cast<jlong>(new_value.release()));
+}
+
+BaseHybridClass* HybridData::getNativePointer() {
+  static auto pointerField = getClass()->getField<jlong>("mNativePointer");
+  auto* value = reinterpret_cast<BaseHybridClass*>(getFieldValue(pointerField));
+  if (!value) {
+    throwNewJavaException("java/lang/NullPointerException", "java.lang.NullPointerException");
+  }
+  return value;
+}
+
+local_ref<HybridData> HybridData::create() {
+  return newInstance();
+}
+
+}
+
+namespace {
+void resetNative(alias_ref<detail::HybridData> jthis) {
+  jthis->setNativePointer(nullptr);
+}
+}
+
+void HybridDataOnLoad() {
+  registerNatives("com/facebook/jni/HybridData", {
+      makeNativeMethod("resetNative", resetNative),
+  });
+}
+
+}}
