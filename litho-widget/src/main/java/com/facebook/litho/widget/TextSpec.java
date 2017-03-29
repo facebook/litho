@@ -619,3 +619,9 @@ class TextSpec {
       return;
     }
 
+    node.setBoundsInParent(sTempRect);
+
+    node.setClickable(true);
+    node.setFocusable(true);
+    node.setEnabled(true);
+    node.setVisibleToUser(true);
