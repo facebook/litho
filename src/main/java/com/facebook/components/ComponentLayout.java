@@ -44,3 +44,4 @@ import static android.support.annotation.Dimension.DP;
 public interface ComponentLayout {
 
   @Px
+  int getX();

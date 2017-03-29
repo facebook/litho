@@ -64,3 +64,11 @@ public class LayoutOutputTest {
   @Test
   public void testHostMarkerSet() {
     mLayoutOutput.setHostMarker(10l);
+    assertEquals(10, mLayoutOutput.getHostMarker());
+  }
+
+  @Test
+  public void testFlagsSet() {
+    mLayoutOutput.setFlags(1);
+    assertEquals(1, mLayoutOutput.getFlags());
+  }

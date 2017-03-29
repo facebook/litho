@@ -35,3 +35,7 @@ import static android.os.Process.THREAD_PRIORITY_LOWEST;
 public class GlyphWarmer {
 
   private static final String TAG = GlyphWarmer.class.getName();
+
+  private static final int WARMER_THREAD_PRIORITY =
+      (THREAD_PRIORITY_BACKGROUND + THREAD_PRIORITY_LOWEST) / 2;
+

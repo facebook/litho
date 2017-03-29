@@ -103,3 +103,6 @@ public class ComponentView extends ComponentHost {
     mTemporaryDetachedComponent = mComponent;
   }
 
+  @Override
+  protected void onAttachedToWindow() {
+    super.onAttachedToWindow();

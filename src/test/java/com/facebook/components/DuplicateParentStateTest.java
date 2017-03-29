@@ -106,3 +106,4 @@ public class DuplicateParentStateTest {
         MountItem.isDuplicateParentState(layoutState.getMountableOutputAt(1).getFlags()));
 
     assertTrue(
+        "Parent does duplicate host state",
