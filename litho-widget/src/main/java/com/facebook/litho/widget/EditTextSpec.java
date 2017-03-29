@@ -297,3 +297,4 @@ class EditTextSpec {
   }
 
   @OnBind
+  static void onBind(
