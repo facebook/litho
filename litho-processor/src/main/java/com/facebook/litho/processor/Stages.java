@@ -155,3 +155,5 @@ public class Stages {
   private LinkedHashMap<String, VariableElement> mImplMembers;
   private List<Parameter> mImplParameters;
 
+  private final Map<String, TypeMirror> mExtraStateMembers;
+
