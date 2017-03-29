@@ -590,3 +590,11 @@ public class WorkingRangesTest {
 
     @Override
     public void onUnmount(ViewGroup view) {
+      if (mView == null) {
+        throw new IllegalStateException("onUnmount called before onMount");
+      }
+
+      mView = null;
+    }
+
+    @Override

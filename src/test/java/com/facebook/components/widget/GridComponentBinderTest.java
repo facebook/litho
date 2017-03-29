@@ -74,3 +74,7 @@ public class GridComponentBinderTest {
     mRecyclerView = new RecyclerView(mContext);
     mRecyclerView.setPadding(1, 2, 3, 4);
 
+    mLayoutThreadShadowLooper = Shadows.shadowOf(
+        (Looper) Whitebox.invokeMethod(
+            ComponentTree.class,
+            "getDefaultLayoutThreadLooper"));

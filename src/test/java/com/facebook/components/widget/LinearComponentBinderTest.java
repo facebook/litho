@@ -63,3 +63,9 @@ public class LinearComponentBinderTest {
 
     Context context = RuntimeEnvironment.application;
     ComponentsConfiguration.bootstrapBinderItems = true;
+
+    mLayoutManager = new LinearLayoutManager(context);
+
+    mView = new RecyclerView(context);
+    mView.setLayoutManager(mLayoutManager);
+

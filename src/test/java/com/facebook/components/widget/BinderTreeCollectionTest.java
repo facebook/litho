@@ -69,3 +69,4 @@ public class BinderTreeCollectionTest {
 
     ComponentTree newComponentTree = createNewComponentTree();
 
+    assertNotEquals(newComponentTree, mBinderTreeCollection.get(1));
