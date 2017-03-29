@@ -63,3 +63,5 @@ public interface ComponentLayout {
   int getPaddingLeft();
 
   YogaDirection getResolvedLayoutDirection();
+
+  interface Builder {

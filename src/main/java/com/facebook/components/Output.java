@@ -30,3 +30,7 @@ public class Output<T> {
   public T get() {
     return mT;
   }
+
+  void release() {
+    mT = null;
+  }
