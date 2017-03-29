@@ -2180,3 +2180,6 @@ public class Stages {
       final VariableElement componentMember = findPropVariableForName(variableElementName);
 
       if (componentMember == null) {
+        throw new ComponentsProcessingException(
+            variableElement,
+            "Arguments for ShouldUpdate should match declared Props");
