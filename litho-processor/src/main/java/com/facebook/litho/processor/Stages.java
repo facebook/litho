@@ -1310,3 +1310,5 @@ public class Stages {
         .addParameter(
             ParameterSpec.builder(ClassNames.OBJECT, "eventState", Modifier.FINAL).build());
 
+    methodBuilder.addStatement("int id = eventHandler.id");
+    methodBuilder.beginControlFlow("switch($L)", "id");
