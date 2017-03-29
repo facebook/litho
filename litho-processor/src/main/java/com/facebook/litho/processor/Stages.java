@@ -469,3 +469,4 @@ public class Stages {
             // outputand the new type is an prop, and the type argument of the output matches the
             // prop. In the future, we may want to allow stages to modify outputs from previous
             // stages, but for now we disallow it.
+
