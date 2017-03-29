@@ -184,3 +184,7 @@ public class Stages {
       Map<String, TypeMirror> extraStateMembers,
       List<TypeElement> eventDeclarations,
       Map<String, String> propJavadocs) {
+    mProcessingEnv = processingEnv;
+    mSourceElement = sourceElement;
+    mQualifiedClassName = qualifiedClassName;
+    mStageAnnotations = stageAnnotations;

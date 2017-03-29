@@ -189,3 +189,7 @@ public class ComponentTree {
   @ReturnsOwnership
   private LayoutState setBestMainThreadLayoutAndReturnOldLayout() {
     assertHoldsLock(this);
+
+    // If everything matches perfectly then we prefer mMainThreadLayoutState
+    // because that means we don't need to remount.
+    boolean isMainThreadLayoutBest;
