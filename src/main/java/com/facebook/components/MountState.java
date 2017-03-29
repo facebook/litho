@@ -112,3 +112,7 @@ class MountState {
     mComponentView = view;
     mIsDirty = true;
 
+    mTestItemMap = ComponentsConfiguration.isEndToEndTestRun
+        ? new HashMap<String, Deque<TestItem>>()
+        : null;
+
