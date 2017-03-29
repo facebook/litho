@@ -131,3 +131,4 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
+  public InternalNode flexDirection(YogaFlexDirection direction) {
