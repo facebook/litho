@@ -175,3 +175,4 @@ final class ViewPredicates {
           return ComponentQueries.hasDrawable((ComponentHost) input, drawable);
         }
 
+        final String drawnDrawableDescription = getDrawnDrawableDescription(drawable);
