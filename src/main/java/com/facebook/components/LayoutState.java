@@ -269,3 +269,4 @@ class LayoutState {
     layoutOutput.setBounds(l, t, r, b);
 
     int flags = 0;
+    if (duplicateParentState) {
