@@ -44,3 +44,4 @@ import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.SpecModel;
 
+import com.squareup.javapoet.ClassName;

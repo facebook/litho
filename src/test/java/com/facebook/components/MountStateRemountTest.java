@@ -96,3 +96,7 @@ public class MountStateRemountTest {
       components.add(indexToItemMap.valueAt(i).getComponent());
     }
 
+    assertFalse(containsRef(components, component1));
+    assertFalse(containsRef(components, component2));
+    assertTrue(containsRef(components, component3));
+    assertTrue(containsRef(components, component4));

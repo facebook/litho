@@ -64,3 +64,4 @@ public class ComponentHostTest {
   private TestableComponentHost mHost;
   private Component<?> mDrawableComponent;
   private Component<?> mViewComponent;
+  private ComponentContext mContext;

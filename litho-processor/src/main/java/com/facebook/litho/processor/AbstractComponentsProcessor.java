@@ -51,3 +51,4 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
         Closeable closeable = null;
         SpecModel specModel = null;
         final TypeElement typeElement = (TypeElement) element;
+        if (element.getAnnotation(LayoutSpec.class) != null) {

@@ -141,3 +141,4 @@ public class TestDrawableComponent extends ComponentLifecycle {
 
   @Override
   protected void onMeasure(
+      ComponentContext c,
