@@ -659,3 +659,4 @@ class LayoutState {
       }
     }
 
+    // 8. If we're in a testing environment, maintain an additional data structure with
