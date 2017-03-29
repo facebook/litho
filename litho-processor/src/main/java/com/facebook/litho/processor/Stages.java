@@ -2751,3 +2751,8 @@ public class Stages {
       final FieldSpec.Builder requiredPropsNamesBuilder =
           FieldSpec.builder(
               String[].class,
+              REQUIRED_PROPS_NAMES,
+              Modifier.PRIVATE)
+              .initializer("new String[] {$L}", commaSeparateAndQuoteStrings(requiredPropNames))
+              .addModifiers(Modifier.FINAL);
+
