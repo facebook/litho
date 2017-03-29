@@ -359,3 +359,4 @@ public class BaseBinderTest {
     }
 
     @Override
+    public void onMount(ViewGroup view) {

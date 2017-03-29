@@ -115,3 +115,11 @@ class LayoutOutput implements Cloneable {
     mHostMarker = hostMarker;
   }
 
+  long getId() {
+    return mId;
+  }
+
+  void setId(long id) {
+    mId = id;
+  }
+
