@@ -571,3 +571,30 @@ class LayoutState {
     }
 
     // 4. Add border color if defined.
+    if (node.shouldDrawBorders()) {
+      final LayoutOutput convertBorder = (currentDiffNode != null)
+          ? currentDiffNode.getBorder()
+          : null;
+
+      final LayoutOutput borderOutput = addDrawableComponent(
+          node,
+          layoutState,
+          convertBorder,
+          getBorderColorDrawable(node),
+          LayoutOutput.TYPE_BORDER);
+      if (diffNode != null) {
+        diffNode.setBorder(borderOutput);
+      }
+    }
+
+    // 5. Extract the Transitions.
+    if (SDK_INT >= ICE_CREAM_SANDWICH) {
+      if (node.getTransitionKey() != null) {
+        layoutState
+            .getOrCreateTransitionContext()
+            .addTransitionKey(node.getTransitionKey());
+      }
+      if (component != null) {
+        Transition transition = component.getLifecycle().onLayoutTransition(
+            layoutState.mContext,
+            component);
