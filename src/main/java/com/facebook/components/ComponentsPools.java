@@ -106,3 +106,6 @@ public class ComponentsPools {
   private static final Pools.SynchronizedPool<ComponentTree.Builder> sComponentTreeBuilderPool =
       new Pools.SynchronizedPool<>(2);
 
+  private static final Pools.SynchronizedPool<StateHandler> sStateHandlerPool =
+      new Pools.SynchronizedPool<>(10);
+
