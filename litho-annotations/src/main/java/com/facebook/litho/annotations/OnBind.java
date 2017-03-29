@@ -21,3 +21,4 @@ import java.lang.annotation.RetentionPolicy;
  * This callback will be invoked every time the mounted object is about to become active after being
  * mounted. This method can be called multiple times after onMount with the same mounted content.
  */
+@Retention(RetentionPolicy.CLASS)

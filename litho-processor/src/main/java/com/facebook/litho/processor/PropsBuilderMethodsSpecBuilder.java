@@ -19,3 +19,4 @@ import com.facebook.litho.javapoet.JPUtil;
 import com.facebook.litho.specmodels.model.ClassNames;
 
 import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.ArrayTypeName;

@@ -183,3 +183,7 @@ public class ComponentView extends ComponentHost {
 
   @Override
   protected void performLayout(boolean changed, int left, int top, int right, int bottom) {
+
+    if (mComponent != null) {
+      boolean wasMountTriggered = mComponent.layout();
+

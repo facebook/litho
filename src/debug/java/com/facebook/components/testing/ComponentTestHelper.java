@@ -12,3 +12,4 @@ package com.facebook.litho.testing;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.graphics.Rect;
