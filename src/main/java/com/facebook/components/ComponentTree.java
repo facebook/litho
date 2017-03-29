@@ -814,3 +814,5 @@ public class ComponentTree {
         return;
       }
 
+      final boolean widthSpecDidntChange = !widthSpecInitialized || widthSpec == mWidthSpec;
+      final boolean heightSpecDidntChange = !heightSpecInitialized || heightSpec == mHeightSpec;

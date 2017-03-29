@@ -611,3 +611,11 @@ public class ComponentHost extends ViewGroup {
       final ComponentHost componentHost = (ComponentHost) view;
 
       view.setVisibility(GONE);
+
+      // In Gingerbread the View system doesn't invalidate
+      // the parent if a child become invisible.
+      invalidate();
+
+      startTemporaryDetach(componentHost);
+
+      mScrapHosts.add(componentHost);
