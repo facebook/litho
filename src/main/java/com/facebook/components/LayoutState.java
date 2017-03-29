@@ -1142,3 +1142,4 @@ class LayoutState {
     if (YogaConstants.isUndefined(root.getStyleWidth())) {
       root.setStyleWidthFromSpec(widthSpec);
     }
+    if (YogaConstants.isUndefined(root.getStyleHeight())) {
