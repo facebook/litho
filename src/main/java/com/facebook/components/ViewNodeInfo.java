@@ -156,3 +156,4 @@ class ViewNodeInfo {
     return this;
   }
 
+  void release() {

@@ -72,3 +72,12 @@ import static com.facebook.litho.SizeSpec.EXACTLY;
  * based on the provided {@link InternalNode} for later use in {@link MountState}.
  */
 class LayoutState {
+  static final Comparator<LayoutOutput> sTopsComparator =
+      new Comparator<LayoutOutput>() {
+        @Override
+        public int compare(LayoutOutput lhs, LayoutOutput rhs) {
+          final int lhsTop = lhs.getBounds().top;
+          final int rhsTop = rhs.getBounds().top;
+          return lhsTop < rhsTop
+              ? -1
+              : lhsTop > rhsTop
