@@ -294,3 +294,4 @@ public class LayoutStateCalculateTest {
     assertEquals("textLeft1", getTextFromTextComponent(layoutState, 3));
     assertEquals("textRight1", getTextFromTextComponent(layoutState, 4));
     assertEquals("textLeft2", getTextFromTextComponent(layoutState, 6));
+

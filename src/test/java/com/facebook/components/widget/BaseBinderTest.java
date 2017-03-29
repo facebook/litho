@@ -375,3 +375,4 @@ public class BaseBinderTest {
     }
 
     @Override
+    public void onUnbind(ViewGroup view) {
