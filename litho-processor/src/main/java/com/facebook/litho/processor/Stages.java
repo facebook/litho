@@ -202,3 +202,4 @@ public class Stages {
     mParameterAnnotations = parameterAnnotations.toArray(
         new Class[parameterAnnotations.size()]);
 
+    mSupportState = supportState;
