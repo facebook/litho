@@ -2492,3 +2492,4 @@ public class Stages {
       methodBuilder.addStatement("_lifecycle.dispatchOnEvent(_eventHandler, _eventState)");
     }
 
+    writeMethodSpec(methodBuilder.build());
