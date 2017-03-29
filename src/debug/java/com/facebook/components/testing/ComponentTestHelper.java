@@ -404,3 +404,4 @@ public final class ComponentTestHelper {
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
+    treeProps.put(propClass, prop);
