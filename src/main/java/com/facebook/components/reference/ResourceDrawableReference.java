@@ -103,3 +103,9 @@ public final class ResourceDrawableReference extends ReferenceLifecycle<Drawable
       State state = (State) o;
 
       return mResId == state.mResId;
+    }
+  }
+
+  public static class PropsBuilder extends Reference.Builder<Drawable> {
+
+    private State mState;

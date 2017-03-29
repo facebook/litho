@@ -172,3 +172,5 @@ class HorizontalScrollSpec {
       @FromBoundsDefined int componentWidth,
       @FromBoundsDefined int componentHeight) {
 
+    horizontalScrollComponentView.setHorizontalScrollBarEnabled(scrollbarEnabled);
+    horizontalScrollComponentView.mount(contentComponent, componentWidth, componentHeight);

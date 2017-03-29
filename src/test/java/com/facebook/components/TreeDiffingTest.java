@@ -315,3 +315,18 @@ public class TreeDiffingTest {
     InternalNode layoutTreeRoot = LayoutState.createTree(
         component2,
         mContext);
+    LayoutState.applyDiffNodeToUnchangedNodes(layoutTreeRoot, node);
+    InternalNode child_1 = (InternalNode) layoutTreeRoot.getChildAt(0);
+    assertCachedMeasurementsDefined(child_1);
+
+    InternalNode child_2 = (InternalNode) layoutTreeRoot.getChildAt(1);
+    assertCachedMeasurementsNotDefined(child_2);
+    InternalNode child_3 = (InternalNode) child_2.getChildAt(0);
+    assertCachedMeasurementsDefined(child_3);
+
+    InternalNode child_4 = (InternalNode) layoutTreeRoot.getChildAt(2);
+    assertCachedMeasurementsNotDefined(child_4);
+  }
+
+  @Test
+  public void testLayoutOutputReuse() {

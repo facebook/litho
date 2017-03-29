@@ -103,3 +103,4 @@ private static class State<T extends Drawable> extends Component<DrawableCompone
     Reference<T> mDrawable;
     int mDrawableWidth;
     int mDrawableHeight;
+

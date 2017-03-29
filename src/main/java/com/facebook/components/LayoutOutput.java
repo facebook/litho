@@ -193,3 +193,5 @@ class LayoutOutput implements Cloneable {
     mHostTranslationX = 0;
     mHostTranslationY = 0;
     mFlags = 0;
+    mHostMarker = -1L;
+    mUpdateState = STATE_UNKNOWN;
