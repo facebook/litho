@@ -1104,3 +1104,5 @@ public class LayoutStateCalculateTest {
     assertEquals(hostMarkerOne, layoutState.getMountableOutputAt(2).getHostMarker());
 
     // Third and fourth outputs are children of the root view.
+    assertEquals(hostMarkerRoot, layoutState.getMountableOutputAt(3).getHostMarker());
+    assertEquals(hostMarkerRoot, layoutState.getMountableOutputAt(4).getHostMarker());
