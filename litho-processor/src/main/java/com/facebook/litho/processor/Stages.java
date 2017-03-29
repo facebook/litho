@@ -1035,3 +1035,10 @@ public class Stages {
       if (elementInnerClassType != null) {
         final String paramName = element.getSimpleName().toString();
         VariableElement implParameter = mStateMap.get(paramName);
+
+        if (implParameter == null || implParameter.getAnnotation(State.class) == null) {
+          throw new ComponentsProcessingException(
+              executableElement,
+              "Only parameters annotated with @State can be initialized in @OnCreateInitialState," +
+                  " parameter without annotation is: " + paramName);
+        }
