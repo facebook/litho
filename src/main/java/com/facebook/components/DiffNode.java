@@ -152,3 +152,5 @@ class DiffNode implements Cloneable {
 
     mLastMeasuredWidth = UNSPECIFIED;
     mLastMeasuredHeight = UNSPECIFIED;
+    mLastWidthSpec = UNSPECIFIED;
+    mLastHeightSpec = UNSPECIFIED;
