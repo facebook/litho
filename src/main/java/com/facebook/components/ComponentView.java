@@ -351,3 +351,8 @@ public class ComponentView extends ComponentHost {
   void setMountStateDirty() {
     mMountState.setDirty();
     mPreviousMountBounds.setEmpty();
+  }
+
+  boolean isMountStateDirty() {
+    return mMountState.isDirty();
+  }
