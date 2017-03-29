@@ -267,3 +267,33 @@ public class MountSpecHelper extends ComponentSpecHelper {
     mTypeSpec.addMethod(
         new OnCreateMountContentMethodBuilder()
             .target(mStages.getSourceDelegateAccessorName())
+            .delegateName(onCreateMountContent.getSimpleName().toString())
+            .build());
+  }
+
+  /**
+   * Generate an onMount implementation that delegates to the @OnMount-annotated method.
+   */
+  public void generateOnMount() {
+    final ExecutableElement onMount = Utils.getAnnotatedMethod(
+        mStages.getSourceElement(),
+        OnMount.class);
+    if (onMount == null) {
+      return;
+    }
+
+    final MethodDescription methodDescription = new MethodDescription();
+    methodDescription.annotations = new Class[] { Override.class };
+    methodDescription.accessType = Modifier.PROTECTED;
+    methodDescription.name = "onMount";
+    methodDescription.returnType = ClassName.VOID;
+    methodDescription.parameterTypes = new TypeName[] {
+        ClassNames.COMPONENT_CONTEXT,
+        ClassName.OBJECT,
+    };
+
+    if (!Utils.getParametersWithAnnotation(onMount, FromMeasure.class).isEmpty() ||
+        !Utils.getParametersWithAnnotation(onMount, FromBoundsDefined.class).isEmpty()) {
+      mTypeSpec.addMethod(new IsMountSizeDependentMethodSpecBuilder().build());
+    }
+
