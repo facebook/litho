@@ -179,3 +179,14 @@ class LayoutState {
         node,
         true /* useNodePadding */,
         node.getImportantForAccessibility(),
+        layoutState.mShouldDuplicateParentState);
+  }
+
+  private static LayoutOutput createHostLayoutOutput(LayoutState layoutState, InternalNode node) {
+    final LayoutOutput hostOutput = createLayoutOutput(
+        HostComponent.create(),
+        layoutState,
+        node,
+        false /* useNodePadding */,
+        node.getImportantForAccessibility(),
+        node.isDuplicateParentStateEnabled());
