@@ -1142,3 +1142,7 @@ public class Stages {
         .target(mSourceDelegateAccessorName)
         .toName(to.getSimpleName().toString())
         .stateParams(mStateMap.keySet())
+        .toReturnType(ClassName.get(to.getReturnType()))
+        .toParams(toParams)
+        .build());
+  }
