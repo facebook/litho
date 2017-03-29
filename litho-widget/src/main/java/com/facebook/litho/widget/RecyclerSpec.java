@@ -64,3 +64,4 @@ class RecyclerSpec {
       ComponentContext context,
       ComponentLayout layout,
       @Prop Binder<RecyclerView> binder) {
+    binder.setSize(
