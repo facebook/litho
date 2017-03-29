@@ -2146,3 +2146,4 @@ public class Stages {
       ClassName comparedInstancesClassName) {
     final ClassName implClass = ClassName.bestGuess(getImplClassName());
 
+    final MethodSpec.Builder shouldUpdateComponent =
