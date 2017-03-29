@@ -84,3 +84,5 @@ public class ComponentTreeTest {
 
     // The component input should be the one we passed in
     Assert.assertSame(
+        mComponent,
+        Whitebox.getInternalState(componentTree, "mRoot"));

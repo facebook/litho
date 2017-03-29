@@ -165,3 +165,5 @@ class LayoutOutput implements Cloneable {
           " is already initialized with one.");
     }
     mViewNodeInfo = viewNodeInfo.acquireRef();
+  }
+

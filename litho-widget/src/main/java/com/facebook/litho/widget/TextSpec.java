@@ -70,3 +70,6 @@ import static com.facebook.litho.annotations.ResType.STRING;
 @MountSpec(isPureRender = true, shouldUseDisplayList = true, poolSize = 30)
 class TextSpec {
 
+  private static final Alignment[] ALIGNMENT = Alignment.values();
+  private static final TruncateAt[] TRUNCATE_AT = TruncateAt.values();
+

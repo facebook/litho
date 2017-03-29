@@ -316,3 +316,6 @@ public class BaseBinderTest {
     // To disable incremental mount we need to release all the components first.
     mBinder.release();
 
+    mBinder.setIncrementalMountEnabled(false);
+    performNotifyDataSetChanged();
+
