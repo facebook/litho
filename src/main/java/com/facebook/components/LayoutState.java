@@ -1071,3 +1071,21 @@ class LayoutState {
       return output;
     }
 
+    if ((output.getFlags() & FLAG_DUPLICATE_PARENT_STATE) != 0) {
+      final int parentPosition = layoutState.getLayoutOutputPositionForId(output.getHostMarker());
+      if (parentPosition >= 0) {
+        final LayoutOutput parent = layoutState.mMountableOutputs.get(parentPosition);
+        if (parent == null) {
+          return null;
+        }
+
+        return findInteractiveRoot(layoutState, parent);
+      }
+
+      return null;
+    }
+
+    return output;
+  }
+
+  private static boolean isActivityDestroyed(Activity activity) {
