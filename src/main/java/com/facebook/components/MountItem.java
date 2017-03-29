@@ -242,3 +242,20 @@ class MountItem {
   }
 
   /**
+   * @return Whether this MountItem is currently bound. A bound mount item is a Mount item that has
+   * been mounted and is currently active on screen.
+   */
+  boolean isBound() {
+    return mIsBound;
+  }
+
+  /**
+   * Sets whether this MountItem is currently bound.
+   */
+  void setIsBound(boolean bound) {
+    mIsBound = bound;
+  }
+
+  DisplayListDrawable getDisplayListDrawable() {
+    return mDisplayListDrawable;
+  }

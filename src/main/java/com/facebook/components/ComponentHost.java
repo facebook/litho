@@ -327,3 +327,6 @@ public class ComponentHost extends ViewGroup {
     }
 
     return drawables;
+  }
+
+  /**
