@@ -42,3 +42,4 @@ final class ViewPredicates {
   public static Predicate<View> hasTextMatchingPredicate(final Predicate<String> predicate) {
     return new Predicate<View>() {
       @Override
+      public boolean apply(final View input) {

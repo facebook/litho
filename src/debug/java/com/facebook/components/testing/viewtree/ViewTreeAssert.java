@@ -61,3 +61,4 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
         text,
         actual.makeString(GET_TEXT_FUNCTION));
 
+    final ImmutableList<View> similarPath = getPathToVisibleSimilarText(text);
