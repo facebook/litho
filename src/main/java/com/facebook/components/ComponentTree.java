@@ -328,3 +328,16 @@ public class ComponentTree {
     }
   }
 
+  private static boolean hasSameBaseContext(Context context1, Context context2) {
+    return getBaseContext(context1) == getBaseContext(context2);
+  }
+
+  private static Context getBaseContext(Context context) {
+    Context baseContext = context;
+    while (baseContext instanceof ContextWrapper) {
+      baseContext = ((ContextWrapper) baseContext).getBaseContext();
+    }
+
+    return baseContext;
+  }
+
