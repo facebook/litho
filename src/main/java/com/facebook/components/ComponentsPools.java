@@ -235,3 +235,8 @@ public class ComponentsPools {
         component,
         host,
         content,
+        null,
+        viewNodeInfo,
+        null,
+        0,
+        IMPORTANT_FOR_ACCESSIBILITY_AUTO);
