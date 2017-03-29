@@ -226,3 +226,7 @@ public abstract class ComponentLifecycle implements EventDispatcher {
 
     ComponentsSystrace.endSection();
 
+    if (node == null) {
+      return ComponentContext.NULL_LAYOUT;
+    }
+
