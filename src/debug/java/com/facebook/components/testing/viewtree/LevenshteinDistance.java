@@ -6,3 +6,6 @@ public class LevenshteinDistance {
   /**
    * Efficient version of Levenshtein Distance Algorithm. It saves CPU by returning early if
    * the distance goes over maxAllowedEditDistance. See examples in LevenshteinDistanceTest class.
+   * @param s String
+   * @param t String
+   * @param maxAllowedEditDistance int
