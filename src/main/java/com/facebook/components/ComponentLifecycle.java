@@ -338,3 +338,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
    * {@link ComponentLayout#getHeight()} to get the size and position of the component
    * in the layout tree.
    *
+   * @param c The {@link Context} used by this component.
