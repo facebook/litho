@@ -269,3 +269,4 @@ class EditTextSpec {
     initEditText(
         editTextView,
         text,
+        hint,
