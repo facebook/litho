@@ -1136,3 +1136,4 @@ public class ComponentTree {
     public void handleMessage(Message msg) {
       switch (msg.what) {
         case MESSAGE_WHAT_BACKGROUND_LAYOUT_STATE_UPDATED:
+          ComponentTree that = (ComponentTree) msg.obj;

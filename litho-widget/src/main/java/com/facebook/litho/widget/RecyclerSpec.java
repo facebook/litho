@@ -122,3 +122,5 @@ class RecyclerSpec {
     }
 
     binder.mount(recyclerView);
+  }
+
