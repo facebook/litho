@@ -25,3 +25,5 @@ public class MethodDescription {
   public Modifier accessType;
   public TypeName returnType;
   public String name;
+  public TypeName[] parameterTypes;
+  public TypeName[] exceptions;

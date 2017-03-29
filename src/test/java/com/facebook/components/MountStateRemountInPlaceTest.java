@@ -91,3 +91,17 @@ public class MountStateRemountInPlaceTest {
         TestDrawableComponent.create(mContext)
             .build();
 
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Container.create(c)
+                .child(firstComponent)
+                .build();
+          }
+        });
+
+    assertTrue(firstComponent.wasOnMountCalled());
+    assertTrue(firstComponent.wasOnBindCalled());
+    assertFalse(firstComponent.wasOnUnmountCalled());
