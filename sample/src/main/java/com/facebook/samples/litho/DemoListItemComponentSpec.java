@@ -39,3 +39,4 @@ public class DemoListItemComponentSpec {
         .paddingDip(ALL, 16)
         .child(
             Text.create(c)
+                .text(name)

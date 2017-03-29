@@ -67,3 +67,4 @@ public interface ClassNames {
   ClassName COMPONENT_LIFECYCLE_MOUNT_TYPE =
       ClassName.bestGuess("com.facebook.litho.ComponentLifecycle.MountType");
 
+  ClassName REFERENCE = ClassName.bestGuess("com.facebook.litho.reference.Reference");

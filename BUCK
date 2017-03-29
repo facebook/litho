@@ -40,3 +40,4 @@ android_aar(
 
 android_resource(
     name = "res",
+    package = "com.facebook",

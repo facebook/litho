@@ -27,3 +27,5 @@ import com.facebook.samples.litho.playground.PlaygroundComponent;
  */
 public final class Demos {
 
+  private static Map<String, Component<?>> demoModels;
+
