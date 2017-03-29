@@ -1543,3 +1543,6 @@ public class Stages {
    *  params annotated with {@link Param} on the method and keeps them in class members.
    * @param element The method annotated with {@link OnUpdateState}
    */
+  private void generateStateUpdateClass(
+      ExecutableElement element,
+      ClassName componentClassName,
