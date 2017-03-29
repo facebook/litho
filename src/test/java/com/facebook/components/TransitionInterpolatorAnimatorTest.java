@@ -13,3 +13,14 @@ import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
 import com.facebook.components.testing.testrunner.ComponentsTestRunner;
+import com.facebook.components.TransitionProperties.PropertyChangeHolder;
+import com.facebook.components.TransitionProperties.PropertyType;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RuntimeEnvironment;
+import org.robolectric.shadows.ShadowSystemClock;
+
+import static junit.framework.Assert.assertEquals;
+

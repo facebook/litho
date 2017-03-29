@@ -20,3 +20,4 @@ public class ThreadUtils {
   private ThreadUtils() {
   }
 
+  public static boolean isMainThread() {

@@ -10,3 +10,4 @@
 package com.facebook.components;
 
 class HostComponent extends ComponentLifecycle {
+

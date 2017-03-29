@@ -8,3 +8,10 @@
  */
 
 package com.facebook.components.testing;
+
+import android.support.v4.util.Pools;
+
+import com.facebook.components.Component;
+import com.facebook.components.ComponentLayout;
+import com.facebook.components.ComponentLifecycle;
+import com.facebook.components.Container;
