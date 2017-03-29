@@ -49,3 +49,4 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
     final ImmutableList<View> path = getPathToVisibleText(text);
 
     Assertions.assertThat(path)
+        .overridingErrorMessage(path == null ? getHasVisibleTextErrorMessage(text) : "")
