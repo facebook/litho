@@ -414,3 +414,4 @@ public class MountSpecHelper extends ComponentSpecHelper {
   private static MountType getMountType(TypeMirror returnTypeParam) {
     TypeMirror returnType = returnTypeParam;
     while (returnType.getKind() != TypeKind.NONE && returnType.getKind() != TypeKind.VOID) {
+      final TypeElement returnElement = (TypeElement) ((DeclaredType) returnType).asElement();
