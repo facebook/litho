@@ -370,3 +370,4 @@ public interface ComponentLayout {
     ContainerBuilder clickHandler(EventHandler<ClickEvent> clickHandler);
     ContainerBuilder longClickHandler(EventHandler<LongClickEvent> clickHandler);
     ContainerBuilder touchHandler(EventHandler<TouchEvent> touchHandler);
+    ContainerBuilder focusable(boolean isFocusable);
