@@ -44,3 +44,4 @@ class RecyclerSpec {
   @PropDefault static final int scrollBarStyle = View.SCROLLBARS_INSIDE_OVERLAY;
   @PropDefault static final boolean hasFixedSize = true;
   @PropDefault static final boolean nestedScrollingEnabled = true;
+  @PropDefault static final ItemAnimator itemAnimator = new NoUpdateItemAnimator();
