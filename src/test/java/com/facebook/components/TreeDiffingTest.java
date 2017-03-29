@@ -132,3 +132,7 @@ public class TreeDiffingTest {
     InternalNode node = LayoutState.createTree(
         component,
         mContext);
+
+    return node;
+  }
+

@@ -136,3 +136,4 @@ class LayoutStateOutputIdCalculator {
    * Calculates an id for a {@link LayoutOutput}. See
    * {@link LayoutStateOutputIdCalculator#calculateLayoutOutputBaseId(LayoutOutput, int, int)} and
    * {@link LayoutStateOutputIdCalculator#calculateId(long, int)}.
+   */

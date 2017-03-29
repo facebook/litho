@@ -125,3 +125,4 @@ class OnStateUpdateMethodSpecBuilder {
     } else {
       builder.addStatement("c.updateState(_stateUpdate)");
     }
+

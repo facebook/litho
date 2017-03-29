@@ -68,3 +68,4 @@ class TransferStateSpecBuilder {
             ParameterSpec.builder(mStateContainerClassName, "prevStateContainer").build())
         .addParameter(
             ParameterSpec.builder(mComponentClassName, "component").build())
+        .addStatement(
