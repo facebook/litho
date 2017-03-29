@@ -891,3 +891,8 @@ public class Stages {
    * Generate a method for this component which either lazily instantiates a singleton reference or
    * return this depending on whether this lifecycle is static or not.
    */
+  public void generateGetter(boolean isStatic) {
+    final ClassName className = ClassName.bestGuess(mQualifiedClassName);
+    if (isStatic) {
+      mClassTypeSpec.addField(
+          FieldSpec
