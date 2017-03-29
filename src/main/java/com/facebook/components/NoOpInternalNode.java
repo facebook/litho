@@ -211,3 +211,13 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
+  public InternalNode importantForAccessibility(int importantForAccessibility) {
+    return this;
+  }
+
+  @Override
+  public InternalNode duplicateParentState(boolean duplicateParentState) {
+    return this;
+  }
+
+  @Override
