@@ -76,3 +76,7 @@ public class MountItemTest {
     mNodeInfo.setViewTag(mViewTag);
     mNodeInfo.setViewTags(mViewTags);
 
+    mMountItem.init(
+        mComponent,
+        mComponentHost,
+        mContent,

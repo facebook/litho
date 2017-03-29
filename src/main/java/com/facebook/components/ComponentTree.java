@@ -261,3 +261,6 @@ public class ComponentTree {
       return;
     }
 
+    // We defer until measure if we don't yet have a width/height
+    int viewWidth = mComponentView.getMeasuredWidth();
+    int viewHeight = mComponentView.getMeasuredHeight();
