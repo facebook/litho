@@ -149,3 +149,5 @@ class FrescoComponentSpec {
 
   @OnUnmount
   protected static void onUnmount(
+      ComponentContext c,
+      DraweeDrawable<GenericReferenceDraweeHierarchy> mountedDrawable) {
