@@ -549,3 +549,6 @@ class TextSpec {
       ((MountableCharSequence) text).onMount(textDrawable);
     }
   }
+
+  @OnUnmount
+  static void onUnmount(
