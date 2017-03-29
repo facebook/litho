@@ -763,3 +763,4 @@ public class Stages {
   }
 
   /**
+   * Gather a list of parameters from the given element that are props to this component.

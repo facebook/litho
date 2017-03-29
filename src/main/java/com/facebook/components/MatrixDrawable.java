@@ -61,3 +61,7 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
 
     mMatrix = matrix;
 
+    // We should clip rect if either the transformation matrix needs so or
+    // if a ColorDrawable in Gingerbread is being drawn because it doesn't
+    // respect its bounds.
+    mShouldClipRect = (mMatrix != null && mMatrix.shouldClipRect()) ||
