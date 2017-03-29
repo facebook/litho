@@ -443,3 +443,22 @@ class NoOpInternalNode extends InternalNode {
 
   @Override
   public InternalNode heightPx(@Px int height) {
+    return this;
+  }
+
+  @Override
+  public InternalNode heightRes(@DimenRes int resId) {
+    return this;
+  }
+
+  @Override
+  public InternalNode heightAttr(@DimenRes int resId, @DimenRes int defaultResId) {
+    return this;
+  }
+
+  @Override
+  public InternalNode heightAttr(@AttrRes int resId) {
+    return this;
+  }
+
+  @Override
