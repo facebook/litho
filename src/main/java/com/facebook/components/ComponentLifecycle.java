@@ -475,3 +475,5 @@ public abstract class ComponentLifecycle implements EventDispatcher {
 
   /**
    * Get extra accessibility node id at a given point within the component.
+   * @param x x co-ordinate within the mounted component
+   * @param y y co-ordinate within the mounted component
