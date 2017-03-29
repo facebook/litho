@@ -212,3 +212,5 @@ public class MountItemTest {
     assertThat(mMountItem.getContent()).isNull();
     assertThat(mMountItem.getNodeInfo()).isNull();
     assertThat(mMountItem.getFlags()).isEqualTo(0);
+    assertThat(mMountItem.getImportantForAccessibility())
+        .isEqualTo(IMPORTANT_FOR_ACCESSIBILITY_AUTO);

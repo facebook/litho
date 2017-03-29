@@ -266,3 +266,4 @@ public class MountSpecHelper extends ComponentSpecHelper {
 
     mTypeSpec.addMethod(
         new OnCreateMountContentMethodBuilder()
+            .target(mStages.getSourceDelegateAccessorName())
