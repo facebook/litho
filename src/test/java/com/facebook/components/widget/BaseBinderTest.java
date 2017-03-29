@@ -372,3 +372,6 @@ public class BaseBinderTest {
       if (mView == null) {
         throw new IllegalStateException("onBind called before onMount");
       }
+    }
+
+    @Override

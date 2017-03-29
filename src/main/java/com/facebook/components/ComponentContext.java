@@ -27,3 +27,5 @@ public class ComponentContext extends ContextWrapper {
 
   static final InternalNode NULL_LAYOUT = new NoOpInternalNode();
 
+  private final String mLogTag;
+  private final ComponentsLogger mLogger;
