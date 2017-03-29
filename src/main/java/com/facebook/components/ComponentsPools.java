@@ -424,3 +424,20 @@ public class ComponentsPools {
     return transitionManager;
   }
 
+  public static TreeProps acquireTreeProps() {
+    TreeProps treeProps = sTreePropsMapPool.acquire();
+    if (treeProps == null) {
+      treeProps = new TreeProps();
+    }
+
+    return treeProps;
+  }
+
+  //TODO t16407516 shb: change all "enableChecks = false" here to @TakesOwnership
+  @ThreadSafe(enableChecks = false)
+  public static void release(TreeProps treeProps) {
+    treeProps.reset();
+    sTreePropsMapPool.release(treeProps);
+  }
+
+  @ThreadSafe(enableChecks = false)

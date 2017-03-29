@@ -184,3 +184,5 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
             .getString(resourceId));
   }
 
+  /**
+   * Tests if any view hierarchy under the root has the given contentDescription.
