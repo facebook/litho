@@ -60,3 +60,4 @@ public class ComponentTreeMountTest {
             .color(Color.YELLOW)
             .build());
     assertEquals(1, componentView.getDrawables().size());
+    assertEquals(Color.YELLOW, ((ColorDrawable) componentView.getDrawables().get(0)).getColor());

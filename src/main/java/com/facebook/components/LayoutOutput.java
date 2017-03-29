@@ -50,3 +50,4 @@ class LayoutOutput implements Cloneable {
   private int mHostTranslationX;
   private int mHostTranslationY;
   private int mFlags;
+  private long mHostMarker;

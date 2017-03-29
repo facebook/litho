@@ -105,3 +105,5 @@ public class MountStateBoundsTest {
           }
         });
 
+    final ComponentHost host = (ComponentHost) componentView.getChildAt(0);
+    assertEquals(new Rect(0, 0, 10, 10), host.getDrawables().get(0).getBounds());

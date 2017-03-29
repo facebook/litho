@@ -106,3 +106,19 @@ public class TestDrawableComponent extends ComponentLifecycle {
   }
 
   @Override
+  protected boolean shouldUseDisplayList() {
+    return mUsesDisplayList;
+  }
+
+  @Override
+  public boolean isMountSizeDependent() {
+    return mIsMountSizeDependent;
+  }
+
+  @Override
+  protected Object onCreateMountContent(ComponentContext c) {
+    return new ColorDrawable();
+  }
+
+  @Override
+  protected void onMount(ComponentContext c, Object convertDrawable, Component _stateObject) {

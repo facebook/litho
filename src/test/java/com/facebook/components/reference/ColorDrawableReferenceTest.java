@@ -71,3 +71,5 @@ public class ColorDrawableReferenceTest {
         (ColorDrawable) Reference.acquire(mContext, ref2);
 
     assertSame(colorDrawable1, colorDrawable2);
+  }
+}

@@ -86,3 +86,4 @@ class EventHandlerFactoryMethodSpecBuilder {
 
       paramsBlock.add("new Object[] {\n");
       paramsBlock.indent();
+      paramsBlock.add("c,\n");
