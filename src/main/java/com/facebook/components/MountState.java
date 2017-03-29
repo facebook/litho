@@ -184,3 +184,19 @@ class MountState {
 
     mMountStats.reset();
 
+    final int componentTreeId = layoutState.getComponentTreeId();
+    final boolean isIncrementalMountEnabled = localVisibleRect != null;
+
+    if (!isIncrementalMountEnabled ||
+            !performIncrementalMount(layoutState, localVisibleRect)) {
+      for (int i = 0, size = layoutState.getMountableOutputCount(); i < size; i++) {
+        final LayoutOutput layoutOutput = layoutState.getMountableOutputAt(i);
+        final Component component = layoutOutput.getComponent();
+        ComponentsSystrace.beginSection(component.getSimpleName());
+        final MountItem currentMountItem = getItemAt(i);
+
+        final boolean isMounted = currentMountItem != null;
+        final boolean isMountable =
+            !isIncrementalMountEnabled ||
+                isMountedHostWithChildContent(currentMountItem) ||
+                Rect.intersects(localVisibleRect, layoutOutput.getBounds());
