@@ -47,3 +47,5 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
    */
   public ViewTreeAssert hasVisibleText(final String text) {
     final ImmutableList<View> path = getPathToVisibleText(text);
+
+    Assertions.assertThat(path)
