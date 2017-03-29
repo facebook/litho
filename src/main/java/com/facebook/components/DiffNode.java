@@ -16,3 +16,4 @@ import java.util.List;
  * A lightweight representation of a layout node, used to cache measurements between two Layout tree
  * calculations.
  */
+class DiffNode implements Cloneable {
