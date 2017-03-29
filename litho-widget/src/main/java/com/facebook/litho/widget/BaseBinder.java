@@ -411,3 +411,12 @@ public abstract class BaseBinder<
       mContentHeightSpec = newHeightSpec;
     }
 
+    // TODO(12986103): Remove onBoundsDefined once the experiment proved to be ok.
+    if (ComponentsConfiguration.bootstrapBinderItems) {
+      initializeRange(getInitializeStartPosition());
+    } else {
+      onBoundsDefined();
+    }
+  }
+
+  /**
