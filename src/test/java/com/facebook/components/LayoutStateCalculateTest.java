@@ -1389,3 +1389,6 @@ public class LayoutStateCalculateTest {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            .contentDescription("This is root view")
+            .child(
+                TestDrawableComponent.create(c)
