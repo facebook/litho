@@ -101,3 +101,8 @@ class LayoutOutput implements Cloneable {
     mFlags = flags;
   }
 
+  /**
+   * Returns the id of the LayoutOutput that represents the host of this LayoutOutput.
+   */
+  long getHostMarker() {
+    return mHostMarker;

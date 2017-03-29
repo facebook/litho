@@ -218,3 +218,4 @@ public class TreeDiffingTest {
 
     InternalNode node = createInternalNodeForMeasurableComponent(component);
     long output = measureInternalNode(
+        node,

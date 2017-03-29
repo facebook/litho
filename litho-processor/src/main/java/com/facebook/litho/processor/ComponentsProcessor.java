@@ -37,3 +37,5 @@ public class ComponentsProcessor extends AbstractComponentsProcessor {
     final boolean isPureRender = mountSpecHelper.isPureRender();
     final SpecModel specModel = mountSpecHelper.getSpecModel();
     final TypeSpec.Builder typeSpec = mountSpecHelper.getTypeSpec();
+
+    mountSpecHelper.getTypeSpec().addModifiers(Modifier.FINAL);
