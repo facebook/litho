@@ -307,3 +307,4 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
   public EventDispatcher getEventDispatcher() {
     return mLifecycle;
   }
+}
