@@ -2665,3 +2665,5 @@ public class Stages {
         SectionClassNames.SECTION_CONTEXT,
         ClassNames.EVENT_HANDLER,
         SectionClassNames.SECTION,
+        true,
+        true);
