@@ -198,3 +198,4 @@ class ComponentHostUtils {
     }
     return hasAncestorHost((ComponentHost) host.getParent(), targetHost);
   }
+}

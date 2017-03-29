@@ -173,3 +173,9 @@ public class LayoutStateCalculateTest {
         SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
 
     assertEquals(3, layoutState.getMountableOutputCount());
+
+    final NodeInfo nodeInfo = layoutState.getMountableOutputAt(1).getNodeInfo();
+    assertNotNull(nodeInfo);
+    assertNull(nodeInfo.getClickHandler());
+    assertNotNull(nodeInfo.getLongClickHandler());
+    assertNull(nodeInfo.getTouchHandler());

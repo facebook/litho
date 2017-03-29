@@ -91,3 +91,13 @@ public class BinderTreeCollectionTest {
     assertContiguous();
     assertEquals(originalSize + 1, mBinderTreeCollection.size());
     assertEquals(newComponentTree, mBinderTreeCollection.get(originalSize + 1));
+  }
+
+  @Test
+  public void testInsertInMiddle() {
+    int originalSize = mBinderTreeCollection.size();
+
+    int insertPosition = 4;
+    ComponentTree treeAtPosition3 = mBinderTreeCollection.get(3);
+    ComponentTree treeAtPosition4 = mBinderTreeCollection.get(4);
+    ComponentTree treeAtPosition6 = mBinderTreeCollection.get(6);
