@@ -339,3 +339,7 @@ public abstract class ComponentLifecycle implements EventDispatcher {
    * in the layout tree.
    *
    * @param c The {@link Context} used by this component.
+   * @param layout The {@link ComponentLayout} with defined position and size.
+   * @param component The {@link Component} for this component.
+   */
+  protected void onBoundsDefined(
