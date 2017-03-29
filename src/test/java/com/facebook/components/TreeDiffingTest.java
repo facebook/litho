@@ -217,3 +217,4 @@ public class TreeDiffingTest {
         .build();
 
     InternalNode node = createInternalNodeForMeasurableComponent(component);
+    long output = measureInternalNode(
