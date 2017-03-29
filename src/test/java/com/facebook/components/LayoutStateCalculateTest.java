@@ -1304,3 +1304,8 @@ public class LayoutStateCalculateTest {
   }
 
   @Test
+  public void testLayoutOutputsForAccessibilityEnabled() {
+    enableAccessibility();
+
+    final Component component = new InlineLayoutSpec() {
+      @Override
