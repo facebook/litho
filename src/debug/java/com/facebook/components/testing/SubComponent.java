@@ -22,3 +22,5 @@ public class SubComponent {
     return new SubComponent(componentType, null);
   }
 
+  public static SubComponent of(Component component) {
+    return new SubComponent(component.getLifecycle().getClass(), component);

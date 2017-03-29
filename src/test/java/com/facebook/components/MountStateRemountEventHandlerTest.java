@@ -296,3 +296,9 @@ public class MountStateRemountEventHandlerTest {
   }
 
   @Test
+  public void testSetTouchHandler() {
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {

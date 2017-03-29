@@ -167,3 +167,4 @@ public class ComponentViewMountTest {
     @Override
     public void requestLayout() {
       super.requestLayout();
+      mRequestLayoutInvocationCount++;
