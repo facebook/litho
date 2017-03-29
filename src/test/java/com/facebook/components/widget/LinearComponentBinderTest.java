@@ -197,3 +197,9 @@ public class LinearComponentBinderTest {
   }
 
   private Integer getAdapterInputStringAtPosition(int position) {
+    ComponentTree componentTree = mBinder.getComponentAt(position);
+
+    if (componentTree == null) {
+      return null;
+    }
+
