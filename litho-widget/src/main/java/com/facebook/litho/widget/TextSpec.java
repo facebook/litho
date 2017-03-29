@@ -357,3 +357,16 @@ class TextSpec {
         .setWidth(
             SizeSpec.getSize(widthSpec),
             textMeasureMode);
+
+    if (minEms != DEFAULT_EMS) {
+      layoutBuilder.setMinEms(minEms);
+    } else {
+      layoutBuilder.setMinWidth(minWidth);
+    }
+
+    if (maxEms != DEFAULT_EMS) {
+      layoutBuilder.setMaxEms(maxEms);
+    } else {
+      layoutBuilder.setMaxWidth(maxWidth);
+    }
+
