@@ -26,3 +26,5 @@ public class SingleImageComponentSpec {
   @OnCreateLayout
   static ComponentLayout onCreateLayout(
       ComponentContext c,
+      @Prop String image,
+      @Prop(optional = true) float aspectRatio) {
