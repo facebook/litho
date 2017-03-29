@@ -136,3 +136,10 @@ public class ComponentTree {
 
   private Object mLayoutLock;
 
+  protected final int mId = sIdGenerator.getAndIncrement();
+
+  @GuardedBy("this")
+  private boolean mIsMeasuring;
+  @GuardedBy("this")
+  private @PendingLayoutCalculation int mScheduleLayoutAfterMeasure;
+
