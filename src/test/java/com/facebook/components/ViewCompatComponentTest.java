@@ -19,3 +19,4 @@ import static org.junit.Assert.assertEquals;
 /**
  * Tests {@link ViewCompatComponent}
  */
+@RunWith(ComponentsTestRunner.class)

@@ -66,3 +66,7 @@ import static com.facebook.litho.NodeInfo.FOCUS_SET_TRUE;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 
 /**
+ * The main role of {@link LayoutState} is to hold the output of layout calculation. This includes
+ * mountable outputs and visibility outputs. A centerpiece of the class is {@link
+ * #collectResults(InternalNode, LayoutState, DiffNode)} which prepares the before-mentioned outputs
+ * based on the provided {@link InternalNode} for later use in {@link MountState}.
