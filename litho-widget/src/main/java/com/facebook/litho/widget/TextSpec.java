@@ -542,3 +542,6 @@ class TextSpec {
         textLayoutTranslationY == null ? 0 : textLayoutTranslationY,
         textColorStateList,
         textColor,
+        highlightColor,
+        clickableSpans);
+
