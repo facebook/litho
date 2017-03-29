@@ -102,3 +102,4 @@ class FrescoComponentSpec {
 
     GenericReferenceDraweeHierarchy draweeHierarchy = draweeDrawable.getDraweeHierarchy();
     draweeHierarchy.setContext(c);
+
