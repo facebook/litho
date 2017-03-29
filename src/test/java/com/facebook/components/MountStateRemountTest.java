@@ -28,3 +28,4 @@ import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;

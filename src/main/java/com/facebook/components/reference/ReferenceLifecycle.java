@@ -35,3 +35,41 @@ public abstract class ReferenceLifecycle<T> {
 
   protected void onRelease(
       ComponentContext context,
+      T value,
+      Reference<T> reference) {
+  }
+
+  protected final <T> Diff<T> acquireDiff(T previousValue, T nextValue) {
+    Diff diff =  sDiffPool.acquire();
+    if (diff == null) {
+      diff = new Diff();
+    }
+
+    diff.setPrevious(previousValue);
+    diff.setNext(nextValue);
+
+    return diff;
+  }
+
+  protected void releaseDiff(Diff diff) {
+    sDiffPool.release(diff);
+  }
+
+  protected boolean shouldUpdate(Reference<T> previous, Reference<T> next) {
+    return !previous.equals(next);
+  }
+
+  public final boolean shouldReferenceUpdate(Reference<T> previous, Reference<T> next) {
+    if (previous == null) {
+      return next != null;
+    } else if (next == null) {
+      return true;
+    }
+
+    if (previous.getClass() != next.getClass()) {
+      return true;
+    }
+    
+    return shouldUpdate(previous, next);
+  }
+}

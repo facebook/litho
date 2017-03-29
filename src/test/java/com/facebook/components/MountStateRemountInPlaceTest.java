@@ -17,3 +17,4 @@ import com.facebook.litho.widget.SolidColor;
 import com.facebook.litho.widget.Text;
 import com.facebook.components.testing.TestComponent;
 import com.facebook.components.testing.TestDrawableComponent;
+

@@ -29,3 +29,7 @@ public abstract class Reference<L> {
       super.init(c, c.getResourceCache());
     }
   }
+
+  private final ReferenceLifecycle<L> mLifecycle;
+
+  protected Reference(ReferenceLifecycle<L> lifecycle) {

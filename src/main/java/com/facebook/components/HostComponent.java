@@ -23,3 +23,13 @@ class HostComponent extends ComponentLifecycle {
   public MountType getMountType() {
     return MountType.VIEW;
   }
+
+  static Component create() {
+    return new State();
+  }
+
+  private static class State extends Component<HostComponent> implements Cloneable {
+
+    State() {
+      super(sInstance);
+    }

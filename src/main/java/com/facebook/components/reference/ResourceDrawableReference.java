@@ -53,3 +53,7 @@ public final class ResourceDrawableReference extends ReferenceLifecycle<Drawable
 
   public static PropsBuilder create(ComponentContext c) {
     return newBuilder(c, new State());
+  }
+
+  @Override
+  protected Drawable onAcquire(

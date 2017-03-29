@@ -30,3 +30,4 @@ public class ColorDrawableReferenceTest {
 
   private static final int DEFAULT_ALPHA_VALUE = 255;
   private static final int OTHER_ALPHA_VALUE = 128;
+
