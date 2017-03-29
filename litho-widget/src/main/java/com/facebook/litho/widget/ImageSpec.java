@@ -46,3 +46,4 @@ import static com.facebook.components.SizeSpec.UNSPECIFIED;
  */
 @MountSpec(isPureRender = true, poolSize = 30)
 class ImageSpec {
+
