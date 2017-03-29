@@ -336,3 +336,7 @@ class TransitionKeySet implements TransitionListener {
             mTargetView,
             startValues,
             mEndValues);
+        mAnimationRunningCounter++;
+      }
+
+      if (mRunningTransitionsPointer.size() > 0) {

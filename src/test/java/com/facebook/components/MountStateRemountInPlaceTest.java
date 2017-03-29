@@ -622,3 +622,10 @@ public class MountStateRemountInPlaceTest {
                                 firstComponent)
                             .child(
                                 SolidColor.create(c).color(Color.GREEN))))
+            .build();
+      }
+    };
+
+    final InlineLayoutSpec secondLayout = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
