@@ -250,3 +250,7 @@ public class Stages {
     if (stage != null) {
       stageIndex = asList(mStageAnnotations).indexOf(stage);
       if (interStagePropIndex < 0 || stageIndex < 0) {
+        throw new IllegalArgumentException(); // indicates bug in the annotation processor
+      }
+    }
+
