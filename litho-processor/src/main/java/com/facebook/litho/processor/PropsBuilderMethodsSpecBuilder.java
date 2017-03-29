@@ -270,3 +270,7 @@ class PropsBuilderMethodsSpecBuilder {
     return builder(
         mPropParameter.parameter.name + "Sp",
         Arrays.asList(parameter(TypeName.FLOAT, "sips", spAnnotation)),
+        "sipsToPixels(sips)");
+  }
+
+  private MethodSpec builderBuilder(ClassName builderClass) {

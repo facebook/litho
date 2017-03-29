@@ -235,3 +235,4 @@ public class ComponentLifecycleTest {
         mNestedTreeHeightSpec,
         mInput);
     verify(mNode).setComponent(mInput);
+    verify(mNode, never()).setMeasureFunction(any(YogaMeasureFunction.class));
