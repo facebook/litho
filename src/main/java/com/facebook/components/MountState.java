@@ -1093,3 +1093,6 @@ class MountState {
       unsetViewBackground(view, viewNodeInfo);
       unsetViewForeground(view, viewNodeInfo);
       unsetViewLayoutDirection(view, viewNodeInfo);
+    }
+  }
+
