@@ -3063,3 +3063,11 @@ public class Stages {
   private void writeMethodSpec(MethodSpec methodSpec) {
     mClassTypeSpec.addMethod(methodSpec);
   }
+
+  private void writeInnerTypeSpec(TypeSpec typeSpec) {
+    mClassTypeSpec.addType(typeSpec);
+  }
+
+  private void writeFieldSpec(FieldSpec fieldSpec) {
+    mClassTypeSpec.addField(fieldSpec);
+  }
