@@ -135,3 +135,4 @@ public class MountItemTest {
   @Test
   public void testIsAccessibleWithAccessibleComponent() {
     final MountItem mountItem = new MountItem();
+

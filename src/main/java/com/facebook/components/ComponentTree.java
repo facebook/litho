@@ -161,3 +161,4 @@ public class ComponentTree {
     mLayoutLock = builder.layoutLock;
     mIsAsyncUpdateStateEnabled = builder.asyncStateUpdates;
 
+    if (mLayoutThreadHandler == null) {
