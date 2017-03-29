@@ -1607,3 +1607,4 @@ public class Stages {
                 ParameterizedTypeName.get(
                     ClassNames.COMPONENT,
                     WildcardTypeName.subtypeOf(Object.class)),
+                "_component")
