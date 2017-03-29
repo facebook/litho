@@ -1834,3 +1834,17 @@ class MountState {
           content,
           component);
       mountItem.setIsBound(true);
+
+      if (content instanceof View &&
+          !(content instanceof ComponentHost) &&
+          ((View) content).isLayoutRequested()) {
+        final View view = (View) content;
+        applyBoundsToMountContent(
+            view,
+            view.getLeft(),
+            view.getTop(),
+            view.getRight(),
+            view.getBottom(),
+            true);
+      }
+    }
