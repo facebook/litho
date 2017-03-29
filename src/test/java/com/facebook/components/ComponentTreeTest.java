@@ -179,3 +179,4 @@ public class ComponentTreeTest {
 
     // Only fields changed but no layout is done yet.
 
+    Assert.assertTrue(componentTreeHasSizeSpec(componentTree));

@@ -628,3 +628,57 @@ public class TreeDiffingTest {
     assertEquals(LayoutOutput.STATE_UPDATED, thirdState.getMountableOutputAt(2).getUpdateState());
     assertEquals(LayoutOutput.STATE_UPDATED, thirdState.getMountableOutputAt(3).getUpdateState());
     assertEquals(LayoutOutput.STATE_UPDATED, thirdState.getMountableOutputAt(4).getUpdateState());
+}
+
+  // This test covers the same case with the foreground since the code path is the same!
+  @Test
+  public void testLayoutOutputUpdateStateWithBackgroundInWithLayout() {
+    final Component component1 = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c)
+            .backgroundColor(Color.RED)
+            .foregroundRes(android.R.drawable.btn_default)
+            .child(
+                TestDrawableComponent.create(c)
+                    .withLayout()
+                    .backgroundColor(Color.BLACK))
+            .child(
+                Container.create(c)
+                    .child(TestDrawableComponent.create(c)))
+            .build();
+      }
+    };
+
+    final Component component2 = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c)
+            .backgroundColor(Color.RED)
+            .foregroundRes(android.R.drawable.btn_default)
+            .child(TestDrawableComponent.create(c)
+                .withLayout()
+                .backgroundColor(Color.BLACK))
+            .child(
+                Container.create(c)
+                    .child(TestDrawableComponent.create(c)))
+            .build();
+      }
+    };
+
+    final Component component3 = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c)
+            .backgroundColor(Color.RED)
+            .foregroundRes(android.R.drawable.btn_default)
+            .child(TestDrawableComponent.create(c)
+                .withLayout()
+                .backgroundColor(Color.RED))
+            .child(
+                Container.create(c)
+                    .child(TestDrawableComponent.create(c)))
+            .build();
+      }
+    };
+

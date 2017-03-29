@@ -266,3 +266,7 @@ public class ComponentView extends ComponentHost {
     mComponent = component;
 
     if (mComponent != null) {
+      mComponent.setComponentView(this);
+
+      if (mIsAttached) {
+        mComponent.attach();
