@@ -724,3 +724,4 @@ class LayoutState {
     final LayoutOutput output = addDrawableLayoutOutput(
         drawableComponent,
         layoutState,
+        node,
