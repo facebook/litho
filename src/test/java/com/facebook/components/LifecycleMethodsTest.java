@@ -47,3 +47,6 @@ public class LifecycleMethodsTest {
   @Before
   public void setup() throws Exception {
     mComponentView = new ComponentView(RuntimeEnvironment.application);
+    mLifecycle = new LifecycleMethodsComponent();
+    mComponent = mLifecycle.create(10);
+

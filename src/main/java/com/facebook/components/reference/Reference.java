@@ -33,3 +33,6 @@ public abstract class Reference<L> {
   private final ReferenceLifecycle<L> mLifecycle;
 
   protected Reference(ReferenceLifecycle<L> lifecycle) {
+    mLifecycle = lifecycle;
+  }
+

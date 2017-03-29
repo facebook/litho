@@ -21,3 +21,5 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.LongSparseArray;
+import android.support.v4.view.ViewCompat;
+import android.text.TextUtils;

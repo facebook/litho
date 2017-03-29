@@ -32,3 +32,6 @@ class MountItem {
 
   private NodeInfo mNodeInfo;
   private ViewNodeInfo mViewNodeInfo;
+  private Component<?> mComponent;
+  private Object mContent;
+  private ComponentHost mHost;

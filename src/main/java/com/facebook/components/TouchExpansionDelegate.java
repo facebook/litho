@@ -80,3 +80,21 @@ class TouchExpansionDelegate extends TouchDelegate {
     return false;
   }
 
+  void draw(Canvas canvas, Paint paint) {
+    for (int i = mDelegates.size() - 1; i >= 0; i--) {
+      canvas.drawRect(mDelegates.valueAt(i).mDelegateBounds, paint);
+    }
+  }
+
+  @Override
+  public boolean onTouchEvent(MotionEvent event) {
+    for (int i = mDelegates.size() - 1; i >= 0; i--) {
+      final InnerTouchDelegate touchDelegate = mDelegates.valueAt(i);
+      if (touchDelegate.onTouchEvent(event)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
