@@ -16,3 +16,6 @@ import com.facebook.yoga.YogaFlexDirection;
 import android.view.ContextThemeWrapper;
 
 import com.facebook.litho.R;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.widget.Text;
+import com.facebook.litho.testing.ComponentsRule;

@@ -11,3 +11,4 @@ package com.facebook.litho;
 
 import android.graphics.drawable.Drawable;
 
+import com.facebook.litho.reference.Reference;

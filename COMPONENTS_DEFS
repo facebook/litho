@@ -2,3 +2,22 @@ COMPONENTS_ROOT = '//'
 
 COMPONENTS_VISIBILITY = 'PUBLIC'
 COMPONENTS_IS_OSS_BUILD = True
+
+def make_dep_path(pth):
+  return COMPONENTS_ROOT + pth
+
+COMPONENTS_ROOT_TARGET = make_dep_path(":components")
+
+# Java source
+COMPONENTS_JAVA_TARGET                     = make_dep_path('src/main/java/com/facebook/components:components')
+COMPONENTS_DEBUG_JAVA_TARGET               = make_dep_path('src/debug/java/com/facebook/components:components')
+COMPONENTS_ANNOTATIONS_TARGET              = make_dep_path('litho-annotations/src/main/java/com/facebook/litho/annotations:annotations')
+COMPONENTS_CONFIG_TARGET                   = make_dep_path('src/main/java/com/facebook/components/config:config')
+COMPONENTS_DISPLAYLISTSUBS_TARGET          = make_dep_path('src/main/java/com/facebook/components/displaylist/stubs:stubs')
+COMPONENTS_VIEWCOMPATCREATOR_TARGET        = make_dep_path('src/main/java/com/facebook/components/viewcompatcreator:viewcompatcreator')
+COMPONENTS_UTILS_TARGET                    = make_dep_path('src/main/java/com/facebook/components/utils:utils')
+COMPONENTS_WIDGET_ACCESSIBILITIES_TARGET   = make_dep_path('litho-widget/src/main/java/com/facebook/litho/widget/accessibility:accessibility')
+COMPONENTS_WIDGET_TARGET                   = make_dep_path('litho-widget/src/main/java/com/facebook/litho/widget:widget')
+COMPONENTS_COMPONENTS_FRESCO_TARGET        = make_dep_path('src/main/java/com/facebook/components/fresco:fresco')
+COMPONENTS_COMPONENTS_FRESCO_COMMON_TARGET = make_dep_path('src/main/java/com/facebook/components/fresco/common:common')
+

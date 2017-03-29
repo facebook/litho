@@ -15,3 +15,7 @@ import javax.lang.model.element.TypeElement;
 
 import java.lang.annotation.Annotation;
 
+import com.facebook.litho.annotations.OnCreateInitialState;
+import com.facebook.litho.annotations.ShouldUpdate;
+import com.facebook.litho.specmodels.model.ClassNames;
+import com.facebook.litho.specmodels.model.SpecModel;

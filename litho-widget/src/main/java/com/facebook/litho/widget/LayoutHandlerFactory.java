@@ -11,3 +11,5 @@ package com.facebook.litho.widget;
 
 import javax.annotation.Nullable;
 
+import com.facebook.litho.ComponentInfo;
+import com.facebook.litho.LayoutHandler;

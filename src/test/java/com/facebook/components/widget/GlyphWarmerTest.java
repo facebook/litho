@@ -13,3 +13,4 @@ import android.graphics.Canvas;
 import android.graphics.Picture;
 import android.text.Layout;
 
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;

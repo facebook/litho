@@ -9,3 +9,6 @@
 
 package com.facebook.litho.reference;
 
+import com.facebook.litho.ComponentContext;
+import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.ResourceResolver;

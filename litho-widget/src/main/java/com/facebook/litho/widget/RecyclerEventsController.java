@@ -12,3 +12,4 @@ package com.facebook.litho.widget;
 import android.support.v7.widget.RecyclerView;
 
 /**
+ * An controller that can be passed as {@link com.facebook.litho.annotations.Prop} to a

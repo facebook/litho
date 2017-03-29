@@ -17,3 +17,5 @@ import android.graphics.drawable.Drawable;
 import android.view.ContextThemeWrapper;
 
 import com.facebook.litho.R;
+import com.facebook.litho.reference.Reference;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;

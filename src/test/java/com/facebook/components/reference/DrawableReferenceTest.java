@@ -12,3 +12,5 @@ package com.facebook.litho.reference;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 
+import com.facebook.litho.ComponentContext;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
