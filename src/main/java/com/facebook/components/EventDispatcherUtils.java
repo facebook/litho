@@ -187,3 +187,5 @@ class EventDispatcherUtils {
     sOnInitializeAccessibilityEventEvent.event = event;
     sOnInitializeAccessibilityEventEvent.superDelegate = superDelegate;
 
+    final EventDispatcher eventDispatcher = eventHandler.mHasEventDispatcher.getEventDispatcher();
+    eventDispatcher.dispatchOnEvent(eventHandler, sOnInitializeAccessibilityEventEvent);

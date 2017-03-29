@@ -570,3 +570,7 @@ public class LayoutStateCalculateTest {
     assertTrue(getComponentAt(layoutState, 15) instanceof TestDrawableComponent);
     assertTrue(getComponentAt(layoutState, 16) instanceof TestDrawableComponent);
     assertTrue(getComponentAt(layoutState, 17) instanceof TestViewComponent);
+  }
+
+  @Test
+  public void testLayoutOutputStableIds() {
