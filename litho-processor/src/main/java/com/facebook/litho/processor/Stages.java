@@ -2694,3 +2694,4 @@ public class Stages {
       StyleableFlag isStylable,
       ClassName propsClass,
       TypeName genericType,
+      String builderClassName,
