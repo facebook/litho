@@ -190,3 +190,6 @@ void translatePendingCppExceptionToJavaException() noexcept {
   local_ref<JThrowable> previous;
   auto func = [&previous] () {
     local_ref<JThrowable> current;
+    try {
+      throw;
+    } catch(const JniException& ex) {
