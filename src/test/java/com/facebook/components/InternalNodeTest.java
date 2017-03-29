@@ -158,3 +158,11 @@ public class InternalNodeTest {
   }
 
   @Test
+  public void testBorderColorFlag() {
+    mNode.borderColor(Color.GREEN);
+    assertTrue(isFlagSet(mNode, "PFLAG_BORDER_COLOR_IS_SET"));
+    clearFlag(mNode, "PFLAG_BORDER_COLOR_IS_SET");
+    assertEmptyFlags(mNode);
+  }
+
+  @Test

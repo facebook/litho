@@ -156,3 +156,6 @@ public class StateUpdatesTest {
             "getDefaultLayoutThreadLooper"));
     mTestComponent = new TestComponent(mLifecycle);
 
+    mComponentTree = ComponentTree.create(mContext, mTestComponent)
+        .incrementalMount(false)
+        .build();
