@@ -451,3 +451,8 @@ public class ComponentHost extends ViewGroup {
   public void setViewTags(SparseArray<Object> viewTags) {
     mViewTags = viewTags;
   }
+
+  /**
+   * Sets a click listener on this host.
+   * @param listener The listener to set on this host.
+   */
