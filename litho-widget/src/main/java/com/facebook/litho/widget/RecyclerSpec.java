@@ -131,3 +131,4 @@ class RecyclerSpec {
       @Prop(optional = true) ItemAnimator itemAnimator,
       @Prop Binder<RecyclerView> binder,
       @Prop(optional = true) final RecyclerEventsController recyclerEventsController,
+      @Prop(optional = true) RecyclerView.OnScrollListener onScrollListener,

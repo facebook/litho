@@ -194,3 +194,13 @@ public class LayoutOutputTest {
             SEQ_TEST));
 
     assertEquals(LayoutStateOutputIdCalculator.getLevelFromId(mLayoutOutput.getId()), MAX_LEVEL_TEST);
+  }
+
+  @Test
+  public void testGetIdSequence() {
+    ComponentLifecycle lifecycle = new ComponentLifecycle() {
+      @Override
+      int getId() {
+        return LIFECYCLE_TEST_ID;
+      }
+    };
