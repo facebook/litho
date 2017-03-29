@@ -35,3 +35,4 @@ COMPONENTS_INFERANNOTATIONS_TARGET            = make_dep_path('lib/infer-annotat
 COMPONENTS_JSR_TARGET                         = make_dep_path('lib/jsr-305:jsr-305')
 COMPONENTS_ANDROIDSUPPORT_TARGET              = make_dep_path('lib/android-support:android-support')
 COMPONENTS_ANDROIDSUPPORT_RECYCLERVIEW_TARGET = make_dep_path('lib/android-support:android-support-recyclerview')
+COMPONENTS_ANDROIDSUPPORT_APPCOMPAT_TARGET    = make_dep_path('lib/appcompat:appcompat')

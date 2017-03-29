@@ -13,3 +13,4 @@ import java.util.Deque;
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.support.annotation.VisibleForTesting;

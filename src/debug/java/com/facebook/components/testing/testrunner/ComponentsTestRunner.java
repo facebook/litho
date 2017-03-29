@@ -35,3 +35,44 @@ public class ComponentsTestRunner extends RobolectricTestRunner {
 
     static ProjectEnvironment detectFromSystemProperties() {
       final String property = System.getProperty("com.facebook.litho.is_oss");
+      // If this isn't set, you're probably not running Buck, ergo this isn't an internal build.
+      if (property == null) {
+        return OSS;
+      }
+
+      return property.equals("true") ? OSS : INTERNAL;
+    }
+  }
+
+  private static String getAndroidManifestPath() {
+    String prefix = "";
+    switch (ProjectEnvironment.detectFromSystemProperties()) {
+      case OSS:
+        break;
+      case INTERNAL:
+        prefix = "libraries/components/";
+        break;
+    }
+
+    return prefix +
+        "src/test/java/com/facebook/components/AndroidManifest.xml";
+  }
+
+  @Override
+  public Config getConfig(final Method method) {
+    final Config config = super.getConfig(method);
+    // We are hard-coding the path here instead of relying on BUCK internals
+    // to allow for building with gradle in the Open Source version.
+    return new Config.Implementation(config, new Config.Implementation(
+        new int[]{},
+        getAndroidManifestPath(),
+        "",
+        "",
+        "res",
+        "assets",
+        new Class[]{},
+        Application.class,
+        new String[0],
+        null));
+  }
+}

@@ -40,3 +40,9 @@ components_robolectric_test(
         COMPONENTS_YOGA_TARGET,
         make_dep_path("src/main/java/com/facebook/components/viewcompatcreator:viewcompatcreator"),
         COMPONENTS_WIDGET_TARGET,
+        make_dep_path("src/debug/java/com/facebook/components/testing:testing"),
+        make_dep_path("src/debug/java/com/facebook/components/testing/assertj:assertj"),
+        make_dep_path("src/debug/java/com/facebook/components/testing/testrunner:testrunner"),
+    ],
+)
+

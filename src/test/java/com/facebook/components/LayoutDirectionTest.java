@@ -30,3 +30,4 @@ import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
+import static android.os.Build.VERSION_CODES.LOLLIPOP;

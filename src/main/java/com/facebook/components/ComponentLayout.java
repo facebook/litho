@@ -13,3 +13,4 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.AttrRes;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DimenRes;
+import android.support.annotation.Dimension;

@@ -16,3 +16,4 @@ android_library(
     visibility = [
         "PUBLIC",
     ],
+    deps = [
