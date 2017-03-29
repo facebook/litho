@@ -1015,3 +1015,4 @@ public class Stages {
     if (parameters.size() < ON_CREATE_INITIAL_STATE + 1) {
       throw new ComponentsProcessingException(
           executableElement,
+          "The @OnCreateInitialState method should have an " + contextClass +
