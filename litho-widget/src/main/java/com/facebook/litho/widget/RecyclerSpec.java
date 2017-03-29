@@ -114,3 +114,5 @@ class RecyclerSpec {
     recyclerView.setNestedScrollingEnabled(nestedScrollingEnabled);
     recyclerViewWrapper.setNestedScrollingEnabled(nestedScrollingEnabled);
     recyclerView.setScrollBarStyle(scrollBarStyle);
+    // TODO (t14949498) determine if this is necessary
+    recyclerView.setId(recyclerViewId);
