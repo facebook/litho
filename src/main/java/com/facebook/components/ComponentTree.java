@@ -91,3 +91,4 @@ public class ComponentTree {
   private final Runnable mCalculateLayoutRunnable = new Runnable() {
     @Override
     public void run() {
+      calculateLayout(null);
