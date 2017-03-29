@@ -45,3 +45,4 @@ import static com.facebook.litho.SizeSpec.UNSPECIFIED;
  * resource ID as prop.
  */
 @MountSpec(isPureRender = true, poolSize = 30)
+class ImageSpec {

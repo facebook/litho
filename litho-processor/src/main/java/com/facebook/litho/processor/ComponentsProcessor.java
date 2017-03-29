@@ -12,3 +12,5 @@ package com.facebook.litho.processor;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.element.TypeElement;
+
