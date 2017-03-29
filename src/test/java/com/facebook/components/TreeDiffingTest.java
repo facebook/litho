@@ -918,3 +918,26 @@ public class TreeDiffingTest {
                     .setDelegate(true)
                     .withLayout().flexShrink(0)
                     .marginPx(YogaEdge.ALL, 11))
+            .build();
+      }
+    };
+
+    LayoutState prevLayoutState = LayoutState.calculate(
+        mContext,
+        component1,
+        -1,
+        SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
+        SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
+        true,
+        null);
+
+    LayoutState layoutState = LayoutState.calculate(
+        mContext,
+        component2,
+        -1,
+        SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
+        SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
+        true,
+        prevLayoutState.getDiffTree());
+
+    // The nested root measure() was called in the first layout calculation.
