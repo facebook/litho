@@ -86,3 +86,22 @@ public class LinearComponentBinderTest {
   @Test
   public void testWorkingRangesBasic() throws Exception {
     setupBinder();
+
+    mBinder.getRangeController().notifyOnScroll(3, 2);
+
+    int rangeSizeInViewPorts =
+        RecyclerComponentBinder.RecyclerComponentWorkingRangeController.RANGE_SIZE;
+    int rangeItemCount = 2 * rangeSizeInViewPorts;
+    Assert.assertEquals(rangeItemCount, mBinder.getComponentCount());
+
+    // The items outside of the range should not be loaded.
+    Assert.assertEquals(null, getAdapterInputStringAtPosition(0));
+    Assert.assertEquals(null, getAdapterInputStringAtPosition(7));
+
+    for (int i = 1; i < 7; i++) {
+      Assert.assertEquals(mItems.get(i), getAdapterInputStringAtPosition(i));
+    }
+  }
+
+  @Test
+  public void testWorkingRangesTrimmedBeginning() throws Exception {

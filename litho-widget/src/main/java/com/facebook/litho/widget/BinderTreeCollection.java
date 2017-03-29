@@ -218,3 +218,7 @@ class BinderTreeCollection {
       }
     }
 
+    for (int position = positionEnd - shiftByAmount + 1; position < positionStart; position++) {
+      mItems.remove(position);
+    }
+  }
