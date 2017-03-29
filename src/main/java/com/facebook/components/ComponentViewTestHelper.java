@@ -62,3 +62,24 @@ public class ComponentViewTestHelper {
    *          return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
    *              .child(
    *                  Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+   *                      .child(TestDrawableComponent.create(c))
+   *                      .child(TestDrawableComponent.create(c))
+   *                      .testKey("mytestkey"))
+   *              .build();
+   *        }
+   *      });
+   *  final TestItem testItem = ComponentViewTestHelper.findTestItem(componentView, "mytestkey");
+   *  }
+   * </pre>
+   *
+   * @param componentView The component view the component is mounted to.
+   * @param testKey The unique identifier the component was constructed with.
+   * @return Queue of mounted items in order by mount time.
+   * @throws UnsupportedOperationException If the e2e flag is not enabled in the configuration.
+   */
+  @DoNotStrip
+  @NonNull
+  public static Deque<TestItem> findTestItems(ComponentView componentView, String testKey) {
+    return componentView.findTestItems(testKey);
+  }
+}

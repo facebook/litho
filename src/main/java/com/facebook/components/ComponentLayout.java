@@ -30,3 +30,5 @@ import com.facebook.yoga.YogaEdge;
 import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.reference.Reference;
 
+import static android.support.annotation.Dimension.DP;
+

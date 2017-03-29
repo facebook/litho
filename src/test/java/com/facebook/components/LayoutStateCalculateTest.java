@@ -31,3 +31,4 @@ import com.facebook.yoga.YogaJustify;
 import com.facebook.yoga.YogaPositionType;
 
 import org.junit.Before;
+import org.junit.Rule;

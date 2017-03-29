@@ -31,3 +31,4 @@ import static org.junit.Assert.assertEquals;
  * attaching the view and setting the component.
  */
 
+@RunWith(ComponentsTestRunner.class)

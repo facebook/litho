@@ -33,3 +33,4 @@ import static com.facebook.yoga.YogaEdge.TOP;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+@RunWith(ComponentsTestRunner.class)
