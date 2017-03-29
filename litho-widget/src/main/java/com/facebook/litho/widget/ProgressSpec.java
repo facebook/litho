@@ -45,3 +45,5 @@ class ProgressSpec {
 
   static final int DEFAULT_SIZE = 50;
 
+  @PropDefault static final int color = Color.TRANSPARENT;
+
