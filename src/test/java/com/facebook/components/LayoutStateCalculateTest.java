@@ -1410,3 +1410,6 @@ public class LayoutStateCalculateTest {
                     .importantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS)
                     .child(
                         TestDrawableComponent.create(c)
+                            .withLayout().flexShrink(0)
+                            .widthDip(30)
+                            .heightDip(30)
