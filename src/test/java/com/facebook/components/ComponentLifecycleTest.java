@@ -64,3 +64,4 @@ public class ComponentLifecycleTest {
   private InternalNode mNode;
   private DiffNode mDiffNode;
   private Component mInput;
+  private ComponentContext mContext;
