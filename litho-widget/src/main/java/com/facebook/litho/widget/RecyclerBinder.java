@@ -585,3 +585,6 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     view.setLayoutManager(mLayoutInfo.getLayoutManager());
     view.setAdapter(mInternalAdapter);
     view.addOnScrollListener(mRangeScrollListener);
+    if (mLayoutInfo.getSpanCount() > 1) {
+      ((GridLayoutManager) mLayoutInfo.getLayoutManager()).setSpanSizeLookup(mGridSpanSizeLookup);
+    }
