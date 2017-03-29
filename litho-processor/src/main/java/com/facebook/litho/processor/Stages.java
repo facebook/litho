@@ -830,3 +830,13 @@ public class Stages {
   /**
    * Get the annotation, if any, present on a parameter. Annotations are restricted to our whitelist
    * of parameter annotations: e.g. {@link Prop}, {@link State} etc)
+   */
+  private Annotation getParameterAnnotation(VariableElement element) {
+    return getParameterAnnotation(element, mParameterAnnotations);
+  }
+
+  /**
+   * Get the annotation, if any, present on a parameter. Annotations are restricted to the specified
+   * whitelist. If there is a duplicate we will issue an error.
+   */
+  private Annotation getParameterAnnotation(
