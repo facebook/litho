@@ -427,3 +427,4 @@ public class RecyclerBinderTest {
   public void testRangeBiggerThanContent() {
     final List<ComponentInfo> components = new ArrayList<>();
     for (int i = 0; i < 2; i++) {
+      components.add(ComponentInfo.create().component(mock(Component.class)).build());
