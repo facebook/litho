@@ -627,3 +627,6 @@ public class Stages {
 
   /**
    * Gather a list of VariableElement that are the props to this component
+   */
+  private void populateProps() {
+    // We use a linked hash map to guarantee iteration order

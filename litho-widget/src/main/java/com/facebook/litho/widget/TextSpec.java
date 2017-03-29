@@ -447,3 +447,4 @@ class TextSpec {
     if (TextUtils.isEmpty(text)) {
       return;
     }
+
