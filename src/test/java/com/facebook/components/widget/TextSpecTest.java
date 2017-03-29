@@ -122,3 +122,4 @@ public class TextSpecTest {
     assertThat(drawable.getColor() == Color.RED);
   }
 
+  private TextDrawable getMountedDrawableForText(CharSequence text) {
