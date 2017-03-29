@@ -38,3 +38,12 @@ class JRuntimeException : public JavaClass<JRuntimeException, JThrowable> {
   static local_ref<JRuntimeException> create() {
     return newInstance();
   }
+};
+
+class JIOException : public JavaClass<JIOException, JThrowable> {
+ public:
+  static auto constexpr kJavaDescriptor = "Ljava/io/IOException;";
+
+  static local_ref<JIOException> create(const char* str) {
+    return newInstance(make_jstring(str));
+  }
