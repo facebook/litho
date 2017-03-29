@@ -1378,3 +1378,12 @@ public class LayoutStateCalculateTest {
     assertTrue(isHostComponent(getComponentAt(layoutState, 6)));
     assertTrue(getComponentAt(layoutState, 7) instanceof TestDrawableComponent);
     assertTrue(isHostComponent(getComponentAt(layoutState, 8)));
+    assertTrue(getComponentAt(layoutState, 9) instanceof TestDrawableComponent);
+  }
+
+  @Test
+  public void testLayoutOutputsWithImportantForAccessibility() {
+    enableAccessibility();
+
+    final Component component = new InlineLayoutSpec() {
+      @Override
