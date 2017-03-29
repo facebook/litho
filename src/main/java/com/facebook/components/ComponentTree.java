@@ -905,3 +905,7 @@ public class ComponentTree {
       widthSpec = mWidthSpec;
       heightSpec = mHeightSpec;
       root = mRoot.makeShallowCopy();
+
+      if (mMainThreadLayoutState != null) {
+        previousLayoutState = mMainThreadLayoutState.acquireRef();
+      }
