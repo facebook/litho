@@ -23,3 +23,4 @@ public class TreeProps {
 
   private final SimpleArrayMap<Class, Object> mMap = new SimpleArrayMap<>();
 
+  public void put(Class key, Object value) {
