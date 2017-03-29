@@ -1305,3 +1305,4 @@ public class Stages {
         .addModifiers(Modifier.PUBLIC)
         .addAnnotation(Override.class)
         .returns(TypeName.OBJECT)
+        .addParameter(
