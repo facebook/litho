@@ -168,3 +168,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private Spacing mNestedTreeBorderWidth;
   private boolean[] mIsPaddingPercent;
 
+  private float mResolvedTouchExpansionLeft = YogaConstants.UNDEFINED;
+  private float mResolvedTouchExpansionRight = YogaConstants.UNDEFINED;
+  private float mResolvedX = YogaConstants.UNDEFINED;
+  private float mResolvedY = YogaConstants.UNDEFINED;
+  private float mResolvedWidth = YogaConstants.UNDEFINED;
+  private float mResolvedHeight = YogaConstants.UNDEFINED;
