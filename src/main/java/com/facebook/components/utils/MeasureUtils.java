@@ -207,3 +207,22 @@ public final class MeasureUtils {
       outputSize.width = widthSize;
 
       if (heightMode == UNSPECIFIED || widthBasedHeight <= heightSize) {
+        outputSize.height = widthBasedHeight;
+      } else {
+        outputSize.height = heightSize;
+        if (ComponentsConfiguration.IS_INTERNAL_BUILD) {
+          Log.d(
+              "com.facebook.components.utils.MeasureUtils",
+              String.format(
+                  "Ratio makes height larger than allowed. w:%s h:%s aspectRatio:%f",
+                  SizeSpec.toString(widthSpec),
+                  SizeSpec.toString(heightSpec),
+                  aspectRatio));
+        }
+      }
+    }
+    // Height is set to exact measurement and the width is either unspecified or is allowed to be
+    // large enough to accommodate the given aspect ratio.
+    else if (heightMode == EXACTLY) {
+      outputSize.height = heightSize;
+
