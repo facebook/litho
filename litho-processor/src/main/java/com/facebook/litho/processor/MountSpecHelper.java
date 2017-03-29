@@ -448,3 +448,4 @@ public class MountSpecHelper extends ComponentSpecHelper {
         Utils.getAnnotatedMethod(
             mStages.getSourceElement(),
             GetExtraAccessibilityNodeAt.class);
+

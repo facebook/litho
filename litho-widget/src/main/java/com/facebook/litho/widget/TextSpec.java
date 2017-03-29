@@ -412,3 +412,7 @@ class TextSpec {
   static void onBoundsDefined(
       ComponentContext c,
       ComponentLayout layout,
+      @Prop(resType = ResType.STRING) CharSequence text,
+      @Prop(optional = true) TruncateAt ellipsize,
+      @Prop(optional = true, resType = ResType.BOOL) boolean shouldIncludeFontPadding,
+      @Prop(optional = true, resType = ResType.INT) int maxLines,
