@@ -126,3 +126,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
               heightSpec,
               size,
               component);
+
