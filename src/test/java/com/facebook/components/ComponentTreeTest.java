@@ -321,3 +321,4 @@ public class ComponentTreeTest {
   @Test
   public void testSetInput() {
     Component component = TestLayoutComponent.create(mContext)
+        .build();
