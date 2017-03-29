@@ -154,3 +154,4 @@ public class ComponentViewMountTest {
   }
 
   private static class TestComponentView extends ComponentView {
+    private int mRequestLayoutInvocationCount = 0;

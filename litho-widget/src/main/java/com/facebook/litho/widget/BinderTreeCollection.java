@@ -215,3 +215,4 @@ class BinderTreeCollection {
           mItems.put(position - shiftByAmount, componentTree);
         }
         mItems.remove(position);
+      }
