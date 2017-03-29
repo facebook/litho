@@ -38,3 +38,4 @@ public class ComponentContext extends ContextWrapper {
   private @ThreadConfined(ThreadConfined.ANY) int mHeightSpec;
   private @ThreadConfined(ThreadConfined.ANY) TreeProps mTreeProps;
 
+  private @ThreadConfined(ThreadConfined.ANY) ComponentTree mComponentTree;
