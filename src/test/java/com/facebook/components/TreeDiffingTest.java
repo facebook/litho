@@ -183,3 +183,6 @@ public class TreeDiffingTest {
 
   @Test
   public void tesLastConstraints() {
+    final Component component = TestDrawableComponent.create(mContext)
+        .build();
+

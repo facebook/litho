@@ -194,3 +194,4 @@ public class MountStateTestItemTest {
                 .child(
                     Text.create(c)
                         .text(MY_TEST_STRING_1)
+                        .withLayout().flexShrink(0)

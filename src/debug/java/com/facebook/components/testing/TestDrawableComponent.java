@@ -298,3 +298,20 @@ public class TestDrawableComponent extends ComponentLifecycle {
       return super.hashCode() + color;
     }
 
+    @Override
+    public boolean equals(Object o) {
+      if (o == null) {
+        return false;
+      }
+      if (!super.equals(o)) {
+        return false;
+      }
+      if (o instanceof State) {
+        State s = (State) o;
+        return color == s.color;
+      }
+      return false;
+    }
+  }
+
+  public static class Builder
