@@ -50,3 +50,16 @@ public final class ColorDrawableReference extends ReferenceLifecycle<Drawable> {
     return sInstance;
   }
 
+  private static PropsBuilder newBuilder(ComponentContext context, State state) {
+    PropsBuilder builder = mBuilderPool.acquire();
+    if (builder == null) {
+      builder = new PropsBuilder();
+    }
+
+    builder.init(context, state);
+
+    return builder;
+  }
+
+  public static PropsBuilder create(ComponentContext c) {
+    return newBuilder(c, new State());

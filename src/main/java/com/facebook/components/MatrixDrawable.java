@@ -30,3 +30,6 @@ import static android.os.Build.VERSION_CODES.LOLLIPOP;
  */
 public class MatrixDrawable<T extends Drawable> extends Drawable
     implements Drawable.Callback, Touchable {
+
+  public static final int UNSET = -1;
+
