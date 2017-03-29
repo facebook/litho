@@ -2328,3 +2328,4 @@ public class Stages {
             "$L " + implInstanceName + " = ($L) impl",
             implClassName,
             implClassName);
+
