@@ -256,3 +256,5 @@ JniException::~JniException() {
   throwable_.reset();
 }
 
+local_ref<JThrowable> JniException::getThrowable() const noexcept {
+  return make_local(throwable_);
