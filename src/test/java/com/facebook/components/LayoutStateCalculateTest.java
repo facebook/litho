@@ -1388,3 +1388,8 @@ public class LayoutStateCalculateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c)
+            .contentDescription("This is root view")
+            .child(
+                TestDrawableComponent.create(c)
+                    .withLayout()
