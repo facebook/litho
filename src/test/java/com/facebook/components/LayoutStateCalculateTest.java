@@ -1635,3 +1635,11 @@ public class LayoutStateCalculateTest {
     assertEquals(new Rect(13, 13, 63, 63), mountBounds);
     assertTrue(getComponentAt(layoutState, 2) instanceof TestDrawableComponent);
     layoutState.getMountableOutputAt(2).getMountBounds(mountBounds);
+    assertEquals(new Rect(13, 13, 63, 63), mountBounds);
+  }
+
+  @Test
+  public void testLayoutOutputForDelegateNestedTreeComponent() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
