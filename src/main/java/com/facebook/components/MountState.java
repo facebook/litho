@@ -1721,3 +1721,7 @@ class MountState {
         component,
         PARAM_MOUNTED_COUNT,
         String.valueOf(mountStats.mountedCount));
+    logger.eventAddParam(
+        EVENT_MOUNT,
+        component,
+        PARAM_UNMOUNTED_COUNT,
