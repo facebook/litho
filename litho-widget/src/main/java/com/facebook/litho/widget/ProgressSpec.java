@@ -76,3 +76,5 @@ class ProgressSpec {
       int widthSpec,
       int heightSpec,
       Size size) {
+    if (SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED &&
+        SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED) {
