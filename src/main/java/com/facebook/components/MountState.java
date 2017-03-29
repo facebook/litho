@@ -976,3 +976,4 @@ class MountState {
    * being mounted.
    */
   private static ComponentHost resolveComponentHost(
+      LayoutOutput layoutOutput,
