@@ -324,3 +324,4 @@ FBEXPORT int fb_printLog(int prio, const char* tag, const char* fmt, ...)
 
 #define fb_vprintLog(prio, cond, tag, fmt...) \
   __android_log_vprint(prio, tag, fmt)
+
