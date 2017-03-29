@@ -1297,3 +1297,6 @@ class LayoutState {
     // If measuring a ComponentTree with a LayoutSpecWithSizeSpec at the root, the nested tree
     // holder argument will be null.
     if (hasNestedTreeHolder && isLayoutSpecWithSizeSpec(component)) {
+      // Transfer information from the holder node to the nested tree root before measurement.
+      nestedTreeHolder.copyInto(root);
+      diffTreeRoot = nestedTreeHolder.getDiffNode();
