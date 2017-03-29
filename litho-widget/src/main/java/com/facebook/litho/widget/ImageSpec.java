@@ -128,3 +128,16 @@ class ImageSpec {
       Output<DrawableMatrix> drawableMatrix,
       Output<Integer> drawableWidth,
       Output<Integer> drawableHeight) {
+
+    final Drawable d = Reference.acquire(c, src);
+    try {
+      final int horizontalPadding = layout.getPaddingLeft() + layout.getPaddingRight();
+      final int verticalPadding = layout.getPaddingTop() + layout.getPaddingBottom();
+
+      if (ScaleType.FIT_XY == scaleType
+          || d.getIntrinsicWidth() <= 0
+          || d.getIntrinsicHeight() <= 0) {
+        drawableMatrix.set(null);
+        drawableWidth.set(layout.getWidth() - horizontalPadding);
+        drawableHeight.set(layout.getHeight() - verticalPadding);
+      } else {
