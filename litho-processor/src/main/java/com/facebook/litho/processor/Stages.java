@@ -2882,3 +2882,6 @@ public class Stages {
         .addStatement("super.release()")
         .addStatement(implMemberInstanceName + " = null")
         .addStatement(contextMemberInstanceName + " = null")
+        .addStatement("$L.release(this)", poolName)
+        .build());
+
