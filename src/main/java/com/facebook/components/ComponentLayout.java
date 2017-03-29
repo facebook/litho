@@ -293,3 +293,4 @@ public interface ComponentLayout {
     ContainerBuilder widthRes(@DimenRes int resId);
     ContainerBuilder widthDip(@Dimension(unit = DP) int width);
     ContainerBuilder widthPercent(float percent);
+
