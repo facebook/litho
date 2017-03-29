@@ -239,3 +239,4 @@ public abstract class BaseBinder<
             positionStart <= mComponentTrees.getFirstPosition() + mComponentTrees.size()) {
 
           for (int i = 0; i < itemCount; i++) {
+            final ComponentTree componentTree = buildComponentTree(componentList.get(i));
