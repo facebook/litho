@@ -61,3 +61,12 @@ class FBEXPORT ThreadScope {
   ThreadScope& operator=(ThreadScope&&) = delete;
   ~ThreadScope();
 
+  /**
+   * This runs the closure in a scope with fbjni's classloader. This should be
+   * the same classloader as the rest of the application and thus anything
+   * running in the closure will have access to the same classes as in a normal
+   * java-create thread.
+   */
+  static void WithClassLoader(std::function<void()>&& runnable);
+
+  static void OnLoad();

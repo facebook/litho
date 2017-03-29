@@ -109,3 +109,4 @@ template<typename... Args>
 
 // Identifies any pending C++ exception and throws it as a Java exception. If the exception can't
 // be thrown, it aborts the program. This is a noexcept function at C++ level.
+FBEXPORT void translatePendingCppExceptionToJavaException() noexcept;
