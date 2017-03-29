@@ -310,3 +310,4 @@ public class TreeDiffingTest {
     // Check diff tree is consistent.
     DiffNode node = prevLayoutState.getDiffTree();
 
+    InternalNode layoutTreeRoot = LayoutState.createTree(

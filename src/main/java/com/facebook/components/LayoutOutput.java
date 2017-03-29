@@ -159,3 +159,9 @@ class LayoutOutput implements Cloneable {
     mDisplayList = displayList;
   }
 
+  void setViewNodeInfo(ViewNodeInfo viewNodeInfo) {
+    if (mViewNodeInfo != null) {
+      throw new IllegalStateException("Try to set a new ViewNodeInfo in a LayoutOutput that" +
+          " is already initialized with one.");
+    }
+    mViewNodeInfo = viewNodeInfo.acquireRef();

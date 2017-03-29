@@ -103,3 +103,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private static final long PFLAG_PADDING_IS_SET = 1L << 10;
   // When this flag is set, position was explicitly set on this node.
   private static final long PFLAG_POSITION_IS_SET = 1L << 11;
+  // When this flag is set, width was explicitly set on this node.

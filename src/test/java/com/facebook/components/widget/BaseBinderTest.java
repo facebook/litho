@@ -313,3 +313,6 @@ public class BaseBinderTest {
       assertTrue(mBinder.getComponentAt(i).isIncrementalMountEnabled());
     }
 
+    // To disable incremental mount we need to release all the components first.
+    mBinder.release();
+

@@ -169,3 +169,5 @@ public abstract class RecyclerComponentBinder<L extends RecyclerView.LayoutManag
       extends Adapter<ComponentViewHolder> implements BaseBinder.Listener {
 
     private final Context mContext;
+    private final RecyclerComponentBinder mBinder;
+
