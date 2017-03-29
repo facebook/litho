@@ -279,3 +279,19 @@ class TextSpec {
           Math.round(paint.getFontMetricsInt(null) * spacingMultiplier + extraSpacing);
       preferredHeight += lineHeight * (minLines - lineCount);
     }
+
+    size.height = SizeSpec.resolveSize(heightSpec, preferredHeight);
+
+    // Some devices seem to be returning negative sizes in some cases.
+    if (size.width < 0 || size.height < 0) {
+      size.width = Math.max(size.width, 0);
+      size.height = Math.max(size.height, 0);
+
+      final ComponentsLogger logger = context.getLogger();
+      if (logger != null) {
+        logger.softError("Text layout measured to less than 0 pixels");
+      }
+    }
+
+    measuredWidth.set(size.width);
+    measuredHeight.set(size.height);
