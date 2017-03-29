@@ -210,3 +210,19 @@ class MountState {
             mountItemIncrementally(currentMountItem, layoutOutput.getBounds(), localVisibleRect);
           }
 
+          if (mIsDirty) {
+            final boolean useUpdateValueFromLayoutOutput =
+                (componentTreeId >= 0) && (componentTreeId == mLastMountedComponentTreeId);
+
+            final boolean itemUpdated = updateMountItemIfNeeded(
+                layoutOutput,
+                currentMountItem,
+                useUpdateValueFromLayoutOutput,
+                logger);
+
+            if (itemUpdated) {
+              mMountStats.updatedCount++;
+            } else {
+              mMountStats.noOpCount++;
+            }
+          }
