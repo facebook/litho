@@ -39,3 +39,5 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 
 @RunWith(ComponentsTestRunner.class)
+public class StateUpdatesTest {
+  private static final int LIFECYCLE_TEST_ID = 1;

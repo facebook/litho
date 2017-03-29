@@ -36,3 +36,12 @@ public class MountStateFocusableTest {
   public void setup() {
     mContext = new ComponentContext(RuntimeEnvironment.application);
     mFocusableDefault = new ComponentHost(mContext).isFocusable();
+  }
+
+  @Test
+  public void testInnerComponentHostFocusable() {
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {

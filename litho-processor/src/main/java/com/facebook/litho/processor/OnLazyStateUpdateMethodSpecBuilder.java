@@ -31,3 +31,102 @@ class OnLazyStateUpdateMethodSpecBuilder {
   private static final String STATE_UPDATE_IMPL_NAME_SUFFIX = "StateUpdate";
   private static final String STATE_UPDATE_VALUE_PARAM = "lazyUpdateValue";
   private static final String STATE_UPDATE_IS_LAZY_METHOD_NAME = "isLazyStateUpdate";
+
+  private TypeName mContextClass;
+  private ClassName mComponentClass;
+  private String mImplClass;
+
+  private String mStateName;
+  private TypeName mStateUpdateType;
+  private TypeName mStateContainerClassName;
+  private TypeName mStateType;
+  private String mLifecycleImplClassName;
+
+  OnLazyStateUpdateMethodSpecBuilder contextClass(TypeName contextClass) {
+    this.mContextClass = contextClass;
+    return this;
+  }
+
+  OnLazyStateUpdateMethodSpecBuilder componentClass(ClassName componentClass) {
+    mComponentClass = componentClass;
+    return this;
+  }
+
+  OnLazyStateUpdateMethodSpecBuilder implClass(String implClass) {
+    mImplClass = implClass;
+    return this;
+  }
+
+  OnLazyStateUpdateMethodSpecBuilder stateName(String stateName) {
+    mStateName = stateName;
+    return this;
+  }
+
+  OnLazyStateUpdateMethodSpecBuilder stateType(TypeName stateType) {
+    mStateType = stateType;
+    return this;
+  }
+
+  OnLazyStateUpdateMethodSpecBuilder stateUpdateType(TypeName stateUpdateType) {
+    mStateUpdateType = stateUpdateType;
+    return this;
+  }
+
+  public OnLazyStateUpdateMethodSpecBuilder withStateContainerClassName(TypeName className) {
+    mStateContainerClassName = className;
+    return this;
+  }
+
+  public OnLazyStateUpdateMethodSpecBuilder lifecycleImplClass(String lifecycleImplClassName) {
+    mLifecycleImplClassName = lifecycleImplClassName;
+    return this;
+  }
+
+  MethodSpec build() {
+
+    final String newComponentImplName =
+        STATE_UPDATE_NEW_COMPONENT_NAME + STATE_UPDATE_IMPL_NAME_SUFFIX;
+
+    final MethodSpec.Builder builder = MethodSpec.methodBuilder(
+        "lazyUpdate" + mStateName.substring(0, 1).toUpperCase() + mStateName.substring(1))
+        .addModifiers(Modifier.PROTECTED, Modifier.STATIC)
+        .addParameter(mContextClass, "c")
+        .addParameter(mStateType, STATE_UPDATE_VALUE_PARAM, Modifier.FINAL);
+
+    builder.addStatement(
+        "$T _component = c.get$LScope()",
+        mComponentClass,
+        mComponentClass.simpleName())
+        .addCode(
+            CodeBlock.builder()
+                .beginControlFlow("if (_component == null)")
+                .addStatement("return")
+                .endControlFlow()
+                .build());
+
+    final TypeName implClass = ClassName.bestGuess(mLifecycleImplClassName + "." + mImplClass);
+    final TypeName boxedStateType = mStateType.isPrimitive() ? mStateType.box() : mStateType;
+
+    final MethodSpec.Builder stateUpdate = MethodSpec.methodBuilder(STATE_UPDATE_METHOD_NAME)
+        .addParameter(mStateContainerClassName, STATE_CONTAINER_PARAM_NAME)
+        .addParameter(mComponentClass, STATE_UPDATE_NEW_COMPONENT_NAME)
+        .addModifiers(Modifier.PUBLIC)
+        .addStatement(
+            "$T " + newComponentImplName + " = ($T) " + STATE_UPDATE_NEW_COMPONENT_NAME,
+            implClass,
+            implClass)
+        .addStatement(
+            "$T " + mStateName + " = new $T()",
+            ParameterizedTypeName.get(
+                ClassNames.STATE_VALUE,
+                boxedStateType),
+            ParameterizedTypeName.get(
+                ClassNames.STATE_VALUE,
+                boxedStateType))
+        .addStatement(
+            mStateName + ".set(" + STATE_UPDATE_VALUE_PARAM + ")")
+        .addStatement(newComponentImplName +
+            "." + Stages.STATE_CONTAINER_IMPL_MEMBER +
+            "." + mStateName +
+            " = " + mStateName + ".get()");
+

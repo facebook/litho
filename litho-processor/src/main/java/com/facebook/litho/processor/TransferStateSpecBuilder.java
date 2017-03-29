@@ -44,3 +44,8 @@ class TransferStateSpecBuilder {
     return this;
   }
 
+  TransferStateSpecBuilder stateContainerClassName(ClassName stateContainerClassName) {
+    mStateContainerClassName = stateContainerClassName;
+    return this;
+  }
+
