@@ -677,3 +677,5 @@ class MountState {
 
       // Root host is implicitly marked as mounted.
       mIndexToItemMap.put(ROOT_HOST_ID, mRootHostMountItem);
+    }
+
