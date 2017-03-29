@@ -441,3 +441,4 @@ class TextSpec {
       @FromMeasure Integer measuredWidth,
       @FromMeasure Integer measuredHeight,
       Output<Layout> textLayout,
+      Output<Float> textLayoutTranslationY,

@@ -60,3 +60,4 @@ class RecyclerSpec {
   }
 
   @OnBoundsDefined
+  static void onBoundsDefined(
