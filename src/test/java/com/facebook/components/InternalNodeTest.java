@@ -255,3 +255,11 @@ public class InternalNodeTest {
 
   @Test
   public void setNestedTreeDoesntTransferLayoutDirectionIfExplicitlySetOnNestedNode() {
+    InternalNode holderNode =
+        ComponentsPools.acquireInternalNode(
+            new ComponentContext(RuntimeEnvironment.application),
+            RuntimeEnvironment.application.getResources());
+    InternalNode nestedTree =
+        ComponentsPools.acquireInternalNode(
+            new ComponentContext(RuntimeEnvironment.application),
+            RuntimeEnvironment.application.getResources());

@@ -95,3 +95,4 @@ public class ComponentTree {
     }
   };
 
+  private final ComponentContext mContext;

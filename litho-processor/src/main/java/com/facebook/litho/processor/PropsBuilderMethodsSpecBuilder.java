@@ -20,3 +20,13 @@ import com.facebook.litho.specmodels.model.ClassNames;
 
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ArrayTypeName;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
+import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.WildcardTypeName;
+
+class PropsBuilderMethodsSpecBuilder {
+  private int mIndex;
+  private PropParameter mPropParameter;

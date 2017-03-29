@@ -105,3 +105,5 @@ class HorizontalScrollSpec {
         heightSpec,
         contentSize);
 
+    measuredWidth = contentSize.width;
+    measuredHeight = contentSize.height;

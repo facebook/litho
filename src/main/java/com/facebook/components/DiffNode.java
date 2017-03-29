@@ -113,3 +113,4 @@ class DiffNode implements Cloneable {
     return mBackground;
   }
 
+  void setBackground(LayoutOutput background) {
