@@ -61,3 +61,5 @@ public abstract class BaseBinder<
   private final BinderTreeCollection mComponentTrees;
   private final Looper mLayoutLooper;
 
+  private int mContentWidthSpec = SizeSpec.makeSizeSpec(0, UNSPECIFIED);
+  private int mContentHeightSpec = SizeSpec.makeSizeSpec(0, UNSPECIFIED);

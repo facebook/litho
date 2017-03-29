@@ -121,3 +121,5 @@ public class ComponentTreeBuilderTest {
     assertSameAsInternalState(componentTree, null, "mLayoutLock");
 
     assertTrue(componentTree.isIncrementalMountEnabled());
+  }
+}

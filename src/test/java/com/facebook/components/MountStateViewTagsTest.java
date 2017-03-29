@@ -80,3 +80,4 @@ public class MountStateViewTagsTest {
     final Object tag = new Object();
     final SparseArray<Object> tags = new SparseArray<>(1);
     tags.put(DUMMY_ID, tag);
+
