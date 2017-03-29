@@ -20,3 +20,5 @@ import android.view.ViewGroup;
 
 import com.facebook.components.Component;
 import com.facebook.components.ComponentContext;
+import com.facebook.components.ComponentTree;
+import com.facebook.components.ComponentView;
