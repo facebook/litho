@@ -278,3 +278,4 @@ int __android_log_print(int prio, const char *tag, const char *fmt, ...)
  */
 #ifndef FBLOG
 #define FBLOG(priority, tag, ...) \
+  FBLOG_PRI(ANDROID_##priority, tag, __VA_ARGS__)
