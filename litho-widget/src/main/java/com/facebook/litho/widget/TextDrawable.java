@@ -163,3 +163,10 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
       float layoutTranslationY,
       ColorStateList colorStateList,
       int userColor,
+      int highlightColor,
+      ClickableSpan[] clickableSpans) {
+    mLayout = layout;
+    mLayoutTranslationY = layoutTranslationY;
+    mText = text;
+    mClickableSpans = clickableSpans;
+    mShouldHandleTouch = (clickableSpans != null && clickableSpans.length > 0);
