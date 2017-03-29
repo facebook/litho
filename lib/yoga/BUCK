@@ -17,3 +17,4 @@ android_library(
         COMPONENTS_INFERANNOTATIONS_TARGET,
         COMPONENTS_JSR_TARGET,
     ],
+)
