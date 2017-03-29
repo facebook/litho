@@ -115,3 +115,6 @@ void throwPendingJniExceptionAsCppException() {
   }
 
   auto throwable = adopt_local(env->ExceptionOccurred());
+  if (!throwable) {
+    throw std::runtime_error("Unable to get pending JNI exception.");
+  }
