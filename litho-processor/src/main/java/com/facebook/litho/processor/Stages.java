@@ -3060,3 +3060,5 @@ public class Stages {
     return "m" + getSimpleClassName() + IMPL_CLASS_NAME_SUFFIX;
   }
 
+  private void writeMethodSpec(MethodSpec methodSpec) {
+    mClassTypeSpec.addMethod(methodSpec);
