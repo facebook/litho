@@ -123,3 +123,15 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputsForSpecsWithClickHandling() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            .child(
+                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    .child(TestDrawableComponent.create(c))
+                    .clickHandler(c.newEventHandler(1)))
+            .build();
+      }
+    };
+

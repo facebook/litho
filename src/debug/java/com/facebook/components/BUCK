@@ -23,3 +23,4 @@ android_library(
         COMPONENTS_JSR_TARGET,
         COMPONENTS_STETHO_TARGET,
     ],
+)

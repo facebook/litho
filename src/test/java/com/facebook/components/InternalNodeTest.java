@@ -143,3 +143,4 @@ public class InternalNodeTest {
 
   @Test
   public void testPaddingFlag() {
+    mNode.paddingPx(YogaEdge.ALL, 3);
