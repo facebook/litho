@@ -1888,3 +1888,6 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   /**
+   * Crash if the given node has context specific style set.
+   */
+  static void assertContextSpecificStyleNotSet(InternalNode node) {
