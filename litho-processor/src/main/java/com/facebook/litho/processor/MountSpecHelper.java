@@ -484,3 +484,11 @@ public class MountSpecHelper extends ComponentSpecHelper {
       throw new ComponentsProcessingException(
           mSpecElement,
           "Only implement accessibility support for Mount Specs that mount drawables.");
+    }
+
+    if (onPopulateAccessibilityNode != null) {
+      generateOnPopulateAccessibilityNode(onPopulateAccessibilityNode);
+    }
+
+    if (onPopulateExtraAccessibilityNode != null) {
+      generateOnPopulateExtraAccessibilityNode(onPopulateExtraAccessibilityNode);
