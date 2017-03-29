@@ -613,3 +613,6 @@ public class Stages {
 
   private void validateStaticMethods() {
     for (Class<? extends Annotation> stageAnnotation : mStageAnnotations) {
+      final ExecutableElement stage = Utils.getAnnotatedMethod(
+          mSourceElement,
+          stageAnnotation);
