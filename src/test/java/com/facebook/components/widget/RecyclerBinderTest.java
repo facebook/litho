@@ -428,3 +428,7 @@ public class RecyclerBinderTest {
     final List<ComponentInfo> components = new ArrayList<>();
     for (int i = 0; i < 2; i++) {
       components.add(ComponentInfo.create().component(mock(Component.class)).build());
+      mRecyclerBinder.insertItemAt(i, components.get(i));
+    }
+
+    for (int i = 0; i < 2; i++) {
