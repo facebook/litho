@@ -189,3 +189,4 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
    * @param resourceId the resId of the contentDescription to search for
    * @return the assertions object
    */
+  public ViewTreeAssert hasContentDescription(final int resourceId) {
