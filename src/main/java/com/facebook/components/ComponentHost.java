@@ -297,3 +297,4 @@ public class ComponentHost extends ViewGroup {
   MountItem getMountItemAt(int index) {
     return mMountItems.valueAt(index);
   }
+

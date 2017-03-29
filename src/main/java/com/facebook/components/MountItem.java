@@ -213,3 +213,5 @@ class MountItem {
     mContent = null;
     mFlags = 0;
     mIsBound = false;
+    mImportantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+  }
