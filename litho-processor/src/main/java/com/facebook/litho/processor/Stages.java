@@ -1032,3 +1032,5 @@ public class Stages {
       final TypeMirror elementInnerClassType =
           Utils.getGenericTypeArgument(element.asType(), ClassNames.OUTPUT);
 
+      if (elementInnerClassType != null) {
+        final String paramName = element.getSimpleName().toString();
