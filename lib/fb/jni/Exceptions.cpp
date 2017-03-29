@@ -75,3 +75,7 @@ class JUnknownCppException : public JavaClass<JUnknownCppException, JThrowable> 
     return newInstance();
   }
 
+  static local_ref<JUnknownCppException> create(const char* str) {
+    return newInstance(make_jstring(str));
+  }
+};
