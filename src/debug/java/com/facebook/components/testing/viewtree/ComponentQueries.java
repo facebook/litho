@@ -27,3 +27,4 @@ class ComponentQueries {
    */
   static boolean hasTextMatchingPredicate(final ComponentHost host, final Predicate<String> predicate) {
     for (final CharSequence foundText : host.getTextContent().getTextItems()) {
+      if (predicate.apply(foundText.toString())) {

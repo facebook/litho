@@ -48,3 +48,4 @@ final class ViewPredicates {
         }
 
         if (input instanceof ComponentHost) {
+          return ComponentQueries.hasTextMatchingPredicate((ComponentHost) input, predicate);
