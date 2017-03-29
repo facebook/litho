@@ -967,3 +967,6 @@ public class ComponentTree {
       postBackgroundLayoutStateUpdated();
     }
 
+    logLayoutCalculationFinish(root);
+  }
+
