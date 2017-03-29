@@ -100,3 +100,4 @@ class TextSpec {
   @PropDefault protected static final int textStyle = DEFAULT_TYPEFACE.getStyle();
   @PropDefault protected static final Typeface typeface = DEFAULT_TYPEFACE;
   @PropDefault protected static final float spacingMultiplier = 1.0f;
+  @PropDefault protected static final VerticalGravity verticalGravity = VerticalGravity.TOP;
