@@ -783,3 +783,9 @@ public class Stages {
    * our prop annotations or are of type {@link com.facebook.litho.Output}.
    */
   private List<VariableElement> getSpecDefinedParameters(ExecutableElement element) {
+    return getSpecDefinedParameters(element, true);
+  }
+
+  private List<VariableElement> getSpecDefinedParameters(
+      ExecutableElement element,
+      boolean shouldIncludeOutputs) {
