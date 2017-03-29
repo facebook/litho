@@ -98,3 +98,6 @@ public class ResourceResolver {
 
   protected final int resolveIntRes(@IntegerRes int resId) {
     if (resId != 0) {
+      Integer cached = mResourceCache.get(resId);
+      if (cached != null) {
+        return cached;

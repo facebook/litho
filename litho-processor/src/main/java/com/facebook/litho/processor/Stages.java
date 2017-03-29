@@ -88,3 +88,7 @@ public class Stages {
   private static final String STATE_UPDATE_IMPL_NAME_SUFFIX = "StateUpdate";
   public static final String STATE_CONTAINER_IMPL_NAME_SUFFIX = "StateContainerImpl";
   public static final String STATE_CONTAINER_IMPL_MEMBER = "mStateContainerImpl";
+
+  private static final String REQUIRED_PROPS_NAMES = "REQUIRED_PROPS_NAMES";
+  private static final String REQUIRED_PROPS_COUNT = "REQUIRED_PROPS_COUNT";
+

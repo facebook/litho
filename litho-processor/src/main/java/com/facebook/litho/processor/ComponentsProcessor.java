@@ -39,3 +39,7 @@ public class ComponentsProcessor extends AbstractComponentsProcessor {
     final TypeSpec.Builder typeSpec = mountSpecHelper.getTypeSpec();
 
     mountSpecHelper.getTypeSpec().addModifiers(Modifier.FINAL);
+    JavadocGenerator.generate(mountSpecHelper.getSpecModel())
+        .addToTypeSpec(mountSpecHelper.getTypeSpec());
+    PreambleGenerator.generate(mountSpecHelper.getSpecModel())
+        .addToTypeSpec(mountSpecHelper.getTypeSpec());
