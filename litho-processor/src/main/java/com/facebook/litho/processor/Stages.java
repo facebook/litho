@@ -209,3 +209,4 @@ public class Stages {
     mOnCreateTreePropsMethods = Utils.getAnnotatedMethods(mSourceElement, OnCreateTreeProp.class);
 
     mExtraStateMembers = extraStateMembers;
+    validateOnEventMethods();
