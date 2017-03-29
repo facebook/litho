@@ -653,3 +653,4 @@ class MountState {
   }
 
   /**
+   * Prepare the {@link MountState} to mount a new {@link LayoutState}.
