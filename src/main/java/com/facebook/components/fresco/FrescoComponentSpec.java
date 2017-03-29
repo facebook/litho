@@ -89,3 +89,4 @@ class FrescoComponentSpec {
       @Prop(optional = true) int fadeDuration,
       @Prop(optional = true, resType = DRAWABLE) Reference<Drawable> failureImage,
       @Prop(optional = true) ScalingUtils.ScaleType failureImageScaleType,
+      @Prop(optional = true, resType = DRAWABLE) Reference<Drawable> placeholderImage,
