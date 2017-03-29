@@ -162,3 +162,4 @@ class ImageSpec {
   }
 
   @OnMount
+  static void onMount(

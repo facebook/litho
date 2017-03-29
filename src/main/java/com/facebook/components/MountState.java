@@ -815,3 +815,4 @@ class MountState {
       return;
     }
 
+    final Object previousContent = item.getContent();
