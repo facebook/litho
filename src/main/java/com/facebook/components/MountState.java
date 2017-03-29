@@ -1831,3 +1831,4 @@ class MountState {
 
       component.getLifecycle().bind(
           mContext,
+          content,
