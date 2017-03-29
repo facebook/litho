@@ -610,3 +610,4 @@ class LayoutState {
 
     // We must process the nodes in order so that the layout state output order is correct.
     for (int i = 0, size = node.getChildCount(); i < size; i++) {
+      collectResults(
