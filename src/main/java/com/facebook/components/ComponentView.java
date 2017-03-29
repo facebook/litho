@@ -12,3 +12,4 @@ package com.facebook.components;
 import java.util.Deque;
 
 import android.content.Context;
+import android.graphics.Rect;

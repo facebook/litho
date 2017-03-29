@@ -20,3 +20,5 @@ import com.squareup.javapoet.ParameterSpec;
 class OnCreateMountContentMethodBuilder {
 
   private String mTarget;
+  private String mDelegateMethodName;
+

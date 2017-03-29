@@ -12,3 +12,5 @@ package com.facebook.components;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.concurrent.GuardedBy;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;

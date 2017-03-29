@@ -20,3 +20,4 @@ public class ComponentsProcessingException extends PrintableException {
     this(null, message);
   }
 
+  public ComponentsProcessingException(Element element, String message) {

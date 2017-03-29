@@ -12,3 +12,5 @@ package com.facebook.components;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.support.v4.util.LongSparseArray;
+import android.support.v4.util.Pools;

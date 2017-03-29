@@ -15,3 +15,7 @@ import android.support.v4.util.Pools;
 import com.facebook.components.ComponentContext;
 import com.facebook.components.config.ComponentsConfiguration;
 
+/**
+ * A Reference used to acquire {@link Drawable} defined as resources. This uses an internal cache to
+ * avoid recreating the same Drawable instances multiple times.
+ */
