@@ -2626,3 +2626,4 @@ public class Stages {
         ClassNames.REFERENCE,
         genericType,
         INNER_IMPL_BUILDER_CLASS_NAME,
+        new TypeName[]{genericType},
