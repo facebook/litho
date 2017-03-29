@@ -31,3 +31,16 @@ public class ProcessorUtils {
       }
     }
 
+    return null;
+  }
+
+  /**
+   * @return the AnnotationValue related to key from the provided AnnotationMirror
+   */
+  public static AnnotationValue getAnnotationValue(AnnotationMirror annotationMirror, String key) {
+    for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry :
+        annotationMirror.getElementValues().entrySet() ) {
+      if (entry.getKey().getSimpleName().toString().equals(key)) {
+        return entry.getValue();
+      }
+    }

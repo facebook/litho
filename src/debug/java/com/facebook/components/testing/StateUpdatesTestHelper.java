@@ -44,3 +44,5 @@ public class StateUpdatesTestHelper {
         context,
         component,
         stateUpdater,
+        layoutThreadShadowLooper,
+        false);
