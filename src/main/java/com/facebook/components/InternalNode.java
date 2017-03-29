@@ -1898,3 +1898,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     }
     if ((node.mPrivateFlags & PFLAG_POSITION_TYPE_IS_SET) != 0L) {
       errorTypes = addOrCreateList(errorTypes, "positionType");
+    }
