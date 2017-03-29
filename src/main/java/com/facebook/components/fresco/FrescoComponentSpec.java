@@ -146,3 +146,5 @@ class FrescoComponentSpec {
       controller.onViewportVisibilityHint(false);
     }
   }
+
+  @OnUnmount
