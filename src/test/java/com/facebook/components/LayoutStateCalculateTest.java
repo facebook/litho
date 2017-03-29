@@ -847,3 +847,16 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputsWithInteractiveLayoutSpecAsLeafs() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c)
+            .child(TestDrawableComponent.create(c))
+            .child(
+                Container.create(c)
+                    .child(TestLayoutComponent.create(c))
+                    .wrapInView())
+            .build();
+      }
+    };
+

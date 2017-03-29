@@ -493,3 +493,10 @@ class LayoutState {
     final long currentHostMarker = layoutState.mCurrentHostMarker;
     final int currentHostOutputPosition = layoutState.mCurrentHostOutputPosition;
 
+    int hostLayoutPosition = -1;
+
+    // 1. Insert a host LayoutOutput if we have some interactive content to be attached to.
+    if (needsHostView) {
+      hostLayoutPosition = addHostLayoutOutput(node, layoutState, diffNode);
+
+      layoutState.mCurrentLevel++;
