@@ -228,3 +228,4 @@ public class ComponentTreeTest {
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
+    componentTree.setSizeSpec(mWidthSpec2, mHeightSpec2);
