@@ -53,3 +53,4 @@ public class TestComponentTree extends ComponentTree {
         mId,
         widthSpec,
         heightSpec,
+        diffingEnabled,
