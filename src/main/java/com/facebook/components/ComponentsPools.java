@@ -362,3 +362,21 @@ public class ComponentsPools {
     return output;
   }
 
+  static DiffNode acquireDiffNode() {
+    DiffNode node = sDiffNodePool.acquire();
+    if (node == null) {
+      node = new DiffNode();
+    }
+
+    return node;
+  }
+
+  static Diff acquireDiff() {
+    Diff diff = sDiffPool.acquire();
+    if (diff == null) {
+      diff = new Diff();
+    }
+
+    return diff;
+  }
+
