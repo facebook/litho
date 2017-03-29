@@ -102,3 +102,5 @@ class TextSpec {
   @PropDefault protected static final float spacingMultiplier = 1.0f;
   @PropDefault protected static final VerticalGravity verticalGravity = VerticalGravity.TOP;
   @PropDefault protected static final boolean glyphWarming = false;
+  @PropDefault protected static final boolean shouldIncludeFontPadding = true;
+  @PropDefault protected static final Alignment textAlignment = ALIGN_NORMAL;
