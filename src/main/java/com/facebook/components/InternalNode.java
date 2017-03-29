@@ -1915,3 +1915,6 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     if (errorTypes != null) {
       final CharSequence errorStr = TextUtils.join(", ", errorTypes);
       throw new IllegalStateException("You should not set " + errorStr + " to a root layout in "
+          + node.getComponent().getLifecycle());
+    }
+  }
