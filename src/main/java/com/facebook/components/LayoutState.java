@@ -839,3 +839,4 @@ class LayoutState {
     // children got processed.
     addMountableOutput(layoutState, hostLayoutOutput);
 
+    final int hostOutputPosition = layoutState.mMountableOutputs.size() - 1;
