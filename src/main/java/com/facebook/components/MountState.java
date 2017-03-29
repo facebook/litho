@@ -963,3 +963,4 @@ class MountState {
     } else if (content instanceof Drawable) {
       ((Drawable) content).setBounds(left, top, right, bottom);
     } else {
+      throw new IllegalStateException("Unsupported mounted content " + content);
