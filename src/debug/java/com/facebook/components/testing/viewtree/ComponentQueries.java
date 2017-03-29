@@ -25,3 +25,5 @@ class ComponentQueries {
    * @param predicate the predicate to test
    * @return true if the host has the given text.
    */
+  static boolean hasTextMatchingPredicate(final ComponentHost host, final Predicate<String> predicate) {
+    for (final CharSequence foundText : host.getTextContent().getTextItems()) {
