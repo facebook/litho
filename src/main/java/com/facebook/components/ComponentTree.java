@@ -43,3 +43,4 @@ import static com.facebook.components.ComponentsLogger.EVENT_PRE_ALLOCATE_MOUNT_
 import static com.facebook.components.ComponentsLogger.PARAM_IS_BACKGROUND_LAYOUT;
 import static com.facebook.components.ComponentsLogger.PARAM_LOG_TAG;
 import static com.facebook.components.ComponentsLogger.PARAM_TREE_DIFF_ENABLED;
+import static com.facebook.components.ThreadUtils.assertHoldsLock;
