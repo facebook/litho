@@ -168,3 +168,4 @@ class TextSpec {
         linkColor.set(a.getColor(attr, 0));
       } else if (attr == R.styleable.Text_android_textColorHighlight) {
         highlightColor.set(a.getColor(attr, 0));
+      } else if (attr == R.styleable.Text_android_textStyle) {

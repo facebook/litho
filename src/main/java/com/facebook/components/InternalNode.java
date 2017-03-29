@@ -960,3 +960,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     }
 
     mPrivateFlags |= PFLAG_TOUCH_EXPANSION_IS_SET;
+    mTouchExpansion.set(edge.intValue(), touchExpansion);
