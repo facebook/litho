@@ -290,3 +290,7 @@ public class ComponentsPools {
         return null;
       }
 
+      pool = poolsArray.get(componentId);
+      if (pool == null) {
+        return null;
+      }

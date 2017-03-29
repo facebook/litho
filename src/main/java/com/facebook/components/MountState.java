@@ -643,3 +643,8 @@ class MountState {
     final boolean forceTraversal = Component.isMountViewSpec(layoutOutput.getComponent())
         && ((View) item.getContent()).isLayoutRequested();
 
+    applyBoundsToMountContent(
+        item.getContent(),
+        sTempRect.left,
+        sTempRect.top,
+        sTempRect.right,
