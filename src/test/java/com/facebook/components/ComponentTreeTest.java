@@ -428,3 +428,6 @@ public class ComponentTreeTest {
         mContext,
         component)
         .incrementalMount(false)
+        .build();
+
+    // Attach first view.
