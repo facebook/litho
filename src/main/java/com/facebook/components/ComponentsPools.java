@@ -619,3 +619,12 @@ public class ComponentsPools {
     sTouchableScrapArrayPool.release(sparseArray);
   }
 
+  static RectF acquireRectF() {
+    RectF rect = sRectFPool.acquire();
+    if (rect == null) {
+      rect = new RectF();
+    }
+
+    return rect;
+  }
+

@@ -840,3 +840,6 @@ public class Stages {
    * whitelist. If there is a duplicate we will issue an error.
    */
   private Annotation getParameterAnnotation(
+      VariableElement element,
+      Class<Annotation>[] possibleAnnotations) {
+    final ArrayList<Annotation> annotations = new ArrayList<>();
