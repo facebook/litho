@@ -537,3 +537,5 @@ public class ComponentTree {
       mComponentView.setMountStateDirty();
     }
 
+    measureOutput[0] = mMainThreadLayoutState.getWidth();
+    measureOutput[1] = mMainThreadLayoutState.getHeight();
