@@ -1042,3 +1042,16 @@ public class Stages {
               "Only parameters annotated with @State can be initialized in @OnCreateInitialState," +
                   " parameter without annotation is: " + paramName);
         }
+      }
+    }
+  }
+
+  /**
+   * Generate a method implementation that delegates to another method that takes annotated props.
+   *
+   * @param from description of method signature to be generated
+   * @param to method to which to delegate
+   * @param propsClass Component / Delegate. The base class of the inner implementation object
+   * @throws java.io.IOException If one of the writer methods throw
+   */
+  public void generateDelegate(
