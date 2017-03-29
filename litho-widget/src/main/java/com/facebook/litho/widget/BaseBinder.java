@@ -172,3 +172,9 @@ public abstract class BaseBinder<
     if (shouldInsertItem) {
       Component component = createComponent(mContext, position);
 
+      synchronized (this) {
+        // We need to check again because we exited the critical section and since the last check
+        // the result might have changed.
+        if (isInRange(position) ||
+            position == mComponentTrees.getFirstPosition() + mComponentTrees.size()) {
+

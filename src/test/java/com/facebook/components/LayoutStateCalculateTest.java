@@ -465,3 +465,4 @@ public class LayoutStateCalculateTest {
     assertEquals(textBackgroundBounds.right , textLayoutBounds.right + paddingSize);
     assertEquals(textBackgroundBounds.bottom , textLayoutBounds.bottom + paddingSize);
 
+    assertEquals(layoutState.getMountableOutputAt(7).getBounds(),layoutState.getMountableOutputAt(8).getBounds());

@@ -228,3 +228,4 @@ class LayoutState {
 
     if (layoutState.mCurrentHostOutputPosition >= 0) {
       final LayoutOutput hostOutput =
+          layoutState.mMountableOutputs.get(layoutState.mCurrentHostOutputPosition);

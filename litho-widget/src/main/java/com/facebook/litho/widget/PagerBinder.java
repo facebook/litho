@@ -82,3 +82,7 @@ public abstract class PagerBinder extends BaseBinder<
     return mCurrentItem;
   }
 
+  public int getPagerOffscreenLimit() {
+    return mPagerOffscreenLimit;
+  }
+
