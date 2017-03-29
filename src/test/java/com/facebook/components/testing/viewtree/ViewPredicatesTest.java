@@ -117,3 +117,7 @@ public class ViewPredicatesTest {
     assertThat(matchesPartOfHello.apply(mTextViewWithHello)).isTrue();
     assertThat(matchesPartOfHello.apply(mTextViewWithWorld)).isTrue();
     assertThat(matchesPartOfHello.apply(mComponentViewWithText)).isTrue();
+  }
+
+  @Test
+  public void testHasVisibleMatchingText() throws Exception {
