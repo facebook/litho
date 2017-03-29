@@ -55,3 +55,7 @@ public class MountStateFocusableTest {
         });
 
     assertEquals(1, componentView.getChildCount());
+    // TODO(T16959291): The default varies between internal and external test runs, which indicates
+    // that our Robolectric setup is not actually identical. Until we can figure out why,
+    // we will compare against the dynamic default instead of asserting false.
+    assertEquals(mFocusableDefault, componentView.isFocusable());

@@ -163,3 +163,5 @@ public class TreeDiffingTest {
 
     InternalNode node = createInternalNodeForMeasurableComponent(component);
     DiffNode diffNode = new DiffNode();
+    diffNode.setLastHeightSpec(mUnspecifiedSpec);
+    diffNode.setLastWidthSpec(mUnspecifiedSpec);
