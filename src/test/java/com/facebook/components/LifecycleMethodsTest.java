@@ -169,3 +169,35 @@ public class LifecycleMethodsTest {
     @Override
     protected void onUnbind(
         ComponentContext c,
+        Object mountedContent,
+        Component<?> component) {
+      LifecycleMethodsInstance instance = (LifecycleMethodsInstance) component;
+      instance.setCurrentStep(LifecycleStep.ON_UNBIND);
+    }
+
+    @Override
+    protected boolean shouldUpdate(Component previous, Component next) {
+      return true;
+    }
+
+    @Override
+    public MountType getMountType() {
+      return MountType.DRAWABLE;
+    }
+
+    public LifecycleMethodsInstance create(int size) {
+      return new LifecycleMethodsInstance(this, size);
+    }
+  }
+
+  private static class LifecycleMethodsInstance
+      extends Component<LifecycleMethodsComponent> implements Cloneable {
+
+    private final int mSize;
+    LifecycleStep mCurrentStep = LifecycleStep.ON_UNMOUNT;
+
+    protected LifecycleMethodsInstance(LifecycleMethodsComponent l, int size) {
+      super(l);
+      mSize = size;
+    }
+

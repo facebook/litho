@@ -179,3 +179,5 @@ public class TestDrawableComponent extends ComponentLifecycle {
   protected void onUnbind(ComponentContext c, Object mountedContent, Component<?> component) {
     State state = (State) component;
     state.onUnbindCalled();
+  }
+

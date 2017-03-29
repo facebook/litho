@@ -73,3 +73,4 @@ public class ComponentHostTest {
     mDrawableComponent = TestDrawableComponent.create(mContext).build();
 
     mHost = new TestableComponentHost(mContext);
+
