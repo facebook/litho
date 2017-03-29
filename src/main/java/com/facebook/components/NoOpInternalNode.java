@@ -463,3 +463,7 @@ class NoOpInternalNode extends InternalNode {
 
   @Override
   public InternalNode heightDip(@Dimension(unit = DP) int height) {
+    return this;
+  }
+
+  @Override
