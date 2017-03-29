@@ -30,3 +30,4 @@ android_library(
     tests = [
         COMPONENTS_TEST_TARGET,
     ],
+    visibility = [
