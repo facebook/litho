@@ -13,3 +13,10 @@ import javax.lang.model.element.Modifier;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterSpec;
+
+class TransferStateSpecBuilder {
+

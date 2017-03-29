@@ -40,3 +40,26 @@ public class DrawableResourcesCacheTest {
   public void testPoolIsNeverEmpty() {
 
     Resources resources = RuntimeEnvironment.application.getResources();
+    // This being null is ok since we are only using this drawable to test the cache.
+    // We still need to declare the variable though otherewise the call to the constructor would be
+    // ambiguous.
+    Bitmap bitmap = null;
+    BitmapDrawable drawable = new BitmapDrawable(resources, bitmap);
+
+    mCache.release(drawable, 1);
+    mCache.release(new ColorDrawable(), 2);
+
+    Drawable first = mCache.get(1, resources);
+    Drawable second = mCache.get(1, resources);
+    Drawable third = mCache.get(2, resources);
+
+    assertNotNull(first);
+    assertNotNull(second);
+    assertNotNull(third);
+
+    assertEquals(first.getConstantState(), second.getConstantState());
+    assertNotEquals(first.getConstantState(), third.getConstantState());
+  }
+
+  @Test
+  public void testReleaseAndGet() {

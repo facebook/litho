@@ -28,3 +28,6 @@ public class DrawableReferenceTest {
   public void testAcquire() {
     Drawable drawable = new ColorDrawable();
     ComponentContext context = new ComponentContext(RuntimeEnvironment.application);
+
+    assertEquals(
+        Reference.acquire(

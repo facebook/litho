@@ -27,3 +27,12 @@ public class TestComponentContextWithView extends ComponentContext {
     }
   }
 
+  public TestComponentContextWithView(Context context, View view) {
+    super(context);
+    mTestView = view;
+  }
+
+  public View getTestView() {
+    return mTestView;
+  }
+}
