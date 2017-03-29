@@ -132,3 +132,21 @@ class BinderTreeCollection {
     }
 
     return mItems.keyAt(index);
+  }
+
+  /**
+   * Add all the contained ComponentTrees in the given {@link List}.
+   */
+  void addAllTo(List<ComponentTree> list) {
+    for (int i = 0, size = mItems.size(); i < size; i++) {
+      list.add(mItems.valueAt(i));
+    }
+  }
+
+  /**
+   * Clear the collection.
+   */
+  void clear() {
+    mItems.clear();
+  }
+

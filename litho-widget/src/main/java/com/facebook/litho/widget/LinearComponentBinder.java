@@ -42,3 +42,4 @@ public abstract class LinearComponentBinder extends
     final LinearLayoutManager layoutManager = getLayoutManager();
     final int firstViewPosition = layoutManager.findFirstVisibleItemPosition();
     final int lastViewPosition = layoutManager.findLastVisibleItemPosition();
+
