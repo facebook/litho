@@ -1615,3 +1615,4 @@ public class Stages {
     for (int i = ON_STYLE_PROPS, size = parameters.size(); i < size; i++) {
       final VariableElement v = parameters.get(i);
       final TypeName typeName = ClassName.get(v.asType());
+
