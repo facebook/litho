@@ -541,3 +541,6 @@ public abstract class BaseBinder<
    * Returns the total number of component props in the data set hold by the binder.
    *
    * @return The total number of component props in this binder.
+   */
+  protected abstract int getCount();
+
