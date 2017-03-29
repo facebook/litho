@@ -195,3 +195,4 @@ class TextSpec {
   }
 
   @OnMeasure
+  static void onMeasure(
