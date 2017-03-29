@@ -420,3 +420,13 @@ class LayoutState {
    * will be created at the right order when mounting. The host markers will be define which host
    * each mounted artifacts will be attached to.
    * <p/>
+   * At this stage all the {@link InternalNode} for which we have LayoutOutputs that can be recycled
+   * will have a DiffNode associated. If the CachedMeasures are valid we'll try to recycle both the
+   * host and the contents (including background/foreground). In all other cases instead we'll only
+   * try to re-use the hosts. In some cases the host's structure might change between two updates
+   * even if the component is of the same type. This can happen for example when a click listener is
+   * added. To avoid trying to re-use the wrong host type we explicitly check that after all the
+   * children for a subtree have been added (this is when the actual host type is resolved). If the
+   * host type changed compared to the one in the DiffNode we need to refresh the ids for the whole
+   * subtree in order to ensure that the MountState will unmount the subtree and mount it again on
+   * the correct host.
