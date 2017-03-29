@@ -1606,3 +1606,4 @@ public class Stages {
             ParameterSpec.builder(
                 ParameterizedTypeName.get(
                     ClassNames.COMPONENT,
+                    WildcardTypeName.subtypeOf(Object.class)),
