@@ -139,3 +139,6 @@ public class MountSpecHelper extends ComponentSpecHelper {
    * Generate an onMeasure implementation that delegates to the @OnCreateLayout-annotated method.
    */
   public void generateOnMeasure() {
+    final ExecutableElement onMeasure = Utils.getAnnotatedMethod(
+        mStages.getSourceElement(),
+        OnMeasure.class);
