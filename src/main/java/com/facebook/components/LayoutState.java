@@ -883,3 +883,4 @@ class LayoutState {
 
     component.applyStateUpdates(c);
 
+    final InternalNode root = createAndMeasureTreeForComponent(
