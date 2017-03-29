@@ -154,3 +154,4 @@ class MountState {
 
     ComponentsSystrace.beginSection("mount");
 
+    final ComponentTree componentTree = mComponentView.getComponent();
