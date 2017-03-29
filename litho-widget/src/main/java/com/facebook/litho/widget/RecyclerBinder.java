@@ -145,3 +145,4 @@ public class RecyclerBinder implements Binder<RecyclerView> {
    * inserted after a layout calculation has been completed for the new {@link Component}.
    */
   @UiThread
+  public final void insertItemAtAsync(int position, ComponentInfo componentInfo) {
