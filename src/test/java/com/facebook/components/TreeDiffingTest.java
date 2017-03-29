@@ -765,3 +765,10 @@ public class TreeDiffingTest {
         component1,
         SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
+        true,
+        null);
+
+    assertOutputsState(state, LayoutOutput.STATE_UNKNOWN);
+
+    LayoutState secondState = componentTree.calculateLayoutState(
+        null,
