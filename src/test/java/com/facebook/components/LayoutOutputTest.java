@@ -262,3 +262,26 @@ public class LayoutOutputTest {
             LayoutOutput.TYPE_FOREGROUND,
             MAX_SEQ_TEST + 1));
   }
+
+  @Test
+  public void testGetMountBoundsNoHostTranslation() {
+    mLayoutOutput.setBounds(10, 10, 10, 10);
+
+    Rect mountBounds = new Rect();
+    mLayoutOutput.getMountBounds(mountBounds);
+
+    assertEquals(mLayoutOutput.getBounds(), mountBounds);
+  }
+
+  @Test
+  public void testGetMountBoundsWithHostTranslation() {
+    mLayoutOutput.setBounds(10, 10, 10, 10);
+    mLayoutOutput.setHostTranslationX(5);
+    mLayoutOutput.setHostTranslationY(2);
+
+    Rect mountBounds = new Rect();
+    mLayoutOutput.getMountBounds(mountBounds);
+
+    assertEquals(new Rect(5, 8, 5, 8), mountBounds);
+  }
+}
