@@ -739,3 +739,6 @@ public class ComponentTree {
         null /* output */);
   }
 
+  /**
+   * Compute a new layout with the given component root and sizes
+   */
