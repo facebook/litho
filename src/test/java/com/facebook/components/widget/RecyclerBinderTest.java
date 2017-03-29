@@ -440,3 +440,4 @@ public class RecyclerBinderTest {
     int heightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
 
     mRecyclerBinder.measure(size, widthSpec, heightSpec);
+
