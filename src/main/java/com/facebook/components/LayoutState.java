@@ -1147,3 +1147,4 @@ class LayoutState {
     }
 
     if (previousDiffTreeRoot != null) {
+      ComponentsSystrace.beginSection("applyDiffNode");
