@@ -1139,3 +1139,4 @@ class LayoutState {
     final Component component = root.getComponent();
     ComponentsSystrace.beginSection("measureTree:" + component.getSimpleName());
 
+    if (YogaConstants.isUndefined(root.getStyleWidth())) {
