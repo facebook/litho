@@ -909,3 +909,5 @@ public class ComponentTree {
       if (mMainThreadLayoutState != null) {
         previousLayoutState = mMainThreadLayoutState.acquireRef();
       }
+    }
+
