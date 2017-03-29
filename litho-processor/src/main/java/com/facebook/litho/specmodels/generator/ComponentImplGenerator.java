@@ -20,3 +20,91 @@ import com.facebook.common.internal.ImmutableList;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
+import com.facebook.components.specmodels.model.EventDeclarationModel;
+import com.facebook.components.specmodels.model.InterStageInputParamModel;
+import com.facebook.components.specmodels.model.MethodParamModel;
+import com.facebook.components.specmodels.model.ClassNames;
+import com.facebook.components.specmodels.model.PropModel;
+import com.facebook.components.specmodels.model.SpecModel;
+import com.facebook.components.specmodels.model.SpecModelUtils;
+import com.facebook.components.specmodels.model.StateParamModel;
+import com.facebook.components.specmodels.model.TreePropModel;
+import com.facebook.components.specmodels.model.UpdateStateMethodModel;
+
+import com.squareup.javapoet.ArrayTypeName;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.CodeBlock;
+import com.squareup.javapoet.FieldSpec;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
+import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
+
+import static com.facebook.components.specmodels.model.ClassNames.COMPONENT;
+import static com.facebook.components.specmodels.generator.GeneratorConstants.IMPL_CLASS_NAME_SUFFIX;
+import static com.facebook.components.specmodels.generator.GeneratorConstants.STATE_CONTAINER_FIELD_NAME;
+
+/**
+ * Class that generates the preamble for a Component.
+ */
+public class ComponentImplGenerator {
+
+  private ComponentImplGenerator() {
+  }
+
+  public static TypeSpecDataHolder generate(SpecModel specModel) {
+    final String implClassName = getImplClassName(specModel);
+    final TypeSpec.Builder implClassBuilder =
+        TypeSpec.classBuilder(implClassName)
+            .addModifiers(Modifier.PRIVATE)
+            .superclass(
+                ParameterizedTypeName.get(
+                    ClassNames.COMPONENT,
+                    specModel.getComponentTypeName()))
+            .addSuperinterface(Cloneable.class);
+
+    if (!specModel.hasInjectedDependencies()) {
+      implClassBuilder.addModifiers(Modifier.STATIC);
+      implClassBuilder.addTypeVariables(specModel.getTypeVariables());
+    }
+
+    final ClassName stateContainerImplClass =
+        ClassName.bestGuess(getStateContainerImplClassName(specModel));
+    implClassBuilder.addField(stateContainerImplClass, STATE_CONTAINER_FIELD_NAME);
+    implClassBuilder.addMethod(
+        generateStateContainerGetter(specModel.getStateContainerClass()));
+
+    generateProps(specModel).addToTypeSpec(implClassBuilder);
+    generateTreeProps(specModel).addToTypeSpec(implClassBuilder);
+    generateInterStageInputs(specModel).addToTypeSpec(implClassBuilder);
+    generateEventHandlers(specModel).addToTypeSpec(implClassBuilder);
+
+    implClassBuilder.addMethod(generateImplConstructor(stateContainerImplClass));
+    implClassBuilder.addMethod(generateGetSimpleName(specModel));
+    implClassBuilder.addMethod(generateEqualsMethod(specModel, true));
+
+    generateCopyInterStageImpl(specModel).addToTypeSpec(implClassBuilder);
+
+    generateOnUpdateStateMethods(specModel).addToTypeSpec(implClassBuilder);
+    generateMakeShallowCopy(specModel, /* hasDeepCopy */ false).addToTypeSpec(implClassBuilder);
+
+    return TypeSpecDataHolder.newBuilder()
+        .addType(generateStateContainerImpl(specModel))
+        .addType(implClassBuilder.build())
+        .build();
+  }
+
+  static TypeSpec generateStateContainerImpl(SpecModel specModel) {
+    final TypeSpec.Builder stateContainerImplClassBuilder =
+        TypeSpec.classBuilder(getStateContainerImplClassName(specModel))
+            .addSuperinterface(specModel.getStateContainerClass());
+
+    if (!specModel.hasInjectedDependencies()) {
+      stateContainerImplClassBuilder.addModifiers(Modifier.STATIC, Modifier.PRIVATE);
+      stateContainerImplClassBuilder.addTypeVariables(specModel.getTypeVariables());
+    }
+
+    for (StateParamModel stateValue : specModel.getStateValues()) {
+      stateContainerImplClassBuilder.addField(FieldSpec.builder(
+          stateValue.getType(),

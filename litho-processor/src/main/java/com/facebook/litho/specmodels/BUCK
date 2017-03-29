@@ -26,3 +26,7 @@ java_library(
 
 java_library(
     name = "specmodels-bare",
+    srcs = glob(
+        ["**/*.java"],
+        excludes = glob(["processor/*.java"]),
+    ),

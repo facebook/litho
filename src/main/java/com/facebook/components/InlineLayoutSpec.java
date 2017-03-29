@@ -21,3 +21,4 @@ public abstract class InlineLayoutSpec extends Component implements Cloneable {
     @Override
     public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
       // no-op
+      return null;

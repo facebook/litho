@@ -13,3 +13,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.facebook.litho.annotations.OnCreateTreeProp;
+
+import com.squareup.javapoet.TypeName;
+
+class TreePropValidation {
+
+  static List<SpecModelValidationError> validate(SpecModel specModel) {
+    List<SpecModelValidationError> validationErrors = new ArrayList<>();
+
+    final List<DelegateMethodModel> onCreateTreePropMethods =
+        SpecModelUtils.getMethodModelsWithAnnotation(specModel, OnCreateTreeProp.class);
+    for (DelegateMethodModel onCreateTreePropMethod : onCreateTreePropMethods) {
+      if (onCreateTreePropMethod.returnType.equals(TypeName.VOID)) {
+        validationErrors.add(
+            new SpecModelValidationError(
+                onCreateTreePropMethod.representedObject,
+                "@OnCreateTreeProp methods cannot return void."));
+      }
+
