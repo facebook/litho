@@ -119,3 +119,12 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
         innerDrawableTop,
         innerDrawableLeft + mWidth,
         innerDrawableTop + mHeight);
+  }
+
+  public void unmount() {
+    if (mDrawable != null) {
+      mDrawable.setCallback(null);
+    }
+
+    mDrawable = null;
+    mMatrix = null;
