@@ -2872,3 +2872,5 @@ public class Stages {
         .addStatement("$L " + implInstanceName + " = " + implMemberInstanceName, implClassName)
         .addStatement("release()")
         .addStatement("return " + implInstanceName);
+
+    propsBuilderClassBuilder.addMethod(buildMethodBuilder.build());
