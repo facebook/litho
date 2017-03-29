@@ -65,3 +65,12 @@ class EventDispatcherUtils {
 
     final EventDispatcher eventDispatcher = visibleHandler.mHasEventDispatcher.getEventDispatcher();
     eventDispatcher.dispatchOnEvent(visibleHandler, sVisibleEvent);
+  }
+
+  static void dispatchOnFocused(EventHandler<FocusedVisibleEvent> focusedHandler) {
+    assertMainThread();
+
+    if (sFocusedVisibleEvent == null) {
+      sFocusedVisibleEvent = new FocusedVisibleEvent();
+    }
+
