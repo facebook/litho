@@ -166,3 +166,5 @@ class MountItem {
     return mImportantForAccessibility;
   }
 
+  NodeInfo getNodeInfo() {
+    return mNodeInfo;

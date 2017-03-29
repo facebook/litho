@@ -185,3 +185,17 @@ public class ComponentTreeTest {
         Whitebox.getInternalState(componentTree, "mWidthSpec"));
     assertEquals(
         mHeightSpec,
+        Whitebox.getInternalState(componentTree, "mHeightSpec"));
+    Assert.assertNull(Whitebox.getInternalState(componentTree, "mMainThreadLayoutState"));
+    Assert.assertNull(Whitebox.getInternalState(componentTree, "mBackgroundLayoutState"));
+
+    // Now the background thread run the queued task.
+    mLayoutThreadShadowLooper.runOneTask();
+
+    // Since this happens post creation, it's not in general safe to update the main thread layout
+    // state synchronously, so the result should be in the background layout state
+    postSizeSpecChecks(componentTree, "mBackgroundLayoutState");
+  }
+
+  @Test
+  public void testSetSizeSpecAsyncThenSyncBeforeRunningTask() {
