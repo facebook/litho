@@ -29,3 +29,4 @@ class CardClipSpec {
   }
 
   @OnMount
+  static void onMount(
