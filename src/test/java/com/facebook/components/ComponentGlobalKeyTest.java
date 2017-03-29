@@ -170,3 +170,13 @@ public class ComponentGlobalKeyTest {
             .child(testGlobalKeyChildComponent)
             .child(
                 Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    .backgroundColor(color)
+                    .child(CardClip.create(c).key("[CardClip2]")))
+            .child(TestViewComponent.create(c).key("[TestViewComponent2]"))
+            .build();
+      }
+    };
+
+    return testGlobalKeyChild;
+  }
+}

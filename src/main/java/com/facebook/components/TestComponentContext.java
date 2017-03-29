@@ -40,3 +40,7 @@ class TestComponentContext extends ComponentContext {
     super(c);
   }
 
+  TestComponentContext(Context c, StateHandler stateHandler) {
+    super(c, stateHandler);
+  }
+
