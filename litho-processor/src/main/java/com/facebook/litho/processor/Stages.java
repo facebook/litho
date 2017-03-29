@@ -867,3 +867,20 @@ public class Stages {
   public void generateJavadoc() {
     for (VariableElement v : mProps) {
       final Prop propAnnotation = v.getAnnotation(Prop.class);
+      final String propTag = propAnnotation.optional() ? "@prop-optional" : "@prop-required";
+      final String javadoc =
+          mPropJavadocs != null ? mPropJavadocs.get(v.getSimpleName().toString()) : "";
+
+      final String sanitizedJavadoc =
+          javadoc != null ? javadoc.replace('\n', ' ') : null;
+
+      // Adds javadoc with following format:
+      // @prop-required name type javadoc.
+      // This can be changed later to use clear demarcation for fields.
+      // This is a block tag and cannot support inline tags like "{@link something}".
+      mClassTypeSpec.addJavadoc(
+          "$L $L $L $L\n",
+          propTag,
+          v.getSimpleName().toString(),
+          Utils.getTypeName(v.asType()),
+          sanitizedJavadoc);
