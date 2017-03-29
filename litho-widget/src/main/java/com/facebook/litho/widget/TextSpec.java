@@ -602,3 +602,11 @@ class TextSpec {
         startLine == endLine ? end : textLayout.getLineVisibleEnd(startLine);
 
     textLayout.getSelectionPath(start, selectionPathEnd, sTempPath);
+    sTempPath.computeBounds(sTempRectF, /* unused */true);
+
+    sTempRect.set(
+        componentBoundsLeft + (int) sTempRectF.left,
+        componentBoundsTop + (int) sTempRectF.top,
+        componentBoundsLeft + (int) sTempRectF.right,
+        componentBoundsTop + (int) sTempRectF.bottom);
+
