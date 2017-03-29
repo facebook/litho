@@ -63,3 +63,9 @@ public class BaseBinderTest {
     mItems.add("8");
 
     Context context = RuntimeEnvironment.application;
+    mView = new ComponentView(context);
+    mComponentView1 = mock(ComponentView.class);
+    mComponentView2 = mock(ComponentView.class);
+
+    mView.addView(mComponentView1);
+    mView.addView(mComponentView2);
