@@ -1374,3 +1374,7 @@ public class Stages {
     writeMethodSpec(methodBuilder.build());
   }
 
+  private void generateEventHandlerFactory(
+      ExecutableElement element,
+      ClassName contextClassName,
+      ClassName componentClassName) {
