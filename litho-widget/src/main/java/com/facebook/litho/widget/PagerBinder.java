@@ -186,3 +186,4 @@ public abstract class PagerBinder extends BaseBinder<
         throw new IllegalStateException("Null component while initializing a new page.");
       }
 
+      componentView.setComponent(component);
