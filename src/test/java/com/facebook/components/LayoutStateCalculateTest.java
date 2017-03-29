@@ -417,3 +417,6 @@ public class LayoutStateCalculateTest {
     assertEquals(
         foregroundHasOwnOutput ? 12 : 11,
         layoutState.getMountableOutputCount());
+
+    // Check quantity of HostComponents.
+    int totalHosts = 0;

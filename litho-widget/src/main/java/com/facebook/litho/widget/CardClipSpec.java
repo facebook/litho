@@ -25,3 +25,6 @@ class CardClipSpec {
 
   @OnCreateMountContent
   static CardClipDrawable onCreateMountContent(ComponentContext c) {
+    return new CardClipDrawable();
+  }
+
