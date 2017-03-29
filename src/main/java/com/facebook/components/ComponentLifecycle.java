@@ -168,3 +168,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
   Object createMountContent(ComponentContext c) {
     return onCreateMountContent(c);
   }
+
