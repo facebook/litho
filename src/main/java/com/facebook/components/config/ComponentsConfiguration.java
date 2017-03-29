@@ -16,3 +16,4 @@ import com.facebook.components.BuildConfig;
 /**
  * Configuration for the Components library.
  */
+public class ComponentsConfiguration {
