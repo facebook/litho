@@ -54,3 +54,12 @@ class EventDispatcherUtils {
     eventDispatcher.dispatchOnEvent(clickHandler, sClickEvent);
 
     sClickEvent.view = null;
+  }
+
+  static void dispatchOnVisible(EventHandler<VisibleEvent> visibleHandler) {
+    assertMainThread();
+
+    if (sVisibleEvent == null) {
+      sVisibleEvent = new VisibleEvent();
+    }
+
