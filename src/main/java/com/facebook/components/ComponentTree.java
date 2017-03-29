@@ -320,3 +320,4 @@ public class ComponentTree {
             componentRootId,
             viewWidth,
             viewHeight);
+
