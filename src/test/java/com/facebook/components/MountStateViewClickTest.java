@@ -57,3 +57,7 @@ public class MountStateViewClickTest {
     assertFalse(componentView.isClickable());
 
     ComponentHost innerHost = (ComponentHost) componentView.getChildAt(0);
+    assertTrue(innerHost.isClickable());
+  }
+
+  @Test

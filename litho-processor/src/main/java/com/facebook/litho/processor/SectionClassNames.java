@@ -21,3 +21,4 @@ public class SectionClassNames {
 
   public static final ClassName STATE_CONTAINER_SECTION =
       ClassName.bestGuess("com.facebook.litho.list.SectionLifecycle.StateContainer");
+  public static final ClassName SECTION =

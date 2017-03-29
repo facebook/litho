@@ -333,3 +333,4 @@ public class LayoutDirectionTest {
         40,
         10);
 
+    Drawable drawable = componentView.getDrawables().get(0);

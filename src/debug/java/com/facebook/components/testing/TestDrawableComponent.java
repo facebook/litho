@@ -99,3 +99,4 @@ public class TestDrawableComponent extends ComponentLifecycle {
   protected boolean isPureRender() {
     return mIsPureRender;
   }
+

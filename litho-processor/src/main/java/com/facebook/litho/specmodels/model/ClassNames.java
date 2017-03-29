@@ -46,3 +46,4 @@ public interface ClassNames {
   ClassName OUTPUT = ClassName.bestGuess("com.facebook.litho.Output");
   ClassName DIFF = ClassName.bestGuess("com.facebook.litho.Diff");
   ClassName SIZE = ClassName.bestGuess("com.facebook.litho.Size");
+
