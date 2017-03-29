@@ -48,3 +48,4 @@ class PagerSpec {
   static void onBoundsDefined(
       ComponentContext context,
       ComponentLayout layout,
+      @Prop PagerBinder binder) {
