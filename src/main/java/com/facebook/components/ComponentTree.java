@@ -706,3 +706,5 @@ public class ComponentTree {
    * in the given {@link Size}.
    */
   public void setSizeSpec(int widthSpec, int heightSpec, Size output) {
+    setRootAndSizeSpecInternal(
+        null,

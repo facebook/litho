@@ -73,3 +73,5 @@ public final class ColorDrawableReference extends ReferenceLifecycle<Drawable> {
 
     if (CAN_RECYCLE) {
       drawable = sPool.acquire();
+    }
+
