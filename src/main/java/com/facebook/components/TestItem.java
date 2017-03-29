@@ -62,3 +62,10 @@ public class TestItem {
     return sb.toString();
   }
 
+  public List<CharSequence> getTextItems() {
+    return
+        ComponentHostUtils
+            .extractTextContent(Collections.singletonList(mContent))
+            .getTextItems();
+  }
+
