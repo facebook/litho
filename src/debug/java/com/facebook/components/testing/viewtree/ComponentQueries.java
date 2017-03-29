@@ -102,3 +102,5 @@ class ComponentQueries {
     drawable = drawable.mutate();
     drawable.setBounds(0, 0, 0, 0);
 
+    return drawable.equals(containingDrawable);
+  }
