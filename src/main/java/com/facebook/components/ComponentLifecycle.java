@@ -422,3 +422,6 @@ public abstract class ComponentLifecycle implements EventDispatcher {
    * Unload UI elements associated with this component.
    *
    * @param c The {@link Context} for this mount operation.
+   * @param mountedContent The {@link Drawable} or {@link View} mounted by this component.
+   * @param component The {@link Component} for this component.
+   */
