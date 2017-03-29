@@ -175,3 +175,5 @@ class MountState {
     }
 
     if (mIsDirty) {
+      suppressInvalidationsOnHosts(true);
+
