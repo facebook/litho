@@ -2029,3 +2029,5 @@ static void YGNodelayoutImpl(const YGNodeRef node,
   const float maxInnerHeight =
       YGResolveValue(&node->style.maxDimensions[YGDimensionHeight], parentHeight) -
       marginAxisColumn - paddingAndBorderAxisColumn;
+  const float minInnerMainDim = isMainAxisRow ? minInnerWidth : minInnerHeight;
+  const float maxInnerMainDim = isMainAxisRow ? maxInnerWidth : maxInnerHeight;
