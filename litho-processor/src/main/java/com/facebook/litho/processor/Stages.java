@@ -1381,3 +1381,5 @@ public class Stages {
     final List<VariableElement> eventParamElements =
         Utils.getParametersWithAnnotation(element, Param.class);
     final List<Parameter> eventParams = new ArrayList<>();
+    final List<String> typeParameters = new ArrayList<>();
+
