@@ -225,3 +225,5 @@ public class ComponentLifecycleTest {
     ComponentLifecycle componentLifecycle = setUpComponentForCreateLayout(
         false /* isMountSpec */,
         true /* canMeasure */);
+    mContext.setWidthSpec(mNestedTreeWidthSpec);
+    mContext.setHeightSpec(mNestedTreeHeightSpec);
