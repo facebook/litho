@@ -1235,3 +1235,6 @@ public class ComponentTree {
       root = null;
 
       incrementalMountEnabled = true;
+      isLayoutDiffingEnabled = false;
+      layoutThreadHandler = null;
+      layoutLock = null;
