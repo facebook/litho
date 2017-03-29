@@ -1168,3 +1168,4 @@ public class ComponentTree {
             mId,
             widthSpec,
             heightSpec,
+            diffingEnabled,
