@@ -56,3 +56,7 @@ class ImageSpec {
       Output<ScaleType> scaleType) {
 
     final TypedArray a = c.obtainStyledAttributes(R.styleable.Image, 0);
+
+    for (int i = 0, size = a.getIndexCount(); i < size; i++) {
+      final int attr = a.getIndex(i);
+

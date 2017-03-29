@@ -1077,3 +1077,7 @@ public class Stages {
         expectedTypes,
         Collections.<String, String>emptyMap(),
         propsClass);
+  }
+
+  /**
+   * Generate a method implementation that delegates to another method that takes annotated props.
