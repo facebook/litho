@@ -320,3 +320,4 @@ class EditTextSpec {
   private static void initEditText(
       EditText editText,
       CharSequence text,
+      CharSequence hint,
