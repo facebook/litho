@@ -599,3 +599,8 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     return c.newEventHandler(id, params);
   }
 
+  protected static <E> EventHandler<E> newEventHandler(
+      Component<?> c,
+      int id,
+      Object[] params) {
+    return new EventHandler<E>(c, id, params);
