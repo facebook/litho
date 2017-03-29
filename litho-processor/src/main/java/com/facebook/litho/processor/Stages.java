@@ -897,3 +897,5 @@ public class Stages {
       mClassTypeSpec.addField(
           FieldSpec
               .builder(className, SPEC_INSTANCE_NAME, Modifier.PRIVATE, Modifier.STATIC)
+              .initializer("null")
+              .build());
