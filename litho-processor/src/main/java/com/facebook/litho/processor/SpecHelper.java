@@ -101,3 +101,4 @@ public abstract class SpecHelper implements Closeable {
         // Splitting the javadoc with "@prop ".
         String[] keyValuePropJavadocs = javadocContents.split("@prop ");
         propJavadocs = new HashMap<>(keyValuePropJavadocs.length);
+
