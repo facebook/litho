@@ -12,3 +12,8 @@ package com.facebook.litho.specmodels.generator;
 import java.lang.annotation.Annotation;
 import java.util.Map;
 
+import com.facebook.litho.specmodels.model.DelegateMethodDescription;
+import com.facebook.litho.specmodels.model.DelegateMethodModel;
+import com.facebook.litho.specmodels.model.MethodParamModel;
+import com.facebook.litho.specmodels.model.SpecModel;
+import com.facebook.litho.specmodels.model.SpecModelUtils;

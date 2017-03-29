@@ -31,3 +31,12 @@ public class FeedItemSpec {
       @Prop int color,
       @Prop String message) {
     return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        .paddingDip(ALL, 16)
+        .backgroundColor(color)
+        .child(
+            Text.create(c)
+                .text(message)
+                .textSizeSp(40))
+        .build();
+  }
+}

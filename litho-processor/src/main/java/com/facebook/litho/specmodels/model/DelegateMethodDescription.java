@@ -24,3 +24,4 @@ import com.squareup.javapoet.TypeName;
  * Describes the signature and other feature of a delegate method.
  *
  * We use method descriptions to refer to abstract methods defined in
+ * com.facebook.litho.ComponentLifecycle, so that we can define implementations that delegate

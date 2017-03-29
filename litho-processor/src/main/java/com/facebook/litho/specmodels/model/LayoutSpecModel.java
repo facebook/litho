@@ -14,3 +14,14 @@ import javax.lang.model.element.Modifier;
 import java.util.List;
 
 import com.facebook.common.internal.ImmutableList;
+import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
+import com.facebook.litho.specmodels.generator.BuilderGenerator;
+import com.facebook.litho.specmodels.generator.ComponentImplGenerator;
+import com.facebook.litho.specmodels.generator.DelegateMethodGenerator;
+import com.facebook.litho.specmodels.generator.EventGenerator;
+import com.facebook.litho.specmodels.generator.JavadocGenerator;
+import com.facebook.litho.specmodels.generator.PreambleGenerator;
+import com.facebook.litho.specmodels.generator.PureRenderGenerator;
+import com.facebook.litho.specmodels.generator.StateGenerator;
+import com.facebook.litho.specmodels.generator.TreePropGenerator;
+import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;

@@ -22,3 +22,5 @@ import android.support.annotation.IntegerRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
+import com.facebook.litho.reference.Reference;
+import com.facebook.litho.reference.ResourceDrawableReference;

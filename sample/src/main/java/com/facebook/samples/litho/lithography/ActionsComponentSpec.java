@@ -37,3 +37,12 @@ public class ActionsComponentSpec {
       ComponentContext c,
       @State boolean snapToLeft) {
     return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        .backgroundColor(0xDDFFFFFF)
+        .positionType(YogaPositionType.ABSOLUTE)
+        .positionDip(snapToLeft ? YogaEdge.LEFT : YogaEdge.RIGHT, 4)
+        .transitionKey("left_right_slide")
+        .positionDip(YogaEdge.TOP, 4)
+        .paddingDip(YogaEdge.ALL, 2)
+        .flexDirection(YogaFlexDirection.ROW)
+        .child(FavouriteButton.create(c))
+        .child(

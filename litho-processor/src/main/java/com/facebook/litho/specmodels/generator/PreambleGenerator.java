@@ -11,3 +11,4 @@ package com.facebook.litho.specmodels.generator;
 
 import javax.lang.model.element.Modifier;
 
+import com.facebook.litho.specmodels.model.SpecModel;

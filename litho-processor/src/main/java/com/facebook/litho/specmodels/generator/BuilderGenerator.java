@@ -16,3 +16,7 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
 
+import com.facebook.litho.specmodels.model.ClassNames;
+import com.facebook.litho.specmodels.model.EventDeclarationModel;
+import com.facebook.litho.specmodels.model.PropModel;
+import com.facebook.litho.specmodels.model.SpecModel;

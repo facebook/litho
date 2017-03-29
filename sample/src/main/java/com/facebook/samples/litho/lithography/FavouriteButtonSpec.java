@@ -38,3 +38,23 @@ public class FavouriteButtonSpec {
       ComponentContext c,
       @State boolean favourited) {
     return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        .backgroundRes(favourited ? star_on : star_off)
+        .marginDip(YogaEdge.RIGHT, 2)
+        .widthDip(32)
+        .heightDip(32)
+        .clickHandler(FavouriteButton.onClick(c))
+        .build();
+  }
+
+  @OnUpdateState
+  static void toggleFavourited(StateValue<Boolean> favourited) {
+    favourited.set(!favourited.get());
+  }
+
+  @OnEvent(ClickEvent.class)
+  static void onClick(
+      ComponentContext c,
+      @FromEvent View view) {
+    FavouriteButton.toggleFavourited(c);
+  }
+}

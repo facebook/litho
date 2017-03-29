@@ -33,3 +33,5 @@ public class DecadeSeparatorSpec {
         .paddingDip(YogaEdge.VERTICAL, 16)
         .child(
             Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                .heightPx(1)
+                .backgroundColor(0xFFAAAAAA)

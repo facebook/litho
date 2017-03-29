@@ -11,3 +11,4 @@ package com.facebook.litho.processor;
 
 import java.util.List;
 
+import com.facebook.litho.annotations.ResType;

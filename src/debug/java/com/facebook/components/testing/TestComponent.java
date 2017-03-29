@@ -9,3 +9,5 @@
 
 package com.facebook.litho.testing;
 
+import com.facebook.litho.Component;
+import com.facebook.litho.ComponentLifecycle;

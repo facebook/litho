@@ -11,3 +11,11 @@ package com.facebook.litho.specmodels.generator;
 
 import javax.lang.model.element.Modifier;
 
+import com.facebook.litho.annotations.FromEvent;
+import com.facebook.litho.annotations.Param;
+import com.facebook.litho.specmodels.model.EventDeclarationModel;
+import com.facebook.litho.specmodels.model.EventMethodModel;
+import com.facebook.litho.specmodels.model.MethodParamModel;
+import com.facebook.litho.specmodels.model.MethodParamModelUtils;
+import com.facebook.litho.specmodels.model.ClassNames;
+import com.facebook.litho.specmodels.model.SpecModel;

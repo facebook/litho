@@ -43,3 +43,5 @@ public class LithoSampleApplication extends Application {
             return defaultModulesBuilder.finish();
           }
         }).build());
+  }
+}

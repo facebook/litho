@@ -11,3 +11,4 @@ package com.facebook.litho.specmodels.model;
 
 import java.util.List;
 
+import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;

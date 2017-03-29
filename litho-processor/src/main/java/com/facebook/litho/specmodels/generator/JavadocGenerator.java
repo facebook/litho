@@ -9,3 +9,7 @@
 
 package com.facebook.litho.specmodels.generator;
 
+import com.facebook.litho.specmodels.generator.TypeSpecDataHolder.JavadocSpec;
+import com.facebook.litho.specmodels.model.PropJavadocModel;
+import com.facebook.litho.specmodels.model.PropModel;
+import com.facebook.litho.specmodels.model.SpecModel;

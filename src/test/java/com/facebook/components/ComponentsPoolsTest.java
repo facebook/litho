@@ -13,3 +13,4 @@ import android.content.ContextWrapper;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;

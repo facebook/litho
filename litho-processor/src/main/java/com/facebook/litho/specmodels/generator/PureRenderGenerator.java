@@ -14,3 +14,9 @@ import javax.lang.model.element.Modifier;
 
 import java.lang.annotation.Annotation;
 
+import com.facebook.litho.annotations.ShouldUpdate;
+import com.facebook.litho.specmodels.model.DelegateMethodModel;
+import com.facebook.litho.specmodels.model.SpecModelUtils;
+import com.facebook.litho.specmodels.model.HasPureRender;
+import com.facebook.litho.specmodels.model.MethodParamModel;
+import com.facebook.litho.specmodels.model.SpecModel;

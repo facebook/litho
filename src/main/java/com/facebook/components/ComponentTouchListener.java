@@ -12,3 +12,4 @@ package com.facebook.litho;
 import android.view.MotionEvent;
 import android.view.View;
 
+import static com.facebook.litho.EventDispatcherUtils.dispatchOnTouch;
