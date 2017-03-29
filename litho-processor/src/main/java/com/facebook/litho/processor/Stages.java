@@ -2558,3 +2558,11 @@ public class Stages {
         break;
     }
 
+    TypeMirror typeMirror = element.asType();
+
+    final TypeMirror diffTypeMirror = Utils.getGenericTypeArgument(typeMirror, ClassNames.DIFF);
+    if (diffTypeMirror != null) {
+      typeMirror = diffTypeMirror;
+    }
+
+    final TypeName type = JPUtil.getTypeFromMirror(typeMirror);
