@@ -952,3 +952,33 @@ class LayoutState {
     return layoutState;
   }
 
+  void preAllocateMountContent() {
+    if (mMountableOutputs != null && !mMountableOutputs.isEmpty()) {
+      for (int i = 0, size = mMountableOutputs.size(); i < size; i++) {
+        final Component component = mMountableOutputs.get(i).getComponent();
+
+        if (Component.isMountViewSpec(component)) {
+          final ComponentLifecycle lifecycle = component.getLifecycle();
+
+          if (!lifecycle.hasBeenPreallocated()) {
+            final int poolSize = lifecycle.poolSize();
+
+            int insertedCount = 0;
+            while (insertedCount < poolSize &&
+                ComponentsPools.canAddMountContentToPool(mContext, lifecycle)) {
+              ComponentsPools.release(
+                  mContext,
+                  lifecycle,
+                  lifecycle.createMountContent(mContext));
+              insertedCount++;
+            }
+
+            lifecycle.setWasPreallocated();
+          }
+        }
+      }
+    }
+  }
+
+  private static void collectDisplayLists(LayoutState layoutState) {
+    final Rect rect = new Rect();

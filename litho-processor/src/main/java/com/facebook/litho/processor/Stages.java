@@ -1904,3 +1904,11 @@ public class Stages {
 
     final MethodSpec makeShallowCopy =
         generateMakeShallowCopy(SectionClassNames.SECTION, /* hasDeepCopy */ true);
+
+    if (makeShallowCopy != null) {
+      stateClassBuilder.addMethod(makeShallowCopy);
+    }
+    writeInnerTypeSpec(stateClassBuilder.build());
+  }
+
+  private MethodSpec generateEqualsMethodDefinition(boolean shouldCheckId) {
