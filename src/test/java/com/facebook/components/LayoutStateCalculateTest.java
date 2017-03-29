@@ -443,3 +443,5 @@ public class LayoutStateCalculateTest {
     if (foregroundHasOwnOutput) {
       assertTrue(getComponentAt(layoutState, 11) instanceof DrawableComponent);
     }
+
+    // Check the text within the TextComponents.

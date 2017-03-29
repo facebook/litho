@@ -60,3 +60,10 @@ public @interface MountSpec {
    * Whether the generated class should be public. If not, it will be package-private.
    */
   boolean isPublic() default true;
+
+  /**
+   * Whether the component implements a pure render function. If this is true and the Component
+   * didn't change during an update of the ComponentTree measurements and LayoutOutputs will be
+   * reused instead of being calculated again.
+   */
+  boolean isPureRender() default false;

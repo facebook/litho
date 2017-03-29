@@ -223,3 +223,4 @@ public class StateUpdateImplClassBuilder {
               stateParamName + ".set(" + STATE_CONTAINER_IMPL_NAME + "." + stateParamName +")");
     }
 
+    final String target = mStaticFlag == Stages.StaticFlag.STATIC ?
