@@ -479,3 +479,4 @@ public class MountSpecHelper extends ComponentSpecHelper {
         mStages.getSourceElement(),
         OnCreateMountContent.class);
     final MountType componentMountType = getMountType(onCreateMountContent.getReturnType());
+

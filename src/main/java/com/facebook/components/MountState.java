@@ -182,3 +182,4 @@ class MountState {
       prepareMount(layoutState);
     }
 
+    mMountStats.reset();
