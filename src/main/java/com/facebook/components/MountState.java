@@ -895,3 +895,5 @@ class MountState {
   // (the very first LayoutOutput).
   private MountItem mountContent(
       int index,
+      Component<?> component,
+      Object content,
