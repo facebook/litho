@@ -144,3 +144,4 @@ public final class ColorDrawableReference extends ReferenceLifecycle<Drawable> {
 
     protected void init(ComponentContext context, State state) {
       super.init(context, state);
+      mState = state;
