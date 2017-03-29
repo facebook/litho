@@ -401,3 +401,9 @@ public class RecyclerBinderTest {
 
     for (int i = 0; i < RANGE_SIZE; i++) {
       componentTreeHolder = mHoldersForComponents.get(components.get(i).getComponent());
+
+      assertTrue(componentTreeHolder.isTreeValid());
+      assertTrue(componentTreeHolder.mLayoutSyncCalled);
+    }
+
+    for (int i = RANGE_SIZE ; i <= rangeTotal; i++) {
