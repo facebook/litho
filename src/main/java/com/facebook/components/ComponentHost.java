@@ -62,3 +62,4 @@ public class ComponentHost extends ViewGroup {
   private boolean mWasInvalidatedForAccessibilityWhileSuppressed;
   private boolean mSuppressInvalidations;
 
+  private final InterleavedDispatchDraw mDispatchDraw = new InterleavedDispatchDraw();

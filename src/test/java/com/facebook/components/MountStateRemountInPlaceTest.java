@@ -554,3 +554,8 @@ public class MountStateRemountInPlaceTest {
     assertTrue(firstComponent.wasOnBindCalled());
     assertFalse(firstComponent.wasOnUnmountCalled());
 
+    final TestComponent secondComponent =
+        TestDrawableComponent.create(
+            mContext,
+            false,
+            true,
