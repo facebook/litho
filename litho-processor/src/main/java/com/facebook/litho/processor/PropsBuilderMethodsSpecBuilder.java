@@ -31,3 +31,5 @@ class PropsBuilderMethodsSpecBuilder {
   private int mIndex;
   private PropParameter mPropParameter;
   private String mImplName;
+  private String mRequiredSetName;
+  private TypeName mBuilderClass;

@@ -206,3 +206,19 @@ public class InternalNodeTest {
   }
 
   @Test
+  public void testMinHeightFlag() {
+    mNode.minHeightPx(4);
+    assertTrue(isFlagSet(mNode, "PFLAG_MIN_HEIGHT_IS_SET"));
+    clearFlag(mNode, "PFLAG_MIN_HEIGHT_IS_SET");
+    assertEmptyFlags(mNode);
+  }
+
+  @Test
+  public void testMaxHeightFlag() {
+    mNode.maxHeightPx(4);
+    assertTrue(isFlagSet(mNode, "PFLAG_MAX_HEIGHT_IS_SET"));
+    clearFlag(mNode, "PFLAG_MAX_HEIGHT_IS_SET");
+    assertEmptyFlags(mNode);
+  }
+
+  @Test
