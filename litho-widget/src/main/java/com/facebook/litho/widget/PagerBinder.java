@@ -332,3 +332,4 @@ public abstract class PagerBinder extends BaseBinder<
     public void notifyOnPageSelected(int currentPosition, int flags) {
 
       if (currentPosition < 0 || currentPosition >= getBinder().getCount()) {
+        return;
