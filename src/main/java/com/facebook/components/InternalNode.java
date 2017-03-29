@@ -1104,3 +1104,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public InternalNode foregroundColor(@ColorInt int foregroundColor) {
