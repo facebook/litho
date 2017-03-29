@@ -31,3 +31,4 @@ import android.view.accessibility.AccessibilityEvent;
  */
 class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
   private static final String TAG = "ComponentAccessibility";
+

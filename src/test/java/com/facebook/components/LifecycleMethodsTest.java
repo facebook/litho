@@ -108,3 +108,17 @@ public class LifecycleMethodsTest {
     @Override
     protected void onMeasure(
         ComponentContext c,
+        ComponentLayout layout,
+        int widthSpec,
+        int heightSpec,
+        Size size,
+        Component<?> component) {
+      LifecycleMethodsInstance instance = (LifecycleMethodsInstance) component;
+      instance.setCurrentStep(LifecycleStep.ON_MEASURE);
+
+      size.width = instance.getSize();
+      size.height = instance.getSize();
+    }
+
+    @Override
+    protected void onBoundsDefined(

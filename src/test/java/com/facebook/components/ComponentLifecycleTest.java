@@ -10,3 +10,4 @@
 package com.facebook.litho;
 
 import android.content.res.Resources;
+

@@ -70,3 +70,17 @@ public class MountStateViewClickTest {
             return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .child(
                     Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                        .longClickHandler(c.newEventHandler(1))
+                        .child(TestViewComponent.create(c)))
+                .build();
+          }
+        });
+
+    assertEquals(1, componentView.getChildCount());
+    assertFalse(componentView.isClickable());
+
+    ComponentHost innerHost = (ComponentHost) componentView.getChildAt(0);
+    assertTrue(innerHost.isLongClickable());
+  }
+
+  @Test

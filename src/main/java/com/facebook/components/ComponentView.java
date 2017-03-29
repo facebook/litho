@@ -56,3 +56,8 @@ public class ComponentView extends ComponentHost {
   // TODO T14859077 Replace with proper solution
   private ComponentTree mTemporaryDetachedComponent;
 
+  public ComponentView(Context context) {
+    this(context, null);
+  }
+
+  public ComponentView(Context context, AttributeSet attrs) {

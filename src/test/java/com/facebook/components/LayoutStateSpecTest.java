@@ -29,3 +29,4 @@ public class LayoutStateSpecTest {
   private int mWidthSpec;
   private int mHeightSpec;
   private LayoutState mLayoutState;
+  private Component<?> mComponent;
