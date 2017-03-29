@@ -185,3 +185,5 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
     invalidateSelf();
   }
 
+  public void unmount() {
+    mLayout = null;

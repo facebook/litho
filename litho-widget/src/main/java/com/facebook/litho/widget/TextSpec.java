@@ -507,3 +507,4 @@ class TextSpec {
         break;
 
       default:
+        textLayoutTranslationY.set(0f);
