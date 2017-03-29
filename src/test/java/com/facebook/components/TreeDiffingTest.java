@@ -1029,3 +1029,20 @@ public class TreeDiffingTest {
     final int widthMeasuredComponent = SizeSpec.makeSizeSpec(
         SizeSpec.getSize(widthSpecContainer) - horizontalPadding - horizontalPadding,
         SizeSpec.EXACTLY);
+
+    final Component<?> sizeDependentComponentSpy1 = PowerMockito.spy(
+        TestSizeDependentComponent.create(c)
+            .setFixSizes(false)
+            .setDelegate(false)
+            .build());
+    Size sizeOutput1 = new Size();
+    sizeDependentComponentSpy1.measure(
+        c,
+        widthMeasuredComponent,
+        heightSpec,
+        sizeOutput1);
+
+    // Now embed the measured component in another container and calculate a layout.
+    final Component rootContainer1 = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
