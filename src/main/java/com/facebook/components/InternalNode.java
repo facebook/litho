@@ -1828,3 +1828,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     mLastMeasuredWidth = DiffNode.UNSPECIFIED;
     mDiffNode = null;
     mCachedMeasuresValid = false;
+    mIsNestedTreeHolder = false;
