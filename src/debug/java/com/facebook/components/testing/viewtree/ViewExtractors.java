@@ -30,3 +30,22 @@ final class ViewExtractors {
       CharSequence text = null;
       if (input instanceof ComponentHost) {
         List<CharSequence> strings = ((ComponentHost) input).getTextContent().getTextItems();
+        if (!strings.isEmpty()) {
+          text = Joiner.on("\", and \"").join(strings);
+        }
+      } else if (input instanceof TextView) {
+        text = ((TextView) input).getText();
+      }
+      if (text == null) {
+        return String.format(
+            "No text found, view is %s",
+            getVisibilityString(input.getVisibility()));
+      }
+
+      return String.format(
+          "Found text: \"%s\", view is %s",
+          Strings.nullToEmpty(text.toString()),
+          getVisibilityString(input.getVisibility()));
+    }
+  };
+

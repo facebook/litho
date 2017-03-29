@@ -36,3 +36,49 @@ public class ViewTreeTest {
   @Before
   public void setUp() {
     final Activity activity = Robolectric.buildActivity(Activity.class).create().get();
+    mRoot = new LinearLayout(activity);
+    mChildLayout = new LinearLayout(activity);
+    mChild1 = new View(activity);
+    mGrandchild1 = new View(activity);
+    mGrandchild2 = new View(activity);
+
+    mChildLayout.addView(mGrandchild1);
+    mChildLayout.addView(mGrandchild2);
+    mRoot.addView(mChild1);
+    mRoot.addView(mChildLayout);
+
+    mTree = ViewTree.of(mRoot);
+  }
+
+  @Test
+  public void testFindRoot() throws Exception {
+    assertThat(mTree.findChild(Predicates.<View>equalTo(mRoot))).containsExactly(mRoot);
+  }
+
+  @Test
+  public void testReturnNullIfCannotFind() throws Exception {
+    assertThat(mTree.findChild(Predicates.<View>equalTo(null))).isNull();
+  }
+
+  @Test
+  public void testFindChild() throws Exception {
+    assertThat(mTree.findChild(Predicates.<View>equalTo(mChildLayout)))
+        .containsExactly(mRoot, mChildLayout);
+  }
+
+  @Test
+  public void testFindGrandchild() throws Exception {
+    assertThat(mTree.findChild(Predicates.<View>equalTo(mGrandchild2)))
+        .containsExactly(mRoot, mChildLayout, mGrandchild2);
+  }
+
+  @Test
+  public void testRespectShouldGoIntoChildren() throws Exception {
+    assertThat(mTree.findChild(
+        Predicates.<View>equalTo(mGrandchild2),
+        Predicates.not(Predicates.equalTo(mChildLayout))))
+        .isNull();
+  }
+
+  @Test
+  public void testGenerateString() {

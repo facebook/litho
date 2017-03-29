@@ -35,3 +35,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(ComponentsTestRunner.class)
 @Config(shadows = ColorDrawableShadow.class)
 public class ViewPredicatesTest {
+
+  private View mView;
+  private TextView mTextViewWithNull;
+  private TextView mTextViewWithEmptyString;
+  private TextView mTextViewWithHello;
+  private TextView mTextViewWithWorld;
+  private ImageView mImagelessView;
+  private ImageView mOtherImageView;
+  private ImageView mImageView;

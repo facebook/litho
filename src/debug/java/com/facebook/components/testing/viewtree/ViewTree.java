@@ -59,3 +59,27 @@ public final class ViewTree {
    */
   @Nullable
   public ImmutableList<View> findChild(
+      Predicate<View> predicate,
+      Predicate<? super ViewGroup> shouldCheckChildren) {
+    return findChild(mView, predicate, shouldCheckChildren);
+  }
+
+  /**
+   * Generates a string describing the views tree using the views' toString methods and an extra
+   * information function.
+   *
+   * The output is a string, with each view of the tree in its own line, indented according to its
+   * depth in the tree, and then the extra information supplied by teh function.
+   *
+   * This can be used, for example, to print all views and their respective text and is useful
+   * for when assertions fail.
+   *
+   * @param extraTextFunction the function returning extra information to print per view, or null
+   *   if not extra information should be printed
+   * @return a string describing the tree
+   */
+  public String makeString(Function<View, String> extraTextFunction) {
+    return makeString(extraTextFunction, mView, 0);
+  }
+
+  private String makeString(Function<View, String> extraTextFunction, View view, int depth) {

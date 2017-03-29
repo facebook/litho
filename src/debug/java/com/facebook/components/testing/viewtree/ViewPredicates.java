@@ -19,3 +19,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.facebook.litho.ComponentHost;
+
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
