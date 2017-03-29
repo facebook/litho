@@ -771,3 +771,4 @@ class MountState {
       }
     }
 
+    return mPrepareMountStats;
