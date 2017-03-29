@@ -1503,3 +1503,5 @@ public class LayoutStateCalculateTest {
     assertNotNull(nodeInfo);
     assertNotNull(nodeInfo.getClickHandler());
     assertNotNull(nodeInfo.getViewTags());
+  }
+
