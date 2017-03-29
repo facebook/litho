@@ -41,3 +41,5 @@ import com.facebook.litho.annotations.ShouldUpdate;
 
 @MountSpec(canMountIncrementally = true, isPureRender = true, events = {PTRRefreshEvent.class})
 class RecyclerSpec {
+  @PropDefault static final int scrollBarStyle = View.SCROLLBARS_INSIDE_OVERLAY;
+  @PropDefault static final boolean hasFixedSize = true;
