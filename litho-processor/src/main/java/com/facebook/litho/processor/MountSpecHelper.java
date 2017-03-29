@@ -300,3 +300,5 @@ public class MountSpecHelper extends ComponentSpecHelper {
     mStages.generateDelegate(
         methodDescription,
         onMount,
+        Arrays.asList(ClassNames.COMPONENT_CONTEXT, getMountType()),
+        ClassNames.COMPONENT);
