@@ -220,3 +220,19 @@ class HorizontalScrollSpec {
     }
 
     void mount(ComponentTree component, int width, int height) {
+      mComponentView.setComponent(component);
+      mComponentWidth = width;
+      mComponentHeight = height;
+    }
+
+    void incrementalMount() {
+      mComponentView.performIncrementalMount();
+    }
+
+    void unmount() {
+      // Clear all component-related state from the view.
+      mComponentView.setComponent(null);
+      mComponentWidth = 0;
+      mComponentHeight = 0;
+    }
+  }

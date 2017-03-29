@@ -496,3 +496,4 @@ public class ComponentHostTest {
   @Test
   public void testGetContentDescriptions() {
     CharSequence hostContentDescription = "hostContentDescription";
+    mHost.setContentDescription(hostContentDescription);
