@@ -164,3 +164,4 @@ class TextSpec {
         maxLines.set(a.getInteger(attr, -1));
       } else if (attr == R.styleable.Text_android_singleLine) {
         isSingleLine.set(a.getBoolean(attr, false));
+      } else if (attr == R.styleable.Text_android_textColorLink) {
