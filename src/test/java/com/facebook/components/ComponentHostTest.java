@@ -727,3 +727,4 @@ public class ComponentHostTest {
         null,
         content,
         nodeInfo,
+        null,
