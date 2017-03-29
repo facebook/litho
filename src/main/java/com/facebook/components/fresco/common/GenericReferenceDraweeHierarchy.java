@@ -307,3 +307,7 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
     mGenericDraweeHierarchy.setActualImageFocusPoint(actualImageFocusPoint);
   }
 
+  public void setActualImageScaleType(ScalingUtils.ScaleType actualImageScaleType) {
+    mGenericDraweeHierarchy.setActualImageScaleType(actualImageScaleType);
+  }
+
