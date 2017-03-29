@@ -86,3 +86,4 @@ class ProgressSpec {
   }
 
   @OnMount
+  static void onMount(
