@@ -198,3 +198,4 @@ public class Stages {
     parameterAnnotations.addAll(asList(PROP_ANNOTATIONS));
     parameterAnnotations.addAll(asList(STATE_ANNOTATIONS));
     parameterAnnotations.addAll(asList(mInterStagePropAnnotations));
+    parameterAnnotations.addAll(asList(TREE_PROP_ANNOTATIONS));

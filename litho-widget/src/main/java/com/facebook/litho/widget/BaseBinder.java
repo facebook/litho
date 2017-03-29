@@ -711,3 +711,4 @@ public abstract class BaseBinder<
         final Component<?> component = componentList.get(position - positionStart);
 
         // Create a new ComponentTree.
+        final ComponentTree componentTree = buildComponentTree(component);
