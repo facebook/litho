@@ -1684,3 +1684,4 @@ public class Stages {
                     ClassName.bestGuess(getSimpleClassName())))
             .addSuperinterface(Cloneable.class);
 
+    if (isStatic.equals(Stages.StaticFlag.STATIC)) {

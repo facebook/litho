@@ -760,3 +760,6 @@ class LayoutState {
       LayoutState layoutState,
       InternalNode node,
       @LayoutOutput.LayoutOutputType int layoutOutputType,
+      long previousId,
+      boolean isCachedOutputUpdated) {
+
