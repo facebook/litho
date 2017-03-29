@@ -22,3 +22,4 @@ import com.facebook.components.ComponentHost;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
+import org.robolectric.Shadows;

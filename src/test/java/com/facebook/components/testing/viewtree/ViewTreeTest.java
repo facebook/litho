@@ -92,3 +92,4 @@ public class ViewTreeTest {
     assertThat(mTree.makeString(new Function<View, String>() {
 
       @Override
+      public String apply(@Nullable final View input) {

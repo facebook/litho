@@ -66,3 +66,6 @@ final class ViewExtractors {
       = new Function<View, String>() {
     @Override
     public String apply(@Nullable View input) {
+      if (input == null) {
+        return "Provided view was null";
+      }

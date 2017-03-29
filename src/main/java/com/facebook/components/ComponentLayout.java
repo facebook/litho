@@ -48,3 +48,4 @@ public interface ComponentLayout {
   @Px
   int getY();
 
+  @Px
