@@ -789,3 +789,4 @@ public class Stages {
   private List<VariableElement> getSpecDefinedParameters(
       ExecutableElement element,
       boolean shouldIncludeOutputs) {
+    final ArrayList<VariableElement> specDefinedParameters = new ArrayList<>();

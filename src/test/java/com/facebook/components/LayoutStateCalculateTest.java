@@ -1540,3 +1540,23 @@ public class LayoutStateCalculateTest {
   }
 
   @Test
+  public void testLayoutOutputsForForceWrappedComponent() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c)
+            .child(
+                TestDrawableComponent.create(c)
+                    .withLayout()
+                    .wrapInView())
+            .build();
+      }
+    };
+
+    final LayoutState layoutState = calculateLayoutState(
+        RuntimeEnvironment.application,
+        component,
+        -1,
+        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
+        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
+
