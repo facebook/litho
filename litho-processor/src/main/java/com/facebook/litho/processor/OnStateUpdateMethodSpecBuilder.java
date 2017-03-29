@@ -54,3 +54,23 @@ class OnStateUpdateMethodSpecBuilder {
     return this;
   }
 
+  OnStateUpdateMethodSpecBuilder typeParameter(String typeParam) {
+    this.mTypeParameters.add(typeParam);
+    return this;
+  }
+
+  OnStateUpdateMethodSpecBuilder componentClass(ClassName componentClass) {
+    mComponentClass = componentClass;
+    return this;
+  }
+
+  OnStateUpdateMethodSpecBuilder lifecycleImplClass(String lifecycleImplClass) {
+    mLifecycleImplClass = lifecycleImplClass;
+    return this;
+  }
+
+  OnStateUpdateMethodSpecBuilder stateUpdateClassName(String stateUpdateClassName) {
+    mStateUpdateClassName = stateUpdateClassName;
+    return this;
+  }
+

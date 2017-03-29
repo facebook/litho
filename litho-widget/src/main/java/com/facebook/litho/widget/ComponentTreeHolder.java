@@ -27,3 +27,14 @@ import com.facebook.litho.StateHandler;
  * ComponentTreeHolder keeps the {@link ComponentInfo} which contains the original {@link Component}
  * and either the {@link ComponentTree} or the {@link StateHandler} depending upon whether
  * the item is within the current working range or not.
+ */
+@ThreadSafe
+public class ComponentTreeHolder {
+  private static final Pools.SynchronizedPool<ComponentTreeHolder> sComponentTreeHoldersPool =
+      new Pools.SynchronizedPool<>(8);
+
+  @GuardedBy("this")
+  private ComponentTree mComponentTree;
+  @GuardedBy("this")
+  private StateHandler mStateHandler;
+  @GuardedBy("this")

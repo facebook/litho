@@ -49,3 +49,8 @@ class TransferStateSpecBuilder {
     return this;
   }
 
+  TransferStateSpecBuilder componentImplClassName(String componentImplClassName) {
+    mComponentImplClassName = componentImplClassName;
+    return this;
+  }
+
