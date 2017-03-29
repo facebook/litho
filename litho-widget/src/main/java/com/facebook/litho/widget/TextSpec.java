@@ -510,3 +510,4 @@ class TextSpec {
         textLayoutTranslationY.set(0f);
         break;
     }
+
