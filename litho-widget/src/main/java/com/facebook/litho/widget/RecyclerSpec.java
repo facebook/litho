@@ -107,3 +107,4 @@ class RecyclerSpec {
       throw new IllegalStateException(
           "RecyclerView not found, it should not be removed from SwipeRefreshLayout");
     }
+
