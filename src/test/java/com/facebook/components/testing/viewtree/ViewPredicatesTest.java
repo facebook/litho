@@ -76,3 +76,4 @@ public class ViewPredicatesTest {
 
   @Test
   public void testHasText() throws Exception {
+    final Predicate<View> hasHello = ViewPredicates.hasText("Hello");
