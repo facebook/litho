@@ -1662,3 +1662,11 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     }
   }
 
+  int getImportantForAccessibility() {
+    return mImportantForAccessibility;
+  }
+
+  boolean isDuplicateParentStateEnabled() {
+    return mDuplicateParentState;
+  }
+
