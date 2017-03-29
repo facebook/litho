@@ -719,3 +719,4 @@ class MountState {
     mPrepareMountStats.reset();
 
     if (mLayoutOutputsIds == null) {
+      return mPrepareMountStats;
