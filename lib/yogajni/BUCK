@@ -44,3 +44,4 @@ if COMPONENTS_IS_OSS_BUILD:
       COMPONENTS_FBJNI_TARGET,
     ],
     visibility = [COMPONENTS_VISIBILITY],
+  )

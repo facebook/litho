@@ -29,3 +29,6 @@ public final class Demos {
 
   private static Map<String, Component<?>> demoModels;
 
+  private Demos() {
+  }
+
