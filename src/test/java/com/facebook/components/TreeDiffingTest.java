@@ -779,3 +779,10 @@ public class TreeDiffingTest {
         true,
         state.getDiffTree());
 
+    assertEquals(secondState.getMountableOutputCount(), 6);
+    assertEquals(secondState.getMountableOutputAt(0).getUpdateState(), LayoutOutput.STATE_DIRTY);
+    assertEquals(secondState.getMountableOutputAt(1).getUpdateState(), LayoutOutput.STATE_UNKNOWN);
+    assertEquals(secondState.getMountableOutputAt(2).getUpdateState(), LayoutOutput.STATE_UPDATED);
+    assertEquals(secondState.getMountableOutputAt(3).getUpdateState(), LayoutOutput.STATE_UNKNOWN);
+    assertEquals(secondState.getMountableOutputAt(4).getUpdateState(), LayoutOutput.STATE_UNKNOWN);
+    assertEquals(secondState.getMountableOutputAt(5).getUpdateState(), LayoutOutput.STATE_UNKNOWN);
