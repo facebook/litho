@@ -270,3 +270,22 @@ class EventDispatcherUtils {
     sOnRequestSendAccessibilityEventEvent.superDelegate = null;
 
     return returnValue;
+  }
+
+  static boolean dispatchPerformAccessibilityActionEvent(
+      EventHandler<PerformAccessibilityActionEvent> eventHandler,
+      View host,
+      int action,
+      Bundle args,
+      AccessibilityDelegateCompat superDelegate) {
+    assertMainThread();
+
+    if (sPerformAccessibilityActionEvent == null) {
+      sPerformAccessibilityActionEvent = new PerformAccessibilityActionEvent();
+    }
+
+    sPerformAccessibilityActionEvent.host = host;
+    sPerformAccessibilityActionEvent.action = action;
+    sPerformAccessibilityActionEvent.args = args;
+    sPerformAccessibilityActionEvent.superDelegate = superDelegate;
+
