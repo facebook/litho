@@ -215,3 +215,4 @@ class EventDispatcherUtils {
 
     sOnInitializeAccessibilityNodeInfoEvent.host = null;
     sOnInitializeAccessibilityNodeInfoEvent.info = null;
+    sOnInitializeAccessibilityNodeInfoEvent.superDelegate = null;

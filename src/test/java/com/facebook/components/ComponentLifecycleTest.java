@@ -143,3 +143,8 @@ public class ComponentLifecycleTest {
   }
 
   @Test
+  public void testCreateLayoutAndResolveNestedTreeWithMountSpecCannotMeasure() {
+    ComponentLifecycle componentLifecycle = setUpComponentForCreateLayout(
+        true /* isMountSpec */,
+        false /* canMeasure */);
+    componentLifecycle.createLayout(mContext, mInput, true);
