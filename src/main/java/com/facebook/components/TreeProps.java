@@ -18,3 +18,4 @@ import com.facebook.infer.annotation.ThreadConfined;
  * A data structure to store tree props.
  * @see {@link TreeProp}.
  */
+@ThreadConfined(ThreadConfined.ANY)

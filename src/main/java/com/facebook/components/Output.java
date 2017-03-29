@@ -18,3 +18,7 @@ import com.facebook.infer.annotation.ThreadSafe;
 public class Output<T> {
   private T mT;
 
+  /**
+   * Assumed thread-safe because the one write is before all the reads
+   */
+  @ThreadSafe(enableChecks = false)
