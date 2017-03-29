@@ -37,3 +37,5 @@ import com.squareup.javapoet.TypeVariableName;
 
 public abstract class SpecHelper implements Closeable {
 
+  private static final Pattern JAVADOC_SANITIZER = Pattern.compile("^\\s", Pattern.MULTILINE);
+

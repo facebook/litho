@@ -28,3 +28,4 @@ public class EventHandler<E> {
   public void dispatchEvent(E event) {
     mHasEventDispatcher.getEventDispatcher().dispatchOnEvent(this, event);
   }
+}
