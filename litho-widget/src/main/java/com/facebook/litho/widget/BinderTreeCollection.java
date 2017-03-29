@@ -223,3 +223,7 @@ class BinderTreeCollection {
     }
   }
 
+  void shiftAllLeft(int shiftByAmount) {
+    shiftRangeLeft(getFirstPosition(), size(), shiftByAmount);
+  }
+
