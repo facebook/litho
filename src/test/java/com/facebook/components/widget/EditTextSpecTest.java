@@ -27,3 +27,5 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(ComponentsTestRunner.class)
 public class EditTextSpecTest {
+  @Rule
+  public ComponentsRule mComponentsRule = new ComponentsRule();

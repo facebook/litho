@@ -11,3 +11,4 @@ package com.facebook.components;
 
 import android.graphics.Rect;
 
+import com.facebook.components.testing.testrunner.ComponentsTestRunner;

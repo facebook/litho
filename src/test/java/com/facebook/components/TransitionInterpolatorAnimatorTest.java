@@ -29,3 +29,5 @@ public class TransitionInterpolatorAnimatorTest {
 
   private static final int DURATION = 3000;
   private static final int START_DELAY = 600;
+  private Interpolator mInterpolator;
+  private Animator.AnimatorListener mListenerAdapter;

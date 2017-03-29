@@ -37,3 +37,4 @@ COMPONENTS_ANDROIDSUPPORT_TARGET              = make_dep_path('lib/android-suppo
 COMPONENTS_ANDROIDSUPPORT_RECYCLERVIEW_TARGET = make_dep_path('lib/android-support:android-support-recyclerview')
 COMPONENTS_ANDROIDSUPPORT_APPCOMPAT_TARGET    = make_dep_path('lib/appcompat:appcompat')
 COMPONENTS_YOGA_TARGET                        = make_dep_path('lib/yoga:yoga')
+COMPONENTS_YOGAPREBUILT_TARGET                = make_dep_path('lib/yoga:yoga-prebuilt')

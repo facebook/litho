@@ -16,3 +16,4 @@ import android.os.Build;
 import android.util.SparseArray;
 import android.view.accessibility.AccessibilityManager;
 
+import com.facebook.components.testing.testrunner.ComponentsTestRunner;

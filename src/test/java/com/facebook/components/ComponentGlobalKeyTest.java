@@ -12,3 +12,4 @@ package com.facebook.components;
 import android.view.View;
 
 import com.facebook.litho.annotations.OnCreateLayout;
+import com.facebook.components.testing.testrunner.ComponentsTestRunner;

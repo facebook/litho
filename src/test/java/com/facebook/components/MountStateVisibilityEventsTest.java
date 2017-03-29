@@ -12,3 +12,9 @@ package com.facebook.components;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.graphics.Rect;
+import android.support.v4.util.LongSparseArray;
+
+import com.facebook.components.testing.testrunner.ComponentsTestRunner;
+import com.facebook.components.testing.TestLayoutComponent;
+import com.facebook.components.testing.TestViewComponent;
