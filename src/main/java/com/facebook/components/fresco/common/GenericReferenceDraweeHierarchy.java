@@ -319,3 +319,38 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
     mGenericDraweeHierarchy.setFadeDuration(durationMs);
   }
 
+  @Override
+  public Drawable getTopLevelDrawable() {
+    return mGenericDraweeHierarchy.getTopLevelDrawable();
+  }
+
+  @Override
+  public void reset() {
+    mGenericDraweeHierarchy.reset();
+  }
+
+  @Override
+  public void setImage(Drawable drawable, float progress, boolean immediate) {
+    mGenericDraweeHierarchy.setImage(drawable, progress, immediate);
+  }
+
+  @Override
+  public void setProgress(float progress, boolean immediate) {
+    mGenericDraweeHierarchy.setProgress(progress, immediate);
+  }
+
+  @Override
+  public void setFailure(Throwable throwable) {
+    mGenericDraweeHierarchy.setFailure(throwable);
+  }
+
+  @Override
+  public void setRetry(Throwable throwable) {
+    mGenericDraweeHierarchy.setRetry(throwable);
+  }
+
+  @Override
+  public void setControllerOverlay(Drawable drawable) {
+    mGenericDraweeHierarchy.setControllerOverlay(drawable);
+  }
+}
