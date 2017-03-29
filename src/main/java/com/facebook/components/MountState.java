@@ -1297,3 +1297,6 @@ class MountState {
       final ComponentHost host = (ComponentHost) view;
       host.setViewTags(null);
     } else {
+      if (viewTags != null) {
+        for (int i = 0, size = viewTags.size(); i < size; i++) {
+          view.setTag(viewTags.keyAt(i), null);
