@@ -152,3 +152,4 @@ public class JPUtil {
     return type instanceof ParameterizedTypeName
         ? ((ParameterizedTypeName) type).typeArguments : null;
   }
+}
