@@ -1941,3 +1941,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       ComponentsPools.release(backgroundPadding);
     }
   }
+}
