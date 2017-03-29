@@ -62,3 +62,4 @@ public class LinearComponentBinderTest {
     mItems.add(Color.MAGENTA);
 
     Context context = RuntimeEnvironment.application;
+    ComponentsConfiguration.bootstrapBinderItems = true;

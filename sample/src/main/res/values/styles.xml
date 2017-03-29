@@ -9,3 +9,4 @@
 -->
 
 <resources>
+  <style name="NoTitleBarWhiteBG" parent="Theme.AppCompat.Light">

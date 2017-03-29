@@ -72,3 +72,10 @@ public class InternalNodeTest {
   @Test
   public void testAlignSelfFlag() {
     mNode.alignSelf(YogaAlign.STRETCH);
+    assertTrue(isFlagSet(mNode, "PFLAG_ALIGN_SELF_IS_SET"));
+    clearFlag(mNode, "PFLAG_ALIGN_SELF_IS_SET");
+    assertEmptyFlags(mNode);
+  }
+
+  @Test
+  public void testPositionTypeFlag() {
