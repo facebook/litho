@@ -407,3 +407,7 @@ public abstract class ComponentLifecycle implements EventDispatcher {
   }
 
   /**
+   * Deploy all UI elements representing the final bounds defined in the given
+   * {@link ComponentLayout}. Return either a {@link Drawable} or a {@link View} or
+   * {@code null} to be mounted.
+   *
