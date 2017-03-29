@@ -874,3 +874,6 @@ class LayoutState {
     LayoutState layoutState = ComponentsPools.acquireLayoutState(c);
     layoutState.mShouldGenerateDiffTree = shouldGenerateDiffTree;
     layoutState.mComponentTreeId = componentTreeId;
+    layoutState.mAccessibilityManager =
+        (AccessibilityManager) c.getSystemService(ACCESSIBILITY_SERVICE);
+    layoutState.mAccessibilityEnabled = isAccessibilityEnabled(layoutState.mAccessibilityManager);
