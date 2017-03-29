@@ -791,3 +791,5 @@ public class Stages {
       boolean shouldIncludeOutputs) {
     final ArrayList<VariableElement> specDefinedParameters = new ArrayList<>();
     for (VariableElement v : element.getParameters()) {
+      final boolean isAnnotatedParameter = getParameterAnnotation(v) != null;
+      final boolean isInterStageOutput = Utils.getGenericTypeArgument(
