@@ -921,3 +921,4 @@ public class Stages {
     }
   }
 
+  public void generateSourceDelegate(boolean initialized) {
