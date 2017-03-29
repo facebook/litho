@@ -44,3 +44,4 @@ class TestComponentContext extends ComponentContext {
     super(c, stateHandler);
   }
 
+  /**

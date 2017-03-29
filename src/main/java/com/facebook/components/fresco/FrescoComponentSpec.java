@@ -15,3 +15,4 @@ import android.graphics.drawable.Drawable;
 
 import com.facebook.components.ComponentContext;
 import com.facebook.components.ComponentLayout;
+import com.facebook.components.Size;
