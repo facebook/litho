@@ -155,3 +155,4 @@ public class ComponentHost extends ViewGroup {
   public void unmount(int index, MountItem mountItem) {
     final Object content = mountItem.getContent();
     if (content instanceof Drawable) {
+      unmountDrawable(index, mountItem);
