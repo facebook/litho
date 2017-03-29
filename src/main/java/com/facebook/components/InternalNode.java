@@ -1874,3 +1874,16 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return list;
   }
 
+  private void setIsPaddingPercent(YogaEdge edge, boolean isPaddingPercent) {
+    if (mIsPaddingPercent == null && isPaddingPercent) {
+      mIsPaddingPercent = new boolean[Spacing.ALL + 1];
+    }
+    if (mIsPaddingPercent != null) {
+      mIsPaddingPercent[edge.intValue()] = isPaddingPercent;
+    }
+  }
+
+  private boolean isPaddingPercent(YogaEdge edge) {
+    return (mIsPaddingPercent == null) ? false : mIsPaddingPercent[edge.intValue()];
+  }
+
