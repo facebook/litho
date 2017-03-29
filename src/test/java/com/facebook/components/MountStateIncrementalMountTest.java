@@ -459,3 +459,4 @@ public class MountStateIncrementalMountTest {
         TestViewComponent.create(testComponentContext));
 
     assertTrue(mountedView.getPreviousIncrementalMountBounds().isEmpty());
+
