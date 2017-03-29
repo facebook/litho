@@ -43,3 +43,4 @@ public class ComponentContext extends ContextWrapper {
   // Used to hold styling information applied to components
   private @ThreadConfined(ThreadConfined.ANY) @StyleRes int mDefStyleRes = 0;
   private @ThreadConfined(ThreadConfined.ANY) @AttrRes int mDefStyleAttr = 0;
+
