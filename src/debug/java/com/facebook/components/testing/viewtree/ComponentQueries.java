@@ -57,3 +57,4 @@ class ComponentQueries {
    * at the host's children.
    * @param host the component host
    * @param drawable the drawable to look for
+   * @return true if the given host contains the drawable.
