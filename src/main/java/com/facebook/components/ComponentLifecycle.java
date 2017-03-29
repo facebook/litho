@@ -237,3 +237,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     if (node.getComponent() == null) {
       node.setComponent(component);
       node.setBaselineFunction(sBaselineFunction);
+
