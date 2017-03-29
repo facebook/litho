@@ -234,3 +234,6 @@ class TextSpec {
       measureLayout.set(null);
       size.width = 0;
       size.height = 0;
+      return;
+    }
+

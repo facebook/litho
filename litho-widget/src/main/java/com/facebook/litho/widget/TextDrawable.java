@@ -35,3 +35,5 @@ import com.facebook.components.Touchable;
 import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
 
 import static android.view.MotionEvent.ACTION_CANCEL;
+import static android.view.MotionEvent.ACTION_DOWN;
+import static android.view.MotionEvent.ACTION_UP;
