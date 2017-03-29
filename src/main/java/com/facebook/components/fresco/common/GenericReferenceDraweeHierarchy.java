@@ -240,3 +240,13 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
    *    reference.
    */
   public void setOverlayImageReference(@Nullable Reference<Drawable> overlayImageReference) {
+    if (mOverlayImageReference != null) {
+      if (!Reference.shouldUpdate(mOverlayImageReference, overlayImageReference)) {
+        return;
+      } else {
+        Reference.release(mContext, mOverlayImage, mOverlayImageReference);
+        mOverlayImageReference = null;
+        mOverlayImage = null;
+      }
+    }
+
