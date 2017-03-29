@@ -78,3 +78,8 @@ public class ComponentTreeHolder {
 
       componentTree = mComponentTree;
       component = mComponentInfo.getComponent();
+    }
+
+    componentTree.setRootAndSizeSpec(component, widthSpec, heightSpec, size);
+
+    synchronized (this) {
