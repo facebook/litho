@@ -17,3 +17,4 @@ import android.view.ViewGroup;
 
 import com.facebook.litho.ComponentView;
 
+import static com.facebook.litho.ThreadUtils.assertMainThread;

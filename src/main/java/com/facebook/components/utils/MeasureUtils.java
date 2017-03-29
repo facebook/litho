@@ -232,3 +232,4 @@ public final class MeasureUtils {
         outputSize.width = widthSize;
         if (ComponentsConfiguration.IS_INTERNAL_BUILD) {
           Log.d(
+              "com.facebook.litho.utils.MeasureUtils",
