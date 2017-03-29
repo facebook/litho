@@ -3010,3 +3010,9 @@ public class Stages {
       }
     }
 
+    if (mExtraStateMembers != null) {
+      for (String key : mExtraStateMembers.keySet()) {
+        componentParameters.add(new Parameter(TypeName.get(mExtraStateMembers.get(key)), key));
+      }
+    }
+
