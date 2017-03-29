@@ -2966,3 +2966,16 @@ public class Stages {
     final List<VariableElement> specDefinedParameters = new ArrayList<>();
 
     for (ExecutableElement stage : mStages) {
+      specDefinedParameters.addAll(getSpecDefinedParameters(stage));
+    }
+
+    addCreateInitialStateDefinedProps(specDefinedParameters);
+
+    for (VariableElement v : specDefinedParameters) {
+      if (v.getAnnotation(State.class) != null) {
+        continue;
+      }
+      if (!variableNameToElementMap.containsKey(v.getSimpleName().toString())) {
+        // Validation unnecessary - already handled by validateAnnotatedParameters
+        final String name = v.getSimpleName().toString();
+        variableNameToElementMap.put(name, v);
