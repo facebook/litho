@@ -311,3 +311,6 @@ public class GridComponentBinderTest {
           "mComponentTrees")).getFirstPosition();
     }
 
+    int getComponentCount() {
+      return ((BinderTreeCollection) Whitebox.getInternalState(this, "mComponentTrees")).size();
+    }

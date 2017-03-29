@@ -112,3 +112,4 @@ public class BinderTreeCollectionTest {
     assertEquals(newComponentTree, mBinderTreeCollection.get(4));
     assertEquals(treeAtPosition4, mBinderTreeCollection.get(5));
     assertEquals(treeAtPosition6, mBinderTreeCollection.get(7));
+    assertEquals(treeAtLastPosition, mBinderTreeCollection.get(originalSize + 1));
