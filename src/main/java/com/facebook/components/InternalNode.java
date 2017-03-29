@@ -823,3 +823,81 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public InternalNode minHeightPx(@Px int minHeight) {
+    mPrivateFlags |= PFLAG_MIN_HEIGHT_IS_SET;
+    mYogaNode.setMinHeight(minHeight);
+    return this;
+  }
+
+  @Override
+  public InternalNode minHeightPercent(float percent) {
+    mPrivateFlags |= PFLAG_MIN_HEIGHT_IS_SET;
+    mYogaNode.setMinHeightPercent(percent);
+    return this;
+  }
+
+  @Override
+  public InternalNode minHeightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+    return minHeightPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
+  }
+
+  @Override
+  public InternalNode minHeightAttr(@AttrRes int resId) {
+    return minHeightAttr(resId, 0);
+  }
+
+  @Override
+  public InternalNode minHeightRes(@DimenRes int resId) {
+    return minHeightPx(mResourceResolver.resolveDimenSizeRes(resId));
+  }
+
+  @Override
+  public InternalNode minHeightDip(@Dimension(unit = DP) int minHeight) {
+    return minHeightPx(mResourceResolver.dipsToPixels(minHeight));
+  }
+
+  @Override
+  public InternalNode maxHeightPx(@Px int maxHeight) {
+    mPrivateFlags |= PFLAG_MAX_HEIGHT_IS_SET;
+    mYogaNode.setMaxHeight(maxHeight);
+    return this;
+  }
+
+  @Override
+  public InternalNode maxHeightPercent(float percent) {
+    mPrivateFlags |= PFLAG_MAX_HEIGHT_IS_SET;
+    mYogaNode.setMaxHeightPercent(percent);
+    return this;
+  }
+
+  @Override
+  public InternalNode maxHeightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+    return maxHeightPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
+  }
+
+  @Override
+  public InternalNode maxHeightAttr(@AttrRes int resId) {
+    return maxHeightAttr(resId, 0);
+  }
+
+  @Override
+  public InternalNode maxHeightRes(@DimenRes int resId) {
+    return maxHeightPx(mResourceResolver.resolveDimenSizeRes(resId));
+  }
+
+  @Override
+  public InternalNode maxHeightDip(@Dimension(unit = DP) int maxHeight) {
+    return maxHeightPx(mResourceResolver.dipsToPixels(maxHeight));
+  }
+
+  @Override
+  public InternalNode aspectRatio(float aspectRatio) {
+    mPrivateFlags |= PFLAG_ASPECT_RATIO_IS_SET;
+    if (mYogaNode instanceof YogaNode) {
+      ((YogaNode) mYogaNode).setAspectRatio(aspectRatio);
+      return this;
+    } else {
+      throw new IllegalStateException("Aspect ration requires using YogaNode not YogaNodeDEPRECATED");
+    }
+  }
+
