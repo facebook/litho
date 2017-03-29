@@ -1492,3 +1492,18 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
    */
   void setNestedTree(InternalNode nestedTree) {
     nestedTree.mNestedTreeHolder = this;
+    mNestedTree = nestedTree;
+  }
+
+  NodeInfo getNodeInfo() {
+    return mNodeInfo;
+  }
+
+  void copyInto(InternalNode node) {
+    if (mNodeInfo != null) {
+      if (node.mNodeInfo == null) {
+        node.mNodeInfo = mNodeInfo.acquireRef();
+      } else {
+        node.mNodeInfo.updateWith(mNodeInfo);
+      }
+    }
