@@ -319,3 +319,4 @@ public class ComponentTreeTest {
   }
 
   @Test
+  public void testSetInput() {
