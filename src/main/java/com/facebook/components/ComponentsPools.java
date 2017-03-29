@@ -475,3 +475,6 @@ public class ComponentsPools {
   }
 
   @ThreadSafe(enableChecks = false)
+  static void release(InternalNode node) {
+    node.release();
+    sInternalNodePool.release(node);
