@@ -2698,3 +2698,9 @@ public class Stages {
       TypeName[] builderGenericTypes,
       ClassName contextClass,
       ClassName eventHandlerClass,
+      ClassName componentClassName,
+      boolean hasKeySetter,
+      boolean hasLoadingEventHandlerSetter) {
+    final String implClassName = getImplClassName();
+    final String implInstanceName = getImplInstanceName();
+    final String implMemberInstanceName = getImplMemberInstanceName();
