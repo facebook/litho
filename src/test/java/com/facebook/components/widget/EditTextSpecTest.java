@@ -39,3 +39,7 @@ public class EditTextSpecTest {
         EditText.create(c)
             .textChangedEventHandler(null)
             .textSizePx(10)
+            .text(TEXT));
+
+    final android.widget.EditText editText = (android.widget.EditText) componentView.getChildAt(0);
+    assertThat(editText.getText().toString()).isEqualTo(TEXT);
