@@ -934,3 +934,6 @@ public class ComponentTree {
 
     boolean layoutStateUpdated = false;
     synchronized (this) {
+      // Make sure some other thread hasn't computed a compatible layout in the meantime.
+      if (!hasCompatibleComponentAndSpec()
+          && isCompatibleSpec(localLayoutState, mWidthSpec, mHeightSpec)) {

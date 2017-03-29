@@ -692,3 +692,4 @@ class MountState {
       logger.eventEnd(EVENT_PREPARE_MOUNT, component, ACTION_SUCCESS);
     }
   }
+
