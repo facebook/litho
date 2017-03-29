@@ -47,3 +47,6 @@ public final class ColorDrawableReference extends ReferenceLifecycle<Drawable> {
       sInstance = new ColorDrawableReference();
     }
 
+    return sInstance;
+  }
+
