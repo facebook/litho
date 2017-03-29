@@ -87,3 +87,4 @@ class MountState {
   // refresh the content of the HostComponent. Always set from the main thread.
   private boolean mIsDirty;
 
+  // Holds the list of known component hosts during a mount pass.

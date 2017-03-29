@@ -80,3 +80,6 @@ class HorizontalScrollSpec {
       Output<ComponentTree> contentComponent) {
     contentComponent.set(
         ComponentTree.create(context, contentProps).build());
+  }
+
+  @OnMeasure
