@@ -470,3 +470,49 @@ public class RecyclerBinderTest {
     TestComponentTreeHolder componentTreeHolder;
     for (int i = 0; i < components.size(); i++) {
       componentTreeHolder = mHoldersForComponents.get(components.get(i).getComponent());
+
+      if (i >= newRangeStart - (RANGE_RATIO * RANGE_SIZE) && i <= newRangeStart + rangeTotal) {
+        assertTrue(componentTreeHolder.isTreeValid());
+        assertTrue(componentTreeHolder.mLayoutAsyncCalled);
+        assertFalse(componentTreeHolder.mLayoutSyncCalled);
+      } else {
+        assertFalse(componentTreeHolder.isTreeValid());
+        assertFalse(componentTreeHolder.mLayoutAsyncCalled);
+        assertFalse(componentTreeHolder.mLayoutSyncCalled);
+        if (i <= rangeTotal) {
+          assertTrue(componentTreeHolder.mDidAcquireStateHandler);
+        } else {
+          assertFalse(componentTreeHolder.mDidAcquireStateHandler);
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testRealRangeOverridesEstimatedRange() {
+    final List<ComponentInfo> components = prepareLoadedBinder();
+    final int newRangeStart = 40;
+    final int newRangeEnd = 50;
+    int rangeSize = newRangeEnd - newRangeStart;
+    final int rangeTotal = (int) (rangeSize + (RANGE_RATIO * rangeSize));
+
+    mRecyclerBinder.onNewVisibleRange(newRangeStart, newRangeEnd);
+
+    TestComponentTreeHolder componentTreeHolder;
+    for (int i = 0; i < components.size(); i++) {
+      componentTreeHolder = mHoldersForComponents.get(components.get(i).getComponent());
+
+      if (i >= newRangeStart - (RANGE_RATIO * rangeSize) && i <= newRangeStart + rangeTotal) {
+        assertTrue(componentTreeHolder.isTreeValid());
+        assertTrue(componentTreeHolder.mLayoutAsyncCalled);
+        assertFalse(componentTreeHolder.mLayoutSyncCalled);
+      } else {
+        assertFalse(componentTreeHolder.isTreeValid());
+        assertFalse(componentTreeHolder.mLayoutAsyncCalled);
+        assertFalse(componentTreeHolder.mLayoutSyncCalled);
+      }
+    }
+  }
+
+  @Test
+  public void testMoveRangeToEnd() {
