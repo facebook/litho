@@ -328,3 +328,27 @@ public class TreeDiffingTest {
 
   @Test
   public void testLayoutOutputReuse() {
+    final Component component1 = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c)
+            .child(TestDrawableComponent.create(c))
+            .child(
+                Container.create(c)
+                    .child(TestDrawableComponent.create(c)))
+            .build();
+      }
+    };
+
+    final Component component2 = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return Container.create(c)
+            .child(TestDrawableComponent.create(c))
+            .child(
+                Container.create(c)
+                    .child(TestDrawableComponent.create(c)))
+            .build();
+      }
+    };
+

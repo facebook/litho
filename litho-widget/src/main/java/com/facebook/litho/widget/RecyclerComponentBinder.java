@@ -177,3 +177,5 @@ public abstract class RecyclerComponentBinder<L extends RecyclerView.LayoutManag
     }
 
     @Override
+    public ComponentViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+      return new ComponentViewHolder(new ComponentView(mContext));
