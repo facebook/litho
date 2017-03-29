@@ -534,3 +534,7 @@ class MountState {
       long[] layoutOutputsIds,
       ComponentsLogger logger) {
     final @LayoutOutput.UpdateState int updateState = layoutOutput.getUpdateState();
+    final Component currentComponent = currentMountItem.getComponent();
+    final ComponentLifecycle currentLifecycle = currentComponent.getLifecycle();
+    final Component nextComponent = layoutOutput.getComponent();
+    final ComponentLifecycle nextLifecycle = nextComponent.getLifecycle();
