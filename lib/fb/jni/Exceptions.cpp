@@ -118,3 +118,4 @@ void throwPendingJniExceptionAsCppException() {
   if (!throwable) {
     throw std::runtime_error("Unable to get pending JNI exception.");
   }
+  env->ExceptionClear();
