@@ -1070,3 +1070,5 @@ class MountState {
       if (!TextUtils.isEmpty(nodeInfo.getContentDescription())) {
         unsetContentDescription(view);
       }
+    }
+
