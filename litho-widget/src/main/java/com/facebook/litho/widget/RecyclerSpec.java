@@ -179,3 +179,12 @@ class RecyclerSpec {
       @FromBind ItemAnimator oldAnimator) {
     final RecyclerView recyclerView = recyclerViewWrapper.getRecyclerView();
 
+    if (recyclerView == null) {
+      throw new IllegalStateException(
+          "RecyclerView not found, it should not be removed from SwipeRefreshLayout " +
+              "before unmounting");
+    }
+
+    recyclerView.setItemAnimator(oldAnimator);
+
+    binder.unbind(recyclerView);
