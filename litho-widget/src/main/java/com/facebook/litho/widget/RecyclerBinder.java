@@ -57,3 +57,4 @@ public class RecyclerBinder implements Binder<RecyclerView> {
   private final ComponentContext mComponentContext;
   private final RangeScrollListener mRangeScrollListener = new RangeScrollListener();
   private final LayoutHandlerFactory mLayoutHandlerFactory;
+  private final GridSpanSizeLookup mGridSpanSizeLookup = new GridSpanSizeLookup();

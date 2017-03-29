@@ -67,3 +67,6 @@ public class RecyclerBinderTest {
       new Answer<ComponentTreeHolder>() {
         @Override
         public ComponentTreeHolder answer(InvocationOnMock invocation) throws Throwable {
+          final ComponentInfo componentInfo = (ComponentInfo) invocation.getArguments()[0];
+          final TestComponentTreeHolder holder = new TestComponentTreeHolder(componentInfo);
+          mHoldersForComponents.put(componentInfo.getComponent(), holder);
