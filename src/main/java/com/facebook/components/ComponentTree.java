@@ -867,3 +867,7 @@ public class ComponentTree {
       mLayoutThreadHandler.removeCallbacks(mCalculateLayoutRunnable);
       mLayoutThreadHandler.post(mCalculateLayoutRunnable);
     } else {
+      calculateLayout(output);
+    }
+  }
+
