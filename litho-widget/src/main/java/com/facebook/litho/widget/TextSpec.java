@@ -129,3 +129,4 @@ class TextSpec {
       Output<ColorStateList> textColorStateList,
       Output<Integer> linkColor,
       Output<Integer> highlightColor,
+      Output<Integer> textSize,

@@ -394,3 +394,4 @@ public class ComponentHost extends ViewGroup {
    * @param oldIndex The current index of the MountItem.
    * @param newIndex The new index of the MountItem.
    */
+  void moveItem(MountItem item, int oldIndex, int newIndex) {
