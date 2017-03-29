@@ -905,3 +905,5 @@ class MountState {
           host,
           content,
           layoutOutput);
+
+    // Create and keep a MountItem even for the layoutSpec with null content
