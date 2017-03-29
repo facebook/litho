@@ -27,3 +27,5 @@ public final class ColorDrawableReference extends ReferenceLifecycle<Drawable> {
 
   private static final int DEFAULT_ALPHA = 255;
   private static final int INITIAL_POOL_SIZE = 50;
+  // setColor() was introduced only in Honeycomb.
+  private static final boolean CAN_RECYCLE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB;
