@@ -400,3 +400,4 @@ class TextSpec {
 
     layoutBuilder.setText(null);
     sTextLayoutBuilderPool.release(layoutBuilder);
+

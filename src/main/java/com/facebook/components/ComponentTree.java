@@ -498,3 +498,4 @@ public class ComponentTree {
       toRelease = null;
     }
 
+    if (component != null) {
