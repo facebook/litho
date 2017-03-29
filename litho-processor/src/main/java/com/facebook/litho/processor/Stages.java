@@ -2681,3 +2681,11 @@ public class Stages {
         .addModifiers(Modifier.PUBLIC)
         .returns(ClassName.bestGuess(INNER_IMPL_BUILDER_CLASS_NAME))
         .addParameter(SectionClassNames.SECTION_CONTEXT, "context")
+        .addStatement(
+            "return new$L(context, new $T())",
+            INNER_IMPL_BUILDER_CLASS_NAME,
+            ClassName.bestGuess(getImplClassName()))
+        .addModifiers(isStatic == StaticFlag.STATIC ? Modifier.STATIC : Modifier.FINAL)
+        .build());
+  }
+
