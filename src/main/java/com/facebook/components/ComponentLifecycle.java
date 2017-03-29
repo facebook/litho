@@ -531,3 +531,38 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     return null;
   }
 
+  boolean hasBeenPreallocated() {
+    return mPreallocationDone;
+  }
+
+  void setWasPreallocated() {
+    mPreallocationDone = true;
+  }
+
+  protected boolean isPureRender() {
+    return false;
+  }
+
+  protected boolean callsShouldUpdateOnMount() {
+    return false;
+  }
+
+  /**
+   * @return true if Mount uses @FromMeasure or @FromOnBoundsDefined parameters.
+   */
+  protected boolean isMountSizeDependent() {
+    return false;
+  }
+
+  protected int poolSize() {
+    return DEFAULT_MAX_PREALLOCATION;
+  }
+
+  final boolean shouldComponentUpdate(Component previous, Component next) {
+    if (isPureRender()) {
+      return shouldUpdate(previous, next);
+    }
+
+    return true;
+  }
+
