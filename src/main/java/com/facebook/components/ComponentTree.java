@@ -223,3 +223,4 @@ public class ComponentTree {
       LayoutState toRelease = mMainThreadLayoutState;
       mMainThreadLayoutState = mBackgroundLayoutState;
       mBackgroundLayoutState = null;
+
