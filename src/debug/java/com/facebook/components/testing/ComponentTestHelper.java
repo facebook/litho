@@ -393,3 +393,4 @@ public final class ComponentTestHelper {
    * Sets a TreeProp that will be visible to all Components which are created from
    * the given Context (unless a child overwrites its).
    */
+  public static void setTreeProp(ComponentContext context, Class propClass, Object prop) {
