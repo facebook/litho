@@ -1116,3 +1116,4 @@ public class Stages {
       if (!toParams.get(i).type.equals(expectedTypes.get(i))) {
         errors.add(new ComponentsProcessingException(
             to.getParameters().get(i),
+            "Expected " + expectedTypes.get(i)));
