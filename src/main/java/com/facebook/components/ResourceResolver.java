@@ -220,3 +220,29 @@ public class ResourceResolver {
   }
 
   protected final String resolveStringAttr(@AttrRes int attrResId, @StringRes int defResId) {
+    mAttrs[0] = attrResId;
+    TypedArray a = mTheme.obtainStyledAttributes(mAttrs);
+
+    try {
+      String result = a.getString(0);
+      if (result == null) {
+        result = resolveStringRes(defResId);
+      }
+
+      return result;
+    } finally {
+      a.recycle();
+    }
+  }
+
+  public final String[] resolveStringArrayAttr(@AttrRes int attrResId, @ArrayRes int defResId) {
+    mAttrs[0] = attrResId;
+    TypedArray a = mContext.getTheme().obtainStyledAttributes(mAttrs);
+
+    try {
+      return resolveStringArrayRes(a.getResourceId(0, defResId));
+    } finally {
+      a.recycle();
+    }
+  }
+
