@@ -235,3 +235,20 @@ class PropsBuilderMethodsSpecBuilder {
     builders.add(builder(
         mPropParameter.parameter.name + "Attr",
         Arrays.asList(parameter(TypeName.INT, "attrResId", annotation(ClassNames.ATTR_RES))),
+        "$L(attrResId, 0)",
+        resolver + "Attr"));
+
+    return builders;
+  }
+
+  private MethodSpec pxBuilder() {
+    return builder(
+        mPropParameter.parameter.name + "Px",
+        Arrays.asList(parameter(
+            mPropParameter.parameter.type,
+            mPropParameter.parameter.name,
+            annotation(ClassNames.PX))),
+        mPropParameter.parameter.name);
+  }
+
+  private MethodSpec dipBuilder() {
