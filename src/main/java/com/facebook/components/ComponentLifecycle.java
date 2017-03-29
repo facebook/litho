@@ -114,3 +114,6 @@ public abstract class ComponentLifecycle implements EventDispatcher {
 
         outputWidth = nestedTree.getWidth();
         outputHeight = nestedTree.getHeight();
+      } else if (diffNode != null
+          && diffNode.getLastWidthSpec() == widthSpec
+          && diffNode.getLastHeightSpec() == heightSpec) {
