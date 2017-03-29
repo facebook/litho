@@ -110,3 +110,7 @@ void setJavaExceptionAndAbortOnFailure(alias_ref<JThrowable> throwable) {
 // TODO(T6618159) Take a stack dump here to save context if it results in a crash when propagated
 void throwPendingJniExceptionAsCppException() {
   JNIEnv* env = Environment::current();
+  if (env->ExceptionCheck() == JNI_FALSE) {
+    return;
+  }
+
