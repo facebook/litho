@@ -79,3 +79,7 @@ class ViewNodeInfo {
     mPadding.set(l, t, r, b);
   }
 
+  boolean hasPadding() {
+    return (mPadding != null);
+  }
+

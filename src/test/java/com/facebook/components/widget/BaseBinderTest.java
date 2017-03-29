@@ -51,3 +51,14 @@ public class BaseBinderTest {
 
   @Before
   public void setup() throws Exception {
+    mItems = new ArrayList<>();
+    mItems.add("0");
+    mItems.add("1");
+    mItems.add("2");
+    mItems.add("3");
+    mItems.add("4");
+    mItems.add("5");
+    mItems.add("6");
+    mItems.add("7");
+    mItems.add("8");
+

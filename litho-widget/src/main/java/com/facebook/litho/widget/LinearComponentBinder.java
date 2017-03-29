@@ -38,3 +38,4 @@ public abstract class LinearComponentBinder extends
 
   @Override
   protected void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+    super.onScrolled(recyclerView, dx, dy);
