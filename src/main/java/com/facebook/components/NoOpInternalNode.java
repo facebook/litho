@@ -323,3 +323,7 @@ class NoOpInternalNode extends InternalNode {
 
   @Override
   public InternalNode positionPx(YogaEdge edge, @Px int position) {
+    return this;
+  }
+
+  @Override
