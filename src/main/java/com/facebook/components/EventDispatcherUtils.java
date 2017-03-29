@@ -290,3 +290,4 @@ class EventDispatcherUtils {
     sPerformAccessibilityActionEvent.superDelegate = superDelegate;
 
     final EventDispatcher eventDispatcher = eventHandler.mHasEventDispatcher.getEventDispatcher();
+    final boolean returnValue = (boolean) eventDispatcher.dispatchOnEvent(
