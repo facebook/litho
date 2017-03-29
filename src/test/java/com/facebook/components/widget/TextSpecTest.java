@@ -40,3 +40,31 @@ public class TextSpecTest {
   public void setup() {
     mContext = new ComponentContext(RuntimeEnvironment.application);
   }
+
+  @Test
+  public void testTextWithoutClickableSpans() {
+    TextDrawable drawable = getMountedDrawableForText("Some text.");
+    assertThat(drawable.getClickableSpans()).isNull();
+  }
+
+  @Test
+  public void testSpannableWithoutClickableSpans() {
+    Spannable nonClickableText = Spannable.Factory.getInstance().newSpannable("Some text.");
+
+    TextDrawable drawable = getMountedDrawableForText(nonClickableText);
+    assertThat(drawable.getClickableSpans()).isNotNull().hasSize(0);
+  }
+
+  @Test
+  public void testSpannableWithClickableSpans() {
+    Spannable clickableText = Spannable.Factory.getInstance().newSpannable("Some text.");
+    clickableText.setSpan(new ClickableSpan() {
+      @Override
+      public void onClick(View widget) {
+      }
+    }, 0, 1, 0);
+
+    TextDrawable drawable = getMountedDrawableForText(clickableText);
+    assertThat(drawable.getClickableSpans()).isNotNull().hasSize(1);
+  }
+

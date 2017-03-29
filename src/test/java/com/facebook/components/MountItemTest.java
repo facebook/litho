@@ -105,3 +105,5 @@ public class MountItemTest {
     assertThat(mMountItem.getNodeInfo().getClickHandler()).isSameAs(mClickHandler);
     assertThat(mMountItem.getNodeInfo().getTouchHandler()).isSameAs(mTouchHandler);
     assertThat(mMountItem.getFlags()).isEqualTo(mFlags);
+    assertThat(mMountItem.getImportantForAccessibility())
+        .isEqualTo(IMPORTANT_FOR_ACCESSIBILITY_YES);
