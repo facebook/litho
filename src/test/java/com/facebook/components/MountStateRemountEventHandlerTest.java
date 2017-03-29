@@ -78,3 +78,17 @@ public class MountStateRemountEventHandlerTest {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
             return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                .longClickHandler(c.newEventHandler(1))
+                .child(TestDrawableComponent.create(c))
+                .child(TestDrawableComponent.create(c))
+                .build();
+          }
+        });
+
+    final ComponentLongClickListener longClickListener =
+        MountState.getComponentLongClickListener(componentView);
+    assertNotNull(longClickListener);
+
+    componentView.getComponent().setRoot(new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {

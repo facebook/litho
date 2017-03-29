@@ -67,3 +67,4 @@ class DrawableComponent<T extends Drawable> extends ComponentLifecycle {
   protected void onUnmount(
       ComponentContext context,
       Object mountedContent,
+      Component<?> component) {

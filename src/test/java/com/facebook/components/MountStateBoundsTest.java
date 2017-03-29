@@ -81,3 +81,7 @@ public class MountStateBoundsTest {
             mountedView.getTop(),
             mountedView.getRight(),
             mountedView.getBottom()));
+  }
+
+  @Test
+  public void testInnerComponentHostBounds() {

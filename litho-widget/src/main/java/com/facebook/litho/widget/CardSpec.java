@@ -103,3 +103,4 @@ class CardSpec {
                 .cornerRadiusPx(cornerRadius)
                 .shadowSizePx(elevation)
                 .withLayout().flexShrink(0)
+                .positionType(ABSOLUTE)

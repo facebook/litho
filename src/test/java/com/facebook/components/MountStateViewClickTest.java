@@ -61,3 +61,9 @@ public class MountStateViewClickTest {
   }
 
   @Test
+  public void testInnerComponentHostClickableWithLongClickHandler() {
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {

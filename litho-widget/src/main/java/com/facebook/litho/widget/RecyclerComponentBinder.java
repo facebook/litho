@@ -37,3 +37,4 @@ public abstract class RecyclerComponentBinder<L extends RecyclerView.LayoutManag
   private final L mLayoutManager;
   private final InternalAdapter mAdapter;
   private final RecyclerView.OnScrollListener mOnScrollListener;
+
