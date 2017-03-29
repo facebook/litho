@@ -187,3 +187,5 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
   /**
    * Tests if any view hierarchy under the root has the given contentDescription.
    * @param resourceId the resId of the contentDescription to search for
+   * @return the assertions object
+   */
