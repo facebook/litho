@@ -2084,3 +2084,4 @@ public class Stages {
     }
   }
 
+  private FieldSpec getPropFieldSpec(VariableElement v, boolean isStateProp) {
