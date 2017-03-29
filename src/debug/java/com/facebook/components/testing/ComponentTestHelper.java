@@ -353,3 +353,8 @@ public final class ComponentTestHelper {
   private static ComponentContext getContext(Component.Builder builder) {
     return Whitebox.getInternalState(builder, "mContext");
   }
+
+  /**
+   * Mounts the component & triggers the visibility event. Requires that the component supports
+   * incremental mounting.
+   *
