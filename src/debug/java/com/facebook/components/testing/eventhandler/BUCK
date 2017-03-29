@@ -17,3 +17,4 @@ android_library(
         COMPONENTS_JAVA_TARGET,
         COMPONENTS_MOCKITO_TARGET,
     ],
+)
