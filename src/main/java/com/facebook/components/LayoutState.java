@@ -126,3 +126,4 @@ class LayoutState {
   private final List<TestOutput> mTestOutputs;
 
   private InternalNode mLayoutRoot;
+  private DiffNode mDiffTreeRoot;
