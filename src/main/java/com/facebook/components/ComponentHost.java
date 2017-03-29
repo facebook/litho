@@ -854,3 +854,4 @@ public class ComponentHost extends ViewGroup {
       mChildDrawingOrder = new int[childCount + 5];
     }
 
+    int index = 0;
