@@ -201,3 +201,4 @@ public class StateUpdatesTest {
             .child(
                 Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(child1))
+            .child(

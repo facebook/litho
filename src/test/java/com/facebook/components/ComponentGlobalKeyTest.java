@@ -166,3 +166,6 @@ public class ComponentGlobalKeyTest {
           ComponentContext c) {
 
         return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            .child(Text.create(c).text("test").key("[Text2]"))
+            .child(testGlobalKeyChildComponent)
+            .child(
