@@ -20,3 +20,4 @@ android_library(
 
 android_library(
     name = "widget-bare",
+    srcs = glob(["*.java"]),

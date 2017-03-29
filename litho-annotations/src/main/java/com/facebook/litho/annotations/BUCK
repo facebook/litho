@@ -13,3 +13,6 @@ java_library(
     provided_deps = [
         COMPONENTS_ANDROIDSUPPORT_TARGET,
     ],
+    visibility = [
+        "PUBLIC",
+    ],

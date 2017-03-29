@@ -5,3 +5,6 @@ android_library(
     srcs = glob(["*.java"]),
     exported_deps = [
         COMPONENTS_ASSERTJ_TARGET,
+    ],
+    visibility = [
+        "//javatests/...",
