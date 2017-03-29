@@ -28,3 +28,6 @@ public class ComponentQueriesTest {
   public void setup() {
     mContext = new ComponentContext(RuntimeEnvironment.application);
   }
+
+  @Test
+  public void testNoTextOnComponent() {

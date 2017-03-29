@@ -77,3 +77,14 @@ public class ViewExtractorsTest {
   public void testGetDrawableOutOfImageView() {
     assertThat(ViewExtractors.GET_DRAWABLE_FUNCTION.apply(mImageView))
         .contains(mLithoDrawable.toString());
+  }
+
+  @Test
+  public void testGetDrawablePrintsVisibity() {
+    assertThat(ViewExtractors.GET_DRAWABLE_FUNCTION.apply(mImageView))
+        .contains("view is visible");
+    assertThat(ViewExtractors.GET_DRAWABLE_FUNCTION.apply(mGoneImageView))
+        .contains("view is not visible");
+  }
+
+}
