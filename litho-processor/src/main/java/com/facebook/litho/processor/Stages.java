@@ -2742,3 +2742,10 @@ public class Stages {
     int numRequiredProps = 0;
     for (VariableElement v : mProps) {
       if (!v.getAnnotation(Prop.class).optional()) {
+        numRequiredProps++;
+        requiredPropNames.add(v.getSimpleName().toString());
+      }
+    }
+
+    if (numRequiredProps > 0) {
+      final FieldSpec.Builder requiredPropsNamesBuilder =
