@@ -63,3 +63,4 @@ class RecyclerSpec {
   static void onBoundsDefined(
       ComponentContext context,
       ComponentLayout layout,
+      @Prop Binder<RecyclerView> binder) {

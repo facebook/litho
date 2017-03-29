@@ -443,3 +443,6 @@ class TextSpec {
       Output<Layout> textLayout,
       Output<Float> textLayoutTranslationY,
       Output<ClickableSpan[]> clickableSpans) {
+
+    if (TextUtils.isEmpty(text)) {
+      return;
