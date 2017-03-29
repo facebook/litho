@@ -99,3 +99,8 @@ public class ViewTreeTest {
   }
 
   private String getString(final View view) {
+    return removePrefix(
+      removePrefix(view.toString(), "android.widget."),
+      "android.view.");
+  }
+
