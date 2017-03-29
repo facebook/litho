@@ -44,3 +44,4 @@ public class IncrementalMountUtils {
    */
   public static void performIncrementalMount(ViewGroup scrollingViewParent) {
     assertMainThread();
+    final int viewGroupWidth = scrollingViewParent.getWidth();

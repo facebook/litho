@@ -388,3 +388,24 @@ public class ComponentTree {
       View parent = (View) viewParent;
       getLocationAndBoundsOnScreen(parent, sParentLocation, sParentBounds);
       if (!visibleBounds.setIntersect(visibleBounds, sParentBounds)) {
+        return false;
+      }
+    }
+
+    visibleBounds.offset(-sCurrentLocation[0], -sCurrentLocation[1]);
+
+    return true;
+  }
+
+  private static void getLocationAndBoundsOnScreen(View view, int[] location, Rect bounds) {
+    assertMainThread();
+
+    view.getLocationOnScreen(location);
+    bounds.set(
+        location[0],
+        location[1],
+        location[0] + view.getWidth(),
+        location[1] + view.getHeight());
+  }
+
+  void mountComponent(Rect currentVisibleArea) {
