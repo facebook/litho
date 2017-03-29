@@ -246,3 +246,13 @@ public class ComponentContext extends ContextWrapper {
       applyStyle(node, defStyleAttr, defStyleRes);
     }
 
+    return node;
+  }
+
+  ComponentLayout.Builder newLayoutBuilder(
+      Component.Builder componentBuilder,
+      @AttrRes int defStyleAttr,
+      @StyleRes int defStyleRes) {
+    return newLayoutBuilder(componentBuilder.build(), defStyleAttr, defStyleRes);
+  }
+
