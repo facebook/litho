@@ -210,3 +210,5 @@ class EventDispatcherUtils {
     sOnInitializeAccessibilityNodeInfoEvent.info = info;
     sOnInitializeAccessibilityNodeInfoEvent.superDelegate = superDelegate;
 
+    final EventDispatcher eventDispatcher = eventHandler.mHasEventDispatcher.getEventDispatcher();
+    eventDispatcher.dispatchOnEvent(eventHandler, sOnInitializeAccessibilityNodeInfoEvent);
