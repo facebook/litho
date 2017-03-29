@@ -12,3 +12,14 @@ package com.facebook.components.processor;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.element.TypeElement;
+
+import com.facebook.components.specmodels.generator.BuilderGenerator;
+import com.facebook.components.specmodels.generator.ComponentImplGenerator;
+import com.facebook.components.specmodels.generator.EventGenerator;
+import com.facebook.components.specmodels.generator.JavadocGenerator;
+import com.facebook.components.specmodels.generator.PreambleGenerator;
+import com.facebook.components.specmodels.generator.StateGenerator;
+import com.facebook.components.specmodels.generator.TreePropGenerator;
+import com.facebook.components.specmodels.model.DependencyInjectionHelper;
+import com.facebook.components.specmodels.model.SpecModel;

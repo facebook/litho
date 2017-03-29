@@ -63,3 +63,4 @@ public class ComponentViewTest {
         mComponentView.getMeasuredHeight());
 
     // View got measured.
+    assertTrue(mComponentView.getMeasuredHeight() != 0 && mComponentView.getMeasuredWidth() != 0);

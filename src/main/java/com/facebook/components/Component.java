@@ -27,3 +27,4 @@ import com.facebook.infer.annotation.ThreadSafe;
  * instances are immutable after creation.
  */
 public abstract class Component<L extends ComponentLifecycle> implements HasEventDispatcher {
+

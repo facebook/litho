@@ -434,3 +434,4 @@ public class LayoutDirectionTest {
           }
         });
 
+    final View childView = componentView.getChildAt(0);
