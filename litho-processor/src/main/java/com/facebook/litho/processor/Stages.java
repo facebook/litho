@@ -210,3 +210,7 @@ public class Stages {
 
     mExtraStateMembers = extraStateMembers;
     validateOnEventMethods();
+
+    populatePropDefaults();
+    populateStages();
+    validateAnnotatedParameters();
