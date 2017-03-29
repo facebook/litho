@@ -434,3 +434,6 @@ public class ComponentTree {
   void setComponentView(@NonNull ComponentView view) {
     assertMainThread();
 
+    // It's possible that the view associated with this ComponentTree was recycled but was
+    // never detached. In all cases we have to make sure that the old references between
+    // componentView and componentTree are reset.

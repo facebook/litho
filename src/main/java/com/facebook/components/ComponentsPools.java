@@ -121,3 +121,5 @@ public class ComponentsPools {
   private static final Pools.SynchronizedPool<Rect> sRectPool =
       new Pools.SynchronizedPool<>(30);
 
+  private static final Pools.SynchronizedPool<Spacing> sSpacingPool =
+      new Pools.SynchronizedPool<>(30);
