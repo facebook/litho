@@ -122,3 +122,4 @@ class ProgressSpec {
     progressBar.setIndeterminateDrawable(null);
   }
 
+  @OnCreateMountContent
