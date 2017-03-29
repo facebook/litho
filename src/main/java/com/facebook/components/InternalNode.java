@@ -1549,3 +1549,5 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       }
 
       final YogaNodeAPI yogaNode = node.mYogaNode;
+
+      node.mPrivateFlags |= PFLAG_PADDING_IS_SET;
