@@ -1001,3 +1001,5 @@ public class ComponentTree {
         PARAM_TREE_DIFF_ENABLED,
         String.valueOf(mIsLayoutDiffingEnabled));
     logger.eventAddParam(
+        EVENT_LAYOUT_CALCULATE,
+        root,
