@@ -927,3 +927,5 @@ public class ComponentTree {
       output.height = localLayoutState.getHeight();
     }
 
+    if (previousLayoutState != null) {
+      previousLayoutState.releaseRef();
