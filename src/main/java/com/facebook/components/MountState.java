@@ -111,3 +111,4 @@ class MountState {
     mContext = (ComponentContext) view.getContext();
     mComponentView = view;
     mIsDirty = true;
+
