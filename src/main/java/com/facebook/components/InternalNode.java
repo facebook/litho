@@ -1829,3 +1829,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     mDiffNode = null;
     mCachedMeasuresValid = false;
     mIsNestedTreeHolder = false;
+    mTestKey = null;

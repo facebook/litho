@@ -1188,3 +1188,4 @@ class MountState {
 
       listener.setEventHandler(longClickHandler);
 
+      view.setLongClickable(true);
