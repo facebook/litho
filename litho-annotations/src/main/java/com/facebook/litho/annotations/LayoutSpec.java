@@ -60,3 +60,4 @@ public @interface LayoutSpec {
    * List of event POJOs this component can dispatch. Used to generate event dispatch methods.
    */
   Class<?>[] events() default {};
+}

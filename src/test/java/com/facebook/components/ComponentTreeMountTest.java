@@ -31,3 +31,4 @@ import static org.junit.Assert.assertEquals;
 @PrepareForTest(ThreadUtils.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
 @RunWith(ComponentsTestRunner.class)
+public class ComponentTreeMountTest {

@@ -39,3 +39,4 @@ public interface ClassNames {
 
   ClassName SYNCHRONIZED_POOL =
       ClassName.bestGuess("android.support.v4.util.Pools.SynchronizedPool");
+

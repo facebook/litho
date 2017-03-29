@@ -37,3 +37,4 @@ import com.facebook.components.specmodels.processor.MountSpecModelFactory;
 
 import com.squareup.javapoet.JavaFile;
 
+@SupportedSourceVersion(SourceVersion.RELEASE_7)
