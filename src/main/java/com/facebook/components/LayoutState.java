@@ -1473,3 +1473,5 @@ class LayoutState {
 
   boolean isComponentId(int componentId) {
     return mComponent.getId() == componentId;
+  }
+
