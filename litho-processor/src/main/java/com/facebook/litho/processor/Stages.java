@@ -2596,3 +2596,5 @@ public class Stages {
     throw new ComponentsProcessingException(
         element,
         "Expected parameter of one of types" + Arrays.toString(types) +  ". Found " + elementType);
+  }
+
