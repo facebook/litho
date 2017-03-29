@@ -1297,3 +1297,5 @@ public class Stages {
   }
 
   /**
+   * Generate a dispatchOnEvent() implementation for the component.
+   */
