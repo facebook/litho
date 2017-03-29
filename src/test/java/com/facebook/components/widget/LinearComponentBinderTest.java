@@ -36,3 +36,6 @@ import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowLooper;
 
 @RunWith(ComponentsTestRunner.class)
+public class LinearComponentBinderTest {
+
+  private static final int WIDTH = 200;

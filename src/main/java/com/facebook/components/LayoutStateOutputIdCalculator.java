@@ -79,3 +79,36 @@ class LayoutStateOutputIdCalculator {
     mLayoutCurrentSequenceForBaseId.put(baseLayoutId, sequence + 1);
   }
 
+  void calculateAndSetVisibilityOutputId(
+      VisibilityOutput visibilityOutput,
+      int level,
+      long previousId) {
+
+    // We need to assign an id to this VisibilityOutput. We want the ids to be as consistent as
+    // possible between different layout calculations. For this reason the id generation is a
+    // function based on the component of the VisibilityOutput, the depth of this output in the view
+    // hierarchy and an incremental sequence number for VisibilityOutputs that have all the other
+    // parameters in common.
+    final long baseVisibilityId = calculateVisibilityOutputBaseId(
+        visibilityOutput,
+        level);
+    int sequence;
+    if (previousId > 0 && getLevelFromId(previousId) == level) {
+      sequence = getSequenceFromId(previousId);
+    } else {
+      sequence = -1;
+    }
+
+    final int currentSequence = mVisibilityCurrentSequenceForBaseId.get(baseVisibilityId, 0);
+    // If sequence is positive we are trying to re-use the id from a previous VisibilityOutput.
+    // We can only do that if the sequence that visibilityOutput used is not already assigned.
+    if (sequence < currentSequence) {
+      sequence = currentSequence + 1;
+    }
+
+    final long visibilityOutputId = calculateId(baseVisibilityId, sequence);
+    visibilityOutput.setId(visibilityOutputId);
+
+    mVisibilityCurrentSequenceForBaseId.put(baseVisibilityId, sequence + 1);
+  }
+

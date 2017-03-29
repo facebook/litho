@@ -110,3 +110,7 @@ class BinderTreeCollection {
    * @param position the position at which the new item is inserted
    * @param item the new item
    */
+  void insertShiftingLeft(int position, ComponentTree item) {
+    final int firstPosition = getFirstPosition();
+    shiftRangeLeft(firstPosition, position - firstPosition + 1, 1);
+    mItems.put(position, item);

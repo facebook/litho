@@ -562,3 +562,7 @@ public class WorkingRangesTest {
 
     @Override
     public void onBoundsDefined() {
+
+    }
+
+    @Override
