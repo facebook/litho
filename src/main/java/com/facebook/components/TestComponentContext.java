@@ -55,3 +55,10 @@ class TestComponentContext extends ComponentContext {
     component.applyStateUpdates(this);
 
     node.setComponent(new TestComponent(component));
+
+    return node;
+  }
+
+  @Override
+  public ComponentLayout.Builder newLayoutBuilder(
+      Component<?> component,

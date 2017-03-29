@@ -71,3 +71,4 @@ public class SubComponent {
         thisComponent == null ||
         thatComponent.equals(thisComponent);
   }
+}

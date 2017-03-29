@@ -49,3 +49,4 @@ public class TestComponentTree extends ComponentTree {
         new TestComponentContext(
             ComponentContext.withComponentTree(new TestComponentContext(context), this),
             new StateHandler()),
+        root,
