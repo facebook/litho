@@ -1549,3 +1549,38 @@ public class Stages {
       ClassName stateContainerClassName,
       ClassName updateStateInterface,
       StaticFlag staticFlag) {
+    final String stateUpdateClassName = getStateUpdateClassName(element);
+    final TypeName implClassName = ClassName.bestGuess(getImplClassName());
+
+    final StateUpdateImplClassBuilder stateUpdateImplClassBuilder =
+        new StateUpdateImplClassBuilder()
+            .withTarget(mSourceDelegateAccessorName)
+            .withSpecOnUpdateStateMethodName(element.getSimpleName().toString())
+            .withComponentImplClassName(implClassName)
+            .withComponentClassName(componentClassName)
+            .withComponentStateUpdateInterface(updateStateInterface)
+            .withStateContainerClassName(stateContainerClassName)
+            .withStateContainerImplClassName(ClassName.bestGuess(getStateContainerImplClassName()))
+            .withStateUpdateImplClassName(stateUpdateClassName)
+            .withSpecOnUpdateStateMethodParams(getParams(element))
+            .withStateValueParams(getStateValueParams(element))
+            .withStaticFlag(staticFlag);
+
+    final List<VariableElement> parametersVarElements =
+        Utils.getParametersWithAnnotation(element, Param.class);
+    final List<Parameter> parameters = new ArrayList<>();
+
+    for (VariableElement v : parametersVarElements) {
+      parameters.add(new Parameter(ClassName.get(v.asType()), v.getSimpleName().toString()));
+
+      for (TypeMirror typeVar : getTypeVarArguments(v.asType())) {
+        stateUpdateImplClassBuilder.typeParameter(typeVar.toString());
+      }
+    }
+
+    stateUpdateImplClassBuilder.withParamsForStateUpdate(parameters);
+
+    writeInnerTypeSpec(stateUpdateImplClassBuilder.build());
+  }
+
+  /**
