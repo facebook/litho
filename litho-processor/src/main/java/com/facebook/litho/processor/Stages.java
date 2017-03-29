@@ -422,3 +422,4 @@ public class Stages {
     final Map<String, VariableElement> variableNameToElementMap = new HashMap<>();
     final Map<String, Class<? extends Annotation>> outputVariableToStage = new HashMap<>();
 
+    for (Class<? extends Annotation> stageAnnotation : mStageAnnotations) {
