@@ -1555,3 +1555,5 @@ class LayoutState {
         ComponentsPools.release(mMountableOutputs.get(i));
       }
       mMountableOutputs.clear();
+      mMountableOutputTops.clear();
+      mMountableOutputBottoms.clear();
