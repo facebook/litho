@@ -837,3 +837,4 @@ public class ComponentTree {
               mostRecentLayoutState.getHeight()));
       final boolean rootDidntChange = !rootInitialized || root.getId() == mRoot.getId();
 
+      if (rootDidntChange && sizeSpecsAreCompatible) {
