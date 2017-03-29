@@ -344,3 +344,7 @@ public class ComponentView extends ComponentHost {
     mMountState.mount(layoutState, currentVisibleArea);
   }
 
+  public Rect getPreviousMountBounds() {
+    return mPreviousMountBounds;
+  }
+

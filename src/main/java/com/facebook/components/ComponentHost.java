@@ -317,3 +317,5 @@ public class ComponentHost extends ViewGroup {
   }
 
   /**
+   * @return list of drawables that are mounted on this host.
+   */
