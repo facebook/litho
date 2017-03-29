@@ -218,3 +218,4 @@ class LayoutState {
       boolean duplicateParentState) {
     final boolean isMountViewSpec = isMountViewSpec(component);
 
+    final LayoutOutput layoutOutput = ComponentsPools.acquireLayoutOutput();

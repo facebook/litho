@@ -293,3 +293,21 @@ class TransitionKeySet implements TransitionListener {
     }
 
     mTransitionKeySetListener = listener;
+    mRunningTransitionsPointer = null;
+    mAnimationRunningCounter = 0;
+
+    switch (keyStatus) {
+      case KeyStatus.APPEARED:
+        if (hasAppearingTransitions()) {
+          mRunningTransitionsPointer = mAppearTransition;
+        }
+        break;
+
+      case KeyStatus.UNCHANGED:
+        if (hasChangingTransitions()) {
+          mRunningTransitionsPointer = mChangeTransitions;
+        }
+        break;
+
+      case KeyStatus.DISAPPEARED:
+        if (hasDisappearingTransitions()) {
