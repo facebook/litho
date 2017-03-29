@@ -65,3 +65,5 @@ class MountItem {
         component,
         host,
         content,
+        layoutOutput.getNodeInfo(),
+        layoutOutput.getViewNodeInfo(),
