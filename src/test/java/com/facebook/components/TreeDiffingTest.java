@@ -1028,3 +1028,4 @@ public class TreeDiffingTest {
     final int horizontalPadding = 20;
     final int widthMeasuredComponent = SizeSpec.makeSizeSpec(
         SizeSpec.getSize(widthSpecContainer) - horizontalPadding - horizontalPadding,
+        SizeSpec.EXACTLY);
