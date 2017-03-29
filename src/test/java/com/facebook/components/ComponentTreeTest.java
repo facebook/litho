@@ -438,3 +438,4 @@ public class ComponentTreeTest {
     assertEquals(componentTree, getComponentTree(componentView1));
 
     // Attach second view.
+    ComponentView componentView2 = new ComponentView(mContext);
