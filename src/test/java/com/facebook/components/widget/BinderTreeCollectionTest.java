@@ -51,3 +51,8 @@ public class BinderTreeCollectionTest {
     ComponentTree newTreeAtPos5 = createNewComponentTree();
     mBinderTreeCollection.put(5, newTreeAtPos5);
 
+    assertEquals(5, mBinderTreeCollection.getPositionOf(newTreeAtPos5));
+
+    ComponentTree inexistentTree = createNewComponentTree();
+
+    assertTrue(mBinderTreeCollection.getPositionOf(inexistentTree) < 0);

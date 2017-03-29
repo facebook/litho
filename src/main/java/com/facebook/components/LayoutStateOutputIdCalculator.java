@@ -113,3 +113,5 @@ class LayoutStateOutputIdCalculator {
   }
 
   void clear() {
+    mLayoutCurrentSequenceForBaseId.clear();
+    mVisibilityCurrentSequenceForBaseId.clear();

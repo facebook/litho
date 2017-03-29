@@ -73,3 +73,8 @@ public abstract class GridComponentBinder extends RecyclerComponentBinder<
   protected void onScrolled(RecyclerView recyclerView, int dx, int dy) {
     super.onScrolled(recyclerView, dx, dy);
 
+    final GridLayoutManager layoutManager = getLayoutManager();
+
+    final int firstItemPosition = layoutManager.findFirstVisibleItemPosition();
+    final int lastItemPosition = layoutManager.findLastVisibleItemPosition();
+
