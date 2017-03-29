@@ -151,3 +151,4 @@ public class ResourceResolver {
         return cached;
       }
 
+      int result = mResources.getColor(resId);
