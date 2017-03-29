@@ -128,3 +128,4 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
 
     mDrawable = null;
     mMatrix = null;
+    mShouldClipRect = false;
