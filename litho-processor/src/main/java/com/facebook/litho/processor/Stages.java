@@ -781,3 +781,5 @@ public class Stages {
    * aren't one of the parameters predefined for a given method. For example, OnCreateLayout has a
    * predefined parameter of type LayoutContext. Spec-defined parameters are annotated with one of
    * our prop annotations or are of type {@link com.facebook.litho.Output}.
+   */
+  private List<VariableElement> getSpecDefinedParameters(ExecutableElement element) {
