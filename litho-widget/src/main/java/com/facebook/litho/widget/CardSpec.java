@@ -96,3 +96,6 @@ class CardSpec {
             CardShadow.create(c)
                 .shadowStartColor(shadowStartColor)
                 .shadowEndColor(shadowEndColor)
+                .cornerRadiusPx(cornerRadius)
+                .shadowSizePx(elevation)
+                .withLayout()

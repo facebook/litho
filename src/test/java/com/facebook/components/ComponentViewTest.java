@@ -66,3 +66,4 @@ public class ComponentViewTest {
     assertTrue(mComponentView.getMeasuredHeight() != 0 && mComponentView.getMeasuredWidth() != 0);
 
     // Attaching will automatically mount since we already have a layout fitting our size.
+    ShadowView shadow = Shadows.shadowOf(mComponentView);

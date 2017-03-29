@@ -72,3 +72,4 @@ public abstract class BaseBinder<
   }
 
   public BaseBinder(Context context, Looper layoutLooper, R rangeController) {
+    mContext = new ComponentContext(context);

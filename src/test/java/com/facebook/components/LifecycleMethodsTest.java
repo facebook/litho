@@ -107,3 +107,4 @@ public class LifecycleMethodsTest {
 
     @Override
     protected void onMeasure(
+        ComponentContext c,

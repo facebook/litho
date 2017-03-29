@@ -154,3 +154,7 @@ public class MountStateBoundsTest {
     assertEquals(
         new Rect(100, 100, 200, 200),
         new Rect(
+            host.getLeft(),
+            host.getTop(),
+            host.getRight(),
+            host.getBottom()));
