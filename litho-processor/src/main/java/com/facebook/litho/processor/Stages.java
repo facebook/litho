@@ -2885,3 +2885,4 @@ public class Stages {
         .addStatement("$L.release(this)", poolName)
         .build());
 
+    writeInnerTypeSpec(propsBuilderClassBuilder.build());
