@@ -99,3 +99,9 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
       return;
     }
 
+    mPlaceholderReference = placeholderReference;
+    mPlaceholder = Reference.acquire(mContext, placeholderReference);
+
+    mGenericDraweeHierarchy.setPlaceholderImage(
+        DrawableUtils.cloneDrawable(mPlaceholder),
+        scaleType != null ? scaleType : DEFAULT_SCALE_TYPE);
