@@ -312,3 +312,4 @@ public abstract class ComponentLifecycle implements EventDispatcher {
    * @param c The {@link ComponentContext} to build a {@link ComponentLayout} tree.
    * @param component The component to create the {@link ComponentLayout} tree from.
    */
+  protected ComponentLayout onCreateLayout(ComponentContext c, Component<?> component) {
