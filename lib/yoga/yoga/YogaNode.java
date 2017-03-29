@@ -694,3 +694,4 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
 
   // Implementation Note: Why this method needs to stay final
   //
+  // We cache the jmethodid for this method in Yoga code. This means that even if a subclass
