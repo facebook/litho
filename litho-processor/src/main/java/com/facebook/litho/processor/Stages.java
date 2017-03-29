@@ -2663,3 +2663,4 @@ public class Stages {
         INNER_IMPL_BUILDER_CLASS_NAME,
         new TypeName[]{genericType},
         SectionClassNames.SECTION_CONTEXT,
+        ClassNames.EVENT_HANDLER,

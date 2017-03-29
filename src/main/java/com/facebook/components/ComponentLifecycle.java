@@ -519,3 +519,10 @@ public abstract class ComponentLifecycle implements EventDispatcher {
       ComponentContext c,
       StateContainer previousStateContainer,
       Component component) {
+  }
+
+  protected void createInitialState(ComponentContext c, Component<?> component) {
+
+  }
+
+  @Override
