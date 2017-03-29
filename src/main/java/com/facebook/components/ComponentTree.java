@@ -249,3 +249,4 @@ public class ComponentTree {
       LayoutState oldMainThreadLayoutState = mMainThreadLayoutState;
       toRelease = setBestMainThreadLayoutAndReturnOldLayout();
       layoutStateUpdated = (mMainThreadLayoutState != oldMainThreadLayoutState);
+      componentRootId = mRoot.getId();
