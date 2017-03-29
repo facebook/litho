@@ -837,3 +837,7 @@ public class TreeDiffingTest {
         firstLayoutState.getDiffTree());
 
     assertFalse(secondComponent.wasMeasureCalled());
+  }
+
+  @Test
+  public void testDiffTreeUsedIfMeasureSpecsAreSame() {

@@ -342,3 +342,5 @@ public class ComponentView extends ComponentHost {
     }
 
     mMountState.mount(layoutState, currentVisibleArea);
+  }
+
