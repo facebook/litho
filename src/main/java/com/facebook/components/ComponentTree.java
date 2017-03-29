@@ -1272,3 +1272,9 @@ public class ComponentTree {
     public Builder layoutThreadLooper(Looper looper) {
       if (looper != null) {
         layoutThreadHandler = new DefaultLayoutHandler(looper);
+      }
+
+      return this;
+    }
+
+    /**
