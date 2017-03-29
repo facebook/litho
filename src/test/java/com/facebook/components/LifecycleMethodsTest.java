@@ -151,3 +151,11 @@ public class LifecycleMethodsTest {
     @Override
     protected void onUnmount(
         ComponentContext c,
+        Object mountedContent,
+        Component<?> component) {
+      LifecycleMethodsInstance instance = (LifecycleMethodsInstance) component;
+      instance.setCurrentStep(LifecycleStep.ON_UNMOUNT);
+    }
+
+    @Override
+    protected void onBind(

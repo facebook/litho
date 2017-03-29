@@ -65,3 +65,6 @@ public class ComponentHostTest {
   private Component<?> mDrawableComponent;
   private Component<?> mViewComponent;
   private ComponentContext mContext;
+
+  @Before
+  public void setup() throws Exception {

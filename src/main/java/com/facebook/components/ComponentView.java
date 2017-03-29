@@ -86,3 +86,5 @@ public class ComponentView extends ComponentHost {
             MeasureSpec.makeMeasureSpec(child.getWidth(), MeasureSpec.EXACTLY),
             MeasureSpec.makeMeasureSpec(child.getHeight(), MeasureSpec.EXACTLY));
         child.layout(child.getLeft(), child.getTop(), child.getRight(), child.getBottom());
+      }
+

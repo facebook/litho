@@ -164,3 +164,14 @@ public class MountStateRemountEventHandlerTest {
     });
 
     final ComponentClickListener listener = MountState.getComponentClickListener(componentView);
+    assertNotNull(listener);
+    assertNull(listener.getEventHandler());
+  }
+
+  @Test
+  public void testUnsetLongClickHandler() {
+    final ComponentView componentView = ComponentTestHelper.mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {

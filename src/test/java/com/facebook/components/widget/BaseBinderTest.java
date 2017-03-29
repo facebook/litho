@@ -71,3 +71,4 @@ public class BaseBinderTest {
     mView.addView(mComponentView2);
 
     mBinder = new MyTestComponentBinder(context, mItems);
+

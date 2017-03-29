@@ -26,3 +26,5 @@ import android.text.Layout.Alignment;
 import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.TextUtils;
+import android.text.TextUtils.TruncateAt;
+import android.text.style.ClickableSpan;
