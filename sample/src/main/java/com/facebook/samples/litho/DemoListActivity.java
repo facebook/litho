@@ -23,3 +23,6 @@ public class DemoListActivity extends AppCompatActivity {
 
     final ComponentView componentView = new ComponentView(this);
     final ComponentContext context = new ComponentContext(this);
+
+    Demos.initialize(context);
+
