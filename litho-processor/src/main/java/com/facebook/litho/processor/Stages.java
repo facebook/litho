@@ -2812,3 +2812,19 @@ public class Stages {
       }
     }
 
+    for (TypeElement event : mEventDeclarations) {
+      propsBuilderClassBuilder.addMethods(
+          new PropsBuilderMethodsSpecBuilder()
+              .propParameter(
+                  new PropParameter(
+                      new Parameter(
+                          eventHandlerClass,
+                          getEventHandlerInstanceName(event.getSimpleName().toString())),
+                      true,
+                      ResType.NONE,
+                      Collections.<ClassName>emptyList()))
+              .implName(getImplMemberInstanceName())
+              .builderClass(propsBuilderClassName)
+              .build());
+    }
+
