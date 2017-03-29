@@ -26,3 +26,6 @@ public class ComponentsProcessingException extends PrintableException {
   }
 
   public void print(Messager messager) {
+    messager.printMessage(Diagnostic.Kind.ERROR, getMessage(), element);
+  }
+}

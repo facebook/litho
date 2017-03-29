@@ -22,3 +22,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
 public final class ResourceDrawableReference extends ReferenceLifecycle<Drawable> {
 
   private static ResourceDrawableReference sInstance;
+
+  private static final Pools.SynchronizedPool<PropsBuilder> mBuilderPool =
+      new Pools.SynchronizedPool<PropsBuilder>(2);
+

@@ -141,3 +141,5 @@ public class ComponentImplGenerator {
     final ImmutableList<PropModel> props = specModel.getProps();
 
     for (PropModel prop : props) {
+      final FieldSpec.Builder fieldBuilder = FieldSpec.builder(prop.getType(), prop.getName())
+          .addAnnotation(Prop.class);

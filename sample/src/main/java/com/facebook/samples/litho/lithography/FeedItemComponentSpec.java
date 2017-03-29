@@ -46,3 +46,5 @@ public class FeedItemComponentSpec {
             FooterComponent.create(c)
                 .text(artist.biography))
         .build();
+  }
+}

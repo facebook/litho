@@ -41,3 +41,12 @@ public class RequiredPropsTest {
     assertTrue(
         "Error message did not mention the missing required prop",
         error.contains("text"));
+  }
+
+  @Test
+  public void testWithRequiredProps() {
+    Text.create(mContext)
+        .text("text")
+        .build();
+  }
+}

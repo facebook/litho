@@ -29,3 +29,60 @@ public class TestViewComponent extends ComponentLifecycle {
   private static final Pools.SynchronizedPool<Builder> mBuilderPool =
       new Pools.SynchronizedPool<>(2);
 
+  private final boolean mCallsShouldUpdateOnMount;
+  private final boolean mIsPureRender;
+  private final boolean mCanMeasure;
+  private final boolean mCanMountIncrementally;
+
+  private synchronized static TestViewComponent get(
+      boolean callsShouldUpdateOnMount,
+      boolean isPureRender,
+      boolean canMeasure,
+      boolean canMountIncrementally) {
+    for (TestViewComponent lifecycle : sInstances) {
+      if (lifecycle.mCallsShouldUpdateOnMount == callsShouldUpdateOnMount &&
+          lifecycle.mIsPureRender == isPureRender &&
+          lifecycle.mCanMeasure == canMeasure &&
+          lifecycle.mCanMountIncrementally == canMountIncrementally) {
+        return lifecycle;
+      }
+    }
+
+    final TestViewComponent lifecycle = new TestViewComponent(
+        callsShouldUpdateOnMount,
+        isPureRender,
+        canMeasure,
+        canMountIncrementally);
+
+    sInstances.add(lifecycle);
+
+    return lifecycle;
+  }
+
+  private TestViewComponent(
+      boolean callsShouldUpdateOnMount,
+      boolean isPureRender,
+      boolean canMeasure,
+      boolean canMountIncrementally) {
+    super();
+
+    mCallsShouldUpdateOnMount = callsShouldUpdateOnMount;
+    mIsPureRender = isPureRender;
+    mCanMeasure = canMeasure;
+    mCanMountIncrementally = canMountIncrementally;
+  }
+
+  @Override
+  public boolean shouldUpdate(Component previous, Component next) {
+    return !next.equals(previous);
+  }
+
+  @Override
+  protected boolean callsShouldUpdateOnMount() {
+    return mCallsShouldUpdateOnMount;
+  }
+
+  @Override
+  protected boolean isPureRender() {
+    return mIsPureRender;
+  }
