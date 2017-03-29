@@ -547,3 +547,44 @@ class MountState {
 
     if (useUpdateValueFromLayoutOutput) {
       if (updateState == LayoutOutput.STATE_UPDATED) {
+
+        // Check for incompatible ReferenceLifecycle.
+        if (currentLifecycle instanceof DrawableComponent
+            && nextLifecycle instanceof DrawableComponent
+            && currentLifecycle.shouldComponentUpdate(currentComponent, nextComponent)) {
+
+          if (logger != null) {
+            ComponentsLogger.LayoutOutputLog logObj = new ComponentsLogger.LayoutOutputLog();
+
+            logObj.currentId = indexToItemMap.keyAt(
+                indexToItemMap.indexOfValue(currentMountItem));
+            logObj.currentLifecycle = currentLifecycle.toString();
+
+            logObj.nextId = layoutOutput.getId();
+            logObj.nextLifecycle = nextLifecycle.toString();
+
+            for (int i = 0; i < layoutOutputsIds.length; i++) {
+              if (layoutOutputsIds[i] == logObj.currentId) {
+                if (logObj.currentIndex == -1) {
+                  logObj.currentIndex = i;
+                }
+
+                logObj.currentLastDuplicatedIdIndex = i;
+              }
+            }
+
+            if (logObj.nextId == logObj.currentId) {
+              logObj.nextIndex = logObj.currentIndex;
+              logObj.nextLastDuplicatedIdIndex = logObj.currentLastDuplicatedIdIndex;
+            } else {
+              for (int i = 0; i < layoutOutputsIds.length; i++) {
+                if (layoutOutputsIds[i] == logObj.nextId) {
+                  if (logObj.nextIndex == -1) {
+                    logObj.nextIndex = i;
+                  }
+
+                  logObj.nextLastDuplicatedIdIndex = i;
+                }
+              }
+            }
+
