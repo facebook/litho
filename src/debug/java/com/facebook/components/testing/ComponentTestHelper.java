@@ -131,3 +131,32 @@ public final class ComponentTestHelper {
     return mountComponent(
         context,
         componentView,
+        component,
+        false,
+        width,
+        height);
+  }
+
+  /**
+   * Mount a component into a component view.
+   *
+   * @param context A components context
+   * @param componentView The view to mount the component into
+   * @param component The component to mount
+   * @param incrementalMountEnabled States whether incremental mount is enabled
+   * @param width The width of the resulting view
+   * @param height The height of the resulting view
+   * @return A ComponentView with the component mounted in it.
+   */
+  public static ComponentView mountComponent(
+      ComponentContext context,
+      ComponentView componentView,
+      Component component,
+      boolean incrementalMountEnabled,
+      int width,
+      int height) {
+    return mountComponent(
+        componentView,
+        ComponentTree.create(context, component)
+            .incrementalMount(incrementalMountEnabled)
+            .build(),
