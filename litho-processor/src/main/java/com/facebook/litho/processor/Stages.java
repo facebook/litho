@@ -2324,3 +2324,4 @@ public class Stages {
                 ClassNames.COMPONENT,
                 ClassName.bestGuess(getSimpleClassName())),
             "impl")
+        .addStatement(
