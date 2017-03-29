@@ -279,3 +279,5 @@ class TransitionKeySet implements TransitionListener {
    * @param keyStatus the status of the key to be animated.
    * @param listener listener to be notified when the set of transitions finished.
    * @param oldRunningTransitions previous running transitions to recover from their state.
+   * @param interruptedValues interrupted values from previous transition if any which might be used
+   *                          instead of start values.
