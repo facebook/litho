@@ -307,3 +307,4 @@ public final class ComponentTestHelper {
     final ComponentView componentView = new ComponentView(context);
     componentView.setComponent(componentTree);
 
+    componentView.measure(widthSpec, heightSpec);
