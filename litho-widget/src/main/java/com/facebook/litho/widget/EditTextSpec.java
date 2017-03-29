@@ -364,3 +364,4 @@ class EditTextSpec {
     editText.setLineSpacing(extraSpacing, spacingMultiplier);
     editText.setTypeface(typeface, textStyle);
     editText.setGravity(gravity);
+
