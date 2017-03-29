@@ -235,3 +235,37 @@ public class RecyclerBinder implements Binder<RecyclerView> {
               position,
               childrenWidthSpec,
               childrenHeightSpec,
+              mLayoutInfo.getScrollDirection());
+
+          computeLayout = false;
+        } else {
+          computeLayout = position >= mCurrentFirstVisiblePosition &&
+              position < mCurrentFirstVisiblePosition + mRange.estimatedViewportCount;
+        }
+      } else {
+        computeLayout = false;
+      }
+    }
+
+    if (computeLayout) {
+      holder.computeLayoutSync(mComponentContext, childrenWidthSpec, childrenHeightSpec, null);
+    }
+    mInternalAdapter.notifyItemInserted(position);
+
+    computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+  }
+
+  /**
+   * See {@link RecyclerBinder#updateItemAt(int, Component)}.
+   */
+  @UiThread
+  public final void updateItemAt(int position, Component component) {
+    updateItemAt(position, ComponentInfo.create().component(component).build());
+  }
+
+  /**
+   * Updates the item at position. The {@link RecyclerView} gets notified immediately about the item
+   * being updated. If the item's position falls within the currently visible range, the layout is
+   * immediately computed on the UiThread.
+   */
+  @UiThread
