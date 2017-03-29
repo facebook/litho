@@ -263,3 +263,5 @@ class MountState {
     }
 
     ComponentsSystrace.endSection();
+  }
+
