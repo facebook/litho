@@ -834,3 +834,5 @@ class LayoutState {
     }
 
     final LayoutOutput hostLayoutOutput = createHostLayoutOutput(layoutState, node);
+
+    // The component of the hostLayoutOutput will be set later after all the
