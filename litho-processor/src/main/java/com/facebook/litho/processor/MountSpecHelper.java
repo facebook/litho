@@ -499,3 +499,4 @@ public class MountSpecHelper extends ComponentSpecHelper {
     generatePopulatesAccessibilityTrue();
   }
 
+  private void generateOnPopulateAccessibilityNode(ExecutableElement onPopulateAccessibilityNode) {
