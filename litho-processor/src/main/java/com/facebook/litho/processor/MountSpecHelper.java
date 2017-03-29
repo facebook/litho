@@ -475,3 +475,4 @@ public class MountSpecHelper extends ComponentSpecHelper {
           "getExtraAccessibilityNodesCount().");
     }
 
+    final ExecutableElement onCreateMountContent = Utils.getAnnotatedMethod(
