@@ -303,3 +303,90 @@ public class BinderTreeCollectionTest {
 
     assertEquals(originalSize - 4, mBinderTreeCollection.size());
     assertEquals(treeAtPosition1, mBinderTreeCollection.get(1));
+    assertNull(mBinderTreeCollection.get(2));
+    assertNull(mBinderTreeCollection.get(3));
+    assertNull(mBinderTreeCollection.get(4));
+    assertNull(mBinderTreeCollection.get(5));
+    assertEquals(treeAtPosition2, mBinderTreeCollection.get(6));
+    assertEquals(treeAtPosition3, mBinderTreeCollection.get(7));
+    assertEquals(treeAtPosition8, mBinderTreeCollection.get(8));
+    assertEquals(treeAtPositionLast, mBinderTreeCollection.get(originalSize));
+  }
+
+  @Test
+  public void testShiftRangeRightStartBeforeFirstPosition() throws Exception {
+    int originalSize = mBinderTreeCollection.size();
+    int positionStart = 0;
+    int itemCount = 4;
+    int shiftBy = 2;
+
+    ComponentTree treeAtPosition1 = mBinderTreeCollection.get(1);
+    ComponentTree treeAtPosition2 = mBinderTreeCollection.get(2);
+   ComponentTree treeAtPositionLast = mBinderTreeCollection.get(originalSize);
+
+    Whitebox.invokeMethod(
+        mBinderTreeCollection,
+        "shiftRangeRight",
+        positionStart,
+        itemCount,
+        shiftBy);
+
+    assertEquals(originalSize - 2, mBinderTreeCollection.size());
+    assertNull(mBinderTreeCollection.get(1));
+    assertNull(mBinderTreeCollection.get(2));
+    assertEquals(treeAtPosition1, mBinderTreeCollection.get(3));
+    assertEquals(treeAtPosition2, mBinderTreeCollection.get(4));
+    assertEquals(treeAtPositionLast, mBinderTreeCollection.get(originalSize));
+  }
+
+  @Test
+  public void testShiftRangeLeft() throws Exception {
+    int originalSize = mBinderTreeCollection.size();
+    int positionStart = 4;
+    int itemCount = 4;
+    int shiftBy = 2;
+
+    ComponentTree treeAtPosition1 = mBinderTreeCollection.get(1);
+    ComponentTree treeAtPosition4 = mBinderTreeCollection.get(4);
+    ComponentTree treeAtPosition7 = mBinderTreeCollection.get(7);
+    ComponentTree treeAtPosition8 = mBinderTreeCollection.get(8);
+    ComponentTree treeAtPositionLast = mBinderTreeCollection.get(originalSize);
+
+    Whitebox.invokeMethod(
+        mBinderTreeCollection,
+        "shiftRangeLeft",
+        positionStart,
+        itemCount,
+        shiftBy);
+
+    assertEquals(originalSize - 2, mBinderTreeCollection.size());
+    assertEquals(treeAtPosition1, mBinderTreeCollection.get(1));
+    assertEquals(treeAtPosition4, mBinderTreeCollection.get(2));
+    assertEquals(treeAtPosition7, mBinderTreeCollection.get(5));
+    assertNull(mBinderTreeCollection.get(6));
+    assertNull(mBinderTreeCollection.get(7));
+    assertEquals(treeAtPosition8, mBinderTreeCollection.get(8));
+    assertEquals(treeAtPositionLast, mBinderTreeCollection.get(originalSize));
+  }
+
+  @Test
+  public void testShiftRangeLeftSmallerCount() throws Exception {
+    int originalSize = mBinderTreeCollection.size();
+    int positionStart = 4;
+    int itemCount = 2;
+    int shiftBy = 3;
+
+    ComponentTree treeAtPosition4 = mBinderTreeCollection.get(4);
+    ComponentTree treeAtPosition5 = mBinderTreeCollection.get(5);
+    ComponentTree treeAtPosition6 = mBinderTreeCollection.get(6);
+    ComponentTree treeAtPositionLast = mBinderTreeCollection.get(originalSize);
+
+    Whitebox.invokeMethod(
+        mBinderTreeCollection,
+        "shiftRangeLeft",
+        positionStart,
+        itemCount,
+        shiftBy);
+
+    assertEquals(originalSize - 3, mBinderTreeCollection.size());
+    assertEquals(treeAtPosition4, mBinderTreeCollection.get(1));

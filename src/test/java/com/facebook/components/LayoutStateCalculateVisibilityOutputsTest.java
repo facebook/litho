@@ -178,3 +178,5 @@ public class LayoutStateCalculateVisibilityOutputsTest {
                     .invisibleHandler(c.newEventHandler(2)))
             .child(
                 Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    .child(
+                        TestLayoutComponent.create(c)

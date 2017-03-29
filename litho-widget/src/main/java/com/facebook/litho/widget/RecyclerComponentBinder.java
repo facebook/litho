@@ -252,3 +252,4 @@ public abstract class RecyclerComponentBinder<L extends RecyclerView.LayoutManag
   }
 
   private static class ComponentViewHolder extends RecyclerView.ViewHolder {
+
