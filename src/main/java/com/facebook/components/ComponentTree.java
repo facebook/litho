@@ -453,3 +453,20 @@ public class ComponentTree {
       throw new IllegalArgumentException(
           "Base view context differs, view context is: " + view.getContext() +
               ", ComponentTree context is: " + mContext);
+    }
+
+    mComponentView = view;
+  }
+
+  void clearComponentView() {
+    assertMainThread();
+
+    // Crash if the ComponentTree is mounted to a view.
+    if (mIsAttached) {
+      throw new IllegalStateException(
+          "Clearing the ComponentView while the ComponentTree is attached");
+    }
+
+    mComponentView = null;
+  }
+
