@@ -78,3 +78,5 @@ public class LayoutStateRecyclingTest {
             .build();
       }
     };
+
+    LayoutState layoutState = LayoutState.calculate(

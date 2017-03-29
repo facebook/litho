@@ -45,3 +45,7 @@ public class LayoutStateSpecTest {
     Whitebox.setInternalState(mLayoutState, "mComponent", mComponent);
     Whitebox.setInternalState(mLayoutState, "mWidthSpec", mWidthSpec);
     Whitebox.setInternalState(mLayoutState, "mHeightSpec", mHeightSpec);
+  }
+
+  @Test
+  public void testCompatibleInputAndSpec() {

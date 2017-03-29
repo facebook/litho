@@ -26,3 +26,4 @@ import com.facebook.components.specmodels.model.SpecModel;
 
 import com.squareup.javapoet.TypeSpec;
 
+@SupportedSourceVersion(SourceVersion.RELEASE_7)

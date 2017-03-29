@@ -86,3 +86,4 @@ public interface ClassNames {
   ClassName HAS_EVENT_DISPATCHER_CLASSNAME =
       ClassName.bestGuess("com.facebook.components.HasEventDispatcher");
   ClassName EVENT_HANDLER = ClassName.bestGuess("com.facebook.components.EventHandler");
+}

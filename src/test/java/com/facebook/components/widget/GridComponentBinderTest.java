@@ -58,3 +58,4 @@ public class GridComponentBinderTest {
   private ShadowLooper mLayoutThreadShadowLooper;
 
   @Before
+  public void setup() throws Exception {
