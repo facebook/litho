@@ -813,3 +813,7 @@ public class ComponentHost extends ViewGroup {
       return;
     }
 
+    ViewCompat.setAccessibilityDelegate(
+        this,
+        isAccessibilityEnabled ? mComponentAccessibilityDelegate : null);
+    mIsComponentAccessibilityDelegateSet = isAccessibilityEnabled;
