@@ -89,3 +89,4 @@ class RecyclerSpec {
     }
   }
 
+  @OnMount
