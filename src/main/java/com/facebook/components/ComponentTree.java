@@ -367,3 +367,9 @@ public class ComponentTree {
           " is not enabled");
     }
 
+    // Per ComponentTree visible area. Because ComponentViews can be nested and mounted
+    // not in "depth order", this variable cannot be static.
+    final Rect currentVisibleArea = ComponentsPools.acquireRect();
+
+    if (getVisibleRect(currentVisibleArea)) {
+      mountComponent(currentVisibleArea);
