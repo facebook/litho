@@ -162,3 +162,4 @@ public class BaseBinderTest {
 
   @Test
   public void testNotifyRangeInserted() {
+    mount();

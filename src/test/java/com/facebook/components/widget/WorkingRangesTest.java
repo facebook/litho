@@ -603,3 +603,4 @@ public class WorkingRangesTest {
     }
 
     @Override
+    public boolean isAsyncLayoutEnabled() {
