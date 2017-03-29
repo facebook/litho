@@ -603,3 +603,13 @@ public class MountSpecHelper extends ComponentSpecHelper {
             .build());
   }
 
+  private void generateImplementsExtraAccessibilityNodes() {
+    mTypeSpec.addMethod(
+        MethodSpec.methodBuilder("implementsExtraAccessibilityNodes")
+          .addAnnotation(Override.class)
+          .addModifiers(Modifier.PUBLIC)
+          .returns(TypeName.BOOLEAN)
+          .addStatement("return true")
+          .build());
+  }
+
