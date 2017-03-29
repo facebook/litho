@@ -1062,3 +1062,4 @@ public class ComponentTree {
       mainThreadLayoutState = null;
     }
 
+    if (backgroundLayoutState != null) {
