@@ -789,3 +789,7 @@ class LayoutState {
   }
 
   static void releaseNodeTree(InternalNode node, boolean isNestedTree) {
+    if (node == NULL_LAYOUT) {
+      throw new IllegalArgumentException("Cannot release a null node tree");
+    }
+
