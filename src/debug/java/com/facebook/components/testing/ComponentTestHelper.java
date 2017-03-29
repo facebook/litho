@@ -301,3 +301,6 @@ public final class ComponentTestHelper {
     final TestComponentTree componentTree =
         TestComponentTree.create(context, component)
             .incrementalMount(false)
+            .layoutDiffing(true)
+            .build();
+
