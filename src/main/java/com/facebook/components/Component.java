@@ -80,3 +80,5 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
     }
 
     public final ComponentLayout.Builder withLayout() {
+      // calling build() which will release this builder setting these members to null/0.
+      // We must capture their value before that happens.

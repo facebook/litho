@@ -145,3 +145,5 @@ class MountState {
   /**
    * Mount the layoutState on the pre-set HostView.
    * @param layoutState
+   * @param localVisibleRect If this variable is null, then mount everything, since incremental
+   *                         mount is not enabled.
