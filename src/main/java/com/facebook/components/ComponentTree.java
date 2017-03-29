@@ -1040,3 +1040,5 @@ public class ComponentTree {
    */
   public void release() {
     LayoutState mainThreadLayoutState;
+    LayoutState backgroundLayoutState;
+    synchronized (this) {
