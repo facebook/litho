@@ -1660,3 +1660,4 @@ public class Stages {
     }
 
     writeMethodSpec(methodBuilder.build());
+  }
