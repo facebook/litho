@@ -41,3 +41,5 @@ import com.facebook.litho.annotations.OnPrepare;
 import com.facebook.litho.annotations.OnUnbind;
 import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.ShouldUpdate;
+import com.facebook.components.specmodels.model.ClassNames;
+import com.facebook.components.specmodels.model.SpecModel;

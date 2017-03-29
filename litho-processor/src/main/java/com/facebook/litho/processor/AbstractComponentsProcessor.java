@@ -57,3 +57,10 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
               typeElement,
               getDependencyInjectionGenerator(typeElement));
         } else if (element.getAnnotation(MountSpec.class) != null) {
+          final MountSpecModel mountSpecModel =
+              MountSpecModelFactory.create(
+                  processingEnv.getElementUtils(),
+                  (TypeElement) element,
+                  getDependencyInjectionGenerator((TypeElement) element));
+          validate(mountSpecModel);
+

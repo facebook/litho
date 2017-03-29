@@ -53,3 +53,6 @@ import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
 import com.facebook.components.javapoet.JPUtil;
 import com.facebook.components.processor.GetTreePropsForChildrenMethodBuilder.CreateTreePropMethodData;
+import com.facebook.components.specmodels.model.ClassNames;
+import com.facebook.components.specmodels.model.PropDefaultModel;
+import com.facebook.components.specmodels.processor.PropDefaultsExtractor;
