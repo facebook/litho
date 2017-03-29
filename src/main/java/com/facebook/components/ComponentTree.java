@@ -929,3 +929,4 @@ public class ComponentTree {
 
     if (previousLayoutState != null) {
       previousLayoutState.releaseRef();
+      previousLayoutState = null;
