@@ -261,3 +261,4 @@ public final class ComponentTestHelper {
    * @param component The component which to get the subcomponents of
    * @return The subcomponents of the given component
    */
+  public static List<SubComponent> getSubComponents(ComponentContext context, Component component) {

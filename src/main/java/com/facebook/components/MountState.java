@@ -1038,3 +1038,4 @@ class MountState {
   }
 
   private static void unsetViewAttributes(MountItem item) {
+    final Component<?> component = item.getComponent();
