@@ -1159,3 +1159,4 @@ public class ComponentTree {
        contextWithStateHandler =
           new ComponentContext(context, StateHandler.acquireNewInstance(mStateHandler));
     }
+
