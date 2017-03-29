@@ -33,3 +33,4 @@ import com.facebook.components.specmodels.processor.TypeVariablesExtractor;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.TypeVariableName;
