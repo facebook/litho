@@ -294,3 +294,4 @@ public class ComponentHost extends ViewGroup {
   /**
    * @return the {@link MountItem} that was mounted with the given index.
    */
+  MountItem getMountItemAt(int index) {
