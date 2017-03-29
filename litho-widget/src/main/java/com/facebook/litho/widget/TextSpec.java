@@ -545,3 +545,6 @@ class TextSpec {
         highlightColor,
         clickableSpans);
 
+    if (text instanceof MountableCharSequence) {
+      ((MountableCharSequence) text).onMount(textDrawable);
+    }
