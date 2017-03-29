@@ -521,3 +521,5 @@ public abstract class ComponentLifecycle implements EventDispatcher {
    */
   protected void transferState(
       ComponentContext c,
+      StateContainer previousStateContainer,
+      Component component) {

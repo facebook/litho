@@ -2577,3 +2577,4 @@ public class Stages {
     return new PropsBuilderMethodsSpecBuilder()
         .index(requiredIndex)
         .propParameter(propParameter)
+        .implName(getImplMemberInstanceName())
