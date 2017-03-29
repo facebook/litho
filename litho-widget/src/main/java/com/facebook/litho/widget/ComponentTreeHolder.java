@@ -134,3 +134,10 @@ public class ComponentTreeHolder {
     clearStateHandler();
     mComponentInfo.release();
     mComponentInfo = null;
+    mLayoutHandler = null;
+    sComponentTreeHoldersPool.release(this);
+  }
+
+  @GuardedBy("this")
+  private void ensureComponentTree(ComponentContext context) {
+    if (mComponentTree == null) {
