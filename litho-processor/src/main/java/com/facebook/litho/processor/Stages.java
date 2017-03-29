@@ -1385,3 +1385,6 @@ public class Stages {
 
     for (VariableElement e : eventParamElements) {
       eventParams.add(new Parameter(ClassName.get(e.asType()), e.getSimpleName().toString()));
+      for (TypeMirror typeParam : getTypeVarArguments(e.asType())) {
+        typeParameters.add(typeParam.toString());
+      }
