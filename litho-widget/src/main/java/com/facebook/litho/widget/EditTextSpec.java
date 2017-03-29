@@ -365,3 +365,8 @@ class EditTextSpec {
     editText.setTypeface(typeface, textStyle);
     editText.setGravity(gravity);
 
+    editText.setFocusable(editable);
+    editText.setFocusableInTouchMode(editable);
+    editText.setClickable(editable);
+    editText.setLongClickable(editable);
+    editText.setCursorVisible(editable);
