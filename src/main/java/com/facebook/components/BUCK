@@ -31,3 +31,4 @@ android_library(
         COMPONENTS_TEST_TARGET,
     ],
     visibility = [
+        COMPONENTS_VISIBILITY,
