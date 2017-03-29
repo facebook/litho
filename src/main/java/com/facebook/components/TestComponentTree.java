@@ -75,3 +75,6 @@ public class TestComponentTree extends ComponentTree {
       extractSubComponents(child, output);
     }
   }
+
+  public static class Builder extends ComponentTree.Builder {
+

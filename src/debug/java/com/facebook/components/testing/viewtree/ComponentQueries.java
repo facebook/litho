@@ -31,3 +31,4 @@ class ComponentQueries {
         return true;
       }
     }
+
