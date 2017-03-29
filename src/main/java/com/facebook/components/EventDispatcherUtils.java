@@ -213,3 +213,5 @@ class EventDispatcherUtils {
     final EventDispatcher eventDispatcher = eventHandler.mHasEventDispatcher.getEventDispatcher();
     eventDispatcher.dispatchOnEvent(eventHandler, sOnInitializeAccessibilityNodeInfoEvent);
 
+    sOnInitializeAccessibilityNodeInfoEvent.host = null;
+    sOnInitializeAccessibilityNodeInfoEvent.info = null;
