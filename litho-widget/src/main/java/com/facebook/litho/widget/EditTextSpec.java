@@ -342,3 +342,4 @@ class EditTextSpec {
       int textStyle,
       Typeface typeface,
       Layout.Alignment textAlignment,
+      int gravity,
