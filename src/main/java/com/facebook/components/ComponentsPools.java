@@ -201,3 +201,22 @@ public class ComponentsPools {
     return node;
   }
 
+  static synchronized NodeInfo acquireNodeInfo() {
+    NodeInfo nodeInfo = sNodeInfoPool.acquire();
+    if (nodeInfo == null) {
+      nodeInfo = new NodeInfo();
+    }
+
+    return nodeInfo;
+  }
+
+  static synchronized ViewNodeInfo acquireViewNodeInfo() {
+    ViewNodeInfo viewNodeInfo = sViewNodeInfoPool.acquire();
+    if (viewNodeInfo == null) {
+      viewNodeInfo = new ViewNodeInfo();
+    }
+
+    return viewNodeInfo;
+  }
+
+  static MountItem acquireRootHostMountItem(

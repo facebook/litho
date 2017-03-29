@@ -343,3 +343,9 @@ public abstract class PagerBinder extends BaseBinder<
 
       updateWorkingRange(start, count, flags);
     }
+
+    public int getHalfWorkingRangeSize() {
+      // The range is composed of the pages before the viewport, the pages after the viewport and
+      // the ones in the viewport itself.
+      return mPagerOffscreenLimit + ADDITIONAL_ADAPTER_PAGES;
+    }
