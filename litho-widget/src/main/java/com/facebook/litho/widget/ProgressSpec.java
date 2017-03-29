@@ -17,3 +17,4 @@ import android.graphics.drawable.Drawable;
 import android.widget.ProgressBar;
 
 import com.facebook.R;
+import com.facebook.components.ComponentContext;
