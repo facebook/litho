@@ -640,3 +640,27 @@ public class RecyclerBinderTest {
         mHoldersForComponents.get(components.get(0).getComponent());
     final TestComponentTreeHolder movedHolderTwo =
         mHoldersForComponents.get(components.get(1).getComponent());
+
+    movedHolderOne.mLayoutSyncCalled = false;
+    movedHolderOne.mLayoutAsyncCalled = false;
+    movedHolderOne.mDidAcquireStateHandler = false;
+
+    movedHolderTwo.mLayoutSyncCalled = false;
+    movedHolderTwo.mLayoutAsyncCalled = false;
+    movedHolderTwo.mDidAcquireStateHandler = false;
+
+    mRecyclerBinder.moveItem(0, 1);
+
+    assertTrue(movedHolderOne.isTreeValid());
+    assertFalse(movedHolderOne.mLayoutAsyncCalled);
+    assertFalse(movedHolderOne.mLayoutSyncCalled);
+    assertFalse(movedHolderOne.mDidAcquireStateHandler);
+
+    assertTrue(movedHolderTwo.isTreeValid());
+    assertFalse(movedHolderTwo.mLayoutAsyncCalled);
+    assertFalse(movedHolderTwo.mLayoutSyncCalled);
+    assertFalse(movedHolderTwo.mDidAcquireStateHandler);
+  }
+
+  @Test
+  public void testInsertInVisibleRange() {
