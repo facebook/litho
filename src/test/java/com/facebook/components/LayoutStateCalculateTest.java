@@ -1397,3 +1397,4 @@ public class LayoutStateCalculateTest {
                     .heightDip(30))
             .child(
                 TestDrawableComponent.create(c, true, true, true, true, false)
+                    .withLayout()
