@@ -806,3 +806,33 @@ public class RecyclerBinderTest {
     private TestComponentTreeHolder(ComponentInfo componentInfo) {
       mComponentInfo = componentInfo;
     }
+
+    @Override
+    protected void release() {
+      mReleased = true;
+    }
+
+    @Override
+    protected synchronized void acquireStateHandlerAndReleaseTree() {
+      mComponentTree = null;
+      mTreeValid = false;
+      mLayoutAsyncCalled = false;
+      mLayoutSyncCalled = false;
+      mDidAcquireStateHandler = true;
+    }
+
+    @Override
+    protected synchronized void invalidateTree() {
+      mTreeValid = false;
+      mLayoutAsyncCalled = false;
+      mLayoutSyncCalled = false;
+    }
+
+    @Override
+    protected synchronized void computeLayoutAsync(
+        ComponentContext context,
+        int widthSpec,
+        int heightSpec) {
+      mComponentTree = mock(ComponentTree.class);
+      mTreeValid = true;
+      mLayoutAsyncCalled = true;
