@@ -554,3 +554,69 @@ public class MountStateIncrementalMountTest {
                     Layout.create(c, child1).flexShrink(0)
                         .widthPx(10)
                         .heightPx(10))
+                .build();
+          }
+        });
+
+    componentView.getComponent().mountComponent(new Rect(0, -10, 10, -5));
+    assertFalse(child1.isMounted());
+    assertTrue(child1.wasOnUnbindCalled());
+    assertTrue(child1.wasOnUnmountCalled());
+
+    componentView.getComponent().mountComponent(new Rect(0, 0, 10, 5));
+    assertTrue(child1.isMounted());
+
+    child1.resetInteractions();
+
+    componentView.getComponent().mountComponent(new Rect(0, 5, 10, 15));
+    assertTrue(child1.isMounted());
+
+    assertFalse(child1.wasOnBindCalled());
+    assertFalse(child1.wasOnMountCalled());
+    assertFalse(child1.wasOnUnbindCalled());
+    assertFalse(child1.wasOnUnmountCalled());
+  }
+
+  private void verifyLoggingAndResetLogger(int mountedCount, int unmountedCount) {
+    verify(mComponentsLogger).eventAddParam(
+        eq(EVENT_MOUNT),
+        any(ComponentTree.class),
+        eq(PARAM_MOUNTED_COUNT),
+        eq(String.valueOf(mountedCount)));
+    verify(mComponentsLogger).eventAddParam(
+        eq(EVENT_MOUNT),
+        any(ComponentTree.class),
+        eq(PARAM_UNMOUNTED_COUNT),
+        eq(String.valueOf(unmountedCount)));
+
+    reset(mComponentsLogger);
+  }
+
+  private static ComponentView getMockComponentViewWithBounds(Rect bounds) {
+    final ComponentView componentView = mock(ComponentView.class);
+    when(componentView.getLeft()).thenReturn(bounds.left);
+    when(componentView.getTop()).thenReturn(bounds.top);
+    when(componentView.getRight()).thenReturn(bounds.right);
+    when(componentView.getBottom()).thenReturn(bounds.bottom);
+    when(componentView.getWidth()).thenReturn(bounds.width());
+    when(componentView.getHeight()).thenReturn(bounds.height());
+
+    return componentView;
+  }
+
+  private static class TestComponentView extends ComponentView {
+    private final Rect mPreviousIncrementalMountBounds = new Rect();
+
+    public TestComponentView(Context context) {
+      super(context);
+    }
+
+    @Override
+    public void performIncrementalMount(Rect visibleRect) {
+      mPreviousIncrementalMountBounds.set(visibleRect);
+    }
+
+    private Rect getPreviousIncrementalMountBounds() {
+      return mPreviousIncrementalMountBounds;
+    }
+  }
