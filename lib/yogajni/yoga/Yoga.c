@@ -2232,3 +2232,5 @@ static void YGNodelayoutImpl(const YGNodeRef node,
     // If the main dimension size isn't known, it is computed based on
     // the line length, so there's no more space left to distribute.
 
+    // If we don't measure with exact main dimension we want to ensure we don't violate min and max
+    if (measureModeMainDim != YGMeasureModeExactly) {
