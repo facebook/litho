@@ -223,3 +223,8 @@ public class ComponentsPools {
       Component<?> component,
       ComponentHost host,
       Object content) {
+    MountItem item = sMountItemPool.acquire();
+    if (item == null) {
+      item = new MountItem();
+    }
+
