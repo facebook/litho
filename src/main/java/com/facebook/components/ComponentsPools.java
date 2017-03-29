@@ -522,3 +522,8 @@ public class ComponentsPools {
   }
 
   @ThreadSafe(enableChecks = false)
+  static void release(TestItem testItem) {
+    testItem.release();
+    sTestItemPool.release(testItem);
+  }
+
