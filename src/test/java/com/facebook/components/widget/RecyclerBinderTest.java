@@ -318,3 +318,4 @@ public class RecyclerBinderTest {
     assertTrue(holder.mLayoutSyncCalled);
 
     for (int i = 1; i <= rangeTotal; i++) {
+      holder = mHoldersForComponents.get(components.get(i).getComponent());
