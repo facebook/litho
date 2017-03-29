@@ -30,3 +30,4 @@ if COMPONENTS_IS_OSS_BUILD:
       COMPONENTS_JNI_TARGET,
     ],
     visibility = [COMPONENTS_VISIBILITY],
+  )

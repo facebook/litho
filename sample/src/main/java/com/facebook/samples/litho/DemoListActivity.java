@@ -29,3 +29,7 @@ public class DemoListActivity extends AppCompatActivity {
     componentView.setComponent(
         ComponentTree.create(context, DemoListComponent.create(context))
             .incrementalMount(false)
+            .build());
+    setContentView(componentView);
+  }
+}

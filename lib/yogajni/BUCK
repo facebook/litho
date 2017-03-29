@@ -29,3 +29,14 @@ if COMPONENTS_IS_OSS_BUILD:
   cxx_library(
     name = 'jni',
     soname = 'libyoga.$(ext)',
+    srcs = glob(['jni/*.cpp']),
+    header_namespace = '',
+    compiler_flags = [
+      '-fno-omit-frame-pointer',
+      '-fexceptions',
+      '-Wall',
+      '-Werror',
+      '-O3',
+      '-std=c++11',
+    ],
+    deps = [

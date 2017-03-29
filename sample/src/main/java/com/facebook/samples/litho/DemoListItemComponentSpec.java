@@ -31,3 +31,7 @@ public class DemoListItemComponentSpec {
   static ComponentLayout onCreateLayout(
       ComponentContext c,
       @Prop final String name) {
+    return Container.create(c)
+        .paddingDip(ALL, 16)
+        .child(
+            Text.create(c)
