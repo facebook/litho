@@ -152,3 +152,4 @@ class LayoutState {
 
   private StateHandler mStateHandler;
 
+  LayoutState() {

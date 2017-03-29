@@ -124,3 +124,5 @@ class TextSpec {
       Output<Integer> maxEms,
       Output<Integer> minWidth,
       Output<Integer> maxWidth,
+      Output<Boolean> isSingleLine,
+      Output<CharSequence> text,
