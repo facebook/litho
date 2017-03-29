@@ -916,3 +916,9 @@ public class ComponentHost extends ViewGroup {
     }
   }
 
+  private void unmountDrawable(int index, MountItem mountItem) {
+    final Drawable contentDrawable = (Drawable) mountItem.getContent();
+    final Drawable drawable = mountItem.getDisplayListDrawable() == null
+        ? contentDrawable
+        : mountItem.getDisplayListDrawable();
+
