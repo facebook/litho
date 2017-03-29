@@ -61,3 +61,5 @@ import static com.facebook.components.ThreadUtils.isMainThread;
 public class ComponentTree {
 
   private static final String TAG = ComponentTree.class.getSimpleName();
+  private static final int SIZE_UNINITIALIZED = -1;
+  // MainThread Looper messages:
