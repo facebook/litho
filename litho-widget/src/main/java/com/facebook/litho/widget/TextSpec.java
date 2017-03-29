@@ -556,3 +556,7 @@ class TextSpec {
       TextDrawable textDrawable,
       @Prop(resType = ResType.STRING) CharSequence text) {
     textDrawable.unmount();
+
+    if (text instanceof MountableCharSequence) {
+      ((MountableCharSequence) text).onUnmount(textDrawable);
+    }
