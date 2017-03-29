@@ -361,3 +361,7 @@ public interface ComponentLayout {
 
     ContainerBuilder foreground(Reference<? extends Drawable> foreground);
     ContainerBuilder foreground(Reference.Builder<? extends Drawable> foregroundBuilder);
+    ContainerBuilder foregroundAttr(@AttrRes int resId, @DrawableRes int defaultResId);
+    ContainerBuilder foregroundAttr(@AttrRes int resId);
+    ContainerBuilder foregroundRes(@DrawableRes int resId);
+    ContainerBuilder foregroundColor(@ColorInt int foregroundColor);
