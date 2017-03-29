@@ -614,3 +614,5 @@ class LayoutState {
           node.getChildAt(i),
           layoutState,
           diffNode);
+    }
+
