@@ -2870,3 +2870,4 @@ public class Stages {
 
     buildMethodBuilder
         .addStatement("$L " + implInstanceName + " = " + implMemberInstanceName, implClassName)
+        .addStatement("release()")
