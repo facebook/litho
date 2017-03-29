@@ -120,3 +120,7 @@ class TextSpec {
       Output<Float> spacingMultiplier,
       Output<Integer> minLines,
       Output<Integer> maxLines,
+      Output<Integer> minEms,
+      Output<Integer> maxEms,
+      Output<Integer> minWidth,
+      Output<Integer> maxWidth,

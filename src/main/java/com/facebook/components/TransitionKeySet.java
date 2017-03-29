@@ -362,3 +362,4 @@ class TransitionKeySet implements TransitionListener {
     return (mChangeTransitions != null && !mChangeTransitions.isEmpty());
   }
 
+  boolean hasDisappearingTransitions() {
