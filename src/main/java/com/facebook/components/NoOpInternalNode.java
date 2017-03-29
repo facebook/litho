@@ -127,3 +127,7 @@ class NoOpInternalNode extends InternalNode {
 
   @Override
   public InternalNode layoutDirection(YogaDirection direction) {
+    return this;
+  }
+
+  @Override
