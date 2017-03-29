@@ -307,3 +307,12 @@ class MountState {
               sTempRect)) {
             visibilityItem.setIsInFocusedRange();
             EventDispatcherUtils.dispatchOnFocused(focusedHandler);
+          }
+        }
+
+        // If the component has not entered the full impression range yet, make sure to update the
+        // information about the visible edges.
+        if (fullImpressionHandler != null && !visibilityItem.isInFullImpressionRange()) {
+          visibilityItem.setVisibleEdges(visibilityOutputBounds, sTempRect);
+
+          if (visibilityItem.isInFullImpressionRange()) {
