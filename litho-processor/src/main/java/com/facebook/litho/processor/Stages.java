@@ -96,3 +96,4 @@ public class Stages {
   private static final int ON_CREATE_INITIAL_STATE = 1;
 
   private final boolean mSupportState;
+

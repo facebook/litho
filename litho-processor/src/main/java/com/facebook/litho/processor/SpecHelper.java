@@ -30,3 +30,4 @@ import java.util.regex.Pattern;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.processor.TypeVariablesExtractor;
 
+import com.squareup.javapoet.JavaFile;
