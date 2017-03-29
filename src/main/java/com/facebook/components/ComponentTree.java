@@ -795,3 +795,4 @@ public class ComponentTree {
       boolean isAsync,
       Size output) {
 
+    synchronized (this) {

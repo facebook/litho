@@ -690,3 +690,8 @@ public class Stages {
   }
 
   /**
+   * Get the list of stages (OnInflate, OnMeasure, OnMount) that are defined for this component.
+   */
+  private void populateStages() {
+    mStages = new ArrayList<>();
+    for (Class<Annotation> stageAnnotation : mStageAnnotations) {
