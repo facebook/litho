@@ -260,3 +260,36 @@ public class LayoutStateCalculateVisibilityOutputsTest {
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .paddingPx(YogaEdge.ALL, 2)
+            .child(new TestNullLayoutComponent())
+            .invisibleHandler(c.newEventHandler(2))
+            .build();
+      }
+    };
+
+    LayoutState layoutState = calculateLayoutState(
+        RuntimeEnvironment.application,
+        component,
+        -1,
+        SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
+        SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY));
+
+    assertEquals(1, layoutState.getVisibilityOutputCount());
+  }
+
+  private static LayoutState calculateLayoutState(
+      Context context,
+      Component<?> component,
+      int componentTreeId,
+      int widthSpec,
+      int heightSpec) {
+
+    return LayoutState.calculate(
+        new ComponentContext(context),
+        component,
+        componentTreeId,
+        widthSpec,
+        heightSpec,
+        false,
+        null);
+  }
+}
