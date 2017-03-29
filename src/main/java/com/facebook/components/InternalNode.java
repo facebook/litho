@@ -120,3 +120,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   // When this flag is set, foreground was explicitly set on this node.
   private static final long PFLAG_FOREGROUND_IS_SET = 1L << 19;
   // When this flag is set, visibleHandler was explicitly set on this node.
+  private static final long PFLAG_VISIBLE_HANDLER_IS_SET = 1L << 20;

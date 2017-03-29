@@ -136,3 +136,5 @@ public class ComponentTreeTest {
     Assert.assertTrue(
         layoutState.isCompatibleComponentAndSpec(
             mComponent.getId(),
+            widthSpec,
+            heightSpec));
