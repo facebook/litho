@@ -89,3 +89,9 @@ public class IncrementalMountUtils {
           "ViewDiagnosticsWrapper must be the same height as the underlying view");
     }
 
+    final int translationX = (int) view.getTranslationX();
+    final int translationY = (int) view.getTranslationY();
+    final int top = view.getTop() + translationY;
+    final int bottom = view.getBottom() + translationY;
+    final int left = view.getLeft() + translationX;
+    final int right = view.getRight() + translationX;

@@ -180,3 +180,11 @@ class TextSpec {
         shadowRadius.set(a.getFloat(attr, 0));
       } else if (attr == R.styleable.Text_android_shadowColor) {
         shadowColor.set(a.getColor(attr, 0));
+      } else if (attr == R.styleable.Text_android_minEms) {
+        minEms.set(a.getInteger(attr, DEFAULT_EMS));
+      } else if (attr == R.styleable.Text_android_maxEms) {
+        maxEms.set(a.getInteger(attr, DEFAULT_EMS));
+      } else if (attr == R.styleable.Text_android_minWidth) {
+        minWidth.set(a.getInteger(attr, DEFAULT_MIN_WIDTH));
+      } else if (attr == R.styleable.Text_android_maxWidth) {
+        maxWidth.set(a.getInteger(attr, DEFAULT_MAX_WIDTH));
