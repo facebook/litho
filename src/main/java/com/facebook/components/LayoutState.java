@@ -1314,3 +1314,7 @@ class LayoutState {
     return root;
   }
 
+  static DiffNode createDiffNode(InternalNode node, DiffNode parent) {
+    ComponentsSystrace.beginSection("diff_node_creation");
+    DiffNode diffNode = ComponentsPools.acquireDiffNode();
+

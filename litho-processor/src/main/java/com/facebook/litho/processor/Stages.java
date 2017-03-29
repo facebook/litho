@@ -1915,3 +1915,14 @@ public class Stages {
     final String implClassName = getImplClassName();
     final String implInstanceName = getImplInstanceName();
 
+    MethodSpec.Builder equalsBuilder = MethodSpec.methodBuilder("equals")
+        .addAnnotation(Override.class)
+        .addModifiers(Modifier.PUBLIC)
+        .returns(TypeName.BOOLEAN)
+        .addParameter(TypeName.OBJECT, "other")
+        .beginControlFlow("if (this == other)")
+        .addStatement("return true")
+        .endControlFlow()
+        .beginControlFlow("if (other == null || getClass() != other.getClass())")
+        .addStatement("return false")
+        .endControlFlow()
