@@ -73,3 +73,9 @@ class EditTextSpec {
   @PropDefault protected static final int hintColor = DEFAULT_HINT_COLOR;
   @PropDefault protected static final ColorStateList hintColorStateList =
       new ColorStateList(DEFAULT_HINT_COLOR_STATE_LIST_STATES,DEFAULT_HINT_COLOR_STATE_LIST_COLORS);
+  @PropDefault protected static final int linkColor = DEFAULT_COLOR;
+  @PropDefault protected static final int textSize = 13;
+  @PropDefault protected static final int textStyle = DEFAULT_TYPEFACE.getStyle();
+  @PropDefault protected static final Typeface typeface = DEFAULT_TYPEFACE;
+  @PropDefault protected static final float spacingMultiplier = 1.0f;
+  @PropDefault protected static final Layout.Alignment textAlignment = ALIGN_NORMAL;

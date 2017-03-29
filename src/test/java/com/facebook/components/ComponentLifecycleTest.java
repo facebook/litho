@@ -269,3 +269,4 @@ public class ComponentLifecycleTest {
     YogaMeasureFunction measureFunction = getMeasureFunction();
 
     try {
+      measureFunction.measure(mNode.mYogaNode, 0, EXACTLY, 0, EXACTLY);
