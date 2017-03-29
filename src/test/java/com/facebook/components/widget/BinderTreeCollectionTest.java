@@ -77,3 +77,9 @@ public class BinderTreeCollectionTest {
     assertEquals(originalSize, mBinderTreeCollection.size());
     assertEquals(newComponentTree, mBinderTreeCollection.get(1));
     assertEquals(secondItem, mBinderTreeCollection.get(2));
+  }
+
+  @Test
+  public void testPutAsNewInsertion() {
+    int originalSize = mBinderTreeCollection.size();
+

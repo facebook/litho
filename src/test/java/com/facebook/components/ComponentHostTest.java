@@ -200,3 +200,4 @@ public class ComponentHostTest {
     assertEquals(mountItem1, mHost.getMountItemAt(0));
     assertEquals(mountItem2, mHost.getMountItemAt(1));
 
+    mHost.moveItem(mountItem2, 2, 0);

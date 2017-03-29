@@ -230,3 +230,4 @@ public class BaseBinderTest {
   }
 
   @Test
+  public void testNotifyItemRemoved() {

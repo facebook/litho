@@ -83,3 +83,7 @@ class MountState {
 
   private long[] mLayoutOutputsIds;
 
+  // True if we are receiving a new LayoutState and we need to completely
+  // refresh the content of the HostComponent. Always set from the main thread.
+  private boolean mIsDirty;
+
