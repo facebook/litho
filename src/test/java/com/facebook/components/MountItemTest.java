@@ -138,3 +138,4 @@ public class MountItemTest {
 
     mountItem.init(
         TestDrawableComponent.create(
+            mContext,

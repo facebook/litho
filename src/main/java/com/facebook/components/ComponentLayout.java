@@ -342,3 +342,8 @@ public interface ComponentLayout {
         YogaEdge edge,
         @Dimension(unit = DP) int value);
 
+    ContainerBuilder wrap(YogaWrap wrap);
+    ContainerBuilder flexDirection(YogaFlexDirection direction);
+    ContainerBuilder justifyContent(YogaJustify justifyContent);
+    ContainerBuilder alignItems(YogaAlign alignItems);
+    ContainerBuilder alignContent(YogaAlign alignContent);
