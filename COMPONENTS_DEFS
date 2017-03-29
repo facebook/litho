@@ -56,3 +56,6 @@ COMPONENTS_GUAVA_TARGET                       = make_dep_path('lib/guava:guava')
 COMPONENTS_DIFFUTILS_TARGET                   = make_dep_path('lib/diff-utils:diff-utils')
 
 # Fresco
+COMPONENTS_FRESCO_TARGET                      = make_dep_path('lib/fresco:fresco')
+COMPONENTS_ROBOLECTRIC_TARGET                 = make_dep_path('lib/robolectric3:robolectric3')
+COMPONENTS_JUNIT_TARGET                       = make_dep_path('lib/junit:junit')

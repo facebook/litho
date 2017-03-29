@@ -67,3 +67,5 @@ public class LayoutStateEventHandlerTest {
         new ComponentContext(RuntimeEnvironment.application),
         mRootComponent,
         -1,
+        mUnspecifiedSizeSpec,
+        mUnspecifiedSizeSpec,

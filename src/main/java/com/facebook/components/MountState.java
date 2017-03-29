@@ -29,3 +29,4 @@ import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 
 import com.facebook.R;
+import com.facebook.components.config.ComponentsConfiguration;

@@ -4,3 +4,4 @@ android_library(
     name = "assertj",
     srcs = glob(["*.java"]),
     exported_deps = [
+        COMPONENTS_ASSERTJ_TARGET,
