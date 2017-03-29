@@ -98,3 +98,4 @@ public class ViewTreeTest {
     })).isEqualTo(expected);
   }
 
+  private String getString(final View view) {

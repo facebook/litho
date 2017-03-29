@@ -37,3 +37,4 @@ public class ViewExtractorsTest {
 
     mLithoDrawable = activity.getResources().getDrawable(R.drawable.litho);
 
+    mView = new View(activity);
