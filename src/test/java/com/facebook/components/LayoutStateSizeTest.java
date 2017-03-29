@@ -39,3 +39,6 @@ public class LayoutStateSizeTest {
     Whitebox.setInternalState(mComponent, "mId", COMPONENT_ID);
 
     mLayoutState = new LayoutState();
+    Whitebox.setInternalState(mLayoutState, "mWidth", WIDTH);
+    Whitebox.setInternalState(mLayoutState, "mHeight", HEIGHT);
+    Whitebox.setInternalState(mLayoutState, "mComponent", mComponent);
