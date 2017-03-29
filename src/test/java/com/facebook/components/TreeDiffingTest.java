@@ -450,3 +450,4 @@ public class TreeDiffingTest {
 
   @Test
   public void testComponentHostMoveItem() {
+    ComponentHost hostHolder = new ComponentHost(mContext);

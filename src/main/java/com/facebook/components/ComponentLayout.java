@@ -192,3 +192,4 @@ public interface ComponentLayout {
     Builder foregroundRes(@DrawableRes int resId);
     Builder foregroundColor(@ColorInt int foregroundColor);
 
+    Builder wrapInView();
