@@ -52,3 +52,11 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
   }
 
   /**
+   * @return
+   *    The {@link GenericDraweeHierarchy} to which this reference points to.
+   */
+  public GenericDraweeHierarchy getHierarchy() {
+    return mGenericDraweeHierarchy;
+  }
+
+  /**
