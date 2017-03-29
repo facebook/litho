@@ -151,3 +151,5 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private InternalNode mNestedTreeHolder;
   private long mPrivateFlags;
 
+  private Reference<? extends Drawable> mBackground;
+  private Reference<? extends Drawable> mForeground;
