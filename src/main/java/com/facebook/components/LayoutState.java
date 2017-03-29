@@ -857,3 +857,5 @@ class LayoutState {
         hostOutputPosition);
 
     return hostOutputPosition;
+  }
+
