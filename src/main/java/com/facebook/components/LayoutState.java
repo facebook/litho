@@ -1124,3 +1124,4 @@ class LayoutState {
 
     if (logger != null) {
       logger.eventEnd(EVENT_CREATE_LAYOUT, context, ACTION_SUCCESS);
+    }
