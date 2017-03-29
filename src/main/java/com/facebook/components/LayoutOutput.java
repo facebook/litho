@@ -9,3 +9,6 @@
 
 package com.facebook.litho;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+

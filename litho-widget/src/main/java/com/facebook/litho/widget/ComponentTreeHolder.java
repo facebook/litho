@@ -21,3 +21,6 @@ import com.facebook.litho.ComponentTree;
 import com.facebook.litho.LayoutHandler;
 import com.facebook.litho.Size;
 import com.facebook.litho.StateHandler;
+
+/**
+ * A class used to store the data backing a {@link RecyclerBinder}. For each item the

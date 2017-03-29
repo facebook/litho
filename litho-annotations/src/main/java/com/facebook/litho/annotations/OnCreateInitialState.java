@@ -16,3 +16,14 @@ import java.lang.annotation.RetentionPolicy;
  * A method annotated with this annotation will be responsible to create the initial value for
  * params annotated with the {@link State} annotation in this spec. This method will take as
  * parameters a context and an {@link com.facebook.litho.Output} for every State variable that
+ * it will initialize
+ *
+ * <p>For example:
+ * <pre>
+ * {@code
+ *
+ * @LayoutSpec
+ * public class MyChangeSetSpec {
+ *
+ *   @OnCreateInitialState
+ *   protected void onCreateInitialState(
