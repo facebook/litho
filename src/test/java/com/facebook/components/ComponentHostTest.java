@@ -491,3 +491,6 @@ public class ComponentHostTest {
   @Test
   public void testViewGroupScrapHosts() {
     testScrapHostsForComponent(mViewGroupHost, ComponentHost.class);
+  }
+
+  @Test
