@@ -2462,3 +2462,5 @@ public class Stages {
     }
 
     methodBuilder.addParameter(eventHandlerClassName, "_eventHandler");
+    for (VariableElement v : parameters) {
+      methodBuilder.addParameter(ClassName.get(v.asType()), v.getSimpleName().toString());
