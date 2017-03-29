@@ -101,3 +101,8 @@ public final class ColorDrawableReference extends ReferenceLifecycle<Drawable> {
     int mColor;
     int mAlpha = DEFAULT_ALPHA;
 
+    @Override
+    public String getSimpleName() {
+      return "ColorDrawableReference";
+    }
+
