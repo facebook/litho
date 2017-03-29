@@ -148,3 +148,5 @@ public abstract class ComponentLifecycle implements EventDispatcher {
 
       node.setLastMeasuredWidth(outputWidth);
       node.setLastMeasuredHeight(outputHeight);
+
+      ComponentsSystrace.endSection();
