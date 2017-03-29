@@ -138,3 +138,5 @@ public class ResourceResolver {
       boolean result = mResources.getBoolean(resId);
       mResourceCache.put(resId, result);
 
+      return result;
+    }

@@ -148,3 +148,5 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private boolean mDuplicateParentState;
   private boolean mIsNestedTreeHolder;
   private InternalNode mNestedTree;
+  private InternalNode mNestedTreeHolder;
+  private long mPrivateFlags;
