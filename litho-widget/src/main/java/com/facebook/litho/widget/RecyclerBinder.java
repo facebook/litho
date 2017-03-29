@@ -133,3 +133,4 @@ public class RecyclerBinder implements Binder<RecyclerView> {
     // If the binder has not been measured yet we simply fall back on the sync implementation as
     // nothing will really happen until we compute the first range.
     if (!mIsMeasured.get()) {
+      updateItemAt(position, componentInfo);

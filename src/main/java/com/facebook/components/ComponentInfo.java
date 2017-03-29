@@ -70,3 +70,11 @@ public class ComponentInfo {
     return mCustomAttributes == null ? null : mCustomAttributes.get(key);
   }
 
+  public void release() {
+    mComponent = null;
+    mCustomAttributes = null;
+    sComponentInfoPool.release(this);
+  }
+
+  private void init(Builder builder) {
+    mComponent = builder.mComponent;
