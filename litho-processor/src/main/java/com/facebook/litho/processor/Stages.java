@@ -235,3 +235,4 @@ public class Stages {
       throw new IllegalArgumentException(); // indicates bug in the annotation processor
     }
 
+    // This logic relies on the fact that there are prop annotations for each stage (except for
