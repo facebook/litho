@@ -11,7 +11,6 @@ java_library(
     name = "specmodels",
     exported_deps = [
         ":specmodels-bare",
-        make_dep_path("src/main/java/com/facebook/components/javapoet:javapoet"),
         COMPONENTS_JAVAPOET_TARGET,
         COMPONENTS_FBCORE_TARGET,
         COMPONENTS_JSR_TARGET,
@@ -34,7 +33,6 @@ java_library(
         COMPONENTS_ANNOTATIONS_TARGET,
     ],
     provided_deps = [
-        make_dep_path("src/main/java/com/facebook/components/javapoet:javapoet"),
         COMPONENTS_JAVAPOET_TARGET,
         COMPONENTS_FBCORE_TARGET,
         COMPONENTS_JSR_TARGET,
