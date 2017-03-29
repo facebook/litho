@@ -20,3 +20,10 @@ import java.lang.annotation.RetentionPolicy;
  * one entry for tree props of any given type. PLEASE DO NOT USE COMMON JAVA CLASSES, for example,
  * String, Integer etc; creates a wrapper class instead.
  *
+ * <p>Example usage:
+ * <pre>
+ * {@code
+ *
+ * @LayoutSpec
+ * public class MySpec {
+ *

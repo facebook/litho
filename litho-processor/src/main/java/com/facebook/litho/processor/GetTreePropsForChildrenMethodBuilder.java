@@ -65,3 +65,29 @@ class GetTreePropsForChildrenMethodBuilder {
           method.returnType,
           delegateName,
           method.name)
+          .indent()
+          .indent();
+      List<Parameter> parameters = method.parameters;
+
+      for (int i = 0; i < parameters.size(); i++) {
+        if (i == 0) {
+          block.add("($T) $L", contextClassName, "c");
+        } else {
+          block.add("($T) _impl.$L", parameters.get(i).type, parameters.get(i).name);
+        }
+        if (i < parameters.size() - 1) {
+          block.add(",\n");
+        }
+      }
+
+      builder.addCode(block.add("));\n")
+          .unindent()
+          .unindent()
+          .build());
+    }
+
+    return builder
+        .addStatement("return childTreeProps")
+        .build();
+  }
+}
