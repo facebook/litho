@@ -290,3 +290,4 @@ int __android_log_print(int prio, const char *tag, const char *fmt, ...)
  * Log macro that allows you to specify a number for the priority.
  */
 #ifndef FBLOG_PRI
+#define FBLOG_PRI(priority, tag, ...) fb_printLog(priority, tag, __VA_ARGS__)
