@@ -771,3 +771,4 @@ public class ComponentTree {
   /**
    * @return the {@link ComponentView} associated with this ComponentTree if any.
    */
+  @Keep
