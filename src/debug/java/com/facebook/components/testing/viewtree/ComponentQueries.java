@@ -80,3 +80,4 @@ class ComponentQueries {
       return false;
     }
 
+    final String drawnDrawableDescription = ViewPredicates.getDrawnDrawableDescription(drawable);
