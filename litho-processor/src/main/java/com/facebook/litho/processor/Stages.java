@@ -2099,3 +2099,11 @@ public class Stages {
         variableClassName,
         v.getSimpleName().toString());
 
+    if (!isInterStageComponentVariable(v)) {
+      if (isStateProp) {
+        fieldBuilder.addAnnotation(State.class);
+      } else {
+        fieldBuilder.addAnnotation(Prop.class);
+      }
+    }
+
