@@ -291,3 +291,6 @@ public class LayoutStateCalculateTest {
     assertTrue(getComponentAt(layoutState, 7) instanceof TestViewComponent);
 
     // Check the text within the TextComponents.
+    assertEquals("textLeft1", getTextFromTextComponent(layoutState, 3));
+    assertEquals("textRight1", getTextFromTextComponent(layoutState, 4));
+    assertEquals("textLeft2", getTextFromTextComponent(layoutState, 6));

@@ -142,3 +142,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   YogaNodeAPI mYogaNode;
   private ComponentContext mComponentContext;
+  private Resources mResources;
+  private Component mComponent;
+  private int mImportantForAccessibility = ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+  private boolean mDuplicateParentState;
