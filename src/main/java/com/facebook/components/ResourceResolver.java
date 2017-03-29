@@ -192,3 +192,4 @@ public class ResourceResolver {
     return 0;
   }
 
+  protected final float resolveFloatRes(@DimenRes int resId) {
