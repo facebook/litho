@@ -1481,3 +1481,5 @@ class LayoutState {
 
   LayoutOutput getMountableOutputAt(int index) {
     return mMountableOutputs.get(index);
+  }
+
