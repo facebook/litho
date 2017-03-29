@@ -27,3 +27,5 @@ import java.lang.annotation.RetentionPolicy;
  * @LayoutSpec
  * public class MySpec {
  *
+ *   @OnCreateTreeProp
+ *   protected SomeTreePropClass onCreateSomeTreeProp(
