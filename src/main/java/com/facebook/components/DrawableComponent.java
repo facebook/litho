@@ -114,3 +114,4 @@ private static class State<T extends Drawable> extends Component<DrawableCompone
       return mDrawable.getSimpleName();
     }
 
+    private Reference<T> getDrawable() {
