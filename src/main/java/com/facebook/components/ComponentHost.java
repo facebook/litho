@@ -1013,3 +1013,4 @@ public class ComponentHost extends ViewGroup {
     private void start(Canvas canvas) {
       mCanvas = canvas;
       mDrawIndex = 0;
+      mItemsToDraw = mMountItems.size();
