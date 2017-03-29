@@ -1331,3 +1331,7 @@ public class LayoutStateCalculateTest {
                     .flexDirection(YogaFlexDirection.ROW)
                     .alignItems(YogaAlign.CENTER)
                     .paddingDip(YogaEdge.ALL, 10)
+                    .contentDescription("This is a container")
+                    .child(
+                        TestDrawableComponent.create(c)
+                            .withLayout()

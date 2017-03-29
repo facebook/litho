@@ -143,3 +143,8 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
     boolean isWithinBounds = getBounds().contains((int) event.getX(), (int) event.getY());
     boolean isUpOrDown = action == ACTION_UP || action == ACTION_DOWN;
     return (mShouldHandleTouch && isWithinBounds && isUpOrDown) || action == ACTION_CANCEL;
+  }
+
+  public void mount(
+      CharSequence text,
+      Layout layout,
