@@ -713,3 +713,6 @@ class LayoutState {
         ComponentContext.withComponentScope(node.getContext(), drawableComponent));
     final boolean isOutputUpdated;
     if (recycle != null) {
+      isOutputUpdated = !drawableComponent.getLifecycle().shouldComponentUpdate(
+          recycle.getComponent(),
+          drawableComponent);
