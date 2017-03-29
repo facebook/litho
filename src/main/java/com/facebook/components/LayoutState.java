@@ -1283,3 +1283,7 @@ class LayoutState {
         component,
         c);
 
+    if (hasNestedTreeHolder) {
+      c.setTreeProps(null);
+    }
+
