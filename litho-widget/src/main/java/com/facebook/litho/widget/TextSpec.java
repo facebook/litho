@@ -529,3 +529,4 @@ class TextSpec {
       ComponentContext c,
       TextDrawable textDrawable,
       @Prop(resType = ResType.STRING) CharSequence text,
+      @Prop(optional = true, resType = ResType.COLOR) int textColor,
