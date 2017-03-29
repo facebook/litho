@@ -70,3 +70,15 @@ public abstract class PagerBinder extends BaseBinder<
   }
 
   /**
+   * Set a listener for page change events.  DO NOT FORGET TO UNSET THIS LISTENER
+   * @param clientOnPageChangeListener The listener to set
+   */
+  public void setOnPageChangeListener(
+      ViewPager.OnPageChangeListener clientOnPageChangeListener) {
+    mClientOnPageChangeListener = clientOnPageChangeListener;
+  }
+
+  public int getCurrentItem() {
+    return mCurrentItem;
+  }
+
