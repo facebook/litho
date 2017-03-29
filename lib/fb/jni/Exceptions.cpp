@@ -141,3 +141,4 @@ void throwNewJavaException(jthrowable throwable) {
   throw JniException(wrap_alias(throwable));
 }
 
+void throwNewJavaException(const char* throwableName, const char* msg) {
