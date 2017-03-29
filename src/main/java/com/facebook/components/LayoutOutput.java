@@ -123,3 +123,9 @@ class LayoutOutput implements Cloneable {
     mId = id;
   }
 
+  void setNodeInfo(NodeInfo nodeInfo) {
+    if (mNodeInfo != null) {
+      throw new IllegalStateException("NodeInfo set more than once on the same LayoutOutput.");
+    } else if (nodeInfo != null) {
+      mNodeInfo = nodeInfo.acquireRef();
+    }

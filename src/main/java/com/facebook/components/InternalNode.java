@@ -83,3 +83,4 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private static final long PFLAG_LAYOUT_DIRECTION_IS_SET = 1L << 0;
   // When this flag is set, alignSelf was explicitly set on this node.
   private static final long PFLAG_ALIGN_SELF_IS_SET = 1L << 1;
+  // When this flag is set, position type was explicitly set on this node.
