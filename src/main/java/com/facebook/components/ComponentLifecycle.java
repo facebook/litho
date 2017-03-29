@@ -423,3 +423,5 @@ public abstract class ComponentLifecycle implements EventDispatcher {
   }
 
   /**
+   * Unload UI elements associated with this component.
+   *
