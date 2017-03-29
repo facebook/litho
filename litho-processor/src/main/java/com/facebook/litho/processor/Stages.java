@@ -2120,3 +2120,4 @@ public class Stages {
   }
 
   public void generateIsPureRender() {
+    final MethodSpec.Builder shouldUpdateComponent =
