@@ -350,3 +350,11 @@ public abstract class PagerBinder extends BaseBinder<
       return mPagerOffscreenLimit + ADDITIONAL_ADAPTER_PAGES;
     }
   }
+
+  /**
+   * @param pageWidth changes the pageWidth of the pages rendered by this binder.
+   */
+  public void setPageWidth(float pageWidth) {
+    mPageWidth = pageWidth;
+    mPagerOffscreenLimit = (int) Math.ceil(1 / mPageWidth);
+  }

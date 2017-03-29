@@ -390,3 +390,4 @@ public class MountSpecHelper extends ComponentSpecHelper {
         mStages.getSourceElement(),
         OnCreateMountContent.class);
 
+    final TypeMirror mountReturnType = onCreateMountContent.getReturnType();
