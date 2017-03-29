@@ -465,3 +465,12 @@ public class MountStateIncrementalMountTest {
 
     componentView.getComponent().mountComponent(new Rect(80, 80, 120, 120));
     assertEquals(new Rect(80, 80, 100, 100), mountedView.getPreviousIncrementalMountBounds());
+  }
+
+  @Test
+  public void testChildViewGroupIncrementallyMounted() {
+    final ViewGroup mountedView = mock(ViewGroup.class);
+    when(mountedView.getLeft()).thenReturn(0);
+    when(mountedView.getTop()).thenReturn(0);
+    when(mountedView.getRight()).thenReturn(100);
+    when(mountedView.getBottom()).thenReturn(100);
