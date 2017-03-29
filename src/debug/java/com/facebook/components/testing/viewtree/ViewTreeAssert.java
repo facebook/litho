@@ -158,3 +158,15 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
    */
   public ViewTreeAssert hasContentDescription(final String contentDescription) {
     final ImmutableList<View> path = getPathToContentDescription(contentDescription);
+
+    Assertions.assertThat(path)
+        .overridingErrorMessage(
+            "Cannot find content description \"%s\" in view hierarchy:%n%s",
+            contentDescription,
+            actual.makeString(ViewExtractors.GET_CONTENT_DESCRIPTION_FUNCTION))
+        .isNotNull();
+
+    return this;
+  }
+
+  /**

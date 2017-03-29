@@ -396,3 +396,6 @@ public class ComponentLifecycleTest {
         Component<?> component) {
       size.width = A_WIDTH;
       size.height = A_HEIGHT;
+    }
+  }
+}
