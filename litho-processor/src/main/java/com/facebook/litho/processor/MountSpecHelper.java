@@ -362,3 +362,4 @@ public class MountSpecHelper extends ComponentSpecHelper {
   /**
    * Generate an onUnmount implementation that delegates to the @OnUnmount-annotated method.
    */
+  public void generateOnUnmount() {
