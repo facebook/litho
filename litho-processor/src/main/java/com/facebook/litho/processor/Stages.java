@@ -2706,3 +2706,5 @@ public class Stages {
     final String implMemberInstanceName = getImplMemberInstanceName();
     final String contextMemberInstanceName = "mContext";
     final ClassName implClass = ClassName.bestGuess(implClassName);
+    final MethodSpec.Builder initMethodSpec = MethodSpec.methodBuilder("init")
+        .addModifiers(Modifier.PRIVATE)
