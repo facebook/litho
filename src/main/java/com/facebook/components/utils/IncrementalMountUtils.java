@@ -106,3 +106,6 @@ public class IncrementalMountUtils {
       return;
     }
 
+    final Rect rect = acquireRect();
+    rect.set(
+        Math.max(0, -left),
