@@ -199,3 +199,5 @@ public class TreeDiffingTest {
 
     long output = measureInternalNode(node, 10f, 5f);
 
+    assertTrue(YogaMeasureOutput.getHeight(output) == (int) diffNode.getLastMeasuredHeight());
+    assertTrue(YogaMeasureOutput.getWidth(output) == (int) diffNode.getLastMeasuredWidth());
