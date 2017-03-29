@@ -1661,3 +1661,8 @@ public class Stages {
 
     writeMethodSpec(methodBuilder.build());
   }
+
+  /**
+   * Find variables annotated with {@link PropDefault}
+   */
+  private void populatePropDefaults() {
