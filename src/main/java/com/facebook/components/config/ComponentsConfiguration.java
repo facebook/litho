@@ -53,3 +53,9 @@ public class ComponentsConfiguration {
    * Indicates whether InternalNode should use CSSNodeDEPRECATED or YogaNode
    */
   public static boolean shouldUseCSSNodeJNI = true;
+
+  /*
+   * Use the new bootstrap ranges code instead of initializing all the items when the binder view
+   * is measured (t12986103).
+   */
+  public static boolean bootstrapBinderItems = false;
