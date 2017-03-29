@@ -340,3 +340,17 @@ public abstract class RecyclerComponentBinder<L extends RecyclerView.LayoutManag
       }
     }
   }
+
+  /**
+   * This NoOp WorkingRangeController, as the name suggests, is not operating on the range leaving
+   * whatever initialized, untouched.
+   */
+  public static class NoOpRecyclerComponentWorkingRangeController
+      extends RecyclerComponentWorkingRangeController {
+
+    @Override
+    public void notifyOnScroll(int currentFirstVisiblePosition, int currentVisibleItemCount) {
+      // no-op.
+    }
+  }
+}

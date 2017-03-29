@@ -429,3 +429,5 @@ public class BaseBinderTest {
     }
 
     static class MyTestWorkingRangeController extends WorkingRangeController { }
+  }
+}
