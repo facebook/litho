@@ -602,3 +602,7 @@ class MountState {
       }
     }
 
+    if (!currentLifecycle.callsShouldUpdateOnMount()) {
+      return true;
+    }
+
