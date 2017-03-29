@@ -39,3 +39,4 @@ class VisibilityOutput {
   }
 
   void setComponent(Component<?> component) {
+    mComponent = component;

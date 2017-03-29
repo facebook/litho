@@ -44,3 +44,4 @@ public class ColorDrawableReferenceTest {
         mContext,
         ColorDrawableReference.create(mContext)
             .color(Color.BLACK)
+            .alpha(DEFAULT_ALPHA_VALUE)

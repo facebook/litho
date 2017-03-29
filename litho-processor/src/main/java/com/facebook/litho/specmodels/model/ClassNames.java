@@ -22,3 +22,20 @@ public interface ClassNames {
   ClassName DRAWABLE =
       ClassName.bestGuess("android.graphics.drawable.Drawable");
 
+  ClassName ACCESSIBILITY_NODE =
+      ClassName.bestGuess("android.support.v4.view.accessibility.AccessibilityNodeInfoCompat");
+
+  ClassName STRING_RES = ClassName.bestGuess("android.support.annotation.StringRes");
+  ClassName INT_RES = ClassName.bestGuess("android.support.annotation.IntegerRes");
+  ClassName BOOL_RES = ClassName.bestGuess("android.support.annotation.BoolRes");
+  ClassName COLOR_RES = ClassName.bestGuess("android.support.annotation.ColorRes");
+  ClassName COLOR_INT = ClassName.bestGuess("android.support.annotation.ColorInt");
+  ClassName DIMEN_RES = ClassName.bestGuess("android.support.annotation.DimenRes");
+  ClassName ATTR_RES = ClassName.bestGuess("android.support.annotation.AttrRes");
+  ClassName DRAWABLE_RES = ClassName.bestGuess("android.support.annotation.DrawableRes");
+  ClassName ARRAY_RES = ClassName.bestGuess("android.support.annotation.ArrayRes");
+  ClassName DIMENSION = ClassName.bestGuess("android.support.annotation.Dimension");
+  ClassName PX = ClassName.bestGuess("android.support.annotation.Px");
+
+  ClassName SYNCHRONIZED_POOL =
+      ClassName.bestGuess("android.support.v4.util.Pools.SynchronizedPool");

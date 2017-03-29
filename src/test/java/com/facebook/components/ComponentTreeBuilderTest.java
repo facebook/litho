@@ -80,3 +80,10 @@ public class ComponentTreeBuilderTest {
 
     Handler handler = Whitebox.getInternalState(componentTree, "mLayoutThreadHandler");
     assertSame(mLooper, handler.getLooper());
+  }
+
+  @Test
+  public void testReleaseAndInit() {
+    mComponentTreeBuilder
+        .layoutDiffing(true)
+        .layoutLock(mLayoutLock)

@@ -32,3 +32,5 @@ import static com.facebook.litho.AccessibilityUtils.isAccessibilityEnabled;
 public class ComponentView extends ComponentHost {
   private ComponentTree mComponent;
   private final MountState mMountState;
+  private boolean mIsAttached;
+  private final Rect mPreviousMountBounds = new Rect();

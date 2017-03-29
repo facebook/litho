@@ -31,3 +31,7 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(ComponentsTestRunner.class)
 public class ComponentViewTest {
+  private ComponentView mComponentView;
+
+  @Before
+  public void setup() {
