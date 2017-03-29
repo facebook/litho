@@ -44,3 +44,4 @@ public class MountItemTest {
   private EventHandler mDispatchPopulateAccessibilityEventHandler;
   private int mFlags;
   private ComponentContext mContext;
+  private NodeInfo mNodeInfo;
