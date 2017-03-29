@@ -309,3 +309,23 @@ public class ComponentsPools {
     return output;
   }
 
+  static VisibilityOutput acquireVisibilityOutput() {
+    VisibilityOutput output = sVisibilityOutputPool.acquire();
+    if (output == null) {
+      output = new VisibilityOutput();
+    }
+
+    return output;
+  }
+
+  static VisibilityItem acquireVisibilityItem(EventHandler invisibleHandler) {
+    VisibilityItem item = sVisibilityItemPool.acquire();
+    if (item == null) {
+      item = new VisibilityItem();
+    }
+
+    item.setInvisibleHandler(invisibleHandler);
+
+    return item;
+  }
+
