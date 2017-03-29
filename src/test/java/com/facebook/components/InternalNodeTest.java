@@ -306,3 +306,5 @@ public class InternalNodeTest {
             new ComponentContext(RuntimeEnvironment.application),
             RuntimeEnvironment.application.getResources());
 
+    holderNode.layoutDirection(YogaDirection.RTL);
+    holderNode.calculateLayout();

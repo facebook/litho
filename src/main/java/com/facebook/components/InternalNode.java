@@ -84,3 +84,12 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   // When this flag is set, alignSelf was explicitly set on this node.
   private static final long PFLAG_ALIGN_SELF_IS_SET = 1L << 1;
   // When this flag is set, position type was explicitly set on this node.
+  private static final long PFLAG_POSITION_TYPE_IS_SET = 1L << 2;
+  // When this flag is set, flex was explicitly set on this node.
+  private static final long PFLAG_FLEX_IS_SET = 1L << 3;
+  // When this flag is set, flex grow was explicitly set on this node.
+  private static final long PFLAG_FLEX_GROW_IS_SET = 1L << 4;
+  // When this flag is set, flex shrink was explicitly set on this node.
+  private static final long PFLAG_FLEX_SHRINK_IS_SET = 1L << 5;
+  // When this flag is set, flex basis was explicitly set on this node.
+  private static final long PFLAG_FLEX_BASIS_IS_SET = 1L << 6;
