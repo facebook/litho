@@ -48,3 +48,4 @@ public class ColorDrawableReferenceTest {
             .build());
 
     assertEquals(drawable.getColor(), Color.BLACK);
+    assertEquals(drawable.getAlpha(), DEFAULT_ALPHA_VALUE);

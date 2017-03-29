@@ -34,3 +34,7 @@ class CardShadowSpec {
   static void onMount(
       ComponentContext context,
       CardShadowDrawable cardShadowDrawable,
+      @Prop(optional = true, resType = ResType.COLOR) int shadowStartColor,
+      @Prop(optional = true, resType = ResType.COLOR) int shadowEndColor,
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float cornerRadius,
+      @Prop(optional = true, resType = ResType.DIMEN_SIZE) float shadowSize) {

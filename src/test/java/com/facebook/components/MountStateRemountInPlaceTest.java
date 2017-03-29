@@ -26,3 +26,5 @@ import org.robolectric.RuntimeEnvironment;
 import static android.view.View.MeasureSpec.AT_MOST;
 import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
+import static com.facebook.components.ComponentsLogger.EVENT_PREPARE_MOUNT;
+import static com.facebook.components.ComponentsLogger.PARAM_MOVED_COUNT;

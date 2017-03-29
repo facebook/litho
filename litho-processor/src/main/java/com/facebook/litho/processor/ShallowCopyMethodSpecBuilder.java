@@ -50,3 +50,6 @@ class ShallowCopyMethodSpecBuilder {
 
   ShallowCopyMethodSpecBuilder stateContainerImplClassName(String stateContainerImplClassName) {
     mStateContainerImplClassName = stateContainerImplClassName;
+    return this;
+  }
+
