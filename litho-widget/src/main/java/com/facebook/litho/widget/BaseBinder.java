@@ -189,3 +189,14 @@ public abstract class BaseBinder<
           // Move right the successive ComponentTree positions and insert the new item.
           mComponentTrees.insert(position, componentTree);
         }
+      }
+    }
+
+    // There might be a componentTree outside the range now but for simplicity we just keep it,
+    // it will be released in a successive updateRange call.
+
+    if (mListener != null) {
+      mListener.onItemInserted(position);
+    }
+  }
+

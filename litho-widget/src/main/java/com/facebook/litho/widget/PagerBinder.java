@@ -95,3 +95,4 @@ public abstract class PagerBinder extends BaseBinder<
   }
 
   /**
+   * Overrides this method to provide a title for for the page at the given position.
