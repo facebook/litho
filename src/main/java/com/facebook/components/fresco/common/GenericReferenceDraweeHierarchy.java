@@ -286,3 +286,9 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
       mProgressBarReference = null;
       mGenericDraweeHierarchy.setProgressBarImage(null);
     }
+    if (mOverlayImageReference != null) {
+      Reference.release(mContext, mOverlayImage, mOverlayImageReference);
+      mOverlayImage = null;
+      mOverlayImageReference = null;
+      mGenericDraweeHierarchy.setOverlayImage(null);
+    }
