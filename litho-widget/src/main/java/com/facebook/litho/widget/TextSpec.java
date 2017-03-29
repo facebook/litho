@@ -396,3 +396,4 @@ class TextSpec {
     layoutBuilder.setAlignment(textAlignment);
     layoutBuilder.setLinkColor(linkColor);
 
+    newLayout = layoutBuilder.build();
