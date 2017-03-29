@@ -50,3 +50,6 @@ import static com.facebook.components.ComponentsLogger.PARAM_NO_OP_COUNT;
 import static com.facebook.components.ComponentsLogger.PARAM_UNCHANGED_COUNT;
 import static com.facebook.components.ComponentsLogger.PARAM_UNMOUNTED_COUNT;
 import static com.facebook.components.ComponentsLogger.PARAM_UPDATED_COUNT;
+import static com.facebook.components.ThreadUtils.assertMainThread;
+
+/**

@@ -112,3 +112,6 @@ class LayoutOutput implements Cloneable {
    * hostMarker is the id of the LayoutOutput that represents the host of this LayoutOutput.
    */
   void setHostMarker(long hostMarker) {
+    mHostMarker = hostMarker;
+  }
+

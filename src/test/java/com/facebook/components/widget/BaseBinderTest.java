@@ -281,3 +281,4 @@ public class BaseBinderTest {
     Assert.assertEquals("7", getAdapterInputStringAtPosition(4));
   }
 
+  @Test
