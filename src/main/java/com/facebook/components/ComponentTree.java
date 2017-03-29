@@ -1057,3 +1057,5 @@ public class ComponentTree {
       mStateHandler = null;
     }
 
+    if (mainThreadLayoutState != null) {
+      mainThreadLayoutState.releaseRef();
