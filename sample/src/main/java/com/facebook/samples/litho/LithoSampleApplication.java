@@ -20,3 +20,12 @@ import com.facebook.stetho.inspector.elements.android.AndroidDocumentProviderFac
 import com.facebook.stetho.inspector.protocol.ChromeDevtoolsDomain;
 
 import java.util.Arrays;
+
+public class LithoSampleApplication extends Application {
+
+  @Override
+  public void onCreate() {
+    super.onCreate();
+
+    Fresco.initialize(this);
+    SoLoader.init(this, false);

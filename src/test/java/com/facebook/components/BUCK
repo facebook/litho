@@ -39,3 +39,4 @@ components_robolectric_test(
         COMPONENTS_POWERMOCK_MOCKITO_TARGET,
         COMPONENTS_YOGA_TARGET,
         make_dep_path("src/main/java/com/facebook/components/viewcompatcreator:viewcompatcreator"),
+        COMPONENTS_WIDGET_TARGET,

@@ -11,3 +11,8 @@ package com.facebook.samples.litho.lithography;
 import com.facebook.components.ComponentLayout;
 import com.facebook.components.Container;
 import com.facebook.components.ComponentContext;
+import com.facebook.litho.annotations.LayoutSpec;
+import com.facebook.litho.annotations.OnCreateLayout;
+import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.widget.Recycler;
+import com.facebook.litho.widget.RecyclerBinder;

@@ -9,3 +9,4 @@
 -->
 
 <resources>
+  <string name="app_name">Litho</string>
