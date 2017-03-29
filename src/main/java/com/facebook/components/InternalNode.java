@@ -1208,3 +1208,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Override
   public InternalNode viewTag(Object viewTag) {
     getOrCreateNodeInfo().setViewTag(viewTag);
+    return this;
+  }
+
+  @Override
