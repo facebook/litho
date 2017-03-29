@@ -225,3 +225,4 @@ public class PagerBinderTest {
     return Whitebox.getInternalState(binder, "mPagerOffscreenLimit");
   }
 
+  private class TestPagerComponentBinder extends PagerBinder {
