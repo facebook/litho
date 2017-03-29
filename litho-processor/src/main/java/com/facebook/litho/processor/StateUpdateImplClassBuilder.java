@@ -201,3 +201,4 @@ public class StateUpdateImplClassBuilder {
         MethodSpec.methodBuilder(STATE_UPDATE_METHOD_NAME)
             .addModifiers(Modifier.PUBLIC)
             .addParameter(mStateContainerClassName, STATE_CONTAINER_PARAM_NAME)
+            .addParameter(mComponentClassName, STATE_UPDATE_NEW_COMPONENT_NAME)
