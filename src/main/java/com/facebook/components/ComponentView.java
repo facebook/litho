@@ -273,3 +273,5 @@ public class ComponentView extends ComponentHost {
       }
     }
   }
+
+  public void rebind() {
