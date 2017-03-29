@@ -384,3 +384,4 @@ public class ComponentLifecycleTest {
     }
   }
 
+  private class TestMountSpecSettingSizesInOnMeasure extends TestMountSpecWithEmptyOnMeasure {
