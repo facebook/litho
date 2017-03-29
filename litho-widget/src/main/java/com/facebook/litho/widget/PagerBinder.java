@@ -134,3 +134,8 @@ public abstract class PagerBinder extends BaseBinder<
 
   @Override
   public void onUnmount(ViewPager viewPager) {
+    if (mViewPager != null) { // Temporary workaround for misuse of this class; see #16387087
+      mViewPager.setOnPageChangeListener(null);
+      mViewPager.setAdapter(null);
+      mViewPager = null;
+    }
