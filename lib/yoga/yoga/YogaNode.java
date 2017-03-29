@@ -698,3 +698,4 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   // were to override measure, we'd still call this implementation from layout code since the
   // overriding method will have a different jmethodid. This is final to prevent that mistake.
   @DoNotStrip
+  public final long measure(float width, int widthMode, float height, int heightMode) {
