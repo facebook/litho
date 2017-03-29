@@ -1222,3 +1222,6 @@ public class ComponentTree {
     }
 
     protected Builder(ComponentContext context, Component<?> root) {
+      init(context, root);
+    }
+
