@@ -1090,3 +1090,19 @@ class LayoutState {
 
   private static boolean isActivityDestroyed(Activity activity) {
     if (SDK_INT >= JELLY_BEAN_MR1) {
+      return activity.isDestroyed();
+    }
+
+    return false;
+  }
+
+  private static Activity findActivityInContext(Context context) {
+    if (context instanceof Activity) {
+      return (Activity) context;
+    } else if (context instanceof ContextWrapper) {
+      return findActivityInContext(((ContextWrapper) context).getBaseContext());
+    }
+
+    return null;
+  }
+

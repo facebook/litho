@@ -2119,3 +2119,4 @@ public class Stages {
     return fieldBuilder.build();
   }
 
+  public void generateIsPureRender() {
