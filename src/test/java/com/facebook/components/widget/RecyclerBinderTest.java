@@ -720,3 +720,4 @@ public class RecyclerBinderTest {
     final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
 
     mRecyclerBinder.insertItemAt(rangeTotal + 1, newComponentInfo);
+
