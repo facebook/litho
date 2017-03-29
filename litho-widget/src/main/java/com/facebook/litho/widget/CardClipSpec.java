@@ -28,3 +28,4 @@ class CardClipSpec {
     return new CardClipDrawable();
   }
 
+  @OnMount
