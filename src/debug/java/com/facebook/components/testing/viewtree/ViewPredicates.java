@@ -191,3 +191,12 @@ final class ViewPredicates {
     return Predicates.and(isVisible(), hasId(viewId));
   }
 
+  /**
+   * Tries to extract the description of a drawn view from a canvas
+   *
+   * Since Robolectric can screw up {@link View#draw}, this uses reflection to call
+   * {@link View#onDraw} and give you a canvas that has all the information drawn into it.
+   * This is useful for asserting some view draws something specific to a canvas.
+   *
+   * @param view the view to draw
+   */
