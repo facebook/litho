@@ -56,3 +56,6 @@ public abstract class SpecHelper implements Closeable {
       Class<Annotation>[] stageAnnotations,
       Class<Annotation>[] interStageInputAnnotations,
       SpecModel specModel) {
+    mProcessingEnv = processingEnv;
+    mSpecElement = specElement;
+    mQualifiedClassName = Utils.getGenClassName(specElement, name);

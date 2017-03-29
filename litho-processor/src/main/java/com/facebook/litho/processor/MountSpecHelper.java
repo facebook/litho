@@ -176,3 +176,4 @@ public class MountSpecHelper extends ComponentSpecHelper {
    * Generate an onBoundsDefined implementation that delegates to the
    * @OnBoundsDefined-annotated method.
    */
+  public void generateOnBoundsDefined() {
