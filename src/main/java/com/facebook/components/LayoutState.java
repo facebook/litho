@@ -500,3 +500,5 @@ class LayoutState {
       hostLayoutPosition = addHostLayoutOutput(node, layoutState, diffNode);
 
       layoutState.mCurrentLevel++;
+      layoutState.mCurrentHostMarker =
+          layoutState.mMountableOutputs.get(hostLayoutPosition).getId();
