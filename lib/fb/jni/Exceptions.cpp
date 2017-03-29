@@ -47,3 +47,5 @@ class JIOException : public JavaClass<JIOException, JThrowable> {
   static local_ref<JIOException> create(const char* str) {
     return newInstance(make_jstring(str));
   }
+};
+

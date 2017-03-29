@@ -50,3 +50,6 @@ extern "C" {
 #ifdef ANDROID
 #include <android/log.h>
 #else
+// These declarations are needed for our internal use even on non-Android
+// builds.
+// (they are borrowed from <android/log.h>)
