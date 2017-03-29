@@ -52,3 +52,12 @@ public class ComponentContext extends ContextWrapper {
     this(context, null, null, stateHandler);
   }
 
+  /**
+   *  Constructor that can be used to receive log data from components.
+   *  Check {@link ComponentsLogger} for the type of events you can listen for.
+   *
+   * @param context Android context.
+   * @param logTag Specify a log tag, to be used with the logger.
+   * @param logger Specify the lifecycle logger to be used.
+   */
+  public ComponentContext(Context context, String logTag, ComponentsLogger logger) {

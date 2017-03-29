@@ -806,3 +806,5 @@ public class TreeDiffingTest {
         mContext,
         layoutComponent,
         0,
+        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
+        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
