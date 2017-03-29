@@ -54,3 +54,5 @@ class RecyclerSpec {
       ComponentLayout layout,
       int widthSpec,
       int heightSpec,
+      Size measureOutput,
+      @Prop Binder<RecyclerView> binder) {
