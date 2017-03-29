@@ -43,3 +43,8 @@ public abstract class LinearComponentBinder extends
     final int firstViewPosition = layoutManager.findFirstVisibleItemPosition();
     final int lastViewPosition = layoutManager.findLastVisibleItemPosition();
 
+    if (firstViewPosition == RecyclerView.NO_POSITION ||
+        lastViewPosition == RecyclerView.NO_POSITION) {
+      return;
+    }
+

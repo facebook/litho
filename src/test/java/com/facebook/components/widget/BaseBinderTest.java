@@ -116,3 +116,4 @@ public class BaseBinderTest {
 
   @Test
   public void testNotifyItemRangeChanged() {
+    mount();

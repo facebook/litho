@@ -228,3 +228,10 @@ public class TestDrawableComponent extends ComponentLifecycle {
         context,
         defStyleAttr,
         defStyleRes,
+        new State(
+            callsShouldUpdateOnMount,
+            isPureRender,
+            canMeasure,
+            implementsAccessibility,
+            usesDisplayList,
+            isMountSizeDependent));
