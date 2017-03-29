@@ -25,3 +25,8 @@ import com.facebook.drawee.interfaces.SettableDraweeHierarchy;
 
 import static com.facebook.drawee.generic.GenericDraweeHierarchyBuilder.DEFAULT_SCALE_TYPE;
 
+/**
+ * A wrapper around {@link com.facebook.drawee.generic.GenericDraweeHierarchy} which correctly
+ * manages references.
+ */
+public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy {
