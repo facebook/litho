@@ -469,3 +469,6 @@ public class ComponentTreeTest {
       // will fail.
       synchronized (componentTree) {
         hasCssSpec = Whitebox.invokeMethod(componentTree, ComponentTree.class, "hasSizeSpec");
+      }
+      return hasCssSpec;
+    } catch (Exception e) {

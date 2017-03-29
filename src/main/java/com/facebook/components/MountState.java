@@ -412,3 +412,4 @@ class MountState {
       final EventHandler invisibleHandler = visibilityItem.getInvisibleHandler();
 
       if (invisibleHandler != null) {
+        EventDispatcherUtils.dispatchOnInvisible(invisibleHandler);
