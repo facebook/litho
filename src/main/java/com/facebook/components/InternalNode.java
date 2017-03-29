@@ -528,3 +528,6 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Override
   public InternalNode marginRes(YogaEdge edge, @DimenRes int resId) {
     return marginPx(edge, mResourceResolver.resolveDimenOffsetRes(resId));
+  }
+
+  @Override
