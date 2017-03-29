@@ -206,3 +206,9 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
     return null;
   }
 
+  private static MountItem getAccessibleMountItem(View view) {
+    if (!(view instanceof ComponentHost)) {
+      return null;
+    }
+
+    return ((ComponentHost) view).getAccessibleMountItem();

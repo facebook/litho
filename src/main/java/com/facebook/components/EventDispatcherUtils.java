@@ -165,3 +165,4 @@ class EventDispatcherUtils {
         eventHandler,
         sDispatchPopulateAccessibilityEventEvent);
 
+    sDispatchPopulateAccessibilityEventEvent.host = null;
