@@ -876,3 +876,4 @@ public class LayoutStateCalculateTest {
   }
 
   private static ComponentLifecycle getComponentAt(LayoutState layoutState, int index) {
+    return layoutState.getMountableOutputAt(index).getComponent().getLifecycle();

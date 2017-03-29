@@ -517,3 +517,4 @@ class LayoutState {
     final LayoutOutput layoutOutput = createGenericLayoutOutput(node, layoutState);
     if (layoutOutput != null) {
       final long previousId = shouldUseCachedOutputs ? currentDiffNode.getContent().getId() : -1;
+      layoutState.mLayoutStateOutputIdCalculator.calculateAndSetLayoutOutputIdAndUpdateState(
