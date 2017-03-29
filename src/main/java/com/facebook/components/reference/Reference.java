@@ -55,3 +55,5 @@ public abstract class Reference<L> {
    */
   public static <T> void release(
       ComponentContext context,
+      T value,
+      Reference<T> reference) {

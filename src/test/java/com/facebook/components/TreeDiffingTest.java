@@ -48,3 +48,5 @@ import static org.mockito.Mockito.verify;
 @PrepareForTest(Component.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
 @RunWith(ComponentsTestRunner.class)
+public class TreeDiffingTest {
+

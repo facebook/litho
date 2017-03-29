@@ -26,3 +26,6 @@ import com.squareup.javapoet.TypeVariableName;
 class OnStateUpdateMethodSpecBuilder {
   private String mUpdateMethodName;
   private TypeName mContextClass;
+  private ClassName mComponentClass;
+  private String mLifecycleImplClass;
+

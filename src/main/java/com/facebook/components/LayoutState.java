@@ -32,3 +32,5 @@ import android.view.View;
 import android.view.accessibility.AccessibilityManager;
 
 import com.facebook.components.config.ComponentsConfiguration;
+import com.facebook.components.displaylist.DisplayList;
+import com.facebook.components.displaylist.DisplayListException;

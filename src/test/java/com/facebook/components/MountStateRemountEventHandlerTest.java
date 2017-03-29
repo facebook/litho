@@ -130,3 +130,7 @@ public class MountStateRemountEventHandlerTest {
     });
 
     assertEquals(touchListener, MountState.getComponentTouchListener(componentView));
+  }
+
+  @Test
+  public void testUnsetClickHandler() {
