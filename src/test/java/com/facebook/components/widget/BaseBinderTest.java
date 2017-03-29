@@ -87,3 +87,8 @@ public class BaseBinderTest {
     Assert.assertEquals(mItems.get(0), getAdapterInputStringAtPosition(0));
   }
 
+  private void mount() {
+    mBinder.setSize(WIDTH, HEIGHT);
+    mBinder.mount(mView);
+  }
+
