@@ -197,3 +197,4 @@ void translatePendingCppExceptionToJavaException() noexcept {
     } catch(const std::ios_base::failure& ex) {
       current = JIOException::create(ex.what());
     } catch(const std::bad_alloc& ex) {
+      current = JOutOfMemoryError::create(ex.what());
