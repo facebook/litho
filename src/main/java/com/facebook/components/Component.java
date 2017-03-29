@@ -104,3 +104,4 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
 
   // If we have a cachedLayout, onPrepare and onMeasure would have been called on it already.
   private @ThreadConfined(ThreadConfined.ANY) InternalNode mLastMeasuredLayout;
+

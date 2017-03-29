@@ -17,3 +17,9 @@ import com.facebook.litho.ComponentLifecycle;
 public class TestNullLayoutComponent extends Component {
 
   private static class Lifecycle extends ComponentLifecycle {
+
+    @Override
+    protected boolean canMeasure() {
+      return true;
+    }
+
