@@ -69,3 +69,4 @@ class RecyclerSpec {
         layout.getHeight());
   }
 
+  @OnCreateMountContent

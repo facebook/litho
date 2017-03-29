@@ -760,3 +760,4 @@ class MountState {
           unmountItem(mContext, i, mHostsByMarker);
           mPrepareMountStats.unmountedCount++;
         } else if (newPosition != i) {
+          // If a MountItem for this id exists and the hostMarker has not changed but its position
