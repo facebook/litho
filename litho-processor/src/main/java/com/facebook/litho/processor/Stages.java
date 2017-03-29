@@ -2639,3 +2639,5 @@ public class Stages {
         mTypeVariables.isEmpty() || isStatic == StaticFlag.STATIC
             ? StaticFlag.STATIC
             : StaticFlag.NOT_STATIC,
+        StyleableFlag.NOT_STYLEABLE,
+        ClassNames.COMPONENT_CONTEXT);
