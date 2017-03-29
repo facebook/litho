@@ -1806,3 +1806,5 @@ public class Stages {
     generateComponentClassProps(implClassBuilder, null);
 
     implClassBuilder.addMethod(
+        MethodSpec.constructorBuilder()
+            .addModifiers(Modifier.PRIVATE)

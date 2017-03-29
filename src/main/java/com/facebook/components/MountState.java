@@ -1548,3 +1548,5 @@ class MountState {
     // The root host item should never be unmounted as it's a reference
     // to the top-level ComponentView.
     if (item == null || mLayoutOutputsIds[index] == ROOT_HOST_ID) {
+      return;
+    }
