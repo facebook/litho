@@ -257,3 +257,4 @@ class DelegateMethodSpecBuilder {
     final String parameterName = translatedName != null ? translatedName : output.name;
 
     for (Parameter parameter : mFromParams) {
+      if (parameter.name.equals(parameterName)) {

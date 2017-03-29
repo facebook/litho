@@ -296,3 +296,5 @@ public class TestDrawableComponent extends ComponentLifecycle {
     @Override
     public int hashCode() {
       return super.hashCode() + color;
+    }
+

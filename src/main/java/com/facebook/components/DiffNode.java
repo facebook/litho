@@ -90,3 +90,6 @@ class DiffNode implements Cloneable {
   }
 
   void addChild(DiffNode node) {
+    mChildren.add(node);
+  }
+
