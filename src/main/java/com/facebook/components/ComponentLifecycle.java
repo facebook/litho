@@ -373,3 +373,5 @@ public abstract class ComponentLifecycle implements EventDispatcher {
       int widthSpec,
       int heightSpec,
       Size size,
+      Component<?> component) {
+    throw new IllegalStateException(
