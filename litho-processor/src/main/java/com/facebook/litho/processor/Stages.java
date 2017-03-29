@@ -1459,3 +1459,6 @@ public class Stages {
         .fromReturnType(ClassName.get(element.getReturnType()))
         .toReturnType(ClassName.get(element.getReturnType()))
         .stateParams(mStateMap.keySet())
+        .build());
+  }
+
