@@ -1325,3 +1325,5 @@ public class Stages {
           "value");
       final String eventName = eventClass.toString();
 
+      methodBuilder.addStatement(
+          "$L $L = ($L) $L",
