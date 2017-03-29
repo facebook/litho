@@ -162,3 +162,6 @@ public class ResourceResolver {
 
   protected final int resolveDimenSizeRes(@DimenRes int resId) {
     if (resId != 0) {
+      Integer cached = mResourceCache.get(resId);
+      if (cached != null) {
+        return cached;

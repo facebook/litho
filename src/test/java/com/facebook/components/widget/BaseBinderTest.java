@@ -360,3 +360,8 @@ public class BaseBinderTest {
 
     @Override
     public void onMount(ViewGroup view) {
+      if (mView != null) {
+        throw new IllegalStateException("mView should be null!");
+      }
+
+      mView = view;
