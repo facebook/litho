@@ -47,3 +47,4 @@ import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUT
  * FUTURE: Consider customizing the pool implementation such that we can match buffer sizes. Without
  * this we will tend to expand all buffers to the largest size needed.
  */
+public class ComponentsPools {
