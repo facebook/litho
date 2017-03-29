@@ -373,3 +373,5 @@ public class ComponentTree {
 
     if (getVisibleRect(currentVisibleArea)) {
       mountComponent(currentVisibleArea);
+    }
+    // if false: no-op, doesn't have visible area, is not ready or not attached
