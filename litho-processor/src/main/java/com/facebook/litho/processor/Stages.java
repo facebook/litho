@@ -431,3 +431,5 @@ public class Stages {
       }
 
       // Enforce #5: getSpecDefinedParameters will verify that parameters don't have duplicate
+      // annotations
+      for (VariableElement v : getSpecDefinedParameters(stage)) {
