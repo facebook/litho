@@ -68,3 +68,17 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       mNodeInfo != null
       && mNodeInfo.getOnInitializeAccessibilityNodeInfoHandler() != null) {
       EventDispatcherUtils.dispatchOnInitializeAccessibilityNodeInfoEvent(
+          mNodeInfo.getOnInitializeAccessibilityNodeInfoHandler(),
+          host,
+          node,
+          mSuperDelegate);
+    } else if (mountItem != null) {
+      super.onInitializeAccessibilityNodeInfo(host, node);
+      // Coalesce the accessible mount item's information with the
+      // the root host view's as they are meant to behave as a single
+      // node in the accessibility framework.
+      final Component<?> component = mountItem.getComponent();
+      component.getLifecycle().onPopulateAccessibilityNode(node, component);
+    } else {
+      super.onInitializeAccessibilityNodeInfo(host, node);
+    }
