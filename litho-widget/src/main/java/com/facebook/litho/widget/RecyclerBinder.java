@@ -233,3 +233,5 @@ public class RecyclerBinder implements Binder<RecyclerView> {
               mMeasuredSize.width,
               mMeasuredSize.height,
               position,
+              childrenWidthSpec,
+              childrenHeightSpec,
