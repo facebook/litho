@@ -79,3 +79,33 @@ class FBEXPORT JniException : public std::exception {
 
  private:
   global_ref<JThrowable> throwable_;
+  mutable std::string what_;
+  mutable bool isMessageExtracted_;
+  const static std::string kExceptionMessageFailure_;
+
+  void populateWhat() const noexcept;
+};
+
+// Exception throwing & translating functions //////////////////////////////////////////////////////
+
+// Functions that throw C++ exceptions
+
+static const int kMaxExceptionMessageBufferSize = 512;
+
+// These methods are the preferred way to throw a Java exception from
+// a C++ function.  They create and throw a C++ exception which wraps
+// a Java exception, so the C++ flow is interrupted. Then, when
+// translatePendingCppExceptionToJavaException is called at the
+// topmost level of the native stack, the wrapped Java exception is
+// thrown to the java caller.
+template<typename... Args>
+[[noreturn]] void throwNewJavaException(const char* throwableName, const char* fmt, Args... args) {
+  int msgSize = snprintf(nullptr, 0, fmt, args...);
+
+  char *msg = (char*) alloca(msgSize + 1);
+  snprintf(msg, kMaxExceptionMessageBufferSize, fmt, args...);
+  throwNewJavaException(throwableName, msg);
+}
+
+// Identifies any pending C++ exception and throws it as a Java exception. If the exception can't
+// be thrown, it aborts the program. This is a noexcept function at C++ level.
