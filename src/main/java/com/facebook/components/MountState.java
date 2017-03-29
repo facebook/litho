@@ -77,3 +77,7 @@ class MountState {
   // Holds a list of MountItems that are currently mounted which can mount incrementally.
   private final LongSparseArray<MountItem> mCanMountIncrementallyMountItems;
 
+  // A map from test key to a list of one or more `TestItem`s which is only allocated
+  // and populated during test runs.
+  private final Map<String, Deque<TestItem>> mTestItemMap;
+
