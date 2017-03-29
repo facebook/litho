@@ -375,3 +375,5 @@ public final class ComponentTestHelper {
         componentView,
         ComponentTree.create(context, component)
             .build(),
+        makeMeasureSpec(100, EXACTLY),
+        makeMeasureSpec(100, EXACTLY));
