@@ -241,3 +241,8 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
    */
   public ViewTreeAssert hasVisibleTextMatching(final String pattern) {
     final ImmutableList<View> path = getPathToVisibleMatchingText(pattern);
+
+    Assertions.assertThat(path)
+        .overridingErrorMessage(
+            "Cannot find text matching \"%s\" in view hierarchy:%n%s",
+            pattern,
