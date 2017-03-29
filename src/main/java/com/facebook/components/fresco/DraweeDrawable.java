@@ -50,3 +50,4 @@ public class DraweeDrawable<DH extends DraweeHierarchy>
   }
 
   public void unmount() {
+    mDraweeHolder.onDetach();
