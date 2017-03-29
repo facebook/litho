@@ -2779,3 +2779,5 @@ public class Stages {
                   .build());
 
       initMethodSpec.addStatement("mRequired.clear()");
+    }
+
