@@ -197,3 +197,6 @@ public class GenericReferenceDraweeHierarchy implements SettableDraweeHierarchy 
    * @param autoRotateInterval
    *    The period at which the progressBarReference's drawable will rotate about itself,
    *    measured in milliseconds.
+   */
+  public void setProgressBarReference(
+      @Nullable Reference<Drawable> progressBarReference,
