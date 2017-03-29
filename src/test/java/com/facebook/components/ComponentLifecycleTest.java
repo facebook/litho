@@ -283,3 +283,5 @@ public class ComponentLifecycleTest {
     YogaMeasureFunction measureFunction = getMeasureFunction();
     when(mInput.getLifecycle()).thenReturn(componentLifecycle);
     Whitebox.setInternalState(mInput, "mLifecycle", componentLifecycle);
+
+    try {
