@@ -185,3 +185,5 @@ public class Utils {
   }
 
   public static List<VariableElement> getEnclosedFields(TypeElement typeElement) {
+    final List<VariableElement> enclosedFields = new ArrayList<>();
+    for (final Element enclosed : typeElement.getEnclosedElements()) {
