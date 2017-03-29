@@ -214,3 +214,16 @@ void translatePendingCppExceptionToJavaException() noexcept {
     if (previous) {
       current->initCause(previous);
     }
+    previous = current;
+  };
+
+  try {
+    denest(func);
+    setJavaExceptionAndAbortOnFailure(previous);
+  } catch (std::exception& e) {
+    FBLOGE("unexpected exception in translatePendingCppExceptionToJavaException: %s", e.what());
+    // rethrow the exception and let the noexcept handling abort.
+    throw;
+  } catch (...) {
+    FBLOGE("unexpected exception in translatePendingCppExceptionToJavaException");
+    throw;
