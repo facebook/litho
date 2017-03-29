@@ -189,3 +189,4 @@ public class Stages {
     mQualifiedClassName = qualifiedClassName;
     mStageAnnotations = stageAnnotations;
     mInterStagePropAnnotations = interStagePropAnnotations;
+    mClassTypeSpec = typeSpec;
