@@ -29,10 +29,15 @@ public class FeedItemComponentSpec {
       ComponentContext c,
       @Prop final Artist artist,
       @Prop final RecyclerBinder binder) {
-    return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+    return Container.create(c)
+        .flexDirection(YogaFlexDirection.COLUMN)
         .child(
-            Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                .child(
+            Container.create(c)
+                .child(artist.images.length == 1 ?
+                    SingleImageComponent.create(c)
+                        .image(artist.images[0])
+                        .aspectRatio(2)
+                        .withLayout() :
                     Recycler.create(c)
                         .binder(binder)
                         .withLayout().flexShrink(0)
