@@ -912,7 +912,7 @@ class MountState {
     mIndexToItemMap.put(mLayoutOutputsIds[index], item);
 
     if (component.getLifecycle().canMountIncrementally()) {
-      mCanMountIncrementallyMountItems.put(index, item);
+      mCanMountIncrementallyMountItems.put(mLayoutOutputsIds[index], item);
     }
 
     layoutOutput.getMountBounds(sTempRect);
@@ -1601,7 +1601,7 @@ class MountState {
 
     mIndexToItemMap.remove(mLayoutOutputsIds[index]);
     if (component.getLifecycle().canMountIncrementally()) {
-      mCanMountIncrementallyMountItems.delete(index);
+      mCanMountIncrementallyMountItems.delete(mLayoutOutputsIds[index]);
     }
 
     ComponentsPools.release(context, item);
@@ -1926,10 +1926,11 @@ class MountState {
 
     for (int i = 0, size = mCanMountIncrementallyMountItems.size(); i < size; i++) {
       final MountItem mountItem = mCanMountIncrementallyMountItems.valueAt(i);
+      final int layoutOutputPosition =
+          layoutState.getLayoutOutputPositionForId(mCanMountIncrementallyMountItems.keyAt(i));
       mountItemIncrementally(
           mountItem,
-          layoutState.getMountableOutputAt(
-              (int) mCanMountIncrementallyMountItems.keyAt(i)).getBounds(),
+          layoutState.getMountableOutputAt(layoutOutputPosition).getBounds(),
           localVisibleRect);
     }
 
