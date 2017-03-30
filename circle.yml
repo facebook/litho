@@ -1,0 +1,32 @@
+machine:
+  environment:
+    TERM: 'dumb'
+    ADB_INSTALL_TIMEOUT: 10
+  java:
+    version: 'oraclejdk8'
+
+dependencies:
+  override:
+    # Buck and Android
+    - if [[ ! -e /home/ubuntu/buck ]]; then git clone https://github.com/facebook/buck.git /home/ubuntu/buck; fi
+    - cd /home/ubuntu/buck && ant
+    - buck --version
+    - source scripts/circle-ci-android-setup.sh && getAndroidSDK
+    - buck fetch src/...
+    - buck fetch sample/...
+
+  cached_directories:
+    - "/home/ubuntu/buck"
+
+test:
+  override:
+    # Build the sample first
+    - buck build sample
+    # Run the tests
+    - buck test src/test/...
+
+experimental:
+  notify:
+    branches:
+      only:
+        - master
