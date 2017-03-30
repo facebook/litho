@@ -2,6 +2,7 @@ machine:
   environment:
     TERM: 'dumb'
     ADB_INSTALL_TIMEOUT: 10
+    PATH: "/home/ubuntu/buck/bin:$PATH"
   java:
     version: 'oraclejdk8'
 
