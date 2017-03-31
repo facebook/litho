@@ -128,7 +128,7 @@ public final class ComponentViewDescriptor
         component.setStethoManager(new ComponentsStethoManagerImpl());
         element.forceRelayout();
       } else {
-        final int outerWrapperComponentIndex = root.getComponents().size() - 1;
+        final int outerWrapperComponentIndex = Math.max(0, root.getComponents().size() - 1);
         final ComponentStethoNode componentStethoNode =
             stethoManager.getComponentsStethoNode(root, outerWrapperComponentIndex);
         children.store(componentStethoNode);

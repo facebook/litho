@@ -55,7 +55,7 @@ public final class ComponentStethoNodeDescriptor
 
     for (int i = 0, count = element.node.getChildCount(); i < count; i++) {
       final InternalNode childNode = element.node.getChildAt(i);
-      final int outerWrapperComponentIndex = childNode.getComponents().size() - 1;
+      final int outerWrapperComponentIndex = Math.max(0, childNode.getComponents().size() - 1);
       children.store(stethoManager.getComponentsStethoNode(childNode, outerWrapperComponentIndex));
     }
 
@@ -63,7 +63,7 @@ public final class ComponentStethoNodeDescriptor
       final InternalNode nestedTree = element.node.getNestedTree();
       for (int i = 0, count = nestedTree.getChildCount(); i < count; i++) {
         final InternalNode childNode = nestedTree.getChildAt(i);
-        children.store(stethoManager.getComponentsStethoNode(childNode, childNode.getComponents().size() - 1));
+        children.store(stethoManager.getComponentsStethoNode(childNode, Math.max(0, childNode.getComponents().size() - 1)));
       }
     }
 
