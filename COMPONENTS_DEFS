@@ -10,7 +10,7 @@ COMPONENTS_ROOT_TARGET = make_dep_path(":components")
 
 # Java source
 COMPONENTS_JAVA_TARGET                     = make_dep_path('src/main/java/com/facebook/components:components')
-COMPONENTS_DEBUG_JAVA_TARGET               = make_dep_path('src/debug/java/com/facebook/components:components')
+COMPONENTS_DEBUG_JAVA_TARGET               = make_dep_path('src/debug/java/com/facebook/litho:components')
 COMPONENTS_ANNOTATIONS_TARGET              = make_dep_path('litho-annotations/src/main/java/com/facebook/litho/annotations:annotations')
 COMPONENTS_CONFIG_TARGET                   = make_dep_path('src/main/java/com/facebook/components/config:config')
 COMPONENTS_DISPLAYLISTSUBS_TARGET          = make_dep_path('src/main/java/com/facebook/components/displaylist/stubs:stubs')

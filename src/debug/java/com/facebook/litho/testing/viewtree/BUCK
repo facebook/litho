@@ -21,6 +21,6 @@ android_library(
         COMPONENTS_JAVA_TARGET,
         COMPONENTS_JSR_TARGET,
         COMPONENTS_JUNIT_TARGET,
-        make_dep_path("src/debug/java/com/facebook/components/testing:testing"),
+        make_dep_path("src/debug/java/com/facebook/litho/testing:testing"),
     ],
 )
