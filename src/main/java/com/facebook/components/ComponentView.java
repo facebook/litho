@@ -34,6 +34,7 @@ public class ComponentView extends ComponentHost {
   private final MountState mMountState;
   private boolean mIsAttached;
   private final Rect mPreviousMountBounds = new Rect();
+  private final boolean mIncrementalMountOnOffsetOrTranslationChange;
 
   private boolean mForceLayout;
 
@@ -69,10 +70,18 @@ public class ComponentView extends ComponentHost {
   }
 
   public ComponentView(ComponentContext context, AttributeSet attrs) {
+    this(context, attrs, false);
+  }
+
+  public ComponentView(
+      ComponentContext context,
+      AttributeSet attrs,
+      boolean incrementalMountOnOffsetOrTranslationChange) {
     super(context, attrs);
 
     mMountState = new MountState(this);
     mAccessibilityManager = (AccessibilityManager) context.getSystemService(ACCESSIBILITY_SERVICE);
+    mIncrementalMountOnOffsetOrTranslationChange = incrementalMountOnOffsetOrTranslationChange;
   }
 
   private static void performLayoutOnChildrenIfNecessary(ComponentHost host) {
@@ -295,6 +304,85 @@ public class ComponentView extends ComponentHost {
     }
 
     mComponent = null;
+  }
+
+  @Override
+  public void offsetTopAndBottom(int offset) {
+    super.offsetTopAndBottom(offset);
+
+    if (mIncrementalMountOnOffsetOrTranslationChange) {
+      maybePerformIncrementalMountOnView();
+    }
+  }
+
+  @Override
+  public void offsetLeftAndRight(int offset) {
+    super.offsetLeftAndRight(offset);
+
+    if (mIncrementalMountOnOffsetOrTranslationChange) {
+      maybePerformIncrementalMountOnView();
+    }
+  }
+
+  @Override
+  public void setTranslationX(float translationX) {
+    super.setTranslationX(translationX);
+
+    if (mIncrementalMountOnOffsetOrTranslationChange) {
+      maybePerformIncrementalMountOnView();
+    }
+  }
+
+  @Override
+  public void setTranslationY(float translationY) {
+    super.setTranslationY(translationY);
+
+    if (mIncrementalMountOnOffsetOrTranslationChange) {
+      maybePerformIncrementalMountOnView();
+    }
+  }
+
+  private void maybePerformIncrementalMountOnView() {
+    if (!isIncrementalMountEnabled() || !(getParent() instanceof View)) {
+      return;
+    }
+
+    int parentWidth = ((View) getParent()).getWidth();
+    int parentHeight = ((View) getParent()).getHeight();
+
+    final int translationX = (int) getTranslationX();
+    final int translationY = (int) getTranslationY();
+    final int top = getTop() + translationY;
+    final int bottom = getBottom() + translationY;
+    final int left = getLeft() + translationX;
+    final int right = getRight() + translationX;
+
+    if (left >= 0 &&
+        top >= 0 &&
+        right <= parentWidth &&
+        bottom <= parentHeight &&
+        mPreviousMountBounds.width() == getWidth() &&
+        mPreviousMountBounds.height() == getHeight()) {
+      // View is fully visible, and has already been completely mounted.
+      return;
+    }
+
+    final Rect rect = ComponentsPools.acquireRect();
+    rect.set(
+        Math.max(0, -left),
+        Math.max(0, -top),
+        Math.min(right, parentWidth) - left,
+        Math.min(bottom, parentHeight) - top);
+
+    if (rect.isEmpty()) {
+      // View is not visible at all, nothing to do.
+      ComponentsPools.release(rect);
+      return;
+    }
+
+    performIncrementalMount(rect);
+
+    ComponentsPools.release(rect);
   }
 
   public void performIncrementalMount(Rect visibleRect) {
