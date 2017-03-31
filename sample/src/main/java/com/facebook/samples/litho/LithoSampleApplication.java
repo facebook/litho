@@ -10,16 +10,10 @@ package com.facebook.samples.litho;
 
 import android.app.Application;
 
-import com.facebook.litho.ComponentsDescriptorProvider;
+import com.facebook.litho.LithoWebKitInspector;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.soloader.SoLoader;
-import com.facebook.stetho.InspectorModulesProvider;
 import com.facebook.stetho.Stetho;
-import com.facebook.stetho.inspector.elements.DescriptorProvider;
-import com.facebook.stetho.inspector.elements.android.AndroidDocumentProviderFactory;
-import com.facebook.stetho.inspector.protocol.ChromeDevtoolsDomain;
-
-import java.util.Arrays;
 
 public class LithoSampleApplication extends Application {
 
@@ -29,19 +23,9 @@ public class LithoSampleApplication extends Application {
 
     Fresco.initialize(this);
     SoLoader.init(this, false);
-    Stetho.initialize(Stetho.newInitializerBuilder(this).enableWebKitInspector(
-        new InspectorModulesProvider() {
-          @Override
-          public Iterable<ChromeDevtoolsDomain> get() {
-            final Stetho.DefaultInspectorModulesBuilder defaultModulesBuilder =
-                new Stetho.DefaultInspectorModulesBuilder(LithoSampleApplication.this);
-
-            defaultModulesBuilder.documentProvider(new AndroidDocumentProviderFactory(
-                LithoSampleApplication.this,
-                Arrays.<DescriptorProvider>asList(new ComponentsDescriptorProvider())));
-
-            return defaultModulesBuilder.finish();
-          }
-        }).build());
+    Stetho.initialize(
+        Stetho.newInitializerBuilder(this)
+            .enableWebKitInspector(new LithoWebKitInspector(this))
+            .build());
   }
 }
