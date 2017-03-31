@@ -7,7 +7,7 @@ permalink: /docs/layout-specs
 
 A *layout spec* is the logical equivalent of a composite view on Android. It simply groups existing components together in an immutable layout tree.
 
-Implementing a layout spec is very simple: you only need to write one method annotated with `@OnCreateLayout` which returns an immutable tree of `ComponentLayout` objects. 
+Implementing a layout spec is very simple: you only need to write one method annotated with `@OnCreateLayout` which returns an immutable tree of `ComponentLayout` objects.
 
 Let's start with a simple example:
 
@@ -20,8 +20,7 @@ public class MyComponentSpec {
       @Prop Uri imageUri,
       @Prop String title) {
 
-      return Container.create(c)
-          .direction(ROW)
+      return Row.create(c)
           .alignItems(CENTER)
           .child(
               FrescoComponent.create(c)
@@ -40,11 +39,11 @@ public class MyComponentSpec {
 }
 ```
 
-As you can see, layout spec classes use the `@LayoutSpec` annotation. 
+As you can see, layout spec classes use the `@LayoutSpec` annotation.
 
 The method annotated with `@OnCreateLayout` must have `ComponentContext` as its first argument followed by a list of arguments annotated with `@Prop`. The annotation processor will validate this and other invariants in the API at build time.
 
-In the example above, the layout tree has a root *Container* with two children stacked horizontally (`FlexDirection.ROW`) and vertically centered (`Align.CENTER`).
+In the example above, the layout tree has a root *Container* with two children stacked horizontally (`Row.create`) and vertically centered (`Align.CENTER`).
 
 The first child is a `FrescoImage` component that takes an `uri` prop and has a 40dp width and height.
 
@@ -66,5 +65,4 @@ Text.create(c)
     .grow(1f)
 ```
 
-The framework exposes many layout features. See <https://facebook.github.io/yoga/docs/learn-more/> for full documentation. 
- 
+The framework exposes many layout features. See <https://facebook.github.io/yoga/docs/learn-more/> for full documentation.

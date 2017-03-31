@@ -62,7 +62,7 @@ Text.create(context)
 ```
 
 `Text` is a core component defined in `com.facebook.litho.widget`.  It has a number of _properties_ such as _text_ and _textSize_ which you can set as shown. These _properties_ are called props to mimic [React](https://facebook.github.io/react/) terminology. You'll learn how to write your own components later but it's worth noting the `Text` class is generated from a `TextSpec` class. The generated component class provides a builder API with methods to define values for the component's props.
- 
+
 The `Text` component is added as a single child component to the `ComponentTree` in the example. You could instead have a single root component with several child components. You'll see how to do this in follow-on examples.
 
 Note that often this would be written as the more compact and pleasing, but slightly more confusing
@@ -86,7 +86,7 @@ Your custom component will be called `FeedItem`. Therefore, define a class named
 public class FeedItemSpec {
   @OnCreateLayout
   static ComponentLayout onCreateLayout(ComponentContext c) {
-    return Container.create(c)
+    return Column.create(c)
         .paddingDip(ALL, 16)
         .backgroundColor(Color.WHITE)
         .child(
@@ -98,7 +98,7 @@ public class FeedItemSpec {
 }
 ```
 
-You should recognize the `Text` component from the previous tutorial step. In this example, you're passing it in as a "child" property of a `Container`. You can think `Container`s like `<div>`s in HTML.  It's a wrapper, used mainly for collating things together and perhaps adding some background styling.  Since Litho uses [Yoga](https://facebook.github.io/yoga/), you can add flexbox attributes to set the layout for the children of a `Container`. Here, you simply set the padding and the background color.
+You should recognize the `Text` component from the previous tutorial step. In this example, you're passing it in as a "child" property of a `Column`. You can think `Column`s like `<div>`s in HTML.  It's a wrapper, used mainly for collating things together and perhaps adding some background styling.  Since Litho uses [Yoga](https://facebook.github.io/yoga/), you can add flexbox attributes to set the layout for the children of a `Column` or a `Row`. Here, you simply set the padding and the background color.
 
 How do you this component? In your activity, simply change the `ComponentTree` definition to:
 
@@ -111,7 +111,7 @@ final ComponentTree componentTree = ComponentTree.create(
 
 **Note:** That's `FeedItem` you're using, not `FeedItemSpec`.
 
-Where did `FeedItem` come from?  Where are `create` and `build` defined?  This is the magic of Litho _Specs_. 
+Where did `FeedItem` come from?  Where are `create` and `build` defined?  This is the magic of Litho _Specs_.
 
 ??? HOW TO DO THIS WITHOUT BUCK ???
 
@@ -201,7 +201,7 @@ static ComponentLayout onCreateLayout(
     ComponentContext c,
     @Prop int color,
     @Prop String message) {
-  return Container.create(c)
+  return Column.create(c)
       .paddingDip(ALL, 16)
       .backgroundColor(color)
       .child(
@@ -245,4 +245,3 @@ You can specify more options to the `@Prop` annotation.  For example, consider t
 This tells the annotation processor to construct a number of functions, such as `shadowRadiusPx`, `shadowRadiusDip`, `shadowRadiusSp` as well as `shadowRadiusRes`.
 
 Congratulations on completing this tutorial! This basic tutorial should arm you with all the building blocks to start using Litho and building your own components. You can find the [completed tutorial here](https://github.com/facebook/litho/tree/master/sample-barebones). Be sure to check out [this sample](https://github.com/facebook/litho/tree/master/sample) for more in-depth code as well as the Litho API documentation.
-

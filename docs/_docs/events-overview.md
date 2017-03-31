@@ -1,5 +1,5 @@
 ---
-docid: events-overview 
+docid: events-overview
 title: Overview
 layout: docs
 permalink: /docs/events-overview
@@ -22,7 +22,7 @@ In this example we will assume you have a component called `ColorComponent`. To 
 
 This will auto-generate a matching //dispatch// method and an event identifier that will used by event callbacks (see //Handling events// section below).
 
-The //dispatch// method takes an `EventHandler` as the first argument followed by the list of attributes defined in your `@Event` class. An `EventHandler` is essentially a generic //listener// interface to connect components through events. The convention is to have an `EventHandler` prop for each event exposed by your component. 
+The //dispatch// method takes an `EventHandler` as the first argument followed by the list of attributes defined in your `@Event` class. An `EventHandler` is essentially a generic //listener// interface to connect components through events. The convention is to have an `EventHandler` prop for each event exposed by your component.
 
 ```java
 @MountSpec(events = { ColorChangedEvent.class })
@@ -43,7 +43,7 @@ public class ColorComponentSpec {
 }
 ```
 
-In the example above, `ColorComponent` takes an `colorChangedHandler` as prop and dispatches the `ColorChangedEvent` to it with the generated `dispatchColorChangedEvent()` method. 
+In the example above, `ColorComponent` takes an `colorChangedHandler` as prop and dispatches the `ColorChangedEvent` to it with the generated `dispatchColorChangedEvent()` method.
 
 # Handling events
 
@@ -65,7 +65,7 @@ public class MyComponentSpec {
       LayoutContext c,
       @Prop String someColor) {
 
-    return Container.create(c)
+    return Column.create(c)
         ...
         .child(
             ColorComponent.create(c)
@@ -100,7 +100,7 @@ public class FacePileComponentSpec {
       @Prop Uri[] faces) {
 
 
-    ComponentLayout.Builder builder = Container.create(c);
+    ComponentLayout.Builder builder = Column.create(c);
     for (Uri face : avatarUrls) {
       builder.child(
           FrescoComponent.create(c)
