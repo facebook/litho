@@ -13,12 +13,10 @@ import android.support.annotation.AttrRes;
 import android.support.annotation.StyleRes;
 
 /**
- * Utility class to create a new container builder in the same way component layouts
- * are created.
- *
- * @see ComponentContext
- * @see ComponentContext#newLayoutBuilder(Component)
+ * @deprecated Container has been deprecated in favor of {@link Row} & {@link Column} to make
+ *             their direction explicit.
  */
+@Deprecated
 public final class Container {
   private Container() {
   }

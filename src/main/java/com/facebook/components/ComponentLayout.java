@@ -343,7 +343,14 @@ public interface ComponentLayout {
         @Dimension(unit = DP) int value);
 
     ContainerBuilder wrap(YogaWrap wrap);
+
+    /**
+     * @deprecated flexDirection has been deprecated in favor of specific {@link Row} &
+     *             {@link Column} container classes.
+     */
+    @Deprecated
     ContainerBuilder flexDirection(YogaFlexDirection direction);
+
     ContainerBuilder justifyContent(YogaJustify justifyContent);
     ContainerBuilder alignItems(YogaAlign alignItems);
     ContainerBuilder alignContent(YogaAlign alignContent);
