@@ -22,7 +22,7 @@ COMPONENTS_COMPONENTS_FRESCO_TARGET        = make_dep_path('src/main/java/com/fa
 COMPONENTS_COMPONENTS_FRESCO_COMMON_TARGET = make_dep_path('src/main/java/com/facebook/components/fresco/common:common')
 
 # Test source
-COMPONENTS_TEST_TARGET                     = make_dep_path('src/test/java/com/facebook/components:components')
+COMPONENTS_TEST_TARGET                     = make_dep_path('src/test/java/com/facebook/litho:components')
 
 # Java source with local upstream
 COMPONENTS_PROGUARDANNOTATIONS_TARGET = make_dep_path('src/main/java/com/facebook/proguard/annotations:annotations')
