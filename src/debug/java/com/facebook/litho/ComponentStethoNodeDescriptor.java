@@ -122,12 +122,16 @@ public final class ComponentStethoNodeDescriptor
       ComponentStethoNode element,
       StyleRuleNameAccumulator accumulator) {
 
-    // We currently have no way of overriding props / state of non-root components
-    accumulator.store("state", element.componentIndex == 0);
-    accumulator.store("props", element.componentIndex == 0);
+    if (!element.node.getComponents().isEmpty()) {
+      // We currently have no way of overriding props / state of non-root components
+      accumulator.store("state", element.componentIndex == 0);
+      accumulator.store("props", element.componentIndex == 0);
 
-    // Only the root component has actual layout info
-    if (element.componentIndex == 0) {
+      // Only the root component has actual layout info
+      if (element.componentIndex == 0) {
+        accumulator.store("layout", true);
+      }
+    } else {
       accumulator.store("layout", true);
     }
 
@@ -142,12 +146,20 @@ public final class ComponentStethoNodeDescriptor
       String ruleName,
       StyleAccumulator accumulator) {
 
+    final ComponentsStethoManagerImpl stethoManager = getStethoManager(element);
+    if ("layout".equals(ruleName) && stethoManager != null) {
+      stethoManager.getStyles(element, accumulator);
+    }
+
+    if (element.node.getComponents().isEmpty()) {
+      return;
+    }
+
     final Component component = element.node.getComponents().get(element.componentIndex);
     if (component == null) {
       return;
     }
 
-    final ComponentsStethoManagerImpl stethoManager = getStethoManager(element);
     final ComponentLifecycle.StateContainer stateContainer = component.getStateContainer();
 
     if ("props".equals(ruleName)) {
@@ -180,8 +192,6 @@ public final class ComponentStethoNodeDescriptor
           }
         } catch (IllegalAccessException ignored) {}
       }
-    } else if ("layout".equals(ruleName) && stethoManager != null) {
-      stethoManager.getStyles(element, accumulator);
     }
   }
 
