@@ -244,6 +244,8 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
           }
           switch (flexBasis.unit) {
             case AUTO:
+              node.flexBasisAuto();
+              break;
             case UNDEFINED:
             case POINT:
               node.flexBasisPx(FastMath.round(flexBasis.value));
@@ -261,6 +263,8 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
           }
           switch (width.unit) {
             case AUTO:
+              node.widthAuto();
+              break;
             case UNDEFINED:
             case POINT:
               node.widthPx(FastMath.round(width.value));
@@ -310,6 +314,8 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
           }
           switch (height.unit) {
             case AUTO:
+              node.heightAuto();
+              break;
             case UNDEFINED:
             case POINT:
               node.heightPx(FastMath.round(height.value));

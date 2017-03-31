@@ -449,6 +449,12 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return this;
   }
 
+  // Used by stetho to re-set auto value
+  InternalNode flexBasisAuto() {
+    mYogaNode.setFlexBasisAuto();
+    return this;
+  }
+
   @Override
   public InternalNode flexBasisPercent(float percent) {
     mPrivateFlags |= PFLAG_FLEX_BASIS_IS_SET;
@@ -694,6 +700,12 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return this;
   }
 
+  // Used by stetho to re-set auto value
+  InternalNode widthAuto() {
+    mYogaNode.setWidthAuto();
+    return this;
+  }
+
   @Override
   public InternalNode widthPercent(float percent) {
     mPrivateFlags |= PFLAG_WIDTH_IS_SET;
@@ -793,6 +805,12 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   public InternalNode heightPx(@Px int height) {
     mPrivateFlags |= PFLAG_HEIGHT_IS_SET;
     mYogaNode.setHeight(height);
+    return this;
+  }
+
+  // Used by stetho to re-set auto value
+  InternalNode heightAuto() {
+    mYogaNode.setHeightAuto();
     return this;
   }
 
