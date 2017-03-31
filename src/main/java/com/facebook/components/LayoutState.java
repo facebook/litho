@@ -23,6 +23,7 @@ import android.content.pm.ApplicationInfo;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.LongSparseArray;
@@ -1266,18 +1267,27 @@ class LayoutState {
       int widthSpec,
       int heightSpec,
       DiffNode diffTreeRoot) {
+
+    final boolean isTest = "robolectric".equals(Build.FINGERPRINT);
+    // Copy the context so that it can have its own set of tree props.
+    // Robolectric tests keep the context so that tree props can be set externally.
+    if (!isTest) {
+      c = c.makeNewCopy();
+    }
+
+    final boolean hasNestedTreeHolder = nestedTreeHolder != null;
+    if (hasNestedTreeHolder) {
+      c.setTreeProps(nestedTreeHolder.getPendingTreeProps());
+    } else if (!isTest) {
+      c.setTreeProps(null);
+    }
+
     // Account for the size specs in ComponentContext in case the tree is a NestedTree.
     final int previousWidthSpec = c.getWidthSpec();
     final int previousHeightSpec = c.getHeightSpec();
 
-    final boolean hasNestedTreeHolder = nestedTreeHolder != null;
-
     c.setWidthSpec(widthSpec);
     c.setHeightSpec(heightSpec);
-
-    if (hasNestedTreeHolder) {
-      c.setTreeProps(nestedTreeHolder.getPendingTreeProps());
-    }
 
     final InternalNode root = createTree(
         component,
