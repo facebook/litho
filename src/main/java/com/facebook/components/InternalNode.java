@@ -1923,19 +1923,15 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     if ((node.mPrivateFlags & PFLAG_FLEX_GROW_IS_SET) != 0L) {
       errorTypes = addOrCreateList(errorTypes, "flexGrow");
     }
-    if ((node.mPrivateFlags & PFLAG_FLEX_SHRINK_IS_SET) != 0L) {
-      errorTypes = addOrCreateList(errorTypes, "flexShrink");
-    }
     if ((node.mPrivateFlags & PFLAG_MARGIN_IS_SET) != 0L) {
       errorTypes = addOrCreateList(errorTypes, "margin");
     }
 
-    // TODO(16963569) Temporarily remove this assertion while codemoding flexbox defaults
-    // if (errorTypes != null) {
-    //   final CharSequence errorStr = TextUtils.join(", ", errorTypes);
-    //   throw new IllegalStateException("You should not set " + errorStr + " to a root layout in "
-    //       + node.getComponent().getLifecycle());
-    // }
+    if (errorTypes != null) {
+      final CharSequence errorStr = TextUtils.join(", ", errorTypes);
+      throw new IllegalStateException("You should not set " + errorStr + " to a root layout in "
+          + node.getRootComponent().getLifecycle());
+    }
   }
 
   public TreeProps getPendingTreeProps() {
