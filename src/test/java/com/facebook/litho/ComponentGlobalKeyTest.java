@@ -65,6 +65,7 @@ public class ComponentGlobalKeyTest {
     System.out.println(component.getLifecycle().getId());
     ComponentTree componentTree = ComponentTree.create(mContext, component)
         .incrementalMount(false)
+        .layoutDiffing(false)
         .build();
     ComponentView componentView = getComponentView(componentTree);
 
@@ -82,6 +83,7 @@ public class ComponentGlobalKeyTest {
     System.out.println(component.getLifecycle().getId());
     ComponentTree componentTree = ComponentTree.create(mContext, component)
         .incrementalMount(false)
+        .layoutDiffing(false)
         .build();
     ComponentView componentView = getComponentView(componentTree);
 
@@ -99,6 +101,7 @@ public class ComponentGlobalKeyTest {
 
     ComponentTree componentTree = ComponentTree.create(mContext, component)
         .incrementalMount(false)
+        .layoutDiffing(false)
         .build();
     ComponentView componentView = getComponentView(componentTree);
 

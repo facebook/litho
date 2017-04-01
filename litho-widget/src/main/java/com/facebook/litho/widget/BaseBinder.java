@@ -675,6 +675,7 @@ public abstract class BaseBinder<
     return ComponentTree.create(mContext, component)
         .incrementalMount(isIncrementalMountEnabled())
         .layoutThreadLooper(mLayoutLooper)
+        .layoutDiffing(false)
         .build();
   }
 

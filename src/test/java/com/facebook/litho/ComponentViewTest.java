@@ -49,6 +49,7 @@ public class ComponentViewTest {
     final ComponentContext c = new ComponentContext(RuntimeEnvironment.application);
     final ComponentTree componentTree = ComponentTree.create(c, component)
         .incrementalMount(false)
+        .layoutDiffing(false)
         .build();
 
     mComponentView = new ComponentView(RuntimeEnvironment.application);

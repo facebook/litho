@@ -53,6 +53,7 @@ public class LifecycleMethodsTest {
     final ComponentContext c = new ComponentContext(RuntimeEnvironment.application);
     mComponentTree = ComponentTree.create(c, mComponent)
         .incrementalMount(false)
+        .layoutDiffing(false)
         .build();
     mComponentView.setComponent(mComponentTree);
   }

@@ -37,7 +37,8 @@ public class SampleActivity extends Activity {
     final ComponentTree componentTree = ComponentTree.create(
         context,
         Recycler.create(context)
-                    .binder(recyclerBinder))
+                .binder(recyclerBinder))
+            .layoutDiffing(false)
             .build();
 
     componentView.setComponent(componentTree);

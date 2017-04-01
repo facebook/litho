@@ -267,6 +267,7 @@ public class MountStateRemountInPlaceTest {
           }
         })
             .incrementalMount(false)
+            .layoutDiffing(false)
             .build(),
         makeMeasureSpec(100, AT_MOST),
         makeMeasureSpec(100, AT_MOST));
@@ -313,6 +314,7 @@ public class MountStateRemountInPlaceTest {
           }
         })
             .incrementalMount(false)
+            .layoutDiffing(false)
             .build(),
         makeMeasureSpec(100, EXACTLY),
         makeMeasureSpec(100, EXACTLY));
@@ -359,6 +361,7 @@ public class MountStateRemountInPlaceTest {
           }
         })
             .incrementalMount(false)
+            .layoutDiffing(false)
             .build(),
         makeMeasureSpec(100, EXACTLY),
         makeMeasureSpec(100, EXACTLY));
@@ -508,6 +511,7 @@ public class MountStateRemountInPlaceTest {
           }
         })
         .incrementalMount(false)
+        .layoutDiffing(false)
         .build();
     secondTree.setSizeSpec(100, 100);
 
@@ -579,6 +583,7 @@ public class MountStateRemountInPlaceTest {
           }
         })
         .incrementalMount(false)
+        .layoutDiffing(false)
         .build();
     secondTree.setSizeSpec(100, 100);
 
@@ -653,6 +658,7 @@ public class MountStateRemountInPlaceTest {
 
     ComponentTree tree = ComponentTree.create(mContext, firstLayout)
         .incrementalMount(false)
+        .layoutDiffing(false)
         .build();
     ComponentView cv = new ComponentView(mContext);
     ComponentTestHelper.mountComponent(cv, tree);

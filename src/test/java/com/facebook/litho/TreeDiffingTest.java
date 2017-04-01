@@ -511,6 +511,7 @@ public class TreeDiffingTest {
 
     ComponentTree componentTree = ComponentTree.create(mContext, firstComponent)
         .incrementalMount(false)
+        .layoutDiffing(false)
         .build();
     LayoutState state = componentTree.calculateLayoutState(
         null,
@@ -592,6 +593,7 @@ public class TreeDiffingTest {
 
     ComponentTree componentTree = ComponentTree.create(mContext, component1)
         .incrementalMount(false)
+        .layoutDiffing(false)
         .build();
     LayoutState state = componentTree.calculateLayoutState(
         null,
@@ -686,6 +688,7 @@ public class TreeDiffingTest {
 
     ComponentTree componentTree = ComponentTree.create(mContext, component1)
         .incrementalMount(false)
+        .layoutDiffing(false)
         .build();
     LayoutState state = componentTree.calculateLayoutState(
         null,
@@ -758,6 +761,7 @@ public class TreeDiffingTest {
 
     ComponentTree componentTree = ComponentTree.create(mContext, component1)
         .incrementalMount(false)
+        .layoutDiffing(false)
         .build();
     LayoutState state = componentTree.calculateLayoutState(
         null,

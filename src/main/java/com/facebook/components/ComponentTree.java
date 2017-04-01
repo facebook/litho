@@ -1221,7 +1221,7 @@ public class ComponentTree {
 
     // optional
     private boolean incrementalMountEnabled = true;
-    private boolean isLayoutDiffingEnabled;
+    private boolean isLayoutDiffingEnabled = true;
     private LayoutHandler layoutThreadHandler;
     private Object layoutLock;
     private StateHandler stateHandler;
@@ -1244,7 +1244,7 @@ public class ComponentTree {
       root = null;
 
       incrementalMountEnabled = true;
-      isLayoutDiffingEnabled = false;
+      isLayoutDiffingEnabled = true;
       layoutThreadHandler = null;
       layoutLock = null;
       stateHandler = null;
@@ -1265,7 +1265,10 @@ public class ComponentTree {
 
     /**
      * Whether or not to enable layout tree diffing. This will reduce the cost of
-     * updates at the expense of using extra memory.
+     * updates at the expense of using extra memory. True by default.
+     *
+     * @Deprecated We will remove this option soon, please consider turning it on (which is on by
+     * default)
      */
     public Builder layoutDiffing(boolean enabled) {
       isLayoutDiffingEnabled = enabled;

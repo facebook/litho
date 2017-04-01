@@ -475,6 +475,7 @@ public class BinderTreeCollectionTest {
         TestLayoutComponent.create(c)
             .build())
         .incrementalMount(false)
+        .layoutDiffing(false)
         .build();
   }
 }

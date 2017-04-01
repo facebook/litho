@@ -162,6 +162,7 @@ public class StateUpdatesTest {
 
     mComponentTree = ComponentTree.create(mContext, mTestComponent)
         .incrementalMount(false)
+        .layoutDiffing(false)
         .build();
     final ComponentView componentView = new ComponentView(mContext);
     componentView.setComponent(mComponentTree);
@@ -184,6 +185,7 @@ public class StateUpdatesTest {
     };
     final ComponentTree componentTree = ComponentTree.create(mContext, component)
         .incrementalMount(false)
+        .layoutDiffing(false)
         .build();
     final ComponentView componentView = new ComponentView(mContext);
     componentView.setComponent(componentTree);
@@ -209,6 +211,7 @@ public class StateUpdatesTest {
     };
     final ComponentTree componentTree = ComponentTree.create(mContext, component)
         .incrementalMount(false)
+        .layoutDiffing(false)
         .build();
     final ComponentView componentView = new ComponentView(mContext);
     componentView.setComponent(componentTree);

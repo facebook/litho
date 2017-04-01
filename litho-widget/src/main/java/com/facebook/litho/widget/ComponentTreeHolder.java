@@ -142,7 +142,6 @@ public class ComponentTreeHolder {
   private void ensureComponentTree(ComponentContext context) {
     if (mComponentTree == null) {
       mComponentTree = ComponentTree.create(context, mComponentInfo.getComponent())
-          .layoutDiffing(true)
           .layoutThreadHandler(mLayoutHandler)
           .stateHandler(mStateHandler)
           .build();

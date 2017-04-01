@@ -94,6 +94,7 @@ public class StateUpdatesTestHelper {
     Whitebox.invokeMethod(component, "setKey", "bogusKeyForTest");
     final ComponentTree componentTree = ComponentTree.create(context, component)
         .incrementalMount(incrementalMountEnabled)
+        .layoutDiffing(false)
         .build();
 
     final ComponentView componentView = new ComponentView(context);

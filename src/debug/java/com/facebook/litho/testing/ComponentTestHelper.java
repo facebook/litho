@@ -159,6 +159,7 @@ public final class ComponentTestHelper {
         componentView,
         ComponentTree.create(context, component)
             .incrementalMount(incrementalMountEnabled)
+            .layoutDiffing(false)
             .build(),
         makeMeasureSpec(width, EXACTLY),
         makeMeasureSpec(height, EXACTLY));
@@ -301,7 +302,6 @@ public final class ComponentTestHelper {
     final TestComponentTree componentTree =
         TestComponentTree.create(context, component)
             .incrementalMount(false)
-            .layoutDiffing(true)
             .build();
 
     final ComponentView componentView = new ComponentView(context);
@@ -374,6 +374,7 @@ public final class ComponentTestHelper {
     mountComponent(
         componentView,
         ComponentTree.create(context, component)
+            .layoutDiffing(false)
             .build(),
         makeMeasureSpec(100, EXACTLY),
         makeMeasureSpec(100, EXACTLY));

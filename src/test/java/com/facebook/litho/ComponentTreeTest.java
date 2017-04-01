@@ -145,6 +145,7 @@ public class ComponentTreeTest {
     ComponentTree componentTree =
         ComponentTree.create(mContext, mComponent)
             .incrementalMount(false)
+            .layoutDiffing(false)
             .build();
 
     creationCommonChecks(componentTree);
@@ -161,6 +162,7 @@ public class ComponentTreeTest {
     ComponentTree componentTree =
         ComponentTree.create(mContext, mComponent)
             .incrementalMount(false)
+            .layoutDiffing(false)
             .build();
     componentTree.setSizeSpec(mWidthSpec, mHeightSpec);
 
@@ -174,6 +176,7 @@ public class ComponentTreeTest {
     ComponentTree componentTree =
         ComponentTree.create(mContext, mComponent)
             .incrementalMount(false)
+            .layoutDiffing(false)
             .build();
     componentTree.setSizeSpecAsync(mWidthSpec, mHeightSpec);
 
@@ -202,6 +205,7 @@ public class ComponentTreeTest {
     ComponentTree componentTree =
         ComponentTree.create(mContext, mComponent)
             .incrementalMount(false)
+            .layoutDiffing(false)
             .build();
 
     componentTree.setSizeSpecAsync(mWidthSpec, mHeightSpec);
@@ -223,6 +227,7 @@ public class ComponentTreeTest {
     ComponentTree componentTree =
         ComponentTree.create(mContext, mComponent)
             .incrementalMount(false)
+            .layoutDiffing(false)
             .build();
     componentTree.setSizeSpecAsync(mWidthSpec, mHeightSpec);
 
@@ -244,6 +249,7 @@ public class ComponentTreeTest {
     ComponentTree componentTree =
         ComponentTree.create(mContext, mComponent)
             .incrementalMount(false)
+            .layoutDiffing(false)
             .build();
 
     Size size = new Size();
@@ -263,6 +269,7 @@ public class ComponentTreeTest {
     ComponentTree componentTree =
         ComponentTree.create(mContext, mComponent)
             .incrementalMount(false)
+            .layoutDiffing(false)
             .build();
 
     Size size = new Size();
@@ -294,6 +301,7 @@ public class ComponentTreeTest {
     ComponentTree componentTree =
         ComponentTree.create(mContext, mComponent)
             .incrementalMount(false)
+            .layoutDiffing(false)
             .build();
 
     Size size = new Size();
@@ -326,6 +334,7 @@ public class ComponentTreeTest {
     ComponentTree componentTree =
         ComponentTree.create(mContext, component)
             .incrementalMount(false)
+            .layoutDiffing(false)
             .build();
 
     componentTree.setRoot(mComponent);
@@ -349,6 +358,7 @@ public class ComponentTreeTest {
         mContext,
         component1)
         .incrementalMount(false)
+        .layoutDiffing(false)
         .build();
 
     Component component2 = TestDrawableComponent.create(mContext)
@@ -357,6 +367,7 @@ public class ComponentTreeTest {
         mContext,
         component2)
         .incrementalMount(false)
+        .layoutDiffing(false)
         .build();
 
     Assert.assertNull(getComponentView(componentTree1));
@@ -382,6 +393,7 @@ public class ComponentTreeTest {
         mContext,
         component)
         .incrementalMount(false)
+        .layoutDiffing(false)
         .build();
 
     ComponentView componentView = new ComponentView(mContext);
@@ -403,6 +415,7 @@ public class ComponentTreeTest {
         mContext,
         component)
         .incrementalMount(false)
+        .layoutDiffing(false)
         .build();
 
     // Attach first view.
@@ -428,6 +441,7 @@ public class ComponentTreeTest {
         mContext,
         component)
         .incrementalMount(false)
+        .layoutDiffing(false)
         .build();
 
     // Attach first view.
