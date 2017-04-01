@@ -1937,7 +1937,8 @@ public class LayoutStateCalculateTest {
     final Component rootContainer = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Container.create(c)
+            .flexDirection(YogaFlexDirection.COLUMN)
             .paddingPx(YogaEdge.HORIZONTAL, horizontalPadding)
             .child(sizeDependentComponentSpy)
             .build();
