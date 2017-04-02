@@ -42,7 +42,7 @@
 
   a, span {
     border: 0;
-    color: $sidenav-text;
+    color: $text;
   }
 
   i {
@@ -64,7 +64,7 @@ nav.toc {
   }
 
   .toggleNav {
-    color: $sidenav-text;
+    color: $text;
     position: relative;
     transition: background-color 0.3s, color 0.3s;
 
@@ -84,7 +84,7 @@ nav.toc {
         left: 8px;
         width: 3px;
         height: 6px;
-        border: 5px solid $sidenav-text;
+        border: 5px solid $text;
         border-width: 5px 0;
         margin-top: -8px;
         transform: rotate(45deg);
@@ -104,7 +104,7 @@ nav.toc {
           background: transparent;
           border-width: 0 5px 5px;
           border-style: solid;
-          border-color: transparent $sidenav-text;
+          border-color: transparent $text;
           height: 0;
           margin-top: -7px;
           opacity: 1;
@@ -127,13 +127,13 @@ nav.toc {
       }
 
       h3 {
-        color: $sidenav-text;
+        color: $text;
         font-size: 16px;
         font-weight: 600;
         line-height: 1.2em;
         padding: 10px 0px 5px 0px;
         transition: color 0.2s;
-        border-bottom: 1px solid $sidenav-text;
+        border-bottom: 1px solid $text;
 
         i:not(:empty) {
           width: 16px;
@@ -141,7 +141,7 @@ nav.toc {
           display: inline-block;
           box-sizing: border-box;
           text-align: center;
-          color: rgba($sidenav-text, 0.5);
+          color: rgba($text, 0.5);
           margin-right: 10px;
           transition: color 0.2s;
         }
@@ -149,7 +149,7 @@ nav.toc {
       }
 
       &.navGroupActive {
-        color: lighten($sidenav-text, 10%);
+        color: lighten($text, 10%);
 
         ul {
           display: block;
@@ -176,21 +176,16 @@ nav.toc {
 
         a {
           border: none;
-          color: $sidenav-text;
+          color: $text;
           display: inline-block;
           font-size: 14px;
           line-height: 1.1em;
           margin: 0;
           transition: color 0.3s;
 
-          &:hover,
-          &:focus {
-            color: darken($primary-bg, 20%);
-          }
-
           &.navItemActive {
             font-weight: 600;
-            color: $primary-bg;
+            color: $text;
           }
         }
       }

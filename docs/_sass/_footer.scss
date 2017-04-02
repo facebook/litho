@@ -1,12 +1,12 @@
 .footerContainer {
-  background: $secondary-bg;
-  color: $primary-bg;
+  background: $litho-light;
+  color: $text;
   overflow: hidden;
   padding: 0 10px;
   text-align: left;
 
   .footerWrapper {
-    border-top: 1px solid $primary-bg;
+    border-top: 1px solid $text;
     padding: 0;
 
     .footerBlocks {

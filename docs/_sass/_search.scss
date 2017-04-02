@@ -6,6 +6,7 @@ input[type="search"] {
 .navSearchWrapper {
   align-self: center;
   position: relative;
+  margin-bottom: -8px;
 
   &::before {
     border: 3px solid $primary-overlay-special;
@@ -68,7 +69,7 @@ input#search_input {
   font-size: 14px;
   line-height: 20px;
   border-radius: 20px;
-  background-color: rgba($primary-overlay-special, 0.25);
+  background-color: $litho-light;
   border: none;
   color: rgba($primary-overlay-special, 0);
   outline: none;
@@ -102,7 +103,7 @@ input#search_input {
     font-size: 14px;
     line-height: 20px;
     border-radius: 20px;
-    background-color: rgba($primary-overlay-special, 0.25);
+    background-color: $litho-light;
     border: none;
     color: $text;
     outline: none;

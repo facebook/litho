@@ -1,20 +1,20 @@
 /* Toggler like on getting started */
 
 .toggler {
-  text-align: center;
+  text-align: left;
 }
 
 .toggler a {
   display: inline-block;
-  padding: 10px 5px;
+  padding: 10px 20px;
   margin: 2px;
-  border: 1px solid $primary-bg !important;
+  border: 1px solid $litho-dark !important;
   border-radius: 3px;
   text-decoration: none !important;
-  color: $primary-bg !important;
+  color: $litho-dark !important;
   font-weight: 900;
   &:hover {
-    background: $primary-bg !important;
+    background: $litho-dark !important;
     color: #fff !important;
   }
 }
@@ -29,12 +29,12 @@
 
 .toggler strong {
   font-size: 24px;
-  color: $primary-bg;
+  color: $litho-dark;
 }
 
 .display-configuration-gradle .toggler .button-gradle,
 .display-configuration-buck .toggler .button-buck {
-  background: darken($primary-bg, 10%) !important;
+  background: darken($litho-dark, 10%) !important;
   color: #fff !important;
 }
 block {

@@ -1,6 +1,6 @@
 .fixedHeaderContainer {
-  background: $primary-bg;
-  color: $primary-overlay;
+  background: $litho-vibrant;
+  color: $litho-light;
   height: $header-height;
   padding: $header-ptop 0 $header-pbot;
   position: fixed;
@@ -34,7 +34,6 @@
       line-height: 18px;
       position: relative;
       font-size: 22px;
-      color: $primary-overlay-special;
       letter-spacing: 1px;
     }
   }
@@ -58,84 +57,16 @@
 
         a {
           border-bottom: 2px solid transparent;
-          color: $primary-overlay-special;
+          color: $litho-light;
           font-size: 16px;
           font-weight: 400;
           line-height: 1.2em;
 
           &:hover {
-            border-bottom: 2px solid $primary-overlay;
-            color: $primary-overlay;
-          }
-        }
-
-        &.navItemActive {
-          a {
-            color: $primary-overlay;
+            text-decoration: underline;
           }
         }
       }
     }
   }
 }
-
-/* 900px
-
-
-  .fixedHeaderContainer {
-    .navigationWrapper {
-      nav {
-        padding: 0 1em;
-        position: relative;
-        top: -9px;
-
-        ul {
-          margin: 0 -0.4em;
-          li {
-            display: inline-block;
-
-            a {
-              padding: 14px 0.4em;
-              border: 0;
-              color: $primary-overlay-special;
-              display: inline-block;
-
-              &:hover {
-                color: $primary-overlay;
-              }
-            }
-
-            &.navItemActive {
-              a {
-                color: $primary-overlay;
-              }
-            }
-          }
-        }
-      }
-
-      &.navigationFull {
-        display: inline-block;
-      }
-
-      &.navigationSlider {
-        display: none;
-      }
-    }
-  }
-
-  1200px
-
-  .fixedHeaderContainer {
-    header {
-      max-width: 1100px;
-    }
-  }
-
-  1500px
-  .fixedHeaderContainer {
-    header {
-      max-width: 1400px;
-    }
-  }
- */
