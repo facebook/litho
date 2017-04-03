@@ -42,10 +42,10 @@ components_robolectric_test(
         COMPONENTS_SOLOADER_TARGET,
         COMPONENTS_WIDGET_TARGET,
         COMPONENTS_YOGA_TARGET,
-        make_dep_path("src/main/java/com/facebook/litho/viewcompatcreator:viewcompatcreator"),
-        make_dep_path("src/debug/java/com/facebook/litho/testing:testing"),
-        make_dep_path("src/debug/java/com/facebook/litho/testing/assertj:assertj"),
-        make_dep_path("src/debug/java/com/facebook/litho/testing/testrunner:testrunner"),
+        make_dep_path("litho-core/src/main/java/com/facebook/litho/viewcompatcreator:viewcompatcreator"),
+        make_dep_path("litho-core/src/debug/java/com/facebook/litho/testing:testing"),
+        make_dep_path("litho-core/src/debug/java/com/facebook/litho/testing/assertj:assertj"),
+        make_dep_path("litho-core/src/debug/java/com/facebook/litho/testing/testrunner:testrunner"),
     ],
 )
 
@@ -54,7 +54,7 @@ android_resource(
     package = "com.facebook.litho",
     res = "res",
     visibility = [
-        make_dep_path("src/test/..."),
+        make_dep_path("litho-core/src/test/..."),
         "//javatests/com/facebook/litho/...",
     ],
 )
@@ -68,7 +68,7 @@ android_library(
         "TouchExpansionTestInternalNode.java",
     ],
     visibility = [
-        make_dep_path("src/test/java/com/facebook/litho/..."),
+        make_dep_path("litho-core/src/test/java/com/facebook/litho/..."),
     ],
     deps = [
         COMPONENTS_ANDROIDSUPPORT_TARGET,
