@@ -9,6 +9,8 @@
 
 package com.facebook.litho.testing;
 
+import com.facebook.litho.Column;
+
 import com.facebook.yoga.YogaAlign;
 
 import com.facebook.yoga.YogaFlexDirection;
@@ -100,7 +102,7 @@ public class TestLayoutComponent extends ComponentLifecycle {
       return Layout.create(c, mountSpecComponent).flexShrink(0).build();
     }
 
-    ComponentLayout.ContainerBuilder containerBuilder = Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START);
+    ComponentLayout.ContainerBuilder containerBuilder = Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START);
 
     if (mHasMountSpecChild) {
       containerBuilder.child(mountSpecComponent);

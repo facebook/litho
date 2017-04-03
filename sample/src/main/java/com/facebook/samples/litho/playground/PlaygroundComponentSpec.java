@@ -8,6 +8,8 @@
 
 package com.facebook.samples.litho.playground;
 
+import com.facebook.litho.Column;
+
 import com.facebook.yoga.YogaAlign;
 
 import com.facebook.yoga.YogaFlexDirection;
@@ -26,7 +28,7 @@ public class PlaygroundComponentSpec {
 
   @OnCreateLayout
   static ComponentLayout onCreateLayout(ComponentContext c) {
-    return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+    return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
         .backgroundColor(Color.WHITE)
         .child(
             Text.create(c)

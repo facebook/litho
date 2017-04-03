@@ -8,6 +8,8 @@
 
 package com.facebook.samples.lithobarebones;
 
+import com.facebook.litho.Column;
+
 import com.facebook.yoga.YogaAlign;
 
 import com.facebook.yoga.YogaFlexDirection;
@@ -30,7 +32,7 @@ public class FeedItemSpec {
       ComponentContext c,
       @Prop int color,
       @Prop String message) {
-    return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+    return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
         .paddingDip(ALL, 16)
         .backgroundColor(color)
         .child(

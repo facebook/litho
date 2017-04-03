@@ -8,6 +8,8 @@
 
 package com.facebook.samples.litho.lithography;
 
+import com.facebook.litho.Column;
+
 import com.facebook.yoga.YogaAlign;
 
 import com.facebook.yoga.YogaFlexDirection;
@@ -29,10 +31,9 @@ public class FeedItemComponentSpec {
       ComponentContext c,
       @Prop final Artist artist,
       @Prop final RecyclerBinder binder) {
-    return Container.create(c)
-        .flexDirection(YogaFlexDirection.COLUMN)
+    return Column.create(c)
         .child(
-            Container.create(c)
+            Column.create(c)
                 .child(artist.images.length == 1 ?
                     SingleImageComponent.create(c)
                         .image(artist.images[0])

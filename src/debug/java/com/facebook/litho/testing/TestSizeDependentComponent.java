@@ -9,6 +9,8 @@
 
 package com.facebook.litho.testing;
 
+import com.facebook.litho.Column;
+
 import com.facebook.yoga.YogaAlign;
 
 import android.support.v4.util.Pools;
@@ -56,8 +58,7 @@ public class TestSizeDependentComponent extends ComponentLifecycle {
       return builder1.build();
     }
 
-    return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-        .flexDirection(YogaFlexDirection.COLUMN)
+    return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
         .paddingPx(YogaEdge.ALL, 5)
         .child(
             builder1)

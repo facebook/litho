@@ -8,6 +8,8 @@
 
 package com.facebook.samples.litho.lithography;
 
+import com.facebook.litho.Column;
+
 import com.facebook.yoga.YogaAlign;
 
 import com.facebook.yoga.YogaFlexDirection;
@@ -32,7 +34,7 @@ public class FooterComponentSpec {
   static ComponentLayout onCreateLayout(
       ComponentContext c,
       @Prop(resType = STRING) String text) {
-    return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+    return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
         .paddingDip(YogaEdge.ALL, 8)
         .child(
             Text.create(c)

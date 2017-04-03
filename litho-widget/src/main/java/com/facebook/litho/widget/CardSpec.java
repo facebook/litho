@@ -9,6 +9,8 @@
 
 package com.facebook.litho.widget;
 
+import com.facebook.litho.Column;
+
 import com.facebook.yoga.YogaAlign;
 
 import com.facebook.yoga.YogaFlexDirection;
@@ -81,9 +83,9 @@ class CardSpec {
     final int shadowBottom = getShadowBottom(elevation);
     final int shadowHorizontal = getShadowHorizontal(elevation);
 
-    return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+    return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
         .child(
-            Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .marginPx(HORIZONTAL, shadowHorizontal)
                 .marginPx(TOP, shadowTop)
                 .marginPx(BOTTOM, shadowBottom)

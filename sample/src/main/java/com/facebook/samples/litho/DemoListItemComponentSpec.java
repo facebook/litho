@@ -8,6 +8,8 @@
 
 package com.facebook.samples.litho;
 
+import com.facebook.litho.Column;
+
 import com.facebook.yoga.YogaAlign;
 
 import com.facebook.yoga.YogaFlexDirection;
@@ -35,7 +37,7 @@ public class DemoListItemComponentSpec {
   static ComponentLayout onCreateLayout(
       ComponentContext c,
       @Prop final String name) {
-    return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+    return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
         .paddingDip(ALL, 16)
         .child(
             Text.create(c)
