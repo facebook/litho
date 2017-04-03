@@ -18,12 +18,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.facebook.common.internal.ImmutableList;
-import com.facebook.litho.annotations.FromCreateLayout;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.ShouldUpdate;
-import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.DelegateMethodDescriptions;
+import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.LayoutSpecModel;
 
 /**
@@ -35,7 +34,6 @@ public class LayoutSpecModelFactory {
   private static final List<Class<? extends Annotation>> DELEGATE_METHOD_ANNOTATIONS =
       new ArrayList<>();
   static {
-    INTER_STAGE_INPUT_ANNOTATIONS.add(FromCreateLayout.class);
     DELEGATE_METHOD_ANNOTATIONS.addAll(
         DelegateMethodDescriptions.LAYOUT_SPEC_DELEGATE_METHODS_MAP.keySet());
     DELEGATE_METHOD_ANNOTATIONS.add(OnCreateTreeProp.class);

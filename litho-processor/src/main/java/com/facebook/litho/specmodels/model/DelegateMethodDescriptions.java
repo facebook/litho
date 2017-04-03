@@ -73,7 +73,7 @@ public final class DelegateMethodDescriptions {
           .returnType(ClassNames.COMPONENT_LAYOUT)
           .name("onCreateLayout")
           .definedParameterTypes(ImmutableList.<TypeName>of(ClassNames.COMPONENT_CONTEXT))
-          .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE, INTER_STAGE_OUTPUT))
+          .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE))
           .build();
 
   public static final DelegateMethodDescription ON_CREATE_LAYOUT_WITH_SIZE_SPEC =
@@ -84,7 +84,7 @@ public final class DelegateMethodDescriptions {
           .name("onCreateLayoutWithSizeSpec")
           .definedParameterTypes(
               ImmutableList.of(ClassNames.COMPONENT_CONTEXT, TypeName.INT, TypeName.INT))
-          .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE, INTER_STAGE_OUTPUT))
+          .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE))
           .extraMethods(
               ImmutableList.of(MethodSpec.methodBuilder("canMeasure")
                   .addAnnotation(Override.class)
