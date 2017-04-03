@@ -8,6 +8,8 @@
 
 package com.facebook.samples.litho.lithography;
 
+import com.facebook.litho.Row;
+
 
 
 import android.view.View;
@@ -34,7 +36,7 @@ public class FavouriteButtonSpec {
   static ComponentLayout onCreateLayout(
       ComponentContext c,
       @State boolean favourited) {
-    return Container.create(c)
+    return Row.create(c)
         .backgroundRes(favourited ? star_on : star_off)
         .widthDip(32)
         .heightDip(32)

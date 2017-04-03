@@ -8,6 +8,8 @@
 
 package com.facebook.samples.litho.lithography;
 
+import com.facebook.litho.Row;
+
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Container;
@@ -24,7 +26,7 @@ public class ActionsComponentSpec {
   @OnCreateLayout
   static ComponentLayout onCreateLayout(
       ComponentContext c) {
-    return Container.create(c)
+    return Row.create(c)
         .backgroundColor(0xDDFFFFFF)
         .positionType(YogaPositionType.ABSOLUTE)
         .positionDip(YogaEdge.RIGHT, 4)

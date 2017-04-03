@@ -8,6 +8,8 @@
 
 package com.facebook.samples.litho.lithography;
 
+import com.facebook.litho.Row;
+
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Container;
@@ -26,12 +28,11 @@ public class DecadeSeparatorSpec {
   static ComponentLayout onCreateLayout(
       ComponentContext c,
       @Prop final Decade decade) {
-    return Container.create(c)
-        .flexDirection(YogaFlexDirection.ROW)
+    return Row.create(c)
         .alignItems(YogaAlign.CENTER)
         .paddingDip(YogaEdge.ALL, 16)
         .child(
-            Container.create(c)
+            Row.create(c)
                 .heightPx(1)
                 .backgroundColor(0xFFAAAAAA)
                 .flex(1))
@@ -44,7 +45,7 @@ public class DecadeSeparatorSpec {
                 .marginDip(YogaEdge.HORIZONTAL, 10)
                 .flex(0))
         .child(
-            Container.create(c)
+            Row.create(c)
                 .heightPx(1)
                 .backgroundColor(0xFFAAAAAA)
                 .flex(1))
