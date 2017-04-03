@@ -657,19 +657,4 @@ public class MountSpecHelper extends ComponentSpecHelper {
 
     mTypeSpec.addMethod(shouldUseDisplayList.build());
   }
-
-  public boolean isPureRender() {
-    return mSpecElement.getAnnotation(MountSpec.class).isPureRender();
-  }
-
-  public boolean callsShouldUpdateOnMount() {
-    for (Element enclosedElement : mSpecElement.getEnclosedElements()) {
-      final ShouldUpdate shouldUpdateAnnotation = enclosedElement.getAnnotation(ShouldUpdate.class);
-      if (shouldUpdateAnnotation != null) {
-        return shouldUpdateAnnotation.onMount();
-      }
-    }
-
-    return false;
-  }
 }

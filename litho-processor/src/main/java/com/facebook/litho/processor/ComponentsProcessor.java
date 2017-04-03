@@ -19,10 +19,11 @@ import com.facebook.litho.specmodels.generator.ComponentImplGenerator;
 import com.facebook.litho.specmodels.generator.EventGenerator;
 import com.facebook.litho.specmodels.generator.JavadocGenerator;
 import com.facebook.litho.specmodels.generator.PreambleGenerator;
+import com.facebook.litho.specmodels.generator.PureRenderGenerator;
 import com.facebook.litho.specmodels.generator.StateGenerator;
 import com.facebook.litho.specmodels.generator.TreePropGenerator;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
-import com.facebook.litho.specmodels.model.SpecModel;
+import com.facebook.litho.specmodels.model.MountSpecModel;
 
 import com.squareup.javapoet.TypeSpec;
 
@@ -34,8 +35,7 @@ public class ComponentsProcessor extends AbstractComponentsProcessor {
    */
   @Override
   protected void generate(MountSpecHelper mountSpecHelper) {
-    final boolean isPureRender = mountSpecHelper.isPureRender();
-    final SpecModel specModel = mountSpecHelper.getSpecModel();
+    final MountSpecModel specModel = (MountSpecModel) mountSpecHelper.getSpecModel();
     final TypeSpec.Builder typeSpec = mountSpecHelper.getTypeSpec();
 
     mountSpecHelper.getTypeSpec().addModifiers(Modifier.FINAL);
@@ -43,15 +43,7 @@ public class ComponentsProcessor extends AbstractComponentsProcessor {
         .addToTypeSpec(mountSpecHelper.getTypeSpec());
     PreambleGenerator.generate(mountSpecHelper.getSpecModel())
         .addToTypeSpec(mountSpecHelper.getTypeSpec());
-
-    if (isPureRender) {
-      mountSpecHelper.getStages().generateIsPureRender();
-      mountSpecHelper.generateShouldUpdate();
-      if (mountSpecHelper.callsShouldUpdateOnMount()) {
-        mountSpecHelper.getStages().generateCallsShouldUpdateOnMount();
-      }
-    }
-
+    PureRenderGenerator.generate(specModel).addToTypeSpec(typeSpec);
     TreePropGenerator.generate(specModel).addToTypeSpec(typeSpec);
     mountSpecHelper.generateOnPrepare();
     mountSpecHelper.generateOnMeasure();

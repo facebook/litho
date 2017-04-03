@@ -9,17 +9,16 @@
 
 package com.facebook.litho.specmodels.generator;
 
-import javax.annotation.Nullable;
 import javax.lang.model.element.Modifier;
 
 import java.lang.annotation.Annotation;
 
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.specmodels.model.DelegateMethodModel;
-import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.facebook.litho.specmodels.model.HasPureRender;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.SpecModel;
+import com.facebook.litho.specmodels.model.SpecModelUtils;
 
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
@@ -58,10 +57,22 @@ public class PureRenderGenerator {
   }
 
   static TypeSpecDataHolder generateShouldUpdateMethod(SpecModel specModel) {
+    TypeSpecDataHolder.Builder dataHolder = TypeSpecDataHolder.newBuilder();
     final DelegateMethodModel methodModel =
         SpecModelUtils.getMethodModelWithAnnotation(specModel, ShouldUpdate.class);
     if (methodModel == null) {
-      return TypeSpecDataHolder.newBuilder().build();
+      return dataHolder.build();
+    }
+
+    final ShouldUpdate annotation = getShouldUpdateAnnotation(methodModel);
+    if (annotation.onMount()) {
+      dataHolder.addMethod(
+          MethodSpec.methodBuilder("callsShouldUpdateOnMount")
+              .addAnnotation(Override.class)
+              .addModifiers(Modifier.PUBLIC)
+              .returns(TypeName.BOOLEAN)
+              .addStatement("return true")
+              .build());
     }
 
     final MethodSpec.Builder shouldUpdateComponent =
@@ -119,19 +130,16 @@ public class PureRenderGenerator {
     shouldUpdateComponent.addCode(releaseDiffs.build());
     shouldUpdateComponent.addStatement("return shouldUpdate");
 
-    return TypeSpecDataHolder.newBuilder().addMethod(shouldUpdateComponent.build()).build();
+    return dataHolder.addMethod(shouldUpdateComponent.build()).build();
   }
 
-  @Nullable
-  static DelegateMethodModel getShouldUpdateMethodModel(SpecModel specModel) {
-    for (DelegateMethodModel delegateMethodModel : specModel.getDelegateMethods()) {
-      for (Annotation annotation : delegateMethodModel.annotations) {
-        if (annotation.annotationType().equals(ShouldUpdate.class)) {
-          return delegateMethodModel;
-        }
+  static ShouldUpdate getShouldUpdateAnnotation(DelegateMethodModel delegateMethodModel) {
+    for (Annotation annotation : delegateMethodModel.annotations) {
+      if (annotation.annotationType().equals(ShouldUpdate.class)) {
+        return (ShouldUpdate) annotation;
       }
     }
 
-    return null;
+    throw new RuntimeException("Expected to find a ShouldUpdate annotation");
   }
 }
