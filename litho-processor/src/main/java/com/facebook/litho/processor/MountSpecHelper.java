@@ -232,37 +232,10 @@ public class MountSpecHelper extends ComponentSpecHelper {
    * Generate an onCreateMountContent implementation that delegates to the
    * @OnCreateMountContent-annotated method.
    */
-  public void generateOnCreateMountContentAndGetMountType() {
+  public void generateOnCreateMountContent() {
     final ExecutableElement onCreateMountContent = Utils.getAnnotatedMethod(
         mStages.getSourceElement(),
         OnCreateMountContent.class);
-
-    final MountType componentMountType = getMountType(onCreateMountContent.getReturnType());
-    if (componentMountType != MountType.VIEW &&
-        componentMountType != MountType.DRAWABLE) {
-      throw new ComponentsProcessingException(
-          onCreateMountContent,
-          "onCreateMountContent's return type should be either a View or a Drawable subclass");
-    }
-
-    mTypeSpec.addMethod(
-        MethodSpec.methodBuilder("getMountType")
-            .addAnnotation(Override.class)
-            .addModifiers(Modifier.PUBLIC)
-            .returns(ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE)
-            .addStatement(
-                "return $T.$L",
-                ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE,
-                componentMountType)
-            .build());
-
-    mTypeSpec.addMethod(
-        MethodSpec.methodBuilder("poolSize")
-        .addAnnotation(Override.class)
-        .addModifiers(javax.lang.model.element.Modifier.PROTECTED)
-        .returns(TypeName.INT)
-        .addStatement("return "+mSpecElement.getAnnotation(MountSpec.class).poolSize())
-        .build());
 
     mTypeSpec.addMethod(
         new OnCreateMountContentMethodBuilder()
@@ -613,48 +586,8 @@ public class MountSpecHelper extends ComponentSpecHelper {
           .build());
   }
 
-  public void generateCanMountIncrementally() {
-    if (!mSpecElement.getAnnotation(MountSpec.class).canMountIncrementally()) {
-      return;
-    }
-
-    final MethodSpec.Builder canMountIncrementally =
-        MethodSpec.methodBuilder("canMountIncrementally")
-            .addAnnotation(Override.class)
-            .addModifiers(Modifier.PUBLIC)
-            .returns(TypeName.BOOLEAN)
-            .addStatement("return true");
-
-    mTypeSpec.addMethod(canMountIncrementally.build());
-  }
-
   @Override
   public Class getSpecAnnotationClass() {
     return MountSpec.class;
-  }
-
-  public void generateShouldUseDisplayList() {
-    if (!mSpecElement.getAnnotation(MountSpec.class).shouldUseDisplayList()) {
-      return;
-    }
-
-    final ExecutableElement onCreateMountContent = Utils.getAnnotatedMethod(
-        mStages.getSourceElement(),
-        OnCreateMountContent.class);
-
-    if (getMountType(onCreateMountContent.getReturnType()) != MountType.DRAWABLE) {
-      throw new ComponentsProcessingException(
-          mSpecElement,
-          "shouldUseDisplayList = true can only be used on MountSpecs that mount a drawable.");
-    }
-
-    final MethodSpec.Builder shouldUseDisplayList =
-        MethodSpec.methodBuilder("shouldUseDisplayList")
-            .addAnnotation(Override.class)
-            .addModifiers(Modifier.PUBLIC)
-            .returns(TypeName.BOOLEAN)
-            .addStatement("return true");
-
-    mTypeSpec.addMethod(shouldUseDisplayList.build());
   }
 }

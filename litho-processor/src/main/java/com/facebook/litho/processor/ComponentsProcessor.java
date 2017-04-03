@@ -18,6 +18,7 @@ import com.facebook.litho.specmodels.generator.BuilderGenerator;
 import com.facebook.litho.specmodels.generator.ComponentImplGenerator;
 import com.facebook.litho.specmodels.generator.EventGenerator;
 import com.facebook.litho.specmodels.generator.JavadocGenerator;
+import com.facebook.litho.specmodels.generator.MountSpecGenerator;
 import com.facebook.litho.specmodels.generator.PreambleGenerator;
 import com.facebook.litho.specmodels.generator.PureRenderGenerator;
 import com.facebook.litho.specmodels.generator.StateGenerator;
@@ -49,14 +50,16 @@ public class ComponentsProcessor extends AbstractComponentsProcessor {
     mountSpecHelper.generateOnMeasure();
     mountSpecHelper.generateOnMeasureBaseline();
     mountSpecHelper.generateOnBoundsDefined();
-    mountSpecHelper.generateOnCreateMountContentAndGetMountType();
+    MountSpecGenerator.generateGetMountType(specModel).addToTypeSpec(typeSpec);
+    MountSpecGenerator.generatePoolSize(specModel).addToTypeSpec(typeSpec);
+    mountSpecHelper.generateOnCreateMountContent();
     mountSpecHelper.generateOnMount();
     mountSpecHelper.generateOnBind();
     mountSpecHelper.generateOnUnbind();
     mountSpecHelper.generateOnUnmount();
     mountSpecHelper.generateAccessibilityMethods();
-    mountSpecHelper.generateCanMountIncrementally();
-    mountSpecHelper.generateShouldUseDisplayList();
+    MountSpecGenerator.generateCanMountIncrementally(specModel).addToTypeSpec(typeSpec);
+    MountSpecGenerator.generateShouldUseDisplayList(specModel).addToTypeSpec(typeSpec);
     mountSpecHelper.generateCreateInitialState();
 
     final Stages stages = mountSpecHelper.getStages();
