@@ -42,6 +42,8 @@ public class SpecModelValidation {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
     validationErrors.addAll(validateSpecModel(specModel));
     validationErrors.addAll(PureRenderValidation.validate(specModel));
+    validationErrors.addAll(validateGetMountType(specModel));
+    validationErrors.addAll(validateShouldUseDisplayLists(specModel));
     return validationErrors;
   }
 
@@ -54,6 +56,35 @@ public class SpecModelValidation {
               "You must suffix the class name of your spec with \"Spec\" e.g. a " +
                   "\"MyComponentSpec\" class name generates a component named " +
                   "\"MyComponent\"."));
+    }
+
+    return validationErrors;
+  }
+
+  static List<SpecModelValidationError> validateGetMountType(MountSpecModel specModel) {
+    List<SpecModelValidationError> validationErrors = new ArrayList<>();
+
+    if (specModel.getMountType() != ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_DRAWABLE &&
+        specModel.getMountType() != ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_VIEW) {
+      validationErrors.add(
+          new SpecModelValidationError(
+              specModel.getRepresentedObject(),
+              "onCreateMountContent's return type should be either a View or a Drawable " +
+                  "subclass."));
+    }
+
+    return validationErrors;
+  }
+
+  static List<SpecModelValidationError> validateShouldUseDisplayLists(MountSpecModel specModel) {
+    List<SpecModelValidationError> validationErrors = new ArrayList<>();
+
+    if (specModel.shouldUseDisplayList() &&
+        specModel.getMountType() != ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_DRAWABLE) {
+      validationErrors.add(
+          new SpecModelValidationError(
+              specModel.getRepresentedObject(),
+              "shouldUseDisplayList = true can only be used on MountSpecs that mount a drawable."));
     }
 
     return validationErrors;

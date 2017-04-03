@@ -66,6 +66,12 @@ public interface ClassNames {
   ClassName COMPONENT_LIFECYCLE = ClassName.bestGuess("com.facebook.litho.ComponentLifecycle");
   ClassName COMPONENT_LIFECYCLE_MOUNT_TYPE =
       ClassName.bestGuess("com.facebook.litho.ComponentLifecycle.MountType");
+  ClassName COMPONENT_LIFECYCLE_MOUNT_TYPE_DRAWABLE =
+      ClassName.bestGuess("com.facebook.litho.ComponentLifecycle.MountType.DRAWABLE");
+  ClassName COMPONENT_LIFECYCLE_MOUNT_TYPE_VIEW =
+      ClassName.bestGuess("com.facebook.litho.ComponentLifecycle.MountType.VIEW");
+  ClassName COMPONENT_LIFECYCLE_MOUNT_TYPE_NONE =
+      ClassName.bestGuess("com.facebook.litho.ComponentLifecycle.MountType.NONE");
 
   ClassName REFERENCE = ClassName.bestGuess("com.facebook.litho.reference.Reference");
   ClassName REFERENCE_BUILDER =

@@ -10,7 +10,13 @@
 package com.facebook.litho.specmodels.processor;
 
 import javax.annotation.Nullable;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 
 import java.lang.annotation.Annotation;
@@ -24,11 +30,16 @@ import com.facebook.litho.annotations.FromMeasure;
 import com.facebook.litho.annotations.FromMeasureBaseline;
 import com.facebook.litho.annotations.FromPrepare;
 import com.facebook.litho.annotations.MountSpec;
+import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.ShouldUpdate;
+import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DelegateMethodDescriptions;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.MountSpecModel;
+
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.TypeName;
 
 /**
  * Factory for creating {@link MountSpecModel}s.
@@ -77,6 +88,35 @@ public class MountSpecModelFactory {
         element.getAnnotation(MountSpec.class).isPublic(),
         dependencyInjectionHelper,
         element.getAnnotation(MountSpec.class).isPureRender(),
+        element.getAnnotation(MountSpec.class).canMountIncrementally(),
+        element.getAnnotation(MountSpec.class).shouldUseDisplayList(),
+        element.getAnnotation(MountSpec.class).poolSize(),
+        getMountType(element),
         element);
+  }
+
+  private static TypeName getMountType(TypeElement element) {
+    for (Element enclosedElement : element.getEnclosedElements()) {
+      if (enclosedElement.getKind() != ElementKind.METHOD) {
+        continue;
+      }
+
+      if (enclosedElement.getAnnotation(OnCreateMountContent.class) != null) {
+        TypeMirror returnType = ((ExecutableElement) enclosedElement).getReturnType();
+        while (returnType.getKind() != TypeKind.NONE && returnType.getKind() != TypeKind.VOID) {
+          final TypeElement returnElement = (TypeElement) ((DeclaredType) returnType).asElement();
+
+          final TypeName type = ClassName.get(returnElement);
+          if (type.equals(ClassNames.VIEW)) {
+            return ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_VIEW;
+          } else if (type.equals(ClassNames.DRAWABLE)) {
+            return ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_DRAWABLE;
+          }
+          returnType = returnElement.getSuperclass();
+        }
+      }
+    }
+
+    return ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_NONE;
   }
 }

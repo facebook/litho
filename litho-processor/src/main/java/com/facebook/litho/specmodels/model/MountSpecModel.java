@@ -25,6 +25,10 @@ import com.squareup.javapoet.TypeVariableName;
 public class MountSpecModel implements SpecModel, HasPureRender {
   private final SpecModelImpl mSpecModel;
   private final boolean mIsPureRender;
+  private final boolean mCanMountIncrementally;
+  private final boolean mShouldUseDisplayList;
+  private final int mPoolSize;
+  private final TypeName mMountType;
 
   public MountSpecModel(
       String qualifiedSpecClassName,
@@ -39,6 +43,10 @@ public class MountSpecModel implements SpecModel, HasPureRender {
       boolean isPublic,
       DependencyInjectionHelper dependencyInjectionHelper,
       boolean isPureRender,
+      boolean canMountIncrementally,
+      boolean shouldUseDisplayList,
+      int poolSize,
+      TypeName mountType,
       Object representedObject) {
     mSpecModel =
         SpecModelImpl.newBuilder()
@@ -56,6 +64,10 @@ public class MountSpecModel implements SpecModel, HasPureRender {
             .representedObject(representedObject)
             .build();
     mIsPureRender = isPureRender;
+    mCanMountIncrementally = canMountIncrementally;
+    mShouldUseDisplayList = shouldUseDisplayList;
+    mPoolSize = poolSize;
+    mMountType = mountType;
   }
 
   @Override
@@ -195,5 +207,21 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   @Override
   public boolean isPureRender() {
     return mIsPureRender;
+  }
+
+  public boolean canMountIncrementally() {
+    return mCanMountIncrementally;
+  }
+
+  public boolean shouldUseDisplayList() {
+    return mShouldUseDisplayList;
+  }
+
+  public int getPoolSize() {
+    return mPoolSize;
+  }
+
+  public TypeName getMountType() {
+    return mMountType;
   }
 }
