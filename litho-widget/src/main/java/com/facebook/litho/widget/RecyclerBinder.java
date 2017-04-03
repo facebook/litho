@@ -56,6 +56,7 @@ public class RecyclerBinder implements Binder<RecyclerView>, LayoutInfo.Componen
   private final ComponentContext mComponentContext;
   private final RangeScrollListener mRangeScrollListener = new RangeScrollListener();
   private final LayoutHandlerFactory mLayoutHandlerFactory;
+  private final boolean mUseNewIncrementalMount;
 
   // Data structure to be used to hold Components and ComponentTreeHolders before adding them to
   // the RecyclerView. This happens in the case of inserting something inside the current working
@@ -77,7 +78,15 @@ public class RecyclerBinder implements Binder<RecyclerView>, LayoutInfo.Componen
       ComponentContext componentContext,
       float rangeRatio,
       LayoutInfo layoutInfo) {
-    this(componentContext, rangeRatio, layoutInfo, null);
+    this(componentContext, rangeRatio, layoutInfo, null, false);
+  }
+
+  public RecyclerBinder(
+      ComponentContext componentContext,
+      float rangeRatio,
+      LayoutInfo layoutInfo,
+      @Nullable LayoutHandlerFactory layoutHandlerFactory) {
+    this(componentContext, rangeRatio, layoutInfo, layoutHandlerFactory, false);
   }
 
   /**
@@ -92,14 +101,16 @@ public class RecyclerBinder implements Binder<RecyclerView>, LayoutInfo.Componen
    * the {@link LayoutManager} this RecyclerBinder will use.
    * @param layoutHandlerFactory the RecyclerBinder will use this layoutHandlerFactory when creating
    * {@link ComponentTree}s in order to specify on which thread layout calculation should happen.
-   * Pass null to use the default components layout thread.
+   * @param useNewIncrementalMount
    */
   public RecyclerBinder(
       ComponentContext componentContext,
       float rangeRatio,
       LayoutInfo layoutInfo,
-      @Nullable LayoutHandlerFactory layoutHandlerFactory) {
+      @Nullable LayoutHandlerFactory layoutHandlerFactory,
+      boolean useNewIncrementalMount) {
     mComponentContext = componentContext;
+    mUseNewIncrementalMount = useNewIncrementalMount;
     mComponentTreeHolders = new ArrayList<>();
     mPendingComponentTreeHolders = new ArrayList<>();
     mInternalAdapter = new InternalAdapter();
@@ -111,11 +122,11 @@ public class RecyclerBinder implements Binder<RecyclerView>, LayoutInfo.Componen
   }
 
   public RecyclerBinder(ComponentContext c) {
-    this(c, 4f, new LinearLayoutInfo(c, VERTICAL, false), null);
+    this(c, 4f, new LinearLayoutInfo(c, VERTICAL, false), null, false);
   }
 
   public RecyclerBinder(ComponentContext c, LayoutInfo layoutInfo) {
-    this(c, 4f, layoutInfo, null);
+    this(c, 4f, layoutInfo, null, false);
   }
 
   /**
@@ -711,7 +722,9 @@ public class RecyclerBinder implements Binder<RecyclerView>, LayoutInfo.Componen
     @Override
     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 
-      IncrementalMountUtils.performIncrementalMount(recyclerView);
+      if (!mUseNewIncrementalMount) {
+        IncrementalMountUtils.performIncrementalMount(recyclerView);
+      }
 
       final int firstVisiblePosition = mLayoutInfo.findFirstVisiblePosition();
       final int lastVisiblePosition = mLayoutInfo.findLastVisiblePosition();
@@ -747,7 +760,8 @@ public class RecyclerBinder implements Binder<RecyclerView>, LayoutInfo.Componen
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-      return new ComponentViewHolder(new ComponentView(mComponentContext));
+      return new ComponentViewHolder(
+          new ComponentView(mComponentContext, null, mUseNewIncrementalMount));
     }
 
     @Override
