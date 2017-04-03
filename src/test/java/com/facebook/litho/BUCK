@@ -42,7 +42,7 @@ components_robolectric_test(
         COMPONENTS_SOLOADER_TARGET,
         COMPONENTS_WIDGET_TARGET,
         COMPONENTS_YOGA_TARGET,
-        make_dep_path("src/main/java/com/facebook/components/viewcompatcreator:viewcompatcreator"),
+        make_dep_path("src/main/java/com/facebook/litho/viewcompatcreator:viewcompatcreator"),
         make_dep_path("src/debug/java/com/facebook/litho/testing:testing"),
         make_dep_path("src/debug/java/com/facebook/litho/testing/assertj:assertj"),
         make_dep_path("src/debug/java/com/facebook/litho/testing/testrunner:testrunner"),
