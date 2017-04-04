@@ -52,9 +52,9 @@ public class MountStateTestItemTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .child(
-                    Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                         .child(TestDrawableComponent.create(c))
                         .child(TestDrawableComponent.create(c))
                         .testKey(TEST_ID_1))
@@ -80,9 +80,9 @@ public class MountStateTestItemTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .child(
-                    Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                         .child(TestDrawableComponent.create(c))
                         .child(TestDrawableComponent.create(c))
                         .testKey(TEST_ID_1))
@@ -107,9 +107,9 @@ public class MountStateTestItemTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .child(
-                    Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                         .child(TestDrawableComponent.create(c))
                         .child(TestDrawableComponent.create(c))
                         .testKey(""))
@@ -139,7 +139,7 @@ public class MountStateTestItemTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .child(
                     Text.create(c)
                         .text(MY_TEST_STRING_1)
@@ -161,7 +161,7 @@ public class MountStateTestItemTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .child(
                     Text.create(c)
                         .text(MY_TEST_STRING_1)
@@ -190,7 +190,7 @@ public class MountStateTestItemTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .child(
                     Text.create(c)
                         .text(MY_TEST_STRING_1)

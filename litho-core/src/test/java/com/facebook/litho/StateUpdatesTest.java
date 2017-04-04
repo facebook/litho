@@ -177,7 +177,7 @@ public class StateUpdatesTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(child1)
             .child(child2)
             .build();
@@ -199,12 +199,12 @@ public class StateUpdatesTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(child1))
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(child1))
             .build();
       }

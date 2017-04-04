@@ -12,20 +12,18 @@ package com.facebook.litho;
 import android.support.annotation.AttrRes;
 import android.support.annotation.StyleRes;
 
-/**
- * @deprecated Container has been deprecated in favor of {@link Row} & {@link Column} to make
- *             their direction explicit.
- */
-@Deprecated
-public final class Container {
-  private Container() {
+import com.facebook.yoga.YogaFlexDirection;
+
+public final class ColumnReverse {
+  private ColumnReverse() {
   }
 
   public static ComponentLayout.ContainerBuilder create(
       ComponentContext c,
       @AttrRes int defStyleAttr,
       @StyleRes int defStyleRes) {
-    return c.newLayoutBuilder(defStyleAttr, defStyleRes);
+    return c.newLayoutBuilder(defStyleAttr, defStyleRes)
+        .flexDirection(YogaFlexDirection.COLUMN_REVERSE);
   }
 
   public static ComponentLayout.ContainerBuilder create(ComponentContext c) {

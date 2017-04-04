@@ -150,10 +150,10 @@ public class ComponentGlobalKeyTest {
       protected ComponentLayout onCreateLayout(
           ComponentContext c) {
 
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(TestViewComponent.create(c).key("[TestViewComponent1]"))
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .backgroundColor(color)
                     .child(CardClip.create(c).key("[CardClip1]")))
             .child(Text.create(c).text("Test").key("[Text1]"))
@@ -168,11 +168,11 @@ public class ComponentGlobalKeyTest {
       protected ComponentLayout onCreateLayout(
           ComponentContext c) {
 
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(Text.create(c).text("test").key("[Text2]"))
             .child(testGlobalKeyChildComponent)
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .backgroundColor(color)
                     .child(CardClip.create(c).key("[CardClip2]")))
             .child(TestViewComponent.create(c).key("[TestViewComponent2]"))

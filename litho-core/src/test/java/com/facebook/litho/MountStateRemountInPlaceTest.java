@@ -60,7 +60,7 @@ public class MountStateRemountInPlaceTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .child(firstComponent)
                 .build();
           }
@@ -78,7 +78,7 @@ public class MountStateRemountInPlaceTest {
     componentView.getComponent().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(secondComponent)
             .build();
       }
@@ -100,7 +100,7 @@ public class MountStateRemountInPlaceTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .child(firstComponent)
                 .build();
           }
@@ -117,7 +117,7 @@ public class MountStateRemountInPlaceTest {
     componentView.getComponent().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(secondComponent)
             .build();
       }
@@ -150,7 +150,7 @@ public class MountStateRemountInPlaceTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .child(firstComponent)
                 .build();
           }
@@ -178,7 +178,7 @@ public class MountStateRemountInPlaceTest {
     componentView.getComponent().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(secondComponent)
             .build();
       }
@@ -211,7 +211,7 @@ public class MountStateRemountInPlaceTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .child(firstComponent)
                 .build();
           }
@@ -239,7 +239,7 @@ public class MountStateRemountInPlaceTest {
     componentView.getComponent().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(secondComponent)
             .build();
       }
@@ -261,7 +261,7 @@ public class MountStateRemountInPlaceTest {
         ComponentTree.create(mContext, new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .child(firstComponent)
                 .build();
           }
@@ -283,7 +283,7 @@ public class MountStateRemountInPlaceTest {
     componentView.getComponent().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(secondComponent)
             .widthPx(10)
             .heightPx(10)
@@ -308,7 +308,7 @@ public class MountStateRemountInPlaceTest {
         ComponentTree.create(mContext, new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .child(firstComponent)
                 .build();
           }
@@ -330,7 +330,7 @@ public class MountStateRemountInPlaceTest {
     componentView.getComponent().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(secondComponent)
             .widthPx(10)
             .heightPx(10)
@@ -355,7 +355,7 @@ public class MountStateRemountInPlaceTest {
         ComponentTree.create(mContext, new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .child(firstComponent)
                 .build();
           }
@@ -377,7 +377,7 @@ public class MountStateRemountInPlaceTest {
     componentView.getComponent().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(secondComponent)
             .widthPx(10)
             .heightPx(10)
@@ -403,7 +403,7 @@ public class MountStateRemountInPlaceTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .child(firstComponent)
                 .build();
           }
@@ -421,7 +421,7 @@ public class MountStateRemountInPlaceTest {
     componentView.getComponent().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(secondComponent)
             .build();
       }
@@ -444,7 +444,7 @@ public class MountStateRemountInPlaceTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .child(firstComponent)
                 .build();
           }
@@ -462,7 +462,7 @@ public class MountStateRemountInPlaceTest {
     componentView.getComponent().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(secondComponent)
             .build();
       }
@@ -485,7 +485,7 @@ public class MountStateRemountInPlaceTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .child(firstComponent)
                 .build();
           }
@@ -505,7 +505,7 @@ public class MountStateRemountInPlaceTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .child(secondComponent)
                 .build();
           }
@@ -522,7 +522,7 @@ public class MountStateRemountInPlaceTest {
     secondTree.setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(thirdComponent)
             .build();
       }
@@ -552,7 +552,7 @@ public class MountStateRemountInPlaceTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .child(firstComponent)
                 .build();
           }
@@ -577,7 +577,7 @@ public class MountStateRemountInPlaceTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .child(secondComponent)
                 .build();
           }
@@ -609,19 +609,19 @@ public class MountStateRemountInPlaceTest {
     InlineLayoutSpec firstLayout = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .clickHandler(c.newEventHandler(3))
                     .child(
                         Text.create(c).text("test")))
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .clickHandler(c.newEventHandler(2))
                     .child(
                         Text.create(c).text("test2"))
                     .child(
-                        Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                        Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                             .clickHandler(c.newEventHandler(1))
                             .child(
                                 firstComponent)
@@ -634,21 +634,21 @@ public class MountStateRemountInPlaceTest {
     final InlineLayoutSpec secondLayout = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .clickHandler(c.newEventHandler(3))
                     .child(
                         Text.create(c).text("test"))
                     .child(
-                        Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                        Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                             .clickHandler(c.newEventHandler(1))
                             .child(
                                 firstComponent)
                             .child(
                                 SolidColor.create(c).color(Color.GREEN))))
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .clickHandler(c.newEventHandler(2))
                     .child(
                         Text.create(c).text("test2")))

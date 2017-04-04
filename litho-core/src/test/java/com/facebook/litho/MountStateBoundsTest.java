@@ -90,9 +90,9 @@ public class MountStateBoundsTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .child(
-                    Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                         .widthPx(20)
                         .heightPx(20)
                         .wrapInView()
@@ -123,18 +123,17 @@ public class MountStateBoundsTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                .flexDirection(COLUMN)
+            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .alignItems(YogaAlign.FLEX_END)
                 .justifyContent(YogaJustify.FLEX_END)
                 .child(
-                    Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                         .widthPx(100)
                         .heightPx(100)
                         .paddingPx(ALL, 20)
                         .wrapInView()
                         .child(
-                            Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                            Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                                 .widthPx(60)
                                 .heightPx(60)
                                 .wrapInView()

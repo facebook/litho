@@ -318,7 +318,7 @@ public abstract class ComponentLifecycle implements EventDispatcher {
    * @param component The component to create the {@link ComponentLayout} tree from.
    */
   protected ComponentLayout onCreateLayout(ComponentContext c, Component<?> component) {
-    return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START).build();
+    return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START).build();
   }
 
   protected ComponentLayout onCreateLayoutWithSizeSpec(
@@ -326,7 +326,7 @@ public abstract class ComponentLifecycle implements EventDispatcher {
       int widthSpec,
       int heightSpec,
       Component<?> component) {
-    return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START).build();
+    return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START).build();
   }
 
   protected void onPrepare(ComponentContext c, Component<?> component) {

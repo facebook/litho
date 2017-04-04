@@ -377,8 +377,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return this;
   }
 
-  @Override
-  public InternalNode flexDirection(YogaFlexDirection direction) {
+  InternalNode flexDirection(YogaFlexDirection direction) {
     mYogaNode.setFlexDirection(direction);
     return this;
   }

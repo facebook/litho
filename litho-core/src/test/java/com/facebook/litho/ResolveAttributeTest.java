@@ -39,7 +39,7 @@ public class ResolveAttributeTest {
 
   @Test
   public void testResolveDrawableAttribute() {
-    InternalNode node = (InternalNode) Container.create(mContext).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+    InternalNode node = (InternalNode) Column.create(mContext).flexShrink(0).alignContent(YogaAlign.FLEX_START)
         .backgroundAttr(R.attr.testAttrDrawable, 0)
         .build();
 
@@ -49,7 +49,7 @@ public class ResolveAttributeTest {
 
   @Test
   public void testResolveDimenAttribute() {
-    InternalNode node = (InternalNode) Container.create(mContext).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+    InternalNode node = (InternalNode) Column.create(mContext).flexShrink(0).alignContent(YogaAlign.FLEX_START)
         .widthAttr(R.attr.testAttrDimen, R.dimen.default_dimen)
         .build();
     node.calculateLayout();
@@ -61,7 +61,7 @@ public class ResolveAttributeTest {
 
   @Test
   public void testDefaultDrawableAttribute() {
-    InternalNode node = (InternalNode) Container.create(mContext).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+    InternalNode node = (InternalNode) Column.create(mContext).flexShrink(0).alignContent(YogaAlign.FLEX_START)
         .backgroundAttr(R.attr.undefinedAttrDrawable, R.drawable.test_bg)
         .build();
 
@@ -71,7 +71,7 @@ public class ResolveAttributeTest {
 
   @Test
   public void testDefaultDimenAttribute() {
-    InternalNode node = (InternalNode) Container.create(mContext).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+    InternalNode node = (InternalNode) Column.create(mContext).flexShrink(0).alignContent(YogaAlign.FLEX_START)
         .widthAttr(R.attr.undefinedAttrDimen, R.dimen.test_dimen)
         .build();
     node.calculateLayout();

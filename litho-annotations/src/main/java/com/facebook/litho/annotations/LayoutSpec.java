@@ -30,8 +30,7 @@ import java.lang.annotation.RetentionPolicy;
  *
  *   @OnCreateLayout
  *   protected ComponentLayout onCreateLayout(LayoutContext c, @Prop MyProp prop) {
- *       return Container.create(c)
- *           .flexDirection(ROW)
+ *       return Row.create(c)
  *           .alignItems(FLEX_START)
  *           .child(someChild1)
  *           .child(someChild2)

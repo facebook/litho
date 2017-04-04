@@ -29,7 +29,12 @@ public final class ComponentStethoNodeDescriptor
   @Override
   protected String onGetNodeName(ComponentStethoNode element) {
     if (element.node.getComponents().isEmpty()) {
-      return Container.class.getName();
+      switch (element.node.mYogaNode.getFlexDirection()) {
+        case COLUMN: return Column.class.getName();
+        case COLUMN_REVERSE: return ColumnReverse.class.getName();
+        case ROW: return Row.class.getName();
+        case ROW_REVERSE: return RowReverse.class.getName();
+      }
     }
 
     return element.node

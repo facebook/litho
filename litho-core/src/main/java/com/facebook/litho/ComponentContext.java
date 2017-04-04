@@ -210,7 +210,7 @@ public class ComponentContext extends ContextWrapper {
     return new EventHandler<E>(mComponentScope, id, params);
   }
 
-  ComponentLayout.ContainerBuilder newLayoutBuilder(ComponentContext c) {
+  InternalNode newLayoutBuilder(ComponentContext c) {
     return newLayoutBuilder(0, 0);
   }
 
@@ -222,7 +222,7 @@ public class ComponentContext extends ContextWrapper {
     return newLayoutBuilder(componentBuilder.build(), 0, 0);
   }
 
-  ComponentLayout.ContainerBuilder newLayoutBuilder(
+  InternalNode newLayoutBuilder(
       @AttrRes int defStyleAttr,
       @StyleRes int defStyleRes) {
     final InternalNode node = ComponentsPools.acquireInternalNode(this, getResources());

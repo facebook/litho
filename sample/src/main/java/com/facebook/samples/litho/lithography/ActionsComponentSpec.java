@@ -12,7 +12,7 @@ import com.facebook.litho.Row;
 
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
-import com.facebook.litho.Container;
+
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.yoga.YogaEdge;
@@ -32,7 +32,6 @@ public class ActionsComponentSpec {
         .positionDip(YogaEdge.RIGHT, 4)
         .positionDip(YogaEdge.TOP, 4)
         .paddingDip(YogaEdge.ALL, 2)
-        .flexDirection(YogaFlexDirection.ROW)
         .child(FavouriteButton.create(c))
         .build();
   }

@@ -44,7 +44,7 @@ public class MountStateRemountEventHandlerTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .clickHandler(c.newEventHandler(1))
                 .child(TestDrawableComponent.create(c))
                 .child(TestDrawableComponent.create(c))
@@ -59,7 +59,7 @@ public class MountStateRemountEventHandlerTest {
     componentView.getComponent().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .clickHandler(c.newEventHandler(1))
             .child(TestDrawableComponent.create(c))
             .child(TestDrawableComponent.create(c))
@@ -77,7 +77,7 @@ public class MountStateRemountEventHandlerTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .longClickHandler(c.newEventHandler(1))
                 .child(TestDrawableComponent.create(c))
                 .child(TestDrawableComponent.create(c))
@@ -92,7 +92,7 @@ public class MountStateRemountEventHandlerTest {
     componentView.getComponent().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .longClickHandler(c.newEventHandler(1))
             .child(TestDrawableComponent.create(c))
             .child(TestDrawableComponent.create(c))
@@ -110,7 +110,7 @@ public class MountStateRemountEventHandlerTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .touchHandler(c.newEventHandler(1))
                 .child(TestDrawableComponent.create(c))
                 .child(TestDrawableComponent.create(c))
@@ -125,7 +125,7 @@ public class MountStateRemountEventHandlerTest {
     componentView.getComponent().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .touchHandler(c.newEventHandler(2))
             .child(TestDrawableComponent.create(c))
             .child(TestDrawableComponent.create(c))
@@ -143,7 +143,7 @@ public class MountStateRemountEventHandlerTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .clickHandler(c.newEventHandler(1))
                 .child(TestDrawableComponent.create(c))
                 .child(TestDrawableComponent.create(c))
@@ -156,7 +156,7 @@ public class MountStateRemountEventHandlerTest {
     componentView.getComponent().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(TestDrawableComponent.create(c))
             .child(TestDrawableComponent.create(c))
             .build();
@@ -175,7 +175,7 @@ public class MountStateRemountEventHandlerTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .longClickHandler(c.newEventHandler(1))
                 .child(TestDrawableComponent.create(c))
                 .child(TestDrawableComponent.create(c))
@@ -188,7 +188,7 @@ public class MountStateRemountEventHandlerTest {
     componentView.getComponent().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(TestDrawableComponent.create(c))
             .child(TestDrawableComponent.create(c))
             .build();
@@ -208,7 +208,7 @@ public class MountStateRemountEventHandlerTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .touchHandler(c.newEventHandler(1))
                 .child(TestDrawableComponent.create(c))
                 .child(TestDrawableComponent.create(c))
@@ -219,7 +219,7 @@ public class MountStateRemountEventHandlerTest {
     componentView.getComponent().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(TestDrawableComponent.create(c))
             .child(TestDrawableComponent.create(c))
             .build();
@@ -237,7 +237,7 @@ public class MountStateRemountEventHandlerTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .child(TestDrawableComponent.create(c))
                 .child(TestDrawableComponent.create(c))
                 .build();
@@ -249,7 +249,7 @@ public class MountStateRemountEventHandlerTest {
     componentView.getComponent().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .clickHandler(c.newEventHandler(1))
             .child(TestDrawableComponent.create(c))
             .child(TestDrawableComponent.create(c))
@@ -269,7 +269,7 @@ public class MountStateRemountEventHandlerTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .child(TestDrawableComponent.create(c))
                 .child(TestDrawableComponent.create(c))
                 .build();
@@ -281,7 +281,7 @@ public class MountStateRemountEventHandlerTest {
     componentView.getComponent().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .longClickHandler(c.newEventHandler(1))
             .child(TestDrawableComponent.create(c))
             .child(TestDrawableComponent.create(c))
@@ -302,7 +302,7 @@ public class MountStateRemountEventHandlerTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .child(TestDrawableComponent.create(c))
                 .child(TestDrawableComponent.create(c))
                 .build();
@@ -314,7 +314,7 @@ public class MountStateRemountEventHandlerTest {
     componentView.getComponent().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .touchHandler(c.newEventHandler(1))
             .child(TestDrawableComponent.create(c))
             .child(TestDrawableComponent.create(c))

@@ -78,8 +78,7 @@ public class MountStateIncrementalMountTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                .flexDirection(COLUMN)
+            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .child(
                     Layout.create(c, child1).flexShrink(0)
                         .widthPx(10)
@@ -131,8 +130,7 @@ public class MountStateIncrementalMountTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                .flexDirection(COLUMN)
+            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .child(
                     Layout.create(c, child1).flexShrink(0)
                         .widthPx(10)
@@ -187,8 +185,7 @@ public class MountStateIncrementalMountTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                .flexDirection(ROW)
+            return Row.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .child(
                     Layout.create(c, child1).flexShrink(0)
                         .widthPx(10)
@@ -243,8 +240,7 @@ public class MountStateIncrementalMountTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                .flexDirection(COLUMN)
+            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .child(
                     Layout.create(c, child1).flexShrink(0)
                         .widthPx(10)
@@ -297,8 +293,7 @@ public class MountStateIncrementalMountTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                .flexDirection(COLUMN)
+            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .wrapInView()
                 .paddingPx(ALL, 20)
                 .child(
@@ -338,8 +333,7 @@ public class MountStateIncrementalMountTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                .flexDirection(COLUMN)
+            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .child(
                     Layout.create(c, child1).flexShrink(0)
                         .widthPx(10)
@@ -370,8 +364,7 @@ public class MountStateIncrementalMountTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                .flexDirection(COLUMN)
+            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .child(
                     Layout.create(c, child1).flexShrink(0)
                         .positionType(ABSOLUTE)
@@ -430,8 +423,7 @@ public class MountStateIncrementalMountTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                .flexDirection(COLUMN)
+            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .child(
                     Layout.create(c, child2).flexShrink(0)
                         .widthPx(10)
@@ -548,8 +540,7 @@ public class MountStateIncrementalMountTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                .flexDirection(COLUMN)
+            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                 .child(
                     Layout.create(c, child1).flexShrink(0)
                         .widthPx(10)

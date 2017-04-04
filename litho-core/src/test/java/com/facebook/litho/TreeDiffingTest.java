@@ -70,10 +70,10 @@ public class TreeDiffingTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(TestDrawableComponent.create(c))
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c)))
             .build();
       }
@@ -97,10 +97,10 @@ public class TreeDiffingTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(TestDrawableComponent.create(c))
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c)))
             .build();
       }
@@ -233,10 +233,10 @@ public class TreeDiffingTest {
     final Component component1 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(TestDrawableComponent.create(c))
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c)))
             .build();
       }
@@ -245,10 +245,10 @@ public class TreeDiffingTest {
     final Component component2 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(TestDrawableComponent.create(c))
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c)))
             .build();
       }
@@ -278,10 +278,10 @@ public class TreeDiffingTest {
     final Component component1 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(TestDrawableComponent.create(c))
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c)))
             .build();
       }
@@ -290,10 +290,10 @@ public class TreeDiffingTest {
     final Component component2 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(TestDrawableComponent.create(c))
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c)))
             .child(TestDrawableComponent.create(c))
             .build();
@@ -333,10 +333,10 @@ public class TreeDiffingTest {
     final Component component1 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(TestDrawableComponent.create(c))
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c)))
             .build();
       }
@@ -345,10 +345,10 @@ public class TreeDiffingTest {
     final Component component2 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(TestDrawableComponent.create(c))
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c)))
             .build();
       }
@@ -385,10 +385,10 @@ public class TreeDiffingTest {
     final Component component1 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(TestDrawableComponent.create(c))
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c)))
             .build();
       }
@@ -397,10 +397,10 @@ public class TreeDiffingTest {
     final Component component2 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(TestDrawableComponent.create(c))
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c)))
             .child(TestDrawableComponent.create(c))
             .build();
@@ -552,12 +552,12 @@ public class TreeDiffingTest {
     final Component component1 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .backgroundColor(Color.RED)
             .foregroundRes(android.R.drawable.btn_default)
             .child(TestDrawableComponent.create(c))
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c)))
             .build();
       }
@@ -566,12 +566,12 @@ public class TreeDiffingTest {
     final Component component2 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .backgroundColor(Color.RED)
             .foregroundRes(android.R.drawable.btn_default)
             .child(TestDrawableComponent.create(c))
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c)))
             .build();
       }
@@ -580,12 +580,12 @@ public class TreeDiffingTest {
     final Component component3 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .backgroundColor(Color.BLACK)
             .foregroundRes(android.R.drawable.btn_default)
             .child(TestDrawableComponent.create(c))
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c)))
             .build();
       }
@@ -640,7 +640,7 @@ public class TreeDiffingTest {
     final Component component1 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .backgroundColor(Color.RED)
             .foregroundRes(android.R.drawable.btn_default)
             .child(
@@ -648,7 +648,7 @@ public class TreeDiffingTest {
                     .withLayout().flexShrink(0)
                     .backgroundColor(Color.BLACK))
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c)))
             .build();
       }
@@ -657,14 +657,14 @@ public class TreeDiffingTest {
     final Component component2 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .backgroundColor(Color.RED)
             .foregroundRes(android.R.drawable.btn_default)
             .child(TestDrawableComponent.create(c)
                 .withLayout().flexShrink(0)
                 .backgroundColor(Color.BLACK))
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c)))
             .build();
       }
@@ -673,14 +673,14 @@ public class TreeDiffingTest {
     final Component component3 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .backgroundColor(Color.RED)
             .foregroundRes(android.R.drawable.btn_default)
             .child(TestDrawableComponent.create(c)
                 .withLayout().flexShrink(0)
                 .backgroundColor(Color.RED))
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c)))
             .build();
       }
@@ -729,13 +729,13 @@ public class TreeDiffingTest {
     final Component component1 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .wrapInView()
                     .child(TestDrawableComponent.create(c)))
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .wrapInView()
                     .child(TestDrawableComponent.create(c)))
             .build();
@@ -745,14 +745,14 @@ public class TreeDiffingTest {
     final Component component2 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .wrapInView()
                     .child(TestDrawableComponent.create(c))
                     .child(TestDrawableComponent.create(c)))
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .wrapInView()
                     .child(TestDrawableComponent.create(c)))
             .build();
@@ -801,7 +801,7 @@ public class TreeDiffingTest {
     final Component layoutComponent = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .alignItems(YogaAlign.FLEX_START)
             .child(Layout.create(c, component).flexShrink(0).heightPx(50))
             .build();
@@ -826,7 +826,7 @@ public class TreeDiffingTest {
     final Component secondLayoutComponent = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .alignItems(YogaAlign.FLEX_START)
             .child(Layout.create(c, secondComponent).flexShrink(0).heightPx(50))
             .build();
@@ -854,7 +854,7 @@ public class TreeDiffingTest {
     final Component layoutComponent = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(component)
             .build();
       }
@@ -878,7 +878,7 @@ public class TreeDiffingTest {
     final Component secondLayoutComponent = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(secondComponent)
             .build();
       }
@@ -901,7 +901,7 @@ public class TreeDiffingTest {
     final Component component1 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .paddingPx(YogaEdge.ALL, 2)
             .child(
                 TestSizeDependentComponent.create(c)
@@ -915,7 +915,7 @@ public class TreeDiffingTest {
     final Component component2 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .paddingPx(YogaEdge.ALL, 2)
             .child(
                 TestSizeDependentComponent.create(c)
@@ -958,7 +958,7 @@ public class TreeDiffingTest {
     final Component component1 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .paddingPx(YogaEdge.ALL, 2)
             .child(
                 TestDrawableComponent.create(c, false, true, true, false, false))
@@ -974,7 +974,7 @@ public class TreeDiffingTest {
     final Component component2 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .paddingPx(YogaEdge.ALL, 2)
             .child(
                 TestDrawableComponent.create(c, false, true, true, false, false))
@@ -1050,7 +1050,7 @@ public class TreeDiffingTest {
     final Component rootContainer1 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .paddingPx(YogaEdge.HORIZONTAL, horizontalPadding)
             .child(sizeDependentComponentSpy1)
             .build();
@@ -1073,7 +1073,7 @@ public class TreeDiffingTest {
     final Component rootContainer2 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .paddingPx(YogaEdge.HORIZONTAL, horizontalPadding)
             .child(sizeDependentComponentSpy2)
             .build();

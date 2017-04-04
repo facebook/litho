@@ -20,7 +20,6 @@ import android.support.annotation.StringRes;
 import android.util.SparseArray;
 
 import com.facebook.yoga.YogaAlign;
-import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaPositionType;
@@ -343,14 +342,6 @@ public interface ComponentLayout {
         @Dimension(unit = DP) int value);
 
     ContainerBuilder wrap(YogaWrap wrap);
-
-    /**
-     * @deprecated flexDirection has been deprecated in favor of specific {@link Row} &
-     *             {@link Column} container classes.
-     */
-    @Deprecated
-    ContainerBuilder flexDirection(YogaFlexDirection direction);
-
     ContainerBuilder justifyContent(YogaJustify justifyContent);
     ContainerBuilder alignItems(YogaAlign alignItems);
     ContainerBuilder alignContent(YogaAlign alignContent);

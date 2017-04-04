@@ -17,7 +17,7 @@ import android.view.View;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
-import com.facebook.litho.Container;
+
 import com.facebook.litho.StateValue;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.LayoutSpec;

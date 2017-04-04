@@ -81,9 +81,9 @@ public class LayoutStateCalculateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c)))
             .build();
       }
@@ -104,7 +104,7 @@ public class LayoutStateCalculateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(TestDrawableComponent.create(c))
             .wrapInView()
             .build();
@@ -126,9 +126,9 @@ public class LayoutStateCalculateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c))
                     .clickHandler(c.newEventHandler(1)))
             .build();
@@ -156,9 +156,9 @@ public class LayoutStateCalculateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c))
                     .longClickHandler(c.newEventHandler(1)))
             .build();
@@ -186,9 +186,9 @@ public class LayoutStateCalculateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c))
                     .touchHandler(c.newEventHandler(1)))
             .build();
@@ -217,11 +217,10 @@ public class LayoutStateCalculateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .backgroundColor(0xFFFF0000)
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                    .flexDirection(YogaFlexDirection.ROW)
+                Row.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .justifyContent(YogaJustify.SPACE_AROUND)
                     .alignItems(YogaAlign.CENTER)
                     .positionType(YogaPositionType.ABSOLUTE)
@@ -238,8 +237,7 @@ public class LayoutStateCalculateTest {
                     .paddingPx(YogaEdge.ALL, paddingSize)
                     .wrapInView())
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                    .flexDirection(YogaFlexDirection.ROW)
+                Row.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .justifyContent(YogaJustify.SPACE_AROUND)
                     .alignItems(YogaAlign.CENTER)
                     .positionType(YogaPositionType.ABSOLUTE)
@@ -309,12 +307,12 @@ public class LayoutStateCalculateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .widthPx(30)
             .heightPx(30)
             .wrapInView()
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .widthPx(10)
                     .heightPx(10)
                     .marginPx(YogaEdge.ALL, 10)
@@ -353,11 +351,10 @@ public class LayoutStateCalculateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .backgroundColor(0xFFFF0000)
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                    .flexDirection(YogaFlexDirection.ROW)
+                Row.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .justifyContent(YogaJustify.SPACE_AROUND)
                     .alignItems(YogaAlign.CENTER)
                     .positionType(YogaPositionType.ABSOLUTE)
@@ -376,8 +373,7 @@ public class LayoutStateCalculateTest {
                     .paddingPx(YogaEdge.ALL, paddingSize)
                     .wrapInView())
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                    .flexDirection(YogaFlexDirection.ROW)
+                Row.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .justifyContent(YogaJustify.SPACE_AROUND)
                     .alignItems(YogaAlign.CENTER)
                     .positionType(YogaPositionType.ABSOLUTE)
@@ -486,37 +482,37 @@ public class LayoutStateCalculateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c))
                     .child(TestDrawableComponent.create(c))
                     .wrapInView())
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(
                         TestDrawableComponent.create(c)
                             .withLayout().flexShrink(0)
                             .wrapInView())
                     .child(
-                        Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                        Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                             .child(TestDrawableComponent.create(c))
                             .child(TestDrawableComponent.create(c))
                             .wrapInView())
                     .wrapInView())
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c))
                     .child(
-                        Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                        Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                             .child(TestDrawableComponent.create(c))
                             .child(TestDrawableComponent.create(c)))
                     .wrapInView())
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c))
                     .child(
-                        Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                        Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                             .child(TestDrawableComponent.create(c))
                             .child(TestViewComponent.create(c)))
                     .wrapInView())
@@ -577,18 +573,18 @@ public class LayoutStateCalculateTest {
     final Component component1 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c))
                     .contentDescription("cd0"))
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c))
                     .child(TestDrawableComponent.create(c))
                     .contentDescription("cd1"))
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c))
                     .child(TestViewComponent.create(c))
                     .contentDescription("cd2"))
@@ -598,18 +594,18 @@ public class LayoutStateCalculateTest {
     final Component component2 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c))
                     .contentDescription("cd0"))
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c))
                     .child(TestDrawableComponent.create(c))
                     .contentDescription("cd1"))
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c))
                     .child(TestViewComponent.create(c))
                     .contentDescription("cd2"))
@@ -647,37 +643,37 @@ public class LayoutStateCalculateTest {
     final Component component1 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c))
                     .child(TestDrawableComponent.create(c))
                     .wrapInView())
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(
                         TestDrawableComponent.create(c)
                             .withLayout().flexShrink(0)
                             .wrapInView())
                     .child(
-                        Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                        Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                             .child(TestDrawableComponent.create(c))
                             .child(TestDrawableComponent.create(c))
                             .wrapInView())
                     .wrapInView())
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c))
                     .child(
-                        Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                        Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                             .child(TestDrawableComponent.create(c))
                             .child(TestDrawableComponent.create(c)))
                     .wrapInView())
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c))
                     .child(
-                        Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                        Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                             .child(TestDrawableComponent.create(c))
                             .child(TestViewComponent.create(c)))
                     .wrapInView())
@@ -688,37 +684,37 @@ public class LayoutStateCalculateTest {
     final Component component2 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c))
                     .child(TestDrawableComponent.create(c))
                     .wrapInView())
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(
                         TestDrawableComponent.create(c)
                             .withLayout().flexShrink(0)
                             .wrapInView())
                     .child(
-                        Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                        Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                             .child(TestDrawableComponent.create(c))
                             .child(TestDrawableComponent.create(c))
                             .wrapInView())
                     .wrapInView())
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c))
                     .child(
-                        Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                        Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                             .child(TestDrawableComponent.create(c))
                             .child(TestDrawableComponent.create(c)))
                     .wrapInView())
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c))
                     .child(
-                        Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                        Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                             .child(TestDrawableComponent.create(c))
                             .child(TestViewComponent.create(c)))
                     .wrapInView())
@@ -755,7 +751,7 @@ public class LayoutStateCalculateTest {
     final Component component1 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(TestDrawableComponent.create(c))
             .child(TestDrawableComponent.create(c))
             .build();
@@ -764,10 +760,10 @@ public class LayoutStateCalculateTest {
     final Component component2 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(TestDrawableComponent.create(c))
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c))
                     .child(TestDrawableComponent.create(c)))
             .build();
@@ -803,7 +799,7 @@ public class LayoutStateCalculateTest {
     final Component component1 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(TestDrawableComponent.create(c))
             .child(TestDrawableComponent.create(c))
             .build();
@@ -812,13 +808,13 @@ public class LayoutStateCalculateTest {
     final Component component2 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(
                 TestDrawableComponent.create(c)
                     .withLayout().flexShrink(0)
                     .wrapInView())
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c))
                     .child(TestDrawableComponent.create(c))
                     .wrapInView())
@@ -850,10 +846,10 @@ public class LayoutStateCalculateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(TestDrawableComponent.create(c))
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestLayoutComponent.create(c))
                     .wrapInView())
             .build();
@@ -913,7 +909,7 @@ public class LayoutStateCalculateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(
                 Layout.create(c, innerComponent).flexShrink(0)
                     .widthPx(100)
@@ -958,7 +954,7 @@ public class LayoutStateCalculateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(
                 Layout.create(c, innerComponent).flexShrink(0)
                     .widthPx(100)
@@ -1003,7 +999,7 @@ public class LayoutStateCalculateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(innerComponent)
             .build();
       }
@@ -1045,7 +1041,7 @@ public class LayoutStateCalculateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(innerComponent)
             .build();
       }
@@ -1066,20 +1062,20 @@ public class LayoutStateCalculateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(
-                        Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                        Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                             .child(TestDrawableComponent.create(c)))
                 .wrapInView())
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(
-                        Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                        Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                             .child(TestDrawableComponent.create(c)))
                     .child(
-                        Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                        Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                             .child(TestDrawableComponent.create(c))))
             .build();
       }
@@ -1113,7 +1109,7 @@ public class LayoutStateCalculateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .backgroundColor(0xFFFF0000)
             .foregroundColor(0xFFFF0000)
             .child(TestDrawableComponent.create(c))
@@ -1140,18 +1136,18 @@ public class LayoutStateCalculateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c))
                     .wrapInView())
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c))
                     .child(TestDrawableComponent.create(c))
                     .wrapInView())
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c))
                     .child(TestViewComponent.create(c))
                     .wrapInView())
@@ -1197,18 +1193,18 @@ public class LayoutStateCalculateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c))
                     .contentDescription("cd0"))
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c))
                     .child(TestDrawableComponent.create(c))
                     .contentDescription("cd1"))
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c))
                     .child(TestViewComponent.create(c))
                     .contentDescription("cd2"))
@@ -1252,7 +1248,7 @@ public class LayoutStateCalculateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(TestDrawableComponent.create(c))
             .focusable(true)
             .build();
@@ -1282,9 +1278,9 @@ public class LayoutStateCalculateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .child(TestDrawableComponent.create(c))
                     .focusable(true))
             .build();
@@ -1310,8 +1306,7 @@ public class LayoutStateCalculateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-            .flexDirection(YogaFlexDirection.ROW)
+        return Row.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .alignItems(YogaAlign.CENTER)
             .paddingDip(YogaEdge.ALL, 10)
             .contentDescription("This is root view")
@@ -1327,8 +1322,7 @@ public class LayoutStateCalculateTest {
                     .backgroundColor(Color.RED)
                     .marginDip(YogaEdge.HORIZONTAL, 10))
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                    .flexDirection(YogaFlexDirection.ROW)
+                Row.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .alignItems(YogaAlign.CENTER)
                     .paddingDip(YogaEdge.ALL, 10)
                     .contentDescription("This is a container")
@@ -1388,7 +1382,7 @@ public class LayoutStateCalculateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .contentDescription("This is root view")
             .child(
                 TestDrawableComponent.create(c)
@@ -1403,8 +1397,7 @@ public class LayoutStateCalculateTest {
                     .marginDip(YogaEdge.HORIZONTAL, 10)
                     .importantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO))
             .child(
-                Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                    .flexDirection(YogaFlexDirection.ROW)
+                Row.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
                     .alignItems(YogaAlign.CENTER)
                     .paddingDip(YogaEdge.ALL, 10)
                     .importantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS)
@@ -1475,7 +1468,7 @@ public class LayoutStateCalculateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(TestDrawableComponent.create(c))
             .clickHandler(c.newEventHandler(1))
             .viewTags(new SparseArray<>())
@@ -1510,7 +1503,7 @@ public class LayoutStateCalculateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(TestDrawableComponent.create(c))
             .longClickHandler(c.newEventHandler(1))
             .viewTags(new SparseArray<>())
@@ -1544,7 +1537,7 @@ public class LayoutStateCalculateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(
                 TestDrawableComponent.create(c)
                     .withLayout().flexShrink(0)
@@ -1603,7 +1596,7 @@ public class LayoutStateCalculateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .paddingPx(YogaEdge.ALL, 2)
             .child(
                 TestSizeDependentComponent.create(c)
@@ -1643,7 +1636,7 @@ public class LayoutStateCalculateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .paddingPx(YogaEdge.ALL, 2)
             .child(
                 TestSizeDependentComponent.create(c)
@@ -1789,7 +1782,7 @@ public class LayoutStateCalculateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .paddingPx(YogaEdge.ALL, 2)
             .child(new TestNullLayoutComponent())
             .build();
@@ -1818,7 +1811,7 @@ public class LayoutStateCalculateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(
                 TestDrawableComponent.create(c)
                     .measuredWidth(width)
@@ -1870,7 +1863,7 @@ public class LayoutStateCalculateTest {
     final Component rootContainer = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .paddingPx(YogaEdge.HORIZONTAL, horizontalPadding)
             .child(componentSpy)
             .build();
@@ -1937,8 +1930,7 @@ public class LayoutStateCalculateTest {
     final Component rootContainer = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c)
-            .flexDirection(YogaFlexDirection.COLUMN)
+        return Column.create(c)
             .paddingPx(YogaEdge.HORIZONTAL, horizontalPadding)
             .child(sizeDependentComponentSpy)
             .build();
@@ -2006,7 +1998,7 @@ public class LayoutStateCalculateTest {
     final Component rootContainer = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .paddingPx(YogaEdge.HORIZONTAL, horizontalPadding)
             .child(componentSpy)
             .build();
@@ -2070,7 +2062,7 @@ public class LayoutStateCalculateTest {
     final Component rootContainer = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .paddingPx(YogaEdge.HORIZONTAL, horizontalPadding)
             .child(sizeDependentComponentSpy)
             .build();
@@ -2111,8 +2103,7 @@ public class LayoutStateCalculateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-            .flexDirection(YogaFlexDirection.ROW)
+        return Row.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .alignItems(YogaAlign.STRETCH)
             .paddingPx(YogaEdge.ALL, 2)
             .child(
@@ -2145,7 +2136,7 @@ public class LayoutStateCalculateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(
                 TestSizeDependentComponent.create(c)
                     .withLayout().flexShrink(0)
@@ -2172,7 +2163,7 @@ public class LayoutStateCalculateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .alignItems(YogaAlign.FLEX_START)
             .widthPx(100)
             .heightPx(100)
@@ -2207,7 +2198,7 @@ public class LayoutStateCalculateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .alignItems(YogaAlign.FLEX_START)
             .child(
                 TestSizeDependentComponent.create(c)
@@ -2241,7 +2232,7 @@ public class LayoutStateCalculateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .alignItems(YogaAlign.FLEX_START)
             .widthPx(50)
             .heightPx(50)
@@ -2272,7 +2263,7 @@ public class LayoutStateCalculateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(TestDrawableComponent.create(c))
             .borderColor(Color.GREEN)
             .build();
@@ -2296,7 +2287,7 @@ public class LayoutStateCalculateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(TestDrawableComponent.create(c))
             .borderWidthPx(YogaEdge.ALL, 10)
             .build();
@@ -2320,7 +2311,7 @@ public class LayoutStateCalculateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(TestDrawableComponent.create(c))
             .borderWidthPx(YogaEdge.ALL, 10)
             .borderColor(Color.GREEN)
@@ -2346,7 +2337,7 @@ public class LayoutStateCalculateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Container.create(c).flexDirection(YogaFlexDirection.COLUMN).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .child(TestDrawableComponent.create(c))
             .borderWidthPx(YogaEdge.TOP, 10)
             .borderColor(Color.GREEN)
