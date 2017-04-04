@@ -30,6 +30,7 @@ public class ComponentContext extends ContextWrapper {
   private final String mLogTag;
   private final ComponentsLogger mLogger;
   private final StateHandler mStateHandler;
+  private String mNoStateUpdatesMethod;
 
   // Hold a reference to the component which scope we are currently within.
   private @ThreadConfined(ThreadConfined.ANY) Component<?> mComponentScope;
@@ -138,6 +139,8 @@ public class ComponentContext extends ContextWrapper {
    * @param stateUpdate state update to perform
    */
   public void updateState(ComponentLifecycle.StateUpdate stateUpdate) {
+    checkIfNoStateUpdatesMethod();
+
     if (mComponentTree == null) {
       return;
     }
@@ -150,6 +153,8 @@ public class ComponentContext extends ContextWrapper {
    * @param stateUpdate state update to perform
    */
   public void updateStateAsync(ComponentLifecycle.StateUpdate stateUpdate) {
+    checkIfNoStateUpdatesMethod();
+
     if (mComponentTree == null) {
       return;
     }
@@ -163,6 +168,23 @@ public class ComponentContext extends ContextWrapper {
     }
 
     mComponentTree.updateStateLazy(mComponentScope.getGlobalKey(), stateUpdate);
+  }
+
+  public void enterNoStateUpdatesMethod(String noStateUpdatesMethod) {
+    mNoStateUpdatesMethod = noStateUpdatesMethod;
+  }
+
+  public void exitNoStateUpdatesMethod() {
+    mNoStateUpdatesMethod = null;
+  }
+
+  private void checkIfNoStateUpdatesMethod() {
+    if (mNoStateUpdatesMethod != null) {
+      throw new IllegalStateException(
+          "Updating the state of a component during " +
+              mNoStateUpdatesMethod +
+              " leads to unexpected behaviour, consider using lazy state updates.");
+    }
   }
 
   void setDefStyle(@AttrRes int defStyleAttr, @StyleRes int defStyleRes) {

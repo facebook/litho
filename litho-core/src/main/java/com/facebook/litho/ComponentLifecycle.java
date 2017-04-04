@@ -174,11 +174,15 @@ public abstract class ComponentLifecycle implements EventDispatcher {
   }
 
   void mount(ComponentContext c, Object convertContent, Component<?> component) {
+    c.enterNoStateUpdatesMethod("mount");
     onMount(c, convertContent, component);
+    c.exitNoStateUpdatesMethod();
   }
 
   void bind(ComponentContext c, Object mountedContent, Component<?> component) {
+    c.enterNoStateUpdatesMethod("bind");
     onBind(c, mountedContent, component);
+    c.exitNoStateUpdatesMethod();
   }
 
   void unbind(ComponentContext c, Object mountedContent, Component<?> component) {
