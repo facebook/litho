@@ -8,17 +8,16 @@
 include_defs("//COMPONENTS_DEFS")
 
 android_library(
-    name = "utils",
+    name = "internal",
     srcs = glob(["*.java"]),
     tests = [
+        make_dep_path("litho-core/src/test/java/com/facebook/litho/internal:internal"),
     ],
     visibility = [
         "PUBLIC",
     ],
     deps = [
-        COMPONENTS_JAVA_TARGET,
         COMPONENTS_ANDROIDSUPPORT_TARGET,
-        COMPONENTS_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
         COMPONENTS_JSR_TARGET,
     ],
 )
