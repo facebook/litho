@@ -88,15 +88,20 @@ public class DelegateMethodGenerator {
           delegateMethod.methodParams.get(i).getName());
     }
 
-    methodSpec.addParameter(COMPONENT, ABSTRACT_IMPL_PARAM_NAME);
+    if (!methodDescription.optionalParameterTypes.isEmpty()) {
+      methodSpec.addParameter(COMPONENT, ABSTRACT_IMPL_PARAM_NAME);
+    }
 
     for (TypeName exception : methodDescription.exceptions) {
       methodSpec.addException(exception);
     }
 
-    final String implName = specModel.getComponentName() + "Impl";
-    methodSpec.addStatement(
-        implName + " " + IMPL_VARIABLE_NAME + " = (" + implName + ") " + ABSTRACT_IMPL_PARAM_NAME);
+    if (!methodDescription.optionalParameterTypes.isEmpty()) {
+      final String implName = specModel.getComponentName() + "Impl";
+      methodSpec.addStatement(
+          implName + " " + IMPL_VARIABLE_NAME + " = (" + implName + ") " +
+              ABSTRACT_IMPL_PARAM_NAME);
+    }
 
     final CodeBlock.Builder acquireOutputs = CodeBlock.builder();
     final CodeBlock.Builder delegation = CodeBlock.builder();

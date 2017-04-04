@@ -16,6 +16,7 @@ import javax.lang.model.element.TypeElement;
 
 import com.facebook.litho.specmodels.generator.BuilderGenerator;
 import com.facebook.litho.specmodels.generator.ComponentImplGenerator;
+import com.facebook.litho.specmodels.generator.DelegateMethodGenerator;
 import com.facebook.litho.specmodels.generator.EventGenerator;
 import com.facebook.litho.specmodels.generator.JavadocGenerator;
 import com.facebook.litho.specmodels.generator.MountSpecGenerator;
@@ -23,6 +24,7 @@ import com.facebook.litho.specmodels.generator.PreambleGenerator;
 import com.facebook.litho.specmodels.generator.PureRenderGenerator;
 import com.facebook.litho.specmodels.generator.StateGenerator;
 import com.facebook.litho.specmodels.generator.TreePropGenerator;
+import com.facebook.litho.specmodels.model.DelegateMethodDescriptions;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.MountSpecModel;
 
@@ -46,24 +48,14 @@ public class ComponentsProcessor extends AbstractComponentsProcessor {
         .addToTypeSpec(mountSpecHelper.getTypeSpec());
     PureRenderGenerator.generate(specModel).addToTypeSpec(typeSpec);
     TreePropGenerator.generate(specModel).addToTypeSpec(typeSpec);
-    mountSpecHelper.generateOnPrepare();
-    mountSpecHelper.generateOnMeasure();
-    mountSpecHelper.generateOnMeasureBaseline();
-    mountSpecHelper.generateOnBoundsDefined();
+    DelegateMethodGenerator.generateDelegates(
+        specModel,
+        DelegateMethodDescriptions.MOUNT_SPEC_DELEGATE_METHODS_MAP).addToTypeSpec(typeSpec);
     MountSpecGenerator.generateGetMountType(specModel).addToTypeSpec(typeSpec);
     MountSpecGenerator.generatePoolSize(specModel).addToTypeSpec(typeSpec);
-    mountSpecHelper.generateOnCreateMountContent();
-    mountSpecHelper.generateOnMount();
-    mountSpecHelper.generateOnBind();
-    mountSpecHelper.generateOnUnbind();
-    mountSpecHelper.generateOnUnmount();
-    mountSpecHelper.generateAccessibilityMethods();
     MountSpecGenerator.generateCanMountIncrementally(specModel).addToTypeSpec(typeSpec);
     MountSpecGenerator.generateShouldUseDisplayList(specModel).addToTypeSpec(typeSpec);
-    mountSpecHelper.generateCreateInitialState();
 
-    final Stages stages = mountSpecHelper.getStages();
-    stages.generateOnLoadStyle();
 
     ComponentImplGenerator.generate(specModel).addToTypeSpec(typeSpec);
     EventGenerator.generate(specModel).addToTypeSpec(typeSpec);
