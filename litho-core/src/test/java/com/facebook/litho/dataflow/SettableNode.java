@@ -12,7 +12,7 @@ package com.facebook.litho.dataflow;
 /**
  * Test node that allows setting of its next value.
  */
-public class SettableNode extends ValueNode<Float> {
+public class SettableNode extends ValueNode<Float> implements NodeCanFinish {
 
   private float mValue;
 
@@ -28,5 +28,14 @@ public class SettableNode extends ValueNode<Float> {
   @Override
   protected Float initialize() {
     return mValue;
+  }
+
+  @Override
+  public boolean isFinished() {
+    return false;
+  }
+
+  @Override
+  public void onInputsFinished() {
   }
 }

@@ -53,6 +53,11 @@ public class DataFlowGraph {
   private final CopyOnWriteArrayList<GraphBinding> mBindings = new CopyOnWriteArrayList<>();
   private final ArrayList<ValueNode> mSortedNodes = new ArrayList<>();
   private final WeakHashMap<ValueNode, Void> mIsInitialized = new WeakHashMap<>();
+  private final ArraySet<ValueNode> mFinishedNodes = new ArraySet<>();
+  private final ArraySet<ValueNode> mNodesWithFinishedInputs = new ArraySet<>();
+  private final SimpleArrayMap<GraphBinding, ArraySet<ValueNode>> mBindingToNodes =
+      new SimpleArrayMap<>();
+  private final ArraySet<GraphBinding> mFinishedBindings = new ArraySet<>();
 
   private boolean mIsDirty = false;
 
@@ -69,6 +74,7 @@ public class DataFlowGraph {
       throw new RuntimeException("Expected added GraphBinding to be active: " + binding);
     }
     mBindings.add(binding);
+    mBindingToNodes.put(binding, binding.getAllNodes());
     if (mBindings.size() == 1) {
       mTimingSource.start();
     }
@@ -83,6 +89,8 @@ public class DataFlowGraph {
     if (!mBindings.remove(binding)) {
       throw new RuntimeException("Tried to unregister non-existent binding");
     }
+    mBindingToNodes.remove(binding);
+    mFinishedBindings.remove(binding);
     if (mBindings.isEmpty()) {
       mTimingSource.stop();
     }
@@ -96,6 +104,7 @@ public class DataFlowGraph {
     }
 
     propagate(frameTimeNanos);
+    updateFinishedStates();
   }
 
   private void propagate(long frameTimeNanos) {
@@ -116,9 +125,10 @@ public class DataFlowGraph {
     final ArraySet<ValueNode> leafNodes = new ArraySet<>();
     final SimpleArrayMap<ValueNode, MutableInt> nodesToOutputsLeft = new SimpleArrayMap<>();
 
-    for (int i = 0; i < mBindings.size(); i++) {
-      final GraphBinding graphBinding = mBindings.get(i);
-      for (final ValueNode node : graphBinding.getAllNodes()) {
+    for (int i = 0, bindingsSize = mBindingToNodes.size(); i < bindingsSize; i++) {
+      final ArraySet<ValueNode> nodes = mBindingToNodes.valueAt(i);
+      for (int j = 0, nodesSize = nodes.size(); j < nodesSize; j++) {
+        final ValueNode node = nodes.valueAt(j);
         final int outputCount = node.getOutputCount();
         if (outputCount == 0) {
           leafNodes.add(node);
@@ -137,7 +147,7 @@ public class DataFlowGraph {
     while (!nodesToProcess.isEmpty()) {
       final ValueNode next = nodesToProcess.pollFirst();
       mSortedNodes.add(next);
-      for (int i = 0; i < next.getInputCount(); i++) {
+      for (int i = 0, count = next.getInputCount(); i < count; i++) {
         final ValueNode input = next.getInputAt(i);
         final MutableInt outputsLeft = nodesToOutputsLeft.get(input);
         outputsLeft.value--;
@@ -165,6 +175,68 @@ public class DataFlowGraph {
       if (!mIsInitialized.containsKey(node)) {
         node.doInitialize();
         mIsInitialized.put(node, null);
+      }
+    }
+  }
+
+  private void updateFinishedStates() {
+    updateFinishedNodes();
+    notifyFinishedBindings();
+  }
+
+  private void updateFinishedNodes() {
+    for (int i = 0, size = mSortedNodes.size(); i < size; i++) {
+      final ValueNode node = mSortedNodes.get(i);
+      if (mFinishedNodes.contains(node)) {
+        continue;
+      }
+      final boolean wereInputsFinished = mNodesWithFinishedInputs.contains(node);
+      final boolean areInputsFinished = wereInputsFinished || areInputsFinished(node);
+      if (!wereInputsFinished && areInputsFinished) {
+        mNodesWithFinishedInputs.add(node);
+        if (node instanceof NodeCanFinish) {
+          ((NodeCanFinish) node).onInputsFinished();
+        }
+      }
+
+      final boolean nodeIsNowFinished =
+          !(node instanceof NodeCanFinish) ||
+              ((NodeCanFinish) node).isFinished();
+      if (nodeIsNowFinished) {
+        mFinishedNodes.add(node);
+      }
+    }
+  }
+
+  private boolean areInputsFinished(ValueNode node) {
+    for (int i = 0, inputCount = node.getInputCount(); i < inputCount; i++) {
+      if (!mFinishedNodes.contains(node.getInputAt(i))) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private void notifyFinishedBindings() {
+    // Iterate in reverse order since notifying that a binding is finished might result in removing
+    // that binding.
+    for (int i = mBindingToNodes.size() - 1; i >= 0; i--) {
+      final GraphBinding binding = mBindingToNodes.keyAt(i);
+      if (mFinishedBindings.contains(binding)) {
+        continue;
+      }
+      boolean allAreFinished = true;
+      final ArraySet<ValueNode> nodesToCheck = mBindingToNodes.valueAt(i);
+      for (int j = 0, nodesSize = nodesToCheck.size(); j < nodesSize; j++) {
+        final ValueNode node = nodesToCheck.valueAt(j);
+        if (!mFinishedNodes.contains(node)) {
+          allAreFinished = false;
+          break;
+        }
+      }
+      if (allAreFinished) {
+        binding.notifyNodesHaveFinished();
+        mFinishedBindings.add(binding);
       }
     }
   }

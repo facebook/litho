@@ -28,6 +28,7 @@ public final class GraphBinding implements DataFlowBinding {
   private final DataFlowGraph mDataFlowGraph;
   private final Bindings mBindings = new Bindings();
   private final ArraySet<ValueNode> mAllNodes = new ArraySet<>();
+  private BindingListener mListener;
   private boolean mIsActive = false;
   private boolean mHasBeenActivated = false;
 
@@ -91,6 +92,20 @@ public final class GraphBinding implements DataFlowBinding {
   @Override
   public boolean isActive() {
     return mIsActive;
+  }
+
+  void notifyNodesHaveFinished() {
+    if (mListener != null) {
+      mListener.onAllNodesFinished(this);
+    }
+  }
+
+  @Override
+  public void setListener(BindingListener listener) {
+    if (mListener != null && listener != null) {
+      throw new RuntimeException("Overriding existing listener!");
+    }
+    mListener = listener;
   }
 
   private static class Bindings {

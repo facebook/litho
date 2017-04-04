@@ -3,10 +3,13 @@
 package com.facebook.litho.animation;
 
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import android.support.annotation.VisibleForTesting;
 
 import com.facebook.litho.dataflow.BadGraphSetupException;
+import com.facebook.litho.dataflow.BindingListener;
+import com.facebook.litho.dataflow.DataFlowBinding;
 import com.facebook.litho.dataflow.GraphBinding;
 import com.facebook.litho.dataflow.ValueNode;
 
@@ -21,6 +24,8 @@ public class SimpleAnimationBinding implements AnimationBinding {
   private final GraphBinding mGraphBinding;
   private final ArrayList<PendingBinding> mPendingBindings = new ArrayList<>();
   private final ArrayList<PendingNode> mPendingNodes = new ArrayList<>();
+  private final CopyOnWriteArrayList<AnimationBindingListener> mListeners =
+      new CopyOnWriteArrayList<>();
 
   public SimpleAnimationBinding() {
     this(GraphBinding.create());
@@ -29,6 +34,12 @@ public class SimpleAnimationBinding implements AnimationBinding {
   @VisibleForTesting
   SimpleAnimationBinding(GraphBinding graphBinding) {
     mGraphBinding = graphBinding;
+    mGraphBinding.setListener(new BindingListener() {
+      @Override
+      public void onAllNodesFinished(DataFlowBinding binding) {
+        SimpleAnimationBinding.this.onAllNodesFinished();
+      }
+    });
   }
 
   /**
@@ -121,5 +132,22 @@ public class SimpleAnimationBinding implements AnimationBinding {
     }
     mPendingBindings.clear();
     mPendingNodes.clear();
+  }
+
+  private void onAllNodesFinished() {
+    for (AnimationBindingListener listener : mListeners) {
+      listener.onFinish(this);
+    }
+    stop();
+  }
+
+  @Override
+  public void addListener(AnimationBindingListener bindingListener) {
+    mListeners.add(bindingListener);
+  }
+
+  @Override
+  public void removeListener(AnimationBindingListener animationBindingListener) {
+    mListeners.remove(animationBindingListener);
   }
 }

@@ -12,7 +12,7 @@ package com.facebook.litho.dataflow;
 /**
  * Test node whose value is based on the number of frames it's seen.
  */
-public class NumFramesNode extends ValueNode<Float> {
+public class NumFramesNode extends ValueNode<Float> implements NodeCanFinish {
 
   private int mNumFramesSeen = 0;
   private long mLastFrameTime = Long.MIN_VALUE;
@@ -29,5 +29,14 @@ public class NumFramesNode extends ValueNode<Float> {
   @Override
   protected Float initialize() {
     return 0f;
+  }
+
+  @Override
+  public boolean isFinished() {
+    return false;
+  }
+
+  @Override
+  public void onInputsFinished() {
   }
 }

@@ -31,4 +31,14 @@ public interface AnimationBinding {
    * {@link #start()}.
    */
   void resolvePendingNodes(PendingNodeResolver resolver);
+
+  /**
+   * Adds a {@link AnimationBindingListener}.
+   */
+  void addListener(AnimationBindingListener animationBindingListener);
+
+  /**
+   * Removes a previously added {@link AnimationBindingListener}.
+   */
+  void removeListener(AnimationBindingListener animationBindingListener);
 }

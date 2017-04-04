@@ -12,7 +12,7 @@ package com.facebook.litho.dataflow;
  * NB: If the end input changes after the end of the duration, this node will just pass through that
  * new value.
  */
-public class TimingNode extends ValueNode<Float> {
+public class TimingNode extends ValueNode<Float> implements NodeCanFinish {
 
   public static final String INITIAL_INPUT = "initial";
   public static final String END_INPUT = "end";
@@ -24,6 +24,7 @@ public class TimingNode extends ValueNode<Float> {
   private long mExpectedEndTimeNs = Long.MIN_VALUE;
   private long mLastValueTimeNs = Long.MIN_VALUE;
   private float mInitialValue;
+  private boolean mAreParentsFinished = false;
   private boolean mIsFinished = false;
 
   public TimingNode(int durationMs) {
@@ -40,10 +41,6 @@ public class TimingNode extends ValueNode<Float> {
     }
 
     float endValue = (Float) getInput(END_INPUT).getValue();
-    if (mIsFinished) {
-      return endValue;
-    }
-
     if (frameTimeNanos >= mExpectedEndTimeNs) {
       mIsFinished = true;
       return endValue;
@@ -62,5 +59,16 @@ public class TimingNode extends ValueNode<Float> {
   public Float initialize() {
     mInitialValue = (Float) getInput(INITIAL_INPUT).getValue();
     return mInitialValue;
+  }
+
+  @Override
+  public boolean isFinished() {
+    return mIsFinished && mAreParentsFinished;
+  }
+
+  @Override
+  public void onInputsFinished() {
+    mAreParentsFinished = true;
+    mIsFinished = mLastValueTimeNs >= mExpectedEndTimeNs;
   }
 }
