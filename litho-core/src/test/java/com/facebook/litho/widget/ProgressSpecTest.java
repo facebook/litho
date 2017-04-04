@@ -44,12 +44,7 @@ public class ProgressSpecTest {
     assertThat(view.getMeasuredHeight()).isGreaterThan(0);
   }
 
-  /**
-   * Ignored because the first view.measure() fails to trigger onMeasure in ProgressSpec.
-   * CSSLayout bug?
-   */
   @Test
-  @Ignore
   public void testUnsetSize() {
     ComponentView view = getMountedView();
 
