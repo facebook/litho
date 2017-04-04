@@ -11,6 +11,7 @@ android_library(
     name = "utils",
     srcs = glob(["*.java"]),
     tests = [
+        make_dep_path("litho-core/src/test/java/com/facebook/litho/utils:utils"),
     ],
     visibility = [
         "PUBLIC",
