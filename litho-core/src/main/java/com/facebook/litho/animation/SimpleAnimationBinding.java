@@ -9,7 +9,6 @@ import android.support.annotation.VisibleForTesting;
 
 import com.facebook.litho.dataflow.BadGraphSetupException;
 import com.facebook.litho.dataflow.BindingListener;
-import com.facebook.litho.dataflow.DataFlowBinding;
 import com.facebook.litho.dataflow.GraphBinding;
 import com.facebook.litho.dataflow.ValueNode;
 
@@ -36,7 +35,7 @@ public class SimpleAnimationBinding implements AnimationBinding {
     mGraphBinding = graphBinding;
     mGraphBinding.setListener(new BindingListener() {
       @Override
-      public void onAllNodesFinished(DataFlowBinding binding) {
+      public void onAllNodesFinished(GraphBinding binding) {
         SimpleAnimationBinding.this.onAllNodesFinished();
       }
     });

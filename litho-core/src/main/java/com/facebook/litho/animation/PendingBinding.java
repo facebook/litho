@@ -2,13 +2,12 @@
 
 package com.facebook.litho.animation;
 
-import com.facebook.litho.dataflow.DataFlowBinding;
 import com.facebook.litho.dataflow.GraphBinding;
 import com.facebook.litho.dataflow.ValueNode;
 
 /**
  * Represents the specification for a binding between {@link ValueNode}s that will be added at
- * runtime just as a {@link DataFlowBinding} is being activated.
+ * runtime just as a {@link GraphBinding} is being activated.
  *
  * A PendingBinding is used instead of a regular binding (using {@link GraphBinding#addBinding})
  * when one of the ValueNodes in the binding doesn't exist yet. An example is binding to a View

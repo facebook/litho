@@ -22,7 +22,7 @@ public class GraphBindingFinishesTest {
     private int mNumFinishCalls = 0;
 
     @Override
-    public void onAllNodesFinished(DataFlowBinding binding) {
+    public void onAllNodesFinished(GraphBinding binding) {
       mNumFinishCalls++;
     }
 

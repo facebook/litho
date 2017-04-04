@@ -15,15 +15,14 @@ import android.support.annotation.VisibleForTesting;
 import android.util.ArraySet;
 
 /**
- * The core {@link DataFlowBinding} implementation: it specifies a set of {@link ValueNode}s and how
- * they're connected within a {@link DataFlowGraph}. When a GraphBinding is activated, it adds its
- * nodes (if they don't already exist) to the {@link DataFlowGraph} and connects them together. When
- * the binding is deactivated, these connections and nodes are removed. You can think of a
- * GraphBinding as a sub-graph of a DAG that can be added and removed in isolation.
+ * Defines the relationship of a set of input values to a set of output values where the values from
+ * the input nodes 'flow into' the output nodes. For example, input values could be a touch X/Y or a
+ * layout value, and output values could be the X/Y position of a View or its opacity. Input and
+ * output values can be connected to each other via intermediate operators like springs or timing.
  *
  * NB: ValueNodes can be referenced by multiple GraphBindings (e.g. a view property).
  */
-public final class GraphBinding implements DataFlowBinding {
+public final class GraphBinding {
 
   private final DataFlowGraph mDataFlowGraph;
   private final Bindings mBindings = new Bindings();
@@ -73,7 +72,11 @@ public final class GraphBinding implements DataFlowBinding {
     return mAllNodes;
   }
 
-  @Override
+  /**
+   * Activates a binding, adding the sub-graph defined by this binding to the main
+   * {@link DataFlowGraph} associated with this binding. This is expected to be called from
+   * framework code and should not be called by the end developer.
+   */
   public void activate() {
     mBindings.applyBindings();
     mHasBeenActivated = true;
@@ -82,14 +85,21 @@ public final class GraphBinding implements DataFlowBinding {
     mDataFlowGraph.register(this);
   }
 
-  @Override
+  /**
+   * Deactivates this binding which, as you might guess, is the reverse of activating it: the
+   * sub-graph associated with this binding is removed from the main {@link DataFlowGraph}. As with
+   * {@link #activate()}, this is expected to only be called by framework code and not the end
+   * developer.
+   */
   public void deactivate() {
     mIsActive = false;
     mDataFlowGraph.unregister(this);
     mBindings.removeBindings();
   }
 
-  @Override
+  /**
+   * @return whether this binding has been activated and not yet deactivated.
+   */
   public boolean isActive() {
     return mIsActive;
   }
@@ -100,7 +110,9 @@ public final class GraphBinding implements DataFlowBinding {
     }
   }
 
-  @Override
+  /**
+   * Sets the {@link BindingListener}.
+   */
   public void setListener(BindingListener listener) {
     if (mListener != null && listener != null) {
       throw new RuntimeException("Overriding existing listener!");

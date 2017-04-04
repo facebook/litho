@@ -3,12 +3,12 @@
 package com.facebook.litho.dataflow;
 
 /**
- * Listener that receives events when a {@link DataFlowBinding} is activated or is finished.
+ * Listener that receives events when a {@link GraphBinding} is activated or is finished.
  */
 public interface BindingListener {
 
   /**
-   * Called when a {@link DataFlowBinding} is finished, meaning all of its nodes are finished.
+   * Called when a {@link GraphBinding} is finished, meaning all of its nodes are finished.
    */
-  void onAllNodesFinished(DataFlowBinding binding);
+  void onAllNodesFinished(GraphBinding binding);
 }
