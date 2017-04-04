@@ -188,7 +188,7 @@ class MountState {
     final boolean isIncrementalMountEnabled = localVisibleRect != null;
 
     if (!isIncrementalMountEnabled ||
-            !performIncrementalMount(layoutState, localVisibleRect)) {
+        !performIncrementalMount(layoutState, localVisibleRect)) {
       for (int i = 0, size = layoutState.getMountableOutputCount(); i < size; i++) {
         final LayoutOutput layoutOutput = layoutState.getMountableOutputAt(i);
         final Component component = layoutOutput.getComponent();
@@ -482,7 +482,7 @@ class MountState {
     // 3. We will re-bind this later in 7 regardless so let's make sure it's currently unbound.
     if (currentMountItem.isBound()) {
       itemComponent.getLifecycle().onUnbind(
-          itemComponent.getScopedContext(),
+          getContextForComponent(itemComponent),
           currentMountItem.getContent(),
           itemComponent);
       currentMountItem.setIsBound(false);
@@ -501,7 +501,7 @@ class MountState {
 
     // 6. Set the mounted content on the Component and call the bind callback.
     layoutOutputComponent.getLifecycle().bind(
-        layoutOutputComponent.getScopedContext(),
+        getContextForComponent(layoutOutputComponent),
         currentContent,
         layoutOutputComponent);
     currentMountItem.setIsBound(true);
@@ -796,8 +796,8 @@ class MountState {
   private int findLastDescendantOfItem(int disappearingItemIndex, MountItem item) {
     for (int i = disappearingItemIndex + 1; i < mLayoutOutputsIds.length; i++) {
       if (!ComponentHostUtils.hasAncestorHost(
-             getItemAt(i).getHost(),
-             (ComponentHost) item.getContent())) {
+          getItemAt(i).getHost(),
+          (ComponentHost) item.getContent())) {
         // No need to go further as the items that have common ancestor hosts are co-located.
         // This is the first non-descendant of given MountItem, therefore last descendant is the
         // item before.
@@ -822,8 +822,9 @@ class MountState {
     // Call unmount and mount in sequence to make sure all the the resources are correctly
     // de-allocated. It's possible for previousContent to equal null - when the root is
     // interactive we create a LayoutOutput without content in order to set up click handling.
-    lifecycle.unmount(previousComponent.getScopedContext(), previousContent, previousComponent);
-    lifecycle.mount(component.getScopedContext(), previousContent, component);
+    lifecycle.unmount(
+        getContextForComponent(previousComponent), previousContent, previousComponent);
+    lifecycle.mount(getContextForComponent(component), previousContent, component);
   }
 
   private void mountLayoutOutput(int index, LayoutOutput layoutOutput, LayoutState layoutState) {
@@ -846,6 +847,7 @@ class MountState {
     }
 
     final Component<?> component = layoutOutput.getComponent();
+    final ComponentContext context = getContextForComponent(component);
     final ComponentLifecycle lifecycle = component.getLifecycle();
 
     // 2. Generate the component's mount state (this might also be a ComponentHost View).
@@ -855,7 +857,7 @@ class MountState {
     }
 
     lifecycle.mount(
-        component.getScopedContext(),
+        context,
         content,
         component);
 
@@ -870,7 +872,7 @@ class MountState {
     final MountItem item = mountContent(index, component, content, host, layoutOutput);
 
     // 5. Notify the component that mounting has completed
-    lifecycle.bind(component.getScopedContext(), content, component);
+    lifecycle.bind(context, content, component);
     item.setIsBound(true);
 
     // 6. Apply the bounds to the Mount content now. It's important to do so after bind as calling
@@ -902,10 +904,10 @@ class MountState {
       LayoutOutput layoutOutput) {
 
     final MountItem item = ComponentsPools.acquireMountItem(
-          component,
-          host,
-          content,
-          layoutOutput);
+        component,
+        host,
+        content,
+        layoutOutput);
 
     // Create and keep a MountItem even for the layoutSpec with null content
     // that sets the root host interactions.
@@ -1882,8 +1884,8 @@ class MountState {
       }
 
       while (mPreviousBottomsIndex > 0 &&
-         localVisibleRect.top <
-             layoutOutputBottoms.get(mPreviousBottomsIndex - 1).getBounds().bottom) {
+          localVisibleRect.top <
+              layoutOutputBottoms.get(mPreviousBottomsIndex - 1).getBounds().bottom) {
         mPreviousBottomsIndex--;
         final LayoutOutput layoutOutput = layoutOutputBottoms.get(mPreviousBottomsIndex);
         final int layoutOutputIndex =
@@ -1902,7 +1904,7 @@ class MountState {
       // View is going on/off the bottom of the screen. Check the tops to see if there is anything
       // that has changed.
       while (mPreviousTopsIndex < count &&
-           localVisibleRect.bottom > layoutOutputTops.get(mPreviousTopsIndex).getBounds().top) {
+          localVisibleRect.bottom > layoutOutputTops.get(mPreviousTopsIndex).getBounds().top) {
         final LayoutOutput layoutOutput = layoutOutputTops.get(mPreviousTopsIndex);
         final int layoutOutputIndex =
             layoutState.getLayoutOutputPositionForId(layoutOutput.getId());
@@ -1916,8 +1918,8 @@ class MountState {
       }
 
       while (mPreviousTopsIndex > 0 &&
-           localVisibleRect.bottom <=
-               layoutOutputTops.get(mPreviousTopsIndex - 1).getBounds().top) {
+          localVisibleRect.bottom <=
+              layoutOutputTops.get(mPreviousTopsIndex - 1).getBounds().top) {
         mPreviousTopsIndex--;
         final long id = layoutOutputTops.get(mPreviousTopsIndex).getId();
         unmountItem(mContext, layoutState.getLayoutOutputPositionForId(id), mHostsByMarker);
@@ -1979,5 +1981,15 @@ class MountState {
 
     final Deque<TestItem> items = mTestItemMap.get(testKey);
     return items == null ? new LinkedList<TestItem>() : items;
+  }
+
+  /**
+   * For HostComponents, we don't set a scoped context during layout calculation because we don't
+   * need one, as we could never call a state update on it. Instead it's okay to use the context
+   * that is passed to MountState from the ComponentView, which is not scoped.
+   */
+  private ComponentContext getContextForComponent(Component component) {
+    final ComponentContext c = component.getScopedContext();
+    return c == null ? mContext : c;
   }
 }
