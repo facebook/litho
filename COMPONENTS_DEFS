@@ -44,7 +44,6 @@ COMPONENTS_STETHO_TARGET                      = make_dep_path('lib/stetho:stetho
 COMPONENTS_COMMONS_CLI_TARGET                 = make_dep_path('lib/commons-cli:commons-cli')
 COMPONENTS_TEXTLAYOUTBUILDER_TARGET           = make_dep_path('lib/textlayoutbuilder:textlayoutbuilder')
 COMPONENTS_JAVAPOET_TARGET                    = make_dep_path('lib/javapoet:javapoet')
-COMPONENTS_FBCORE_TARGET                      = make_dep_path('lib/fbcore:fbcore')
 COMPONENTS_SOLOADER_TARGET                    = make_dep_path('lib/soloader:soloader')
 COMPONENTS_ASSERTJ_TARGET                     = make_dep_path('lib/assertj:assertj')
 COMPONENTS_MOCKITO_TARGET                     = make_dep_path('lib/mockito:mockito')
@@ -75,7 +74,6 @@ COMPONENTS_OSS_TARGET = make_dep_path(":components")
 # Targets that sometimes exist and sometimes don't
 COMPONENTS_TEXTLAYOUTBUILDER_UTILS_TARGET = []
 COMPONENTS_FRESCO_TARGETS = [
-    make_dep_path('lib/fbcore:fbcore'),
     make_dep_path('lib/fresco:fresco-drawee'),
     make_dep_path('lib/fresco:fresco'),
 ]
