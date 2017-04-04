@@ -25,8 +25,7 @@ import android.support.v4.util.SimpleArrayMap;
  *
  * Sub-classes are expected to implement {@link #calculateValue}, which handles calculating
  * the new value for this frame based on the node's parents (i.e. nodes it depends on) and the
- * current frame time, and {@link #initialize}, which handles calculating and returning
- * an initial value for this node.
+ * current frame time.
  */
 public abstract class ValueNode<T> {
 
@@ -50,14 +49,6 @@ public abstract class ValueNode<T> {
    * updated for this frame.
    */
   protected abstract T calculateValue(long frameTimeNanos);
-
-  /**
-   * Called when this node is first added to the graph. inputSpec defines what this node's
-   * outputs expects as its initial input, if anything. If this node has multiple outputs, its
-   * inputSpec will be the most restrictive of these outputs, assuming they don't conflict.
-   * (If they do conflict, the graph is trying to initialize an illegal state and will throw).
-   */
-  protected abstract T initialize();
 
   /**
    * @return the input node for the given input name
@@ -133,10 +124,6 @@ public abstract class ValueNode<T> {
 
     mTimeNs = frameTimeNanos;
     mValue = value;
-  }
-
-  final void doInitialize() {
-    mValue = initialize();
   }
 
   void addOutput(ValueNode node) {

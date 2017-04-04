@@ -18,9 +18,4 @@ public class AdditionNode extends ValueNode<Float> {
   protected Float calculateValue(long frameTimeNanos) {
     return (Float) getInput("a").getValue() + (Float) getInput("b").getValue();
   }
-
-  @Override
-  protected Float initialize() {
-    return 0f;
-  }
 }

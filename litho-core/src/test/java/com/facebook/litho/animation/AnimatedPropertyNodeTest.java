@@ -60,7 +60,7 @@ public class AnimatedPropertyNodeTest {
     View view = new View(RuntimeEnvironment.application);
     AnimatedPropertyNode source = new AnimatedPropertyNode(view, AnimatedProperties.X);
     SimpleNode middle = new SimpleNode();
-    OutputOnlyNode destination = new OutputOnlyNode(0);
+    OutputOnlyNode destination = new OutputOnlyNode();
 
     GraphBinding binding = GraphBinding.create(mDataFlowGraph);
     binding.addBinding(source, middle);
@@ -82,7 +82,7 @@ public class AnimatedPropertyNodeTest {
     View view = new View(RuntimeEnvironment.application);
     SettableNode source = new SettableNode();
     AnimatedPropertyNode viewNode = new AnimatedPropertyNode(view, AnimatedProperties.X);
-    OutputOnlyNode destination = new OutputOnlyNode(0);
+    OutputOnlyNode destination = new OutputOnlyNode();
 
     GraphBinding binding = GraphBinding.create(mDataFlowGraph);
     binding.addBinding(source, viewNode);

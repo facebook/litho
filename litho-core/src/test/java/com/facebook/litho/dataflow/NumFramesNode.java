@@ -27,11 +27,6 @@ public class NumFramesNode extends ValueNode<Float> implements NodeCanFinish {
   }
 
   @Override
-  protected Float initialize() {
-    return 0f;
-  }
-
-  @Override
   public boolean isFinished() {
     return false;
   }

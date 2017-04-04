@@ -33,7 +33,7 @@ public class DataFlowGraphTest {
   public void testSimpleGraph() {
     SettableNode source = new SettableNode();
     SimpleNode middle = new SimpleNode();
-    OutputOnlyNode destination = new OutputOnlyNode(123);
+    OutputOnlyNode destination = new OutputOnlyNode();
 
     GraphBinding binding = GraphBinding.create(mDataFlowGraph);
     binding.addBinding(source, middle);
@@ -56,7 +56,7 @@ public class DataFlowGraphTest {
   public void testSimpleUpdatingGraph() {
     NumFramesNode source = new NumFramesNode();
     SimpleNode middle = new SimpleNode();
-    OutputOnlyNode destination = new OutputOnlyNode(123);
+    OutputOnlyNode destination = new OutputOnlyNode();
 
     GraphBinding binding = GraphBinding.create(mDataFlowGraph);
     binding.addBinding(source, middle);
@@ -83,9 +83,9 @@ public class DataFlowGraphTest {
   public void testGraphWithMultipleOutputs() {
     NumFramesNode source = new NumFramesNode();
     SimpleNode middle = new SimpleNode();
-    OutputOnlyNode dest1 = new OutputOnlyNode(123);
-    OutputOnlyNode dest2 = new OutputOnlyNode(456);
-    OutputOnlyNode dest3 = new OutputOnlyNode(456);
+    OutputOnlyNode dest1 = new OutputOnlyNode();
+    OutputOnlyNode dest2 = new OutputOnlyNode();
+    OutputOnlyNode dest3 = new OutputOnlyNode();
 
     GraphBinding binding = GraphBinding.create(mDataFlowGraph);
     binding.addBinding(source, middle);
@@ -111,7 +111,7 @@ public class DataFlowGraphTest {
   public void testRebindNode() {
     SettableNode source = new SettableNode();
     SimpleNode middle = new SimpleNode();
-    OutputOnlyNode destination = new OutputOnlyNode(123);
+    OutputOnlyNode destination = new OutputOnlyNode();
 
     GraphBinding binding = GraphBinding.create(mDataFlowGraph);
     binding.addBinding(source, middle);

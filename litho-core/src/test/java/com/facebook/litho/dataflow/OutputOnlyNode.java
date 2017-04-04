@@ -14,19 +14,8 @@ package com.facebook.litho.dataflow;
  */
 public class OutputOnlyNode extends ValueNode<Float> {
 
-  private final float mInitialValue;
-
-  public OutputOnlyNode(float initialValue) {
-    mInitialValue = initialValue;
-  }
-
   @Override
   protected Float calculateValue(long frameTimeNanos) {
     return (Float) getInput().getValue();
-  }
-
-  @Override
-  protected Float initialize() {
-    return mInitialValue;
   }
 }

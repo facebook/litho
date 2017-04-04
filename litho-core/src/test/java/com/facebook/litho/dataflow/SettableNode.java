@@ -26,11 +26,6 @@ public class SettableNode extends ValueNode<Float> implements NodeCanFinish {
   }
 
   @Override
-  protected Float initialize() {
-    return mValue;
-  }
-
-  @Override
   public boolean isFinished() {
     return false;
   }

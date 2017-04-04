@@ -18,9 +18,4 @@ public class SimpleNode<T> extends ValueNode<T> {
   public T calculateValue(long frameTimeNanos) {
     return (T) getInput().getValue();
   }
-
-  @Override
-  public T initialize() {
-    return (T) getInput().getValue();
-  }
 }

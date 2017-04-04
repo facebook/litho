@@ -52,7 +52,6 @@ public class DataFlowGraph {
   private final TimingSource mTimingSource;
   private final CopyOnWriteArrayList<GraphBinding> mBindings = new CopyOnWriteArrayList<>();
   private final ArrayList<ValueNode> mSortedNodes = new ArrayList<>();
-  private final WeakHashMap<ValueNode, Void> mIsInitialized = new WeakHashMap<>();
   private final ArraySet<ValueNode> mFinishedNodes = new ArraySet<>();
   private final ArraySet<ValueNode> mNodesWithFinishedInputs = new ArraySet<>();
   private final SimpleArrayMap<GraphBinding, ArraySet<ValueNode>> mBindingToNodes =
@@ -100,7 +99,6 @@ public class DataFlowGraph {
   void doFrame(long frameTimeNanos) {
     if (mIsDirty) {
       regenerateSortedNodes();
-      initializeUninitializedNodes();
     }
 
     propagate(frameTimeNanos);
@@ -167,16 +165,6 @@ public class DataFlowGraph {
 
     Collections.reverse(mSortedNodes);
     mIsDirty = false;
-  }
-
-  private void initializeUninitializedNodes() {
-    for (int i = 0; i < mSortedNodes.size(); i++) {
-      final ValueNode node = mSortedNodes.get(i);
-      if (!mIsInitialized.containsKey(node)) {
-        node.doInitialize();
-        mIsInitialized.put(node, null);
-      }
-    }
   }
 
   private void updateFinishedStates() {

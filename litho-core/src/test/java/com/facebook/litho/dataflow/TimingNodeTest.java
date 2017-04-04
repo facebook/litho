@@ -31,7 +31,7 @@ public class TimingNodeTest {
 
     TimingNode timingNode = new TimingNode(durationMs);
     SimpleNode middle = new SimpleNode();
-    OutputOnlyNode destination = new OutputOnlyNode(0);
+    OutputOnlyNode destination = new OutputOnlyNode();
 
     GraphBinding binding = GraphBinding.create(mDataFlowGraph);
     binding.addBinding(timingNode, middle);
@@ -62,7 +62,7 @@ public class TimingNodeTest {
     SettableNode end = new SettableNode();
     TimingNode timingNode = new TimingNode(durationMs);
     SimpleNode middle = new SimpleNode();
-    OutputOnlyNode destination = new OutputOnlyNode(0);
+    OutputOnlyNode destination = new OutputOnlyNode();
     end.setValue(100);
 
     GraphBinding binding = GraphBinding.create(mDataFlowGraph);

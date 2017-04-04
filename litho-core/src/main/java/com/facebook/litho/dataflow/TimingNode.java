@@ -34,6 +34,7 @@ public class TimingNode extends ValueNode<Float> implements NodeCanFinish {
   @Override
   public Float calculateValue(long frameTimeNanos) {
     if (mLastValueTimeNs == Long.MIN_VALUE) {
+      mInitialValue = (Float) getInput(INITIAL_INPUT).getValue();
       mStartTimeNs = frameTimeNanos;
       mLastValueTimeNs = frameTimeNanos;
       mExpectedEndTimeNs = mStartTimeNs + (mDurationMs * MS_IN_NANOS);
@@ -53,12 +54,6 @@ public class TimingNode extends ValueNode<Float> implements NodeCanFinish {
     mLastValueTimeNs = frameTimeNanos;
 
     return lastValue + increment;
-  }
-
-  @Override
-  public Float initialize() {
-    mInitialValue = (Float) getInput(INITIAL_INPUT).getValue();
-    return mInitialValue;
   }
 
   @Override

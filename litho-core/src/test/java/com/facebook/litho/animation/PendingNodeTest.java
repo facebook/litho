@@ -49,7 +49,7 @@ public class PendingNodeTest {
   @Test
   public void testSimpleGraph() {
     SimpleNode middle = new SimpleNode();
-    OutputOnlyNode destination = new OutputOnlyNode(123);
+    OutputOnlyNode destination = new OutputOnlyNode();
 
     GraphBinding graphBinding = GraphBinding.create(mDataFlowGraph);
     SimpleAnimationBinding animationBinding = new SimpleAnimationBinding(graphBinding);

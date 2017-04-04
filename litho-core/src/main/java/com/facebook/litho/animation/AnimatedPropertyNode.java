@@ -43,14 +43,4 @@ public class AnimatedPropertyNode extends ValueNode<Float> {
 
     return value;
   }
-
-  @Override
-  public Float initialize() {
-    final Object mountItem = mMountItem.get();
-    if (mountItem == null) {
-      // As above, this should probably be handled gracefully in the future
-      throw new RuntimeException("Mount item went away before we wanted to start animating it!");
-    }
-    return mAnimatedProperty.get(mountItem);
-  }
 }

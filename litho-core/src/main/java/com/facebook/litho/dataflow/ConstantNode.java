@@ -24,9 +24,4 @@ public class ConstantNode<T> extends ValueNode<T> {
   public T calculateValue(long frameTimeNanos) {
     return mValue;
   }
-
-  @Override
-  public T initialize() {
-    return mValue;
-  }
 }

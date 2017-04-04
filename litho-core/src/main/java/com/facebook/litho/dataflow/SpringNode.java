@@ -30,26 +30,26 @@ public class SpringNode extends ValueNode<Float> implements NodeCanFinish {
 
   @Override
   public Float calculateValue(long frameTimeNanos) {
+    if (mLastFrameTimeNs == Long.MIN_VALUE) {
+      mLastFrameTimeNs = frameTimeNanos;
+      float initialValue = (Float) getInput("initial").getValue();
+      final float endValue = (Float) getInput("end").getValue();
+      mSpring.setCurrentValue(initialValue);
+      mSpring.setEndValue(endValue);
+      return initialValue;
+    }
+
     final float endValue = (Float) getInput("end").getValue();
     mSpring.setEndValue(endValue);
     if (isFinished()) {
       return endValue;
     }
 
-    if (mLastFrameTimeNs != Long.MIN_VALUE) {
-      double timeDeltaSec = (frameTimeNanos - mLastFrameTimeNs) / NS_PER_SECOND;
-      mSpring.advance(timeDeltaSec);
-    }
+    double timeDeltaSec = (frameTimeNanos - mLastFrameTimeNs) / NS_PER_SECOND;
+    mSpring.advance(timeDeltaSec);
     mLastFrameTimeNs = frameTimeNanos;
 
     return (float) mSpring.getCurrentValue();
-  }
-
-  @Override
-  public Float initialize() {
-    float initialValue = (Float) getInput("initial").getValue();
-    mSpring.setCurrentValue(initialValue);
-    return initialValue;
   }
 
   @Override
