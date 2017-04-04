@@ -13,7 +13,7 @@ import javax.lang.model.element.Modifier;
 
 import java.util.List;
 
-import com.facebook.common.internal.ImmutableList;
+import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
 import com.facebook.litho.specmodels.generator.BuilderGenerator;
 import com.facebook.litho.specmodels.generator.ComponentImplGenerator;

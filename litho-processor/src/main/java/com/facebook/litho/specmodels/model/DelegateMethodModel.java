@@ -14,7 +14,7 @@ import javax.lang.model.element.Modifier;
 
 import java.lang.annotation.Annotation;
 
-import com.facebook.common.internal.ImmutableList;
+import com.facebook.litho.specmodels.internal.ImmutableList;
 
 import com.squareup.javapoet.TypeName;
 

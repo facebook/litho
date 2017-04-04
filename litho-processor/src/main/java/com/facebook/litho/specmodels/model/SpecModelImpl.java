@@ -17,7 +17,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.facebook.common.internal.ImmutableList;
+import com.facebook.litho.specmodels.internal.ImmutableList;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;

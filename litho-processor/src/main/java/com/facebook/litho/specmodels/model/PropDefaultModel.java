@@ -12,7 +12,7 @@ package com.facebook.litho.specmodels.model;
 import javax.annotation.concurrent.Immutable;
 import javax.lang.model.element.Modifier;
 
-import com.facebook.common.internal.ImmutableList;
+import com.facebook.litho.specmodels.internal.ImmutableList;
 
 import com.squareup.javapoet.TypeName;
 

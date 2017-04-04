@@ -17,12 +17,12 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.TreeMap;
 
-import com.facebook.common.internal.ImmutableList;
 import com.facebook.litho.annotations.FromBind;
 import com.facebook.litho.annotations.FromBoundsDefined;
 import com.facebook.litho.annotations.FromMeasure;
 import com.facebook.litho.annotations.FromMeasureBaseline;
 import com.facebook.litho.annotations.FromPrepare;
+import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.annotations.GetExtraAccessibilityNodeAt;
 import com.facebook.litho.annotations.GetExtraAccessibilityNodesCount;
 import com.facebook.litho.annotations.OnBind;

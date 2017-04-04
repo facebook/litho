@@ -23,7 +23,6 @@ java_library(
         "PUBLIC",
     ],
     deps = [
-        COMPONENTS_FBCORE_TARGET,
         COMPONENTS_JSR_TARGET,
     ],
 )

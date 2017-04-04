@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import com.facebook.common.internal.ImmutableList;
+import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.PropJavadocModel;
 
 /**

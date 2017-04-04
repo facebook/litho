@@ -17,7 +17,7 @@ import javax.lang.model.element.VariableElement;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.facebook.common.internal.ImmutableList;
+import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.specmodels.model.PropDefaultModel;
 

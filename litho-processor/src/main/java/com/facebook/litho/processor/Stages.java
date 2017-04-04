@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.facebook.common.internal.ImmutableList;
+import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.annotations.Event;
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.OnCreateInitialState;

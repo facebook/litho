@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.facebook.common.internal.ImmutableList;
 import com.facebook.litho.annotations.OnBind;
+import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
 import com.facebook.litho.annotations.OnCreateMountContent;

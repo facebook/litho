@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import com.facebook.common.internal.ImmutableList;
+import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.annotations.Event;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
