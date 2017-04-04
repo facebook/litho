@@ -13,7 +13,7 @@ dependencies:
     - cd /home/ubuntu/buck && ant
     - buck --version
     - source scripts/circle-ci-android-setup.sh && getAndroidSDK
-    - buck fetch src/...
+    - buck fetch litho-core/src/...
     - buck fetch sample/...
 
   cached_directories:
@@ -24,7 +24,7 @@ test:
     # Build the sample first
     - buck build sample
     # Run the tests
-    - buck test src/test/... --config build.threads=1
+    - buck test litho-core/src/test/... --config build.threads=1
 
 experimental:
   notify:
