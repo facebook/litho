@@ -24,6 +24,7 @@ import com.facebook.litho.Diff;
  * A ReferenceLifecycle should take care of both acquiring a resource given its {@link Reference}
  * and releasing/caching it for future use.
  */
+@Deprecated
 public abstract class ReferenceLifecycle<T> {
 
   private static final Pools.SynchronizedPool<Diff<?>> sDiffPool =

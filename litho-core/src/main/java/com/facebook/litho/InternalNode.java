@@ -35,6 +35,7 @@ import android.util.SparseArray;
 import com.facebook.litho.R;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.reference.ColorDrawableReference;
+import com.facebook.litho.reference.DrawableReference;
 import com.facebook.litho.reference.Reference;
 import com.facebook.litho.reference.ResourceDrawableReference;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -1058,6 +1059,11 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public InternalNode background(Drawable background) {
+    return background(DrawableReference.create().drawable(background));
+  }
+
+  @Override
   public InternalNode backgroundAttr(@AttrRes int resId, @DrawableRes int defaultResId) {
     return backgroundRes(mResourceResolver.resolveResIdAttr(resId, defaultResId));
   }
@@ -1097,6 +1103,11 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Override
   public InternalNode foreground(Reference.Builder<? extends Drawable> builder) {
     return foreground(builder.build());
+  }
+
+  @Override
+  public InternalNode foreground(Drawable foreground) {
+    return background(DrawableReference.create().drawable(foreground));
   }
 
   @Override

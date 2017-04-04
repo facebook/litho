@@ -19,7 +19,10 @@ import com.facebook.litho.ResourceResolver;
  * to acquire the underlying resource and
  * {@link Reference#release(ComponentContext, Object, Reference)} to release it when
  * it's not needed anymore.
+ *
+ * @deprecated Just use the object directly instead.
  */
+@Deprecated
 public abstract class Reference<L> {
 
   public static abstract class Builder<L> extends ResourceResolver {

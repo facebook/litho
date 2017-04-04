@@ -177,15 +177,33 @@ public interface ComponentLayout {
     Builder touchExpansionRes(YogaEdge edge, @DimenRes int resId);
     Builder touchExpansionDip(YogaEdge edge, @Dimension(unit = DP) int value);
 
+    /**
+     * @deprecated just use {@link #background(Drawable)} instead.
+     */
+    @Deprecated
     Builder background(Reference<? extends Drawable> background);
+    /**
+     * @deprecated just use {@link #background(Drawable)} instead.
+     */
+    @Deprecated
     Builder background(Reference.Builder<? extends Drawable> backgroundBuilder);
+    Builder background(Drawable drawable);
     Builder backgroundAttr(@AttrRes int resId, @DrawableRes int defaultResId);
     Builder backgroundAttr(@AttrRes int resId);
     Builder backgroundRes(@DrawableRes int resId);
     Builder backgroundColor(@ColorInt int backgroundColor);
 
+    /**
+     * @deprecated just use {@link #foreground(Drawable)} instead.
+     */
+    @Deprecated
     Builder foreground(Reference<? extends Drawable> foreground);
+    /**
+     * @deprecated just use {@link #foreground(Drawable)} instead.
+     */
+    @Deprecated
     Builder foreground(Reference.Builder<? extends Drawable> foregroundBuilder);
+    Builder foreground(Drawable drawable);
     Builder foregroundAttr(@AttrRes int resId, @DrawableRes int defaultResId);
     Builder foregroundAttr(@AttrRes int resId);
     Builder foregroundRes(@DrawableRes int resId);
@@ -350,15 +368,33 @@ public interface ComponentLayout {
     ContainerBuilder child(Component<?> component);
     ContainerBuilder child(Component.Builder<?> componentBuilder);
 
+    /**
+     * @deprecated just use {@link #background(Drawable)} instead.
+     */
+    @Deprecated
     ContainerBuilder background(Reference<? extends Drawable> background);
+    /**
+     * @deprecated just use {@link #background(Drawable)} instead.
+     */
+    @Deprecated
     ContainerBuilder background(Reference.Builder<? extends Drawable> backgroundBuilder);
+    ContainerBuilder background(Drawable drawable);
     ContainerBuilder backgroundAttr(@AttrRes int resId, @DrawableRes int defaultResId);
     ContainerBuilder backgroundAttr(@AttrRes int resId);
     ContainerBuilder backgroundRes(@DrawableRes int resId);
     ContainerBuilder backgroundColor(@ColorInt int backgroundColor);
 
+    /**
+     * @deprecated just use {@link #foreground(Drawable)} instead.
+     */
+    @Deprecated
     ContainerBuilder foreground(Reference<? extends Drawable> foreground);
+    /**
+     * @deprecated just use {@link #foreground(Drawable)} instead.
+     */
+    @Deprecated
     ContainerBuilder foreground(Reference.Builder<? extends Drawable> foregroundBuilder);
+    ContainerBuilder foreground(Drawable drawable);
     ContainerBuilder foregroundAttr(@AttrRes int resId, @DrawableRes int defaultResId);
     ContainerBuilder foregroundAttr(@AttrRes int resId);
     ContainerBuilder foregroundRes(@DrawableRes int resId);

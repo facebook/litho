@@ -561,6 +561,11 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
+  public InternalNode background(Drawable background) {
+    return this;
+  }
+
+  @Override
   public InternalNode backgroundAttr(@AttrRes int resId, @DrawableRes int defaultResId) {
     return this;
   }
@@ -582,6 +587,11 @@ class NoOpInternalNode extends InternalNode {
 
   @Override
   public InternalNode foreground(Reference.Builder<? extends Drawable> builder) {
+    return this;
+  }
+
+  @Override
+  public InternalNode foreground(Drawable foreground) {
     return this;
   }
 
