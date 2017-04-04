@@ -50,6 +50,7 @@ public final class DelegateMethodDescription {
   public final String name;
   public final ImmutableList<TypeName> definedParameterTypes;
   public final ImmutableList<OptionalParameterType> optionalParameterTypes;
+  public final ImmutableList<Class<? extends Annotation>> interStageInputAnnotations;
   public final ImmutableList<MethodSpec> extraMethods;
   public final ImmutableList<TypeName> exceptions;
 
@@ -60,6 +61,7 @@ public final class DelegateMethodDescription {
     name = builder.name;
     definedParameterTypes = builder.definedParameterTypes;
     optionalParameterTypes = builder.optionalParameterTypes;
+    interStageInputAnnotations = builder.interStageInputAnnotations;
     extraMethods = builder.extraMethods;
     exceptions = builder.exceptions;
   }
@@ -75,6 +77,7 @@ public final class DelegateMethodDescription {
     private String name;
     private ImmutableList<TypeName> definedParameterTypes;
     private ImmutableList<OptionalParameterType> optionalParameterTypes;
+    private ImmutableList<Class<? extends Annotation>> interStageInputAnnotations;
     private ImmutableList<MethodSpec> extraMethods;
     private ImmutableList<TypeName> exceptions;
 
@@ -109,6 +112,12 @@ public final class DelegateMethodDescription {
     public Builder optionalParameterTypes(
         ImmutableList<OptionalParameterType> optionalParameterTypes) {
       this.optionalParameterTypes = optionalParameterTypes;
+      return this;
+    }
+
+    public Builder interStageInputAnnotations(
+        ImmutableList<Class<? extends Annotation>> interStageInputAnnotations) {
+      this.interStageInputAnnotations = interStageInputAnnotations;
       return this;
     }
 
@@ -157,6 +166,10 @@ public final class DelegateMethodDescription {
 
       if (definedParameterTypes == null) {
         definedParameterTypes = ImmutableList.of();
+      }
+
+      if (interStageInputAnnotations == null) {
+        interStageInputAnnotations = ImmutableList.of();
       }
 
       if (extraMethods == null) {

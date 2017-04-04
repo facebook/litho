@@ -42,6 +42,7 @@ public class SpecModelValidation {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
     validationErrors.addAll(validateSpecModel(specModel));
     validationErrors.addAll(PureRenderValidation.validate(specModel));
+    validationErrors.addAll(DelegateMethodValidation.validateMountSpecModel(specModel));
     validationErrors.addAll(validateGetMountType(specModel));
     validationErrors.addAll(validateShouldUseDisplayLists(specModel));
     return validationErrors;

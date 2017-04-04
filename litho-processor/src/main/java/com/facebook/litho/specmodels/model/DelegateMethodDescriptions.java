@@ -18,6 +18,11 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import com.facebook.common.internal.ImmutableList;
+import com.facebook.litho.annotations.FromBind;
+import com.facebook.litho.annotations.FromBoundsDefined;
+import com.facebook.litho.annotations.FromMeasure;
+import com.facebook.litho.annotations.FromMeasureBaseline;
+import com.facebook.litho.annotations.FromPrepare;
 import com.facebook.litho.annotations.GetExtraAccessibilityNodeAt;
 import com.facebook.litho.annotations.GetExtraAccessibilityNodesCount;
 import com.facebook.litho.annotations.OnBind;
@@ -137,6 +142,8 @@ public final class DelegateMethodDescriptions {
               TypeName.INT,
               ClassNames.SIZE))
           .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE, INTER_STAGE_OUTPUT))
+          .interStageInputAnnotations(
+              ImmutableList.<Class<? extends Annotation>>of(FromPrepare.class))
           .extraMethods(
               ImmutableList.of(MethodSpec.methodBuilder("canMeasure")
                   .addAnnotation(Override.class)
@@ -157,6 +164,8 @@ public final class DelegateMethodDescriptions {
               TypeName.INT,
               TypeName.INT))
           .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE, INTER_STAGE_OUTPUT))
+          .interStageInputAnnotations(
+              ImmutableList.<Class<? extends Annotation>>of(FromPrepare.class))
           .build();
 
   public static final DelegateMethodDescription ON_BOUNDS_DEFINED =
@@ -169,6 +178,8 @@ public final class DelegateMethodDescriptions {
               ClassNames.COMPONENT_CONTEXT,
               ClassNames.COMPONENT_LAYOUT))
           .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE, INTER_STAGE_OUTPUT))
+          .interStageInputAnnotations(
+              ImmutableList.of(FromPrepare.class, FromMeasure.class, FromMeasureBaseline.class))
           .build();
 
   public static final DelegateMethodDescription ON_CREATE_MOUNT_CONTENT =
@@ -192,6 +203,11 @@ public final class DelegateMethodDescriptions {
               ClassNames.COMPONENT_CONTEXT,
               ClassNames.OBJECT))
           .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE, INTER_STAGE_OUTPUT))
+          .interStageInputAnnotations(ImmutableList.of(
+              FromPrepare.class,
+              FromMeasure.class,
+              FromMeasureBaseline.class,
+              FromBoundsDefined.class))
           .build();
 
   public static final DelegateMethodDescription ON_BIND =
@@ -203,7 +219,12 @@ public final class DelegateMethodDescriptions {
           .definedParameterTypes(ImmutableList.<TypeName>of(
               ClassNames.COMPONENT_CONTEXT,
               ClassNames.OBJECT))
-          .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE))
+          .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE, INTER_STAGE_OUTPUT))
+          .interStageInputAnnotations(ImmutableList.of(
+              FromPrepare.class,
+              FromMeasure.class,
+              FromMeasureBaseline.class,
+              FromBoundsDefined.class))
           .build();
 
   public static final DelegateMethodDescription ON_UNBIND =
@@ -216,6 +237,12 @@ public final class DelegateMethodDescriptions {
               ClassNames.COMPONENT_CONTEXT,
               ClassNames.OBJECT))
           .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE))
+          .interStageInputAnnotations(ImmutableList.of(
+              FromPrepare.class,
+              FromMeasure.class,
+              FromMeasureBaseline.class,
+              FromBoundsDefined.class,
+              FromBind.class))
           .build();
 
   public static final DelegateMethodDescription ON_UNMOUNT =
@@ -228,6 +255,11 @@ public final class DelegateMethodDescriptions {
               ClassNames.COMPONENT_CONTEXT,
               ClassNames.OBJECT))
           .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE))
+          .interStageInputAnnotations(ImmutableList.of(
+              FromPrepare.class,
+              FromMeasure.class,
+              FromMeasureBaseline.class,
+              FromBoundsDefined.class))
           .build();
 
   public static final DelegateMethodDescription ON_POPULATE_ACCESSIBILITY_NODE =
@@ -238,6 +270,12 @@ public final class DelegateMethodDescriptions {
           .name("onPopulateAccessibilityNode")
           .definedParameterTypes(ImmutableList.<TypeName>of(ClassNames.ACCESSIBILITY_NODE))
           .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE))
+          .interStageInputAnnotations(ImmutableList.of(
+              FromPrepare.class,
+              FromMeasure.class,
+              FromMeasureBaseline.class,
+              FromBoundsDefined.class,
+              FromBind.class))
           .extraMethods(
               ImmutableList.of(
                   MethodSpec.methodBuilder("implementsAccessibility")
@@ -260,6 +298,12 @@ public final class DelegateMethodDescriptions {
               TypeName.INT,
               TypeName.INT))
           .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE))
+          .interStageInputAnnotations(ImmutableList.of(
+              FromPrepare.class,
+              FromMeasure.class,
+              FromMeasureBaseline.class,
+              FromBoundsDefined.class,
+              FromBind.class))
           .extraMethods(
               ImmutableList.of(
                   MethodSpec.methodBuilder("implementsExtraAccessibilityNodes")
@@ -278,6 +322,12 @@ public final class DelegateMethodDescriptions {
           .name("getExtraAccessibilityNodeAt")
           .definedParameterTypes(ImmutableList.of(TypeName.INT, TypeName.INT))
           .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE))
+          .interStageInputAnnotations(ImmutableList.of(
+              FromPrepare.class,
+              FromMeasure.class,
+              FromMeasureBaseline.class,
+              FromBoundsDefined.class,
+              FromBind.class))
           .build();
 
   public static final DelegateMethodDescription GET_EXTRA_ACCESSIBILITY_NODES_COUNT =
@@ -288,6 +338,12 @@ public final class DelegateMethodDescriptions {
           .name("getExtraAccessibilityNodesCount")
           .definedParameterTypes(ImmutableList.<TypeName>of())
           .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE))
+          .interStageInputAnnotations(ImmutableList.of(
+              FromPrepare.class,
+              FromMeasure.class,
+              FromMeasureBaseline.class,
+              FromBoundsDefined.class,
+              FromBind.class))
           .build();
 
   public static final Map<Class<? extends Annotation>, DelegateMethodDescription>
@@ -295,6 +351,9 @@ public final class DelegateMethodDescriptions {
           
   public static final Map<Class<? extends Annotation>, DelegateMethodDescription>
       MOUNT_SPEC_DELEGATE_METHODS_MAP;
+
+  public static final Map<Class<? extends Annotation>, Class<? extends Annotation>>
+      INTER_STAGE_INPUTS_MAP;
 
   static {
     Map<Class<? extends Annotation>, DelegateMethodDescription> layoutSpecDelegateMethodsMap = 
@@ -341,5 +400,20 @@ public final class DelegateMethodDescriptions {
     mountSpecDelegateMethodsMap.put(
         GetExtraAccessibilityNodesCount.class, GET_EXTRA_ACCESSIBILITY_NODES_COUNT);
     MOUNT_SPEC_DELEGATE_METHODS_MAP = Collections.unmodifiableMap(mountSpecDelegateMethodsMap);
+
+    Map<Class<? extends Annotation>, Class<? extends Annotation>> interStageInputsMap =
+        new TreeMap<>(new Comparator<Class<? extends Annotation>>() {
+          @Override
+          public int compare(
+              Class<? extends Annotation> lhs, Class<? extends Annotation> rhs) {
+            return lhs.toString().compareTo(rhs.toString());
+          }
+        });
+    interStageInputsMap.put(FromPrepare.class, OnPrepare.class);
+    interStageInputsMap.put(FromMeasure.class, OnMeasure.class);
+    interStageInputsMap.put(FromMeasureBaseline.class, OnMeasureBaseline.class);
+    interStageInputsMap.put(FromBoundsDefined.class, OnBoundsDefined.class);
+    interStageInputsMap.put(FromBind.class, OnBind.class);
+    INTER_STAGE_INPUTS_MAP = Collections.unmodifiableMap(interStageInputsMap);
   }
 }

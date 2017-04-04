@@ -9,6 +9,7 @@
 
 package com.facebook.litho.specmodels.model;
 
+import javax.annotation.Nullable;
 import javax.lang.model.element.Modifier;
 
 import java.lang.annotation.Annotation;
@@ -17,8 +18,13 @@ import java.util.List;
 import java.util.Map;
 
 import com.facebook.common.internal.ImmutableList;
+import com.facebook.litho.annotations.OnBind;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
+import com.facebook.litho.annotations.OnCreateMountContent;
+import com.facebook.litho.annotations.OnMount;
+import com.facebook.litho.annotations.OnUnbind;
+import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
@@ -59,6 +65,41 @@ public class DelegateMethodValidation {
               "Your LayoutSpec should have a method annotated with either @OnCreateLayout " +
                   "or @OnCreateLayoutWithSizeSpec, but not both. In most cases, @OnCreateLayout " +
                   "is what you want."));
+    }
+
+    return validationErrors;
+  }
+
+  static List<SpecModelValidationError> validateMountSpecModel(MountSpecModel specModel) {
+    List<SpecModelValidationError> validationErrors = new ArrayList<>();
+    validationErrors.addAll(
+        validateMethods(specModel, DelegateMethodDescriptions.MOUNT_SPEC_DELEGATE_METHODS_MAP));
+
+    final DelegateMethodModel onCreateMountContentModel =
+        SpecModelUtils.getMethodModelWithAnnotation(specModel, OnCreateMountContent.class);
+    if (onCreateMountContentModel == null) {
+      validationErrors.add(
+          new SpecModelValidationError(
+              specModel.getRepresentedObject(),
+              "All MountSpecs need to have a method annotated with @OnCreateMountContent."));
+    } else {
+      final TypeName mountType = onCreateMountContentModel.returnType;
+      ImmutableList<Class<? extends Annotation>> methodsAcceptingMountTypeAsSecondParam =
+          ImmutableList.of(OnMount.class, OnBind.class, OnUnbind.class, OnUnmount.class);
+      for (Class<? extends Annotation> annotation : methodsAcceptingMountTypeAsSecondParam) {
+        final DelegateMethodModel method =
+            SpecModelUtils.getMethodModelWithAnnotation(specModel, annotation);
+        if (method != null &&
+            (method.methodParams.size() < 2 ||
+                !method.methodParams.get(1).getType().equals(mountType))) {
+          validationErrors.add(
+              new SpecModelValidationError(
+                  method.representedObject,
+                  "The second parameter of a method annotated with " + annotation + " must " +
+                      "have the same type as the return type of the method annotated with " +
+                      "@OnCreateMountContent (i.e. " + mountType + ")."));
+        }
+      }
     }
 
     return validationErrors;
@@ -112,7 +153,8 @@ public class DelegateMethodValidation {
         final MethodParamModel delegateMethodParam = delegateMethod.methodParams.get(i);
 
         if (i < definedParameterTypes.size()) {
-          if (!delegateMethodParam.getType().equals(definedParameterTypes.get(i))) {
+          if (!definedParameterTypes.get(i).equals(ClassNames.OBJECT) &&
+              !delegateMethodParam.getType().equals(definedParameterTypes.get(i))) {
             validationErrors.add(
                 new SpecModelValidationError(
                     delegateMethodParam.getRepresentedObject(),
@@ -121,7 +163,51 @@ public class DelegateMethodValidation {
                         definedParameterTypes.get(i) + "."));
           }
         } else {
-          if (!isOptionalParamValid(
+          if (delegateMethodParam instanceof InterStageInputParamModel) {
+            final Annotation annotation =
+                getInterStageInputAnnotation(
+                    delegateMethodParam,
+                    delegateMethodDescription.interStageInputAnnotations);
+
+            if (annotation == null) {
+              validationErrors.add(
+                  new SpecModelValidationError(
+                      delegateMethodParam.getRepresentedObject(),
+                      "Inter-stage input annotation is not valid for this method, please use one " +
+                          "of the following: " +
+                          delegateMethodDescription.interStageInputAnnotations));
+            } else {
+              final Class<? extends Annotation> interStageOutputMethodAnnotation =
+                  DelegateMethodDescriptions.INTER_STAGE_INPUTS_MAP.get(
+                      annotation.annotationType());
+
+              final DelegateMethodModel interStageOutputMethod =
+                  SpecModelUtils.getMethodModelWithAnnotation(
+                      specModel,
+                      interStageOutputMethodAnnotation);
+
+              if (interStageOutputMethod == null) {
+                validationErrors.add(
+                    new SpecModelValidationError(
+                        delegateMethodParam.getRepresentedObject(),
+                        "To use " + annotation.annotationType() + " on param " +
+                            delegateMethodParam.getName() + " you must have a method annotated " +
+                            "with " + interStageOutputMethodAnnotation + " that has a param " +
+                            "Output<" + delegateMethodParam.getType().box() + "> " +
+                            delegateMethodParam.getName()));
+              } else if (
+                  !hasMatchingInterStageOutput(interStageOutputMethod, delegateMethodParam)) {
+                validationErrors.add(
+                    new SpecModelValidationError(
+                        delegateMethodParam.getRepresentedObject(),
+                        "To use " + annotation.annotationType() + " on param " +
+                            delegateMethodParam.getName() + " your method annotated " +
+                            "with " + interStageOutputMethodAnnotation + " must have a param " +
+                            "Output<" + delegateMethodParam.getType().box() + "> " +
+                            delegateMethodParam.getName()));
+              }
+            }
+          } else if (!isOptionalParamValid(
               specModel,
               delegateMethodDescription.optionalParameterTypes,
               delegateMethodParam)) {
@@ -137,6 +223,35 @@ public class DelegateMethodValidation {
     }
 
     return validationErrors;
+  }
+
+  @Nullable
+  private static Annotation getInterStageInputAnnotation(
+      MethodParamModel methodParamModel,
+      ImmutableList<Class<? extends Annotation>> validAnnotations) {
+    for (Annotation annotation : methodParamModel.getAnnotations()) {
+      if (validAnnotations.contains(annotation.annotationType())) {
+        return annotation;
+      }
+    }
+
+    return null;
+  }
+
+  private static boolean hasMatchingInterStageOutput(
+      DelegateMethodModel method, MethodParamModel interStageInput) {
+    for (MethodParamModel methodParam : method.methodParams) {
+      if (methodParam.getName().equals(interStageInput.getName()) &&
+          methodParam.getType() instanceof ParameterizedTypeName &&
+          ((ParameterizedTypeName) methodParam.getType()).rawType.equals(ClassNames.OUTPUT) &&
+          ((ParameterizedTypeName) methodParam.getType()).typeArguments.size() == 1 &&
+          ((ParameterizedTypeName) methodParam.getType()).typeArguments.get(0).equals(
+              interStageInput.getType().box())) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   private static boolean isOptionalParamValid(
