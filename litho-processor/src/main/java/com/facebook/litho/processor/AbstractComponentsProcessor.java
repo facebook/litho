@@ -17,7 +17,6 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,7 +28,6 @@ import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
-import com.facebook.litho.specmodels.model.MountSpecModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelValidationError;
 import com.facebook.litho.specmodels.processor.LayoutSpecModelFactory;
@@ -48,7 +46,6 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
 
     for (Element element : roundEnv.getRootElements()) {
       try {
-        Closeable closeable = null;
         SpecModel specModel = null;
         final TypeElement typeElement = (TypeElement) element;
         if (element.getAnnotation(LayoutSpec.class) != null) {
@@ -57,26 +54,16 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
               typeElement,
               getDependencyInjectionGenerator(typeElement));
         } else if (element.getAnnotation(MountSpec.class) != null) {
-          final MountSpecModel mountSpecModel =
+           specModel =
               MountSpecModelFactory.create(
                   processingEnv.getElementUtils(),
                   (TypeElement) element,
                   getDependencyInjectionGenerator((TypeElement) element));
-          validate(mountSpecModel);
-
-          final MountSpecHelper mountSpecHelper =
-              new MountSpecHelper(processingEnv, (TypeElement) element, mountSpecModel);
-          closeable = mountSpecHelper;
-          generate(mountSpecHelper);
         }
 
         if (specModel != null) {
           validate(specModel);
           generate(specModel);
-        }
-
-        if (closeable != null) {
-          closeable.close();
         }
       } catch (PrintableException e) {
         e.print(processingEnv.getMessager());
@@ -99,8 +86,6 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
         ClassNames.LAYOUT_SPEC.toString(),
         ClassNames.MOUNT_SPEC.toString()));
   }
-
-  abstract protected void generate(MountSpecHelper mountSpecHelper);
 
   abstract protected DependencyInjectionHelper getDependencyInjectionGenerator(
       TypeElement typeElement);

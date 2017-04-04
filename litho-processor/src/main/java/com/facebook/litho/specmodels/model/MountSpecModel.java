@@ -9,9 +9,22 @@
 
 package com.facebook.litho.specmodels.model;
 
+import javax.lang.model.element.Modifier;
+
 import java.util.List;
 
 import com.facebook.common.internal.ImmutableList;
+import com.facebook.litho.specmodels.generator.BuilderGenerator;
+import com.facebook.litho.specmodels.generator.ComponentImplGenerator;
+import com.facebook.litho.specmodels.generator.DelegateMethodGenerator;
+import com.facebook.litho.specmodels.generator.EventGenerator;
+import com.facebook.litho.specmodels.generator.JavadocGenerator;
+import com.facebook.litho.specmodels.generator.MountSpecGenerator;
+import com.facebook.litho.specmodels.generator.PreambleGenerator;
+import com.facebook.litho.specmodels.generator.PureRenderGenerator;
+import com.facebook.litho.specmodels.generator.StateGenerator;
+import com.facebook.litho.specmodels.generator.TreePropGenerator;
+import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
@@ -201,7 +214,41 @@ public class MountSpecModel implements SpecModel, HasPureRender {
 
   @Override
   public TypeSpec generate() {
-    return null;
+    final TypeSpec.Builder typeSpec =
+        TypeSpec.classBuilder(getComponentName())
+            .superclass(ClassNames.COMPONENT_LIFECYCLE)
+            .addTypeVariables(getTypeVariables());
+
+    if (isPublic()) {
+      typeSpec.addModifiers(Modifier.PUBLIC);
+    }
+
+    if (hasInjectedDependencies()) {
+      getDependencyInjectionHelper().generate(this).addToTypeSpec(typeSpec);
+    } else {
+      typeSpec.addModifiers(Modifier.FINAL);
+    }
+
+    TypeSpecDataHolder.newBuilder()
+        .addTypeSpecDataHolder(JavadocGenerator.generate(this))
+        .addTypeSpecDataHolder(PreambleGenerator.generate(this))
+        .addTypeSpecDataHolder(ComponentImplGenerator.generate(this))
+        .addTypeSpecDataHolder(TreePropGenerator.generate(this))
+        .addTypeSpecDataHolder(DelegateMethodGenerator.generateDelegates(
+            this,
+            DelegateMethodDescriptions.MOUNT_SPEC_DELEGATE_METHODS_MAP))
+        .addTypeSpecDataHolder(MountSpecGenerator.generateGetMountType(this))
+        .addTypeSpecDataHolder(MountSpecGenerator.generatePoolSize(this))
+        .addTypeSpecDataHolder(MountSpecGenerator.generateCanMountIncrementally(this))
+        .addTypeSpecDataHolder(MountSpecGenerator.generateShouldUseDisplayList(this))
+        .addTypeSpecDataHolder(PureRenderGenerator.generate(this))
+        .addTypeSpecDataHolder(EventGenerator.generate(this))
+        .addTypeSpecDataHolder(StateGenerator.generate(this))
+        .addTypeSpecDataHolder(BuilderGenerator.generate(this))
+        .build()
+        .addToTypeSpec(typeSpec);
+
+    return typeSpec.build();
   }
 
   @Override
