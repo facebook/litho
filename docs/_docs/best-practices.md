@@ -21,7 +21,7 @@ permalink: /docs/best-practices
 
 Here is some sample code with our styling guidelines:
 
-``` java
+```java
 @LayoutSpec
 class MyComponentSpec {
 

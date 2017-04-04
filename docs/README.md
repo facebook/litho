@@ -22,13 +22,13 @@ The requirements for running a GitHub pages site locally is described in [GitHub
 
 1. Make sure you have [Bundler](http://bundler.io/) installed.
 
-    ```
+    ```shell
     # may require sudo
     gem install bundler
     ```
 1. Install the project's dependencies
 
-    ```
+    ```shell
     # run this in the directory containing the "Gemfile" file
     bundle install
     ```
@@ -43,14 +43,14 @@ The requirements for running a GitHub pages site locally is described in [GitHub
 
     - On first runs or for structural changes to the documentation (e.g., new sidebar menu item), do a full build.
 
-    ```
+    ```shell
     # run this in the directory containing the "Gemfile" file
     bundle exec jekyll serve
     ```
 
     - For content changes only, you can use `--incremental` for faster builds.
 
-    ```
+    ```shell
     # run this in the directory containing the "Gemfile" file
     bundle exec jekyll serve --incremental
     ```
@@ -59,7 +59,7 @@ The requirements for running a GitHub pages site locally is described in [GitHub
 
     - To run using an actual IP address, you can use `--host=0.0.0.0`
 
-    ```
+    ```shell
     # run this in the directory containing the "Gemfile" file
     bundle exec jekyll serve --host=0.0.0.0
     ```
@@ -76,7 +76,7 @@ The site depends on Github Pages and the installed bundle is based on the `githu
 Occasionally that gem might get updated with new or changed functionality. If that is the case,
 you can run:
 
-```
+```shell
 # run this in the directory containing the "Gemfile" file
 bundle update
 ```

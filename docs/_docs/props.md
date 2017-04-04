@@ -14,7 +14,7 @@ The same prop can be defined and accessed in multiple lifecycle methods. The ann
 
 Take the following `Component` spec, for example:
 
-``` java
+```java
 @MountSpec
 class MyComponentSpec {
   @OnPrepare
@@ -49,7 +49,7 @@ For each unique prop defined on the spec, the annotation processor creates a bui
 
 You pass down values for these props by calling the appropriate methods on the generated Component Builder:
 
-``` java
+```java
 MyComponent.create(c)
     .prop1("My prop 1")
     .prop2(256)
@@ -62,7 +62,7 @@ You can omit setting a value for an optional prop and it will be initialized to 
 
 You can define default prop values as static members on the Spec class via the `@PropDefault` annotation. Let's define default values for the props described above:
 
-``` java
+```java
 @MountSpec
 public class MyComponentSpec {
   @PropDefault static final String prop1 = "mydefaultvalue";

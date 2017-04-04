@@ -9,7 +9,7 @@ Components can have their props come from regular Android style resources in a s
 
 Style support can be implemented using the `@OnLoadStyle` method in your component spec. The first argument is a ComponentContext which you can use to retrieve a TypedArray with the style resource values. The rest of the arguments should be Outputs matching the name and type of the props to which you want to set values.
 
-``` java
+```java
 @LayoutSpec
 class MyComponentSpec {
 

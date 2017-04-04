@@ -4,7 +4,7 @@
 
 You can include Litho to your Android project via Gradle by adding the following to your `BUCK` file:
 
-``` python
+```python
 android_prebuilt_aar(
     name = "litho",
     aar = ":litho.aar",

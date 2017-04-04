@@ -23,7 +23,7 @@ A component can be measured in isolation for some given `SizeSpec`. A `Size` obj
 
 In the following example, a `Text` component is measured with unspecified `SizeSpec` implying a single line of text indefinitely long.
 
-``` java
+```java
 final Component<Text> textComponent = Text.create(c)
     .textSizeSp(16)
     .text(“Some text to measure.”)
@@ -45,7 +45,7 @@ During layout creation, the API can provide information about the `SizeSpecs` a 
 
 In the following example, a `Text` component is measured to check if the given text fits in the available space. An `Image` component is otherwise used.
 
-``` java
+```java
 @LayoutSpec
 public class MyComponentSpec {
 

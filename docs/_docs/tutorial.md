@@ -31,7 +31,7 @@ Behind the scenes, Litho uses [Yoga](https://facebook.github.io/yoga/) for layou
 
 Next, add a `Text` Litho component to an activity:
 
-``` java
+```java
 @Override
 public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -54,7 +54,7 @@ The two main players when using components are `ComponentView` and `ComponentTre
 
 How do the components come into play? Let's zero in on this piece of code:
 
-``` java
+```java
 Text.create(context)
     .text("Hello World")
     .textSizeDip(50)
@@ -81,7 +81,7 @@ Ready? It's time to dive in and build this component. In Litho, a component is d
 
 Your custom component will be called `FeedItem`. Therefore, define a class named `FeedItemSpec` with the following content:
 
-``` java
+```java
 @LayoutSpec
 public class FeedItemSpec {
   @OnCreateLayout
@@ -102,7 +102,7 @@ You should recognize the `Text` component from the previous tutorial step. In th
 
 How do you this component? In your activity, simply change the `ComponentTree` definition to:
 
-``` java
+```java
 final ComponentTree componentTree = ComponentTree.create(
     context,
     FeedItem.create(context))
@@ -117,7 +117,7 @@ Where did `FeedItem` come from?  Where are `create` and `build` defined?  This i
 
 You need to add to the buck target `/src/main/java/com/company/tutorial:tutorial`
 
-``` python
+```python
 plugins = [
         INSERT_ANNOTATION_TARGET_HERE,
     ],
@@ -146,7 +146,7 @@ dependencies {
 
 Next, in your activity modify the `ComponentTree` definition as follows:
 
-``` java
+```java
 final RecyclerBinder recyclerBinder = new RecyclerBinder(
     context,
     4.0f,
@@ -165,7 +165,7 @@ You then create and pass in the a `Recycler` component to the component tree.
 
 Now turn your focus to populating the binder. Define a helper function in your activity to do this:
 
-``` java
+```java
 private void addContent(RecyclerBinder recyclerBinder, ComponentContext context) {
   for (int i = 0; i < 32; i++) {
     ComponentInfo.Builder componentInfoBuilder = ComponentInfo.create();
@@ -195,7 +195,7 @@ Adding props to a component is very simple. Props are parameters to methods of t
 
 Modify `FeedItemSpec` as follows:
 
-``` java
+```java
 @OnCreateLayout
 static ComponentLayout onCreateLayout(
     ComponentContext c,
@@ -216,7 +216,7 @@ This adds two props: `message` and `color` props. Notice that the background col
 
 The magic happens in the `@Prop` annotations and the annotation processor.  The processor produces methods on the builder that correspond to the props in a smart way. You can now change the binder's construction of the component to:
 
-``` java
+```java
 private void addContent(RecyclerBinder recyclerBinder, ComponentContext context) {
   for (int i = 0; i < 32; i++) {
     ComponentInfo.Builder componentInfoBuilder = ComponentInfo.create();
@@ -238,7 +238,7 @@ Run the app. You should see something like this:
 
 You can specify more options to the `@Prop` annotation.  For example, consider the property:
 
-``` java
+```java
 @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int shadowRadius,
 ```
 

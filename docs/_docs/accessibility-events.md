@@ -41,7 +41,7 @@ static void onInitializeAccessibilityNodeInfoEvent(
 {:start="2"}
 2. Setting that event handler on a component:
 
-```
+```java
 Text.create(c)
     .text(title)
     .withLayout()
@@ -53,7 +53,7 @@ One of the best features of `AccessibilityDelegate`s in general is their reusabi
 ```java
 @LayoutSpec
 class PoliteComponentWrapper {
-    
+
   @OnCreateLayout
   static ComponentLayout onCreateLayout(
       ComponentContext c,

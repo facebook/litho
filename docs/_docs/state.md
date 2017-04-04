@@ -17,7 +17,7 @@ You can define a State on a Component by using the @State annotation in the spec
 
 Defining state elements is enabled on the lifecycle methods of Layout Specs and Mount Specs.
 
-``` java
+```java
 @LayoutSpec		
 public class CheckboxSpec {		
 
@@ -59,7 +59,7 @@ This is what you need to know when writing an `@OnCreateInitialState` method:
 
 Here's how you would initialize the checkbox state with a value passed down from the parent:
 
-``` java
+```java
 @LayoutSpec		
 public class CheckboxSpec {
 
@@ -88,7 +88,7 @@ This is what you need to know when writing an `@OnUpdateState`  method:
 
 Here's how you would define a state update method for the checkbox:
 
-``` java
+```java
 @LayoutSpec		
 public class CheckboxSpec {		
 
@@ -102,7 +102,7 @@ public class CheckboxSpec {
 
 If you want to bundle multiple state updates in a single method, you would just add all those states as parameters to the same `@OnUpdateState` method:
 
-``` java
+```java
 @OnUpdateState
 static void updateMultipleStates(
     StateValue<Boolean> stateOne,
@@ -123,7 +123,7 @@ Both methods take as first parameter a `ComponentContext` followed by all the pa
 
 Here's how you would call the state update method to update your checkbox when a user clicks it:
 
-``` java
+```java
 @LayoutSpec		
 public class CheckboxSpec {		
 
@@ -175,7 +175,7 @@ You should set this key whenever you have multiple children of the same componen
 
 The most common case when you must manually define keys for your components is creating and adding them as children in a loop:
 
-``` java
+```java
  @OnCreateLayout
  static ComponentLayout onCreateLayout(
  	  ComponentContext c,
@@ -201,7 +201,7 @@ States marked as `canUpdateLazily` can still be used for regular state updates.
 
 Let's look at an example:
 
-``` java
+```java
 @OnCreateLayout
 static ComponentLayout onCreateLayout(
     final ComponentContext c,

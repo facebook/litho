@@ -15,7 +15,7 @@ You should only have to do these one time.
 
 Most content is written in markdown. You name the file `something.md`, then have a header that looks like this:
 
-```
+```yml
 ---
 docid: getting-started
 title: Getting started with ProjectName
@@ -34,7 +34,7 @@ Modify `index.md` with your new or updated content.
 
 If you want a `GridBlock` as part of your content, you can do so directly with HTML:
 
-```
+```html
 <div class="gridBlock">
   <div class="blockElement twoByGridBlock alignLeft">
     <div class="blockContent">
@@ -114,7 +114,7 @@ If you want to use raw HTML but have some markdown-like content within it, you c
 
 e.g.
 
-```
+```html
 {% capture landing-page-sample %}{% include_relative landing-page-sample.md %}{% endcapture %}
 
 <div class="gridBlock alternateColor">
