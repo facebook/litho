@@ -18,7 +18,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.SimpleArrayMap;
-import android.util.ArraySet;
+import com.facebook.litho.internal.ArraySet;
 import android.util.MutableInt;
 
 /**
