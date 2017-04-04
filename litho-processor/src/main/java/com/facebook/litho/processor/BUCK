@@ -24,9 +24,6 @@ java_library(
         ":processor-lib-bare",
         COMPONENTS_JAVAPOET_TARGET,
     ],
-    tests = [
-        "//javatests/com/facebook/litho/processor:processor",
-    ],
     visibility = [
         "PUBLIC",
     ],
@@ -44,7 +41,6 @@ java_library(
     deps = [
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels-bare"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/processor:processor"),
-        make_dep_path("litho-processor/src/main/java/com/facebook/litho/javapoet:javapoet"),
         COMPONENTS_ANNOTATIONS_TARGET,
     ],
 )
