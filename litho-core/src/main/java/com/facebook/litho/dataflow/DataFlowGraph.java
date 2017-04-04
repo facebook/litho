@@ -19,7 +19,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.SimpleArrayMap;
 import com.facebook.litho.internal.ArraySet;
-import android.util.MutableInt;
+import com.facebook.litho.internal.MutableInt;
 
 /**
  * A directed acyclic graph (DAG) created from one or more {@link GraphBinding}s. These component
