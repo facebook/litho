@@ -55,6 +55,9 @@ import com.facebook.litho.javapoet.JPUtil;
 import com.facebook.litho.processor.GetTreePropsForChildrenMethodBuilder.CreateTreePropMethodData;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.PropDefaultModel;
+import com.facebook.litho.specmodels.processor.ComponentsProcessingException;
+import com.facebook.litho.specmodels.processor.MultiPrintableException;
+import com.facebook.litho.specmodels.processor.PrintableException;
 import com.facebook.litho.specmodels.processor.PropDefaultsExtractor;
 
 import com.squareup.javapoet.AnnotationSpec;

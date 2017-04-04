@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.litho.processor;
+package com.facebook.litho.specmodels.processor;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
@@ -30,8 +30,6 @@ import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelValidationError;
-import com.facebook.litho.specmodels.processor.LayoutSpecModelFactory;
-import com.facebook.litho.specmodels.processor.MountSpecModelFactory;
 
 import com.squareup.javapoet.JavaFile;
 
@@ -110,10 +108,14 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
 
   void generate(SpecModel specModel) throws IOException {
     JavaFile.builder(
-        Utils.getPackageName(specModel.getComponentTypeName().toString()), specModel.generate())
-        .skipJavaLangImports(true)
-        .addFileComment("Copyright 2004-present Facebook. All Rights Reserved.")
-        .build()
-        .writeTo(processingEnv.getFiler());
+        getPackageName(specModel.getComponentTypeName().toString()), specModel.generate())
+            .skipJavaLangImports(true)
+            .addFileComment("Copyright 2004-present Facebook. All Rights Reserved.")
+            .build()
+            .writeTo(processingEnv.getFiler());
+  }
+
+  private static String getPackageName(String qualifiedName) {
+    return qualifiedName.substring(0, qualifiedName.lastIndexOf('.'));
   }
 }

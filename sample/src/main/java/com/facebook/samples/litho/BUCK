@@ -13,7 +13,7 @@ android_library(
         COMPONENTS_PROCESSOR_LIB_TARGET,
     ],
     annotation_processors = [
-        "com.facebook.litho.processor.ComponentsProcessor",
+        "com.facebook.litho.specmodels.processor.ComponentsProcessor",
     ],
     visibility = [
         "PUBLIC",

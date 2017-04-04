@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facebook.litho.specmodels.processor.ComponentsProcessingException;
+
 import com.squareup.javapoet.ClassName;
 
 public class Utils {

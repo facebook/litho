@@ -7,16 +7,16 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.litho.processor;
+package com.facebook.litho.specmodels.processor;
 
 import javax.annotation.processing.Messager;
 
 import java.util.List;
 
-class MultiPrintableException extends PrintableException {
+public class MultiPrintableException extends PrintableException {
   private final List<PrintableException> exceptions;
 
-  MultiPrintableException(List<PrintableException> exceptions) {
+  public MultiPrintableException(List<PrintableException> exceptions) {
     this.exceptions = exceptions;
   }
 
