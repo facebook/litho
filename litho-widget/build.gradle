@@ -10,6 +10,8 @@ android {
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
 
+    useLibrary 'org.apache.http.legacy'
+
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
     }
@@ -41,4 +43,11 @@ dependencies {
 
     // Processor
     compile deps.javapoet
+
+    // Testing
+    testCompile project(':litho-testing')
+    testCompile deps.robolectric
+    testCompile deps.soloader
+    testCompile deps.powermockMockito
+    testCompile deps.powermockJunit
 }
