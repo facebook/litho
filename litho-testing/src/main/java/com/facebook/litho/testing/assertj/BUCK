@@ -14,7 +14,7 @@ android_library(
         COMPONENTS_ANDROIDSUPPORT_TARGET,
         COMPONENTS_JAVA_TARGET,
         COMPONENTS_POWERMOCK_REFLECT_TARGET,
-        make_dep_path("litho-core/src/debug/java/com/facebook/litho/testing/viewtree:viewtree"),
-        make_dep_path("litho-core/src/debug/java/com/facebook/litho/testing:testing"),
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/viewtree:viewtree"),
+        COMPONENTS_TESTING_TARGET,
     ],
 )
