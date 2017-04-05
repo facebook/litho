@@ -39,9 +39,10 @@
         </div>
         <div class="column">
           <p>
-            Litho uses a declarative API to define UI components. This allows optimizations to be
-            moved into the framework, greatly simplifying product code. With code generation Litho
-            is able to produce optimal code while keeping your code easy to maintain.
+            Litho uses a declarative API to define UI components. You simply describe the layout for
+            your UI based on a set of immutable inputs and the framework takes care of the rest.
+            With code generation, Litho can perform optimisations for your UI under the hood,
+            while keeping your code simple and easy to maintain.
           </p>
         </div>
       </div>
@@ -58,9 +59,9 @@
         </div>
         <div class="column">
           <p>
-            With Litho your UI will be measured and layed out before those precious 16 ms even start.
-            By decoupling components from the standard Android View system Litho is able to drop the
-            UI thread constraint imposed by Android.
+            Litho can measure and layout your UI ahead of time without blocking the UI thread.
+            By decoupling its layout system from the traditional Android View system, Litho can drop
+            the UI thread constraint imposed by Android.
           </p>
         </div>
       </div>
@@ -78,10 +79,10 @@
         </div>
         <div class="column">
           <p>
-            By relying on <a href="https://facebook.github.io/yoga">Yoga</a> for layout Litho is
-            able to remove the need for many ViewGroups. This in addition to Litho's text
-            optimizations allows for much smaller view hierarchies improving both memory and scroll
-            performance.
+            Litho uses <a href="https://facebook.github.io/yoga">Yoga</a> for layout and
+            automatically reduces the number of ViewGroups that your UI contains. This, in addition
+            to Litho's text optimizations, allows for much smaller view hierarchies and improves
+            both memory and scroll performance.
           </p>
         </div>
       </div>
@@ -98,9 +99,10 @@
         </div>
         <div class="column">
           <p>
-            With Litho each text, image, or video is recycled individually. This enables re-use of
-            views for unique items by piecing together scraps of previous items. Such recycling
-            reduces memory usage and improves scroll performance of applications.
+            With Litho, each UI item such as text, image, or video is recycled individually.
+            As soon as an item goes off screen, it can be reused anywhere in the UI and pieced
+            together with other items to create new UI elements. Such recycling reduces the need of
+            having multiple view types and improves memory usage and scroll performance.
           </p>
         </div>
       </div>
