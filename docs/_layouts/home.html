@@ -15,7 +15,7 @@
     <section class="hero">
       <div class="content">
         <img class="logo" src="{{ '/static/logo.png' | relative_url }}">
-        <div class="title">
+        <div class="header">
           <p>
             Litho: A declarative UI framework for Android
           </p>
@@ -38,6 +38,7 @@
           <img src="{{ '/static/images/home-code.png' | relative_url }}">
         </div>
         <div class="column">
+          <div class="title">Declarative</div>
           <p>
             Litho uses a declarative API to define UI components. You simply describe the layout for
             your UI based on a set of immutable inputs and the framework takes care of the rest.
@@ -58,6 +59,7 @@
           <img src="{{ '/static/images/home-async.png' | relative_url }}">
         </div>
         <div class="column">
+          <div class="title">Asynchronous layout</div>
           <p>
             Litho can measure and layout your UI ahead of time without blocking the UI thread.
             By decoupling its layout system from the traditional Android View system, Litho can drop
@@ -78,6 +80,7 @@
           <img src="{{ '/static/images/flat.png' | relative_url }}">
         </div>
         <div class="column">
+          <div class="title">Flatter view hierarchies</div>
           <p>
             Litho uses <a href="https://facebook.github.io/yoga">Yoga</a> for layout and
             automatically reduces the number of ViewGroups that your UI contains. This, in addition
@@ -98,6 +101,7 @@
           <img class="home-incremental-sample" src="{{ '/static/images/home-incremental-mount.png' | relative_url }}">
         </div>
         <div class="column">
+          <div class="title">Fine-grained recycling</div>
           <p>
             With Litho, each UI item such as text, image, or video is recycled individually.
             As soon as an item goes off screen, it can be reused anywhere in the UI and pieced

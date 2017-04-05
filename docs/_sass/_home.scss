@@ -87,7 +87,7 @@
           }
         }
 
-        .title {
+        .header {
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -169,17 +169,30 @@
           width: 90%;
         }
 
+        .title {
+          align-self: flex-start;
+          font-size: 20px;
+          font-weight: 500;
+          line-height: 150%;
+          margin-bottom: 15px;
+
+          @media screen and (max-width: 750px) {
+            margin-top: 5%;
+            margin-bottom: 1%;
+          }
+        }
+
         img {
           width: 350px;
         }
 
         p {
           font-size: 20px;
-          font-weight: 500;
+          font-weight: 300;
           line-height: 150%;
 
           @media screen and (max-width: 750px) {
-            margin-top: 10%;
+            margin-top: 3%;
           }
         }
 
