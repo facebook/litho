@@ -1,0 +1,24 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion rootProject.compileSdkVersion
+    buildToolsVersion rootProject.buildToolsVersion
+
+    useLibrary 'org.apache.http.legacy'
+
+    defaultConfig {
+        minSdkVersion rootProject.minSdkVersion
+    }
+}
+
+dependencies {
+    compile project(':litho-core')
+
+    compile deps.assertjCore
+    compile deps.guava
+    compile deps.jsr305
+    compile deps.junit
+    compile deps.mockitoCore
+    compile deps.powermockReflect
+    compile deps.robolectric
+}
