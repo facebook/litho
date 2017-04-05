@@ -1,5 +1,4 @@
-Litho
-=====
+# Litho [![CircleCI](https://circleci.com/gh/facebook/litho/tree/master.svg?style=svg)](https://circleci.com/gh/facebook/litho/tree/master)
 
 Litho is a powerful framework that enables Android developers to write efficient UI code by default through a simple annotation-based Java API.
 
