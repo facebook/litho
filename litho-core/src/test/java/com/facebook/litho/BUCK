@@ -55,6 +55,7 @@ android_resource(
     res = "res",
     visibility = [
         make_dep_path("litho-core/src/test/..."),
+        make_dep_path("litho-testing/src/test/..."),
         "//javatests/com/facebook/litho/...",
     ],
 )
@@ -69,6 +70,7 @@ android_library(
     ],
     visibility = [
         make_dep_path("litho-core/src/test/java/com/facebook/litho/..."),
+        make_dep_path("litho-testing/src/test/java/com/facebook/litho/..."),
     ],
     deps = [
         COMPONENTS_ANDROIDSUPPORT_TARGET,
