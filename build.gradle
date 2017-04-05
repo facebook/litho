@@ -1,0 +1,49 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.3.0'
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+subprojects {
+    repositories {
+        jcenter()
+    }
+}
+
+ext {
+    minSdkVersion = 15
+    targetSdkVersion = 25
+    compileSdkVersion = 25
+    buildToolsVersion = '25.0.2'
+    sourceCompatibilityVersion = JavaVersion.VERSION_1_7
+    targetCompatibilityVersion = JavaVersion.VERSION_1_7
+}
+
+ext.deps = [
+        // Android support
+        supportAnnotations : 'com.android.support:support-annotations:25.3.1',
+        supportCompat      : 'com.android.support:support-compat:25.1.0',
+        supportCoreUi      : 'com.android.support:support-core-ui:25.3.1',
+        supportRecyclerView: 'com.android.support:recyclerview-v7:25.3.1',
+        // First-party
+        yoga               : 'com.facebook.yoga:yoga:1.3.1',
+        fresco             : 'com.facebook.fresco:fresco:1.2.0',
+        // Annotations
+        jsr305             : 'com.google.code.findbugs:jsr305:3.0.1',
+        inferAnnotations   : 'com.facebook.infer.annotation:infer-annotation:0.10.0.2',
+        // Debugging and testing
+        guava              : 'com.google.guava:guava:20.0',
+        robolectric        : 'org.robolectric:robolectric:3.0',
+        junit              : 'junit:junit:4.12',
+        powermockReflect   : 'org.powermock:powermock-reflect:1.5.6',
+        mockitoCore        : 'org.mockito:mockito-core:1.9.5',
+        assertjCore        : 'org.assertj:assertj-core:1.6.1',
+        // Processor
+        javapoet           : 'com.squareup:javapoet:1.8.0',
+]

@@ -1,0 +1,62 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion rootProject.compileSdkVersion
+    buildToolsVersion rootProject.buildToolsVersion
+
+    // We're on an old version of Robolectric which requires this, sadly.
+    useLibrary 'org.apache.http.legacy'
+
+    defaultConfig {
+        minSdkVersion rootProject.minSdkVersion
+    }
+
+    buildTypes {
+        def internalBuildField = "IS_INTERNAL_BUILD"
+
+        debug {
+            buildConfigField "boolean", internalBuildField, "true";
+        }
+
+        release {
+            buildConfigField "boolean", internalBuildField, "false";
+        }
+    }
+}
+
+dependencies {
+    // Project dependencies
+    compile project(':litho-annotations')
+    provided project(':litho-stubs')
+
+    // Provided dependencies
+    provided deps.jsr305
+    provided deps.inferAnnotations
+
+    // Android Support Library
+    compile deps.supportAnnotations
+    compile deps.supportCompat
+    compile deps.supportCoreUi
+    compile deps.supportRecyclerView
+
+    // First-party dependencies
+    compile deps.yoga
+    compile deps.fresco
+
+    // TODO: Use maven artifact once published.
+    // debugCompile 'com.facebook.stetho:stetho:1.4.2'
+    debugCompile files('../lib/stetho/stetho.jar')
+
+    compile files('../lib/CSSLayoutDEPRECATED-TOREMOVE/CSSLayoutDEPRECATED.jar')
+
+    // Debugging dependencies
+    debugCompile deps.guava
+    debugCompile deps.robolectric
+    debugCompile deps.junit
+    debugCompile deps.powermockReflect
+    debugCompile deps.mockitoCore
+    debugCompile deps.assertjCore
+
+    // Processor
+    compile deps.javapoet
+}

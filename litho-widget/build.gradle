@@ -1,0 +1,39 @@
+apply plugin: 'com.android.library'
+
+repositories {
+    flatDir {
+        dirs '../lib/textlayoutbuilder/'
+    }
+}
+
+android {
+    compileSdkVersion rootProject.compileSdkVersion
+    buildToolsVersion rootProject.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.minSdkVersion
+    }
+}
+
+dependencies {
+    compile project(':litho-core')
+    annotationProcessor project(':litho-processor')
+
+    // Annotations
+    provided deps.jsr305
+    provided deps.inferAnnotations
+
+    // First-party
+    compile deps.yoga
+    compile deps.fresco
+    compile files('../lib/CSSLayoutDEPRECATED-TOREMOVE/CSSLayoutDEPRECATED.jar')
+    // TODO: Replace with published version
+    compile(name: 'textlayoutbuilder-1.0.0', ext: 'aar')
+
+    // Android Support Library
+    compile deps.supportCompat
+    compile deps.supportCoreUi
+
+    // Processor
+    compile deps.javapoet
+}

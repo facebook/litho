@@ -11,6 +11,9 @@ for (File file : sdkHandler.sdkLoader.repositories) {
 }
 
 dependencies {
-    // Android Support Library
-    compile deps.supportAnnotations
+    compile project(':litho-annotations')
+    compile deps.jsr305
+
+    // Processor
+    compile deps.javapoet
 }
