@@ -9,7 +9,7 @@ include_defs("//COMPONENTS_DEFS")
 
 android_library(
     name = "yoga",
-    srcs = glob(["yoga/*.java"]),
+    srcs = glob(["src/main/java/**/*.java"]),
     visibility = [COMPONENTS_VISIBILITY],
     deps = [
         COMPONENTS_PROGUARDANNOTATIONS_TARGET,

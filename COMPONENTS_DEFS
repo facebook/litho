@@ -98,7 +98,7 @@ def components_robolectric_test(
     kwargs['vm_args'] = extra_vm_args
     kwargs['use_cxx_libraries'] = True
     kwargs['cxx_library_whitelist'] = [
-        '//lib/yoga:yoga',
+        '//lib/yoga/src/main/cpp:yoga',
         '//lib/yogajni:jni',
         '//lib/fb:jni',
     ]
