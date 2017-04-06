@@ -21,6 +21,8 @@ import com.facebook.litho.SizeSpec;
  * {@link LinearLayoutManager}.
  */
 public class LinearLayoutInfo implements LayoutInfo {
+  private static final int MAX_SANE_RANGE = 10;
+  private static final int MIN_SANE_RANGE = 2;
 
   private final LinearLayoutManager mLinearLayoutManager;
 
@@ -60,15 +62,26 @@ public class LinearLayoutInfo implements LayoutInfo {
       int recyclerMeasuredWidth,
       int recyclerMeasuredHeight) {
 
+    int approximateRange;
+
     switch (mLinearLayoutManager.getOrientation()) {
       case LinearLayoutManager.HORIZONTAL:
-        return (int)
+        approximateRange = (int)
             Math.ceil((float) recyclerMeasuredWidth / (float) firstMeasuredItemWidth);
-
+        break;
       default:
-        return (int)
+        approximateRange = (int)
             Math.ceil((float) recyclerMeasuredHeight / (float) firstMeasuredItemHeight);
+        break;
     }
+
+    if (approximateRange < MIN_SANE_RANGE) {
+      approximateRange = MIN_SANE_RANGE;
+    } else if (approximateRange > MAX_SANE_RANGE) {
+      approximateRange = MAX_SANE_RANGE;
+    }
+
+    return approximateRange;
   }
 
   @Override
