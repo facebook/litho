@@ -36,7 +36,7 @@ RecyclerBinder is the part of Litho that:
  - Defines the layout to use in the RecyclerView (ex Linear, Grid)
  - Manages all the complexity of computing layouts ahead of time in a background thread.
 
-![Layout range in action](static/range_small.gif "Layout range in action")
+![Layout range in action](/static/images/range_small.gif "Layout range in action")
 
 Let's start creating a RecyclerBinder:
 
@@ -50,6 +50,7 @@ To have Recycler use a grid layout we can use this constructor instead:
 ``` java
 final RecyclerBinder recyclerBinder = new RecyclerBinder(c, new GridLayoutInfo(c, spanCount);
 ```
+
 RecyclerBinder exposes a set of APIs to manipulate the items that will be displayed in the Recycler.
 
 The most commonly used are:
@@ -67,8 +68,8 @@ RecyclerBinder also supports receiving extra information about the way a Compone
 
 ``` java
 recyclerBinder.insertItemAt(
-	position,
-	ComponentInfo.create().component(component).isSticky().build());
+  position,
+  ComponentInfo.create().component(component).isSticky().build());
 ```
 
 #### RecyclerBinder Async operations
@@ -93,10 +94,13 @@ would mean that remove is only executed after component has been inserted at pos
 
 Operating with synchronous operations on the other hand, means that an item will be immediately inserted, even if its insertion position is inside the range of active components. This potentially means that the framework would be forced to compute a layout synchronously on the UI thread when that component needs to be put on screen.
 
-###### Sync insertion:
-![Layout range in action](static/insertion_sync_small.gif "Layout range in action")
-###### Async insertion:
-![Layout range in action](static/insertion_async_small.gif "Layout range in action")
+#### Sync insertion:
+
+![Layout range in action](/static/images/insertion_sync_small.gif "Layout range in action")
+
+#### Async insertion:
+
+![Layout range in action](/static/images/insertion_async_small.gif "Layout range in action")
 
 
 Operating with sync operations is usually useful when the result of an operation should be visible without any delay. Triggering a sync operation while there is an active queue of async operations will flush all the pending async operations synchronously.
