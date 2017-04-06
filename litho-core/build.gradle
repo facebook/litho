@@ -62,7 +62,4 @@ dependencies {
     debugCompile deps.powermockReflect
     debugCompile deps.mockitoCore
     debugCompile deps.assertjCore
-
-    // Processor
-    compile deps.javapoet
 }
