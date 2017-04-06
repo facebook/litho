@@ -1,5 +1,5 @@
 ---
-docid: mount-specs 
+docid: mount-specs
 title: Mount Specs
 layout: docs
 permalink: /docs/mount-specs
@@ -9,7 +9,7 @@ A *mount spec* defines a component that can render views or drawables.
 
 Mount specs should only be created when you need to integrate your own views/drawables with the Components framework. "Mount" here means the operation performed by all components in a layout tree to extract their rendered state (a `View` or a `Drawable`) to be displayed.
 
-Mount spec classes should be annotated with `@MountSpec` and implement at least an `@OnCreateMountContent` method. The other methods listed below are optional. 
+Mount spec classes should be annotated with `@MountSpec` and implement at least an `@OnCreateMountContent` method. The other methods listed below are optional.
 
 The life cycle of mount spec components is as follows:
 
@@ -20,7 +20,7 @@ The life cycle of mount spec components is as follows:
 - Run `@OnMount` before the component is attached to a hosting view.
 - Run `@OnBind` after the component is attached to a hosting view.
 - Run `@OnUnbind` before the component is detached from a hosting view.
-- Run `@OnUnmount` optionally after the component is detached from a hosting view. 
+- Run `@OnUnmount` optionally after the component is detached from a hosting view.
 
 ## Mounting
 
@@ -52,7 +52,7 @@ public class ColorComponentSpec {
 
 - `onCreateMountContent` cannot take a `@Prop` or any other annotated parameter.
 
-- Given that the `@OnMount` method always runs in the UI thread, expensive operations should not be performed in it. 
+- Given that the `@OnMount` method always runs in the UI thread, expensive operations should not be performed in it.
 
 ## Inter-stage inputs and outputs
 
@@ -126,3 +126,23 @@ static void onMeasure(
 You can access component props with the `@Prop` annotation as usual in `@OnMeasure`. SizeSpec's API is analogous to Android's [MeasureSpec](http://developer.android.com/reference/android/view/View.MeasureSpec.html).
 
 Just like `@OnPrepare`, the `@OnMeasure` method can also generate inter-stage outputs (accessible via the `@FromMeasure` argument annotation) and may be performed in a background thread.
+
+## ShouldUpdate
+
+A MountSpec can define a method annotated with `@ShouldUpdate` to avoid remeasuring/remounting upon updates.
+Invocations of `@ShouldUpdate` are dependent on whether a Component is a pure render function.
+A Component is a pure render function if the result of the rendering only depends on its props and states. This means that the Component shouldn't be accessing any mutable global variable during `@OnMount`.
+A `@MountSpec` can be defined as pure render by using the pureRender parameter of the `@MountSpec` annotation.
+Only pureRender Components can assume that when props do not change remounting won't be needed. A `@ShouldUpdate` function can be defined as follows:
+``` java
+@ShouldUpdate(onMount = true)
+public boolean shouldUpdate(Diff<String> someStringProp) {
+  return !someStringProp.getPrevious().equals(someStringProp.getNext());
+}
+```
+The parameters taken from shouldUpdate are Diff of Props or State. A Diff is an object containing the value of a `@Prop` or a `@State` in the old components hierarchy and the value of the same `@Prop`/`@State` in the new components hierarchy.
+In this example this component was defining a `@Prop` String someStringProp. ShouldUpdate will receive a Diff<String> to be able to compare the old and new value of this `@Prop`. `@ShouldUpdate` has to take into consideration any prop and any state that are used at OnMount time. It can safely ignore `@Prop`/`@State` that are only used at OnBind/OnUnbind time as these two methods will be executed regardless.
+
+The onMount attribute on the `@ShouldUpdate` annotation controls whether this shouldUpdate check can happen at mount time. By default Components will try to do this reconciliation at layout time but if layout diffing is turned off it might be useful to set onMount to true in order to execute this check at mount time instead. The onMount attribute is set to false by default as the equality check might be heavy itself and make mount performances worse.
+
+`@ShouldUpdate` is currently only supported in `@MountSpec`. We have plans to expand the support to complex layouts in the future but at the moment a `@ShouldUpdate` annotated method in a `@LayoutSpec` would have no effect.

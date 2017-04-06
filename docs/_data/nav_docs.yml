@@ -37,7 +37,6 @@
   items:
   - id: custom-layout
   - id: tree-props
-  - id: should-update
   - id: inc-mount
 - title: Best Practices
   items:
