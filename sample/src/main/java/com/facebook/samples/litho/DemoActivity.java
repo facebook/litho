@@ -34,6 +34,7 @@ public class DemoActivity extends AppCompatActivity {
     componentView.setComponent(
         ComponentTree.create(context, component)
             .incrementalMount(false)
+            .layoutDiffing(false)
             .build());
     setContentView(componentView);
   }
