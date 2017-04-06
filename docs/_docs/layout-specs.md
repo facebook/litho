@@ -64,5 +64,4 @@ Text.create(c)
     .withLayout()
     .grow(1f)
 ```
-
-The framework exposes many layout features. See <https://facebook.github.io/yoga/docs/learn-more/> for full documentation.
+You can check the full [Yoga](https://facebook.github.io/yoga/docs/learn-more/) documentation to see all the layout features that the framework exposes.

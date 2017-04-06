@@ -5,7 +5,10 @@ layout: docs
 permalink: /docs/accessibility-handling
 ---
 
-All components support a set of events corresponding to [`AccessibilityDelegateCompat`](https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html)'s methods. These events have attributes for each parameter of the corresponding `AccessibilityDelegateCompat` method *and* an additional parameter of type `AccessibilityDelegateCompat` called `superDelegate` which allows you to explicitly call `View`'s default implementation of accessibility methods where necessary. The supported events are:
+All components support a set of events corresponding to [`AccessibilityDelegateCompat`](https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html)'s methods.  
+These events have attributes for each parameter of the corresponding `AccessibilityDelegateCompat` method *and* an additional parameter of type `AccessibilityDelegateCompat` called `superDelegate`, which allows you to explicitly call `View`'s default implementation of accessibility methods where necessary.  
+
+Here is an overview of the supported events:
 
 
 | Event | AccessibilityDelegate method
@@ -20,9 +23,11 @@ All components support a set of events corresponding to [`AccessibilityDelegateC
 | SendAccessibilityUncheckedEvent |  [sendAccessibilityEventUnchecked](https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html#sendAccessibilityEventUnchecked(android.view.View, android.view.accessibility.AccessibilityEvent))
 
 
-Setting a handler for *any* of these events, will result in an `AccessibilityDelegate` being set on the mounted `View` which will call your event handler when the corresponding method is called. Whenever a method for which you haven't supplied an event handler is called, the delegate will defer to `View`'s default implementation (equivalent to calling `super` or `superDelegate`'s implementation).
+Setting a handler for any of these events will result in an `AccessibilityDelegate` being set on the mounted `View`, which will call your event handler when the corresponding method is called.  
 
-For example, overriding `onInitializeAccessibilityNodeInfo` for a component can be as simple as:
+Whenever a method for which you haven't supplied an event handler is called, the delegate will defer to the Android `View`'s default implementation (equivalent to calling `super` or `superDelegate`'s implementation).
+
+For example, here are the steps for overriding `onInitializeAccessibilityNodeInfo` for a component:
 
 1. Implementing an event handler
 
@@ -36,8 +41,7 @@ static void onInitializeAccessibilityNodeInfoEvent(
   superDelegate.onInitializeAccessibilityNodeInfo(view, node);
   // My implementation
 }
-```
-
+``` 
 {:start="2"}
 2. Setting that event handler on a component:
 
@@ -45,7 +49,7 @@ static void onInitializeAccessibilityNodeInfoEvent(
 Text.create(c)
     .text(title)
     .withLayout()
-    .onInitializeAccessiblityNodeInfoHandler(MyComponent.onInitializeAccessibilityNodeInfo)
+    .onInitializeAccessiblityNodeInfoHandler(MyComponent.onInitializeAccessibilityNodeInfoEvent(c))
 ```  
 
 One of the best features of `AccessibilityDelegate`s in general is their reusability even across different types of `View`s. This can also be achieved within the Components framework by creating a wrapper spec that takes in a component and adds the desired event handlers. For example, let's say we want to have a Component that appends "please" to every `AccessibilityEvent` that it announces.

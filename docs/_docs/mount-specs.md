@@ -7,7 +7,7 @@ permalink: /docs/mount-specs
 
 A *mount spec* defines a component that can render views or drawables.
 
-Mount specs should only be created when you need to integrate your own views/drawables with the Components framework. "Mount" here means the operation performed by all components in a layout tree to extract their rendered state (a `View` or a `Drawable`) to be displayed.
+Mount specs should only be created when you need to integrate your own views/drawables with the Components framework. *Mount* here refers to the operation performed by all components in a layout tree to extract their rendered state (a `View` or a `Drawable`) to be displayed.
 
 Mount spec classes should be annotated with `@MountSpec` and implement at least an `@OnCreateMountContent` method. The other methods listed below are optional.
 

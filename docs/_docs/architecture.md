@@ -30,6 +30,6 @@ If the validation step on a Spec Model is successful, then the `generate` method
 If you set up your project using the instructions in the [Getting Started](/docs/getting-started) section, then code generation will automatically take place on your project. 
 
 
-## Async Layout
+## Asynchronous Layout
 
 ## Recycling

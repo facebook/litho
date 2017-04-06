@@ -48,11 +48,11 @@ $litho-light: #F6F7F9;
 $litho-dark: #5F6673;
 
 // Our variables
-$base-font-family:  'Lato', Calibri, Arial, sans-serif;
-$header-font-family:  'Lato', 'Helvetica Neue', Arial, sans-serif;
-$base-font-size:    20px;
+$base-font-family:  proxima-nova,"Helvetica Neue",Helvetica,Roboto,Arial,sans-serif;
+$header-font-family:  proxima-nova,"Helvetica Neue",Helvetica,Roboto,Arial,sans-serif;
+$base-font-size:    15px;
 $small-font-size:   $base-font-size * 0.875;
-$base-line-height:  1.4em;
+$base-line-height:  1em;
 
 $spacing-unit:      12px;
 
@@ -81,7 +81,7 @@ $primary-overlay-special:   lighten($primary-bg, 80%);
 
 // $secondary-bg overlays
 {% if site.color.secondary-overlay == 'light' %}
-$text:              #333;
+$text:              #484848;
 $sidenav:           darken($secondary-bg, 20%);
 $sidenav-text:      $text;
 $sidenav-overlay:   darken($sidenav, 10%);

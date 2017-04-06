@@ -25,8 +25,5 @@ view.setComponent(component);
 
 In this example, `MyComponent` will be laid out by the hosting `ComponentView` once it gets attached to a view tree.
 
-IMPORTANT: The ComponentView from this example, if directly used in your view hierarchy as is, will perform layout synchronously on the main thread.
-
-For more information about performing layout off the main thread, see TODO get correct link for this: [[ components-for-android/async-layout | Async Layout ]].
-
-components.md 
+> IMPORTANT: The ComponentView from this example, if directly used in your view hierarchy as is, will perform layout synchronously on the main thread.  
+For more information about performing layout off the main thread, see [Async Layout](/docs/architecture#async-layout).

@@ -37,12 +37,25 @@ class HelloComponentSpec {
 
 You simply declare what you want to display and Litho takes care of rendering
 it in the most efficient way by computing [layout in a background
-thread](/docs/background-layout), automatically [flattening your view
-hierarchy](/docs/flatter-views), and [incrementally
-rendering](/docs/incremental-mount) complex components.
+thread](/docs/architecture#asynchronous-layout), automatically [flattening your view
+hierarchy](/docs/intro#view-flattening), and [incrementally
+rendering](/docs/intro#incremental-mount) complex components.
 
 Have a look at our [Tutorial](/docs/tutorial) for a step-by-step guide on using
 Litho in your app. You can also read the quick start guide on how to
 [write](/docs/writing-components) and [use](/docs/using-components) your own
 Litho components.
 
+## Incremental mount
+
+Even though components provide flatter view hierarchies and perform [layout off the main thread](/docs/architecture#asynchronous-layout), the mount operation (creating, recycling and attaching views and drawables) can still have a cost in the UI thread for very complex components, especially for the ones containing many views.
+
+Litho can transparently spread the cost of mounting components across UI frames to avoid jank.
+
+With incremental mount enabled (which it is by default), the `ComponentView` will only mount enough content to fill its visible region and unmount (and recycle) components that are no longer visible.
+
+![Incremental Mount Diagram](/static/images/incremental-mount.png)
+
+If you are using the Litho [async RecyclerView](/docs/recycler-component) support, the framework will seamlessly perform incremental mount.
+
+## View flattening
