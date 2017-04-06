@@ -20,6 +20,7 @@ import com.facebook.stetho.common.Accumulator;
 import com.facebook.stetho.inspector.elements.AbstractChainedDescriptor;
 import com.facebook.stetho.inspector.elements.StyleAccumulator;
 import com.facebook.stetho.inspector.elements.StyleRuleNameAccumulator;
+import com.facebook.stetho.inspector.elements.AttributeAccumulator;
 import com.facebook.stetho.inspector.elements.android.HighlightableDescriptor;
 
 public final class ComponentStethoNodeDescriptor
@@ -88,6 +89,14 @@ public final class ComponentStethoNodeDescriptor
           children.store(mountItem.getContent());
         }
       }
+    }
+  }
+
+  @Override
+  protected void onGetAttributes(ComponentStethoNode element, AttributeAccumulator attributes) {
+    final String testKey = element.node.getTestKey();
+    if (testKey != null) {
+      attributes.store("testKey", testKey);
     }
   }
 
