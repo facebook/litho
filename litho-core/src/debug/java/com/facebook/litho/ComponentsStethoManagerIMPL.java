@@ -11,6 +11,7 @@ package com.facebook.litho;
 
 import java.lang.reflect.Field;
 
+import android.graphics.Color;
 import android.support.annotation.Nullable;
 import android.support.v4.util.SimpleArrayMap;
 
@@ -137,6 +138,17 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
     }
   }
 
+  private static void storeDrawable(
+      StyleAccumulator accumulator,
+      SimpleArrayMap<String, String> overrides,
+      String key) {
+    if (overrides.containsKey(key)) {
+      accumulator.store(key, overrides.get(key), false);
+    } else {
+      accumulator.store(key, "<drawable>", false);
+    }
+  }
+
   void getStyles(ComponentStethoNode stethoNode, StyleAccumulator accumulator) {
     final YogaNodeAPI yogaNode = stethoNode.node.mYogaNode;
     final YogaNodeAPI defaults = ComponentsPools.acquireYogaNode();
@@ -146,6 +158,9 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
       overrides = new SimpleArrayMap<>();
       mStyleOverrides.put(stethoNode.key, overrides);
     }
+
+    storeDrawable(accumulator, overrides, "background");
+    storeDrawable(accumulator, overrides, "foreground");
 
     storeEnum(accumulator, overrides, "direction", yogaNode.getStyleDirection());
     storeEnum(accumulator, overrides, "flex-direction", yogaNode.getFlexDirection());
@@ -188,6 +203,22 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
     ComponentsPools.release(defaults);
   }
 
+  private static int parseColor(String color) {
+    if (color == null || color.length() == 0) {
+      return Color.TRANSPARENT;
+    }
+
+    // Color.parse does not handle hax code with 3 ints e.g. #123
+    if (color.length() == 4) {
+      final char r = color.charAt(1);
+      final char g = color.charAt(2);
+      final char b = color.charAt(3);
+      color = "#" + r + r + g + g + b + b;
+    }
+
+    return Color.parseColor(color);
+  }
+
   public void applyOverrides(InternalNode node) {
     final String nodeKey = getGlobalKey(node, 0); // We only override the root
 
@@ -198,6 +229,14 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
         final String value = styles.get(key);
 
         try {
+          if (key.equals("background")) {
+            node.backgroundColor(parseColor(value));
+          }
+
+          if (key.equals("foreground")) {
+            node.foregroundColor(parseColor(value));
+          }
+
           if (key.equals("direction")) {
             node.layoutDirection(YogaDirection.valueOf(toEnumString(value)));
           }
