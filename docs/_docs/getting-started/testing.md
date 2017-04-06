@@ -21,26 +21,23 @@ Then, add a predefined Litho `Text` widget to an activity that displays "Hello W
 
 ```java
 [MyActivity.java]
+import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentView;
+
 public class MyActivity extends Activity {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    final ComponentView componentView = new ComponentView(this);
-    final ComponentContext context = new ComponentContext(this);
-
-    final Component text = Text.create(context)
-        .text("Hello, World!")
-        .build();
-    final ComponentTree componentTree = ComponentTree.create(context, text).build();
-
-    componentView.setComponent(componentTree);
-
+    final ComponentView componentView = ComponentView.create(
+    	this /* context */, 
+    	Text.create(new ComponentContext(this))
+            .text("Hello, World!")
+            .build());
+    	
     setContentView(componentView);
   }
 }
 ```
-
-> The class `Text` lives in the package `com.facebook.litho.widget`.  All other classes in the above are from `com.facebook.litho`.
 
 Run the app, you should see "Hello World!" displayed on the screen.
