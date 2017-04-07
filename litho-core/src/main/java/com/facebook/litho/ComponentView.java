@@ -30,7 +30,7 @@ import static com.facebook.litho.AccessibilityUtils.isAccessibilityEnabled;
  * A {@link ViewGroup} that can host the mounted state of a {@link Component}.
  */
 public class ComponentView extends ComponentHost {
-  private ComponentTree mComponent;
+  private ComponentTree mComponentTree;
   private final MountState mMountState;
   private boolean mIsAttached;
   private final Rect mPreviousMountBounds = new Rect();
@@ -56,6 +56,33 @@ public class ComponentView extends ComponentHost {
   // sticky header and RecyclerView's binder
   // TODO T14859077 Replace with proper solution
   private ComponentTree mTemporaryDetachedComponent;
+
+  /**
+   * Create a new {@link ComponentView} instance and initialize it
+   * with the given {@link Component} root.
+   *
+   * @param context Android {@link Context}.
+   * @param component The root component to draw.
+   * @return {@link ComponentView} able to render a {@link Component} hierarchy.
+   */
+  public static ComponentView create(Context context, Component component) {
+    return create(new ComponentContext(context), component);
+  }
+
+  /**
+   * Create a new {@link ComponentView} instance and initialize it
+   * with the given {@link Component} root.
+   *
+   * @param context {@link ComponentContext}.
+   * @param component The root component to draw.
+   * @return {@link ComponentView} able to render a {@link Component} hierarchy.
+   */
+  public static ComponentView create(ComponentContext context, Component component) {
+    final ComponentView componentView = new ComponentView(context);
+    componentView.setComponent(ComponentTree.create(context, component).build());
+
+    return componentView;
+  }
 
   public ComponentView(Context context) {
     this(context, null);
@@ -109,7 +136,7 @@ public class ComponentView extends ComponentHost {
   }
 
   public void startTemporaryDetach() {
-    mTemporaryDetachedComponent = mComponent;
+    mTemporaryDetachedComponent = mComponentTree;
   }
 
   @Override
@@ -140,8 +167,8 @@ public class ComponentView extends ComponentHost {
     if (!mIsAttached) {
       mIsAttached = true;
 
-      if (mComponent != null) {
-        mComponent.attach();
+      if (mComponentTree != null) {
+        mComponentTree.attach();
       }
 
       refreshAccessibilityDelegatesIfNeeded(isAccessibilityEnabled(getContext()));
@@ -156,10 +183,10 @@ public class ComponentView extends ComponentHost {
     if (mIsAttached) {
       mIsAttached = false;
 
-      if (mComponent != null) {
+      if (mComponentTree != null) {
         mMountState.detach();
 
-        mComponent.detach();
+        mComponentTree.detach();
       }
 
       AccessibilityManagerCompat.removeAccessibilityStateChangeListener(
@@ -173,15 +200,15 @@ public class ComponentView extends ComponentHost {
     int width = MeasureSpec.getSize(widthMeasureSpec);
     int height = MeasureSpec.getSize(heightMeasureSpec);
 
-    if (mTemporaryDetachedComponent != null && mComponent == null) {
+    if (mTemporaryDetachedComponent != null && mComponentTree == null) {
       setComponent(mTemporaryDetachedComponent);
       mTemporaryDetachedComponent = null;
     }
 
-    if (mComponent != null) {
+    if (mComponentTree != null) {
       boolean forceRelayout = mForceLayout;
       mForceLayout = false;
-      mComponent.measure(widthMeasureSpec, heightMeasureSpec, sLayoutSize, forceRelayout);
+      mComponentTree.measure(widthMeasureSpec, heightMeasureSpec, sLayoutSize, forceRelayout);
 
       width = sLayoutSize[0];
       height = sLayoutSize[1];
@@ -193,8 +220,8 @@ public class ComponentView extends ComponentHost {
   @Override
   protected void performLayout(boolean changed, int left, int top, int right, int bottom) {
 
-    if (mComponent != null) {
-      boolean wasMountTriggered = mComponent.layout();
+    if (mComponentTree != null) {
+      boolean wasMountTriggered = mComponentTree.layout();
 
       final boolean isRectSame = mPreviousMountBounds != null
           && mPreviousMountBounds.left == left
@@ -240,10 +267,18 @@ public class ComponentView extends ComponentHost {
     return false;
   }
 
+  /**
+   * @return {@link ComponentContext} associated with this ComponentView. It's a wrapper on the
+   * {@link Context} originally used to create this ComponentView itself.
+   */
+  public ComponentContext getComponentContext() {
+    return (ComponentContext) getContext();
+  }
+
   @Override
   protected boolean shouldRequestLayout() {
     // Don't bubble up layout requests while mounting.
-    if (mComponent != null && mComponent.isMounting()) {
+    if (mComponentTree != null && mComponentTree.isMounting()) {
       return false;
     }
 
@@ -251,12 +286,12 @@ public class ComponentView extends ComponentHost {
   }
 
   public ComponentTree getComponent() {
-    return mComponent;
+    return mComponentTree;
   }
 
-  public void setComponent(ComponentTree component) {
+  public void setComponent(ComponentTree componentTree) {
     mTemporaryDetachedComponent = null;
-    if (mComponent == component) {
+    if (mComponentTree == componentTree) {
       if (mIsAttached) {
         rebind();
       }
@@ -264,23 +299,49 @@ public class ComponentView extends ComponentHost {
     }
     setMountStateDirty();
 
-    if (mComponent != null) {
+    if (mComponentTree != null) {
       if (mIsAttached) {
-        mComponent.detach();
+        mComponentTree.detach();
       }
 
-      mComponent.clearComponentView();
+      mComponentTree.clearComponentView();
     }
 
-    mComponent = component;
+    mComponentTree = componentTree;
 
-    if (mComponent != null) {
-      mComponent.setComponentView(this);
+    if (mComponentTree != null) {
+      mComponentTree.setComponentView(this);
 
       if (mIsAttached) {
-        mComponent.attach();
+        mComponentTree.attach();
       }
     }
+  }
+
+  /**
+   * Change the root component synchronously.
+   */
+  public void setComponentRootSync(Component component) {
+    if (mComponentTree == null) {
+      throw new IllegalStateException("No ComponentTree initialized. Use the static " +
+          ComponentView.class.getSimpleName() + ".create(..) method to create an instance of a " +
+          ComponentView.class.getSimpleName() + " or manually set a ComponentTree.");
+    }
+
+    mComponentTree.setRoot(component);
+  }
+
+  /**
+   * Change the root component measuring it on a background thread before updating the UI.
+   */
+  public void setComponentRootAsync(Component component) {
+    if (mComponentTree == null) {
+      throw new IllegalStateException("No ComponentTree initialized. Use the static " +
+          ComponentView.class.getSimpleName() + ".create(..) method to create an instance of a " +
+          ComponentView.class.getSimpleName() + " or manually set a ComponentTree.");
+    }
+
+    mComponentTree.setRootAsync(component);
   }
 
   public void rebind() {
@@ -303,7 +364,7 @@ public class ComponentView extends ComponentHost {
       throw new IllegalStateException("Trying to clear the ComponentTree while attached.");
     }
 
-    mComponent = null;
+    mComponentTree = null;
   }
 
   @Override
@@ -386,12 +447,12 @@ public class ComponentView extends ComponentHost {
   }
 
   public void performIncrementalMount(Rect visibleRect) {
-    if (mComponent == null) {
+    if (mComponentTree == null) {
       return;
     }
 
-    if (mComponent.isIncrementalMountEnabled()) {
-      mComponent.mountComponent(visibleRect);
+    if (mComponentTree.isIncrementalMountEnabled()) {
+      mComponentTree.mountComponent(visibleRect);
     } else {
       throw new IllegalStateException("To perform incremental mounting, you need first to enable" +
           " it when creating the ComponentTree.");
@@ -399,12 +460,12 @@ public class ComponentView extends ComponentHost {
   }
 
   public void performIncrementalMount() {
-    if (mComponent == null) {
+    if (mComponentTree == null) {
       return;
     }
 
-    if (mComponent.isIncrementalMountEnabled()) {
-      mComponent.incrementalMountComponent();
+    if (mComponentTree.isIncrementalMountEnabled()) {
+      mComponentTree.incrementalMountComponent();
     } else {
       throw new IllegalStateException("To perform incremental mounting, you need first to enable" +
           " it when creating the ComponentTree.");
@@ -412,13 +473,13 @@ public class ComponentView extends ComponentHost {
   }
 
   public boolean isIncrementalMountEnabled() {
-    return (mComponent != null && mComponent.isIncrementalMountEnabled());
+    return (mComponentTree != null && mComponentTree.isIncrementalMountEnabled());
   }
 
   public void release() {
-    if (mComponent != null) {
-      mComponent.release();
-      mComponent = null;
+    if (mComponentTree != null) {
+      mComponentTree.release();
+      mComponentTree = null;
     }
   }
 

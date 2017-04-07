@@ -473,7 +473,7 @@ public class ComponentTreeTest {
   }
 
   private static ComponentTree getComponentTree(ComponentView componentView) {
-    return Whitebox.getInternalState(componentView, "mComponent");
+    return Whitebox.getInternalState(componentView, "mComponentTree");
   }
 
   private static boolean componentTreeHasSizeSpec(ComponentTree componentTree) {
