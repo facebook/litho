@@ -1,0 +1,6251 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+  <meta name="description" content="Javadoc API documentation for Litho." />
+
+<link rel="shortcut icon" type="image/x-icon" href="../../../favicon.ico" />
+<title>
+
+  ComponentLayout.Builder - Litho API
+
+
+| Litho
+
+</title>
+<link href="../../../../assets/doclava-developer-docs.css" rel="stylesheet" type="text/css" />
+<link href="../../../../assets/customizations.css" rel="stylesheet" type="text/css" />
+<script src="../../../../assets/search_autocomplete.js" type="text/javascript"></script>
+<script src="../../../../assets/jquery-resizable.min.js" type="text/javascript"></script>
+<script src="../../../../assets/doclava-developer-docs.js" type="text/javascript"></script>
+<script src="../../../../assets/prettify.js" type="text/javascript"></script>
+<script type="text/javascript">
+  setToRoot("../../../", "../../../../assets/");
+</script>
+<script src="../../../../assets/doclava-developer-reference.js" type="text/javascript"></script>
+<script src="../../../../assets/navtree_data.js" type="text/javascript"></script>
+<script src="../../../../assets/customizations.js" type="text/javascript"></script>
+<noscript>
+  <style type="text/css">
+    html,body{overflow:auto;}
+    #body-content{position:relative; top:0;}
+    #doc-content{overflow:visible;border-left:3px solid #666;}
+    #side-nav{padding:0;}
+    #side-nav .toggle-list ul {display:block;}
+    #resize-packages-nav{border-bottom:3px solid #666;}
+  </style>
+</noscript>
+</head>
+
+<body class="">
+
+<div id="header">
+    <div id="headerLeft">
+    
+      <span id="masthead-title"><a href="../../../packages.html">Litho</a></span>
+    
+    </div>
+    <div id="headerRight">
+      
+  <div id="search" >
+      <div id="searchForm">
+          <form accept-charset="utf-8" class="gsc-search-box" 
+                onsubmit="return submit_search()">
+            <table class="gsc-search-box" cellpadding="0" cellspacing="0"><tbody>
+                <tr>
+                  <td class="gsc-input">
+                    <input id="search_autocomplete" class="gsc-input" type="text" size="33" autocomplete="off"
+                      title="search developer docs" name="q"
+                      value="search developer docs"
+                      onFocus="search_focus_changed(this, true)"
+                      onBlur="search_focus_changed(this, false)"
+                      onkeydown="return search_changed(event, true, '../../../')"
+                      onkeyup="return search_changed(event, false, '../../../')" />
+                  <div id="search_filtered_div" class="no-display">
+                      <table id="search_filtered" cellspacing=0>
+                      </table>
+                  </div>
+                  </td>
+                  <!-- <td class="gsc-search-button">
+                    <input type="submit" value="Search" title="search" id="search-button" class="gsc-search-button" />
+                  </td>
+                  <td class="gsc-clear-button">
+                    <div title="clear results" class="gsc-clear-button">&nbsp;</div>
+                  </td> -->
+                </tr></tbody>
+              </table>
+          </form>
+      </div><!-- searchForm -->
+  </div><!-- search -->
+      
+    </div>
+</div><!-- header -->
+
+
+  <div class="g-section g-tpl-240" id="body-content">
+    <div class="g-unit g-first side-nav-resizable" id="side-nav">
+      <div id="swapper">
+        <div id="nav-panels">
+          <div id="resize-packages-nav">
+            <div id="packages-nav">
+              <div id="index-links">
+                <a href="../../../packages.html"  >Packages</a> | 
+                <a href="../../../classes.html" >Classes</a>
+              </div>
+              <ul>
+                
+    <li class="selected api apilevel-">
+  <a href="../../../com/facebook/litho/package-summary.html">com.facebook.litho</a></li>
+    <li class="api apilevel-">
+  <a href="../../../com/facebook/litho/animation/package-summary.html">com.facebook.litho.animation</a></li>
+    <li class="api apilevel-">
+  <a href="../../../com/facebook/litho/annotations/package-summary.html">com.facebook.litho.annotations</a></li>
+    <li class="api apilevel-">
+  <a href="../../../com/facebook/litho/config/package-summary.html">com.facebook.litho.config</a></li>
+    <li class="api apilevel-">
+  <a href="../../../com/facebook/litho/dataflow/package-summary.html">com.facebook.litho.dataflow</a></li>
+    <li class="api apilevel-">
+  <a href="../../../com/facebook/litho/dataflow/springs/package-summary.html">com.facebook.litho.dataflow.springs</a></li>
+    <li class="api apilevel-">
+  <a href="../../../com/facebook/litho/displaylist/package-summary.html">com.facebook.litho.displaylist</a></li>
+    <li class="api apilevel-">
+  <a href="../../../com/facebook/litho/fresco/package-summary.html">com.facebook.litho.fresco</a></li>
+    <li class="api apilevel-">
+  <a href="../../../com/facebook/litho/fresco/common/package-summary.html">com.facebook.litho.fresco.common</a></li>
+    <li class="api apilevel-">
+  <a href="../../../com/facebook/litho/internal/package-summary.html">com.facebook.litho.internal</a></li>
+    <li class="api apilevel-">
+  <a href="../../../com/facebook/litho/reference/package-summary.html">com.facebook.litho.reference</a></li>
+    <li class="api apilevel-">
+  <a href="../../../com/facebook/litho/specmodels/generator/package-summary.html">com.facebook.litho.specmodels.generator</a></li>
+    <li class="api apilevel-">
+  <a href="../../../com/facebook/litho/specmodels/internal/package-summary.html">com.facebook.litho.specmodels.internal</a></li>
+    <li class="api apilevel-">
+  <a href="../../../com/facebook/litho/specmodels/model/package-summary.html">com.facebook.litho.specmodels.model</a></li>
+    <li class="api apilevel-">
+  <a href="../../../com/facebook/litho/specmodels/processor/package-summary.html">com.facebook.litho.specmodels.processor</a></li>
+    <li class="api apilevel-">
+  <a href="../../../com/facebook/litho/utils/package-summary.html">com.facebook.litho.utils</a></li>
+    <li class="api apilevel-">
+  <a href="../../../com/facebook/litho/viewcompatcreator/package-summary.html">com.facebook.litho.viewcompatcreator</a></li>
+    <li class="api apilevel-">
+  <a href="../../../com/facebook/litho/widget/package-summary.html">com.facebook.litho.widget</a></li>
+    <li class="api apilevel-">
+  <a href="../../../com/facebook/widget/accessibility/delegates/package-summary.html">com.facebook.widget.accessibility.delegates</a></li>
+              </ul><br/>
+            </div> <!-- end packages -->
+          </div> <!-- end resize-packages -->
+          <div id="classes-nav">
+            <ul>
+              
+    <li><h2>Interfaces</h2>
+      <ul>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/ComponentLayout.html">ComponentLayout</a></li>
+          <li class="selected api apilevel-"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/ComponentLayout.ContainerBuilder.html">ComponentLayout.ContainerBuilder</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/ComponentLifecycle.StateContainer.html">ComponentLifecycle.StateContainer</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/ComponentLifecycle.StateUpdate.html">ComponentLifecycle.StateUpdate</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/ComponentsLogger.html">ComponentsLogger</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/ComponentsSystrace.Systrace.html">ComponentsSystrace.Systrace</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/EventDispatcher.html">EventDispatcher</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/HasEventDispatcher.html">HasEventDispatcher</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/ImageContent.html">ImageContent</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/LayoutHandler.html">LayoutHandler</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/TextContent.html">TextContent</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/Touchable.html">Touchable</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/ViewCompatComponent.ViewBinder.html">ViewCompatComponent.ViewBinder</a>&lt;V&nbsp;extends&nbsp;View&gt;</li>
+      </ul>
+    </li>
+              
+    <li><h2>Classes</h2>
+      <ul>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/BorderColorDrawable.html">BorderColorDrawable</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/ClickEvent.html">ClickEvent</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/Column.html">Column</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/ColumnReverse.html">ColumnReverse</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/Component.html">Component</a>&lt;L&nbsp;extends&nbsp;<a href="../../../com/facebook/litho/ComponentLifecycle.html">ComponentLifecycle</a>&gt;</li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/Component.Builder.html">Component.Builder</a>&lt;L&nbsp;extends&nbsp;<a href="../../../com/facebook/litho/ComponentLifecycle.html">ComponentLifecycle</a>&gt;</li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/ComponentContext.html">ComponentContext</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/ComponentHost.html">ComponentHost</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/ComponentInfo.html">ComponentInfo</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/ComponentInfo.Builder.html">ComponentInfo.Builder</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/ComponentLifecycle.html">ComponentLifecycle</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/ComponentsLifecycles.html">ComponentsLifecycles</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/ComponentsLogger.LayoutOutputLog.html">ComponentsLogger.LayoutOutputLog</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/ComponentsPools.html">ComponentsPools</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/ComponentsSystrace.html">ComponentsSystrace</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/ComponentTree.html">ComponentTree</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/ComponentTree.Builder.html">ComponentTree.Builder</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/ComponentView.html">ComponentView</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/ComponentViewTestHelper.html">ComponentViewTestHelper</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/DefaultComponentsSystrace.html">DefaultComponentsSystrace</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/Diff.html">Diff</a>&lt;T&gt;</li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/DispatchPopulateAccessibilityEventEvent.html">DispatchPopulateAccessibilityEventEvent</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/DrawableMatrix.html">DrawableMatrix</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/EventHandler.html">EventHandler</a>&lt;E&gt;</li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/FocusedVisibleEvent.html">FocusedVisibleEvent</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/FullImpressionVisibleEvent.html">FullImpressionVisibleEvent</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/InlineLayoutSpec.html">InlineLayoutSpec</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/InvisibleEvent.html">InvisibleEvent</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/Layout.html">Layout</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/LongClickEvent.html">LongClickEvent</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/MatrixDrawable.html">MatrixDrawable</a>&lt;T&nbsp;extends&nbsp;Drawable&gt;</li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/MeasureComparisonUtils.html">MeasureComparisonUtils</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/OnInitializeAccessibilityEventEvent.html">OnInitializeAccessibilityEventEvent</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/OnInitializeAccessibilityNodeInfoEvent.html">OnInitializeAccessibilityNodeInfoEvent</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/OnPopulateAccessibilityEventEvent.html">OnPopulateAccessibilityEventEvent</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/OnRequestSendAccessibilityEventEvent.html">OnRequestSendAccessibilityEventEvent</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/Output.html">Output</a>&lt;T&gt;</li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/PerformAccessibilityActionEvent.html">PerformAccessibilityActionEvent</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/ResourceResolver.html">ResourceResolver</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/Row.html">Row</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/RowReverse.html">RowReverse</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/SendAccessibilityEventEvent.html">SendAccessibilityEventEvent</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/SendAccessibilityEventUncheckedEvent.html">SendAccessibilityEventUncheckedEvent</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/Size.html">Size</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/SizeSpec.html">SizeSpec</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/StateHandler.html">StateHandler</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/StateValue.html">StateValue</a>&lt;T&gt;</li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/TestComponentTree.html">TestComponentTree</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/TestComponentTree.Builder.html">TestComponentTree.Builder</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/TestItem.html">TestItem</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/ThreadUtils.html">ThreadUtils</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/TouchEvent.html">TouchEvent</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/Transition.html">Transition</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/Transition.Builder.html">Transition.Builder</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/TransitionInterpolatorAnimator.html">TransitionInterpolatorAnimator</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/TransitionInterpolatorAnimator.Builder.html">TransitionInterpolatorAnimator.Builder</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/TransitionProperties.html">TransitionProperties</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/TransitionProperties.PropertyChangeHolder.html">TransitionProperties.PropertyChangeHolder</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/TransitionProperties.PropertySetHolder.html">TransitionProperties.PropertySetHolder</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/TransitionSet.html">TransitionSet</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/TreeProps.html">TreeProps</a></li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/ViewCompatComponent.html">ViewCompatComponent</a>&lt;V&nbsp;extends&nbsp;View&gt;</li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/ViewCompatComponent.Builder.html">ViewCompatComponent.Builder</a>&lt;V&nbsp;extends&nbsp;View&gt;</li>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/VisibleEvent.html">VisibleEvent</a></li>
+      </ul>
+    </li>
+              
+    <li><h2>Annotations</h2>
+      <ul>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/SizeSpec.MeasureSpecMode.html">SizeSpec.MeasureSpecMode</a></li>
+      </ul>
+    </li>
+              
+    <li><h2>Enums</h2>
+      <ul>
+          <li class="api apilevel-"><a href="../../../com/facebook/litho/ComponentLifecycle.MountType.html">ComponentLifecycle.MountType</a></li>
+      </ul>
+    </li>
+              
+              
+            </ul><br/>
+          </div><!-- end classes -->
+        </div><!-- end nav-panels -->
+        <div id="nav-tree" style="display:none">
+          <div id="index-links">
+            <a href="../../../packages.html"  >Packages</a> | 
+            <a href="../../../classes.html" >Classes</a>
+          </div>
+        </div><!-- end nav-tree -->
+      </div><!-- end swapper -->
+    </div> <!-- end side-nav -->
+    <script>
+      if (!isMobile) {
+        //$("<a href='#' id='nav-swap' onclick='swapNav();return false;' style='font-size:10px;line-height:9px;margin-left:1em;text-decoration:none;'><span id='tree-link'>Use Tree Navigation</span><span id='panel-link' style='display:none'>Use Panel Navigation</span></a>").appendTo("#side-nav");
+        chooseDefaultNav();
+        if ($("#nav-tree").is(':visible')) {
+          init_default_navtree("../../../");
+        } else {
+          addLoadEvent(function() {
+            scrollIntoView("packages-nav");
+            scrollIntoView("classes-nav");
+          });
+        }
+        //$("#swapper").css({borderBottom:"2px solid #aaa"});
+      } else {
+        swapNav(); // tree view should be used on mobile
+      }
+    </script>
+
+
+
+<div class="g-unit" id="doc-content">
+
+<div id="api-info-block">
+
+
+
+
+<div class="sum-details-links">
+
+
+Summary:
+
+
+
+
+
+
+
+
+
+
+
+  <a href="#pubmethods">Methods</a>
+  
+
+
+
+&#124; <a href="#" onclick="return toggleAllClassInherited()" id="toggleAllClassInherited">[Expand All]</a>
+
+</div><!-- end sum-details-links -->
+<div class="api-level">
+  
+
+
+  
+  
+
+</div>
+</div><!-- end api-info-block -->
+
+
+<!-- ======== START OF CLASS DATA ======== -->
+
+<div id="jd-header">
+    public
+    static 
+     
+    
+    interface
+<h1>ComponentLayout.Builder</h1>
+
+
+
+  
+  
+  
+
+
+</div><!-- end header -->
+
+<div id="naMessage"></div>
+
+<div id="jd-content" class="api apilevel-">
+<table class="jd-inheritance-table">
+
+
+    <tr>
+         	
+        <td colspan="1" class="jd-inheritance-class-cell">com.facebook.litho.ComponentLayout.Builder</td>
+    </tr>
+    
+
+</table>
+
+
+
+
+
+
+<table class="jd-sumtable jd-sumtable-subclasses"><tr><td colspan="12" style="border:none;margin:0;padding:0;">
+
+  <a href="#" onclick="return toggleInherited(this, null)" id="subclasses-indirect" class="jd-expando-trigger closed"
+          ><img id="subclasses-indirect-trigger"
+          src="../../../../assets/images/triangle-closed.png"
+          class="jd-expando-trigger-img" /></a>Known Indirect Subclasses
+
+  <div id="subclasses-indirect">
+      <div id="subclasses-indirect-list"
+              class="jd-inheritedlinks"
+              
+              >
+          
+            
+              <a href="../../../com/facebook/litho/ComponentLayout.ContainerBuilder.html">ComponentLayout.ContainerBuilder</a>
+            
+          
+      </div>
+      <div id="subclasses-indirect-summary"
+              style="display: none;"
+              >
+  <table class="jd-sumtable-expando">
+        <tr class="alt-color api apilevel-" >
+              <td class="jd-linkcol"><a href="../../../com/facebook/litho/ComponentLayout.ContainerBuilder.html">ComponentLayout.ContainerBuilder</a></td>
+              <td class="jd-descrcol" width="100%">&nbsp;</td>
+          </tr>
+  </table>
+      </div>
+  </div>
+</td></tr></table>
+
+
+<div class="jd-descr">
+
+
+
+
+
+
+</div><!-- jd-descr -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="jd-descr">
+
+
+<h2>Summary</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ========== METHOD SUMMARY =========== -->
+<table id="pubmethods" class="jd-sumtable"><tr><th colspan="12">Public Methods</th></tr>
+
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#alignSelf(YogaAlign)">alignSelf</a></span>(YogaAlign alignSelf)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#aspectRatio(float)">aspectRatio</a></span>(float aspectRatio)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#background(android.graphics.drawable.Drawable)">background</a></span>(Drawable drawable)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#background(com.facebook.litho.reference.Reference.Builder<? extends android.graphics.drawable.Drawable>)">background</a></span>(<a href="../../../com/facebook/litho/reference/Reference.Builder.html">Builder</a>&lt;?&nbsp;extends&nbsp;Drawable&gt; backgroundBuilder)
+        
+        <div class="jd-descrdiv">
+      <em>
+  This method is deprecated.
+      just use <code><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#background(android.graphics.drawable.Drawable)">background(Drawable)</a></code> instead.
+</em></div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#background(com.facebook.litho.reference.Reference<? extends android.graphics.drawable.Drawable>)">background</a></span>(<a href="../../../com/facebook/litho/reference/Reference.html">Reference</a>&lt;?&nbsp;extends&nbsp;Drawable&gt; background)
+        
+        <div class="jd-descrdiv">
+      <em>
+  This method is deprecated.
+      just use <code><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#background(android.graphics.drawable.Drawable)">background(Drawable)</a></code> instead.
+</em></div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#backgroundAttr(int, int)">backgroundAttr</a></span>(int resId, int defaultResId)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#backgroundAttr(int)">backgroundAttr</a></span>(int resId)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#backgroundColor(int)">backgroundColor</a></span>(int backgroundColor)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#backgroundRes(int)">backgroundRes</a></span>(int resId)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#borderColor(int)">borderColor</a></span>(int borderColor)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#borderWidthAttr(YogaEdge, int, int)">borderWidthAttr</a></span>(YogaEdge edge, int resId, int defaultResId)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#borderWidthAttr(YogaEdge, int)">borderWidthAttr</a></span>(YogaEdge edge, int resId)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#borderWidthDip(YogaEdge, int)">borderWidthDip</a></span>(YogaEdge edge, int borderWidth)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#borderWidthPx(YogaEdge, int)">borderWidthPx</a></span>(YogaEdge edge, int borderWidth)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#borderWidthRes(YogaEdge, int)">borderWidthRes</a></span>(YogaEdge edge, int resId)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.html">ComponentLayout</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#build()">build</a></span>()
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#clickHandler(com.facebook.litho.EventHandler<com.facebook.litho.ClickEvent>)">clickHandler</a></span>(<a href="../../../com/facebook/litho/EventHandler.html">EventHandler</a>&lt;<a href="../../../com/facebook/litho/ClickEvent.html">ClickEvent</a>&gt; clickHandler)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#contentDescription(int)">contentDescription</a></span>(int stringId)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#contentDescription(java.lang.CharSequence)">contentDescription</a></span>(CharSequence contentDescription)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#contentDescription(int, java.lang.Object...)">contentDescription</a></span>(int stringId, Object... formatArgs)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#dispatchPopulateAccessibilityEventHandler(com.facebook.litho.EventHandler<com.facebook.litho.DispatchPopulateAccessibilityEventEvent>)">dispatchPopulateAccessibilityEventHandler</a></span>(<a href="../../../com/facebook/litho/EventHandler.html">EventHandler</a>&lt;<a href="../../../com/facebook/litho/DispatchPopulateAccessibilityEventEvent.html">DispatchPopulateAccessibilityEventEvent</a>&gt; dispatchPopulateAccessibilityEventHandler)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#duplicateParentState(boolean)">duplicateParentState</a></span>(boolean duplicateParentState)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#flex(float)">flex</a></span>(float flex)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#flexBasisAttr(int, int)">flexBasisAttr</a></span>(int resId, int defaultResId)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#flexBasisAttr(int)">flexBasisAttr</a></span>(int resId)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#flexBasisDip(int)">flexBasisDip</a></span>(int flexBasis)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#flexBasisPercent(float)">flexBasisPercent</a></span>(float percent)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#flexBasisPx(int)">flexBasisPx</a></span>(int flexBasis)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#flexBasisRes(int)">flexBasisRes</a></span>(int resId)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#flexGrow(float)">flexGrow</a></span>(float flexGrow)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#flexShrink(float)">flexShrink</a></span>(float flexShrink)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#focusable(boolean)">focusable</a></span>(boolean isFocusable)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#focusedHandler(com.facebook.litho.EventHandler<com.facebook.litho.FocusedVisibleEvent>)">focusedHandler</a></span>(<a href="../../../com/facebook/litho/EventHandler.html">EventHandler</a>&lt;<a href="../../../com/facebook/litho/FocusedVisibleEvent.html">FocusedVisibleEvent</a>&gt; focusedHandler)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#foreground(com.facebook.litho.reference.Reference<? extends android.graphics.drawable.Drawable>)">foreground</a></span>(<a href="../../../com/facebook/litho/reference/Reference.html">Reference</a>&lt;?&nbsp;extends&nbsp;Drawable&gt; foreground)
+        
+        <div class="jd-descrdiv">
+      <em>
+  This method is deprecated.
+      just use <code><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#foreground(android.graphics.drawable.Drawable)">foreground(Drawable)</a></code> instead.
+</em></div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#foreground(com.facebook.litho.reference.Reference.Builder<? extends android.graphics.drawable.Drawable>)">foreground</a></span>(<a href="../../../com/facebook/litho/reference/Reference.Builder.html">Builder</a>&lt;?&nbsp;extends&nbsp;Drawable&gt; foregroundBuilder)
+        
+        <div class="jd-descrdiv">
+      <em>
+  This method is deprecated.
+      just use <code><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#foreground(android.graphics.drawable.Drawable)">foreground(Drawable)</a></code> instead.
+</em></div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#foreground(android.graphics.drawable.Drawable)">foreground</a></span>(Drawable drawable)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#foregroundAttr(int, int)">foregroundAttr</a></span>(int resId, int defaultResId)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#foregroundAttr(int)">foregroundAttr</a></span>(int resId)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#foregroundColor(int)">foregroundColor</a></span>(int foregroundColor)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#foregroundRes(int)">foregroundRes</a></span>(int resId)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#fullImpressionHandler(com.facebook.litho.EventHandler<com.facebook.litho.FullImpressionVisibleEvent>)">fullImpressionHandler</a></span>(<a href="../../../com/facebook/litho/EventHandler.html">EventHandler</a>&lt;<a href="../../../com/facebook/litho/FullImpressionVisibleEvent.html">FullImpressionVisibleEvent</a>&gt; fullImpressionHandler)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#heightAttr(int)">heightAttr</a></span>(int resId)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#heightAttr(int, int)">heightAttr</a></span>(int resId, int defaultResId)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#heightDip(int)">heightDip</a></span>(int height)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#heightPercent(float)">heightPercent</a></span>(float percent)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#heightPx(int)">heightPx</a></span>(int height)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#heightRes(int)">heightRes</a></span>(int resId)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#importantForAccessibility(int)">importantForAccessibility</a></span>(int importantForAccessibility)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#invisibleHandler(com.facebook.litho.EventHandler<com.facebook.litho.InvisibleEvent>)">invisibleHandler</a></span>(<a href="../../../com/facebook/litho/EventHandler.html">EventHandler</a>&lt;<a href="../../../com/facebook/litho/InvisibleEvent.html">InvisibleEvent</a>&gt; invisibleHandler)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#layoutDirection(YogaDirection)">layoutDirection</a></span>(YogaDirection direction)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#longClickHandler(com.facebook.litho.EventHandler<com.facebook.litho.LongClickEvent>)">longClickHandler</a></span>(<a href="../../../com/facebook/litho/EventHandler.html">EventHandler</a>&lt;<a href="../../../com/facebook/litho/LongClickEvent.html">LongClickEvent</a>&gt; clickHandler)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#marginAttr(YogaEdge, int)">marginAttr</a></span>(YogaEdge edge, int resId)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#marginAttr(YogaEdge, int, int)">marginAttr</a></span>(YogaEdge edge, int resId, int defaultResId)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#marginAuto(YogaEdge)">marginAuto</a></span>(YogaEdge edge)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#marginDip(YogaEdge, int)">marginDip</a></span>(YogaEdge edge, int margin)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#marginPercent(YogaEdge, float)">marginPercent</a></span>(YogaEdge edge, float percent)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#marginPx(YogaEdge, int)">marginPx</a></span>(YogaEdge edge, int margin)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#marginRes(YogaEdge, int)">marginRes</a></span>(YogaEdge edge, int resId)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#maxHeightAttr(int, int)">maxHeightAttr</a></span>(int resId, int defaultResId)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#maxHeightAttr(int)">maxHeightAttr</a></span>(int resId)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#maxHeightDip(int)">maxHeightDip</a></span>(int maxHeight)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#maxHeightPercent(float)">maxHeightPercent</a></span>(float percent)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#maxHeightPx(int)">maxHeightPx</a></span>(int maxHeight)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#maxHeightRes(int)">maxHeightRes</a></span>(int resId)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#maxWidthAttr(int)">maxWidthAttr</a></span>(int resId)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#maxWidthAttr(int, int)">maxWidthAttr</a></span>(int resId, int defaultResId)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#maxWidthDip(int)">maxWidthDip</a></span>(int maxWidth)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#maxWidthPercent(float)">maxWidthPercent</a></span>(float percent)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#maxWidthPx(int)">maxWidthPx</a></span>(int maxWidth)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#maxWidthRes(int)">maxWidthRes</a></span>(int resId)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#minHeightAttr(int)">minHeightAttr</a></span>(int resId)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#minHeightAttr(int, int)">minHeightAttr</a></span>(int resId, int defaultResId)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#minHeightDip(int)">minHeightDip</a></span>(int minHeight)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#minHeightPercent(float)">minHeightPercent</a></span>(float percent)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#minHeightPx(int)">minHeightPx</a></span>(int minHeight)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#minHeightRes(int)">minHeightRes</a></span>(int resId)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#minWidthAttr(int, int)">minWidthAttr</a></span>(int resId, int defaultResId)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#minWidthAttr(int)">minWidthAttr</a></span>(int resId)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#minWidthDip(int)">minWidthDip</a></span>(int minWidth)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#minWidthPercent(float)">minWidthPercent</a></span>(float percent)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#minWidthPx(int)">minWidthPx</a></span>(int minWidth)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#minWidthRes(int)">minWidthRes</a></span>(int resId)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#onInitializeAccessibilityEventHandler(com.facebook.litho.EventHandler<com.facebook.litho.OnInitializeAccessibilityEventEvent>)">onInitializeAccessibilityEventHandler</a></span>(<a href="../../../com/facebook/litho/EventHandler.html">EventHandler</a>&lt;<a href="../../../com/facebook/litho/OnInitializeAccessibilityEventEvent.html">OnInitializeAccessibilityEventEvent</a>&gt; onInitializeAccessibilityEventHandler)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#onInitializeAccessibilityNodeInfoHandler(com.facebook.litho.EventHandler<com.facebook.litho.OnInitializeAccessibilityNodeInfoEvent>)">onInitializeAccessibilityNodeInfoHandler</a></span>(<a href="../../../com/facebook/litho/EventHandler.html">EventHandler</a>&lt;<a href="../../../com/facebook/litho/OnInitializeAccessibilityNodeInfoEvent.html">OnInitializeAccessibilityNodeInfoEvent</a>&gt; onInitializeAccessibilityNodeInfoHandler)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#onPopulateAccessibilityEventHandler(com.facebook.litho.EventHandler<com.facebook.litho.OnPopulateAccessibilityEventEvent>)">onPopulateAccessibilityEventHandler</a></span>(<a href="../../../com/facebook/litho/EventHandler.html">EventHandler</a>&lt;<a href="../../../com/facebook/litho/OnPopulateAccessibilityEventEvent.html">OnPopulateAccessibilityEventEvent</a>&gt; onPopulateAccessibilityEventHandler)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#onRequestSendAccessibilityEventHandler(com.facebook.litho.EventHandler<com.facebook.litho.OnRequestSendAccessibilityEventEvent>)">onRequestSendAccessibilityEventHandler</a></span>(<a href="../../../com/facebook/litho/EventHandler.html">EventHandler</a>&lt;<a href="../../../com/facebook/litho/OnRequestSendAccessibilityEventEvent.html">OnRequestSendAccessibilityEventEvent</a>&gt; onRequestSendAccessibilityEventHandler)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#paddingAttr(YogaEdge, int)">paddingAttr</a></span>(YogaEdge edge, int resId)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#paddingAttr(YogaEdge, int, int)">paddingAttr</a></span>(YogaEdge edge, int resId, int defaultResId)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#paddingDip(YogaEdge, int)">paddingDip</a></span>(YogaEdge edge, int padding)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#paddingPercent(YogaEdge, float)">paddingPercent</a></span>(YogaEdge edge, float percent)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#paddingPx(YogaEdge, int)">paddingPx</a></span>(YogaEdge edge, int padding)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#paddingRes(YogaEdge, int)">paddingRes</a></span>(YogaEdge edge, int resId)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#performAccessibilityActionHandler(com.facebook.litho.EventHandler<com.facebook.litho.PerformAccessibilityActionEvent>)">performAccessibilityActionHandler</a></span>(<a href="../../../com/facebook/litho/EventHandler.html">EventHandler</a>&lt;<a href="../../../com/facebook/litho/PerformAccessibilityActionEvent.html">PerformAccessibilityActionEvent</a>&gt; performAccessibilityActionHandler)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#positionAttr(YogaEdge, int)">positionAttr</a></span>(YogaEdge edge, int resId)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#positionAttr(YogaEdge, int, int)">positionAttr</a></span>(YogaEdge edge, int resId, int defaultResId)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#positionDip(YogaEdge, int)">positionDip</a></span>(YogaEdge edge, int value)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#positionPercent(YogaEdge, float)">positionPercent</a></span>(YogaEdge edge, float percent)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#positionPx(YogaEdge, int)">positionPx</a></span>(YogaEdge edge, int value)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#positionRes(YogaEdge, int)">positionRes</a></span>(YogaEdge edge, int resId)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#positionType(YogaPositionType)">positionType</a></span>(YogaPositionType positionType)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#sendAccessibilityEventHandler(com.facebook.litho.EventHandler<com.facebook.litho.SendAccessibilityEventEvent>)">sendAccessibilityEventHandler</a></span>(<a href="../../../com/facebook/litho/EventHandler.html">EventHandler</a>&lt;<a href="../../../com/facebook/litho/SendAccessibilityEventEvent.html">SendAccessibilityEventEvent</a>&gt; sendAccessibilityEventHandler)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#sendAccessibilityEventUncheckedHandler(com.facebook.litho.EventHandler<com.facebook.litho.SendAccessibilityEventUncheckedEvent>)">sendAccessibilityEventUncheckedHandler</a></span>(<a href="../../../com/facebook/litho/EventHandler.html">EventHandler</a>&lt;<a href="../../../com/facebook/litho/SendAccessibilityEventUncheckedEvent.html">SendAccessibilityEventUncheckedEvent</a>&gt; sendAccessibilityEventUncheckedHandler)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#testKey(java.lang.String)">testKey</a></span>(String testKey)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#touchExpansionAttr(YogaEdge, int)">touchExpansionAttr</a></span>(YogaEdge edge, int resId)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#touchExpansionAttr(YogaEdge, int, int)">touchExpansionAttr</a></span>(YogaEdge edge, int resId, int defaultResId)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#touchExpansionDip(YogaEdge, int)">touchExpansionDip</a></span>(YogaEdge edge, int value)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#touchExpansionPx(YogaEdge, int)">touchExpansionPx</a></span>(YogaEdge edge, int value)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#touchExpansionRes(YogaEdge, int)">touchExpansionRes</a></span>(YogaEdge edge, int resId)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#touchHandler(com.facebook.litho.EventHandler<com.facebook.litho.TouchEvent>)">touchHandler</a></span>(<a href="../../../com/facebook/litho/EventHandler.html">EventHandler</a>&lt;<a href="../../../com/facebook/litho/TouchEvent.html">TouchEvent</a>&gt; touchHandler)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#transitionKey(java.lang.String)">transitionKey</a></span>(String key)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#viewTag(java.lang.Object)">viewTag</a></span>(Object viewTag)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#viewTags(android.util.SparseArray<java.lang.Object>)">viewTags</a></span>(SparseArray&lt;Object&gt; viewTags)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#visibleHandler(com.facebook.litho.EventHandler<com.facebook.litho.VisibleEvent>)">visibleHandler</a></span>(<a href="../../../com/facebook/litho/EventHandler.html">EventHandler</a>&lt;<a href="../../../com/facebook/litho/VisibleEvent.html">VisibleEvent</a>&gt; visibleHandler)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#widthAttr(int, int)">widthAttr</a></span>(int resId, int defaultResId)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#widthAttr(int)">widthAttr</a></span>(int resId)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#widthDip(int)">widthDip</a></span>(int width)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#widthPercent(float)">widthPercent</a></span>(float percent)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#widthPx(int)">widthPx</a></span>(int width)
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#widthRes(int)">widthRes</a></span>(int resId)
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol">
+            abstract
+            
+            
+            
+            
+            <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+        </td>
+        <td class="jd-linkcol" width="100%">
+        <span class="sympad"><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#wrapInView()">wrapInView</a></span>()
+        
+  </td></tr>
+
+
+
+</table>
+
+
+
+
+
+
+
+</div><!-- jd-descr (summary) -->
+
+<!-- Details -->
+
+
+
+
+
+
+
+
+<!-- XML Attributes -->
+
+
+<!-- Enum Values -->
+
+
+<!-- Constants -->
+
+
+<!-- Fields -->
+
+
+<!-- Public ctors -->
+
+
+
+<!-- ========= CONSTRUCTOR DETAIL ======== -->
+<!-- Protected ctors -->
+
+
+
+<!-- ========= METHOD DETAIL ======== -->
+<!-- Public methdos -->
+
+<h2>Public Methods</h2>
+
+
+
+<a id="alignSelf(YogaAlign)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">alignSelf</span>
+      <span class="normal">(YogaAlign alignSelf)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="aspectRatio(float)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">aspectRatio</span>
+      <span class="normal">(float aspectRatio)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="background(android.graphics.drawable.Drawable)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">background</span>
+      <span class="normal">(Drawable drawable)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="background(com.facebook.litho.reference.Reference.Builder<? extends android.graphics.drawable.Drawable>)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">background</span>
+      <span class="normal">(<a href="../../../com/facebook/litho/reference/Reference.Builder.html">Builder</a>&lt;?&nbsp;extends&nbsp;Drawable&gt; backgroundBuilder)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      <p>
+  <p class="caution">
+      <strong>
+  This method is deprecated.</strong><br/> just use <code><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#background(android.graphics.drawable.Drawable)">background(Drawable)</a></code> instead.
+
+  </p>
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="background(com.facebook.litho.reference.Reference<? extends android.graphics.drawable.Drawable>)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">background</span>
+      <span class="normal">(<a href="../../../com/facebook/litho/reference/Reference.html">Reference</a>&lt;?&nbsp;extends&nbsp;Drawable&gt; background)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      <p>
+  <p class="caution">
+      <strong>
+  This method is deprecated.</strong><br/> just use <code><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#background(android.graphics.drawable.Drawable)">background(Drawable)</a></code> instead.
+
+  </p>
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="backgroundAttr(int, int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">backgroundAttr</span>
+      <span class="normal">(int resId, int defaultResId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="backgroundAttr(int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">backgroundAttr</span>
+      <span class="normal">(int resId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="backgroundColor(int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">backgroundColor</span>
+      <span class="normal">(int backgroundColor)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="backgroundRes(int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">backgroundRes</span>
+      <span class="normal">(int resId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="borderColor(int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">borderColor</span>
+      <span class="normal">(int borderColor)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="borderWidthAttr(YogaEdge, int, int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">borderWidthAttr</span>
+      <span class="normal">(YogaEdge edge, int resId, int defaultResId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="borderWidthAttr(YogaEdge, int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">borderWidthAttr</span>
+      <span class="normal">(YogaEdge edge, int resId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="borderWidthDip(YogaEdge, int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">borderWidthDip</span>
+      <span class="normal">(YogaEdge edge, int borderWidth)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="borderWidthPx(YogaEdge, int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">borderWidthPx</span>
+      <span class="normal">(YogaEdge edge, int borderWidth)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="borderWidthRes(YogaEdge, int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">borderWidthRes</span>
+      <span class="normal">(YogaEdge edge, int resId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="build()"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.html">ComponentLayout</a>
+      </span>
+      <span class="sympad">build</span>
+      <span class="normal">()</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="clickHandler(com.facebook.litho.EventHandler<com.facebook.litho.ClickEvent>)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">clickHandler</span>
+      <span class="normal">(<a href="../../../com/facebook/litho/EventHandler.html">EventHandler</a>&lt;<a href="../../../com/facebook/litho/ClickEvent.html">ClickEvent</a>&gt; clickHandler)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="contentDescription(int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">contentDescription</span>
+      <span class="normal">(int stringId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="contentDescription(java.lang.CharSequence)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">contentDescription</span>
+      <span class="normal">(CharSequence contentDescription)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="contentDescription(int, java.lang.Object...)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">contentDescription</span>
+      <span class="normal">(int stringId, Object... formatArgs)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="dispatchPopulateAccessibilityEventHandler(com.facebook.litho.EventHandler<com.facebook.litho.DispatchPopulateAccessibilityEventEvent>)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">dispatchPopulateAccessibilityEventHandler</span>
+      <span class="normal">(<a href="../../../com/facebook/litho/EventHandler.html">EventHandler</a>&lt;<a href="../../../com/facebook/litho/DispatchPopulateAccessibilityEventEvent.html">DispatchPopulateAccessibilityEventEvent</a>&gt; dispatchPopulateAccessibilityEventHandler)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="duplicateParentState(boolean)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">duplicateParentState</span>
+      <span class="normal">(boolean duplicateParentState)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="flex(float)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">flex</span>
+      <span class="normal">(float flex)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="flexBasisAttr(int, int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">flexBasisAttr</span>
+      <span class="normal">(int resId, int defaultResId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="flexBasisAttr(int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">flexBasisAttr</span>
+      <span class="normal">(int resId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="flexBasisDip(int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">flexBasisDip</span>
+      <span class="normal">(int flexBasis)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="flexBasisPercent(float)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">flexBasisPercent</span>
+      <span class="normal">(float percent)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="flexBasisPx(int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">flexBasisPx</span>
+      <span class="normal">(int flexBasis)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="flexBasisRes(int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">flexBasisRes</span>
+      <span class="normal">(int resId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="flexGrow(float)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">flexGrow</span>
+      <span class="normal">(float flexGrow)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="flexShrink(float)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">flexShrink</span>
+      <span class="normal">(float flexShrink)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="focusable(boolean)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">focusable</span>
+      <span class="normal">(boolean isFocusable)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="focusedHandler(com.facebook.litho.EventHandler<com.facebook.litho.FocusedVisibleEvent>)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">focusedHandler</span>
+      <span class="normal">(<a href="../../../com/facebook/litho/EventHandler.html">EventHandler</a>&lt;<a href="../../../com/facebook/litho/FocusedVisibleEvent.html">FocusedVisibleEvent</a>&gt; focusedHandler)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="foreground(com.facebook.litho.reference.Reference<? extends android.graphics.drawable.Drawable>)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">foreground</span>
+      <span class="normal">(<a href="../../../com/facebook/litho/reference/Reference.html">Reference</a>&lt;?&nbsp;extends&nbsp;Drawable&gt; foreground)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      <p>
+  <p class="caution">
+      <strong>
+  This method is deprecated.</strong><br/> just use <code><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#foreground(android.graphics.drawable.Drawable)">foreground(Drawable)</a></code> instead.
+
+  </p>
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="foreground(com.facebook.litho.reference.Reference.Builder<? extends android.graphics.drawable.Drawable>)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">foreground</span>
+      <span class="normal">(<a href="../../../com/facebook/litho/reference/Reference.Builder.html">Builder</a>&lt;?&nbsp;extends&nbsp;Drawable&gt; foregroundBuilder)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      <p>
+  <p class="caution">
+      <strong>
+  This method is deprecated.</strong><br/> just use <code><a href="../../../com/facebook/litho/ComponentLayout.Builder.html#foreground(android.graphics.drawable.Drawable)">foreground(Drawable)</a></code> instead.
+
+  </p>
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="foreground(android.graphics.drawable.Drawable)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">foreground</span>
+      <span class="normal">(Drawable drawable)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="foregroundAttr(int, int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">foregroundAttr</span>
+      <span class="normal">(int resId, int defaultResId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="foregroundAttr(int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">foregroundAttr</span>
+      <span class="normal">(int resId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="foregroundColor(int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">foregroundColor</span>
+      <span class="normal">(int foregroundColor)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="foregroundRes(int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">foregroundRes</span>
+      <span class="normal">(int resId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="fullImpressionHandler(com.facebook.litho.EventHandler<com.facebook.litho.FullImpressionVisibleEvent>)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">fullImpressionHandler</span>
+      <span class="normal">(<a href="../../../com/facebook/litho/EventHandler.html">EventHandler</a>&lt;<a href="../../../com/facebook/litho/FullImpressionVisibleEvent.html">FullImpressionVisibleEvent</a>&gt; fullImpressionHandler)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="heightAttr(int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">heightAttr</span>
+      <span class="normal">(int resId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="heightAttr(int, int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">heightAttr</span>
+      <span class="normal">(int resId, int defaultResId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="heightDip(int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">heightDip</span>
+      <span class="normal">(int height)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="heightPercent(float)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">heightPercent</span>
+      <span class="normal">(float percent)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="heightPx(int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">heightPx</span>
+      <span class="normal">(int height)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="heightRes(int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">heightRes</span>
+      <span class="normal">(int resId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="importantForAccessibility(int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">importantForAccessibility</span>
+      <span class="normal">(int importantForAccessibility)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="invisibleHandler(com.facebook.litho.EventHandler<com.facebook.litho.InvisibleEvent>)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">invisibleHandler</span>
+      <span class="normal">(<a href="../../../com/facebook/litho/EventHandler.html">EventHandler</a>&lt;<a href="../../../com/facebook/litho/InvisibleEvent.html">InvisibleEvent</a>&gt; invisibleHandler)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="layoutDirection(YogaDirection)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">layoutDirection</span>
+      <span class="normal">(YogaDirection direction)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="longClickHandler(com.facebook.litho.EventHandler<com.facebook.litho.LongClickEvent>)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">longClickHandler</span>
+      <span class="normal">(<a href="../../../com/facebook/litho/EventHandler.html">EventHandler</a>&lt;<a href="../../../com/facebook/litho/LongClickEvent.html">LongClickEvent</a>&gt; clickHandler)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="marginAttr(YogaEdge, int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">marginAttr</span>
+      <span class="normal">(YogaEdge edge, int resId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="marginAttr(YogaEdge, int, int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">marginAttr</span>
+      <span class="normal">(YogaEdge edge, int resId, int defaultResId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="marginAuto(YogaEdge)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">marginAuto</span>
+      <span class="normal">(YogaEdge edge)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="marginDip(YogaEdge, int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">marginDip</span>
+      <span class="normal">(YogaEdge edge, int margin)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="marginPercent(YogaEdge, float)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">marginPercent</span>
+      <span class="normal">(YogaEdge edge, float percent)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="marginPx(YogaEdge, int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">marginPx</span>
+      <span class="normal">(YogaEdge edge, int margin)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="marginRes(YogaEdge, int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">marginRes</span>
+      <span class="normal">(YogaEdge edge, int resId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="maxHeightAttr(int, int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">maxHeightAttr</span>
+      <span class="normal">(int resId, int defaultResId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="maxHeightAttr(int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">maxHeightAttr</span>
+      <span class="normal">(int resId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="maxHeightDip(int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">maxHeightDip</span>
+      <span class="normal">(int maxHeight)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="maxHeightPercent(float)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">maxHeightPercent</span>
+      <span class="normal">(float percent)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="maxHeightPx(int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">maxHeightPx</span>
+      <span class="normal">(int maxHeight)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="maxHeightRes(int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">maxHeightRes</span>
+      <span class="normal">(int resId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="maxWidthAttr(int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">maxWidthAttr</span>
+      <span class="normal">(int resId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="maxWidthAttr(int, int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">maxWidthAttr</span>
+      <span class="normal">(int resId, int defaultResId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="maxWidthDip(int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">maxWidthDip</span>
+      <span class="normal">(int maxWidth)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="maxWidthPercent(float)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">maxWidthPercent</span>
+      <span class="normal">(float percent)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="maxWidthPx(int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">maxWidthPx</span>
+      <span class="normal">(int maxWidth)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="maxWidthRes(int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">maxWidthRes</span>
+      <span class="normal">(int resId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="minHeightAttr(int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">minHeightAttr</span>
+      <span class="normal">(int resId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="minHeightAttr(int, int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">minHeightAttr</span>
+      <span class="normal">(int resId, int defaultResId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="minHeightDip(int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">minHeightDip</span>
+      <span class="normal">(int minHeight)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="minHeightPercent(float)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">minHeightPercent</span>
+      <span class="normal">(float percent)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="minHeightPx(int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">minHeightPx</span>
+      <span class="normal">(int minHeight)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="minHeightRes(int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">minHeightRes</span>
+      <span class="normal">(int resId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="minWidthAttr(int, int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">minWidthAttr</span>
+      <span class="normal">(int resId, int defaultResId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="minWidthAttr(int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">minWidthAttr</span>
+      <span class="normal">(int resId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="minWidthDip(int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">minWidthDip</span>
+      <span class="normal">(int minWidth)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="minWidthPercent(float)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">minWidthPercent</span>
+      <span class="normal">(float percent)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="minWidthPx(int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">minWidthPx</span>
+      <span class="normal">(int minWidth)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="minWidthRes(int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">minWidthRes</span>
+      <span class="normal">(int resId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="onInitializeAccessibilityEventHandler(com.facebook.litho.EventHandler<com.facebook.litho.OnInitializeAccessibilityEventEvent>)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">onInitializeAccessibilityEventHandler</span>
+      <span class="normal">(<a href="../../../com/facebook/litho/EventHandler.html">EventHandler</a>&lt;<a href="../../../com/facebook/litho/OnInitializeAccessibilityEventEvent.html">OnInitializeAccessibilityEventEvent</a>&gt; onInitializeAccessibilityEventHandler)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="onInitializeAccessibilityNodeInfoHandler(com.facebook.litho.EventHandler<com.facebook.litho.OnInitializeAccessibilityNodeInfoEvent>)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">onInitializeAccessibilityNodeInfoHandler</span>
+      <span class="normal">(<a href="../../../com/facebook/litho/EventHandler.html">EventHandler</a>&lt;<a href="../../../com/facebook/litho/OnInitializeAccessibilityNodeInfoEvent.html">OnInitializeAccessibilityNodeInfoEvent</a>&gt; onInitializeAccessibilityNodeInfoHandler)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="onPopulateAccessibilityEventHandler(com.facebook.litho.EventHandler<com.facebook.litho.OnPopulateAccessibilityEventEvent>)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">onPopulateAccessibilityEventHandler</span>
+      <span class="normal">(<a href="../../../com/facebook/litho/EventHandler.html">EventHandler</a>&lt;<a href="../../../com/facebook/litho/OnPopulateAccessibilityEventEvent.html">OnPopulateAccessibilityEventEvent</a>&gt; onPopulateAccessibilityEventHandler)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="onRequestSendAccessibilityEventHandler(com.facebook.litho.EventHandler<com.facebook.litho.OnRequestSendAccessibilityEventEvent>)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">onRequestSendAccessibilityEventHandler</span>
+      <span class="normal">(<a href="../../../com/facebook/litho/EventHandler.html">EventHandler</a>&lt;<a href="../../../com/facebook/litho/OnRequestSendAccessibilityEventEvent.html">OnRequestSendAccessibilityEventEvent</a>&gt; onRequestSendAccessibilityEventHandler)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="paddingAttr(YogaEdge, int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">paddingAttr</span>
+      <span class="normal">(YogaEdge edge, int resId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="paddingAttr(YogaEdge, int, int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">paddingAttr</span>
+      <span class="normal">(YogaEdge edge, int resId, int defaultResId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="paddingDip(YogaEdge, int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">paddingDip</span>
+      <span class="normal">(YogaEdge edge, int padding)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="paddingPercent(YogaEdge, float)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">paddingPercent</span>
+      <span class="normal">(YogaEdge edge, float percent)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="paddingPx(YogaEdge, int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">paddingPx</span>
+      <span class="normal">(YogaEdge edge, int padding)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="paddingRes(YogaEdge, int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">paddingRes</span>
+      <span class="normal">(YogaEdge edge, int resId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="performAccessibilityActionHandler(com.facebook.litho.EventHandler<com.facebook.litho.PerformAccessibilityActionEvent>)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">performAccessibilityActionHandler</span>
+      <span class="normal">(<a href="../../../com/facebook/litho/EventHandler.html">EventHandler</a>&lt;<a href="../../../com/facebook/litho/PerformAccessibilityActionEvent.html">PerformAccessibilityActionEvent</a>&gt; performAccessibilityActionHandler)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="positionAttr(YogaEdge, int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">positionAttr</span>
+      <span class="normal">(YogaEdge edge, int resId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="positionAttr(YogaEdge, int, int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">positionAttr</span>
+      <span class="normal">(YogaEdge edge, int resId, int defaultResId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="positionDip(YogaEdge, int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">positionDip</span>
+      <span class="normal">(YogaEdge edge, int value)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="positionPercent(YogaEdge, float)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">positionPercent</span>
+      <span class="normal">(YogaEdge edge, float percent)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="positionPx(YogaEdge, int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">positionPx</span>
+      <span class="normal">(YogaEdge edge, int value)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="positionRes(YogaEdge, int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">positionRes</span>
+      <span class="normal">(YogaEdge edge, int resId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="positionType(YogaPositionType)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">positionType</span>
+      <span class="normal">(YogaPositionType positionType)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="sendAccessibilityEventHandler(com.facebook.litho.EventHandler<com.facebook.litho.SendAccessibilityEventEvent>)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">sendAccessibilityEventHandler</span>
+      <span class="normal">(<a href="../../../com/facebook/litho/EventHandler.html">EventHandler</a>&lt;<a href="../../../com/facebook/litho/SendAccessibilityEventEvent.html">SendAccessibilityEventEvent</a>&gt; sendAccessibilityEventHandler)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="sendAccessibilityEventUncheckedHandler(com.facebook.litho.EventHandler<com.facebook.litho.SendAccessibilityEventUncheckedEvent>)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">sendAccessibilityEventUncheckedHandler</span>
+      <span class="normal">(<a href="../../../com/facebook/litho/EventHandler.html">EventHandler</a>&lt;<a href="../../../com/facebook/litho/SendAccessibilityEventUncheckedEvent.html">SendAccessibilityEventUncheckedEvent</a>&gt; sendAccessibilityEventUncheckedHandler)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="testKey(java.lang.String)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">testKey</span>
+      <span class="normal">(String testKey)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="touchExpansionAttr(YogaEdge, int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">touchExpansionAttr</span>
+      <span class="normal">(YogaEdge edge, int resId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="touchExpansionAttr(YogaEdge, int, int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">touchExpansionAttr</span>
+      <span class="normal">(YogaEdge edge, int resId, int defaultResId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="touchExpansionDip(YogaEdge, int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">touchExpansionDip</span>
+      <span class="normal">(YogaEdge edge, int value)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="touchExpansionPx(YogaEdge, int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">touchExpansionPx</span>
+      <span class="normal">(YogaEdge edge, int value)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="touchExpansionRes(YogaEdge, int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">touchExpansionRes</span>
+      <span class="normal">(YogaEdge edge, int resId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="touchHandler(com.facebook.litho.EventHandler<com.facebook.litho.TouchEvent>)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">touchHandler</span>
+      <span class="normal">(<a href="../../../com/facebook/litho/EventHandler.html">EventHandler</a>&lt;<a href="../../../com/facebook/litho/TouchEvent.html">TouchEvent</a>&gt; touchHandler)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="transitionKey(java.lang.String)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">transitionKey</span>
+      <span class="normal">(String key)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="viewTag(java.lang.Object)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">viewTag</span>
+      <span class="normal">(Object viewTag)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="viewTags(android.util.SparseArray<java.lang.Object>)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">viewTags</span>
+      <span class="normal">(SparseArray&lt;Object&gt; viewTags)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="visibleHandler(com.facebook.litho.EventHandler<com.facebook.litho.VisibleEvent>)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">visibleHandler</span>
+      <span class="normal">(<a href="../../../com/facebook/litho/EventHandler.html">EventHandler</a>&lt;<a href="../../../com/facebook/litho/VisibleEvent.html">VisibleEvent</a>&gt; visibleHandler)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="widthAttr(int, int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">widthAttr</span>
+      <span class="normal">(int resId, int defaultResId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="widthAttr(int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">widthAttr</span>
+      <span class="normal">(int resId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="widthDip(int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">widthDip</span>
+      <span class="normal">(int width)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="widthPercent(float)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">widthPercent</span>
+      <span class="normal">(float percent)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="widthPx(int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">widthPx</span>
+      <span class="normal">(int width)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="widthRes(int)"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">widthRes</span>
+      <span class="normal">(int resId)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+<a id="wrapInView()"></a>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+        abstract 
+         
+        <a href="../../../com/facebook/litho/ComponentLayout.Builder.html">ComponentLayout.Builder</a>
+      </span>
+      <span class="sympad">wrapInView</span>
+      <span class="normal">()</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    </div>
+</div>
+
+
+
+
+
+<!-- ========= METHOD DETAIL ======== -->
+
+
+
+<!-- ========= END OF CLASS DATA ========= -->
+<a id="navbar_top"></a>
+
+<div id="footer">
+ +Generated by <a href="http://code.google.com/p/doclava/">Doclava</a>.
+ +</div> <!-- end footer - @generated -->
+
+</div> <!-- jd-content -->
+
+</div><!-- end doc-content -->
+
+</div> <!-- end body-content --> 
+
+<script type="text/javascript">
+init(); /* initialize doclava-developer-docs.js */
+</script>
+
+</body>
+</html>
