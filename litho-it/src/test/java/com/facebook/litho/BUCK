@@ -54,8 +54,8 @@ android_resource(
     package = "com.facebook.litho",
     res = "res",
     visibility = [
-        make_dep_path("litho-testing/src/test/..."),
-        make_dep_path("litho-testing/src/test/..."),
+        make_dep_path("litho-it/src/test/..."),
+        make_dep_path("litho-it/src/test/..."),
         "//javatests/com/facebook/litho/...",
     ],
 )
@@ -69,8 +69,8 @@ android_library(
         "TouchExpansionTestInternalNode.java",
     ],
     visibility = [
-        make_dep_path("litho-testing/src/test/java/com/facebook/litho/..."),
-        make_dep_path("litho-testing/src/test/java/com/facebook/litho/..."),
+        make_dep_path("litho-it/src/test/java/com/facebook/litho/..."),
+        make_dep_path("litho-it/src/test/java/com/facebook/litho/..."),
     ],
     deps = [
         COMPONENTS_ANDROIDSUPPORT_TARGET,

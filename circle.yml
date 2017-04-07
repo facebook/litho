@@ -24,7 +24,7 @@ test:
     # Build the sample first
     - buck build sample
     # Run the tests
-    - buck test litho-testing/src/test/... --config build.threads=1
+    - buck test litho-it/src/test/... --config build.threads=1
 
 experimental:
   notify:

@@ -10,7 +10,7 @@ android_library(
         COMPONENTS_ROBOLECTRIC_TARGET,
     ],
     tests = [
-        make_dep_path("litho-testing/src/test/java/com/facebook/litho/testing/viewtree:viewtree"),
+        make_dep_path("litho-it/src/test/java/com/facebook/litho/testing/viewtree:viewtree"),
     ],
     visibility = [
         "PUBLIC",
