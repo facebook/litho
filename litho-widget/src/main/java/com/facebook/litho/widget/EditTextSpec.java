@@ -14,6 +14,7 @@ import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.Layout;
@@ -29,6 +30,7 @@ import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.Output;
 import com.facebook.litho.Size;
+import com.facebook.litho.annotations.FromBind;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnBind;
 import com.facebook.litho.annotations.OnCreateMountContent;
@@ -185,6 +187,7 @@ class EditTextSpec {
       @Prop(optional = true) Layout.Alignment textAlignment,
       @Prop(optional = true) int gravity,
       @Prop(optional = true) boolean editable,
+      @Prop(optional = true) Drawable background,
       @Prop(optional = true) int selection) {
 
     // TODO(11759579) - don't allocate a new EditText in every measure.
@@ -217,6 +220,7 @@ class EditTextSpec {
         textAlignment,
         gravity,
         editable,
+        background,
         selection);
 
     editText.measure(
@@ -293,20 +297,27 @@ class EditTextSpec {
         textAlignment,
         gravity,
         editable,
+        null,
         selection);
   }
 
   @OnBind
   static void onBind(
       ComponentContext c,
-      EditTextTextTextChangedEventHandler editText) {
+      EditTextTextTextChangedEventHandler editText,
+      @Prop(optional = true) Drawable background,
+      Output<Drawable> oldBackground) {
+    oldBackground.set(editText.getBackground());
+    editText.setBackground(background);
     editText.attachWatcher();
   }
 
   @OnUnbind
   static void onUnbind(
       ComponentContext c,
-      EditTextTextTextChangedEventHandler editText) {
+      EditTextTextTextChangedEventHandler editText,
+      @FromBind Drawable oldBackground) {
+    editText.setBackground(oldBackground);
     editText.detachWatcher();
   }
 
@@ -344,6 +355,7 @@ class EditTextSpec {
       Layout.Alignment textAlignment,
       int gravity,
       boolean editable,
+      Drawable background,
       int selection) {
 
     // If it's the same text, don't set it again so that the caret won't move to the beginning or
@@ -384,6 +396,10 @@ class EditTextSpec {
       editText.setHintTextColor(hintColor);
     } else {
       editText.setHintTextColor(hintColorStateList);
+    }
+
+    if (background != null) {
+      editText.setBackground(background);
     }
 
     switch (textAlignment) {
