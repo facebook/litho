@@ -46,7 +46,7 @@ dependencies {
     compile deps.supportRecyclerView
 
     // First-party dependencies
-    compile deps.yoga
+    compile project(':yoga')
     compile deps.fresco
 
     // TODO: Use maven artifact once published.

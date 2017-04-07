@@ -8,3 +8,4 @@ docs/_site/
 /.buckd
 /gentest/test.html
 .buckversion
+/lib/yoga/.externalNativeBuild/

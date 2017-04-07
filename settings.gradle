@@ -21,3 +21,6 @@ include ':litho-processor'
 include ':litho-widget'
 include ':litho-stubs'
 include ':litho-testing'
+include ':yoga'
+
+project(':yoga').projectDir = file('lib/yoga')
