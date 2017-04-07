@@ -20,7 +20,6 @@
 - title: Handling Events
   items:
   - id: events-overview
-  - id: accessibility-handling
   - id: events-touch-handling
   - id: visibility-handling
 - title: Compatibility
