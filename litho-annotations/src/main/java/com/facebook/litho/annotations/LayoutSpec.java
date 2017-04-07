@@ -22,22 +22,21 @@ import java.lang.annotation.RetentionPolicy;
  * <p>If you wish to create a component that mounts its own content, then use {@link MountSpec}
  * instead.
  * <p>For example:
- * <pre>
- * {@code
+ * <code>
  *
- * @LayoutSpec
+ * {@literal @}LayoutSpec
  * public class MyComponentSpec {
  *
- *   @OnCreateLayout
- *   protected ComponentLayout onCreateLayout(LayoutContext c, @Prop MyProp prop) {
+ *   {@literal @}OnCreateLayout
+ *   ComponentLayout onCreateLayout(LayoutContext c, @Prop MyProp prop) {
  *       return Row.create(c)
  *           .alignItems(FLEX_START)
  *           .child(someChild1)
  *           .child(someChild2)
  *           .build();
+ *   }
  * }
- * }
- * </pre>
+ * </code>
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface LayoutSpec {

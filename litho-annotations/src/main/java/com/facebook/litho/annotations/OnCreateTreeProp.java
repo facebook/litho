@@ -21,21 +21,19 @@ import java.lang.annotation.RetentionPolicy;
  * String, Integer etc; creates a wrapper class instead.
  *
  * <p>Example usage:
- * <pre>
- * {@code
+ * <code>
  *
- * @LayoutSpec
+ * {@literal @}LayoutSpec
  * public class MySpec {
  *
- *   @OnCreateTreeProp
- *   protected SomeTreePropClass onCreateSomeTreeProp(
+ *   {@literal @}OnCreateTreeProp
+ *   SomeTreePropClass onCreateSomeTreeProp(
  *     ComponentsContext c,
- *     @Prop SomeProp prop) {
+ *     {@literal @}Prop SomeProp prop) {
  *    return new SomeTreePropClass(prop.getSomeProperty());
  *   }
  * }
- * }
- * </pre>
+ * </code>
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface OnCreateTreeProp {

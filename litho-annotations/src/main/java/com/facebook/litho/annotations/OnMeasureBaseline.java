@@ -18,18 +18,16 @@ import java.lang.annotation.RetentionPolicy;
  * computed height of your component. The baseline is the vertical location of your component
  * to be aligned when using .alignItems(BASELINE).
  *
- * <pre>
- * {@code
- * @LayoutSpec
+ * <code>
+ * {@literal @}LayoutSpec
  * public class MyComponentSpec {
  *
- *   @OnMeasureBaseline
- *   protected int onMeasureBaseline(LayoutContext c, int width, int height) {
- *       return height / 2;
+ *   {@literal @}OnMeasureBaseline
+ *   int onMeasureBaseline(LayoutContext c, int width, int height) {
+ *     return height / 2;
  *   }
  * }
- * }
- * </pre>
+ * </code>
  */
 @Retention(RetentionPolicy.SOURCE)
 public @interface OnMeasureBaseline {

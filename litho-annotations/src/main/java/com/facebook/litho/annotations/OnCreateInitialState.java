@@ -13,27 +13,25 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * A method annotated with this annotation will be responsible to create the initial value for
+ * A method annotated with this annotation is responsible for creating the initial value for
  * params annotated with the {@link State} annotation in this spec. This method will take as
- * parameters a context and an {@link com.facebook.litho.Output} for every State variable that
- * it will initialize
+ * parameters a context and an com.facebook.litho.Output for every State variable that it will
+ * initialize.
  *
  * <p>For example:
- * <pre>
- * {@code
+ * <code>
  *
- * @LayoutSpec
+ * {@literal @}LayoutSpec
  * public class MyChangeSetSpec {
  *
- *   @OnCreateInitialState
- *   protected void onCreateInitialState(
+ *   {@literal @}OnCreateInitialState
+ *   void onCreateInitialState(
  *     ComponentContext c,
- *     Output<SomeState> someState) {
+ *     Output{@literal <}SomeState{@literal >} someState) {
        someState.set(new SomeState());
  *   }
  * }
- * }
- * </pre>
+ * </code>
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface OnCreateInitialState {

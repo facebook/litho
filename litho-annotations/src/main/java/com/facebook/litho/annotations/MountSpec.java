@@ -16,7 +16,8 @@ import java.lang.annotation.RetentionPolicy;
  * A class that is annotated with this annotation will be used to create a component that renders
  * something, in the form of either a Drawable or a View.
  * <p>A class that is annotated with {@link MountSpec} must implement a method with the
- * {@link OnMount} annotation. It may also implement methods with the following annotations:
+ * {@link OnCreateMountContent} annotation. It may also implement methods with the following
+ * annotations:
  * - {@link OnLoadStyle}
  * - {@link OnEvent}
  * - {@link OnPrepare}
@@ -29,28 +30,25 @@ import java.lang.annotation.RetentionPolicy;
  * <p>If you wish to create a component that is a composition of other components, then use
  * {@link LayoutSpec} instead.
  * <p>For example:
- * <pre>
- * {@code
+ * <code>
  *
- * @MountSpec
+ * {@literal @}MountSpec
  * public class MyComponentSpec {
  *
- *   @OnMount
- *   protected MyDrawable onMount(
+ *   {@literal @}OnCreateMountContent
+ *   MyDrawable onCreateMountContent(ComponentContext c) {
+ *     return new MyDrawable(c);
+ *   }
+ *
+ *   {@literal @}OnMount
+ *   void onMount(
  *       ComponentContext context,
- *       MyDrawable convertDrawable,
- *       @Prop MyProp prop) {
- *     if (convertDrawable == null) {
- *       convertDrawable = new MyDrawable();
- *     }
- *
- *     convertDrawable.setMyProp(prop);
- *
- *     return convertDrawable;
+ *       MyDrawable myDrawable,
+ *       {@literal @}Prop MyProp prop) {
+ *     myDrawable.setMyProp(prop);
  *   }
  * }
- * }
- * </pre>
+ * </code>
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MountSpec {

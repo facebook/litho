@@ -27,7 +27,7 @@ public class ProcessorUtils {
    * Gets an annotation parameter from an annotation. Usually you can just get the parameter
    * directly, but if the parameter has type {@link Class} it doesn't work, because javac doesn't
    * load classes in the normal manner.
-   * @see https://area-51.blog/2009/02/13/getting-class-values-from-annotations-in-an-annotationprocessor/
+   * @see <a href=https://area-51.blog/2009/02/13/getting-class-values-from-annotations-in-an-annotationprocessor/>this article</a>
    * for more details.
    */
   public static <T> T getAnnotationParameter(
