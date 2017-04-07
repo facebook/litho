@@ -86,6 +86,7 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
         false,
+        false,
         null);
 
     // Check diff tree is null.
@@ -113,6 +114,7 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
         true,
+        false,
         null);
 
     // Check diff tree is not null and consistent.
@@ -261,6 +263,7 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
         true,
+        false,
         null);
 
     // Check diff tree is consistent.
@@ -307,6 +310,7 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
         true,
+        false,
         null);
 
     // Check diff tree is consistent.
@@ -361,6 +365,7 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
         true,
+        false,
         null);
 
     LayoutState layoutState = LayoutState.calculate(
@@ -370,6 +375,7 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
         true,
+        false,
         prevLayoutState.getDiffTree());
 
     assertEquals(prevLayoutState.getMountableOutputCount(), layoutState.getMountableOutputCount());
@@ -414,6 +420,7 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
         true,
+        false,
         null);
     LayoutState layoutState = LayoutState.calculate(
         mContext,
@@ -422,6 +429,7 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
         true,
+        false,
         prevLayoutState.getDiffTree());
 
     assertNotEquals(
@@ -520,6 +528,7 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
         true,
+        false,
         null);
 
     assertOutputsState(state, LayoutOutput.STATE_UNKNOWN);
@@ -531,6 +540,7 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
         true,
+        false,
         state.getDiffTree());
 
     assertOutputsState(secondState, LayoutOutput.STATE_UPDATED);
@@ -542,6 +552,7 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
         true,
+        false,
         secondState.getDiffTree());
 
     assertOutputsState(thirdState, LayoutOutput.STATE_DIRTY);
@@ -602,6 +613,7 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
         true,
+        false,
         null);
 
     assertOutputsState(state, LayoutOutput.STATE_UNKNOWN);
@@ -613,6 +625,7 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
         true,
+        false,
         state.getDiffTree());
 
     assertEquals(secondState.getMountableOutputCount(), 5);
@@ -625,6 +638,7 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
         true,
+        false,
         secondState.getDiffTree());
 
     assertEquals(thirdState.getMountableOutputCount(), 5);
@@ -697,6 +711,7 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
         true,
+        false,
         null);
 
     assertEquals(LayoutOutput.STATE_UNKNOWN, state.getMountableOutputAt(2).getUpdateState());
@@ -708,6 +723,7 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
         true,
+        false,
         state.getDiffTree());
 
     assertEquals(LayoutOutput.STATE_UPDATED, secondState.getMountableOutputAt(2).getUpdateState());
@@ -719,6 +735,7 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
         true,
+        false,
         secondState.getDiffTree());
 
     assertEquals(LayoutOutput.STATE_DIRTY, thirdState.getMountableOutputAt(2).getUpdateState());
@@ -770,6 +787,7 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
         true,
+        false,
         null);
 
     assertOutputsState(state, LayoutOutput.STATE_UNKNOWN);
@@ -781,6 +799,7 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
         true,
+        false,
         state.getDiffTree());
 
     assertEquals(secondState.getMountableOutputCount(), 6);
@@ -815,6 +834,7 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
         true,
+        false,
         null);
 
     assertTrue(component.wasMeasureCalled());
@@ -840,6 +860,7 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(90, SizeSpec.EXACTLY),
         true,
+        false,
         firstLayoutState.getDiffTree());
 
     assertFalse(secondComponent.wasMeasureCalled());
@@ -867,6 +888,7 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
         true,
+        false,
         null);
 
     assertTrue(component.wasMeasureCalled());
@@ -891,6 +913,7 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
         true,
+        false,
         firstLayoutState.getDiffTree());
 
     assertFalse(secondComponent.wasMeasureCalled());
@@ -933,6 +956,7 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
         true,
+        false,
         null);
 
     LayoutState layoutState = LayoutState.calculate(
@@ -942,6 +966,7 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
         true,
+        false,
         prevLayoutState.getDiffTree());
 
     // The nested root measure() was called in the first layout calculation.
@@ -994,6 +1019,7 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
         true,
+        false,
         null);
 
     LayoutState layoutState = LayoutState.calculate(
@@ -1003,6 +1029,7 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
         true,
+        false,
         prevLayoutState.getDiffTree());
 
     // The nested root measure() was called in the first layout calculation.
@@ -1087,6 +1114,7 @@ public class TreeDiffingTest {
         widthSpecContainer,
         heightSpec,
         true,
+        false,
         null);
 
     // Make sure we reused the cached layout and it wasn't released.
@@ -1100,6 +1128,7 @@ public class TreeDiffingTest {
         widthSpecContainer,
         heightSpec,
         true,
+        false,
         prevLayoutState.getDiffTree());
 
     // Make sure we reused the cached layout and it wasn't released.

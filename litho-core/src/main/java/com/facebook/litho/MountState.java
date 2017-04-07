@@ -248,8 +248,7 @@ class MountState {
           mTransitionManager,
           mIndexToItemMap,
           false /* isPreMount */);
-      final boolean animateTransitions = !componentTree.isFirstMount();
-      mTransitionManager.processTransitions(animateTransitions);
+      mTransitionManager.processTransitions(layoutState.shouldAnimateTransitions());
     }
 
     processTestOutputs(layoutState);

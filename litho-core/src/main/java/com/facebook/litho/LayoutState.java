@@ -150,6 +150,7 @@ class LayoutState {
 
   private AccessibilityManager mAccessibilityManager;
   private boolean mAccessibilityEnabled = false;
+  private boolean mShouldAnimateTransitions = false;
 
   private StateHandler mStateHandler;
 
@@ -867,6 +868,7 @@ class LayoutState {
       int widthSpec,
       int heightSpec,
       boolean shouldGenerateDiffTree,
+      boolean shouldAnimatedTransitions,
       DiffNode previousDiffTreeRoot) {
 
     // Detect errors internal to components
@@ -881,6 +883,7 @@ class LayoutState {
     layoutState.mComponent = component;
     layoutState.mWidthSpec = widthSpec;
     layoutState.mHeightSpec = heightSpec;
+    layoutState.mShouldAnimateTransitions = shouldAnimatedTransitions;
 
     component.applyStateUpdates(c);
 
@@ -1584,6 +1587,7 @@ class LayoutState {
       mShouldGenerateDiffTree = false;
       mAccessibilityManager = null;
       mAccessibilityEnabled = false;
+      mShouldAnimateTransitions = false;
 
       if (mDiffTreeRoot != null) {
         ComponentsPools.release(mDiffTreeRoot);
@@ -1714,6 +1718,10 @@ class LayoutState {
 
   boolean hasTransitionContext() {
     return (mTransitionContext != null);
+  }
+
+  boolean shouldAnimateTransitions() {
+    return mShouldAnimateTransitions;
   }
 
   private static void addMountableOutput(LayoutState layoutState, LayoutOutput layoutOutput) {
