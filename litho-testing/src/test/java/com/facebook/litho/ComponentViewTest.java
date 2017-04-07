@@ -97,7 +97,6 @@ public class ComponentViewTest {
             new ComponentContext(RuntimeEnvironment.application),
             component)
             .incrementalMount(false)
-            .layoutDiffing(false)
             .build());
 
     nullComponentView.measure(

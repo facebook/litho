@@ -55,7 +55,7 @@ public class ComponentsTestRunner extends RobolectricTestRunner {
     }
 
     return prefix +
-        "litho-core/src/test/java/com/facebook/litho/AndroidManifest.xml";
+        "litho-testing/src/test/java/com/facebook/litho/AndroidManifest.xml";
   }
 
   @Override

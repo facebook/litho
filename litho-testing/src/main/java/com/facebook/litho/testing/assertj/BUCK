@@ -8,7 +8,7 @@ android_library(
     ],
     visibility = [
         "//javatests/...",
-        make_dep_path("litho-core/src/test/..."),
+        make_dep_path("litho-testing/src/test/..."),
     ],
     deps = [
         COMPONENTS_ANDROIDSUPPORT_TARGET,

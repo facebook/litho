@@ -23,7 +23,7 @@ COMPONENTS_COMPONENTS_FRESCO_COMMON_TARGET = make_dep_path('litho-core/src/main/
 COMPONENTS_TESTING_TARGET                  = make_dep_path('litho-testing/src/main/java/com/facebook/litho/testing:testing')
 
 # Test source
-COMPONENTS_TEST_TARGET                     = make_dep_path('litho-core/src/test/java/com/facebook/litho:components')
+COMPONENTS_TEST_TARGET                     = make_dep_path('litho-testing/src/test/java/com/facebook/litho:components')
 
 # Java source with local upstream
 COMPONENTS_PROGUARDANNOTATIONS_TARGET = make_dep_path('litho-core/src/main/java/com/facebook/proguard/annotations:annotations')

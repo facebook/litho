@@ -11,7 +11,7 @@ android_library(
     name = "internal",
     srcs = glob(["*.java"]),
     tests = [
-        make_dep_path("litho-core/src/test/java/com/facebook/litho/internal:internal"),
+        make_dep_path("litho-testing/src/test/java/com/facebook/litho/internal:internal"),
     ],
     visibility = [
         "PUBLIC",
