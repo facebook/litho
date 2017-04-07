@@ -89,8 +89,6 @@ class CardSpec {
                 .marginPx(HORIZONTAL, shadowHorizontal)
                 .marginPx(TOP, shadowTop)
                 .marginPx(BOTTOM, shadowBottom)
-                .positionType(ABSOLUTE)
-                .positionPx(ALL, 0)
                 .backgroundColor(cardBackgroundColor)
                 .child(content)
                 .child(
