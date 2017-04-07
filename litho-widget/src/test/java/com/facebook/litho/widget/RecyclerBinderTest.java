@@ -194,7 +194,7 @@ public class RecyclerBinderTest {
 
     final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
 
-    TestComponentTreeHolder holder =  mHoldersForComponents.get(components.get(0).getComponent());
+    TestComponentTreeHolder holder = mHoldersForComponents.get(components.get(0).getComponent());
     assertTrue(holder.isTreeValid());
     assertTrue(holder.mLayoutSyncCalled);
 
@@ -277,7 +277,7 @@ public class RecyclerBinderTest {
     mRecyclerBinder.measure(new Size(), widthSpec, heightSpec);
     final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
 
-    TestComponentTreeHolder holder =  mHoldersForComponents.get(components.get(0).getComponent());
+    TestComponentTreeHolder holder = mHoldersForComponents.get(components.get(0).getComponent());
     assertTrue(holder.isTreeValid());
     assertTrue(holder.mLayoutSyncCalled);
 
@@ -380,7 +380,7 @@ public class RecyclerBinderTest {
       assertTrue(componentTreeHolder.mLayoutSyncCalled);
     }
 
-    for (int i = RANGE_SIZE ; i <= rangeTotal; i++) {
+    for (int i = RANGE_SIZE; i <= rangeTotal; i++) {
       componentTreeHolder = mHoldersForComponents.get(components.get(i).getComponent());
 
       assertTrue(componentTreeHolder.isTreeValid());
@@ -687,6 +687,41 @@ public class RecyclerBinderTest {
   }
 
   @Test
+  public void testInsertRange() {
+    final List<ComponentInfo> components = prepareLoadedBinder();
+    final List<ComponentInfo> newComponents = new ArrayList<>();
+
+    for (int i = 0; i < 3; i++) {
+      newComponents.add(
+          ComponentInfo.create().component(mock(Component.class)).build());
+    }
+
+    mRecyclerBinder.insertRangeAt(0, newComponents);
+
+    // The new elements were scheduled for layout.
+    for (int i = 0; i < 3; i++) {
+      final TestComponentTreeHolder holder =
+          mHoldersForComponents.get(newComponents.get(i).getComponent());
+      assertTrue(holder.isTreeValid());
+      assertFalse(holder.mLayoutSyncCalled);
+      assertTrue(holder.mLayoutAsyncCalled);
+      assertFalse(holder.mDidAcquireStateHandler);
+    }
+
+    final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
+
+    // The elements that went outside the layout range have been released.
+    for (int i = rangeTotal - 2; i <= rangeTotal; i++) {
+      final TestComponentTreeHolder holder =
+          mHoldersForComponents.get(components.get(i).getComponent());
+      assertFalse(holder.isTreeValid());
+      assertFalse(holder.mLayoutSyncCalled);
+      assertFalse(holder.mLayoutAsyncCalled);
+      assertTrue(holder.mDidAcquireStateHandler);
+    }
+  }
+
+  @Test
   public void testInsertOusideRange() {
     prepareLoadedBinder();
     final ComponentInfo newComponentInfo =
@@ -733,6 +768,76 @@ public class RecyclerBinderTest {
     assertFalse(holderMovedInRange.mLayoutSyncCalled);
     assertTrue(holderMovedInRange.mLayoutAsyncCalled);
     assertFalse(holderMovedInRange.mDidAcquireStateHandler);
+  }
+
+  @Test
+  public void testRemoveRange() {
+    final List<ComponentInfo> components = prepareLoadedBinder();
+    final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
+
+    mRecyclerBinder.removeRangeAt(0, RANGE_SIZE);
+
+    // The elements that were removed have been released.
+    for (int i = 0; i < RANGE_SIZE; i++) {
+      final TestComponentTreeHolder holder =
+          mHoldersForComponents.get(components.get(i).getComponent());
+      assertTrue(holder.mReleased);
+    }
+
+    // The elements that are now in the range get their layout computed
+    for (int i = rangeTotal + 1; i <= rangeTotal + RANGE_SIZE; i++) {
+      final TestComponentTreeHolder holder =
+          mHoldersForComponents.get(components.get(i).getComponent());
+      assertTrue(holder.isTreeValid());
+      assertFalse(holder.mLayoutSyncCalled);
+      assertTrue(holder.mLayoutAsyncCalled);
+      assertFalse(holder.mDidAcquireStateHandler);
+    }
+  }
+
+  @Test
+  public void testUpdate() {
+    final List<ComponentInfo> components = prepareLoadedBinder();
+
+    final TestComponentTreeHolder holder =
+        mHoldersForComponents.get(components.get(0).getComponent());
+    assertTrue(holder.isTreeValid());
+    holder.mTreeValid = false;
+    assertFalse(holder.isTreeValid());
+
+    final ComponentInfo newComponentInfo =
+        ComponentInfo.create().component(mock(Component.class)).build();
+    mRecyclerBinder.updateItemAt(0, newComponentInfo);
+
+    assertEquals(holder.getComponentInfo(), newComponentInfo);
+    assertTrue(holder.isTreeValid());
+  }
+
+  @Test
+  public void testUpdateRange() {
+    final List<ComponentInfo> components = prepareLoadedBinder();
+
+    for (int i = 0; i < RANGE_SIZE; i++) {
+      final TestComponentTreeHolder holder =
+          mHoldersForComponents.get(components.get(i).getComponent());
+      assertTrue(holder.isTreeValid());
+      holder.mTreeValid = false;
+      assertFalse(holder.isTreeValid());
+    }
+
+    final List<ComponentInfo> newInfos = new ArrayList<>();
+    for (int i = 0; i < RANGE_SIZE; i++) {
+      newInfos.add(
+          ComponentInfo.create().component(mock(Component.class)).build());
+    }
+    mRecyclerBinder.updateRangeAt(0, newInfos);
+
+    for (int i = 0; i < RANGE_SIZE; i++) {
+      final TestComponentTreeHolder holder =
+          mHoldersForComponents.get(components.get(i).getComponent());
+      assertEquals(holder.getComponentInfo(), newInfos.get(i));
+      assertTrue(holder.isTreeValid());
+    }
   }
 
   @Test
@@ -825,6 +930,11 @@ public class RecyclerBinderTest {
       }
 
       mLayoutSyncCalled = true;
+    }
+
+    @Override
+    public void setComponentInfo(ComponentInfo componentInfo) {
+      mComponentInfo = componentInfo;
     }
 
     @Override

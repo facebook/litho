@@ -263,6 +263,34 @@ public class RecyclerBinder implements Binder<RecyclerView>, LayoutInfo.Componen
   }
 
   /**
+   * Inserts the new items starting from position. The {@link RecyclerView} gets notified
+   * immediately about the new item being inserted.
+   * The ComponentInfo contains the component that will be inserted in the Binder and extra info
+   * like isSticky or spanCount.
+   */
+  @UiThread
+  public final void insertRangeAt(int position, List<ComponentInfo> componentInfos) {
+    ThreadUtils.assertMainThread();
+
+    for (int i = 0, size = componentInfos.size(); i < size; i++) {
+
+      synchronized (this) {
+        final ComponentInfo componentInfo = componentInfos.get(i);
+        final ComponentTreeHolder holder = ComponentTreeHolder.acquire(
+            componentInfo,
+            mLayoutHandlerFactory != null ?
+                mLayoutHandlerFactory.createLayoutCalculationHandler(componentInfo) :
+                null);
+
+        mComponentTreeHolders.add(position + i, holder);
+      }
+    }
+    mInternalAdapter.notifyItemRangeInserted(position, componentInfos.size());
+
+    computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+  }
+
+  /**
    * See {@link RecyclerBinder#updateItemAt(int, Component)}.
    */
   @UiThread
@@ -298,8 +326,27 @@ public class RecyclerBinder implements Binder<RecyclerView>, LayoutInfo.Componen
     if (shouldComputeLayout) {
       holder.computeLayoutSync(mComponentContext, childrenWidthSpec, childrenHeightSpec, null);
     }
-
     mInternalAdapter.notifyItemChanged(position);
+
+    computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+  }
+
+  /**
+   * Updates the range of items starting at position. The {@link RecyclerView} gets notified
+   * immediately about the item being updated.
+   */
+  @UiThread
+  public final void updateRangeAt(int position, List<ComponentInfo> componentInfos) {
+    ThreadUtils.assertMainThread();
+
+    for (int i = 0, size = componentInfos.size(); i < size; i++) {
+
+      synchronized (this) {
+        mComponentTreeHolders.get(position + i).setComponentInfo(componentInfos.get(i));
+      }
+    }
+    mInternalAdapter.notifyItemRangeChanged(position, componentInfos.size());
+
     computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
   }
 
@@ -337,8 +384,8 @@ public class RecyclerBinder implements Binder<RecyclerView>, LayoutInfo.Componen
     } else if (isNewPositionInVisibleRange && !isTreeValid) {
       holder.computeLayoutSync(mComponentContext, childrenWidthSpec, childrenHeightSpec, null);
     }
-
     mInternalAdapter.notifyItemMoved(fromPosition, toPosition);
+
     computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
   }
 
@@ -353,7 +400,25 @@ public class RecyclerBinder implements Binder<RecyclerView>, LayoutInfo.Componen
       holder = mComponentTreeHolders.remove(position);
     }
     mInternalAdapter.notifyItemRemoved(position);
+
     holder.release();
+    computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+  }
+
+  /**
+   * Removes count items starting from position.
+   */
+  @UiThread
+  public final void removeRangeAt(int position, int count) {
+    ThreadUtils.assertMainThread();
+    synchronized (this) {
+      for (int i = 0; i < count; i++) {
+        final ComponentTreeHolder holder = mComponentTreeHolders.remove(position);
+        holder.release();
+      }
+    }
+    mInternalAdapter.notifyItemRangeRemoved(position, count);
+
     computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
   }
 
