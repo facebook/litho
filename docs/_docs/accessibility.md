@@ -7,7 +7,7 @@ permalink: /docs/accessibility
 
 ## Content Description
 
-All components support content description by default. This means all layout builders have a `CharSequence` prop named `contentDescription`.
+All components support content description by default. This means all layout builders have a prop of type `CharSequence` named `contentDescription` .
 
 Setting a content description on any component is as simple as:
 
@@ -42,9 +42,9 @@ This is only applicable for components which mount drawables, since if the compo
 
 On more complex mount specs that need to expose extra nodes to the accessibility framework, you'll have to implement three extra methods:
 
-- *GetExtraAccessibilityNodesCount*: Returns number of extra accessibility nodes exposed by the component.
-- *OnPopulateExtraAccessibilityNode*: Populates the extra accessibility node with the given bounds. 
-- *GetExtraVirtualViewAt*: Returns the index of the extra accessibility node for the given position within the component.
+- **GetExtraAccessibilityNodesCount**: Returns number of extra accessibility nodes exposed by the component.
+- **OnPopulateExtraAccessibilityNode**: Populates the extra accessibility node with the given bounds. 
+- **GetExtraVirtualViewAt**: Returns the index of the extra accessibility node for the given position within the component.
 
 ## Accessibility Handling
 

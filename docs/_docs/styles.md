@@ -5,7 +5,7 @@ layout: docs
 permalink: /docs/styles
 ---
 
-Components can have their props come from regular Android style resources in a similar way to an Android View's AttributeSet constructor. It enables developers to define static prop values directly from style resources.
+Components can have their props come from regular Android style resources in a similar way to an Android View's AttributeSet constructor. It enables developers to define static prop values or prop defaults directly from style resources.
 
 Style support can be implemented using the `@OnLoadStyle` method in your component spec. The first argument is a ComponentContext which you can use to retrieve a TypedArray with the style resource values. The rest of the arguments should be Outputs matching the name and type of the props to which you want to set values.
 
