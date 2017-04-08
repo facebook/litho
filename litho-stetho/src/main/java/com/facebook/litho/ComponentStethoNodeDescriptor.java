@@ -98,6 +98,16 @@ public final class ComponentStethoNodeDescriptor
     if (testKey != null) {
       attributes.store("testKey", testKey);
     }
+
+    if (!element.node.getComponents().isEmpty()) {
+      final Component component = element.node.getComponents().get(element.componentIndex);
+      if (component != null) {
+        final String key = component.getKey();
+        if (key != null) {
+          attributes.store("key", key);
+        }
+      }
+    }
   }
 
   @Override
