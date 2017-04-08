@@ -15,12 +15,13 @@ include 'api'
 include 'services:webservice'
 */
 
-include ':litho-core'
 include ':litho-annotations'
+include ':litho-core'
 include ':litho-processor'
-include ':litho-widget'
+include ':litho-stetho'
 include ':litho-stubs'
 include ':litho-testing'
+include ':litho-widget'
 include ':yoga'
 
 project(':yoga').projectDir = file('lib/yoga')
