@@ -10,6 +10,9 @@ for (File file : sdkHandler.sdkLoader.repositories) {
   }
 }
 
+targetCompatibility = rootProject.targetCompatibilityVersion
+sourceCompatibility = rootProject.sourceCompatibilityVersion
+
 dependencies {
     // Android Support Library
     compile deps.supportAnnotations

@@ -1,11 +1,5 @@
 apply plugin: 'com.android.library'
 
-repositories {
-    flatDir {
-        dirs '../lib/textlayoutbuilder/'
-    }
-}
-
 android {
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
@@ -49,9 +43,6 @@ dependencies {
     // Android Support Library
     compile deps.supportCompat
     compile deps.supportCoreUi
-
-    // Processor
-    compile deps.javapoet
 
     // Testing
     testCompile project(':litho-testing')

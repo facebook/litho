@@ -13,6 +13,9 @@ buildscript {
 subprojects {
     repositories {
         jcenter()
+        flatDir {
+            dirs '../lib/textlayoutbuilder/'
+        }
     }
 }
 
@@ -30,6 +33,7 @@ ext.deps = [
         // Android support
         supportAnnotations : 'com.android.support:support-annotations:25.3.1',
         supportCompat      : 'com.android.support:support-compat:25.1.0',
+        supportAppCompat   : 'com.android.support:appcompat-v7:25.3.1',
         supportCoreUi      : 'com.android.support:support-core-ui:25.3.1',
         supportRecyclerView: 'com.android.support:recyclerview-v7:25.3.1',
         // First-party
