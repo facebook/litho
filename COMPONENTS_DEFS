@@ -26,7 +26,7 @@ COMPONENTS_TESTING_TARGET                  = make_dep_path('litho-testing/src/ma
 COMPONENTS_TEST_TARGET                     = make_dep_path('litho-it/src/test/java/com/facebook/litho:components')
 
 # Java source with local upstream
-COMPONENTS_PROGUARDANNOTATIONS_TARGET = make_dep_path('litho-core/src/main/java/com/facebook/proguard/annotations:annotations')
+COMPONENTS_PROGUARDANNOTATIONS_TARGET = make_dep_path('litho-annotations/src/main/java/com/facebook/proguard/annotations:annotations')
 
 # Resources
 COMPONENTS_RES_TARGET               = make_dep_path(':res')
