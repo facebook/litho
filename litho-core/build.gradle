@@ -47,12 +47,6 @@ dependencies {
 
     // First-party dependencies
     compile project(':yoga')
-    compile deps.fresco
-
-    // TODO: Use maven artifact once published.
-    // debugCompile 'com.facebook.stetho:stetho:1.4.2'
-    debugCompile files('../lib/stetho/stetho.jar')
-
     compile files('../lib/CSSLayoutDEPRECATED-TOREMOVE/CSSLayoutDEPRECATED.jar')
 
     // Debugging dependencies

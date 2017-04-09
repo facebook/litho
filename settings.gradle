@@ -22,6 +22,7 @@ include ':litho-stetho'
 include ':litho-stubs'
 include ':litho-testing'
 include ':litho-widget'
+include ':litho-fresco'
 include ':yoga'
 
 project(':yoga').projectDir = file('lib/yoga')
