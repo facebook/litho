@@ -9,14 +9,8 @@
 package com.facebook.samples.lithobarebones;
 
 import com.facebook.litho.Column;
-
-import com.facebook.yoga.YogaAlign;
-
-import com.facebook.yoga.YogaFlexDirection;
-
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
-
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
@@ -25,7 +19,7 @@ import com.facebook.litho.widget.Text;
 import static com.facebook.yoga.YogaEdge.ALL;
 
 @LayoutSpec
-public class FeedItemSpec {
+public class ListItemSpec {
 
   @OnCreateLayout
   static ComponentLayout onCreateLayout(
@@ -33,8 +27,6 @@ public class FeedItemSpec {
       @Prop int color,
       @Prop String message) {
     return Column.create(c)
-        .flexShrink(0)
-        .alignContent(YogaAlign.FLEX_START)
         .paddingDip(ALL, 16)
         .backgroundColor(color)
         .child(
