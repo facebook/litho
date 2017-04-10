@@ -14,7 +14,8 @@
   <uses-sdk android:minSdkVersion="15" android:targetSdkVersion="19"/>
 
   <application
-      android:name="com.facebook.samples.lithobarebones.SampleApplication">
+      android:name="com.facebook.samples.lithobarebones.SampleApplication"
+      android:label="Litho Barebones">
     <activity android:name="com.facebook.samples.lithobarebones.SampleActivity">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
