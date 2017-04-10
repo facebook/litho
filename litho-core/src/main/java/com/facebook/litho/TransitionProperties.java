@@ -38,7 +38,7 @@ public class TransitionProperties {
           TRANSLATION_X,
           TRANSLATION_Y})
   @Retention(RetentionPolicy.SOURCE)
-  @interface PropertyType {
+  public @interface PropertyType {
     int NONE = 0;
     int ALPHA = 1 << 0;
     int TRANSLATION_X = 1 << 1;

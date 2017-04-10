@@ -15,7 +15,7 @@ components_robolectric_test(
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/viewtree:viewtree"),
         COMPONENTS_TESTING_TARGET,
-        make_dep_path("litho-it/src/test/java/com/facebook/litho:res"),
+        COMPONENTS_TEST_RES,
         make_dep_path("litho-it/src/test/java/com/facebook/litho:testutil"),
     ],
 )

@@ -1,0 +1,35 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion rootProject.compileSdkVersion
+    buildToolsVersion rootProject.buildToolsVersion
+
+    useLibrary 'org.apache.http.legacy'
+
+    defaultConfig {
+        minSdkVersion rootProject.minSdkVersion
+    }
+}
+
+afterEvaluate {
+    tasks.withType(Test) {
+        it.dependsOn rootProject.copyYogaLibs
+        systemProperty 'java.library.path', "${rootDir}/build/jniLibs"
+        environment 'LD_LIBRARY_PATH', "${rootDir}/build/jniLibs"
+        environment 'DYLD_LIBRARY_PATH', "${rootDir}/build/jniLibs"
+    }
+}
+
+
+dependencies {
+    compile project(':litho-core')
+    testCompile project(':litho-testing')
+    testCompile project(':litho-widget')
+
+    // Testing
+    testCompile deps.robolectric
+    testCompile deps.soloader
+    testCompile deps.powermockMockito
+    testCompile deps.powermockJunit
+    testCompile deps.powermockXstream
+}

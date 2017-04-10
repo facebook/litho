@@ -29,8 +29,8 @@ components_robolectric_test(
         COMPONENTS_ROBOLECTRIC_TARGET,
     ],
     deps = [
-        ":res",
         ":testutil",
+        COMPONENTS_TEST_RES,
         COMPONENTS_ANDROIDSUPPORT_TARGET,
         COMPONENTS_ASSERTJ_TARGET,
         COMPONENTS_BUILD_CONFIG_TARGET,
@@ -46,17 +46,6 @@ components_robolectric_test(
         COMPONENTS_TESTING_TARGET,
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner"),
-    ],
-)
-
-android_resource(
-    name = "res",
-    package = "com.facebook.litho",
-    res = "res",
-    visibility = [
-        make_dep_path("litho-it/src/test/..."),
-        make_dep_path("litho-it/src/test/..."),
-        "//javatests/com/facebook/litho/...",
     ],
 )
 

@@ -53,7 +53,7 @@ public class Transition {
 
   @IntDef({UNDEFINED, APPEAR, CHANGE, DISAPPEAR})
   @Retention(RetentionPolicy.SOURCE)
-  @interface TransitionType {
+  public @interface TransitionType {
     int UNDEFINED = -1;
     int APPEAR = 0;
     int CHANGE = 1;

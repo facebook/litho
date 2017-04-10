@@ -11,7 +11,7 @@
 
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.facebook.litho"
+    package="com.facebook.litho.it"
     android:versionCode="1"
     android:versionName="1.0">
 

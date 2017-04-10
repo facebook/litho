@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.facebook.litho.R;
+import com.facebook.litho.it.R;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 
 import org.junit.Before;
