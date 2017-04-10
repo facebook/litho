@@ -651,6 +651,11 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
+  public InternalNode unfocusedHandler(EventHandler unfocusedHandler) {
+    return this;
+  }
+
+  @Override
   public InternalNode contentDescription(CharSequence contentDescription) {
     return this;
   }

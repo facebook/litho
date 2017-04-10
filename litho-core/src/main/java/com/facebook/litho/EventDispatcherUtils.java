@@ -31,6 +31,7 @@ class EventDispatcherUtils {
   private static VisibleEvent sVisibleEvent;
   private static InvisibleEvent sInvisibleEvent;
   private static FocusedVisibleEvent sFocusedVisibleEvent;
+  private static UnfocusedVisibleEvent sUnfocusedVisibleEvent;
   private static FullImpressionVisibleEvent sFullImpressionVisibleEvent;
   private static DispatchPopulateAccessibilityEventEvent sDispatchPopulateAccessibilityEventEvent;
   private static OnInitializeAccessibilityEventEvent sOnInitializeAccessibilityEventEvent;
@@ -74,8 +75,21 @@ class EventDispatcherUtils {
       sFocusedVisibleEvent = new FocusedVisibleEvent();
     }
 
-    final EventDispatcher eventDispatcher = focusedHandler.mHasEventDispatcher.getEventDispatcher();
+    final EventDispatcher eventDispatcher =
+      focusedHandler.mHasEventDispatcher.getEventDispatcher();
     eventDispatcher.dispatchOnEvent(focusedHandler, sFocusedVisibleEvent);
+  }
+
+  static void dispatchOnUnfocused(EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
+    assertMainThread();
+
+    if (sUnfocusedVisibleEvent == null) {
+      sUnfocusedVisibleEvent = new UnfocusedVisibleEvent();
+    }
+
+    final EventDispatcher eventDispatcher =
+      unfocusedHandler.mHasEventDispatcher.getEventDispatcher();
+    eventDispatcher.dispatchOnEvent(unfocusedHandler, sUnfocusedVisibleEvent);
   }
 
   static void dispatchOnFullImpression(

@@ -129,16 +129,18 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private static final long PFLAG_FULL_IMPRESSION_HANDLER_IS_SET = 1L << 22;
   // When this flag is set, invisibleHandler was explicitly set on this node.
   private static final long PFLAG_INVISIBLE_HANDLER_IS_SET = 1L << 23;
+  // When this flag is set, unfocusedHandler was explicitly set on this node.
+  private static final long PFLAG_UNFOCUSED_HANDLER_IS_SET = 1L << 24;
   // When this flag is set, touch expansion was explicitly set on this node.
-  private static final long PFLAG_TOUCH_EXPANSION_IS_SET = 1L << 24;
+  private static final long PFLAG_TOUCH_EXPANSION_IS_SET = 1L << 25;
   // When this flag is set, border width was explicitly set on this node.
-  private static final long PFLAG_BORDER_WIDTH_IS_SET = 1L << 25;
+  private static final long PFLAG_BORDER_WIDTH_IS_SET = 1L << 26;
   // When this flag is set, aspectRatio was explicitly set on this node.
-  private static final long PFLAG_ASPECT_RATIO_IS_SET = 1L << 26;
+  private static final long PFLAG_ASPECT_RATIO_IS_SET = 1L << 27;
   // When this flag is set, transitionKey was explicitly set on this node.
-  private static final long PFLAG_TRANSITION_KEY_IS_SET = 1L << 27;
+  private static final long PFLAG_TRANSITION_KEY_IS_SET = 1L << 28;
   // When this flag is set, border color was explicitly set on this node.
-  private static final long PFLAG_BORDER_COLOR_IS_SET = 1L << 28;
+  private static final long PFLAG_BORDER_COLOR_IS_SET = 1L << 29;
 
   private final ResourceResolver mResourceResolver = new ResourceResolver();
 
@@ -162,6 +164,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private String mTransitionKey;
   private EventHandler mVisibleHandler;
   private EventHandler mFocusedHandler;
+  private EventHandler mUnfocusedHandler;
   private EventHandler mFullImpressionHandler;
   private EventHandler mInvisibleHandler;
   private String mTestKey;
@@ -300,6 +303,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   public boolean hasVisibilityHandlers() {
     return mVisibleHandler != null
         || mFocusedHandler != null
+        || mUnfocusedHandler != null
         || mFullImpressionHandler != null
         || mInvisibleHandler != null;
   }
@@ -1197,6 +1201,17 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public InternalNode unfocusedHandler(EventHandler unfocusedHandler) {
+    mPrivateFlags |= PFLAG_UNFOCUSED_HANDLER_IS_SET;
+    mUnfocusedHandler = unfocusedHandler;
+    return this;
+  }
+
+  EventHandler getUnfocusedHandler() {
+    return mUnfocusedHandler;
+  }
+
+  @Override
   public InternalNode fullImpressionHandler(EventHandler fullImpressionHandler) {
     mPrivateFlags |= PFLAG_FULL_IMPRESSION_HANDLER_IS_SET;
     mFullImpressionHandler = fullImpressionHandler;
@@ -1585,6 +1600,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     if ((mPrivateFlags & PFLAG_INVISIBLE_HANDLER_IS_SET) != 0L) {
       node.mInvisibleHandler = mInvisibleHandler;
     }
+    if ((mPrivateFlags & PFLAG_UNFOCUSED_HANDLER_IS_SET) != 0L) {
+      node.mUnfocusedHandler = mUnfocusedHandler;
+    }
     if (mTestKey != null) {
       node.mTestKey = mTestKey;
     }
@@ -1848,6 +1866,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     mForceViewWrapping = false;
     mVisibleHandler = null;
     mFocusedHandler = null;
+    mUnfocusedHandler = null;
     mFullImpressionHandler = null;
     mInvisibleHandler = null;
     mPrivateFlags = 0L;

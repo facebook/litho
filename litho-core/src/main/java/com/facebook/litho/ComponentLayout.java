@@ -216,6 +216,7 @@ public interface ComponentLayout {
     Builder focusable(boolean isFocusable);
     Builder visibleHandler(EventHandler<VisibleEvent> visibleHandler);
     Builder focusedHandler(EventHandler<FocusedVisibleEvent> focusedHandler);
+    Builder unfocusedHandler(EventHandler<UnfocusedVisibleEvent> unfocusedHandler);
     Builder fullImpressionHandler(EventHandler<FullImpressionVisibleEvent> fullImpressionHandler);
     Builder invisibleHandler(EventHandler<InvisibleEvent> invisibleHandler);
     Builder contentDescription(CharSequence contentDescription);
@@ -407,6 +408,7 @@ public interface ComponentLayout {
     ContainerBuilder focusable(boolean isFocusable);
     ContainerBuilder visibleHandler(EventHandler<VisibleEvent> visibleHandler);
     ContainerBuilder focusedHandler(EventHandler<FocusedVisibleEvent> focusedHandler);
+    ContainerBuilder unfocusedHandler(EventHandler<UnfocusedVisibleEvent> unfocusedHandler);
     ContainerBuilder fullImpressionHandler(
         EventHandler<FullImpressionVisibleEvent> fullImpressionHandler);
     ContainerBuilder invisibleHandler(EventHandler<InvisibleEvent> invisibleHandler);

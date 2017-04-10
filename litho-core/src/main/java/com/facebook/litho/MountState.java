@@ -275,6 +275,7 @@ class MountState {
 
       final EventHandler visibleHandler = visibilityOutput.getVisibleEventHandler();
       final EventHandler focusedHandler = visibilityOutput.getFocusedEventHandler();
+      final EventHandler unfocusedHandler = visibilityOutput.getUnfocusedEventHandler();
       final EventHandler fullImpressionHandler = visibilityOutput.getFullImpressionEventHandler();
       final EventHandler invisibleHandler = visibilityOutput.getInvisibleEventHandler();
       final long visibilityOutputId = visibilityOutput.getId();
@@ -296,20 +297,26 @@ class MountState {
           }
         }
 
-        // Check if the component has entered the focused range.
-        if (focusedHandler != null && !visibilityItem.isInFocusedRange()) {
+        // Check if the component has entered or exited the focused range.
+        if ((focusedHandler != null && !visibilityItem.isInFocusedRange()) ||
+          (unfocusedHandler != null && visibilityItem.isInFocusedRange())) {
           final View parent = (View) mComponentView.getParent();
-
-          if (hasEnteredFocusedRange(
+          if (isInFocusedRange(
               parent.getWidth(),
               parent.getHeight(),
               visibilityOutputBounds,
               sTempRect)) {
-            visibilityItem.setIsInFocusedRange();
-            EventDispatcherUtils.dispatchOnFocused(focusedHandler);
+            if (!visibilityItem.isInFocusedRange()) {
+              visibilityItem.setFocusedRange(true);
+              EventDispatcherUtils.dispatchOnFocused(focusedHandler);
+            }
+          } else {
+            if (visibilityItem.isInFocusedRange()) {
+              visibilityItem.setFocusedRange(false);
+              EventDispatcherUtils.dispatchOnUnfocused(unfocusedHandler);
+            }
           }
         }
-
         // If the component has not entered the full impression range yet, make sure to update the
         // information about the visible edges.
         if (fullImpressionHandler != null && !visibilityItem.isInFullImpressionRange()) {
@@ -426,9 +433,9 @@ class MountState {
   }
 
   /**
-   * Returns true if the component has entered the focused visible range.
+   * Returns true if the component is in the focused visible range.
    */
-  static boolean hasEnteredFocusedRange(
+  static boolean isInFocusedRange(
       int viewportWidth,
       int viewportHeight,
       Rect componentBounds,

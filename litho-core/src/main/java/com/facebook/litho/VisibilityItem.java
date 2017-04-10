@@ -25,6 +25,7 @@ class VisibilityItem {
   private static final int FLAG_FOCUSED_RANGE = 1 << 5;
 
   private int mFlags;
+  private boolean mFocusedFlag;
   // The invisible event handler is required to make it possible to dispatch the InvisibleEvent when
   // on unbind is called or when the MountState is reset.
   private EventHandler mInvisibleHandler;
@@ -49,11 +50,11 @@ class VisibilityItem {
   }
 
   boolean isInFocusedRange() {
-    return (mFlags & FLAG_FOCUSED_RANGE) != 0;
+    return mFocusedFlag;
   }
 
-  void setIsInFocusedRange() {
-    mFlags |= FLAG_FOCUSED_RANGE;
+  void setFocusedRange(boolean flag) {
+    mFocusedFlag = flag;
   }
 
   /**

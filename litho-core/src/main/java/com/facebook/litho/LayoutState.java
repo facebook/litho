@@ -296,6 +296,7 @@ class LayoutState {
 
     final EventHandler visibleHandler = node.getVisibleHandler();
     final EventHandler focusedHandler = node.getFocusedHandler();
+    final EventHandler unfocusedHandler = node.getUnfocusedHandler();
     final EventHandler fullImpressionHandler = node.getFullImpressionHandler();
     final EventHandler invisibleHandler = node.getInvisibleHandler();
     final VisibilityOutput visibilityOutput = ComponentsPools.acquireVisibilityOutput();
@@ -307,6 +308,8 @@ class LayoutState {
       handlerComponent = (Component<?>) visibleHandler.mHasEventDispatcher;
     } else if (focusedHandler != null) {
       handlerComponent = (Component<?>) focusedHandler.mHasEventDispatcher;
+    } else if (unfocusedHandler != null) {
+      handlerComponent = (Component<?>) unfocusedHandler.mHasEventDispatcher;
     } else if (fullImpressionHandler != null) {
       handlerComponent = (Component<?>) fullImpressionHandler.mHasEventDispatcher;
     } else {
@@ -318,6 +321,7 @@ class LayoutState {
     visibilityOutput.setBounds(l, t, r, b);
     visibilityOutput.setVisibleEventHandler(visibleHandler);
     visibilityOutput.setFocusedEventHandler(focusedHandler);
+    visibilityOutput.setUnfocusedEventHandler(unfocusedHandler);
     visibilityOutput.setFullImpressionEventHandler(fullImpressionHandler);
     visibilityOutput.setInvisibleEventHandler(invisibleHandler);
 

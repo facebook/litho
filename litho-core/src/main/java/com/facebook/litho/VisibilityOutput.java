@@ -23,6 +23,7 @@ class VisibilityOutput {
   private final Rect mBounds = new Rect();
   private EventHandler mVisibleEventHandler;
   private EventHandler mFocusedEventHandler;
+  private EventHandler mUnfocusedEventHandler;
   private EventHandler mFullImpressionEventHandler;
   private EventHandler mInvisibleEventHandler;
 
@@ -68,6 +69,14 @@ class VisibilityOutput {
 
   EventHandler getFocusedEventHandler() {
     return mFocusedEventHandler;
+  }
+
+  void setUnfocusedEventHandler(EventHandler unfocusedEventHandler) {
+    mUnfocusedEventHandler = unfocusedEventHandler;
+  }
+
+  EventHandler getUnfocusedEventHandler() {
+    return mUnfocusedEventHandler;
   }
 
   void setFullImpressionEventHandler(EventHandler visibleEventHandler) {
