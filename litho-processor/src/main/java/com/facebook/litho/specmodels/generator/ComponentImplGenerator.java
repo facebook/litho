@@ -80,19 +80,24 @@ public class ComponentImplGenerator {
     generateInterStageInputs(specModel).addToTypeSpec(implClassBuilder);
     generateEventHandlers(specModel).addToTypeSpec(implClassBuilder);
 
-    implClassBuilder.addMethod(generateImplConstructor(stateContainerImplClass));
+    final boolean hasState = !specModel.getStateValues().isEmpty();
+
+    implClassBuilder.addMethod(generateImplConstructor(stateContainerImplClass, hasState));
     implClassBuilder.addMethod(generateGetSimpleName(specModel));
     implClassBuilder.addMethod(generateEqualsMethod(specModel, true));
 
     generateCopyInterStageImpl(specModel).addToTypeSpec(implClassBuilder);
 
     generateOnUpdateStateMethods(specModel).addToTypeSpec(implClassBuilder);
-    generateMakeShallowCopy(specModel, /* hasDeepCopy */ false).addToTypeSpec(implClassBuilder);
+    generateMakeShallowCopy(specModel, /* hasDeepCopy */ false, hasState)
+        .addToTypeSpec(implClassBuilder);
 
-    return TypeSpecDataHolder.newBuilder()
-        .addType(generateStateContainerImpl(specModel))
-        .addType(implClassBuilder.build())
-        .build();
+    final TypeSpecDataHolder.Builder builder = TypeSpecDataHolder.newBuilder();
+    if (hasState) {
+      builder.addType(generateStateContainerImpl(specModel));
+    }
+    builder.addType(implClassBuilder.build());
+    return builder.build();
   }
 
   static TypeSpec generateStateContainerImpl(SpecModel specModel) {
@@ -124,7 +129,11 @@ public class ComponentImplGenerator {
   }
 
   static String getStateContainerImplClassName(SpecModel specModel) {
-    return specModel.getComponentName() + GeneratorConstants.STATE_CONTAINER_IMPL_NAME_SUFFIX;
+    if (specModel.getStateValues().isEmpty()) {
+      return specModel.getStateContainerClass().toString();
+    } else {
+      return specModel.getComponentName() + GeneratorConstants.STATE_CONTAINER_IMPL_NAME_SUFFIX;
+    }
   }
 
   static MethodSpec generateStateContainerGetter(TypeName stateContainerClassName) {
@@ -199,12 +208,16 @@ public class ComponentImplGenerator {
         "Handler";
   }
 
-  static MethodSpec generateImplConstructor(TypeName stateContainerImplClass) {
-    return MethodSpec.constructorBuilder()
+  static MethodSpec generateImplConstructor(TypeName stateContainerImplClass, boolean hasState) {
+    final MethodSpec.Builder builder = MethodSpec.constructorBuilder()
         .addModifiers(Modifier.PRIVATE)
-        .addStatement("super(get())")
-        .addStatement(STATE_CONTAINER_FIELD_NAME + " = new $T()", stateContainerImplClass)
-        .build();
+        .addStatement("super(get())");
+
+    if (hasState) {
+      builder.addStatement(STATE_CONTAINER_FIELD_NAME + " = new $T()", stateContainerImplClass);
+    }
+
+    return builder.build();
   }
 
   static MethodSpec generateGetSimpleName(SpecModel specModel) {
@@ -329,7 +342,10 @@ public class ComponentImplGenerator {
     return typeSpecDataHolder.build();
   }
 
-  static TypeSpecDataHolder generateMakeShallowCopy(SpecModel specModel, boolean hasDeepCopy) {
+  static TypeSpecDataHolder generateMakeShallowCopy(
+      SpecModel specModel,
+      boolean hasDeepCopy,
+      boolean hasState) {
     TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
 
     final List<MethodParamModel> componentsInImpl = findComponentsInImpl(specModel);
@@ -381,7 +397,7 @@ public class ComponentImplGenerator {
     }
 
     final String stateContainerImplClassName = getStateContainerImplClassName(specModel);
-    if (stateContainerImplClassName != null) {
+    if (stateContainerImplClassName != null && hasState) {
       builder.addStatement(
           "component." + GeneratorConstants.STATE_CONTAINER_FIELD_NAME + " = new $T()",
           ClassName.bestGuess(stateContainerImplClassName));
