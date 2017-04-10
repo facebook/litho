@@ -26,7 +26,6 @@ public class SampleActivity extends Activity {
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    final ComponentView componentView = new ComponentView(this);
     final ComponentContext context = new ComponentContext(this);
 
     final RecyclerBinder recyclerBinder = new RecyclerBinder(
@@ -34,16 +33,13 @@ public class SampleActivity extends Activity {
         4.0f,
         new LinearLayoutInfo(this, OrientationHelper.VERTICAL, false));
 
-    final ComponentTree componentTree = ComponentTree.create(
+    addContent(recyclerBinder, context);
+
+    final ComponentView componentView = ComponentView.create(
         context,
         Recycler.create(context)
-                .binder(recyclerBinder))
-            .layoutDiffing(false)
-            .build();
-
-    componentView.setComponent(componentTree);
-
-    addContent(recyclerBinder, context);
+            .binder(recyclerBinder)
+            .build());
 
     setContentView(componentView);
   }

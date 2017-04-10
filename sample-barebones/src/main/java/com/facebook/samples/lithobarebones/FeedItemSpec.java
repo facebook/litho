@@ -32,7 +32,9 @@ public class FeedItemSpec {
       ComponentContext c,
       @Prop int color,
       @Prop String message) {
-    return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+    return Column.create(c)
+        .flexShrink(0)
+        .alignContent(YogaAlign.FLEX_START)
         .paddingDip(ALL, 16)
         .backgroundColor(color)
         .child(
