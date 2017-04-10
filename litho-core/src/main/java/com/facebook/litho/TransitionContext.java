@@ -10,8 +10,11 @@
 package com.facebook.litho;
 
 import java.util.HashSet;
+import java.util.ArrayList;
 
 import android.support.v4.util.SimpleArrayMap;
+
+import com.facebook.litho.animation.AnimationBinding;
 
 /**
  * TransitionContext is unique per LayoutState and contains all the transitions defined
@@ -22,6 +25,7 @@ class TransitionContext {
   // User defined transitions
   private final SimpleArrayMap<String, TransitionKeySet> mKeyToTransitionKeySets =
       new SimpleArrayMap<>();
+  private final ArrayList<AnimationBinding> mTransitionAnimationBindings = new ArrayList<>();
 
   // Transition keys of given layout tree
   private final HashSet<String> mTransitionKeys = new HashSet<>(8);
@@ -46,11 +50,20 @@ class TransitionContext {
     }
   }
 
+  void addTransitionAnimationBinding(AnimationBinding binding) {
+    mTransitionAnimationBindings.add(binding);
+  }
+
   SimpleArrayMap<String, TransitionKeySet> getTransitionKeySets() {
     return mKeyToTransitionKeySets;
   }
 
+  ArrayList<AnimationBinding> getTransitionAnimationBindings() {
+    return mTransitionAnimationBindings;
+  }
+
   void reset() {
+    mTransitionAnimationBindings.clear();
     mKeyToTransitionKeySets.clear();
     mTransitionKeys.clear();
   }

@@ -25,6 +25,7 @@ import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.support.v4.widget.ExploreByTouchHelper;
 import android.view.View;
 
+import com.facebook.litho.animation.AnimationBinding;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaMeasureMode;
@@ -598,6 +599,18 @@ public abstract class ComponentLifecycle implements EventDispatcher {
    * when the layout changes.
    */
   protected Transition onLayoutTransition(ComponentContext c, Component<?> component) {
+    return null;
+  }
+
+  /**
+   * @return a {@link AnimationBinding} specifying how to animate this component to its new layout
+   * and props.
+   *
+   * Note: This API is in progress, use {@link #onLayoutTransition} for now.
+   */
+  protected AnimationBinding onCreateTransitionAnimation(
+      ComponentContext c,
+      Component<?> component) {
     return null;
   }
 

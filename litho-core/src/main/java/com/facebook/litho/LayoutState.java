@@ -32,6 +32,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.accessibility.AccessibilityManager;
 
+import com.facebook.litho.animation.AnimationBinding;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.displaylist.DisplayList;
 import com.facebook.litho.displaylist.DisplayListException;
@@ -600,9 +601,20 @@ class LayoutState {
         Transition transition = component.getLifecycle().onLayoutTransition(
             layoutState.mContext,
             component);
+        final AnimationBinding transitionAnimation =
+            component.getLifecycle().onCreateTransitionAnimation(layoutState.mContext, component);
 
-        if (transition != null) {
-          layoutState.getOrCreateTransitionContext().add(transition);
+        if (transition != null || transitionAnimation != null) {
+          if (transition != null && transitionAnimation != null) {
+            throw new RuntimeException(
+                "Can't add both a regular transition and an experimental " +
+                "binding transition (which you probably shouldn't be using)");
+          }
+          if (transition != null) {
+            layoutState.getOrCreateTransitionContext().add(transition);
+          } else {
+            layoutState.getOrCreateTransitionContext().addTransitionAnimationBinding(transitionAnimation);
+          }
         }
       }
     }
