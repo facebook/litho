@@ -43,13 +43,17 @@ public class EventGenerator {
   }
 
   public static TypeSpecDataHolder generate(SpecModel specModel) {
-    return TypeSpecDataHolder.newBuilder()
+    final TypeSpecDataHolder.Builder builder = TypeSpecDataHolder.newBuilder()
         .addTypeSpecDataHolder(generateGetEventHandlerMethods(specModel))
         .addTypeSpecDataHolder(generateEventDispatchers(specModel))
         .addTypeSpecDataHolder(generateEventMethods(specModel))
-        .addTypeSpecDataHolder(generateEventHandlerFactories(specModel))
-        .addMethod(generateDispatchOnEvent(specModel))
-        .build();
+        .addTypeSpecDataHolder(generateEventHandlerFactories(specModel));
+
+    if (!specModel.getEventMethods().isEmpty()) {
+      builder.addMethod(generateDispatchOnEvent(specModel));
+    }
+
+    return builder.build();
   }
 
   static TypeSpecDataHolder generateGetEventHandlerMethods(SpecModel specModel) {
