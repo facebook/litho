@@ -20,6 +20,6 @@ prebuilt_jar(
 
 remote_file(
     name = "assertj-core.jar",
-    sha1 = "5db13d0ae30dca5157f0dea60f78640cf039cafe",
-    url = "mvn:org.assertj:assertj-core:jar:1.6.1",
+    sha1 = "b532c3fc4f66bcfee4989a3514f1cd56203a33ad",
+    url = "mvn:org.assertj:assertj-core:jar:2.6.0",
 )

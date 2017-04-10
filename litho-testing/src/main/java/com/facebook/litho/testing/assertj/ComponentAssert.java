@@ -15,7 +15,7 @@ import com.facebook.litho.testing.ComponentTestHelper;
 import com.facebook.litho.testing.SubComponent;
 
 import org.assertj.core.api.AbstractAssert;
-import org.assertj.core.api.Assertions;
+import org.assertj.core.api.Java6Assertions;
 import org.powermock.reflect.Whitebox;
 
 /**
@@ -62,7 +62,7 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
     final List<SubComponent> subComponents = ComponentTestHelper.getSubComponents(
         mComponentContext,
         actual);
-    Assertions.assertThat(subComponents)
+    Java6Assertions.assertThat(subComponents)
         .overridingErrorMessage(
             "Expected Component not to have any sub " +
                 "components, but found %d.",
@@ -79,7 +79,7 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
     final List<SubComponent> subComponents = ComponentTestHelper.getSubComponents(
         mComponentContext,
         actual);
-    Assertions.assertThat(subComponents)
+    Java6Assertions.assertThat(subComponents)
         .overridingErrorMessage(
             "Expected to find <%s> as sub component of <%s>, " +
                 "but couldn't find it among the %d sub components.",
@@ -98,7 +98,7 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
     final List<SubComponent> subComponents = ComponentTestHelper.getSubComponents(
         mComponentContext,
         actual);
-    Assertions.assertThat(subComponents)
+    Java6Assertions.assertThat(subComponents)
         .overridingErrorMessage(
             "Did not expect to find <%s> as sub component of <%s>, " +
                 "but it was present.",
@@ -184,7 +184,7 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
         mComponentContext,
         actual);
 
-    Assertions.assertThat(mountedSubComponents)
+    Java6Assertions.assertThat(mountedSubComponents)
         .isEqualTo(subComponents);
 
     return this;
@@ -199,7 +199,7 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
         mComponentContext,
         actual);
 
-    Assertions.assertThat(mountedSubComponents)
+    Java6Assertions.assertThat(mountedSubComponents)
         .containsOnly(subComponents);
 
     return this;

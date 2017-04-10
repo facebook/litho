@@ -25,7 +25,7 @@ import org.mockito.stubbing.Answer;
 import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;

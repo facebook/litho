@@ -13,7 +13,7 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableList;
 import org.assertj.core.api.AbstractAssert;
-import org.assertj.core.api.Assertions;
+import org.assertj.core.api.Java6Assertions;
 import org.robolectric.RuntimeEnvironment;
 
 import static com.facebook.litho.testing.viewtree.ViewExtractors.GET_TEXT_FUNCTION;
@@ -48,7 +48,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
   public ViewTreeAssert hasVisibleText(final String text) {
     final ImmutableList<View> path = getPathToVisibleText(text);
 
-    Assertions.assertThat(path)
+    Java6Assertions.assertThat(path)
         .overridingErrorMessage(path == null ? getHasVisibleTextErrorMessage(text) : "")
         .isNotNull();
 
@@ -85,7 +85,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
   public ViewTreeAssert hasVisibleTextWithTag(final String text, final int tagId, final Object tagValue) {
     final ImmutableList<View> path = getPathToVisibleTextWithTag(text, tagId, tagValue);
 
-    Assertions.assertThat(path)
+    Java6Assertions.assertThat(path)
         .overridingErrorMessage(
             "Cannot find text \"%s\" with tagId \"%d\" and value:%s in view hierarchy:%n%s",
             text,
@@ -121,7 +121,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
   public ViewTreeAssert doesNotHaveVisibleText(final String text) {
     final ImmutableList<View> path = getPathToVisibleText(text);
 
-    Assertions.assertThat(path)
+    Java6Assertions.assertThat(path)
         .overridingErrorMessage(
             "Found text \"%s\" in view hierarchy for path: %s",
             text,
@@ -140,7 +140,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
   public ViewTreeAssert hasViewTag(final int tagId, final Object tagValue) {
     final ImmutableList<View> path = getPathToViewTag(tagId, tagValue);
 
-    Assertions.assertThat(path)
+    Java6Assertions.assertThat(path)
         .overridingErrorMessage(
             "Cannot find tag id \"%d\" with tag value \"%s\" in view hierarchy:%n%s",
             tagId,
@@ -159,7 +159,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
   public ViewTreeAssert hasContentDescription(final String contentDescription) {
     final ImmutableList<View> path = getPathToContentDescription(contentDescription);
 
-    Assertions.assertThat(path)
+    Java6Assertions.assertThat(path)
         .overridingErrorMessage(
             "Cannot find content description \"%s\" in view hierarchy:%n%s",
             contentDescription,
@@ -242,7 +242,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
   public ViewTreeAssert hasVisibleTextMatching(final String pattern) {
     final ImmutableList<View> path = getPathToVisibleMatchingText(pattern);
 
-    Assertions.assertThat(path)
+    Java6Assertions.assertThat(path)
         .overridingErrorMessage(
             "Cannot find text matching \"%s\" in view hierarchy:%n%s",
             pattern,
@@ -262,7 +262,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
   public ViewTreeAssert doesNotHaveVisibleTextMatching(final String pattern) {
     final ImmutableList<View> path = getPathToVisibleMatchingText(pattern);
 
-    Assertions.assertThat(path)
+    Java6Assertions.assertThat(path)
         .overridingErrorMessage(
             "Found pattern \"%s\" in view hierarchy for path: %s",
             pattern,
@@ -281,7 +281,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
   public ViewTreeAssert doesNotHaveVisibleText() {
     final ImmutableList<View> path = getPathToVisibleMatchingText(".+");
 
-    Assertions.assertThat(path)
+    Java6Assertions.assertThat(path)
         .overridingErrorMessage(
             "Found text \"%s\" in view hierarchy for path: %s",
             getTextProof(path),
@@ -340,7 +340,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
   public ViewTreeAssert hasVisibleDrawable(final Drawable drawable) {
     final ImmutableList<View> path = getPathToVisibleWithDrawable(drawable);
 
-    Assertions.assertThat(path)
+    Java6Assertions.assertThat(path)
         .overridingErrorMessage(
             "Did not find drawable %s in view hierarchy:%n%s",
             drawable,
@@ -379,7 +379,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
   public ViewTreeAssert doesNotHaveVisibleDrawable(final Drawable drawable) {
     final ImmutableList<View> path = getPathToVisibleWithDrawable(drawable);
 
-    Assertions.assertThat(path)
+    Java6Assertions.assertThat(path)
         .overridingErrorMessage(
             "Found drawable %s in view hierarchy:%n%s",
             drawable,
@@ -393,7 +393,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
   public ViewTreeAssert hasVisibleViewWithId(final int viewId) {
     final ImmutableList<View> path = getPathToVisibleWithId(viewId);
 
-    Assertions.assertThat(path)
+    Java6Assertions.assertThat(path)
         .overridingErrorMessage(
             "Did not find visible view with id \"%s=%d\":%n%s",
             ViewTreeUtil.getResourceName(viewId),
@@ -408,7 +408,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
   public ViewTreeAssert doesNotHaveVisibleViewWithId(final int viewId) {
     final ImmutableList<View> path = getPathToVisibleWithId(viewId);
 
-    Assertions.assertThat(path)
+    Java6Assertions.assertThat(path)
         .overridingErrorMessage(
             "Found visible view with id \"%s=%d\":%n%s",
             ViewTreeUtil.getResourceName(viewId),
@@ -429,7 +429,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
         conjunction,
         ViewPredicates.isVisible());
 
-    Assertions.assertThat(path)
+    Java6Assertions.assertThat(path)
         .overridingErrorMessage(
             "Did not find view for which given predicate is true in view hierarchy:%n%s",
             actual.makeString(null))
@@ -450,7 +450,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
         conjunction,
         ViewPredicates.isVisible());
 
-    Assertions.assertThat(path)
+    Java6Assertions.assertThat(path)
         .overridingErrorMessage(
             "Found a view for which given predicate is true in view hierarchy:%n%s",
             actual.makeString(null))

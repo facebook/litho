@@ -29,7 +29,7 @@ import org.robolectric.RuntimeEnvironment;
 
 import static com.facebook.yoga.YogaMeasureMode.EXACTLY;
 import static junit.framework.Assert.fail;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;

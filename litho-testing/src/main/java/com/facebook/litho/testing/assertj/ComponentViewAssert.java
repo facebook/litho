@@ -16,7 +16,7 @@ import com.facebook.litho.testing.viewtree.ViewTree;
 import com.facebook.litho.testing.viewtree.ViewTreeAssert;
 
 import org.assertj.core.api.AbstractAssert;
-import org.assertj.core.api.Assertions;
+import org.assertj.core.api.Java6Assertions;
 
 /**
  * Assertion methods for {@link ComponentView}s.
@@ -40,7 +40,7 @@ public class ComponentViewAssert extends AbstractAssert<ComponentViewAssert, Com
 
   public ComponentViewAssert containsTestKey(String testKey, OccurrenceCount count) {
     final Deque<TestItem> testItems = ComponentViewTestHelper.findTestItems(actual, testKey);
-    Assertions.assertThat(testItems)
+    Java6Assertions.assertThat(testItems)
         .hasSize(count.times)
         .overridingErrorMessage(
             "Expected to find test key <%s> in ComponentView <%s> %s, but %s.",
@@ -55,11 +55,12 @@ public class ComponentViewAssert extends AbstractAssert<ComponentViewAssert, Com
     return this;
   }
 
+  @SuppressWarnings("VisibleForTests")
   public ComponentViewAssert doesNotContainTestKey(String testKey) {
     final TestItem testItem = ComponentViewTestHelper.findTestItem(actual, testKey);
     final Rect bounds = testItem == null ? null : testItem.getBounds();
 
-    Assertions.assertThat(testItem)
+    Java6Assertions.assertThat(testItem)
         .overridingErrorMessage(
             "Expected not to find test key <%s> in ComponentView <%s>, but it was present at " +
                 "bounds %s.",
