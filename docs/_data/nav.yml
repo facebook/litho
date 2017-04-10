@@ -2,6 +2,10 @@
   href: /docs/
   category: docs
 
+- title: API
+  href: /javadoc/
+  category: apidocs
+
 - title: Tutorial
   href: /docs/tutorial
   category: tutorial
