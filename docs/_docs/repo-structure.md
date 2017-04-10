@@ -26,13 +26,20 @@ The source for the finished product of the [barebones tutorial](/tutorial/) is f
 
 Under this directory is found code for the Litho sample app.  This includes the playground, which you should use for all testing/bug reporting.
 
-### `/src/`
+### `/litho-*/`
 
-This directory contains all the source for Litho.  It has three sub folders.
+Litho is split into several sub-project so end users can pick and choose the
+parts of the framework they want to use. The available projects are as follows:
 
- * `/src/main` contains all the core code for components, the annotation processor, widgets etc.
- * `/src/test` contains all the testing code that is to be run by a test runner (typically `buck test`)
- * `/src/debug` contains code for Stetho integration, as well as some helpers for the test suite
+ * `litho-annotation` is a pure Java library containing the annotations necessary to use the processor with.
+ * `litho-core` contains the core framework code.
+ * `litho-fresco` contains components for the use with the Fresco image library.
+ * `litho-it` contains integration tests for the framework. It is necessary to have a separate project for this as it to avoid circular dependencies.
+ * `litho-processor` contains the stand-alone annotation processor.
+ * `litho-stetho` contains Stetho integrations for easier debugging and development.
+ * `litho-stubs` contains stubbed out Android framework classes that are needed for some display list magic in `litho-core`.
+ * `litho-testing` contains utilities to test Litho components.
+ * `litho-widget` contains several mount specs for commonly used Android widgets.
 
 ### `/COMPONENTS_DEFS` and `/BUCK`
 
