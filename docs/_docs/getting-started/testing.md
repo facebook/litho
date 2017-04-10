@@ -40,4 +40,4 @@ public class MyActivity extends Activity {
 }
 ```
 
-Run the app, you should see "Hello World!" displayed on the screen.
+Now, when you run the app you should see "Hello World!" displayed on the screen.

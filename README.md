@@ -12,3 +12,8 @@ To build and run (on an attached device/emulator) the sample app, execute
 
     $ buck fetch sample
     $ buck install -r sample
+
+or, if you prefer Gradle,
+
+    $ ./gradlew :sample:installDebug
+
