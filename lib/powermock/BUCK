@@ -53,7 +53,13 @@ remote_file(
 
 prebuilt_jar(
     name = "powermock-mockito-release-full-prebuilt",
-    binary_jar = "powermock-mockito-release-full-1.5.6-full.jar",
+    binary_jar = ":powermock-mockito-release-full.jar",
+)
+
+remote_file(
+    name = "powermock-mockito-release-full.jar",
+    sha1 = "eb22f277a1aa4e85916fc76760ec6a07b965ff0e",
+    url = "https://bintray.com/bintray/jcenter/download_file?file_path=org%2Fpowermock%2Fpowermock-mockito-release-full%2F1.5.6%2Fpowermock-mockito-release-full-1.5.6-full.jar",
 )
 
 prebuilt_jar(
