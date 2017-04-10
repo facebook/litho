@@ -129,7 +129,7 @@ public class ComponentGlobalKeyTest {
 
   private ComponentView getComponentView(ComponentTree componentTree) {
     ComponentView componentView = new ComponentView(mContext);
-    componentView.setComponent(componentTree);
+    componentView.setComponentTree(componentTree);
     componentView.measure(
         View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
         View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));

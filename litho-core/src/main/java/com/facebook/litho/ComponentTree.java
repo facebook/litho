@@ -450,7 +450,7 @@ public class ComponentTree {
     // componentView and componentTree are reset.
     if (mIsAttached) {
       if (mComponentView != null) {
-        mComponentView.setComponent(null);
+        mComponentView.setComponentTree(null);
       } else {
         detach();
       }
@@ -1107,7 +1107,7 @@ public class ComponentTree {
     LayoutState backgroundLayoutState;
     synchronized (this) {
       if (mComponentView != null) {
-        mComponentView.setComponent(null);
+        mComponentView.setComponentTree(null);
       }
       mRoot = null;
 

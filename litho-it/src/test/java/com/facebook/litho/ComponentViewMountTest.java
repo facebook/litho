@@ -65,7 +65,7 @@ public class ComponentViewMountTest {
 
   @Test
   public void testNothingCalledUntilMeasured() {
-    mComponentView.setComponent(mComponentTree);
+    mComponentView.setComponentTree(mComponentTree);
     mComponentView.onAttachedToWindow();
 
     assertEquals(0, mComponentView.getRequestLayoutInvocationCount());
@@ -74,7 +74,7 @@ public class ComponentViewMountTest {
   @Test
   public void testSetComponentAndAttachRequestsLayout() {
     mComponentView.setMeasured(10, 10);
-    mComponentView.setComponent(mComponentTree);
+    mComponentView.setComponentTree(mComponentTree);
     mComponentView.onAttachedToWindow();
 
     assertEquals(1, mComponentView.getRequestLayoutInvocationCount());
@@ -83,7 +83,7 @@ public class ComponentViewMountTest {
   @Test
   public void testSetSameSizeComponentAndAttachRequestsLayout() {
     mComponentView.setMeasured(100, 100);
-    mComponentView.setComponent(mComponentTree);
+    mComponentView.setComponentTree(mComponentTree);
     mComponentView.onAttachedToWindow();
 
     assertEquals(1, mComponentView.getRequestLayoutInvocationCount());
@@ -97,7 +97,7 @@ public class ComponentViewMountTest {
         .build();
     ct.setSizeSpec(100, 100);
 
-    mComponentView.setComponent(ct);
+    mComponentView.setComponentTree(ct);
     mComponentView.setMeasured(100, 100);
     mComponentView.onAttachedToWindow();
 
@@ -107,7 +107,7 @@ public class ComponentViewMountTest {
 
     mComponentView.resetRequestLayoutInvocationCount();
 
-    mComponentView.setComponent(ct);
+    mComponentView.setComponentTree(ct);
     mComponentView.onAttachedToWindow();
 
     assertEquals(1, mComponentView.getRequestLayoutInvocationCount());
@@ -117,7 +117,7 @@ public class ComponentViewMountTest {
   public void testAttachAndSetSameSizeComponentRequestsLayout() {
     mComponentView.setMeasured(100, 100);
     mComponentView.onAttachedToWindow();
-    mComponentView.setComponent(mComponentTree);
+    mComponentView.setComponentTree(mComponentTree);
 
     assertEquals(1, mComponentView.getRequestLayoutInvocationCount());
   }
@@ -126,7 +126,7 @@ public class ComponentViewMountTest {
   public void testAttachAndSetComponentRequestsLayout() {
     mComponentView.setMeasured(10, 10);
     mComponentView.onAttachedToWindow();
-    mComponentView.setComponent(mComponentTree);
+    mComponentView.setComponentTree(mComponentTree);
 
     assertEquals(1, mComponentView.getRequestLayoutInvocationCount());
   }
@@ -134,7 +134,7 @@ public class ComponentViewMountTest {
   @Test
   public void testReAttachRequestsLayout() {
     mComponentView.setMeasured(100, 100);
-    mComponentView.setComponent(mComponentTree);
+    mComponentView.setComponentTree(mComponentTree);
     mComponentView.onAttachedToWindow();
 
     assertEquals(1, mComponentView.getRequestLayoutInvocationCount());
@@ -155,7 +155,7 @@ public class ComponentViewMountTest {
         SizeSpec.makeSizeSpec(100, EXACTLY));
 
     mComponentView.resetRequestLayoutInvocationCount();
-    mComponentView.setComponent(newComponentTree);
+    mComponentView.setComponentTree(newComponentTree);
 
     assertEquals(1, mComponentView.getRequestLayoutInvocationCount());
   }

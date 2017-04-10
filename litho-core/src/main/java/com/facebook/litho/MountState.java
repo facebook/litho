@@ -28,7 +28,6 @@ import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 
-import com.facebook.litho.R;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.reference.Reference;
 
@@ -154,7 +153,7 @@ class MountState {
 
     ComponentsSystrace.beginSection("mount");
 
-    final ComponentTree componentTree = mComponentView.getComponent();
+    final ComponentTree componentTree = mComponentView.getComponentTree();
     final ComponentsLogger logger = componentTree.getContext().getLogger();
 
     if (logger != null) {
@@ -664,7 +663,7 @@ class MountState {
    */
   @SuppressWarnings("unchecked")
   private void prepareMount(LayoutState layoutState) {
-    final ComponentTree component = mComponentView.getComponent();
+    final ComponentTree component = mComponentView.getComponentTree();
     final ComponentsLogger logger = component.getContext().getLogger();
     final String logTag = component.getContext().getLogTag();
 

@@ -116,7 +116,7 @@ public final class ComponentViewDescriptor
     // the component hierarchy. View children of ComponentView are of type ComponentHost which is
     // an implementation detail of the Components framework.
 
-    final ComponentTree component = element.getComponent();
+    final ComponentTree component = element.getComponentTree();
     final LayoutState layoutState = component == null ? null : component.getMainThreadLayoutState();
     final InternalNode root = layoutState == null ? null : layoutState.getLayoutRoot();
     if (root != null) {

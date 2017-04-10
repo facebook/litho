@@ -374,12 +374,12 @@ public class ComponentTreeTest {
     Assert.assertNull(getComponentView(componentTree2));
 
     ComponentView componentView = new ComponentView(mContext);
-    componentView.setComponent(componentTree1);
+    componentView.setComponentTree(componentTree1);
 
     Assert.assertNotNull(getComponentView(componentTree1));
     Assert.assertNull(getComponentView(componentTree2));
 
-    componentView.setComponent(componentTree2);
+    componentView.setComponentTree(componentTree2);
 
     Assert.assertNull(getComponentView(componentTree1));
     Assert.assertNotNull(getComponentView(componentTree2));
@@ -397,13 +397,13 @@ public class ComponentTreeTest {
         .build();
 
     ComponentView componentView = new ComponentView(mContext);
-    componentView.setComponent(componentTree);
+    componentView.setComponentTree(componentTree);
 
-    assertEquals(componentView.getComponent(), componentTree);
+    assertEquals(componentView.getComponentTree(), componentTree);
 
     componentTree.release();
 
-    assertNull(componentView.getComponent());
+    assertNull(componentView.getComponentTree());
   }
 
   @Test
@@ -420,7 +420,7 @@ public class ComponentTreeTest {
 
     // Attach first view.
     ComponentView componentView1 = new ComponentView(mContext);
-    componentView1.setComponent(componentTree);
+    componentView1.setComponentTree(componentTree);
     componentView1.onAttachedToWindow();
 
     // Attach second view.
@@ -429,7 +429,7 @@ public class ComponentTreeTest {
 
     // Set the component that is already mounted on the first view, on the second attached view.
     // This should be ok.
-    componentView2.setComponent(componentTree);
+    componentView2.setComponentTree(componentTree);
   }
 
   @Test
@@ -446,7 +446,7 @@ public class ComponentTreeTest {
 
     // Attach first view.
     ComponentView componentView1 = new ComponentView(mContext);
-    componentView1.setComponent(componentTree);
+    componentView1.setComponentTree(componentTree);
 
     assertEquals(componentView1, getComponentView(componentTree));
     assertEquals(componentTree, getComponentTree(componentView1));
@@ -456,7 +456,7 @@ public class ComponentTreeTest {
 
     Assert.assertNull(getComponentTree(componentView2));
 
-    componentView2.setComponent(componentTree);
+    componentView2.setComponentTree(componentTree);
 
     assertEquals(componentView2, getComponentView(componentTree));
     assertEquals(componentTree, getComponentTree(componentView2));

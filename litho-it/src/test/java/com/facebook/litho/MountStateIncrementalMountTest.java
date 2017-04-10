@@ -93,27 +93,27 @@ public class MountStateIncrementalMountTest {
 
     verifyLoggingAndResetLogger(2, 0);
 
-    componentView.getComponent().mountComponent(new Rect(0, -10, 10, -5));
+    componentView.getComponentTree().mountComponent(new Rect(0, -10, 10, -5));
     assertFalse(child1.isMounted());
     assertFalse(child2.isMounted());
     verifyLoggingAndResetLogger(0, 2);
 
-    componentView.getComponent().mountComponent(new Rect(0, 0, 10, 5));
+    componentView.getComponentTree().mountComponent(new Rect(0, 0, 10, 5));
     assertTrue(child1.isMounted());
     assertFalse(child2.isMounted());
     verifyLoggingAndResetLogger(1, 0);
 
-    componentView.getComponent().mountComponent(new Rect(0, 5, 10, 15));
+    componentView.getComponentTree().mountComponent(new Rect(0, 5, 10, 15));
     assertTrue(child1.isMounted());
     assertTrue(child2.isMounted());
     verifyLoggingAndResetLogger(1, 0);
 
-    componentView.getComponent().mountComponent(new Rect(0, 15, 10, 25));
+    componentView.getComponentTree().mountComponent(new Rect(0, 15, 10, 25));
     assertFalse(child1.isMounted());
     assertTrue(child2.isMounted());
     verifyLoggingAndResetLogger(0, 1);
 
-    componentView.getComponent().mountComponent(new Rect(0, 20, 10, 30));
+    componentView.getComponentTree().mountComponent(new Rect(0, 20, 10, 30));
     assertFalse(child1.isMounted());
     assertFalse(child2.isMounted());
     verifyLoggingAndResetLogger(0, 1);
@@ -145,27 +145,27 @@ public class MountStateIncrementalMountTest {
 
     verifyLoggingAndResetLogger(2, 0);
 
-    componentView.getComponent().mountComponent(new Rect(0, 20, 10, 30));
+    componentView.getComponentTree().mountComponent(new Rect(0, 20, 10, 30));
     assertFalse(child1.isMounted());
     assertFalse(child2.isMounted());
     verifyLoggingAndResetLogger(0, 2);
 
-    componentView.getComponent().mountComponent(new Rect(0, 15, 10, 25));
+    componentView.getComponentTree().mountComponent(new Rect(0, 15, 10, 25));
     assertFalse(child1.isMounted());
     assertTrue(child2.isMounted());
     verifyLoggingAndResetLogger(1, 0);
 
-    componentView.getComponent().mountComponent(new Rect(0, 5, 10, 15));
+    componentView.getComponentTree().mountComponent(new Rect(0, 5, 10, 15));
     assertTrue(child1.isMounted());
     assertTrue(child2.isMounted());
     verifyLoggingAndResetLogger(1, 0);
 
-    componentView.getComponent().mountComponent(new Rect(0, 0, 10, 10));
+    componentView.getComponentTree().mountComponent(new Rect(0, 0, 10, 10));
     assertTrue(child1.isMounted());
     assertFalse(child2.isMounted());
     verifyLoggingAndResetLogger(0, 1);
 
-    componentView.getComponent().mountComponent(new Rect(0, -10, 10, -5));
+    componentView.getComponentTree().mountComponent(new Rect(0, -10, 10, -5));
     assertFalse(child1.isMounted());
     assertFalse(child2.isMounted());
     verifyLoggingAndResetLogger(0, 1);
@@ -200,27 +200,27 @@ public class MountStateIncrementalMountTest {
 
     verifyLoggingAndResetLogger(2, 0);
 
-    componentView.getComponent().mountComponent(new Rect( -10, 0, -5, 10));
+    componentView.getComponentTree().mountComponent(new Rect( -10, 0, -5, 10));
     assertFalse(child1.isMounted());
     assertFalse(child2.isMounted());
     verifyLoggingAndResetLogger(0, 2);
 
-    componentView.getComponent().mountComponent(new Rect(0, 0, 5, 10));
+    componentView.getComponentTree().mountComponent(new Rect(0, 0, 5, 10));
     assertTrue(child1.isMounted());
     assertFalse(child2.isMounted());
     verifyLoggingAndResetLogger(1, 0);
 
-    componentView.getComponent().mountComponent(new Rect(5, 0, 15, 10));
+    componentView.getComponentTree().mountComponent(new Rect(5, 0, 15, 10));
     assertTrue(child1.isMounted());
     assertTrue(child2.isMounted());
     verifyLoggingAndResetLogger(1, 0);
 
-    componentView.getComponent().mountComponent(new Rect(15, 0, 25, 10));
+    componentView.getComponentTree().mountComponent(new Rect(15, 0, 25, 10));
     assertFalse(child1.isMounted());
     assertTrue(child2.isMounted());
     verifyLoggingAndResetLogger(0, 1);
 
-    componentView.getComponent().mountComponent(new Rect(20, 0, 30, 10));
+    componentView.getComponentTree().mountComponent(new Rect(20, 0, 30, 10));
     assertFalse(child1.isMounted());
     assertFalse(child2.isMounted());
     verifyLoggingAndResetLogger(0, 1);
@@ -255,27 +255,27 @@ public class MountStateIncrementalMountTest {
 
     verifyLoggingAndResetLogger(2, 0);
 
-    componentView.getComponent().mountComponent(new Rect(0, -10, 10, -5));
+    componentView.getComponentTree().mountComponent(new Rect(0, -10, 10, -5));
     assertFalse(child1.isMounted());
     assertFalse(child2.isMounted());
     verifyLoggingAndResetLogger(0, 2);
 
-    componentView.getComponent().mountComponent(new Rect(0, 0, 10, 5));
+    componentView.getComponentTree().mountComponent(new Rect(0, 0, 10, 5));
     assertTrue(child1.isMounted());
     assertFalse(child2.isMounted());
     verifyLoggingAndResetLogger(1, 0);
 
-    componentView.getComponent().mountComponent(new Rect(0, 5, 10, 15));
+    componentView.getComponentTree().mountComponent(new Rect(0, 5, 10, 15));
     assertTrue(child1.isMounted());
     assertTrue(child2.isMounted());
     verifyLoggingAndResetLogger(1, 0);
 
-    componentView.getComponent().mountComponent(new Rect(0, 15, 10, 25));
+    componentView.getComponentTree().mountComponent(new Rect(0, 15, 10, 25));
     assertFalse(child1.isMounted());
     assertTrue(child2.isMounted());
     verifyLoggingAndResetLogger(0, 1);
 
-    componentView.getComponent().mountComponent(new Rect(0, 20, 10, 30));
+    componentView.getComponentTree().mountComponent(new Rect(0, 20, 10, 30));
     assertFalse(child1.isMounted());
     assertFalse(child2.isMounted());
     verifyLoggingAndResetLogger(0, 1);
@@ -307,15 +307,15 @@ public class MountStateIncrementalMountTest {
 
     verifyLoggingAndResetLogger(2, 0);
 
-    componentView.getComponent().mountComponent(new Rect(0, 0, 50, 20));
+    componentView.getComponentTree().mountComponent(new Rect(0, 0, 50, 20));
     assertFalse(child.isMounted());
     verifyLoggingAndResetLogger(0, 2);
 
-    componentView.getComponent().mountComponent(new Rect(0, 0, 50, 40));
+    componentView.getComponentTree().mountComponent(new Rect(0, 0, 50, 40));
     assertTrue(child.isMounted());
     verifyLoggingAndResetLogger(2, 0);
 
-    componentView.getComponent().mountComponent(new Rect(30, 0, 50, 40));
+    componentView.getComponentTree().mountComponent(new Rect(30, 0, 50, 40));
     assertFalse(child.isMounted());
     verifyLoggingAndResetLogger(0, 1);
   }
@@ -346,7 +346,7 @@ public class MountStateIncrementalMountTest {
 
     verifyLoggingAndResetLogger(2, 0);
 
-    componentView.getComponent().mountComponent(new Rect(0, -10, 10, -5));
+    componentView.getComponentTree().mountComponent(new Rect(0, -10, 10, -5));
     verifyLoggingAndResetLogger(0, 0);
   }
 
@@ -386,22 +386,22 @@ public class MountStateIncrementalMountTest {
 
     verifyLoggingAndResetLogger(3, 0);
 
-    componentView.getComponent().mountComponent(new Rect(0, 0, 5, 5));
+    componentView.getComponentTree().mountComponent(new Rect(0, 0, 5, 5));
     assertTrue(child1.isMounted());
     assertFalse(child2.isMounted());
     verifyLoggingAndResetLogger(0, 1);
 
-    componentView.getComponent().mountComponent(new Rect(5, 5, 10, 10));
+    componentView.getComponentTree().mountComponent(new Rect(5, 5, 10, 10));
     assertTrue(child1.isMounted());
     assertTrue(child2.isMounted());
     verifyLoggingAndResetLogger(1, 0);
 
-    componentView.getComponent().mountComponent(new Rect(10, 10, 15, 15));
+    componentView.getComponentTree().mountComponent(new Rect(10, 10, 15, 15));
     assertFalse(child1.isMounted());
     assertTrue(child2.isMounted());
     verifyLoggingAndResetLogger(0, 1);
 
-    componentView.getComponent().mountComponent(new Rect(15, 15, 20, 20));
+    componentView.getComponentTree().mountComponent(new Rect(15, 15, 20, 20));
     assertFalse(child1.isMounted());
     assertFalse(child2.isMounted());
     verifyLoggingAndResetLogger(0, 1);
@@ -434,7 +434,7 @@ public class MountStateIncrementalMountTest {
         });
 
     for (int i = 0; i < 20; i++) {
-      componentView.getComponent().mountComponent(new Rect(0, 0, 10, 3 + i));
+      componentView.getComponentTree().mountComponent(new Rect(0, 0, 10, 3 + i));
       assertEquals(new Rect(0, 0, 8, 1 + i), mountedView.getPreviousIncrementalMountBounds());
     }
   }
@@ -452,10 +452,10 @@ public class MountStateIncrementalMountTest {
 
     assertTrue(mountedView.getPreviousIncrementalMountBounds().isEmpty());
 
-    componentView.getComponent().mountComponent(new Rect(-10, -10, 10, 10));
+    componentView.getComponentTree().mountComponent(new Rect(-10, -10, 10, 10));
     assertEquals(new Rect(0, 0, 10, 10), mountedView.getPreviousIncrementalMountBounds());
 
-    componentView.getComponent().mountComponent(new Rect(80, 80, 120, 120));
+    componentView.getComponentTree().mountComponent(new Rect(80, 80, 120, 120));
     assertEquals(new Rect(80, 80, 100, 100), mountedView.getPreviousIncrementalMountBounds());
   }
 
@@ -521,7 +521,7 @@ public class MountStateIncrementalMountTest {
           }
         }).when(childView3).performIncrementalMount(any(Rect.class));
 
-    componentView.getComponent().mountComponent(new Rect(15, 15, 40, 40));
+    componentView.getComponentTree().mountComponent(new Rect(15, 15, 40, 40));
 
     verify(childView1).performIncrementalMount(any(Rect.class));
     verify(childView2).performIncrementalMount(any(Rect.class));
@@ -549,17 +549,17 @@ public class MountStateIncrementalMountTest {
           }
         });
 
-    componentView.getComponent().mountComponent(new Rect(0, -10, 10, -5));
+    componentView.getComponentTree().mountComponent(new Rect(0, -10, 10, -5));
     assertFalse(child1.isMounted());
     assertTrue(child1.wasOnUnbindCalled());
     assertTrue(child1.wasOnUnmountCalled());
 
-    componentView.getComponent().mountComponent(new Rect(0, 0, 10, 5));
+    componentView.getComponentTree().mountComponent(new Rect(0, 0, 10, 5));
     assertTrue(child1.isMounted());
 
     child1.resetInteractions();
 
-    componentView.getComponent().mountComponent(new Rect(0, 5, 10, 15));
+    componentView.getComponentTree().mountComponent(new Rect(0, 5, 10, 15));
     assertTrue(child1.isMounted());
 
     assertFalse(child1.wasOnBindCalled());

@@ -220,7 +220,7 @@ class HorizontalScrollSpec {
     }
 
     void mount(ComponentTree component, int width, int height) {
-      mComponentView.setComponent(component);
+      mComponentView.setComponentTree(component);
       mComponentWidth = width;
       mComponentHeight = height;
     }
@@ -231,7 +231,7 @@ class HorizontalScrollSpec {
 
     void unmount() {
       // Clear all component-related state from the view.
-      mComponentView.setComponent(null);
+      mComponentView.setComponentTree(null);
       mComponentWidth = 0;
       mComponentHeight = 0;
     }

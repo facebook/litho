@@ -165,7 +165,7 @@ public class StateUpdatesTest {
         .layoutDiffing(false)
         .build();
     final ComponentView componentView = new ComponentView(mContext);
-    componentView.setComponent(mComponentTree);
+    componentView.setComponentTree(mComponentTree);
     componentView.onAttachedToWindow();
     ComponentTestHelper.measureAndLayout(componentView);
   }
@@ -188,7 +188,7 @@ public class StateUpdatesTest {
         .layoutDiffing(false)
         .build();
     final ComponentView componentView = new ComponentView(mContext);
-    componentView.setComponent(componentTree);
+    componentView.setComponentTree(componentTree);
     componentView.onAttachedToWindow();
     ComponentTestHelper.measureAndLayout(componentView);
   }
@@ -214,7 +214,7 @@ public class StateUpdatesTest {
         .layoutDiffing(false)
         .build();
     final ComponentView componentView = new ComponentView(mContext);
-    componentView.setComponent(componentTree);
+    componentView.setComponentTree(componentTree);
     componentView.onAttachedToWindow();
     ComponentTestHelper.measureAndLayout(componentView);
   }

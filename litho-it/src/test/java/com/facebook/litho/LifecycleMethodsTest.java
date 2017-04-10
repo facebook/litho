@@ -55,7 +55,7 @@ public class LifecycleMethodsTest {
         .incrementalMount(false)
         .layoutDiffing(false)
         .build();
-    mComponentView.setComponent(mComponentTree);
+    mComponentView.setComponentTree(mComponentTree);
   }
 
   @Test

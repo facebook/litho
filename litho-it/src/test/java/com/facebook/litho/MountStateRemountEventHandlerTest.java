@@ -56,7 +56,7 @@ public class MountStateRemountEventHandlerTest {
         MountState.getComponentClickListener(componentView);
     assertNotNull(clickListener);
 
-    componentView.getComponent().setRoot(new InlineLayoutSpec() {
+    componentView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
@@ -89,7 +89,7 @@ public class MountStateRemountEventHandlerTest {
         MountState.getComponentLongClickListener(componentView);
     assertNotNull(longClickListener);
 
-    componentView.getComponent().setRoot(new InlineLayoutSpec() {
+    componentView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
@@ -122,7 +122,7 @@ public class MountStateRemountEventHandlerTest {
         MountState.getComponentTouchListener(componentView);
     assertNotNull(touchListener);
 
-    componentView.getComponent().setRoot(new InlineLayoutSpec() {
+    componentView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
@@ -153,7 +153,7 @@ public class MountStateRemountEventHandlerTest {
 
     assertNotNull(MountState.getComponentClickListener(componentView));
 
-    componentView.getComponent().setRoot(new InlineLayoutSpec() {
+    componentView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
@@ -185,7 +185,7 @@ public class MountStateRemountEventHandlerTest {
 
     assertNotNull(MountState.getComponentLongClickListener(componentView));
 
-    componentView.getComponent().setRoot(new InlineLayoutSpec() {
+    componentView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
@@ -216,7 +216,7 @@ public class MountStateRemountEventHandlerTest {
           }
         });
 
-    componentView.getComponent().setRoot(new InlineLayoutSpec() {
+    componentView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
@@ -246,7 +246,7 @@ public class MountStateRemountEventHandlerTest {
 
     assertNull(MountState.getComponentClickListener(componentView));
 
-    componentView.getComponent().setRoot(new InlineLayoutSpec() {
+    componentView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
@@ -278,7 +278,7 @@ public class MountStateRemountEventHandlerTest {
 
     assertNull(MountState.getComponentLongClickListener(componentView));
 
-    componentView.getComponent().setRoot(new InlineLayoutSpec() {
+    componentView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
@@ -311,7 +311,7 @@ public class MountStateRemountEventHandlerTest {
 
     assertNull(MountState.getComponentClickListener(componentView));
 
-    componentView.getComponent().setRoot(new InlineLayoutSpec() {
+    componentView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)

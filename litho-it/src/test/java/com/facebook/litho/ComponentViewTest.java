@@ -53,7 +53,7 @@ public class ComponentViewTest {
         .build();
 
     mComponentView = new ComponentView(RuntimeEnvironment.application);
-    mComponentView.setComponent(componentTree);
+    mComponentView.setComponentTree(componentTree);
   }
 
   @Test
@@ -92,7 +92,7 @@ public class ComponentViewTest {
     };
 
     ComponentView nullComponentView = new ComponentView(RuntimeEnvironment.application);
-    nullComponentView.setComponent(
+    nullComponentView.setComponentTree(
         ComponentTree.create(
             new ComponentContext(RuntimeEnvironment.application),
             component)

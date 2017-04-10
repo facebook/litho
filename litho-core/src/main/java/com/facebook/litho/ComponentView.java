@@ -79,7 +79,7 @@ public class ComponentView extends ComponentHost {
    */
   public static ComponentView create(ComponentContext context, Component component) {
     final ComponentView componentView = new ComponentView(context);
-    componentView.setComponent(ComponentTree.create(context, component).build());
+    componentView.setComponentTree(ComponentTree.create(context, component).build());
 
     return componentView;
   }
@@ -201,7 +201,7 @@ public class ComponentView extends ComponentHost {
     int height = MeasureSpec.getSize(heightMeasureSpec);
 
     if (mTemporaryDetachedComponent != null && mComponentTree == null) {
-      setComponent(mTemporaryDetachedComponent);
+      setComponentTree(mTemporaryDetachedComponent);
       mTemporaryDetachedComponent = null;
     }
 
@@ -285,11 +285,11 @@ public class ComponentView extends ComponentHost {
     return super.shouldRequestLayout();
   }
 
-  public ComponentTree getComponent() {
+  public ComponentTree getComponentTree() {
     return mComponentTree;
   }
 
-  public void setComponent(ComponentTree componentTree) {
+  public void setComponentTree(ComponentTree componentTree) {
     mTemporaryDetachedComponent = null;
     if (mComponentTree == componentTree) {
       if (mIsAttached) {

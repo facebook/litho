@@ -842,7 +842,7 @@ public class RecyclerBinder implements Binder<RecyclerView>, LayoutInfo.Componen
             .computeLayoutSync(mComponentContext, childrenWidthSpec, childrenHeightSpec, null);
       }
 
-      componentView.setComponent(componentTreeHolder.getComponentTree());
+      componentView.setComponentTree(componentTreeHolder.getComponentTree());
     }
 
     @Override

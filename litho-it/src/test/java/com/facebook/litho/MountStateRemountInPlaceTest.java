@@ -75,7 +75,7 @@ public class MountStateRemountInPlaceTest {
             .unique()
             .build();
 
-    componentView.getComponent().setRoot(new InlineLayoutSpec() {
+    componentView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
@@ -114,7 +114,7 @@ public class MountStateRemountInPlaceTest {
         TestDrawableComponent.create(mContext)
             .build();
 
-    componentView.getComponent().setRoot(new InlineLayoutSpec() {
+    componentView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
@@ -175,7 +175,7 @@ public class MountStateRemountInPlaceTest {
             .measuredHeight(11)
             .build();
 
-    componentView.getComponent().setRoot(new InlineLayoutSpec() {
+    componentView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
@@ -236,7 +236,7 @@ public class MountStateRemountInPlaceTest {
             .measuredHeight(10)
             .build();
 
-    componentView.getComponent().setRoot(new InlineLayoutSpec() {
+    componentView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
@@ -280,7 +280,7 @@ public class MountStateRemountInPlaceTest {
         TestDrawableComponent.create(mContext)
             .build();
 
-    componentView.getComponent().setRoot(new InlineLayoutSpec() {
+    componentView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
@@ -327,7 +327,7 @@ public class MountStateRemountInPlaceTest {
         TestDrawableComponent.create(mContext)
             .build();
 
-    componentView.getComponent().setRoot(new InlineLayoutSpec() {
+    componentView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
@@ -374,7 +374,7 @@ public class MountStateRemountInPlaceTest {
         TestDrawableComponent.create(mContext)
             .build();
 
-    componentView.getComponent().setRoot(new InlineLayoutSpec() {
+    componentView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
@@ -418,7 +418,7 @@ public class MountStateRemountInPlaceTest {
             .color(Color.BLACK)
             .build();
 
-    componentView.getComponent().setRoot(new InlineLayoutSpec() {
+    componentView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
@@ -459,7 +459,7 @@ public class MountStateRemountInPlaceTest {
             .color(Color.WHITE)
             .build();
 
-    componentView.getComponent().setRoot(new InlineLayoutSpec() {
+    componentView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
