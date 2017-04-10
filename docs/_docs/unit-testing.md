@@ -12,6 +12,10 @@ AssertJ methods. They are available as:
   or Components.
 - `ComponentViewAssert` for assertions against mounted Components.
 
+In order to use any of the testing capabilities, you need include the optional
+`litho-testing` package in your build. It is available as
+`com.facebook.litho:litho-testing:+`.
+
 Under the hood, these asserts are implemented through these helpers,
 that are also available in case that more complicated use cases need
 to be reconstructed:
