@@ -8,7 +8,7 @@ permalink: /docs/tutorial
 
 This tutorial assumes you've gone through the [Getting Started](getting-started.html) guide to set up Litho.
 
-In this tutorial, you'll start by building a basic "Hello World!" screen using Litho and work your way up to creating a list of "Hello World!" items on the screen. Along the way, you'll learn about the building blocks of Litho: components, `ComponentTree`, and `ComponentView`. You'll learn how to set properties on components.
+In this tutorial, you'll start by building a basic "Hello World!" screen using Litho and work your way up to creating a list of "Hello World!" items on the screen. Along the way, you'll learn about the building block of Litho: components. You'll learn how to set properties on components.
 
 
 ## 1. Hello World
@@ -36,21 +36,18 @@ Next, add a `Text` Litho component to an activity:
 public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    final ComponentView componentView = new ComponentView(this);
     final ComponentContext context = new ComponentContext(this);
 
-    final Component text = Text.create(context)
-            .text("Hello World")
-            .textSizeDip(50)
-            .build();
-    final ComponentTree componentTree = ComponentTree.create(context, text).build();
+    final Component component = Text.create(context)
+        .text("Hello World")
+        .textSizeDip(50)
+        .build();
 
-    componentView.setComponent(componentTree);
-    setContentView(componentView);
+    setContentView(ComponentView.create(context, component));
 }
 ```
 
-The two main players when using components are `ComponentView` and `ComponentTree`. A `ComponentView` is an Android `ViewGroup` that can render components. The example sets the content for the activity to a `ComponentView`. A `ComponentTree` represents a tree of components. You attach a `ComponentTree` to a `ComponentView` to manage the life cycles of the components in a thread-safe way.
+The way we associate components with Android view system is through [ComponentView](/javadoc/reference/com/facebook/litho/ComponentView.html) which acts as bridge between Litho components and Android `View`s. The example sets the content for the activity to a `ComponentView` that displays `Text` component.
 
 How do the components come into play? Let's zero in on this piece of code:
 
@@ -63,9 +60,7 @@ Text.create(context)
 
 `Text` is a core component defined in `com.facebook.litho.widget`.  It has a number of _properties_ such as _text_ and _textSize_ which you can set as shown. These _properties_ are called props to mimic [React](https://facebook.github.io/react/) terminology. You'll learn how to write your own components later but it's worth noting the `Text` class is generated from a `TextSpec` class. The generated component class provides a builder API with methods to define values for the component's props.
 
-The `Text` component is added as a single child component to the `ComponentTree` in the example. You could instead have a single root component with several child components. You'll see how to do this in follow-on examples.
-
-Note that often this would be written as the more compact and pleasing, but slightly more confusing
+The `Text` component is added as a single child component to the `ComponentView` in the example. You could instead have a single root component with several child components. You'll see how to do this in follow-on examples.
 
 That's it! Run the app, you should see something like this:
 
@@ -73,17 +68,17 @@ That's it! Run the app, you should see something like this:
 
 Not pretty, but this is certainly a start!
 
-## 3. Your First Custom Component
+## 2. Your First Custom Component
 
 At the end of this tutorial you'll have a simple, scrollable feed. This feed will just say "Hello World" a whole lot of times. Exciting times! In this section, you'll define one of the elements, a "Hello World" component that appears in the feed. Naturally, a real world app would define a more complicated component but you'll learn all the basics you need to do that in this example.
 
 Ready? It's time to dive in and build this component. In Litho, a component is defined by _Spec_ classes. The framework then generates the underlying component class that you use in your code to create a component instance.
 
-Your custom component will be called `FeedItem`. Therefore, define a class named `FeedItemSpec` with the following content:
+Your custom component will be called `ListItem`. Therefore, define a class named `ListItemSpec` with the following content:
 
 ```java
 @LayoutSpec
-public class FeedItemSpec {
+public class ListItemSpec {
   @OnCreateLayout
   static ComponentLayout onCreateLayout(ComponentContext c) {
     return Column.create(c)
@@ -100,18 +95,16 @@ public class FeedItemSpec {
 
 You should recognize the `Text` component from the previous tutorial step. In this example, you're passing it in as a "child" property of a `Column`. You can think `Column`s like `<div>`s in HTML.  It's a wrapper, used mainly for collating things together and perhaps adding some background styling.  Since Litho uses [Yoga](https://facebook.github.io/yoga/), you can add flexbox attributes to set the layout for the children of a `Column` or a `Row`. Here, you simply set the padding and the background color.
 
-How do you this component? In your activity, simply change the `ComponentTree` definition to:
+How do you render this component? In your activity, simply change the `Component` definition to:
 
 ```java
-final ComponentTree componentTree = ComponentTree.create(
-    context,
-    FeedItem.create(context))
+final Component text = ListItem.create(context)
         .build();
 ```
 
-**Note:** That's `FeedItem` you're using, not `FeedItemSpec`.
+**Note:** That's `ListItem` you're using, not `ListItemSpec`.
 
-Where did `FeedItem` come from?  Where are `create` and `build` defined?  This is the magic of Litho _Specs_.
+Where did `ListItem` come from?  Where are `create` and `build` defined?  This is the magic of Litho _Specs_.
 
 ??? HOW TO DO THIS WITHOUT BUCK ???
 
@@ -123,28 +116,28 @@ plugins = [
     ],
 ```
 
-This runs an annotation processor over your code.  It looks for `(.*)Spec` class names and constructs `(.*)` classes.  These classes will have all the methods required by Litho automatically filled in.  In addition, based upon the specification, there will be extra methods (such as `Text`'s `.textSizeSp` or the `.backgroundColor` method of `Container`).
+This runs an annotation processor over your code.  It looks for `FooSpec` class names and constructs `Foo` classes.  These classes will have all the methods required by Litho automatically filled in.  In addition, based upon the specification, there will be extra methods (such as `Text`'s `.textSizeSp` or the `.backgroundColor` method of `Column`/`Row`) generated by annotation processor.
 
 It's as simple as that. Run your app. You should see something like this:
 
 <img src="/static/images/barebones2.png" style="width: 300px;">
 
-## 4. Creating a List of Items
+## 3. Creating a List of Items
 
 You can handle lists in Litho using the core `Recycler` component.  This component is conceptually similar to the Android `RecyclerView`.  However, with Litho, all the layout is performed in a separate thread, resulting in a substantial performance boost.
 
-In this part of the tutorial, you'll use a `RecyclerBinder` to provide components to a `Recycler`, in the same way that a `LayoutMangager` works hand in hand with an `Adapter` to provide `View`s to a `RecyclerView`.
+In this part of the tutorial, you'll use a `RecyclerBinder` to provide components to a `Recycler`, in the same way that a `LayoutManager` works hand in hand with an `Adapter` to provide `View`s to a `RecyclerView`.
 
-First, you need to add the Android support `RecyclerView` library to your gradle dependencies:
+First, you need to add the Android support `RecyclerView` library to your Gradle or BUCK dependencies. In case of gradle it will look like this:
 
-```java
+```gradle
 dependencies {
   // ...
   compile 'com.android.support:recyclerview-v7:+'
 }
 ```
 
-Next, in your activity modify the `ComponentTree` definition as follows:
+Next, in your activity modify the `Component` definition as follows:
 
 ```java
 final RecyclerBinder recyclerBinder = new RecyclerBinder(
@@ -152,16 +145,14 @@ final RecyclerBinder recyclerBinder = new RecyclerBinder(
     4.0f,
     new LinearLayoutInfo(this, OrientationHelper.VERTICAL, false));
 
-final ComponentTree componentTree = ComponentTree.create(
-    context,
-    Recycler.create(context)
-        .binder(recyclerBinder))
+final Component component = Recycler.create(context)
+    .binder(recyclerBinder)
     .build();
 ```
 
 This code constructs a `RecyclerBinder` and attaches it to a `Recycler`. A new `RecyclerBinder` takes as constructor parameters a component context, a range ratio, and layout info. In your example, this sets the range ratio to 4 and a `LinearLayoutInfo` for the layout info.
 
-You then create and pass in the a `Recycler` component to the component tree.
+You then create and pass in the `Recycler` component to the `ComponentView`.
 
 Now turn your focus to populating the binder. Define a helper function in your activity to do this:
 
@@ -169,15 +160,15 @@ Now turn your focus to populating the binder. Define a helper function in your a
 private void addContent(RecyclerBinder recyclerBinder, ComponentContext context) {
   for (int i = 0; i < 32; i++) {
     ComponentInfo.Builder componentInfoBuilder = ComponentInfo.create();
-    componentInfoBuilder.component(FeedItem.create(context).build());
+    componentInfoBuilder.component(ListItem.create(context).build());
     recyclerBinder.insertItemAt(i, componentInfoBuilder.build());
   }
 }
 ```
 
-In the code, a `ComponentInfo` is created that describes the components to be rendered by a `Recycler`. In this example, a `FeedItem` is the component to be rendered.
+In the code, a `ComponentInfo` is created that describes the components to be rendered by a `Recycler`. In this example, a `ListItem` is the component to be rendered.
 
-Finally, make a call to `addContent` in your activity's `onCreate` method, after the `componentTree` definition:
+Finally, make a call to `addContent` in your activity's `onCreate` method, after the `component` definition:
 
 ```java
 addContent(recyclerBinder, context);
@@ -187,13 +178,13 @@ Run the app. You should see a scrollable list of 32 "Hello World" components:
 
 <img src="/static/images/barebones3.png" style="width: 300px;">
 
-## 5. Defining a Component's properties
+## 4. Defining a Component's properties
 
 Feeds are no good if they only contain repetitive copies of a single component. In this part, you'll look at _properties_ or props. These are attributes you can set on components to change their behavior or appearance.
 
 Adding props to a component is very simple. Props are parameters to methods of the component specification, annotated with the `@Prop` annotation.
 
-Modify `FeedItemSpec` as follows:
+Modify `ListItemSpec` as follows:
 
 ```java
 @OnCreateLayout
@@ -221,7 +212,7 @@ private void addContent(RecyclerBinder recyclerBinder, ComponentContext context)
   for (int i = 0; i < 32; i++) {
     ComponentInfo.Builder componentInfoBuilder = ComponentInfo.create();
     componentInfoBuilder.component(
-        FeedItem.create(context)
+        ListItem.create(context)
             .color(i % 2 == 0 ? Color.WHITE : Color.LTGRAY)
             .message("Hello, world!")
             .build());
@@ -230,7 +221,7 @@ private void addContent(RecyclerBinder recyclerBinder, ComponentContext context)
 }
 ```
 
-Now when `FeedItem` is constructed, the `color` and `message` props are passed in with the background color alternating for each row.
+Now when `ListItem` is constructed, the `color` and `message` props are passed in with the background color alternating for each row.
 
 Run the app. You should see something like this:
 
