@@ -8,16 +8,10 @@
 
 package com.facebook.samples.litho;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLifecycle;
-import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ComponentView;
 
 public class DemoActivity extends AppCompatActivity {
@@ -28,14 +22,10 @@ public class DemoActivity extends AppCompatActivity {
 
     final ComponentContext context = new ComponentContext(this);
     final String demoName = (String) getIntent().getSerializableExtra("demoName");
-    final Component<?> component = Demos.getComponent(demoName);
 
-    final ComponentView componentView = new ComponentView(this);
-    componentView.setComponent(
-        ComponentTree.create(context, component)
-            .incrementalMount(false)
-            .layoutDiffing(false)
-            .build());
-    setContentView(componentView);
+    setContentView(
+        ComponentView.create(
+            context,
+            Demos.getComponent(demoName)));
   }
 }
