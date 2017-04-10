@@ -9,7 +9,7 @@
 
 package com.facebook.litho.widget;
 
-import android.support.v7.widget.RecyclerView;
+import com.facebook.litho.ThreadUtils;
 
 /**
  * An controller that can be passed as {@link com.facebook.litho.annotations.Prop} to a
@@ -18,6 +18,15 @@ import android.support.v7.widget.RecyclerView;
 public class RecyclerEventsController {
 
   private RecyclerViewWrapper mRecyclerViewWrapper;
+
+  private final Runnable mClearRefreshRunnable = new Runnable() {
+    @Override
+    public void run() {
+      if (mRecyclerViewWrapper != null && mRecyclerViewWrapper.isRefreshing()) {
+        mRecyclerViewWrapper.setRefreshing(false);
+      }
+    }
+  };
 
   /**
    * Send the Recycler a request to scroll the content to the first item in the binder.
@@ -42,9 +51,17 @@ public class RecyclerEventsController {
   }
 
   public void clearRefreshing() {
-    if (mRecyclerViewWrapper != null) {
-      mRecyclerViewWrapper.setRefreshing(false);
+    if (mRecyclerViewWrapper == null || !mRecyclerViewWrapper.isRefreshing()) {
+      return;
     }
+
+    if (ThreadUtils.isMainThread()) {
+      mRecyclerViewWrapper.setRefreshing(false);
+      return;
+    }
+
+    mRecyclerViewWrapper.removeCallbacks(mClearRefreshRunnable);
+    mRecyclerViewWrapper.post(mClearRefreshRunnable);
   }
 
   void setRecyclerViewWrapper(RecyclerViewWrapper recyclerViewWrapper) {
