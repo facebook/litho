@@ -1,6 +1,6 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-package com.facebook.litho;
+package com.facebook.litho.testing.shadows;
 
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;

@@ -46,25 +46,21 @@ components_robolectric_test(
         COMPONENTS_TESTING_TARGET,
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner"),
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/shadows:shadows"),
     ],
 )
 
 android_library(
     name = "testutil",
     srcs = [
-        "ColorDrawableShadow.java",
-        "LayoutDirectionViewGroupShadow.java",
-        "LayoutDirectionViewShadow.java",
         "TouchExpansionTestInternalNode.java",
     ],
     visibility = [
         make_dep_path("litho-it/src/test/java/com/facebook/litho/..."),
-        make_dep_path("litho-it/src/test/java/com/facebook/litho/..."),
     ],
     deps = [
-        COMPONENTS_ANDROIDSUPPORT_TARGET,
         COMPONENTS_JAVA_TARGET,
-        COMPONENTS_ROBOLECTRIC_TARGET,
+        COMPONENTS_ANDROIDSUPPORT_TARGET,
         COMPONENTS_YOGA_TARGET,
     ],
 )

@@ -16,8 +16,8 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentView;
 import com.facebook.litho.testing.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.shadows.ColorDrawableShadow;
 import com.facebook.litho.widget.Text;
-import com.facebook.litho.ColorDrawableShadow;
 
 import com.google.common.base.Predicate;
 import org.junit.Before;
