@@ -69,18 +69,21 @@ public class ComponentImplGenerator {
       implClassBuilder.addTypeVariables(specModel.getTypeVariables());
     }
 
+    final boolean hasState = !specModel.getStateValues().isEmpty();
+
     final ClassName stateContainerImplClass =
         ClassName.bestGuess(getStateContainerImplClassName(specModel));
-    implClassBuilder.addField(stateContainerImplClass, STATE_CONTAINER_FIELD_NAME);
-    implClassBuilder.addMethod(
-        generateStateContainerGetter(specModel.getStateContainerClass()));
+
+    if (hasState) {
+      implClassBuilder.addField(stateContainerImplClass, STATE_CONTAINER_FIELD_NAME);
+      implClassBuilder.addMethod(
+          generateStateContainerGetter(specModel.getStateContainerClass()));
+    }
 
     generateProps(specModel).addToTypeSpec(implClassBuilder);
     generateTreeProps(specModel).addToTypeSpec(implClassBuilder);
     generateInterStageInputs(specModel).addToTypeSpec(implClassBuilder);
     generateEventHandlers(specModel).addToTypeSpec(implClassBuilder);
-
-    final boolean hasState = !specModel.getStateValues().isEmpty();
 
     implClassBuilder.addMethod(generateImplConstructor(stateContainerImplClass, hasState));
     implClassBuilder.addMethod(generateGetSimpleName(specModel));
