@@ -12,14 +12,26 @@ android_prebuilt_aar(
 )
 
 remote_file(
-    name = "litho.aar",
+    name = "litho-core.aar",
     sha1 = "sha1here",
-    url = "mvn:com.facebook.litho:litho:aar:0.1.0",
+    url = "mvn:com.facebook.litho:litho-core:aar:0.1.0",
 )
 
 prebuilt_jar(
     name = "litho-annotation",
     binary_jar = ":litho-annotation.jar",
+    visibility = ["PUBLIC"],
+)
+
+remote_file(
+    name = "litho-processor.aar",
+    sha1 = "sha1here",
+    url = "mvn:com.facebook.litho:litho-processor:aar:0.1.0",
+)
+
+prebuilt_jar(
+    name = "litho-processor",
+    binary_jar = ":litho-processor.jar",
     visibility = ["PUBLIC"],
 )
 
@@ -47,13 +59,14 @@ android_library(
     ...
     annotation_processor_deps = [
         ":litho-annotation",
+        ":litho-processor",
     ],
     annotation_processors = [
         "com.facebook.litho.processor.ComponentsProcessor",
     ],
     deps = [
-        ':litho',
-        ':litho-widget',
+        ":litho",
+        ":litho-widget",
         ...
     ]
 )
