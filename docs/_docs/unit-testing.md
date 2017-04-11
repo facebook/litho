@@ -193,7 +193,6 @@ There are several more assertions available for `Component`s and
 So asserting the presence of a `Drawable` in your `Component` will traverse
 the view hierarchy from the provided starting point.
 
-
 ## Caveats
 
 When running Litho unit tests, be aware that the native library for Yoga must be loaded
@@ -215,9 +214,26 @@ a `libyoga.so already loaded in another classloader` exception.
 The only way to avoid this is by either preventing the use of multiple ClassLoaders
 or forking the process whenever a new ClassLoader is necessary.
 
+Gradle allows you to limit the number of test classes a process can execute before
+it is discarded. If you set the number to one, we avoid the ClassLoader reuse:
+
+```groovy
+android {
+    [...]
+
+    testOptions {
+        unitTests.all {
+            forkEvery = 1
+            maxParallelForks = Math.ceil(Runtime.runtime.availableProcessors() * 1.5)
+        }
+    }
+}
+```
+
 With Buck, this behavior can be achieved by assigning test targets separate names
-as those will result in a parallel process being spun up. With Gradle, however,
-there are no easily accessible controls in place.
+as those will result in a parallel process being spun up. Alternatively, you can
+set the `fork_mode` to `per_test` as described
+[here](https://buckbuild.com/rule/java_test.html#fork_mode).
 
 Ultimately, depending on your build system and the existing constraints of your
 project, you may need to adjust the way in which your test runner utilizes
