@@ -11,7 +11,7 @@ android_library(
     name = "shadows",
     srcs = glob(["*.java"]),
     visibility = [
-        COMPONENTS_VISIBILITY,
+        make_dep_path("litho-it/src/test/java/com/facebook/litho/..."),
     ],
     deps = [
         COMPONENTS_ANDROIDSUPPORT_TARGET,

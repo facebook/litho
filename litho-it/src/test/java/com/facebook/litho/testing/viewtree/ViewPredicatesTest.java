@@ -33,6 +33,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
  * Tests {@link ViewPredicates}
  */
 @RunWith(ComponentsTestRunner.class)
+@Config(shadows = ColorDrawableShadow.class)
 public class ViewPredicatesTest {
 
   private View mView;

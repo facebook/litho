@@ -35,7 +35,12 @@ import org.robolectric.annotation.Config;
 import static android.os.Build.VERSION_CODES.LOLLIPOP;
 import static org.junit.Assert.assertEquals;
 
-@Config(sdk = LOLLIPOP)
+@Config(
+    manifest = Config.NONE,
+    sdk = LOLLIPOP,
+    shadows = {
+        LayoutDirectionViewShadow.class,
+        LayoutDirectionViewGroupShadow.class})
 @RunWith(ComponentsTestRunner.class)
 public class LayoutDirectionTest {
   private ComponentContext mContext;

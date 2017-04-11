@@ -9,15 +9,13 @@
 
 package com.facebook.litho.testing.testrunner;
 
+import java.lang.reflect.Method;
+
 import android.app.Application;
-import com.facebook.litho.testing.shadows.ColorDrawableShadow;
-import com.facebook.litho.testing.shadows.LayoutDirectionViewGroupShadow;
-import com.facebook.litho.testing.shadows.LayoutDirectionViewShadow;
+
 import org.junit.runners.model.InitializationError;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
-
-import java.lang.reflect.Method;
 
 public class ComponentsTestRunner extends RobolectricTestRunner {
   /**
@@ -44,14 +42,6 @@ public class ComponentsTestRunner extends RobolectricTestRunner {
 
       return property.equals("true") ? OSS : INTERNAL;
     }
-  }
-
-  private static Class<?>[] getDefaultShadows() {
-    return new Class[]{
-            ColorDrawableShadow.class,
-            LayoutDirectionViewShadow.class,
-            LayoutDirectionViewGroupShadow.class,
-    };
   }
 
   private static String getResPrefix() {
@@ -89,7 +79,7 @@ public class ComponentsTestRunner extends RobolectricTestRunner {
         "",
         "res",
         "assets",
-        getDefaultShadows(),
+        new Class[]{},
         Application.class,
         new String[0],
         null));
