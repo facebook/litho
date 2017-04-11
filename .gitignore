@@ -9,3 +9,6 @@ docs/_site/
 /gentest/test.html
 .buckversion
 /lib/yoga/.externalNativeBuild/
+
+# Output files
+build/
