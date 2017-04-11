@@ -34,11 +34,9 @@ dependencies {
     provided deps.inferAnnotations
 
     // First-party
-    // compile deps.yoga
     compile deps.fresco
     compile files('../lib/CSSLayoutDEPRECATED-TOREMOVE/CSSLayoutDEPRECATED.jar')
-    // TODO: Replace with published version
-    compile(name: 'textlayoutbuilder-1.0.0', ext: 'aar')
+    compile deps.textlayoutbuilder
 
     // Android Support Library
     compile deps.supportCompat

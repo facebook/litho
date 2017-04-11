@@ -9,8 +9,14 @@ include_defs("//COMPONENTS_DEFS")
 
 android_prebuilt_aar(
     name = "textlayoutbuilder",
-    aar = "textlayoutbuilder-1.0.0.aar",
+    aar = ":textlayoutbuilder-aar",
     visibility = [
         COMPONENTS_VISIBILITY,
     ],
+)
+
+remote_file(
+    name = "textlayoutbuilder-aar",
+    url = "mvn:com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:aar:1.1.0",
+    sha1 = "297030029bbe61bd2504323e850b5fb33e0a5cf3",
 )
