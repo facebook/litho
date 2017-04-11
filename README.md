@@ -17,3 +17,6 @@ or, if you prefer Gradle,
 
     $ ./gradlew :sample:installDebug
 
+## License
+
+Litho is BSD-licensed. We also provide an additional patent grant.
