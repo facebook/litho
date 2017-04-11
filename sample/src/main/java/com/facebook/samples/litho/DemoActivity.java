@@ -20,12 +20,11 @@ public class DemoActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    final ComponentContext context = new ComponentContext(this);
     final String demoName = (String) getIntent().getSerializableExtra("demoName");
 
     setContentView(
         ComponentView.create(
-            context,
+            this,
             Demos.getComponent(demoName)));
   }
 }

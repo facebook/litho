@@ -8,6 +8,7 @@
 
 package com.facebook.samples.litho;
 
+import android.content.Context;
 import android.support.v7.widget.OrientationHelper;
 
 import java.util.Map;
@@ -32,7 +33,8 @@ public final class Demos {
   private Demos() {
   }
 
-  public static void initialize(ComponentContext c) {
+  public static void initialize(Context context) {
+    final ComponentContext c = new ComponentContext(context);
     final RecyclerBinder recyclerBinder = new RecyclerBinder(
         c,
         4.0f,

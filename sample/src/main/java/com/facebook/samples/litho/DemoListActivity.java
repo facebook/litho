@@ -20,14 +20,12 @@ public class DemoListActivity extends AppCompatActivity {
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    final ComponentContext context = new ComponentContext(this);
-
-    Demos.initialize(context);
+    Demos.initialize(this);
 
     setContentView(
         ComponentView.create(
-            context,
-            DemoListComponent.create(context)
+            this,
+            DemoListComponent.create(new ComponentContext(this))
                 .build()));
   }
 }
