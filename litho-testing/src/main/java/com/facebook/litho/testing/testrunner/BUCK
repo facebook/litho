@@ -15,5 +15,6 @@ android_library(
     ],
     deps = [
         COMPONENTS_ROBOLECTRIC_TARGET,
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/shadows:shadows"),
     ],
 )
