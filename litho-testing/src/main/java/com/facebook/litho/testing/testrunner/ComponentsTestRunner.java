@@ -54,7 +54,7 @@ public class ComponentsTestRunner extends RobolectricTestRunner {
     };
   }
 
-  private static String getAndroidManifestPath() {
+  private static String getResPrefix() {
     String prefix = "";
     switch (ProjectEnvironment.detectFromSystemProperties()) {
       case OSS:
@@ -64,8 +64,17 @@ public class ComponentsTestRunner extends RobolectricTestRunner {
         break;
     }
 
-    return prefix +
-        "litho-it/src/main/AndroidManifest.xml";
+    // If we're running with gradle, the test runner will start running from within
+    // the given sub-project.
+    if (System.getProperty("org.gradle.test.worker") != null) {
+      return "../litho-it/src/main/";
+    } else {
+      return prefix + "litho-it/src/main/";
+    }
+  }
+
+  private static String getAndroidManifestPath() {
+    return getResPrefix() + "AndroidManifest.xml";
   }
 
   @Override
@@ -75,7 +84,7 @@ public class ComponentsTestRunner extends RobolectricTestRunner {
     // to allow for building with gradle in the Open Source version.
     return new Config.Implementation(config, new Config.Implementation(
         new int[]{},
-        getAndroidManifestPath(),
+        getResPrefix() + "AndroidManifest.xml",
         "",
         "",
         "res",
