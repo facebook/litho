@@ -323,25 +323,23 @@ public class ComponentView extends ComponentHost {
    */
   public void setComponent(Component component) {
     if (mComponentTree == null) {
-      throw new IllegalStateException("No ComponentTree initialized. Use the static " +
-          ComponentView.class.getSimpleName() + ".create(..) method to create an instance of a " +
-          ComponentView.class.getSimpleName() + " or manually set a ComponentTree.");
+      setComponentTree(ComponentTree.create(getComponentContext(), component).build());
+    } else {
+      mComponentTree.setRoot(component);
     }
-
-    mComponentTree.setRoot(component);
   }
 
   /**
    * Change the root component measuring it on a background thread before updating the UI.
+   * If this {@link ComponentView} doesn't have a ComponentTree initialized, the root will be
+   * computed synchronously.
    */
   public void setComponentAsync(Component component) {
     if (mComponentTree == null) {
-      throw new IllegalStateException("No ComponentTree initialized. Use the static " +
-          ComponentView.class.getSimpleName() + ".create(..) method to create an instance of a " +
-          ComponentView.class.getSimpleName() + " or manually set a ComponentTree.");
+      setComponentTree(ComponentTree.create(getComponentContext(), component).build());
+    } else {
+      mComponentTree.setRootAsync(component);
     }
-
-    mComponentTree.setRootAsync(component);
   }
 
   public void rebind() {
