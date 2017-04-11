@@ -24,8 +24,10 @@ test:
   override:
     # Build the sample first
     - buck build sample
-    # Run the tests
+    # Run the tests with Buck
     - buck test litho-it/src/test/... --config build.threads=1
+    # Run them again with Gradle
+    - ./gradlew test
 
 experimental:
   notify:
