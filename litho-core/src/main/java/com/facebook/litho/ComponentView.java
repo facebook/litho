@@ -321,7 +321,7 @@ public class ComponentView extends ComponentHost {
   /**
    * Change the root component synchronously.
    */
-  public void setComponentRootSync(Component component) {
+  public void setComponent(Component component) {
     if (mComponentTree == null) {
       throw new IllegalStateException("No ComponentTree initialized. Use the static " +
           ComponentView.class.getSimpleName() + ".create(..) method to create an instance of a " +
@@ -334,7 +334,7 @@ public class ComponentView extends ComponentHost {
   /**
    * Change the root component measuring it on a background thread before updating the UI.
    */
-  public void setComponentRootAsync(Component component) {
+  public void setComponentAsync(Component component) {
     if (mComponentTree == null) {
       throw new IllegalStateException("No ComponentTree initialized. Use the static " +
           ComponentView.class.getSimpleName() + ".create(..) method to create an instance of a " +
