@@ -10,6 +10,7 @@
 package com.facebook.litho;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -22,63 +23,75 @@ import java.util.WeakHashMap;
  */
 public class ComponentsLifecycles {
   private static class LeakDetector {
-    private Activity mActivity;
+    private Context mContext;
 
-    LeakDetector(Activity activity) {
-      mActivity = activity;
+    LeakDetector(Context context) {
+      mContext = context;
     }
 
     void clear() {
-      mActivity = null;
+      mContext = null;
     }
 
     @Override
     public void finalize() {
-      if (mActivity != null) {
-        final Activity activity = mActivity;
+      if (mContext != null) {
+        final Context context = mContext;
 
         // Post the error to the main thread to bring down the process -
         // exceptions on finalizer threads are ignored by default.
         new Handler(Looper.getMainLooper()).post(new Runnable() {
           @Override
           public void run() {
-            throw new RuntimeException("onActivityDestroyed not called for: " + activity);
+            throw new RuntimeException("onContextDestroyed method not called for: " + context);
           }
         });
       }
     }
   }
 
-  private static WeakHashMap<Activity, LeakDetector> mTrackedActivities;
+  private static WeakHashMap<Context, LeakDetector> mTrackedContexts;
 
   public static void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-    if (mTrackedActivities == null) {
-      mTrackedActivities = new WeakHashMap<>();
-      ComponentsPools.sIsManualCallbacks = true;
-    }
-
-    LeakDetector old = mTrackedActivities.put(activity, new LeakDetector(activity));
-    if (old != null) {
-      throw new RuntimeException("Duplicate onActivityCreated call for: " + activity);
-    }
-
-    ComponentsPools.onActivityCreated(activity, savedInstanceState);
+    onContextCreated(activity);
   }
 
   public static void onActivityDestroyed(Activity activity) {
-    if (mTrackedActivities == null) {
-      throw new RuntimeException(
-          "onActivityDestroyed called without onActivityCreated for: " + activity);
+    onContextDestroyed(activity);
+  }
+
+  public static void onContextCreated(Activity activity) {
+    ComponentsPools.sIsManualCallbacks = true;
+    onContextCreated((Context) activity);
+  }
+
+  public static void onContextCreated(Context context) {
+    if (mTrackedContexts == null) {
+      mTrackedContexts = new WeakHashMap<>();
     }
 
-    LeakDetector removed = mTrackedActivities.remove(activity);
+    LeakDetector old = mTrackedContexts.put(context, new LeakDetector(context));
+    if (old != null) {
+      throw new RuntimeException("Duplicate onContextCreated call for: " + context);
+    }
+
+    ComponentsPools.onContextCreated(context);
+  }
+
+  public static void onContextDestroyed(Context context) {
+    if (mTrackedContexts == null) {
+      throw new RuntimeException(
+          "onContextDestroyed called without onContextCreated for: " + context);
+    }
+
+    LeakDetector removed = mTrackedContexts.remove(context);
     if (removed == null) {
       throw new RuntimeException(
-          "onActivityDestroyed called without onActivityCreated for: " + activity);
+          "onContextDestroyed called without onContextCreated for: " + context);
     } else {
       removed.clear();
     }
 
-    ComponentsPools.onActivityDestroyed(activity);
+    ComponentsPools.onContextDestroyed(context);
   }
 }

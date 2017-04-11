@@ -673,7 +673,7 @@ public class ComponentsPools {
 
     @Override
     public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-      ComponentsPools.onActivityCreated(activity, savedInstanceState);
+      ComponentsPools.onContextCreated(activity);
     }
 
     @Override
@@ -703,27 +703,27 @@ public class ComponentsPools {
 
     @Override
     public void onActivityDestroyed(Activity activity) {
-      ComponentsPools.onActivityDestroyed(activity);
+      ComponentsPools.onContextDestroyed(activity);
     }
   }
 
-  static void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-    if (sMountContentPoolsByContext.containsKey(activity)) {
+  static void onContextCreated(Context context) {
+    if (sMountContentPoolsByContext.containsKey(context)) {
       throw new IllegalStateException("The MountContentPools has a reference to an activity" +
           "that has just been created");
     }
   }
 
-  static void onActivityDestroyed(Activity activity) {
-    sMountContentPoolsByContext.remove(activity);
+  static void onContextDestroyed(Context context) {
+    sMountContentPoolsByContext.remove(context);
 
     // Clear any context wrappers holding a reference to this activity.
     final Iterator<Map.Entry<Context, SparseArray<PoolWithCount>>> it =
         sMountContentPoolsByContext.entrySet().iterator();
 
     while (it.hasNext()) {
-      final Context context = it.next().getKey();
-      if (isActivityWrapper(context, activity)) {
+      final Context contextKey = it.next().getKey();
+      if (isContextWrapper(contextKey, context)) {
         it.remove();
       }
     }
@@ -736,12 +736,12 @@ public class ComponentsPools {
     sMountContentPoolsByContext.clear();
   }
 
-  private static boolean isActivityWrapper(Context context, Activity activity) {
+  private static boolean isContextWrapper(Context contextKey, Context context) {
     Context baseContext = context;
     while (baseContext instanceof ContextWrapper) {
       baseContext = ((ContextWrapper) baseContext).getBaseContext();
 
-      if (baseContext == activity) {
+      if (baseContext == context) {
         return true;
       }
     }
