@@ -192,3 +192,34 @@ There are several more assertions available for `Component`s and
 `ComponentView`s. They all operate on the tree created by your `Component`.
 So asserting the presence of a `Drawable` in your `Component` will traverse
 the view hierarchy from the provided starting point.
+
+
+## Caveats
+
+When running Litho unit tests, be aware that the native library for Yoga must be loaded
+which can pose some challenges depending on your build system of choice. With Gradle and
+Robolectric, for instance, you may run into issues as Robolectric spins up new
+[ClassLoaders](https://docs.oracle.com/javase/7/docs/api/java/lang/ClassLoader.html)
+for every test suite with a different configuration. The same goes for PowerMock, which
+prepares the ClassLoaders on a per-suite basis and leaves them in a non-reusable state.
+
+The JVM has two important limitations that are relevant to this: 
+
+1. A shared library can only ever be loaded once per process.
+2. `ClassLoader`s do not share information about the libraries loaded.
+
+Because of that, using multiple ClassLoaders for test runs, is highly problematic
+as every instance will attempt to load Yoga and every but the first will fail with
+a `libyoga.so already loaded in another classloader` exception.
+
+The only way to avoid this is by either preventing the use of multiple ClassLoaders
+or forking the process whenever a new ClassLoader is necessary.
+
+With Buck, this behavior can be achieved by assigning test targets separate names
+as those will result in a parallel process being spun up. With Gradle, however,
+there are no easily accessible controls in place.
+
+Ultimately, depending on your build system and the existing constraints of your
+project, you may need to adjust the way in which your test runner utilizes
+ClassLoaders. This is, however, not a problem unique to Litho but an unfortunate
+consequence of mixing native and Java code in Android projects.
