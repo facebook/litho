@@ -9,19 +9,22 @@
 
 package com.facebook.litho.animation;
 
+import android.support.v4.util.SimpleArrayMap;
+
+import com.facebook.litho.internal.ArraySet;
+
 /**
  * An animation or set of animations using {@link com.facebook.litho.dataflow.GraphBinding}s.
- * This interface adds on top of {@link com.facebook.litho.dataflow.GraphBinding} the ability
- * to define {@link PendingNode}s which will be resolved to concrete ValueNodes when the
- * animation is ready to start. These are used to allow developers to define animations when the
- * concrete view or view property doesn't exist yet.
+ * In {@link #start}, subclasses can use the provided Resolver instance to reference concrete mount
+ * item properties when creating the GraphBinding.
  */
 public interface AnimationBinding {
 
   /**
-   * Begins this animation.
+   * Starts this animation. The provided {@link Resolver} instance can be used to configure this
+   * animation appropriately using mount item property current and end values.
    */
-  void start();
+  void start(Resolver resolver);
 
   /**
    * Stops this animation.
@@ -34,10 +37,23 @@ public interface AnimationBinding {
   boolean isActive();
 
   /**
-   * Resolves {@link PendingNode}s with the given resolver. Should be called before
-   * {@link #start()}.
+   * Collects the set of {@link ComponentProperty}s that this animation will animate. This is used
+   * to make sure before/after values are recorded and accessible for the animation. Implementations
+   * should add their animating properties to this set.
+   *
+   * Note: This is a 'collect' call instead of a getter to allocating more sets then necessary for
+   * animations with nested animation (e.g. a sequence of animations). Yay Java.
    */
-  void resolvePendingNodes(PendingNodeResolver resolver);
+   void collectTransitioningProperties(ArraySet<ComponentProperty> outSet);
+
+  /**
+   * Collects a mapping from {@link ComponentProperty} to its initial value. This is used to set up
+   * the initial property values for appear animations.
+   *
+   * Note: This is a 'collect' call instead of a getter to allocating more maps then necessary for
+   * animations with nested animation (e.g. a sequence of animations). Yay Java.
+   */
+   void collectAppearFromValues(SimpleArrayMap<ComponentProperty, LazyValue> outMap);
 
   /**
    * Adds a {@link AnimationBindingListener}.
