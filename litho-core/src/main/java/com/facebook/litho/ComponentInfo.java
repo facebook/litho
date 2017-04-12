@@ -26,7 +26,6 @@ import android.support.v4.util.SimpleArrayMap;
 public class ComponentInfo {
 
   private static final Pool<Builder> sBuilderPool = new Pools.SynchronizedPool<>(2);
-  private static final Pool<ComponentInfo> sComponentInfoPool = new Pools.SynchronizedPool<>(8);
   private static final String IS_STICKY = "is_sticky";
   private static final String SPAN_SIZE = "span_size";
 
@@ -42,8 +41,9 @@ public class ComponentInfo {
     return builder;
   }
 
-  private ComponentInfo() {
-    mComponent = null;
+  private ComponentInfo(Builder builder) {
+    mComponent = builder.mComponent;
+    mCustomAttributes = builder.mCustomAttributes;
   }
 
   public Component getComponent() {
@@ -68,17 +68,6 @@ public class ComponentInfo {
 
   public Object getCustomAttribute(String key) {
     return mCustomAttributes == null ? null : mCustomAttributes.get(key);
-  }
-
-  public void release() {
-    mComponent = null;
-    mCustomAttributes = null;
-    sComponentInfoPool.release(this);
-  }
-
-  private void init(Builder builder) {
-    mComponent = builder.mComponent;
-    mCustomAttributes = builder.mCustomAttributes;
   }
 
   public static class Builder {
@@ -113,12 +102,7 @@ public class ComponentInfo {
     }
 
     public ComponentInfo build() {
-      ComponentInfo componentInfo = sComponentInfoPool.acquire();
-      if (componentInfo == null) {
-        componentInfo = new ComponentInfo();
-      }
-      componentInfo.init(this);
-
+      ComponentInfo componentInfo =  new ComponentInfo(this);
       release();
 
       return componentInfo;
