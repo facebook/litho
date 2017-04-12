@@ -18,6 +18,36 @@ public abstract class AnimatedComponent {
   }
 
   /**
+   * @return a handle to the 'x' property of this component.
+   */
+  public abstract DimensionComponentProperty x();
+
+  /**
+   * @return a handle to the 'y' property of this component.
+   */
+  public abstract DimensionComponentProperty y();
+
+  /**
+   * @return a handle to the width property of this component.
+   */
+  public abstract DimensionComponentProperty width();
+
+  /**
+   * @return a handle to the height property of this component.
+   */
+  public abstract DimensionComponentProperty height();
+
+  /**
+   * @return a handle to the scale property of this component.
+   */
+  public abstract FloatComponentProperty scale();
+
+  /**
+   * @return a handle to the alpha property of this component.
+   */
+  public abstract FloatComponentProperty alpha();
+
+  /**
    * @return the key used to identify this component in the mounted hierarchy.
    */
   public String getKey() {

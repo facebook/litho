@@ -22,9 +22,25 @@ public class LazyDimensionValue implements LazyValue {
     return new LazyDimensionValue(Type.OFFSET, value);
   }
 
+  /**
+   * Like {@link #offset}, but the relative offset is based on a percentage of the mount item width.
+   */
+  public static LazyDimensionValue widthPercentageOffset(float value) {
+    return new LazyDimensionValue(Type.OFFSET_WIDTH_PERCENTAGE, value);
+  }
+
+  /**
+   * Like {@link #offset}, but the relative offset is based on a percentage of the mount item height
+   */
+  public static LazyDimensionValue heightPercentageOffset(float value) {
+    return new LazyDimensionValue(Type.OFFSET_HEIGHT_PERCENTAGE, value);
+  }
+
   private enum Type {
     ABSOLUTE,
     OFFSET,
+    OFFSET_WIDTH_PERCENTAGE,
+    OFFSET_HEIGHT_PERCENTAGE
     ;
   }
 
@@ -36,16 +52,21 @@ public class LazyDimensionValue implements LazyValue {
     mValue = value;
   }
 
-  /**
-   * @return a resolved value for this LazyValue based on the current state of the given mount item.
-   */
   public float resolve(Resolver resolver, ComponentProperty componentProperty) {
-    float currentValue = resolver.getCurrentState(componentProperty);
+    final float currentValue = resolver.getCurrentState(componentProperty);
     switch (mType) {
       case ABSOLUTE:
         return mValue;
       case OFFSET:
         return mValue + currentValue;
+      case OFFSET_WIDTH_PERCENTAGE:
+        final float width =
+            resolver.getCurrentState(componentProperty.getAnimatedComponent().width());
+        return mValue / 100 * width + currentValue;
+      case OFFSET_HEIGHT_PERCENTAGE:
+        final float height =
+            resolver.getCurrentState(componentProperty.getAnimatedComponent().height());
+        return mValue / 100 * height + currentValue;
       default:
         throw new RuntimeException("Missing LazyValue type: " + mType);
     }

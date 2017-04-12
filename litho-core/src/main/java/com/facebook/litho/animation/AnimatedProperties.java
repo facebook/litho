@@ -27,6 +27,16 @@ public final class AnimatedProperties {
   public static final AnimatedProperty Y = new YAnimatedProperty();
 
   /**
+   * The width of a mount item.
+   */
+  public static final AnimatedProperty WIDTH = new WidthAnimatedProperty();
+
+  /**
+   * The height of a mount item.
+   */
+  public static final AnimatedProperty HEIGHT = new HeightAnimatedProperty();
+
+  /**
    * The transparency of a mount item.
    */
   public static final AnimatedProperty ALPHA = new AlphaAnimatedProperty();
@@ -78,6 +88,40 @@ public final class AnimatedProperties {
     @Override
     public void set(Object mountItem, float value) {
       assertIsView(mountItem, this).setY(value);
+    }
+  };
+
+  private static class WidthAnimatedProperty implements AnimatedProperty {
+    @Override
+    public String getName() {
+      return "width";
+    }
+
+    @Override
+    public float get(Object mountItem) {
+      return assertIsView(mountItem, this).getWidth();
+    }
+
+    @Override
+    public void set(Object mountItem, float value) {
+      throw new UnsupportedOperationException("Setting width in animations is not supported yet.");
+    }
+  }
+
+  private static class HeightAnimatedProperty implements AnimatedProperty {
+    @Override
+    public String getName() {
+      return "height";
+    }
+
+    @Override
+    public float get(Object mountItem) {
+      return assertIsView(mountItem, this).getHeight();
+    }
+
+    @Override
+    public void set(Object mountItem, float value) {
+      throw new UnsupportedOperationException("Setting height in animations is not supported yet.");
     }
   };
 
