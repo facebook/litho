@@ -38,6 +38,11 @@ public abstract class AnimatedComponent {
   public abstract DimensionComponentProperty height();
 
   /**
+   * @return a handle to the composite 'xy' position property of this component.
+   */
+  public abstract PositionComponentProperty xy();
+
+  /**
    * @return a handle to the scale property of this component.
    */
   public abstract FloatComponentProperty scale();

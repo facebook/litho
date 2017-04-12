@@ -32,6 +32,10 @@ public class AppearingComponent extends AnimatedComponent {
   }
 
   @Override
+  public AppearingPositionComponentProperty xy() {
+    return new AppearingPositionComponentProperty(this, x(), y());
+  }
+
   public AppearingFloatComponentProperty scale() {
     return new AppearingFloatComponentProperty(this, AnimatedProperties.SCALE);
   }

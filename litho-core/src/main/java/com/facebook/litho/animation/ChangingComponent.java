@@ -31,6 +31,10 @@ public class ChangingComponent extends AnimatedComponent {
     return new DimensionComponentProperty(this, AnimatedProperties.HEIGHT);
   }
 
+  public PositionComponentProperty xy() {
+    return new PositionComponentProperty(this, x(), y());
+  }
+
   @Override
   public FloatComponentProperty scale() {
     return new FloatComponentProperty(this, AnimatedProperties.SCALE);
