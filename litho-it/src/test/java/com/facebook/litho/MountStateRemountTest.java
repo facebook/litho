@@ -9,10 +9,6 @@
 
 package com.facebook.litho;
 
-import com.facebook.yoga.YogaAlign;
-
-import com.facebook.yoga.YogaFlexDirection;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,10 +16,12 @@ import android.support.v4.util.LongSparseArray;
 import android.support.v4.util.Pools;
 
 import com.facebook.litho.testing.ComponentTestHelper;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.util.InlineLayoutSpec;
+import com.facebook.yoga.YogaAlign;
 
 import org.junit.Before;
 import org.junit.Test;

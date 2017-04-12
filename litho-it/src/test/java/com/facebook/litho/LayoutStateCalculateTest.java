@@ -16,17 +16,17 @@ import android.os.Build;
 import android.util.SparseArray;
 import android.view.accessibility.AccessibilityManager;
 
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-import com.facebook.litho.widget.Text;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestLayoutComponent;
 import com.facebook.litho.testing.TestNullLayoutComponent;
 import com.facebook.litho.testing.TestSizeDependentComponent;
 import com.facebook.litho.testing.TestViewComponent;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.util.InlineLayoutSpec;
+import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaEdge;
-import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
 import com.facebook.yoga.YogaPositionType;
 

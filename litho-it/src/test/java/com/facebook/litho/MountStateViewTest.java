@@ -9,17 +9,15 @@
 
 package com.facebook.litho;
 
-import com.facebook.yoga.YogaAlign;
-
-import com.facebook.yoga.YogaFlexDirection;
-
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import com.facebook.litho.testing.ComponentTestHelper;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.TestViewComponent;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.util.InlineLayoutSpec;
+import com.facebook.yoga.YogaAlign;
 
 import org.junit.Before;
 import org.junit.Test;

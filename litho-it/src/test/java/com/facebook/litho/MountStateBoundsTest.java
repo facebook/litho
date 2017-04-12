@@ -9,15 +9,14 @@
 
 package com.facebook.litho;
 
-import com.facebook.yoga.YogaFlexDirection;
-
 import android.graphics.Rect;
 import android.view.View;
 
 import com.facebook.litho.testing.ComponentTestHelper;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaJustify;
 
@@ -27,7 +26,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
 import static com.facebook.yoga.YogaEdge.ALL;
-import static com.facebook.yoga.YogaFlexDirection.COLUMN;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(ComponentsTestRunner.class)

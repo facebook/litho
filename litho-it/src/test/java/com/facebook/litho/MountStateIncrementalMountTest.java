@@ -9,20 +9,18 @@
 
 package com.facebook.litho;
 
-import com.facebook.yoga.YogaAlign;
-
-import com.facebook.yoga.YogaFlexDirection;
-
 import android.content.Context;
 import android.graphics.Rect;
 import android.view.ViewGroup;
 
 import com.facebook.litho.testing.ComponentTestHelper;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestComponentContextWithView;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.util.InlineLayoutSpec;
+import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaEdge;
 
 import org.junit.Before;
@@ -38,8 +36,6 @@ import static com.facebook.litho.ComponentsLogger.PARAM_UNMOUNTED_COUNT;
 import static com.facebook.yoga.YogaEdge.ALL;
 import static com.facebook.yoga.YogaEdge.LEFT;
 import static com.facebook.yoga.YogaEdge.TOP;
-import static com.facebook.yoga.YogaFlexDirection.COLUMN;
-import static com.facebook.yoga.YogaFlexDirection.ROW;
 import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

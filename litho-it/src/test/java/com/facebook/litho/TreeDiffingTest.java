@@ -9,16 +9,15 @@
 
 package com.facebook.litho;
 
-import com.facebook.yoga.YogaFlexDirection;
-
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.support.v4.util.SparseArrayCompat;
 
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestSizeDependentComponent;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaEdge;
