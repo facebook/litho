@@ -107,6 +107,13 @@ public class SequenceBinding implements AnimationBinding {
   }
 
   @Override
+  public void collectDisappearToValues(SimpleArrayMap<ComponentProperty, LazyValue> outMap) {
+    for (int i = 0; i < mBindings.length; i++) {
+      mBindings[i].collectDisappearToValues(outMap);
+    }
+  }
+
+  @Override
   public void addListener(AnimationBindingListener animationBindingListener) {
     mListeners.add(animationBindingListener);
   }

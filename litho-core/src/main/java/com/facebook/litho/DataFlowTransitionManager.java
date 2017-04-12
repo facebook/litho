@@ -82,6 +82,7 @@ public class DataFlowTransitionManager {
 
   void activateBindings() {
     restoreInitialStates();
+    setDisappearToValues();
     for (int i = 0, size = mAnimationBindings.size(); i < size; i++) {
       final AnimationBinding binding = mAnimationBindings.get(i);
       binding.start(mResolver);
@@ -114,6 +115,25 @@ public class DataFlowTransitionManager {
       final TransitionDiff diff = mKeyToTransitionDiffs.get(property.getTransitionKey());
       final float value = lazyValue.resolve(mResolver, property);
       property.getProperty().set(diff.mountItem, value);
+    }
+  }
+
+  private void setDisappearToValues() {
+    SimpleArrayMap<ComponentProperty, LazyValue> disappearToValues = new SimpleArrayMap<>();
+    for (int i = 0, size = mAnimationBindings.size(); i < size; i++) {
+      final AnimationBinding binding = mAnimationBindings.get(i);
+      binding.collectDisappearToValues(disappearToValues);
+    }
+
+    for (int i = 0, size = disappearToValues.size(); i < size; i++) {
+      final ComponentProperty property = disappearToValues.keyAt(i);
+      final LazyValue lazyValue = disappearToValues.valueAt(i);
+      final TransitionDiff diff = mKeyToTransitionDiffs.get(property.getTransitionKey());
+      if (diff.changeType != TransitionManager.KeyStatus.DISAPPEARED) {
+        throw new RuntimeException("Wrong transition type for disappear: " + diff.changeType);
+      }
+      final float value = lazyValue.resolve(mResolver, property);
+      diff.afterValues.put(property.getProperty(), value);
     }
   }
 

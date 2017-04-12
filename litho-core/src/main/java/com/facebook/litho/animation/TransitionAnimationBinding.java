@@ -23,6 +23,8 @@ public abstract class TransitionAnimationBinding implements AnimationBinding {
       new CopyOnWriteArrayList<>();
   private final SimpleArrayMap<ComponentProperty, LazyValue> mAppearFromValues =
       new SimpleArrayMap<>();
+  private final SimpleArrayMap<ComponentProperty, LazyValue> mDisappearToValues =
+      new SimpleArrayMap<>();
 
   public TransitionAnimationBinding() {
     this(GraphBinding.create());
@@ -61,6 +63,14 @@ public abstract class TransitionAnimationBinding implements AnimationBinding {
     mAppearFromValues.put(property, value);
   }
 
+  /**
+   * For disappear animations, sets the value that the property should end at by the time the
+   * animation ends and before the item is unmounted. See {@link LazyValue} for more info.
+   */
+  public void addDisappearToValue(ComponentProperty property, LazyValue value) {
+    mDisappearToValues.put(property, value);
+  }
+
   @Override
   public void start(Resolver resolver) {
     setupBinding(resolver);
@@ -93,6 +103,11 @@ public abstract class TransitionAnimationBinding implements AnimationBinding {
   @Override
   public void collectAppearFromValues(SimpleArrayMap<ComponentProperty, LazyValue> outMap) {
     outMap.putAll(mAppearFromValues);
+  }
+
+  @Override
+  public void collectDisappearToValues(SimpleArrayMap<ComponentProperty, LazyValue> outMap) {
+    outMap.putAll(mDisappearToValues);
   }
 
   @Override

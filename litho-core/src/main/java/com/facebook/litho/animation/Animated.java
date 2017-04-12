@@ -82,14 +82,32 @@ public final class Animated {
       return new DimensionComponentProperty.TransitionBuilder(this);
     }
 
+    public DisappearingDimensionComponentProperty.TransitionBuilder animate(
+        DisappearingDimensionComponentProperty property) {
+      mProperty = property;
+      return new DisappearingDimensionComponentProperty.TransitionBuilder(this);
+    }
+
+    public DisappearingFloatComponentProperty.TransitionBuilder animate(
+        DisappearingFloatComponentProperty property) {
+      mProperty = property;
+      return new DisappearingFloatComponentProperty.TransitionBuilder(this);
+    }
+
     final TransitionAnimationBinding buildForAppear(LazyValue fromValue) {
-      TransitionAnimationBinding transition = buildTransition(mProperty);
+      final TransitionAnimationBinding transition = buildTransition(mProperty);
       transition.addAppearFromValue(mProperty, fromValue);
       return transition;
     }
 
     final TransitionAnimationBinding buildForChange() {
       return buildTransition(mProperty);
+    }
+
+    final TransitionAnimationBinding buildForDisappear(LazyValue toValue) {
+      final TransitionAnimationBinding transition = buildTransition(mProperty);
+      transition.addDisappearToValue(mProperty, toValue);
+      return transition;
     }
 
     abstract TransitionAnimationBinding buildTransition(ComponentProperty property);
@@ -110,8 +128,14 @@ public final class Animated {
       return new PositionComponentProperty.TransitionBuilder(this);
     }
 
+    public DisappearingPositionComponentProperty.TransitionBuilder animate(
+        DisappearingPositionComponentProperty property) {
+      mProperty = property;
+      return new DisappearingPositionComponentProperty.TransitionBuilder(this);
+    }
+
     final TransitionAnimationBinding buildForAppear(LazyValue fromX, LazyValue fromY) {
-      TransitionAnimationBinding transition = buildTransition(mProperty);
+      final TransitionAnimationBinding transition = buildTransition(mProperty);
       transition.addAppearFromValue(mProperty.getXProperty(), fromX);
       transition.addAppearFromValue(mProperty.getYProperty(), fromY);
       return transition;
@@ -119,6 +143,13 @@ public final class Animated {
 
     final TransitionAnimationBinding buildForChange() {
       return buildTransition(mProperty);
+    }
+
+    final TransitionAnimationBinding buildForDisappear(LazyValue toX, LazyValue toY) {
+      final TransitionAnimationBinding transition = buildTransition(mProperty);
+      transition.addDisappearToValue(mProperty.getXProperty(), toX);
+      transition.addDisappearToValue(mProperty.getYProperty(), toY);
+      return transition;
     }
 
     abstract TransitionAnimationBinding buildTransition(PositionComponentProperty property);

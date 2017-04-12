@@ -56,6 +56,15 @@ public interface AnimationBinding {
    void collectAppearFromValues(SimpleArrayMap<ComponentProperty, LazyValue> outMap);
 
   /**
+   * Collects a mapping from {@link ComponentProperty} to its end value. This is used to set up
+   * the end property values for disappear animations.
+   *
+   * Note: This is a 'collect' call instead of a getter to allocating more maps then necessary for
+   * animations with nested animation (e.g. a sequence of animations).
+   */
+  void collectDisappearToValues(SimpleArrayMap<ComponentProperty, LazyValue> outMap);
+
+  /**
    * Adds a {@link AnimationBindingListener}.
    */
   void addListener(AnimationBindingListener animationBindingListener);
