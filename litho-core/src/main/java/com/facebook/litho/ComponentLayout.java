@@ -19,6 +19,8 @@ import android.support.annotation.Px;
 import android.support.annotation.StringRes;
 import android.util.SparseArray;
 
+import com.facebook.infer.annotation.ReturnsOwnership;
+
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaJustify;
 import com.facebook.yoga.YogaDirection;
@@ -247,6 +249,7 @@ public interface ComponentLayout {
     Builder sendAccessibilityEventUncheckedHandler(
         EventHandler<SendAccessibilityEventUncheckedEvent> sendAccessibilityEventUncheckedHandler);
 
+    @ReturnsOwnership
     ComponentLayout build();
   }
 
