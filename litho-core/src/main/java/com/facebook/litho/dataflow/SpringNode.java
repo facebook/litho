@@ -18,11 +18,12 @@ import com.facebook.litho.dataflow.springs.Spring;
 public class SpringNode extends ValueNode<Float> implements NodeCanFinish {
 
   public static final double NS_PER_SECOND = 1000_000_000.;
+  public static final String INITIAL_INPUT = "initial";
+  public static final String END_INPUT = "end";
 
   private final Spring mSpring;
   private long mLastFrameTimeNs = Long.MIN_VALUE;
   private boolean mAreParentsFinished = false;
-  private boolean mIsFinished = false;
 
   public SpringNode() {
     mSpring = new Spring();
@@ -32,14 +33,14 @@ public class SpringNode extends ValueNode<Float> implements NodeCanFinish {
   public Float calculateValue(long frameTimeNanos) {
     if (mLastFrameTimeNs == Long.MIN_VALUE) {
       mLastFrameTimeNs = frameTimeNanos;
-      float initialValue = (Float) getInput("initial").getValue();
-      final float endValue = (Float) getInput("end").getValue();
+      float initialValue = (Float) getInput(INITIAL_INPUT).getValue();
+      final float endValue = (Float) getInput(END_INPUT).getValue();
       mSpring.setCurrentValue(initialValue);
       mSpring.setEndValue(endValue);
       return initialValue;
     }
 
-    final float endValue = (Float) getInput("end").getValue();
+    final float endValue = (Float) getInput(END_INPUT).getValue();
     mSpring.setEndValue(endValue);
     if (isFinished()) {
       return endValue;
@@ -60,6 +61,5 @@ public class SpringNode extends ValueNode<Float> implements NodeCanFinish {
   @Override
   public void onInputsFinished() {
     mAreParentsFinished = true;
-    mIsFinished = mSpring.isAtRest();
   }
 }
