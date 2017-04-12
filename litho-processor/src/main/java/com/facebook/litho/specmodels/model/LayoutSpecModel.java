@@ -9,22 +9,9 @@
 
 package com.facebook.litho.specmodels.model;
 
-import javax.lang.model.element.Modifier;
-
 import java.util.List;
 
 import com.facebook.litho.specmodels.internal.ImmutableList;
-import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
-import com.facebook.litho.specmodels.generator.BuilderGenerator;
-import com.facebook.litho.specmodels.generator.ComponentImplGenerator;
-import com.facebook.litho.specmodels.generator.DelegateMethodGenerator;
-import com.facebook.litho.specmodels.generator.EventGenerator;
-import com.facebook.litho.specmodels.generator.JavadocGenerator;
-import com.facebook.litho.specmodels.generator.PreambleGenerator;
-import com.facebook.litho.specmodels.generator.PureRenderGenerator;
-import com.facebook.litho.specmodels.generator.StateGenerator;
-import com.facebook.litho.specmodels.generator.TreePropGenerator;
-import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
@@ -38,6 +25,7 @@ import com.squareup.javapoet.TypeVariableName;
 public class LayoutSpecModel implements SpecModel, HasPureRender {
   private final SpecModelImpl mSpecModel;
   private final boolean mIsPureRender;
+  private final LayoutSpecGenerator mLayoutSpecGenerator;
 
   public LayoutSpecModel(
       String qualifiedSpecClassName,
@@ -52,7 +40,8 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
       boolean isPublic,
       DependencyInjectionHelper dependencyInjectionHelper,
       boolean isPureRender,
-      Object representedObject) {
+      Object representedObject,
+      LayoutSpecGenerator layoutSpecGenerator) {
     mSpecModel =
         SpecModelImpl.newBuilder()
             .qualifiedSpecClassName(qualifiedSpecClassName)
@@ -69,6 +58,7 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
             .representedObject(representedObject)
             .build();
     mIsPureRender = isPureRender;
+    mLayoutSpecGenerator = layoutSpecGenerator;
   }
 
   @Override
@@ -203,37 +193,7 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
 
   @Override
   public TypeSpec generate() {
-    final TypeSpec.Builder typeSpec =
-        TypeSpec.classBuilder(getComponentName())
-            .superclass(ClassNames.COMPONENT_LIFECYCLE)
-            .addTypeVariables(getTypeVariables());
-
-    if (isPublic()) {
-      typeSpec.addModifiers(Modifier.PUBLIC);
-    }
-
-    if (hasInjectedDependencies()) {
-      getDependencyInjectionHelper().generate(this).addToTypeSpec(typeSpec);
-    } else {
-      typeSpec.addModifiers(Modifier.FINAL);
-    }
-
-    TypeSpecDataHolder.newBuilder()
-        .addTypeSpecDataHolder(JavadocGenerator.generate(this))
-        .addTypeSpecDataHolder(PreambleGenerator.generate(this))
-        .addTypeSpecDataHolder(ComponentImplGenerator.generate(this))
-        .addTypeSpecDataHolder(TreePropGenerator.generate(this))
-        .addTypeSpecDataHolder(DelegateMethodGenerator.generateDelegates(
-            this,
-            DelegateMethodDescriptions.LAYOUT_SPEC_DELEGATE_METHODS_MAP))
-        .addTypeSpecDataHolder(PureRenderGenerator.generate(this))
-        .addTypeSpecDataHolder(EventGenerator.generate(this))
-        .addTypeSpecDataHolder(StateGenerator.generate(this))
-        .addTypeSpecDataHolder(BuilderGenerator.generate(this))
-        .build()
-        .addToTypeSpec(typeSpec);
-
-    return typeSpec.build();
+    return mLayoutSpecGenerator.generate(this);
   }
 
   @Override

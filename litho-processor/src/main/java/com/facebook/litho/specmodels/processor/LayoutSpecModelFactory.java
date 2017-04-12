@@ -23,6 +23,8 @@ import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.specmodels.model.DelegateMethodDescriptions;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
+import com.facebook.litho.specmodels.model.LayoutSpecGenerator;
+import com.facebook.litho.specmodels.model.DefaultLayoutSpecGenerator;
 import com.facebook.litho.specmodels.model.LayoutSpecModel;
 
 /**
@@ -48,11 +50,25 @@ public class LayoutSpecModelFactory {
       Elements elements,
       TypeElement element,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper) {
+    return create(
+        elements,
+        element,
+        dependencyInjectionHelper,
+        DELEGATE_METHOD_ANNOTATIONS,
+        new DefaultLayoutSpecGenerator());
+  }
+
+  public static LayoutSpecModel create(
+      Elements elements,
+      TypeElement element,
+      @Nullable DependencyInjectionHelper dependencyInjectionHelper,
+      List<Class<? extends Annotation>> delegateMethodAnnotations,
+      LayoutSpecGenerator layoutSpecGenerator) {
     return new LayoutSpecModel(
         element.getQualifiedName().toString(),
         DelegateMethodExtractor.getDelegateMethods(
             element,
-            DELEGATE_METHOD_ANNOTATIONS,
+            delegateMethodAnnotations,
             INTER_STAGE_INPUT_ANNOTATIONS),
         EventMethodExtractor.getOnEventMethods(
             elements, element, INTER_STAGE_INPUT_ANNOTATIONS),
@@ -67,6 +83,7 @@ public class LayoutSpecModelFactory {
         element.getAnnotation(LayoutSpec.class).isPublic(),
         dependencyInjectionHelper,
         element.getAnnotation(LayoutSpec.class).isPureRender(),
-        element);
+        element,
+        layoutSpecGenerator);
   }
 }

@@ -14,6 +14,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.TypeElement;
 
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
+import com.facebook.litho.specmodels.model.SpecModel;
 
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class ComponentsProcessor extends AbstractComponentsProcessor {
@@ -21,5 +22,13 @@ public class ComponentsProcessor extends AbstractComponentsProcessor {
   @Override
   protected DependencyInjectionHelper getDependencyInjectionGenerator(TypeElement typeElement) {
     return null;
+  }
+
+  @Override
+  protected SpecModel getLayoutSpecModel(TypeElement typeElement) {
+    return LayoutSpecModelFactory.create(
+        processingEnv.getElementUtils(),
+        typeElement,
+        getDependencyInjectionGenerator(typeElement));
   }
 }

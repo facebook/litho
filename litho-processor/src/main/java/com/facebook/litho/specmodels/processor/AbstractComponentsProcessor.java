@@ -47,10 +47,7 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
         SpecModel specModel = null;
         final TypeElement typeElement = (TypeElement) element;
         if (element.getAnnotation(LayoutSpec.class) != null) {
-          specModel = LayoutSpecModelFactory.create(
-              processingEnv.getElementUtils(),
-              typeElement,
-              getDependencyInjectionGenerator(typeElement));
+          specModel = getLayoutSpecModel(typeElement);
         } else if (element.getAnnotation(MountSpec.class) != null) {
            specModel =
               MountSpecModelFactory.create(
@@ -87,6 +84,8 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
 
   abstract protected DependencyInjectionHelper getDependencyInjectionGenerator(
       TypeElement typeElement);
+
+  abstract protected SpecModel getLayoutSpecModel(TypeElement typeElement);
 
   void validate(SpecModel specModel) {
     List<SpecModelValidationError> validationErrors = specModel.validate();
