@@ -283,8 +283,6 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
     return (isLayoutSpec(component) && component.mLifecycle.canMeasure());
   }
 
-  // TODO(#11675508): Shouldn't rely on the component.hasCachedLayout() condition depending on
-  // the fact that the cached layout could be transferred into the holder.nestedTree member or not.
   static boolean isNestedTree(Component<?> component) {
     return (isLayoutSpecWithSizeSpec(component)
         || (component != null && component.hasCachedLayout()));
