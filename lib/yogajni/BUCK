@@ -13,7 +13,7 @@ if COMPONENTS_IS_OSS_BUILD:
   cxx_library(
     name = 'jni',
     soname = 'libyoga.$(ext)',
-    srcs = glob(['jni/*.cpp']),
+    srcs = glob(['src/main/cpp/jni/*.cpp']),
     header_namespace = '',
     compiler_flags = [
       '-fno-omit-frame-pointer',
