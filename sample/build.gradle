@@ -25,6 +25,9 @@ dependencies {
     compile project(':litho-fresco')
     annotationProcessor project(':litho-processor')
 
+    // First-party
+    compile deps.soloader
+
     // Annotations
     provided deps.jsr305
     provided deps.inferAnnotations
