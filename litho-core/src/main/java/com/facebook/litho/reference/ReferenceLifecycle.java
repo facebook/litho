@@ -12,6 +12,7 @@ package com.facebook.litho.reference;
 import android.support.v4.util.Pools;
 
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentsPools;
 import com.facebook.litho.Diff;
 
 /**
@@ -27,9 +28,6 @@ import com.facebook.litho.Diff;
 @Deprecated
 public abstract class ReferenceLifecycle<T> {
 
-  private static final Pools.SynchronizedPool<Diff<?>> sDiffPool =
-      new Pools.SynchronizedPool<>(20);
-
   protected abstract T onAcquire(
       ComponentContext context,
       Reference<T> reference);
@@ -41,19 +39,13 @@ public abstract class ReferenceLifecycle<T> {
   }
 
   protected final <T> Diff<T> acquireDiff(T previousValue, T nextValue) {
-    Diff diff =  sDiffPool.acquire();
-    if (diff == null) {
-      diff = new Diff();
-    }
-
-    diff.setPrevious(previousValue);
-    diff.setNext(nextValue);
+    Diff diff = ComponentsPools.acquireDiff(previousValue, nextValue);
 
     return diff;
   }
 
   protected void releaseDiff(Diff diff) {
-    sDiffPool.release(diff);
+    ComponentsPools.release(diff);
   }
 
   protected boolean shouldUpdate(Reference<T> previous, Reference<T> next) {

@@ -371,11 +371,12 @@ public class ComponentsPools {
     return node;
   }
 
-  static Diff acquireDiff() {
+  public static <T> Diff acquireDiff(T previous, T next) {
     Diff diff = sDiffPool.acquire();
     if (diff == null) {
       diff = new Diff();
     }
+    diff.init(previous, next);
 
     return diff;
   }
@@ -540,7 +541,7 @@ public class ComponentsPools {
   }
 
   @ThreadSafe(enableChecks = false)
-  static void release(Diff diff) {
+  public static void release(Diff diff) {
     diff.release();
     sDiffPool.release(diff);
   }

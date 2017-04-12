@@ -33,12 +33,9 @@ public class Diff<T> {
     return mNext;
   }
 
-  public void setNext(T next) {
-    mNext = next;
-  }
-
-  public void setPrevious(T previous) {
+  void init(T previous, T next) {
     mPrevious = previous;
+    mNext = next;
   }
 
   void release() {
