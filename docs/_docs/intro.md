@@ -37,7 +37,7 @@ class HelloComponentSpec {
 
 You simply declare what you want to display and Litho takes care of rendering
 it in the most efficient way by computing [layout in a background
-thread](/docs/architecture#asynchronous-layout), automatically [flattening your view
+thread](/docs/asynchronous-layout), automatically [flattening your view
 hierarchy](/docs/intro#view-flattening), and [incrementally
 rendering](/docs/intro#incremental-mount) complex components.
 

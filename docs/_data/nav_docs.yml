@@ -30,20 +30,23 @@
 - title: Testing
   items:
   - id: unit-testing
-  - id: e2e-testing
-  - id: events-testing
 - title: Advanced Guides
   items:
   - id: custom-layout
   - id: tree-props
   - id: inc-mount
+- title: Architecture
+  items:
+  - id: codegen
+  - id: asynchronous-layout
+  - id: recycling
 - title: Best Practices
   items:
   - id: best-practices
 - title: Tools
   items:
   - id: debugging
-  - id: ide
+  - id: dev-options
 - title: Widgets
   items:
   - id: widgets-card
@@ -58,4 +61,3 @@
   items:
   - id: contributing
   - id: repo-structure
-  - id: architecture

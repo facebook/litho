@@ -32,15 +32,3 @@ Click on the inspect link for the application you would like to inspect (we are 
 When inspecting a Litho component you are also given the ability to edit the contents of your UI directly from the inspector! This enables quick design iterations by tweaking margins, padding, and many other properties, without needed to re-compile or re-start the application. You can also use this to quickly test that your UI handles different lengths of text properly.
 
 ![Stetho edit](/static/images/stetho-edit.png)
-
-## Optional flags
-
-In addition to Stetho we also provide two compile time flags for visualizing the component hierarchy of your application. These are similar to Android's show view bounds internal setting but because Litho does not always use Android Views we have implemented our own to make it more helpful.
-
-Within the `ComponentsConfiguration` class there are two fields which control this.
-
-### DEBUG_HIGHLIGHT_INTERACTIVE_BOUNDS
-Highlight the interactive bounds of components as well as their expanded touch bounds, if present.
-
-### DEBUG_HIGHLIGHT_MOUNT_BOUNDS
-Highlight the bounds of mounted drawables and views. Views automatically added by the framework (e.g. when a component is clickable) are highlighted with a different color.
