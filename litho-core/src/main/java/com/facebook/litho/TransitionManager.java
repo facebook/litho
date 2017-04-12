@@ -39,12 +39,14 @@ class TransitionManager implements TransitionKeySetListener {
     int DISAPPEARED = 2;
   }
 
+  private final DataFlowTransitionManager mDataFlowTransitionManager;
   private HashSet<String> mPostMountKeys;
   private SimpleArrayMap<String, Integer> mKeysStatus;
   private SimpleArrayMap<String, TransitionKeySet> mTransitions;
   private SimpleArrayMap<String, TransitionKeySet> mRunningTransitions;
 
   TransitionManager() {
+    mDataFlowTransitionManager = new DataFlowTransitionManager();
     mPostMountKeys = new HashSet<>();
     mKeysStatus = new SimpleArrayMap<>();
     mTransitions = new SimpleArrayMap<>();
@@ -65,6 +67,7 @@ class TransitionManager implements TransitionKeySetListener {
   void onNewTransitionContext(TransitionContext transitionContext) {
     mTransitions.clear();
     mTransitions.putAll(transitionContext.getTransitionKeySets());
+    mDataFlowTransitionManager.onNewTransitionContext(transitionContext);
   }
 
   /**
@@ -83,6 +86,8 @@ class TransitionManager implements TransitionKeySetListener {
       t.recordStartValues(view);
       t.setTargetView(view);
     }
+
+    mDataFlowTransitionManager.onPreMountItem(transitionKey, view);
   }
 
   /**
@@ -97,6 +102,8 @@ class TransitionManager implements TransitionKeySetListener {
     }
 
     mPostMountKeys.add(transitionKey);
+
+    mDataFlowTransitionManager.onPostMountItem(transitionKey, view);
   }
 
   /**
@@ -159,6 +166,8 @@ class TransitionManager implements TransitionKeySetListener {
         mRunningTransitions.put(key, transition);
       }
     }
+
+    mDataFlowTransitionManager.activateBindings();
   }
 
   TransitionKeySet getTransitionKeySet(String key) {
