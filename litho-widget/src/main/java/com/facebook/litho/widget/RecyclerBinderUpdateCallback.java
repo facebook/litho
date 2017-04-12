@@ -42,6 +42,19 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
       int oldDataSize,
       List<T> data,
       ComponentRenderer<T> componentRenderer,
+      RecyclerBinder recyclerBinder) {
+
+    return acquire(
+        oldDataSize,
+        data,
+        componentRenderer,
+        new RecyclerBinderOperationExecutor(recyclerBinder));
+  }
+
+  public static<T> RecyclerBinderUpdateCallback<T> acquire(
+      int oldDataSize,
+      List<T> data,
+      ComponentRenderer<T> componentRenderer,
       OperationExecutor operationExecutor) {
 
     RecyclerBinderUpdateCallback instance = sUpdatesCallbackPool.acquire();
