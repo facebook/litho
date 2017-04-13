@@ -1,12 +1,48 @@
 # Litho [![CircleCI](https://circleci.com/gh/facebook/litho/tree/master.svg?style=svg)](https://circleci.com/gh/facebook/litho/tree/master)
 
-Litho is a powerful framework that enables Android developers to write efficient UI code by default through a simple annotation-based Java API.
+Litho is a powerful Android UI framework that enables developers to write efficient UI code through a simple annotation-based Java API.
 
-## Contributing
+* **Declarative:** Litho uses a declarative API to define UI components. You simply describe the layout for your UI based on a set of immutable inputs and the framework takes care of the rest.
+* **Asynchronous layout:** Litho can measure and layout your UI ahead of time without blocking the UI thread. 
+* **View flattening:** Litho uses [Yoga](https://facebook.github.io/yoga/) for layout and automatically reduces the number of ViewGroups that your UI contains.
+* **Fine-grained recycling:** Any component such as a text or image can be recycled and reused anywhere in the UI.
 
-Please see [CONTRIBUTING.md](CONTRIBUTING.md) for information on contributing to Litho.
+[Learn how to use Litho in your project.](https://facebook.github.io/litho/docs/getting-started)  
+[Get started with our tutorial.](https://facebook.github.io/litho/docs/tutorial)  
+[Read more about Litho in our docs.](https://facebook.github.io/litho/docs/intro) 
 
-## Sample
+## Installation
+Litho can be integrated either in Gradle or Buck projects. Read our [Getting Started](https://facebook.github.io/litho/docs/getting-started) guide for installation instructions.
+
+## Quick start
+### 1. Initialize `SoLoader` in your `Application` class. 
+```java
+public class SampleApplication extends Application {
+  @Override
+  public void onCreate() {
+    super.onCreate();
+    SoLoader.init(this, false);
+  }
+}
+```
+### 2. Create and display a component in your Activity
+```java
+@Override
+public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+
+    final ComponentContext context = new ComponentContext(this);
+
+    final Component component = Text.create(context)
+        .text("Hello World")
+        .textSizeDip(50)
+        .build();
+
+    setContentView(ComponentView.create(context, component));
+}
+```
+## Run sample
+You can find more examples in our [sample app](https://github.com/facebook/litho/tree/master/sample).
 
 To build and run (on an attached device/emulator) the sample app, execute
 
@@ -16,6 +52,13 @@ To build and run (on an attached device/emulator) the sample app, execute
 or, if you prefer Gradle,
 
     $ ./gradlew :sample:installDebug
+
+## Contributing
+For pull requests, please see our [CONTRIBUTING](CONTRIBUTING.md) guide.  
+
+See our [issues](https://github.com/litho/issues/) page for ideas on how to contribute or to let us know of any problems.
+
+Please also read our [Coding Style](https://facebook.github.io/litho/docs/best-practices#guidelines/) and [Code of Conduct](https://code.facebook.com/codeofconduct) before you contribute.
 
 ## License
 
