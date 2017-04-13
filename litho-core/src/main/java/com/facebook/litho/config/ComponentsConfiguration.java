@@ -59,4 +59,11 @@ public class ComponentsConfiguration {
    * is measured (t12986103).
    */
   public static boolean bootstrapBinderItems = false;
+
+  /**
+   * Whether to use Object pooling via {@link com.facebook.litho.ComponentsPools}. This is switch
+   * beacuse we are experimenting with turning off pooling to get a sense of what its impact is
+   * in production.
+   */
+  public static boolean usePooling = true;
 }
