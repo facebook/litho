@@ -209,7 +209,7 @@ public class ResourceResolver {
   }
 
   @Nullable
-  protected final Reference<Drawable> resolveDrawableRes(@DrawableRes int resId) {
+  protected final Reference<Drawable> resolveDrawableReferenceRes(@DrawableRes int resId) {
     if (resId == 0) {
       return null;
     }
@@ -324,7 +324,7 @@ public class ResourceResolver {
   }
 
   @Nullable
-  protected final Reference<Drawable> resolveDrawableAttr(
+  protected final Reference<Drawable> resolveDrawableReferenceAttr(
       @AttrRes int attrResId,
       @DrawableRes int defResId) {
     if (attrResId == 0) {
@@ -335,7 +335,7 @@ public class ResourceResolver {
     TypedArray a = mTheme.obtainStyledAttributes(mAttrs);
 
     try {
-      return resolveDrawableRes(a.getResourceId(0, defResId));
+      return resolveDrawableReferenceRes(a.getResourceId(0, defResId));
     } finally {
       a.recycle();
     }

@@ -16,10 +16,10 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.widget.ProgressBar;
 
-import com.facebook.litho.R;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Output;
+import com.facebook.litho.R;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.annotations.FromPrepare;
@@ -58,7 +58,8 @@ class ProgressSpec {
   @OnPrepare
   static void onPrepare(
       ComponentContext c,
-      @Prop(optional = true, resType = ResType.DRAWABLE) Reference<Drawable> indeterminateDrawable,
+      @Prop(optional = true, resType = ResType.DRAWABLE_REFERENCE)
+          Reference<Drawable> indeterminateDrawable,
       Output<Reference<Drawable>> resolvedIndeterminateDrawable) {
     if (indeterminateDrawable != null) {
       resolvedIndeterminateDrawable.set(indeterminateDrawable);

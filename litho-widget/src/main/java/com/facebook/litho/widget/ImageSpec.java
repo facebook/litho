@@ -79,7 +79,7 @@ class ImageSpec {
       int widthSpec,
       int heightSpec,
       Size size,
-      @Prop(resType = ResType.DRAWABLE) Reference<Drawable> src) {
+      @Prop(resType = ResType.DRAWABLE_REFERENCE) Reference<Drawable> src) {
     if (src == null) {
       size.width = 0;
       size.height = 0;
@@ -123,7 +123,7 @@ class ImageSpec {
   static void onBoundsDefined(
       ComponentContext c,
       ComponentLayout layout,
-      @Prop(resType = ResType.DRAWABLE) Reference<Drawable> src,
+      @Prop(resType = ResType.DRAWABLE_REFERENCE) Reference<Drawable> src,
       @Prop(optional = true) ScaleType scaleType,
       Output<DrawableMatrix> drawableMatrix,
       Output<Integer> drawableWidth,
@@ -165,7 +165,7 @@ class ImageSpec {
   static void onMount(
       ComponentContext c,
       MatrixDrawable matrixDrawable,
-      @Prop(resType = ResType.DRAWABLE) Reference<Drawable> src,
+      @Prop(resType = ResType.DRAWABLE_REFERENCE) Reference<Drawable> src,
       @FromBoundsDefined DrawableMatrix drawableMatrix) {
     matrixDrawable.mount(Reference.acquire(c, src), drawableMatrix);
   }
@@ -183,7 +183,7 @@ class ImageSpec {
   static void onUnmount(
       ComponentContext c,
       MatrixDrawable convertDrawable,
-      @Prop(resType = ResType.DRAWABLE) Reference<Drawable> src) {
+      @Prop(resType = ResType.DRAWABLE_REFERENCE) Reference<Drawable> src) {
     Reference.release(c, convertDrawable.getMountedDrawable(), src);
     convertDrawable.unmount();
   }

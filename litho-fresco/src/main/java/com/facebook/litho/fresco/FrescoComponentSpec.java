@@ -34,7 +34,7 @@ import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
 import com.facebook.drawee.generic.RoundingParams;
 import com.facebook.drawee.interfaces.DraweeController;
 
-import static com.facebook.litho.annotations.ResType.DRAWABLE;
+import static com.facebook.litho.annotations.ResType.DRAWABLE_REFERENCE;
 
 @MountSpec
 class FrescoComponentSpec {
@@ -87,15 +87,15 @@ class FrescoComponentSpec {
       @Prop DraweeController controller,
       @Prop(optional = true) ScalingUtils.ScaleType actualImageScaleType,
       @Prop(optional = true) int fadeDuration,
-      @Prop(optional = true, resType = DRAWABLE) Reference<Drawable> failureImage,
+      @Prop(optional = true, resType = DRAWABLE_REFERENCE) Reference<Drawable> failureImage,
       @Prop(optional = true) ScalingUtils.ScaleType failureImageScaleType,
-      @Prop(optional = true, resType = DRAWABLE) Reference<Drawable> placeholderImage,
+      @Prop(optional = true, resType = DRAWABLE_REFERENCE) Reference<Drawable> placeholderImage,
       @Prop(optional = true) PointF placeholderImageFocusPoint,
       @Prop(optional = true) ScalingUtils.ScaleType placeholderImageScaleType,
-      @Prop(optional = true, resType = DRAWABLE) Reference<Drawable> progressBarImage,
+      @Prop(optional = true, resType = DRAWABLE_REFERENCE) Reference<Drawable> progressBarImage,
       @Prop(optional = true) ScalingUtils.ScaleType progressBarImageScaleType,
       @Prop(optional = true) int progressBarAutoRotateInterval,
-      @Prop(optional = true, resType = DRAWABLE) Reference<Drawable> retryImage,
+      @Prop(optional = true, resType = DRAWABLE_REFERENCE) Reference<Drawable> retryImage,
       @Prop(optional = true) ScalingUtils.ScaleType retryImageScaleType,
       @Prop(optional = true) RoundingParams roundingParams,
       @Prop(optional = true) ColorFilter colorFilter) {

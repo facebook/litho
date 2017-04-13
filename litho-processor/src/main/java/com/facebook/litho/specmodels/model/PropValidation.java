@@ -127,7 +127,7 @@ public class PropValidation {
         validResTypes.add(TypeName.get(float.class));
         validResTypes.add(TypeName.get(Float.class));
         break;
-      case DRAWABLE:
+      case DRAWABLE_REFERENCE:
         validResTypes.add(ParameterizedTypeName.get(ClassNames.REFERENCE, ClassNames.DRAWABLE));
         break;
     }
