@@ -66,6 +66,7 @@
       background-color: $litho-vibrant;
       color: $litho-light;
       height: 400px;
+      padding-bottom: 30px;
 
       @media screen and (max-width: 750px) {
         height: auto;
@@ -74,6 +75,12 @@
       }
 
       .content {
+        margin-top: -30px;
+
+        @media screen and (max-width: 750px) {
+          margin-top: 0px;
+        }
+
         .logo {
           width: 300px;
           height: 300px;
