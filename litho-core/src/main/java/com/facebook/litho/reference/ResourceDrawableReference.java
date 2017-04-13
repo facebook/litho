@@ -59,10 +59,10 @@ public final class ResourceDrawableReference extends ReferenceLifecycle<Drawable
   protected Drawable onAcquire(
       ComponentContext context,
       Reference reference) {
-    Drawable drawable = mDrawableResourcesCache.get(
+    return mDrawableResourcesCache.get(
         ((State) reference).mResId,
-        context.getResources());
-    return drawable;
+        context.getResources(),
+        context.getTheme());
   }
 
   @Override

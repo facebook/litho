@@ -49,9 +49,9 @@ public class DrawableResourcesCacheTest {
     mCache.release(drawable, 1);
     mCache.release(new ColorDrawable(), 2);
 
-    Drawable first = mCache.get(1, resources);
-    Drawable second = mCache.get(1, resources);
-    Drawable third = mCache.get(2, resources);
+    Drawable first = mCache.get(1, resources, null);
+    Drawable second = mCache.get(1, resources, null);
+    Drawable third = mCache.get(2, resources, null);
 
     assertNotNull(first);
     assertNotNull(second);

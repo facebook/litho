@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.util.LruCache;
 import android.support.v4.util.Pools;
 import android.util.StateSet;
@@ -43,7 +44,15 @@ class DrawableResourcesCache {
     };
   }
 
+  /**
+   * @deprecated use {@link #get(int, Resources, Resources.Theme)}
+   */
+  @Deprecated
   public @Nullable Drawable get(int resId, Resources resources) {
+    return get(resId, resources, null);
+  }
+
+  public @Nullable Drawable get(int resId, Resources resources, @Nullable Resources.Theme theme) {
     SimplePoolWithCount<Drawable> drawablesPool = mDrawableCache.get(resId);
 
     if (drawablesPool == null) {
@@ -54,13 +63,13 @@ class DrawableResourcesCache {
     Drawable drawable = drawablesPool.acquire();
 
     if (drawable == null) {
-      drawable = resources.getDrawable(resId);
+      drawable = ResourcesCompat.getDrawable(resources, resId, theme);
     }
 
     // We never want this pool to remain empty otherwise we would risk to resolve a new drawable
     // when get is called again. So if the pool is about to drain we just put a new Drawable in it
     // to keep it warm.
-    if (drawablesPool.getPoolSize() == 0) {
+    if (drawable != null && drawablesPool.getPoolSize() == 0) {
       drawablesPool.release(drawable.getConstantState().newDrawable());
     }
 
