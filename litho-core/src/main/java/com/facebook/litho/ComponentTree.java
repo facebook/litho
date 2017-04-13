@@ -829,7 +829,7 @@ public class ComponentTree {
    */
   @Keep
   @Nullable
-  public LithoView getComponentView() {
+  public LithoView getLithoView() {
     assertMainThread();
     return mComponentView;
   }

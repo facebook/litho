@@ -60,8 +60,8 @@ public class RecyclerViewWrapper extends SwipeRefreshLayout {
   }
 
   public void setStickyComponent(ComponentTree component) {
-    if (component.getComponentView() != null) {
-      component.getComponentView().startTemporaryDetach();
+    if (component.getLithoView() != null) {
+      component.getLithoView().startTemporaryDetach();
     }
     mStickyHeader.setComponentTree(component);
   }
