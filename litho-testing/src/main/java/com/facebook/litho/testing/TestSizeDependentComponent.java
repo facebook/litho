@@ -40,10 +40,10 @@ public class TestSizeDependentComponent extends ComponentLifecycle {
 
     final ComponentLayout.Builder builder1 =
         TestDrawableComponent.create(c, false, true, true, false, false)
-            .withLayout()
+            .withLayout().flexShrink(0)
             .backgroundColor(0xFFFF0000);
     final ComponentLayout.Builder builder2 = TestViewComponent.create(c, false, true, true, false)
-        .withLayout()
+        .withLayout().flexShrink(0)
         .marginPx(YogaEdge.ALL, 3);
 
     if (state.hasFixedSizes) {
@@ -58,10 +58,12 @@ public class TestSizeDependentComponent extends ComponentLifecycle {
       return builder1.build();
     }
 
-    return Column.create(c)
+    return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
         .paddingPx(YogaEdge.ALL, 5)
-        .child(builder1)
-        .child(builder2)
+        .child(
+            builder1)
+        .child(
+            builder2)
         .build();
   }
 
