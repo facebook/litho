@@ -16,7 +16,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 
-import com.facebook.litho.ComponentView;
+import com.facebook.litho.LithoView;
 import com.facebook.litho.ComponentViewTestHelper;
 import com.facebook.litho.TestItem;
 import com.facebook.litho.testing.viewtree.ViewTree;
@@ -26,18 +26,18 @@ import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Java6Assertions;
 
 /**
- * Assertion methods for {@link ComponentView}s.
+ * Assertion methods for {@link LithoView}s.
  *
  * <p> To create an instance of this class, invoke
- * <code>{@link ComponentViewAssert#assertThat(ComponentView)}</code>.
+ * <code>{@link ComponentViewAssert#assertThat(LithoView)}</code>.
  */
-public class ComponentViewAssert extends AbstractAssert<ComponentViewAssert, ComponentView> {
+public class ComponentViewAssert extends AbstractAssert<ComponentViewAssert, LithoView> {
 
-  public static ComponentViewAssert assertThat(ComponentView actual) {
+  public static ComponentViewAssert assertThat(LithoView actual) {
     return new ComponentViewAssert(actual);
   }
 
-  ComponentViewAssert(ComponentView actual) {
+  ComponentViewAssert(LithoView actual) {
     super(actual, ComponentViewAssert.class);
   }
 
@@ -50,7 +50,7 @@ public class ComponentViewAssert extends AbstractAssert<ComponentViewAssert, Com
     Java6Assertions.assertThat(testItems)
         .hasSize(count.times)
         .overridingErrorMessage(
-            "Expected to find test key <%s> in ComponentView <%s> %s, but %s.",
+            "Expected to find test key <%s> in LithoView <%s> %s, but %s.",
             testKey,
             actual,
             count,
@@ -69,7 +69,7 @@ public class ComponentViewAssert extends AbstractAssert<ComponentViewAssert, Com
 
     Java6Assertions.assertThat(testItem)
         .overridingErrorMessage(
-            "Expected not to find test key <%s> in ComponentView <%s>, but it was present at " +
+            "Expected not to find test key <%s> in LithoView <%s>, but it was present at " +
                 "bounds %s.",
             testKey,
             actual,

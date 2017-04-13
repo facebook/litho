@@ -15,7 +15,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.facebook.litho.ComponentView;
+import com.facebook.litho.LithoView;
 
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 
@@ -75,11 +75,11 @@ public class IncrementalMountUtils {
         ? ((WrapperView) view).getWrappedView()
         : view;
 
-    if (!(underlyingView instanceof ComponentView)) {
+    if (!(underlyingView instanceof LithoView)) {
       return;
     }
 
-    final ComponentView componentView = (ComponentView) underlyingView;
+    final LithoView componentView = (LithoView) underlyingView;
     if (!componentView.isIncrementalMountEnabled()) {
       return;
     }

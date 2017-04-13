@@ -28,7 +28,7 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(ComponentsTestRunner.class)
 public class ComponentViewTest {
-  private ComponentView mComponentView;
+  private LithoView mComponentView;
 
   @Before
   public void setup() {
@@ -49,7 +49,7 @@ public class ComponentViewTest {
         .layoutDiffing(false)
         .build();
 
-    mComponentView = new ComponentView(RuntimeEnvironment.application);
+    mComponentView = new LithoView(RuntimeEnvironment.application);
     mComponentView.setComponentTree(componentTree);
   }
 
@@ -74,7 +74,7 @@ public class ComponentViewTest {
     assertEquals(2, getInternalMountItems(mComponentView).length);
   }
 
-  private static long[] getInternalMountItems(ComponentView componentView) {
+  private static long[] getInternalMountItems(LithoView componentView) {
     MountState mountState = Whitebox.getInternalState(componentView, "mMountState");
     return Whitebox.getInternalState(mountState, "mLayoutOutputsIds");
   }
@@ -88,7 +88,7 @@ public class ComponentViewTest {
       }
     };
 
-    ComponentView nullComponentView = new ComponentView(RuntimeEnvironment.application);
+    LithoView nullComponentView = new LithoView(RuntimeEnvironment.application);
     nullComponentView.setComponentTree(
         ComponentTree.create(
             new ComponentContext(RuntimeEnvironment.application),

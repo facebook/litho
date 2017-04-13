@@ -12,7 +12,7 @@ package com.facebook.litho.testing;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
-import com.facebook.litho.ComponentView;
+import com.facebook.litho.LithoView;
 
 import org.powermock.reflect.Whitebox;
 import org.robolectric.shadows.ShadowLooper;
@@ -33,9 +33,9 @@ public class StateUpdatesTestHelper {
    * @param component the component to update
    * @param stateUpdater implementation of {@link StateUpdater} that triggers the state update
    * @param layoutThreadShadowLooper shadow looper to post messages to the main thread
-   * @return the updated ComponentView after the state update was applied
+   * @return the updated LithoView after the state update was applied
    */
-  public static ComponentView getViewAfterStateUpdate(
+  public static LithoView getViewAfterStateUpdate(
       ComponentContext context,
       Component component,
       StateUpdater stateUpdater,
@@ -56,9 +56,9 @@ public class StateUpdatesTestHelper {
    * @param stateUpdater implementation of {@link StateUpdater} that triggers the state update
    * @param layoutThreadShadowLooper shadow looper to post messages to the main thread
    * @param incrementalMountEnabled whether or not to enable incremental mount for the component
-   * @return the updated ComponentView after the state update was applied
+   * @return the updated LithoView after the state update was applied
    */
-  public static ComponentView getViewAfterStateUpdate(
+  public static LithoView getViewAfterStateUpdate(
       ComponentContext context,
       Component component,
       StateUpdater stateUpdater,
@@ -81,9 +81,9 @@ public class StateUpdatesTestHelper {
    * @param loopers shadow loopers to post messages to the main thread, run in the same order they
    * are specified
    * @param incrementalMountEnabled whether or not to enable incremental mount for the component
-   * @return the updated ComponentView after the state update was applied
+   * @return the updated LithoView after the state update was applied
    */
-  public static ComponentView getViewAfterStateUpdate(
+  public static LithoView getViewAfterStateUpdate(
       ComponentContext context,
       Component component,
       StateUpdater stateUpdater,
@@ -97,7 +97,7 @@ public class StateUpdatesTestHelper {
         .layoutDiffing(false)
         .build();
 
-    final ComponentView componentView = new ComponentView(context);
+    final LithoView componentView = new LithoView(context);
     ComponentTestHelper.mountComponent(componentView, componentTree);
 
     Whitebox.setInternalState(component, "mGlobalKey", "bogusKeyForTest");

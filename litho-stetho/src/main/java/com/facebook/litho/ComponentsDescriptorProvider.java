@@ -16,7 +16,7 @@ public final class ComponentsDescriptorProvider implements DescriptorProvider {
 
   @Override
   public void registerDescriptor(DescriptorRegistrar registrar) {
-    registrar.registerDescriptor(ComponentView.class, new ComponentViewDescriptor());
+    registrar.registerDescriptor(LithoView.class, new ComponentViewDescriptor());
     registrar.registerDescriptor(ComponentStethoNode.class, new ComponentStethoNodeDescriptor());
   }
 }

@@ -66,7 +66,7 @@ public class ComponentGlobalKeyTest {
         .incrementalMount(false)
         .layoutDiffing(false)
         .build();
-    ComponentView componentView = getComponentView(componentTree);
+    LithoView componentView = getComponentView(componentTree);
 
     Assert.assertEquals(
         componentView.getMountItemAt(0).getComponent().getGlobalKey(),
@@ -84,7 +84,7 @@ public class ComponentGlobalKeyTest {
         .incrementalMount(false)
         .layoutDiffing(false)
         .build();
-    ComponentView componentView = getComponentView(componentTree);
+    LithoView componentView = getComponentView(componentTree);
 
     Assert.assertEquals(
         componentView.getMountItemAt(0).getComponent().getGlobalKey(),
@@ -102,7 +102,7 @@ public class ComponentGlobalKeyTest {
         .incrementalMount(false)
         .layoutDiffing(false)
         .build();
-    ComponentView componentView = getComponentView(componentTree);
+    LithoView componentView = getComponentView(componentTree);
 
     // Text
     Assert.assertEquals(layoutSpecId + "[Text2]", getComponentAt(componentView, 0).getGlobalKey());
@@ -122,12 +122,12 @@ public class ComponentGlobalKeyTest {
     Assert.assertEquals(layoutSpecId + "[TestViewComponent2]", getComponentAt(componentView, 7).getGlobalKey());
   }
 
-  private static Component getComponentAt(ComponentView componentView, int index) {
+  private static Component getComponentAt(LithoView componentView, int index) {
     return componentView.getMountItemAt(index).getComponent();
   }
 
-  private ComponentView getComponentView(ComponentTree componentTree) {
-    ComponentView componentView = new ComponentView(mContext);
+  private LithoView getComponentView(ComponentTree componentTree) {
+    LithoView componentView = new LithoView(mContext);
     componentView.setComponentTree(componentTree);
     componentView.measure(
         View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),

@@ -22,7 +22,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
 
 /**
- * Helper class to access metadata from {@link ComponentView} that is relevant during end to end
+ * Helper class to access metadata from {@link LithoView} that is relevant during end to end
  * tests. In order for the data to be collected, {@link
  * ComponentsConfiguration#isEndToEndTestRun} must be enabled.
  */
@@ -30,7 +30,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 public class ComponentViewTestHelper {
 
   /**
-   * @see #findTestItems(ComponentView, String)
+   * @see #findTestItems(LithoView, String)
    *
    * <strong>Note:</strong> If there is more than one element mounted under the given key,
    * the last one to render will be returned.
@@ -42,19 +42,19 @@ public class ComponentViewTestHelper {
    */
   @DoNotStrip
   @Nullable
-  public static TestItem findTestItem(ComponentView componentView, String testKey) {
+  public static TestItem findTestItem(LithoView componentView, String testKey) {
     final Deque<TestItem> items = componentView.findTestItems(testKey);
 
     return items.isEmpty() ? null : items.getLast();
   }
 
   /**
-   * Finds a {@link TestItem} given a {@link ComponentView} based on the test key it was
+   * Finds a {@link TestItem} given a {@link LithoView} based on the test key it was
    * assigned during construction.
    *
    * <strong>Example use:</strong>
    * <pre>{@code
-   *  final ComponentView componentView = ComponentTestHelper.mountComponent(
+   *  final LithoView componentView = ComponentTestHelper.mountComponent(
    *      mContext,
    *      new InlineLayoutSpec() {
    *        @Override
@@ -79,7 +79,7 @@ public class ComponentViewTestHelper {
    */
   @DoNotStrip
   @NonNull
-  public static Deque<TestItem> findTestItems(ComponentView componentView, String testKey) {
+  public static Deque<TestItem> findTestItems(LithoView componentView, String testKey) {
     return componentView.findTestItems(testKey);
   }
 }

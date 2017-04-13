@@ -24,7 +24,7 @@ import static com.facebook.litho.SizeSpec.EXACTLY;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Tests for {@link ComponentView} and {@link MountState} to make sure mount only happens once when
+ * Tests for {@link LithoView} and {@link MountState} to make sure mount only happens once when
  * attaching the view and setting the component.
  */
 
@@ -157,7 +157,7 @@ public class ComponentViewMountTest {
     assertEquals(1, mComponentView.getRequestLayoutInvocationCount());
   }
 
-  private static class TestComponentView extends ComponentView {
+  private static class TestComponentView extends LithoView {
     private int mRequestLayoutInvocationCount = 0;
 
     public TestComponentView(Context context) {

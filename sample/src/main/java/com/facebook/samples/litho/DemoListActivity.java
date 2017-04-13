@@ -12,7 +12,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentView;
+import com.facebook.litho.LithoView;
 
 public class DemoListActivity extends AppCompatActivity {
 
@@ -23,7 +23,7 @@ public class DemoListActivity extends AppCompatActivity {
     Demos.initialize(this);
 
     setContentView(
-        ComponentView.create(
+        LithoView.create(
             this,
             DemoListComponent.create(new ComponentContext(this))
                 .build()));

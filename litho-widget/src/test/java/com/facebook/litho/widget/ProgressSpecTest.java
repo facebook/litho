@@ -12,7 +12,7 @@ package com.facebook.litho.widget;
 import android.view.View;
 
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentView;
+import com.facebook.litho.LithoView;
 import com.facebook.litho.testing.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 
@@ -39,14 +39,14 @@ public class ProgressSpecTest {
 
   @Test
   public void testDefault() {
-    ComponentView view = getMountedView();
+    LithoView view = getMountedView();
     assertThat(view.getMeasuredWidth()).isGreaterThan(0);
     assertThat(view.getMeasuredHeight()).isGreaterThan(0);
   }
 
   @Test
   public void testUnsetSize() {
-    ComponentView view = getMountedView();
+    LithoView view = getMountedView();
 
     view.measure(
         View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
@@ -56,7 +56,7 @@ public class ProgressSpecTest {
     assertThat(view.getMeasuredHeight()).isEqualTo(ProgressSpec.DEFAULT_SIZE);
   }
 
-  private ComponentView getMountedView() {
+  private LithoView getMountedView() {
     Progress.Builder progress = Progress.create(mContext);
 
     return ComponentTestHelper.mountComponent(

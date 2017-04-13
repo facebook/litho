@@ -14,7 +14,7 @@ import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.facebook.litho.ComponentView;
+import com.facebook.litho.LithoView;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.utils.IncrementalMountUtils.WrapperView;
 
@@ -41,7 +41,7 @@ public class IncrementalMountUtilsTest {
   private static final int SCROLLING_VIEW_HEIGHT = 1000;
 
   public TestWrapperView mWrapperView = mock(TestWrapperView.class);
-  public ComponentView mComponentView = mock(ComponentView.class);
+  public LithoView mComponentView = mock(LithoView.class);
   public ViewGroup mViewGroup = mock(ViewGroup.class);
 
   private final Rect mMountedRect = new Rect();
@@ -256,7 +256,7 @@ public class IncrementalMountUtilsTest {
   }
 
   private static void setupComponentViewPreviousBounds(
-      ComponentView componentView,
+      LithoView componentView,
       int width,
       int height) {
     when(componentView.getPreviousMountBounds()).thenReturn(new Rect(0, 0, width, height));

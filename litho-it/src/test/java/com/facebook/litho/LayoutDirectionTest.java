@@ -62,7 +62,7 @@ public class LayoutDirectionTest {
         TestViewComponent.create(mContext, true, true, true, false)
             .build();
 
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
               @Override
@@ -155,7 +155,7 @@ public class LayoutDirectionTest {
     final TestComponent child2 = TestDrawableComponent.create(mContext)
         .build();
 
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
               @Override
@@ -222,7 +222,7 @@ public class LayoutDirectionTest {
     final TestComponent child2 = TestDrawableComponent.create(mContext)
         .build();
 
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
               @Override
@@ -265,7 +265,7 @@ public class LayoutDirectionTest {
     final TestComponent child2 = TestDrawableComponent.create(mContext)
         .build();
 
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
               @Override
@@ -307,7 +307,7 @@ public class LayoutDirectionTest {
     final TestComponent child = TestDrawableComponent.create(mContext)
         .build();
 
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
               @Override
@@ -362,7 +362,7 @@ public class LayoutDirectionTest {
     final TestComponent child = TestDrawableComponent.create(mContext)
         .build();
 
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
               @Override
@@ -417,7 +417,7 @@ public class LayoutDirectionTest {
     final TestComponent child = TestViewComponent.create(mContext)
         .build();
 
-    ComponentView componentView = ComponentTestHelper.mountComponent(
+    LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override

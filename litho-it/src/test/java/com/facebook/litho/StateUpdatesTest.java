@@ -162,7 +162,7 @@ public class StateUpdatesTest {
         .incrementalMount(false)
         .layoutDiffing(false)
         .build();
-    final ComponentView componentView = new ComponentView(mContext);
+    final LithoView componentView = new LithoView(mContext);
     componentView.setComponentTree(mComponentTree);
     componentView.onAttachedToWindow();
     ComponentTestHelper.measureAndLayout(componentView);
@@ -185,7 +185,7 @@ public class StateUpdatesTest {
         .incrementalMount(false)
         .layoutDiffing(false)
         .build();
-    final ComponentView componentView = new ComponentView(mContext);
+    final LithoView componentView = new LithoView(mContext);
     componentView.setComponentTree(componentTree);
     componentView.onAttachedToWindow();
     ComponentTestHelper.measureAndLayout(componentView);
@@ -211,7 +211,7 @@ public class StateUpdatesTest {
         .incrementalMount(false)
         .layoutDiffing(false)
         .build();
-    final ComponentView componentView = new ComponentView(mContext);
+    final LithoView componentView = new LithoView(mContext);
     componentView.setComponentTree(componentTree);
     componentView.onAttachedToWindow();
     ComponentTestHelper.measureAndLayout(componentView);

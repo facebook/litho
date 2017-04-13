@@ -10,7 +10,7 @@
 package com.facebook.litho.testing.viewtree;
 
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentView;
+import com.facebook.litho.LithoView;
 import com.facebook.litho.testing.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.Text;
@@ -38,7 +38,7 @@ public class ComponentQueriesTest {
 
   @Test
   public void testNoTextOnComponent() {
-    final ComponentView view = ComponentTestHelper.mountComponent(
+    final LithoView view = ComponentTestHelper.mountComponent(
         mContext,
         Text.create(mContext)
             .text("goodbye")
@@ -50,7 +50,7 @@ public class ComponentQueriesTest {
 
   @Test
   public void testTextOnComponent() {
-    final ComponentView view = ComponentTestHelper.mountComponent(
+    final LithoView view = ComponentTestHelper.mountComponent(
         mContext,
         Text.create(mContext)
             .text("hello")
@@ -62,7 +62,7 @@ public class ComponentQueriesTest {
 
   @Test
   public void testExtractTextFromTextComponent() {
-    final ComponentView view = ComponentTestHelper.mountComponent(
+    final LithoView view = ComponentTestHelper.mountComponent(
         mContext,
         Text.create(mContext)
             .text("hello")

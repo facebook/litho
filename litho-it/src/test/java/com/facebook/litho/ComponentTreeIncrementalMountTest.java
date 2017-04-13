@@ -35,7 +35,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(ComponentsTestRunner.class)
 public class ComponentTreeIncrementalMountTest {
-  private ComponentView mComponentView;
+  private LithoView mComponentView;
   private ComponentTree mComponentTree;
 
   private final Rect mMountedRect = new Rect();
@@ -172,10 +172,10 @@ public class ComponentTreeIncrementalMountTest {
   }
 
   /**
-   * Required in order to ensure that {@link ComponentView#mount(LayoutState, Rect)} is
+   * Required in order to ensure that {@link LithoView#mount(LayoutState, Rect)} is
    * mocked correctly (it needs protected access to be mocked).
    */
-  public static class TestComponentView extends ComponentView {
+  public static class TestComponentView extends LithoView {
 
     public TestComponentView(Context context) {
       super(context);

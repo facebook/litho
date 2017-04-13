@@ -52,7 +52,7 @@ public class MountStateTestItemTest {
 
   @Test
   public void testInnerComponentHostViewTags() {
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -80,7 +80,7 @@ public class MountStateTestItemTest {
 
   @Test
   public void testMultipleIdenticalInnerComponentHostViewTags() {
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -107,7 +107,7 @@ public class MountStateTestItemTest {
 
   @Test
   public void testSkipInvalidTestKeys() {
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -139,7 +139,7 @@ public class MountStateTestItemTest {
 
   @Test
   public void testTextItemTextContent() {
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -161,7 +161,7 @@ public class MountStateTestItemTest {
 
   @Test
   public void testMultipleTextItemsTextContents() {
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -190,7 +190,7 @@ public class MountStateTestItemTest {
 
   @Test
   public void testTextItemsWithClickHandler() {
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override

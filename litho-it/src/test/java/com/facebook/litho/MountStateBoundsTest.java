@@ -40,7 +40,7 @@ public class MountStateBoundsTest {
 
   @Test
   public void testMountedDrawableBounds() {
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -58,7 +58,7 @@ public class MountStateBoundsTest {
 
   @Test
   public void testMountedViewBounds() {
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -83,7 +83,7 @@ public class MountStateBoundsTest {
 
   @Test
   public void testInnerComponentHostBounds() {
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -116,7 +116,7 @@ public class MountStateBoundsTest {
 
   @Test
   public void testDoubleInnerComponentHostBounds() {
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override

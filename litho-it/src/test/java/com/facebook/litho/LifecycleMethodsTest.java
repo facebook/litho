@@ -39,14 +39,14 @@ public class LifecycleMethodsTest {
     ON_UNMOUNT
   }
 
-  private ComponentView mComponentView;
+  private LithoView mComponentView;
   private ComponentTree mComponentTree;
   private LifecycleMethodsComponent mLifecycle;
   private LifecycleMethodsInstance mComponent;
 
   @Before
   public void setup() throws Exception {
-    mComponentView = new ComponentView(RuntimeEnvironment.application);
+    mComponentView = new LithoView(RuntimeEnvironment.application);
     mLifecycle = new LifecycleMethodsComponent();
     mComponent = mLifecycle.create(10);
 

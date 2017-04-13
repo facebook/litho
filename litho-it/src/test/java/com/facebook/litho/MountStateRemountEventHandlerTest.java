@@ -37,7 +37,7 @@ public class MountStateRemountEventHandlerTest {
 
   @Test
   public void testReuseClickListenerOnSameView() {
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -70,7 +70,7 @@ public class MountStateRemountEventHandlerTest {
 
   @Test
   public void testReuseLongClickListenerOnSameView() {
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -103,7 +103,7 @@ public class MountStateRemountEventHandlerTest {
 
   @Test
   public void testReuseTouchListenerOnSameView() {
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -136,7 +136,7 @@ public class MountStateRemountEventHandlerTest {
 
   @Test
   public void testUnsetClickHandler() {
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -168,7 +168,7 @@ public class MountStateRemountEventHandlerTest {
 
   @Test
   public void testUnsetLongClickHandler() {
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -201,7 +201,7 @@ public class MountStateRemountEventHandlerTest {
 
   @Test
   public void testUnsetTouchHandler() {
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -230,7 +230,7 @@ public class MountStateRemountEventHandlerTest {
 
   @Test
   public void testSetClickHandler() {
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -262,7 +262,7 @@ public class MountStateRemountEventHandlerTest {
 
   @Test
   public void testSetLongClickHandler() {
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -295,7 +295,7 @@ public class MountStateRemountEventHandlerTest {
 
   @Test
   public void testSetTouchHandler() {
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override

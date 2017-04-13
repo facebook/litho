@@ -10,7 +10,7 @@
 package com.facebook.litho.widget;
 
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentView;
+import com.facebook.litho.LithoView;
 import com.facebook.litho.testing.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.ComponentsRule;
@@ -35,7 +35,7 @@ public class EditTextSpecTest {
   @Test
   public void testEditTextWithText() {
     final ComponentContext c = mComponentsRule.getContext();
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         EditText.create(c)
             .textChangedEventHandler(null)
             .textSizePx(10)

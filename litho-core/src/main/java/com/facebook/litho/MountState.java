@@ -56,7 +56,7 @@ import static com.facebook.litho.ThreadUtils.assertMainThread;
  * by recycling existing UI elements e.g. {@link Drawable}s.
  *
  * @see #mount(LayoutState, Rect)
- * @see ComponentView
+ * @see LithoView
  * @see LayoutState
  */
 class MountState {
@@ -92,7 +92,7 @@ class MountState {
   private static final Rect sTempRect = new Rect();
 
   private final ComponentContext mContext;
-  private final ComponentView mComponentView;
+  private final LithoView mComponentView;
   private final Rect mPreviousLocalVisibleRect = new Rect();
   private final PrepareMountStats mPrepareMountStats = new PrepareMountStats();
   private final MountStats mMountStats = new MountStats();
@@ -103,7 +103,7 @@ class MountState {
 
   private final MountItem mRootHostMountItem;
 
-  public MountState(ComponentView view) {
+  public MountState(LithoView view) {
     mIndexToItemMap = new LongSparseArray<>();
     mVisibilityIdToItemMap = new LongSparseArray<>();
     mCanMountIncrementallyMountItems = new LongSparseArray<>();
@@ -115,7 +115,7 @@ class MountState {
         ? new HashMap<String, Deque<TestItem>>()
         : null;
 
-    // The mount item representing the top-level ComponentView which
+    // The mount item representing the top-level LithoView which
     // is always automatically mounted.
     mRootHostMountItem = ComponentsPools.acquireRootHostMountItem(
         HostComponent.create(),
@@ -639,7 +639,7 @@ class MountState {
 
   private void updateBoundsForMountedLayoutOutput(LayoutOutput layoutOutput, MountItem item) {
     // MountState should never update the bounds of the top-level host as this
-    // should be done by the ViewGroup containing the ComponentView.
+    // should be done by the ViewGroup containing the LithoView.
     if (layoutOutput.getId() == ROOT_HOST_ID) {
       return;
     }
@@ -1105,7 +1105,7 @@ class MountState {
   }
 
   /**
-   * Store a {@link ComponentAccessibilityDelegate} as a tag in {@code view}. {@link ComponentView}
+   * Store a {@link ComponentAccessibilityDelegate} as a tag in {@code view}. {@link LithoView}
    * contains the logic for setting/unsetting it whenever accessibility is enabled/disabled
    *
    * For non {@link ComponentHost}s
@@ -1466,7 +1466,7 @@ class MountState {
     }
 
     // We can't just use the bounds of the View since we need the bounds relative to the
-    // hosting ComponentView (which is what the localVisibleRect is measured relative to).
+    // hosting LithoView (which is what the localVisibleRect is measured relative to).
     final View view = (View) item.getContent();
     final Rect rect = ComponentsPools.acquireRect();
     rect.set(
@@ -1483,8 +1483,8 @@ class MountState {
   private static void mountViewIncrementally(View view, Rect localVisibleRect) {
     assertMainThread();
 
-    if (view instanceof ComponentView) {
-      final ComponentView componentView = (ComponentView) view;
+    if (view instanceof LithoView) {
+      final LithoView componentView = (LithoView) view;
       componentView.performIncrementalMount(localVisibleRect);
     } else if (view instanceof ViewGroup) {
       final ViewGroup viewGroup = (ViewGroup) view;
@@ -1554,7 +1554,7 @@ class MountState {
     final MountItem item = getItemAt(index);
 
     // The root host item should never be unmounted as it's a reference
-    // to the top-level ComponentView.
+    // to the top-level LithoView.
     if (item == null || mLayoutOutputsIds[index] == ROOT_HOST_ID) {
       return;
     }
@@ -1565,7 +1565,7 @@ class MountState {
     // This is the case when mountDiffing is enabled and unmountOrMoveOldItems() has a matching
     // sub tree. However, traversing the tree bottom-up, it needs to unmount a node holding that
     // sub tree, that will still have mounted items. (Different sequence number on LayoutOutput id)
-    if ((content instanceof ComponentHost) && !(content instanceof ComponentView)) {
+    if ((content instanceof ComponentHost) && !(content instanceof LithoView)) {
       final ComponentHost host = (ComponentHost) content;
 
       // Concurrently remove items therefore traverse backwards.
@@ -1821,7 +1821,7 @@ class MountState {
   /**
    * This is called when the {@link MountItem}s mounted on this {@link MountState} need to be
    * re-bound with the same component. The common case here is a detach/attach happens on the
-   * {@link ComponentView} that owns the MountState.
+   * {@link LithoView} that owns the MountState.
    */
   void rebind() {
     if (mLayoutOutputsIds == null) {
@@ -1975,7 +1975,7 @@ class MountState {
   }
 
   /**
-   * @see ComponentViewTestHelper#findTestItems(ComponentView, String)
+   * @see ComponentViewTestHelper#findTestItems(LithoView, String)
    */
   @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
   Deque<TestItem> findTestItems(String testKey) {
@@ -1991,7 +1991,7 @@ class MountState {
   /**
    * For HostComponents, we don't set a scoped context during layout calculation because we don't
    * need one, as we could never call a state update on it. Instead it's okay to use the context
-   * that is passed to MountState from the ComponentView, which is not scoped.
+   * that is passed to MountState from the LithoView, which is not scoped.
    */
   private ComponentContext getContextForComponent(Component component) {
     final ComponentContext c = component.getScopedContext();

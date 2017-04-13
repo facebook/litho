@@ -68,7 +68,7 @@ public @interface MountSpec {
 
   /**
    * Whether this mount spec supports incremental mount. This is only applicable to MountSpecs which
-   * mount a View which is or contains a ComponentView.
+   * mount a View which is or contains a LithoView.
    */
   boolean canMountIncrementally() default false;
 

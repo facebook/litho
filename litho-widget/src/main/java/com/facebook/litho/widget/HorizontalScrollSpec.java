@@ -19,7 +19,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentLayout;
-import com.facebook.litho.ComponentView;
+import com.facebook.litho.LithoView;
 import com.facebook.litho.Output;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.annotations.OnCreateMountContent;
@@ -184,14 +184,14 @@ class HorizontalScrollSpec {
   }
 
   static class HorizontalScrollComponentView extends HorizontalScrollView {
-    private final ComponentView mComponentView;
+    private final LithoView mComponentView;
 
     private int mComponentWidth;
     private int mComponentHeight;
 
     public HorizontalScrollComponentView(Context context) {
       super(context);
-      mComponentView = new ComponentView(context);
+      mComponentView = new LithoView(context);
       addView(mComponentView);
     }
 

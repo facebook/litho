@@ -16,7 +16,7 @@ import android.support.v7.widget.OrientationHelper;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentInfo;
-import com.facebook.litho.ComponentView;
+import com.facebook.litho.LithoView;
 import com.facebook.litho.widget.LinearLayoutInfo;
 import com.facebook.litho.widget.Recycler;
 import com.facebook.litho.widget.RecyclerBinder;
@@ -39,7 +39,7 @@ public class SampleActivity extends Activity {
 
     addContent(recyclerBinder, context);
 
-    setContentView(ComponentView.create(context, component));
+    setContentView(LithoView.create(context, component));
   }
 
   private static void addContent(RecyclerBinder recyclerBinder, ComponentContext context) {

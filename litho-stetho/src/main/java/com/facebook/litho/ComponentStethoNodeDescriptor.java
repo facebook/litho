@@ -75,7 +75,7 @@ public final class ComponentStethoNodeDescriptor
 
     final ComponentContext context = element.node.getContext();
     final ComponentTree tree = context == null ? null : context.getComponentTree();
-    final ComponentView view = tree == null ? null : tree.getComponentView();
+    final LithoView view = tree == null ? null : tree.getComponentView();
     final MountState mountState = view == null ? null : view.getMountState();
 
     if (mountState != null) {
@@ -231,7 +231,7 @@ public final class ComponentStethoNodeDescriptor
       String value) {
     final ComponentContext context = element.node.getContext();
     final ComponentTree componentTree = context.getComponentTree();
-    final ComponentView view = componentTree == null ? null : componentTree.getComponentView();
+    final LithoView view = componentTree == null ? null : componentTree.getComponentView();
     final ComponentsStethoManagerImpl stethoManager = getStethoManager(element);
 
     if (view == null || stethoManager == null) {

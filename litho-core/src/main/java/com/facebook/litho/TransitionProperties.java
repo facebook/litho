@@ -141,7 +141,7 @@ public class TransitionProperties {
     private float mAlpha;
     private float mTranslationX;
     private float mTranslationY;
-    // Location of the target View relative to the hosting ComponentView.
+    // Location of the target View relative to the hosting LithoView.
     private int[] mLocation = {UNDEFINED, UNDEFINED};
 
     void set(@PropertyType int propertyType, float value) {

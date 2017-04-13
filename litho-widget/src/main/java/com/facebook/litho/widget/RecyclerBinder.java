@@ -28,7 +28,7 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentInfo;
 import com.facebook.litho.ComponentTree;
-import com.facebook.litho.ComponentView;
+import com.facebook.litho.LithoView;
 import com.facebook.litho.MeasureComparisonUtils;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
@@ -802,7 +802,7 @@ public class RecyclerBinder implements Binder<RecyclerView>, LayoutInfo.Componen
 
   private class ComponentViewHolder extends RecyclerView.ViewHolder {
 
-    public ComponentViewHolder(ComponentView componentView) {
+    public ComponentViewHolder(LithoView componentView) {
       super(componentView);
 
       switch (mLayoutInfo.getScrollDirection()) {
@@ -826,12 +826,12 @@ public class RecyclerBinder implements Binder<RecyclerView>, LayoutInfo.Componen
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
       return new ComponentViewHolder(
-          new ComponentView(mComponentContext, null, mUseNewIncrementalMount));
+          new LithoView(mComponentContext, null, mUseNewIncrementalMount));
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-      final ComponentView componentView = (ComponentView) holder.itemView;
+      final LithoView componentView = (LithoView) holder.itemView;
       // We can ignore the synchronization here. We'll only add to this from the UiThread.
       // This read only happens on the UiThread as well and we are never writing this here.
       final ComponentTreeHolder componentTreeHolder = mComponentTreeHolders.get(position);

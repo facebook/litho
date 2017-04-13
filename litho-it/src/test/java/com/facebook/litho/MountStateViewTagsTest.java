@@ -46,7 +46,7 @@ public class MountStateViewTagsTest {
     final SparseArray<Object> tags2 = new SparseArray<>(1);
     tags2.put(DUMMY_ID, tag2);
 
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -79,7 +79,7 @@ public class MountStateViewTagsTest {
     final SparseArray<Object> tags = new SparseArray<>(1);
     tags.put(DUMMY_ID, tag);
 
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override

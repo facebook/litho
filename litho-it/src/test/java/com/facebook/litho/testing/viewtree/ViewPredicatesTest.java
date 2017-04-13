@@ -20,7 +20,7 @@ import android.widget.TextView;
 
 import com.facebook.litho.it.R;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentView;
+import com.facebook.litho.LithoView;
 import com.facebook.litho.testing.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.shadows.ColorDrawableShadow;
@@ -52,7 +52,7 @@ public class ViewPredicatesTest {
   private ImageView mOtherImageView;
   private ImageView mImageView;
   private ImageView mImageViewWithCustomDrawable;
-  private ComponentView mComponentViewWithText;
+  private LithoView mComponentViewWithText;
 
   @Before
   public void setUp() {

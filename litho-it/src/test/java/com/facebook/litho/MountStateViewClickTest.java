@@ -37,7 +37,7 @@ public class MountStateViewClickTest {
 
   @Test
   public void testInnerComponentHostClickable() {
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -60,7 +60,7 @@ public class MountStateViewClickTest {
 
   @Test
   public void testInnerComponentHostClickableWithLongClickHandler() {
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -83,7 +83,7 @@ public class MountStateViewClickTest {
 
   @Test
   public void testRootHostClickable() {
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -101,7 +101,7 @@ public class MountStateViewClickTest {
 
   @Test
   public void testRootHostClickableWithLongClickHandler() {
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override

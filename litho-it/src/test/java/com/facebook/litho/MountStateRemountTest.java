@@ -52,7 +52,7 @@ public class MountStateRemountTest {
     final TestComponent component4 = TestDrawableComponent.create(mContext)
         .build();
 
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -110,7 +110,7 @@ public class MountStateRemountTest {
     clearPool("sLayoutOutputPool");
     clearPool("sViewNodeInfoPool");
 
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -145,7 +145,7 @@ public class MountStateRemountTest {
         .unique()
         .build();
 
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -190,7 +190,7 @@ public class MountStateRemountTest {
     final TestComponent component4 = TestDrawableComponent.create(mContext)
         .build();
 
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override

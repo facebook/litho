@@ -17,7 +17,7 @@ import android.support.annotation.DrawableRes;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLifecycle;
-import com.facebook.litho.ComponentView;
+import com.facebook.litho.LithoView;
 import com.facebook.litho.testing.ComponentTestHelper;
 import com.facebook.litho.testing.SubComponent;
 
@@ -54,7 +54,7 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
     mComponentContext = c;
   }
 
-  private ComponentView mountComponent() {
+  private LithoView mountComponent() {
     return ComponentTestHelper.mountComponent(mComponentContext, actual);
   }
 

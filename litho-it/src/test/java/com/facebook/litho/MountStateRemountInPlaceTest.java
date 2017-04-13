@@ -53,7 +53,7 @@ public class MountStateRemountInPlaceTest {
             .unique()
             .build();
 
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -93,7 +93,7 @@ public class MountStateRemountInPlaceTest {
         TestDrawableComponent.create(mContext)
             .build();
 
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -143,7 +143,7 @@ public class MountStateRemountInPlaceTest {
             .measuredHeight(10)
             .build();
 
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -204,7 +204,7 @@ public class MountStateRemountInPlaceTest {
             .measuredHeight(10)
             .build();
 
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -254,8 +254,8 @@ public class MountStateRemountInPlaceTest {
         TestDrawableComponent.create(mContext)
             .build();
 
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
-        new ComponentView(mContext),
+    final LithoView componentView = ComponentTestHelper.mountComponent(
+        new LithoView(mContext),
         ComponentTree.create(mContext, new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
@@ -301,8 +301,8 @@ public class MountStateRemountInPlaceTest {
         TestDrawableComponent.create(mContext, 0, 0, true, true, true, false, false, true)
             .build();
 
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
-        new ComponentView(mContext),
+    final LithoView componentView = ComponentTestHelper.mountComponent(
+        new LithoView(mContext),
         ComponentTree.create(mContext, new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
@@ -348,8 +348,8 @@ public class MountStateRemountInPlaceTest {
         TestDrawableComponent.create(mContext)
             .build();
 
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
-        new ComponentView(mContext),
+    final LithoView componentView = ComponentTestHelper.mountComponent(
+        new LithoView(mContext),
         ComponentTree.create(mContext, new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
@@ -396,7 +396,7 @@ public class MountStateRemountInPlaceTest {
             .color(Color.BLACK)
             .build();
 
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -437,7 +437,7 @@ public class MountStateRemountInPlaceTest {
             .color(Color.BLACK)
             .build();
 
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -478,7 +478,7 @@ public class MountStateRemountInPlaceTest {
             .unique()
             .build();
 
-    final ComponentView firstComponentView = ComponentTestHelper.mountComponent(
+    final LithoView firstComponentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -545,7 +545,7 @@ public class MountStateRemountInPlaceTest {
             false)
             .build();
 
-    final ComponentView firstComponentView = ComponentTestHelper.mountComponent(
+    final LithoView firstComponentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -658,7 +658,7 @@ public class MountStateRemountInPlaceTest {
         .incrementalMount(false)
         .layoutDiffing(false)
         .build();
-    ComponentView cv = new ComponentView(mContext);
+    LithoView cv = new LithoView(mContext);
     ComponentTestHelper.mountComponent(cv, tree);
     tree.setRoot(secondLayout);
 

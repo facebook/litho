@@ -56,7 +56,7 @@ class TransitionManager implements TransitionKeySetListener {
   /**
    * The {@link MountState} was just set to dirty and is about to re-mount.
    * Stop all the transitions, setting their values to the end state before the
-   * root {@link ComponentView} will go through re-layout.
+   * root {@link LithoView} will go through re-layout.
    */
   void setDirty() {
     for (int i = 0, size = mRunningTransitions.size(); i < size; i++) {
@@ -216,7 +216,7 @@ class TransitionManager implements TransitionKeySetListener {
 
   /**
    * Set the clipChildren properties to all Views in the same tree branch from the given one, up to
-   * the top ComponentView.
+   * the top LithoView.
    */
   private void recursivelySetChildClipping(View view, boolean clipChildren) {
     if (view instanceof ComponentHost) {

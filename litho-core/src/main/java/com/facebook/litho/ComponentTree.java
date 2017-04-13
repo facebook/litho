@@ -110,7 +110,7 @@ public class ComponentTree {
   private boolean mIsLayoutDiffingEnabled;
   private boolean mIsAttached;
   private boolean mIsAsyncUpdateStateEnabled;
-  private ComponentView mComponentView;
+  private LithoView mComponentView;
   private LayoutHandler mLayoutThreadHandler;
 
   @GuardedBy("this")
@@ -438,11 +438,11 @@ public class ComponentTree {
   }
 
   /**
-   * Set a new ComponentView to this ComponentTree checking that they have the same context and
-   * clear the ComponentTree reference from the previous ComponentView if any.
+   * Set a new LithoView to this ComponentTree checking that they have the same context and
+   * clear the ComponentTree reference from the previous LithoView if any.
    * Be sure this ComponentTree is detach first.
    */
-  void setComponentView(@NonNull ComponentView view) {
+  void setComponentView(@NonNull LithoView view) {
     assertMainThread();
 
     // It's possible that the view associated with this ComponentTree was recycled but was
@@ -475,7 +475,7 @@ public class ComponentTree {
     // Crash if the ComponentTree is mounted to a view.
     if (mIsAttached) {
       throw new IllegalStateException(
-          "Clearing the ComponentView while the ComponentTree is attached");
+          "Clearing the LithoView while the ComponentTree is attached");
     }
 
     mComponentView = null;
@@ -825,11 +825,11 @@ public class ComponentTree {
   }
 
   /**
-   * @return the {@link ComponentView} associated with this ComponentTree if any.
+   * @return the {@link LithoView} associated with this ComponentTree if any.
    */
   @Keep
   @Nullable
-  public ComponentView getComponentView() {
+  public LithoView getComponentView() {
     assertMainThread();
     return mComponentView;
   }

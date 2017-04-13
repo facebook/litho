@@ -69,7 +69,7 @@ public class MountStateIncrementalMountTest {
         .build();
     final TestComponent child2 = TestViewComponent.create(mContext)
         .build();
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -121,7 +121,7 @@ public class MountStateIncrementalMountTest {
         .build();
     final TestComponent child2 = TestViewComponent.create(mContext)
         .build();
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -176,7 +176,7 @@ public class MountStateIncrementalMountTest {
         .build();
     final TestComponent child2 = TestViewComponent.create(mContext)
         .build();
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -231,7 +231,7 @@ public class MountStateIncrementalMountTest {
         .build();
     final TestComponent child2 = TestDrawableComponent.create(mContext)
         .build();
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -284,7 +284,7 @@ public class MountStateIncrementalMountTest {
   public void testIncrementalMountNestedView() {
     final TestComponent child = TestViewComponent.create(mContext)
         .build();
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -324,7 +324,7 @@ public class MountStateIncrementalMountTest {
   public void testIncrementalMountVerticalDrawableStackNegativeMargin() {
     final TestComponent child1 = TestDrawableComponent.create(mContext)
         .build();
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -355,7 +355,7 @@ public class MountStateIncrementalMountTest {
         .build();
     final TestComponent child2 = TestViewComponent.create(mContext)
         .build();
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -414,7 +414,7 @@ public class MountStateIncrementalMountTest {
         new TestComponentContextWithView(mContext, mountedView);
     final TestComponent child2 = TestViewComponent.create(testComponentContext).build();
 
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         testComponentContext,
         new InlineLayoutSpec() {
           @Override
@@ -443,7 +443,7 @@ public class MountStateIncrementalMountTest {
     final TestComponentContextWithView testComponentContext =
         new TestComponentContextWithView(mContext, mountedView);
 
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         TestViewComponent.create(testComponentContext));
 
     assertTrue(mountedView.getPreviousIncrementalMountBounds().isEmpty());
@@ -464,19 +464,19 @@ public class MountStateIncrementalMountTest {
     when(mountedView.getBottom()).thenReturn(100);
     when(mountedView.getChildCount()).thenReturn(3);
 
-    final ComponentView childView1 = getMockComponentViewWithBounds(new Rect(5, 10, 20, 30));
+    final LithoView childView1 = getMockComponentViewWithBounds(new Rect(5, 10, 20, 30));
     when(mountedView.getChildAt(0)).thenReturn(childView1);
 
-    final ComponentView childView2 = getMockComponentViewWithBounds(new Rect(10, 10, 50, 60));
+    final LithoView childView2 = getMockComponentViewWithBounds(new Rect(10, 10, 50, 60));
     when(mountedView.getChildAt(1)).thenReturn(childView2);
 
-    final ComponentView childView3 = getMockComponentViewWithBounds(new Rect(30, 35, 50, 60));
+    final LithoView childView3 = getMockComponentViewWithBounds(new Rect(30, 35, 50, 60));
     when(mountedView.getChildAt(2)).thenReturn(childView3);
 
     final TestComponentContextWithView testComponentContext =
         new TestComponentContextWithView(mContext, mountedView);
 
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         TestViewComponent.create(testComponentContext));
 
     // Can't verify directly as the object will have changed by the time we get the chance to
@@ -531,7 +531,7 @@ public class MountStateIncrementalMountTest {
   public void testIncrementalMountDoesNotCauseMultipleUpdates() {
     final TestComponent child1 = TestViewComponent.create(mContext)
         .build();
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -579,8 +579,8 @@ public class MountStateIncrementalMountTest {
     reset(mComponentsLogger);
   }
 
-  private static ComponentView getMockComponentViewWithBounds(Rect bounds) {
-    final ComponentView componentView = mock(ComponentView.class);
+  private static LithoView getMockComponentViewWithBounds(Rect bounds) {
+    final LithoView componentView = mock(LithoView.class);
     when(componentView.getLeft()).thenReturn(bounds.left);
     when(componentView.getTop()).thenReturn(bounds.top);
     when(componentView.getRight()).thenReturn(bounds.right);
@@ -591,7 +591,7 @@ public class MountStateIncrementalMountTest {
     return componentView;
   }
 
-  private static class TestComponentView extends ComponentView {
+  private static class TestComponentView extends LithoView {
     private final Rect mPreviousIncrementalMountBounds = new Rect();
 
     public TestComponentView(Context context) {

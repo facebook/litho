@@ -390,7 +390,7 @@ public abstract class ComponentLifecycle implements EventDispatcher {
   /**
    * Whether this {@link ComponentLifecycle} mounts views that contain component-based
    * content that can be incrementally mounted e.g. if the mounted view has a
-   * ComponentView with incremental mount enabled.
+   * LithoView with incremental mount enabled.
    */
   protected boolean canMountIncrementally() {
     return false;
@@ -404,7 +404,7 @@ public abstract class ComponentLifecycle implements EventDispatcher {
   }
 
   /**
-   * Create the object that will be mounted in the {@link ComponentView}.
+   * Create the object that will be mounted in the {@link LithoView}.
    *
    * @param context The {@link ComponentContext} to be used to create the content.
    * @return an Object that can be mounted for this component.

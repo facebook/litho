@@ -64,7 +64,7 @@ public class ViewCompatComponentTest {
           }
         };
 
-    ComponentView componentView = ComponentTestHelper.mountComponent(
+    LithoView componentView = ComponentTestHelper.mountComponent(
         ViewCompatComponent.get(TEXT_VIEW_CREATOR, "TextView")
             .create(mContext)
             .viewBinder(binder));
@@ -96,7 +96,7 @@ public class ViewCompatComponentTest {
           }
         };
 
-    ComponentView componentView = ComponentTestHelper.mountComponent(
+    LithoView componentView = ComponentTestHelper.mountComponent(
         ViewCompatComponent.get(TEXT_VIEW_CREATOR, "TextView")
             .create(mContext)
             .viewBinder(binder));
@@ -128,7 +128,7 @@ public class ViewCompatComponentTest {
           }
         };
 
-    ComponentView componentView = ComponentTestHelper.mountComponent(
+    LithoView componentView = ComponentTestHelper.mountComponent(
         ViewCompatComponent.get(TEXT_VIEW_CREATOR, "TextView")
             .create(mContext)
             .viewBinder(binder));

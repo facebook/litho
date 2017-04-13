@@ -38,7 +38,7 @@ public class MountStateFocusableTest {
 
   @Test
   public void testInnerComponentHostFocusable() {
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -64,7 +64,7 @@ public class MountStateFocusableTest {
 
   @Test
   public void testRootHostFocusable() {
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override

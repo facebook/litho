@@ -29,7 +29,7 @@ import static com.facebook.litho.AccessibilityUtils.isAccessibilityEnabled;
 /**
  * A {@link ViewGroup} that can host the mounted state of a {@link Component}.
  */
-public class ComponentView extends ComponentHost {
+public class LithoView extends ComponentHost {
   private ComponentTree mComponentTree;
   private final MountState mMountState;
   private boolean mIsAttached;
@@ -58,49 +58,49 @@ public class ComponentView extends ComponentHost {
   private ComponentTree mTemporaryDetachedComponent;
 
   /**
-   * Create a new {@link ComponentView} instance and initialize it
+   * Create a new {@link LithoView} instance and initialize it
    * with the given {@link Component} root.
    *
    * @param context Android {@link Context}.
    * @param component The root component to draw.
-   * @return {@link ComponentView} able to render a {@link Component} hierarchy.
+   * @return {@link LithoView} able to render a {@link Component} hierarchy.
    */
-  public static ComponentView create(Context context, Component component) {
+  public static LithoView create(Context context, Component component) {
     return create(new ComponentContext(context), component);
   }
 
   /**
-   * Create a new {@link ComponentView} instance and initialize it
+   * Create a new {@link LithoView} instance and initialize it
    * with the given {@link Component} root.
    *
    * @param context {@link ComponentContext}.
    * @param component The root component to draw.
-   * @return {@link ComponentView} able to render a {@link Component} hierarchy.
+   * @return {@link LithoView} able to render a {@link Component} hierarchy.
    */
-  public static ComponentView create(ComponentContext context, Component component) {
-    final ComponentView componentView = new ComponentView(context);
+  public static LithoView create(ComponentContext context, Component component) {
+    final LithoView componentView = new LithoView(context);
     componentView.setComponentTree(ComponentTree.create(context, component).build());
 
     return componentView;
   }
 
-  public ComponentView(Context context) {
+  public LithoView(Context context) {
     this(context, null);
   }
 
-  public ComponentView(Context context, AttributeSet attrs) {
+  public LithoView(Context context, AttributeSet attrs) {
     this(new ComponentContext(context), attrs);
   }
 
-  public ComponentView(ComponentContext context) {
+  public LithoView(ComponentContext context) {
     this(context, null);
   }
 
-  public ComponentView(ComponentContext context, AttributeSet attrs) {
+  public LithoView(ComponentContext context, AttributeSet attrs) {
     this(context, attrs, false);
   }
 
-  public ComponentView(
+  public LithoView(
       ComponentContext context,
       AttributeSet attrs,
       boolean incrementalMountOnOffsetOrTranslationChange) {
@@ -229,7 +229,7 @@ public class ComponentView extends ComponentHost {
           && mPreviousMountBounds.right == right
           && mPreviousMountBounds.bottom == bottom;
 
-      // If this happens the ComponentView might have moved on Screen without a scroll event
+      // If this happens the LithoView might have moved on Screen without a scroll event
       // triggering incremental mount. We trigger one here to be sure all the content is visible.
       if (!wasMountTriggered
           && !isRectSame
@@ -263,8 +263,8 @@ public class ComponentView extends ComponentHost {
   }
 
   /**
-   * @return {@link ComponentContext} associated with this ComponentView. It's a wrapper on the
-   * {@link Context} originally used to create this ComponentView itself.
+   * @return {@link ComponentContext} associated with this LithoView. It's a wrapper on the
+   * {@link Context} originally used to create this LithoView itself.
    */
   public ComponentContext getComponentContext() {
     return (ComponentContext) getContext();
@@ -326,7 +326,7 @@ public class ComponentView extends ComponentHost {
 
   /**
    * Change the root component measuring it on a background thread before updating the UI.
-   * If this {@link ComponentView} doesn't have a ComponentTree initialized, the root will be
+   * If this {@link LithoView} doesn't have a ComponentTree initialized, the root will be
    * computed synchronously.
    */
   public void setComponentAsync(Component component) {
@@ -342,7 +342,7 @@ public class ComponentView extends ComponentHost {
   }
 
   /**
-   * To be called this when the ComponentView is about to become inactive. This means that either
+   * To be called this when the LithoView is about to become inactive. This means that either
    * the view is about to be recycled or moved off-screen.
    */
   public void unbind() {

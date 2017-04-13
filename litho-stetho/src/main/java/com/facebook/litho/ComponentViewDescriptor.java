@@ -23,18 +23,18 @@ import com.facebook.stetho.inspector.elements.StyleRuleNameAccumulator;
 import com.facebook.stetho.inspector.elements.android.HighlightableDescriptor;
 
 /**
- * Exposes ComponentView to the stetho elements inspector. It ensures that the view children
- * of a ComponentView are not exposed (as they would if we used the ViewGroupDescriptor) as
+ * Exposes LithoView to the stetho elements inspector. It ensures that the view children
+ * of a LithoView are not exposed (as they would if we used the ViewGroupDescriptor) as
  * they are an implementation detail of the framework (ComponentHost etc.).
  */
 public final class ComponentViewDescriptor
-    extends Descriptor<ComponentView>
-    implements ChainedDescriptor<ComponentView>, HighlightableDescriptor<ComponentView> {
+    extends Descriptor<LithoView>
+    implements ChainedDescriptor<LithoView>, HighlightableDescriptor<LithoView> {
 
-  private Descriptor<? super ComponentView> mSuper;
+  private Descriptor<? super LithoView> mSuper;
 
   @Override
-  public void setSuper(Descriptor<? super ComponentView> superDescriptor) {
+  public void setSuper(Descriptor<? super LithoView> superDescriptor) {
     if (superDescriptor == null) {
       throw new IllegalArgumentException("Super descriptor must not be null.");
     }
@@ -48,72 +48,72 @@ public final class ComponentViewDescriptor
   }
 
   @Override
-  public void hook(ComponentView element) {
+  public void hook(LithoView element) {
     verifyThreadAccess();
     mSuper.hook(element);
   }
 
   @Override
-  public void unhook(ComponentView element) {
+  public void unhook(LithoView element) {
     verifyThreadAccess();
     mSuper.unhook(element);
   }
 
   @Override
-  public NodeType getNodeType(ComponentView element) {
+  public NodeType getNodeType(LithoView element) {
     return mSuper.getNodeType(element);
   }
 
   @Override
-  public String getNodeName(ComponentView element) {
+  public String getNodeName(LithoView element) {
     return mSuper.getNodeName(element);
   }
 
   @Override
-  public String getLocalName(ComponentView element) {
+  public String getLocalName(LithoView element) {
     return mSuper.getLocalName(element);
   }
 
   @Override
-  public String getNodeValue(ComponentView element) {
+  public String getNodeValue(LithoView element) {
     return mSuper.getNodeValue(element);
   }
 
   @Override
-  public void getAttributes(ComponentView element, AttributeAccumulator attributes) {
+  public void getAttributes(LithoView element, AttributeAccumulator attributes) {
     mSuper.getAttributes(element, attributes);
   }
 
   @Override
-  public void setAttributesAsText(ComponentView element, String text) {
+  public void setAttributesAsText(LithoView element, String text) {
     mSuper.setAttributesAsText(element, text);
   }
 
   @Override
-  public void getStyleRuleNames(ComponentView element, StyleRuleNameAccumulator accumulator) {
+  public void getStyleRuleNames(LithoView element, StyleRuleNameAccumulator accumulator) {
     mSuper.getStyleRuleNames(element, accumulator);
   }
 
   @Override
-  public void getStyles(ComponentView element, String ruleName, StyleAccumulator accumulator) {
+  public void getStyles(LithoView element, String ruleName, StyleAccumulator accumulator) {
     mSuper.getStyles(element, ruleName, accumulator);
   }
 
   @Override
-  public void setStyle(ComponentView element, String ruleName, String name, String value) {
+  public void setStyle(LithoView element, String ruleName, String name, String value) {
     mSuper.setStyle(element, ruleName, name, value);
   }
 
   @Override
-  public void getComputedStyles(ComponentView element, ComputedStyleAccumulator accumulator) {
+  public void getComputedStyles(LithoView element, ComputedStyleAccumulator accumulator) {
     mSuper.getComputedStyles(element, accumulator);
   }
 
   @Override
-  public void getChildren(ComponentView element, Accumulator<Object> children) {
-    // ComponentView is a view group but we explicitly do not want to call mSuper.getChildren()
-    // here as we don't want to render children of ComponentView and instead want to render
-    // the component hierarchy. View children of ComponentView are of type ComponentHost which is
+  public void getChildren(LithoView element, Accumulator<Object> children) {
+    // LithoView is a view group but we explicitly do not want to call mSuper.getChildren()
+    // here as we don't want to render children of LithoView and instead want to render
+    // the component hierarchy. View children of LithoView are of type ComponentHost which is
     // an implementation detail of the Components framework.
 
     final ComponentTree component = element.getComponentTree();
@@ -137,12 +137,12 @@ public final class ComponentViewDescriptor
   }
 
   @Override
-  public View getViewAndBoundsForHighlighting(ComponentView element, Rect bounds) {
+  public View getViewAndBoundsForHighlighting(LithoView element, Rect bounds) {
     return element;
   }
 
   @Override
-  public Object getElementToHighlightAtPosition(ComponentView element, int x, int y, Rect bounds) {
+  public Object getElementToHighlightAtPosition(LithoView element, int x, int y, Rect bounds) {
     final HitTestAccumulator hitTestAccumulator = new HitTestAccumulator(bounds, x, y);
     getChildren(element, hitTestAccumulator);
 

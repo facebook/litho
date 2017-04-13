@@ -44,7 +44,7 @@ public class MountStateViewTest {
   @Test
   public void testViewPaddingAndBackground() {
     final int color = 0xFFFF0000;
-    final ComponentView componentView = ComponentTestHelper.mountComponent(
+    final LithoView componentView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override

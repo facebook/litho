@@ -64,7 +64,7 @@ public class MountStateVisibilityEventsTest {
     doReturn(VIEWPORT_WIDTH).when(mockParent).getWidth();
     doReturn(VIEWPORT_HEIGHT).when(mockParent).getHeight();
 
-    ComponentView attachedView = spy(new ComponentView(mContext));
+    LithoView attachedView = spy(new LithoView(mContext));
     Whitebox.setInternalState(attachedView, "mComponentTree", mockComponentTree);
     doReturn(mockParent).when(attachedView).getParent();
 

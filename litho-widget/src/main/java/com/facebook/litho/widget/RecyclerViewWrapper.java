@@ -16,7 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.facebook.litho.ComponentTree;
-import com.facebook.litho.ComponentView;
+import com.facebook.litho.LithoView;
 
 /**
  * Wrapper that encapsulates all the features {@link RecyclerSpec} provides such as
@@ -24,7 +24,7 @@ import com.facebook.litho.ComponentView;
  */
 public class RecyclerViewWrapper extends SwipeRefreshLayout {
 
-  private final ComponentView mStickyHeader;
+  private final LithoView mStickyHeader;
   private final RecyclerView mRecyclerView;
   /**
    * Indicates whether {@link RecyclerView} has been detached. In such case we need to make sure
@@ -46,7 +46,7 @@ public class RecyclerViewWrapper extends SwipeRefreshLayout {
     });
 
     addView(mRecyclerView);
-    mStickyHeader = new ComponentView(getContext());
+    mStickyHeader = new LithoView(getContext());
     mStickyHeader.setLayoutParams(new ViewGroup.LayoutParams(
         ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -65,7 +65,7 @@ public class RecyclerViewWrapper extends SwipeRefreshLayout {
     mStickyHeader.setComponentTree(component);
   }
 
-  public ComponentView getStickyHeader() {
+  public LithoView getStickyHeader() {
     return mStickyHeader;
   }
 

@@ -703,7 +703,7 @@ class LayoutState {
       LayoutState layoutState,
       boolean isCachedOutputUpdated) {
     if (layoutState.isLayoutRoot(node)) {
-      // The root host (ComponentView) always has ID 0 and is unconditionally
+      // The root host (LithoView) always has ID 0 and is unconditionally
       // set as dirty i.e. no need to use shouldComponentUpdate().
       hostOutput.setId(ROOT_HOST_ID);
 
