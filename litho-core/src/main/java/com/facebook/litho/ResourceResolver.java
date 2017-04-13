@@ -209,6 +209,15 @@ public class ResourceResolver {
   }
 
   @Nullable
+  protected final Drawable resolveDrawableRes(@DrawableRes int resId) {
+    if (resId == 0) {
+      return null;
+    }
+
+    return mResources.getDrawable(resId);
+  }
+
+  @Nullable
   protected final Reference<Drawable> resolveDrawableReferenceRes(@DrawableRes int resId) {
     if (resId == 0) {
       return null;
@@ -336,6 +345,24 @@ public class ResourceResolver {
 
     try {
       return resolveDrawableReferenceRes(a.getResourceId(0, defResId));
+    } finally {
+      a.recycle();
+    }
+  }
+
+  @Nullable
+  protected final Drawable resolveDrawableAttr(
+      @AttrRes int attrResId,
+      @DrawableRes int defResId) {
+    if (attrResId == 0) {
+      return null;
+    }
+
+    mAttrs[0] = attrResId;
+    TypedArray a = mTheme.obtainStyledAttributes(mAttrs);
+
+    try {
+      return resolveDrawableRes(a.getResourceId(0, defResId));
     } finally {
       a.recycle();
     }

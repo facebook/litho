@@ -389,6 +389,22 @@ public class BuilderGenerator {
                 ClassNames.DRAWABLE_RES,
                 "resolveDrawableReference"));
         break;
+      case DRAWABLE:
+        dataHolder.addMethod(regularBuilder(specModel, prop, requiredIndex));
+        dataHolder.addMethod(
+            resBuilder(
+                specModel,
+                prop,
+                requiredIndex,
+                ClassNames.DRAWABLE_RES,
+                "resolveDrawable"));
+        dataHolder.addTypeSpecDataHolder(
+            attrBuilders(
+                specModel,
+                prop,
+                requiredIndex,
+                ClassNames.DRAWABLE_RES,
+                "resolveDrawable"));
       case NONE:
         if (prop.getType().equals(specModel.getComponentClass())) {
           dataHolder.addMethod(componentBuilder(specModel, prop, requiredIndex));
