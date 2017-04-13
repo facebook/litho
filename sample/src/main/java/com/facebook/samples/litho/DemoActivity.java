@@ -19,6 +19,7 @@ public class DemoActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    Demos.initialize(this);
 
     final String demoName = (String) getIntent().getSerializableExtra("demoName");
 
