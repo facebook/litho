@@ -33,6 +33,7 @@ class LikersComponentSpec {
   protected static ComponentLayout onCreateLayout(
       ComponentContext c,
       @Prop List<User> likers) {
+      
     return Container.create(c)
         .direction(ROW)
         .alignItems(FLEX_START)

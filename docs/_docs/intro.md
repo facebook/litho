@@ -53,13 +53,14 @@ Even though components provide flatter view hierarchies and perform [layout off 
 Litho can transparently spread the cost of mounting components across UI frames to avoid jank.
 
 With incremental mount enabled (which it is by default), the `ComponentView` will only mount enough content to fill its visible region and unmount (and recycle) components that are no longer visible.
-
+  
 ![Incremental Mount Diagram](/static/images/incremental-mount.png)
 
 If you are using the Litho [async RecyclerView](/docs/recycler-component) support, the framework will seamlessly perform incremental mount.
 
 ## View flattening
-Let's take a look at the layout in the example below. It contains an image, a title and subtitle. With the traditional Android View system, you would have a view for all these elements, wrapped in a few view groups for arranging the items. 
+Let's take a look at the layout in the example below. It contains an image, a title and subtitle. With the traditional Android View system, you would have a view for all these elements, wrapped in a few view groups for arranging the items.
+
 ![View Flattening](/static/images/viewflatteningnobounds.jpeg)
 
 Litho automatically reduces the number of views your final UI hierarchy will contain. The layout tree that results from the layout calculation step is just a blueprint of your UI with no direct coupling with Android views. This allows the framework to process the layout tree for optimal rendering performance before the component is mounted.  

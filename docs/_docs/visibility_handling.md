@@ -31,6 +31,7 @@ class MyLayoutSpec {
 
   @OnCreateLayout
   static ComponentLayout onCreateLayout(ComponentContext c) {
+  
     return Column.create(c)
         .alignItems(Align.STRETCH)
         .child(Text.create(c)

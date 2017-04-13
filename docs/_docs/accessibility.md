@@ -106,8 +106,10 @@ class PoliteComponentWrapper {
   static ComponentLayout onCreateLayout(
       ComponentContext c,
       @Prop Component<?> content) {
+      
     return Layout.create(c, content)
-        .onPopulateAccessibilityEventHandler(PoliteComponentWrapper.onPopulateAccessibilityEvent(c))
+        .onPopulateAccessibilityEventHandler(
+            PoliteComponentWrapper.onPopulateAccessibilityEvent(c))
         .build();
   }
 
@@ -130,6 +132,7 @@ Now you can replace any usages of your component with `PoliteComponentWrapper`
 static ComponentLayout onCreateLayout(
     ComponentContext c,
     @Prop CharSequence text) {
+    
   return PoliteComponentWrapper.create(c)
       .content(
            Text.create(c)

@@ -9,10 +9,10 @@ Generated component classes provide a simple builder with the props you defined 
 You can assign a component to be rendered by a `ComponentView` as follows:
 
 ```java
-Component component = MyComponent.create()
-        .title("My title")
-        .imageUri(Uri.parse("http://example.com/myimage"))
-	    .build();
+final Component component = MyComponent.create()
+    .title("My title")
+    .imageUri(Uri.parse("http://example.com/myimage")
+    .build();
 ComponentView view = ComponentView.create(context, component);    
 ```
 
@@ -35,9 +35,9 @@ public void onCreate(Bundle savedInstanceState) {
     final ComponentContext context = new ComponentContext(this);
 
     final Component text = Text.create(context)
-            .text("Hello World")
-            .textSizeDip(50)
-            .build();
+        .text("Hello World")
+        .textSizeDip(50)
+        .build();
     final ComponentTree componentTree = ComponentTree.create(context, text).build();
 
     componentView.setComponentTree(componentTree);

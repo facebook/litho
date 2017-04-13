@@ -76,7 +76,7 @@ class MyComponentSpec {
 
     // Small component to use in case textComponent doesn’t fit within
     // the current layout.
-    Component<Image> imageComponent = Image.create(c)
+    final Component<Image> imageComponent = Image.create(c)
         .srcRes(R.drawable.some_icon)
         .build();
 

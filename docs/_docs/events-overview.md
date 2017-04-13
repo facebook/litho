@@ -92,8 +92,6 @@ class FacePileComponentSpec {
   static ComponentLayout onCreateLayout(
       LayoutContext c,
       @Prop Uri[] faces) {
-
-
     ComponentLayout.Builder builder = Column.create(c);
     for (Uri face : avatarUrls) {
       builder.child(
@@ -102,6 +100,7 @@ class FacePileComponentSpec {
               .withLayout()
               .clickHandler(FacePileComponent.onFaceClicked(c, face));
     }
+    
     return builder.build();
   }
 

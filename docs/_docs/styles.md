@@ -19,7 +19,7 @@ class MyComponentSpec {
       @Prop String prop1,
       @Prop int prop2) {
 
-  return ...;
+    return ...;
   }
 }
 ```

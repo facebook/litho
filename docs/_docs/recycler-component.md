@@ -17,10 +17,11 @@ You can use `Recycler` as you would use any other component in the framework by 
 static ComponentLayout onCreateLayout(
     final ComponentContext c,
     @Prop RecyclerBinder recyclerBinder) {
-   	  return Container.create(c)
-        .child(Recycler.create(c)
-          .binder(recyclerBinder))
-        .build();
+    
+  return Container.create(c)
+      .child(Recycler.create(c)
+      .binder(recyclerBinder))
+      .build();
 }
 ```
 This code will render a Recycler component that will display the content of recyclerBinder.

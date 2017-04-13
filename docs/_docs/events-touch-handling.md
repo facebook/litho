@@ -17,12 +17,14 @@ class MyComponentSpec {
 
 	@OnCreateLayout
 	static ComponentLayout onCreateLayout(
-		ComponentContext c,
-		@Prop String title) {
-		return Text.create(c)
-		           .text(title)
-         		   .withLayout()
-           		   .clickHandler(MyComponent.onClick(c))
+	    ComponentContext c,
+	    @Prop String title) {
+	    
+	  return Text.create(c)
+	      .text(title)
+	      .withLayout()
+	      .clickHandler(MyComponent.onClick(c))
+	      .buildWithLayout();
     }
 }
 ```

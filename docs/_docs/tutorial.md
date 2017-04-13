@@ -18,9 +18,11 @@ First, initialize `SoLoader` in your `Application` class:
 
 ```java
 public class SampleApplication extends Application {
+
   @Override
   public void onCreate() {
     super.onCreate();
+    
     SoLoader.init(this, false);
   }
 }
@@ -81,8 +83,10 @@ Your custom component will be called `ListItem`. Therefore, you need to create a
 ```java
 @LayoutSpec
 public class ListItemSpec {
+
   @OnCreateLayout
   static ComponentLayout onCreateLayout(ComponentContext c) {
+  
     return Column.create(c)
         .paddingDip(ALL, 16)
         .backgroundColor(Color.WHITE)
@@ -100,8 +104,7 @@ You should recognize the `Text` component from the previous tutorial step. In th
 How do you render this component? In your activity, simply change the `Component` definition to:
 
 ```java
-final Component text = ListItem.create(context)
-        .build();
+final Component text = ListItem.create(context).build();
 ```
 
 **Note:** That's `ListItem` you're using, which is the generated implementation of [ComponentLifecycle](/javadoc/com/facebook/litho/ComponentLifecycle), not `ListItemSpec`.
@@ -150,7 +153,9 @@ You then create and pass in the `Recycler` component to the `ComponentView`.
 Now turn your focus to populating the binder with list items. Define a helper function in your activity to do this:
 
 ```java
-private void addContent(RecyclerBinder recyclerBinder, ComponentContext context) {
+private void addContent(
+    RecyclerBinder recyclerBinder, 
+    ComponentContext context) {
   for (int i = 0; i < 32; i++) {
     ComponentInfo.Builder componentInfoBuilder = ComponentInfo.create();
     componentInfoBuilder.component(ListItem.create(context).build());
@@ -185,6 +190,7 @@ static ComponentLayout onCreateLayout(
     ComponentContext c,
     @Prop int color,
     @Prop String message) {
+    
   return Column.create(c)
       .paddingDip(ALL, 16)
       .backgroundColor(color)
@@ -201,7 +207,9 @@ This adds two props: `message` and `color` props. Notice that the background col
 The magic happens in the `@Prop` annotations and the annotation processor.  The processor generates methods on the component builder that correspond to the props in a smart way. You can now change the binder's construction of the component to:
 
 ```java
-private void addContent(RecyclerBinder recyclerBinder, ComponentContext context) {
+private void addContent(
+    RecyclerBinder recyclerBinder, 
+    ComponentContext context) {
   for (int i = 0; i < 32; i++) {
     ComponentInfo.Builder componentInfoBuilder = ComponentInfo.create();
     componentInfoBuilder.component(

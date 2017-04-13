@@ -16,6 +16,7 @@ For now, let's just have a look at the overall structure of a *layout spec*:
 ```java
 @LayoutSpec
 class MyComponentSpec {
+
   @OnCreateLayout
   static ComponentLayout onCreateLayout(
       ComponentContext c,

@@ -29,6 +29,7 @@ Let's start with a simple `ColorComponent` that takes a color name as a prop and
 ```java
 @MountSpec
 public class ColorComponentSpec {
+
   @OnCreateMountContent
   static ColorDrawable onCreateMountContent(ComponentContext c) {
     return new ColorDrawable();
@@ -65,6 +66,7 @@ Let's have a look at `ColorComponent` with the described `@OnPrepare` method.
 ```java
 @MountSpec
 public class ColorComponentSpec {
+
   @OnPrepare
   static void onPrepare(
       Context context,

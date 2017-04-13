@@ -17,6 +17,7 @@ Take the following `Component` spec, for example:
 ```java
 @MountSpec
 class MyComponentSpec {
+
   @OnPrepare
   static void onPrepare(
       ComponentContext c,
@@ -80,6 +81,7 @@ Let's consider a simple example:
 ```java
 @LayoutSpec
 public class MyComponentSpec {
+
   @OnCreateLayout
   static ComponentLayout onCreateLayout(
       LayoutContext context,
@@ -107,6 +109,7 @@ The framework allows you to annotate props with resource types so that your comp
 ```java
 @LayoutSpec
 public class MyComponentSpec {
+
   @OnCreateLayout
   static ComponentLayout onCreateLayout(
       LayoutContext context,

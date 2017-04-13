@@ -9,9 +9,11 @@ First, initialize `SoLoader`. Litho has a dependency on [SoLoader](https://githu
 ```java
 [MyApplication.java]
 public class MyApplication extends Application {
+
   @Override
   public void onCreate() {
     super.onCreate();
+    
     SoLoader.init(this, false);
   }
 }
@@ -25,6 +27,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentView;
 
 public class MyActivity extends Activity {
+
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);

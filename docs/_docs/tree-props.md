@@ -22,6 +22,7 @@ public class ParentComponentSpec {
   static Prefetcher onCreatePrefetcher(
       ComponentContext c,
       @Prop Prefetcher prefetcher) {
+      
     return prefetcher;
   }
   
@@ -29,9 +30,10 @@ public class ParentComponentSpec {
   static ComponentLayout onCreateLayout(
       ComponentContext c,
       @Prop Uri imageUri) {
+      
     return ChildComponent.create(c)
         .imageUri(imageUri)
-        .build();
+        .buildWithLayout();
   }
 }
 ```

@@ -25,14 +25,15 @@ public class CheckboxSpec {
   static ComponentLayout onCreateLayout(
       ComponentContext c,
       @State boolean isChecked) {
+      
     return Column.create(c)
-    	.child(Image.create(c)
-	 		.srcRes(isChecked
-				? R.drawable.is_checked
-				: R.drawable.is_unchecked))
-		.child(Text.create(c)
-	 		.text("Submit")
-			.clickHandler(Checkbox.onClickedText(c))
+        .child(Image.create(c)
+            .srcRes(isChecked
+                ? R.drawable.is_checked
+                : R.drawable.is_unchecked))
+        .child(Text.create(c)
+            .text("Submit")
+            .clickHandler(Checkbox.onClickedText(c))
 	    .build;
   }
 
@@ -41,7 +42,7 @@ public class CheckboxSpec {
   	ComponentContext c,
   	@State boolean isChecked) {
   		...
-  	}
+  }
 }
 ```
 
@@ -131,26 +132,27 @@ public class CheckboxSpec {
   static ComponentLayout onCreateLayout(
       ComponentContext c,
       @State boolean isChecked) {
+      
     return Column.create(c)
     	.child(Image.create(c)
-	 		.srcRes(isChecked
-				? R.drawable.is_checked
-				: R.drawable.is_unchecked))
-			.clickHandler(Checkbox.onCheckboxClicked(c)))
-	    .build;
+	 	    .srcRes(isChecked
+	 	        ? R.drawable.is_checked 
+	 	        : R.drawable.is_unchecked))
+		    .clickHandler(Checkbox.onCheckboxClicked(c)))
+		.build;
   }
 
   @OnUpdateState
   void updateCheckbox(
-  	StateValue<Boolean> isChecked) {
-  	isChecked.set(!isChecked.get());
+  	   StateValue<Boolean> isChecked) {
+  	   isChecked.set(!isChecked.get());
   }
 
   @OnEvent(ClickEvent.class)
   static void onCheckboxClicked(
-  	ComponentContext c) {
-  		Checkbox.updateCheckboxAsync(c);
-  		// Checkbox.updateCheckbox(c); for a sync update
+  	   ComponentContext c) {
+  	 Checkbox.updateCheckboxAsync(c);
+  	 // Checkbox.updateCheckbox(c); for a sync update
   	}
 }
 ```
@@ -185,7 +187,7 @@ The most common case when you must manually define keys for your components is c
       parent.child(Text.create(c).key("key" +i));
    }
 
-    return parent.build();
+   return parent.build();
   }
 ```
 
