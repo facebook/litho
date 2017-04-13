@@ -8,7 +8,7 @@ docs/_site/
 /.buckd
 /gentest/test.html
 .buckversion
+/lib/yoga/.externalNativeBuild/
 
 # Output files
 build/
-.externalNativeBuild/

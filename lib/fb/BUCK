@@ -12,7 +12,7 @@ if COMPONENTS_IS_OSS_BUILD:
   cxx_library(
     name = 'jni',
     soname = 'libfb.$(ext)',
-    srcs = glob(['src/main/cpp/*.cpp', 'src/main/cpp/jni/*.cpp', 'src/main/cpp/lyra/*.cpp']),
+    srcs = glob(['*.cpp', 'jni/*.cpp', 'lyra/*.cpp']),
     header_namespace = '',
     compiler_flags = [
       '-fno-omit-frame-pointer',
@@ -23,8 +23,8 @@ if COMPONENTS_IS_OSS_BUILD:
       '-DDISABLE_XPLAT',
     ],
     exported_headers = subdir_glob([
-      ('src/main/cpp/include', 'fb/**/*.h'),
-      ('src/main/cpp/include', 'jni/*.h'),
+      ('include', 'fb/**/*.h'),
+      ('include', 'jni/*.h'),
     ]),
     deps = [
       COMPONENTS_JNI_TARGET,

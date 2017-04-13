@@ -26,7 +26,5 @@ include ':litho-testing'
 include ':litho-widget'
 include ':sample'
 include ':yoga'
-include ':libfb'
 
 project(':yoga').projectDir = file('lib/yoga')
-project(':libfb').projectDir = file('lib/fb')
