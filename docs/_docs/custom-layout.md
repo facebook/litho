@@ -6,7 +6,7 @@ permalink: /docs/custom-layout.html
 ---
 Litho relies on [Yoga](https://facebook.github.io/yoga/), a powerful layout engine that is able to create very complex UIs, for layout calculations.  However, there are few exceptions where Yoga is not enough and you may need to implement your own measuring and layout. 
 
-Litho provides a custom layout API for accessing size information while the [ComponentTree](link to javadoc) is being created and measured, as well as the possibility to measure a component in isolation.
+Litho provides a custom layout API for accessing size information while the [ComponentTree](/javadoc/com/facebook/litho/ComponentTree) is being created and measured, as well as the possibility to measure a component in isolation.
 
 > **IMPORTANT**: This API comes with a **non-negligible** performance overhead. Therefore, it is advisable to only use it when it is absolutely necessary.
 
@@ -51,7 +51,7 @@ In the following example, a `Text` component is measured to check if the given t
 
 ```java
 @LayoutSpec
-public class MyComponentSpec {
+class MyComponentSpec {
 
   @OnCreateLayoutWithSizeSpec
   static ComponentLayout onCreateLayoutWithSizeSpec(

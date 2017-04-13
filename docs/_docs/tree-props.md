@@ -5,10 +5,9 @@ layout: docs
 permalink: /docs/tree-props
 ---
 
-# TreeProps
-`@TreeProp` are props which are automatically and silently passed from a parent component to its children.
+`@TreeProp` are [props](/docs/props) which are automatically and silently passed from a parent component to its children.
 
-`@TreeProp` are a convenient way to share contextual data or utilities in a tree without having to explicitly pass `@Prop` to every component. 
+`TreeProps` are a convenient way to share contextual data or utilities in a tree without having to explicitly pass `@Prop` to every component in your hierarchy. 
 
 A good candidate, for example, is a prefetcher which fetches network images ahead of render time. The prefetcher is widely used since images are common. The prefetcher implementation might be something we define for any Component that needs to use it without having to pass it as `@Prop` in the entire tree.
 
@@ -45,9 +44,9 @@ The child component can access the TreeProp value through a param annotated with
 
 ``` java
 @LayoutSpec
-public class ChildComponentSpec {
+class ChildComponentSpec {
   @OnCreateLayout
-  protected static ComponentLayout onCreateLayout(
+  static ComponentLayout onCreateLayout(
       ComponentContext context,
       @TreeProp Prefetcher prefetcher,
       @Prop Uri imageUri) {

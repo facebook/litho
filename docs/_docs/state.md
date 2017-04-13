@@ -223,4 +223,4 @@ static void onCreateInitialState(Output<String> foo) {
 The first time FooComponent is rendered, its child `Text` component will display *first foo*, even if `foo` is lazily updated with another value. When a regular state update or receiving new props will trigger a new layout calculation, the lazy state update will be applied and the `Text` will render *updated foo*.
 
 ## Immutability
-Because of background layout, `State` can be accessed at anytime by multiple threads. To ensure thread safety, `State` objects should be immutable (and if for some rare reason this is not possible, then at least thread safe). The simplest solution is to express your state in terms of primitives since primitives are by definition immutable.
+Because of [background layout](/docs/asynchronous-layout), `State` can be accessed at anytime by multiple threads. To ensure thread safety, `State` objects should be immutable (and if for some rare reason this is not possible, then at least thread safe). The simplest solution is to express your state in terms of primitives since primitives are by definition immutable.

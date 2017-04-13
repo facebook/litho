@@ -5,7 +5,7 @@ layout: docs
 permalink: /docs/props
 ---
 
-Components use a unidirectional data flow with immutable inputs. Following the name established by React, the inputs that a `Component` takes are known as *props*.
+Litho uses a unidirectional data flow with immutable inputs. Following the name established by [React](https://facebook.github.io/react/), the inputs that a `Component` takes are known as *props*.
 
 ## Defining and using Props
 The props for a given `Component` are the union of all arguments annotated with `@Prop` in your spec methods. You can access the value of the props in all the methods that declare it as an `@Prop` parameter. 
@@ -118,7 +118,7 @@ public class MyComponentSpec {
 }
 ```
 
-With the changes above, `MyComponent`'s builder will contain //Res//, //Attr//, //Dip//, and //Px// methods for the annotated props according to their resource types. So you'll be able to do the following:
+With the changes above, `MyComponent`'s builder will contain *Res*, *Attr*, *Dip*, and *Px* methods for the annotated props according to their resource types. So you'll be able to do the following:
 
 ```java
 MyComponent.create(c)
@@ -132,4 +132,4 @@ Other supported resource types are `ResType.STRING_ARRAY`, `ResType.INT`, `ResTy
 
 ## Immutability
 The props of a Component are read-only. The Component's parent passes down values for the props when it creates the Component and they cannot change throughout the lifecycle of the Component. If the props values must be updated, the parent has to create a new Component and pass down new values for the props.
-The props objects should be made immutable. Due to background layout, props may be accessed on multiple threads. Props immutability ensures that no thread safety issues enter into your component hierarchy.
+The props objects should be made immutable. Due to [background layout](/docs/asynchronous-layout), props may be accessed on multiple threads. Props immutability ensures that no thread safety issues enter into your component hierarchy.

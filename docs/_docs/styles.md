@@ -45,7 +45,7 @@ Then you can collect the values of these attributes in your `@OnLoadStyle` metho
 
 ```java
 @OnLoadStyle
-protected void onLoadStyle(
+void onLoadStyle(
     ComponentContext c,
     Output<String> prop1,
     Output<Integer> prop2) {

@@ -15,7 +15,7 @@ For now, let's just have a look at the overall structure of a *layout spec*:
 
 ```java
 @LayoutSpec
-public class MyComponentSpec {
+class MyComponentSpec {
   @OnCreateLayout
   static ComponentLayout onCreateLayout(
       ComponentContext c,
@@ -35,11 +35,11 @@ A few things to note:
 
 ## Spec, Lifecycle, and Component classes
 
-A component spec class will be processed to generate a `ComponentLifecycle` subclass with the same name as the spec but without the *Spec* suffix. For example, a `MyComponentSpec` spec generates a `MyComponent` class.
+A component spec class will be processed to generate a [ComponentLifecycle](/javadoc/com/facebook/litho/ComponentLifecycle) subclass with the same name as the spec but without the *Spec* suffix. For example, a `MyComponentSpec` spec generates a `MyComponent` class.
 
 The generated `ComponentLifecycle` class is what you are going to [use in your product](/docs/using-components). The spec class will be used as a delegate in the generated code at runtime.
 
-The only API exposed by the generated class is a `create(...)` method that returns the appropriate [`Component.Builder`](linktojavadoc) for the `@Prop`s that you declared in your spec class.
+The only API exposed by the generated class is a `create(...)` method that returns the appropriate [`Component.Builder`](/javadoc/com/facebook/litho/Component.Builder.html) for the `@Prop`s that you declared in your spec class.
 
 At runtime, all component instances of a certain type share the same `ComponentLifecycle` reference. This means that there will only be one spec instance per component type, not per component instance.
 

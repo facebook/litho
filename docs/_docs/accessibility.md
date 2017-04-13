@@ -40,7 +40,7 @@ This is only applicable for components which mount drawables, since if the compo
 
 ## Extra accessibility nodes 
 
-On more complex mount specs that need to expose extra nodes to the accessibility framework, you'll have to implement three extra methods:
+On more complex mount specs that need to expose extra nodes to the accessibility framework, you'll have to implement three extra methods with the following annotations:
 
 - **GetExtraAccessibilityNodesCount**: Returns number of extra accessibility nodes exposed by the component.
 - **OnPopulateExtraAccessibilityNode**: Populates the extra accessibility node with the given bounds. 
@@ -96,7 +96,7 @@ Text.create(c)
     .onInitializeAccessiblityNodeInfoHandler(MyComponent.onInitializeAccessibilityNodeInfoEvent(c))
 ```  
 
-One of the best features of `AccessibilityDelegate`s in general is their reusability even across different types of `View`s. This can also be achieved within the Components framework by creating a wrapper spec that takes in a component and adds the desired event handlers. For example, let's say we want to have a Component that appends "please" to every `AccessibilityEvent` that it announces.
+One of the best features of `AccessibilityDelegate`s in general is their reusability even across different types of `View`s. This can also be achieved within Litho by creating a wrapper spec that takes in a component and adds the desired event handlers. For example, let's say we want to have a Component that appends "please" to every `AccessibilityEvent` that it announces.
 
 ```java
 @LayoutSpec

@@ -9,17 +9,17 @@ permalink: /docs/visibility-handling
 
 The framework currently supports four types of Visibility Event:
 
-- **Visible Event**: this event is triggered when at least one pixel of the Component is visible.
+- [Visible Event](/javadoc/com/facebook/litho/VisibleEvent): this event is triggered when at least one pixel of the Component is visible.
 
-- **Invisible Event**: this event is triggered when the Component no longer has any pixels on the screen.
+- [Invisible Event](/javadoc/com/facebook/litho/InvisibleEvent): this event is triggered when the Component no longer has any pixels on the screen.
 
-- **Focused Visible Event**: this event is triggered when either the Component occupies at least half of the viewport, or, if the Component is smaller than half the viewport, when it is fully visible.
+- [Focused Visible Event](/javadoc/com/facebook/litho/FocusedVisibleEvent): this event is triggered when either the Component occupies at least half of the viewport, or, if the Component is smaller than half the viewport, when it is fully visible.
 
-- **Full Impression Visible Event**: this event is triggered when the entire Component has passed through the viewport at some point.
+- [Full Impression Visible Event](/javadoc/com/facebook/litho/FullImpressionVisibleEvent): this event is triggered when the entire Component has passed through the viewport at some point.
 
 ### Usage ###
 
-Visibility Ranges require [incremental mount](/docs/inc-mount#manual-incremental-mount) to be enabled on the relevant Component.
+Visibility ranges require [incremental mount](/docs/inc-mount#manual-incremental-mount) to be enabled on the relevant Component.
 
 To register visibility event handlers for a component you can follow the same [steps](/docs/events-overview) as for setting any other event handler. 
 

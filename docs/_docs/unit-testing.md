@@ -5,22 +5,22 @@ layout: docs
 permalink: /docs/unit-testing.html
 ---
 
-The Components framework provides testing helpers exposed through fluid
+Litho provides testing helpers exposed through fluid
 AssertJ methods. They are available as:
 
-- `ComponentAssert` for assertions that are run against either Component builders
+- [ComponentAssert](/javadoc/com/facebook/litho/testing/assertj/ComponentAssert) for assertions that are run against either Component builders
   or Components.
-- `ComponentViewAssert` for assertions against mounted Components.
+- [ComponentViewAssert](/javadoc/com/facebook/litho/testing/assertj/ComponentViewAssert) for assertions against mounted Components.
 
 In order to use any of the testing capabilities, you need include the optional
 `litho-testing` package in your build. It is available as
 `com.facebook.litho:litho-testing:+`.
 
-Under the hood, these asserts are implemented through these helpers,
-that are also available in case that more complicated use cases need
+Under the hood, these asserts are implemented through the helpers below,
+which are also available in case more complicated use cases need
 to be reconstructed:
 
-- `ComponentTestHelper`: Allows simple and short creation of views that are
+- [ComponentTestHelper](/javadoc/com/facebook/litho/testing/ComponentTestHelper): Allows simple and short creation of views that are
   created and mounted in a similar way to how they are in real apps.
 - `ComponentQueries`: Utility class to query the state of components.
 
@@ -35,7 +35,7 @@ that displays a like icon and a short description.
  * > 3 likers => Comma separated number denoting the like count
  */
 @LayoutSpec
-public class LikersComponentSpec {
+class LikersComponentSpec {
 
   @OnCreateLayout
   protected static ComponentLayout onCreateLayout(
@@ -46,7 +46,7 @@ public class LikersComponentSpec {
         .alignItems(FLEX_START)
         .child(
             Image.create(c)
-                .srcRes(R.drawable.like))
+                 .srcRes(R.drawable.like))
         .child(
             Text.create(c)
                 .text(formatLikers(likers))
@@ -123,7 +123,7 @@ or on the `ComponentBuilder` before it is consumed by `build()`.
 ```
 
 Generally, this should be enough, but if you need more control,
-you can also manually mount a Component with `ComponentTestHelper`
+you can also manually mount a Component with [ComponentTestHelper](/javadoc/com/facebook/litho/testing/ComponentTestHelper)
 and verify the state of it through `ComponentQueries`.
 
 ```java
@@ -147,7 +147,7 @@ and verify the state of it through `ComponentQueries`.
 ## Testing Sub-Component Rendering
 Instead of performing assertions on the content rendered by your Component, it
 might be useful to test for the rendering of sub-components instead.
-`SubComponent` is a convenience class that allows for easier comparison of Component
+[SubComponent](/javadoc/com/facebook/litho/testing/SubComponent) is a convenience class that allows for easier comparison of Component
 types. You can, again, use AssertJ to verify the presence or absence of
 the subcomponents.
 

@@ -129,20 +129,21 @@ Just like `@OnPrepare`, the `@OnMeasure` method can also generate inter-stage ou
 
 ## ShouldUpdate
 
-A MountSpec can define a method annotated with `@ShouldUpdate` to avoid remeasuring/remounting upon updates.
-Invocations of `@ShouldUpdate` are dependent on whether a Component is a pure render function.
-A Component is a pure render function if the result of the rendering only depends on its props and states. This means that the Component shouldn't be accessing any mutable global variable during `@OnMount`.
+A MountSpec can define a method annotated with `@ShouldUpdate` to avoid remeasuring and remounting upon updates.  
+Invocations of `@ShouldUpdate` are dependent on whether a Component is a **pure render function**. A Component is a pure render function if the result of the rendering only depends on its props and states. This means that the Component shouldn't be accessing any mutable global variable during `@OnMount`.  
 A `@MountSpec` can be defined as pure render by using the pureRender parameter of the `@MountSpec` annotation.
-Only pureRender Components can assume that when props do not change remounting won't be needed. A `@ShouldUpdate` function can be defined as follows:
+Only pure render Components can assume that when props do not change remounting won't be needed. A `@ShouldUpdate` function can be defined as follows:
+
 ``` java
 @ShouldUpdate(onMount = true)
 public boolean shouldUpdate(Diff<String> someStringProp) {
   return !someStringProp.getPrevious().equals(someStringProp.getNext());
 }
 ```
-The parameters taken from shouldUpdate are Diff of Props or State. A Diff is an object containing the value of a `@Prop` or a `@State` in the old components hierarchy and the value of the same `@Prop`/`@State` in the new components hierarchy.
-In this example this component was defining a `@Prop` String someStringProp. ShouldUpdate will receive a Diff<String> to be able to compare the old and new value of this `@Prop`. `@ShouldUpdate` has to take into consideration any prop and any state that are used at OnMount time. It can safely ignore `@Prop`/`@State` that are only used at OnBind/OnUnbind time as these two methods will be executed regardless.
+The parameters taken from `shouldUpdate` are [Diffs](/javadoc/com/facebook/litho/Diff) of Props or State. A Diff is an object containing the value of a `@Prop` or a `@State` in the old components hierarchy and the value of the same `@Prop`or `@State` in the new components hierarchy.  
+In this example this component was defining **someStringProp** as a String `@Prop`. `shouldUpdate` will receive a `Diff<String>` to be able to compare the old and new value of this `@Prop`.  
+`shouldUpdate` has to take into consideration any prop and any states that are used at `@OnMount` time. It can safely ignore props and states that are only used at '@OnMount/@OnUnbind` time as these two methods will be executed regardless.
 
-The onMount attribute on the `@ShouldUpdate` annotation controls whether this shouldUpdate check can happen at mount time. By default Components will try to do this reconciliation at layout time but if layout diffing is turned off it might be useful to set onMount to true in order to execute this check at mount time instead. The onMount attribute is set to false by default as the equality check might be heavy itself and make mount performances worse.
+The `onMount` attribute on the `@ShouldUpdate` annotation controls whether this `shouldUpdate` check can happen at mount time. By default, Litho will try to do this reconciliation at layout time, but if layout diffing is turned off it might be useful to set onMount to true in order to execute this check at mount time instead. The `onMount` attribute is set to false by default as the equality check might be heavy itself and make mount performances worse.
 
-`@ShouldUpdate` is currently only supported in `@MountSpec`. We have plans to expand the support to complex layouts in the future but at the moment a `@ShouldUpdate` annotated method in a `@LayoutSpec` would have no effect.
+`@ShouldUpdate` annotated methods are currently only supported in `@MountSpec`. We have plans to expand the support to complex layouts in the future but at the moment a `@ShouldUpdate` annotated method in a `@LayoutSpec` would have no effect.

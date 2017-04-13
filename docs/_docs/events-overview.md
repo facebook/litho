@@ -5,11 +5,11 @@ layout: docs
 permalink: /docs/events-overview
 ---
 
-The framework provides a general-purpose API to connect components through events. Events are declared as a POJO with an `@Event` annotation. By convention we name suffix Event class names with *Event*. Event declarations may not be inner classes of your `LayoutSpec` or `MountSpec`. This is by design as specs are supposed to be a private concept and events can be used across multiple components.
+The framework provides a general-purpose API to connect components through events. Events are declared as a POJO with an `@Event` annotation. By convention we suffix Event class names with *Event*. Event declarations may not be inner classes of your `LayoutSpec` or `MountSpec`. This is by design as specs are supposed to be a private concept and events can be used across multiple components.
 
 ```java
 @Event
-private class ColorChangedEvent {
+public class ColorChangedEvent {
   public int color;
 }
 ```
@@ -18,7 +18,7 @@ In this example we will assume we have a component called `ColorComponent`. To i
 
 ```java
 @LayoutSpec(events = { ColorChangedEvent.class })
-public class ColorComponentSpec {
+class ColorComponentSpec {
   ...
   @OnCreateLayout
   static ComponentLayout onCreateLayout(
@@ -36,7 +36,7 @@ public class ColorComponentSpec {
 
 For an event of type `FooEvent`, this will auto-generate a matching `dispatchFooEvent` method and an event identifier that will used by event callbacks.
 
-The `dispatchFooEvent` method takes an `EventHandler` as the first argument followed by the list of attributes defined in your `@Event` class. An `EventHandler` is essentially a generic listener interface to connect components through events. The convention is to have an `EventHandler` prop for each event exposed by your component.
+The `dispatchFooEvent` method takes an [EventHandler](/javadoc/com/facebook/litho/EventHandler) as the first argument followed by the list of attributes defined in your `@Event` class. An `EventHandler` is essentially a generic listener interface to connect components through events. The convention is to have an `EventHandler` prop for each event exposed by your component.
 
 In the example above, `ColorComponent` takes a `colorChangedHandler` as prop and dispatches the `ColorChangedEvent` to it with the generated `dispatchColorChangedEvent()` method.
 
@@ -52,7 +52,7 @@ For example, here's how a component would define a handler for the `ColorChanged
 
 ```java
 @LayoutSpec
-public class MyComponentSpec {
+class MyComponentSpec {
 
   @OnCreateLayout
   static ComponentLayout onCreateLayout(
@@ -86,7 +86,7 @@ As you can see, `@OnEvent` callbacks have access to all component props just lik
 
 ```java
 @LayoutSpec
-public class FacePileComponentSpec {
+class FacePileComponentSpec {
 
   @OnCreateLayout
   static ComponentLayout onCreateLayout(

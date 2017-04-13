@@ -12,21 +12,34 @@ This means all layout builders have an `EventHandler` prop named `clickHandler`,
 For example, setting a click handler on any component is as simple as:
 
 ```java
-Text.create(c)
-    .text(title)
-    .withLayout()
-    .clickHandler(MyComponent.onClick(c))
+@LayoutSpec
+class MyComponentSpec {
+
+	@OnCreateLayout
+	static ComponentLayout onCreateLayout(
+		ComponentContext c,
+		@Prop String title) {
+		return Text.create(c)
+		           .text(title)
+         		   .withLayout()
+           		   .clickHandler(MyComponent.onClick(c))
+    }
+}
 ```
 
 And the callback within MyComponentSpec would look like this:
 
 ```java
-@OnEvent(ClickEvent.class)
-static void onClick(
-    ComponentContext c,
-    @FromEvent View view,
-    @Prop String someProp) {
-  // Handle click here.
+@LayoutSpec
+class MyComponentSpec {
+... 
+	@OnEvent(ClickEvent.class)
+	static void onClick(
+	    ComponentContext c,
+	    @FromEvent View view,
+	    @Prop String someProp) {
+	  // Handle click here.
+	}
 }
 ```
 
