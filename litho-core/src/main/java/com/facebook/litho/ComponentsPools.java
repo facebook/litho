@@ -9,6 +9,7 @@
 
 package com.facebook.litho;
 
+import java.util.ArrayDeque;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,12 +26,14 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.util.Pools;
+import android.support.v4.util.SimpleArrayMap;
 import android.support.v4.util.SparseArrayCompat;
 import android.util.SparseArray;
 
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.displaylist.DisplayList;
 import com.facebook.infer.annotation.ThreadSafe;
+import com.facebook.litho.internal.ArraySet;
 import com.facebook.yoga.YogaConfig;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaExperimentalFeature;
@@ -134,6 +137,12 @@ public class ComponentsPools {
       new Pools.SimplePool<>(10);
 
   private static final Pools.SynchronizedPool<TreeProps> sTreePropsMapPool =
+      new Pools.SynchronizedPool<>(10);
+
+  private static final Pools.SynchronizedPool<ArraySet> sArraySetPool =
+      new Pools.SynchronizedPool<>(10);
+
+  private static final Pools.SynchronizedPool<ArrayDeque> sArrayDequePool =
       new Pools.SynchronizedPool<>(10);
 
   // Lazily initialized when acquired first time, as this is not a common use case.
@@ -830,5 +839,33 @@ public class ComponentsPools {
   @ThreadSafe(enableChecks = false)
   public static void release(BorderColorDrawable borderColorDrawable) {
     sBorderColorDrawablePool.release(borderColorDrawable);
+  }
+
+  public static <E> ArraySet<E> acquireArraySet() {
+    ArraySet<E> set = sArraySetPool.acquire();
+    if (set == null) {
+      set = new ArraySet<>();
+    }
+    return set;
+  }
+
+  @ThreadSafe(enableChecks = false)
+  public static void release(ArraySet set) {
+    set.clear();
+    sArraySetPool.release(set);
+  }
+
+  public static <E> ArrayDeque<E> acquireArrayDeque() {
+    ArrayDeque<E> deque = sArrayDequePool.acquire();
+    if (deque == null) {
+      deque = new ArrayDeque<>();
+    }
+    return deque;
+  }
+
+  @ThreadSafe(enableChecks = false)
+  public static void release(ArrayDeque deque) {
+    deque.clear();
+    sArrayDequePool.release(deque);
   }
 }

@@ -1,10 +1,18 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/**
+ * Copyright (c) 2017-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
 
 package com.facebook.litho;
 
 import java.util.ArrayList;
 import java.util.WeakHashMap;
 
+import android.support.v4.util.Pools;
 import android.support.v4.util.SimpleArrayMap;
 
 import com.facebook.litho.animation.AnimatedPropertyNode;
@@ -20,12 +28,21 @@ import com.facebook.litho.internal.ArraySet;
  */
 public class DataFlowTransitionManager {
 
+  private static Pools.SimplePool<TransitionDiff> sTransitionDiffPool = new Pools.SimplePool<>(20);
+
   private static class TransitionDiff {
 
     public final SimpleArrayMap<AnimatedProperty, Float> beforeValues = new SimpleArrayMap<>();
     public final SimpleArrayMap<AnimatedProperty, Float> afterValues = new SimpleArrayMap<>();
     public int changeType = TransitionManager.KeyStatus.DISAPPEARED;
     public Object mountItem;
+
+    public void reset() {
+      beforeValues.clear();
+      afterValues.clear();
+      changeType = TransitionManager.KeyStatus.DISAPPEARED;
+      mountItem = null;
+    }
   }
 
   private final ArrayList<AnimationBinding> mAnimationBindings = new ArrayList<>();
@@ -40,6 +57,10 @@ public class DataFlowTransitionManager {
   void onNewTransitionContext(TransitionContext transitionContext) {
     mAnimationBindings.clear();
     mKeyToAnimatingProperties.clear();
+    for (int i = 0, size = mKeyToTransitionDiffs.size(); i < size; i++) {
+      releaseTransitionDiff(mKeyToTransitionDiffs.valueAt(i));
+    }
+    mKeyToTransitionDiffs.clear();
 
     mAnimationBindings.addAll(transitionContext.getTransitionAnimationBindings());
     recordAllTransitioningProperties();
@@ -49,7 +70,7 @@ public class DataFlowTransitionManager {
     final ArrayList<AnimatedProperty> animatingProperties =
         mKeyToAnimatingProperties.get(transitionKey);
     if (animatingProperties != null) {
-      final TransitionDiff info = new TransitionDiff();
+      final TransitionDiff info = acquireTransitionDiff();
       for (int i = 0; i < animatingProperties.size(); i++) {
         final AnimatedProperty prop = animatingProperties.get(i);
         info.beforeValues.put(prop, prop.get(mountItem));
@@ -65,7 +86,7 @@ public class DataFlowTransitionManager {
     if (animatingProperties != null) {
       TransitionDiff info = mKeyToTransitionDiffs.get(transitionKey);
       if (info == null) {
-        info = new TransitionDiff();
+        info = acquireTransitionDiff();
         info.changeType = TransitionManager.KeyStatus.APPEARED;
         info.mountItem = mountItem;
         mKeyToTransitionDiffs.put(transitionKey, info);
@@ -178,6 +199,19 @@ public class DataFlowTransitionManager {
       animatedProperties.put(animatedProperty.getName(), node);
     }
     return node;
+  }
+
+  private static TransitionDiff acquireTransitionDiff() {
+    TransitionDiff diff = sTransitionDiffPool.acquire();
+    if (diff == null) {
+      diff = new TransitionDiff();
+    }
+    return diff;
+  }
+
+  private static void releaseTransitionDiff(TransitionDiff diff) {
+    diff.reset();
+    sTransitionDiffPool.release(diff);
   }
 
   private class TransitionsResolver implements Resolver {

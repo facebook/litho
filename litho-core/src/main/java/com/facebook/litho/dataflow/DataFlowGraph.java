@@ -12,14 +12,13 @@ package com.facebook.litho.dataflow;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Deque;
-import java.util.WeakHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.SimpleArrayMap;
+
+import com.facebook.litho.ComponentsPools;
 import com.facebook.litho.internal.ArraySet;
-import com.facebook.litho.internal.MutableInt;
 
 /**
  * A directed acyclic graph (DAG) created from one or more {@link GraphBinding}s. These component
@@ -120,8 +119,8 @@ public class DataFlowGraph {
       return;
     }
 
-    final ArraySet<ValueNode> leafNodes = new ArraySet<>();
-    final SimpleArrayMap<ValueNode, MutableInt> nodesToOutputsLeft = new SimpleArrayMap<>();
+    final ArraySet<ValueNode> leafNodes = ComponentsPools.acquireArraySet();
+    final SimpleArrayMap<ValueNode, Integer> nodesToOutputsLeft = new SimpleArrayMap<>();
 
     for (int i = 0, bindingsSize = mBindingToNodes.size(); i < bindingsSize; i++) {
       final ArraySet<ValueNode> nodes = mBindingToNodes.valueAt(i);
@@ -131,7 +130,7 @@ public class DataFlowGraph {
         if (outputCount == 0) {
           leafNodes.add(node);
         } else {
-          nodesToOutputsLeft.put(node, new MutableInt(outputCount));
+          nodesToOutputsLeft.put(node, outputCount);
         }
       }
     }
@@ -141,17 +140,19 @@ public class DataFlowGraph {
           "Graph has nodes, but they represent a cycle with no leaf nodes!");
     }
 
-    final Deque<ValueNode> nodesToProcess = new ArrayDeque<>(leafNodes);
+    final ArrayDeque<ValueNode> nodesToProcess = ComponentsPools.acquireArrayDeque();
+    nodesToProcess.addAll(leafNodes);
+
     while (!nodesToProcess.isEmpty()) {
       final ValueNode next = nodesToProcess.pollFirst();
       mSortedNodes.add(next);
       for (int i = 0, count = next.getInputCount(); i < count; i++) {
         final ValueNode input = next.getInputAt(i);
-        final MutableInt outputsLeft = nodesToOutputsLeft.get(input);
-        outputsLeft.value--;
-        if (outputsLeft.value == 0) {
+        final int outputsLeft = nodesToOutputsLeft.get(input) - 1;
+        nodesToOutputsLeft.put(input, outputsLeft);
+        if (outputsLeft == 0) {
           nodesToProcess.addLast(input);
-        } else if (outputsLeft.value < 0) {
+        } else if (outputsLeft < 0) {
           throw new DetectedCycleException("Detected cycle.");
         }
       }
@@ -165,6 +166,9 @@ public class DataFlowGraph {
 
     Collections.reverse(mSortedNodes);
     mIsDirty = false;
+
+    ComponentsPools.release(nodesToProcess);
+    ComponentsPools.release(leafNodes);
   }
 
   private void updateFinishedStates() {

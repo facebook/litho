@@ -21,6 +21,7 @@ android_library(
         COMPONENTS_CONFIG_TARGET,
         COMPONENTS_CSSLAYOUT_TARGET,
         COMPONENTS_PROGUARDANNOTATIONS_TARGET,
+        make_dep_path("litho-core/src/main/java/com/facebook/litho/internal:internal"),
     ],
     provided_deps = [
         COMPONENTS_ANDROIDSUPPORT_TARGET,
@@ -38,6 +39,5 @@ android_library(
         COMPONENTS_INFERANNOTATIONS_TARGET,
         COMPONENTS_RES_TARGET,
         COMPONENTS_VIEWCOMPATCREATOR_TARGET,
-        make_dep_path("litho-core/src/main/java/com/facebook/litho/internal:internal"),
     ],
 )
