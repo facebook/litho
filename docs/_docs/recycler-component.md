@@ -72,39 +72,6 @@ recyclerBinder.insertItemAt(
   ComponentInfo.create().component(component).isSticky().build());
 ```
 
-#### RecyclerBinder Async operations
-
-RecyclerBinder also supports async operations.
-Inserting or updating an item asynchronously means that if the item is in the range for which we would need to compute a layout, the Binder will wait until the layout is ready before notifying the RecyclerView of any change.
-To use async operations you would write something like:
-
-``` java
- recyclerBinder.insertItemAtAsync(position, component);
- recyclerBinder.updateItemAtAsync(position, component);
- recyclerBinder.removeItemAsync(position);
- recyclerBinder.moveItemAsync(fromPosition, toPosition);
-```
-RecyclerBinder is guaranteed to respect the ordering in which the async operations were invoked. Take the example below: 
-
-``` java
- recyclerBinder.insertItemAtAsync(0, component);
- recyclerBinder.removeItemAsync(1);
-```
-In this example, `remove` is only executed after `component` has been inserted at position 0 and it will actually remove the item that was in position 0 before `component` was inserted.
-
-Operating with synchronous operations on the other hand, means that an item will be immediately inserted, even if its insertion position is inside the range of active components. This potentially means that the framework would be forced to compute a layout synchronously on the UI thread when that component needs to be put on screen.
-
-#### Sync insertion:
-
-![Layout range in action](/static/images/insertion_sync_small.gif "Layout range in action")
-
-#### Async insertion:
-
-![Layout range in action](/static/images/insertion_async_small.gif "Layout range in action")
-
-
-Operating with sync operations is usually useful when the result of an operation should be visible without any delay. Triggering a sync operation while there is an active queue of async operations will flush all the pending async operations synchronously.
-
 #### Using RecyclerBinder with DiffUtil
 
 RecyclerBinder exposes by default bindings to be used in conjunction with [DiffUtil](https://developer.android.com/reference/android/support/v7/util/DiffUtil.html).
