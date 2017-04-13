@@ -7,17 +7,21 @@ permalink: /docs/debugging
 
 ## Stetho
 
-[Stetho](http://facebook.github.io/stetho/) is a great debugging tool for Android and we have made sure it works with Litho as well. 
+[Stetho](http://facebook.github.io/stetho/) is a great debugging tool for Android and we have made sure it works with Litho as well.
 To enable Litho debugging in Stetho, add the following lines in the `onCreate()` method of your `Application` implementation.
 
 ```java
-@Override
-public void onCreate() {
-	...
-	Stetho.initialize(
-	    Stetho.newInitializerBuilder(this)
-	        .enableWebKitInspector(new LithoWebKitInspector(this))
-	        .build());
+public class SampleApplication extends Application {
+  @Override
+  public void onCreate() {
+    super.onCreate();
+    SoLoader.init(this, false);
+		
+		Stetho.initialize(
+		    Stetho.newInitializerBuilder(this)
+		        .enableWebKitInspector(new LithoWebKitInspector(this))
+		        .build());
+  }
 }
 ```
 
