@@ -104,3 +104,34 @@ Operating with synchronous operations on the other hand, means that an item will
 
 
 Operating with sync operations is usually useful when the result of an operation should be visible without any delay. Triggering a sync operation while there is an active queue of async operations will flush all the pending async operations synchronously.
+
+#### Using RecyclerBinder with DiffUtil
+
+RecyclerBinder exposes by default bindings to be used in conjunction with [DiffUtil](https://developer.android.com/reference/android/support/v7/util/DiffUtil.html).
+Litho defines in its API a [RecyclerBinderUpdateCallback](/javadoc/com/facebook/litho/widget/RecyclerBinderUpdateCallback.html) that implements ListUpdateCallback and therefore can be used to dispatch the DiffResult to a RecyclerBinder.
+
+Here's an example of how DiffUtil can be used with Litho:
+
+``` java
+
+  private final ComponentRenderer<Data> mComponentRenderer = new ComponentRenderer<> {
+    ComponentInfo render(Data data, int idx) {
+      return ComponentInfo.create().component(DataComponent.create(mComponentContext).data(data)).build();
+    }
+  }
+
+  public void onNewData(List<Data> newData) {
+    final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new MyDataDiffCallback(mCurrentData, newData));
+    final RecyclerBinderUpdateCallback callback = RecyclerBinderUpdateCallback.acquire(
+      mCurrentData.size(),
+      newData,
+      mComponentRenderer,
+      mRecyclerBinder)
+
+    diffResult.dispatchUpdatesTo(callback);
+    callback.applyChangeset();
+    RecyclerBinderUpdateCallback.release(callback);
+}
+```
+
+The ComponentRenderer will be invoked whenever a new Component needs to be created for a new or updated model in the list.
