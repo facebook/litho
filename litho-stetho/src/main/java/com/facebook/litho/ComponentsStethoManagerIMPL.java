@@ -22,7 +22,7 @@ import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
-import com.facebook.yoga.YogaNodeAPI;
+import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaUnit;
 import com.facebook.yoga.YogaValue;
@@ -150,8 +150,8 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
   }
 
   void getStyles(ComponentStethoNode stethoNode, StyleAccumulator accumulator) {
-    final YogaNodeAPI yogaNode = stethoNode.node.mYogaNode;
-    final YogaNodeAPI defaults = ComponentsPools.acquireYogaNode();
+    final YogaNode yogaNode = stethoNode.node.mYogaNode;
+    final YogaNode defaults = ComponentsPools.acquireYogaNode();
 
     SimpleArrayMap<String, String> overrides = mStyleOverrides.get(stethoNode.key);
     if (overrides == null) {

@@ -7,7 +7,7 @@
 
 include_defs("//COMPONENTS_DEFS")
 
-android_library(
+litho_android_library(
     name = "components",
     exported_deps = [
         COMPONENTS_STETHO_JAVA_TARGET,

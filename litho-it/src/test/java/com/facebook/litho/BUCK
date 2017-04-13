@@ -51,7 +51,7 @@ components_robolectric_test(
     ],
 )
 
-android_library(
+litho_android_library(
     name = "testutil",
     srcs = [
         "TouchExpansionTestInternalNode.java",

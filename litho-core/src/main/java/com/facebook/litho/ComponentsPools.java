@@ -38,9 +38,6 @@ import com.facebook.yoga.YogaConfig;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaExperimentalFeature;
 import com.facebook.yoga.YogaNode;
-import com.facebook.yoga.YogaNodeAPI;
-import com.facebook.yoga.CSSNodeDEPRECATED;
-import com.facebook.yoga.Spacing;
 
 import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 
@@ -75,7 +72,7 @@ public class ComponentsPools {
   private static final Pools.SynchronizedPool<ViewNodeInfo> sViewNodeInfoPool =
       new Pools.SynchronizedPool<>(64);
 
-  private static final Pools.SynchronizedPool<YogaNodeAPI> sYogaNodePool =
+  private static final Pools.SynchronizedPool<YogaNode> sYogaNodePool =
       new Pools.SynchronizedPool<>(256);
 
   private static final Pools.SynchronizedPool<MountItem> sMountItemPool =
@@ -124,7 +121,7 @@ public class ComponentsPools {
   private static final Pools.SynchronizedPool<Rect> sRectPool =
       new Pools.SynchronizedPool<>(30);
 
-  private static final Pools.SynchronizedPool<Spacing> sSpacingPool =
+  private static final Pools.SynchronizedPool<Edges> sEdgesPool =
       new Pools.SynchronizedPool<>(30);
 
   private static final Pools.SynchronizedPool<TransitionContext> sTransitionContextPool =
@@ -158,14 +155,6 @@ public class ComponentsPools {
    */
   static boolean sIsManualCallbacks;
 
-  /**
-   * Local cache of ComponentsConfiguration.shouldUseCSSNodeJNI which ensures
-   * the value is only read once.
-   * Once any InternalNode uses any of CSSNodeDEPRECATED or
-   * YogaNode all future InternalNodes must do the same as to not mix and match.
-   */
-  private static Boolean sShouldUseCSSNodeJNI = null;
-
   static LayoutState acquireLayoutState(ComponentContext context) {
     LayoutState state = ComponentsConfiguration.usePooling ? sLayoutStatePool.acquire() : null;
     if (state == null) {
@@ -176,23 +165,15 @@ public class ComponentsPools {
     return state;
   }
 
-  static synchronized YogaNodeAPI acquireYogaNode() {
-    YogaNodeAPI node = ComponentsConfiguration.usePooling ? sYogaNodePool.acquire() : null;
+  static synchronized YogaNode acquireYogaNode() {
+    YogaNode node = ComponentsConfiguration.usePooling ? sYogaNodePool.acquire() : null;
     if (node == null) {
-      if (sShouldUseCSSNodeJNI == null) {
-        sShouldUseCSSNodeJNI = ComponentsConfiguration.shouldUseCSSNodeJNI;
+      if (sYogaConfig == null) {
+        sYogaConfig = new YogaConfig();
+        sYogaConfig.setUseWebDefaults(true);
+        sYogaConfig.setExperimentalFeatureEnabled(YogaExperimentalFeature.ROUNDING, true);
       }
-
-      if (sShouldUseCSSNodeJNI) {
-        if (sYogaConfig == null) {
-          sYogaConfig = new YogaConfig();
-          sYogaConfig.setUseWebDefaults(true);
-          sYogaConfig.setExperimentalFeatureEnabled(YogaExperimentalFeature.ROUNDING, true);
-        }
-        node = new YogaNode(sYogaConfig);
-      } else {
-        node = new CSSNodeDEPRECATED();
-      }
+      node = new YogaNode(sYogaConfig);
     }
 
     return node;
@@ -507,7 +488,7 @@ public class ComponentsPools {
   }
 
   @ThreadSafe(enableChecks = false)
-  static void release(YogaNodeAPI node) {
+  static void release(YogaNode node) {
     if (!ComponentsConfiguration.usePooling) {
       return;
     }
@@ -745,22 +726,22 @@ public class ComponentsPools {
     sRectPool.release(rect);
   }
 
-  static Spacing acquireSpacing() {
-    Spacing spacing = ComponentsConfiguration.usePooling ? sSpacingPool.acquire() : null;
+  static Edges acquireEdges() {
+    Edges spacing = ComponentsConfiguration.usePooling ? sEdgesPool.acquire() : null;
     if (spacing == null) {
-      spacing = new Spacing();
+      spacing = new Edges();
     }
 
     return spacing;
   }
 
   @ThreadSafe(enableChecks = false)
-  static void release(Spacing spacing) {
+  static void release(Edges edges) {
     if (!ComponentsConfiguration.usePooling) {
       return;
     }
-    spacing.reset();
-    sSpacingPool.release(spacing);
+    edges.reset();
+    sEdgesPool.release(edges);
   }
 
   /**

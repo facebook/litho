@@ -41,7 +41,6 @@ COMPONENTS_ANDROIDSUPPORT_APPCOMPAT_TARGET    = make_dep_path('lib/appcompat:app
 COMPONENTS_YOGA_TARGET                        = make_dep_path('lib/yoga:yoga')
 COMPONENTS_YOGAPREBUILT_TARGET                = make_dep_path('lib/yoga:yoga-prebuilt')
 COMPONENTS_BUILD_CONFIG_TARGET                = make_dep_path(':build_config')
-COMPONENTS_CSSLAYOUT_TARGET                   = make_dep_path('lib/CSSLayoutDEPRECATED-TOREMOVE:CSSLayoutDEPRECATED')
 COMPONENTS_STETHO_TARGET                      = make_dep_path('lib/stetho:stetho')
 COMPONENTS_COMMONS_CLI_TARGET                 = make_dep_path('lib/commons-cli:commons-cli')
 COMPONENTS_TEXTLAYOUTBUILDER_TARGET           = make_dep_path('lib/textlayoutbuilder:textlayoutbuilder')
@@ -121,3 +120,6 @@ def components_robolectric_test(
           srcs=[src],
           *args,
           **kwargs)
+
+def litho_android_library(*args, **kwargs):
+  android_library(*args, **kwargs)

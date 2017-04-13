@@ -53,7 +53,7 @@ remote_file(
     url = "mvn:com.facebook.litho:litho-widget:aar:0.1.0",
 )
 
-android_library(
+litho_android_library(
     ...
     # Your target here
     ...

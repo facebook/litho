@@ -15,7 +15,7 @@ import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureOutput;
-import com.facebook.yoga.YogaNodeAPI;
+import com.facebook.yoga.YogaNode;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -48,8 +48,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
     InternalNode.class,
     DiffNode.class,
     LayoutState.class,
-    ComponentsPools.class,
-    YogaNodeAPI.class})
+    ComponentsPools.class})
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
 @RunWith(ComponentsTestRunner.class)
 public class ComponentLifecycleTest {
@@ -72,9 +71,9 @@ public class ComponentLifecycleTest {
   public void setUp() {
     mDiffNode = mock(DiffNode.class);
     mNode = mock(InternalNode.class);
-    final YogaNodeAPI cssNode = mock(YogaNodeAPI.class);
-    Whitebox.setInternalState(mNode, "mYogaNode", cssNode);
-    when(cssNode.getData()).thenReturn(mNode);
+    final YogaNode cssNode = new YogaNode();
+    cssNode.setData(mNode);
+    mNode.mYogaNode = cssNode;
 
     mockStatic(ComponentsPools.class);
 

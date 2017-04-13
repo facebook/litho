@@ -15,7 +15,7 @@ import android.support.annotation.StyleRes;
 
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureFunction;
-import com.facebook.yoga.YogaNodeAPI;
+import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaMeasureOutput;
 
 /**
@@ -27,7 +27,7 @@ class TestComponentContext extends ComponentContext {
   private static final YogaMeasureFunction FAKE_MEASURE_FUNCTION = new YogaMeasureFunction() {
     @Override
     public long measure(
-        YogaNodeAPI cssNode,
+        YogaNode cssNode,
         float width,
         YogaMeasureMode widthMode,
         float height,

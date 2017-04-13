@@ -31,7 +31,7 @@ import com.facebook.yoga.YogaWrap;
 import com.facebook.yoga.YogaEdge;
 
 import com.facebook.litho.reference.Reference;
-import com.facebook.yoga.YogaNodeAPI;
+import com.facebook.yoga.YogaNode;
 
 import static android.support.annotation.Dimension.DP;
 
@@ -42,7 +42,7 @@ import static android.support.annotation.Dimension.DP;
 class NoOpInternalNode extends InternalNode {
 
   @Override
-  void init(YogaNodeAPI cssNode, ComponentContext componentContext, Resources resources) {}
+  void init(YogaNode cssNode, ComponentContext componentContext, Resources resources) {}
 
   @Override
   void appendComponent(Component component) {

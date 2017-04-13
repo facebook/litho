@@ -31,7 +31,7 @@ remote_file(
     url = "mvn:com.facebook.fresco:drawee:aar:1.1.0",
 )
 
-android_library(
+litho_android_library(
     name = "imagepipeline",
     exported_deps = [
         ":bolts",

@@ -39,7 +39,7 @@ java_library(
     ],
 )
 
-android_library(
+litho_android_library(
     name = "android-support-recyclerview",
     exported_deps = [
         ":android-support-recyclerview-aar",

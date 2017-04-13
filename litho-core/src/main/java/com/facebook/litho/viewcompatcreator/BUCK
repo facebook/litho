@@ -5,7 +5,9 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
-android_library(
+include_defs("//COMPONENTS_DEFS")
+
+litho_android_library(
     name = "viewcompatcreator",
     srcs = glob(["**/*.java"]),
     visibility = [

@@ -6,7 +6,7 @@
 
 include_defs("//COMPONENTS_DEFS")
 
-android_library(
+litho_android_library(
     name = "lithobarebones",
     srcs = glob(["**/*.java"]),
     annotation_processor_deps = [

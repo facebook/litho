@@ -50,9 +50,7 @@ import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaNode;
-import com.facebook.yoga.YogaNodeAPI;
 import com.facebook.yoga.YogaOverflow;
-import com.facebook.yoga.Spacing;
 
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
@@ -144,7 +142,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   private final ResourceResolver mResourceResolver = new ResourceResolver();
 
-  YogaNodeAPI mYogaNode;
+  YogaNode mYogaNode;
   private ComponentContext mComponentContext;
   private Resources mResources;
   @ThreadConfined(ThreadConfined.ANY)
@@ -169,9 +167,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private EventHandler mFullImpressionHandler;
   private EventHandler mInvisibleHandler;
   private String mTestKey;
-  private Spacing mTouchExpansion;
-  private Spacing mNestedTreePadding;
-  private Spacing mNestedTreeBorderWidth;
+  private Edges mTouchExpansion;
+  private Edges mNestedTreePadding;
+  private Edges mNestedTreeBorderWidth;
   private boolean[] mIsPaddingPercent;
 
   private float mResolvedTouchExpansionLeft = YogaConstants.UNDEFINED;
@@ -190,12 +188,12 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private boolean mCachedMeasuresValid;
   private TreeProps mPendingTreeProps;
 
-  void init(YogaNodeAPI yogaNode, ComponentContext componentContext, Resources resources) {
+  void init(YogaNode yogaNode, ComponentContext componentContext, Resources resources) {
     yogaNode.setData(this);
     yogaNode.setOverflow(YogaOverflow.HIDDEN);
     yogaNode.setMeasureFunction(null);
 
-    // YogaNode is the only version of YogaNodeAPI with this support;
+    // YogaNode is the only version of YogaNode with this support;
     if (yogaNode instanceof YogaNode) {
       yogaNode.setBaselineFunction(null);
     }
@@ -553,10 +551,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
     if (mIsNestedTreeHolder) {
       if (mNestedTreePadding == null) {
-        mNestedTreePadding = ComponentsPools.acquireSpacing();
+        mNestedTreePadding = ComponentsPools.acquireEdges();
       }
 
-      mNestedTreePadding.set(edge.intValue(), padding);
+      mNestedTreePadding.set(edge, padding);
       setIsPaddingPercent(edge, false);
     } else {
       mYogaNode.setPadding(edge, padding);
@@ -571,10 +569,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
     if (mIsNestedTreeHolder) {
       if (mNestedTreePadding == null) {
-        mNestedTreePadding = ComponentsPools.acquireSpacing();
+        mNestedTreePadding = ComponentsPools.acquireEdges();
       }
 
-      mNestedTreePadding.set(edge.intValue(), percent);
+      mNestedTreePadding.set(edge, percent);
       setIsPaddingPercent(edge, true);
     } else {
       mYogaNode.setPaddingPercent(edge, percent);
@@ -614,10 +612,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
     if (mIsNestedTreeHolder) {
       if (mNestedTreeBorderWidth == null) {
-        mNestedTreeBorderWidth = ComponentsPools.acquireSpacing();
+        mNestedTreeBorderWidth = ComponentsPools.acquireEdges();
       }
 
-      mNestedTreeBorderWidth.set(edge.intValue(), borderWidth);
+      mNestedTreeBorderWidth.set(edge, borderWidth);
     } else {
       mYogaNode.setBorder(edge, borderWidth);
     }
@@ -918,7 +916,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   public InternalNode aspectRatio(float aspectRatio) {
     mPrivateFlags |= PFLAG_ASPECT_RATIO_IS_SET;
     if (mYogaNode instanceof YogaNode) {
-      ((YogaNode) mYogaNode).setAspectRatio(aspectRatio);
+      mYogaNode.setAspectRatio(aspectRatio);
       return this;
     } else {
       throw new IllegalStateException("Aspect ration requires using YogaNode not YogaNodeDEPRECATED");
@@ -933,7 +931,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return ((mPrivateFlags & PFLAG_TOUCH_EXPANSION_IS_SET) != 0L);
   }
 
-  Spacing getTouchExpansion() {
+  Edges getTouchExpansion() {
     return mTouchExpansion;
   }
 
@@ -943,7 +941,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     }
 
     if (YogaConstants.isUndefined(mResolvedTouchExpansionLeft)) {
-      mResolvedTouchExpansionLeft = resolveHorizontalSpacing(mTouchExpansion, Spacing.LEFT);
+      mResolvedTouchExpansionLeft = resolveHorizontalEdges(mTouchExpansion, YogaEdge.LEFT);
     }
 
     return FastMath.round(mResolvedTouchExpansionLeft);
@@ -954,7 +952,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       return 0;
     }
 
-    return FastMath.round(mTouchExpansion.get(Spacing.TOP));
+    return FastMath.round(mTouchExpansion.get(YogaEdge.TOP));
   }
 
   int getTouchExpansionRight() {
@@ -963,7 +961,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     }
 
     if (YogaConstants.isUndefined(mResolvedTouchExpansionRight)) {
-      mResolvedTouchExpansionRight = resolveHorizontalSpacing(mTouchExpansion, Spacing.RIGHT);
+      mResolvedTouchExpansionRight = resolveHorizontalEdges(mTouchExpansion, YogaEdge.RIGHT);
     }
 
     return FastMath.round(mResolvedTouchExpansionRight);
@@ -974,17 +972,17 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       return 0;
     }
 
-    return FastMath.round(mTouchExpansion.get(Spacing.BOTTOM));
+    return FastMath.round(mTouchExpansion.get(YogaEdge.BOTTOM));
   }
 
   @Override
   public InternalNode touchExpansionPx(YogaEdge edge, @Px int touchExpansion) {
     if (mTouchExpansion == null) {
-      mTouchExpansion = ComponentsPools.acquireSpacing();
+      mTouchExpansion = ComponentsPools.acquireEdges();
     }
 
     mPrivateFlags |= PFLAG_TOUCH_EXPANSION_IS_SET;
-    mTouchExpansion.set(edge.intValue(), touchExpansion);
+    mTouchExpansion.set(edge, touchExpansion);
 
     return this;
   }
@@ -1359,7 +1357,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   void setBaselineFunction(YogaBaselineFunction baselineFunction) {
-    // YogaNode is the only version of YogaNodeAPI with this support;
+    // YogaNode is the only version of YogaNode with this support;
     if (mYogaNode instanceof YogaNode) {
       mYogaNode.setBaselineFunction(baselineFunction);
     }
@@ -1469,27 +1467,27 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return this;
   }
 
-  private float resolveHorizontalSpacing(Spacing spacing, int index) {
+  private float resolveHorizontalEdges(Edges spacing, YogaEdge edge) {
     final boolean isRtl =
         (mYogaNode.getLayoutDirection() == YogaDirection.RTL);
 
-    final int resolvedIndex;
-    switch (index) {
-      case Spacing.LEFT:
-        resolvedIndex = (isRtl ? Spacing.END : Spacing.START);
+    final YogaEdge resolvedEdge;
+    switch (edge) {
+      case LEFT:
+        resolvedEdge = (isRtl ? YogaEdge.END : YogaEdge.START);
         break;
 
-      case Spacing.RIGHT:
-        resolvedIndex = (isRtl ? Spacing.START : Spacing.END);
+      case RIGHT:
+        resolvedEdge = (isRtl ? YogaEdge.START : YogaEdge.END);
         break;
 
       default:
-        throw new IllegalArgumentException("Not an horizontal padding index: " + index);
+        throw new IllegalArgumentException("Not an horizontal padding edge: " + edge);
     }
 
-    float result = spacing.getRaw(resolvedIndex);
+    float result = spacing.getRaw(resolvedEdge);
     if (YogaConstants.isUndefined(result)) {
-      result = spacing.get(index);
+      result = spacing.get(edge);
     }
 
     return result;
@@ -1613,61 +1611,61 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
             "If padding was set on the holder node, we must have a mNestedTreePadding instance");
       }
 
-      final YogaNodeAPI yogaNode = node.mYogaNode;
+      final YogaNode yogaNode = node.mYogaNode;
 
       node.mPrivateFlags |= PFLAG_PADDING_IS_SET;
       if (isPaddingPercent(LEFT)) {
-        yogaNode.setPaddingPercent(LEFT, mNestedTreePadding.getRaw(Spacing.LEFT));
+        yogaNode.setPaddingPercent(LEFT, mNestedTreePadding.getRaw(YogaEdge.LEFT));
       } else {
-        yogaNode.setPadding(LEFT, mNestedTreePadding.getRaw(Spacing.LEFT));
+        yogaNode.setPadding(LEFT, mNestedTreePadding.getRaw(YogaEdge.LEFT));
       }
 
       if (isPaddingPercent(TOP)) {
-        yogaNode.setPaddingPercent(TOP, mNestedTreePadding.getRaw(Spacing.TOP));
+        yogaNode.setPaddingPercent(TOP, mNestedTreePadding.getRaw(YogaEdge.TOP));
       } else {
-        yogaNode.setPadding(TOP, mNestedTreePadding.getRaw(Spacing.TOP));
+        yogaNode.setPadding(TOP, mNestedTreePadding.getRaw(YogaEdge.TOP));
       }
 
       if (isPaddingPercent(RIGHT)) {
-        yogaNode.setPaddingPercent(RIGHT, mNestedTreePadding.getRaw(Spacing.RIGHT));
+        yogaNode.setPaddingPercent(RIGHT, mNestedTreePadding.getRaw(YogaEdge.RIGHT));
       } else {
-        yogaNode.setPadding(RIGHT, mNestedTreePadding.getRaw(Spacing.RIGHT));
+        yogaNode.setPadding(RIGHT, mNestedTreePadding.getRaw(YogaEdge.RIGHT));
       }
 
       if (isPaddingPercent(BOTTOM)) {
-        yogaNode.setPaddingPercent(BOTTOM, mNestedTreePadding.getRaw(Spacing.BOTTOM));
+        yogaNode.setPaddingPercent(BOTTOM, mNestedTreePadding.getRaw(YogaEdge.BOTTOM));
       } else {
-        yogaNode.setPadding(BOTTOM, mNestedTreePadding.getRaw(Spacing.BOTTOM));
+        yogaNode.setPadding(BOTTOM, mNestedTreePadding.getRaw(YogaEdge.BOTTOM));
       }
 
       if (isPaddingPercent(VERTICAL)) {
-        yogaNode.setPaddingPercent(VERTICAL, mNestedTreePadding.getRaw(Spacing.VERTICAL));
+        yogaNode.setPaddingPercent(VERTICAL, mNestedTreePadding.getRaw(YogaEdge.VERTICAL));
       } else {
-        yogaNode.setPadding(VERTICAL, mNestedTreePadding.getRaw(Spacing.VERTICAL));
+        yogaNode.setPadding(VERTICAL, mNestedTreePadding.getRaw(YogaEdge.VERTICAL));
       }
 
       if (isPaddingPercent(HORIZONTAL)) {
-        yogaNode.setPaddingPercent(HORIZONTAL, mNestedTreePadding.getRaw(Spacing.HORIZONTAL));
+        yogaNode.setPaddingPercent(HORIZONTAL, mNestedTreePadding.getRaw(YogaEdge.HORIZONTAL));
       } else {
-        yogaNode.setPadding(HORIZONTAL, mNestedTreePadding.getRaw(Spacing.HORIZONTAL));
+        yogaNode.setPadding(HORIZONTAL, mNestedTreePadding.getRaw(YogaEdge.HORIZONTAL));
       }
 
       if (isPaddingPercent(START)) {
-        yogaNode.setPaddingPercent(START, mNestedTreePadding.getRaw(Spacing.START));
+        yogaNode.setPaddingPercent(START, mNestedTreePadding.getRaw(YogaEdge.START));
       } else {
-        yogaNode.setPadding(START, mNestedTreePadding.getRaw(Spacing.START));
+        yogaNode.setPadding(START, mNestedTreePadding.getRaw(YogaEdge.START));
       }
 
       if (isPaddingPercent(END)) {
-        yogaNode.setPaddingPercent(END, mNestedTreePadding.getRaw(Spacing.END));
+        yogaNode.setPaddingPercent(END, mNestedTreePadding.getRaw(YogaEdge.END));
       } else {
-        yogaNode.setPadding(END, mNestedTreePadding.getRaw(Spacing.END));
+        yogaNode.setPadding(END, mNestedTreePadding.getRaw(YogaEdge.END));
       }
 
       if (isPaddingPercent(ALL)) {
-        yogaNode.setPaddingPercent(ALL, mNestedTreePadding.getRaw(Spacing.ALL));
+        yogaNode.setPaddingPercent(ALL, mNestedTreePadding.getRaw(YogaEdge.ALL));
       } else {
-        yogaNode.setPadding(ALL, mNestedTreePadding.getRaw(Spacing.ALL));
+        yogaNode.setPadding(ALL, mNestedTreePadding.getRaw(YogaEdge.ALL));
       }
     }
 
@@ -1678,18 +1676,18 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
             "instance");
       }
 
-      final YogaNodeAPI yogaNode = node.mYogaNode;
+      final YogaNode yogaNode = node.mYogaNode;
 
       node.mPrivateFlags |= PFLAG_BORDER_WIDTH_IS_SET;
-      yogaNode.setBorder(LEFT, mNestedTreeBorderWidth.getRaw(Spacing.LEFT));
-      yogaNode.setBorder(TOP, mNestedTreeBorderWidth.getRaw(Spacing.TOP));
-      yogaNode.setBorder(RIGHT, mNestedTreeBorderWidth.getRaw(Spacing.RIGHT));
-      yogaNode.setBorder(BOTTOM, mNestedTreeBorderWidth.getRaw(Spacing.BOTTOM));
-      yogaNode.setBorder(VERTICAL, mNestedTreeBorderWidth.getRaw(Spacing.VERTICAL));
-      yogaNode.setBorder(HORIZONTAL, mNestedTreeBorderWidth.getRaw(Spacing.HORIZONTAL));
-      yogaNode.setBorder(START, mNestedTreeBorderWidth.getRaw(Spacing.START));
-      yogaNode.setBorder(END, mNestedTreeBorderWidth.getRaw(Spacing.END));
-      yogaNode.setBorder(ALL, mNestedTreeBorderWidth.getRaw(Spacing.ALL));
+      yogaNode.setBorder(LEFT, mNestedTreeBorderWidth.getRaw(YogaEdge.LEFT));
+      yogaNode.setBorder(TOP, mNestedTreeBorderWidth.getRaw(YogaEdge.TOP));
+      yogaNode.setBorder(RIGHT, mNestedTreeBorderWidth.getRaw(YogaEdge.RIGHT));
+      yogaNode.setBorder(BOTTOM, mNestedTreeBorderWidth.getRaw(YogaEdge.BOTTOM));
+      yogaNode.setBorder(VERTICAL, mNestedTreeBorderWidth.getRaw(YogaEdge.VERTICAL));
+      yogaNode.setBorder(HORIZONTAL, mNestedTreeBorderWidth.getRaw(YogaEdge.HORIZONTAL));
+      yogaNode.setBorder(START, mNestedTreeBorderWidth.getRaw(YogaEdge.START));
+      yogaNode.setBorder(END, mNestedTreeBorderWidth.getRaw(YogaEdge.END));
+      yogaNode.setBorder(ALL, mNestedTreeBorderWidth.getRaw(YogaEdge.ALL));
     }
     if ((mPrivateFlags & PFLAG_TRANSITION_KEY_IS_SET) != 0L) {
       node.mTransitionKey = mTransitionKey;
@@ -1942,7 +1940,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   private void setIsPaddingPercent(YogaEdge edge, boolean isPaddingPercent) {
     if (mIsPaddingPercent == null && isPaddingPercent) {
-      mIsPaddingPercent = new boolean[Spacing.ALL + 1];
+      mIsPaddingPercent = new boolean[YogaEdge.ALL.intValue() + 1];
     }
     if (mIsPaddingPercent != null) {
       mIsPaddingPercent[edge.intValue()] = isPaddingPercent;

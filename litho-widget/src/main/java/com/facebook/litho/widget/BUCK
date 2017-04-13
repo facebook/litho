@@ -7,7 +7,7 @@
 
 include_defs("//COMPONENTS_DEFS")
 
-android_library(
+litho_android_library(
     name = "widget",
     exported_deps = [
         COMPONENTS_TEXTLAYOUTBUILDER_TARGET,
@@ -18,7 +18,7 @@ android_library(
     ],
 )
 
-android_library(
+litho_android_library(
     name = "widget-bare",
     srcs = glob(["*.java"]),
     plugins = [

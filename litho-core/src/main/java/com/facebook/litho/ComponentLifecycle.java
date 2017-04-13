@@ -30,8 +30,8 @@ import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureFunction;
-import com.facebook.yoga.YogaNodeAPI;
 import com.facebook.yoga.YogaMeasureOutput;
+import com.facebook.yoga.YogaNode;
 
 /**
  * {@link ComponentLifecycle} is a stateless singleton object that defines how {@link Component}
@@ -57,7 +57,7 @@ public abstract class ComponentLifecycle implements EventDispatcher {
   public interface StateContainer {}
 
   private static final YogaBaselineFunction sBaselineFunction = new YogaBaselineFunction() {
-    public float baseline(YogaNodeAPI cssNode, float width, float height) {
+    public float baseline(YogaNode cssNode, float width, float height) {
       final InternalNode node = (InternalNode) cssNode.getData();
       return node.getRootComponent()
           .getLifecycle()
@@ -89,7 +89,7 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     @SuppressLint("WrongCall")
     @SuppressWarnings("unchecked")
     public long measure(
-        YogaNodeAPI cssNode,
+        YogaNode cssNode,
         float width,
         YogaMeasureMode widthMode,
         float height,
