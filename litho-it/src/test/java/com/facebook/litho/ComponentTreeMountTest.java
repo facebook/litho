@@ -45,21 +45,21 @@ public class ComponentTreeMountTest {
 
   @Test
   public void testRemountsWithNewInputOnSameLayout() {
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         mContext,
         TestDrawableComponent.create(mContext)
           .color(Color.BLACK)
           .build());
-    Shadows.shadowOf(componentView).callOnAttachedToWindow();
+    Shadows.shadowOf(lithoView).callOnAttachedToWindow();
 
-    assertEquals(1, componentView.getDrawables().size());
-    assertEquals(Color.BLACK, ((ColorDrawable) componentView.getDrawables().get(0)).getColor());
+    assertEquals(1, lithoView.getDrawables().size());
+    assertEquals(Color.BLACK, ((ColorDrawable) lithoView.getDrawables().get(0)).getColor());
 
-    componentView.getComponentTree().setRoot(
+    lithoView.getComponentTree().setRoot(
         TestDrawableComponent.create(mContext)
             .color(Color.YELLOW)
             .build());
-    assertEquals(1, componentView.getDrawables().size());
-    assertEquals(Color.YELLOW, ((ColorDrawable) componentView.getDrawables().get(0)).getColor());
+    assertEquals(1, lithoView.getDrawables().size());
+    assertEquals(Color.YELLOW, ((ColorDrawable) lithoView.getDrawables().get(0)).getColor());
   }
 }

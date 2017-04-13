@@ -97,8 +97,8 @@ public class StateUpdatesTestHelper {
         .layoutDiffing(false)
         .build();
 
-    final LithoView componentView = new LithoView(context);
-    ComponentTestHelper.mountComponent(componentView, componentTree);
+    final LithoView lithoView = new LithoView(context);
+    ComponentTestHelper.mountComponent(lithoView, componentTree);
 
     Whitebox.setInternalState(component, "mGlobalKey", "bogusKeyForTest");
     Whitebox.setInternalState(component, "mId", 457282882);
@@ -111,7 +111,7 @@ public class StateUpdatesTestHelper {
       looper.runToEndOfTasks();
     }
 
-    ComponentTestHelper.mountComponent(componentView, componentTree);
-    return componentView;
+    ComponentTestHelper.mountComponent(lithoView, componentTree);
+    return lithoView;
   }
 }

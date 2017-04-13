@@ -1484,8 +1484,8 @@ class MountState {
     assertMainThread();
 
     if (view instanceof LithoView) {
-      final LithoView componentView = (LithoView) view;
-      componentView.performIncrementalMount(localVisibleRect);
+      final LithoView lithoView = (LithoView) view;
+      lithoView.performIncrementalMount(localVisibleRect);
     } else if (view instanceof ViewGroup) {
       final ViewGroup viewGroup = (ViewGroup) view;
 

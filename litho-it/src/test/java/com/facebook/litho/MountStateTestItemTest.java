@@ -52,7 +52,7 @@ public class MountStateTestItemTest {
 
   @Test
   public void testInnerComponentHostViewTags() {
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -72,7 +72,7 @@ public class MountStateTestItemTest {
           }
         });
 
-    ComponentViewAssert.assertThat(componentView)
+    ComponentViewAssert.assertThat(lithoView)
         .containsTestKey(TEST_ID_1)
         .containsTestKey(TEST_ID_2)
         .doesNotContainTestKey(TEST_ID_3);
@@ -80,7 +80,7 @@ public class MountStateTestItemTest {
 
   @Test
   public void testMultipleIdenticalInnerComponentHostViewTags() {
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -100,14 +100,14 @@ public class MountStateTestItemTest {
           }
         });
 
-    ComponentViewAssert.assertThat(componentView)
+    ComponentViewAssert.assertThat(lithoView)
         .containsTestKey(TEST_ID_1, times(2))
         .doesNotContainTestKey(TEST_ID_2);
   }
 
   @Test
   public void testSkipInvalidTestKeys() {
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -131,7 +131,7 @@ public class MountStateTestItemTest {
           }
         });
 
-    ComponentViewAssert.assertThat(componentView)
+    ComponentViewAssert.assertThat(lithoView)
         .doesNotContainTestKey("")
         .doesNotContainTestKey(null)
         .containsTestKey(TEST_ID_1);
@@ -139,7 +139,7 @@ public class MountStateTestItemTest {
 
   @Test
   public void testTextItemTextContent() {
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -154,14 +154,14 @@ public class MountStateTestItemTest {
           }
         });
 
-    ComponentViewAssert.assertThat(componentView).containsTestKey(TEST_ID_1);
-    final TestItem item1 = ComponentViewTestHelper.findTestItem(componentView, TEST_ID_1);
+    ComponentViewAssert.assertThat(lithoView).containsTestKey(TEST_ID_1);
+    final TestItem item1 = ComponentViewTestHelper.findTestItem(lithoView, TEST_ID_1);
     assertThat(item1.getTextContent()).isEqualTo(MY_TEST_STRING_1);
   }
 
   @Test
   public void testMultipleTextItemsTextContents() {
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -181,16 +181,16 @@ public class MountStateTestItemTest {
           }
         });
 
-    ComponentViewAssert.assertThat(componentView).containsTestKey(TEST_ID_1);
-    final TestItem item1 = ComponentViewTestHelper.findTestItem(componentView, TEST_ID_1);
+    ComponentViewAssert.assertThat(lithoView).containsTestKey(TEST_ID_1);
+    final TestItem item1 = ComponentViewTestHelper.findTestItem(lithoView, TEST_ID_1);
     assertThat(item1.getTextContent()).isEqualTo(MY_TEST_STRING_1);
-    final TestItem item2 = ComponentViewTestHelper.findTestItem(componentView, TEST_ID_2);
+    final TestItem item2 = ComponentViewTestHelper.findTestItem(lithoView, TEST_ID_2);
     assertThat(item2.getTextContent()).isEqualTo(MY_TEST_STRING_2);
   }
 
   @Test
   public void testTextItemsWithClickHandler() {
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -211,10 +211,10 @@ public class MountStateTestItemTest {
           }
         });
 
-    ComponentViewAssert.assertThat(componentView).containsTestKey(TEST_ID_1);
-    final TestItem item1 = ComponentViewTestHelper.findTestItem(componentView, TEST_ID_1);
+    ComponentViewAssert.assertThat(lithoView).containsTestKey(TEST_ID_1);
+    final TestItem item1 = ComponentViewTestHelper.findTestItem(lithoView, TEST_ID_1);
     assertThat(item1.getTextContent()).isEqualTo(MY_TEST_STRING_1);
-    final TestItem item2 = ComponentViewTestHelper.findTestItem(componentView, TEST_ID_2);
+    final TestItem item2 = ComponentViewTestHelper.findTestItem(lithoView, TEST_ID_2);
     assertThat(item2.getTextContent()).isEqualTo(MY_TEST_STRING_2);
   }
 }

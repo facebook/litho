@@ -78,10 +78,10 @@ public class LithoView extends ComponentHost {
    * @return {@link LithoView} able to render a {@link Component} hierarchy.
    */
   public static LithoView create(ComponentContext context, Component component) {
-    final LithoView componentView = new LithoView(context);
-    componentView.setComponentTree(ComponentTree.create(context, component).build());
+    final LithoView lithoView = new LithoView(context);
+    lithoView.setComponentTree(ComponentTree.create(context, component).build());
 
-    return componentView;
+    return lithoView;
   }
 
   public LithoView(Context context) {

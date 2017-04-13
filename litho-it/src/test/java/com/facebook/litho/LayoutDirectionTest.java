@@ -62,7 +62,7 @@ public class LayoutDirectionTest {
         TestViewComponent.create(mContext, true, true, true, false)
             .build();
 
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
               @Override
@@ -83,8 +83,8 @@ public class LayoutDirectionTest {
         20,
         10);
 
-    View view1 = componentView.getChildAt(0);
-    View view2 = componentView.getChildAt(1);
+    View view1 = lithoView.getChildAt(0);
+    View view2 = lithoView.getChildAt(1);
 
     assertEquals(
         new Rect(0, 0, 10, 10),
@@ -104,7 +104,7 @@ public class LayoutDirectionTest {
 
     ComponentTestHelper.mountComponent(
         mContext,
-        componentView,
+        lithoView,
         new InlineLayoutSpec() {
               @Override
               protected ComponentLayout onCreateLayout(ComponentContext c) {
@@ -124,8 +124,8 @@ public class LayoutDirectionTest {
         20,
         10);
 
-    view1 = componentView.getChildAt(0);
-    view2 = componentView.getChildAt(1);
+    view1 = lithoView.getChildAt(0);
+    view2 = lithoView.getChildAt(1);
 
     assertEquals(
         new Rect(10, 0, 20, 10),
@@ -155,7 +155,7 @@ public class LayoutDirectionTest {
     final TestComponent child2 = TestDrawableComponent.create(mContext)
         .build();
 
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
               @Override
@@ -176,15 +176,15 @@ public class LayoutDirectionTest {
         20,
         10);
 
-    Drawable drawable1 = componentView.getDrawables().get(0);
-    Drawable drawable2 = componentView.getDrawables().get(1);
+    Drawable drawable1 = lithoView.getDrawables().get(0);
+    Drawable drawable2 = lithoView.getDrawables().get(1);
 
     assertEquals(new Rect(0, 0, 10, 10), drawable1.getBounds());
     assertEquals(new Rect(10, 0, 20, 10), drawable2.getBounds());
 
     ComponentTestHelper.mountComponent(
         mContext,
-        componentView,
+        lithoView,
         new InlineLayoutSpec() {
               @Override
               protected ComponentLayout onCreateLayout(ComponentContext c) {
@@ -204,8 +204,8 @@ public class LayoutDirectionTest {
         20,
         10);
 
-    drawable1 = componentView.getDrawables().get(0);
-    drawable2 = componentView.getDrawables().get(1);
+    drawable1 = lithoView.getDrawables().get(0);
+    drawable2 = lithoView.getDrawables().get(1);
 
     assertEquals(new Rect(10, 0, 20, 10), drawable1.getBounds());
     assertEquals(new Rect(0, 0, 10, 10), drawable2.getBounds());
@@ -222,7 +222,7 @@ public class LayoutDirectionTest {
     final TestComponent child2 = TestDrawableComponent.create(mContext)
         .build();
 
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
               @Override
@@ -246,7 +246,7 @@ public class LayoutDirectionTest {
         20,
         10);
 
-    final ComponentHost host = (ComponentHost) componentView.getChildAt(0);
+    final ComponentHost host = (ComponentHost) lithoView.getChildAt(0);
     final Drawable drawable1 = host.getDrawables().get(0);
     final Drawable drawable2 = host.getDrawables().get(1);
 
@@ -265,7 +265,7 @@ public class LayoutDirectionTest {
     final TestComponent child2 = TestDrawableComponent.create(mContext)
         .build();
 
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
               @Override
@@ -290,7 +290,7 @@ public class LayoutDirectionTest {
         20,
         10);
 
-    final ComponentHost host = (ComponentHost) componentView.getChildAt(0);
+    final ComponentHost host = (ComponentHost) lithoView.getChildAt(0);
     final Drawable drawable1 = host.getDrawables().get(0);
     final Drawable drawable2 = host.getDrawables().get(1);
 
@@ -307,7 +307,7 @@ public class LayoutDirectionTest {
     final TestComponent child = TestDrawableComponent.create(mContext)
         .build();
 
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
               @Override
@@ -326,12 +326,12 @@ public class LayoutDirectionTest {
         40,
         10);
 
-    Drawable drawable = componentView.getDrawables().get(0);
+    Drawable drawable = lithoView.getDrawables().get(0);
     assertEquals(new Rect(10, 0, 20, 10), drawable.getBounds());
 
     ComponentTestHelper.mountComponent(
         mContext,
-        componentView,
+        lithoView,
         new InlineLayoutSpec() {
               @Override
               protected ComponentLayout onCreateLayout(ComponentContext c) {
@@ -349,7 +349,7 @@ public class LayoutDirectionTest {
         40,
         10);
 
-    drawable = componentView.getDrawables().get(0);
+    drawable = lithoView.getDrawables().get(0);
     assertEquals(new Rect(20, 0, 30, 10), drawable.getBounds());
   }
 
@@ -362,7 +362,7 @@ public class LayoutDirectionTest {
     final TestComponent child = TestDrawableComponent.create(mContext)
         .build();
 
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
               @Override
@@ -381,12 +381,12 @@ public class LayoutDirectionTest {
         40,
         10);
 
-    Drawable drawable = componentView.getDrawables().get(0);
+    Drawable drawable = lithoView.getDrawables().get(0);
     assertEquals(new Rect(10, 0, 20, 10), drawable.getBounds());
 
     ComponentTestHelper.mountComponent(
         mContext,
-        componentView,
+        lithoView,
         new InlineLayoutSpec() {
               @Override
               protected ComponentLayout onCreateLayout(ComponentContext c) {
@@ -404,7 +404,7 @@ public class LayoutDirectionTest {
         40,
         10);
 
-    drawable = componentView.getDrawables().get(0);
+    drawable = lithoView.getDrawables().get(0);
     assertEquals(new Rect(20, 0, 30, 10), drawable.getBounds());
   }
 
@@ -417,7 +417,7 @@ public class LayoutDirectionTest {
     final TestComponent child = TestViewComponent.create(mContext)
         .build();
 
-    LithoView componentView = ComponentTestHelper.mountComponent(
+    LithoView lithoView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -429,7 +429,7 @@ public class LayoutDirectionTest {
           }
         });
 
-    final View childView = componentView.getChildAt(0);
+    final View childView = lithoView.getChildAt(0);
     assertEquals(View.LAYOUT_DIRECTION_RTL, childView.getLayoutDirection());
   }
 }

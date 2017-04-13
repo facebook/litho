@@ -101,22 +101,22 @@ public final class ComponentTestHelper {
    * Mount a component into a component view.
    *
    * @param context A components context
-   * @param componentView The view to mount the component into
+   * @param lithoView The view to mount the component into
    * @param component The component to mount
    * @return A LithoView with the component mounted in it.
    */
   public static LithoView mountComponent(
       ComponentContext context,
-      LithoView componentView,
+      LithoView lithoView,
       Component component) {
-    return mountComponent(context, componentView, component, 100, 100);
+    return mountComponent(context, lithoView, component, 100, 100);
   }
 
   /**
    * Mount a component into a component view.
    *
    * @param context A components context
-   * @param componentView The view to mount the component into
+   * @param lithoView The view to mount the component into
    * @param component The component to mount
    * @param width The width of the resulting view
    * @param height The height of the resulting view
@@ -124,13 +124,13 @@ public final class ComponentTestHelper {
    */
   public static LithoView mountComponent(
       ComponentContext context,
-      LithoView componentView,
+      LithoView lithoView,
       Component component,
       int width,
       int height) {
     return mountComponent(
         context,
-        componentView,
+        lithoView,
         component,
         false,
         width,
@@ -141,7 +141,7 @@ public final class ComponentTestHelper {
    * Mount a component into a component view.
    *
    * @param context A components context
-   * @param componentView The view to mount the component into
+   * @param lithoView The view to mount the component into
    * @param component The component to mount
    * @param incrementalMountEnabled States whether incremental mount is enabled
    * @param width The width of the resulting view
@@ -150,13 +150,13 @@ public final class ComponentTestHelper {
    */
   public static LithoView mountComponent(
       ComponentContext context,
-      LithoView componentView,
+      LithoView lithoView,
       Component component,
       boolean incrementalMountEnabled,
       int width,
       int height) {
     return mountComponent(
-        componentView,
+        lithoView,
         ComponentTree.create(context, component)
             .incrementalMount(incrementalMountEnabled)
             .layoutDiffing(false)
@@ -168,15 +168,15 @@ public final class ComponentTestHelper {
   /**
    * Mount a component tree into a component view.
    *
-   * @param componentView The view to mount the component tree into
+   * @param lithoView The view to mount the component tree into
    * @param componentTree The component tree to mount
    * @return A LithoView with the component tree mounted in it.
    */
   public static LithoView mountComponent(
-      LithoView componentView,
+      LithoView lithoView,
       ComponentTree componentTree) {
     return mountComponent(
-        componentView,
+        lithoView,
         componentTree,
         makeMeasureSpec(100, EXACTLY),
         makeMeasureSpec(100, EXACTLY));
@@ -185,41 +185,41 @@ public final class ComponentTestHelper {
   /**
    * Mount a component tree into a component view.
    *
-   * @param componentView The view to mount the component tree into
+   * @param lithoView The view to mount the component tree into
    * @param componentTree The component tree to mount
    * @param widthSpec The width spec used to measure the resulting view
    * @param heightSpec The height spec used to measure the resulting view
    * @return A LithoView with the component tree mounted in it.
    */
   public static LithoView mountComponent(
-      LithoView componentView,
+      LithoView lithoView,
       ComponentTree componentTree,
       int widthSpec,
       int heightSpec) {
-    componentView.setComponentTree(componentTree);
+    lithoView.setComponentTree(componentTree);
 
     try {
-      Whitebox.invokeMethod(componentView, "onAttach");
+      Whitebox.invokeMethod(lithoView, "onAttach");
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
 
-    componentView.measure(widthSpec, heightSpec);
-    componentView.layout(
+    lithoView.measure(widthSpec, heightSpec);
+    lithoView.layout(
         0,
         0,
-        componentView.getMeasuredWidth(),
-        componentView.getMeasuredHeight());
+        lithoView.getMeasuredWidth(),
+        lithoView.getMeasuredHeight());
 
-    return componentView;
+    return lithoView;
   }
 
   /**
    * Unmounts a component tree from a component view.
-   * @param componentView the view to unmount
+   * @param lithoView the view to unmount
    */
-  public static void unmountComponent(LithoView componentView) {
-    if (!componentView.isIncrementalMountEnabled()) {
+  public static void unmountComponent(LithoView lithoView) {
+    if (!lithoView.isIncrementalMountEnabled()) {
       throw new IllegalArgumentException(
           "In order to test unmounting a Component, it needs to be mounted with " +
               "incremental mount enabled. Please use a mountComponent() variation that " +
@@ -229,17 +229,17 @@ public final class ComponentTestHelper {
     // Unmounting the component by running incremental mount to a Rect that we certain won't
     // contain the component.
     Rect rect = new Rect(99999, 99999, 999999, 999999);
-    componentView.performIncrementalMount(rect);
+    lithoView.performIncrementalMount(rect);
   }
 
   /**
    * Unbinds a component tree from a component view.
    *
-   * @param componentView The view to unbind.
+   * @param lithoView The view to unbind.
    */
-  public static void unbindComponent(LithoView componentView) {
+  public static void unbindComponent(LithoView lithoView) {
     try {
-      Whitebox.invokeMethod(componentView, "onDetach");
+      Whitebox.invokeMethod(lithoView, "onDetach");
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -304,11 +304,11 @@ public final class ComponentTestHelper {
             .incrementalMount(false)
             .build();
 
-    final LithoView componentView = new LithoView(context);
-    componentView.setComponentTree(componentTree);
+    final LithoView lithoView = new LithoView(context);
+    lithoView.setComponentTree(componentTree);
 
-    componentView.measure(widthSpec, heightSpec);
-    componentView.layout(0, 0, componentView.getMeasuredWidth(), componentView.getMeasuredHeight());
+    lithoView.measure(widthSpec, heightSpec);
+    lithoView.layout(0, 0, lithoView.getMeasuredWidth(), lithoView.getMeasuredHeight());
 
     final List<Component> components = componentTree.getSubComponents();
     final List<SubComponent> subComponents = new ArrayList<>(components.size());
@@ -369,17 +369,17 @@ public final class ComponentTestHelper {
       ComponentContext context,
       EventHandler onVisibleHandler,
       Component component) {
-    LithoView componentView = new LithoView(context);
+    LithoView lithoView = new LithoView(context);
 
     mountComponent(
-        componentView,
+        lithoView,
         ComponentTree.create(context, component)
             .layoutDiffing(false)
             .build(),
         makeMeasureSpec(100, EXACTLY),
         makeMeasureSpec(100, EXACTLY));
 
-    componentView.performIncrementalMount();
+    lithoView.performIncrementalMount();
 
     try {
       Whitebox.invokeMethod(component.getLifecycle(), "dispatchOnVisible", onVisibleHandler);
@@ -387,7 +387,7 @@ public final class ComponentTestHelper {
       throw new RuntimeException(e);
     }
 
-    return componentView;
+    return lithoView;
   }
 
   /**

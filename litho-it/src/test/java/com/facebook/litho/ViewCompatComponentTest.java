@@ -64,13 +64,13 @@ public class ViewCompatComponentTest {
           }
         };
 
-    LithoView componentView = ComponentTestHelper.mountComponent(
+    LithoView lithoView = ComponentTestHelper.mountComponent(
         ViewCompatComponent.get(TEXT_VIEW_CREATOR, "TextView")
             .create(mContext)
             .viewBinder(binder));
 
-    assertEquals(1, componentView.getMountItemCount());
-    TextView view = (TextView) componentView.getMountItemAt(0).getContent();
+    assertEquals(1, lithoView.getMountItemCount());
+    TextView view = (TextView) lithoView.getMountItemAt(0).getContent();
     assertEquals("Hello World!", view.getText());
   }
 
@@ -96,13 +96,13 @@ public class ViewCompatComponentTest {
           }
         };
 
-    LithoView componentView = ComponentTestHelper.mountComponent(
+    LithoView lithoView = ComponentTestHelper.mountComponent(
         ViewCompatComponent.get(TEXT_VIEW_CREATOR, "TextView")
             .create(mContext)
             .viewBinder(binder));
 
-    assertEquals(1, componentView.getMountItemCount());
-    TextView view = (TextView) componentView.getMountItemAt(0).getContent();
+    assertEquals(1, lithoView.getMountItemCount());
+    TextView view = (TextView) lithoView.getMountItemAt(0).getContent();
     assertEquals("Hello World!", view.getText());
   }
 
@@ -128,15 +128,15 @@ public class ViewCompatComponentTest {
           }
         };
 
-    LithoView componentView = ComponentTestHelper.mountComponent(
+    LithoView lithoView = ComponentTestHelper.mountComponent(
         ViewCompatComponent.get(TEXT_VIEW_CREATOR, "TextView")
             .create(mContext)
             .viewBinder(binder));
 
-    ComponentTestHelper.unbindComponent(componentView);
+    ComponentTestHelper.unbindComponent(lithoView);
 
-    assertEquals(1, componentView.getMountItemCount());
-    TextView view = (TextView) componentView.getMountItemAt(0).getContent();
+    assertEquals(1, lithoView.getMountItemCount());
+    TextView view = (TextView) lithoView.getMountItemAt(0).getContent();
     assertEquals("", view.getText());
   }
 }

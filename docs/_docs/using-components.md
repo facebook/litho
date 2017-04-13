@@ -31,7 +31,7 @@ This is how you can create a `ComponentTree`, pass it a component root and attac
 public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    final ComponentView componentView = new ComponentView(this);
+    final ComponentView lithoView = new ComponentView(this);
     final ComponentContext context = new ComponentContext(this);
 
     final Component text = Text.create(context)
@@ -40,7 +40,7 @@ public void onCreate(Bundle savedInstanceState) {
         .build();
     final ComponentTree componentTree = ComponentTree.create(context, text).build();
 
-    componentView.setComponentTree(componentTree);
-    setContentView(componentView);
+    lithoView.setComponentTree(componentTree);
+    setContentView(lithoView);
 }
 ``` 

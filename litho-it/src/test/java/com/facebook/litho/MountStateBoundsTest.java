@@ -40,7 +40,7 @@ public class MountStateBoundsTest {
 
   @Test
   public void testMountedDrawableBounds() {
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -53,12 +53,12 @@ public class MountStateBoundsTest {
           }
         });
 
-    assertEquals(new Rect(0, 0, 10, 10), componentView.getDrawables().get(0).getBounds());
+    assertEquals(new Rect(0, 0, 10, 10), lithoView.getDrawables().get(0).getBounds());
   }
 
   @Test
   public void testMountedViewBounds() {
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -71,7 +71,7 @@ public class MountStateBoundsTest {
           }
         });
 
-    final View mountedView = componentView.getChildAt(0);
+    final View mountedView = lithoView.getChildAt(0);
     assertEquals(
         new Rect(0, 0, 10, 10),
         new Rect(
@@ -83,7 +83,7 @@ public class MountStateBoundsTest {
 
   @Test
   public void testInnerComponentHostBounds() {
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -103,7 +103,7 @@ public class MountStateBoundsTest {
           }
         });
 
-    final ComponentHost host = (ComponentHost) componentView.getChildAt(0);
+    final ComponentHost host = (ComponentHost) lithoView.getChildAt(0);
     assertEquals(new Rect(0, 0, 10, 10), host.getDrawables().get(0).getBounds());
     assertEquals(
         new Rect(0, 0, 20, 20),
@@ -116,7 +116,7 @@ public class MountStateBoundsTest {
 
   @Test
   public void testDoubleInnerComponentHostBounds() {
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -147,7 +147,7 @@ public class MountStateBoundsTest {
         200,
         200);
 
-    final ComponentHost host = (ComponentHost) componentView.getChildAt(0);
+    final ComponentHost host = (ComponentHost) lithoView.getChildAt(0);
     final ComponentHost nestedHost = (ComponentHost) host.getChildAt(0);
 
     assertEquals(

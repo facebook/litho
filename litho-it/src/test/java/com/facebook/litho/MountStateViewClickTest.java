@@ -37,7 +37,7 @@ public class MountStateViewClickTest {
 
   @Test
   public void testInnerComponentHostClickable() {
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -51,16 +51,16 @@ public class MountStateViewClickTest {
           }
         });
 
-    assertEquals(1, componentView.getChildCount());
-    assertFalse(componentView.isClickable());
+    assertEquals(1, lithoView.getChildCount());
+    assertFalse(lithoView.isClickable());
 
-    ComponentHost innerHost = (ComponentHost) componentView.getChildAt(0);
+    ComponentHost innerHost = (ComponentHost) lithoView.getChildAt(0);
     assertTrue(innerHost.isClickable());
   }
 
   @Test
   public void testInnerComponentHostClickableWithLongClickHandler() {
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -74,16 +74,16 @@ public class MountStateViewClickTest {
           }
         });
 
-    assertEquals(1, componentView.getChildCount());
-    assertFalse(componentView.isClickable());
+    assertEquals(1, lithoView.getChildCount());
+    assertFalse(lithoView.isClickable());
 
-    ComponentHost innerHost = (ComponentHost) componentView.getChildAt(0);
+    ComponentHost innerHost = (ComponentHost) lithoView.getChildAt(0);
     assertTrue(innerHost.isLongClickable());
   }
 
   @Test
   public void testRootHostClickable() {
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -95,13 +95,13 @@ public class MountStateViewClickTest {
           }
         });
 
-    assertEquals(0, componentView.getChildCount());
-    assertTrue(componentView.isClickable());
+    assertEquals(0, lithoView.getChildCount());
+    assertTrue(lithoView.isClickable());
   }
 
   @Test
   public void testRootHostClickableWithLongClickHandler() {
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -113,7 +113,7 @@ public class MountStateViewClickTest {
           }
         });
 
-    assertEquals(0, componentView.getChildCount());
-    assertTrue(componentView.isLongClickable());
+    assertEquals(0, lithoView.getChildCount());
+    assertTrue(lithoView.isLongClickable());
   }
 }

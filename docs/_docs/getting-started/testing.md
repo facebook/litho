@@ -32,13 +32,13 @@ public class MyActivity extends Activity {
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    final ComponentView componentView = ComponentView.create(
+    final ComponentView lithoView = ComponentView.create(
     	this /* context */, 
     	Text.create(new ComponentContext(this))
             .text("Hello, World!")
             .build());
     	
-    setContentView(componentView);
+    setContentView(lithoView);
   }
 }
 ```

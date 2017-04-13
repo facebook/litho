@@ -66,10 +66,10 @@ public class ComponentGlobalKeyTest {
         .incrementalMount(false)
         .layoutDiffing(false)
         .build();
-    LithoView componentView = getComponentView(componentTree);
+    LithoView lithoView = getComponentView(componentTree);
 
     Assert.assertEquals(
-        componentView.getMountItemAt(0).getComponent().getGlobalKey(),
+        lithoView.getMountItemAt(0).getComponent().getGlobalKey(),
         component.getKey());
   }
 
@@ -84,10 +84,10 @@ public class ComponentGlobalKeyTest {
         .incrementalMount(false)
         .layoutDiffing(false)
         .build();
-    LithoView componentView = getComponentView(componentTree);
+    LithoView lithoView = getComponentView(componentTree);
 
     Assert.assertEquals(
-        componentView.getMountItemAt(0).getComponent().getGlobalKey(),
+        lithoView.getMountItemAt(0).getComponent().getGlobalKey(),
         "someKey");
   }
 
@@ -102,42 +102,42 @@ public class ComponentGlobalKeyTest {
         .incrementalMount(false)
         .layoutDiffing(false)
         .build();
-    LithoView componentView = getComponentView(componentTree);
+    LithoView lithoView = getComponentView(componentTree);
 
     // Text
-    Assert.assertEquals(layoutSpecId + "[Text2]", getComponentAt(componentView, 0).getGlobalKey());
+    Assert.assertEquals(layoutSpecId + "[Text2]", getComponentAt(lithoView, 0).getGlobalKey());
     // TestViewComponent in child layout
-    Assert.assertEquals(layoutSpecId + "" + nestedLayoutSpecId + "[TestViewComponent1]", getComponentAt(componentView, 1).getGlobalKey());
+    Assert.assertEquals(layoutSpecId + "" + nestedLayoutSpecId + "[TestViewComponent1]", getComponentAt(lithoView, 1).getGlobalKey());
     //background in child
-    Assert.assertNull(getComponentAt(componentView, 2).getGlobalKey());
+    Assert.assertNull(getComponentAt(lithoView, 2).getGlobalKey());
     // CardClip in child
-    Assert.assertEquals(layoutSpecId + "" + nestedLayoutSpecId + "[CardClip1]", getComponentAt(componentView, 3).getGlobalKey());
+    Assert.assertEquals(layoutSpecId + "" + nestedLayoutSpecId + "[CardClip1]", getComponentAt(lithoView, 3).getGlobalKey());
     // Text in child
-    Assert.assertEquals(layoutSpecId + "" + nestedLayoutSpecId + "[Text1]", getComponentAt(componentView, 4).getGlobalKey());
+    Assert.assertEquals(layoutSpecId + "" + nestedLayoutSpecId + "[Text1]", getComponentAt(lithoView, 4).getGlobalKey());
     // background
-    Assert.assertNull(getComponentAt(componentView, 5).getGlobalKey());
+    Assert.assertNull(getComponentAt(lithoView, 5).getGlobalKey());
     // CardClip
-    Assert.assertEquals(layoutSpecId + "[CardClip2]", getComponentAt(componentView, 6).getGlobalKey());
+    Assert.assertEquals(layoutSpecId + "[CardClip2]", getComponentAt(lithoView, 6).getGlobalKey());
     // TestViewComponent
-    Assert.assertEquals(layoutSpecId + "[TestViewComponent2]", getComponentAt(componentView, 7).getGlobalKey());
+    Assert.assertEquals(layoutSpecId + "[TestViewComponent2]", getComponentAt(lithoView, 7).getGlobalKey());
   }
 
-  private static Component getComponentAt(LithoView componentView, int index) {
-    return componentView.getMountItemAt(index).getComponent();
+  private static Component getComponentAt(LithoView lithoView, int index) {
+    return lithoView.getMountItemAt(index).getComponent();
   }
 
   private LithoView getComponentView(ComponentTree componentTree) {
-    LithoView componentView = new LithoView(mContext);
-    componentView.setComponentTree(componentTree);
-    componentView.measure(
+    LithoView lithoView = new LithoView(mContext);
+    lithoView.setComponentTree(componentTree);
+    lithoView.measure(
         View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
         View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-    componentView.layout(
+    lithoView.layout(
         0,
         0,
-        componentView.getMeasuredWidth(),
-        componentView.getMeasuredHeight());
-    return componentView;
+        lithoView.getMeasuredWidth(),
+        lithoView.getMeasuredHeight());
+    return lithoView;
   }
 
   private static Component getMultipleChildrenComponent() {

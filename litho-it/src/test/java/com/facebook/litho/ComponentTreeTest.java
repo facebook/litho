@@ -373,13 +373,13 @@ public class ComponentTreeTest {
     Assert.assertNull(getComponentView(componentTree1));
     Assert.assertNull(getComponentView(componentTree2));
 
-    LithoView componentView = new LithoView(mContext);
-    componentView.setComponentTree(componentTree1);
+    LithoView lithoView = new LithoView(mContext);
+    lithoView.setComponentTree(componentTree1);
 
     Assert.assertNotNull(getComponentView(componentTree1));
     Assert.assertNull(getComponentView(componentTree2));
 
-    componentView.setComponentTree(componentTree2);
+    lithoView.setComponentTree(componentTree2);
 
     Assert.assertNull(getComponentView(componentTree1));
     Assert.assertNotNull(getComponentView(componentTree2));
@@ -396,14 +396,14 @@ public class ComponentTreeTest {
         .layoutDiffing(false)
         .build();
 
-    LithoView componentView = new LithoView(mContext);
-    componentView.setComponentTree(componentTree);
+    LithoView lithoView = new LithoView(mContext);
+    lithoView.setComponentTree(componentTree);
 
-    assertEquals(componentView.getComponentTree(), componentTree);
+    assertEquals(lithoView.getComponentTree(), componentTree);
 
     componentTree.release();
 
-    assertNull(componentView.getComponentTree());
+    assertNull(lithoView.getComponentTree());
   }
 
   @Test
@@ -419,17 +419,17 @@ public class ComponentTreeTest {
         .build();
 
     // Attach first view.
-    LithoView componentView1 = new LithoView(mContext);
-    componentView1.setComponentTree(componentTree);
-    componentView1.onAttachedToWindow();
+    LithoView lithoView1 = new LithoView(mContext);
+    lithoView1.setComponentTree(componentTree);
+    lithoView1.onAttachedToWindow();
 
     // Attach second view.
-    LithoView componentView2 = new LithoView(mContext);
-    componentView2.onAttachedToWindow();
+    LithoView lithoView2 = new LithoView(mContext);
+    lithoView2.onAttachedToWindow();
 
     // Set the component that is already mounted on the first view, on the second attached view.
     // This should be ok.
-    componentView2.setComponentTree(componentTree);
+    lithoView2.setComponentTree(componentTree);
   }
 
   @Test
@@ -445,23 +445,23 @@ public class ComponentTreeTest {
         .build();
 
     // Attach first view.
-    LithoView componentView1 = new LithoView(mContext);
-    componentView1.setComponentTree(componentTree);
+    LithoView lithoView1 = new LithoView(mContext);
+    lithoView1.setComponentTree(componentTree);
 
-    assertEquals(componentView1, getComponentView(componentTree));
-    assertEquals(componentTree, getComponentTree(componentView1));
+    assertEquals(lithoView1, getComponentView(componentTree));
+    assertEquals(componentTree, getComponentTree(lithoView1));
 
     // Attach second view.
-    LithoView componentView2 = new LithoView(mContext);
+    LithoView lithoView2 = new LithoView(mContext);
 
-    Assert.assertNull(getComponentTree(componentView2));
+    Assert.assertNull(getComponentTree(lithoView2));
 
-    componentView2.setComponentTree(componentTree);
+    lithoView2.setComponentTree(componentTree);
 
-    assertEquals(componentView2, getComponentView(componentTree));
-    assertEquals(componentTree, getComponentTree(componentView2));
+    assertEquals(lithoView2, getComponentView(componentTree));
+    assertEquals(componentTree, getComponentTree(lithoView2));
 
-    Assert.assertNull(getComponentTree(componentView1));
+    Assert.assertNull(getComponentTree(lithoView1));
   }
 
   private static LithoView getComponentView(ComponentTree componentTree) {
@@ -472,8 +472,8 @@ public class ComponentTreeTest {
     return Whitebox.getInternalState(componentTree, "mIsAttached");
   }
 
-  private static ComponentTree getComponentTree(LithoView componentView) {
-    return Whitebox.getInternalState(componentView, "mComponentTree");
+  private static ComponentTree getComponentTree(LithoView lithoView) {
+    return Whitebox.getInternalState(lithoView, "mComponentTree");
   }
 
   private static boolean componentTreeHasSizeSpec(ComponentTree componentTree) {

@@ -44,7 +44,7 @@ public class MountStateViewTest {
   @Test
   public void testViewPaddingAndBackground() {
     final int color = 0xFFFF0000;
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -62,7 +62,7 @@ public class MountStateViewTest {
           }
         });
 
-    final View child = componentView.getChildAt(0);
+    final View child = lithoView.getChildAt(0);
     final Drawable background = child.getBackground();
 
     assertEquals(5, child.getPaddingLeft());

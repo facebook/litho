@@ -14,7 +14,7 @@ public class SampleActivity extends Activity {
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    final ComponentView componentView = new ComponentView(this);
+    final ComponentView lithoView = new ComponentView(this);
     final ComponentContext context = new ComponentContext(this);
 
     final Component text = Text.create(context)
@@ -23,9 +23,9 @@ public class SampleActivity extends Activity {
     final ComponentTree componentTree = ComponentTree.create(context, text)
         .build();
 
-    componentView.setComponent(componentTree);
+    lithoView.setComponent(componentTree);
 
-    setContentView(componentView);
+    setContentView(lithoView);
   }
 }
 ```

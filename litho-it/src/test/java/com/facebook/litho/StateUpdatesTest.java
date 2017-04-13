@@ -162,10 +162,10 @@ public class StateUpdatesTest {
         .incrementalMount(false)
         .layoutDiffing(false)
         .build();
-    final LithoView componentView = new LithoView(mContext);
-    componentView.setComponentTree(mComponentTree);
-    componentView.onAttachedToWindow();
-    ComponentTestHelper.measureAndLayout(componentView);
+    final LithoView lithoView = new LithoView(mContext);
+    lithoView.setComponentTree(mComponentTree);
+    lithoView.onAttachedToWindow();
+    ComponentTestHelper.measureAndLayout(lithoView);
   }
 
   @Test(expected = RuntimeException.class)
@@ -185,10 +185,10 @@ public class StateUpdatesTest {
         .incrementalMount(false)
         .layoutDiffing(false)
         .build();
-    final LithoView componentView = new LithoView(mContext);
-    componentView.setComponentTree(componentTree);
-    componentView.onAttachedToWindow();
-    ComponentTestHelper.measureAndLayout(componentView);
+    final LithoView lithoView = new LithoView(mContext);
+    lithoView.setComponentTree(componentTree);
+    lithoView.onAttachedToWindow();
+    ComponentTestHelper.measureAndLayout(lithoView);
   }
 
   @Test(expected = RuntimeException.class)
@@ -211,10 +211,10 @@ public class StateUpdatesTest {
         .incrementalMount(false)
         .layoutDiffing(false)
         .build();
-    final LithoView componentView = new LithoView(mContext);
-    componentView.setComponentTree(componentTree);
-    componentView.onAttachedToWindow();
-    ComponentTestHelper.measureAndLayout(componentView);
+    final LithoView lithoView = new LithoView(mContext);
+    lithoView.setComponentTree(componentTree);
+    lithoView.onAttachedToWindow();
+    ComponentTestHelper.measureAndLayout(lithoView);
   }
 
   @Test

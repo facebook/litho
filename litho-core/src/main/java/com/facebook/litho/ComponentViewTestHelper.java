@@ -35,15 +35,15 @@ public class ComponentViewTestHelper {
    * <strong>Note:</strong> If there is more than one element mounted under the given key,
    * the last one to render will be returned.
    *
-   * @param componentView The component view the component is mounted to.
+   * @param lithoView The component view the component is mounted to.
    * @param testKey The unique identifier the component was constructed with.
    * @return Test item if found, null otherwise.
    * @throws UnsupportedOperationException If the e2e flag is not enabled in the configuration.
    */
   @DoNotStrip
   @Nullable
-  public static TestItem findTestItem(LithoView componentView, String testKey) {
-    final Deque<TestItem> items = componentView.findTestItems(testKey);
+  public static TestItem findTestItem(LithoView lithoView, String testKey) {
+    final Deque<TestItem> items = lithoView.findTestItems(testKey);
 
     return items.isEmpty() ? null : items.getLast();
   }
@@ -54,7 +54,7 @@ public class ComponentViewTestHelper {
    *
    * <strong>Example use:</strong>
    * <pre>{@code
-   *  final LithoView componentView = ComponentTestHelper.mountComponent(
+   *  final LithoView lithoView = ComponentTestHelper.mountComponent(
    *      mContext,
    *      new InlineLayoutSpec() {
    *        @Override
@@ -68,18 +68,18 @@ public class ComponentViewTestHelper {
    *              .build();
    *        }
    *      });
-   *  final TestItem testItem = ComponentViewTestHelper.findTestItem(componentView, "mytestkey");
+   *  final TestItem testItem = ComponentViewTestHelper.findTestItem(lithoView, "mytestkey");
    *  }
    * </pre>
    *
-   * @param componentView The component view the component is mounted to.
+   * @param lithoView The component view the component is mounted to.
    * @param testKey The unique identifier the component was constructed with.
    * @return Queue of mounted items in order by mount time.
    * @throws UnsupportedOperationException If the e2e flag is not enabled in the configuration.
    */
   @DoNotStrip
   @NonNull
-  public static Deque<TestItem> findTestItems(LithoView componentView, String testKey) {
-    return componentView.findTestItems(testKey);
+  public static Deque<TestItem> findTestItems(LithoView lithoView, String testKey) {
+    return lithoView.findTestItems(testKey);
   }
 }

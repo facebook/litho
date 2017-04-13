@@ -74,8 +74,8 @@ public class ComponentViewTest {
     assertEquals(2, getInternalMountItems(mComponentView).length);
   }
 
-  private static long[] getInternalMountItems(LithoView componentView) {
-    MountState mountState = Whitebox.getInternalState(componentView, "mMountState");
+  private static long[] getInternalMountItems(LithoView lithoView) {
+    MountState mountState = Whitebox.getInternalState(lithoView, "mMountState");
     return Whitebox.getInternalState(mountState, "mLayoutOutputsIds");
   }
 

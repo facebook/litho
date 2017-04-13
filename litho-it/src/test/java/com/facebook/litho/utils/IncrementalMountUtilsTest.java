@@ -256,10 +256,10 @@ public class IncrementalMountUtilsTest {
   }
 
   private static void setupComponentViewPreviousBounds(
-      LithoView componentView,
+      LithoView lithoView,
       int width,
       int height) {
-    when(componentView.getPreviousMountBounds()).thenReturn(new Rect(0, 0, width, height));
+    when(lithoView.getPreviousMountBounds()).thenReturn(new Rect(0, 0, width, height));
   }
 
   private void verifyPerformIncrementalMountCalled(Rect rect) {

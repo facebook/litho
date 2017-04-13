@@ -46,7 +46,7 @@ public class MountStateViewTagsTest {
     final SparseArray<Object> tags2 = new SparseArray<>(1);
     tags2.put(DUMMY_ID, tag2);
 
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -66,8 +66,8 @@ public class MountStateViewTagsTest {
           }
         });
 
-    final View innerHost1 = componentView.getChildAt(0);
-    final View innerHost2 = componentView.getChildAt(1);
+    final View innerHost1 = lithoView.getChildAt(0);
+    final View innerHost2 = lithoView.getChildAt(1);
 
     assertEquals(tag1, innerHost1.getTag(DUMMY_ID));
     assertEquals(tag2, innerHost2.getTag(DUMMY_ID));
@@ -79,7 +79,7 @@ public class MountStateViewTagsTest {
     final SparseArray<Object> tags = new SparseArray<>(1);
     tags.put(DUMMY_ID, tag);
 
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -92,6 +92,6 @@ public class MountStateViewTagsTest {
           }
         });
 
-    assertEquals(tag, componentView.getTag(DUMMY_ID));
+    assertEquals(tag, lithoView.getTag(DUMMY_ID));
   }
 }

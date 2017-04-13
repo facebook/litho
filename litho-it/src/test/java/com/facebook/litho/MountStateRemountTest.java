@@ -52,7 +52,7 @@ public class MountStateRemountTest {
     final TestComponent component4 = TestDrawableComponent.create(mContext)
         .build();
 
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -69,7 +69,7 @@ public class MountStateRemountTest {
 
     ComponentTestHelper.mountComponent(
         mContext,
-        componentView,
+        lithoView,
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
@@ -85,7 +85,7 @@ public class MountStateRemountTest {
     assertFalse(component3.isMounted());
     assertFalse(component4.isMounted());
 
-    final MountState mountState = Whitebox.getInternalState(componentView,"mMountState");
+    final MountState mountState = Whitebox.getInternalState(lithoView,"mMountState");
     final LongSparseArray<MountItem> indexToItemMap =
         Whitebox.getInternalState(mountState,"mIndexToItemMap");
 
@@ -110,7 +110,7 @@ public class MountStateRemountTest {
     clearPool("sLayoutOutputPool");
     clearPool("sViewNodeInfoPool");
 
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -121,7 +121,7 @@ public class MountStateRemountTest {
 
     ComponentTestHelper.mountComponent(
         mContext,
-        componentView,
+        lithoView,
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
@@ -145,7 +145,7 @@ public class MountStateRemountTest {
         .unique()
         .build();
 
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -162,7 +162,7 @@ public class MountStateRemountTest {
 
     ComponentTestHelper.mountComponent(
         mContext,
-        componentView,
+        lithoView,
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
@@ -190,7 +190,7 @@ public class MountStateRemountTest {
     final TestComponent component4 = TestDrawableComponent.create(mContext)
         .build();
 
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -207,7 +207,7 @@ public class MountStateRemountTest {
 
     ComponentTestHelper.mountComponent(
         mContext,
-        componentView,
+        lithoView,
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {

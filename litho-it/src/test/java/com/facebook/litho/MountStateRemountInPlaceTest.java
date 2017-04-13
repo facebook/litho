@@ -53,7 +53,7 @@ public class MountStateRemountInPlaceTest {
             .unique()
             .build();
 
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -73,7 +73,7 @@ public class MountStateRemountInPlaceTest {
             .unique()
             .build();
 
-    componentView.getComponentTree().setRoot(new InlineLayoutSpec() {
+    lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
@@ -93,7 +93,7 @@ public class MountStateRemountInPlaceTest {
         TestDrawableComponent.create(mContext)
             .build();
 
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -112,7 +112,7 @@ public class MountStateRemountInPlaceTest {
         TestDrawableComponent.create(mContext)
             .build();
 
-    componentView.getComponentTree().setRoot(new InlineLayoutSpec() {
+    lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
@@ -143,7 +143,7 @@ public class MountStateRemountInPlaceTest {
             .measuredHeight(10)
             .build();
 
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -173,7 +173,7 @@ public class MountStateRemountInPlaceTest {
             .measuredHeight(11)
             .build();
 
-    componentView.getComponentTree().setRoot(new InlineLayoutSpec() {
+    lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
@@ -204,7 +204,7 @@ public class MountStateRemountInPlaceTest {
             .measuredHeight(10)
             .build();
 
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -234,7 +234,7 @@ public class MountStateRemountInPlaceTest {
             .measuredHeight(10)
             .build();
 
-    componentView.getComponentTree().setRoot(new InlineLayoutSpec() {
+    lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
@@ -254,7 +254,7 @@ public class MountStateRemountInPlaceTest {
         TestDrawableComponent.create(mContext)
             .build();
 
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         new LithoView(mContext),
         ComponentTree.create(mContext, new InlineLayoutSpec() {
           @Override
@@ -278,7 +278,7 @@ public class MountStateRemountInPlaceTest {
         TestDrawableComponent.create(mContext)
             .build();
 
-    componentView.getComponentTree().setRoot(new InlineLayoutSpec() {
+    lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
@@ -289,7 +289,7 @@ public class MountStateRemountInPlaceTest {
       }
     });
 
-    assertTrue(componentView.isLayoutRequested());
+    assertTrue(lithoView.isLayoutRequested());
     assertFalse(secondComponent.wasOnMountCalled());
     assertFalse(secondComponent.wasOnBindCalled());
     assertFalse(firstComponent.wasOnUnmountCalled());
@@ -301,7 +301,7 @@ public class MountStateRemountInPlaceTest {
         TestDrawableComponent.create(mContext, 0, 0, true, true, true, false, false, true)
             .build();
 
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         new LithoView(mContext),
         ComponentTree.create(mContext, new InlineLayoutSpec() {
           @Override
@@ -325,7 +325,7 @@ public class MountStateRemountInPlaceTest {
         TestDrawableComponent.create(mContext)
             .build();
 
-    componentView.getComponentTree().setRoot(new InlineLayoutSpec() {
+    lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
@@ -336,7 +336,7 @@ public class MountStateRemountInPlaceTest {
       }
     });
 
-    assertFalse(componentView.isLayoutRequested());
+    assertFalse(lithoView.isLayoutRequested());
     assertTrue(secondComponent.wasOnMountCalled());
     assertTrue(secondComponent.wasOnBindCalled());
     assertTrue(firstComponent.wasOnUnmountCalled());
@@ -348,7 +348,7 @@ public class MountStateRemountInPlaceTest {
         TestDrawableComponent.create(mContext)
             .build();
 
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         new LithoView(mContext),
         ComponentTree.create(mContext, new InlineLayoutSpec() {
           @Override
@@ -372,7 +372,7 @@ public class MountStateRemountInPlaceTest {
         TestDrawableComponent.create(mContext)
             .build();
 
-    componentView.getComponentTree().setRoot(new InlineLayoutSpec() {
+    lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
@@ -383,7 +383,7 @@ public class MountStateRemountInPlaceTest {
       }
     });
 
-    assertFalse(componentView.isLayoutRequested());
+    assertFalse(lithoView.isLayoutRequested());
     assertFalse(secondComponent.wasOnMountCalled());
     assertTrue(secondComponent.wasOnBindCalled());
     assertFalse(firstComponent.wasOnUnmountCalled());
@@ -396,7 +396,7 @@ public class MountStateRemountInPlaceTest {
             .color(Color.BLACK)
             .build();
 
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -416,7 +416,7 @@ public class MountStateRemountInPlaceTest {
             .color(Color.BLACK)
             .build();
 
-    componentView.getComponentTree().setRoot(new InlineLayoutSpec() {
+    lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
@@ -437,7 +437,7 @@ public class MountStateRemountInPlaceTest {
             .color(Color.BLACK)
             .build();
 
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -457,7 +457,7 @@ public class MountStateRemountInPlaceTest {
             .color(Color.WHITE)
             .build();
 
-    componentView.getComponentTree().setRoot(new InlineLayoutSpec() {
+    lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)

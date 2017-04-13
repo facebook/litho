@@ -132,7 +132,7 @@ public class ComponentTreeIncrementalMountTest {
   }
 
   private void setupIncrementalMountTest(
-      final Rect componentViewBoundsInScreen,
+      final Rect lithoViewBoundsInScreen,
       final Rect parentBoundsInScreen) {
 
     doAnswer(
@@ -140,15 +140,15 @@ public class ComponentTreeIncrementalMountTest {
           @Override
           public Void answer(InvocationOnMock invocation) throws Throwable {
             int[] location = (int[]) invocation.getArguments()[0];
-            location[0] = componentViewBoundsInScreen.left;
-            location[1] = componentViewBoundsInScreen.top;
+            location[0] = lithoViewBoundsInScreen.left;
+            location[1] = lithoViewBoundsInScreen.top;
             return null;
           }
         }).when(mComponentView).getLocationOnScreen(any(int[].class));
     when(mComponentView.getWidth())
-        .thenReturn(componentViewBoundsInScreen.right - componentViewBoundsInScreen.left);
+        .thenReturn(lithoViewBoundsInScreen.right - lithoViewBoundsInScreen.left);
     when(mComponentView.getHeight())
-        .thenReturn(componentViewBoundsInScreen.bottom - componentViewBoundsInScreen.top);
+        .thenReturn(lithoViewBoundsInScreen.bottom - lithoViewBoundsInScreen.top);
 
     if (parentBoundsInScreen == null) {
       return;

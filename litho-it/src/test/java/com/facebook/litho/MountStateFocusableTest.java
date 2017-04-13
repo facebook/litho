@@ -38,7 +38,7 @@ public class MountStateFocusableTest {
 
   @Test
   public void testInnerComponentHostFocusable() {
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -52,19 +52,19 @@ public class MountStateFocusableTest {
           }
         });
 
-    assertEquals(1, componentView.getChildCount());
+    assertEquals(1, lithoView.getChildCount());
     // TODO(T16959291): The default varies between internal and external test runs, which indicates
     // that our Robolectric setup is not actually identical. Until we can figure out why,
     // we will compare against the dynamic default instead of asserting false.
-    assertEquals(mFocusableDefault, componentView.isFocusable());
+    assertEquals(mFocusableDefault, lithoView.isFocusable());
 
-    ComponentHost innerHost = (ComponentHost) componentView.getChildAt(0);
+    ComponentHost innerHost = (ComponentHost) lithoView.getChildAt(0);
     assertTrue(innerHost.isFocusable());
   }
 
   @Test
   public void testRootHostFocusable() {
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -76,7 +76,7 @@ public class MountStateFocusableTest {
           }
         });
 
-    assertEquals(0, componentView.getChildCount());
-    assertTrue(componentView.isFocusable());
+    assertEquals(0, lithoView.getChildCount());
+    assertTrue(lithoView.isFocusable());
   }
 }

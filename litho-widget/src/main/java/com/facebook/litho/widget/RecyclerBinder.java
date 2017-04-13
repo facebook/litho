@@ -802,18 +802,18 @@ public class RecyclerBinder implements Binder<RecyclerView>, LayoutInfo.Componen
 
   private class ComponentViewHolder extends RecyclerView.ViewHolder {
 
-    public ComponentViewHolder(LithoView componentView) {
-      super(componentView);
+    public ComponentViewHolder(LithoView lithoView) {
+      super(lithoView);
 
       switch (mLayoutInfo.getScrollDirection()) {
         case OrientationHelper.VERTICAL:
-          componentView.setLayoutParams(
+          lithoView.setLayoutParams(
               new RecyclerView.LayoutParams(
                   ViewGroup.LayoutParams.MATCH_PARENT,
                   ViewGroup.LayoutParams.WRAP_CONTENT));
           break;
         default:
-          componentView.setLayoutParams(
+          lithoView.setLayoutParams(
               new RecyclerView.LayoutParams(
                   ViewGroup.LayoutParams.WRAP_CONTENT,
                   ViewGroup.LayoutParams.MATCH_PARENT));
@@ -831,7 +831,7 @@ public class RecyclerBinder implements Binder<RecyclerView>, LayoutInfo.Componen
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-      final LithoView componentView = (LithoView) holder.itemView;
+      final LithoView lithoView = (LithoView) holder.itemView;
       // We can ignore the synchronization here. We'll only add to this from the UiThread.
       // This read only happens on the UiThread as well and we are never writing this here.
       final ComponentTreeHolder componentTreeHolder = mComponentTreeHolders.get(position);
@@ -842,7 +842,7 @@ public class RecyclerBinder implements Binder<RecyclerView>, LayoutInfo.Componen
             .computeLayoutSync(mComponentContext, childrenWidthSpec, childrenHeightSpec, null);
       }
 
-      componentView.setComponentTree(componentTreeHolder.getComponentTree());
+      lithoView.setComponentTree(componentTreeHolder.getComponentTree());
     }
 
     @Override

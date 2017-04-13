@@ -79,8 +79,8 @@ public class IncrementalMountUtils {
       return;
     }
 
-    final LithoView componentView = (LithoView) underlyingView;
-    if (!componentView.isIncrementalMountEnabled()) {
+    final LithoView lithoView = (LithoView) underlyingView;
+    if (!lithoView.isIncrementalMountEnabled()) {
       return;
     }
 
@@ -100,8 +100,8 @@ public class IncrementalMountUtils {
         top >= 0 &&
         right <= scrollingParentWidth &&
         bottom <= scrollingParentHeight &&
-        componentView.getPreviousMountBounds().width() == componentView.getWidth() &&
-        componentView.getPreviousMountBounds().height() == componentView.getHeight()) {
+        lithoView.getPreviousMountBounds().width() == lithoView.getWidth() &&
+        lithoView.getPreviousMountBounds().height() == lithoView.getHeight()) {
       // View is fully visible, and has already been completely mounted.
       return;
     }
@@ -119,7 +119,7 @@ public class IncrementalMountUtils {
       return;
     }
 
-    componentView.performIncrementalMount(rect);
+    lithoView.performIncrementalMount(rect);
 
     release(rect);
   }

@@ -35,13 +35,13 @@ public class EditTextSpecTest {
   @Test
   public void testEditTextWithText() {
     final ComponentContext c = mComponentsRule.getContext();
-    final LithoView componentView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = ComponentTestHelper.mountComponent(
         EditText.create(c)
             .textChangedEventHandler(null)
             .textSizePx(10)
             .text(TEXT));
 
-    final android.widget.EditText editText = (android.widget.EditText) componentView.getChildAt(0);
+    final android.widget.EditText editText = (android.widget.EditText) lithoView.getChildAt(0);
     assertThat(editText.getText().toString()).isEqualTo(TEXT);
     assertThat(editText.getTextSize()).isEqualTo(10);
   }
