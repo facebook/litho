@@ -187,7 +187,6 @@ class EditTextSpec {
       @Prop(optional = true) Layout.Alignment textAlignment,
       @Prop(optional = true) int gravity,
       @Prop(optional = true) boolean editable,
-      @Prop(optional = true) Drawable background,
       @Prop(optional = true) int selection) {
 
     // TODO(11759579) - don't allocate a new EditText in every measure.
@@ -220,7 +219,6 @@ class EditTextSpec {
         textAlignment,
         gravity,
         editable,
-        background,
         selection);
 
     editText.measure(
@@ -297,27 +295,20 @@ class EditTextSpec {
         textAlignment,
         gravity,
         editable,
-        null,
         selection);
   }
 
   @OnBind
   static void onBind(
       ComponentContext c,
-      EditTextTextTextChangedEventHandler editText,
-      @Prop(optional = true) Drawable background,
-      Output<Drawable> oldBackground) {
-    oldBackground.set(editText.getBackground());
-    editText.setBackground(background);
+      EditTextTextTextChangedEventHandler editText) {
     editText.attachWatcher();
   }
 
   @OnUnbind
   static void onUnbind(
       ComponentContext c,
-      EditTextTextTextChangedEventHandler editText,
-      @FromBind Drawable oldBackground) {
-    editText.setBackground(oldBackground);
+      EditTextTextTextChangedEventHandler editText) {
     editText.detachWatcher();
   }
 
@@ -355,7 +346,6 @@ class EditTextSpec {
       Layout.Alignment textAlignment,
       int gravity,
       boolean editable,
-      Drawable background,
       int selection) {
 
     // If it's the same text, don't set it again so that the caret won't move to the beginning or
@@ -396,10 +386,6 @@ class EditTextSpec {
       editText.setHintTextColor(hintColor);
     } else {
       editText.setHintTextColor(hintColorStateList);
-    }
-
-    if (background != null) {
-      editText.setBackground(background);
     }
 
     switch (textAlignment) {
