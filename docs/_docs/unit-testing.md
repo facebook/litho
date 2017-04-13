@@ -16,14 +16,6 @@ In order to use any of the testing capabilities, you need include the optional
 `litho-testing` package in your build. It is available as
 `com.facebook.litho:litho-testing:+`.
 
-Under the hood, these asserts are implemented through the helpers below,
-which are also available in case more complicated use cases need
-to be reconstructed:
-
-- [ComponentTestHelper](/javadoc/com/facebook/litho/testing/ComponentTestHelper): Allows simple and short creation of views that are
-  created and mounted in a similar way to how they are in real apps.
-- `ComponentQueries`: Utility class to query the state of components.
-
 To demonstrate the usage of these classes, below is an example of a component
 that displays a like icon and a short description.
 
@@ -66,16 +58,16 @@ For our test, we want to verify the rendering of the text and the icon.
 ## Setup
 
 The Components testing framework provides a JUnit
-[`@Rule`](https://github.com/junit-team/junit4/wiki/Rules)]] which
+[`@Rule`](https://github.com/junit-team/junit4/wiki/Rules) which
 sets up overrides for
-[Styleables](https://developer.android.com/reference/android/R.styleable.html)]]
+[Styleables](https://developer.android.com/reference/android/R.styleable.html)
 and allows easy access to a `ComponentContext`.
 
 ```java
 /**
  * Tests {@link LikersComponent}
  */
-@RunWith(WithTestDefaultsRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class LikersComponentTest {
   @Rule
   public ComponentsRule mComponentsRule = new ComponentsRule();
@@ -122,29 +114,9 @@ or on the `ComponentBuilder` before it is consumed by `build()`.
   }
 ```
 
-Generally, this should be enough, but if you need more control,
-you can also manually mount a Component with [ComponentTestHelper](/javadoc/com/facebook/litho/testing/ComponentTestHelper)
-and verify the state of it through `ComponentQueries`.
-
-```java
-  @Test
-  public void testManuallyMountTwoLikers() {
-    ComponentContext c = mComponentsRule.getContext();
-    ImmutableList<User> likers =
-        ImmutableList.of(new User("Jane"), new User("Mike"));
-
-    ComponentView view = ComponentTestHelper
-        .mountComponent(
-            c,
-            LikersComponent.create(c)
-                .likers(likers));
-
-    assertThat(ComponentQueries.hasText(view, "Jane, Mike")).isTrue();
-  }
-}
-```
 
 ## Testing Sub-Component Rendering
+
 Instead of performing assertions on the content rendered by your Component, it
 might be useful to test for the rendering of sub-components instead.
 [SubComponent](/javadoc/com/facebook/litho/testing/SubComponent) is a convenience class that allows for easier comparison of Component
