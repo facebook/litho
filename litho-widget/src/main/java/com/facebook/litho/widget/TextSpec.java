@@ -30,13 +30,12 @@ import android.text.TextUtils.TruncateAt;
 import android.text.style.ClickableSpan;
 import android.util.Log;
 
-import com.facebook.fbui.textlayoutbuilder.TextLayoutBuilder;
-import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
+import com.facebook.litho.R;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.ComponentsLogger;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.Output;
-import com.facebook.litho.R;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.annotations.FromBoundsDefined;
@@ -55,9 +54,10 @@ import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
-import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.widget.accessibility.delegates.AccessibleClickableSpan;
 import com.facebook.yoga.YogaDirection;
+import com.facebook.fbui.textlayoutbuilder.TextLayoutBuilder;
+import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
+import com.facebook.widget.accessibility.delegates.AccessibleClickableSpan;
 
 import static android.support.v4.widget.ExploreByTouchHelper.INVALID_ID;
 import static android.text.Layout.Alignment.ALIGN_NORMAL;
@@ -137,99 +137,8 @@ class TextSpec {
       Output<Float> shadowDy,
       Output<Integer> shadowColor) {
 
-    //check first if provided attributes contain textAppearance. As an analogy to TextView behavior,
-    //we will parse textAppearance attributes first and then will override leftovers from main style
-    TypedArray a = c.obtainStyledAttributes(
-        R.styleable.TextAppearance,
-        android.R.attr.textViewStyle);
+    final TypedArray a = c.obtainStyledAttributes(R.styleable.Text, 0);
 
-    int textAppearanceResId = a.getResourceId(
-        R.styleable.TextAppearance_android_textAppearance,
-        -1);
-    if (textAppearanceResId != -1) {
-      a = c.getTheme().obtainStyledAttributes(
-          textAppearanceResId,
-          R.styleable.Text);
-      resolveStyleAttrsForTypedArray(
-          a,
-          ellipsize,
-          shouldIncludeFontPadding,
-          spacingMultiplier,
-          minLines,
-          maxLines,
-          minEms,
-          maxEms,
-          minWidth,
-          maxWidth,
-          isSingleLine,
-          text,
-          textColorStateList,
-          linkColor,
-          highlightColor,
-          textSize,
-          textAlignment,
-          textStyle,
-          shadowRadius,
-          shadowDx,
-          shadowDy,
-          shadowColor);
-    }
-
-    //now (after we parsed textAppearance) we can move on to main style attributes
-    a = c.obtainStyledAttributes(
-        R.styleable.Text,
-        android.R.attr.textViewStyle);
-    resolveStyleAttrsForTypedArray(
-        a,
-        ellipsize,
-        shouldIncludeFontPadding,
-        spacingMultiplier,
-        minLines,
-        maxLines,
-        minEms,
-        maxEms,
-        minWidth,
-        maxWidth,
-        isSingleLine,
-        text,
-        textColorStateList,
-        linkColor,
-        highlightColor,
-        textSize,
-        textAlignment,
-        textStyle,
-        shadowRadius,
-        shadowDx,
-        shadowDy,
-        shadowColor);
-
-    a.recycle();
-  }
-
-  private static void resolveStyleAttrsForTypedArray(
-      TypedArray a,
-      Output<TruncateAt> ellipsize,
-      Output<Boolean> shouldIncludeFontPadding,
-      Output<Float> spacingMultiplier,
-      Output<Integer> minLines,
-      Output<Integer> maxLines,
-      Output<Integer> minEms,
-      Output<Integer> maxEms,
-      Output<Integer> minWidth,
-      Output<Integer> maxWidth,
-      Output<Boolean> isSingleLine,
-      Output<CharSequence> text,
-      Output<ColorStateList> textColorStateList,
-      Output<Integer> linkColor,
-      Output<Integer> highlightColor,
-      Output<Integer> textSize,
-      Output<Alignment> textAlignment,
-      Output<Integer> textStyle,
-      Output<Float> shadowRadius,
-      Output<Float> shadowDx,
-      Output<Float> shadowDy,
-      Output<Integer> shadowColor
-  ) {
     for (int i = 0, size = a.getIndexCount(); i < size; i++) {
       final int attr = a.getIndex(i);
 
@@ -281,6 +190,8 @@ class TextSpec {
         maxWidth.set(a.getInteger(attr, DEFAULT_MAX_WIDTH));
       }
     }
+
+    a.recycle();
   }
 
   @OnMeasure
@@ -552,7 +463,7 @@ class TextSpec {
             TAG,
             "Remeasuring Text component.  This is expensive: consider changing parent layout " +
                 "so that double measurement is not necessary.");
-      }
+          }
 
       textLayout.set(
           createTextLayout(
