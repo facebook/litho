@@ -100,7 +100,9 @@ public class DataModel {
     final Datum[] dataModels = SampleData();
     for (Datum datum : dataModels) {
       ComponentInfo.Builder componentInfoBuilder = ComponentInfo.create();
-      componentInfoBuilder.component(datum.createComponent(c));
+      componentInfoBuilder
+          .component(datum.createComponent(c))
+          .isSticky(datum instanceof Decade);
       recyclerBinder.insertItemAt(recyclerBinder.getItemCount(), componentInfoBuilder.build());
     }
   }
