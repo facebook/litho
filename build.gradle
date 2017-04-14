@@ -13,6 +13,10 @@ buildscript {
 subprojects {
     repositories {
         jcenter()
+
+        flatDir {
+            dirs "${rootDir}/lib/yoga"
+        }
     }
 }
 

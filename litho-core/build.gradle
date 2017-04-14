@@ -27,7 +27,6 @@ android {
     lintOptions {
         abortOnError false
     }
-
 }
 
 dependencies {
@@ -46,8 +45,7 @@ dependencies {
     compile deps.supportRecyclerView
 
     // First-party dependencies
-    compile deps.yoga
-    compile files('../lib/CSSLayoutDEPRECATED-TOREMOVE/CSSLayoutDEPRECATED.jar')
+    compile(name: 'yoga', ext: 'aar')
 
     // Debugging dependencies
     debugCompile deps.guava

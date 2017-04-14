@@ -35,7 +35,6 @@ dependencies {
 
     // First-party
     compile deps.fresco
-    compile files('../lib/CSSLayoutDEPRECATED-TOREMOVE/CSSLayoutDEPRECATED.jar')
     compile deps.textlayoutbuilder
 
     // Android Support Library
