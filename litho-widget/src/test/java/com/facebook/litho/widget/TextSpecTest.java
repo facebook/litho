@@ -84,7 +84,7 @@ public class TextSpecTest {
   @Test
   public void testColorDefault() {
     TextDrawable drawable = getMountedDrawableForText("Some text");
-    assertThat(drawable.getColor() == Color.BLACK);
+    assertThat(drawable.getColor()).isEqualTo(Color.BLACK);
   }
 
   @Test
@@ -96,7 +96,7 @@ public class TextSpecTest {
         "Some text",
         Color.RED,
         colorStateList);
-    assertThat(drawable.getColor() == Color.RED);
+    assertThat(drawable.getColor()).isEqualTo(Color.RED);
   }
 
   @Test
@@ -106,7 +106,7 @@ public class TextSpecTest {
         "Some text",
         Color. RED,
         null);
-    assertThat(drawable.getColor() == Color.RED);
+    assertThat(drawable.getColor()).isEqualTo(Color.RED);
   }
 
   @Test
@@ -119,7 +119,7 @@ public class TextSpecTest {
         "Some text",
         0,
         colorStateList);
-    assertThat(drawable.getColor() == Color.RED);
+    assertThat(drawable.getColor()).isEqualTo(Color.GREEN);
   }
 
   private TextDrawable getMountedDrawableForText(CharSequence text) {
