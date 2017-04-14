@@ -9,6 +9,8 @@
 
 package com.facebook.litho.widget;
 
+import com.facebook.litho.ComponentTree;
+
 interface HasStickyHeader {
 
   /**
@@ -26,4 +28,10 @@ interface HasStickyHeader {
    * @return Whether the item at given position is *sticky*
    */
   boolean isSticky(int position);
+
+  /**
+   * @param position
+   * @return a component tree for the idem at position.
+   */
+  ComponentTree getComponentAt(int position);
 }

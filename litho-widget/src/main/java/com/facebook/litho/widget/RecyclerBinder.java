@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import android.os.Build;
 import android.support.annotation.UiThread;
 import android.support.annotation.VisibleForTesting;
 import android.support.v7.widget.OrientationHelper;
@@ -44,7 +45,10 @@ import static com.facebook.litho.MeasureComparisonUtils.isMeasureSpecCompatible;
  * and attaching them to a {@link RecyclerSpec}.
  */
 @ThreadSafe
-public class RecyclerBinder implements Binder<RecyclerView>, LayoutInfo.ComponentInfoCollection {
+public class RecyclerBinder implements
+    Binder<RecyclerView>,
+    LayoutInfo.ComponentInfoCollection,
+    HasStickyHeader {
 
   private static final int UNINITIALIZED = -1;
   private static final Size sDummySize = new Size();
@@ -55,6 +59,7 @@ public class RecyclerBinder implements Binder<RecyclerView>, LayoutInfo.Componen
   private final RecyclerView.Adapter mInternalAdapter;
   private final ComponentContext mComponentContext;
   private final RangeScrollListener mRangeScrollListener = new RangeScrollListener();
+  private final StickyHeaderAwareScrollListener mStickyHeaderScrollListener;
   private final LayoutHandlerFactory mLayoutHandlerFactory;
   private final boolean mUseNewIncrementalMount;
 
@@ -119,6 +124,9 @@ public class RecyclerBinder implements Binder<RecyclerView>, LayoutInfo.Componen
     mLayoutInfo = layoutInfo;
     mLayoutHandlerFactory = layoutHandlerFactory;
     mCurrentFirstVisiblePosition = mCurrentLastVisiblePosition = 0;
+    mStickyHeaderScrollListener = new StickyHeaderAwareScrollListener(
+        this,
+        mLayoutInfo.getLayoutManager());
   }
 
   public RecyclerBinder(ComponentContext c) {
@@ -664,6 +672,26 @@ public class RecyclerBinder implements Binder<RecyclerView>, LayoutInfo.Componen
         mCurrentFirstVisiblePosition > 0) {
       view.scrollToPosition(mCurrentFirstVisiblePosition);
     }
+
+    enableStickyHeader(mMountedView);
+  }
+
+  private void enableStickyHeader(RecyclerView recyclerView) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+      // Sticky header needs some APIs like 'setTranslationY()' which are not available Gingerbread
+      // and below
+      return;
+    }
+    if (recyclerView == null) {
+      return;
+    }
+    RecyclerViewWrapper recyclerViewWrapper = RecyclerViewWrapper.getParentWrapper(recyclerView);
+    if (recyclerViewWrapper == null) {
+      return;
+    }
+
+    mStickyHeaderScrollListener.setRecyclerViewWrapper(recyclerViewWrapper);
+    recyclerView.addOnScrollListener(mStickyHeaderScrollListener);
   }
 
   /**
@@ -685,6 +713,7 @@ public class RecyclerBinder implements Binder<RecyclerView>, LayoutInfo.Componen
 
     mMountedView = null;
     view.removeOnScrollListener(mRangeScrollListener);
+    view.removeOnScrollListener(mStickyHeaderScrollListener);
     view.setAdapter(null);
     view.setLayoutManager(null);
     mLayoutInfo.setComponentInfoCollection(null);
@@ -711,6 +740,23 @@ public class RecyclerBinder implements Binder<RecyclerView>, LayoutInfo.Componen
     }
 
     return false;
+  }
+
+  @Override
+  public int findFirstVisibleItemPosition() {
+    return mLayoutInfo.findFirstVisiblePosition();
+  }
+
+  @Override
+  public int findLastVisibleItemPosition() {
+    return mLayoutInfo.findLastVisiblePosition();
+  }
+
+  @Override
+  @UiThread
+  @GuardedBy("this")
+  public boolean isSticky(int position) {
+    return mComponentTreeHolders.get(position).getComponentInfo().isSticky();
   }
 
   private static class RangeCalculationResult {
@@ -766,7 +812,7 @@ public class RecyclerBinder implements Binder<RecyclerView>, LayoutInfo.Componen
         if (!holder.isTreeValid()) {
           holder.computeLayoutAsync(mComponentContext, childrenWidthSpec, childrenHeightSpec);
         }
-      } else if (holder.isTreeValid()) {
+      } else if (holder.isTreeValid() && !holder.getComponentInfo().isSticky()) {
         holder.acquireStateHandlerAndReleaseTree();
       }
     }

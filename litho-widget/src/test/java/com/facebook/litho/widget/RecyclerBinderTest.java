@@ -33,7 +33,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.powermock.api.mockito.PowerMockito;
@@ -48,7 +47,9 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link RecyclerBinder}
@@ -95,17 +96,17 @@ public class RecyclerBinderTest {
   }
 
   private void setupBaseLayoutInfoMock() {
-    Mockito.when(mLayoutInfo.getScrollDirection()).thenReturn(OrientationHelper.VERTICAL);
+    when(mLayoutInfo.getScrollDirection()).thenReturn(OrientationHelper.VERTICAL);
 
-    Mockito.when(mLayoutInfo.getLayoutManager())
+    when(mLayoutInfo.getLayoutManager())
         .thenReturn(new LinearLayoutManager(mComponentContext));
 
-    Mockito.when(mLayoutInfo.approximateRangeSize(anyInt(), anyInt(), anyInt(), anyInt()))
+    when(mLayoutInfo.approximateRangeSize(anyInt(), anyInt(), anyInt(), anyInt()))
         .thenReturn(RANGE_SIZE);
 
-    Mockito.when(mLayoutInfo.getChildHeightSpec(anyInt(), any(ComponentInfo.class)))
+    when(mLayoutInfo.getChildHeightSpec(anyInt(), any(ComponentInfo.class)))
         .thenReturn(SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
-    Mockito.when(mLayoutInfo.getChildWidthSpec(anyInt(), any(ComponentInfo.class)))
+    when(mLayoutInfo.getChildWidthSpec(anyInt(), any(ComponentInfo.class)))
         .thenReturn(SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
   }
 
@@ -244,7 +245,7 @@ public class RecyclerBinderTest {
 
     verify(recyclerView).setLayoutManager(null);
     verify(recyclerView).setAdapter(null);
-    verify(recyclerView).removeOnScrollListener(any(OnScrollListener.class));
+    verify(recyclerView, times(2)).removeOnScrollListener(any(OnScrollListener.class));
 
     verify(secondRecyclerView).setLayoutManager(mLayoutInfo.getLayoutManager());
     verify(secondRecyclerView).setAdapter(any(RecyclerView.Adapter.class));
@@ -265,7 +266,18 @@ public class RecyclerBinderTest {
     verify(recyclerView).setLayoutManager(null);
     verify(recyclerView).setAdapter(null);
     verify(mLayoutInfo).setComponentInfoCollection(null);
-    verify(recyclerView).removeOnScrollListener(any(OnScrollListener.class));
+    verify(recyclerView, times(2)).removeOnScrollListener(any(OnScrollListener.class));
+  }
+
+  @Test
+  public void testAddStickyHeaderIfRecyclerViewWrapperExists() throws Exception {
+    RecyclerView recyclerView = mock(RecyclerView.class);
+    when(recyclerView.getParent()).thenReturn(mock(RecyclerViewWrapper.class));
+    mRecyclerBinder.mount(recyclerView);
+
+    verify(recyclerView).setLayoutManager(mLayoutInfo.getLayoutManager());
+    verify(recyclerView).setAdapter(any(RecyclerView.Adapter.class));
+    verify(recyclerView, times(2)).addOnScrollListener(any(OnScrollListener.class));
   }
 
   @Test
@@ -314,7 +326,7 @@ public class RecyclerBinderTest {
       mRecyclerBinder.insertItemAt(i, components.get(i));
     }
 
-    Mockito.when(mLayoutInfo.getChildWidthSpec(anyInt(), any(ComponentInfo.class)))
+    when(mLayoutInfo.getChildWidthSpec(anyInt(), any(ComponentInfo.class)))
         .thenAnswer(new Answer<Integer>() {
           @Override
           public Integer answer(InvocationOnMock invocation) throws Throwable {
@@ -484,6 +496,48 @@ public class RecyclerBinderTest {
       componentTreeHolder = mHoldersForComponents.get(components.get(i).getComponent());
 
       if (i >= newRangeStart - (RANGE_RATIO * rangeSize) && i <= newRangeStart + rangeTotal) {
+        assertTrue(componentTreeHolder.isTreeValid());
+        assertTrue(componentTreeHolder.mLayoutAsyncCalled);
+        assertFalse(componentTreeHolder.mLayoutSyncCalled);
+      } else {
+        assertFalse(componentTreeHolder.isTreeValid());
+        assertFalse(componentTreeHolder.mLayoutAsyncCalled);
+        assertFalse(componentTreeHolder.mLayoutSyncCalled);
+      }
+    }
+  }
+
+  @Test
+  public void testStickyComponentsStayValidOutsideRange() {
+    final List<ComponentInfo> components = prepareLoadedBinder();
+    makeIndexSticky(components, 5);
+    makeIndexSticky(components, 40);
+    makeIndexSticky(components, 80);
+
+    Size size = new Size();
+    int widthSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
+    int heightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
+
+    mRecyclerBinder.measure(size, widthSpec, heightSpec);
+
+    assertTrue(mHoldersForComponents.get(components.get(5).getComponent()).isTreeValid());
+
+    final int newRangeStart = 40;
+    final int newRangeEnd = 50;
+    int rangeSize = newRangeEnd - newRangeStart;
+    final int rangeTotal = (int) (rangeSize + (RANGE_RATIO * rangeSize));
+
+    mRecyclerBinder.onNewVisibleRange(newRangeStart, newRangeEnd);
+
+    TestComponentTreeHolder componentTreeHolder;
+    for (int i = 0; i < components.size(); i++) {
+      componentTreeHolder = mHoldersForComponents.get(components.get(i).getComponent());
+      boolean isIndexInRange =
+          i >= newRangeStart - (RANGE_RATIO * rangeSize) && i <= newRangeStart + rangeTotal;
+      boolean isPreviouslyComputedTreeAndSticky =
+          i <= newRangeStart + rangeTotal && componentTreeHolder.getComponentInfo().isSticky();
+
+      if (isIndexInRange || isPreviouslyComputedTreeAndSticky) {
         assertTrue(componentTreeHolder.isTreeValid());
         assertTrue(componentTreeHolder.mLayoutAsyncCalled);
         assertFalse(componentTreeHolder.mLayoutSyncCalled);
@@ -875,6 +929,14 @@ public class RecyclerBinderTest {
     mRecyclerBinder.measure(size, widthSpec, heightSpec);
 
     return components;
+  }
+
+  private void makeIndexSticky(List<ComponentInfo> components, int i) {
+    components.set(
+        i,
+        ComponentInfo.create().component(mock(Component.class)).isSticky(true).build());
+    mRecyclerBinder.removeItemAt(i);
+    mRecyclerBinder.insertItemAt(i, components.get(i));
   }
 
   private static class TestComponentTreeHolder extends ComponentTreeHolder {
