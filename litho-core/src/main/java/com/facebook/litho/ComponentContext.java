@@ -37,7 +37,7 @@ public class ComponentContext extends ContextWrapper {
   private @ThreadConfined(ThreadConfined.ANY) ResourceCache mResourceCache;
   private @ThreadConfined(ThreadConfined.ANY) int mWidthSpec;
   private @ThreadConfined(ThreadConfined.ANY) int mHeightSpec;
-  private @ThreadConfined(ThreadConfined.ANY) TreeProps mTreeProps;
+  protected @ThreadConfined(ThreadConfined.ANY) TreeProps mTreeProps;
 
   private @ThreadConfined(ThreadConfined.ANY) ComponentTree mComponentTree;
 
