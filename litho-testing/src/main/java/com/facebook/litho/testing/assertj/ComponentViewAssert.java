@@ -17,7 +17,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 
 import com.facebook.litho.LithoView;
-import com.facebook.litho.ComponentViewTestHelper;
+import com.facebook.litho.LithoViewTestHelper;
 import com.facebook.litho.TestItem;
 import com.facebook.litho.testing.viewtree.ViewTree;
 import com.facebook.litho.testing.viewtree.ViewTreeAssert;
@@ -46,7 +46,7 @@ public class ComponentViewAssert extends AbstractAssert<ComponentViewAssert, Lit
   }
 
   public ComponentViewAssert containsTestKey(String testKey, OccurrenceCount count) {
-    final Deque<TestItem> testItems = ComponentViewTestHelper.findTestItems(actual, testKey);
+    final Deque<TestItem> testItems = LithoViewTestHelper.findTestItems(actual, testKey);
     Java6Assertions.assertThat(testItems)
         .hasSize(count.times)
         .overridingErrorMessage(
@@ -64,7 +64,7 @@ public class ComponentViewAssert extends AbstractAssert<ComponentViewAssert, Lit
 
   @SuppressWarnings("VisibleForTests")
   public ComponentViewAssert doesNotContainTestKey(String testKey) {
-    final TestItem testItem = ComponentViewTestHelper.findTestItem(actual, testKey);
+    final TestItem testItem = LithoViewTestHelper.findTestItem(actual, testKey);
     final Rect bounds = testItem == null ? null : testItem.getBounds();
 
     Java6Assertions.assertThat(testItem)

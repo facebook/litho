@@ -1975,7 +1975,7 @@ class MountState {
   }
 
   /**
-   * @see ComponentViewTestHelper#findTestItems(LithoView, String)
+   * @see LithoViewTestHelper#findTestItems(LithoView, String)
    */
   @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
   Deque<TestItem> findTestItems(String testKey) {

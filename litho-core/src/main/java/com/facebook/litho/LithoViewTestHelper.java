@@ -27,7 +27,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
  * ComponentsConfiguration#isEndToEndTestRun} must be enabled.
  */
 @DoNotStrip
-public class ComponentViewTestHelper {
+public class LithoViewTestHelper {
 
   /**
    * @see #findTestItems(LithoView, String)
@@ -68,7 +68,7 @@ public class ComponentViewTestHelper {
    *              .build();
    *        }
    *      });
-   *  final TestItem testItem = ComponentViewTestHelper.findTestItem(lithoView, "mytestkey");
+   *  final TestItem testItem = LithoViewTestHelper.findTestItem(lithoView, "mytestkey");
    *  }
    * </pre>
    *

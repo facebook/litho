@@ -155,7 +155,7 @@ public class MountStateTestItemTest {
         });
 
     ComponentViewAssert.assertThat(lithoView).containsTestKey(TEST_ID_1);
-    final TestItem item1 = ComponentViewTestHelper.findTestItem(lithoView, TEST_ID_1);
+    final TestItem item1 = LithoViewTestHelper.findTestItem(lithoView, TEST_ID_1);
     assertThat(item1.getTextContent()).isEqualTo(MY_TEST_STRING_1);
   }
 
@@ -182,9 +182,9 @@ public class MountStateTestItemTest {
         });
 
     ComponentViewAssert.assertThat(lithoView).containsTestKey(TEST_ID_1);
-    final TestItem item1 = ComponentViewTestHelper.findTestItem(lithoView, TEST_ID_1);
+    final TestItem item1 = LithoViewTestHelper.findTestItem(lithoView, TEST_ID_1);
     assertThat(item1.getTextContent()).isEqualTo(MY_TEST_STRING_1);
-    final TestItem item2 = ComponentViewTestHelper.findTestItem(lithoView, TEST_ID_2);
+    final TestItem item2 = LithoViewTestHelper.findTestItem(lithoView, TEST_ID_2);
     assertThat(item2.getTextContent()).isEqualTo(MY_TEST_STRING_2);
   }
 
@@ -212,9 +212,9 @@ public class MountStateTestItemTest {
         });
 
     ComponentViewAssert.assertThat(lithoView).containsTestKey(TEST_ID_1);
-    final TestItem item1 = ComponentViewTestHelper.findTestItem(lithoView, TEST_ID_1);
+    final TestItem item1 = LithoViewTestHelper.findTestItem(lithoView, TEST_ID_1);
     assertThat(item1.getTextContent()).isEqualTo(MY_TEST_STRING_1);
-    final TestItem item2 = ComponentViewTestHelper.findTestItem(lithoView, TEST_ID_2);
+    final TestItem item2 = LithoViewTestHelper.findTestItem(lithoView, TEST_ID_2);
     assertThat(item2.getTextContent()).isEqualTo(MY_TEST_STRING_2);
   }
 }
