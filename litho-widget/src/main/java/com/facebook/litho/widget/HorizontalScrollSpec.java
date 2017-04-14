@@ -159,40 +159,40 @@ class HorizontalScrollSpec {
   }
 
   @OnCreateMountContent
-  static HorizontalScrollComponentView onCreateMountContent(ComponentContext c) {
-    return new HorizontalScrollComponentView(c);
+  static HorizontalScrollLithoView onCreateMountContent(ComponentContext c) {
+    return new HorizontalScrollLithoView(c);
   }
 
   @OnMount
   static void onMount(
       ComponentContext context,
-      HorizontalScrollComponentView horizontalScrollComponentView,
+      HorizontalScrollLithoView horizontalScrollLithoView,
       @Prop(optional = true, resType = ResType.BOOL) boolean scrollbarEnabled,
       @FromPrepare ComponentTree contentComponent,
       @FromBoundsDefined int componentWidth,
       @FromBoundsDefined int componentHeight) {
 
-    horizontalScrollComponentView.setHorizontalScrollBarEnabled(scrollbarEnabled);
-    horizontalScrollComponentView.mount(contentComponent, componentWidth, componentHeight);
+    horizontalScrollLithoView.setHorizontalScrollBarEnabled(scrollbarEnabled);
+    horizontalScrollLithoView.mount(contentComponent, componentWidth, componentHeight);
   }
 
   @OnUnmount
   static void onUnmount(
       ComponentContext context,
-      HorizontalScrollComponentView mountedView) {
+      HorizontalScrollLithoView mountedView) {
     mountedView.unmount();
   }
 
-  static class HorizontalScrollComponentView extends HorizontalScrollView {
-    private final LithoView mComponentView;
+  static class HorizontalScrollLithoView extends HorizontalScrollView {
+    private final LithoView mLithoView;
 
     private int mComponentWidth;
     private int mComponentHeight;
 
-    public HorizontalScrollComponentView(Context context) {
+    public HorizontalScrollLithoView(Context context) {
       super(context);
-      mComponentView = new LithoView(context);
-      addView(mComponentView);
+      mLithoView = new LithoView(context);
+      addView(mLithoView);
     }
 
     @Override
@@ -209,7 +209,7 @@ class HorizontalScrollSpec {
       // ensure that there will never be a size-mismatch between the view and the
       // component-based content, which would trigger a layout pass in the
       // UI thread.
-      mComponentView.measure(
+      mLithoView.measure(
           MeasureSpec.makeMeasureSpec(mComponentWidth, MeasureSpec.EXACTLY),
           MeasureSpec.makeMeasureSpec(mComponentHeight, MeasureSpec.EXACTLY));
 
@@ -220,18 +220,18 @@ class HorizontalScrollSpec {
     }
 
     void mount(ComponentTree component, int width, int height) {
-      mComponentView.setComponentTree(component);
+      mLithoView.setComponentTree(component);
       mComponentWidth = width;
       mComponentHeight = height;
     }
 
     void incrementalMount() {
-      mComponentView.performIncrementalMount();
+      mLithoView.performIncrementalMount();
     }
 
     void unmount() {
       // Clear all component-related state from the view.
-      mComponentView.setComponentTree(null);
+      mLithoView.setComponentTree(null);
       mComponentWidth = 0;
       mComponentHeight = 0;
     }

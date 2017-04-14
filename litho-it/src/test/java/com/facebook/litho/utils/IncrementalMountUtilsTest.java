@@ -41,18 +41,18 @@ public class IncrementalMountUtilsTest {
   private static final int SCROLLING_VIEW_HEIGHT = 1000;
 
   public TestWrapperView mWrapperView = mock(TestWrapperView.class);
-  public LithoView mComponentView = mock(LithoView.class);
+  public LithoView mLithoView = mock(LithoView.class);
   public ViewGroup mViewGroup = mock(ViewGroup.class);
 
   private final Rect mMountedRect = new Rect();
 
   @Before
   public void setUp() {
-    when(mComponentView.isIncrementalMountEnabled()).thenReturn(true);
-    when(mWrapperView.getWrappedView()).thenReturn(mComponentView);
+    when(mLithoView.isIncrementalMountEnabled()).thenReturn(true);
+    when(mWrapperView.getWrappedView()).thenReturn(mLithoView);
 
     when(mViewGroup.getChildCount()).thenReturn(1);
-    when(mViewGroup.getChildAt(0)).thenReturn(mComponentView);
+    when(mViewGroup.getChildAt(0)).thenReturn(mLithoView);
     when(mViewGroup.getWidth()).thenReturn(SCROLLING_VIEW_WIDTH);
     when(mViewGroup.getHeight()).thenReturn(SCROLLING_VIEW_HEIGHT);
 
@@ -65,12 +65,12 @@ public class IncrementalMountUtilsTest {
             mMountedRect.set((Rect) invocation.getArguments()[0]);
             return null;
           }
-        }).when(mComponentView).performIncrementalMount(any(Rect.class));
+        }).when(mLithoView).performIncrementalMount(any(Rect.class));
   }
 
   @Test
-  public void testIncrementalMountForComponentViewVisibleAtTop() {
-    setupViewBounds(mComponentView, 0, -10, SCROLLING_VIEW_WIDTH, 10);
+  public void testIncrementalMountForLithoViewVisibleAtTop() {
+    setupViewBounds(mLithoView, 0, -10, SCROLLING_VIEW_WIDTH, 10);
 
     IncrementalMountUtils.performIncrementalMount(mViewGroup);
 
@@ -78,9 +78,9 @@ public class IncrementalMountUtilsTest {
   }
 
   @Test
-  public void testIncrementalMountForComponentViewVisibleAtTopWithTranslationYPartialIn() {
-    setupViewBounds(mComponentView, 0, -10, SCROLLING_VIEW_WIDTH, 10);
-    setupViewTranslations(mComponentView, 0, 5);
+  public void testIncrementalMountForLithoViewVisibleAtTopWithTranslationYPartialIn() {
+    setupViewBounds(mLithoView, 0, -10, SCROLLING_VIEW_WIDTH, 10);
+    setupViewTranslations(mLithoView, 0, 5);
 
     IncrementalMountUtils.performIncrementalMount(mViewGroup);
 
@@ -88,18 +88,18 @@ public class IncrementalMountUtilsTest {
   }
 
   @Test
-  public void testIncrementalMountForComponentViewVisibleAtTopWithTranslationYFullyOut() {
-    setupViewBounds(mComponentView, 0, -10, SCROLLING_VIEW_WIDTH, 10);
-    setupViewTranslations(mComponentView, 0, -15);
+  public void testIncrementalMountForLithoViewVisibleAtTopWithTranslationYFullyOut() {
+    setupViewBounds(mLithoView, 0, -10, SCROLLING_VIEW_WIDTH, 10);
+    setupViewTranslations(mLithoView, 0, -15);
 
     IncrementalMountUtils.performIncrementalMount(mViewGroup);
 
-    verify(mComponentView, never()).performIncrementalMount(any(Rect.class));
+    verify(mLithoView, never()).performIncrementalMount(any(Rect.class));
   }
 
   @Test
-  public void testIncrementalMountForComponentViewVisibleAtLeft() {
-    setupViewBounds(mComponentView, -10, 0, 10, SCROLLING_VIEW_HEIGHT);
+  public void testIncrementalMountForLithoViewVisibleAtLeft() {
+    setupViewBounds(mLithoView, -10, 0, 10, SCROLLING_VIEW_HEIGHT);
 
     IncrementalMountUtils.performIncrementalMount(mViewGroup);
 
@@ -107,20 +107,20 @@ public class IncrementalMountUtilsTest {
   }
 
   @Test
-  public void testIncrementalMountForComponentViewVisibleAtLeftWithTranslationXFullyIn() {
-    setupViewBounds(mComponentView, -10, 0, 10, SCROLLING_VIEW_HEIGHT);
-    setupViewTranslations(mComponentView, 15, 0);
-    setupComponentViewPreviousBounds(mComponentView, 20, SCROLLING_VIEW_HEIGHT);
+  public void testIncrementalMountForLithoViewVisibleAtLeftWithTranslationXFullyIn() {
+    setupViewBounds(mLithoView, -10, 0, 10, SCROLLING_VIEW_HEIGHT);
+    setupViewTranslations(mLithoView, 15, 0);
+    setupLithoViewPreviousBounds(mLithoView, 20, SCROLLING_VIEW_HEIGHT);
 
     IncrementalMountUtils.performIncrementalMount(mViewGroup);
 
-    verify(mComponentView, never()).performIncrementalMount(any(Rect.class));
+    verify(mLithoView, never()).performIncrementalMount(any(Rect.class));
   }
 
   @Test
-  public void testIncrementalMountForComponentViewVisibleAtLeftWithTranslationXPartialOut() {
-    setupViewBounds(mComponentView, -10, 0, 10, SCROLLING_VIEW_HEIGHT);
-    setupViewTranslations(mComponentView, -7, 0);
+  public void testIncrementalMountForLithoViewVisibleAtLeftWithTranslationXPartialOut() {
+    setupViewBounds(mLithoView, -10, 0, 10, SCROLLING_VIEW_HEIGHT);
+    setupViewTranslations(mLithoView, -7, 0);
 
     IncrementalMountUtils.performIncrementalMount(mViewGroup);
 
@@ -128,9 +128,9 @@ public class IncrementalMountUtilsTest {
   }
 
   @Test
-  public void testIncrementalMountForComponentViewVisibleAtBottom() {
+  public void testIncrementalMountForLithoViewVisibleAtBottom() {
     setupViewBounds(
-        mComponentView,
+        mLithoView,
         0,
         SCROLLING_VIEW_HEIGHT - 5,
         SCROLLING_VIEW_WIDTH,
@@ -142,9 +142,9 @@ public class IncrementalMountUtilsTest {
   }
 
   @Test
-  public void testIncrementalMountForComponentViewVisibleAtRight() {
+  public void testIncrementalMountForLithoViewVisibleAtRight() {
     setupViewBounds(
-        mComponentView,
+        mLithoView,
         SCROLLING_VIEW_WIDTH - 5,
         0,
         SCROLLING_VIEW_WIDTH + 5,
@@ -156,9 +156,9 @@ public class IncrementalMountUtilsTest {
   }
 
   @Test
-  public void testIncrementalMountForComponentViewNewlyFullyVisible() {
-    setupViewBounds(mComponentView, 0, 10, SCROLLING_VIEW_WIDTH, 20);
-    setupComponentViewPreviousBounds(mComponentView, SCROLLING_VIEW_WIDTH, 5);
+  public void testIncrementalMountForLithoViewNewlyFullyVisible() {
+    setupViewBounds(mLithoView, 0, 10, SCROLLING_VIEW_WIDTH, 20);
+    setupLithoViewPreviousBounds(mLithoView, SCROLLING_VIEW_WIDTH, 5);
 
     IncrementalMountUtils.performIncrementalMount(mViewGroup);
 
@@ -166,35 +166,35 @@ public class IncrementalMountUtilsTest {
   }
 
   @Test
-  public void testIncrementalMountForComponentViewAlreadyFullyVisible() {
-    setupViewBounds(mComponentView, 0, 10, SCROLLING_VIEW_WIDTH, 20);
-    setupComponentViewPreviousBounds(mComponentView, SCROLLING_VIEW_WIDTH, 10);
+  public void testIncrementalMountForLithoViewAlreadyFullyVisible() {
+    setupViewBounds(mLithoView, 0, 10, SCROLLING_VIEW_WIDTH, 20);
+    setupLithoViewPreviousBounds(mLithoView, SCROLLING_VIEW_WIDTH, 10);
 
     IncrementalMountUtils.performIncrementalMount(mViewGroup);
 
-    verify(mComponentView, never()).performIncrementalMount(any(Rect.class));
+    verify(mLithoView, never()).performIncrementalMount(any(Rect.class));
   }
 
   @Test
   public void testNoIncrementalMountWhenNotEnabled() {
     setupViewBounds(
-        mComponentView,
+        mLithoView,
         0,
         SCROLLING_VIEW_HEIGHT - 5,
         SCROLLING_VIEW_WIDTH,
         SCROLLING_VIEW_HEIGHT + 5);
-    when(mComponentView.isIncrementalMountEnabled()).thenReturn(false);
+    when(mLithoView.isIncrementalMountEnabled()).thenReturn(false);
 
     IncrementalMountUtils.performIncrementalMount(mViewGroup);
 
-    verify(mComponentView, never()).performIncrementalMount(any(Rect.class));
+    verify(mLithoView, never()).performIncrementalMount(any(Rect.class));
   }
 
   @Test
   public void testIncrementalMountForWrappedViewAtTop() {
     when(mViewGroup.getChildAt(0)).thenReturn(mWrapperView);
     setupViewBounds(mWrapperView, 0, -10, SCROLLING_VIEW_WIDTH, 10);
-    setupViewBounds(mComponentView, 0, 0, SCROLLING_VIEW_WIDTH, 20);
+    setupViewBounds(mLithoView, 0, 0, SCROLLING_VIEW_WIDTH, 20);
 
     IncrementalMountUtils.performIncrementalMount(mViewGroup);
 
@@ -210,7 +210,7 @@ public class IncrementalMountUtilsTest {
         SCROLLING_VIEW_HEIGHT - 5,
         SCROLLING_VIEW_WIDTH,
         SCROLLING_VIEW_HEIGHT + 5);
-    setupViewBounds(mComponentView, 0, 0, SCROLLING_VIEW_WIDTH, 10);
+    setupViewBounds(mLithoView, 0, 0, SCROLLING_VIEW_WIDTH, 10);
 
     IncrementalMountUtils.performIncrementalMount(mViewGroup);
 
@@ -218,11 +218,11 @@ public class IncrementalMountUtilsTest {
   }
 
   @Test
-  public void testIncrementalMountForWrappedComponentViewNewlyFullyVisible() {
+  public void testIncrementalMountForWrappedLithoViewNewlyFullyVisible() {
     when(mViewGroup.getChildAt(0)).thenReturn(mWrapperView);
     setupViewBounds(mWrapperView, 0, 10, SCROLLING_VIEW_WIDTH, 20);
-    setupViewBounds(mComponentView, 0, 0, SCROLLING_VIEW_WIDTH, 10);
-    setupComponentViewPreviousBounds(mComponentView, SCROLLING_VIEW_WIDTH, 5);
+    setupViewBounds(mLithoView, 0, 0, SCROLLING_VIEW_WIDTH, 10);
+    setupLithoViewPreviousBounds(mLithoView, SCROLLING_VIEW_WIDTH, 5);
 
     IncrementalMountUtils.performIncrementalMount(mViewGroup);
 
@@ -230,15 +230,15 @@ public class IncrementalMountUtilsTest {
   }
 
   @Test
-  public void testIncrementalMountForWrappedComponentViewAlreadyFullyVisible() {
+  public void testIncrementalMountForWrappedLithoViewAlreadyFullyVisible() {
     when(mViewGroup.getChildAt(0)).thenReturn(mWrapperView);
     setupViewBounds(mWrapperView, 0, 10, SCROLLING_VIEW_WIDTH, 20);
-    setupViewBounds(mComponentView, 0, 0, SCROLLING_VIEW_WIDTH, 10);
-    setupComponentViewPreviousBounds(mComponentView, SCROLLING_VIEW_WIDTH, 10);
+    setupViewBounds(mLithoView, 0, 0, SCROLLING_VIEW_WIDTH, 10);
+    setupLithoViewPreviousBounds(mLithoView, SCROLLING_VIEW_WIDTH, 10);
 
     IncrementalMountUtils.performIncrementalMount(mViewGroup);
 
-    verify(mComponentView, never()).performIncrementalMount(any(Rect.class));
+    verify(mLithoView, never()).performIncrementalMount(any(Rect.class));
   }
 
   private static void setupViewBounds(View view, int l, int t, int r, int b) {
@@ -255,7 +255,7 @@ public class IncrementalMountUtilsTest {
     when(view.getTranslationY()).thenReturn(translationY);
   }
 
-  private static void setupComponentViewPreviousBounds(
+  private static void setupLithoViewPreviousBounds(
       LithoView lithoView,
       int width,
       int height) {

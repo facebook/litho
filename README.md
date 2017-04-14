@@ -38,7 +38,7 @@ public void onCreate(Bundle savedInstanceState) {
         .textSizeDip(50)
         .build();
 
-    setContentView(ComponentView.create(context, component));
+    setContentView(LithoView.create(context, component));
 }
 ```
 ## Run sample

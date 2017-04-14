@@ -12,7 +12,7 @@ package com.facebook.litho;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.ComponentTestHelper;
 import com.facebook.litho.testing.TestDrawableComponent;
-import com.facebook.litho.testing.assertj.ComponentViewAssert;
+import com.facebook.litho.testing.assertj.LithoViewAssert;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.litho.widget.Text;
@@ -24,7 +24,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
-import static com.facebook.litho.testing.assertj.ComponentViewAssert.times;
+import static com.facebook.litho.testing.assertj.LithoViewAssert.times;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -72,7 +72,7 @@ public class MountStateTestItemTest {
           }
         });
 
-    ComponentViewAssert.assertThat(lithoView)
+    LithoViewAssert.assertThat(lithoView)
         .containsTestKey(TEST_ID_1)
         .containsTestKey(TEST_ID_2)
         .doesNotContainTestKey(TEST_ID_3);
@@ -100,7 +100,7 @@ public class MountStateTestItemTest {
           }
         });
 
-    ComponentViewAssert.assertThat(lithoView)
+    LithoViewAssert.assertThat(lithoView)
         .containsTestKey(TEST_ID_1, times(2))
         .doesNotContainTestKey(TEST_ID_2);
   }
@@ -131,7 +131,7 @@ public class MountStateTestItemTest {
           }
         });
 
-    ComponentViewAssert.assertThat(lithoView)
+    LithoViewAssert.assertThat(lithoView)
         .doesNotContainTestKey("")
         .doesNotContainTestKey(null)
         .containsTestKey(TEST_ID_1);
@@ -154,7 +154,7 @@ public class MountStateTestItemTest {
           }
         });
 
-    ComponentViewAssert.assertThat(lithoView).containsTestKey(TEST_ID_1);
+    LithoViewAssert.assertThat(lithoView).containsTestKey(TEST_ID_1);
     final TestItem item1 = LithoViewTestHelper.findTestItem(lithoView, TEST_ID_1);
     assertThat(item1.getTextContent()).isEqualTo(MY_TEST_STRING_1);
   }
@@ -181,7 +181,7 @@ public class MountStateTestItemTest {
           }
         });
 
-    ComponentViewAssert.assertThat(lithoView).containsTestKey(TEST_ID_1);
+    LithoViewAssert.assertThat(lithoView).containsTestKey(TEST_ID_1);
     final TestItem item1 = LithoViewTestHelper.findTestItem(lithoView, TEST_ID_1);
     assertThat(item1.getTextContent()).isEqualTo(MY_TEST_STRING_1);
     final TestItem item2 = LithoViewTestHelper.findTestItem(lithoView, TEST_ID_2);
@@ -211,7 +211,7 @@ public class MountStateTestItemTest {
           }
         });
 
-    ComponentViewAssert.assertThat(lithoView).containsTestKey(TEST_ID_1);
+    LithoViewAssert.assertThat(lithoView).containsTestKey(TEST_ID_1);
     final TestItem item1 = LithoViewTestHelper.findTestItem(lithoView, TEST_ID_1);
     assertThat(item1.getTextContent()).isEqualTo(MY_TEST_STRING_1);
     final TestItem item2 = LithoViewTestHelper.findTestItem(lithoView, TEST_ID_2);

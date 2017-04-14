@@ -800,9 +800,9 @@ public class RecyclerBinder implements Binder<RecyclerView>, LayoutInfo.Componen
     }
   }
 
-  private class ComponentViewHolder extends RecyclerView.ViewHolder {
+  private class LithoViewHolder extends RecyclerView.ViewHolder {
 
-    public ComponentViewHolder(LithoView lithoView) {
+    public LithoViewHolder(LithoView lithoView) {
       super(lithoView);
 
       switch (mLayoutInfo.getScrollDirection()) {
@@ -825,7 +825,7 @@ public class RecyclerBinder implements Binder<RecyclerView>, LayoutInfo.Componen
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-      return new ComponentViewHolder(
+      return new LithoViewHolder(
           new LithoView(mComponentContext, null, mUseNewIncrementalMount));
     }
 

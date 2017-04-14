@@ -478,7 +478,7 @@ public class MountStateRemountInPlaceTest {
             .unique()
             .build();
 
-    final LithoView firstComponentView = ComponentTestHelper.mountComponent(
+    final LithoView firstLithoView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -526,7 +526,7 @@ public class MountStateRemountInPlaceTest {
       }
     });
 
-    ComponentTestHelper.mountComponent(firstComponentView, secondTree);
+    ComponentTestHelper.mountComponent(firstLithoView, secondTree);
 
     assertTrue(thirdComponent.wasOnMountCalled());
     assertTrue(thirdComponent.wasOnBindCalled());
@@ -545,7 +545,7 @@ public class MountStateRemountInPlaceTest {
             false)
             .build();
 
-    final LithoView firstComponentView = ComponentTestHelper.mountComponent(
+    final LithoView firstLithoView = ComponentTestHelper.mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -585,7 +585,7 @@ public class MountStateRemountInPlaceTest {
         .build();
     secondTree.setSizeSpec(100, 100);
 
-    ComponentTestHelper.mountComponent(firstComponentView, secondTree);
+    ComponentTestHelper.mountComponent(firstLithoView, secondTree);
 
     assertTrue(secondComponent.wasOnMountCalled());
     assertTrue(secondComponent.wasOnBindCalled());

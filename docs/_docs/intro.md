@@ -52,7 +52,7 @@ Even though components provide flatter view hierarchies and perform [layout off 
 
 Litho can transparently spread the cost of mounting components across UI frames to avoid jank.
 
-With incremental mount enabled (which it is by default), the `ComponentView` will only mount enough content to fill its visible region and unmount (and recycle) components that are no longer visible.
+With incremental mount enabled (which it is by default), the `LithoView` will only mount enough content to fill its visible region and unmount (and recycle) components that are no longer visible.
   
 ![Incremental Mount Diagram](/static/images/incremental-mount.png)
 

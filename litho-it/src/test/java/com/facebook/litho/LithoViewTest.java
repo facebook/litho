@@ -27,8 +27,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(ComponentsTestRunner.class)
-public class ComponentViewTest {
-  private LithoView mComponentView;
+public class LithoViewTest {
+  private LithoView mLithoView;
 
   @Before
   public void setup() {
@@ -49,29 +49,29 @@ public class ComponentViewTest {
         .layoutDiffing(false)
         .build();
 
-    mComponentView = new LithoView(RuntimeEnvironment.application);
-    mComponentView.setComponentTree(componentTree);
+    mLithoView = new LithoView(RuntimeEnvironment.application);
+    mLithoView.setComponentTree(componentTree);
   }
 
   @Test
   public void measureBeforeBeingAttached() {
-    mComponentView.measure(
+    mLithoView.measure(
         View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
         View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-    mComponentView.layout(
+    mLithoView.layout(
         0,
         0,
-        mComponentView.getMeasuredWidth(),
-        mComponentView.getMeasuredHeight());
+        mLithoView.getMeasuredWidth(),
+        mLithoView.getMeasuredHeight());
 
     // View got measured.
-    assertTrue(mComponentView.getMeasuredHeight() != 0 && mComponentView.getMeasuredWidth() != 0);
+    assertTrue(mLithoView.getMeasuredHeight() != 0 && mLithoView.getMeasuredWidth() != 0);
 
     // Attaching will automatically mount since we already have a layout fitting our size.
-    ShadowView shadow = Shadows.shadowOf(mComponentView);
+    ShadowView shadow = Shadows.shadowOf(mLithoView);
     shadow.callOnAttachedToWindow();
 
-    assertEquals(2, getInternalMountItems(mComponentView).length);
+    assertEquals(2, getInternalMountItems(mLithoView).length);
   }
 
   private static long[] getInternalMountItems(LithoView lithoView) {
@@ -80,7 +80,7 @@ public class ComponentViewTest {
   }
 
   @Test
-  public void testNullComponentViewDimensions() {
+  public void testNullLithoViewDimensions() {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
@@ -88,24 +88,24 @@ public class ComponentViewTest {
       }
     };
 
-    LithoView nullComponentView = new LithoView(RuntimeEnvironment.application);
-    nullComponentView.setComponentTree(
+    LithoView nullLithoView = new LithoView(RuntimeEnvironment.application);
+    nullLithoView.setComponentTree(
         ComponentTree.create(
             new ComponentContext(RuntimeEnvironment.application),
             component)
             .incrementalMount(false)
             .build());
 
-    nullComponentView.measure(
+    nullLithoView.measure(
         View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
         View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-    nullComponentView.layout(
+    nullLithoView.layout(
         0,
         0,
-        nullComponentView.getMeasuredWidth(),
-        nullComponentView.getMeasuredHeight());
+        nullLithoView.getMeasuredWidth(),
+        nullLithoView.getMeasuredHeight());
 
-    assertTrue(nullComponentView.getMeasuredHeight() == 0
-        && nullComponentView.getMeasuredWidth() == 0);
+    assertTrue(nullLithoView.getMeasuredHeight() == 0
+        && nullLithoView.getMeasuredWidth() == 0);
   }
 }

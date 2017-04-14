@@ -52,7 +52,7 @@ public class ViewPredicatesTest {
   private ImageView mOtherImageView;
   private ImageView mImageView;
   private ImageView mImageViewWithCustomDrawable;
-  private LithoView mComponentViewWithText;
+  private LithoView mLithoViewWithText;
 
   @Before
   public void setUp() {
@@ -76,7 +76,7 @@ public class ViewPredicatesTest {
     mImageViewWithCustomDrawable.setImageResource(R.drawable.custom_drawable);
 
     final ComponentContext context = new ComponentContext(activity);
-    mComponentViewWithText = ComponentTestHelper.mountComponent(
+    mLithoViewWithText = ComponentTestHelper.mountComponent(
         Text.create(context)
             .text("Hello"));
   }
@@ -90,7 +90,7 @@ public class ViewPredicatesTest {
     assertThat(hasHello.apply(mTextViewWithEmptyString)).isFalse();
     assertThat(hasHello.apply(mTextViewWithHello)).isTrue();
     assertThat(hasHello.apply(mTextViewWithWorld)).isFalse();
-    assertThat(hasHello.apply(mComponentViewWithText)).isTrue();
+    assertThat(hasHello.apply(mLithoViewWithText)).isTrue();
   }
 
   @Test
@@ -111,7 +111,7 @@ public class ViewPredicatesTest {
     assertThat(matchesHello.apply(mTextViewWithEmptyString)).isFalse();
     assertThat(matchesHello.apply(mTextViewWithHello)).isTrue();
     assertThat(matchesHello.apply(mTextViewWithWorld)).isFalse();
-    assertThat(matchesHello.apply(mComponentViewWithText)).isTrue();
+    assertThat(matchesHello.apply(mLithoViewWithText)).isTrue();
   }
 
   @Test
@@ -123,7 +123,7 @@ public class ViewPredicatesTest {
     assertThat(matchesPartOfHello.apply(mTextViewWithEmptyString)).isFalse();
     assertThat(matchesPartOfHello.apply(mTextViewWithHello)).isTrue();
     assertThat(matchesPartOfHello.apply(mTextViewWithWorld)).isTrue();
-    assertThat(matchesPartOfHello.apply(mComponentViewWithText)).isTrue();
+    assertThat(matchesPartOfHello.apply(mLithoViewWithText)).isTrue();
   }
 
   @Test

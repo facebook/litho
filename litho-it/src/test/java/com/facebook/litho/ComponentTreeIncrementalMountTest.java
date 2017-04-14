@@ -35,7 +35,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(ComponentsTestRunner.class)
 public class ComponentTreeIncrementalMountTest {
-  private LithoView mComponentView;
+  private LithoView mLithoView;
   private ComponentTree mComponentTree;
 
   private final Rect mMountedRect = new Rect();
@@ -51,8 +51,8 @@ public class ComponentTreeIncrementalMountTest {
         .layoutDiffing(false)
         .build();
 
-    mComponentView = mock(TestComponentView.class);
-    Whitebox.setInternalState(mComponentTree, "mComponentView", mComponentView);
+    mLithoView = mock(TestLithoView.class);
+    Whitebox.setInternalState(mComponentTree, "mLithoView", mLithoView);
 
     // Can't use verify as the rect is reset when it is released back to the pool, which occurs
     // before we can check it.
@@ -63,7 +63,7 @@ public class ComponentTreeIncrementalMountTest {
             mMountedRect.set((Rect) invocation.getArguments()[1]);
             return null;
           }
-        }).when(mComponentView).mount(any(LayoutState.class), any(Rect.class));
+        }).when(mLithoView).mount(any(LayoutState.class), any(Rect.class));
   }
 
   @Test
@@ -96,7 +96,7 @@ public class ComponentTreeIncrementalMountTest {
     setupIncrementalMountTest(new Rect(10, 10, 20, 20), new Rect(20, 10, 30, 30));
 
     mComponentTree.incrementalMountComponent();
-    verify(mComponentView, never()).mount(any(LayoutState.class), any(Rect.class));
+    verify(mLithoView, never()).mount(any(LayoutState.class), any(Rect.class));
   }
 
   @Test
@@ -144,10 +144,10 @@ public class ComponentTreeIncrementalMountTest {
             location[1] = lithoViewBoundsInScreen.top;
             return null;
           }
-        }).when(mComponentView).getLocationOnScreen(any(int[].class));
-    when(mComponentView.getWidth())
+        }).when(mLithoView).getLocationOnScreen(any(int[].class));
+    when(mLithoView.getWidth())
         .thenReturn(lithoViewBoundsInScreen.right - lithoViewBoundsInScreen.left);
-    when(mComponentView.getHeight())
+    when(mLithoView.getHeight())
         .thenReturn(lithoViewBoundsInScreen.bottom - lithoViewBoundsInScreen.top);
 
     if (parentBoundsInScreen == null) {
@@ -155,7 +155,7 @@ public class ComponentTreeIncrementalMountTest {
     }
 
     ViewGroup parentView = mock(ViewGroup.class);
-    when(mComponentView.getParent()).thenReturn(parentView);
+    when(mLithoView.getParent()).thenReturn(parentView);
 
     doAnswer(
         new Answer<Void>() {
@@ -175,9 +175,9 @@ public class ComponentTreeIncrementalMountTest {
    * Required in order to ensure that {@link LithoView#mount(LayoutState, Rect)} is
    * mocked correctly (it needs protected access to be mocked).
    */
-  public static class TestComponentView extends LithoView {
+  public static class TestLithoView extends LithoView {
 
-    public TestComponentView(Context context) {
+    public TestLithoView(Context context) {
       super(context);
     }
 

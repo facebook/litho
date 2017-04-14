@@ -58,8 +58,8 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
     return ComponentTestHelper.mountComponent(mComponentContext, actual);
   }
 
-  private ComponentViewAssert assertThatComponentView() {
-    return ComponentViewAssert.assertThat(mountComponent());
+  private LithoViewAssert assertThatLithoView() {
+    return LithoViewAssert.assertThat(mountComponent());
   }
 
   /**
@@ -121,7 +121,7 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
    * description.
    */
   public ComponentAssert hasContentDescription(String contentDescription) {
-    assertThatComponentView().hasContentDescription(contentDescription);
+    assertThatLithoView().hasContentDescription(contentDescription);
 
     return this;
   }
@@ -131,7 +131,7 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
    * resource id.
    */
   public ComponentAssert hasVisibleDrawable(@DrawableRes int drawableRes) {
-    assertThatComponentView().hasVisibleDrawable(drawableRes);
+    assertThatLithoView().hasVisibleDrawable(drawableRes);
 
     return this;
   }
@@ -140,7 +140,7 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
    * Assert that the given component contains the drawable provided.
    */
   public ComponentAssert hasVisibleDrawable(Drawable drawable) {
-    assertThatComponentView().hasVisibleDrawable(drawable);
+    assertThatLithoView().hasVisibleDrawable(drawable);
 
     return this;
   }
@@ -149,7 +149,7 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
    * Inverse of {@link #hasVisibleDrawable(Drawable)}
    */
   public ComponentAssert doesNotHaveVisibleDrawable(Drawable drawable) {
-    assertThatComponentView().doesNotHaveVisibleDrawable(drawable);
+    assertThatLithoView().doesNotHaveVisibleDrawable(drawable);
 
     return this;
   }
@@ -158,7 +158,7 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
    * Inverse of {@link #hasVisibleDrawable(int)}
    */
   public ComponentAssert doesNotHaveVisibleDrawable(@DrawableRes int drawableRes) {
-    assertThatComponentView().doesNotHaveVisibleDrawable(drawableRes);
+    assertThatLithoView().doesNotHaveVisibleDrawable(drawableRes);
 
     return this;
   }
@@ -167,7 +167,7 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
    * Assert that the given component has the exact text provided.
    */
   public ComponentAssert hasVisibleText(String text) {
-    assertThatComponentView().hasVisibleText(text);
+    assertThatLithoView().hasVisibleText(text);
 
     return this;
   }
@@ -178,7 +178,7 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
    * @param tagValue View tag value.
    */
   public ComponentAssert hasViewTag(int tagId, Object tagValue) {
-    assertThatComponentView().hasViewTag(tagId, tagValue);
+    assertThatLithoView().hasViewTag(tagId, tagValue);
 
     return this;
   }

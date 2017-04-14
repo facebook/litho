@@ -75,7 +75,7 @@ public class ComponentTreeTest {
 
   private void creationCommonChecks(ComponentTree componentTree) {
     // Not view or attached yet
-    Assert.assertNull(getComponentView(componentTree));
+    Assert.assertNull(getLithoView(componentTree));
     Assert.assertFalse(isAttached(componentTree));
 
     // No measure spec from view yet.
@@ -370,19 +370,19 @@ public class ComponentTreeTest {
         .layoutDiffing(false)
         .build();
 
-    Assert.assertNull(getComponentView(componentTree1));
-    Assert.assertNull(getComponentView(componentTree2));
+    Assert.assertNull(getLithoView(componentTree1));
+    Assert.assertNull(getLithoView(componentTree2));
 
     LithoView lithoView = new LithoView(mContext);
     lithoView.setComponentTree(componentTree1);
 
-    Assert.assertNotNull(getComponentView(componentTree1));
-    Assert.assertNull(getComponentView(componentTree2));
+    Assert.assertNotNull(getLithoView(componentTree1));
+    Assert.assertNull(getLithoView(componentTree2));
 
     lithoView.setComponentTree(componentTree2);
 
-    Assert.assertNull(getComponentView(componentTree1));
-    Assert.assertNotNull(getComponentView(componentTree2));
+    Assert.assertNull(getLithoView(componentTree1));
+    Assert.assertNotNull(getLithoView(componentTree2));
   }
 
   @Test
@@ -448,7 +448,7 @@ public class ComponentTreeTest {
     LithoView lithoView1 = new LithoView(mContext);
     lithoView1.setComponentTree(componentTree);
 
-    assertEquals(lithoView1, getComponentView(componentTree));
+    assertEquals(lithoView1, getLithoView(componentTree));
     assertEquals(componentTree, getComponentTree(lithoView1));
 
     // Attach second view.
@@ -458,14 +458,14 @@ public class ComponentTreeTest {
 
     lithoView2.setComponentTree(componentTree);
 
-    assertEquals(lithoView2, getComponentView(componentTree));
+    assertEquals(lithoView2, getLithoView(componentTree));
     assertEquals(componentTree, getComponentTree(lithoView2));
 
     Assert.assertNull(getComponentTree(lithoView1));
   }
 
-  private static LithoView getComponentView(ComponentTree componentTree) {
-    return Whitebox.getInternalState(componentTree, "mComponentView");
+  private static LithoView getLithoView(ComponentTree componentTree) {
+    return Whitebox.getInternalState(componentTree, "mLithoView");
   }
 
   private static boolean isAttached(ComponentTree componentTree) {

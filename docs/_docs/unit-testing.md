@@ -10,7 +10,7 @@ AssertJ methods. They are available as:
 
 - [ComponentAssert](/javadoc/com/facebook/litho/testing/assertj/ComponentAssert) for assertions that are run against either Component builders
   or Components.
-- [ComponentViewAssert](/javadoc/com/facebook/litho/testing/assertj/ComponentViewAssert) for assertions against mounted Components.
+- [LithoViewAssert](/javadoc/com/facebook/litho/testing/assertj/LithoViewAssert) for assertions against mounted Components.
 
 In order to use any of the testing capabilities, you need include the optional
 `litho-testing` package in your build. It is available as
@@ -162,7 +162,7 @@ public class StoryTest {
 ## Additional Asserts
 
 There are several more assertions available for `Component`s and
-`ComponentView`s. They all operate on the tree created by your `Component`.
+`LithoView`s. They all operate on the tree created by your `Component`.
 So asserting the presence of a `Drawable` in your `Component` will traverse
 the view hierarchy from the provided starting point.
 

@@ -278,7 +278,7 @@ public class TransitionProperties {
         set(TRANSLATION_Y, view.getTranslationY());
 
         mLocation[0] = mLocation[1] = 0;
-        getLocationInComponentView(view, mLocation);
+        getLocationInLithoView(view, mLocation);
       }
 
       return this;
@@ -296,7 +296,7 @@ public class TransitionProperties {
       }
     }
 
-    private static void getLocationInComponentView(View view, int[] outLocation) {
+    private static void getLocationInLithoView(View view, int[] outLocation) {
       if (view.getParent() == null || !(view.getParent() instanceof ComponentHost)) {
         return;
       }
@@ -304,7 +304,7 @@ public class TransitionProperties {
       outLocation[0] += view.getX();
       outLocation[1] += view.getY();
 
-      getLocationInComponentView((View) view.getParent(), outLocation);
+      getLocationInLithoView((View) view.getParent(), outLocation);
     }
   }
 

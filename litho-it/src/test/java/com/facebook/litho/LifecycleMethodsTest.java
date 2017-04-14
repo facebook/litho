@@ -39,14 +39,14 @@ public class LifecycleMethodsTest {
     ON_UNMOUNT
   }
 
-  private LithoView mComponentView;
+  private LithoView mLithoView;
   private ComponentTree mComponentTree;
   private LifecycleMethodsComponent mLifecycle;
   private LifecycleMethodsInstance mComponent;
 
   @Before
   public void setup() throws Exception {
-    mComponentView = new LithoView(RuntimeEnvironment.application);
+    mLithoView = new LithoView(RuntimeEnvironment.application);
     mLifecycle = new LifecycleMethodsComponent();
     mComponent = mLifecycle.create(10);
 
@@ -55,33 +55,33 @@ public class LifecycleMethodsTest {
         .incrementalMount(false)
         .layoutDiffing(false)
         .build();
-    mComponentView.setComponentTree(mComponentTree);
+    mLithoView.setComponentTree(mComponentTree);
   }
 
   @Test
   public void testLifecycle() {
-    mComponentView.onAttachedToWindow();
-    ComponentTestHelper.measureAndLayout(mComponentView);
+    mLithoView.onAttachedToWindow();
+    ComponentTestHelper.measureAndLayout(mLithoView);
 
     assertEquals(LifecycleStep.ON_BIND, mComponent.getCurrentStep());
 
-    mComponentView.onDetachedFromWindow();
+    mLithoView.onDetachedFromWindow();
     assertEquals(LifecycleStep.ON_UNBIND, mComponent.getCurrentStep());
 
-    mComponentView.onAttachedToWindow();
+    mLithoView.onAttachedToWindow();
     assertEquals(LifecycleStep.ON_BIND, mComponent.getCurrentStep());
 
     mComponentTree.setRoot(mLifecycle.create(20));
-    ComponentTestHelper.measureAndLayout(mComponentView);
+    ComponentTestHelper.measureAndLayout(mLithoView);
     assertEquals(LifecycleStep.ON_UNMOUNT, mComponent.getCurrentStep());
 
     mComponentTree.setRoot(mComponent);
-    ComponentTestHelper.measureAndLayout(mComponentView);
+    ComponentTestHelper.measureAndLayout(mLithoView);
     assertEquals(LifecycleStep.ON_BIND, mComponent.getCurrentStep());
 
-    mComponentView.onDetachedFromWindow();
+    mLithoView.onDetachedFromWindow();
     mComponentTree.setRoot(mComponent);
-    ComponentTestHelper.measureAndLayout(mComponentView);
+    ComponentTestHelper.measureAndLayout(mLithoView);
     assertEquals(LifecycleStep.ON_UNBIND, mComponent.getCurrentStep());
   }
 

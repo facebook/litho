@@ -110,7 +110,7 @@ public class ComponentTree {
   private boolean mIsLayoutDiffingEnabled;
   private boolean mIsAttached;
   private boolean mIsAsyncUpdateStateEnabled;
-  private LithoView mComponentView;
+  private LithoView mLithoView;
   private LayoutHandler mLayoutThreadHandler;
 
   @GuardedBy("this")
@@ -227,8 +227,8 @@ public class ComponentTree {
       return toRelease;
     } else {
       // Since we are changing layout states we'll need to remount.
-      if (mComponentView != null) {
-        mComponentView.setMountStateDirty();
+      if (mLithoView != null) {
+        mLithoView.setMountStateDirty();
       }
 
       LayoutState toRelease = mMainThreadLayoutState;
@@ -273,8 +273,8 @@ public class ComponentTree {
     }
 
     // We defer until measure if we don't yet have a width/height
-    int viewWidth = mComponentView.getMeasuredWidth();
-    int viewHeight = mComponentView.getMeasuredHeight();
+    int viewWidth = mLithoView.getMeasuredWidth();
+    int viewHeight = mLithoView.getMeasuredHeight();
     if (viewWidth == 0 && viewHeight == 0) {
       // The host view has not been measured yet.
       return;
@@ -288,7 +288,7 @@ public class ComponentTree {
             viewHeight);
 
     if (needsAndroidLayout) {
-      mComponentView.requestLayout();
+      mLithoView.requestLayout();
     } else {
       mountComponentIfDirty();
     }
@@ -297,7 +297,7 @@ public class ComponentTree {
   void attach() {
     assertMainThread();
 
-    if (mComponentView == null) {
+    if (mLithoView == null) {
       throw new IllegalStateException("Trying to attach a ComponentTree without a set View");
     }
 
@@ -318,8 +318,8 @@ public class ComponentTree {
     }
 
     // We defer until measure if we don't yet have a width/height
-    int viewWidth = mComponentView.getMeasuredWidth();
-    int viewHeight = mComponentView.getMeasuredHeight();
+    int viewWidth = mLithoView.getMeasuredWidth();
+    int viewHeight = mLithoView.getMeasuredHeight();
     if (viewWidth == 0 && viewHeight == 0) {
       // The host view has not been measured yet.
       return;
@@ -332,10 +332,10 @@ public class ComponentTree {
             viewWidth,
             viewHeight);
 
-    if (needsAndroidLayout || mComponentView.isMountStateDirty()) {
-      mComponentView.requestLayout();
+    if (needsAndroidLayout || mLithoView.isMountStateDirty()) {
+      mLithoView.requestLayout();
     } else {
-      mComponentView.rebind();
+      mLithoView.rebind();
     }
   }
 
@@ -357,7 +357,7 @@ public class ComponentTree {
   }
 
   private boolean mountComponentIfDirty() {
-    if (mComponentView.isMountStateDirty()) {
+    if (mLithoView.isMountStateDirty()) {
       if (mIncrementalMountEnabled) {
         incrementalMountComponent();
       } else {
@@ -378,7 +378,7 @@ public class ComponentTree {
           " is not enabled");
     }
 
-    // Per ComponentTree visible area. Because ComponentViews can be nested and mounted
+    // Per ComponentTree visible area. Because LithoViews can be nested and mounted
     // not in "depth order", this variable cannot be static.
     final Rect currentVisibleArea = ComponentsPools.acquireRect();
 
@@ -392,9 +392,9 @@ public class ComponentTree {
   private boolean getVisibleRect(Rect visibleBounds) {
     assertMainThread();
 
-    getLocationAndBoundsOnScreen(mComponentView, sCurrentLocation, visibleBounds);
+    getLocationAndBoundsOnScreen(mLithoView, sCurrentLocation, visibleBounds);
 
-    final ViewParent viewParent = mComponentView.getParent();
+    final ViewParent viewParent = mLithoView.getParent();
     if (viewParent instanceof View) {
       View parent = (View) viewParent;
       getLocationAndBoundsOnScreen(parent, sParentLocation, sParentBounds);
@@ -423,7 +423,7 @@ public class ComponentTree {
     assertMainThread();
     mIsMounting = true;
     // currentVisibleArea null or empty => mount all
-    mComponentView.mount(mMainThreadLayoutState, currentVisibleArea);
+    mLithoView.mount(mMainThreadLayoutState, currentVisibleArea);
 
     mIsMounting = false;
   }
@@ -442,21 +442,21 @@ public class ComponentTree {
    * clear the ComponentTree reference from the previous LithoView if any.
    * Be sure this ComponentTree is detach first.
    */
-  void setComponentView(@NonNull LithoView view) {
+  void setLithoView(@NonNull LithoView view) {
     assertMainThread();
 
     // It's possible that the view associated with this ComponentTree was recycled but was
     // never detached. In all cases we have to make sure that the old references between
     // lithoView and componentTree are reset.
     if (mIsAttached) {
-      if (mComponentView != null) {
-        mComponentView.setComponentTree(null);
+      if (mLithoView != null) {
+        mLithoView.setComponentTree(null);
       } else {
         detach();
       }
-    } else if (mComponentView != null) {
+    } else if (mLithoView != null) {
       // Remove the ComponentTree reference from a previous view if any.
-      mComponentView.clearComponentTree();
+      mLithoView.clearComponentTree();
     }
 
     if (!hasSameBaseContext(view.getContext(), mContext)) {
@@ -466,10 +466,10 @@ public class ComponentTree {
               ", ComponentTree context is: " + mContext);
     }
 
-    mComponentView = view;
+    mLithoView = view;
   }
 
-  void clearComponentView() {
+  void clearLithoView() {
     assertMainThread();
 
     // Crash if the ComponentTree is mounted to a view.
@@ -478,7 +478,7 @@ public class ComponentTree {
           "Clearing the LithoView while the ComponentTree is attached");
     }
 
-    mComponentView = null;
+    mLithoView = null;
   }
 
   void measure(int widthSpec, int heightSpec, int[] measureOutput, boolean forceLayout) {
@@ -546,7 +546,7 @@ public class ComponentTree {
       }
 
       // We need to force remount on layout
-      mComponentView.setMountStateDirty();
+      mLithoView.setMountStateDirty();
     }
 
     measureOutput[0] = mMainThreadLayoutState.getWidth();
@@ -831,7 +831,7 @@ public class ComponentTree {
   @Nullable
   public LithoView getLithoView() {
     assertMainThread();
-    return mComponentView;
+    return mLithoView;
   }
 
   /**
@@ -1106,8 +1106,8 @@ public class ComponentTree {
     LayoutState mainThreadLayoutState;
     LayoutState backgroundLayoutState;
     synchronized (this) {
-      if (mComponentView != null) {
-        mComponentView.setComponentTree(null);
+      if (mLithoView != null) {
+        mLithoView.setComponentTree(null);
       }
       mRoot = null;
 

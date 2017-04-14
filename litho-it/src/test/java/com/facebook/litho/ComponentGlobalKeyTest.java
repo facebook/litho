@@ -66,7 +66,7 @@ public class ComponentGlobalKeyTest {
         .incrementalMount(false)
         .layoutDiffing(false)
         .build();
-    LithoView lithoView = getComponentView(componentTree);
+    LithoView lithoView = getLithoView(componentTree);
 
     Assert.assertEquals(
         lithoView.getMountItemAt(0).getComponent().getGlobalKey(),
@@ -84,7 +84,7 @@ public class ComponentGlobalKeyTest {
         .incrementalMount(false)
         .layoutDiffing(false)
         .build();
-    LithoView lithoView = getComponentView(componentTree);
+    LithoView lithoView = getLithoView(componentTree);
 
     Assert.assertEquals(
         lithoView.getMountItemAt(0).getComponent().getGlobalKey(),
@@ -102,7 +102,7 @@ public class ComponentGlobalKeyTest {
         .incrementalMount(false)
         .layoutDiffing(false)
         .build();
-    LithoView lithoView = getComponentView(componentTree);
+    LithoView lithoView = getLithoView(componentTree);
 
     // Text
     Assert.assertEquals(layoutSpecId + "[Text2]", getComponentAt(lithoView, 0).getGlobalKey());
@@ -126,7 +126,7 @@ public class ComponentGlobalKeyTest {
     return lithoView.getMountItemAt(index).getComponent();
   }
 
-  private LithoView getComponentView(ComponentTree componentTree) {
+  private LithoView getLithoView(ComponentTree componentTree) {
     LithoView lithoView = new LithoView(mContext);
     lithoView.setComponentTree(componentTree);
     lithoView.measure(

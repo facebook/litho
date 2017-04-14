@@ -7,7 +7,7 @@ permalink: /docs/tutorial
 
 This tutorial assumes you've gone through the [Getting Started](getting-started) guide to set up Litho.
 
-In this tutorial, you'll start by building a basic "Hello World!" screen using Litho and work your way up to creating a list of "Hello World!" items on the screen. Along the way, you'll learn about the building block of Litho: [Component](/javadoc/com/facebook/litho/Component) and [ComponentView](/javadoc/com/facebook/litho/ComponentView). You'll learn how to set properties on components.
+In this tutorial, you'll start by building a basic "Hello World!" screen using Litho and work your way up to creating a list of "Hello World!" items on the screen. Along the way, you'll learn about the building block of Litho: [Component](/javadoc/com/facebook/litho/Component) and [LithoView](/javadoc/com/facebook/litho/LithoView). You'll learn how to set properties on components.
 
 
 ## 1. Hello World
@@ -46,11 +46,11 @@ public void onCreate(Bundle savedInstanceState) {
         .textSizeDip(50)
         .build();
 
-    setContentView(ComponentView.create(context, component));
+    setContentView(LithoView.create(context, component));
 }
 ```
 
-`ComponentView` is an Android `ViewGroup` that can render components; it is the bridge between Litho components and Android `View`s. The example sets the content for the activity to a `ComponentView` that displays a `Text` component.
+`LithoView` is an Android `ViewGroup` that can render components; it is the bridge between Litho components and Android `View`s. The example sets the content for the activity to a `LithoView` that displays a `Text` component.
 
 How do the components come into play? Let's zero in on this piece of code:
 
@@ -64,7 +64,7 @@ Text.create(context)
 `Text` is a core component defined in `com.facebook.litho.widget`.  It has a number of properties such as _text_ and _textSize_ which you can set as shown. These properties are called *props* as inspired by [React](https://facebook.github.io/react/) terminology.  
 You'll learn how to write your own components later but it's worth noting the `Text` class is generated from a `TextSpec` class. The generated component class provides a builder API with methods to define values for the component's props.
 
-The `Text` component is added as a single child component to the `ComponentView` in the example. You could instead have a single root component with several child components. You'll see how to do this in follow-on examples.
+The `Text` component is added as a single child component to the `LithoView` in the example. You could instead have a single root component with several child components. You'll see how to do this in follow-on examples.
 
 That's it! Run the app, you should see something like this:
 
@@ -148,7 +148,7 @@ final Component component = Recycler.create(context)
 
 This code constructs a `RecyclerBinder` and attaches it to a `Recycler`. A new `RecyclerBinder` takes as constructor parameters a component context, a range ratio, and layout info. In your example, this sets the range ratio to 4 and a `LinearLayoutInfo` for the layout info.
 
-You then create and pass in the `Recycler` component to the `ComponentView`.
+You then create and pass in the `Recycler` component to the `LithoView`.
 
 Now turn your focus to populating the binder with list items. Define a helper function in your activity to do this:
 

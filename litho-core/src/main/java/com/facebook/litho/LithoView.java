@@ -299,13 +299,13 @@ public class LithoView extends ComponentHost {
         mComponentTree.detach();
       }
 
-      mComponentTree.clearComponentView();
+      mComponentTree.clearLithoView();
     }
 
     mComponentTree = componentTree;
 
     if (mComponentTree != null) {
-      mComponentTree.setComponentView(this);
+      mComponentTree.setLithoView(this);
 
       if (mIsAttached) {
         mComponentTree.attach();

@@ -29,9 +29,9 @@ import static org.junit.Assert.assertEquals;
  */
 
 @RunWith(ComponentsTestRunner.class)
-public class ComponentViewMountTest {
+public class LithoViewMountTest {
   private ComponentContext mContext;
-  private TestComponentView mComponentView;
+  private TestLithoView mLithoView;
   private Component mComponent;
   private ComponentTree mComponentTree;
 
@@ -39,7 +39,7 @@ public class ComponentViewMountTest {
   public void setup() {
     mContext = new ComponentContext(RuntimeEnvironment.application);
 
-    mComponentView = new TestComponentView(mContext);
+    mLithoView = new TestLithoView(mContext);
     mComponent = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
@@ -62,28 +62,28 @@ public class ComponentViewMountTest {
 
   @Test
   public void testNothingCalledUntilMeasured() {
-    mComponentView.setComponentTree(mComponentTree);
-    mComponentView.onAttachedToWindow();
+    mLithoView.setComponentTree(mComponentTree);
+    mLithoView.onAttachedToWindow();
 
-    assertEquals(0, mComponentView.getRequestLayoutInvocationCount());
+    assertEquals(0, mLithoView.getRequestLayoutInvocationCount());
   }
 
   @Test
   public void testSetComponentAndAttachRequestsLayout() {
-    mComponentView.setMeasured(10, 10);
-    mComponentView.setComponentTree(mComponentTree);
-    mComponentView.onAttachedToWindow();
+    mLithoView.setMeasured(10, 10);
+    mLithoView.setComponentTree(mComponentTree);
+    mLithoView.onAttachedToWindow();
 
-    assertEquals(1, mComponentView.getRequestLayoutInvocationCount());
+    assertEquals(1, mLithoView.getRequestLayoutInvocationCount());
   }
 
   @Test
   public void testSetSameSizeComponentAndAttachRequestsLayout() {
-    mComponentView.setMeasured(100, 100);
-    mComponentView.setComponentTree(mComponentTree);
-    mComponentView.onAttachedToWindow();
+    mLithoView.setMeasured(100, 100);
+    mLithoView.setComponentTree(mComponentTree);
+    mLithoView.onAttachedToWindow();
 
-    assertEquals(1, mComponentView.getRequestLayoutInvocationCount());
+    assertEquals(1, mLithoView.getRequestLayoutInvocationCount());
   }
 
   @Test
@@ -94,53 +94,53 @@ public class ComponentViewMountTest {
         .build();
     ct.setSizeSpec(100, 100);
 
-    mComponentView.setComponentTree(ct);
-    mComponentView.setMeasured(100, 100);
-    mComponentView.onAttachedToWindow();
+    mLithoView.setComponentTree(ct);
+    mLithoView.setMeasured(100, 100);
+    mLithoView.onAttachedToWindow();
 
-    assertEquals(1, mComponentView.getRequestLayoutInvocationCount());
+    assertEquals(1, mLithoView.getRequestLayoutInvocationCount());
 
-    mComponentView.onDetachedFromWindow();
+    mLithoView.onDetachedFromWindow();
 
-    mComponentView.resetRequestLayoutInvocationCount();
+    mLithoView.resetRequestLayoutInvocationCount();
 
-    mComponentView.setComponentTree(ct);
-    mComponentView.onAttachedToWindow();
+    mLithoView.setComponentTree(ct);
+    mLithoView.onAttachedToWindow();
 
-    assertEquals(1, mComponentView.getRequestLayoutInvocationCount());
+    assertEquals(1, mLithoView.getRequestLayoutInvocationCount());
   }
 
   @Test
   public void testAttachAndSetSameSizeComponentRequestsLayout() {
-    mComponentView.setMeasured(100, 100);
-    mComponentView.onAttachedToWindow();
-    mComponentView.setComponentTree(mComponentTree);
+    mLithoView.setMeasured(100, 100);
+    mLithoView.onAttachedToWindow();
+    mLithoView.setComponentTree(mComponentTree);
 
-    assertEquals(1, mComponentView.getRequestLayoutInvocationCount());
+    assertEquals(1, mLithoView.getRequestLayoutInvocationCount());
   }
 
   @Test
   public void testAttachAndSetComponentRequestsLayout() {
-    mComponentView.setMeasured(10, 10);
-    mComponentView.onAttachedToWindow();
-    mComponentView.setComponentTree(mComponentTree);
+    mLithoView.setMeasured(10, 10);
+    mLithoView.onAttachedToWindow();
+    mLithoView.setComponentTree(mComponentTree);
 
-    assertEquals(1, mComponentView.getRequestLayoutInvocationCount());
+    assertEquals(1, mLithoView.getRequestLayoutInvocationCount());
   }
 
   @Test
   public void testReAttachRequestsLayout() {
-    mComponentView.setMeasured(100, 100);
-    mComponentView.setComponentTree(mComponentTree);
-    mComponentView.onAttachedToWindow();
+    mLithoView.setMeasured(100, 100);
+    mLithoView.setComponentTree(mComponentTree);
+    mLithoView.onAttachedToWindow();
 
-    assertEquals(1, mComponentView.getRequestLayoutInvocationCount());
+    assertEquals(1, mLithoView.getRequestLayoutInvocationCount());
 
-    mComponentView.onDetachedFromWindow();
-    mComponentView.resetRequestLayoutInvocationCount();
-    mComponentView.onAttachedToWindow();
+    mLithoView.onDetachedFromWindow();
+    mLithoView.resetRequestLayoutInvocationCount();
+    mLithoView.onAttachedToWindow();
 
-    assertEquals(1, mComponentView.getRequestLayoutInvocationCount());
+    assertEquals(1, mLithoView.getRequestLayoutInvocationCount());
 
     ComponentTree newComponentTree =
         ComponentTree.create(mContext, mComponent)
@@ -151,16 +151,16 @@ public class ComponentViewMountTest {
         SizeSpec.makeSizeSpec(100, EXACTLY),
         SizeSpec.makeSizeSpec(100, EXACTLY));
 
-    mComponentView.resetRequestLayoutInvocationCount();
-    mComponentView.setComponentTree(newComponentTree);
+    mLithoView.resetRequestLayoutInvocationCount();
+    mLithoView.setComponentTree(newComponentTree);
 
-    assertEquals(1, mComponentView.getRequestLayoutInvocationCount());
+    assertEquals(1, mLithoView.getRequestLayoutInvocationCount());
   }
 
-  private static class TestComponentView extends LithoView {
+  private static class TestLithoView extends LithoView {
     private int mRequestLayoutInvocationCount = 0;
 
-    public TestComponentView(Context context) {
+    public TestLithoView(Context context) {
       super(context);
     }
 

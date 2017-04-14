@@ -92,7 +92,7 @@ class MountState {
   private static final Rect sTempRect = new Rect();
 
   private final ComponentContext mContext;
-  private final LithoView mComponentView;
+  private final LithoView mLithoView;
   private final Rect mPreviousLocalVisibleRect = new Rect();
   private final PrepareMountStats mPrepareMountStats = new PrepareMountStats();
   private final MountStats mMountStats = new MountStats();
@@ -108,7 +108,7 @@ class MountState {
     mVisibilityIdToItemMap = new LongSparseArray<>();
     mCanMountIncrementallyMountItems = new LongSparseArray<>();
     mContext = (ComponentContext) view.getContext();
-    mComponentView = view;
+    mLithoView = view;
     mIsDirty = true;
 
     mTestItemMap = ComponentsConfiguration.isEndToEndTestRun
@@ -119,8 +119,8 @@ class MountState {
     // is always automatically mounted.
     mRootHostMountItem = ComponentsPools.acquireRootHostMountItem(
         HostComponent.create(),
-        mComponentView,
-        mComponentView);
+        mLithoView,
+        mLithoView);
   }
 
   /**
@@ -153,7 +153,7 @@ class MountState {
 
     ComponentsSystrace.beginSection("mount");
 
-    final ComponentTree componentTree = mComponentView.getComponentTree();
+    final ComponentTree componentTree = mLithoView.getComponentTree();
     final ComponentsLogger logger = componentTree.getContext().getLogger();
 
     if (logger != null) {
@@ -299,7 +299,7 @@ class MountState {
         // Check if the component has entered or exited the focused range.
         if ((focusedHandler != null && !visibilityItem.isInFocusedRange()) ||
           (unfocusedHandler != null && visibilityItem.isInFocusedRange())) {
-          final View parent = (View) mComponentView.getParent();
+          final View parent = (View) mLithoView.getParent();
           if (isInFocusedRange(
               parent.getWidth(),
               parent.getHeight(),
@@ -663,7 +663,7 @@ class MountState {
    */
   @SuppressWarnings("unchecked")
   private void prepareMount(LayoutState layoutState) {
-    final ComponentTree component = mComponentView.getComponentTree();
+    final ComponentTree component = mLithoView.getComponentTree();
     final ComponentsLogger logger = component.getContext().getLogger();
     final String logTag = component.getContext().getLogTag();
 
@@ -679,7 +679,7 @@ class MountState {
 
     if (mHostsByMarker.get(ROOT_HOST_ID) == null) {
       // Mounting always starts with the root host.
-      registerHost(ROOT_HOST_ID, mComponentView);
+      registerHost(ROOT_HOST_ID, mLithoView);
 
       // Root host is implicitly marked as mounted.
       mIndexToItemMap.put(ROOT_HOST_ID, mRootHostMountItem);
@@ -1904,7 +1904,7 @@ class MountState {
       }
     }
 
-    final int height = mComponentView.getHeight();
+    final int height = mLithoView.getHeight();
     if (localVisibleRect.bottom < height || mPreviousLocalVisibleRect.bottom < height) {
       // View is going on/off the bottom of the screen. Check the tops to see if there is anything
       // that has changed.

@@ -408,7 +408,7 @@ public class MountStateIncrementalMountTest {
    */
   @Test
   public void testChildViewCanIncrementallyMount() {
-    final TestComponentView mountedView = new TestComponentView(mContext);
+    final TestLithoView mountedView = new TestLithoView(mContext);
 
     final TestComponentContextWithView testComponentContext =
         new TestComponentContextWithView(mContext, mountedView);
@@ -436,8 +436,8 @@ public class MountStateIncrementalMountTest {
   }
 
   @Test
-  public void testChildComponentViewIncrementallyMounted() {
-    final TestComponentView mountedView = new TestComponentView(mContext);
+  public void testChildLithoViewIncrementallyMounted() {
+    final TestLithoView mountedView = new TestLithoView(mContext);
     mountedView.layout(0, 0, 100, 100);
 
     final TestComponentContextWithView testComponentContext =
@@ -464,13 +464,13 @@ public class MountStateIncrementalMountTest {
     when(mountedView.getBottom()).thenReturn(100);
     when(mountedView.getChildCount()).thenReturn(3);
 
-    final LithoView childView1 = getMockComponentViewWithBounds(new Rect(5, 10, 20, 30));
+    final LithoView childView1 = getMockLithoViewWithBounds(new Rect(5, 10, 20, 30));
     when(mountedView.getChildAt(0)).thenReturn(childView1);
 
-    final LithoView childView2 = getMockComponentViewWithBounds(new Rect(10, 10, 50, 60));
+    final LithoView childView2 = getMockLithoViewWithBounds(new Rect(10, 10, 50, 60));
     when(mountedView.getChildAt(1)).thenReturn(childView2);
 
-    final LithoView childView3 = getMockComponentViewWithBounds(new Rect(30, 35, 50, 60));
+    final LithoView childView3 = getMockLithoViewWithBounds(new Rect(30, 35, 50, 60));
     when(mountedView.getChildAt(2)).thenReturn(childView3);
 
     final TestComponentContextWithView testComponentContext =
@@ -579,7 +579,7 @@ public class MountStateIncrementalMountTest {
     reset(mComponentsLogger);
   }
 
-  private static LithoView getMockComponentViewWithBounds(Rect bounds) {
+  private static LithoView getMockLithoViewWithBounds(Rect bounds) {
     final LithoView lithoView = mock(LithoView.class);
     when(lithoView.getLeft()).thenReturn(bounds.left);
     when(lithoView.getTop()).thenReturn(bounds.top);
@@ -591,10 +591,10 @@ public class MountStateIncrementalMountTest {
     return lithoView;
   }
 
-  private static class TestComponentView extends LithoView {
+  private static class TestLithoView extends LithoView {
     private final Rect mPreviousIncrementalMountBounds = new Rect();
 
-    public TestComponentView(Context context) {
+    public TestLithoView(Context context) {
       super(context);
     }
 

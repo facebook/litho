@@ -5,7 +5,7 @@ import android.os.Bundle;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentInfo;
 import com.facebook.litho.ComponentTree;
-import com.facebook.litho.ComponentView;
+import com.facebook.litho.LithoView;
 import com.facebook.litho.widget.Text;
 
 public class SampleActivity extends Activity {
@@ -14,7 +14,7 @@ public class SampleActivity extends Activity {
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    final ComponentView lithoView = new ComponentView(this);
+    final LithoView lithoView = new LithoView(this);
     final ComponentContext context = new ComponentContext(this);
 
     final Component text = Text.create(context)

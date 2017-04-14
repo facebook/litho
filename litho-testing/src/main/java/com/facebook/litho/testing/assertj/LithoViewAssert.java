@@ -29,23 +29,23 @@ import org.assertj.core.api.Java6Assertions;
  * Assertion methods for {@link LithoView}s.
  *
  * <p> To create an instance of this class, invoke
- * <code>{@link ComponentViewAssert#assertThat(LithoView)}</code>.
+ * <code>{@link LithoViewAssert#assertThat(LithoView)}</code>.
  */
-public class ComponentViewAssert extends AbstractAssert<ComponentViewAssert, LithoView> {
+public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> {
 
-  public static ComponentViewAssert assertThat(LithoView actual) {
-    return new ComponentViewAssert(actual);
+  public static LithoViewAssert assertThat(LithoView actual) {
+    return new LithoViewAssert(actual);
   }
 
-  ComponentViewAssert(LithoView actual) {
-    super(actual, ComponentViewAssert.class);
+  LithoViewAssert(LithoView actual) {
+    super(actual, LithoViewAssert.class);
   }
 
-  public ComponentViewAssert containsTestKey(String testKey) {
+  public LithoViewAssert containsTestKey(String testKey) {
     return containsTestKey(testKey, once());
   }
 
-  public ComponentViewAssert containsTestKey(String testKey, OccurrenceCount count) {
+  public LithoViewAssert containsTestKey(String testKey, OccurrenceCount count) {
     final Deque<TestItem> testItems = LithoViewTestHelper.findTestItems(actual, testKey);
     Java6Assertions.assertThat(testItems)
         .hasSize(count.times)
@@ -63,7 +63,7 @@ public class ComponentViewAssert extends AbstractAssert<ComponentViewAssert, Lit
   }
 
   @SuppressWarnings("VisibleForTests")
-  public ComponentViewAssert doesNotContainTestKey(String testKey) {
+  public LithoViewAssert doesNotContainTestKey(String testKey) {
     final TestItem testItem = LithoViewTestHelper.findTestItem(actual, testKey);
     final Rect bounds = testItem == null ? null : testItem.getBounds();
 
@@ -87,7 +87,7 @@ public class ComponentViewAssert extends AbstractAssert<ComponentViewAssert, Lit
    * Assert that any view in the given Component has the provided content
    * description.
    */
-  public ComponentViewAssert hasContentDescription(String contentDescription) {
+  public LithoViewAssert hasContentDescription(String contentDescription) {
     assertThatViewTree().hasContentDescription(contentDescription);
 
     return this;
@@ -97,7 +97,7 @@ public class ComponentViewAssert extends AbstractAssert<ComponentViewAssert, Lit
    * Assert that the given component contains the drawable identified by the provided drawable
    * resource id.
    */
-  public ComponentViewAssert hasVisibleDrawable(@DrawableRes int drawableRes) {
+  public LithoViewAssert hasVisibleDrawable(@DrawableRes int drawableRes) {
     assertThatViewTree().hasVisibleDrawable(drawableRes);
 
     return this;
@@ -106,7 +106,7 @@ public class ComponentViewAssert extends AbstractAssert<ComponentViewAssert, Lit
   /**
    * Assert that the given component contains the drawable provided.
    */
-  public ComponentViewAssert hasVisibleDrawable(Drawable drawable) {
+  public LithoViewAssert hasVisibleDrawable(Drawable drawable) {
     assertThatViewTree().hasVisibleDrawable(drawable);
 
     return this;
@@ -115,7 +115,7 @@ public class ComponentViewAssert extends AbstractAssert<ComponentViewAssert, Lit
   /**
    * Inverse of {@link #hasVisibleDrawable(Drawable)}
    */
-  public ComponentViewAssert doesNotHaveVisibleDrawable(Drawable drawable) {
+  public LithoViewAssert doesNotHaveVisibleDrawable(Drawable drawable) {
     assertThatViewTree().doesNotHaveVisibleDrawable(drawable);
 
     return this;
@@ -124,7 +124,7 @@ public class ComponentViewAssert extends AbstractAssert<ComponentViewAssert, Lit
   /**
    * Inverse of {@link #hasVisibleDrawable(int)}
    */
-  public ComponentViewAssert doesNotHaveVisibleDrawable(@DrawableRes int drawableRes) {
+  public LithoViewAssert doesNotHaveVisibleDrawable(@DrawableRes int drawableRes) {
     assertThatViewTree().doesNotHaveVisibleDrawable(drawableRes);
 
     return this;
@@ -133,7 +133,7 @@ public class ComponentViewAssert extends AbstractAssert<ComponentViewAssert, Lit
   /**
    * Assert that the given component has the exact text provided.
    */
-  public ComponentViewAssert hasVisibleText(String text) {
+  public LithoViewAssert hasVisibleText(String text) {
     assertThatViewTree().hasVisibleText(text);
 
     return this;
@@ -144,7 +144,7 @@ public class ComponentViewAssert extends AbstractAssert<ComponentViewAssert, Lit
    * @param tagId Index of the view tag.
    * @param tagValue View tag value.
    */
-  public ComponentViewAssert hasViewTag(int tagId, Object tagValue) {
+  public LithoViewAssert hasViewTag(int tagId, Object tagValue) {
     assertThatViewTree().hasViewTag(tagId, tagValue);
 
     return this;

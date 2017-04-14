@@ -27,7 +27,7 @@ import com.facebook.stetho.inspector.elements.android.HighlightableDescriptor;
  * of a LithoView are not exposed (as they would if we used the ViewGroupDescriptor) as
  * they are an implementation detail of the framework (ComponentHost etc.).
  */
-public final class ComponentViewDescriptor
+public final class LithoViewDescriptor
     extends Descriptor<LithoView>
     implements ChainedDescriptor<LithoView>, HighlightableDescriptor<LithoView> {
 
