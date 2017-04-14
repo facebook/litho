@@ -30,12 +30,13 @@ import android.text.TextUtils.TruncateAt;
 import android.text.style.ClickableSpan;
 import android.util.Log;
 
-import com.facebook.litho.R;
+import com.facebook.fbui.textlayoutbuilder.TextLayoutBuilder;
+import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.ComponentsLogger;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.Output;
+import com.facebook.litho.R;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.annotations.FromBoundsDefined;
@@ -54,10 +55,9 @@ import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
-import com.facebook.yoga.YogaDirection;
-import com.facebook.fbui.textlayoutbuilder.TextLayoutBuilder;
-import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.widget.accessibility.delegates.AccessibleClickableSpan;
+import com.facebook.yoga.YogaDirection;
 
 import static android.support.v4.widget.ExploreByTouchHelper.INVALID_ID;
 import static android.text.Layout.Alignment.ALIGN_NORMAL;
@@ -81,6 +81,7 @@ class TextSpec {
 
   private static final int[][] DEFAULT_TEXT_COLOR_STATE_LIST_STATES = {{0}};
   private static final int[] DEFAULT_TEXT_COLOR_STATE_LIST_COLORS = {Color.BLACK};
+  private static final int[] DEFAULT_TEXT_DRAWABLE_STATE = {android.R.attr.state_enabled};
 
   private static final String TAG = "TextSpec";
 
@@ -463,7 +464,7 @@ class TextSpec {
             TAG,
             "Remeasuring Text component.  This is expensive: consider changing parent layout " +
                 "so that double measurement is not necessary.");
-          }
+      }
 
       textLayout.set(
           createTextLayout(
@@ -536,6 +537,9 @@ class TextSpec {
       @FromBoundsDefined Float textLayoutTranslationY,
       @FromBoundsDefined ClickableSpan[] clickableSpans) {
 
+    //make sure we set default state to drawable because default dummy state set in Drawable
+    //matches anything which can cause wrong text color to be selected by default
+    textDrawable.setState(DEFAULT_TEXT_DRAWABLE_STATE);
     textDrawable.mount(
         text,
         textLayout,

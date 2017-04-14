@@ -122,6 +122,28 @@ public class TextSpecTest {
     assertThat(drawable.getColor()).isEqualTo(Color.GREEN);
   }
 
+  @Test
+  public void testColorStateListMultipleStates()
+  {
+    ColorStateList colorStateList = new ColorStateList(
+        new int[][]{
+            new int[]{-android.R.attr.state_enabled}, //disabled state
+            new int[]{}
+        },
+        new int[] {
+            Color.RED,
+            Color.GREEN
+        }
+    );
+    TextDrawable drawable = getMountedDrawableForTextWithColors(
+        "Some text",
+        0,
+        colorStateList);
+
+    //color should fallback to default state
+    assertThat(drawable.getColor()).isEqualTo(Color.GREEN);
+  }
+
   private TextDrawable getMountedDrawableForText(CharSequence text) {
     return (TextDrawable) ComponentTestHelper.mountComponent(
         mContext,
