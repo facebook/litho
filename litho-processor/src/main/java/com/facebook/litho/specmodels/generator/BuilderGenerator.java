@@ -405,6 +405,7 @@ public class BuilderGenerator {
                 requiredIndex,
                 ClassNames.DRAWABLE_RES,
                 "resolveDrawable"));
+        break;
       case NONE:
         if (prop.getType().equals(specModel.getComponentClass())) {
           dataHolder.addMethod(componentBuilder(specModel, prop, requiredIndex));

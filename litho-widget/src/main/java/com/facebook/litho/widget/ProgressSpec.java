@@ -50,17 +50,15 @@ class ProgressSpec {
   @OnLoadStyle
   static void onLoadStyle(
       ComponentContext c,
-      Output<Reference<Drawable>> indeterminateDrawable) {
-
+      Output<Drawable> indeterminateDrawable) {
     indeterminateDrawable.set(getStyledIndeterminateDrawable(c, 0));
   }
 
   @OnPrepare
   static void onPrepare(
       ComponentContext c,
-      @Prop(optional = true, resType = ResType.DRAWABLE_REFERENCE)
-          Reference<Drawable> indeterminateDrawable,
-      Output<Reference<Drawable>> resolvedIndeterminateDrawable) {
+      @Prop(optional = true, resType = ResType.DRAWABLE) Drawable indeterminateDrawable,
+      Output<Drawable> resolvedIndeterminateDrawable) {
     if (indeterminateDrawable != null) {
       resolvedIndeterminateDrawable.set(indeterminateDrawable);
     } else {
@@ -91,10 +89,10 @@ class ProgressSpec {
       ComponentContext c,
       ProgressBar progressBar,
       @Prop(optional = true, resType = ResType.COLOR) int color,
-      @FromPrepare Reference<Drawable> resolvedIndeterminateDrawable) {
+      @FromPrepare Drawable resolvedIndeterminateDrawable) {
 
     if (resolvedIndeterminateDrawable != null) {
-      progressBar.setIndeterminateDrawable(Reference.acquire(c, resolvedIndeterminateDrawable));
+      progressBar.setIndeterminateDrawable(resolvedIndeterminateDrawable);
     }
 
     if (color != Color.TRANSPARENT && progressBar.getIndeterminateDrawable() != null) {
@@ -109,15 +107,11 @@ class ProgressSpec {
       ComponentContext c,
       ProgressBar progressBar,
       @Prop(optional = true, resType = ResType.COLOR) int color,
-      @FromPrepare Reference<Drawable> resolvedIndeterminateDrawable) {
+      @FromPrepare Drawable resolvedIndeterminateDrawable) {
 
     // restore the color first, since it acts on the indeterminateDrawable
     if (color != Color.TRANSPARENT && progressBar.getIndeterminateDrawable() != null) {
       progressBar.getIndeterminateDrawable().mutate().clearColorFilter();
-    }
-
-    if (resolvedIndeterminateDrawable != null) {
-      Reference.release(c, progressBar.getIndeterminateDrawable(), resolvedIndeterminateDrawable);
     }
 
     progressBar.setIndeterminateDrawable(null);
@@ -128,8 +122,8 @@ class ProgressSpec {
     return new ProgressView(c);
   }
 
-  static Reference<Drawable> getStyledIndeterminateDrawable(ComponentContext c, int defStyle) {
-    Reference<Drawable> indeterminateDrawable = null;
+  static Drawable getStyledIndeterminateDrawable(ComponentContext c, int defStyle) {
+    Drawable indeterminateDrawable = null;
 
     final TypedArray styledAttributes = c.obtainStyledAttributes(R.styleable.Progress, defStyle);
 
@@ -137,9 +131,8 @@ class ProgressSpec {
       final int attr = styledAttributes.getIndex(i);
 
       if (attr == R.styleable.Progress_android_indeterminateDrawable) {
-        indeterminateDrawable = ResourceDrawableReference.create(c)
-            .resId(styledAttributes.getResourceId(attr, 0))
-            .build();
+        indeterminateDrawable =
+            c.getResources().getDrawable(styledAttributes.getResourceId(attr, 0));
       }
     }
 
