@@ -30,6 +30,7 @@ import static com.facebook.litho.specmodels.generator.GeneratorConstants.DELEGAT
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.IMPL_VARIABLE_NAME;
 import static com.facebook.litho.specmodels.model.ClassNames.COMPONENT;
 import static com.facebook.litho.specmodels.model.ClassNames.OUTPUT;
+import static com.facebook.litho.specmodels.model.ClassNames.STATE_VALUE;
 
 /**
  * Class that generates delegate methods for a component.
@@ -146,6 +147,18 @@ public class DelegateMethodGenerator {
           releaseOutputs.endControlFlow();
         }
         releaseOutputs.addStatement("releaseOutput($L)", methodParamModel.getName());
+      } else if (isStateValueType(methodParamModel.getType())) {
+        acquireOutputs.add(
+            "$T $L = new StateValue<>();\n",
+            methodParamModel.getType(),
+            methodParamModel.getName());
+        delegation.add("$L", methodParamModel.getName());
+
+        releaseOutputs.addStatement(
+            "$L.$L = $L.get()",
+            IMPL_VARIABLE_NAME,
+            getImplAccessor(specModel, methodParamModel),
+            methodParamModel.getName());
       } else {
         delegation.add(
             "($T) $L.$L",
@@ -178,5 +191,11 @@ public class DelegateMethodGenerator {
     return type.equals(OUTPUT) ||
         (type instanceof ParameterizedTypeName &&
          ((ParameterizedTypeName) type).rawType.equals(OUTPUT));
+  }
+
+  private static boolean isStateValueType(TypeName type) {
+    return type.equals(STATE_VALUE) ||
+        (type instanceof ParameterizedTypeName &&
+            ((ParameterizedTypeName) type).rawType.equals(STATE_VALUE));
   }
 }

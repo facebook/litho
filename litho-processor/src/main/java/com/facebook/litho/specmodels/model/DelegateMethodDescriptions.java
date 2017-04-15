@@ -51,7 +51,7 @@ import static com.facebook.litho.specmodels.model.DelegateMethodDescription.Opti
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.PROP;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.PROP_OUTPUT;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.STATE;
-import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.STATE_OUTPUT;
+import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.STATE_VALUE;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.TREE_PROP;
 
 /**
@@ -107,7 +107,7 @@ public final class DelegateMethodDescriptions {
           .returnType(TypeName.VOID)
           .name("createInitialState")
           .definedParameterTypes(ImmutableList.<TypeName>of(ClassNames.COMPONENT_CONTEXT))
-          .optionalParameterTypes(ImmutableList.of(PROP, STATE_OUTPUT))
+          .optionalParameterTypes(ImmutableList.of(PROP, STATE_VALUE))
           .build();
 
   public static final DelegateMethodDescription ON_LAYOUT_TRANSITION =
