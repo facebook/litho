@@ -18,7 +18,6 @@ litho_android_library(
     ],
     deps = [
         COMPONENTS_ANDROIDSUPPORT_TARGET,
-        COMPONENTS_CORE_TESTING_TARGET,
         COMPONENTS_JAVA_TARGET,
         COMPONENTS_RES_TARGET,
         COMPONENTS_JSR_TARGET,
