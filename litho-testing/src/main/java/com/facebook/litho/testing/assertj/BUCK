@@ -12,6 +12,7 @@ litho_android_library(
     ],
     deps = [
         COMPONENTS_ANDROIDSUPPORT_TARGET,
+        COMPONENTS_CORE_TESTING_TARGET,
         COMPONENTS_JAVA_TARGET,
         COMPONENTS_POWERMOCK_REFLECT_TARGET,
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/viewtree:viewtree"),
