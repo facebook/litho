@@ -11,6 +11,10 @@
 
 <resources>
 
+  <declare-styleable name="TextAppearance">
+    <attr name="android:textAppearance" />
+  </declare-styleable>
+
   <declare-styleable name="Text">
     <attr name="android:minLines" />
     <attr name="android:maxLines" />

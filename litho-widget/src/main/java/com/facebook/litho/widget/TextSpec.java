@@ -138,8 +138,101 @@ class TextSpec {
       Output<Float> shadowDy,
       Output<Integer> shadowColor) {
 
-    final TypedArray a = c.obtainStyledAttributes(R.styleable.Text, 0);
+    //check first if provided attributes contain textAppearance. As an analogy to TextView behavior,
+    //we will parse textAppearance attributes first and then will override leftovers from main style
+    TypedArray a = c.obtainStyledAttributes(
+        R.styleable.TextAppearance,
+        0);
 
+    int textAppearanceResId = a.getResourceId(
+        R.styleable.TextAppearance_android_textAppearance,
+        -1);
+    a.recycle();
+    if (textAppearanceResId != -1) {
+      a = c.getTheme().obtainStyledAttributes(
+          textAppearanceResId,
+          R.styleable.Text);
+      resolveStyleAttrsForTypedArray(
+          a,
+          ellipsize,
+          shouldIncludeFontPadding,
+          spacingMultiplier,
+          minLines,
+          maxLines,
+          minEms,
+          maxEms,
+          minWidth,
+          maxWidth,
+          isSingleLine,
+          text,
+          textColorStateList,
+          linkColor,
+          highlightColor,
+          textSize,
+          textAlignment,
+          textStyle,
+          shadowRadius,
+          shadowDx,
+          shadowDy,
+          shadowColor);
+      a.recycle();
+    }
+
+    //now (after we parsed textAppearance) we can move on to main style attributes
+    a = c.obtainStyledAttributes(
+        R.styleable.Text,
+        0);
+    resolveStyleAttrsForTypedArray(
+        a,
+        ellipsize,
+        shouldIncludeFontPadding,
+        spacingMultiplier,
+        minLines,
+        maxLines,
+        minEms,
+        maxEms,
+        minWidth,
+        maxWidth,
+        isSingleLine,
+        text,
+        textColorStateList,
+        linkColor,
+        highlightColor,
+        textSize,
+        textAlignment,
+        textStyle,
+        shadowRadius,
+        shadowDx,
+        shadowDy,
+        shadowColor);
+
+    a.recycle();
+  }
+
+  private static void resolveStyleAttrsForTypedArray(
+      TypedArray a,
+      Output<TruncateAt> ellipsize,
+      Output<Boolean> shouldIncludeFontPadding,
+      Output<Float> spacingMultiplier,
+      Output<Integer> minLines,
+      Output<Integer> maxLines,
+      Output<Integer> minEms,
+      Output<Integer> maxEms,
+      Output<Integer> minWidth,
+      Output<Integer> maxWidth,
+      Output<Boolean> isSingleLine,
+      Output<CharSequence> text,
+      Output<ColorStateList> textColorStateList,
+      Output<Integer> linkColor,
+      Output<Integer> highlightColor,
+      Output<Integer> textSize,
+      Output<Alignment> textAlignment,
+      Output<Integer> textStyle,
+      Output<Float> shadowRadius,
+      Output<Float> shadowDx,
+      Output<Float> shadowDy,
+      Output<Integer> shadowColor
+  ) {
     for (int i = 0, size = a.getIndexCount(); i < size; i++) {
       final int attr = a.getIndex(i);
 
@@ -191,8 +284,6 @@ class TextSpec {
         maxWidth.set(a.getInteger(attr, DEFAULT_MAX_WIDTH));
       }
     }
-
-    a.recycle();
   }
 
   @OnMeasure
