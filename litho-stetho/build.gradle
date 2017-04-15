@@ -22,5 +22,5 @@ dependencies {
     provided deps.inferAnnotations
 
     // First-party
-    compile files('../lib/stetho/stetho.jar')
+    compile deps.stetho
 }
