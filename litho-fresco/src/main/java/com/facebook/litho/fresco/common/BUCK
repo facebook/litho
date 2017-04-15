@@ -10,9 +10,6 @@ include_defs("//COMPONENTS_DEFS")
 litho_android_library(
     name = "common",
     srcs = glob(["*.java"]),
-    tests = [
-        "//javatests/com/facebook/litho/fresco/common:common",
-    ],
     visibility = [
         "PUBLIC",
     ],
