@@ -13,6 +13,11 @@ import android.graphics.ColorFilter;
 import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
 
+import com.facebook.drawee.drawable.ScalingUtils;
+import com.facebook.drawee.generic.GenericDraweeHierarchy;
+import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
+import com.facebook.drawee.generic.RoundingParams;
+import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Size;
@@ -26,15 +31,9 @@ import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
-import com.facebook.litho.fresco.common.GenericReferenceDraweeHierarchy;
-import com.facebook.litho.reference.Reference;
 import com.facebook.litho.utils.MeasureUtils;
-import com.facebook.drawee.drawable.ScalingUtils;
-import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
-import com.facebook.drawee.generic.RoundingParams;
-import com.facebook.drawee.interfaces.DraweeController;
 
-import static com.facebook.litho.annotations.ResType.DRAWABLE_REFERENCE;
+import static com.facebook.litho.annotations.ResType.DRAWABLE;
 
 @MountSpec
 class FrescoComponentSpec {
@@ -72,38 +71,34 @@ class FrescoComponentSpec {
   }
 
   @OnCreateMountContent
-  protected static DraweeDrawable<GenericReferenceDraweeHierarchy> onCreateMountContent(
+  protected static DraweeDrawable<GenericDraweeHierarchy> onCreateMountContent(
       ComponentContext c) {
-    GenericReferenceDraweeHierarchy draweeHierarchy =
-        new GenericReferenceDraweeHierarchy(
-            GenericDraweeHierarchyBuilder.newInstance(c.getResources()).build());
+    GenericDraweeHierarchy draweeHierarchy =
+        GenericDraweeHierarchyBuilder.newInstance(c.getResources()).build();
     return new DraweeDrawable<>(c, draweeHierarchy);
   }
 
   @OnMount
   protected static void onMount(
       ComponentContext c,
-      DraweeDrawable<GenericReferenceDraweeHierarchy> draweeDrawable,
-      @Prop DraweeController controller,
+      DraweeDrawable<GenericDraweeHierarchy> draweeDrawable,
       @Prop(optional = true) ScalingUtils.ScaleType actualImageScaleType,
       @Prop(optional = true) int fadeDuration,
-      @Prop(optional = true, resType = DRAWABLE_REFERENCE) Reference<Drawable> failureImage,
+      @Prop(optional = true, resType = DRAWABLE) Drawable failureImage,
       @Prop(optional = true) ScalingUtils.ScaleType failureImageScaleType,
-      @Prop(optional = true, resType = DRAWABLE_REFERENCE) Reference<Drawable> placeholderImage,
+      @Prop(optional = true, resType = DRAWABLE) Drawable placeholderImage,
       @Prop(optional = true) PointF placeholderImageFocusPoint,
       @Prop(optional = true) ScalingUtils.ScaleType placeholderImageScaleType,
-      @Prop(optional = true, resType = DRAWABLE_REFERENCE) Reference<Drawable> progressBarImage,
+      @Prop(optional = true, resType = DRAWABLE) Drawable progressBarImage,
       @Prop(optional = true) ScalingUtils.ScaleType progressBarImageScaleType,
-      @Prop(optional = true) int progressBarAutoRotateInterval,
-      @Prop(optional = true, resType = DRAWABLE_REFERENCE) Reference<Drawable> retryImage,
+      @Prop(optional = true, resType = DRAWABLE) Drawable retryImage,
       @Prop(optional = true) ScalingUtils.ScaleType retryImageScaleType,
       @Prop(optional = true) RoundingParams roundingParams,
       @Prop(optional = true) ColorFilter colorFilter) {
 
-    GenericReferenceDraweeHierarchy draweeHierarchy = draweeDrawable.getDraweeHierarchy();
-    draweeHierarchy.setContext(c);
+    GenericDraweeHierarchy draweeHierarchy = draweeDrawable.getDraweeHierarchy();
 
-    draweeHierarchy.setPlaceholderReference(placeholderImage, placeholderImageScaleType);
+    draweeHierarchy.setPlaceholderImage(placeholderImage, placeholderImageScaleType);
 
     if (placeholderImageScaleType == ScalingUtils.ScaleType.FOCUS_CROP) {
       draweeHierarchy.setPlaceholderImageFocusPoint(placeholderImageFocusPoint);
@@ -111,12 +106,9 @@ class FrescoComponentSpec {
 
     draweeHierarchy.setActualImageScaleType(actualImageScaleType);
     draweeHierarchy.setFadeDuration(fadeDuration);
-    draweeHierarchy.setFailureReference(failureImage, failureImageScaleType);
-    draweeHierarchy.setProgressBarReference(
-        progressBarImage,
-        progressBarImageScaleType,
-        progressBarAutoRotateInterval);
-    draweeHierarchy.setRetryReference(retryImage, retryImageScaleType);
+    draweeHierarchy.setFailureImage(failureImage, failureImageScaleType);
+    draweeHierarchy.setProgressBarImage(progressBarImage, progressBarImageScaleType);
+    draweeHierarchy.setRetryImage(retryImage, retryImageScaleType);
     draweeHierarchy.setRoundingParams(roundingParams);
     draweeHierarchy.setActualImageColorFilter(colorFilter);
 
@@ -126,7 +118,7 @@ class FrescoComponentSpec {
   @OnBind
   protected static void onBind(
       ComponentContext c,
-      DraweeDrawable<GenericReferenceDraweeHierarchy> mountedDrawable,
+      DraweeDrawable<GenericDraweeHierarchy> mountedDrawable,
       @Prop DraweeController controller) {
     mountedDrawable.setController(controller);
 
@@ -138,7 +130,7 @@ class FrescoComponentSpec {
   @OnUnbind
   protected static void onUnbind(
       ComponentContext c,
-      DraweeDrawable<GenericReferenceDraweeHierarchy> mountedDrawable,
+      DraweeDrawable<GenericDraweeHierarchy> mountedDrawable,
       @Prop DraweeController controller) {
     mountedDrawable.setController(null);
 
@@ -150,8 +142,7 @@ class FrescoComponentSpec {
   @OnUnmount
   protected static void onUnmount(
       ComponentContext c,
-      DraweeDrawable<GenericReferenceDraweeHierarchy> mountedDrawable) {
+      DraweeDrawable<GenericDraweeHierarchy> mountedDrawable) {
     mountedDrawable.unmount();
-    mountedDrawable.getDraweeHierarchy().releaseReferences();
   }
 }
