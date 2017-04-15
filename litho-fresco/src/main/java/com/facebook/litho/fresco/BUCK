@@ -22,8 +22,6 @@ litho_android_library(
     deps =
         COMPONENTS_FRESCO_TARGETS + [
             COMPONENTS_OSS_TARGET,
-            COMPONENTS_COMPONENTS_FRESCO_COMMON_TARGET,
             COMPONENTS_UTILS_TARGET,
-            COMPONENTS_ANDROIDSUPPORT_TARGET,
         ],
 )
