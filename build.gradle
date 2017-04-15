@@ -13,10 +13,6 @@ buildscript {
 subprojects {
     repositories {
         jcenter()
-
-        flatDir {
-            dirs "${rootDir}/lib/yoga"
-        }
     }
 }
 
@@ -38,7 +34,7 @@ ext.deps = [
         supportCoreUi      : 'com.android.support:support-core-ui:25.3.1',
         supportRecyclerView: 'com.android.support:recyclerview-v7:25.3.1',
         // First-party
-        yoga               : 'com.facebook.yoga:yoga:1.4.1',
+        yoga               : 'com.facebook.yoga:yoga:1.4.2',
         fresco             : 'com.facebook.fresco:fresco:1.2.0',
         soloader           : 'com.facebook.soloader:soloader:0.2.0',
         textlayoutbuilder  : 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.1.0',

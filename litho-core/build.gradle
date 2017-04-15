@@ -45,7 +45,7 @@ dependencies {
     compile deps.supportRecyclerView
 
     // First-party dependencies
-    compile(name: 'yoga', ext: 'aar')
+    compile deps.yoga
 
     // Debugging dependencies
     debugCompile deps.guava
