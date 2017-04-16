@@ -7,9 +7,14 @@
 
 prebuilt_jar(
     name = "infer-annotations",
-    binary_jar = "infer-annotations-4.0.jar",
-    source_jar = "infer-annotations-4.0-src.jar",
+    binary_jar = ":infer-annotations.jar",
     visibility = [
         "PUBLIC",
     ],
+)
+
+remote_file(
+    name = "infer-annotations.jar",
+    sha1 = "3932ca6a3e1aa16df91ef994d6ecfba0ddd3a90e",
+    url = "mvn:com.facebook.infer.annotation:infer-annotation:jar:0.10.0.2",
 )
