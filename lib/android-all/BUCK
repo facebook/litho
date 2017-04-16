@@ -20,31 +20,3 @@ prebuilt_jar(
     name = "shadows-core-16-jar",
     binary_jar = "shadows-core-3.0-16.jar",
 )
-
-prebuilt_jar(
-    name = "android-all-16",
-    binary_jar = "android-all-4.1.2_r1-robolectric-0.jar",
-)
-
-prebuilt_jar(
-    name = "shadows-core-18-jar",
-    binary_jar = "shadows-core-3.0-18.jar",
-)
-
-java_library(
-    name = "shadows-prebuilt-core-18",
-    exported_deps = [
-        ":shadows-core-18-jar",
-    ],
-)
-
-prebuilt_jar(
-    name = "android-all-18",
-    binary_jar = "android-all-4.3_r2-robolectric-0.jar",
-)
-
-prebuilt_jar(
-    name = "android-all-21",
-    binary_jar = "android-all-5.0.0_r2-robolectric-1.jar",
-    source_jar = "android-all-5.0.0_r2-robolectric-1-sources.jar",
-)
