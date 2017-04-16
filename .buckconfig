@@ -8,5 +8,5 @@
   cpu_abis = arm64, armv7, x86, x86_64
 
 [android]
-  target = android-23
+  target = android-25
   build_tools_version = 23.0.2

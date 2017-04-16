@@ -8,8 +8,21 @@
 include_defs("//COMPONENTS_DEFS")
 
 android_prebuilt_aar(
+    name = "appcompat-aar",
+    aar = ":android-appcompat-v7.aar",
+)
+
+remote_file(
+    name = "android-appcompat-v7.aar",
+    sha1 = "99ba6ed8d35e089c35ce4d6a09d083a2829a81b3",
+    url = "mvn:com.android.support:appcompat-v7:aar:25.3.1",
+)
+
+java_library(
     name = "appcompat",
-    aar = "appcompat-v7-24.1.1.aar",
+    exported_deps = [
+        ":appcompat-aar",
+    ],
     visibility = [
         COMPONENTS_VISIBILITY,
     ],

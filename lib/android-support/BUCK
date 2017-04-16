@@ -8,31 +8,103 @@
 include_defs("//COMPONENTS_DEFS")
 
 android_prebuilt_aar(
-    name = "android-support-jar",
-    aar = "support-v4-24.1.1.aar",
+    name = "android-support-compat-aar",
+    aar = ":android-support-compat.aar",
+)
+
+remote_file(
+    name = "android-support-compat.aar",
+    sha1 = "8add1858a6be417b8bae984c750e67b58d84f09a",
+    url = "mvn:com.android.support:support-compat:aar:25.3.1",
+)
+
+android_prebuilt_aar(
+    name = "android-support-v4-aar",
+    aar = ":android-support-v4.aar",
+)
+
+remote_file(
+    name = "android-support-v4.aar",
+    sha1 = "e8f2835adcd883b3778f34121368892a5d1c188e",
+    url = "mvn:com.android.support:support-v4:aar:25.3.1",
+)
+
+android_prebuilt_aar(
+    name = "android-support-core-ui-aar",
+    aar = ":android-support-core-ui.aar",
+)
+
+remote_file(
+    name = "android-support-core-ui.aar",
+    sha1 = "c05699af8e8a46ed42c09a72c70b61493d7c47c7",
+    url = "mvn:com.android.support:support-core-ui:aar:25.3.1",
+)
+
+android_prebuilt_aar(
+    name = "android-support-core-utils-aar",
+    aar = ":android-support-core-utils.aar",
+)
+
+remote_file(
+    name = "android-support-core-utils.aar",
+    sha1 = "e4e6f72f7921c612e2397008e5a14ff00c66a374",
+    url = "mvn:com.android.support:support-core-utils:aar:25.3.1",
+)
+
+android_prebuilt_aar(
+    name = "android-support-fragment-aar",
+    aar = ":android-support-fragment.aar",
+)
+
+remote_file(
+    name = "android-support-fragment.aar",
+    sha1 = "9efba7de2e5c0ab4837b2b8ae11f9e5362bb3dc8",
+    url = "mvn:com.android.support:support-fragment:aar:25.3.1",
+)
+
+android_prebuilt_aar(
+    name = "android-support-vector-drawable-aar",
+    aar = ":android-support-vector-drawable.aar",
+)
+
+remote_file(
+    name = "android-support-vector-drawable.aar",
+    sha1 = "b897d928c149d39b634447b55a6e5bd64bf8073a",
+    url = "mvn:com.android.support:support-vector-drawable:aar:25.3.1",
 )
 
 prebuilt_jar(
     name = "android-support-annotations-jar",
-    binary_jar = "android-support-annotations.jar",
+    binary_jar = ":android-support-annotations.jar",
+)
+
+remote_file(
+    name = "android-support-annotations.jar",
+    sha1 = "bf8841d29fa39e077730e7a91222c2ce269fa7c9",
+    url = "mvn:com.android.support:support-annotations:jar:25.3.1",
 )
 
 android_prebuilt_aar(
     name = "android-support-recyclerview-aar",
-    aar = "recyclerview-v7-24.2.1.aar",
+    aar = ":recyclerview.aar",
 )
 
-android_prebuilt_aar(
-    name = "android-support-vector-aar",
-    aar = "support-vector-drawable-24.1.1.aar",
+remote_file(
+    name = "recyclerview.aar",
+    sha1 = "38154caf424be47be79afcfeed165b47f1b69958",
+    url = "mvn:com.android.support:recyclerview-v7:aar:25.3.1",
 )
 
 java_library(
     name = "android-support",
     exported_deps = [
         ":android-support-annotations-jar",
-        ":android-support-jar",
-        ":android-support-vector-aar",
+        ":android-support-compat-aar",
+        ":android-support-core-ui-aar",
+        ":android-support-core-utils-aar",
+        ":android-support-fragment-aar",
+        ":android-support-v4-aar",
+        ":android-support-vector-drawable-aar",
     ],
     visibility = [
         COMPONENTS_VISIBILITY,
