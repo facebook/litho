@@ -34,8 +34,7 @@ class LikersComponentSpec {
       ComponentContext c,
       @Prop List<User> likers) {
       
-    return Container.create(c)
-        .direction(ROW)
+    return Row.create(c)
         .alignItems(FLEX_START)
         .child(
             Image.create(c)
