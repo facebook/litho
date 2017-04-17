@@ -136,5 +136,14 @@ public class ComponentsRule implements TestRule {
       /* destPos */ 0,
       R.styleable.Image.length);
 
+    System.arraycopy(
+        new int[]{
+            android.R.attr.textAppearance,
+        },
+      /* srcPos */ 0,
+        R.styleable.TextAppearance,
+      /* destPos */ 0,
+        R.styleable.TextAppearance.length);
+
   }
 }

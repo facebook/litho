@@ -9,10 +9,6 @@
 
 package com.facebook.litho;
 
-import com.facebook.yoga.YogaAlign;
-
-import com.facebook.yoga.YogaFlexDirection;
-
 import android.view.ContextThemeWrapper;
 
 import com.facebook.litho.it.R;
@@ -31,7 +27,6 @@ import org.robolectric.RuntimeEnvironment;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(ComponentsTestRunner.class)
-@org.junit.Ignore("t16280359")
 public class ComponentStyleTest {
   private int mDimen;
   private int mLargeDimen;
@@ -93,6 +88,24 @@ public class ComponentStyleTest {
   public void testAttributeStyleProp() {
     Component<Text> component =
         Text.create(mContext, R.attr.testAttrLargeText, 0)
+            .text("text")
+            .build();
+    assertEquals(mLargeDimen, Whitebox.getInternalState(component, "textSize"));
+  }
+
+  @Test
+  public void testTextAppearenceStyleProp() {
+    Component<Text> component =
+        Text.create(mContext, 0, R.style.TextStyleWithLargeTextAppearance)
+            .text("text")
+            .build();
+    assertEquals(mLargeDimen, Whitebox.getInternalState(component, "textSize"));
+  }
+
+  @Test
+  public void testTextAppearenceAttributeStyleProp() {
+    Component<Text> component =
+        Text.create(mContext, R.attr.testAttrLargeTextAppearance, 0)
             .text("text")
             .build();
     assertEquals(mLargeDimen, Whitebox.getInternalState(component, "textSize"));
