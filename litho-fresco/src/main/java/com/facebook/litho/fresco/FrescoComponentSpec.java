@@ -98,7 +98,11 @@ class FrescoComponentSpec {
 
     GenericDraweeHierarchy draweeHierarchy = draweeDrawable.getDraweeHierarchy();
 
-    draweeHierarchy.setPlaceholderImage(placeholderImage, placeholderImageScaleType);
+    if (placeholderImage == null) {
+      draweeHierarchy.setPlaceholderImage(null);
+    } else {
+      draweeHierarchy.setPlaceholderImage(placeholderImage, placeholderImageScaleType);
+    }
 
     if (placeholderImageScaleType == ScalingUtils.ScaleType.FOCUS_CROP) {
       draweeHierarchy.setPlaceholderImageFocusPoint(placeholderImageFocusPoint);
@@ -106,9 +110,25 @@ class FrescoComponentSpec {
 
     draweeHierarchy.setActualImageScaleType(actualImageScaleType);
     draweeHierarchy.setFadeDuration(fadeDuration);
-    draweeHierarchy.setFailureImage(failureImage, failureImageScaleType);
-    draweeHierarchy.setProgressBarImage(progressBarImage, progressBarImageScaleType);
-    draweeHierarchy.setRetryImage(retryImage, retryImageScaleType);
+
+    if (failureImage == null) {
+      draweeHierarchy.setFailureImage(null);
+    } else {
+      draweeHierarchy.setFailureImage(failureImage, failureImageScaleType);
+    }
+
+    if (progressBarImage == null) {
+      draweeHierarchy.setProgressBarImage(null);
+    } else {
+      draweeHierarchy.setProgressBarImage(progressBarImage, progressBarImageScaleType);
+    }
+
+    if (retryImage == null) {
+      draweeHierarchy.setRetryImage(null);
+    } else {
+      draweeHierarchy.setRetryImage(retryImage, retryImageScaleType);
+    }
+
     draweeHierarchy.setRoundingParams(roundingParams);
     draweeHierarchy.setActualImageColorFilter(colorFilter);
 
