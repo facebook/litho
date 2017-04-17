@@ -3,6 +3,8 @@ machine:
     TERM: 'dumb'
     ADB_INSTALL_TIMEOUT: 10
     PATH: "/home/ubuntu/buck/bin:$PATH"
+    ANDROID_HOME: "/home/ubuntu/android-sdk"
+    ANDROID_NDK_HOME: "/home/ubuntu/android-sdk/ndk-bundle"
   java:
     version: 'oraclejdk8'
 
@@ -12,13 +14,14 @@ dependencies:
     - if [[ ! -e /home/ubuntu/buck ]]; then git clone https://github.com/facebook/buck.git /home/ubuntu/buck; fi
     - cd /home/ubuntu/buck && ant
     - buck --version
-    - source scripts/circle-ci-android-setup.sh && getAndroidSDK
+    - if [[ ! -e /home/ubuntu/android-sdk ]]; then source scripts/circle-ci-android-setup.sh && installAndroidSDK; fi
     - buck fetch :components
     - buck fetch litho-it/...
     - buck fetch sample/...
 
-  cached_directories:
+  cache_directories:
     - "/home/ubuntu/buck"
+    - "/home/ubuntu/android-sdk"
 
 test:
   override:
@@ -26,6 +29,8 @@ test:
     - buck build sample
     # Run the tests with Buck
     - buck test litho-it/src/test/... --config build.threads=1
+    # Run the tests with Gradle
+    - ./gradlew test
 
 experimental:
   notify:
