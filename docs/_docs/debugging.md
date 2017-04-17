@@ -16,11 +16,11 @@ public class SampleApplication extends Application {
   public void onCreate() {
     super.onCreate();
     SoLoader.init(this, false);
-		
-		Stetho.initialize(
-		    Stetho.newInitializerBuilder(this)
-		        .enableWebKitInspector(new LithoWebKitInspector(this))
-		        .build());
+    
+    Stetho.initialize(
+        Stetho.newInitializerBuilder(this)
+              .enableWebKitInspector(new LithoWebKitInspector(this))
+              .build());
   }
 }
 ```
