@@ -37,6 +37,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.displaylist.DisplayList;
 import com.facebook.litho.displaylist.DisplayListException;
 import com.facebook.litho.reference.BorderColorDrawableReference;
+import com.facebook.litho.reference.DrawableReference;
 import com.facebook.litho.reference.Reference;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.yoga.YogaConstants;
@@ -638,7 +639,7 @@ class LayoutState {
     layoutState.mCurrentY -= node.getY();
 
     // 6. Add foreground if defined.
-    final Reference<? extends Drawable> foreground = node.getForeground();
+    final Drawable foreground = node.getForeground();
     if (foreground != null) {
       if (layoutOutput != null && layoutOutput.hasViewNodeInfo() && SDK_INT >= M) {
         layoutOutput.getViewNodeInfo().setForeground(foreground);
@@ -651,7 +652,7 @@ class LayoutState {
             node,
             layoutState,
             convertForeground,
-            foreground,
+            DrawableReference.create().drawable(foreground).build(),
             LayoutOutput.TYPE_FOREGROUND);
 
         if (diffNode != null) {

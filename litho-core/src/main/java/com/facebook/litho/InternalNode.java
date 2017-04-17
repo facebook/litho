@@ -12,15 +12,15 @@ package com.facebook.litho;
 import javax.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.AttrRes;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DimenRes;
@@ -32,25 +32,24 @@ import android.support.v4.view.ViewCompat;
 import android.text.TextUtils;
 import android.util.SparseArray;
 
-import com.facebook.litho.R;
+import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.reference.ColorDrawableReference;
 import com.facebook.litho.reference.DrawableReference;
 import com.facebook.litho.reference.Reference;
 import com.facebook.litho.reference.ResourceDrawableReference;
-import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
+import com.facebook.yoga.YogaConstants;
+import com.facebook.yoga.YogaDirection;
+import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
-import com.facebook.yoga.YogaDirection;
-import com.facebook.yoga.YogaPositionType;
-import com.facebook.yoga.YogaWrap;
-import com.facebook.yoga.YogaEdge;
-import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaOverflow;
+import com.facebook.yoga.YogaPositionType;
+import com.facebook.yoga.YogaWrap;
 
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
@@ -155,7 +154,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private long mPrivateFlags;
 
   private Reference<? extends Drawable> mBackground;
-  private Reference<? extends Drawable> mForeground;
+  private Drawable mForeground;
   private int mBorderColor = Color.TRANSPARENT;
 
   private NodeInfo mNodeInfo;
@@ -275,7 +274,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return mBackground;
   }
 
-  public Reference<? extends Drawable> getForeground() {
+  public Drawable getForeground() {
     return mForeground;
   }
 
@@ -1097,20 +1096,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
-  public InternalNode foreground(Reference<? extends Drawable> foreground) {
+  public InternalNode foreground(Drawable foreground) {
     mPrivateFlags |= PFLAG_FOREGROUND_IS_SET;
     mForeground = foreground;
     return this;
-  }
-
-  @Override
-  public InternalNode foreground(Reference.Builder<? extends Drawable> builder) {
-    return foreground(builder.build());
-  }
-
-  @Override
-  public InternalNode foreground(Drawable foreground) {
-    return background(DrawableReference.create().drawable(foreground));
   }
 
   @Override
@@ -1126,21 +1115,15 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Override
   public InternalNode foregroundRes(@DrawableRes int resId) {
     if (resId == 0) {
-      return foreground((Reference<Drawable>) null);
+      return foreground(null);
     }
 
-    return foreground(
-        ResourceDrawableReference.create(mComponentContext)
-            .resId(resId)
-            .build());
+    return foreground(mResources.getDrawable(resId));
   }
 
   @Override
   public InternalNode foregroundColor(@ColorInt int foregroundColor) {
-    return foreground(
-        ColorDrawableReference.create(mComponentContext)
-            .color(foregroundColor)
-            .build());
+    return foreground(new ColorDrawable(foregroundColor));
   }
 
   @Override

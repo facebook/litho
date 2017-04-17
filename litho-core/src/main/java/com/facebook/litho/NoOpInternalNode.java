@@ -586,11 +586,6 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
-  public InternalNode foreground(Reference.Builder<? extends Drawable> builder) {
-    return this;
-  }
-
-  @Override
   public InternalNode foreground(Drawable foreground) {
     return this;
   }

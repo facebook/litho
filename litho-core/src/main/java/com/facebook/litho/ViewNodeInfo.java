@@ -15,8 +15,8 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
-import com.facebook.yoga.YogaDirection;
 import com.facebook.litho.reference.Reference;
+import com.facebook.yoga.YogaDirection;
 
 /**
  * Additional information passed between {@link LayoutState} and {@link MountState}
@@ -27,7 +27,7 @@ class ViewNodeInfo {
   private final AtomicInteger mReferenceCount = new AtomicInteger(0);
 
   private Reference<Drawable> mBackground;
-  private Reference<Drawable> mForeground;
+  private Drawable mForeground;
   private Rect mPadding;
   private Rect mExpandedTouchBounds;
   private YogaDirection mLayoutDirection;
@@ -41,11 +41,11 @@ class ViewNodeInfo {
     return mBackground;
   }
 
-  void setForeground(Reference<? extends Drawable> foreground) {
-    mForeground = (Reference<Drawable>) foreground;
+  void setForeground(Drawable foreground) {
+    mForeground = foreground;
   }
 
-  Reference<Drawable> getForeground() {
+  Drawable getForeground() {
     return mForeground;
   }
 

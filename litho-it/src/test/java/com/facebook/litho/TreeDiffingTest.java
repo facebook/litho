@@ -11,6 +11,7 @@ package com.facebook.litho;
 
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v4.util.SparseArrayCompat;
 
 import com.facebook.litho.testing.TestComponent;
@@ -564,7 +565,7 @@ public class TreeDiffingTest {
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .backgroundColor(Color.RED)
-            .foregroundRes(android.R.drawable.btn_default)
+            .foreground(new ColorDrawable(Color.TRANSPARENT))
             .child(TestDrawableComponent.create(c))
             .child(
                 Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
@@ -578,7 +579,7 @@ public class TreeDiffingTest {
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .backgroundColor(Color.RED)
-            .foregroundRes(android.R.drawable.btn_default)
+            .foreground(new ColorDrawable(Color.TRANSPARENT))
             .child(TestDrawableComponent.create(c))
             .child(
                 Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
@@ -592,7 +593,7 @@ public class TreeDiffingTest {
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
             .backgroundColor(Color.BLACK)
-            .foregroundRes(android.R.drawable.btn_default)
+            .foreground(new ColorDrawable(Color.TRANSPARENT))
             .child(TestDrawableComponent.create(c))
             .child(
                 Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)

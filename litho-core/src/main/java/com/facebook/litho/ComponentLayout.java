@@ -195,16 +195,6 @@ public interface ComponentLayout {
     Builder backgroundRes(@DrawableRes int resId);
     Builder backgroundColor(@ColorInt int backgroundColor);
 
-    /**
-     * @deprecated just use {@link #foreground(Drawable)} instead.
-     */
-    @Deprecated
-    Builder foreground(Reference<? extends Drawable> foreground);
-    /**
-     * @deprecated just use {@link #foreground(Drawable)} instead.
-     */
-    @Deprecated
-    Builder foreground(Reference.Builder<? extends Drawable> foregroundBuilder);
     Builder foreground(Drawable drawable);
     Builder foregroundAttr(@AttrRes int resId, @DrawableRes int defaultResId);
     Builder foregroundAttr(@AttrRes int resId);
@@ -388,16 +378,6 @@ public interface ComponentLayout {
     ContainerBuilder backgroundRes(@DrawableRes int resId);
     ContainerBuilder backgroundColor(@ColorInt int backgroundColor);
 
-    /**
-     * @deprecated just use {@link #foreground(Drawable)} instead.
-     */
-    @Deprecated
-    ContainerBuilder foreground(Reference<? extends Drawable> foreground);
-    /**
-     * @deprecated just use {@link #foreground(Drawable)} instead.
-     */
-    @Deprecated
-    ContainerBuilder foreground(Reference.Builder<? extends Drawable> foregroundBuilder);
     ContainerBuilder foreground(Drawable drawable);
     ContainerBuilder foregroundAttr(@AttrRes int resId, @DrawableRes int defaultResId);
     ContainerBuilder foregroundAttr(@AttrRes int resId);

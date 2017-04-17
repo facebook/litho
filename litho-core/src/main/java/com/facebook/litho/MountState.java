@@ -1399,30 +1399,25 @@ class MountState {
   }
 
   private static void setViewForeground(View view, ViewNodeInfo viewNodeInfo) {
-    final Reference<Drawable> foregroundReference = viewNodeInfo.getForeground();
-    if (foregroundReference != null) {
+    final Drawable foreground = viewNodeInfo.getForeground();
+    if (foreground != null) {
       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
         throw new IllegalStateException("MountState has a ViewNodeInfo with foreground however " +
             "the current Android version doesn't support foreground on Views");
       }
 
-      view.setForeground(
-          Reference.acquire((ComponentContext) view.getContext(), foregroundReference));
+      view.setForeground(foreground);
     }
   }
 
   private static void unsetViewForeground(View view, ViewNodeInfo viewNodeInfo) {
-    final Reference<Drawable> foregroundReference = viewNodeInfo.getForeground();
-    if (foregroundReference != null) {
+    final Drawable foreground = viewNodeInfo.getForeground();
+    if (foreground != null) {
       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
         throw new IllegalStateException("MountState has a ViewNodeInfo with foreground however " +
             "the current Android version doesn't support foreground on Views");
       }
 
-      Reference.release(
-          (ComponentContext) view.getContext(),
-          view.getForeground(),
-          foregroundReference);
       view.setForeground(null);
     }
   }
