@@ -35,7 +35,7 @@ litho_android_library(
         COMPONENTS_TEXTLAYOUTBUILDER_TARGET,
     ],
     tests = [
-        make_dep_path("litho-widget/src/test/java/com/facebook/litho/widget:widget"),
+        make_dep_path("litho-it/src/test/java/com/facebook/litho/widget:widget"),
     ],
     visibility = [
         "PUBLIC",

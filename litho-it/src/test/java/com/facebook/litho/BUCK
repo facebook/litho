@@ -16,15 +16,6 @@ components_robolectric_test(
         "reference/*Test.java",
     ]),
     contacts = ["oncall+components_for_android@xmail.facebook.com"],
-    powermock_srcs = [
-        "ComponentLifecycleTest.java",
-        "ComponentTreeMountTest.java",
-        "LayoutDirectionTest.java",
-        "LayoutStateCalculateTest.java",
-        "LayoutStateCalculateVisibilityOutputsTest.java",
-        "LayoutStateRecyclingTest.java",
-        "TreeDiffingTest.java",
-    ],
     provided_deps = [
         COMPONENTS_ROBOLECTRIC_TARGET,
     ],
@@ -37,7 +28,6 @@ components_robolectric_test(
         COMPONENTS_JAVA_TARGET,
         COMPONENTS_JUNIT_TARGET,
         COMPONENTS_MOCKITO_TARGET,
-        COMPONENTS_POWERMOCK_MOCKITO_TARGET,
         COMPONENTS_POWERMOCK_REFLECT_TARGET,
         COMPONENTS_SOLOADER_TARGET,
         COMPONENTS_WIDGET_TARGET,

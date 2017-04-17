@@ -86,12 +86,9 @@ COMPONENTS_FRESCO_INTERFACES_TARGET       = []
 
 def components_robolectric_test(
     name,
-    srcs,
-    powermock_srcs=None,
     *args,
     **kwargs):
     """Tests that can successfully run from the library root folder."""
-    powermock_srcs = powermock_srcs or []
     extra_vm_args = [
         '-Drobolectric.dependency.dir=lib/android-all',
         '-Dcom.facebook.litho.is_oss=true',
@@ -103,22 +100,11 @@ def components_robolectric_test(
         '//lib/fb:jni',
     ]
 
-    # Run normal tests first, excluding powermock
     robolectric_test(
         name=name,
-        srcs=glob(srcs, excludes=powermock_srcs),
         *args,
         **kwargs)
 
-    # Now run the powermock tests in series as they require a separate class
-    # loader to not conflict with Yoga.
-    for src in powermock_srcs:
-      pname = name + '_powermock_' + src.replace(".java", "").replace("/", "_")
-      robolectric_test(
-          name=pname,
-          srcs=[src],
-          *args,
-          **kwargs)
-
-def litho_android_library(*args, **kwargs):
-  android_library(*args, **kwargs)
+# Within the OSS export, these are just aliases.
+litho_android_library = android_library
+components_robolectric_powermock_test = components_robolectric_test

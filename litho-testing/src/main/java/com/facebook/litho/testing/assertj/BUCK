@@ -7,8 +7,7 @@ litho_android_library(
         COMPONENTS_ASSERTJ_TARGET,
     ],
     visibility = [
-        "//javatests/...",
-        make_dep_path("litho-it/src/test/..."),
+        "PUBLIC",
     ],
     deps = [
         COMPONENTS_ANDROIDSUPPORT_TARGET,
