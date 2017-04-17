@@ -32,6 +32,7 @@ afterEvaluate {
 
 dependencies {
     compile project(':litho-core')
+    provided project(':litho-annotations')
     testCompile project(':litho-stubs')
     testCompile project(':litho-testing')
     testCompile project(':litho-widget')

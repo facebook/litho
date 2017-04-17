@@ -20,6 +20,7 @@ android {
 dependencies {
     compile project(':litho-core')
     compile project(':litho-widget')
+    provided project(':litho-annotations')
     annotationProcessor project(':litho-processor')
 
     compile deps.soloader

@@ -31,7 +31,7 @@ android {
 
 dependencies {
     // Project dependencies
-    compile project(':litho-annotations')
+    provided project(':litho-annotations')
     provided project(':litho-stubs')
 
     // Provided dependencies
@@ -39,7 +39,7 @@ dependencies {
     provided deps.inferAnnotations
 
     // Android Support Library
-    compile deps.supportAnnotations
+    provided deps.supportAnnotations
     compile deps.supportCompat
     compile deps.supportCoreUi
     compile deps.supportRecyclerView

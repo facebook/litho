@@ -39,6 +39,7 @@ afterEvaluate {
 
 dependencies {
     compile project(':litho-core')
+    provided project(':litho-annotations')
     annotationProcessor project(':litho-processor')
 
     // Annotations
