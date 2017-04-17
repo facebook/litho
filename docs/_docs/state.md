@@ -53,7 +53,7 @@ This is what you need to know when writing an `@OnCreateInitialState` method:
 
 * First parameter must be of type `ComponentContext`.
 * `@Prop` parameters are allowed.
-* All other parameters must have a corresponding parameter annotated with `@State` in the other lifecycle methods, and their type must be an `Output` that is parameterized with the type of the matching `@State` element.
+* All other parameters must have a corresponding parameter annotated with `@State` in the other lifecycle methods, and their type must be a [StateValue](/javadoc/com/facebook/litho/StateValue) that is parameterized with the type of the matching `@State` element.
 * `@OnCreateInitialState` methods are not mandatory. If you do not define one or if you only initialize some states, the uninitialized ones will take Java defaults.
 * `@OnCreateInitialState` is called only once for each component, when it first gets added to the `ComponentTree`. Following layout recalculations of the same `ComponentTree` will not call this again if the key of the component doesn't change.
 * You should never need to call `@OnCreateInitialState` yourself.
@@ -67,7 +67,7 @@ public class CheckboxSpec {
 	@OnCreateInitialState
 	static void createInitialState(
 		ComponentContext c,
-		Output<Boolean> isChecked,
+		StateValue<Boolean> isChecked,
 		@Prop boolean initChecked) {
 	  isChecked(initChecked);
 	}
@@ -217,7 +217,7 @@ static ComponentLayout onCreateLayout(
 }
 
 @OnCreateInitialState
-static void onCreateInitialState(Output<String> foo) {
+static void onCreateInitialState(StateValue<String> foo) {
   foo.set("first foo");
 }
 ```
