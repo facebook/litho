@@ -13,13 +13,13 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.widget.ImageView.ScaleType;
 
-import com.facebook.litho.R;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Diff;
 import com.facebook.litho.DrawableMatrix;
 import com.facebook.litho.MatrixDrawable;
 import com.facebook.litho.Output;
+import com.facebook.litho.R;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.annotations.FromBoundsDefined;
@@ -34,8 +34,7 @@ import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.ShouldUpdate;
-import com.facebook.litho.reference.Reference;
-import com.facebook.litho.reference.ResourceDrawableReference;
+import com.facebook.litho.reference.DrawableUtils;
 import com.facebook.litho.utils.MeasureUtils;
 
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
@@ -52,7 +51,7 @@ class ImageSpec {
   @OnLoadStyle
   static void onLoadStyle(
       ComponentContext c,
-      Output<Reference<Drawable>> src,
+      Output<Drawable> drawable,
       Output<ScaleType> scaleType) {
 
     final TypedArray a = c.obtainStyledAttributes(R.styleable.Image, 0);
@@ -61,9 +60,7 @@ class ImageSpec {
       final int attr = a.getIndex(i);
 
       if (attr == R.styleable.Image_android_src) {
-        src.set(ResourceDrawableReference.create(c)
-            .resId(a.getResourceId(attr, 0))
-            .build());
+        drawable.set(c.getResources().getDrawable(a.getResourceId(attr, 0)));
       } else if (attr == R.styleable.Image_android_scaleType) {
         scaleType.set(SCALE_TYPE[a.getInteger(attr, -1)]);
       }
@@ -79,80 +76,64 @@ class ImageSpec {
       int widthSpec,
       int heightSpec,
       Size size,
-      @Prop(resType = ResType.DRAWABLE_REFERENCE) Reference<Drawable> src) {
-    if (src == null) {
+      @Prop(resType = ResType.DRAWABLE) Drawable drawable) {
+    if (drawable == null ||
+        drawable.getIntrinsicWidth() <= 0 ||
+        drawable.getIntrinsicHeight() <= 0) {
       size.width = 0;
       size.height = 0;
       return;
     }
 
-    final Drawable drawable = Reference.acquire(c, src);
-    try {
-      if (drawable == null ||
-          drawable.getIntrinsicWidth() <= 0 ||
-          drawable.getIntrinsicHeight() <= 0) {
-        size.width = 0;
-        size.height = 0;
-        return;
-      }
+    final int intrinsicHeight = drawable.getIntrinsicHeight();
+    final int intrinsicWidth = drawable.getIntrinsicWidth();
 
-      final int intrinsicHeight = drawable.getIntrinsicHeight();
-      final int intrinsicWidth = drawable.getIntrinsicWidth();
-
-      if (SizeSpec.getMode(widthSpec) == UNSPECIFIED &&
-          SizeSpec.getMode(heightSpec) == UNSPECIFIED) {
-        size.width = intrinsicWidth;
-        size.height = intrinsicHeight;
-        return;
-      }
-
-      final float aspectRatio = intrinsicWidth / (float) intrinsicHeight;
-      MeasureUtils.measureWithAspectRatio(
-          widthSpec,
-          heightSpec,
-          intrinsicWidth,
-          intrinsicHeight,
-          aspectRatio,
-          size);
-    } finally {
-      Reference.release(c, drawable, src);
+    if (SizeSpec.getMode(widthSpec) == UNSPECIFIED &&
+        SizeSpec.getMode(heightSpec) == UNSPECIFIED) {
+      size.width = intrinsicWidth;
+      size.height = intrinsicHeight;
+      return;
     }
+
+    final float aspectRatio = intrinsicWidth / (float) intrinsicHeight;
+    MeasureUtils.measureWithAspectRatio(
+        widthSpec,
+        heightSpec,
+        intrinsicWidth,
+        intrinsicHeight,
+        aspectRatio,
+        size);
   }
 
   @OnBoundsDefined
   static void onBoundsDefined(
       ComponentContext c,
       ComponentLayout layout,
-      @Prop(resType = ResType.DRAWABLE_REFERENCE) Reference<Drawable> src,
+      @Prop(resType = ResType.DRAWABLE) Drawable drawable,
       @Prop(optional = true) ScaleType scaleType,
       Output<DrawableMatrix> drawableMatrix,
       Output<Integer> drawableWidth,
       Output<Integer> drawableHeight) {
 
-    final Drawable d = Reference.acquire(c, src);
-    try {
-      final int horizontalPadding = layout.getPaddingLeft() + layout.getPaddingRight();
-      final int verticalPadding = layout.getPaddingTop() + layout.getPaddingBottom();
+    final int horizontalPadding = layout.getPaddingLeft() + layout.getPaddingRight();
+    final int verticalPadding = layout.getPaddingTop() + layout.getPaddingBottom();
 
-      if (ScaleType.FIT_XY == scaleType
-          || d.getIntrinsicWidth() <= 0
-          || d.getIntrinsicHeight() <= 0) {
-        drawableMatrix.set(null);
-        drawableWidth.set(layout.getWidth() - horizontalPadding);
-        drawableHeight.set(layout.getHeight() - verticalPadding);
-      } else {
-        final DrawableMatrix matrix = DrawableMatrix.create(
-            d,
-            scaleType,
-            layout.getWidth() - horizontalPadding,
-            layout.getHeight() - verticalPadding);
+    if (ScaleType.FIT_XY == scaleType
+        || drawable.getIntrinsicWidth() <= 0
+        || drawable.getIntrinsicHeight() <= 0) {
+      drawableMatrix.set(null);
+      drawableWidth.set(layout.getWidth() - horizontalPadding);
+      drawableHeight.set(layout.getHeight() - verticalPadding);
+    } else {
+      final DrawableMatrix matrix = DrawableMatrix.create(
+          drawable,
+          scaleType,
+          layout.getWidth() - horizontalPadding,
+          layout.getHeight() - verticalPadding);
 
-        drawableMatrix.set(matrix);
-        drawableWidth.set(d.getIntrinsicWidth());
-        drawableHeight.set(d.getIntrinsicHeight());
-      }
-    } finally {
-      Reference.release(c, d, src);
+      drawableMatrix.set(matrix);
+      drawableWidth.set(drawable.getIntrinsicWidth());
+      drawableHeight.set(drawable.getIntrinsicHeight());
     }
   }
 
@@ -165,9 +146,9 @@ class ImageSpec {
   static void onMount(
       ComponentContext c,
       MatrixDrawable matrixDrawable,
-      @Prop(resType = ResType.DRAWABLE_REFERENCE) Reference<Drawable> src,
+      @Prop(resType = ResType.DRAWABLE) Drawable drawable,
       @FromBoundsDefined DrawableMatrix drawableMatrix) {
-    matrixDrawable.mount(Reference.acquire(c, src), drawableMatrix);
+    matrixDrawable.mount(drawable, drawableMatrix);
   }
 
   @OnBind
@@ -183,16 +164,15 @@ class ImageSpec {
   static void onUnmount(
       ComponentContext c,
       MatrixDrawable convertDrawable,
-      @Prop(resType = ResType.DRAWABLE_REFERENCE) Reference<Drawable> src) {
-    Reference.release(c, convertDrawable.getMountedDrawable(), src);
+      @Prop(resType = ResType.DRAWABLE) Drawable drawable) {
     convertDrawable.unmount();
   }
 
   @ShouldUpdate(onMount = true)
   static boolean shouldUpdate(
       Diff<ScaleType> scaleType,
-      Diff<Reference<Drawable>> src) {
+      Diff<Drawable> drawable) {
     return (scaleType.getNext() != scaleType.getPrevious()) ||
-        Reference.shouldUpdate(src.getNext(), src.getPrevious());
+        !DrawableUtils.areDrawablesEqual(drawable.getNext(), drawable.getPrevious());
   }
 }

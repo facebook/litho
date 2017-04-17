@@ -9,12 +9,13 @@
 
 package com.facebook.litho.widget;
 
-import com.facebook.litho.ComponentLayout;
+import android.graphics.drawable.ColorDrawable;
+
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
-import com.facebook.litho.reference.ColorDrawableReference;
 
 import static android.widget.ImageView.ScaleType.FIT_XY;
 import static com.facebook.litho.annotations.ResType.COLOR;
@@ -31,8 +32,7 @@ class SolidColorSpec {
       @Prop(resType = COLOR) int color) {
     return Image.create(c)
         .scaleType(FIT_XY)
-        .src(ColorDrawableReference.create(c)
-            .color(color))
+        .drawable(new ColorDrawable(color))
         .buildWithLayout();
   }
 }
