@@ -67,12 +67,12 @@ remote_file(
 
 prebuilt_jar(
     name = "bolts",
-    binary_jar = ":download-bolts",
+    binary_jar = ":bolts-tasks.jar",
     visibility = [COMPONENTS_VISIBILITY],
 )
 
 remote_file(
-    name = "download-bolts",
+    name = "bolts-tasks.jar",
     sha1 = "d85884acf6810a3bbbecb587f239005cbc846dc4",
     url = "mvn:com.parse.bolts:bolts-tasks:jar:1.4.0",
 )
