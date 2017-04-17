@@ -14,21 +14,11 @@
         <item name="attr/testAttrDrawable">@drawable/test_bg</item>
         <item name="attr/testAttrLargeText">@style/TextLargeSizeStyle</item>
         <item name="attr/testAttrLargePadding">@style/PaddingStyleLarge</item>
-        <item name="attr/testAttrLargeTextAppearance">@style/TestLargeSizeTextAppearance</item>
     </style>
 
     <style name="TextLargeSizeStyle">
         <item name="android:textSize">@dimen/test_large_dimen</item>
     </style>
-
-    <style name="TextStyleWithLargeTextAppearance">
-        <item name="android:textAppearance">@style/TestLargeSizeTextAppearance</item>
-    </style>
-
-    <style name="TestLargeSizeTextAppearance">
-        <item name="android:textSize">@dimen/test_large_dimen</item>
-    </style>
-
 
     <style name="PaddingStyleLarge">
         <item name="android:padding">@dimen/test_large_dimen</item>
