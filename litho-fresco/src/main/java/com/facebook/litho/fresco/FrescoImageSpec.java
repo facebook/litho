@@ -36,7 +36,7 @@ import com.facebook.litho.utils.MeasureUtils;
 import static com.facebook.litho.annotations.ResType.DRAWABLE;
 
 @MountSpec
-class FrescoComponentSpec {
+class FrescoImageSpec {
 
   private static final ScalingUtils.ScaleType DEFAULT_ACTUAL_IMAGE_SCALE_TYPE =
       GenericDraweeHierarchyBuilder.DEFAULT_ACTUAL_IMAGE_SCALE_TYPE;

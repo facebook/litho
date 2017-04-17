@@ -95,7 +95,7 @@ class FacePileComponentSpec {
     ComponentLayout.Builder builder = Column.create(c);
     for (Uri face : avatarUrls) {
       builder.child(
-          FrescoComponent.create(c)
+          FrescoImage.create(c)
               .uri(face)
               .withLayout()
               .clickHandler(FacePileComponent.onFaceClicked(c, face));
