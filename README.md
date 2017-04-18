@@ -1,23 +1,25 @@
 # Litho [![CircleCI](https://circleci.com/gh/facebook/litho/tree/master.svg?style=svg)](https://circleci.com/gh/facebook/litho/tree/master)
 
-<img src="docs/static/logo.png" width=150 align=left>
+<img src="docs/static/logo.png" width=150 align=right>
 
 Litho is a declarative framework for building efficient UIs on Android.
 
 * **Declarative:** Litho uses a declarative API to define UI components. You simply describe the layout for your UI based on a set of immutable inputs and the framework takes care of the rest.
-* **Asynchronous layout:** Litho can measure and layout your UI ahead of time without blocking the UI thread. 
+* **Asynchronous layout:** Litho can measure and layout your UI ahead of time without blocking the UI thread.
 * **View flattening:** Litho uses [Yoga](https://facebook.github.io/yoga/) for layout and automatically reduces the number of ViewGroups that your UI contains.
 * **Fine-grained recycling:** Any component such as a text or image can be recycled and reused anywhere in the UI.
 
-[Learn how to use Litho in your project.](https://fblitho.com/docs/getting-started)  
-[Get started with our tutorial.](https://fblitho.com/docs/tutorial)  
-[Read more about Litho in our docs.](https://fblitho.com/docs/intro) 
+To get started, check out these links:
+
+* [Learn how to use Litho in your project.](http://facebook.github.io/litho/docs/getting-started)
+* [Get started with our tutorial.](http://facebook.github.io/litho/docs/tutorial)
+* [Read more about Litho in our docs.](http://facebook.github.io/litho/docs/intro)
 
 ## Installation
 Litho can be integrated either in Gradle or Buck projects. Read our [Getting Started](https://fblitho.com/getting-started) guide for installation instructions.
 
 ## Quick start
-### 1. Initialize `SoLoader` in your `Application` class. 
+### 1. Initialize `SoLoader` in your `Application` class.
 ```java
 public class SampleApplication extends Application {
   @Override
@@ -56,7 +58,7 @@ or, if you prefer Gradle,
     $ ./gradlew :sample:installDebug
 
 ## Contributing
-For pull requests, please see our [CONTRIBUTING](CONTRIBUTING.md) guide.  
+For pull requests, please see our [CONTRIBUTING](CONTRIBUTING.md) guide.
 
 See our [issues](https://github.com/litho/issues/) page for ideas on how to contribute or to let us know of any problems.
 
