@@ -30,7 +30,6 @@ public class SampleActivity extends Activity {
 
     final RecyclerBinder recyclerBinder = new RecyclerBinder(
         context,
-        4.0f,
         new LinearLayoutInfo(this, OrientationHelper.VERTICAL, false));
 
     final Component component = Recycler.create(context)
@@ -44,13 +43,15 @@ public class SampleActivity extends Activity {
 
   private static void addContent(RecyclerBinder recyclerBinder, ComponentContext context) {
     for (int i = 0; i < 32; i++) {
-      ComponentInfo.Builder componentInfoBuilder = ComponentInfo.create();
-      componentInfoBuilder.component(
-              ListItem.create(context)
+      recyclerBinder.insertItemAt(
+          i,
+          ComponentInfo.create()
+              .component(
+                  ListItem.create(context)
                       .color(i % 2 == 0 ? Color.WHITE : Color.LTGRAY)
                       .message("Hello, world!")
-                      .build());
-      recyclerBinder.insertItemAt(i, componentInfoBuilder.build());
+                      .build())
+              .build());
     }
   }
 }

@@ -107,7 +107,7 @@ How do you render this component? In your activity, simply change the `Component
 final Component text = ListItem.create(context).build();
 ```
 
-**Note:** That's `ListItem` you're using, which is the generated implementation of [ComponentLifecycle](/javadoc/com/facebook/litho/ComponentLifecycle), not `ListItemSpec`.
+**Note:** That's `ListItem` you're using, not `ListItemSpec`.
 
 Where did `ListItem` come from?  Where are `create` and `build` defined?  This is the magic of Litho _Specs_.
 
@@ -138,7 +138,6 @@ Next, in your activity, modify the `Component` definition as follows:
 ```java
 final RecyclerBinder recyclerBinder = new RecyclerBinder(
     context,
-    4.0f, /* range ratio */
     new LinearLayoutInfo(this, OrientationHelper.VERTICAL, false));
 
 final Component component = Recycler.create(context)
@@ -146,22 +145,25 @@ final Component component = Recycler.create(context)
     .build();
 ```
 
-This code constructs a `RecyclerBinder` and attaches it to a `Recycler`. A new `RecyclerBinder` takes as constructor parameters a component context, a range ratio, and layout info. In your example, this sets the range ratio to 4 and a `LinearLayoutInfo` for the layout info.
+This code constructs a `RecyclerBinder` and attaches it to a `Recycler`. A new `RecyclerBinder` takes as constructor parameters a component context and layout info. 
 
 You then create and pass in the `Recycler` component to the `LithoView`.
 
 Now turn your focus to populating the binder with list items. Define a helper function in your activity to do this:
 
 ```java
-private void addContent(
-    RecyclerBinder recyclerBinder, 
-    ComponentContext context) {
-  for (int i = 0; i < 32; i++) {
-    ComponentInfo.Builder componentInfoBuilder = ComponentInfo.create();
-    componentInfoBuilder.component(ListItem.create(context).build());
-    recyclerBinder.insertItemAt(i, componentInfoBuilder.build());
-  }
-}
+private static void addContent(RecyclerBinder recyclerBinder, ComponentContext context) {
+    for (int i = 0; i < 32; i++) {
+      recyclerBinder.insertItemAt(
+          i,
+          ComponentInfo.create()
+              .component(
+                  ListItem.create(context)
+                      .color(i % 2 == 0 ? Color.WHITE : Color.LTGRAY)
+                      .message("Hello, world!")
+                      .build())
+              .build());
+    }
 ```
 
 In the code, a [ComponentInfo](/javadoc/com/facebook/litho/ComponentInfo) is created that describes the components to be rendered by a `Recycler`. In this example, a `ListItem` is the component to be rendered.

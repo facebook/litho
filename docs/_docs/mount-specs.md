@@ -46,13 +46,9 @@ public class ColorComponentSpec {
 ```
 
 - The mount operation has an API very similar to Android's [RecyclerView Adapters](https://developer.android.com/reference/android/support/v7/widget/RecyclerView.Adapter.html). It has a `onCreateMountContent` method to create and initialize the `View`/`Drawable` content if the recycling pool is empty, and an `onMount` method to update the recycled content with the current information.
-
 - The return type from `onCreateMountContent` should always match the type of the second argument of `onMount`. They are required to be a `View` or a `Drawable` subclass. This is validated by the annotation processor at build time.
-
 - Mounting always happens in the main thread as it might have to deal with Android Views (which are bound to the main thread).
-
 - `onCreateMountContent` cannot take a `@Prop` or any other annotated parameter.
-
 - Given that the `@OnMount` method always runs in the UI thread, expensive operations should not be performed in it.
 
 ## Inter-stage inputs and outputs

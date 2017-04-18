@@ -2,7 +2,7 @@
 
 <img src="docs/static/logo.png" width=150 align=left>
 
-Litho is a powerful Android UI framework that enables developers to write efficient UI code through a simple annotation-based Java API.
+Litho is a declarative framework for building efficient UIs on Android.
 
 * **Declarative:** Litho uses a declarative API to define UI components. You simply describe the layout for your UI based on a set of immutable inputs and the framework takes care of the rest.
 * **Asynchronous layout:** Litho can measure and layout your UI ahead of time without blocking the UI thread. 

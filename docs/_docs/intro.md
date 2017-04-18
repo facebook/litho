@@ -5,7 +5,7 @@ layout: docs
 permalink: /docs/intro
 ---
 
-Litho is a declarative framework to build efficient user interfaces (UI) on
+Litho is a declarative framework for building efficient user interfaces (UI) on
 Android. It allows you to write highly-optimized Android views through a simple
 functional API based on Java annotations. It was [primarily built](/docs/uses)
 to implement complex scrollable UIs based on RecyclerView.

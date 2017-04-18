@@ -35,13 +35,13 @@ And the callback within MyComponentSpec would look like this:
 @LayoutSpec
 class MyComponentSpec {
 ... 
-	@OnEvent(ClickEvent.class)
-	static void onClick(
-	    ComponentContext c,
-	    @FromEvent View view,
-	    @Prop String someProp) {
-	  // Handle click here.
-	}
+    @OnEvent(ClickEvent.class)
+    static void onClick(
+        ComponentContext c,
+        @FromEvent View view,
+        @Prop String someProp) {
+        // Handle click here.
+    }
 }
 ```
 

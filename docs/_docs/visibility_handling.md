@@ -10,11 +10,8 @@ permalink: /docs/visibility-handling
 The framework currently supports four types of Visibility Event:
 
 - [Visible Event](/javadoc/com/facebook/litho/VisibleEvent): this event is triggered when at least one pixel of the Component is visible.
-
 - [Invisible Event](/javadoc/com/facebook/litho/InvisibleEvent): this event is triggered when the Component no longer has any pixels on the screen.
-
 - [Focused Visible Event](/javadoc/com/facebook/litho/FocusedVisibleEvent): this event is triggered when either the Component occupies at least half of the viewport, or, if the Component is smaller than half the viewport, when it is fully visible.
-
 - [Full Impression Visible Event](/javadoc/com/facebook/litho/FullImpressionVisibleEvent): this event is triggered when the entire Component has passed through the viewport at some point.
 
 ### Usage ###

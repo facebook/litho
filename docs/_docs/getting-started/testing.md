@@ -31,10 +31,12 @@ public class MyActivity extends Activity {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    
+    final ComponentContext c = new ComponentContext(this);
 
     final LithoView lithoView = LithoView.create(
     	this /* context */, 
-    	Text.create(new ComponentContext(this))
+    	Text.create(c)
             .text("Hello, World!")
             .build());
     	

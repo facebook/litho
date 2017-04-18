@@ -35,6 +35,7 @@
   - id: custom-layout
   - id: tree-props
   - id: inc-mount
+  - id: component-tree
 - title: Architecture
   items:
   - id: codegen
