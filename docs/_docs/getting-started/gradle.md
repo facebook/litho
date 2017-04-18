@@ -10,9 +10,12 @@ dependencies {
   // Litho
   compile 'com.facebook.litho:litho-core:0.1.0'
   compile 'com.facebook.litho:litho-widget:0.1.0'
-  compileOnly 'com.facebook.litho:litho-annotation:0.1.0'
+  provided 'com.facebook.litho:litho-annotations:0.1.0'
 
   annotationProcessor 'com.facebook.litho:litho-processor:0.1.0'
+  
+  // SoLoader 
+  compile 'com.facebook.soloader:soloader:0.1.0+'
 
   // Optional
   // For debugging
