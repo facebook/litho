@@ -16,7 +16,7 @@ To get started, check out these links:
 * [Read more about Litho in our docs.](http://fblitho.com/litho/docs/intro)
 
 ## Installation
-Litho can be integrated either in Gradle or Buck projects. Read our [Getting Started](https://fblitho.com/getting-started) guide for installation instructions.
+Litho can be integrated either in Gradle or Buck projects. Read our [Getting Started](http://fblitho.com/getting-started) guide for installation instructions.
 
 ## Quick start
 ### 1. Initialize `SoLoader` in your `Application` class.
@@ -62,7 +62,7 @@ For pull requests, please see our [CONTRIBUTING](CONTRIBUTING.md) guide.
 
 See our [issues](https://github.com/litho/issues/) page for ideas on how to contribute or to let us know of any problems.
 
-Please also read our [Coding Style](https://fblitho.com/best-practices#guidelines/) and [Code of Conduct](https://code.facebook.com/codeofconduct) before you contribute.
+Please also read our [Coding Style](http://fblitho.com/best-practices#guidelines/) and [Code of Conduct](https://code.facebook.com/codeofconduct) before you contribute.
 
 ## License
 
