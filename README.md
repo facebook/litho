@@ -16,7 +16,7 @@ To get started, check out these links:
 * [Read more about Litho in our docs.](http://fblitho.com/docs/intro)
 
 ## Installation
-Litho can be integrated either in Gradle or Buck projects. Read our [Getting Started](http://fblitho.com/getting-started) guide for installation instructions.
+Litho can be integrated either in Gradle or Buck projects. Read our [Getting Started](http://fblitho.com/docs/getting-started) guide for installation instructions.
 
 ## Quick start
 ### 1. Initialize `SoLoader` in your `Application` class.
