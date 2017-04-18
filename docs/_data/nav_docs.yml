@@ -39,6 +39,8 @@
   items:
   - id: codegen
   - id: asynchronous-layout
+  - id: inc-mount-architecture
+  - id: view-flattening
   - id: recycling
 - title: Best Practices
   items:
