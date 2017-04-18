@@ -32,6 +32,7 @@ import android.support.v4.view.ViewCompat;
 import android.text.TextUtils;
 import android.util.SparseArray;
 
+import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.reference.ColorDrawableReference;
@@ -544,16 +545,20 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return marginPx(edge, mResourceResolver.dipsToPixels(margin));
   }
 
+  @ReturnsOwnership
+  private Edges getNestedTreePadding() {
+    if (mNestedTreePadding == null) {
+      mNestedTreePadding = ComponentsPools.acquireEdges();
+    }
+    return mNestedTreePadding;
+  }
+
   @Override
   public InternalNode paddingPx(YogaEdge edge, @Px int padding) {
     mPrivateFlags |= PFLAG_PADDING_IS_SET;
 
     if (mIsNestedTreeHolder) {
-      if (mNestedTreePadding == null) {
-        mNestedTreePadding = ComponentsPools.acquireEdges();
-      }
-
-      mNestedTreePadding.set(edge, padding);
+      getNestedTreePadding().set(edge, padding);
       setIsPaddingPercent(edge, false);
     } else {
       mYogaNode.setPadding(edge, padding);
@@ -567,11 +572,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     mPrivateFlags |= PFLAG_PADDING_IS_SET;
 
     if (mIsNestedTreeHolder) {
-      if (mNestedTreePadding == null) {
-        mNestedTreePadding = ComponentsPools.acquireEdges();
-      }
-
-      mNestedTreePadding.set(edge, percent);
+      getNestedTreePadding().set(edge, percent);
       setIsPaddingPercent(edge, true);
     } else {
       mYogaNode.setPaddingPercent(edge, percent);
