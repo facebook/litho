@@ -12,7 +12,7 @@ In this tutorial, you'll start by building a basic "Hello World!" screen using L
 
 ## 1. Hello World
 
-In this inital step, you'll display a view with "Hello World!".
+In this initial step, you'll display a view with "Hello World!".
 
 First, initialize `SoLoader` in your `Application` class:
 
