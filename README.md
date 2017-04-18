@@ -7,12 +7,12 @@ Litho is a powerful Android UI framework that enables developers to write effici
 * **View flattening:** Litho uses [Yoga](https://facebook.github.io/yoga/) for layout and automatically reduces the number of ViewGroups that your UI contains.
 * **Fine-grained recycling:** Any component such as a text or image can be recycled and reused anywhere in the UI.
 
-[Learn how to use Litho in your project.](https://facebook.github.io/litho/docs/getting-started)  
-[Get started with our tutorial.](https://facebook.github.io/litho/docs/tutorial)  
-[Read more about Litho in our docs.](https://facebook.github.io/litho/docs/intro) 
+[Learn how to use Litho in your project.](https://fblitho.com/docs/getting-started)  
+[Get started with our tutorial.](https://fblitho.com/docs/tutorial)  
+[Read more about Litho in our docs.](https://fblitho.com/docs/intro) 
 
 ## Installation
-Litho can be integrated either in Gradle or Buck projects. Read our [Getting Started](https://facebook.github.io/litho/docs/getting-started) guide for installation instructions.
+Litho can be integrated either in Gradle or Buck projects. Read our [Getting Started](https://fblitho.com/getting-started) guide for installation instructions.
 
 ## Quick start
 ### 1. Initialize `SoLoader` in your `Application` class. 
@@ -58,7 +58,7 @@ For pull requests, please see our [CONTRIBUTING](CONTRIBUTING.md) guide.
 
 See our [issues](https://github.com/litho/issues/) page for ideas on how to contribute or to let us know of any problems.
 
-Please also read our [Coding Style](https://facebook.github.io/litho/docs/best-practices#guidelines/) and [Code of Conduct](https://code.facebook.com/codeofconduct) before you contribute.
+Please also read our [Coding Style](https://fblitho.com/best-practices#guidelines/) and [Code of Conduct](https://code.facebook.com/codeofconduct) before you contribute.
 
 ## License
 
