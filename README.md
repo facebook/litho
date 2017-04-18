@@ -1,5 +1,7 @@
 # Litho [![CircleCI](https://circleci.com/gh/facebook/litho/tree/master.svg?style=svg)](https://circleci.com/gh/facebook/litho/tree/master)
 
+<img src="docs/static/logo.png" width=150 align=left>
+
 Litho is a powerful Android UI framework that enables developers to write efficient UI code through a simple annotation-based Java API.
 
 * **Declarative:** Litho uses a declarative API to define UI components. You simply describe the layout for your UI based on a set of immutable inputs and the framework takes care of the rest.
