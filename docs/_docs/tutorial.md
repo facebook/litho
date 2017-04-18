@@ -74,11 +74,12 @@ Not pretty, but this is certainly a start!
 
 ## 2. Your First Custom Component
 
-At the end of this tutorial you'll have a simple, scrollable list. This list will just say "Hello World" a whole lot of times. Exciting times! In this part of the tutorial, you'll write a "Hello world" component that is the list item. Naturally, a real world app would define a more complicated component but you'll learn all the basics you need to do that in this example.
+At the end of this tutorial you'll have a simple, scrollable list. This list will just display an item with a title and subtitle a whole lot of times. Exciting times!   
+In this part of the tutorial, you'll write a simple component that is the list item. Naturally, a real world app would define a more complicated component but you'll learn all the basics you need to do that in this example.
 
 Ready? It's time to dive in and build this component. In Litho, you write *Spec* classes to declare the layout for your components. The framework then generates the underlying component class that you use in your code to create a component instance.
 
-Your custom component will be called `ListItem`. Therefore, you need to create a class named `ListItemSpec` with the following content:
+Your custom component will be called `ListItem` and it will display a title with a smaller subtitle underneath. Therefore, you need to create a class named `ListItemSpec` with the following content:
 
 ```java
 @LayoutSpec
@@ -92,14 +93,18 @@ public class ListItemSpec {
         .backgroundColor(Color.WHITE)
         .child(
             Text.create(c)
-                .text("Hello World")
+                .text("Hello world")
                 .textSizeSp(40))
+        .child(
+            Text.create(c)
+                .text("Litho tutorial")
+                .textSizeSp(20))
         .build();
   }
 }
 ```
 
-You should recognize the `Text` component from the previous tutorial step. In this example, you're passing it in as a "child" property of a `Column`. You can think of a `Column` as equivalent to a `<div>` in HTML.  It's a wrapper, used mainly for collating things together and perhaps adding some background styling.  Since Litho uses [Yoga](https://facebook.github.io/yoga/), you can add flexbox attributes to set the layout for the children of a `Column` or a `Row`. Here, you simply set the padding and the background color.
+You should recognize the `Text` component from the previous tutorial step. In this example, you're passing it in as a `child` property of a [Column](/javadoc/com/facebook/litho/Column). You can think of a `Column` as equivalent to a `<div>` in HTML.  It's a wrapper, used mainly for collating things together and perhaps adding some background styling.  Since Litho uses [Yoga](https://facebook.github.io/yoga/), you can add flexbox attributes to set the layout for the children of a `Column` or a `Row`. Here, you simply set the padding and the background color.
 
 How do you render this component? In your activity, simply change the `Component` definition to:
 
@@ -124,16 +129,7 @@ You can handle lists in Litho using the core [Recycler](/javadoc/com/facebook/li
 
 In this part of the tutorial, you'll use a [RecyclerBinder](/javadoc/com/facebook/litho/widget/RecyclerBinder) to provide components to a `Recycler`, in the same way that a `LayoutManager` works hand in hand with an `Adapter` to provide `View`s to a `RecyclerView`.
 
-First, you need to add the Android support `RecyclerView` library to your Gradle or BUCK dependencies. In case of Gradle it will look like this:
-
-```gradle
-dependencies {
-  // ...
-  compile 'com.android.support:recyclerview-v7:+'
-}
-```
-
-Next, in your activity, modify the `Component` definition as follows:
+First, in your activity, modify the `Component` definition as follows:
 
 ```java
 final RecyclerBinder recyclerBinder = new RecyclerBinder(
@@ -157,13 +153,10 @@ private static void addContent(RecyclerBinder recyclerBinder, ComponentContext c
       recyclerBinder.insertItemAt(
           i,
           ComponentInfo.create()
-              .component(
-                  ListItem.create(context)
-                      .color(i % 2 == 0 ? Color.WHITE : Color.LTGRAY)
-                      .message("Hello, world!")
-                      .build())
+              .component(ListItem.create(context).build())
               .build());
     }
+}    
 ```
 
 In the code, a [ComponentInfo](/javadoc/com/facebook/litho/ComponentInfo) is created that describes the components to be rendered by a `Recycler`. In this example, a `ListItem` is the component to be rendered.
@@ -174,7 +167,7 @@ Finally, make a call to `addContent` in your activity's `onCreate` method, after
 addContent(recyclerBinder, context);
 ```
 
-Run the app. You should see a scrollable list of 32 "Hello World" components:
+Run the app. You should see a scrollable list of 32 ListItem components:
 
 <img src="/static/images/barebones3.png" style="width: 300px;">
 
@@ -191,20 +184,25 @@ Modify `ListItemSpec` as follows:
 static ComponentLayout onCreateLayout(
     ComponentContext c,
     @Prop int color,
-    @Prop String message) {
+    @Prop String title,
+    @Prop String subtitle) {
     
   return Column.create(c)
-      .paddingDip(ALL, 16)
-      .backgroundColor(color)
-      .child(
-          Text.create(c)
-              .text(message)
-              .textSizeSp(40))
-      .build();
+        .paddingDip(ALL, 16)
+        .backgroundColor(color)
+        .child(
+            Text.create(c)
+                .text(title)
+                .textSizeSp(40))
+        .child(
+            Text.create(c)
+                .text(subtitle)
+                .textSizeSp(20))
+        .build();
 }
 ```
 
-This adds two props: `message` and `color` props. Notice that the background color and `Text` component's text are no longer hard-coded and are now based on the `onCreateLayout` method parameters.
+This adds three props: `title`, `subtitle` and `color` props. Notice that the background color and the strings for the `Text` components' text are no longer hard-coded and are now based on the `onCreateLayout` method parameters.
 
 The magic happens in the `@Prop` annotations and the annotation processor.  The processor generates methods on the component builder that correspond to the props in a smart way. You can now change the binder's construction of the component to:
 
@@ -217,14 +215,15 @@ private void addContent(
     componentInfoBuilder.component(
         ListItem.create(context)
             .color(i % 2 == 0 ? Color.WHITE : Color.LTGRAY)
-            .message("Hello, world!")
+            .title("Hello, world!")
+            .subtitle("Litho tutorial")
             .build());
     recyclerBinder.insertItemAt(i, componentInfoBuilder.build());
   }
 }
 ```
 
-Now when `ListItem` is constructed, the `color` and `message` props are passed in with the background color alternating for each row.
+Now when `ListItem` is constructed, the `color`, `title` and `subtitle` props are passed in with the background color alternating for each row.
 
 Run the app. You should see something like this:
 

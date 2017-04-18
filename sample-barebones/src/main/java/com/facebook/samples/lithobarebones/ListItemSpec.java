@@ -25,14 +25,19 @@ public class ListItemSpec {
   static ComponentLayout onCreateLayout(
       ComponentContext c,
       @Prop int color,
-      @Prop String message) {
+      @Prop String title,
+      @Prop String subtitle) {
     return Column.create(c)
         .paddingDip(ALL, 16)
         .backgroundColor(color)
         .child(
             Text.create(c)
-                .text(message)
+                .text(title)
                 .textSizeSp(40))
+        .child(
+            Text.create(c)
+                .text(subtitle)
+                .textSizeSp(20))
         .build();
   }
 }

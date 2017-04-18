@@ -38,6 +38,7 @@ public class MyActivity extends Activity {
     	this /* context */, 
     	Text.create(c)
             .text("Hello, World!")
+            .textSizeDip(50)
             .build());
     	
     setContentView(lithoView);

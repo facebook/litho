@@ -49,7 +49,8 @@ public class SampleActivity extends Activity {
               .component(
                   ListItem.create(context)
                       .color(i % 2 == 0 ? Color.WHITE : Color.LTGRAY)
-                      .message("Hello, world!")
+                      .title("Hello, world!")
+                      .subtitle("Litho tutorial")
                       .build())
               .build());
     }

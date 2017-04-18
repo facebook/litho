@@ -11,9 +11,9 @@ Litho is a declarative framework for building efficient UIs on Android.
 
 To get started, check out these links:
 
-* [Learn how to use Litho in your project.](http://facebook.github.io/litho/docs/getting-started)
-* [Get started with our tutorial.](http://facebook.github.io/litho/docs/tutorial)
-* [Read more about Litho in our docs.](http://facebook.github.io/litho/docs/intro)
+* [Learn how to use Litho in your project.](http://fblitho.com/litho/docs/getting-started)
+* [Get started with our tutorial.](http://fblitho.com/litho/docs/tutorial)
+* [Read more about Litho in our docs.](http://fblitho.com/litho/docs/intro)
 
 ## Installation
 Litho can be integrated either in Gradle or Buck projects. Read our [Getting Started](https://fblitho.com/getting-started) guide for installation instructions.

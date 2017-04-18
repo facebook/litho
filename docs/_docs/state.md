@@ -149,11 +149,10 @@ public class CheckboxSpec {
   }
 
   @OnEvent(ClickEvent.class)
-  static void onCheckboxClicked(
-  	   ComponentContext c) {
+  static void onCheckboxClicked(ComponentContext c) {
   	 Checkbox.updateCheckboxAsync(c);
   	 // Checkbox.updateCheckbox(c); for a sync update
-  	}
+  }
 }
 ```
 
