@@ -20,9 +20,9 @@ android {
 dependencies {
     compile project(':litho-core')
     compile project(':litho-stetho')
-    compile project(':litho-annotations')
     compile project(':litho-widget')
     compile project(':litho-fresco')
+    provided project(':litho-annotations')
     annotationProcessor project(':litho-processor')
 
     // First-party
