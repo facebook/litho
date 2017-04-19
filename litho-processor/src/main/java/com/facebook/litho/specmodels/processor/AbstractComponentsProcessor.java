@@ -105,16 +105,15 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
     throw new MultiPrintableException(printableExceptions);
   }
 
-  void generate(SpecModel specModel) throws IOException {
+  protected void generate(SpecModel specModel) throws IOException {
     JavaFile.builder(
         getPackageName(specModel.getComponentTypeName().toString()), specModel.generate())
             .skipJavaLangImports(true)
-            .addFileComment("Copyright 2004-present Facebook. All Rights Reserved.")
             .build()
             .writeTo(processingEnv.getFiler());
   }
 
-  private static String getPackageName(String qualifiedName) {
+  protected static String getPackageName(String qualifiedName) {
     return qualifiedName.substring(0, qualifiedName.lastIndexOf('.'));
   }
 }
