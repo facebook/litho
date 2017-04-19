@@ -1,4 +1,5 @@
 apply plugin: 'java'
+apply plugin: 'maven-publish'
 
 // Add Android SDK repositories to the lookup path for standard java library
 // projects.
@@ -17,3 +18,5 @@ dependencies {
     // Android Support Library
     compile deps.supportAnnotations
 }
+
+apply from: rootProject.file('release.gradle')

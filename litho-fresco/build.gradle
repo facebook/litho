@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'maven'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -30,3 +31,11 @@ dependencies {
     compile deps.supportCompat
     compile deps.supportCoreUi
 }
+
+apply from: rootProject.file('release.gradle')
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+artifacts.add('archives', sourcesJar)
