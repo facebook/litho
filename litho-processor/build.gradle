@@ -19,4 +19,4 @@ dependencies {
     compile deps.javapoet
 }
 
-apply from: rootProject.file('release.gradle')
+apply from: rootProject.file('gradle/release.gradle')

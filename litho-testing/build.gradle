@@ -24,7 +24,7 @@ dependencies {
     compile deps.robolectric
 }
 
-apply from: rootProject.file('release.gradle')
+apply from: rootProject.file('gradle/release.gradle')
 
 task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
