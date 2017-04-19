@@ -30,6 +30,7 @@ import android.support.v4.util.LongSparseArray;
 import android.support.v4.view.accessibility.AccessibilityManagerCompat;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.Window;
 import android.view.accessibility.AccessibilityManager;
 
 import com.facebook.litho.animation.AnimationBinding;
@@ -1007,6 +1008,18 @@ class LayoutState {
     final Activity activity = findActivityInContext(context);
 
     if (activity == null || activity.isFinishing() || isActivityDestroyed(activity)) {
+      return;
+    }
+
+    // If we have no window or the hierarchy has never been drawn before we cannot guarantee that
+    // a valid GL context exists. In this case just bail.
+    final Window window = activity.getWindow();
+    if (window == null) {
+      return;
+    }
+
+    final View decorView = window.getDecorView();
+    if (decorView == null || decorView.getDrawingTime() == 0) {
       return;
     }
 
