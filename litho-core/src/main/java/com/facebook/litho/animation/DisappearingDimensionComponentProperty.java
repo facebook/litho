@@ -1,4 +1,12 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/*
+ * Copyright (c) 2017-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
 
 package com.facebook.litho.animation;
 
@@ -13,7 +21,7 @@ public class DisappearingDimensionComponentProperty extends DimensionComponentPr
     super(animatedComponent, property);
   }
 
-  public static class TransitionBuilder {
+  public static class TransitionBuilder implements Animated.AnimationBuilder {
 
     private final Animated.AbstractBuilder mBuilderDelegate;
     private LazyDimensionValue mToValue;
@@ -80,6 +88,7 @@ public class DisappearingDimensionComponentProperty extends DimensionComponentPr
       return toOffsetByHeight(100);
     }
 
+    @Override
     public AnimationBinding build() {
       return mBuilderDelegate.buildForDisappear(mToValue);
     }

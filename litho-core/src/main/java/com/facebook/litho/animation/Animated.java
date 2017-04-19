@@ -1,4 +1,12 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/*
+ * Copyright (c) 2017-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
 
 package com.facebook.litho.animation;
 
@@ -14,24 +22,24 @@ public final class Animated {
    * Creates an AnimationBinding which is a sequence of other animation bindings (i.e. each executes
    * after the previous one has finished).
    */
-  public static AnimationBinding sequence(AnimationBinding... bindings) {
-    return new SequenceBinding(bindings);
+  public static AnimationBinding sequence(AnimationForVarArgs... bindings) {
+    return new SequenceBinding(createAnimationBindingsFromMixed(bindings));
   }
 
   /**
    * Creates an AnimationBinding which is a collection of other animation bindings starting at the
    * same time and executing in parallel.
    */
-  public static AnimationBinding parallel(AnimationBinding... bindings) {
-    return new ParallelBinding(0, bindings);
+  public static AnimationBinding parallel(AnimationForVarArgs... bindings) {
+    return new ParallelBinding(0, createAnimationBindingsFromMixed(bindings));
   }
 
   /**
    * Creates an AnimationBinding which is a collection of other animation bindings starting on a
    * stagger and executing in parallel.
    */
-  public static AnimationBinding stagger(int staggerMs, AnimationBinding... bindings) {
-    return new ParallelBinding(staggerMs, bindings);
+  public static AnimationBinding stagger(int staggerMs, AnimationForVarArgs... bindings) {
+    return new ParallelBinding(staggerMs, createAnimationBindingsFromMixed(bindings));
   }
 
   /**
@@ -53,6 +61,28 @@ public final class Animated {
    */
   public static BezierBuilder bezier() {
     return new BezierBuilder();
+  }
+
+  private static AnimationBinding[] createAnimationBindingsFromMixed(
+      AnimationForVarArgs[] bindings) {
+    AnimationBinding[] animationBindings = new AnimationBinding[bindings.length];
+    for (int i = 0; i < bindings.length; i++) {
+      if (bindings[i] instanceof AnimationBinding) {
+        animationBindings[i] = (AnimationBinding) bindings[i];
+      } else if (bindings[i] instanceof AnimationBuilder) {
+        animationBindings[i] = ((AnimationBuilder) bindings[i]).build();
+      } else {
+        throw new RuntimeException("Got unexpected object in animation var args: " + bindings[i]);
+      }
+    }
+    return animationBindings;
+  }
+
+  /**
+   * Class that can create an AnimationBinding.
+   */
+  public interface AnimationBuilder extends AnimationForVarArgs {
+    AnimationBinding build();
   }
 
   public static abstract class AbstractBuilder {
