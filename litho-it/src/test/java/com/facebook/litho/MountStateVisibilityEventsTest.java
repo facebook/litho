@@ -42,6 +42,7 @@ public class MountStateVisibilityEventsTest {
   private static final int FOCUSED = 2;
   private static final int FULL_IMPRESSION = 3;
   private static final int INVISIBLE = 4;
+  private static final int UNFOCUSED = 5;
 
   private static final int LEFT = 0;
   private static final int RIGHT = 10;
@@ -90,6 +91,7 @@ public class MountStateVisibilityEventsTest {
         visibleHandler,
         null,
         null,
+        null,
         null));
 
     final LayoutState layoutState = new LayoutState();
@@ -122,6 +124,7 @@ public class MountStateVisibilityEventsTest {
         null,
         focusedHandler,
         null,
+        null,
         null));
 
     final LayoutState layoutState = new LayoutState();
@@ -152,6 +155,7 @@ public class MountStateVisibilityEventsTest {
         null,
         focusedHandler,
         null,
+        null,
         null));
 
     final LayoutState layoutState = new LayoutState();
@@ -170,6 +174,83 @@ public class MountStateVisibilityEventsTest {
   }
 
   @Test
+  public void testMultipleFocusAndUnfocusEvents() {
+    ComponentLifecycle mockLifecycle = createLifecycleMock();
+    Component<?> content = TestViewComponent.create(mContext).build();
+    Whitebox.setInternalState(content, "mLifecycle", mockLifecycle);
+
+    final EventHandler focusedHandler = createEventHandler(content, FOCUSED);
+    final EventHandler unfocusedHandler = createEventHandler(content, UNFOCUSED);
+
+    final List<VisibilityOutput> visibilityOutputs = new ArrayList<>();
+
+    visibilityOutputs.add(createVisibilityOutput(
+        content,
+        new Rect(LEFT, 5, RIGHT, 12),
+        null,
+        focusedHandler,
+        unfocusedHandler,
+        null,
+        null));
+
+    final LayoutState layoutState = new LayoutState();
+    Whitebox.setInternalState(layoutState, "mVisibilityOutputs", visibilityOutputs);
+
+    //Mount test view in the middle of the view port (focused)
+    mMountState.mount(layoutState, new Rect(LEFT, 6, RIGHT, 11));
+    verify(mockLifecycle, times(1)).dispatchOnEvent(
+        eq(focusedHandler),
+        isA(FocusedVisibleEvent.class));
+
+    //Mount test view on the edge of the viewport (not focused)
+    mMountState.mount(layoutState, new Rect(LEFT, 11, RIGHT, 16));
+    verify(mockLifecycle, times(1)).dispatchOnEvent(
+        eq(unfocusedHandler),
+        isA(UnfocusedVisibleEvent.class));
+
+    //Mount test view in the middle of the view port (focused)
+    mMountState.mount(layoutState, new Rect(LEFT, 4, RIGHT, 9));
+    verify(mockLifecycle, times(2)).dispatchOnEvent(
+        eq(focusedHandler),
+        isA(FocusedVisibleEvent.class));
+
+    //Mount test view off the edge of the view port (unfocused)
+    mMountState.mount(layoutState, new Rect(LEFT, 1, RIGHT, 6));
+    verify(mockLifecycle, times(2)).dispatchOnEvent(
+        eq(unfocusedHandler),
+        isA(UnfocusedVisibleEvent.class));
+  }
+
+  @Test
+  public void testNoUnfocusEvents() {
+    ComponentLifecycle mockLifecycle = createLifecycleMock();
+    Component<?> content = TestViewComponent.create(mContext).build();
+    Whitebox.setInternalState(content, "mLifecycle", mockLifecycle);
+
+    final EventHandler unfocusedHandler = createEventHandler(content, UNFOCUSED);
+
+    final List<VisibilityOutput> visibilityOutputs = new ArrayList<>();
+
+    visibilityOutputs.add(createVisibilityOutput(
+        content,
+        new Rect(LEFT, 5, RIGHT, 12),
+        null,
+        null,
+        unfocusedHandler,
+        null,
+        null));
+
+    final LayoutState layoutState = new LayoutState();
+    Whitebox.setInternalState(layoutState, "mVisibilityOutputs", visibilityOutputs);
+
+    //Mount test view in the middle of the view port (focused)
+    mMountState.mount(layoutState, new Rect(LEFT, 6, RIGHT, 11));
+    verify(mockLifecycle, times(0)).dispatchOnEvent(
+        eq(unfocusedHandler),
+        isA(UnfocusedVisibleEvent.class));
+  }
+
+  @Test
   public void testFullImpression() {
     ComponentLifecycle mockLifecycle = createLifecycleMock();
     Component<?> content = TestViewComponent.create(mContext).build();
@@ -182,6 +263,7 @@ public class MountStateVisibilityEventsTest {
     visibilityOutputs.add(createVisibilityOutput(
         content,
         new Rect(LEFT, 5, RIGHT, 10),
+        null,
         null,
         null,
         fullImpressionHandler,
@@ -211,6 +293,7 @@ public class MountStateVisibilityEventsTest {
     visibilityOutputs.add(createVisibilityOutput(
         content,
         new Rect(LEFT, 5, RIGHT, 10),
+        null,
         null,
         null,
         null,
@@ -244,6 +327,7 @@ public class MountStateVisibilityEventsTest {
         content,
         new Rect(LEFT, 5, RIGHT, 10),
         visibleHandler,
+        null,
         null,
         null,
         invisibleHandler));
@@ -289,12 +373,14 @@ public class MountStateVisibilityEventsTest {
         visibleHandler1,
         null,
         null,
+        null,
         invisibleHandler1));
 
     visibilityOutputs.add(createVisibilityOutput(
         content2,
         new Rect(LEFT, 10, RIGHT, 15),
         visibleHandler2,
+        null,
         null,
         null,
         null));
@@ -339,12 +425,14 @@ public class MountStateVisibilityEventsTest {
         visibleHandler1,
         null,
         null,
+        null,
         null));
 
     visibilityOutputs.add(createVisibilityOutput(
         content2,
         new Rect(LEFT, 10, RIGHT, 15),
         visibleHandler2,
+        null,
         null,
         null,
         null));
@@ -396,6 +484,7 @@ public class MountStateVisibilityEventsTest {
       Rect bounds,
       EventHandler visibleHandler,
       EventHandler focusedHandler,
+      EventHandler unfocusedHandler,
       EventHandler fullImpressionHandler,
       EventHandler invisibleHandler) {
     VisibilityOutput visibilityOutput = new VisibilityOutput();
@@ -404,6 +493,7 @@ public class MountStateVisibilityEventsTest {
     visibilityOutput.setBounds(bounds);
     visibilityOutput.setVisibleEventHandler(visibleHandler);
     visibilityOutput.setFocusedEventHandler(focusedHandler);
+    visibilityOutput.setUnfocusedEventHandler(unfocusedHandler);
     visibilityOutput.setFullImpressionEventHandler(fullImpressionHandler);
     visibilityOutput.setInvisibleEventHandler(invisibleHandler);
 

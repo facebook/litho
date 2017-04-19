@@ -297,8 +297,7 @@ class MountState {
         }
 
         // Check if the component has entered or exited the focused range.
-        if ((focusedHandler != null && !visibilityItem.isInFocusedRange()) ||
-          (unfocusedHandler != null && visibilityItem.isInFocusedRange())) {
+        if (focusedHandler != null || unfocusedHandler != null) {
           final View parent = (View) mLithoView.getParent();
           if (isInFocusedRange(
               parent.getWidth(),
@@ -307,12 +306,16 @@ class MountState {
               sTempRect)) {
             if (!visibilityItem.isInFocusedRange()) {
               visibilityItem.setFocusedRange(true);
-              EventDispatcherUtils.dispatchOnFocused(focusedHandler);
+              if (focusedHandler != null) {
+                EventDispatcherUtils.dispatchOnFocused(focusedHandler);
+              }
             }
           } else {
             if (visibilityItem.isInFocusedRange()) {
               visibilityItem.setFocusedRange(false);
-              EventDispatcherUtils.dispatchOnUnfocused(unfocusedHandler);
+              if (unfocusedHandler != null) {
+                EventDispatcherUtils.dispatchOnUnfocused(unfocusedHandler);
+              }
             }
           }
         }
