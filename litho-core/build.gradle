@@ -1,4 +1,8 @@
 apply plugin: 'com.android.library'
+apply plugin: 'maven'
+
+project.group = GROUP
+version = VERSION_NAME
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -63,3 +67,11 @@ dependencies {
     debugCompile deps.mockitoCore
     debugCompile deps.assertjCore
 }
+
+apply from: rootProject.file('gradle/release.gradle')
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+artifacts.add('archives', sourcesJar)

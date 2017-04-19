@@ -1,0 +1,33 @@
+// Set up everything required for releasing on Bintray
+ext {
+    bintrayRepo = 'maven'
+    bintrayUserOrg = 'facebook'
+    bintrayName = "${GROUP}:${POM_ARTIFACT_ID}"
+    bintrayDescription = POM_DESCRIPTION
+    projectUrl = 'https://github.com/facebook/litho'
+    issuesUrl = 'https://github.com/facebook/litho/issues'
+    scmUrl = 'https://github.com/facebook/litho.git'
+    scmConnection = 'scm:git:https://github.com/facebook/litho.git'
+    scmDeveloperConnection = 'scm:git:git@github.com:facebook/litho.git'
+
+    publishedGroupId = GROUP
+    libraryName = 'litho'
+    artifact = 'litho'
+
+    developerId = 'facebook'
+    developerName = 'Facebook'
+
+    projectLicenses = {
+        license {
+            name 'BSD License'
+            url 'https://github.com/facebook/litho/blob/master/LICENSE'
+            distribution 'repo'
+        }
+    }
+}
+
+// Set up the Android Maven publication (POM etc.)
+apply from: rootProject.file('gradle/android-maven-install.gradle')
+
+// Upload to Bintray
+apply from: rootProject.file('gradle/bintray.gradle')
