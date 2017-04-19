@@ -14,7 +14,7 @@ android_prebuilt_aar(
 remote_file(
     name = "litho-core.aar",
     sha1 = "sha1here",
-    url = "mvn:com.facebook.litho:litho-core:aar:0.1.0",
+    url = "mvn:com.facebook.litho:litho-core:aar:0.2.0",
 )
 
 prebuilt_jar(
@@ -26,7 +26,7 @@ prebuilt_jar(
 remote_file(
     name = "litho-processor.aar",
     sha1 = "sha1here",
-    url = "mvn:com.facebook.litho:litho-processor:aar:0.1.0",
+    url = "mvn:com.facebook.litho:litho-processor:aar:0.2.0",
 )
 
 prebuilt_jar(
@@ -38,7 +38,7 @@ prebuilt_jar(
 remote_file(
     name = "litho-annotation.jar",
     sha1 = "sha1here",
-    url = "mvn:com.facebook.litho:litho-annotation:jar:0.1.0",
+    url = "mvn:com.facebook.litho:litho-annotation:jar:0.2.0",
 )
 
 android_prebuilt_aar(
@@ -50,7 +50,7 @@ android_prebuilt_aar(
 remote_file(
     name = "litho-widget.aar",
     sha1 = "sha1here",
-    url = "mvn:com.facebook.litho:litho-widget:aar:0.1.0",
+    url = "mvn:com.facebook.litho:litho-widget:aar:0.2.0",
 )
 
 litho_android_library(
