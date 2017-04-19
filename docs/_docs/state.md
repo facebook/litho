@@ -34,14 +34,14 @@ public class CheckboxSpec {
         .child(Text.create(c)
             .text("Submit")
             .clickHandler(Checkbox.onClickedText(c))
-	    .build;
+        .build;
   }
 
   @OnEvent(ClickEvent.class)
   static void onClickedText(
-  	ComponentContext c,
-  	@State boolean isChecked) {
-  		...
+      ComponentContext c,
+      @State boolean isChecked) {
+    ...
   }
 }
 ```
@@ -64,13 +64,14 @@ Here's how you would initialize the checkbox state with a value passed down from
 @LayoutSpec		
 public class CheckboxSpec {
 
-	@OnCreateInitialState
-	static void createInitialState(
-		ComponentContext c,
-		StateValue<Boolean> isChecked,
-		@Prop boolean initChecked) {
-	  isChecked(initChecked);
-	}
+  @OnCreateInitialState
+  static void createInitialState(
+      ComponentContext c,
+      StateValue<Boolean> isChecked,
+      @Prop boolean initChecked) {
+
+    isChecked.set(initChecked);
+  }
 }
 ```
 
@@ -93,11 +94,10 @@ Here's how you would define a state update method for the checkbox:
 @LayoutSpec		
 public class CheckboxSpec {		
 
-   @OnUpdateState
-	static void updateCheckboxState(
-	    StateValue<Boolean> isChecked) {
-	    isChecked.set(!isChecked.get());
-	}
+  @OnUpdateState
+  static void updateCheckboxState(StateValue<Boolean> isChecked) {
+    isChecked.set(!isChecked.get());
+  }
 }
 ```
 
@@ -107,8 +107,9 @@ If you want to bundle multiple state updates in a single method, you would just 
 @OnUpdateState
 static void updateMultipleStates(
     StateValue<Boolean> stateOne,
-	 StateValue<String> stateTwo,
-	 @Param int someParam) {
+    StateValue<String> stateTwo,
+    @Param int someParam) {
+
   final boolean thresholdReached = someParam > 100;
   stateOne.set(thresholdReached);
   stateTwo.set(thresholdReached ? "reached" : "not reached");
@@ -134,24 +135,23 @@ public class CheckboxSpec {
       @State boolean isChecked) {
       
     return Column.create(c)
-    	.child(Image.create(c)
-	 	    .srcRes(isChecked
-	 	        ? R.drawable.is_checked 
-	 	        : R.drawable.is_unchecked))
-		    .clickHandler(Checkbox.onCheckboxClicked(c)))
-		.build;
+        .child(Image.create(c)
+        .srcRes(isChecked
+            ? R.drawable.is_checked
+            : R.drawable.is_unchecked))
+        .clickHandler(Checkbox.onCheckboxClicked(c)))
+    .build;
   }
 
   @OnUpdateState
-  void updateCheckbox(
-  	   StateValue<Boolean> isChecked) {
-  	   isChecked.set(!isChecked.get());
+  void updateCheckbox(StateValue<Boolean> isChecked) {
+    isChecked.set(!isChecked.get());
   }
 
   @OnEvent(ClickEvent.class)
   static void onCheckboxClicked(ComponentContext c) {
-  	 Checkbox.updateCheckboxAsync(c);
-  	 // Checkbox.updateCheckbox(c); for a sync update
+    Checkbox.updateCheckboxAsync(c);
+    // Checkbox.updateCheckbox(c); for a sync update
   }
 }
 ```
@@ -177,17 +177,17 @@ You should set this key whenever you have multiple children of the same componen
 The most common case when you must manually define keys for your components is creating and adding them as children in a loop:
 
 ```java
- @OnCreateLayout
- static ComponentLayout onCreateLayout(
- 	  ComponentContext c,
-     @State boolean isChecked) {
-   final ComponentLayout.Builder parent = Column.create(c);
-   for (int i = 0; i < 10; i++) {
-      parent.child(Text.create(c).key("key" +i));
-   }
+@OnCreateLayout
+static ComponentLayout onCreateLayout(
+    ComponentContext c,
+    @State boolean isChecked) {
 
-   return parent.build();
+  final ComponentLayout.Builder parent = Column.create(c);
+  for (int i = 0; i < 10; i++) {
+    parent.child(Text.create(c).key("key" +i));
   }
+  return parent.build();
+}
 ```
 
 
@@ -207,6 +207,7 @@ Let's look at an example:
 static ComponentLayout onCreateLayout(
     final ComponentContext c,
     @State(canUpdateLazily = true) String foo) {
+
   FooComponent.lazyUpdateFoo(context, "updated foo");
   return Column.create(c)
       .child(
