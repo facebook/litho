@@ -10,7 +10,7 @@
 package com.facebook.litho;
 
 import android.annotation.TargetApi;
-import android.support.v4.util.SimpleArrayMap;
+import android.util.SparseArray;
 import android.view.View;
 
 import com.facebook.litho.Transition.TransitionListener;
@@ -46,10 +46,10 @@ class TransitionKeySet implements TransitionListener {
 
   private final String mKey;
 
-  private SimpleArrayMap<Integer, Transition> mAppearTransition;
-  private SimpleArrayMap<Integer, Transition> mChangeTransitions;
-  private SimpleArrayMap<Integer, Transition> mDisappearTransitions;
-  private SimpleArrayMap<Integer, Transition> mRunningTransitionsPointer;
+  private SparseArray<Transition> mAppearTransition;
+  private SparseArray<Transition> mChangeTransitions;
+  private SparseArray<Transition> mDisappearTransitions;
+  private SparseArray<Transition> mRunningTransitionsPointer;
   // Values of the item to transition, at the beginning of the mount process.
   private PropertySetHolder mStartValues;
   // Values of the item to transition, at the end of the mount process.
@@ -76,12 +76,12 @@ class TransitionKeySet implements TransitionListener {
   }
 
   void add(Transition transition) {
-    final SimpleArrayMap<Integer, Transition> tmpPointer;
+    final SparseArray<Transition> tmpPointer;
 
     switch (transition.getTransitionType()) {
       case APPEAR:
         if (mAppearTransition == null) {
-          mAppearTransition = new SimpleArrayMap<>();
+          mAppearTransition = new SparseArray<>();
         }
 
         if (mLocalStartValues == null) {
@@ -95,7 +95,7 @@ class TransitionKeySet implements TransitionListener {
 
       case CHANGE:
         if (mChangeTransitions == null) {
-          mChangeTransitions = new SimpleArrayMap<>();
+          mChangeTransitions = new SparseArray<>();
         }
 
         tmpPointer = mChangeTransitions;
@@ -103,7 +103,7 @@ class TransitionKeySet implements TransitionListener {
 
       case DISAPPEAR:
         if (mDisappearTransitions == null) {
-          mDisappearTransitions = new SimpleArrayMap<>();
+          mDisappearTransitions = new SparseArray<>();
         }
 
         if (mLocalEndValues == null) {
@@ -194,7 +194,7 @@ class TransitionKeySet implements TransitionListener {
       int newKeyStatus,
       TransitionKeySetListener listener) {
 
-    SimpleArrayMap<Integer, ? extends Transition> oldTransitionToResumeFrom = null;
+    SparseArray<? extends Transition> oldTransitionToResumeFrom = null;
     @KeyStatus int keyStatusToResume = KeyStatus.UNCHANGED;
 
     switch (newKeyStatus) {
@@ -286,7 +286,7 @@ class TransitionKeySet implements TransitionListener {
   private boolean start(
       @KeyStatus int keyStatus,
       TransitionKeySetListener listener,
-      SimpleArrayMap<Integer, ? extends Transition> oldRunningTransitions,
+      SparseArray<? extends Transition> oldRunningTransitions,
       PropertySetHolder interruptedValues) {
     if (oldRunningTransitions == null && areStartEndValuesEqual()) {
       return false;
@@ -319,10 +319,10 @@ class TransitionKeySet implements TransitionListener {
     if (mRunningTransitionsPointer != null) {
       for (int i = 0, size = mRunningTransitionsPointer.size(); i < size; i++) {
         final Transition t = mRunningTransitionsPointer.valueAt(i);
-        final Integer valueFlags = t.getValuesFlag();
+        final int valueFlags = t.getValuesFlag();
 
         boolean canRestoreState = oldRunningTransitions != null
-                && oldRunningTransitions.containsKey(valueFlags);
+                && oldRunningTransitions.indexOfKey(valueFlags) >= 0;
 
         // Copy over a previous state of the same transition if possible.
         canRestoreState = canRestoreState && t.restoreState(oldRunningTransitions.get(valueFlags));
@@ -355,15 +355,15 @@ class TransitionKeySet implements TransitionListener {
   }
 
   private boolean hasAppearingTransitions() {
-    return (mAppearTransition != null && !mAppearTransition.isEmpty());
+    return (mAppearTransition != null && mAppearTransition.size() > 0);
   }
 
   private boolean hasChangingTransitions() {
-    return (mChangeTransitions != null && !mChangeTransitions.isEmpty());
+    return (mChangeTransitions != null && mChangeTransitions.size() > 0);
   }
 
   boolean hasDisappearingTransitions() {
-    return (mDisappearTransitions != null && !mDisappearTransitions.isEmpty());
+    return (mDisappearTransitions != null && mDisappearTransitions.size() > 0);
   }
 
   private boolean wasRunningAppearTransition() {
