@@ -25,11 +25,17 @@ public class PropDefaultModel {
   public final TypeName mType;
   public final String mName;
   public final ImmutableList<Modifier> mModifiers;
+  public final Object mRepresentedObject;
 
-  public PropDefaultModel(TypeName type, String name, ImmutableList<Modifier> modifiers) {
+  public PropDefaultModel(
+      TypeName type,
+      String name,
+      ImmutableList<Modifier> modifiers,
+      Object representedObject) {
     mType = type;
     mName = name;
     mModifiers = modifiers;
+    mRepresentedObject = representedObject;
   }
 
   @Override

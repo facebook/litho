@@ -49,7 +49,8 @@ public class PropDefaultsExtractor {
           new PropDefaultModel(
               TypeName.get(variableElement.asType()),
               variableElement.getSimpleName().toString(),
-              ImmutableList.copyOf(new ArrayList<>(variableElement.getModifiers()))));
+              ImmutableList.copyOf(new ArrayList<>(variableElement.getModifiers())),
+              variableElement));
     }
 
     return ImmutableList.copyOf(propDefaults);

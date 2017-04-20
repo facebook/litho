@@ -83,6 +83,23 @@ public class PropValidation {
       validationErrors.addAll(validateResType(prop));
     }
 
+    for (PropDefaultModel propDefault : specModel.getPropDefaults()) {
+      final PropModel prop = SpecModelUtils.getPropWithName(specModel, propDefault.mName);
+      if (prop == null) {
+        validationErrors.add(
+            new SpecModelValidationError(
+                propDefault.mRepresentedObject,
+                "PropDefault " + propDefault.mName + " of type " + propDefault.mType +
+                    " does not correspond to any defined prop"));
+      } else if (!(propDefault.mType).equals(prop.getType())) {
+        validationErrors.add(
+            new SpecModelValidationError(
+                propDefault.mRepresentedObject,
+                "PropDefault " + propDefault.mName + " of type " + propDefault.mType +
+                    " should be of type " + prop.getType()));
+      }
+    }
+
     return validationErrors;
   }
 
