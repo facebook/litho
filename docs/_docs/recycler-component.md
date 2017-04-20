@@ -70,7 +70,7 @@ recyclerBinder.insertItemAt(
   position,
   ComponentInfo.create()
       .component(component)
-      .isSticky()
+      .isSticky(true)
       .build());
 ```
 
