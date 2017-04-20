@@ -22,6 +22,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 
 import com.facebook.litho.R;
@@ -30,7 +31,6 @@ import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.Output;
 import com.facebook.litho.Size;
-import com.facebook.litho.annotations.FromBind;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnBind;
 import com.facebook.litho.annotations.OnCreateMountContent;
@@ -84,6 +84,7 @@ class EditTextSpec {
   @PropDefault protected static final int gravity = DEFAULT_GRAVITY;
   @PropDefault protected static final boolean editable = true;
   @PropDefault protected static final int selection = -1;
+  @PropDefault protected static final int inputType = EditorInfo.TYPE_NULL;
 
   @OnLoadStyle
   static void onLoadStyle(
@@ -104,7 +105,8 @@ class EditTextSpec {
       Output<Float> shadowDx,
       Output<Float> shadowDy,
       Output<Integer> shadowColor,
-      Output<Integer> gravity) {
+      Output<Integer> gravity,
+      Output<Integer> inputType) {
 
     final TypedArray a = c.obtainStyledAttributes(R.styleable.Text, 0);
 
@@ -149,6 +151,8 @@ class EditTextSpec {
         shadowColor.set(a.getColor(attr, 0));
       } else if (attr == R.styleable.Text_android_gravity) {
         gravity.set(a.getInteger(attr, 0));
+      } else if (attr == R.styleable.Text_android_inputType) {
+        inputType.set(a.getInteger(attr, 0));
       }
     }
 
@@ -187,7 +191,8 @@ class EditTextSpec {
       @Prop(optional = true) Layout.Alignment textAlignment,
       @Prop(optional = true) int gravity,
       @Prop(optional = true) boolean editable,
-      @Prop(optional = true) int selection) {
+      @Prop(optional = true) int selection,
+      @Prop(optional = true) int inputType) {
 
     // TODO(11759579) - don't allocate a new EditText in every measure.
     final EditText editText = new EditText(c);
@@ -219,7 +224,8 @@ class EditTextSpec {
         textAlignment,
         gravity,
         editable,
-        selection);
+        selection,
+        inputType);
 
     editText.measure(
         MeasureUtils.getViewMeasureSpec(widthSpec),
@@ -264,7 +270,8 @@ class EditTextSpec {
       @Prop(optional = true) Layout.Alignment textAlignment,
       @Prop(optional = true) int gravity,
       @Prop(optional = true) boolean editable,
-      @Prop(optional = true) int selection) {
+      @Prop(optional = true) int selection,
+      @Prop(optional = true) int inputType) {
     editTextView.setEventHandler(
         com.facebook.litho.widget.EditText.getTextChangedEventHandler(c));
 
@@ -295,7 +302,8 @@ class EditTextSpec {
         textAlignment,
         gravity,
         editable,
-        selection);
+        selection,
+        inputType);
   }
 
   @OnBind
@@ -346,7 +354,8 @@ class EditTextSpec {
       Layout.Alignment textAlignment,
       int gravity,
       boolean editable,
-      int selection) {
+      int selection,
+      int inputType) {
 
     // If it's the same text, don't set it again so that the caret won't move to the beginning or
     // end of the string. Only looking at String instances in order to avoid span comparisons.
@@ -366,6 +375,7 @@ class EditTextSpec {
     editText.setLineSpacing(extraSpacing, spacingMultiplier);
     editText.setTypeface(typeface, textStyle);
     editText.setGravity(gravity);
+    editText.setInputType(inputType);
 
     editText.setFocusable(editable);
     editText.setFocusableInTouchMode(editable);

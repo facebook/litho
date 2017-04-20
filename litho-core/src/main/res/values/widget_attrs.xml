@@ -38,6 +38,7 @@
     <attr name="android:maxEms" />
     <attr name="android:minWidth" />
     <attr name="android:maxWidth" />
+    <attr name="android:inputType" />
   </declare-styleable>
 
   <declare-styleable name="Image">
