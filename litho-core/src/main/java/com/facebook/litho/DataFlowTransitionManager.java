@@ -14,6 +14,7 @@ import java.util.WeakHashMap;
 
 import android.support.v4.util.Pools;
 import android.support.v4.util.SimpleArrayMap;
+import android.view.View;
 
 import com.facebook.litho.animation.AnimatedPropertyNode;
 import com.facebook.litho.animation.AnimationBinding;
@@ -92,6 +93,12 @@ public class DataFlowTransitionManager {
         mKeyToTransitionDiffs.put(transitionKey, info);
       } else {
         info.changeType = TransitionManager.KeyStatus.UNCHANGED;
+      }
+
+      if (mountItem instanceof View) {
+        View view = (View) mountItem;
+        view.setTranslationX(0);
+        view.setTranslationY(0);
       }
 
       for (int i = 0; i < animatingProperties.size(); i++) {
