@@ -17,7 +17,7 @@ android {
 
 dependencies {
     compile project(':litho-core')
-    provided project(':litho-annotations')
+    compile project(':litho-annotations')
 
     // Annotations
     provided deps.jsr305
