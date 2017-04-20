@@ -36,6 +36,8 @@ import android.view.View;
 import android.view.ViewParent;
 
 import com.facebook.infer.annotation.ReturnsOwnership;
+import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.infer.annotation.ThreadSafe;
 
 import static com.facebook.litho.ComponentLifecycle.StateUpdate;
 import static com.facebook.litho.ComponentsLogger.ACTION_SUCCESS;
@@ -59,6 +61,7 @@ import static com.facebook.litho.ThreadUtils.isMainThread;
  * myHostView.setRoot(component);
  * <code/>
  */
+@ThreadSafe
 public class ComponentTree {
 
   private static final String TAG = ComponentTree.class.getSimpleName();
@@ -105,12 +108,19 @@ public class ComponentTree {
   private final ComponentContext mContext;
 
   // These variables are only accessed from the main thread.
+  @ThreadConfined(ThreadConfined.UI)
   private boolean mIsMounting;
+  @ThreadConfined(ThreadConfined.UI)
   private boolean mIncrementalMountEnabled;
+  @ThreadConfined(ThreadConfined.UI)
   private boolean mIsLayoutDiffingEnabled;
+  @ThreadConfined(ThreadConfined.UI)
   private boolean mIsAttached;
+  @ThreadConfined(ThreadConfined.UI)
   private boolean mIsAsyncUpdateStateEnabled;
+  @ThreadConfined(ThreadConfined.UI)
   private LithoView mLithoView;
+  @ThreadConfined(ThreadConfined.UI)
   private LayoutHandler mLayoutThreadHandler;
 
   @GuardedBy("this")
@@ -182,6 +192,7 @@ public class ComponentTree {
         : builderStateHandler;
   }
 
+  @ThreadConfined(ThreadConfined.UI)
   LayoutState getMainThreadLayoutState() {
     return mMainThreadLayoutState;
   }
@@ -198,6 +209,7 @@ public class ComponentTree {
    */
   @CheckReturnValue
   @ReturnsOwnership
+  @ThreadConfined(ThreadConfined.UI)
   private LayoutState setBestMainThreadLayoutAndReturnOldLayout() {
     assertHoldsLock(this);
 
@@ -352,6 +364,7 @@ public class ComponentTree {
     return baseContext;
   }
 
+  @ThreadConfined(ThreadConfined.UI)
   boolean isMounting() {
     return mIsMounting;
   }
@@ -1250,10 +1263,12 @@ public class ComponentTree {
     }
   }
 
+@ThreadConfined(ThreadConfined.UI)
   ComponentsStethoManager getStethoManager() {
     return mStethoManager;
   }
 
+@ThreadConfined(ThreadConfined.UI)
   void setStethoManager(ComponentsStethoManager stethoManager) {
     mStethoManager = stethoManager;
   }

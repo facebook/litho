@@ -28,6 +28,8 @@ import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 
+import com.facebook.infer.annotation.ThreadConfined;
+
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.reference.Reference;
 
@@ -59,6 +61,7 @@ import static com.facebook.litho.ThreadUtils.assertMainThread;
  * @see LithoView
  * @see LayoutState
  */
+@ThreadConfined(ThreadConfined.UI)
 class MountState {
 
   static final int ROOT_HOST_ID = 0;
