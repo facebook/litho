@@ -84,7 +84,8 @@ class EditTextSpec {
   @PropDefault protected static final int gravity = DEFAULT_GRAVITY;
   @PropDefault protected static final boolean editable = true;
   @PropDefault protected static final int selection = -1;
-  @PropDefault protected static final int inputType = EditorInfo.TYPE_NULL;
+  @PropDefault protected static final int inputType =
+      EditorInfo.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE;
 
   @OnLoadStyle
   static void onLoadStyle(
