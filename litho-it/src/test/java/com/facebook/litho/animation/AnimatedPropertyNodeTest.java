@@ -45,7 +45,7 @@ public class AnimatedPropertyNodeTest {
     View view = new View(RuntimeEnvironment.application);
     SettableNode source = new SettableNode();
     SimpleNode middle = new SimpleNode();
-    AnimatedPropertyNode destination = new AnimatedPropertyNode(view, AnimatedProperties.X);
+    AnimatedPropertyNode destination = new AnimatedPropertyNode(view, AnimatedProperties.SCALE);
 
     GraphBinding binding = GraphBinding.create(mDataFlowGraph);
     binding.addBinding(source, middle);
@@ -54,18 +54,18 @@ public class AnimatedPropertyNodeTest {
 
     mTestTimingSource.step(1);
 
-    assertEquals(0f, view.getX());
+    assertEquals(0f, view.getScaleX());
 
     source.setValue(37);
     mTestTimingSource.step(1);
 
-    assertEquals(37f, view.getX());
+    assertEquals(37f, view.getScaleX());
   }
 
   @Test
   public void testViewPropertyNodeWithOutput() {
     View view = new View(RuntimeEnvironment.application);
-    AnimatedPropertyNode source = new AnimatedPropertyNode(view, AnimatedProperties.X);
+    AnimatedPropertyNode source = new AnimatedPropertyNode(view, AnimatedProperties.SCALE);
     SimpleNode middle = new SimpleNode();
     OutputOnlyNode destination = new OutputOnlyNode();
 
@@ -76,9 +76,10 @@ public class AnimatedPropertyNodeTest {
 
     mTestTimingSource.step(1);
 
-    assertEquals(0f, destination.getValue());
+    assertEquals(1f, destination.getValue());
 
-    view.setX(101);
+    view.setScaleX(101);
+    view.setScaleY(101);
     mTestTimingSource.step(1);
 
     assertEquals(101f, destination.getValue());
@@ -88,7 +89,7 @@ public class AnimatedPropertyNodeTest {
   public void testViewPropertyNodeWithInputAndOutput() {
     View view = new View(RuntimeEnvironment.application);
     SettableNode source = new SettableNode();
-    AnimatedPropertyNode viewNode = new AnimatedPropertyNode(view, AnimatedProperties.X);
+    AnimatedPropertyNode viewNode = new AnimatedPropertyNode(view, AnimatedProperties.SCALE);
     OutputOnlyNode destination = new OutputOnlyNode();
 
     GraphBinding binding = GraphBinding.create(mDataFlowGraph);
@@ -98,13 +99,13 @@ public class AnimatedPropertyNodeTest {
 
     mTestTimingSource.step(1);
 
-    assertEquals(0f, view.getX());
+    assertEquals(0f, view.getScaleX());
     assertEquals(0f, destination.getValue());
 
     source.setValue(123);
     mTestTimingSource.step(1);
 
-    assertEquals(123f, view.getX());
+    assertEquals(123f, view.getScaleX());
     assertEquals(123f, destination.getValue());
   }
 }

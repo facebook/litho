@@ -10,6 +10,9 @@
 package com.facebook.litho.animation;
 
 import android.view.View;
+import android.view.ViewParent;
+
+import com.facebook.litho.LithoView;
 
 /**
  * A convenience class for common View properties applicable to all subclasses of View.
@@ -17,12 +20,14 @@ import android.view.View;
 public final class AnimatedProperties {
 
   /**
-   * The X-position of a mount item, relative to its parent.
+   * The absolute X-position of a mount item, relative to the {@link com.facebook.litho.LithoView}
+   * that is rendering this component tree.
    */
   public static final AnimatedProperty X = new XAnimatedProperty();
 
   /**
-   * The Y-position of a mount item, relative to its parent.
+   * The absolute Y-position of a mount item, relative to the {@link com.facebook.litho.LithoView}
+   * that is rendering this component tree.
    */
   public static final AnimatedProperty Y = new YAnimatedProperty();
 
@@ -65,12 +70,14 @@ public final class AnimatedProperties {
 
     @Override
     public float get(Object mountItem) {
-      return assertIsView(mountItem, this).getX();
+      return getPositionRelativeToLithoView(assertIsView(mountItem, this), true);
     }
 
     @Override
     public void set(Object mountItem, float value) {
-      assertIsView(mountItem, this).setX(value);
+      View mountView = assertIsView(mountItem, this);
+      float parentX = getPositionRelativeToLithoView((View) mountView.getParent(), true);
+      mountView.setX(value - parentX);
     }
   }
 
@@ -82,12 +89,14 @@ public final class AnimatedProperties {
 
     @Override
     public float get(Object mountItem) {
-      return assertIsView(mountItem, this).getY();
+      return getPositionRelativeToLithoView(assertIsView(mountItem, this), false);
     }
 
     @Override
     public void set(Object mountItem, float value) {
-      assertIsView(mountItem, this).setY(value);
+      View mountView = assertIsView(mountItem, this);
+      float parentY = getPositionRelativeToLithoView((View) mountView.getParent(), false);
+      mountView.setY(value - parentY);
     }
   };
 
@@ -164,6 +173,28 @@ public final class AnimatedProperties {
       final View asView = assertIsView(mountItem, this);
       asView.setScaleX(value);
       asView.setScaleY(value);
+    }
+  }
+
+  /**
+   * @return the x or y position of the given view relative to the LithoView that this ComponentTree
+   * is being rendered in to.
+   */
+  private static float getPositionRelativeToLithoView(View mountItem, boolean getX) {
+    float pos = 0;
+    View currentView = mountItem;
+    while (true) {
+      if (currentView == null) {
+        throw new RuntimeException("Got unexpected null parent");
+      }
+      if (currentView instanceof LithoView) {
+        return pos;
+      }
+      pos += getX ? currentView.getX() : currentView.getY();
+      if (!(mountItem.getParent() instanceof View)) {
+        throw new RuntimeException("Expected parent to be View, was " + mountItem.getParent());
+      }
+      currentView = (View) currentView.getParent();
     }
   }
 }
