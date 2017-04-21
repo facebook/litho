@@ -27,6 +27,7 @@ public interface ComponentsLogger {
   int EVENT_STETHO_INSPECT_COMPONENT = 11;
 
   int ACTION_SUCCESS = 1 << 4;
+  int ACTION_FAIL = 1 << 5;
 
   String PARAM_LOG_TAG = "log_tag";
   String PARAM_TREE_DIFF_ENABLED = "tree_diff_enabled";
