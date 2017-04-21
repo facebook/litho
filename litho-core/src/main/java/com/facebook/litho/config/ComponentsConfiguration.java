@@ -46,7 +46,7 @@ public class ComponentsConfiguration {
    * Indicates whether LayoutState should try to generate DisplayLists for Components that support
    * that.
    */
-  public static boolean shouldGenerateDisplayLists =
+  public static volatile boolean shouldGenerateDisplayLists =
       Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
 
   /*
@@ -60,5 +60,5 @@ public class ComponentsConfiguration {
    * beacuse we are experimenting with turning off pooling to get a sense of what its impact is
    * in production.
    */
-  public static boolean usePooling = true;
+  public static volatile boolean usePooling = true;
 }
