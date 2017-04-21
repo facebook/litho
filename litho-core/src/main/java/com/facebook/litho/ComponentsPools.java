@@ -817,7 +817,7 @@ public class ComponentsPools {
   }
 
   private static boolean isContextWrapper(Context contextKey, Context context) {
-    Context baseContext = context;
+    Context baseContext = contextKey;
     while (baseContext instanceof ContextWrapper) {
       baseContext = ((ContextWrapper) baseContext).getBaseContext();
 
