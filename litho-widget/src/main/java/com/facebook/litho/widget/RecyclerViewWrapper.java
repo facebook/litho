@@ -64,6 +64,7 @@ public class RecyclerViewWrapper extends SwipeRefreshLayout {
       component.getLithoView().startTemporaryDetach();
     }
     mStickyHeader.setComponentTree(component);
+    measureStickyHeader(getWidth());
   }
 
   public LithoView getStickyHeader() {
@@ -89,9 +90,13 @@ public class RecyclerViewWrapper extends SwipeRefreshLayout {
   @Override
   public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    measureStickyHeader(MeasureSpec.getSize(widthMeasureSpec));
+  }
+
+  private void measureStickyHeader(int parentWidth) {
     measureChild(
         mStickyHeader,
-        MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.EXACTLY),
+        MeasureSpec.makeMeasureSpec(parentWidth, MeasureSpec.EXACTLY),
         MeasureSpec.UNSPECIFIED);
   }
 
