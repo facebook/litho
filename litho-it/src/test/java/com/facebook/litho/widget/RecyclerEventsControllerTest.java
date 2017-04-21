@@ -81,4 +81,21 @@ public class RecyclerEventsControllerTest {
     verify(mRecyclerViewWrapper, times(1)).removeCallbacks(any(Runnable.class));
     verify(mRecyclerViewWrapper, times(1)).post(any(Runnable.class));
   }
+
+  @Test
+  public void testShowRefreshingFromUIThread() {
+    when(mRecyclerViewWrapper.isRefreshing()).thenReturn(false);
+    PowerMockito.when(ThreadUtils.isMainThread()).thenReturn(true);
+
+    mRecyclerEventsController.showRefreshing();
+    verify(mRecyclerViewWrapper).setRefreshing(true);
+  }
+
+  @Test
+  public void testShowRefreshingAlreadyRefreshing() {
+    when(mRecyclerViewWrapper.isRefreshing()).thenReturn(true);
+
+    mRecyclerEventsController.showRefreshing();
+    verify(mRecyclerViewWrapper, never()).setRefreshing(anyBoolean());
+  }
 }

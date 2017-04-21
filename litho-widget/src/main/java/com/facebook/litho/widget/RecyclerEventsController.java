@@ -64,6 +64,14 @@ public class RecyclerEventsController {
     mRecyclerViewWrapper.post(mClearRefreshRunnable);
   }
 
+  public void showRefreshing() {
+    if (mRecyclerViewWrapper == null || mRecyclerViewWrapper.isRefreshing()) {
+      return;
+    }
+    ThreadUtils.assertMainThread();
+    mRecyclerViewWrapper.setRefreshing(true);
+  }
+
   void setRecyclerViewWrapper(RecyclerViewWrapper recyclerViewWrapper) {
     mRecyclerViewWrapper = recyclerViewWrapper;
   }
