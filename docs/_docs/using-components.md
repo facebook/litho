@@ -19,6 +19,6 @@ LithoView view = LithoView.create(context, component);
 In this example, `MyComponent` will be laid out by the hosting `LithoView`, which you can use in your application as you would normally use an Android View. See the [tutorial](/docs/tutorial#hello-world) for an example on how to use it in an Activity.
 
 > IMPORTANT: The LithoView from this example, if directly used in your view hierarchy as is, will perform layout synchronously on the main thread.  
-For more information about performing layout off the main thread, see [Async Layout](/docs/architecture#async-layout).
+For more information about performing layout off the main thread, see [Async Layout](/docs/asynchronous-layout).
 
 
