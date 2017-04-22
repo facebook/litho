@@ -22,7 +22,7 @@ dependencies {
   debugCompile 'com.facebook.litho:litho-stetho:0.2.0'
 
   // For integration with Fresco
-  debugCompile 'com.facebook.litho:litho-fresco:0.2.0'
+  compile 'com.facebook.litho:litho-fresco:0.2.0'
 
   // For testing
   testCompile 'com.facebook.litho:litho-testing:0.2.0'
