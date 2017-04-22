@@ -76,7 +76,7 @@ public class CheckboxSpec {
 ```
 
 ## Defining State Updates
-You can define how a component's state or states should updated by declaring methods annotated with `@OnUpdateState` in the specs.
+You can define how a component's state or states should be updated by declaring methods annotated with `@OnUpdateState` in the specs.
 
 You can have as many `@OnUpdateState` methods as you need, according to what states you want to update or what parameters your states depend on.
 
