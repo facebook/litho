@@ -80,7 +80,7 @@ You can define how a component's state or states should updated by declaring met
 
 You can have as many `@OnUpdateState` methods as you need, according to what states you want to update or what parameters your states depend on.
 
-Each call to an `@OnUpdateState` method will trigger a new layout calculation for its ComponentTree. For better performance, if there are situations that can trigger an update for multiple states, you should define an `@OnUpdateMethod` that updates the value for all those states. Bundling them in the same update call reduces the number of new layout calculations and improves performance.
+Each call to an `@OnUpdateState` method will trigger a new layout calculation for its ComponentTree. For better performance, if there are situations that can trigger an update for multiple states, you should define an `@OnUpdateState` that updates the value for all those states. Bundling them in the same update call reduces the number of new layout calculations and improves performance.
 
 This is what you need to know when writing an `@OnUpdateState`  method:
 
