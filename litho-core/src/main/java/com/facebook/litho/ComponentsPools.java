@@ -816,12 +816,15 @@ public class ComponentsPools {
     sMountContentPoolsByContext.clear();
   }
 
-  private static boolean isContextWrapper(Context contextKey, Context context) {
-    Context baseContext = contextKey;
-    while (baseContext instanceof ContextWrapper) {
-      baseContext = ((ContextWrapper) baseContext).getBaseContext();
+  /**
+   * Check whether contextWrapper is a wrapper of baseContext
+   */
+  private static boolean isContextWrapper(Context contextWrapper, Context baseContext) {
+    Context currentContext = contextWrapper;
+    while (currentContext instanceof ContextWrapper) {
+      currentContext = ((ContextWrapper) currentContext).getBaseContext();
 
-      if (baseContext == context) {
+      if (currentContext == baseContext) {
         return true;
       }
     }
