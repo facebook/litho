@@ -34,6 +34,7 @@ ext.deps = [
         supportCompat      : 'com.android.support:support-compat:25.3.1',
         supportAppCompat   : 'com.android.support:appcompat-v7:25.3.1',
         supportCoreUi      : 'com.android.support:support-core-ui:25.3.1',
+        supportFragment    : 'com.android.support:support-fragment:25.3.1',
         supportRecyclerView: 'com.android.support:recyclerview-v7:25.3.1',
         // First-party
         yoga               : 'com.facebook.yoga:yoga:1.4.2',
@@ -56,6 +57,8 @@ ext.deps = [
         assertjCore        : 'org.assertj:assertj-core:2.6.0',
         // Processor
         javapoet           : 'com.squareup:javapoet:1.8.0',
+        // Third-party
+        glide              : 'com.github.bumptech.glide:glide:3.7.0'
 ]
 
 // This should hopefully only serve as a temporary measure until

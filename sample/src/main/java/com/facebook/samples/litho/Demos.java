@@ -35,16 +35,28 @@ public final class Demos {
 
   public static void initialize(Context context) {
     final ComponentContext c = new ComponentContext(context);
-    final RecyclerBinder recyclerBinder = new RecyclerBinder(
+    final RecyclerBinder frescoRecyclerBinder = new RecyclerBinder(
         c,
         4.0f,
         new LinearLayoutInfo(c, OrientationHelper.VERTICAL, false));
-    DataModel.populateBinderWithSampleData(recyclerBinder, c);
+    DataModel.populateBinderWithSampleData(frescoRecyclerBinder, c);
+
+    final RecyclerBinder glideRecyclerBinder = new RecyclerBinder(
+        c,
+        4.0f,
+        new LinearLayoutInfo(c, OrientationHelper.VERTICAL, false));
+    DataModel.populateBinderWithSampleDataForGlide(glideRecyclerBinder, c);
+
     demoModels = new LinkedHashMap<>();
     demoModels.put(
         "Lithography",
         LithographyRootComponent.create(c)
-            .recyclerBinder(recyclerBinder)
+            .recyclerBinder(frescoRecyclerBinder)
+            .build());
+    demoModels.put(
+        "Lithography - Glide",
+        LithographyRootComponent.create(c)
+            .recyclerBinder(glideRecyclerBinder)
             .build());
     demoModels.put("Playground", PlaygroundComponent.create(c).build());
   }

@@ -1,0 +1,34 @@
+apply plugin: 'com.android.library'
+apply plugin: 'maven'
+
+android {
+  compileSdkVersion rootProject.compileSdkVersion
+  buildToolsVersion rootProject.buildToolsVersion
+
+  defaultConfig {
+    minSdkVersion rootProject.minSdkVersion
+  }
+
+  // TODO(#62): Re-enable abort on error.
+  lintOptions {
+    abortOnError false
+  }
+}
+
+dependencies {
+  compile project(':litho-core')
+  provided project(':litho-annotations')
+  annotationProcessor project(':litho-processor')
+
+  // Annotations
+  provided deps.jsr305
+  provided deps.inferAnnotations
+
+  // Glide
+  compile deps.glide
+
+  // Android Support Library
+  compile deps.supportCompat
+  compile deps.supportCoreUi
+  compile deps.supportFragment
+}

@@ -12,3 +12,9 @@ docs/_site/
 
 # Output files
 build/
+.idea/
+*.iml
+*/*.iml
+*/**.iml
+local.properties
+.gradle/
