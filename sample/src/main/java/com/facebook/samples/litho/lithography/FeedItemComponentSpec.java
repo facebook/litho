@@ -21,23 +21,32 @@ import com.facebook.litho.widget.RecyclerBinder;
 public class FeedItemComponentSpec {
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(ComponentContext c, @Prop final Artist artist,
-      @Prop(optional = true) boolean useGlide, @Prop final RecyclerBinder binder) {
+  static ComponentLayout onCreateLayout(ComponentContext c, @Prop final ArtistDatum artist,
+      @Prop final RecyclerBinder binder) {
     return Column.create(c)
         .child(Column.create(c)
-            .child(artist.images.length == 1 ? getImageComponent(c, artist.images[0], useGlide)
-                : Recycler.create(c).binder(binder).withLayout().flexShrink(0).aspectRatio(2))
-            .child(TitleComponent.create(c).title(artist.name))
+            .child(artist.getImages().length == 1 ? getImageComponent(c, artist)
+                : getRecyclerComponent(c, binder))
+            .child(TitleComponent.create(c).title(artist.getName()))
             .child(ActionsComponent.create(c)))
-        .child(FooterComponent.create(c).text(artist.biography))
+        .child(FooterComponent.create(c).text(artist.getBiography()))
         .build();
   }
 
-  private static ComponentLayout.Builder getImageComponent(ComponentContext c, String imageUrl,
-      boolean useGlide) {
-    return useGlide ? GlideSingleImageComponent.create(c)
+  private static ComponentLayout.Builder getImageComponent(ComponentContext c,
+      ArtistDatum artistDatum) {
+    String imageUrl = artistDatum.getImages()[0];
+    boolean isSimpleArtist = artistDatum instanceof Artist;
+
+    return isSimpleArtist ? SingleImageComponent.create(c)
         .image(imageUrl)
         .aspectRatio(2)
-        .withLayout() : SingleImageComponent.create(c).image(imageUrl).aspectRatio(2).withLayout();
+        .withLayout()
+        : GlideSingleImageComponent.create(c).image(imageUrl).aspectRatio(2).withLayout();
+  }
+
+  private static ComponentLayout.Builder getRecyclerComponent(ComponentContext c,
+      RecyclerBinder binder) {
+    return Recycler.create(c).binder(binder).withLayout().flexShrink(0).aspectRatio(2);
   }
 }

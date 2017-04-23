@@ -1,11 +1,3 @@
-/**
- * Copyright 2014-present, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the license found in the
- * LICENSE-examples file in the root directory of this source tree.
- */
-
 package com.facebook.samples.litho.lithography;
 
 import android.support.v7.widget.OrientationHelper;
@@ -15,14 +7,14 @@ import com.facebook.litho.ComponentInfo;
 import com.facebook.litho.widget.LinearLayoutInfo;
 import com.facebook.litho.widget.RecyclerBinder;
 
-public class Artist implements ArtistDatum {
+public class GlideArtist implements ArtistDatum {
 
   public final String name;
   public final String biography;
   public final int year;
   public final String[] images;
 
-  public Artist(String name, String biography, int year, String... images) {
+  public GlideArtist(String name, String biography, int year, String... images) {
     this.name = name;
     this.biography = biography;
     this.year = year;
@@ -37,7 +29,7 @@ public class Artist implements ArtistDatum {
     for (String image : images) {
       ComponentInfo.Builder imageComponentInfoBuilder = ComponentInfo.create();
       imageComponentInfoBuilder.component(
-          SingleImageComponent.create(c).image(image).aspectRatio(2).build());
+          GlideSingleImageComponent.create(c).image(image).aspectRatio(2).build());
       imageRecyclerBinder.insertItemAt(imageRecyclerBinder.getItemCount(),
           imageComponentInfoBuilder.build());
     }

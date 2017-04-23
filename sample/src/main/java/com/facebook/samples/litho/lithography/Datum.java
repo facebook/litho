@@ -10,6 +10,7 @@ package com.facebook.samples.litho.lithography;
 
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentLifecycle;
 
 /**
  * This is a interface for a piece of data that defines a component to be rendered in the feed.
@@ -17,6 +18,5 @@ import com.facebook.litho.ComponentContext;
  * the component.
  */
 public interface Datum {
-
   Component createComponent(ComponentContext c);
 }
