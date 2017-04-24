@@ -122,7 +122,7 @@ public class ComponentImplGenerator {
     return stateContainerImplClassBuilder.build();
   }
 
-  static String getImplClassName(SpecModel specModel) {
+  public static String getImplClassName(SpecModel specModel) {
     return specModel.getComponentName() + IMPL_CLASS_NAME_SUFFIX;
   }
 
