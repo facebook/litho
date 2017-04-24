@@ -28,7 +28,6 @@ dependencies {
     compile deps.fresco
 
     // Android Support Library
-    compile deps.supportCompat
     compile deps.supportCoreUi
 }
 

@@ -19,17 +19,6 @@ remote_file(
 )
 
 android_prebuilt_aar(
-    name = "android-support-v4-aar",
-    aar = ":android-support-v4.aar",
-)
-
-remote_file(
-    name = "android-support-v4.aar",
-    sha1 = "e8f2835adcd883b3778f34121368892a5d1c188e",
-    url = "mvn:com.android.support:support-v4:aar:25.3.1",
-)
-
-android_prebuilt_aar(
     name = "android-support-core-ui-aar",
     aar = ":android-support-core-ui.aar",
 )
@@ -103,7 +92,6 @@ java_library(
         ":android-support-core-ui-aar",
         ":android-support-core-utils-aar",
         ":android-support-fragment-aar",
-        ":android-support-v4-aar",
         ":android-support-vector-drawable-aar",
     ],
     visibility = [

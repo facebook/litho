@@ -52,7 +52,6 @@ dependencies {
 
     // Android Support Library
     provided deps.supportAnnotations
-    compile deps.supportCompat
     compile deps.supportCoreUi
     compile deps.supportRecyclerView
 
