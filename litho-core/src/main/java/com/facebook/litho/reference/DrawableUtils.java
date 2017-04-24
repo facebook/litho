@@ -96,7 +96,8 @@ public class DrawableUtils {
       return areLayerDrawablesEqual(layerDrawable, otherLayerDrawable);
     }
 
-    return drawable.getConstantState() == otherDrawable.getConstantState();
+    return drawable.getConstantState() != null &&
+        drawable.getConstantState() == otherDrawable.getConstantState();
   }
 
   private static boolean areColorDrawablesEqual(
