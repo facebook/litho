@@ -14,6 +14,7 @@ android {
 
 dependencies {
     compile project(':litho-core')
+    compile project(':litho-processor')
 
     compile deps.assertjCore
     compile deps.guava
