@@ -25,7 +25,6 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.util.Pools;
 import android.support.v4.util.SimpleArrayMap;
 import android.support.v4.util.SparseArrayCompat;
 import android.util.SparseArray;
@@ -60,93 +59,93 @@ public class ComponentsPools {
 
   private static final Object mountContentLock = new Object();
 
-  private static final Pools.SynchronizedPool<LayoutState> sLayoutStatePool =
-      new Pools.SynchronizedPool<>(64);
+  private static final RecyclePool<LayoutState> sLayoutStatePool =
+      new RecyclePool<>(64, true);
 
-  private static final Pools.SynchronizedPool<InternalNode> sInternalNodePool =
-      new Pools.SynchronizedPool<>(256);
+  private static final RecyclePool<InternalNode> sInternalNodePool =
+      new RecyclePool<>(256, true);
 
-  private static final Pools.SynchronizedPool<NodeInfo> sNodeInfoPool =
-      new Pools.SynchronizedPool<>(256);
+  private static final RecyclePool<NodeInfo> sNodeInfoPool =
+      new RecyclePool<>(256, true);
 
-  private static final Pools.SynchronizedPool<ViewNodeInfo> sViewNodeInfoPool =
-      new Pools.SynchronizedPool<>(64);
+  private static final RecyclePool<ViewNodeInfo> sViewNodeInfoPool =
+      new RecyclePool<>(64, true);
 
-  private static final Pools.SynchronizedPool<YogaNode> sYogaNodePool =
-      new Pools.SynchronizedPool<>(256);
+  private static final RecyclePool<YogaNode> sYogaNodePool =
+      new RecyclePool<>(256, true);
 
-  private static final Pools.SynchronizedPool<MountItem> sMountItemPool =
-      new Pools.SynchronizedPool<>(256);
+  private static final RecyclePool<MountItem> sMountItemPool =
+      new RecyclePool<>(256, true);
 
-  private static final Map<Context, SparseArray<PoolWithCount>>
-      sMountContentPoolsByContext = new ConcurrentHashMap<>(4);
+  private static final Map<Context, SparseArray<RecyclePool>> sMountContentPoolsByContext =
+      new ConcurrentHashMap<>(4);
 
-  private static final Pools.SynchronizedPool<LayoutOutput> sLayoutOutputPool =
-      new Pools.SynchronizedPool<>(256);
+  private static final RecyclePool<LayoutOutput> sLayoutOutputPool =
+      new RecyclePool<>(256, true);
 
-  private static final Pools.SynchronizedPool<VisibilityOutput> sVisibilityOutputPool =
-      new Pools.SynchronizedPool<>(64);
+  private static final RecyclePool<VisibilityOutput> sVisibilityOutputPool =
+      new RecyclePool<>(64, true);
 
   // These are lazily initialized as they are only needed when we're in a test environment.
-  private static Pools.SynchronizedPool<TestOutput> sTestOutputPool = null;
-  private static Pools.SynchronizedPool<TestItem> sTestItemPool = null;
+  private static RecyclePool<TestOutput> sTestOutputPool = null;
+  private static RecyclePool<TestItem> sTestItemPool = null;
 
-  private static final Pools.SynchronizedPool<VisibilityItem> sVisibilityItemPool =
-      new Pools.SynchronizedPool<>(64);
+  private static final RecyclePool<VisibilityItem> sVisibilityItemPool =
+      new RecyclePool<>(64, true);
 
-  private static final Pools.SynchronizedPool<Output<?>> sOutputPool =
-      new Pools.SynchronizedPool<>(20);
+  private static final RecyclePool<Output<?>> sOutputPool =
+      new RecyclePool<>(20, true);
 
-  private static final Pools.SynchronizedPool<DiffNode> sDiffNodePool =
-      new Pools.SynchronizedPool<>(256);
+  private static final RecyclePool<DiffNode> sDiffNodePool =
+      new RecyclePool<>(256, true);
 
-  private static final Pools.SynchronizedPool<Diff<?>> sDiffPool =
-      new Pools.SynchronizedPool<>(20);
+  private static final RecyclePool<Diff<?>> sDiffPool =
+      new RecyclePool<>(20, true);
 
-  private static final Pools.SynchronizedPool<ComponentTree.Builder> sComponentTreeBuilderPool =
-      new Pools.SynchronizedPool<>(2);
+  private static final RecyclePool<ComponentTree.Builder> sComponentTreeBuilderPool =
+      new RecyclePool<>(2, true);
 
-  private static final Pools.SynchronizedPool<StateHandler> sStateHandlerPool =
-      new Pools.SynchronizedPool<>(10);
+  private static final RecyclePool<StateHandler> sStateHandlerPool =
+      new RecyclePool<>(10, true);
 
-  private static final Pools.SimplePool<SparseArrayCompat<MountItem>> sMountItemScrapArrayPool =
-      new Pools.SimplePool<>(8);
+  private static final RecyclePool<SparseArrayCompat<MountItem>> sMountItemScrapArrayPool =
+      new RecyclePool<>(8, false);
 
-  private static final Pools.SimplePool<SparseArrayCompat<Touchable>> sTouchableScrapArrayPool =
-      new Pools.SimplePool<>(4);
+  private static final RecyclePool<SparseArrayCompat<Touchable>> sTouchableScrapArrayPool =
+      new RecyclePool<>(4, false);
 
-  private static final Pools.SynchronizedPool<RectF> sRectFPool =
-      new Pools.SynchronizedPool<>(4);
+  private static final RecyclePool<RectF> sRectFPool =
+      new RecyclePool<>(4, true);
 
-  private static final Pools.SynchronizedPool<Rect> sRectPool =
-      new Pools.SynchronizedPool<>(30);
+  private static final RecyclePool<Rect> sRectPool =
+      new RecyclePool<>(30, true);
 
-  private static final Pools.SynchronizedPool<Edges> sEdgesPool =
-      new Pools.SynchronizedPool<>(30);
+  private static final RecyclePool<Edges> sEdgesPool =
+      new RecyclePool<>(30, true);
 
-  private static final Pools.SynchronizedPool<TransitionContext> sTransitionContextPool =
-      new Pools.SynchronizedPool<>(2);
+  private static final RecyclePool<TransitionContext> sTransitionContextPool =
+      new RecyclePool<>(2, true);
 
-  private static final Pools.SimplePool<TransitionManager> sTransitionManagerPool =
-      new Pools.SimplePool<>(2);
+  private static final RecyclePool<TransitionManager> sTransitionManagerPool =
+      new RecyclePool<>(2, false);
 
-  static final Pools.Pool<DisplayListDrawable> sDisplayListDrawablePool =
-      new Pools.SimplePool<>(10);
+  static final RecyclePool<DisplayListDrawable> sDisplayListDrawablePool =
+      new RecyclePool<>(10, false);
 
-  private static final Pools.SynchronizedPool<TreeProps> sTreePropsMapPool =
-      new Pools.SynchronizedPool<>(10);
+  private static final RecyclePool<TreeProps> sTreePropsMapPool =
+      new RecyclePool<>(10, true);
 
-  private static final Pools.SynchronizedPool<ArraySet> sArraySetPool =
-      new Pools.SynchronizedPool<>(10);
+  private static final RecyclePool<ArraySet> sArraySetPool =
+      new RecyclePool<>(10, true);
 
-  private static final Pools.SynchronizedPool<ArrayDeque> sArrayDequePool =
-      new Pools.SynchronizedPool<>(10);
+  private static final RecyclePool<ArrayDeque> sArrayDequePool =
+      new RecyclePool<>(10, true);
 
-  private static final Pools.SynchronizedPool<LogEvent> sLogEventPool =
-      new Pools.SynchronizedPool<>(10);
+  private static final RecyclePool<LogEvent> sLogEventPool =
+      new RecyclePool<>(10, true);
 
   // Lazily initialized when acquired first time, as this is not a common use case.
-  private static Pools.Pool<BorderColorDrawable> sBorderColorDrawablePool = null;
+  private static RecyclePool<BorderColorDrawable> sBorderColorDrawablePool = null;
 
   private static PoolsActivityCallback sActivityCallbacks;
 
@@ -264,7 +263,7 @@ public class ComponentsPools {
       }
     }
 
-    final Pools.SynchronizedPool<Object> pool;
+    final RecyclePool<Object> pool;
 
     synchronized (mountContentLock) {
 
@@ -278,13 +277,13 @@ public class ComponentsPools {
             .registerActivityLifecycleCallbacks(sActivityCallbacks);
       }
 
-      SparseArray<PoolWithCount> poolsArray =
+      SparseArray<RecyclePool> poolsArray =
           sMountContentPoolsByContext.get(context);
 
       if (poolsArray == null) {
         // The context is created here because we are sure the Activity is alive at this point in
         // contrast of the release call where the Activity might by gone.
-        sMountContentPoolsByContext.put(context, new SparseArray<PoolWithCount>());
+        sMountContentPoolsByContext.put(context, new SparseArray<RecyclePool>());
         return null;
       }
 
@@ -329,7 +328,7 @@ public class ComponentsPools {
 
   static TestOutput acquireTestOutput() {
     if (sTestOutputPool == null) {
-      sTestOutputPool = new Pools.SynchronizedPool<>(64);
+      sTestOutputPool = new RecyclePool<>(64, true);
     }
     TestOutput output = ComponentsConfiguration.usePooling ? sTestOutputPool.acquire() : null;
     if (output == null) {
@@ -341,7 +340,7 @@ public class ComponentsPools {
 
   static TestItem acquireTestItem() {
     if (sTestItemPool == null) {
-      sTestItemPool = new Pools.SynchronizedPool<>(64);
+      sTestItemPool = new RecyclePool<>(64, true);
     }
     TestItem item = ComponentsConfiguration.usePooling ? sTestItemPool.acquire() : null;
     if (item == null) {
@@ -629,15 +628,15 @@ public class ComponentsPools {
       }
     }
 
-    PoolWithCount pool = null;
+    RecyclePool pool = null;
 
     synchronized (mountContentLock) {
-      SparseArray<PoolWithCount> poolsArray =
+      SparseArray<RecyclePool> poolsArray =
           sMountContentPoolsByContext.get(context);
       if (poolsArray != null) {
         pool = poolsArray.get(lifecycle.getId());
         if (pool == null) {
-          pool = new PoolWithCount(lifecycle.poolSize());
+          pool = new RecyclePool(lifecycle.poolSize(), true);
           poolsArray.put(lifecycle.getId(), pool);
         }
       }
@@ -656,14 +655,14 @@ public class ComponentsPools {
       return false;
     }
 
-    final SparseArray<PoolWithCount> poolsArray =
+    final SparseArray<RecyclePool> poolsArray =
         sMountContentPoolsByContext.get(context);
 
     if (poolsArray == null) {
       return true;
     }
 
-    final PoolWithCount pool = poolsArray.get(lifecycle.getId());
+    final RecyclePool pool = poolsArray.get(lifecycle.getId());
     return pool == null || !pool.isFull();
   }
 
@@ -811,7 +810,7 @@ public class ComponentsPools {
     sMountContentPoolsByContext.remove(context);
 
     // Clear any context wrappers holding a reference to this activity.
-    final Iterator<Map.Entry<Context, SparseArray<PoolWithCount>>> it =
+    final Iterator<Map.Entry<Context, SparseArray<RecyclePool>>> it =
         sMountContentPoolsByContext.entrySet().iterator();
 
     while (it.hasNext()) {
@@ -843,52 +842,6 @@ public class ComponentsPools {
     }
 
     return false;
-  }
-
-  /**
-   * A {@link android.support.v4.util.Pools.SimplePool} that keeps track of the number of items
-   * that have been added to the Pool.
-   */
-  private static class PoolWithCount extends Pools.SynchronizedPool {
-
-    private int mCount;
-    private final int mSize;
-
-    /**
-     * Creates a new instance.
-     *
-     * @param maxPoolSize The max pool size.
-     * @throws IllegalArgumentException If the max pool size is less than zero.
-     */
-    PoolWithCount(int maxPoolSize) {
-      super(maxPoolSize);
-      mSize = maxPoolSize;
-      mCount = 0;
-    }
-
-    @Override
-    public Object acquire() {
-      Object obj = super.acquire();
-      if (obj != null) {
-        mCount--;
-      }
-
-      return obj;
-    }
-
-    @Override
-    public boolean release(Object element) {
-      boolean inserted = super.release(element);
-      if (inserted) {
-        mCount++;
-      }
-
-      return inserted;
-    }
-
-    public boolean isFull() {
-      return mCount >= mSize;
-    }
   }
 
   public static DisplayListDrawable acquireDisplayListDrawable(
@@ -923,7 +876,7 @@ public class ComponentsPools {
 
   public static BorderColorDrawable acquireBorderColorDrawable() {
     if (sBorderColorDrawablePool == null) {
-      sBorderColorDrawablePool = new Pools.SynchronizedPool<>(10);
+      sBorderColorDrawablePool = new RecyclePool<>(10, true);
     }
     BorderColorDrawable drawable =
         ComponentsConfiguration.usePooling ? sBorderColorDrawablePool.acquire() : null;

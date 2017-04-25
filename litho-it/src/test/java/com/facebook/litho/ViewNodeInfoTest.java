@@ -10,7 +10,7 @@
 package com.facebook.litho;
 
 import android.graphics.Rect;
-import android.support.v4.util.Pools;
+
 
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 
@@ -29,12 +29,10 @@ import static junit.framework.Assert.fail;
 public class ViewNodeInfoTest {
 
   private ViewNodeInfo mViewNodeInfo;
-  private LayoutOutput mLayoutOutput;
 
   @Before
   public void setup() {
     mViewNodeInfo = ViewNodeInfo.acquire();
-    mLayoutOutput = new LayoutOutput();
   }
 
   @Test
@@ -85,7 +83,7 @@ public class ViewNodeInfoTest {
   }
 
   private static void clearViewNodeInfoPool() {
-    final Pools.SynchronizedPool<NodeInfo> viewNodeInfoPool =
+    final RecyclePool<NodeInfo> viewNodeInfoPool =
         Whitebox.getInternalState(ComponentsPools.class, "sViewNodeInfoPool");
 
     while (viewNodeInfoPool.acquire() != null) {

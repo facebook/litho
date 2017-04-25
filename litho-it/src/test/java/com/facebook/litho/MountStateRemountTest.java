@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.support.v4.util.LongSparseArray;
-import android.support.v4.util.Pools;
 
 import com.facebook.litho.testing.ComponentTestHelper;
 import com.facebook.litho.testing.TestComponent;
@@ -237,7 +236,7 @@ public class MountStateRemountTest {
   }
 
   private static void clearPool(String name) {
-    final Pools.SynchronizedPool<?> pool =
+    final RecyclePool<?> pool =
         Whitebox.getInternalState(ComponentsPools.class, name);
 
     while (pool.acquire() != null) {

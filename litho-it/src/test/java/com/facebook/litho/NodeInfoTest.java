@@ -9,7 +9,6 @@
 
 package com.facebook.litho;
 
-import android.support.v4.util.Pools;
 import android.util.SparseArray;
 
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
@@ -306,7 +305,7 @@ public class NodeInfoTest {
   }
 
   private static void clearNodeInfoPool() {
-    final Pools.SynchronizedPool<NodeInfo> nodeInfoPool =
+    final RecyclePool<NodeInfo> nodeInfoPool =
         Whitebox.getInternalState(ComponentsPools.class, "sNodeInfoPool");
 
     while (nodeInfoPool.acquire() != null) {

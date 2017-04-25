@@ -9,8 +9,6 @@
 
 package com.facebook.litho;
 
-import android.support.v4.util.Pools;
-
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.yoga.YogaAlign;
@@ -51,7 +49,7 @@ public class LayoutStateRecyclingTest {
 
   @Test
   public void testNodeRecycling() {
-    Pools.SynchronizedPool<InternalNode> internalNodePool = mock(Pools.SynchronizedPool.class);
+    RecyclePool<InternalNode> internalNodePool = mock(RecyclePool.class);
 
     Whitebox.setInternalState(
         ComponentsPools.class,
