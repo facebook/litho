@@ -25,7 +25,6 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.util.SimpleArrayMap;
 import android.support.v4.util.SparseArrayCompat;
 import android.util.SparseArray;
 
@@ -60,89 +59,89 @@ public class ComponentsPools {
   private static final Object mountContentLock = new Object();
 
   static final RecyclePool<LayoutState> sLayoutStatePool =
-      new RecyclePool<>(64, true);
+      new RecyclePool<>("LayoutState", 64, true);
 
   static final RecyclePool<InternalNode> sInternalNodePool =
-      new RecyclePool<>(256, true);
+      new RecyclePool<>("InternalNode", 256, true);
 
   static final RecyclePool<NodeInfo> sNodeInfoPool =
-      new RecyclePool<>(256, true);
+      new RecyclePool<>("NodeInfo", 256, true);
 
   static final RecyclePool<ViewNodeInfo> sViewNodeInfoPool =
-      new RecyclePool<>(64, true);
+      new RecyclePool<>("ViewNodeInfo", 64, true);
 
   static final RecyclePool<YogaNode> sYogaNodePool =
-      new RecyclePool<>(256, true);
+      new RecyclePool<>("YogaNode", 256, true);
 
   static final RecyclePool<MountItem> sMountItemPool =
-      new RecyclePool<>(256, true);
+      new RecyclePool<>("MountItem", 256, true);
 
   static final Map<Context, SparseArray<RecyclePool>> sMountContentPoolsByContext =
       new ConcurrentHashMap<>(4);
 
   static final RecyclePool<LayoutOutput> sLayoutOutputPool =
-      new RecyclePool<>(256, true);
+      new RecyclePool<>("LayoutOutput", 256, true);
 
   static final RecyclePool<VisibilityOutput> sVisibilityOutputPool =
-      new RecyclePool<>(64, true);
+      new RecyclePool<>("VisibilityOutput", 64, true);
 
   // These are lazily initialized as they are only needed when we're in a test environment.
   static RecyclePool<TestOutput> sTestOutputPool = null;
   static RecyclePool<TestItem> sTestItemPool = null;
 
   static final RecyclePool<VisibilityItem> sVisibilityItemPool =
-      new RecyclePool<>(64, true);
+      new RecyclePool<>("VisibilityItem", 64, true);
 
   static final RecyclePool<Output<?>> sOutputPool =
-      new RecyclePool<>(20, true);
+      new RecyclePool<>("Output", 20, true);
 
   static final RecyclePool<DiffNode> sDiffNodePool =
-      new RecyclePool<>(256, true);
+      new RecyclePool<>("DiffNode", 256, true);
 
   static final RecyclePool<Diff<?>> sDiffPool =
-      new RecyclePool<>(20, true);
+      new RecyclePool<>("Diff", 20, true);
 
   static final RecyclePool<ComponentTree.Builder> sComponentTreeBuilderPool =
-      new RecyclePool<>(2, true);
+      new RecyclePool<>("ComponentTree.Builder", 2, true);
 
   static final RecyclePool<StateHandler> sStateHandlerPool =
-      new RecyclePool<>(10, true);
+      new RecyclePool<>("StateHandler", 10, true);
 
   static final RecyclePool<SparseArrayCompat<MountItem>> sMountItemScrapArrayPool =
-      new RecyclePool<>(8, false);
+      new RecyclePool<>("MountItemScrapArray", 8, false);
 
   static final RecyclePool<SparseArrayCompat<Touchable>> sTouchableScrapArrayPool =
-      new RecyclePool<>(4, false);
+      new RecyclePool<>("TouchableScrapArray", 4, false);
 
   static final RecyclePool<RectF> sRectFPool =
-      new RecyclePool<>(4, true);
+      new RecyclePool<>("RectF", 4, true);
 
   static final RecyclePool<Rect> sRectPool =
-      new RecyclePool<>(30, true);
+      new RecyclePool<>("Rect", 30, true);
 
   static final RecyclePool<Edges> sEdgesPool =
-      new RecyclePool<>(30, true);
+      new RecyclePool<>("Edges", 30, true);
 
   static final RecyclePool<TransitionContext> sTransitionContextPool =
-      new RecyclePool<>(2, true);
+      new RecyclePool<>("TransitionContext", 2, true);
 
   static final RecyclePool<TransitionManager> sTransitionManagerPool =
-      new RecyclePool<>(2, false);
+      new RecyclePool<>("TransitionManager", 2, false);
 
   static final RecyclePool<DisplayListDrawable> sDisplayListDrawablePool =
-      new RecyclePool<>(10, false);
+      new RecyclePool<>("DisplayListDrawable", 10, false);
 
   static final RecyclePool<TreeProps> sTreePropsMapPool =
-      new RecyclePool<>(10, true);
+      new RecyclePool<>("TreeProps", 10, true);
 
   static final RecyclePool<ArraySet> sArraySetPool =
-      new RecyclePool<>(10, true);
+      new RecyclePool<>("ArraySet", 10, true);
 
   static final RecyclePool<ArrayDeque> sArrayDequePool =
-      new RecyclePool<>(10, true);
+      new RecyclePool<>("ArrayDeque", 10, true);
 
   static final RecyclePool<LogEvent> sLogEventPool =
-      new RecyclePool<>(10, true);
+      new RecyclePool<>("LogEvent", 10, true);
 
   // Lazily initialized when acquired first time, as this is not a common use case.
   static RecyclePool<BorderColorDrawable> sBorderColorDrawablePool = null;
@@ -328,7 +327,7 @@ public class ComponentsPools {
 
   static TestOutput acquireTestOutput() {
     if (sTestOutputPool == null) {
-      sTestOutputPool = new RecyclePool<>(64, true);
+      sTestOutputPool = new RecyclePool<>("TestOutput", 64, true);
     }
     TestOutput output = ComponentsConfiguration.usePooling ? sTestOutputPool.acquire() : null;
     if (output == null) {
@@ -340,7 +339,7 @@ public class ComponentsPools {
 
   static TestItem acquireTestItem() {
     if (sTestItemPool == null) {
-      sTestItemPool = new RecyclePool<>(64, true);
+      sTestItemPool = new RecyclePool<>("TestItem", 64, true);
     }
     TestItem item = ComponentsConfiguration.usePooling ? sTestItemPool.acquire() : null;
     if (item == null) {
@@ -636,7 +635,10 @@ public class ComponentsPools {
       if (poolsArray != null) {
         pool = poolsArray.get(lifecycle.getId());
         if (pool == null) {
-          pool = new RecyclePool(lifecycle.poolSize(), true);
+          pool = new RecyclePool(
+              "MountContent - " + lifecycle.getClass().getSimpleName(),
+              lifecycle.poolSize(),
+              true);
           poolsArray.put(lifecycle.getId(), pool);
         }
       }
@@ -876,7 +878,7 @@ public class ComponentsPools {
 
   public static BorderColorDrawable acquireBorderColorDrawable() {
     if (sBorderColorDrawablePool == null) {
-      sBorderColorDrawablePool = new RecyclePool<>(10, true);
+      sBorderColorDrawablePool = new RecyclePool<>("BorderColorDrawable", 10, true);
     }
     BorderColorDrawable drawable =
         ComponentsConfiguration.usePooling ? sBorderColorDrawablePool.acquire() : null;

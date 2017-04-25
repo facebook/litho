@@ -17,13 +17,15 @@ import android.support.v4.util.Pools;
  * pool sizes.
  */
 public class RecyclePool<T> {
+  private final String mName;
   private final int mMaxSize;
   private final boolean mIsSync;
+  private final Pools.Pool<T> mPool;
   private int mCurrentSize = 0;
-  private Pools.Pool<T> mPool;
 
-  public RecyclePool(int maxSize, boolean sync) {
+  public RecyclePool(String name, int maxSize, boolean sync) {
     mIsSync = sync;
+    mName = name;
     mMaxSize = maxSize;
     mPool = sync ? new Pools.SynchronizedPool<T>(maxSize) : new Pools.SimplePool<T>(maxSize);
   }
@@ -52,6 +54,10 @@ public class RecyclePool<T> {
       mPool.release(item);
       mCurrentSize = Math.min(mMaxSize, mCurrentSize + 1);
     }
+  }
+
+  public String getName() {
+    return mName;
   }
 
   public int getMaxSize() {
