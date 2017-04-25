@@ -59,93 +59,93 @@ public class ComponentsPools {
 
   private static final Object mountContentLock = new Object();
 
-  private static final RecyclePool<LayoutState> sLayoutStatePool =
+  static final RecyclePool<LayoutState> sLayoutStatePool =
       new RecyclePool<>(64, true);
 
-  private static final RecyclePool<InternalNode> sInternalNodePool =
+  static final RecyclePool<InternalNode> sInternalNodePool =
       new RecyclePool<>(256, true);
 
-  private static final RecyclePool<NodeInfo> sNodeInfoPool =
+  static final RecyclePool<NodeInfo> sNodeInfoPool =
       new RecyclePool<>(256, true);
 
-  private static final RecyclePool<ViewNodeInfo> sViewNodeInfoPool =
+  static final RecyclePool<ViewNodeInfo> sViewNodeInfoPool =
       new RecyclePool<>(64, true);
 
-  private static final RecyclePool<YogaNode> sYogaNodePool =
+  static final RecyclePool<YogaNode> sYogaNodePool =
       new RecyclePool<>(256, true);
 
-  private static final RecyclePool<MountItem> sMountItemPool =
+  static final RecyclePool<MountItem> sMountItemPool =
       new RecyclePool<>(256, true);
 
-  private static final Map<Context, SparseArray<RecyclePool>> sMountContentPoolsByContext =
+  static final Map<Context, SparseArray<RecyclePool>> sMountContentPoolsByContext =
       new ConcurrentHashMap<>(4);
 
-  private static final RecyclePool<LayoutOutput> sLayoutOutputPool =
+  static final RecyclePool<LayoutOutput> sLayoutOutputPool =
       new RecyclePool<>(256, true);
 
-  private static final RecyclePool<VisibilityOutput> sVisibilityOutputPool =
+  static final RecyclePool<VisibilityOutput> sVisibilityOutputPool =
       new RecyclePool<>(64, true);
 
   // These are lazily initialized as they are only needed when we're in a test environment.
-  private static RecyclePool<TestOutput> sTestOutputPool = null;
-  private static RecyclePool<TestItem> sTestItemPool = null;
+  static RecyclePool<TestOutput> sTestOutputPool = null;
+  static RecyclePool<TestItem> sTestItemPool = null;
 
-  private static final RecyclePool<VisibilityItem> sVisibilityItemPool =
+  static final RecyclePool<VisibilityItem> sVisibilityItemPool =
       new RecyclePool<>(64, true);
 
-  private static final RecyclePool<Output<?>> sOutputPool =
+  static final RecyclePool<Output<?>> sOutputPool =
       new RecyclePool<>(20, true);
 
-  private static final RecyclePool<DiffNode> sDiffNodePool =
+  static final RecyclePool<DiffNode> sDiffNodePool =
       new RecyclePool<>(256, true);
 
-  private static final RecyclePool<Diff<?>> sDiffPool =
+  static final RecyclePool<Diff<?>> sDiffPool =
       new RecyclePool<>(20, true);
 
-  private static final RecyclePool<ComponentTree.Builder> sComponentTreeBuilderPool =
+  static final RecyclePool<ComponentTree.Builder> sComponentTreeBuilderPool =
       new RecyclePool<>(2, true);
 
-  private static final RecyclePool<StateHandler> sStateHandlerPool =
+  static final RecyclePool<StateHandler> sStateHandlerPool =
       new RecyclePool<>(10, true);
 
-  private static final RecyclePool<SparseArrayCompat<MountItem>> sMountItemScrapArrayPool =
+  static final RecyclePool<SparseArrayCompat<MountItem>> sMountItemScrapArrayPool =
       new RecyclePool<>(8, false);
 
-  private static final RecyclePool<SparseArrayCompat<Touchable>> sTouchableScrapArrayPool =
+  static final RecyclePool<SparseArrayCompat<Touchable>> sTouchableScrapArrayPool =
       new RecyclePool<>(4, false);
 
-  private static final RecyclePool<RectF> sRectFPool =
+  static final RecyclePool<RectF> sRectFPool =
       new RecyclePool<>(4, true);
 
-  private static final RecyclePool<Rect> sRectPool =
+  static final RecyclePool<Rect> sRectPool =
       new RecyclePool<>(30, true);
 
-  private static final RecyclePool<Edges> sEdgesPool =
+  static final RecyclePool<Edges> sEdgesPool =
       new RecyclePool<>(30, true);
 
-  private static final RecyclePool<TransitionContext> sTransitionContextPool =
+  static final RecyclePool<TransitionContext> sTransitionContextPool =
       new RecyclePool<>(2, true);
 
-  private static final RecyclePool<TransitionManager> sTransitionManagerPool =
+  static final RecyclePool<TransitionManager> sTransitionManagerPool =
       new RecyclePool<>(2, false);
 
   static final RecyclePool<DisplayListDrawable> sDisplayListDrawablePool =
       new RecyclePool<>(10, false);
 
-  private static final RecyclePool<TreeProps> sTreePropsMapPool =
+  static final RecyclePool<TreeProps> sTreePropsMapPool =
       new RecyclePool<>(10, true);
 
-  private static final RecyclePool<ArraySet> sArraySetPool =
+  static final RecyclePool<ArraySet> sArraySetPool =
       new RecyclePool<>(10, true);
 
-  private static final RecyclePool<ArrayDeque> sArrayDequePool =
+  static final RecyclePool<ArrayDeque> sArrayDequePool =
       new RecyclePool<>(10, true);
 
-  private static final RecyclePool<LogEvent> sLogEventPool =
+  static final RecyclePool<LogEvent> sLogEventPool =
       new RecyclePool<>(10, true);
 
   // Lazily initialized when acquired first time, as this is not a common use case.
-  private static RecyclePool<BorderColorDrawable> sBorderColorDrawablePool = null;
+  static RecyclePool<BorderColorDrawable> sBorderColorDrawablePool = null;
 
   private static PoolsActivityCallback sActivityCallbacks;
 
