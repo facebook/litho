@@ -291,6 +291,16 @@ public class RecyclerBinder implements
                 null);
 
         mComponentTreeHolders.add(position + i, holder);
+
+        if (mRange == null && mIsMeasured.get()) {
+          initRange(
+              mMeasuredSize.width,
+              mMeasuredSize.height,
+              position,
+              getActualChildrenWidthSpec(holder),
+              getActualChildrenHeightSpec(holder),
+              mLayoutInfo.getScrollDirection());
+        }
       }
     }
     mInternalAdapter.notifyItemRangeInserted(position, componentInfos.size());
