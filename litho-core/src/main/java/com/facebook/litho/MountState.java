@@ -39,18 +39,18 @@ import static com.facebook.litho.Component.isHostSpec;
 import static com.facebook.litho.Component.isMountViewSpec;
 import static com.facebook.litho.ComponentHostUtils.maybeInvalidateAccessibilityState;
 import static com.facebook.litho.ComponentHostUtils.maybeSetDrawableState;
-import static com.facebook.litho.ComponentsLogger.ACTION_SUCCESS;
-import static com.facebook.litho.ComponentsLogger.EVENT_MOUNT;
-import static com.facebook.litho.ComponentsLogger.EVENT_PREPARE_MOUNT;
-import static com.facebook.litho.ComponentsLogger.EVENT_SHOULD_UPDATE_REFERENCE_LAYOUT_MISMATCH;
-import static com.facebook.litho.ComponentsLogger.PARAM_IS_DIRTY;
-import static com.facebook.litho.ComponentsLogger.PARAM_LOG_TAG;
-import static com.facebook.litho.ComponentsLogger.PARAM_MOUNTED_COUNT;
-import static com.facebook.litho.ComponentsLogger.PARAM_MOVED_COUNT;
-import static com.facebook.litho.ComponentsLogger.PARAM_NO_OP_COUNT;
-import static com.facebook.litho.ComponentsLogger.PARAM_UNCHANGED_COUNT;
-import static com.facebook.litho.ComponentsLogger.PARAM_UNMOUNTED_COUNT;
-import static com.facebook.litho.ComponentsLogger.PARAM_UPDATED_COUNT;
+import static com.facebook.litho.FrameworkLogEvents.EVENT_MOUNT;
+import static com.facebook.litho.FrameworkLogEvents.EVENT_PREPARE_MOUNT;
+import static com.facebook.litho.FrameworkLogEvents.EVENT_SHOULD_UPDATE_REFERENCE_LAYOUT_MISMATCH;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_DIRTY;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_LOG_TAG;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_MESSAGE;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_MOUNTED_COUNT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_MOVED_COUNT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_NO_OP_COUNT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_UNCHANGED_COUNT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_UNMOUNTED_COUNT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_UPDATED_COUNT;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 
 /**
@@ -159,8 +159,9 @@ class MountState {
     final ComponentTree componentTree = mLithoView.getComponentTree();
     final ComponentsLogger logger = componentTree.getContext().getLogger();
 
+    LogEvent mountEvent = null;
     if (logger != null) {
-      logger.eventStart(EVENT_MOUNT, componentTree);
+      mountEvent = logger.newPerformanceEvent(EVENT_MOUNT);
     }
 
     prepareTransitionManager(layoutState);
@@ -260,8 +261,13 @@ class MountState {
     mLastMountedComponentTreeId = componentTreeId;
 
     if (logger != null) {
-      final String logTag = componentTree.getContext().getLogTag();
-      logMountEnd(logger, logTag, componentTree, mMountStats);
+      mountEvent.addParam(PARAM_LOG_TAG, componentTree.getContext().getLogTag());
+      mountEvent.addParam(PARAM_MOUNTED_COUNT, String.valueOf(mMountStats.mountedCount));
+      mountEvent.addParam(PARAM_UNMOUNTED_COUNT, String.valueOf(mMountStats.unmountedCount));
+      mountEvent.addParam(PARAM_UPDATED_COUNT, String.valueOf(mMountStats.updatedCount));
+      mountEvent.addParam(PARAM_NO_OP_COUNT, String.valueOf(mMountStats.noOpCount));
+      mountEvent.addParam(PARAM_IS_DIRTY, String.valueOf(mIsDirty));
+      logger.log(mountEvent);
     }
 
     ComponentsSystrace.endSection();
@@ -566,7 +572,7 @@ class MountState {
             && currentLifecycle.shouldComponentUpdate(currentComponent, nextComponent)) {
 
           if (logger != null) {
-            ComponentsLogger.LayoutOutputLog logObj = new ComponentsLogger.LayoutOutputLog();
+            LayoutOutputLog logObj = new LayoutOutputLog();
 
             logObj.currentId = indexToItemMap.keyAt(
                 indexToItemMap.indexOfValue(currentMountItem));
@@ -600,9 +606,9 @@ class MountState {
               }
             }
 
-            logger.eventStart(EVENT_SHOULD_UPDATE_REFERENCE_LAYOUT_MISMATCH, logObj);
-            logger
-                .eventEnd(EVENT_SHOULD_UPDATE_REFERENCE_LAYOUT_MISMATCH, logObj, ACTION_SUCCESS);
+            final LogEvent mismatchEvent = logger.newEvent(EVENT_SHOULD_UPDATE_REFERENCE_LAYOUT_MISMATCH);
+            mismatchEvent.addParam(PARAM_MESSAGE, logObj.toString());
+            logger.log(mismatchEvent);
           }
 
           return true;
@@ -673,14 +679,18 @@ class MountState {
     final ComponentsLogger logger = component.getContext().getLogger();
     final String logTag = component.getContext().getLogTag();
 
+    LogEvent prepareEvent = null;
     if (logger != null) {
-      logger.eventStart(EVENT_PREPARE_MOUNT, component);
+      prepareEvent = logger.newPerformanceEvent(EVENT_PREPARE_MOUNT);
     }
 
     PrepareMountStats stats = unmountOrMoveOldItems(layoutState);
 
     if (logger != null) {
-      logPrepareMountParams(logger, logTag, component, stats);
+      prepareEvent.addParam(PARAM_LOG_TAG, logTag);
+      prepareEvent.addParam(PARAM_UNMOUNTED_COUNT, String.valueOf(stats.unmountedCount));
+      prepareEvent.addParam(PARAM_MOVED_COUNT, String.valueOf(stats.movedCount));
+      prepareEvent.addParam(PARAM_UNCHANGED_COUNT, String.valueOf(stats.unchangedCount));
     }
 
     if (mHostsByMarker.get(ROOT_HOST_ID) == null) {
@@ -701,7 +711,7 @@ class MountState {
     }
 
     if (logger != null) {
-      logger.eventEnd(EVENT_PREPARE_MOUNT, component, ACTION_SUCCESS);
+      logger.log(prepareEvent);
     }
   }
 
@@ -1690,69 +1700,6 @@ class MountState {
     return mIndexToItemMap.get(mLayoutOutputsIds[i]);
   }
 
-  private void logPrepareMountParams(
-      ComponentsLogger logger, String logTag, ComponentTree component, PrepareMountStats stats) {
-
-    logger.eventAddParam(
-        EVENT_PREPARE_MOUNT,
-        component,
-        PARAM_LOG_TAG,
-        logTag);
-    logger.eventAddParam(
-        EVENT_PREPARE_MOUNT,
-        component,
-        PARAM_UNMOUNTED_COUNT,
-        String.valueOf(stats.unmountedCount));
-    logger.eventAddParam(
-        EVENT_PREPARE_MOUNT,
-        component,
-        PARAM_MOVED_COUNT,
-        String.valueOf(stats.movedCount));
-    logger.eventAddParam(
-        EVENT_PREPARE_MOUNT,
-        component,
-        PARAM_UNCHANGED_COUNT,
-        String.valueOf(stats.unchangedCount));
-  }
-
-  private void logMountEnd(
-      ComponentsLogger logger,
-      String logTag,
-      ComponentTree component,
-      MountStats mountStats) {
-    logger.eventAddParam(
-        EVENT_MOUNT,
-        component,
-        PARAM_LOG_TAG,
-        logTag);
-    logger.eventAddParam(
-        EVENT_MOUNT,
-        component,
-        PARAM_MOUNTED_COUNT,
-        String.valueOf(mountStats.mountedCount));
-    logger.eventAddParam(
-        EVENT_MOUNT,
-        component,
-        PARAM_UNMOUNTED_COUNT,
-        String.valueOf(mountStats.unmountedCount));
-    logger.eventAddParam(
-        EVENT_MOUNT,
-        component,
-        PARAM_UPDATED_COUNT,
-        String.valueOf(mountStats.updatedCount));
-    logger.eventAddParam(
-        EVENT_MOUNT,
-        component,
-        PARAM_NO_OP_COUNT,
-        String.valueOf(mountStats.noOpCount));
-    logger.eventAddParam(
-        EVENT_MOUNT,
-        component,
-        PARAM_IS_DIRTY,
-        String.valueOf(mIsDirty));
-    logger.eventEnd(EVENT_MOUNT, component, ACTION_SUCCESS);
-  }
-
   private static class PrepareMountStats {
     private int unmountedCount = 0;
     private int movedCount = 0;
@@ -1997,5 +1944,27 @@ class MountState {
   private ComponentContext getContextForComponent(Component component) {
     final ComponentContext c = component.getScopedContext();
     return c == null ? mContext : c;
+  }
+
+  private static class LayoutOutputLog {
+
+    long currentId = -1;
+    String currentLifecycle;
+    int currentIndex = -1;
+    int currentLastDuplicatedIdIndex = -1;
+
+    long nextId = -1;
+    String nextLifecycle;
+    int nextIndex = -1;
+    int nextLastDuplicatedIdIndex = -1;
+
+    @Override
+    public String toString() {
+      return "id: [" + currentId + " - " + nextId + "], "
+          + "lifecycle: [" + currentLifecycle + " - " + nextLifecycle + "], "
+          + "index: [" + currentIndex + " - " + nextIndex + "], "
+          + "lastDuplicatedIdIndex: [" + currentLastDuplicatedIdIndex +
+          " - " + nextLastDuplicatedIdIndex + "]";
+    }
   }
 }

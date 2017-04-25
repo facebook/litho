@@ -28,12 +28,15 @@ import org.robolectric.RuntimeEnvironment;
 import static android.view.View.MeasureSpec.AT_MOST;
 import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
-import static com.facebook.litho.ComponentsLogger.EVENT_PREPARE_MOUNT;
-import static com.facebook.litho.ComponentsLogger.PARAM_MOVED_COUNT;
+import static com.facebook.litho.FrameworkLogEvents.EVENT_PREPARE_MOUNT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_MOVED_COUNT;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(ComponentsTestRunner.class)
 public class MountStateRemountInPlaceTest {
@@ -42,7 +45,10 @@ public class MountStateRemountInPlaceTest {
 
   @Before
   public void setup() {
-    mComponentsLogger = mock(ComponentsLogger.class);
+    mComponentsLogger = spy(new TestComponentsLogger());
+    when(mComponentsLogger.newEvent(any(int.class))).thenCallRealMethod();
+    when(mComponentsLogger.newPerformanceEvent(any(int.class))).thenCallRealMethod();
+
     mContext = new ComponentContext(RuntimeEnvironment.application, "tag", mComponentsLogger);
   }
 
@@ -662,10 +668,8 @@ public class MountStateRemountInPlaceTest {
     ComponentTestHelper.mountComponent(cv, tree);
     tree.setRoot(secondLayout);
 
-    verify(mComponentsLogger).eventAddParam(
-        EVENT_PREPARE_MOUNT,
-        tree,
-        PARAM_MOVED_COUNT,
-        "2");
+    final LogEvent event = mComponentsLogger.newPerformanceEvent(EVENT_PREPARE_MOUNT);
+    event.addParam(PARAM_MOVED_COUNT, "2");
+    verify(mComponentsLogger).log(eq(event));
   }
 }

@@ -35,6 +35,7 @@ import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.ComponentsLogger;
+import com.facebook.litho.LogEvent;
 import com.facebook.litho.Output;
 import com.facebook.litho.R;
 import com.facebook.litho.Size;
@@ -61,6 +62,8 @@ import com.facebook.yoga.YogaDirection;
 
 import static android.support.v4.widget.ExploreByTouchHelper.INVALID_ID;
 import static android.text.Layout.Alignment.ALIGN_NORMAL;
+import static com.facebook.litho.FrameworkLogEvents.EVENT_ERROR;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_MESSAGE;
 import static com.facebook.litho.SizeSpec.AT_MOST;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
@@ -381,7 +384,9 @@ class TextSpec {
 
       final ComponentsLogger logger = context.getLogger();
       if (logger != null) {
-        logger.softError("Text layout measured to less than 0 pixels");
+        final LogEvent event = logger.newEvent(EVENT_ERROR);
+        event.addParam(PARAM_MESSAGE, "Text layout measured to less than 0 pixels");
+        logger.log(event);
       }
     }
 

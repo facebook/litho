@@ -30,9 +30,9 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.robolectric.RuntimeEnvironment;
 
-import static com.facebook.litho.ComponentsLogger.EVENT_MOUNT;
-import static com.facebook.litho.ComponentsLogger.PARAM_MOUNTED_COUNT;
-import static com.facebook.litho.ComponentsLogger.PARAM_UNMOUNTED_COUNT;
+import static com.facebook.litho.FrameworkLogEvents.EVENT_MOUNT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_MOUNTED_COUNT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_UNMOUNTED_COUNT;
 import static com.facebook.yoga.YogaEdge.ALL;
 import static com.facebook.yoga.YogaEdge.LEFT;
 import static com.facebook.yoga.YogaEdge.TOP;
@@ -46,6 +46,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -56,7 +57,10 @@ public class MountStateIncrementalMountTest {
 
   @Before
   public void setup() {
-    mComponentsLogger = mock(ComponentsLogger.class);
+    mComponentsLogger = spy(new TestComponentsLogger());
+    when(mComponentsLogger.newEvent(any(int.class))).thenCallRealMethod();
+    when(mComponentsLogger.newPerformanceEvent(any(int.class))).thenCallRealMethod();
+
     mContext = new ComponentContext(RuntimeEnvironment.application, "tag", mComponentsLogger);
   }
 
@@ -565,17 +569,11 @@ public class MountStateIncrementalMountTest {
   }
 
   private void verifyLoggingAndResetLogger(int mountedCount, int unmountedCount) {
-    verify(mComponentsLogger).eventAddParam(
-        eq(EVENT_MOUNT),
-        any(ComponentTree.class),
-        eq(PARAM_MOUNTED_COUNT),
-        eq(String.valueOf(mountedCount)));
-    verify(mComponentsLogger).eventAddParam(
-        eq(EVENT_MOUNT),
-        any(ComponentTree.class),
-        eq(PARAM_UNMOUNTED_COUNT),
-        eq(String.valueOf(unmountedCount)));
+    final LogEvent event = mComponentsLogger.newPerformanceEvent(EVENT_MOUNT);
+    event.addParam(PARAM_MOUNTED_COUNT, String.valueOf(mountedCount));
+    event.addParam(PARAM_UNMOUNTED_COUNT, String.valueOf(unmountedCount));
 
+    verify(mComponentsLogger).log(eq(event));
     reset(mComponentsLogger);
   }
 

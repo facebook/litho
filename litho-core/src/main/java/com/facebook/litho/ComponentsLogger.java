@@ -10,65 +10,26 @@
 package com.facebook.litho;
 
 /**
- * An interface for logging life-cycle events in components.
+ * An interface for logging events and performance events in litho as well as in user defined
+ * components. The ComponentsLogger is set on the {@link ComponentContext}.
+ * See {@link FrameworkLogEvents} for a list of events and parameters
+ * logged internally by litho.
  */
 public interface ComponentsLogger {
 
-  int EVENT_CREATE_LAYOUT = 0;
-  int EVENT_CSS_LAYOUT = 1;
-  int EVENT_COLLECT_RESULTS = 2;
-  int EVENT_LAYOUT_CALCULATE = 3;
-  int EVENT_PREPARE_PART_DEFINITION = 4;
-  int EVENT_PREPARE_MOUNT = 5;
-  int EVENT_MOUNT = 6;
-  int EVENT_SHOULD_UPDATE_REFERENCE_LAYOUT_MISMATCH = 8;
-  int EVENT_PRE_ALLOCATE_MOUNT_CONTENT = 9;
-  int EVENT_STETHO_UPDATE_COMPONENT = 10;
-  int EVENT_STETHO_INSPECT_COMPONENT = 11;
+  /**
+   * Create a new event with the given event id.
+   */
+  LogEvent newEvent(int eventId);
 
-  int ACTION_SUCCESS = 1 << 4;
-  int ACTION_FAIL = 1 << 5;
+  /**
+   * Create a new performance event with the given event id and start counting the time.
+   */
+  LogEvent newPerformanceEvent(int eventId);
 
-  String PARAM_LOG_TAG = "log_tag";
-  String PARAM_TREE_DIFF_ENABLED = "tree_diff_enabled";
-  String PARAM_IS_ASYNC_PREPARE = "is_async_prepare";
-  String PARAM_IS_BACKGROUND_LAYOUT = "is_background_layout";
-  String PARAM_IS_BACKGROUND_LAYOUT_ENABLED = "is_background_layout_enabled";
-  String PARAM_UNMOUNTED_COUNT = "unmounted_count";
-  String PARAM_MOVED_COUNT = "moved_count";
-  String PARAM_UNCHANGED_COUNT = "unchanged_count";
-  String PARAM_MOUNTED_COUNT = "mounted_count";
-  String PARAM_UPDATED_COUNT = "updated_count";
-  String PARAM_NO_OP_COUNT = "no_op_count";
-  String PARAM_IS_DIRTY = "is_dirty";
-
-  void eventStart(int eventId, Object object);
-  void eventStart(int eventId, Object object, String key, String value);
-  void eventEnd(int eventId, Object object, int actionId);
-  void eventCancel(int eventId, Object object);
-  void eventAddParam(int eventId, Object object, String key, String value);
-  void eventAddTag(int eventId, Object object, String tag);
-  void softError(String message);
-
-  class LayoutOutputLog {
-
-    long currentId = -1;
-    String currentLifecycle;
-    int currentIndex = -1;
-    int currentLastDuplicatedIdIndex = -1;
-
-    long nextId = -1;
-    String nextLifecycle;
-    int nextIndex = -1;
-    int nextLastDuplicatedIdIndex = -1;
-
-    @Override
-    public String toString() {
-      return "id: [" + currentId + " - " + nextId + "], "
-          + "lifecycle: [" + currentLifecycle + " - " + nextLifecycle + "], "
-          + "index: [" + currentIndex + " - " + nextIndex + "], "
-          + "lastDuplicatedIdIndex: [" + currentLastDuplicatedIdIndex +
-          " - " + nextLastDuplicatedIdIndex + "]";
-    }
-  }
+  /**
+   * Log an event. Events are recycled and should not be used once logged. If the logged event is
+   * a performance event it will stop counting the time.
+   */
+  void log(LogEvent event);
 }

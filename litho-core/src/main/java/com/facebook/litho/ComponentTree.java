@@ -30,7 +30,6 @@ import android.support.annotation.IntDef;
 import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.UiThread;
 import android.support.annotation.VisibleForTesting;
 import android.view.View;
 import android.view.ViewParent;
@@ -40,12 +39,11 @@ import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 
 import static com.facebook.litho.ComponentLifecycle.StateUpdate;
-import static com.facebook.litho.ComponentsLogger.ACTION_SUCCESS;
-import static com.facebook.litho.ComponentsLogger.EVENT_LAYOUT_CALCULATE;
-import static com.facebook.litho.ComponentsLogger.EVENT_PRE_ALLOCATE_MOUNT_CONTENT;
-import static com.facebook.litho.ComponentsLogger.PARAM_IS_BACKGROUND_LAYOUT;
-import static com.facebook.litho.ComponentsLogger.PARAM_LOG_TAG;
-import static com.facebook.litho.ComponentsLogger.PARAM_TREE_DIFF_ENABLED;
+import static com.facebook.litho.FrameworkLogEvents.EVENT_LAYOUT_CALCULATE;
+import static com.facebook.litho.FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CONTENT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_BACKGROUND_LAYOUT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_LOG_TAG;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_TREE_DIFF_ENABLED;
 import static com.facebook.litho.ThreadUtils.assertHoldsLock;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 import static com.facebook.litho.ThreadUtils.isMainThread;
@@ -657,9 +655,18 @@ public class ComponentTree {
       }
     }
 
-    logPreAllocationStart();
+    final ComponentsLogger logger = mContext.getLogger();
+    LogEvent event = null;
+    if (logger != null) {
+      event = logger.newPerformanceEvent(EVENT_PRE_ALLOCATE_MOUNT_CONTENT);
+      event.addParam(PARAM_LOG_TAG, mContext.getLogTag());
+    }
+
     toPrePopulate.preAllocateMountContent();
-    logPreAllocationFinish();
+
+    if (logger != null) {
+      logger.log(event);
+    }
 
     toPrePopulate.releaseRef();
   }
@@ -987,7 +994,14 @@ public class ComponentTree {
       }
     }
 
-    logLayoutCalculationStart(root);
+    final ComponentsLogger logger = mContext.getLogger();
+    LogEvent layoutEvent = null;
+    if (logger != null) {
+      layoutEvent = logger.newPerformanceEvent(EVENT_LAYOUT_CALCULATE);
+      layoutEvent.addParam(PARAM_LOG_TAG, mContext.getLogTag());
+      layoutEvent.addParam(PARAM_TREE_DIFF_ENABLED, String.valueOf(mIsLayoutDiffingEnabled));
+      layoutEvent.addParam(PARAM_IS_BACKGROUND_LAYOUT, String.valueOf(!ThreadUtils.isMainThread()));
+    }
 
     LayoutState localLayoutState = calculateLayoutState(
         mLayoutLock,
@@ -1044,50 +1058,8 @@ public class ComponentTree {
       postBackgroundLayoutStateUpdated();
     }
 
-    logLayoutCalculationFinish(root);
-  }
-
-  private void logPreAllocationStart() {
-    final ComponentsLogger logger = mContext.getLogger();
     if (logger != null) {
-      logger.eventStart(
-          EVENT_PRE_ALLOCATE_MOUNT_CONTENT,
-          this,
-          PARAM_LOG_TAG,
-          mContext.getLogTag());
-    }
-  }
-
-  private void logPreAllocationFinish() {
-    final ComponentsLogger logger = mContext.getLogger();
-    if (logger != null) {
-      logger.eventEnd(EVENT_PRE_ALLOCATE_MOUNT_CONTENT, this, ACTION_SUCCESS);
-    }
-  }
-
-  private void logLayoutCalculationStart(Component<?> root) {
-    final ComponentsLogger logger = mContext.getLogger();
-    if (logger == null) {
-      return;
-    }
-
-    logger.eventStart(EVENT_LAYOUT_CALCULATE, root, PARAM_LOG_TAG, mContext.getLogTag());
-    logger.eventAddParam(
-        EVENT_LAYOUT_CALCULATE,
-        root,
-        PARAM_TREE_DIFF_ENABLED,
-        String.valueOf(mIsLayoutDiffingEnabled));
-    logger.eventAddParam(
-        EVENT_LAYOUT_CALCULATE,
-        root,
-        PARAM_IS_BACKGROUND_LAYOUT,
-        String.valueOf(!ThreadUtils.isMainThread()));
-  }
-
-  private void logLayoutCalculationFinish(Component<?> root) {
-    final ComponentsLogger logger = mContext.getLogger();
-    if (logger != null) {
-      logger.eventEnd(EVENT_LAYOUT_CALCULATE, root, ACTION_SUCCESS);
+      logger.log(layoutEvent);
     }
   }
 

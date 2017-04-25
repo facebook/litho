@@ -142,6 +142,9 @@ public class ComponentsPools {
   private static final Pools.SynchronizedPool<ArrayDeque> sArrayDequePool =
       new Pools.SynchronizedPool<>(10);
 
+  private static final Pools.SynchronizedPool<LogEvent> sLogEventPool =
+      new Pools.SynchronizedPool<>(10);
+
   // Lazily initialized when acquired first time, as this is not a common use case.
   private static Pools.Pool<BorderColorDrawable> sBorderColorDrawablePool = null;
 
@@ -431,6 +434,16 @@ public class ComponentsPools {
     }
 
     return treeProps;
+  }
+
+  public static LogEvent acquireLogEvent(int eventId) {
+    LogEvent event = ComponentsConfiguration.usePooling ? sLogEventPool.acquire() : null;
+    if (event == null) {
+      event = new LogEvent();
+    }
+
+    event.setEventId(eventId);
+    return event;
   }
 
   //TODO t16407516 shb: change all "enableChecks = false" here to @TakesOwnership
@@ -961,5 +974,14 @@ public class ComponentsPools {
     }
     deque.clear();
     sArrayDequePool.release(deque);
+  }
+
+  @ThreadSafe(enableChecks = false)
+  public static void release(LogEvent event) {
+    if (!ComponentsConfiguration.usePooling) {
+      return;
+    }
+    event.reset();
+    sLogEventPool.release(event);
   }
 }

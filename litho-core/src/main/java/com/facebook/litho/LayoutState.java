@@ -58,12 +58,12 @@ import static com.facebook.litho.Component.isMountSpec;
 import static com.facebook.litho.Component.isMountViewSpec;
 import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
 import static com.facebook.litho.ComponentLifecycle.MountType.NONE;
-import static com.facebook.litho.ComponentsLogger.ACTION_SUCCESS;
-import static com.facebook.litho.ComponentsLogger.EVENT_COLLECT_RESULTS;
-import static com.facebook.litho.ComponentsLogger.EVENT_CREATE_LAYOUT;
-import static com.facebook.litho.ComponentsLogger.EVENT_CSS_LAYOUT;
-import static com.facebook.litho.ComponentsLogger.PARAM_LOG_TAG;
-import static com.facebook.litho.ComponentsLogger.PARAM_TREE_DIFF_ENABLED;
+import static com.facebook.litho.FrameworkLogEvents.EVENT_COLLECT_RESULTS;
+import static com.facebook.litho.FrameworkLogEvents.EVENT_CREATE_LAYOUT;
+import static com.facebook.litho.FrameworkLogEvents.EVENT_CSS_LAYOUT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_COMPONENT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_LOG_TAG;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_TREE_DIFF_ENABLED;
 import static com.facebook.litho.MountItem.FLAG_DUPLICATE_PARENT_STATE;
 import static com.facebook.litho.MountState.ROOT_HOST_ID;
 import static com.facebook.litho.NodeInfo.FOCUS_SET_TRUE;
@@ -951,14 +951,16 @@ class LayoutState {
     layoutState.mLayoutRoot = root;
 
     ComponentsSystrace.beginSection("collectResults:" + component.getSimpleName());
+    LogEvent collectResultsEvent = null;
     if (logger != null) {
-      logger.eventStart(EVENT_COLLECT_RESULTS, component, PARAM_LOG_TAG, c.getLogTag());
+      collectResultsEvent = logger.newPerformanceEvent(EVENT_COLLECT_RESULTS);
+      collectResultsEvent.addParam(PARAM_LOG_TAG, c.getLogTag());
     }
 
     collectResults(root, layoutState, null);
 
     if (logger != null) {
-      logger.eventEnd(EVENT_COLLECT_RESULTS, component, ACTION_SUCCESS);
+      logger.log(collectResultsEvent);
     }
     ComponentsSystrace.endSection();
 
@@ -1146,9 +1148,11 @@ class LayoutState {
       ComponentContext context) {
     final ComponentsLogger logger = context.getLogger();
 
+    LogEvent createLayoutEvent = null;
     if (logger != null) {
-      logger.eventStart(EVENT_CREATE_LAYOUT, context, PARAM_LOG_TAG, context.getLogTag());
-      logger.eventAddTag(EVENT_CREATE_LAYOUT, context, component.getSimpleName());
+      createLayoutEvent = logger.newPerformanceEvent(EVENT_CREATE_LAYOUT);
+      createLayoutEvent.addParam(PARAM_LOG_TAG, context.getLogTag());
+      createLayoutEvent.addParam(PARAM_COMPONENT, component.getSimpleName());
     }
 
     final InternalNode root = (InternalNode) component.getLifecycle().createLayout(
@@ -1157,7 +1161,7 @@ class LayoutState {
         true /* resolveNestedTree */);
 
     if (logger != null) {
-      logger.eventEnd(EVENT_CREATE_LAYOUT, context, ACTION_SUCCESS);
+      logger.log(createLayoutEvent);
     }
 
     return root;
@@ -1187,13 +1191,11 @@ class LayoutState {
     }
 
     final ComponentsLogger logger = context.getLogger();
+    LogEvent layoutEvent = null;
     if (logger != null) {
-      logger.eventStart(EVENT_CSS_LAYOUT, component, PARAM_LOG_TAG, context.getLogTag());
-      logger.eventAddParam(
-          EVENT_CSS_LAYOUT,
-          component,
-          PARAM_TREE_DIFF_ENABLED,
-          String.valueOf(previousDiffTreeRoot != null));
+      layoutEvent = logger.newPerformanceEvent(EVENT_CSS_LAYOUT);
+      layoutEvent.addParam(PARAM_LOG_TAG, context.getLogTag());
+      layoutEvent.addParam(PARAM_TREE_DIFF_ENABLED, String.valueOf(previousDiffTreeRoot != null));
     }
 
     root.calculateLayout(
@@ -1205,7 +1207,7 @@ class LayoutState {
             : SizeSpec.getSize(heightSpec));
 
     if (logger != null) {
-      logger.eventEnd(EVENT_CSS_LAYOUT, component, ACTION_SUCCESS);
+      logger.log(layoutEvent);
     }
     ComponentsSystrace.endSection(/* measureTree */);
   }

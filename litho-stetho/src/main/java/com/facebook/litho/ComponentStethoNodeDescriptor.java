@@ -23,6 +23,9 @@ import com.facebook.stetho.inspector.elements.StyleRuleNameAccumulator;
 import com.facebook.stetho.inspector.elements.AttributeAccumulator;
 import com.facebook.stetho.inspector.elements.android.HighlightableDescriptor;
 
+import static com.facebook.litho.FrameworkLogEvents.EVENT_STETHO_INSPECT_COMPONENT;
+import static com.facebook.litho.FrameworkLogEvents.EVENT_STETHO_UPDATE_COMPONENT;
+
 public final class ComponentStethoNodeDescriptor
     extends AbstractChainedDescriptor<ComponentStethoNode>
     implements HighlightableDescriptor<ComponentStethoNode> {
@@ -161,7 +164,7 @@ public final class ComponentStethoNodeDescriptor
 
     // This method is called once a node is inspected and not during tree creation like many of the
     // other lifecycle methods.
-    logInspected(element, element.node.getContext());
+    logInspected(element.node.getContext());
   }
 
   @Override
@@ -241,37 +244,29 @@ public final class ComponentStethoNodeDescriptor
     if ("layout".equals(ruleName)) {
       stethoManager.setStyleOverride(element, name, value);
       view.forceRelayout();
-      logStyleUpdate(element, context);
+      logStyleUpdate(context);
     } else if ("props".equals(ruleName)) {
       stethoManager.setPropOverride(element, name, value);
       view.forceRelayout();
-      logStyleUpdate(element, context);
+      logStyleUpdate(context);
     } else if ("state".equals(ruleName)) {
       stethoManager.setStateOverride(element, name, value);
       view.forceRelayout();
-      logStyleUpdate(element, context);
+      logStyleUpdate(context);
     }
   }
 
-  private void logStyleUpdate(ComponentStethoNode element, ComponentContext context) {
+  private void logStyleUpdate(ComponentContext context) {
     final ComponentsLogger logger = context.getLogger();
     if (logger != null) {
-      logger.eventStart(ComponentsLogger.EVENT_STETHO_UPDATE_COMPONENT, element);
-      logger.eventEnd(
-          ComponentsLogger.EVENT_STETHO_UPDATE_COMPONENT,
-          element,
-          ComponentsLogger.ACTION_SUCCESS);
+      logger.log(logger.newEvent(EVENT_STETHO_UPDATE_COMPONENT));
     }
   }
 
-  private void logInspected(ComponentStethoNode element, ComponentContext context) {
+  private void logInspected(ComponentContext context) {
     final ComponentsLogger logger = context.getLogger();
     if (logger != null) {
-      logger.eventStart(ComponentsLogger.EVENT_STETHO_INSPECT_COMPONENT, element);
-      logger.eventEnd(
-          ComponentsLogger.EVENT_STETHO_INSPECT_COMPONENT,
-          element,
-          ComponentsLogger.ACTION_SUCCESS);
+      logger.log(logger.newEvent(EVENT_STETHO_INSPECT_COMPONENT));
     }
   }
 
