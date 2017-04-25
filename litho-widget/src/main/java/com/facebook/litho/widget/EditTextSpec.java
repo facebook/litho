@@ -359,7 +359,9 @@ class EditTextSpec {
       int inputType) {
 
     // Needs to be set before min/max lines.
-    editText.setInputType(inputType);
+    if (inputType != editText.getInputType()) {
+      editText.setInputType(inputType);
+    }
 
     // If it's the same text, don't set it again so that the caret won't move to the beginning or
     // end of the string. Only looking at String instances in order to avoid span comparisons.
