@@ -19,6 +19,7 @@ public class ChoreographerTimingSource implements TimingSource {
   private DataFlowGraph mDataFlowGraph;
   private boolean mIsRunning = false;
   private boolean mHasPostedFrameCallback = false;
+  private long mLastFrameTime = Long.MIN_VALUE;
 
   public ChoreographerTimingSource() {
     mChoreographerCompat = ChoreographerCompat.getInstance();
@@ -73,7 +74,12 @@ public class ChoreographerTimingSource implements TimingSource {
       return;
     }
 
-    mDataFlowGraph.doFrame(frameTimeNanos);
+    // Sometimes Choreographer can call doFrame multiple times with the same frame time, especially
+    // in the case of skipped frames. De-bounce it here.
+    if (mLastFrameTime != frameTimeNanos) {
+      mDataFlowGraph.doFrame(frameTimeNanos);
+      mLastFrameTime = frameTimeNanos;
+    }
 
     if (mIsRunning) {
       postFrameCallback();
