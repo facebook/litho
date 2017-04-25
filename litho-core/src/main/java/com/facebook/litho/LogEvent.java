@@ -19,7 +19,7 @@ import android.support.v4.util.SimpleArrayMap;
  * re-used.
  */
 public final class LogEvent {
-  private SimpleArrayMap<String, String> mParams = new SimpleArrayMap<>();
+  private SimpleArrayMap<String, Object> mParams = new SimpleArrayMap<>();
   private int mEventId = -1;
   private boolean mIsPerformanceEvent = false;
 
@@ -47,7 +47,7 @@ public final class LogEvent {
     return mIsPerformanceEvent;
   }
 
-  public void addParam(String key, String value) {
+  public void addParam(String key, Object value) {
     mParams.put(key, value);
   }
 
@@ -59,12 +59,12 @@ public final class LogEvent {
     return mParams.keyAt(index);
   }
 
-  public String getParamValueAt(int index) {
-    return mParams.valueAt(index);
+  public <T> T getParamValueAt(int index) {
+    return (T) mParams.valueAt(index);
   }
 
-  public String getParam(String paramMessage) {
-    return mParams.get(paramMessage);
+  public <T> T getParam(String paramMessage) {
+    return (T) mParams.get(paramMessage);
   }
 
   @Override
