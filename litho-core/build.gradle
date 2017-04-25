@@ -11,10 +11,6 @@ android {
     // We're on an old version of Robolectric which requires this, sadly.
     useLibrary 'org.apache.http.legacy'
 
-    // See http://tools.android.com/tech-docs/new-build-system/user-guide.
-    // We want to enable Stetho by default for builds from this repo.
-    defaultPublishConfig 'internalBuild'
-
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
     }
@@ -23,10 +19,6 @@ android {
         def internalBuildField = 'IS_INTERNAL_BUILD'
 
         debug {
-            buildConfigField 'boolean', internalBuildField, 'true';
-        }
-
-        internalBuild {
             buildConfigField 'boolean', internalBuildField, 'true';
         }
 

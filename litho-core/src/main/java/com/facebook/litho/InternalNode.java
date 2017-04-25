@@ -1498,7 +1498,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
    * the hierarchy of components in the debugger as well as in stetho.
    */
   void appendComponent(Component component) {
-    if (mComponents.size() == 0 || ComponentsConfiguration.IS_INTERNAL_BUILD) {
+    if (mComponents.size() == 0 || ComponentsConfiguration.isStethoEnabled) {
       mComponents.add(component);
     }
   }

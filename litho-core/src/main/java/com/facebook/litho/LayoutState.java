@@ -962,7 +962,7 @@ class LayoutState {
     }
     ComponentsSystrace.endSection();
 
-    if (!ComponentsConfiguration.IS_INTERNAL_BUILD && layoutState.mLayoutRoot != null) {
+    if (!ComponentsConfiguration.isStethoEnabled && layoutState.mLayoutRoot != null) {
       releaseNodeTree(layoutState.mLayoutRoot, false /* isNestedTree */);
       layoutState.mLayoutRoot = null;
     }

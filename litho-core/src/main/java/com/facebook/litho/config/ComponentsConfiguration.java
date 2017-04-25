@@ -27,6 +27,11 @@ public class ComponentsConfiguration {
   public static final boolean IS_INTERNAL_BUILD = BuildConfig.IS_INTERNAL_BUILD;
 
   /**
+   * Option to enabled stetho debugging.
+   */
+  public static boolean isStethoEnabled = false;
+
+  /**
    * Debug option to highlight interactive areas in mounted components.
    */
   public static boolean debugHighlightInteractiveBounds = false;

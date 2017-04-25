@@ -11,6 +11,7 @@ package com.facebook.litho;
 
 import android.app.Application;
 
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.stetho.InspectorModulesProvider;
 import com.facebook.stetho.Stetho;
 import com.facebook.stetho.inspector.elements.DescriptorProvider;
@@ -28,6 +29,8 @@ public class LithoWebKitInspector implements InspectorModulesProvider {
 
   @Override
   public Iterable<ChromeDevtoolsDomain> get() {
+    ComponentsConfiguration.isStethoEnabled = true;
+
     final Stetho.DefaultInspectorModulesBuilder defaultModulesBuilder =
         new Stetho.DefaultInspectorModulesBuilder(mApplication);
 
