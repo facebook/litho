@@ -47,7 +47,7 @@ This will create the simplest possible `RecyclerBinder` that will layout the con
 To have `Recycler` use a grid layout we can use this constructor instead:
 
 ``` java
-final RecyclerBinder recyclerBinder = new RecyclerBinder(c, new GridLayoutInfo(c, spanCount);
+final RecyclerBinder recyclerBinder = new RecyclerBinder(c, new GridLayoutInfo(c, spanCount));
 ```
 
 `RecyclerBinder` exposes a set of APIs to manipulate the items that will be displayed in the `Recycler`.
