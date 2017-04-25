@@ -190,14 +190,6 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   void init(YogaNode yogaNode, ComponentContext componentContext, Resources resources) {
     yogaNode.setData(this);
-    yogaNode.setOverflow(YogaOverflow.HIDDEN);
-    yogaNode.setMeasureFunction(null);
-
-    // YogaNode is the only version of YogaNode with this support;
-    if (yogaNode instanceof YogaNode) {
-      yogaNode.setBaselineFunction(null);
-    }
-
     mYogaNode = yogaNode;
 
     mComponentContext = componentContext;
@@ -915,12 +907,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Override
   public InternalNode aspectRatio(float aspectRatio) {
     mPrivateFlags |= PFLAG_ASPECT_RATIO_IS_SET;
-    if (mYogaNode instanceof YogaNode) {
-      mYogaNode.setAspectRatio(aspectRatio);
-      return this;
-    } else {
-      throw new IllegalStateException("Aspect ration requires using YogaNode not YogaNodeDEPRECATED");
-    }
+    mYogaNode.setAspectRatio(aspectRatio);
+    return this;
   }
 
   private boolean shouldApplyTouchExpansion() {
@@ -1341,10 +1329,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   void setBaselineFunction(YogaBaselineFunction baselineFunction) {
-    // YogaNode is the only version of YogaNode with this support;
-    if (mYogaNode instanceof YogaNode) {
-      mYogaNode.setBaselineFunction(baselineFunction);
-    }
+    mYogaNode.setBaselineFunction(baselineFunction);
   }
 
   boolean hasNewLayout() {
