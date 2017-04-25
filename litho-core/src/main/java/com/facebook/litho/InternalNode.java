@@ -247,6 +247,70 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return (int) mResolvedHeight;
   }
 
+  private class InternalLayoutFrozen implements ComponentLayout {
+
+    private int x, y, width, height;
+    private int paddingTop, paddingRight, paddingBottom, paddingLeft;
+    private YogaDirection resolvedLayoutDirection;
+
+    InternalLayoutFrozen(InternalNode node) {
+      this.x = node.getX();
+      this.y = node.getY();
+      this.height = node.getHeight();
+      this.width = node.getWidth();
+      this.paddingBottom = node.getPaddingBottom();
+      this.paddingTop = node.getPaddingTop();
+      this.paddingLeft = node.getPaddingLeft();
+      this.paddingRight = node.getPaddingRight();
+      this.resolvedLayoutDirection = node.getResolvedLayoutDirection();
+    }
+
+    @Override
+    public int getX() {
+      return x;
+    }
+
+    @Override
+    public int getY() {
+      return y;
+    }
+
+    @Override
+    public int getWidth() {
+      return width;
+    }
+
+    @Override
+    public int getHeight() {
+      return height;
+    }
+
+    @Override
+    public int getPaddingTop() {
+      return paddingTop;
+    }
+
+    @Override
+    public int getPaddingRight() {
+      return paddingRight;
+    }
+
+    @Override
+    public int getPaddingBottom() {
+      return paddingBottom;
+    }
+
+    @Override
+    public int getPaddingLeft() {
+      return paddingLeft;
+    }
+
+    @Override
+    public YogaDirection getResolvedLayoutDirection() {
+      return resolvedLayoutDirection;
+    }
+  }
+
   @Px
   @Override
   public int getPaddingLeft() {
@@ -1448,7 +1512,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public ComponentLayout build() {
-    return this;
+    return new InternalLayoutFrozen(this);
   }
 
   private float resolveHorizontalEdges(Edges spacing, YogaEdge edge) {
