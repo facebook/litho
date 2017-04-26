@@ -314,13 +314,16 @@ public class ComponentsPools {
     return output;
   }
 
-  static VisibilityItem acquireVisibilityItem(EventHandler invisibleHandler) {
+  static VisibilityItem acquireVisibilityItem(
+      EventHandler invisibleHandler,
+      EventHandler unfocusedHandler) {
     VisibilityItem item = ComponentsConfiguration.usePooling ? sVisibilityItemPool.acquire() : null;
     if (item == null) {
       item = new VisibilityItem();
     }
 
     item.setInvisibleHandler(invisibleHandler);
+    item.setUnfocusedHandler(unfocusedHandler);
 
     return item;
   }

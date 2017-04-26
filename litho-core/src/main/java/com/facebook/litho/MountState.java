@@ -297,7 +297,8 @@ class MountState {
       if (isCurrentlyVisible) {
         // The component is visible now, but used to be outside the viewport.
         if (visibilityItem == null) {
-          visibilityItem = ComponentsPools.acquireVisibilityItem(invisibleHandler);
+          visibilityItem =
+              ComponentsPools.acquireVisibilityItem(invisibleHandler, unfocusedHandler);
           mVisibilityIdToItemMap.put(visibilityOutputId, visibilityItem);
 
           if (visibleHandler != null) {
@@ -341,6 +342,11 @@ class MountState {
         // The component is invisible now, but used to be visible.
         if (invisibleHandler != null) {
           EventDispatcherUtils.dispatchOnInvisible(invisibleHandler);
+        }
+
+        if (unfocusedHandler != null) {
+          visibilityItem.setFocusedRange(false);
+          EventDispatcherUtils.dispatchOnUnfocused(unfocusedHandler);
         }
 
         mVisibilityIdToItemMap.remove(visibilityOutputId);
@@ -428,9 +434,15 @@ class MountState {
     for (int i = mVisibilityIdToItemMap.size() - 1; i >= 0; i--) {
       final VisibilityItem visibilityItem = mVisibilityIdToItemMap.valueAt(i);
       final EventHandler invisibleHandler = visibilityItem.getInvisibleHandler();
+      final EventHandler unfocusedHandler = visibilityItem.getUnfocusedHandler();
 
       if (invisibleHandler != null) {
         EventDispatcherUtils.dispatchOnInvisible(invisibleHandler);
+      }
+
+      if (unfocusedHandler != null && visibilityItem.isInFocusedRange()) {
+        visibilityItem.setFocusedRange(false);
+        EventDispatcherUtils.dispatchOnUnfocused(unfocusedHandler);
       }
 
       mVisibilityIdToItemMap.removeAt(i);

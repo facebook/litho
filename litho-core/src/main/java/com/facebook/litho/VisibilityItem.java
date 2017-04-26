@@ -26,13 +26,15 @@ class VisibilityItem {
 
   private int mFlags;
   private boolean mFocusedFlag;
-  // The invisible event handler is required to make it possible to dispatch the InvisibleEvent when
-  // on unbind is called or when the MountState is reset.
+  // The invisible event and unfocused event handlers are required to make it possible to dispatch
+  // the corresponding event when unbind is called or when the MountState is reset.
   private EventHandler mInvisibleHandler;
+  private EventHandler mUnfocusedHandler;
 
   public VisibilityItem() {
     mFlags = 0;
     mInvisibleHandler = null;
+    mUnfocusedHandler = null;
   }
 
   /**
@@ -47,6 +49,20 @@ class VisibilityItem {
    */
   EventHandler getInvisibleHandler() {
     return mInvisibleHandler;
+  }
+
+  /**
+   * Sets the unfocused event handler.
+   */
+  void setUnfocusedHandler(EventHandler unfocusedHandler) {
+    mUnfocusedHandler = unfocusedHandler;
+  }
+
+  /**
+   * Returns the unfocused event handler.
+   */
+  EventHandler getUnfocusedHandler() {
+    return mUnfocusedHandler;
   }
 
   boolean isInFocusedRange() {
@@ -93,5 +109,6 @@ class VisibilityItem {
   void release() {
     mFlags = 0;
     mInvisibleHandler = null;
+    mUnfocusedHandler = null;
   }
 }
