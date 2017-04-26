@@ -358,6 +358,15 @@ class EditTextSpec {
       int selection,
       int inputType) {
 
+    editText.setSingleLine(isSingleLine);
+    // We only want to change the input type if it actually needs changing, and we need to take
+    // isSingleLine into account so that we get the correct input type.
+    if (isSingleLine) {
+      inputType &= ~EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE;
+    } else {
+      inputType |= EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE;
+    }
+
     // Needs to be set before min/max lines.
     if (inputType != editText.getInputType()) {
       editText.setInputType(inputType);
@@ -374,7 +383,6 @@ class EditTextSpec {
     editText.setMaxLines(maxLines);
     editText.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLength)});
     editText.setShadowLayer(shadowRadius, shadowDx, shadowDy, shadowColor);
-    editText.setSingleLine(isSingleLine);
     editText.setLinkTextColor(linkColor);
     editText.setHighlightColor(highlightColor);
     editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
