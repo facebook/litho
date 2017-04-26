@@ -10,9 +10,7 @@
 package com.facebook.litho.testing;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
 
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -31,30 +29,33 @@ public class TestDrawableComponent extends ComponentLifecycle {
   private static final List<TestDrawableComponent> sInstances = new ArrayList<>();
   private static final Pools.SynchronizedPool<Builder> mBuilderPool =
       new Pools.SynchronizedPool<>(2);
-  
-  private enum Property {
-    CALLS_SHOULD_UPDATE_ON_MOUNT, IS_PURE_REDNER, CAN_MEASURE,
-    USES_DISPLAY_LIST, IMPLEMENTS_ACCESSIBILITY, IS_MOUNT_SIZE_DEPENDENT
-  }
 
-  private EnumSet<Property>  mProperties;
+  private static final byte CALLS_SHOULD_UPDATE_ON_MOUNT = 1 << 0;
+  private static final byte IS_PURE_RENDER = 1 << 1;
+  private static final byte CAN_MEASURE = 1 << 2;
+  private static final byte USES_DISPLAY_LIST = 1 << 3;
+  private static final byte IMPLEMENTS_ACCESSIBILITY = 1 << 4;
+  private static final byte IS_MOUNT_SIZE_DEPENDENT = 1 << 5;
 
-  private synchronized static TestDrawableComponent get(Set<Property> properties) {
+  private byte mProperties;
+
+  private synchronized static TestDrawableComponent get(byte properties) {
     for (TestDrawableComponent lifecycle : sInstances) {
-        if (lifecycle.mProperties.equals(properties)) {
-            return lifecycle;
-        }
+      if (lifecycle.mProperties == properties) {
+        return lifecycle;
+      }
     }
 
     final TestDrawableComponent lifecycle = new TestDrawableComponent(properties);
+
     sInstances.add(lifecycle);
 
     return lifecycle;
   }
 
-  private TestDrawableComponent(Set<Property> properties) {
-      super();
-      mProperties = EnumSet.copyOf(properties);
+  private TestDrawableComponent(byte properties) {
+    super();
+    mProperties = properties;
   }
 
   @Override
@@ -64,27 +65,27 @@ public class TestDrawableComponent extends ComponentLifecycle {
 
   @Override
   protected boolean callsShouldUpdateOnMount() {
-    return mProperties.contains(Property.CALLS_SHOULD_UPDATE_ON_MOUNT);
+    return (mProperties & CALLS_SHOULD_UPDATE_ON_MOUNT) != 0;
   }
 
   @Override
   protected boolean isPureRender() {
-    return mProperties.contains(Property.IS_PURE_REDNER);
+    return (mProperties & IS_PURE_RENDER) != 0;
   }
 
   @Override
   protected boolean implementsAccessibility() {
-    return mProperties.contains(Property.IMPLEMENTS_ACCESSIBILITY);
+    return (mProperties & IMPLEMENTS_ACCESSIBILITY) != 0;
   }
 
   @Override
   protected boolean shouldUseDisplayList() {
-    return mProperties.contains(Property.USES_DISPLAY_LIST);
+    return (mProperties & USES_DISPLAY_LIST) != 0;
   }
 
   @Override
   public boolean isMountSizeDependent() {
-    return mProperties.contains(Property.IS_MOUNT_SIZE_DEPENDENT);
+    return (mProperties & IS_MOUNT_SIZE_DEPENDENT) != 0;
   }
 
   @Override
@@ -108,7 +109,7 @@ public class TestDrawableComponent extends ComponentLifecycle {
 
   @Override
   protected boolean canMeasure() {
-    return mCanMeasure;
+    return (mProperties & CAN_MEASURE) != 0;
   }
 
   @Override
@@ -197,26 +198,20 @@ public class TestDrawableComponent extends ComponentLifecycle {
       boolean usesDisplayList,
       boolean isMountSizeDependent) {
 
-    EnumSet<Property> properties = EnumSet.noneOf(Property.class);
-
-    if (callsShouldUpdateOnMount) {
-      properties.add(Property.CALLS_SHOULD_UPDATE_ON_MOUNT);
-    }
-    if (implementsAccessibility) {
-      properties.add(Property.IMPLEMENTS_ACCESSIBILITY);
-    }
-    if (isMountSizeDependent) {
-      properties.add(Property.IS_MOUNT_SIZE_DEPENDENT);
-    }
-    if (usesDisplayList) {
-      properties.add(Property.USES_DISPLAY_LIST);
-    }
-    if (isPureRender) {
-      properties.add(Property.IS_PURE_REDNER);
-    }
-    if (canMeasure) {
-      properties.add(Property.CAN_MEASURE);
-    }
+    byte properties = 0;
+    
+    if (callsShouldUpdateOnMount) 
+      properties |= CALLS_SHOULD_UPDATE_ON_MOUNT;
+    if (isPureRender)
+      properties |= IS_PURE_RENDER;
+    if (canMeasure)
+      properties |= CAN_MEASURE;
+    if (implementsAccessibility)
+      properties |= IMPLEMENTS_ACCESSIBILITY;
+    if (usesDisplayList)
+      properties |= USES_DISPLAY_LIST;
+    if (isMountSizeDependent)
+      properties |= IS_MOUNT_SIZE_DEPENDENT;
 
     return newBuilder(context, defStyleAttr, defStyleRes, new State(properties));
   }
@@ -261,8 +256,8 @@ public class TestDrawableComponent extends ComponentLifecycle {
     int measuredWidth = -1;
     int measuredHeight = -1;
 
-    private State(Set<Property> properties) {
-        super(get(properties));
+    private State(byte properties) {
+      super(get(properties));
     }
 
     @Override
@@ -288,7 +283,6 @@ public class TestDrawableComponent extends ComponentLifecycle {
 
   public static class Builder
       extends com.facebook.litho.Component.Builder<TestDrawableComponent> {
-        
     State mState;
 
     private void init(
