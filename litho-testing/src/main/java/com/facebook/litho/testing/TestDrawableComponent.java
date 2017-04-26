@@ -30,59 +30,32 @@ public class TestDrawableComponent extends ComponentLifecycle {
   private static final Pools.SynchronizedPool<Builder> mBuilderPool =
       new Pools.SynchronizedPool<>(2);
 
-  private final boolean mCallsShouldUpdateOnMount;
-  private final boolean mIsPureRender;
-  private final boolean mCanMeasure;
-  private final boolean mUsesDisplayList;
-  private final boolean mImplementsAccessibility;
-  private final boolean mIsMountSizeDependent;
+  private static final long CALLS_SHOULD_UPDATE_ON_MOUNT = 1L << 0;
+  private static final long IS_PURE_RENDER = 1L << 1;
+  private static final long CAN_MEASURE = 1L << 2;
+  private static final long USES_DISPLAY_LIST = 1L << 3;
+  private static final long IMPLEMENTS_ACCESSIBILITY = 1L << 4;
+  private static final long IS_MOUNT_SIZE_DEPENDENT = 1L << 5;
 
-  private synchronized static TestDrawableComponent get(
-      boolean callsShouldUpdateOnMount,
-      boolean isPureRender,
-      boolean canMeasure,
-      boolean implementsAccessibility,
-      boolean usesDisplayList,
-      boolean isMountSizeDependent) {
+  private long mProperties;
+
+  private synchronized static TestDrawableComponent get(long properties) {
     for (TestDrawableComponent lifecycle : sInstances) {
-      if (lifecycle.mCallsShouldUpdateOnMount == callsShouldUpdateOnMount &&
-          lifecycle.mIsPureRender == isPureRender &&
-          lifecycle.mCanMeasure == canMeasure &&
-          lifecycle.mImplementsAccessibility == implementsAccessibility &&
-          lifecycle.mUsesDisplayList == usesDisplayList &&
-          lifecycle.mIsMountSizeDependent == isMountSizeDependent) {
+      if (lifecycle.mProperties == properties) {
         return lifecycle;
       }
     }
 
-    final TestDrawableComponent lifecycle = new TestDrawableComponent(
-        callsShouldUpdateOnMount,
-        isPureRender,
-        canMeasure,
-        implementsAccessibility,
-        usesDisplayList,
-        isMountSizeDependent);
+    final TestDrawableComponent lifecycle = new TestDrawableComponent(properties);
 
     sInstances.add(lifecycle);
 
     return lifecycle;
   }
 
-  private TestDrawableComponent(
-      boolean callsShouldUpdateOnMount,
-      boolean isPureRender,
-      boolean canMeasure,
-      boolean implementsAccessibility,
-      boolean usesDisplayList,
-      boolean isMountSizeDependent) {
+  private TestDrawableComponent(long properties) {
     super();
-
-    mCallsShouldUpdateOnMount = callsShouldUpdateOnMount;
-    mIsPureRender = isPureRender;
-    mCanMeasure = canMeasure;
-    mImplementsAccessibility = implementsAccessibility;
-    mUsesDisplayList = usesDisplayList;
-    mIsMountSizeDependent = isMountSizeDependent;
+    mProperties = properties;
   }
 
   @Override
@@ -92,27 +65,27 @@ public class TestDrawableComponent extends ComponentLifecycle {
 
   @Override
   protected boolean callsShouldUpdateOnMount() {
-    return mCallsShouldUpdateOnMount;
+    return (mProperties & CALLS_SHOULD_UPDATE_ON_MOUNT) != 0;
   }
 
   @Override
   protected boolean isPureRender() {
-    return mIsPureRender;
+    return (mProperties & IS_PURE_RENDER) != 0;
   }
 
   @Override
   protected boolean implementsAccessibility() {
-    return mImplementsAccessibility;
+    return (mProperties & IMPLEMENTS_ACCESSIBILITY) != 0;
   }
 
   @Override
   protected boolean shouldUseDisplayList() {
-    return mUsesDisplayList;
+    return (mProperties & USES_DISPLAY_LIST) != 0;
   }
 
   @Override
   public boolean isMountSizeDependent() {
-    return mIsMountSizeDependent;
+    return (mProperties & IS_MOUNT_SIZE_DEPENDENT) != 0;
   }
 
   @Override
@@ -136,7 +109,7 @@ public class TestDrawableComponent extends ComponentLifecycle {
 
   @Override
   protected boolean canMeasure() {
-    return mCanMeasure;
+    return (mProperties & CAN_MEASURE) != 0;
   }
 
   @Override
@@ -224,17 +197,29 @@ public class TestDrawableComponent extends ComponentLifecycle {
       boolean implementsAccessibility,
       boolean usesDisplayList,
       boolean isMountSizeDependent) {
-    return newBuilder(
-        context,
-        defStyleAttr,
-        defStyleRes,
-        new State(
-            callsShouldUpdateOnMount,
-            isPureRender,
-            canMeasure,
-            implementsAccessibility,
-            usesDisplayList,
-            isMountSizeDependent));
+
+    long properties = 0;
+    
+    if (callsShouldUpdateOnMount) { 
+      properties |= CALLS_SHOULD_UPDATE_ON_MOUNT;
+    }
+    if (isPureRender) {
+      properties |= IS_PURE_RENDER;
+    }
+    if (canMeasure) {
+      properties |= CAN_MEASURE;
+    }
+    if (implementsAccessibility) {
+      properties |= IMPLEMENTS_ACCESSIBILITY;
+    }
+    if (usesDisplayList) {
+      properties |= USES_DISPLAY_LIST;
+    }
+    if (isMountSizeDependent) {
+      properties |= IS_MOUNT_SIZE_DEPENDENT;
+    }
+
+    return newBuilder(context, defStyleAttr, defStyleRes, new State(properties));
   }
 
   public static Builder create(ComponentContext context) {
@@ -277,20 +262,8 @@ public class TestDrawableComponent extends ComponentLifecycle {
     int measuredWidth = -1;
     int measuredHeight = -1;
 
-    private State(
-        boolean callsShouldUpdateOnMount,
-        boolean isPureRender,
-        boolean canMeasure,
-        boolean implementsAccessibility,
-        boolean usesDisplayList,
-        boolean isMountSizeDependent) {
-      super(get(
-          callsShouldUpdateOnMount,
-          isPureRender,
-          canMeasure,
-          implementsAccessibility,
-          usesDisplayList,
-          isMountSizeDependent));
+    private State(long properties) {
+      super(get(properties));
     }
 
     @Override
