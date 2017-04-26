@@ -14,7 +14,6 @@ import java.util.WeakHashMap;
 
 import android.support.v4.util.Pools;
 import android.support.v4.util.SimpleArrayMap;
-import android.view.View;
 
 import com.facebook.litho.animation.AnimatedPropertyNode;
 import com.facebook.litho.animation.AnimationBinding;
@@ -75,6 +74,11 @@ public class DataFlowTransitionManager {
       for (int i = 0; i < animatingProperties.size(); i++) {
         final AnimatedProperty prop = animatingProperties.get(i);
         info.beforeValues.put(prop, prop.get(mountItem));
+
+        // Unfortunately, we have no guarantee that this mountItem won't be re-used for another
+        // different component during the coming mount, so we need to reset it before the actual
+        // mount happens. The proper before-values will be set again before any animations start.
+        prop.reset(mountItem);
       }
       info.mountItem = mountItem;
       mKeyToTransitionDiffs.put(transitionKey, info);
@@ -95,10 +99,12 @@ public class DataFlowTransitionManager {
         info.changeType = TransitionManager.KeyStatus.UNCHANGED;
       }
 
-      if (mountItem instanceof View) {
-        View view = (View) mountItem;
-        view.setTranslationX(0);
-        view.setTranslationY(0);
+      // If these are different, this means this transition key will be rendered with a different
+      // mount item (View or Drawable) than it was during the last mount, so we need to migrate
+      // animation state from the old mount item to the new one.
+      if (info.mountItem != mountItem) {
+        migrateToNewMountItem(info.mountItem, mountItem);
+        info.mountItem = mountItem;
       }
 
       for (int i = 0; i < animatingProperties.size(); i++) {
@@ -206,6 +212,18 @@ public class DataFlowTransitionManager {
       animatedProperties.put(animatedProperty.getName(), node);
     }
     return node;
+  }
+
+  private void migrateToNewMountItem(Object oldMountItem, Object newMountItem) {
+    SimpleArrayMap<String, AnimatedPropertyNode> oldItemNodes =
+        mAnimatedPropertyNodes.remove(oldMountItem);
+    if (oldItemNodes == null) {
+      return;
+    }
+    for (int i = 0, size = oldItemNodes.size(); i < size; i++) {
+      oldItemNodes.valueAt(i).setMountItem(newMountItem);
+    }
+    mAnimatedPropertyNodes.put(newMountItem, oldItemNodes);
   }
 
   private static TransitionDiff acquireTransitionDiff() {

@@ -79,6 +79,11 @@ public final class AnimatedProperties {
       float parentX = getPositionRelativeToLithoView((View) mountView.getParent(), true);
       mountView.setX(value - parentX);
     }
+
+    @Override
+    public void reset(Object mountItem) {
+      assertIsView(mountItem, this).setTranslationX(0);
+    }
   }
 
   private static class YAnimatedProperty implements AnimatedProperty {
@@ -98,6 +103,11 @@ public final class AnimatedProperties {
       float parentY = getPositionRelativeToLithoView((View) mountView.getParent(), false);
       mountView.setY(value - parentY);
     }
+
+    @Override
+    public void reset(Object mountItem) {
+      assertIsView(mountItem, this).setTranslationY(0);
+    }
   };
 
   private static class WidthAnimatedProperty implements AnimatedProperty {
@@ -114,6 +124,11 @@ public final class AnimatedProperties {
     @Override
     public void set(Object mountItem, float value) {
       throw new UnsupportedOperationException("Setting width in animations is not supported yet.");
+    }
+
+    @Override
+    public void reset(Object mountItem) {
+      // No-op: height/width are always properly set at mount time so we don't need to reset it.
     }
   }
 
@@ -132,6 +147,11 @@ public final class AnimatedProperties {
     public void set(Object mountItem, float value) {
       throw new UnsupportedOperationException("Setting height in animations is not supported yet.");
     }
+
+    @Override
+    public void reset(Object mountItem) {
+      // No-op: height/width are always properly set at mount time so we don't need to reset it.
+    }
   };
 
   private static class AlphaAnimatedProperty implements AnimatedProperty {
@@ -148,6 +168,11 @@ public final class AnimatedProperties {
     @Override
     public void set(Object mountItem, float value) {
       assertIsView(mountItem, this).setAlpha(value);
+    }
+
+    @Override
+    public void reset(Object mountItem) {
+      assertIsView(mountItem, this).setAlpha(1);
     }
   }
 
@@ -173,6 +198,13 @@ public final class AnimatedProperties {
       final View asView = assertIsView(mountItem, this);
       asView.setScaleX(value);
       asView.setScaleY(value);
+    }
+
+    @Override
+    public void reset(Object mountItem) {
+      final View asView = assertIsView(mountItem, this);
+      asView.setScaleX(1);
+      asView.setScaleY(1);
     }
   }
 

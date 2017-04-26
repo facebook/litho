@@ -23,12 +23,19 @@ import com.facebook.litho.dataflow.ValueNode;
  */
 public class AnimatedPropertyNode extends ValueNode<Float> {
 
-  private final WeakReference<Object> mMountItem;
   private final AnimatedProperty mAnimatedProperty;
+  private WeakReference<Object> mMountItem;
 
   public AnimatedPropertyNode(Object mountItem, AnimatedProperty animatedProperty) {
     mMountItem = new WeakReference<>(mountItem);
     mAnimatedProperty = animatedProperty;
+  }
+
+  /**
+   * Sets the mount item that this {@link AnimatedPropertyNode} updates a value on.
+   */
+  public void setMountItem(Object mountItem) {
+    mMountItem = new WeakReference<>(mountItem);
   }
 
   @Override

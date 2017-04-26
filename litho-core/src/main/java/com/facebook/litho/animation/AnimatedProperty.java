@@ -29,4 +29,9 @@ public interface AnimatedProperty {
    * Updates the value of this property on the given mount item to the given value.
    */
   void set(Object mountItem, float value);
+
+  /**
+   * Resets this property to its default value on this mount item.
+   */
+  void reset(Object mountItem);
 }
