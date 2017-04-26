@@ -11,6 +11,7 @@ package com.facebook.litho.widget;
 
 import android.annotation.TargetApi;
 import android.os.Build;
+import android.support.annotation.VisibleForTesting;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
@@ -18,31 +19,58 @@ import com.facebook.litho.ComponentTree;
 import com.facebook.litho.LithoView;
 
 /**
- * Scroll listener that handles sticky header logic, such as using list item vs. list wrapper's item
- * as sticky header, visibility changes between them and calculation of translation amount
+ * Controller that handles sticky header logic. Depending on where the sticky item is located in the
+ * list, we might either use first child as sticky header or use {@link RecyclerViewWrapper}'s
+ * sticky header.
  */
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-class StickyHeaderAwareScrollListener extends RecyclerView.OnScrollListener {
+class StickyHeaderController extends RecyclerView.OnScrollListener {
+
+  static final String WRAPPER_ARGUMENT_NULL = "Cannot initialize with null RecyclerViewWrapper.";
+  static final String WRAPPER_ALREADY_INITIALIZED =
+          "RecyclerViewWrapper has already been initialized but never reset.";
+  static final String WRAPPER_NOT_INITIALIZED = "RecyclerViewWrapper has not been set yet.";
+  static final String LAYOUTMANAGER_NOT_INITIALIZED =
+      "LayoutManager of RecyclerView is not initialized yet.";
 
   private final HasStickyHeader mHasStickyHeader;
-  private final RecyclerView.LayoutManager mLayoutManager;
 
   private RecyclerViewWrapper mRecyclerViewWrapper;
+  private RecyclerView.LayoutManager mLayoutManager;
   private View lastTranslatedView;
   private int previousStickyHeaderPosition = RecyclerView.NO_POSITION;
 
-  StickyHeaderAwareScrollListener(
-      HasStickyHeader hasStickyHeader,
-      RecyclerView.LayoutManager layoutManager) {
+  StickyHeaderController(HasStickyHeader hasStickyHeader) {
     mHasStickyHeader = hasStickyHeader;
-    mLayoutManager = layoutManager;
   }
 
-  public void setRecyclerViewWrapper(RecyclerViewWrapper recyclerViewWrapper) {
-    mRecyclerViewWrapper = recyclerViewWrapper;
-    if (mRecyclerViewWrapper != null) {
-      mRecyclerViewWrapper.hideStickyHeader();
+  void init(RecyclerViewWrapper recyclerViewWrapper) {
+    if (recyclerViewWrapper == null) {
+      throw new RuntimeException(WRAPPER_ARGUMENT_NULL);
     }
+
+    if (mRecyclerViewWrapper != null) {
+      throw new RuntimeException(WRAPPER_ALREADY_INITIALIZED);
+    }
+
+    mRecyclerViewWrapper = recyclerViewWrapper;
+    mRecyclerViewWrapper.hideStickyHeader();
+    mLayoutManager = recyclerViewWrapper.getRecyclerView().getLayoutManager();
+    if (mLayoutManager == null) {
+      throw new RuntimeException(LAYOUTMANAGER_NOT_INITIALIZED);
+    }
+
+    mRecyclerViewWrapper.getRecyclerView().addOnScrollListener(this);
+  }
+
+  void reset() {
+    if (mRecyclerViewWrapper == null) {
+      throw new IllegalStateException(WRAPPER_NOT_INITIALIZED);
+    }
+
+    mRecyclerViewWrapper.getRecyclerView().removeOnScrollListener(this);
+    mLayoutManager = null;
+    mRecyclerViewWrapper = null;
   }
 
   @Override
@@ -72,9 +100,9 @@ class StickyHeaderAwareScrollListener extends RecyclerView.OnScrollListener {
       return;
     }
 
-    final LithoView firstVisibleView = firstVisibleItemComponentTree.getLithoView();
-
     if (firstVisiblePosition == stickyHeaderPosition) {
+      final LithoView firstVisibleView = firstVisibleItemComponentTree.getLithoView();
+
       // Translate first child, no need for sticky header
       firstVisibleView.setTranslationY(-firstVisibleView.getTop());
       lastTranslatedView = firstVisibleView;
@@ -101,7 +129,7 @@ class StickyHeaderAwareScrollListener extends RecyclerView.OnScrollListener {
           break;
         }
       }
-      mRecyclerViewWrapper.setVerticalOffset(translationY);
+      mRecyclerViewWrapper.setStickyHeaderVerticalOffset(translationY);
       previousStickyHeaderPosition = stickyHeaderPosition;
     }
   }
@@ -110,7 +138,8 @@ class StickyHeaderAwareScrollListener extends RecyclerView.OnScrollListener {
     mRecyclerViewWrapper.setStickyComponent(mHasStickyHeader.getComponentAt(stickyHeaderPosition));
   }
 
-  private int findStickyHeaderPosition(int currentFirstVisiblePosition) {
+  @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+  int findStickyHeaderPosition(int currentFirstVisiblePosition) {
     for (int i = currentFirstVisiblePosition; i >= 0; i--) {
       if (mHasStickyHeader.isSticky(i)) {
         return i;

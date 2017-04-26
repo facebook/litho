@@ -71,7 +71,7 @@ public class RecyclerViewWrapper extends SwipeRefreshLayout {
     return mStickyHeader;
   }
 
-  public void setVerticalOffset(int verticalOffset) {
+  public void setStickyHeaderVerticalOffset(int verticalOffset) {
     mStickyHeader.setTranslationY(verticalOffset);
   }
 

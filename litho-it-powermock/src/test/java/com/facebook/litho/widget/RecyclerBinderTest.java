@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2017-present, Facebook, Inc.
  * All rights reserved.
  *
@@ -245,7 +245,7 @@ public class RecyclerBinderTest {
 
     verify(recyclerView).setLayoutManager(null);
     verify(recyclerView).setAdapter(null);
-    verify(recyclerView, times(2)).removeOnScrollListener(any(OnScrollListener.class));
+    verify(recyclerView).removeOnScrollListener(any(OnScrollListener.class));
 
     verify(secondRecyclerView).setLayoutManager(mLayoutInfo.getLayoutManager());
     verify(secondRecyclerView).setAdapter(any(RecyclerView.Adapter.class));
@@ -266,16 +266,20 @@ public class RecyclerBinderTest {
     verify(recyclerView).setLayoutManager(null);
     verify(recyclerView).setAdapter(null);
     verify(mLayoutInfo).setComponentInfoCollection(null);
-    verify(recyclerView, times(2)).removeOnScrollListener(any(OnScrollListener.class));
+    verify(recyclerView).removeOnScrollListener(any(OnScrollListener.class));
   }
 
   @Test
   public void testAddStickyHeaderIfRecyclerViewWrapperExists() throws Exception {
     RecyclerView recyclerView = mock(RecyclerView.class);
-    when(recyclerView.getParent()).thenReturn(mock(RecyclerViewWrapper.class));
+    RecyclerViewWrapper wrapper = mock(RecyclerViewWrapper.class);
+
+    when(recyclerView.getParent()).thenReturn(wrapper);
+    when(recyclerView.getLayoutManager()).thenReturn(mock(RecyclerView.LayoutManager.class));
+    when(wrapper.getRecyclerView()).thenReturn(recyclerView);
+
     mRecyclerBinder.mount(recyclerView);
 
-    verify(recyclerView).setLayoutManager(mLayoutInfo.getLayoutManager());
     verify(recyclerView).setAdapter(any(RecyclerView.Adapter.class));
     verify(recyclerView, times(2)).addOnScrollListener(any(OnScrollListener.class));
   }

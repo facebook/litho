@@ -23,6 +23,7 @@ import android.support.annotation.VisibleForTesting;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.LayoutManager;
+import android.util.Log;
 import android.view.ViewGroup;
 
 import com.facebook.litho.Component;
@@ -52,6 +53,7 @@ public class RecyclerBinder implements
 
   private static final int UNINITIALIZED = -1;
   private static final Size sDummySize = new Size();
+  private static final String TAG = RecyclerBinder.class.getSimpleName();
 
   @GuardedBy("this")
   private final List<ComponentTreeHolder> mComponentTreeHolders;
@@ -59,7 +61,6 @@ public class RecyclerBinder implements
   private final RecyclerView.Adapter mInternalAdapter;
   private final ComponentContext mComponentContext;
   private final RangeScrollListener mRangeScrollListener = new RangeScrollListener();
-  private final StickyHeaderAwareScrollListener mStickyHeaderScrollListener;
   private final LayoutHandlerFactory mLayoutHandlerFactory;
   private final boolean mUseNewIncrementalMount;
 
@@ -78,6 +79,7 @@ public class RecyclerBinder implements
   private int mCurrentFirstVisiblePosition;
   private int mCurrentLastVisiblePosition;
   private RangeCalculationResult mRange;
+  private StickyHeaderController mStickyHeaderController;
 
   public RecyclerBinder(
       ComponentContext componentContext,
@@ -124,9 +126,6 @@ public class RecyclerBinder implements
     mLayoutInfo = layoutInfo;
     mLayoutHandlerFactory = layoutHandlerFactory;
     mCurrentFirstVisiblePosition = mCurrentLastVisiblePosition = 0;
-    mStickyHeaderScrollListener = new StickyHeaderAwareScrollListener(
-        this,
-        mLayoutInfo.getLayoutManager());
   }
 
   public RecyclerBinder(ComponentContext c) {
@@ -688,8 +687,8 @@ public class RecyclerBinder implements
 
   private void enableStickyHeader(RecyclerView recyclerView) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-      // Sticky header needs some APIs like 'setTranslationY()' which are not available Gingerbread
-      // and below
+      // Sticky header needs view translation APIs which are not available in Gingerbread and below.
+      Log.w(TAG, "Sticky header is supported only on ICS (API14) and above");
       return;
     }
     if (recyclerView == null) {
@@ -699,9 +698,11 @@ public class RecyclerBinder implements
     if (recyclerViewWrapper == null) {
       return;
     }
+    if (mStickyHeaderController == null) {
+      mStickyHeaderController = new StickyHeaderController(this);
+    }
 
-    mStickyHeaderScrollListener.setRecyclerViewWrapper(recyclerViewWrapper);
-    recyclerView.addOnScrollListener(mStickyHeaderScrollListener);
+    mStickyHeaderController.init(recyclerViewWrapper);
   }
 
   /**
@@ -722,8 +723,10 @@ public class RecyclerBinder implements
     }
 
     mMountedView = null;
+    if (mStickyHeaderController != null) {
+      mStickyHeaderController.reset();
+    }
     view.removeOnScrollListener(mRangeScrollListener);
-    view.removeOnScrollListener(mStickyHeaderScrollListener);
     view.setAdapter(null);
     view.setLayoutManager(null);
     mLayoutInfo.setComponentInfoCollection(null);
