@@ -10,7 +10,9 @@
 package com.facebook.litho.testing;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -29,60 +31,30 @@ public class TestDrawableComponent extends ComponentLifecycle {
   private static final List<TestDrawableComponent> sInstances = new ArrayList<>();
   private static final Pools.SynchronizedPool<Builder> mBuilderPool =
       new Pools.SynchronizedPool<>(2);
+  
+  private enum Property {
+    CALLS_SHOULD_UPDATE_ON_MOUNT, IS_PURE_REDNER, CAN_MEASURE,
+    USES_DISPLAY_LIST, IMPLEMENTS_ACCESSIBILITY, IS_MOUNT_SIZE_DEPENDENT
+  }
 
-  private final boolean mCallsShouldUpdateOnMount;
-  private final boolean mIsPureRender;
-  private final boolean mCanMeasure;
-  private final boolean mUsesDisplayList;
-  private final boolean mImplementsAccessibility;
-  private final boolean mIsMountSizeDependent;
+  private EnumSet<Property>  mProperties;
 
-  private synchronized static TestDrawableComponent get(
-      boolean callsShouldUpdateOnMount,
-      boolean isPureRender,
-      boolean canMeasure,
-      boolean implementsAccessibility,
-      boolean usesDisplayList,
-      boolean isMountSizeDependent) {
+  private synchronized static TestDrawableComponent get(Set<Property> properties) {
     for (TestDrawableComponent lifecycle : sInstances) {
-      if (lifecycle.mCallsShouldUpdateOnMount == callsShouldUpdateOnMount &&
-          lifecycle.mIsPureRender == isPureRender &&
-          lifecycle.mCanMeasure == canMeasure &&
-          lifecycle.mImplementsAccessibility == implementsAccessibility &&
-          lifecycle.mUsesDisplayList == usesDisplayList &&
-          lifecycle.mIsMountSizeDependent == isMountSizeDependent) {
-        return lifecycle;
-      }
+        if (lifecycle.mProperties.equals(properties)) {
+            return lifecycle;
+        }
     }
 
-    final TestDrawableComponent lifecycle = new TestDrawableComponent(
-        callsShouldUpdateOnMount,
-        isPureRender,
-        canMeasure,
-        implementsAccessibility,
-        usesDisplayList,
-        isMountSizeDependent);
-
+    final TestDrawableComponent lifecycle = new TestDrawableComponent(properties);
     sInstances.add(lifecycle);
 
     return lifecycle;
   }
 
-  private TestDrawableComponent(
-      boolean callsShouldUpdateOnMount,
-      boolean isPureRender,
-      boolean canMeasure,
-      boolean implementsAccessibility,
-      boolean usesDisplayList,
-      boolean isMountSizeDependent) {
-    super();
-
-    mCallsShouldUpdateOnMount = callsShouldUpdateOnMount;
-    mIsPureRender = isPureRender;
-    mCanMeasure = canMeasure;
-    mImplementsAccessibility = implementsAccessibility;
-    mUsesDisplayList = usesDisplayList;
-    mIsMountSizeDependent = isMountSizeDependent;
+  private TestDrawableComponent(Set<Property> properties) {
+      super();
+      mProperties = EnumSet.copyOf(properties);
   }
 
   @Override
@@ -92,27 +64,27 @@ public class TestDrawableComponent extends ComponentLifecycle {
 
   @Override
   protected boolean callsShouldUpdateOnMount() {
-    return mCallsShouldUpdateOnMount;
+    return mProperties.contains(Property.CALLS_SHOULD_UPDATE_ON_MOUNT);
   }
 
   @Override
   protected boolean isPureRender() {
-    return mIsPureRender;
+    return mProperties.contains(Property.IS_PURE_REDNER);
   }
 
   @Override
   protected boolean implementsAccessibility() {
-    return mImplementsAccessibility;
+    return mProperties.contains(Property.IMPLEMENTS_ACCESSIBILITY);
   }
 
   @Override
   protected boolean shouldUseDisplayList() {
-    return mUsesDisplayList;
+    return mProperties.contains(Property.USES_DISPLAY_LIST);
   }
 
   @Override
   public boolean isMountSizeDependent() {
-    return mIsMountSizeDependent;
+    return mProperties.contains(Property.IS_MOUNT_SIZE_DEPENDENT);
   }
 
   @Override
@@ -224,17 +196,29 @@ public class TestDrawableComponent extends ComponentLifecycle {
       boolean implementsAccessibility,
       boolean usesDisplayList,
       boolean isMountSizeDependent) {
-    return newBuilder(
-        context,
-        defStyleAttr,
-        defStyleRes,
-        new State(
-            callsShouldUpdateOnMount,
-            isPureRender,
-            canMeasure,
-            implementsAccessibility,
-            usesDisplayList,
-            isMountSizeDependent));
+
+    EnumSet<Property> properties = EnumSet.noneOf(Property.class);
+
+    if (callsShouldUpdateOnMount) {
+      properties.add(Property.CALLS_SHOULD_UPDATE_ON_MOUNT);
+    }
+    if (implementsAccessibility) {
+      properties.add(Property.IMPLEMENTS_ACCESSIBILITY);
+    }
+    if (isMountSizeDependent) {
+      properties.add(Property.IS_MOUNT_SIZE_DEPENDENT);
+    }
+    if (usesDisplayList) {
+      properties.add(Property.USES_DISPLAY_LIST);
+    }
+    if (isPureRender) {
+      properties.add(Property.IS_PURE_REDNER);
+    }
+    if (canMeasure) {
+      properties.add(Property.CAN_MEASURE);
+    }
+
+    return newBuilder(context, defStyleAttr, defStyleRes, new State(properties));
   }
 
   public static Builder create(ComponentContext context) {
@@ -277,20 +261,8 @@ public class TestDrawableComponent extends ComponentLifecycle {
     int measuredWidth = -1;
     int measuredHeight = -1;
 
-    private State(
-        boolean callsShouldUpdateOnMount,
-        boolean isPureRender,
-        boolean canMeasure,
-        boolean implementsAccessibility,
-        boolean usesDisplayList,
-        boolean isMountSizeDependent) {
-      super(get(
-          callsShouldUpdateOnMount,
-          isPureRender,
-          canMeasure,
-          implementsAccessibility,
-          usesDisplayList,
-          isMountSizeDependent));
+    private State(Set<Property> properties) {
+        super(get(properties));
     }
 
     @Override
@@ -316,6 +288,7 @@ public class TestDrawableComponent extends ComponentLifecycle {
 
   public static class Builder
       extends com.facebook.litho.Component.Builder<TestDrawableComponent> {
+        
     State mState;
 
     private void init(
