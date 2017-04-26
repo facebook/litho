@@ -166,7 +166,7 @@ public class ComponentsPools {
     return state;
   }
 
-  static synchronized YogaNode acquireYogaNode() {
+  static synchronized YogaNode acquireYogaNode(ComponentContext c) {
     YogaNode node = ComponentsConfiguration.usePooling ? sYogaNodePool.acquire() : null;
     if (node == null) {
       if (sYogaConfig == null) {
@@ -188,7 +188,7 @@ public class ComponentsPools {
       node = new InternalNode();
     }
 
-    node.init(acquireYogaNode(), componentContext, resources);
+    node.init(acquireYogaNode(componentContext), componentContext, resources);
     return node;
   }
 

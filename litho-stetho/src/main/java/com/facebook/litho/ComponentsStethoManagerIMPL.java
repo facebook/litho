@@ -151,7 +151,7 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
 
   void getStyles(ComponentStethoNode stethoNode, StyleAccumulator accumulator) {
     final YogaNode yogaNode = stethoNode.node.mYogaNode;
-    final YogaNode defaults = ComponentsPools.acquireYogaNode();
+    final YogaNode defaults = ComponentsPools.acquireYogaNode(stethoNode.node.getContext());
 
     SimpleArrayMap<String, String> overrides = mStyleOverrides.get(stethoNode.key);
     if (overrides == null) {
