@@ -119,6 +119,7 @@ class ImageSpec {
     final int verticalPadding = layout.getPaddingTop() + layout.getPaddingBottom();
 
     if (ScaleType.FIT_XY == scaleType
+        || drawable == null
         || drawable.getIntrinsicWidth() <= 0
         || drawable.getIntrinsicHeight() <= 0) {
       drawableMatrix.set(null);
