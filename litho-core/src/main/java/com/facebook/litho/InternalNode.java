@@ -140,6 +140,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   // When this flag is set, border color was explicitly set on this node.
   private static final long PFLAG_BORDER_COLOR_IS_SET = 1L << 29;
 
+  private static final String ILLEGAL_MODIFY_OPERATION = "Should not modify ComponentLayout properties on a built object";
+
   private final ResourceResolver mResourceResolver = new ResourceResolver();
 
   YogaNode mYogaNode;
@@ -188,6 +190,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private boolean mCachedMeasuresValid;
   private TreeProps mPendingTreeProps;
 
+  private boolean mIsBuilt;
+
   void init(YogaNode yogaNode, ComponentContext componentContext, Resources resources) {
     yogaNode.setData(this);
     yogaNode.setOverflow(YogaOverflow.HIDDEN);
@@ -205,6 +209,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     mResourceResolver.init(
         mComponentContext,
         componentContext.getResourceCache());
+
+    mIsBuilt = false;
   }
 
   @Px
@@ -245,70 +251,6 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     }
 
     return (int) mResolvedHeight;
-  }
-
-  private class InternalLayoutFrozen implements ComponentLayout {
-
-    private int x, y, width, height;
-    private int paddingTop, paddingRight, paddingBottom, paddingLeft;
-    private YogaDirection resolvedLayoutDirection;
-
-    InternalLayoutFrozen(InternalNode node) {
-      this.x = node.getX();
-      this.y = node.getY();
-      this.height = node.getHeight();
-      this.width = node.getWidth();
-      this.paddingBottom = node.getPaddingBottom();
-      this.paddingTop = node.getPaddingTop();
-      this.paddingLeft = node.getPaddingLeft();
-      this.paddingRight = node.getPaddingRight();
-      this.resolvedLayoutDirection = node.getResolvedLayoutDirection();
-    }
-
-    @Override
-    public int getX() {
-      return x;
-    }
-
-    @Override
-    public int getY() {
-      return y;
-    }
-
-    @Override
-    public int getWidth() {
-      return width;
-    }
-
-    @Override
-    public int getHeight() {
-      return height;
-    }
-
-    @Override
-    public int getPaddingTop() {
-      return paddingTop;
-    }
-
-    @Override
-    public int getPaddingRight() {
-      return paddingRight;
-    }
-
-    @Override
-    public int getPaddingBottom() {
-      return paddingBottom;
-    }
-
-    @Override
-    public int getPaddingLeft() {
-      return paddingLeft;
-    }
-
-    @Override
-    public YogaDirection getResolvedLayoutDirection() {
-      return resolvedLayoutDirection;
-    }
   }
 
   @Px
@@ -440,6 +382,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode layoutDirection(YogaDirection direction) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     mPrivateFlags |= PFLAG_LAYOUT_DIRECTION_IS_SET;
     mYogaNode.setDirection(direction);
     return this;
@@ -452,30 +397,45 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode wrap(YogaWrap wrap) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     mYogaNode.setWrap(wrap);
     return this;
   }
 
   @Override
   public InternalNode justifyContent(YogaJustify justifyContent) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     mYogaNode.setJustifyContent(justifyContent);
     return this;
   }
 
   @Override
   public InternalNode alignItems(YogaAlign alignItems) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     mYogaNode.setAlignItems(alignItems);
     return this;
   }
 
   @Override
   public InternalNode alignContent(YogaAlign alignContent) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     mYogaNode.setAlignContent(alignContent);
     return this;
   }
 
   @Override
   public InternalNode alignSelf(YogaAlign alignSelf) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     mPrivateFlags |= PFLAG_ALIGN_SELF_IS_SET;
     mYogaNode.setAlignSelf(alignSelf);
     return this;
@@ -483,6 +443,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode positionType(YogaPositionType positionType) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     mPrivateFlags |= PFLAG_POSITION_TYPE_IS_SET;
     mYogaNode.setPositionType(positionType);
     return this;
@@ -490,6 +453,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode flex(float flex) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     mPrivateFlags |= PFLAG_FLEX_IS_SET;
     mYogaNode.setFlex(flex);
     return this;
@@ -497,6 +463,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode flexGrow(float flexGrow) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     mPrivateFlags |= PFLAG_FLEX_GROW_IS_SET;
     mYogaNode.setFlexGrow(flexGrow);
     return this;
@@ -504,6 +473,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode flexShrink(float flexShrink) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     mPrivateFlags |= PFLAG_FLEX_SHRINK_IS_SET;
     mYogaNode.setFlexShrink(flexShrink);
     return this;
@@ -511,6 +483,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode flexBasisPx(@Px int flexBasis) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     mPrivateFlags |= PFLAG_FLEX_BASIS_IS_SET;
     mYogaNode.setFlexBasis(flexBasis);
     return this;
@@ -524,6 +499,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode flexBasisPercent(float percent) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     mPrivateFlags |= PFLAG_FLEX_BASIS_IS_SET;
     mYogaNode.setFlexBasisPercent(percent);
     return this;
@@ -531,26 +509,41 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode flexBasisAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     return flexBasisPx(mResourceResolver.resolveDimenOffsetAttr(resId, defaultResId));
   }
 
   @Override
   public InternalNode flexBasisAttr(@AttrRes int resId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     return flexBasisAttr(resId, 0);
   }
 
   @Override
   public InternalNode flexBasisRes(@DimenRes int resId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     return flexBasisPx(mResourceResolver.resolveDimenOffsetRes(resId));
   }
 
   @Override
   public InternalNode flexBasisDip(@Dimension(unit = DP) int flexBasis) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     return flexBasisPx(mResourceResolver.dipsToPixels(flexBasis));
   }
 
   @Override
   public InternalNode importantForAccessibility(int importantForAccessibility) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     mPrivateFlags |= PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET;
     mImportantForAccessibility = importantForAccessibility;
     return this;
@@ -558,6 +551,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode duplicateParentState(boolean duplicateParentState) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     mPrivateFlags |= PFLAG_DUPLICATE_PARENT_STATE_IS_SET;
     mDuplicateParentState = duplicateParentState;
     return this;
@@ -565,6 +561,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode marginPx(YogaEdge edge, @Px int margin) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     mPrivateFlags |= PFLAG_MARGIN_IS_SET;
     mYogaNode.setMargin(edge, margin);
     return this;
@@ -572,6 +571,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode marginPercent(YogaEdge edge, float percent) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     mPrivateFlags |= PFLAG_MARGIN_IS_SET;
     mYogaNode.setMarginPercent(edge, percent);
     return this;
@@ -579,6 +581,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode marginAuto(YogaEdge edge) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     mPrivateFlags |= PFLAG_MARGIN_IS_SET;
     mYogaNode.setMarginAuto(edge);
     return this;
@@ -589,6 +594,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       YogaEdge edge,
       @AttrRes int resId,
       @DimenRes int defaultResId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     return marginPx(edge, mResourceResolver.resolveDimenOffsetAttr(resId, defaultResId));
   }
 
@@ -596,16 +604,25 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   public InternalNode marginAttr(
       YogaEdge edge,
       @AttrRes int resId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     return marginAttr(edge, resId, 0);
   }
 
   @Override
   public InternalNode marginRes(YogaEdge edge, @DimenRes int resId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     return marginPx(edge, mResourceResolver.resolveDimenOffsetRes(resId));
   }
 
   @Override
   public InternalNode marginDip(YogaEdge edge, @Dimension(unit = DP) int margin) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     return marginPx(edge, mResourceResolver.dipsToPixels(margin));
   }
 
@@ -619,6 +636,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode paddingPx(YogaEdge edge, @Px int padding) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     mPrivateFlags |= PFLAG_PADDING_IS_SET;
 
     if (mIsNestedTreeHolder) {
@@ -633,6 +653,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode paddingPercent(YogaEdge edge, float percent) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     mPrivateFlags |= PFLAG_PADDING_IS_SET;
 
     if (mIsNestedTreeHolder) {
@@ -650,6 +673,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       YogaEdge edge,
       @AttrRes int resId,
       @DimenRes int defaultResId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     return paddingPx(edge, mResourceResolver.resolveDimenOffsetAttr(resId, defaultResId));
   }
 
@@ -657,21 +683,33 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   public InternalNode paddingAttr(
       YogaEdge edge,
       @AttrRes int resId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     return paddingAttr(edge, resId, 0);
   }
 
   @Override
   public InternalNode paddingRes(YogaEdge edge, @DimenRes int resId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     return paddingPx(edge, mResourceResolver.resolveDimenOffsetRes(resId));
   }
 
   @Override
   public InternalNode paddingDip(YogaEdge edge, @Dimension(unit = DP) int padding) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     return paddingPx(edge, mResourceResolver.dipsToPixels(padding));
   }
 
   @Override
   public InternalNode borderWidthPx(YogaEdge edge, @Px int borderWidth) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     mPrivateFlags |= PFLAG_BORDER_WIDTH_IS_SET;
 
     if (mIsNestedTreeHolder) {
@@ -692,6 +730,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       YogaEdge edge,
       @AttrRes int resId,
       @DimenRes int defaultResId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     return borderWidthPx(edge, mResourceResolver.resolveDimenOffsetAttr(resId, defaultResId));
   }
 
@@ -699,11 +740,17 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   public InternalNode borderWidthAttr(
       YogaEdge edge,
       @AttrRes int resId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     return borderWidthAttr(edge, resId, 0);
   }
 
   @Override
   public InternalNode borderWidthRes(YogaEdge edge, @DimenRes int resId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     return borderWidthPx(edge, mResourceResolver.resolveDimenOffsetRes(resId));
   }
 
@@ -711,11 +758,17 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   public InternalNode borderWidthDip(
       YogaEdge edge,
       @Dimension(unit = DP) int borderWidth) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     return borderWidthPx(edge, mResourceResolver.dipsToPixels(borderWidth));
   }
 
   @Override
   public Builder borderColor(@ColorInt int borderColor) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     mPrivateFlags |= PFLAG_BORDER_COLOR_IS_SET;
     mBorderColor = borderColor;
     return this;
@@ -723,6 +776,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode positionPx(YogaEdge edge, @Px int position) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     mPrivateFlags |= PFLAG_POSITION_IS_SET;
     mYogaNode.setPosition(edge, position);
     return this;
@@ -730,6 +786,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode positionPercent(YogaEdge edge, float percent) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     mPrivateFlags |= PFLAG_POSITION_IS_SET;
     mYogaNode.setPositionPercent(edge, percent);
     return this;
@@ -740,16 +799,25 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       YogaEdge edge,
       @AttrRes int resId,
       @DimenRes int defaultResId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     return positionPx(edge, mResourceResolver.resolveDimenOffsetAttr(resId, defaultResId));
   }
 
   @Override
   public InternalNode positionAttr(YogaEdge edge, @AttrRes int resId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     return positionAttr(edge, resId, 0);
   }
 
   @Override
   public InternalNode positionRes(YogaEdge edge, @DimenRes int resId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     return positionPx(edge, mResourceResolver.resolveDimenOffsetRes(resId));
   }
 
@@ -757,11 +825,17 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   public InternalNode positionDip(
       YogaEdge edge,
       @Dimension(unit = DP) int position) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     return positionPx(edge, mResourceResolver.dipsToPixels(position));
   }
 
   @Override
   public InternalNode widthPx(@Px int width) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     mPrivateFlags |= PFLAG_WIDTH_IS_SET;
     mYogaNode.setWidth(width);
     return this;
@@ -775,6 +849,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode widthPercent(float percent) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     mPrivateFlags |= PFLAG_WIDTH_IS_SET;
     mYogaNode.setWidthPercent(percent);
     return this;
@@ -782,26 +859,41 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode widthRes(@DimenRes int resId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     return widthPx(mResourceResolver.resolveDimenSizeRes(resId));
   }
 
   @Override
   public InternalNode widthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     return widthPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
   }
 
   @Override
   public InternalNode widthAttr(@AttrRes int resId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     return widthAttr(resId, 0);
   }
 
   @Override
   public InternalNode widthDip(@Dimension(unit = DP) int width) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     return widthPx(mResourceResolver.dipsToPixels(width));
   }
 
   @Override
   public InternalNode minWidthPx(@Px int minWidth) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     mPrivateFlags |= PFLAG_MIN_WIDTH_IS_SET;
     mYogaNode.setMinWidth(minWidth);
     return this;
@@ -809,6 +901,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode minWidthPercent(float percent) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     mPrivateFlags |= PFLAG_MIN_WIDTH_IS_SET;
     mYogaNode.setMinWidthPercent(percent);
     return this;
@@ -816,26 +911,42 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode minWidthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     return minWidthPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
   }
 
   @Override
   public InternalNode minWidthAttr(@AttrRes int resId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     return minWidthAttr(resId, 0);
   }
 
   @Override
   public InternalNode minWidthRes(@DimenRes int resId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     return minWidthPx(mResourceResolver.resolveDimenSizeRes(resId));
   }
 
   @Override
   public InternalNode minWidthDip(@Dimension(unit = DP) int minWidth) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
     return minWidthPx(mResourceResolver.dipsToPixels(minWidth));
   }
 
   @Override
   public InternalNode maxWidthPx(@Px int maxWidth) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     mPrivateFlags |= PFLAG_MAX_WIDTH_IS_SET;
     mYogaNode.setMaxWidth(maxWidth);
     return this;
@@ -843,6 +954,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode maxWidthPercent(float percent) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     mPrivateFlags |= PFLAG_MAX_WIDTH_IS_SET;
     mYogaNode.setMaxWidthPercent(percent);
     return this;
@@ -850,26 +965,46 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode maxWidthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     return maxWidthPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
   }
 
   @Override
   public InternalNode maxWidthAttr(@AttrRes int resId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     return maxWidthAttr(resId, 0);
   }
 
   @Override
   public InternalNode maxWidthRes(@DimenRes int resId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     return maxWidthPx(mResourceResolver.resolveDimenSizeRes(resId));
   }
 
   @Override
   public InternalNode maxWidthDip(@Dimension(unit = DP) int maxWidth) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     return maxWidthPx(mResourceResolver.dipsToPixels(maxWidth));
   }
 
   @Override
   public InternalNode heightPx(@Px int height) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     mPrivateFlags |= PFLAG_HEIGHT_IS_SET;
     mYogaNode.setHeight(height);
     return this;
@@ -877,12 +1012,20 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   // Used by stetho to re-set auto value
   InternalNode heightAuto() {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     mYogaNode.setHeightAuto();
     return this;
   }
 
   @Override
   public InternalNode heightPercent(float percent) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     mPrivateFlags |= PFLAG_HEIGHT_IS_SET;
     mYogaNode.setHeightPercent(percent);
     return this;
@@ -890,26 +1033,46 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode heightRes(@DimenRes int resId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     return heightPx(mResourceResolver.resolveDimenSizeRes(resId));
   }
 
   @Override
   public InternalNode heightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     return heightPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
   }
 
   @Override
   public InternalNode heightAttr(@AttrRes int resId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     return heightAttr(resId, 0);
   }
 
   @Override
   public InternalNode heightDip(@Dimension(unit = DP) int height) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     return heightPx(mResourceResolver.dipsToPixels(height));
   }
 
   @Override
   public InternalNode minHeightPx(@Px int minHeight) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     mPrivateFlags |= PFLAG_MIN_HEIGHT_IS_SET;
     mYogaNode.setMinHeight(minHeight);
     return this;
@@ -917,6 +1080,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode minHeightPercent(float percent) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     mPrivateFlags |= PFLAG_MIN_HEIGHT_IS_SET;
     mYogaNode.setMinHeightPercent(percent);
     return this;
@@ -924,26 +1091,46 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode minHeightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     return minHeightPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
   }
 
   @Override
   public InternalNode minHeightAttr(@AttrRes int resId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     return minHeightAttr(resId, 0);
   }
 
   @Override
   public InternalNode minHeightRes(@DimenRes int resId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     return minHeightPx(mResourceResolver.resolveDimenSizeRes(resId));
   }
 
   @Override
   public InternalNode minHeightDip(@Dimension(unit = DP) int minHeight) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     return minHeightPx(mResourceResolver.dipsToPixels(minHeight));
   }
 
   @Override
   public InternalNode maxHeightPx(@Px int maxHeight) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     mPrivateFlags |= PFLAG_MAX_HEIGHT_IS_SET;
     mYogaNode.setMaxHeight(maxHeight);
     return this;
@@ -951,6 +1138,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode maxHeightPercent(float percent) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     mPrivateFlags |= PFLAG_MAX_HEIGHT_IS_SET;
     mYogaNode.setMaxHeightPercent(percent);
     return this;
@@ -958,26 +1149,46 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode maxHeightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     return maxHeightPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
   }
 
   @Override
   public InternalNode maxHeightAttr(@AttrRes int resId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     return maxHeightAttr(resId, 0);
   }
 
   @Override
   public InternalNode maxHeightRes(@DimenRes int resId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     return maxHeightPx(mResourceResolver.resolveDimenSizeRes(resId));
   }
 
   @Override
   public InternalNode maxHeightDip(@Dimension(unit = DP) int maxHeight) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     return maxHeightPx(mResourceResolver.dipsToPixels(maxHeight));
   }
 
   @Override
   public InternalNode aspectRatio(float aspectRatio) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     mPrivateFlags |= PFLAG_ASPECT_RATIO_IS_SET;
     if (mYogaNode instanceof YogaNode) {
       mYogaNode.setAspectRatio(aspectRatio);
@@ -1041,6 +1252,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode touchExpansionPx(YogaEdge edge, @Px int touchExpansion) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     if (mTouchExpansion == null) {
       mTouchExpansion = ComponentsPools.acquireEdges();
     }
@@ -1056,6 +1271,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       YogaEdge edge,
       @AttrRes int resId,
       @DimenRes int defaultResId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     return touchExpansionPx(
         edge,
         mResourceResolver.resolveDimenOffsetAttr(resId, defaultResId));
@@ -1065,11 +1284,19 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   public InternalNode touchExpansionAttr(
       YogaEdge edge,
       @AttrRes int resId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     return touchExpansionAttr(edge, resId, 0);
   }
 
   @Override
   public InternalNode touchExpansionRes(YogaEdge edge, @DimenRes int resId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     return touchExpansionPx(edge, mResourceResolver.resolveDimenOffsetRes(resId));
   }
 
@@ -1077,11 +1304,19 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   public InternalNode touchExpansionDip(
       YogaEdge edge,
       @Dimension(unit = DP) int touchExpansion) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     return touchExpansionPx(edge, mResourceResolver.dipsToPixels(touchExpansion));
   }
 
   @Override
   public InternalNode child(ComponentLayout child) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     if (child != null && child != NULL_LAYOUT) {
       addChildAt((InternalNode) child, mYogaNode.getChildCount());
     }
@@ -1090,6 +1325,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode child(ComponentLayout.Builder child) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     if (child != null && child != NULL_LAYOUT) {
       child(child.build());
     }
@@ -1098,6 +1337,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode child(Component<?> child) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     if (child != null) {
       child(Layout.create(mComponentContext, child).flexShrink(0));
     }
@@ -1106,6 +1349,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode child(Component.Builder<?> child) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     if (child != null) {
       child(child.build());
     }
@@ -1114,6 +1361,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode background(Reference<? extends Drawable> background) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     mPrivateFlags |= PFLAG_BACKGROUND_IS_SET;
     mBackground = background;
     setPaddingFromDrawableReference(background);
@@ -1122,26 +1373,46 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode background(Reference.Builder<? extends Drawable> builder) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     return background(builder.build());
   }
 
   @Override
   public InternalNode background(Drawable background) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     return background(DrawableReference.create().drawable(background));
   }
 
   @Override
   public InternalNode backgroundAttr(@AttrRes int resId, @DrawableRes int defaultResId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     return backgroundRes(mResourceResolver.resolveResIdAttr(resId, defaultResId));
   }
 
   @Override
   public InternalNode backgroundAttr(@AttrRes int resId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     return backgroundAttr(resId, 0);
   }
 
   @Override
   public InternalNode backgroundRes(@DrawableRes int resId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     if (resId == 0) {
       return background((Reference<Drawable>) null);
     }
@@ -1154,6 +1425,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode backgroundColor(@ColorInt int backgroundColor) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     return background(
         ColorDrawableReference.create(mComponentContext)
             .color(backgroundColor)
@@ -1162,6 +1437,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode foreground(Drawable foreground) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     mPrivateFlags |= PFLAG_FOREGROUND_IS_SET;
     mForeground = foreground;
     return this;
@@ -1169,16 +1448,28 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode foregroundAttr(@AttrRes int resId, @DrawableRes int defaultResId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     return foregroundRes(mResourceResolver.resolveResIdAttr(resId, defaultResId));
   }
 
   @Override
   public InternalNode foregroundAttr(@AttrRes int resId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     return foregroundAttr(resId, 0);
   }
 
   @Override
   public InternalNode foregroundRes(@DrawableRes int resId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     if (resId == 0) {
       return foreground(null);
     }
@@ -1188,11 +1479,19 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode foregroundColor(@ColorInt int foregroundColor) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     return foreground(new ColorDrawable(foregroundColor));
   }
 
   @Override
   public InternalNode wrapInView() {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     mForceViewWrapping = true;
     return this;
   }
@@ -1203,30 +1502,50 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode clickHandler(EventHandler clickHandler) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     getOrCreateNodeInfo().setClickHandler(clickHandler);
     return this;
   }
 
   @Override
   public InternalNode longClickHandler(EventHandler longClickHandler) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     getOrCreateNodeInfo().setLongClickHandler(longClickHandler);
     return this;
   }
 
   @Override
   public InternalNode touchHandler(EventHandler touchHandler) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     getOrCreateNodeInfo().setTouchHandler(touchHandler);
     return this;
   }
 
   @Override
   public ContainerBuilder focusable(boolean isFocusable) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     getOrCreateNodeInfo().setFocusable(isFocusable);
     return this;
   }
 
   @Override
   public InternalNode visibleHandler(EventHandler visibleHandler) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     mPrivateFlags |= PFLAG_VISIBLE_HANDLER_IS_SET;
     mVisibleHandler = visibleHandler;
     return this;
@@ -1238,6 +1557,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode focusedHandler(EventHandler focusedHandler) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     mPrivateFlags |= PFLAG_FOCUSED_HANDLER_IS_SET;
     mFocusedHandler = focusedHandler;
     return this;
@@ -1249,6 +1572,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode unfocusedHandler(EventHandler unfocusedHandler) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     mPrivateFlags |= PFLAG_UNFOCUSED_HANDLER_IS_SET;
     mUnfocusedHandler = unfocusedHandler;
     return this;
@@ -1260,6 +1587,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode fullImpressionHandler(EventHandler fullImpressionHandler) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     mPrivateFlags |= PFLAG_FULL_IMPRESSION_HANDLER_IS_SET;
     mFullImpressionHandler = fullImpressionHandler;
     return this;
@@ -1271,6 +1602,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode invisibleHandler(EventHandler invisibleHandler) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     mPrivateFlags |= PFLAG_INVISIBLE_HANDLER_IS_SET;
     mInvisibleHandler = invisibleHandler;
     return this;
@@ -1282,22 +1617,38 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode contentDescription(CharSequence contentDescription) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     getOrCreateNodeInfo().setContentDescription(contentDescription);
     return this;
   }
 
   @Override
   public InternalNode contentDescription(@StringRes int stringId) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     return contentDescription(mResources.getString(stringId));
   }
 
   @Override
   public InternalNode contentDescription(@StringRes int stringId, Object... formatArgs) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     return contentDescription(mResources.getString(stringId, formatArgs));
   }
 
   @Override
   public InternalNode viewTag(Object viewTag) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     getOrCreateNodeInfo().setViewTag(viewTag);
     return this;
   }
@@ -1310,6 +1661,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode testKey(String testKey) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     mTestKey = testKey;
     return this;
   }
@@ -1320,6 +1675,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
           dispatchPopulateAccessibilityEventHandler) {
     getOrCreateNodeInfo().setDispatchPopulateAccessibilityEventHandler(
         dispatchPopulateAccessibilityEventHandler);
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     return this;
   }
 
@@ -1328,6 +1687,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       EventHandler<OnInitializeAccessibilityEventEvent> onInitializeAccessibilityEventHandler) {
     getOrCreateNodeInfo().setOnInitializeAccessibilityEventHandler(
         onInitializeAccessibilityEventHandler);
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     return this;
   }
 
@@ -1335,6 +1698,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   public InternalNode onInitializeAccessibilityNodeInfoHandler(
       EventHandler<OnInitializeAccessibilityNodeInfoEvent>
           onInitializeAccessibilityNodeInfoHandler) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     getOrCreateNodeInfo().setOnInitializeAccessibilityNodeInfoHandler(
         onInitializeAccessibilityNodeInfoHandler);
     return this;
@@ -1343,6 +1710,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Override
   public InternalNode onPopulateAccessibilityEventHandler(
       EventHandler<OnPopulateAccessibilityEventEvent> onPopulateAccessibilityEventHandler) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     getOrCreateNodeInfo().setOnPopulateAccessibilityEventHandler(
         onPopulateAccessibilityEventHandler);
     return this;
@@ -1351,6 +1722,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Override
   public InternalNode onRequestSendAccessibilityEventHandler(
       EventHandler<OnRequestSendAccessibilityEventEvent> onRequestSendAccessibilityEventHandler) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     getOrCreateNodeInfo().setOnRequestSendAccessibilityEventHandler(
         onRequestSendAccessibilityEventHandler);
     return this;
@@ -1359,6 +1734,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Override
   public InternalNode performAccessibilityActionHandler(
       EventHandler<PerformAccessibilityActionEvent> performAccessibilityActionHandler) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     getOrCreateNodeInfo().setPerformAccessibilityActionHandler(performAccessibilityActionHandler);
     return this;
   }
@@ -1366,6 +1745,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Override
   public InternalNode sendAccessibilityEventHandler(
       EventHandler<SendAccessibilityEventEvent> sendAccessibilityEventHandler) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     getOrCreateNodeInfo().setSendAccessibilityEventHandler(sendAccessibilityEventHandler);
     return this;
   }
@@ -1373,6 +1756,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Override
   public InternalNode sendAccessibilityEventUncheckedHandler(
       EventHandler<SendAccessibilityEventUncheckedEvent> sendAccessibilityEventUncheckedHandler) {
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+
     getOrCreateNodeInfo().setSendAccessibilityEventUncheckedHandler(
         sendAccessibilityEventUncheckedHandler);
     return this;
@@ -1512,7 +1899,11 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public ComponentLayout build() {
-    return new InternalLayoutFrozen(this);
+    if (mIsBuilt) {
+      throw new IllegalStateException(ILLEGAL_MODIFY_OPERATION);
+    }
+    mIsBuilt = true;
+    return this;
   }
 
   private float resolveHorizontalEdges(Edges spacing, YogaEdge edge) {
