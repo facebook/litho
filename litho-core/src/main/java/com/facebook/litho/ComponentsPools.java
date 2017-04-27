@@ -172,7 +172,6 @@ public class ComponentsPools {
       if (sYogaConfig == null) {
         sYogaConfig = new YogaConfig();
         sYogaConfig.setUseWebDefaults(true);
-        sYogaConfig.setExperimentalFeatureEnabled(YogaExperimentalFeature.ROUNDING, true);
       }
       node = new YogaNode(sYogaConfig);
     }
