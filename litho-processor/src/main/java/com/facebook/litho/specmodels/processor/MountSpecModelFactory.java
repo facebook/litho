@@ -71,6 +71,7 @@ public class MountSpecModelFactory {
       @Nullable DependencyInjectionHelper dependencyInjectionHelper) {
     return new MountSpecModel(
         element.getQualifiedName().toString(),
+        element.getAnnotation(MountSpec.class).value(),
         DelegateMethodExtractor.getDelegateMethods(
             element,
             DELEGATE_METHOD_ANNOTATIONS,

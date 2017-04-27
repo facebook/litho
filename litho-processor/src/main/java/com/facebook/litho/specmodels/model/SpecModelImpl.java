@@ -54,6 +54,7 @@ public final class SpecModelImpl implements SpecModel {
 
   private SpecModelImpl(
       String qualifiedSpecClassName,
+      String componentClassName,
       ImmutableList<DelegateMethodModel> delegateMethods,
       ImmutableList<EventMethodModel> eventMethods,
       ImmutableList<UpdateStateMethodModel> updateStateMethods,
@@ -67,8 +68,8 @@ public final class SpecModelImpl implements SpecModel {
       Object representedObject) {
     mSpecName = getSpecName(qualifiedSpecClassName);
     mSpecTypeName = ClassName.bestGuess(qualifiedSpecClassName);
-    mComponentName = getComponentName(qualifiedSpecClassName);
-    mComponentTypeName = getComponentTypeName(qualifiedSpecClassName);
+    mComponentName = getComponentName(componentClassName, qualifiedSpecClassName);
+    mComponentTypeName = getComponentTypeName(componentClassName, qualifiedSpecClassName);
     mDelegateMethods = delegateMethods;
     mEventMethods = eventMethods;
     mUpdateStateMethods = updateStateMethods;
@@ -227,15 +228,26 @@ public final class SpecModelImpl implements SpecModel {
     return qualifiedSpecClassName.substring(qualifiedSpecClassName.lastIndexOf('.') + 1);
   }
 
-  private static TypeName getComponentTypeName(String qualifiedSpecClassName) {
-    final String qualifiedComponentClassName =
-        qualifiedSpecClassName.substring(0, qualifiedSpecClassName.length() - SPEC_SUFFIX.length());
+  private static ClassName getComponentTypeName(
+      String componentClassName,
+      String qualifiedSpecClassName) {
+    final String qualifiedComponentClassName;
+    if (componentClassName == null || componentClassName.isEmpty()) {
+      qualifiedComponentClassName =
+          qualifiedSpecClassName.substring(
+              0,
+              qualifiedSpecClassName.length() - SPEC_SUFFIX.length());
+    } else {
+      qualifiedComponentClassName =
+          qualifiedSpecClassName.substring(0, qualifiedSpecClassName.lastIndexOf('.') + 1) +
+              componentClassName;
+    }
+
     return ClassName.bestGuess(qualifiedComponentClassName);
   }
 
-  private static String getComponentName(String qualifiedSpecClassName) {
-    final String specName = getSpecName(qualifiedSpecClassName);
-    return specName.substring(0, specName.length() - SPEC_SUFFIX.length());
+  private static String getComponentName(String componentClassName, String qualifiedSpecClassName) {
+    return getComponentTypeName(componentClassName, qualifiedSpecClassName).simpleName();
   }
 
   private static ImmutableList<PropModel> getProps(
@@ -372,6 +384,7 @@ public final class SpecModelImpl implements SpecModel {
 
   public static class Builder {
     private String mQualifiedSpecClassName;
+    private String mComponentClassName;
     private ImmutableList<DelegateMethodModel> mDelegateMethodModels;
     private ImmutableList<EventMethodModel> mEventMethodModels;
     private ImmutableList<UpdateStateMethodModel> mUpdateStateMethodModels;
@@ -389,6 +402,15 @@ public final class SpecModelImpl implements SpecModel {
 
     public Builder qualifiedSpecClassName(String qualifiedSpecClassName) {
       mQualifiedSpecClassName = qualifiedSpecClassName;
+      return this;
+    }
+
+    /**
+     * The class name for the generated component. May be unspecified, in which case the spec class
+     * name is used to determine the class name for the component.
+     */
+    public Builder componentClassName(String componentClassName) {
+      mComponentClassName = componentClassName;
       return this;
     }
 
@@ -455,6 +477,7 @@ public final class SpecModelImpl implements SpecModel {
 
       return new SpecModelImpl(
           mQualifiedSpecClassName,
+          mComponentClassName,
           mDelegateMethodModels,
           mEventMethodModels,
           mUpdateStateMethodModels,

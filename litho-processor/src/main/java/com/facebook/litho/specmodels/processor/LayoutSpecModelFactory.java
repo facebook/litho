@@ -66,6 +66,7 @@ public class LayoutSpecModelFactory {
       LayoutSpecGenerator layoutSpecGenerator) {
     return new LayoutSpecModel(
         element.getQualifiedName().toString(),
+        element.getAnnotation(LayoutSpec.class).value(),
         DelegateMethodExtractor.getDelegateMethods(
             element,
             delegateMethodAnnotations,

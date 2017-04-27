@@ -29,6 +29,7 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
 
   public LayoutSpecModel(
       String qualifiedSpecClassName,
+      String componentClassName,
       ImmutableList<DelegateMethodModel> delegateMethods,
       ImmutableList<EventMethodModel> eventMethods,
       ImmutableList<UpdateStateMethodModel> updateStateMethods,
@@ -45,6 +46,7 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
     mSpecModel =
         SpecModelImpl.newBuilder()
             .qualifiedSpecClassName(qualifiedSpecClassName)
+            .componentClassName(componentClassName)
             .delegateMethods(delegateMethods)
             .eventMethods(eventMethods)
             .updateStateMethods(updateStateMethods)
