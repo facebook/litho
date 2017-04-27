@@ -1890,7 +1890,7 @@ public class LayoutStateCalculateTest {
     assertEquals(new Rect(0, 0, 300, sizeOutput.height), mountBounds);
     assertTrue(getComponentAt(layoutState, 1) instanceof TestDrawableComponent);
     layoutState.getMountableOutputAt(1).getMountBounds(mountBounds);
-    assertEquals(new Rect(20, 0, 20, 0), mountBounds);
+    assertEquals(new Rect(20, 0, 280, 0), mountBounds);
 
     Mockito.validateMockitoUsage();
   }
@@ -1964,7 +1964,7 @@ public class LayoutStateCalculateTest {
     assertEquals(new Rect(25, 5, 275, 11), mountBounds);
     assertTrue(getComponentAt(layoutState, 3) instanceof TestViewComponent);
     layoutState.getMountableOutputAt(3).getMountBounds(mountBounds);
-    assertEquals(new Rect(28, 14, 28, 14), mountBounds);
+    assertEquals(new Rect(28, 14, 272, 14), mountBounds);
 
     Mockito.validateMockitoUsage();
   }
