@@ -144,11 +144,11 @@ class TextSpec {
     //check first if provided attributes contain textAppearance. As an analogy to TextView behavior,
     //we will parse textAppearance attributes first and then will override leftovers from main style
     TypedArray a = c.obtainStyledAttributes(
-        R.styleable.TextAppearance,
+        R.styleable.Text_TextAppearanceAttr,
         0);
 
     int textAppearanceResId = a.getResourceId(
-        R.styleable.TextAppearance_android_textAppearance,
+        R.styleable.Text_TextAppearanceAttr_android_textAppearance,
         -1);
     a.recycle();
     if (textAppearanceResId != -1) {

@@ -11,7 +11,7 @@
 
 <resources>
 
-  <declare-styleable name="TextAppearance">
+  <declare-styleable name="Text_TextAppearanceAttr">
     <attr name="android:textAppearance" />
   </declare-styleable>
 
