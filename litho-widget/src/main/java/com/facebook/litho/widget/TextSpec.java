@@ -29,6 +29,8 @@ import android.text.TextUtils;
 import android.text.TextUtils.TruncateAt;
 import android.text.style.ClickableSpan;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
 
 import com.facebook.fbui.textlayoutbuilder.TextLayoutBuilder;
 import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
@@ -61,7 +63,9 @@ import com.facebook.widget.accessibility.delegates.AccessibleClickableSpan;
 import com.facebook.yoga.YogaDirection;
 
 import static android.support.v4.widget.ExploreByTouchHelper.INVALID_ID;
+import static android.text.Layout.Alignment.ALIGN_CENTER;
 import static android.text.Layout.Alignment.ALIGN_NORMAL;
+import static android.text.Layout.Alignment.ALIGN_OPPOSITE;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_ERROR;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_MESSAGE;
 import static com.facebook.litho.SizeSpec.AT_MOST;
@@ -69,11 +73,13 @@ import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 import static com.facebook.litho.annotations.ResType.BOOL;
 import static com.facebook.litho.annotations.ResType.STRING;
+import static com.facebook.litho.widget.VerticalGravity.BOTTOM;
+import static com.facebook.litho.widget.VerticalGravity.CENTER;
+import static com.facebook.litho.widget.VerticalGravity.TOP;
 
 @MountSpec(isPureRender = true, shouldUseDisplayList = true, poolSize = 30)
 class TextSpec {
 
-  private static final Alignment[] ALIGNMENT = Alignment.values();
   private static final TruncateAt[] TRUNCATE_AT = TruncateAt.values();
 
   private static final Typeface DEFAULT_TYPEFACE = Typeface.DEFAULT;
@@ -139,7 +145,8 @@ class TextSpec {
       Output<Float> shadowRadius,
       Output<Float> shadowDx,
       Output<Float> shadowDy,
-      Output<Integer> shadowColor) {
+      Output<Integer> shadowColor,
+      Output<VerticalGravity> verticalGravity) {
 
     //check first if provided attributes contain textAppearance. As an analogy to TextView behavior,
     //we will parse textAppearance attributes first and then will override leftovers from main style
@@ -177,7 +184,8 @@ class TextSpec {
           shadowRadius,
           shadowDx,
           shadowDy,
-          shadowColor);
+          shadowColor,
+          verticalGravity);
       a.recycle();
     }
 
@@ -207,7 +215,8 @@ class TextSpec {
         shadowRadius,
         shadowDx,
         shadowDy,
-        shadowColor);
+        shadowColor,
+        verticalGravity);
 
     a.recycle();
   }
@@ -234,8 +243,12 @@ class TextSpec {
       Output<Float> shadowRadius,
       Output<Float> shadowDx,
       Output<Float> shadowDy,
-      Output<Integer> shadowColor
+      Output<Integer> shadowColor,
+      Output<VerticalGravity> verticalGravity
   ) {
+    int viewTextAlignment = View.TEXT_ALIGNMENT_GRAVITY;
+    int gravity = Gravity.NO_GRAVITY;
+
     for (int i = 0, size = a.getIndexCount(); i < size; i++) {
       final int attr = a.getIndex(i);
 
@@ -252,7 +265,12 @@ class TextSpec {
         }
       } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 &&
           attr == R.styleable.Text_android_textAlignment) {
-        textAlignment.set(ALIGNMENT[a.getInteger(attr, 0)]);
+        viewTextAlignment = a.getInt(attr, -1);
+        textAlignment.set(getAlignment(viewTextAlignment, gravity));
+      } else if (attr == R.styleable.Text_android_gravity) {
+        gravity = a.getInt(attr, -1);
+        textAlignment.set(getAlignment(viewTextAlignment, gravity));
+        verticalGravity.set(getVerticalGravity(gravity));
       } else if (attr == R.styleable.Text_android_includeFontPadding) {
         shouldIncludeFontPadding.set(a.getBoolean(attr, false));
       } else if (attr == R.styleable.Text_android_minLines) {
@@ -503,6 +521,81 @@ class TextSpec {
     }
 
     return newLayout;
+  }
+
+  private static Alignment getAlignment(int viewTextAlignment, int gravity) {
+    final Alignment alignment;
+    switch (viewTextAlignment) {
+      case View.TEXT_ALIGNMENT_GRAVITY:
+        alignment = getAlignment(gravity);
+        break;
+      case View.TEXT_ALIGNMENT_TEXT_START:
+        alignment = ALIGN_NORMAL;
+        break;
+      case View.TEXT_ALIGNMENT_TEXT_END:
+        alignment = ALIGN_OPPOSITE;
+        break;
+      case View.TEXT_ALIGNMENT_CENTER:
+        alignment = ALIGN_CENTER;
+        break;
+      case View.TEXT_ALIGNMENT_VIEW_START: // unsupported, default to normal
+        alignment = ALIGN_NORMAL;
+        break;
+      case View.TEXT_ALIGNMENT_VIEW_END: // unsupported, default to opposite
+        alignment = ALIGN_OPPOSITE;
+        break;
+      case View.TEXT_ALIGNMENT_INHERIT: // unsupported, default to gravity
+        alignment = getAlignment(gravity);
+        break;
+      default:
+        alignment = textAlignment;
+        break;
+    }
+    return alignment;
+  }
+
+  private static Alignment getAlignment(int gravity) {
+    final Alignment alignment;
+    switch (gravity & Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK) {
+      case Gravity.START:
+        alignment = ALIGN_NORMAL;
+        break;
+      case Gravity.END:
+        alignment = ALIGN_OPPOSITE;
+        break;
+      case Gravity.LEFT: // unsupported, default to normal
+        alignment = ALIGN_NORMAL;
+        break;
+      case Gravity.RIGHT: // unsupported, default to opposite
+        alignment = ALIGN_OPPOSITE;
+        break;
+      case Gravity.CENTER_HORIZONTAL:
+        alignment = ALIGN_CENTER;
+        break;
+      default:
+        alignment = textAlignment;
+        break;
+    }
+    return alignment;
+  }
+
+  private static VerticalGravity getVerticalGravity(int gravity) {
+    final VerticalGravity verticalGravity;
+    switch (gravity & Gravity.VERTICAL_GRAVITY_MASK) {
+      case Gravity.TOP:
+        verticalGravity = TOP;
+        break;
+      case Gravity.CENTER_VERTICAL:
+        verticalGravity = CENTER;
+        break;
+      case Gravity.BOTTOM:
+        verticalGravity = BOTTOM;
+        break;
+      default:
+        verticalGravity = TextSpec.verticalGravity;
+        break;
+    }
+    return verticalGravity;
   }
 
   @OnBoundsDefined
