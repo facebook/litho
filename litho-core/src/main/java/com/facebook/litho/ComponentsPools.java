@@ -172,6 +172,7 @@ public class ComponentsPools {
       if (sYogaConfig == null) {
         sYogaConfig = new YogaConfig();
         sYogaConfig.setUseWebDefaults(true);
+        sYogaConfig.setUseLegacyStretchBehaviour(true);
       }
       node = new YogaNode(sYogaConfig);
     }
