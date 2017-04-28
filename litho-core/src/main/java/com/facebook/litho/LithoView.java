@@ -9,6 +9,7 @@
 
 package com.facebook.litho;
 
+import java.lang.ref.WeakReference;
 import java.util.Deque;
 
 import android.content.Context;
@@ -40,15 +41,8 @@ public class LithoView extends ComponentHost {
 
   private final AccessibilityManager mAccessibilityManager;
 
-  private final AccessibilityStateChangeListenerCompat mAccessibilityStateChangeListener =
-      new AccessibilityStateChangeListenerCompat() {
-        @Override
-        public void onAccessibilityStateChanged(boolean enabled) {
-          refreshAccessibilityDelegatesIfNeeded(enabled);
-
-          requestLayout();
-        }
-      };
+  private final AccessibilityStateChangeListener mAccessibilityStateChangeListener =
+      new AccessibilityStateChangeListener(this);
 
   private static final int[] sLayoutSize = new int[2];
 
@@ -507,5 +501,26 @@ public class LithoView extends ComponentHost {
   @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
   Deque<TestItem> findTestItems(String testKey) {
     return mMountState.findTestItems(testKey);
+  }
+
+  private static class AccessibilityStateChangeListener extends
+      AccessibilityStateChangeListenerCompat {
+    private WeakReference<LithoView> mLithoView;
+
+    private AccessibilityStateChangeListener(LithoView lithoView) {
+      mLithoView = new WeakReference<>(lithoView);
+    }
+
+    @Override
+    public void onAccessibilityStateChanged(boolean enabled) {
+      final LithoView lithoView = mLithoView.get();
+      if (lithoView == null) {
+        return;
+      }
+
+      lithoView.refreshAccessibilityDelegatesIfNeeded(enabled);
+
+      lithoView.requestLayout();
+    }
   }
 }
