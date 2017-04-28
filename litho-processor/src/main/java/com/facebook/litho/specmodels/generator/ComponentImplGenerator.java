@@ -13,17 +13,18 @@ import javax.lang.model.element.Modifier;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
+import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.InterStageInputParamModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
-import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.PropModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
@@ -41,9 +42,9 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
-import static com.facebook.litho.specmodels.model.ClassNames.COMPONENT;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.IMPL_CLASS_NAME_SUFFIX;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_FIELD_NAME;
+import static com.facebook.litho.specmodels.model.ClassNames.COMPONENT;
 
 /**
  * Class that generates the preamble for a Component.
@@ -479,7 +480,8 @@ public class ComponentImplGenerator {
     } else if (field.getType() instanceof ArrayTypeName) {
       codeBlock
           .beginControlFlow(
-              "if (!Arrays.equals($L, $L.$L))",
+              "if (!$T.equals($L, $L.$L))",
+              Arrays.class,
               implAccessor,
               implInstanceName,
               implAccessor)

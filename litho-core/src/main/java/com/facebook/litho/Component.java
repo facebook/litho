@@ -9,19 +9,19 @@
 
 package com.facebook.litho;
 
-import com.facebook.yoga.YogaAlign;
-
-import com.facebook.yoga.YogaFlexDirection;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import android.support.annotation.AttrRes;
 import android.support.annotation.StyleRes;
 
-import com.facebook.litho.ComponentLifecycle.MountType;
-import com.facebook.litho.ComponentLifecycle.StateContainer;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
+import com.facebook.litho.ComponentLifecycle.MountType;
+import com.facebook.litho.ComponentLifecycle.StateContainer;
 
 /**
  * Represents a unique instance of a component that is driven by its matching
@@ -73,6 +73,30 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
       mDefStyleAttr = 0;
       mDefStyleRes = 0;
       mComponent = null;
+    }
+
+    /**
+     * Checks that all the required props are supplied, and if not throws a useful exception
+     *
+     * @param requiredPropsCount expected number of props
+     * @param required the bit set that identifies which props have been supplied
+     * @param requiredPropsNames the names of all props used for a useful error message
+     */
+    protected static void checkArgs(
+        int requiredPropsCount,
+        BitSet required,
+        String[] requiredPropsNames) {
+      if (required != null && required.nextClearBit(0) < requiredPropsCount) {
+        List<String> missingProps = new ArrayList<>();
+        for (int i = 0; i < requiredPropsCount; i++) {
+          if (!required.get(i)) {
+            missingProps.add(requiredPropsNames[i]);
+          }
+        }
+        throw new IllegalStateException(
+            "The following props are not marked as optional and were not supplied: " +
+                Arrays.toString(missingProps.toArray()));
+      }
     }
 
     public final ComponentLayout buildWithLayout() {

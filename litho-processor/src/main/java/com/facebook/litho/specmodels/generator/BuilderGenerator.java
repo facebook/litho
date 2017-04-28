@@ -705,23 +705,11 @@ public class BuilderGenerator {
 
     if (numRequiredProps > 0) {
       buildMethodBuilder
-          .beginControlFlow(
-              "if (mRequired != null && mRequired.nextClearBit(0) < $L)", REQUIRED_PROPS_COUNT)
           .addStatement(
-              "$T missingProps = new $T()",
-              ParameterizedTypeName.get(List.class, String.class),
-              ParameterizedTypeName.get(ArrayList.class, String.class))
-          .beginControlFlow("for (int i = 0; i < $L; i++)", REQUIRED_PROPS_COUNT)
-          .beginControlFlow("if (!mRequired.get(i))")
-          .addStatement("missingProps.add($L[i])", REQUIRED_PROPS_NAMES)
-          .endControlFlow()
-          .endControlFlow()
-          .addStatement(
-              "throw new $T($S + $T.toString(missingProps.toArray()))",
-              IllegalStateException.class,
-              "The following props are not marked as optional and were not supplied: ",
-              Arrays.class)
-          .endControlFlow();
+              "checkArgs($L, $L, $L)",
+              REQUIRED_PROPS_COUNT,
+              "mRequired",
+              REQUIRED_PROPS_NAMES);
     }
 
     return buildMethodBuilder
