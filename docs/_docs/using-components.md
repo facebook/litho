@@ -4,7 +4,7 @@ title: Using Components
 layout: docs
 permalink: /docs/using-components
 ---
-Generated component classes provide a simple builder with the props you defined in your component *spec*. In order to use the generated component in your UI, you'll need two things a [LithoView](/javadoc/com/facebook/litho/LithoView), which is an Android `ViewGroup` that is able to render components.
+Generated component classes provide a simple builder with the props you defined in your component *spec*. In order to use the generated component in your UI, you'll need a [LithoView](/javadoc/com/facebook/litho/LithoView), which is an Android `ViewGroup` that is able to render components.
 
 You can assign a component to be rendered by a `LithoView` as follows:
 
