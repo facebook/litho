@@ -9,14 +9,8 @@
 package com.facebook.samples.litho.lithography;
 
 import com.facebook.litho.Column;
-
-import com.facebook.yoga.YogaAlign;
-
-import com.facebook.yoga.YogaFlexDirection;
-
-import com.facebook.litho.ComponentLayout;
-
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
@@ -27,30 +21,32 @@ import com.facebook.litho.widget.RecyclerBinder;
 public class FeedItemComponentSpec {
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
-      ComponentContext c,
-      @Prop final Artist artist,
+  static ComponentLayout onCreateLayout(ComponentContext c, @Prop final ArtistDatum artist,
       @Prop final RecyclerBinder binder) {
     return Column.create(c)
-        .child(
-            Column.create(c)
-                .child(artist.images.length == 1 ?
-                    SingleImageComponent.create(c)
-                        .image(artist.images[0])
-                        .aspectRatio(2)
-                        .withLayout() :
-                    Recycler.create(c)
-                        .binder(binder)
-                        .withLayout().flexShrink(0)
-                        .aspectRatio(2))
-                .child(
-                    TitleComponent.create(c)
-                        .title(artist.name))
-                .child(
-                    ActionsComponent.create(c)))
-        .child(
-            FooterComponent.create(c)
-                .text(artist.biography))
+        .child(Column.create(c)
+            .child(artist.getImages().length == 1 ? getImageComponent(c, artist)
+                : getRecyclerComponent(c, binder))
+            .child(TitleComponent.create(c).title(artist.getName()))
+            .child(ActionsComponent.create(c)))
+        .child(FooterComponent.create(c).text(artist.getBiography()))
         .build();
+  }
+
+  private static ComponentLayout.Builder getImageComponent(ComponentContext c,
+      ArtistDatum artistDatum) {
+    String imageUrl = artistDatum.getImages()[0];
+    boolean isSimpleArtist = artistDatum instanceof Artist;
+
+    return isSimpleArtist ? SingleImageComponent.create(c)
+        .image(imageUrl)
+        .aspectRatio(2)
+        .withLayout()
+        : GlideSingleImageComponent.create(c).image(imageUrl).aspectRatio(2).withLayout();
+  }
+
+  private static ComponentLayout.Builder getRecyclerComponent(ComponentContext c,
+      RecyclerBinder binder) {
+    return Recycler.create(c).binder(binder).withLayout().flexShrink(0).aspectRatio(2);
   }
 }

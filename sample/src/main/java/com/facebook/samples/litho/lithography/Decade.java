@@ -20,8 +20,6 @@ public class Decade implements Datum {
 
   @Override
   public Component createComponent(ComponentContext c) {
-    return DecadeSeparator.create(c)
-        .decade(this)
-        .build();
+    return DecadeSeparator.create(c).decade(this).build();
   }
 }
