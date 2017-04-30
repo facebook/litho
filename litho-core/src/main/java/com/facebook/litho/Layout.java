@@ -34,6 +34,9 @@ public final class Layout {
       Component<?> component,
       @AttrRes int defStyleAttr,
       @StyleRes int defStyleRes) {
+    if (component == null) {
+      return ComponentContext.NULL_LAYOUT;
+    }
     return c.newLayoutBuilder(component, defStyleAttr, defStyleRes);
   }
 
