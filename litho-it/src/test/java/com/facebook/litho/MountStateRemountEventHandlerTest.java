@@ -42,7 +42,7 @@ public class MountStateRemountEventHandlerTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .clickHandler(c.newEventHandler(1))
                 .child(TestDrawableComponent.create(c))
                 .child(TestDrawableComponent.create(c))
@@ -57,7 +57,7 @@ public class MountStateRemountEventHandlerTest {
     lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c)
             .clickHandler(c.newEventHandler(1))
             .child(TestDrawableComponent.create(c))
             .child(TestDrawableComponent.create(c))
@@ -75,7 +75,7 @@ public class MountStateRemountEventHandlerTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .longClickHandler(c.newEventHandler(1))
                 .child(TestDrawableComponent.create(c))
                 .child(TestDrawableComponent.create(c))
@@ -90,7 +90,7 @@ public class MountStateRemountEventHandlerTest {
     lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c)
             .longClickHandler(c.newEventHandler(1))
             .child(TestDrawableComponent.create(c))
             .child(TestDrawableComponent.create(c))
@@ -108,7 +108,7 @@ public class MountStateRemountEventHandlerTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .touchHandler(c.newEventHandler(1))
                 .child(TestDrawableComponent.create(c))
                 .child(TestDrawableComponent.create(c))
@@ -123,7 +123,7 @@ public class MountStateRemountEventHandlerTest {
     lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c)
             .touchHandler(c.newEventHandler(2))
             .child(TestDrawableComponent.create(c))
             .child(TestDrawableComponent.create(c))
@@ -141,7 +141,7 @@ public class MountStateRemountEventHandlerTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .clickHandler(c.newEventHandler(1))
                 .child(TestDrawableComponent.create(c))
                 .child(TestDrawableComponent.create(c))
@@ -154,7 +154,7 @@ public class MountStateRemountEventHandlerTest {
     lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c)
             .child(TestDrawableComponent.create(c))
             .child(TestDrawableComponent.create(c))
             .build();
@@ -173,7 +173,7 @@ public class MountStateRemountEventHandlerTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .longClickHandler(c.newEventHandler(1))
                 .child(TestDrawableComponent.create(c))
                 .child(TestDrawableComponent.create(c))
@@ -186,7 +186,7 @@ public class MountStateRemountEventHandlerTest {
     lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c)
             .child(TestDrawableComponent.create(c))
             .child(TestDrawableComponent.create(c))
             .build();
@@ -206,7 +206,7 @@ public class MountStateRemountEventHandlerTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .touchHandler(c.newEventHandler(1))
                 .child(TestDrawableComponent.create(c))
                 .child(TestDrawableComponent.create(c))
@@ -217,7 +217,7 @@ public class MountStateRemountEventHandlerTest {
     lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c)
             .child(TestDrawableComponent.create(c))
             .child(TestDrawableComponent.create(c))
             .build();
@@ -235,7 +235,7 @@ public class MountStateRemountEventHandlerTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .child(TestDrawableComponent.create(c))
                 .child(TestDrawableComponent.create(c))
                 .build();
@@ -247,7 +247,7 @@ public class MountStateRemountEventHandlerTest {
     lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c)
             .clickHandler(c.newEventHandler(1))
             .child(TestDrawableComponent.create(c))
             .child(TestDrawableComponent.create(c))
@@ -267,7 +267,7 @@ public class MountStateRemountEventHandlerTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .child(TestDrawableComponent.create(c))
                 .child(TestDrawableComponent.create(c))
                 .build();
@@ -279,7 +279,7 @@ public class MountStateRemountEventHandlerTest {
     lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c)
             .longClickHandler(c.newEventHandler(1))
             .child(TestDrawableComponent.create(c))
             .child(TestDrawableComponent.create(c))
@@ -300,7 +300,7 @@ public class MountStateRemountEventHandlerTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .child(TestDrawableComponent.create(c))
                 .child(TestDrawableComponent.create(c))
                 .build();
@@ -312,7 +312,7 @@ public class MountStateRemountEventHandlerTest {
     lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c)
             .touchHandler(c.newEventHandler(1))
             .child(TestDrawableComponent.create(c))
             .child(TestDrawableComponent.create(c))

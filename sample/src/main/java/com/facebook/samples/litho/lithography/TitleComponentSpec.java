@@ -35,7 +35,7 @@ public class TitleComponentSpec {
         .text(title)
         .textStyle(BOLD)
         .textSizeDip(24)
-        .withLayout().flexShrink(0)
+        .withLayout()
         .backgroundColor(0xDDFFFFFF)
         .positionType(YogaPositionType.ABSOLUTE)
         .positionDip(YogaEdge.BOTTOM, 4)

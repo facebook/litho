@@ -43,9 +43,9 @@ public class MountStateFocusableTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .child(
-                    Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    Column.create(c)
                         .focusable(true)
                         .child(TestViewComponent.create(c)))
                 .build();
@@ -69,7 +69,7 @@ public class MountStateFocusableTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .focusable(true)
                 .child(TestDrawableComponent.create(c))
                 .build();

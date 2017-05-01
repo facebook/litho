@@ -100,7 +100,7 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
     }
 
     public final ComponentLayout buildWithLayout() {
-      return this.withLayout().flexShrink(0).build();
+      return this.withLayout().build();
     }
 
     public final ComponentLayout.Builder withLayout() {

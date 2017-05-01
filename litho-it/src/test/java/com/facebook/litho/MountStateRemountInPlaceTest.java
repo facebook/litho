@@ -64,7 +64,7 @@ public class MountStateRemountInPlaceTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .child(firstComponent)
                 .build();
           }
@@ -82,7 +82,7 @@ public class MountStateRemountInPlaceTest {
     lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c)
             .child(secondComponent)
             .build();
       }
@@ -104,7 +104,7 @@ public class MountStateRemountInPlaceTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .child(firstComponent)
                 .build();
           }
@@ -121,7 +121,7 @@ public class MountStateRemountInPlaceTest {
     lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c)
             .child(secondComponent)
             .build();
       }
@@ -154,7 +154,7 @@ public class MountStateRemountInPlaceTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .child(firstComponent)
                 .build();
           }
@@ -182,7 +182,7 @@ public class MountStateRemountInPlaceTest {
     lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c)
             .child(secondComponent)
             .build();
       }
@@ -215,7 +215,7 @@ public class MountStateRemountInPlaceTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .child(firstComponent)
                 .build();
           }
@@ -243,7 +243,7 @@ public class MountStateRemountInPlaceTest {
     lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c)
             .child(secondComponent)
             .build();
       }
@@ -265,7 +265,7 @@ public class MountStateRemountInPlaceTest {
         ComponentTree.create(mContext, new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .child(firstComponent)
                 .build();
           }
@@ -287,7 +287,7 @@ public class MountStateRemountInPlaceTest {
     lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c)
             .child(secondComponent)
             .widthPx(10)
             .heightPx(10)
@@ -312,7 +312,7 @@ public class MountStateRemountInPlaceTest {
         ComponentTree.create(mContext, new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .child(firstComponent)
                 .build();
           }
@@ -334,7 +334,7 @@ public class MountStateRemountInPlaceTest {
     lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c)
             .child(secondComponent)
             .widthPx(10)
             .heightPx(10)
@@ -359,7 +359,7 @@ public class MountStateRemountInPlaceTest {
         ComponentTree.create(mContext, new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .child(firstComponent)
                 .build();
           }
@@ -381,7 +381,7 @@ public class MountStateRemountInPlaceTest {
     lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c)
             .child(secondComponent)
             .widthPx(10)
             .heightPx(10)
@@ -407,7 +407,7 @@ public class MountStateRemountInPlaceTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .child(firstComponent)
                 .build();
           }
@@ -425,7 +425,7 @@ public class MountStateRemountInPlaceTest {
     lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c)
             .child(secondComponent)
             .build();
       }
@@ -448,7 +448,7 @@ public class MountStateRemountInPlaceTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .child(firstComponent)
                 .build();
           }
@@ -466,7 +466,7 @@ public class MountStateRemountInPlaceTest {
     lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c)
             .child(secondComponent)
             .build();
       }
@@ -489,7 +489,7 @@ public class MountStateRemountInPlaceTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .child(firstComponent)
                 .build();
           }
@@ -509,7 +509,7 @@ public class MountStateRemountInPlaceTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .child(secondComponent)
                 .build();
           }
@@ -526,7 +526,7 @@ public class MountStateRemountInPlaceTest {
     secondTree.setRoot(new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c)
             .child(thirdComponent)
             .build();
       }
@@ -556,7 +556,7 @@ public class MountStateRemountInPlaceTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .child(firstComponent)
                 .build();
           }
@@ -581,7 +581,7 @@ public class MountStateRemountInPlaceTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .child(secondComponent)
                 .build();
           }
@@ -613,19 +613,19 @@ public class MountStateRemountInPlaceTest {
     InlineLayoutSpec firstLayout = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c)
             .child(
-                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c)
                     .clickHandler(c.newEventHandler(3))
                     .child(
                         Text.create(c).text("test")))
             .child(
-                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c)
                     .clickHandler(c.newEventHandler(2))
                     .child(
                         Text.create(c).text("test2"))
                     .child(
-                        Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                        Column.create(c)
                             .clickHandler(c.newEventHandler(1))
                             .child(
                                 firstComponent)
@@ -638,21 +638,21 @@ public class MountStateRemountInPlaceTest {
     final InlineLayoutSpec secondLayout = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c)
             .child(
-                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c)
                     .clickHandler(c.newEventHandler(3))
                     .child(
                         Text.create(c).text("test"))
                     .child(
-                        Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                        Column.create(c)
                             .clickHandler(c.newEventHandler(1))
                             .child(
                                 firstComponent)
                             .child(
                                 SolidColor.create(c).color(Color.GREEN))))
             .child(
-                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c)
                     .clickHandler(c.newEventHandler(2))
                     .child(
                         Text.create(c).text("test2")))

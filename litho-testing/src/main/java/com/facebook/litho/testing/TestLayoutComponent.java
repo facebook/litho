@@ -99,10 +99,10 @@ public class TestLayoutComponent extends ComponentLifecycle {
         TestDrawableComponent.create(c, false, true, true, false, false).build();
 
     if (mIsDelegate) {
-      return Layout.create(c, mountSpecComponent).flexShrink(0).build();
+      return Layout.create(c, mountSpecComponent).build();
     }
 
-    ComponentLayout.ContainerBuilder containerBuilder = Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START);
+    ComponentLayout.ContainerBuilder containerBuilder = Column.create(c);
 
     if (mHasMountSpecChild) {
       containerBuilder.child(mountSpecComponent);

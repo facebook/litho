@@ -40,44 +40,44 @@ public class DuplicateParentStateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c)
             .duplicateParentState(true)
             .clickHandler(c.newEventHandler(1))
             .child(
-                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c)
                     .duplicateParentState(false)
                     .child(
                         TestDrawableComponent.create(c)
-                            .withLayout().flexShrink(0)
+                            .withLayout()
                             .duplicateParentState(true)))
             .child(
-                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c)
                     .duplicateParentState(true)
                     .child(
                         TestDrawableComponent.create(c)
-                            .withLayout().flexShrink(0)
+                            .withLayout()
                             .duplicateParentState(true)))
             .child(
-                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c)
                     .clickHandler(c.newEventHandler(2))
                     .child(
                         TestDrawableComponent.create(c)
-                            .withLayout().flexShrink(0)
+                            .withLayout()
                             .duplicateParentState(true)))
             .child(
-                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c)
                     .clickHandler(c.newEventHandler(3))
                     .child(
                         TestDrawableComponent.create(c)
-                            .withLayout().flexShrink(0)
+                            .withLayout()
                             .duplicateParentState(false)))
             .child(
-                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c)
                     .clickHandler(c.newEventHandler(3))
                     .backgroundColor(Color.RED)
                     .foregroundColor(Color.RED))
             .child(
-                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c)
                     .backgroundColor(Color.BLUE)
                     .foregroundColor(Color.BLUE))
             .build();

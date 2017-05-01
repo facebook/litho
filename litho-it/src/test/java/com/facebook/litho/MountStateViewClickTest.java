@@ -42,9 +42,9 @@ public class MountStateViewClickTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .child(
-                    Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    Column.create(c)
                         .clickHandler(c.newEventHandler(1))
                         .child(TestViewComponent.create(c)))
                 .build();
@@ -65,9 +65,9 @@ public class MountStateViewClickTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .child(
-                    Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    Column.create(c)
                         .longClickHandler(c.newEventHandler(1))
                         .child(TestViewComponent.create(c)))
                 .build();
@@ -88,7 +88,7 @@ public class MountStateViewClickTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .clickHandler(c.newEventHandler(1))
                 .child(TestDrawableComponent.create(c))
                 .build();
@@ -106,7 +106,7 @@ public class MountStateViewClickTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .longClickHandler(c.newEventHandler(1))
                 .child(TestDrawableComponent.create(c))
                 .build();

@@ -42,9 +42,9 @@ public class LayoutStateEventHandlerTest {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         assertCorrectEventHandler(c.newEventHandler(1), 1, mRootComponent);
-        Layout.create(c, mNestedComponent).flexShrink(0).build();
+        Layout.create(c, mNestedComponent).build();
         assertCorrectEventHandler(c.newEventHandler(2), 2, mRootComponent);
-        Layout.create(c, mNestedComponent).flexShrink(0).build();
+        Layout.create(c, mNestedComponent).build();
         assertCorrectEventHandler(c.newEventHandler(3), 3, mRootComponent);
 
         return TestLayoutComponent.create(c)

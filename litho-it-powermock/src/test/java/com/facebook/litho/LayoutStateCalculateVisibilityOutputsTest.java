@@ -47,16 +47,16 @@ public class LayoutStateCalculateVisibilityOutputsTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c)
             .child(
-                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c)
                     .child(
                         TestDrawableComponent.create(c)
-                            .withLayout().flexShrink(0)
+                            .withLayout()
                             .visibleHandler(c.newEventHandler(1))))
             .child(
                 TestDrawableComponent.create(c)
-                    .withLayout().flexShrink(0)
+                    .withLayout()
                     .invisibleHandler(c.newEventHandler(2)))
             .child(TestDrawableComponent.create(c))
             .build();
@@ -78,16 +78,16 @@ public class LayoutStateCalculateVisibilityOutputsTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c)
             .child(
-                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c)
                     .child(
                         TestDrawableComponent.create(c)
-                            .withLayout().flexShrink(0)
+                            .withLayout()
                             .visibleHandler(c.newEventHandler(1))))
             .child(
                 TestDrawableComponent.create(c)
-                    .withLayout().flexShrink(0)
+                    .withLayout()
                     .fullImpressionHandler(c.newEventHandler(3)))
             .child(TestDrawableComponent.create(c))
             .build();
@@ -109,16 +109,16 @@ public class LayoutStateCalculateVisibilityOutputsTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c)
             .child(
-                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c)
                     .child(
                         TestDrawableComponent.create(c)
-                            .withLayout().flexShrink(0)
+                            .withLayout()
                             .visibleHandler(c.newEventHandler(1))))
             .child(
                 TestDrawableComponent.create(c)
-                    .withLayout().flexShrink(0)
+                    .withLayout()
                     .focusedHandler(c.newEventHandler(4)))
             .child(TestDrawableComponent.create(c))
             .build();
@@ -141,10 +141,10 @@ public class LayoutStateCalculateVisibilityOutputsTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c)
             .child(
                 TestLayoutComponent.create(c, 0, 0, true, true, false, isDelegate)
-                    .withLayout().flexShrink(0)
+                    .withLayout()
                     .visibleHandler(c.newEventHandler(1)))
             .wrapInView()
             .build();
@@ -166,19 +166,19 @@ public class LayoutStateCalculateVisibilityOutputsTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c)
             .child(
-                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c)
                     .child(
                         TestLayoutComponent.create(c)
-                            .withLayout().flexShrink(0)
+                            .withLayout()
                             .visibleHandler(c.newEventHandler(1)))
                     .invisibleHandler(c.newEventHandler(2)))
             .child(
-                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c)
                     .child(
                         TestLayoutComponent.create(c)
-                            .withLayout().flexShrink(0)
+                            .withLayout()
                             .invisibleHandler(c.newEventHandler(1)))
                     .visibleHandler(c.newEventHandler(2)))
             .wrapInView()
@@ -212,10 +212,10 @@ public class LayoutStateCalculateVisibilityOutputsTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c)
             .child(
                 TestDrawableComponent.create(c)
-                    .withLayout().flexShrink(0)
+                    .withLayout()
                     .visibleHandler(c.newEventHandler(1))
                     .wrapInView())
             .build();
@@ -256,7 +256,7 @@ public class LayoutStateCalculateVisibilityOutputsTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c)
             .paddingPx(YogaEdge.ALL, 2)
             .child(new TestNullLayoutComponent())
             .invisibleHandler(c.newEventHandler(2))

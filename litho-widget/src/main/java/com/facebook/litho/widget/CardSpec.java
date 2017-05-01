@@ -83,9 +83,9 @@ class CardSpec {
     final int shadowBottom = getShadowBottom(elevation);
     final int shadowHorizontal = getShadowHorizontal(elevation);
 
-    return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+    return Column.create(c)
         .child(
-            Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            Column.create(c)
                 .marginPx(HORIZONTAL, shadowHorizontal)
                 .marginPx(TOP, shadowTop)
                 .marginPx(BOTTOM, shadowBottom)
@@ -95,7 +95,7 @@ class CardSpec {
                     CardClip.create(c)
                         .clippingColor(clippingColor)
                         .cornerRadiusPx(cornerRadius)
-                        .withLayout().flexShrink(0)
+                        .withLayout()
                         .positionType(ABSOLUTE)
                         .positionPx(ALL, 0)))
         .child(
@@ -104,7 +104,7 @@ class CardSpec {
                 .shadowEndColor(shadowEndColor)
                 .cornerRadiusPx(cornerRadius)
                 .shadowSizePx(elevation)
-                .withLayout().flexShrink(0)
+                .withLayout()
                 .positionType(ABSOLUTE)
                 .positionPx(ALL, 0))
         .build();

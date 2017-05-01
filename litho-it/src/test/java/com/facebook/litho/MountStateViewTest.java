@@ -49,10 +49,10 @@ public class MountStateViewTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .child(
                     TestViewComponent.create(c)
-                        .withLayout().flexShrink(0)
+                        .withLayout()
                         .paddingPx(LEFT, 5)
                         .paddingPx(TOP, 6)
                         .paddingPx(RIGHT, 7)

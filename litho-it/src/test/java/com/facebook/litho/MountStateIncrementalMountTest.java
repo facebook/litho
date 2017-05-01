@@ -78,13 +78,13 @@ public class MountStateIncrementalMountTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .child(
-                    Layout.create(c, child1).flexShrink(0)
+                    Layout.create(c, child1)
                         .widthPx(10)
                         .heightPx(10))
                 .child(
-                    Layout.create(c, child2).flexShrink(0)
+                    Layout.create(c, child2)
                         .widthPx(10)
                         .heightPx(10))
                 .build();
@@ -130,13 +130,13 @@ public class MountStateIncrementalMountTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .child(
-                    Layout.create(c, child1).flexShrink(0)
+                    Layout.create(c, child1)
                         .widthPx(10)
                         .heightPx(10))
                 .child(
-                    Layout.create(c, child2).flexShrink(0)
+                    Layout.create(c, child2)
                         .widthPx(10)
                         .heightPx(10))
                 .build();
@@ -185,13 +185,13 @@ public class MountStateIncrementalMountTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Row.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Row.create(c)
                 .child(
-                    Layout.create(c, child1).flexShrink(0)
+                    Layout.create(c, child1)
                         .widthPx(10)
                         .heightPx(10))
                 .child(
-                    Layout.create(c, child2).flexShrink(0)
+                    Layout.create(c, child2)
                         .widthPx(10)
                         .heightPx(10))
                 .build();
@@ -240,13 +240,13 @@ public class MountStateIncrementalMountTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .child(
-                    Layout.create(c, child1).flexShrink(0)
+                    Layout.create(c, child1)
                         .widthPx(10)
                         .heightPx(10))
                 .child(
-                    Layout.create(c, child2).flexShrink(0)
+                    Layout.create(c, child2)
                         .widthPx(10)
                         .heightPx(10))
                 .build();
@@ -293,11 +293,11 @@ public class MountStateIncrementalMountTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .wrapInView()
                 .paddingPx(ALL, 20)
                 .child(
-                    Layout.create(c, child).flexShrink(0)
+                    Layout.create(c, child)
                         .widthPx(10)
                         .heightPx(10))
                 .child(TestDrawableComponent.create(c))
@@ -333,9 +333,9 @@ public class MountStateIncrementalMountTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .child(
-                    Layout.create(c, child1).flexShrink(0)
+                    Layout.create(c, child1)
                         .widthPx(10)
                         .heightPx(10)
                         .clickHandler(c.newEventHandler(1))
@@ -364,16 +364,16 @@ public class MountStateIncrementalMountTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .child(
-                    Layout.create(c, child1).flexShrink(0)
+                    Layout.create(c, child1)
                         .positionType(ABSOLUTE)
                         .positionPx(TOP, 0)
                         .positionPx(LEFT, 0)
                         .widthPx(10)
                         .heightPx(10))
                 .child(
-                    Layout.create(c, child2).flexShrink(0)
+                    Layout.create(c, child2)
                         .positionType(ABSOLUTE)
                         .positionPx(TOP, 5)
                         .positionPx(LEFT, 5)
@@ -423,9 +423,9 @@ public class MountStateIncrementalMountTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .child(
-                    Layout.create(c, child2).flexShrink(0)
+                    Layout.create(c, child2)
                         .widthPx(10)
                         .heightPx(20)
                         .marginPx(YogaEdge.ALL, 2))
@@ -540,9 +540,9 @@ public class MountStateIncrementalMountTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .child(
-                    Layout.create(c, child1).flexShrink(0)
+                    Layout.create(c, child1)
                         .widthPx(10)
                         .heightPx(10))
                 .build();

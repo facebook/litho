@@ -34,7 +34,7 @@ public class FeedItemCardSpec {
       ComponentContext c,
       @Prop final Artist artist,
       @Prop final RecyclerBinder binder) {
-    return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+    return Column.create(c)
         .paddingDip(VERTICAL, 8)
         .paddingDip(HORIZONTAL, 16)
         .child(

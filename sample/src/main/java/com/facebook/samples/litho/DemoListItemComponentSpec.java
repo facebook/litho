@@ -37,7 +37,7 @@ public class DemoListItemComponentSpec {
   static ComponentLayout onCreateLayout(
       ComponentContext c,
       @Prop final String name) {
-    return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+    return Column.create(c)
         .paddingDip(ALL, 16)
         .child(
             Text.create(c)

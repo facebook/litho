@@ -56,7 +56,7 @@ public class MountStateRemountTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .child(component1)
                 .child(component2)
                 .build();
@@ -72,7 +72,7 @@ public class MountStateRemountTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .child(component3)
                 .child(component4)
                 .build();
@@ -149,7 +149,7 @@ public class MountStateRemountTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .child(component1)
                 .child(component2)
                 .build();
@@ -165,7 +165,7 @@ public class MountStateRemountTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .child(component3)
                 .child(component4)
                 .build();
@@ -194,7 +194,7 @@ public class MountStateRemountTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .child(component1)
                 .child(component2)
                 .build();
@@ -210,10 +210,10 @@ public class MountStateRemountTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .child(component3)
                 .child(
-                    Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    Column.create(c)
                         .wrapInView()
                         .child(component4))
                 .build();

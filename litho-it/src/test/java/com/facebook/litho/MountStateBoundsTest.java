@@ -46,7 +46,7 @@ public class MountStateBoundsTest {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
             return TestDrawableComponent.create(c)
-                .withLayout().flexShrink(0)
+                .withLayout()
                 .widthPx(10)
                 .heightPx(10)
                 .build();
@@ -64,7 +64,7 @@ public class MountStateBoundsTest {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
             return TestViewComponent.create(c)
-                .withLayout().flexShrink(0)
+                .withLayout()
                 .widthPx(10)
                 .heightPx(10)
                 .build();
@@ -88,15 +88,15 @@ public class MountStateBoundsTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .child(
-                    Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    Column.create(c)
                         .widthPx(20)
                         .heightPx(20)
                         .wrapInView()
                         .child(
                             TestDrawableComponent.create(c)
-                                .withLayout().flexShrink(0)
+                                .withLayout()
                                 .widthPx(10)
                                 .heightPx(10)))
                 .build();
@@ -121,23 +121,23 @@ public class MountStateBoundsTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .alignItems(YogaAlign.FLEX_END)
                 .justifyContent(YogaJustify.FLEX_END)
                 .child(
-                    Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    Column.create(c)
                         .widthPx(100)
                         .heightPx(100)
                         .paddingPx(ALL, 20)
                         .wrapInView()
                         .child(
-                            Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                            Column.create(c)
                                 .widthPx(60)
                                 .heightPx(60)
                                 .wrapInView()
                                 .child(
                                     TestDrawableComponent.create(c)
-                                        .withLayout().flexShrink(0)
+                                        .withLayout()
                                         .widthPx(20)
                                         .heightPx(20)
                                         .marginPx(ALL, 20))))

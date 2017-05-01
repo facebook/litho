@@ -67,14 +67,14 @@ public class LayoutDirectionTest {
         new InlineLayoutSpec() {
               @Override
               protected ComponentLayout onCreateLayout(ComponentContext c) {
-                return Row.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                return Row.create(c)
                     .layoutDirection(YogaDirection.LTR)
                     .child(
-                        Layout.create(c, child1).flexShrink(0)
+                        Layout.create(c, child1)
                             .widthPx(10)
                             .heightPx(10))
                     .child(
-                        Layout.create(c, child2).flexShrink(0)
+                        Layout.create(c, child2)
                             .widthPx(10)
                             .heightPx(10))
                     .build();
@@ -108,14 +108,14 @@ public class LayoutDirectionTest {
         new InlineLayoutSpec() {
               @Override
               protected ComponentLayout onCreateLayout(ComponentContext c) {
-                return Row.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                return Row.create(c)
                     .layoutDirection(YogaDirection.RTL)
                     .child(
-                        Layout.create(c, child1).flexShrink(0)
+                        Layout.create(c, child1)
                             .widthPx(10)
                             .heightPx(10))
                     .child(
-                        Layout.create(c, child2).flexShrink(0)
+                        Layout.create(c, child2)
                             .widthPx(10)
                             .heightPx(10))
                     .build();
@@ -160,14 +160,14 @@ public class LayoutDirectionTest {
         new InlineLayoutSpec() {
               @Override
               protected ComponentLayout onCreateLayout(ComponentContext c) {
-                return Row.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                return Row.create(c)
                     .layoutDirection(YogaDirection.LTR)
                     .child(
-                        Layout.create(c, child1).flexShrink(0)
+                        Layout.create(c, child1)
                             .widthPx(10)
                             .heightPx(10))
                     .child(
-                        Layout.create(c, child2).flexShrink(0)
+                        Layout.create(c, child2)
                             .widthPx(10)
                             .heightPx(10))
                     .build();
@@ -188,14 +188,14 @@ public class LayoutDirectionTest {
         new InlineLayoutSpec() {
               @Override
               protected ComponentLayout onCreateLayout(ComponentContext c) {
-                return Row.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                return Row.create(c)
                     .layoutDirection(YogaDirection.RTL)
                     .child(
-                        Layout.create(c, child1).flexShrink(0)
+                        Layout.create(c, child1)
                             .widthPx(10)
                             .heightPx(10))
                     .child(
-                        Layout.create(c, child2).flexShrink(0)
+                        Layout.create(c, child2)
                             .widthPx(10)
                             .heightPx(10))
                     .build();
@@ -227,17 +227,17 @@ public class LayoutDirectionTest {
         new InlineLayoutSpec() {
               @Override
               protected ComponentLayout onCreateLayout(ComponentContext c) {
-                return Row.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                return Row.create(c)
                     .layoutDirection(YogaDirection.RTL)
                     .child(
-                        Row.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                        Row.create(c)
                             .wrapInView()
                             .child(
-                                Layout.create(c, child1).flexShrink(0)
+                                Layout.create(c, child1)
                                     .widthPx(10)
                                     .heightPx(10))
                             .child(
-                                Layout.create(c, child2).flexShrink(0)
+                                Layout.create(c, child2)
                                     .widthPx(10)
                                     .heightPx(10)))
                     .build();
@@ -270,18 +270,18 @@ public class LayoutDirectionTest {
         new InlineLayoutSpec() {
               @Override
               protected ComponentLayout onCreateLayout(ComponentContext c) {
-                return Row.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                return Row.create(c)
                     .layoutDirection(YogaDirection.RTL)
                     .child(
-                        Row.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                        Row.create(c)
                             .layoutDirection(YogaDirection.LTR)
                             .wrapInView()
                             .child(
-                                Layout.create(c, child1).flexShrink(0)
+                                Layout.create(c, child1)
                                     .widthPx(10)
                                     .heightPx(10))
                             .child(
-                                Layout.create(c, child2).flexShrink(0)
+                                Layout.create(c, child2)
                                     .widthPx(10)
                                     .heightPx(10)))
                     .build();
@@ -312,10 +312,10 @@ public class LayoutDirectionTest {
         new InlineLayoutSpec() {
               @Override
               protected ComponentLayout onCreateLayout(ComponentContext c) {
-                return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                return Column.create(c)
                     .layoutDirection(YogaDirection.LTR)
                     .child(
-                        Layout.create(c, child).flexShrink(0)
+                        Layout.create(c, child)
                             .widthPx(10)
                             .heightPx(10)
                             .marginPx(YogaEdge.START, 10)
@@ -335,10 +335,10 @@ public class LayoutDirectionTest {
         new InlineLayoutSpec() {
               @Override
               protected ComponentLayout onCreateLayout(ComponentContext c) {
-                return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                return Column.create(c)
                     .layoutDirection(YogaDirection.RTL)
                     .child(
-                        Layout.create(c, child).flexShrink(0)
+                        Layout.create(c, child)
                             .widthPx(10)
                             .heightPx(10)
                             .marginPx(YogaEdge.START, 10)
@@ -367,12 +367,12 @@ public class LayoutDirectionTest {
         new InlineLayoutSpec() {
               @Override
               protected ComponentLayout onCreateLayout(ComponentContext c) {
-                return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                return Column.create(c)
                     .layoutDirection(YogaDirection.LTR)
                     .paddingPx(YogaEdge.START, 10)
                     .paddingPx(YogaEdge.END, 20)
                     .child(
-                        Layout.create(c, child).flexShrink(0)
+                        Layout.create(c, child)
                             .widthPx(10)
                             .heightPx(10))
                     .build();
@@ -390,12 +390,12 @@ public class LayoutDirectionTest {
         new InlineLayoutSpec() {
               @Override
               protected ComponentLayout onCreateLayout(ComponentContext c) {
-                return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                return Column.create(c)
                     .layoutDirection(YogaDirection.RTL)
                     .paddingPx(YogaEdge.START, 10)
                     .paddingPx(YogaEdge.END, 20)
                     .child(
-                        Layout.create(c, child).flexShrink(0)
+                        Layout.create(c, child)
                             .widthPx(10)
                             .heightPx(10))
                     .build();
@@ -422,7 +422,7 @@ public class LayoutDirectionTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .layoutDirection(YogaDirection.RTL)
                 .child(child)
                 .build();

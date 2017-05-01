@@ -149,10 +149,10 @@ public class ComponentGlobalKeyTest {
       protected ComponentLayout onCreateLayout(
           ComponentContext c) {
 
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c)
             .child(TestViewComponent.create(c).key("[TestViewComponent1]"))
             .child(
-                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c)
                     .backgroundColor(color)
                     .child(CardClip.create(c).key("[CardClip1]")))
             .child(Text.create(c).text("Test").key("[Text1]"))
@@ -167,11 +167,11 @@ public class ComponentGlobalKeyTest {
       protected ComponentLayout onCreateLayout(
           ComponentContext c) {
 
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c)
             .child(Text.create(c).text("test").key("[Text2]"))
             .child(testGlobalKeyChildComponent)
             .child(
-                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c)
                     .backgroundColor(color)
                     .child(CardClip.create(c).key("[CardClip2]")))
             .child(TestViewComponent.create(c).key("[TestViewComponent2]"))

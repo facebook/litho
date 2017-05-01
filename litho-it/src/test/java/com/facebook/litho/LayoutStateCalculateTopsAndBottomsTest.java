@@ -33,21 +33,21 @@ public class LayoutStateCalculateTopsAndBottomsTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c)
             .child(
-                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                Column.create(c)
                     .child(
                         TestDrawableComponent.create(c)
-                            .withLayout().flexShrink(0)
+                            .withLayout()
                             .wrapInView()
                             .heightPx(50)))
             .child(
                 TestDrawableComponent.create(c)
-                    .withLayout().flexShrink(0)
+                    .withLayout()
                     .heightPx(20))
             .child(
                 TestDrawableComponent.create(c)
-                    .withLayout().flexShrink(0)
+                    .withLayout()
                     .positionType(YogaPositionType.ABSOLUTE)
                     .positionPx(YogaEdge.TOP, 10)
                     .positionPx(YogaEdge.BOTTOM, 30))

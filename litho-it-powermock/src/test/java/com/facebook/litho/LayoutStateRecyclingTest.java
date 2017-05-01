@@ -72,9 +72,9 @@ public class LayoutStateRecyclingTest {
     final Component input = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+        return Column.create(c)
             .child(
-                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START))
+                Column.create(c))
             .build();
       }
     };

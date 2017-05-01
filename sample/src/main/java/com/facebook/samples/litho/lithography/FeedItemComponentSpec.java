@@ -41,7 +41,7 @@ public class FeedItemComponentSpec {
                         .withLayout() :
                     Recycler.create(c)
                         .binder(binder)
-                        .withLayout().flexShrink(0)
+                        .withLayout()
                         .aspectRatio(2))
                 .child(
                     TitleComponent.create(c)

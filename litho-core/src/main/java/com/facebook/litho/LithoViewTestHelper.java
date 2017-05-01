@@ -59,9 +59,9 @@ public class LithoViewTestHelper {
    *      new InlineLayoutSpec() {
    *        @Override
    *        protected ComponentLayout onCreateLayout(ComponentContext c) {
-   *          return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+   *          return Column.create(c)
    *              .child(
-   *                  Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+   *                  Column.create(c)
    *                      .child(TestDrawableComponent.create(c))
    *                      .child(TestDrawableComponent.create(c))
    *                      .testKey("mytestkey"))

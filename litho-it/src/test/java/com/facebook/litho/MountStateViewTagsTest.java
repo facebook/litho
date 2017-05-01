@@ -51,16 +51,16 @@ public class MountStateViewTagsTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .child(
-                    Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+                    Column.create(c)
                         .viewTags(tags1)
                         .child(TestDrawableComponent.create(c))
                         .child(TestDrawableComponent.create(c)))
                 .child(TestDrawableComponent.create(c))
                 .child(
                     TestDrawableComponent.create(c)
-                        .withLayout().flexShrink(0)
+                        .withLayout()
                         .viewTags(tags2))
                 .build();
           }
@@ -84,7 +84,7 @@ public class MountStateViewTagsTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+            return Column.create(c)
                 .viewTags(tags)
                 .child(TestDrawableComponent.create(c))
                 .child(TestDrawableComponent.create(c))

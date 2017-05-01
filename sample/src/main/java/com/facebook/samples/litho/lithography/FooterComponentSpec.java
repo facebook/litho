@@ -34,7 +34,7 @@ public class FooterComponentSpec {
   static ComponentLayout onCreateLayout(
       ComponentContext c,
       @Prop(resType = STRING) String text) {
-    return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+    return Column.create(c)
         .paddingDip(YogaEdge.ALL, 8)
         .child(
             Text.create(c)

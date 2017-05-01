@@ -28,7 +28,7 @@ public class PlaygroundComponentSpec {
 
   @OnCreateLayout
   static ComponentLayout onCreateLayout(ComponentContext c) {
-    return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
+    return Column.create(c)
         .backgroundColor(Color.WHITE)
         .child(
             Text.create(c)

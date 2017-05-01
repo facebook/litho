@@ -82,7 +82,7 @@ public class ComponentStyleTest {
     InternalNode node = (InternalNode)
         Text.create(mContext, 0, R.style.PaddingStyle)
             .text("text")
-            .withLayout().flexShrink(0)
+            .withLayout()
             .paddingPx(YogaEdge.ALL, mDimen * 2)
             .build();
     node.calculateLayout();
@@ -123,7 +123,7 @@ public class ComponentStyleTest {
     InternalNode node = (InternalNode)
         Text.create(mContext, R.attr.testAttrLargePadding, 0)
             .text("text")
-            .withLayout().flexShrink(0)
+            .withLayout()
             .paddingPx(YogaEdge.ALL, mDimen * 2)
             .build();
     node.calculateLayout();
