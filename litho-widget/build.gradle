@@ -48,7 +48,6 @@ dependencies {
     provided deps.inferAnnotations
 
     // First-party
-    compile deps.fresco
     compile deps.textlayoutbuilder
 
     // Android Support Library
