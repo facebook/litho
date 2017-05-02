@@ -31,9 +31,10 @@ import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
 @TargetApi(ICE_CREAM_SANDWICH)
 class TransitionManager implements TransitionKeySetListener {
 
-  @IntDef({KeyStatus.APPEARED, KeyStatus.UNCHANGED, KeyStatus.DISAPPEARED})
+  @IntDef({KeyStatus.APPEARED, KeyStatus.UNCHANGED, KeyStatus.DISAPPEARED, KeyStatus.UNSET})
   @Retention(RetentionPolicy.SOURCE)
   @interface KeyStatus {
+    int UNSET = -1;
     int APPEARED = 0;
     int UNCHANGED = 1;
     int DISAPPEARED = 2;

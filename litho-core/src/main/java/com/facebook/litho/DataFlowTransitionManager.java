@@ -47,12 +47,10 @@ public class DataFlowTransitionManager {
 
     public final SimpleArrayMap<AnimatedProperty, Float> beforeValues = new SimpleArrayMap<>();
     public final SimpleArrayMap<AnimatedProperty, Float> afterValues = new SimpleArrayMap<>();
-    public int changeType = TransitionManager.KeyStatus.DISAPPEARED;
 
     public void reset() {
       beforeValues.clear();
       afterValues.clear();
-      changeType = TransitionManager.KeyStatus.DISAPPEARED;
     }
   }
 
@@ -67,6 +65,7 @@ public class DataFlowTransitionManager {
     public ArraySet<AnimatedProperty> animatingProperties = new ArraySet<>();
     public Object mountItem;
     public ArrayList<OnMountItemAnimationComplete> mAnimationCompleteListeners = new ArrayList<>();
+    public int changeType = TransitionManager.KeyStatus.UNSET;
 
     public void reset() {
       activeAnimations.clear();
@@ -74,6 +73,7 @@ public class DataFlowTransitionManager {
       animatingProperties.clear();
       mountItem = null;
       mAnimationCompleteListeners.clear();
+      changeType = TransitionManager.KeyStatus.UNSET;
     }
   }
 
@@ -113,6 +113,10 @@ public class DataFlowTransitionManager {
       }
       setMountItem(animationState, mountItem);
       mTransitionDiffs.put(transitionKey, info);
+
+      // We set the change type to disappeared for now: if we see it again in onPostMountItem we'll
+      // update it there
+      animationState.changeType = TransitionManager.KeyStatus.DISAPPEARED;
     }
   }
 
@@ -122,10 +126,10 @@ public class DataFlowTransitionManager {
       TransitionDiff info = mTransitionDiffs.get(transitionKey);
       if (info == null) {
         info = acquireTransitionDiff();
-        info.changeType = TransitionManager.KeyStatus.APPEARED;
+        animationState.changeType = TransitionManager.KeyStatus.APPEARED;
         mTransitionDiffs.put(transitionKey, info);
       } else {
-        info.changeType = TransitionManager.KeyStatus.UNCHANGED;
+        animationState.changeType = TransitionManager.KeyStatus.UNCHANGED;
       }
 
       setMountItem(animationState, mountItem);
@@ -161,7 +165,7 @@ public class DataFlowTransitionManager {
       final String transitionKey = mTransitionDiffs.keyAt(i);
       final TransitionDiff diff = mTransitionDiffs.valueAt(i);
       final AnimationState animationState = mAnimationStates.get(transitionKey);
-      if (diff.changeType == TransitionManager.KeyStatus.UNCHANGED) {
+      if (animationState.changeType == TransitionManager.KeyStatus.UNCHANGED) {
         for (int j = 0; j < diff.beforeValues.size(); j++) {
           final AnimatedProperty property = diff.beforeValues.keyAt(j);
           property.set(animationState.mountItem, diff.beforeValues.valueAt(j));
@@ -197,10 +201,12 @@ public class DataFlowTransitionManager {
     for (int i = 0, size = disappearToValues.size(); i < size; i++) {
       final ComponentProperty property = disappearToValues.keyAt(i);
       final LazyValue lazyValue = disappearToValues.valueAt(i);
-      final TransitionDiff diff = mTransitionDiffs.get(property.getTransitionKey());
-      if (diff.changeType != TransitionManager.KeyStatus.DISAPPEARED) {
-        throw new RuntimeException("Wrong transition type for disappear: " + diff.changeType);
+      final AnimationState animationState = mAnimationStates.get(property.getTransitionKey());
+      if (animationState.changeType != TransitionManager.KeyStatus.DISAPPEARED) {
+        throw new RuntimeException(
+            "Wrong transition type for disappear: " + animationState.changeType);
       }
+      final TransitionDiff diff = mTransitionDiffs.get(property.getTransitionKey());
       final float value = lazyValue.resolve(mResolver, property);
       diff.afterValues.put(property.getProperty(), value);
     }
@@ -331,6 +337,11 @@ public class DataFlowTransitionManager {
                   "of active animations, but it wasn't there.");
         }
         if (animationState.activeAnimations.size() == 0) {
+          if (animationState.changeType == TransitionManager.KeyStatus.DISAPPEARED) {
+            for (int j = 0; j < animationState.animatingProperties.size(); j++) {
+              animationState.animatingProperties.valueAt(j).reset(animationState.mountItem);
+            }
+          }
           fireMountItemAnimationCompleteListeners(animationState);
           mAnimationStates.remove(key);
           releaseAnimationState(animationState);
