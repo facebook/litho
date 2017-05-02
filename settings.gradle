@@ -28,5 +28,9 @@ include ':litho-widget'
 include ':sample'
 include ':sample-barebones'
 include ':yoga'
+include ':yogajni'
+include ':libfb'
 
 project(':yoga').projectDir = file('lib/yoga')
+project(':yogajni').projectDir = file('lib/yogajni')
+project(':libfb').projectDir = file('lib/fb')
