@@ -59,7 +59,7 @@ ext.deps = [
 // This should hopefully only serve as a temporary measure until
 // we have a proper Gradle setup for Yoga and JNI.
 task copyYogaLibs(type: Copy, dependsOn: ':yoga:buckBuild') {
-    from 'buck-out/gen/lib/fb/jni#default,shared/'
+    from 'buck-out/gen/lib/fbjni/jni#default,shared/'
     from 'buck-out/gen/lib/yogajni/jni#default,shared/'
     include '*.so'
     include '*.dylib'
