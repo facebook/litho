@@ -12,10 +12,10 @@ package com.facebook.litho.dataflow;
 /**
  * Multi-input node for unit tests
  */
-public class AdditionNode extends ValueNode<Float> {
+public class AdditionNode extends ValueNode {
 
   @Override
-  protected Float calculateValue(long frameTimeNanos) {
-    return (Float) getInput("a").getValue() + (Float) getInput("b").getValue();
+  protected float calculateValue(long frameTimeNanos) {
+    return getInput("a").getValue() + getInput("b").getValue();
   }
 }

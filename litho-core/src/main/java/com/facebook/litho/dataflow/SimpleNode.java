@@ -12,10 +12,10 @@ package com.facebook.litho.dataflow;
 /**
  * A node that passes through its input value to its outputs.
  */
-public class SimpleNode<T> extends ValueNode<T> {
+public class SimpleNode extends ValueNode {
 
   @Override
-  public T calculateValue(long frameTimeNanos) {
-    return (T) getInput().getValue();
+  public float calculateValue(long frameTimeNanos) {
+    return getInput().getValue();
   }
 }

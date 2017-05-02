@@ -1,4 +1,12 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/*
+ * Copyright (c) 2017-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
 
 package com.facebook.litho.animation;
 
@@ -25,9 +33,8 @@ public class SpringTransition extends TransitionAnimationBinding {
   @Override
   protected void setupBinding(Resolver resolver) {
     final SpringNode springNode = new SpringNode();
-    final ConstantNode<Float> initial =
-        new ConstantNode(resolver.getCurrentState(mComponentProperty));
-    final ConstantNode<Float> end = new ConstantNode(resolver.getEndState(mComponentProperty));
+    final ConstantNode initial = new ConstantNode(resolver.getCurrentState(mComponentProperty));
+    final ConstantNode end = new ConstantNode(resolver.getEndState(mComponentProperty));
 
     addBinding(initial, springNode, SpringNode.INITIAL_INPUT);
     addBinding(end, springNode, SpringNode.END_INPUT);

@@ -1,4 +1,12 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/*
+ * Copyright (c) 2017-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
 
 package com.facebook.litho.animation;
 
@@ -59,7 +67,7 @@ public class BezierTransition extends TransitionAnimationBinding {
     addBinding(yBezierNode, resolver.getAnimatedPropertyNode(mYProperty));
   }
 
-  private static class BezierNode extends ValueNode<Float> {
+  private static class BezierNode extends ValueNode {
 
     private final float mInitial;
     private final float mEnd;
@@ -72,8 +80,8 @@ public class BezierTransition extends TransitionAnimationBinding {
     }
 
     @Override
-    protected Float calculateValue(long frameTimeNanos) {
-      float t = (float) getInput().getValue();
+    protected float calculateValue(long frameTimeNanos) {
+      float t = getInput().getValue();
       // Bezier math from Wikipedia: https://goo.gl/MvrMei
       return (1 - t) * (1 - t) * mInitial + 2 * t * (1 - t) * mControlPoint + t * t * mEnd;
     }

@@ -27,19 +27,19 @@ import android.support.v4.util.SimpleArrayMap;
  * the new value for this frame based on the node's parents (i.e. nodes it depends on) and the
  * current frame time.
  */
-public abstract class ValueNode<T> {
+public abstract class ValueNode {
 
   public static final String DEFAULT_INPUT = "default_input";
 
   private SimpleArrayMap<String, ValueNode> mInputs = null;
   private ArrayList<ValueNode> mOutputs = null;
-  private T mValue;
+  private float mValue;
   private long mTimeNs = 0;
 
   /**
    * @return the most recently calculated value from {@link #calculateValue}.
    */
-  public T getValue() {
+  public float getValue() {
     return mValue;
   }
 
@@ -48,13 +48,13 @@ public abstract class ValueNode<T> {
    * it depends on). When this is called, it's guaranteed that the parent nodes have already been
    * updated for this frame.
    */
-  protected abstract T calculateValue(long frameTimeNanos);
+  protected abstract float calculateValue(long frameTimeNanos);
 
   /**
    * @return the input node for the given input name
    */
-  protected <T> ValueNode<T> getInput(String name) {
-    final ValueNode<T> input = getInputUnsafe(name);
+  protected ValueNode getInput(String name) {
+    final ValueNode input = getInputUnsafe(name);
     if (input == null) {
       throw new RuntimeException(
           "Tried to get non-existent input '" + name + "'. Node only has these inputs: " +
@@ -66,7 +66,7 @@ public abstract class ValueNode<T> {
   /**
    * @return the default input node. This should only be used for nodes that expect a single input.
    */
-  protected <T> ValueNode<T> getInput() {
+  protected ValueNode getInput() {
     if (getInputCount() > 1) {
       throw new RuntimeException("Trying to get single input of node with multiple inputs!");
     }
@@ -108,7 +108,7 @@ public abstract class ValueNode<T> {
     return "[" + inputNames + "]";
   }
 
-  <T> ValueNode<T> getInputUnsafe(String name) {
+  ValueNode getInputUnsafe(String name) {
     if (mInputs == null) {
       return null;
     }
@@ -116,7 +116,7 @@ public abstract class ValueNode<T> {
   }
 
   final void doCalculateValue(long frameTimeNanos) {
-    final T value = calculateValue(frameTimeNanos);
+    final float value = calculateValue(frameTimeNanos);
     if (frameTimeNanos == mTimeNs) {
       throw new RuntimeException(
           "Got a calculate value call multiple times in the same frame. This isn't expected.");

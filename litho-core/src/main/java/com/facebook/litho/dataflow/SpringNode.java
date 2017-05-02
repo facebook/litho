@@ -15,7 +15,7 @@ import com.facebook.litho.dataflow.springs.Spring;
  * A node that implements spring physics: it takes an initial value ("initial" input) and
  * end value ("end" input) and animates that value on each frame, outputting the progress over time.
  */
-public class SpringNode extends ValueNode<Float> implements NodeCanFinish {
+public class SpringNode extends ValueNode implements NodeCanFinish {
 
   public static final double NS_PER_SECOND = 1000_000_000.;
   public static final String INITIAL_INPUT = "initial";
@@ -30,17 +30,17 @@ public class SpringNode extends ValueNode<Float> implements NodeCanFinish {
   }
 
   @Override
-  public Float calculateValue(long frameTimeNanos) {
+  public float calculateValue(long frameTimeNanos) {
     if (mLastFrameTimeNs == Long.MIN_VALUE) {
       mLastFrameTimeNs = frameTimeNanos;
-      float initialValue = (Float) getInput(INITIAL_INPUT).getValue();
-      final float endValue = (Float) getInput(END_INPUT).getValue();
+      float initialValue = getInput(INITIAL_INPUT).getValue();
+      final float endValue = getInput(END_INPUT).getValue();
       mSpring.setCurrentValue(initialValue);
       mSpring.setEndValue(endValue);
       return initialValue;
     }
 
-    final float endValue = (Float) getInput(END_INPUT).getValue();
+    final float endValue = getInput(END_INPUT).getValue();
     mSpring.setEndValue(endValue);
     if (isFinished()) {
       return endValue;

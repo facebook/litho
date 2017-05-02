@@ -21,7 +21,7 @@ import com.facebook.litho.dataflow.ValueNode;
  * on the current mount item. Otherwise, this node will set the property of the given mount item to
  * that input value and pass on that value as an output.
  */
-public class AnimatedPropertyNode extends ValueNode<Float> {
+public class AnimatedPropertyNode extends ValueNode {
 
   private final AnimatedProperty mAnimatedProperty;
   private WeakReference<Object> mMountItem;
@@ -39,7 +39,7 @@ public class AnimatedPropertyNode extends ValueNode<Float> {
   }
 
   @Override
-  public Float calculateValue(long frameTimeNanos) {
+  public float calculateValue(long frameTimeNanos) {
     final Object mountItem = mMountItem.get();
 
     if (mountItem == null) {
@@ -52,7 +52,7 @@ public class AnimatedPropertyNode extends ValueNode<Float> {
       return mAnimatedProperty.get(mountItem);
     }
 
-    float value = (float) getInput().getValue();
+    float value = getInput().getValue();
     mAnimatedProperty.set(mountItem, value);
 
     return value;

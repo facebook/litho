@@ -12,16 +12,16 @@ package com.facebook.litho.dataflow;
 /**
  * A dataflow node that returns a constant value.
  */
-public class ConstantNode<T> extends ValueNode<T> {
+public class ConstantNode extends ValueNode {
 
-  private final T mValue;
+  private final float mValue;
 
-  public ConstantNode(T value) {
+  public ConstantNode(float value) {
     mValue = value;
   }
 
   @Override
-  public T calculateValue(long frameTimeNanos) {
+  public float calculateValue(long frameTimeNanos) {
     return mValue;
   }
 }

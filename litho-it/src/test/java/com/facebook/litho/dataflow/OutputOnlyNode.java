@@ -12,10 +12,10 @@ package com.facebook.litho.dataflow;
 /**
  * Test node that only serves as an output node.
  */
-public class OutputOnlyNode extends ValueNode<Float> {
+public class OutputOnlyNode extends ValueNode {
 
   @Override
-  protected Float calculateValue(long frameTimeNanos) {
-    return (Float) getInput().getValue();
+  protected float calculateValue(long frameTimeNanos) {
+    return getInput().getValue();
   }
 }
