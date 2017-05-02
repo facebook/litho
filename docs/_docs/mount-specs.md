@@ -81,7 +81,7 @@ public class ColorComponentSpec {
       ComponentContext context,
       ColorDrawable colorDrawable,
       @FromPrepare int color) {
-    convertDrawable.setColor(color);
+    colorDrawable.setColor(color);
   }
 }
 ```

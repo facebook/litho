@@ -36,7 +36,7 @@ class MyComponentSpec {
       .paddingRes(R.dimen.some_dimen)
       .child(
           Image.create(c)
-              .src(image)
+              .drawable(image)
               .withLayout()
               .width(40)
               .height(40)
