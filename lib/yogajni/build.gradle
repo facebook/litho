@@ -24,4 +24,9 @@ android {
             path 'src/main/cpp/CMakeLists.txt'
         }
     }
+
+    dependencies {
+        // We want to export the Java APIs
+        compile project(':yoga')
+    }
 }
