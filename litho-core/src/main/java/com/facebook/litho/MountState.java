@@ -732,14 +732,30 @@ class MountState {
    */
   private static boolean isItemDisappearing(
       MountItem mountItem,
-      TransitionContext transitionContext) {
-    if (mountItem == null
-        || mountItem.getViewNodeInfo() == null
-        || transitionContext == null) {
+      LayoutState newLayoutState,
+      TransitionManager transitionManager) {
+    if (mountItem == null || mountItem.getViewNodeInfo() == null) {
       return false;
     }
 
-    return transitionContext.isDisappearingKey(mountItem.getViewNodeInfo().getTransitionKey());
+    final String key = mountItem.getViewNodeInfo().getTransitionKey();
+    if (key == null) {
+      return false;
+    }
+
+    final TransitionContext transitionContext = newLayoutState.getTransitionContext();
+
+    // If the transition context saw this transition key in this LayoutState, then it's still there
+    // and not disappearing
+    if (transitionContext != null && transitionContext.hasTransitionKey(key)) {
+      return false;
+    }
+
+    return
+        // for 'first' animation api
+        (transitionContext != null && transitionContext.isDisappearingKey(key)) ||
+        // for dataflow api
+        (transitionManager != null && transitionManager.isKeyAnimating(key));
   }
 
   /**
@@ -763,7 +779,7 @@ class MountState {
       final int newPosition = newLayoutState.getLayoutOutputPositionForId(mLayoutOutputsIds[i]);
       final MountItem oldItem = getItemAt(i);
 
-      if (isItemDisappearing(oldItem, newLayoutState.getTransitionContext())) {
+      if (isItemDisappearing(oldItem, newLayoutState, mTransitionManager)) {
 
         startUnmountDisappearingItem(i, oldItem.getViewNodeInfo().getTransitionKey());
 
@@ -1623,6 +1639,7 @@ class MountState {
       // We need to make sure to remove any disappearing items and clean up their state if we
       // are unmounting its host.
       if (componentHost.hasDisappearingItems()) {
+        // TODO(17679035): Support cleanupDisappearingTransitions in Dataflow API
         mTransitionManager.cleanupDisappearingTransitions(componentHost.getDisappearingItemKeys());
       }
     }
@@ -1667,13 +1684,30 @@ class MountState {
 
     final ComponentHost host = item.getHost();
     host.startUnmountDisappearingItem(index, item);
-    mTransitionManager.getTransitionKeySet(key).setTransitionCleanupListener(
-        new TransitionKeySet.TransitionCleanupListener() {
-          @Override
-          public void onTransitionCleanup() {
-            endUnmountDisappearingItem(mContext, item);
-          }
-        });
+    TransitionKeySet transitionKeySet = mTransitionManager.getTransitionKeySet(key);
+    if (transitionKeySet != null) {
+      transitionKeySet.setTransitionCleanupListener(
+          new TransitionKeySet.TransitionCleanupListener() {
+            @Override
+            public void onTransitionCleanup() {
+              endUnmountDisappearingItem(mContext, item);
+            }
+          });
+    } else {
+      mTransitionManager.addMountItemAnimationCompleteListener(
+          key,
+          new DataFlowTransitionManager.OnMountItemAnimationComplete() {
+            @Override
+            public void onMountItemAnimationComplete(Object currentMountItem) {
+              if (item.getContent() != currentMountItem) {
+                throw new RuntimeException(
+                    "Got animation complete callback for wrong mount item (expected " +
+                        item.getContent() + ", got " + currentMountItem + ")");
+              }
+              endUnmountDisappearingItem(mContext, item);
+            }
+          });
+    }
   }
 
   private void endUnmountDisappearingItem(ComponentContext context, MountItem item) {

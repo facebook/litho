@@ -28,6 +28,13 @@ import com.facebook.litho.internal.ArraySet;
  */
 public class DataFlowTransitionManager {
 
+  /**
+   * A listener that will be invoked when a mount item has stopped animating.
+   */
+  public interface OnMountItemAnimationComplete {
+    void onMountItemAnimationComplete(Object mountItem);
+  }
+
   private static final Pools.SimplePool<TransitionDiff> sTransitionDiffPool =
       new Pools.SimplePool<>(20);
   private static final Pools.SimplePool<AnimationState> sAnimationStatePool =
@@ -59,12 +66,14 @@ public class DataFlowTransitionManager {
         new SimpleArrayMap<>();
     public ArraySet<AnimatedProperty> animatingProperties = new ArraySet<>();
     public Object mountItem;
+    public ArrayList<OnMountItemAnimationComplete> mAnimationCompleteListeners = new ArrayList<>();
 
     public void reset() {
       activeAnimations.clear();
       animatedPropertyNodes.clear();
       animatingProperties.clear();
       mountItem = null;
+      mAnimationCompleteListeners.clear();
     }
   }
 
@@ -136,6 +145,15 @@ public class DataFlowTransitionManager {
       binding.addListener(mAnimationBindingListener);
       binding.start(mResolver);
     }
+  }
+
+  void addMountItemAnimationCompleteListener(String key, OnMountItemAnimationComplete listener) {
+    final AnimationState state = mAnimationStates.get(key);
+    state.mAnimationCompleteListeners.add(listener);
+  }
+
+  boolean isKeyAnimating(String key) {
+    return mAnimationStates.containsKey(key);
   }
 
   private void restoreInitialStates() {
@@ -247,11 +265,21 @@ public class DataFlowTransitionManager {
       for (int i = 0, size = animatingProperties.size(); i < size; i++) {
         animatingProperties.valueAt(i).reset(animationState.mountItem);
       }
+      fireMountItemAnimationCompleteListeners(animationState);
     }
     for (int i = 0, size = animationState.animatedPropertyNodes.size(); i < size; i++) {
       animationState.animatedPropertyNodes.valueAt(i).setMountItem(newMountItem);
     }
     animationState.mountItem = newMountItem;
+  }
+
+  private void fireMountItemAnimationCompleteListeners(AnimationState animationState) {
+    final ArrayList<OnMountItemAnimationComplete> listeners =
+        animationState.mAnimationCompleteListeners;
+    for (int i = 0, listenerSize = listeners.size(); i < listenerSize; i++) {
+      listeners.get(i).onMountItemAnimationComplete(animationState.mountItem);
+    }
+    listeners.clear();
   }
 
   private static TransitionDiff acquireTransitionDiff() {
@@ -303,6 +331,7 @@ public class DataFlowTransitionManager {
                   "of active animations, but it wasn't there.");
         }
         if (animationState.activeAnimations.size() == 0) {
+          fireMountItemAnimationCompleteListeners(animationState);
           mAnimationStates.remove(key);
           releaseAnimationState(animationState);
         }

@@ -72,6 +72,10 @@ class TransitionContext {
     mTransitionKeys.add(transitionKey);
   }
 
+  boolean hasTransitionKey(String transitionKey) {
+    return mTransitionKeys.contains(transitionKey);
+  }
+
   /**
    * @return Whether item with the given {@param transitionKey} is being removed from layout tree.
    */

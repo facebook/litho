@@ -200,6 +200,16 @@ class TransitionManager implements TransitionKeySetListener {
     return runningTransition;
   }
 
+  void addMountItemAnimationCompleteListener(
+      String key,
+      DataFlowTransitionManager.OnMountItemAnimationComplete listener) {
+    mDataFlowTransitionManager.addMountItemAnimationCompleteListener(key, listener);
+  }
+
+  boolean isKeyAnimating(String key) {
+    return mDataFlowTransitionManager.isKeyAnimating(key);
+  }
+
   void cleanupDisappearingTransitions(List<String> transitionKeys) {
     for (int i = 0, size = transitionKeys.size(); i < size; i++) {
       final TransitionKeySet transitionKeySet = removeRunningTransition(transitionKeys.get(i));
