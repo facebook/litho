@@ -42,7 +42,16 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
       return false;
     }
 
-    for (Element element : roundEnv.getRootElements()) {
+    Set<Element> layoutSpecElements =
+        (Set<Element>) roundEnv.getElementsAnnotatedWith(LayoutSpec.class);
+    Set<Element> mountSpecElements =
+        (Set<Element>) roundEnv.getElementsAnnotatedWith(MountSpec.class);
+
+    Set<Element> allSpecElements = new HashSet<>();
+    allSpecElements.addAll(layoutSpecElements);
+    allSpecElements.addAll(mountSpecElements);
+
+    for (Element element : allSpecElements) {
       try {
         SpecModel specModel = null;
         final TypeElement typeElement = (TypeElement) element;
