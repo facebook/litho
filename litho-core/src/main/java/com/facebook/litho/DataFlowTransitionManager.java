@@ -188,6 +188,13 @@ public class DataFlowTransitionManager {
       final AnimationState animationState = mAnimationStates.get(property.getTransitionKey());
       final float value = lazyValue.resolve(mResolver, property);
       property.getProperty().set(animationState.mountItem, value);
+
+      if (animationState.changeType != TransitionManager.KeyStatus.APPEARED) {
+        throw new RuntimeException(
+            "Wrong transition type for appear: " + animationState.changeType);
+      }
+      final TransitionDiff diff = mTransitionDiffs.get(property.getTransitionKey());
+      diff.beforeValues.put(property.getProperty(), value);
     }
   }
 
