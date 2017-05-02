@@ -25,12 +25,11 @@ public class LithoWebKitInspector implements InspectorModulesProvider {
 
   public LithoWebKitInspector(Application application) {
     mApplication = application;
+    ComponentsConfiguration.isStethoEnabled = true;
   }
 
   @Override
   public Iterable<ChromeDevtoolsDomain> get() {
-    ComponentsConfiguration.isStethoEnabled = true;
-
     final Stetho.DefaultInspectorModulesBuilder defaultModulesBuilder =
         new Stetho.DefaultInspectorModulesBuilder(mApplication);
 

@@ -28,8 +28,10 @@ public class ComponentsConfiguration {
 
   /**
    * Option to enabled stetho debugging.
+   * We default to `IS_INTERNAL_BUILD` which is false for release builds but
+   * allow overriding at runtime.
    */
-  public static boolean isStethoEnabled = false;
+  public static boolean isStethoEnabled = BuildConfig.IS_INTERNAL_BUILD;
 
   /**
    * Debug option to highlight interactive areas in mounted components.
