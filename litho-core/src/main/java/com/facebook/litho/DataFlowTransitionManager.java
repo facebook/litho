@@ -35,8 +35,6 @@ public class DataFlowTransitionManager {
     void onMountItemAnimationComplete(Object mountItem);
   }
 
-  private static final Pools.SimplePool<TransitionDiff> sTransitionDiffPool =
-      new Pools.SimplePool<>(20);
   private static final Pools.SimplePool<AnimationState> sAnimationStatePool =
       new Pools.SimplePool<>(20);
 
@@ -65,6 +63,7 @@ public class DataFlowTransitionManager {
     public ArraySet<AnimatedProperty> animatingProperties = new ArraySet<>();
     public Object mountItem;
     public ArrayList<OnMountItemAnimationComplete> mAnimationCompleteListeners = new ArrayList<>();
+    public TransitionDiff currentDiff = new TransitionDiff();
     public int changeType = TransitionManager.KeyStatus.UNSET;
 
     public void reset() {
@@ -73,6 +72,7 @@ public class DataFlowTransitionManager {
       animatingProperties.clear();
       mountItem = null;
       mAnimationCompleteListeners.clear();
+      currentDiff.reset();
       changeType = TransitionManager.KeyStatus.UNSET;
     }
   }
@@ -80,7 +80,6 @@ public class DataFlowTransitionManager {
   private final ArrayList<AnimationBinding> mAnimationBindings = new ArrayList<>();
   private final SimpleArrayMap<AnimationBinding, ArraySet<String>> mAnimationsToKeys =
       new SimpleArrayMap<>();
-  private final SimpleArrayMap<String, TransitionDiff> mTransitionDiffs = new SimpleArrayMap<>();
   private final SimpleArrayMap<String, AnimationState> mAnimationStates = new SimpleArrayMap<>();
   private final TransitionsAnimationBindingListener mAnimationBindingListener =
       new TransitionsAnimationBindingListener();
@@ -88,12 +87,14 @@ public class DataFlowTransitionManager {
 
   void onNewTransitionContext(TransitionContext transitionContext) {
     mAnimationBindings.clear();
-    for (int i = 0, size = mTransitionDiffs.size(); i < size; i++) {
-      releaseTransitionDiff(mTransitionDiffs.valueAt(i));
-    }
-    mTransitionDiffs.clear();
-
     mAnimationBindings.addAll(transitionContext.getTransitionAnimationBindings());
+
+    for (int i = 0, size = mAnimationStates.size(); i < size; i++) {
+      final AnimationState animationState = mAnimationStates.valueAt(i);
+      animationState.changeType = TransitionManager.KeyStatus.UNSET;
+      animationState.currentDiff.reset();
+    }
+
     recordAllTransitioningProperties();
   }
 
@@ -101,10 +102,11 @@ public class DataFlowTransitionManager {
 
     final AnimationState animationState = mAnimationStates.get(transitionKey);
     if (animationState != null) {
-      final TransitionDiff info = acquireTransitionDiff();
       for (int i = 0; i < animationState.animatingProperties.size(); i++) {
         final AnimatedProperty prop = animationState.animatingProperties.valueAt(i);
-        info.beforeValues.put(prop, prop.get(mountItem));
+        if (animationState.currentDiff.beforeValues.put(prop, prop.get(mountItem)) != null) {
+          throw new RuntimeException("TransitionDiff wasn't cleared properly!");
+        }
 
         // Unfortunately, we have no guarantee that this mountItem won't be re-used for another
         // different component during the coming mount, so we need to reset it before the actual
@@ -112,7 +114,6 @@ public class DataFlowTransitionManager {
         prop.reset(mountItem);
       }
       setMountItem(animationState, mountItem);
-      mTransitionDiffs.put(transitionKey, info);
 
       // We set the change type to disappeared for now: if we see it again in onPostMountItem we'll
       // update it there
@@ -123,11 +124,8 @@ public class DataFlowTransitionManager {
   void onPostMountItem(String transitionKey, Object mountItem) {
     final AnimationState animationState = mAnimationStates.get(transitionKey);
     if (animationState != null) {
-      TransitionDiff info = mTransitionDiffs.get(transitionKey);
-      if (info == null) {
-        info = acquireTransitionDiff();
+      if (animationState.changeType == TransitionManager.KeyStatus.UNSET) {
         animationState.changeType = TransitionManager.KeyStatus.APPEARED;
-        mTransitionDiffs.put(transitionKey, info);
       } else {
         animationState.changeType = TransitionManager.KeyStatus.UNCHANGED;
       }
@@ -136,7 +134,9 @@ public class DataFlowTransitionManager {
 
       for (int i = 0; i < animationState.animatingProperties.size(); i++) {
         final AnimatedProperty prop = animationState.animatingProperties.valueAt(i);
-        info.afterValues.put(prop, prop.get(mountItem));
+        if (animationState.currentDiff.afterValues.put(prop, prop.get(mountItem)) != null) {
+          throw new RuntimeException("TransitionDiff wasn't cleared properly!");
+        }
       }
     }
   }
@@ -161,14 +161,15 @@ public class DataFlowTransitionManager {
   }
 
   private void restoreInitialStates() {
-    for (int i = 0; i < mTransitionDiffs.size(); i++) {
-      final String transitionKey = mTransitionDiffs.keyAt(i);
-      final TransitionDiff diff = mTransitionDiffs.valueAt(i);
-      final AnimationState animationState = mAnimationStates.get(transitionKey);
+    for (int i = 0, size = mAnimationStates.size(); i < size; i++) {
+      final String transitionKey = mAnimationStates.keyAt(i);
+      final AnimationState animationState = mAnimationStates.valueAt(i);
       if (animationState.changeType == TransitionManager.KeyStatus.UNCHANGED) {
-        for (int j = 0; j < diff.beforeValues.size(); j++) {
-          final AnimatedProperty property = diff.beforeValues.keyAt(j);
-          property.set(animationState.mountItem, diff.beforeValues.valueAt(j));
+        for (int j = 0; j < animationState.currentDiff.beforeValues.size(); j++) {
+          final AnimatedProperty property = animationState.currentDiff.beforeValues.keyAt(j);
+          property.set(
+              animationState.mountItem,
+              animationState.currentDiff.beforeValues.valueAt(j));
         }
       }
     }
@@ -193,8 +194,7 @@ public class DataFlowTransitionManager {
         throw new RuntimeException(
             "Wrong transition type for appear: " + animationState.changeType);
       }
-      final TransitionDiff diff = mTransitionDiffs.get(property.getTransitionKey());
-      diff.beforeValues.put(property.getProperty(), value);
+      animationState.currentDiff.beforeValues.put(property.getProperty(), value);
     }
   }
 
@@ -213,9 +213,8 @@ public class DataFlowTransitionManager {
         throw new RuntimeException(
             "Wrong transition type for disappear: " + animationState.changeType);
       }
-      final TransitionDiff diff = mTransitionDiffs.get(property.getTransitionKey());
       final float value = lazyValue.resolve(mResolver, property);
-      diff.afterValues.put(property.getProperty(), value);
+      animationState.currentDiff.afterValues.put(property.getProperty(), value);
     }
   }
 
@@ -295,19 +294,6 @@ public class DataFlowTransitionManager {
     listeners.clear();
   }
 
-  private static TransitionDiff acquireTransitionDiff() {
-    TransitionDiff diff = sTransitionDiffPool.acquire();
-    if (diff == null) {
-      diff = new TransitionDiff();
-    }
-    return diff;
-  }
-
-  private static void releaseTransitionDiff(TransitionDiff diff) {
-    diff.reset();
-    sTransitionDiffPool.release(diff);
-  }
-
   private static AnimationState acquireAnimationState() {
     AnimationState animationState = sAnimationStatePool.acquire();
     if (animationState == null) {
@@ -368,8 +354,8 @@ public class DataFlowTransitionManager {
 
     @Override
     public float getEndState(ComponentProperty property) {
-      final TransitionDiff diff = mTransitionDiffs.get(property.getTransitionKey());
-      return diff.afterValues.get(property.getProperty());
+      final AnimationState animationState = mAnimationStates.get(property.getTransitionKey());
+      return animationState.currentDiff.afterValues.get(property.getProperty());
     }
 
     @Override
