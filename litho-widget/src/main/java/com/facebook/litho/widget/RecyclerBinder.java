@@ -852,6 +852,11 @@ public class RecyclerBinder implements
 
       final int firstVisiblePosition = mLayoutInfo.findFirstVisiblePosition();
       final int lastVisiblePosition = mLayoutInfo.findLastVisiblePosition();
+
+      if (firstVisiblePosition < 0 || lastVisiblePosition < 0) {
+        return;
+      }
+
       if (firstVisiblePosition != mCurrentFirstVisiblePosition
           || lastVisiblePosition != mCurrentLastVisiblePosition) {
         onNewVisibleRange(firstVisiblePosition, lastVisiblePosition);
