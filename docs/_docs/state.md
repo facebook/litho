@@ -144,7 +144,7 @@ public class CheckboxSpec {
   }
 
   @OnUpdateState
-  void updateCheckbox(StateValue<Boolean> isChecked) {
+  static void updateCheckbox(StateValue<Boolean> isChecked) {
     isChecked.set(!isChecked.get());
   }
 
