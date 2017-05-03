@@ -47,9 +47,9 @@ import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUT
  */
 public class ComponentsPools {
 
-  private static YogaConfig sYogaConfig;
-
   private static final int SCRAP_ARRAY_INITIAL_SIZE = 4;
+
+  private static YogaConfig sYogaConfig;
 
   private ComponentsPools() {
   }
@@ -167,13 +167,18 @@ public class ComponentsPools {
   }
 
   static synchronized YogaNode acquireYogaNode(ComponentContext c) {
+    if (sYogaConfig == null) {
+      sYogaConfig = new YogaConfig();
+      sYogaConfig.setUseWebDefaults(true);
+      sYogaConfig.setUseLegacyStretchBehaviour(true);
+    }
+
+    if (sYogaConfig.getLogger() != ComponentsConfiguration.YOGA_LOGGER) {
+      sYogaConfig.setLogger(ComponentsConfiguration.YOGA_LOGGER);
+    }
+
     YogaNode node = ComponentsConfiguration.usePooling ? sYogaNodePool.acquire() : null;
     if (node == null) {
-      if (sYogaConfig == null) {
-        sYogaConfig = new YogaConfig();
-        sYogaConfig.setUseWebDefaults(true);
-        sYogaConfig.setUseLegacyStretchBehaviour(true);
-      }
       node = new YogaNode(sYogaConfig);
     }
 

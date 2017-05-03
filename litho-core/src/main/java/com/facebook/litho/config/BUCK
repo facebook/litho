@@ -12,6 +12,7 @@ litho_android_library(
     srcs = glob(["*.java"]),
     provided_deps = [
         COMPONENTS_BUILD_CONFIG_TARGET,
+        COMPONENTS_YOGA_TARGET,
     ],
     visibility = ["PUBLIC"],
 )

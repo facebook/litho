@@ -12,11 +12,14 @@ package com.facebook.litho.config;
 import android.os.Build;
 
 import com.facebook.litho.BuildConfig;
+import com.facebook.yoga.YogaLogger;
 
 /**
  * Configuration for the Components library.
  */
 public class ComponentsConfiguration {
+
+  public static YogaLogger YOGA_LOGGER;
 
   /**
    * Indicates whether this is an internal build.
