@@ -55,30 +55,33 @@ public @interface MountSpec {
   String value() default "";
 
   /**
-   * Whether the generated class should be public. If not, it will be package-private.
+   * @return Boolean indicating whether the generated class should be public. If not, it will be
+   * package-private.
    */
   boolean isPublic() default true;
 
   /**
-   * Whether the component implements a pure render function. If this is true and the Component
-   * didn't change during an update of the ComponentTree measurements and LayoutOutputs will be
-   * reused instead of being calculated again.
+   * @return Boolean indicating whether the component implements a pure render function. If this is
+   * true and the Component didn't change during an update of the ComponentTree measurements and
+   * LayoutOutputs will be reused instead of being calculated again.
    */
   boolean isPureRender() default false;
 
   /**
-   * Whether this mount spec supports incremental mount. This is only applicable to MountSpecs which
-   * mount a View which is or contains a LithoView.
+   * @return Boolean indicating whether this mount spec supports incremental mount. This is only
+   * applicable to MountSpecs which mount a View which is or contains a LithoView.
    */
   boolean canMountIncrementally() default false;
 
   /**
-   * List of event POJOs this component can dispatch. Used to generate event dispatch methods.
+   * @return List of event POJOs this component can dispatch. Used to generate event dispatch
+   * methods.
    */
   Class<?>[] events() default {};
 
   /**
-   * Whether this drawable mount spec should cache its drawing in a display list.
+   * @return Boolean indicating whether this drawable mount spec should cache its drawing in a
+   * display list.
    */
   boolean shouldUseDisplayList() default false;
 
