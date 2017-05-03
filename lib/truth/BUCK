@@ -1,0 +1,29 @@
+# Copyright (c) 2014-present, Facebook, Inc.
+# All rights reserved.
+#
+# This source code is licensed under the BSD-style license found in the
+# LICENSE file in the root directory of this source tree. An additional grant
+# of patent rights can be found in the PATENTS file in the same directory.
+
+include_defs("//COMPONENTS_DEFS")
+
+java_library(
+    name = "truth",
+    exported_deps = [
+        ":truth-prebuilt",
+    ],
+    visibility = [
+        COMPONENTS_VISIBILITY,
+    ],
+)
+
+prebuilt_jar(
+    name = "truth-prebuilt",
+    binary_jar = ":truth.jar",
+)
+
+remote_file(
+    name = "truth.jar",
+    sha1 = "9d591b5a66eda81f0b88cf1c748ab8853d99b18b",
+    url = "mvn:com.google.truth:truth:jar:0.30",
+)
