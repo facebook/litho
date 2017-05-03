@@ -50,6 +50,8 @@ public interface ClassNames {
   ClassName ANIMATION = ClassName.bestGuess("com.facebook.litho.Transition");
   ClassName TRANSITION_ANIMATION =
       ClassName.bestGuess("com.facebook.litho.animation.AnimationBinding");
+  ClassName AUTO_TRANSITION_SET =
+      ClassName.bestGuess("com.facebook.litho.AutoTransitionSet");
 
   ClassName COMPONENTS_CONFIGURATION =
       ClassName.bestGuess("com.facebook.litho.config.ComponentsConfiguration");
