@@ -10,7 +10,7 @@ public abstract class ComponentProperty {
   private final AnimatedComponent mAnimatedComponent;
   private final AnimatedProperty mProperty;
 
-  ComponentProperty(
+  public ComponentProperty(
       AnimatedComponent animatedComponent,
       AnimatedProperty property) {
     mAnimatedComponent = animatedComponent;
