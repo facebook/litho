@@ -97,6 +97,17 @@ public class PropModel implements MethodParamModel {
     return false;
   }
 
+  public PropDefaultModel getDefault(ImmutableList<PropDefaultModel> propDefaults) {
+    for (PropDefaultModel propDefault : propDefaults) {
+      if (propDefault.mType.equals(mParamModel.getType())
+          && propDefault.mName.equals(mParamModel.getName())) {
+        return propDefault;
+      }
+    }
+
+    return null;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (o instanceof PropModel) {

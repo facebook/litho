@@ -9,6 +9,9 @@
 
 package com.facebook.litho.specmodels.generator;
 
+import com.facebook.litho.annotations.ResType;
+import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.model.PropDefaultModel;
 import javax.lang.model.element.Modifier;
 
 import java.util.ArrayList;
@@ -122,6 +125,16 @@ public class BuilderGenerator {
         .addModifiers(Modifier.PRIVATE)
         .addParameter(specModel.getContextClass(), CONTEXT_PARAM_NAME);
 
+    final ImmutableList<PropDefaultModel> propDefaults = specModel.getPropDefaults();
+    boolean hasResTypePropDefault = false;
+
+    for (PropDefaultModel propDefault : propDefaults) {
+      if (propDefault.hasResType()) {
+        hasResTypePropDefault = true;
+        break;
+      }
+    }
+
     if (specModel.isStylingSupported()) {
       initMethodSpec
           .addParameter(int.class, "defStyleAttr")
@@ -137,6 +150,10 @@ public class BuilderGenerator {
     initMethodSpec
         .addStatement("$L = $L", implMemberInstanceName, implParamName)
         .addStatement("$L = $L", CONTEXT_MEMBER_NAME, CONTEXT_PARAM_NAME);
+
+    if (hasResTypePropDefault) {
+      initMethodSpec.addStatement("initPropDefaults()");
+    }
 
     final TypeSpec.Builder propsBuilderClassBuilder = TypeSpec.classBuilder(BUILDER)
         .addModifiers(Modifier.PUBLIC)
@@ -199,7 +216,25 @@ public class BuilderGenerator {
       initMethodSpec.addStatement("mRequired.clear()");
     }
 
+    MethodSpec.Builder initResTypePropDefaultsSpec = null;
+
+    if (hasResTypePropDefault) {
+      initResTypePropDefaultsSpec = MethodSpec.methodBuilder("initPropDefaults");
+
+      for (PropDefaultModel propDefault : propDefaults) {
+        if (!propDefault.hasResType()) continue;
+
+        initResTypePropDefaultsSpec.addStatement("this.$L.$L = $L",
+            getImplMemberInstanceName(specModel), propDefault.mName,
+            generateInitializer(propDefault, specModel));
+      }
+    }
+
     propsBuilderClassBuilder.addMethod(initMethodSpec.build());
+
+    if (initResTypePropDefaultsSpec != null) {
+      propsBuilderClassBuilder.addMethod(initResTypePropDefaultsSpec.build());
+    }
 
     // If there are no type variables, then this class can always be static.
     // If the component implementation class is static, and there are type variables, then this
@@ -777,5 +812,23 @@ public class BuilderGenerator {
         .addStatement(CONTEXT_MEMBER_NAME + " = null")
         .addStatement("$L.release(this)", BUILDER_POOL_FIELD)
         .build();
+  }
+
+  private static String generateInitializer(
+      PropDefaultModel propDefaultModel,
+      SpecModel specModel) {
+    final String defaultInitializer = "%s.%s";
+    StringBuilder builtInitializer = new StringBuilder();
+
+    if (propDefaultModel.hasResType()) {
+      if (propDefaultModel.mResType == ResType.DIMEN_SIZE) {
+        return String.format(builtInitializer.append("resolveDimenSizeRes(")
+            .append(defaultInitializer)
+            .append(")")
+            .toString(), specModel.getSpecName(), propDefaultModel.mName);
+      }
+    }
+
+    return builtInitializer.toString();
   }
 }
