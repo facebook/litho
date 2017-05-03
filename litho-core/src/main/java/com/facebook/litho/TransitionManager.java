@@ -168,7 +168,9 @@ class TransitionManager implements TransitionKeySetListener {
       }
     }
 
-    mDataFlowTransitionManager.activateBindings();
+    if (animateTransitions) {
+      mDataFlowTransitionManager.activateBindings();
+    }
   }
 
   TransitionKeySet getTransitionKeySet(String key) {

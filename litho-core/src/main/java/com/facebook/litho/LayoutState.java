@@ -609,17 +609,24 @@ class LayoutState {
             component);
         final AnimationBinding transitionAnimation =
             component.getLifecycle().onCreateTransitionAnimation(layoutState.mContext, component);
+        final AutoTransitionSet autoTransitionSet =
+            component.getLifecycle().onCreateAutoTransition(layoutState.mContext, component);
 
-        if (transition != null || transitionAnimation != null) {
-          if (transition != null && transitionAnimation != null) {
-            throw new RuntimeException(
-                "Can't add both a regular transition and an experimental " +
-                "binding transition (which you probably shouldn't be using)");
-          }
+        if (transition != null || transitionAnimation != null || autoTransitionSet != null) {
           if (transition != null) {
+            if (transitionAnimation != null || autoTransitionSet != null) {
+              throw new RuntimeException(
+                  "Defined multiple transition animations in the same component!");
+            }
             layoutState.getOrCreateTransitionContext().add(transition);
-          } else {
+          } else if (transitionAnimation != null) {
+            if (autoTransitionSet != null) {
+              throw new RuntimeException(
+                  "Defined multiple transition animations in the same component!");
+            }
             layoutState.getOrCreateTransitionContext().addTransitionAnimationBinding(transitionAnimation);
+          } else {
+            layoutState.getOrCreateTransitionContext().addAutoTransitions(autoTransitionSet);
           }
         }
       }

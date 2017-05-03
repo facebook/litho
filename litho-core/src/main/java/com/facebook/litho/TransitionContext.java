@@ -26,6 +26,7 @@ class TransitionContext {
   private final SimpleArrayMap<String, TransitionKeySet> mKeyToTransitionKeySets =
       new SimpleArrayMap<>();
   private final ArrayList<AnimationBinding> mTransitionAnimationBindings = new ArrayList<>();
+  private final AutoTransitionSet mAutoTransitionSets = new AutoTransitionSet();
 
   // Transition keys of given layout tree
   private final HashSet<String> mTransitionKeys = new HashSet<>(8);
@@ -54,6 +55,10 @@ class TransitionContext {
     mTransitionAnimationBindings.add(binding);
   }
 
+  void addAutoTransitions(AutoTransitionSet autoTransitionSet) {
+    mAutoTransitionSets.mergeIn(autoTransitionSet);
+  }
+
   SimpleArrayMap<String, TransitionKeySet> getTransitionKeySets() {
     return mKeyToTransitionKeySets;
   }
@@ -62,9 +67,14 @@ class TransitionContext {
     return mTransitionAnimationBindings;
   }
 
+  AutoTransitionSet getAutoTransitionSet() {
+    return mAutoTransitionSets;
+  }
+
   void reset() {
     mTransitionAnimationBindings.clear();
     mKeyToTransitionKeySets.clear();
+    mAutoTransitionSets.clear();
     mTransitionKeys.clear();
   }
 
@@ -76,17 +86,21 @@ class TransitionContext {
     return mTransitionKeys.contains(transitionKey);
   }
 
+  HashSet<String> getTransitionKeys() {
+    return mTransitionKeys;
+  }
+
   /**
    * @return Whether item with the given {@param transitionKey} is being removed from layout tree.
    */
   boolean isDisappearingKey(String transitionKey) {
-    if (transitionKey == null) {
+    if (transitionKey == null || mTransitionKeys.contains(transitionKey)) {
       return false;
     }
     final TransitionKeySet transitionKeySet = mKeyToTransitionKeySets.get(transitionKey);
-    if (transitionKeySet == null || !transitionKeySet.hasDisappearingTransitions()) {
-      return false;
+    if (transitionKeySet != null && transitionKeySet.hasDisappearingTransitions()) {
+      return true;
     }
-    return !mTransitionKeys.contains(transitionKey);
+    return mAutoTransitionSets.hasDisappearAnimation(transitionKey);
   }
 }
