@@ -65,6 +65,7 @@ public class DataFlowTransitionManager {
     public ArrayList<OnMountItemAnimationComplete> mAnimationCompleteListeners = new ArrayList<>();
     public TransitionDiff currentDiff = new TransitionDiff();
     public int changeType = TransitionManager.KeyStatus.UNSET;
+    public boolean sawInPreMount = false;
 
     public void reset() {
       activeAnimations.clear();
@@ -74,6 +75,7 @@ public class DataFlowTransitionManager {
       mAnimationCompleteListeners.clear();
       currentDiff.reset();
       changeType = TransitionManager.KeyStatus.UNSET;
+      sawInPreMount = false;
     }
   }
 
@@ -91,7 +93,7 @@ public class DataFlowTransitionManager {
 
     for (int i = 0, size = mAnimationStates.size(); i < size; i++) {
       final AnimationState animationState = mAnimationStates.valueAt(i);
-      animationState.changeType = TransitionManager.KeyStatus.UNSET;
+      animationState.sawInPreMount = false;
       animationState.currentDiff.reset();
     }
 
@@ -118,13 +120,14 @@ public class DataFlowTransitionManager {
       // We set the change type to disappeared for now: if we see it again in onPostMountItem we'll
       // update it there
       animationState.changeType = TransitionManager.KeyStatus.DISAPPEARED;
+      animationState.sawInPreMount = true;
     }
   }
 
   void onPostMountItem(String transitionKey, Object mountItem) {
     final AnimationState animationState = mAnimationStates.get(transitionKey);
     if (animationState != null) {
-      if (animationState.changeType == TransitionManager.KeyStatus.UNSET) {
+      if (!animationState.sawInPreMount) {
         animationState.changeType = TransitionManager.KeyStatus.APPEARED;
       } else {
         animationState.changeType = TransitionManager.KeyStatus.UNCHANGED;
