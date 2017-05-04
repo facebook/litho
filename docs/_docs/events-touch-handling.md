@@ -24,7 +24,7 @@ class MyComponentSpec {
 	      .text(title)
 	      .withLayout()
 	      .clickHandler(MyComponent.onClick(c))
-	      .buildWithLayout();
+	      .build();
     }
 }
 ```
