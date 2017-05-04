@@ -1304,7 +1304,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public ContainerBuilder transitionKey(String key) {
-    if (SDK_INT >= ICE_CREAM_SANDWICH) {
+    if (SDK_INT >= ICE_CREAM_SANDWICH && !TextUtils.isEmpty(key)) {
       mPrivateFlags |= PFLAG_TRANSITION_KEY_IS_SET;
       mTransitionKey = key;
       wrapInView();
