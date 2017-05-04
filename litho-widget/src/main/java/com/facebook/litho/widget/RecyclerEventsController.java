@@ -75,4 +75,8 @@ public class RecyclerEventsController {
   void setRecyclerViewWrapper(RecyclerViewWrapper recyclerViewWrapper) {
     mRecyclerViewWrapper = recyclerViewWrapper;
   }
+
+  protected RecyclerViewWrapper getRecyclerViewWrapper() {
+    return mRecyclerViewWrapper;
+  }
 }
