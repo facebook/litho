@@ -23,6 +23,7 @@ import com.facebook.litho.annotations.Event;
  *
  * @OnEvent(ClickEvent.class)
  * static void onClick(
+ *     ComponentContext c,
  *     @FromEvent View view,
  *     @Param Param someParam,
  *     @Prop Prop someProp) {
