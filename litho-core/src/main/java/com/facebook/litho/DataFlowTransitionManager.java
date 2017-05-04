@@ -164,7 +164,10 @@ public class DataFlowTransitionManager {
     for (int i = 0, size = mAnimationStates.size(); i < size; i++) {
       final String transitionKey = mAnimationStates.keyAt(i);
       final AnimationState animationState = mAnimationStates.valueAt(i);
-      if (animationState.changeType == TransitionManager.KeyStatus.UNCHANGED) {
+      // If the component is appearing, we will instead restore the initial value in
+      // setAppearFromValues. This is necessary since appearFrom values can be written in terms of
+      // the end state (e.g. appear from an offset of -10dp)
+      if (animationState.changeType != TransitionManager.KeyStatus.APPEARED) {
         for (int j = 0; j < animationState.currentDiff.beforeValues.size(); j++) {
           final AnimatedProperty property = animationState.currentDiff.beforeValues.keyAt(j);
           property.set(
