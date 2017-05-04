@@ -44,7 +44,7 @@ final int textComponentWidth = outputSize.width;
 final int textComponentHeight = outputSize.height;
 ```
 
-## `SizeSpec` information during layout
+## SizeSpec information during layout
 During layout creation, the API can provide information about the `SizeSpecs` a component is going to be measured with. To access this information, a new `@OnCreateLayoutWithSizeSpec` annotation needs to be used instead of `@OnCreateLayout`. The arguments of the annotated method, besides the standard ComponentContext, are two more integers representing the width spec and the height spec.
 
 In the following example, a `Text` component is measured to check if the given text fits in the available space. An `Image` component is otherwise used.
