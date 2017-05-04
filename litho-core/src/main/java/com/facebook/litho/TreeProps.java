@@ -9,7 +9,10 @@
 
 package com.facebook.litho;
 
-import android.support.v4.util.SimpleArrayMap;
+import java.util.Collections;
+import java.util.Map;
+
+import android.support.v4.util.ArrayMap;
 
 import com.facebook.litho.annotations.TreeProp;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -22,7 +25,7 @@ import com.facebook.infer.annotation.ThreadSafe;
 @ThreadConfined(ThreadConfined.ANY)
 public class TreeProps {
 
-  private final SimpleArrayMap<Class, Object> mMap = new SimpleArrayMap<>();
+  private final ArrayMap<Class, Object> mMap = new ArrayMap<>();
 
   public void put(Class key, Object value) {
     mMap.put(key, value);
@@ -30,6 +33,10 @@ public class TreeProps {
 
   public <T> T get(Class key) {
     return (T) mMap.get(key);
+  }
+
+  public Map<Class, Object> toMap() {
+    return Collections.unmodifiableMap(mMap);
   }
 
   /**
@@ -41,7 +48,7 @@ public class TreeProps {
   public static TreeProps copy(TreeProps source) {
     final TreeProps newProps = ComponentsPools.acquireTreeProps();
     if (source != null) {
-      newProps.mMap.putAll(source.mMap);
+      newProps.mMap.putAll((Map<? extends Class, ?>) source.mMap);
     }
 
     return newProps;
