@@ -514,6 +514,7 @@ class MountState {
     // 2. Reset all the properties like click handler, content description and tags related to
     // this item if it needs to be updated. the update mount item will re-set the new ones.
     if (shouldUpdate) {
+      maybeDecrementTransitionKeyMountCount(currentMountItem);
       unsetViewAttributes(currentMountItem);
     }
 
@@ -533,6 +534,7 @@ class MountState {
     if (shouldUpdate) {
       updateMountedContent(currentMountItem, layoutOutput, itemComponent);
       setViewAttributes(currentMountItem);
+      maybeIncrementTransitionKeyMountCount(currentMountItem);
     }
 
     final Object currentContent = currentMountItem.getContent();
@@ -839,10 +841,7 @@ class MountState {
 
       // We do not need this mapping for disappearing items.
       mIndexToItemMap.remove(mLayoutOutputsIds[i]);
-      final ViewNodeInfo viewNodeInfo = item.getViewNodeInfo();
-      if (viewNodeInfo != null && viewNodeInfo.getTransitionKey() != null) {
-        decrementMountCount(viewNodeInfo.getTransitionKey());
-      }
+      maybeDecrementTransitionKeyMountCount(item);
 
       // Likewise we no longer need host mapping for disappearing items.
       if (isHostSpec(item.getComponent())) {
@@ -974,10 +973,7 @@ class MountState {
     // Create and keep a MountItem even for the layoutSpec with null content
     // that sets the root host interactions.
     mIndexToItemMap.put(mLayoutOutputsIds[index], item);
-    final ViewNodeInfo viewNodeInfo = item.getViewNodeInfo();
-    if (viewNodeInfo != null && viewNodeInfo.getTransitionKey() != null) {
-      incrementMountCount(viewNodeInfo.getTransitionKey());
-    }
+    maybeIncrementTransitionKeyMountCount(item);
 
     if (component.getLifecycle().canMountIncrementally()) {
       mCanMountIncrementallyMountItems.put(mLayoutOutputsIds[index], item);
@@ -1664,10 +1660,8 @@ class MountState {
     unbindAndUnmountLifecycle(context, item);
 
     mIndexToItemMap.remove(mLayoutOutputsIds[index]);
-    final ViewNodeInfo viewNodeInfo = item.getViewNodeInfo();
-    if (viewNodeInfo != null && viewNodeInfo.getTransitionKey() != null) {
-      decrementMountCount(viewNodeInfo.getTransitionKey());
-    }
+    maybeDecrementTransitionKeyMountCount(item);
+
     if (component.getLifecycle().canMountIncrementally()) {
       mCanMountIncrementallyMountItems.delete(mLayoutOutputsIds[index]);
     }
@@ -2027,13 +2021,33 @@ class MountState {
   // These increment and decrement methods are necessary because when a transition key changes what
   // content it mounts to, it can be re-added to the mount state before its old content is removed
   // (so we can't use a simple set).
-  private void incrementMountCount(String transitionKey) {
-    Integer currentCount = mMountedTransitionKeys.get(transitionKey);
+  private void maybeIncrementTransitionKeyMountCount(MountItem mountItem) {
+    final ViewNodeInfo viewNodeInfo = mountItem.getViewNodeInfo();
+    if (viewNodeInfo == null) {
+      return;
+    }
+
+    final String transitionKey = viewNodeInfo.getTransitionKey();
+    if (transitionKey == null) {
+      return;
+    }
+
+    final Integer currentCount = mMountedTransitionKeys.get(transitionKey);
     mMountedTransitionKeys.put(transitionKey, currentCount == null ? 1 : currentCount + 1);
   }
 
-  private void decrementMountCount(String transitionKey) {
-    Integer currentCount = mMountedTransitionKeys.remove(transitionKey);
+  private void maybeDecrementTransitionKeyMountCount(MountItem mountItem) {
+    final ViewNodeInfo viewNodeInfo = mountItem.getViewNodeInfo();
+    if (viewNodeInfo == null) {
+      return;
+    }
+
+    final String transitionKey = viewNodeInfo.getTransitionKey();
+    if (transitionKey == null) {
+      return;
+    }
+
+    final Integer currentCount = mMountedTransitionKeys.remove(transitionKey);
     if (currentCount == null) {
       throw new RuntimeException("Tried to decrement mount count below 0 for key " + transitionKey);
     }
