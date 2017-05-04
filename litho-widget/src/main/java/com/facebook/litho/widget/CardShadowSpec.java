@@ -21,6 +21,11 @@ import com.facebook.litho.annotations.ResType;
 /**
  * A component that is able to render the card's shadow. Used in the
  * implementation of {@link CardSpec}.
+ *
+ * @prop shadowStartColor Start color for the shadow.
+ * @prop shadowEndColor End color for the shadow.
+ * @prop cornerRadius Corner radius for the card that shows the shadow.
+ * @prop shadowSize Size of the shadow.
  */
 @MountSpec(isPublic = false, isPureRender = true)
 class CardShadowSpec {

@@ -22,6 +22,8 @@ import static com.facebook.litho.annotations.ResType.COLOR;
 
 /**
  * A component that renders a solid color.
+ *
+ * @prop color Color to be shown.
  */
 @LayoutSpec
 class SolidColorSpec {

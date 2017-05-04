@@ -39,6 +39,13 @@ import static com.facebook.litho.widget.CardShadowDrawable.getShadowTop;
 
 /**
  * A component that renders a given component into a card border with shadow.
+ *
+ * @prop cardBackgroundColor Background color for the card.
+ * @prop clippingColor Color for corner clipping.
+ * @prop shadowStartColor Start color for shadow drawn underneath the card.
+ * @prop shadowEndColor End color for shadow drawn underneath the card.
+ * @prop cornerRadius Corner radius for the card.
+ * @prop elevation Evelation of the card.
  */
 @LayoutSpec (isPureRender = true)
 class CardSpec {

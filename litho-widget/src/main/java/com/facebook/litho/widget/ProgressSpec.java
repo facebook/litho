@@ -39,6 +39,9 @@ import com.facebook.litho.utils.MeasureUtils;
 
 /**
  * Renders an infinitely spinning progress bar.
+ *
+ * @prop indeterminateDrawable Drawable to be shown to show progress.
+ * @prop color Tint color for the drawable.
  */
 @MountSpec(isPureRender = true)
 class ProgressSpec {

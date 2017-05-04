@@ -77,6 +77,36 @@ import static com.facebook.litho.widget.VerticalGravity.BOTTOM;
 import static com.facebook.litho.widget.VerticalGravity.CENTER;
 import static com.facebook.litho.widget.VerticalGravity.TOP;
 
+/**
+ * Component to render text.
+ *
+ * @prop text Text to display.
+ * @prop ellipsize If set, specifies the position of the text to be ellipsized.
+ * @prop minLines Minimum number of lines to show.
+ * @prop maxLines Maximum number of lines to show.
+ * @prop minEms Makes the text to be mim ems wide.
+ * @prop maxEms Makes the text to be max ems wide.
+ * @prop minWidth Makes the text to be min pixels wide.
+ * @prop maxWidth Makes the text to be max pixels wide.
+ * @prop shadowRadius Blur radius of the shadow.
+ * @prop shadowDx Horizontal offset of the shadow.
+ * @prop shadowDy Vertical offset of the shadow.
+ * @prop shadowColor Color for the shadow underneath the text.
+ * @prop isSingleLine If set, makes the text to be rendered in a single line.
+ * @prop textColor Color of the text.
+ * @prop textColorStateList ColorStateList of the text.
+ * @prop linkColor Color for links in the text.
+ * @prop textSize Size of the text.
+ * @prop extraSpacing Extra spacing between the lines of text.
+ * @prop spacingMultiplier Extra spacing between the lines of text, as a multiplier.
+ * @prop textStyle Style (bold, italic, bolditalic) for the text.
+ * @prop typeface Typeface for the text.
+ * @prop textAlignment Alignment of the text within its container.
+ * @prop glyphWarming If set, pre-renders the text to an off-screen Canvas to boost performance.
+ * @prop textDirection Heuristic to use to determine the direction of the text.
+ * @prop shouldIncludeFontPadding If set, uses extra padding for ascenders and descenders.
+ * @prop verticalGravity Vertical gravity for the text within its container.
+ */
 @MountSpec(isPureRender = true, shouldUseDisplayList = true, poolSize = 30)
 class TextSpec {
 

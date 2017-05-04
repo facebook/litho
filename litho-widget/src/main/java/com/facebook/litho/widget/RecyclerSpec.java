@@ -39,6 +39,20 @@ import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.ShouldUpdate;
 
+/**
+ * Components that renders a {@link RecyclerView}.
+ *
+ * @prop binder Binder for RecyclerView.
+ * @prop refreshHandler Event handler for refresh event.
+ * @prop hasFixedSize If set, makes RecyclerView not affected by adapter changes.
+ * @prop clipToPadding Clip RecyclerView to its padding.
+ * @prop nestedScrollingEnabled Enables nested scrolling on the RecyclerView.
+ * @prop itemDecoration Item decoration for the RecyclerView.
+ * @prop refreshProgressBarColor Color for progress animation.
+ * @prop recyclerViewId View ID for the RecyclerView.
+ * @prop recyclerEventsController Controller to pass events from outside the component.
+ * @prop onScrollListener Listener for RecyclerView's scroll events.
+ */
 @MountSpec(canMountIncrementally = true, isPureRender = true, events = {PTRRefreshEvent.class})
 class RecyclerSpec {
   @PropDefault static final int scrollBarStyle = View.SCROLLBARS_INSIDE_OVERLAY;

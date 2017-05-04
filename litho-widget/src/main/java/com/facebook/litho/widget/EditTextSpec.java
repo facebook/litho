@@ -51,6 +51,36 @@ import static android.view.View.TEXT_ALIGNMENT_CENTER;
 import static android.view.View.TEXT_ALIGNMENT_TEXT_END;
 import static android.view.View.TEXT_ALIGNMENT_TEXT_START;
 
+/**
+ * Component that renders an {@link EditText}.
+ *
+ * @prop text Text to display.
+ * @prop hint Hint text to display.
+ * @prop ellipsize If sets, specifies the position of the text to be ellispized.
+ * @prop minLines Minimum number of lines to show.
+ * @prop maxLines Maximum number of lines to show.
+ * @prop maxLength Specifies the maximum number of characters to accept.
+ * @prop shadowRadius Blur radius of the shadow.
+ * @prop shadowDx Horizontal offset of the shadow.
+ * @prop shadowDy Vertical offset of the shadow.
+ * @prop shadowColor Color for the shadow underneath the text.
+ * @prop isSingleLine If set, makes the text to be rendered in a single line.
+ * @prop textColor Color of the text.
+ * @prop textColorStateList ColorStateList of the text.
+ * @prop hintTextColor Hint color of the text.
+ * @prop hintTextColorStateList Hint ColorStateList of the text.
+ * @prop textSize Size of the text.
+ * @prop extraSpacing Extra spacing between the lines of text.
+ * @prop spacingMultiplier Extra spacing between the lines of text, as a multiplier.
+ * @prop textStyle Style (bold, italic, bolditalic) for the text.
+ * @prop typeface Typeface for the text.
+ * @prop textAlignment Alignment of the text within its container.
+ * @prop gravity Gravity for the text within its container.
+ * @prop editable If set, allows the text to be editable.
+ * @prop selection Moves the cursor to the selection index.
+ * @prop inputType Type of data being placed in a text field,
+ * used to help an input method decide how to let the user enter text.
+ */
 @MountSpec(isPureRender = true, events = {TextChangedEvent.class})
 class EditTextSpec {
 

@@ -17,8 +17,11 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
 
 /**
- * A component that is paints rounded edges to mimic a clipping operation on the
+ * A component that paints rounded edges to mimic a clipping operation on the
  * component being rendered below it. Used in {@link CardSpec}.
+ *
+ * @prop clippingColor Color for corner clipping.
+ * @prop cornerRadius Radius for corner clipping.
  */
 @MountSpec(isPureRender = true)
 class CardClipSpec {
