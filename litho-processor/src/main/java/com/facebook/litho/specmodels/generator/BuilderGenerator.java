@@ -126,11 +126,11 @@ public class BuilderGenerator {
         .addParameter(specModel.getContextClass(), CONTEXT_PARAM_NAME);
 
     final ImmutableList<PropDefaultModel> propDefaults = specModel.getPropDefaults();
-    boolean hasResTypePropDefault = false;
+    boolean isResResolvable = false;
 
     for (PropDefaultModel propDefault : propDefaults) {
-      if (propDefault.hasResType()) {
-        hasResTypePropDefault = true;
+      if (propDefault.isResResolvable()) {
+        isResResolvable = true;
         break;
       }
     }
@@ -151,7 +151,7 @@ public class BuilderGenerator {
         .addStatement("$L = $L", implMemberInstanceName, implParamName)
         .addStatement("$L = $L", CONTEXT_MEMBER_NAME, CONTEXT_PARAM_NAME);
 
-    if (hasResTypePropDefault) {
+    if (isResResolvable) {
       initMethodSpec.addStatement("initPropDefaults()");
     }
 
@@ -218,15 +218,15 @@ public class BuilderGenerator {
 
     MethodSpec.Builder initResTypePropDefaultsSpec = null;
 
-    if (hasResTypePropDefault) {
+    if (isResResolvable) {
       initResTypePropDefaultsSpec = MethodSpec.methodBuilder("initPropDefaults");
 
       for (PropDefaultModel propDefault : propDefaults) {
-        if (!propDefault.hasResType()) continue;
+        if (!propDefault.isResResolvable()) continue;
 
         initResTypePropDefaultsSpec.addStatement("this.$L.$L = $L",
-            getImplMemberInstanceName(specModel), propDefault.mName,
-            generateInitializer(propDefault, specModel));
+            getImplMemberInstanceName(specModel), propDefault.getName(),
+            generatePropsDefaultInitializers(specModel, propDefault));
       }
     }
 
@@ -436,6 +436,40 @@ public class BuilderGenerator {
     }
 
     return dataHolder.build();
+  }
+
+  static String generatePropsDefaultInitializers(
+      SpecModel specModel,
+      PropDefaultModel propDefault) {
+
+    switch (propDefault.getResType()) {
+      case STRING:
+        return generatePropDefaultResInitializer("resolveStringRes", propDefault, specModel);
+      case STRING_ARRAY:
+        return generatePropDefaultResInitializer("resolveStringArrayRes", propDefault, specModel);
+      case INT:
+        return generatePropDefaultResInitializer("resolveIntRes", propDefault, specModel);
+      case INT_ARRAY:
+        return generatePropDefaultResInitializer("resolveIntArrayRes", propDefault, specModel);
+      case BOOL:
+        return generatePropDefaultResInitializer("resolveBoolRes", propDefault, specModel);
+      case COLOR:
+        return generatePropDefaultResInitializer("resolveColorRes", propDefault, specModel);
+      case DIMEN_SIZE:
+        return generatePropDefaultResInitializer("resolveDimenSizeRes", propDefault, specModel);
+      case DIMEN_TEXT:
+        return generatePropDefaultResInitializer("resolveDimenSizeRes", propDefault, specModel);
+      case DIMEN_OFFSET:
+        return generatePropDefaultResInitializer("resolveDimenOffsetRes", propDefault, specModel);
+      case FLOAT:
+        return generatePropDefaultResInitializer("resolveFloatRes", propDefault, specModel);
+      case DRAWABLE_REFERENCE:
+        return generatePropDefaultResInitializer("resolveDrawableReferenceRes", propDefault, specModel);
+      case DRAWABLE:
+        return generatePropDefaultResInitializer("resolveDrawableRes", propDefault, specModel);
+    }
+
+    return "";
   }
 
   static TypeName getRawType(TypeName type) {
@@ -814,19 +848,20 @@ public class BuilderGenerator {
         .build();
   }
 
-  private static String generateInitializer(
+  private static String generatePropDefaultResInitializer(
+      String resourceResolveMethodName,
       PropDefaultModel propDefaultModel,
       SpecModel specModel) {
-    final String defaultInitializer = "%s.%s";
     StringBuilder builtInitializer = new StringBuilder();
 
-    if (propDefaultModel.hasResType()) {
-      if (propDefaultModel.mResType == ResType.DIMEN_SIZE) {
-        return String.format(builtInitializer.append("resolveDimenSizeRes(")
-            .append(defaultInitializer)
-            .append(")")
-            .toString(), specModel.getSpecName(), propDefaultModel.mName);
-      }
+    if (propDefaultModel.isResResolvable()) {
+      return String.format(
+          builtInitializer
+              .append(resourceResolveMethodName)
+              .append("(")
+              .append(propDefaultModel.getResId())
+              .append(")")
+              .toString(), specModel.getSpecName(), propDefaultModel.getName());
     }
 
     return builtInitializer.toString();

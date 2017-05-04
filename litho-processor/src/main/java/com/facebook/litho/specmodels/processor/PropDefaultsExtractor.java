@@ -49,13 +49,15 @@ public class PropDefaultsExtractor {
       }
 
       final ResType propDefaultResType = ((PropDefault) propDefaultAnnotation).resType();
+      final int propDefaultResId = ((PropDefault) propDefaultAnnotation).resId();
 
       propDefaults.add(
           new PropDefaultModel(
               TypeName.get(variableElement.asType()),
               variableElement.getSimpleName().toString(),
               ImmutableList.copyOf(new ArrayList<>(variableElement.getModifiers())), variableElement,
-              propDefaultResType));
+              propDefaultResType,
+              propDefaultResId));
     }
 
     return ImmutableList.copyOf(propDefaults);

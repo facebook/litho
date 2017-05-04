@@ -24,26 +24,49 @@ import com.squareup.javapoet.TypeName;
 @Immutable
 public class PropDefaultModel {
   public final TypeName mType;
-  public final String mName;
   public final ImmutableList<Modifier> mModifiers;
   public final Object mRepresentedObject;
-  public final ResType mResType;
+  public final String mName;
+  private final ResType mResType;
+  private final int mResId;
 
   public PropDefaultModel(
       TypeName type,
       String name,
       ImmutableList<Modifier> modifiers,
       Object representedObject,
-      ResType resType) {
+      ResType resType,
+      int resId) {
     mType = type;
     mName = name;
     mModifiers = modifiers;
     mRepresentedObject = representedObject;
     mResType = resType;
+    mResId = resId;
   }
 
-  public boolean hasResType() {
+  public String getName() {
+    return mName;
+  }
+
+  public ResType getResType() {
+    return mResType;
+  }
+
+  public int getResId() {
+    return mResId;
+  }
+
+  public boolean isResResolvable() {
+    return hasResType() && hasResId();
+  }
+
+  private boolean hasResType() {
     return mResType != ResType.NONE;
+  }
+
+  private boolean hasResId() {
+    return mResId != 0;
   }
 
   @Override
@@ -51,7 +74,7 @@ public class PropDefaultModel {
     if (o instanceof PropDefaultModel) {
       final PropDefaultModel p = (PropDefaultModel) o;
       return mType.equals(p.mType) && mName.equals(p.mName) && mModifiers.equals(p.mModifiers)
-          && mResType.equals(p.mResType);
+          && mResType.equals(p.mResType) && mResId == p.mResId;
     }
 
     return false;
@@ -63,6 +86,7 @@ public class PropDefaultModel {
     result = 17 * result + mName.hashCode();
     result = 31 * result + mModifiers.hashCode();
     result = 31 * result + mResType.hashCode();
+    result = 31 * result + mResId;
     return result;
   }
 }
