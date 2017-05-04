@@ -1989,15 +1989,17 @@ class MountState {
    * this update.
    */
   private void createAutoMountTransitions(LayoutState layoutState) {
-    TransitionContext transitionContext = layoutState.getTransitionContext();
-    AutoTransitionSet autoTransitionSet = transitionContext.getAutoTransitionSet();
-    ArrayList<AutoTransition> autoTransitions = autoTransitionSet.getAutoTransitions();
+    final TransitionContext transitionContext = layoutState.getTransitionContext();
+    final AutoTransitionSet autoTransitionSet = transitionContext.getAutoTransitionSet();
+    final ArrayList<AutoTransition> autoTransitions = autoTransitionSet.getAutoTransitions();
+
+    transitionContext.getTransitionAnimationBindings().clear();
 
     for (int i = 0, size = autoTransitions.size(); i < size; i++) {
       final AutoTransition transition = autoTransitions.get(i);
       final String key = transition.getTransitionKey();
-      boolean lastMountHadKey = mMountedTransitionKeys.containsKey(key);
-      boolean thisMountWillHaveKey = transitionContext.hasTransitionKey(key);
+      final boolean lastMountHadKey = mMountedTransitionKeys.containsKey(key);
+      final boolean thisMountWillHaveKey = transitionContext.hasTransitionKey(key);
 
       AnimationBinding animation = null;
       if (lastMountHadKey && thisMountWillHaveKey) {
