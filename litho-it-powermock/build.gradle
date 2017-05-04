@@ -37,6 +37,8 @@ afterEvaluate {
 
 dependencies {
     compile project(':litho-core')
+    // We are reusing some of the testing resources
+    compile project(':litho-it')
     testCompile project(':litho-stubs')
     testCompile project(':litho-testing')
     testCompile project(':litho-widget')
