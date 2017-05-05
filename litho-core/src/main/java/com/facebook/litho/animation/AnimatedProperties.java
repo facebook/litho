@@ -51,6 +51,16 @@ public final class AnimatedProperties {
    */
   public static final AnimatedProperty SCALE = new ScaleAnimatedProperty();
 
+  /**
+   * The x-scale of a mount item.
+   */
+  public static final AnimatedProperty SCALE_X = new ScaleXAnimatedProperty();
+
+  /**
+   * The y-scale of a mount item.
+   */
+  public static final AnimatedProperty SCALE_Y = new ScaleYAnimatedProperty();
+
   private AnimatedProperties() {
   }
 
@@ -205,6 +215,50 @@ public final class AnimatedProperties {
       final View asView = assertIsView(mountItem, this);
       asView.setScaleX(1);
       asView.setScaleY(1);
+    }
+  }
+
+  private static class ScaleXAnimatedProperty implements AnimatedProperty {
+    @Override
+    public String getName() {
+      return "scale_x";
+    }
+
+    @Override
+    public float get(Object mountItem) {
+      return assertIsView(mountItem, this).getScaleX();
+    }
+
+    @Override
+    public void set(Object mountItem, float value) {
+      assertIsView(mountItem, this).setScaleX(value);
+    }
+
+    @Override
+    public void reset(Object mountItem) {
+      assertIsView(mountItem, this).setScaleX(1);
+    }
+  }
+
+  private static class ScaleYAnimatedProperty implements AnimatedProperty {
+    @Override
+    public String getName() {
+      return "scale_y";
+    }
+
+    @Override
+    public float get(Object mountItem) {
+      return assertIsView(mountItem, this).getScaleY();
+    }
+
+    @Override
+    public void set(Object mountItem, float value) {
+      assertIsView(mountItem, this).setScaleY(value);
+    }
+
+    @Override
+    public void reset(Object mountItem) {
+      assertIsView(mountItem, this).setScaleY(1);
     }
   }
 
