@@ -12,8 +12,6 @@ package com.facebook.litho;
 import android.support.annotation.AttrRes;
 import android.support.annotation.StyleRes;
 
-import com.facebook.yoga.YogaFlexDirection;
-
 public final class Row {
   private Row() {
   }
@@ -22,7 +20,7 @@ public final class Row {
       ComponentContext c,
       @AttrRes int defStyleAttr,
       @StyleRes int defStyleRes) {
-    return c.newLayoutBuilder(defStyleAttr, defStyleRes).flexDirection(YogaFlexDirection.ROW);
+    return c.newLayoutBuilder(defStyleAttr, defStyleRes);
   }
 
   public static ComponentLayout.ContainerBuilder create(ComponentContext c) {
