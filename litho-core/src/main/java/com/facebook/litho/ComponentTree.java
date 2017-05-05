@@ -151,7 +151,7 @@ public class ComponentTree {
 
   private Object mLayoutLock;
 
-  protected final int mId = sIdGenerator.getAndIncrement();
+  protected final int mId;
 
   @GuardedBy("this")
   private boolean mIsMeasuring;
@@ -188,6 +188,12 @@ public class ComponentTree {
     mStateHandler = builderStateHandler == null
         ? StateHandler.acquireNewInstance(null)
         : builderStateHandler;
+
+    if (builder.overrideComponentTreeId != -1) {
+      mId = builder.overrideComponentTreeId;
+    } else {
+      mId = generateComponentTreeId();
+    }
   }
 
   @ThreadConfined(ThreadConfined.UI)
@@ -1255,6 +1261,10 @@ public class ComponentTree {
     }
   }
 
+  public static int generateComponentTreeId() {
+    return sIdGenerator.getAndIncrement();
+  }
+
   /**
    * A builder class that can be used to create a {@link ComponentTree}.
    */
@@ -1271,6 +1281,7 @@ public class ComponentTree {
     private Object layoutLock;
     private StateHandler stateHandler;
     private boolean asyncStateUpdates = true;
+    private int overrideComponentTreeId = -1;
 
     protected Builder() {
     }
@@ -1294,6 +1305,7 @@ public class ComponentTree {
       layoutLock = null;
       stateHandler = null;
       asyncStateUpdates = true;
+      overrideComponentTreeId = -1;
     }
 
     /**
@@ -1368,6 +1380,16 @@ public class ComponentTree {
      */
     public Builder asyncStateUpdates(boolean enabled) {
       this.asyncStateUpdates = enabled;
+      return this;
+    }
+
+    /**
+     * Gives the ability to override the auto-generated ComponentTree id: this is generally not
+     * useful in the majority of circumstances, so don't use it unless you really know what you're
+     * doing.
+     */
+    public Builder overrideComponentTreeId(int overrideComponentTreeId) {
+      this.overrideComponentTreeId = overrideComponentTreeId;
       return this;
     }
 

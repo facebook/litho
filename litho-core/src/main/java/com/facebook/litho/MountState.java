@@ -162,6 +162,7 @@ class MountState {
 
     final ComponentTree componentTree = mLithoView.getComponentTree();
     final ComponentsLogger logger = componentTree.getContext().getLogger();
+    final int componentTreeId = layoutState.getComponentTreeId();
 
     LogEvent mountEvent = null;
     if (logger != null) {
@@ -169,7 +170,11 @@ class MountState {
     }
 
     // the isDirty check here prevents us from animating for incremental mounts
-    final boolean shouldAnimateTransitions = mIsDirty && layoutState.shouldAnimateTransitions();
+    final boolean shouldAnimateTransitions =
+        mIsDirty &&
+        layoutState.shouldAnimateTransitions() &&
+        mLastMountedComponentTreeId == componentTreeId;
+
     prepareTransitionManager(layoutState);
     if (mTransitionManager != null) {
       if (mIsDirty) {
@@ -196,7 +201,6 @@ class MountState {
 
     mMountStats.reset();
 
-    final int componentTreeId = layoutState.getComponentTreeId();
     final boolean isIncrementalMountEnabled = localVisibleRect != null;
 
     if (!isIncrementalMountEnabled ||
