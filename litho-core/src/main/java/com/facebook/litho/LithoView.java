@@ -15,6 +15,7 @@ import java.util.Deque;
 import android.content.Context;
 import android.graphics.Rect;
 import android.support.annotation.VisibleForTesting;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.view.accessibility.AccessibilityManagerCompat;
 import android.support.v4.view.accessibility.AccessibilityManagerCompat.AccessibilityStateChangeListenerCompat;
 import android.util.AttributeSet;
@@ -355,6 +356,13 @@ public class LithoView extends ComponentHost {
   }
 
   @Override
+  public void setHasTransientState(boolean hasTransientState) {
+    performIncrementalMount(null);
+
+    super.setHasTransientState(hasTransientState);
+  }
+
+  @Override
   public void offsetTopAndBottom(int offset) {
     super.offsetTopAndBottom(offset);
 
@@ -471,6 +479,10 @@ public class LithoView extends ComponentHost {
   }
 
   void mount(LayoutState layoutState, Rect currentVisibleArea) {
+    if (ViewCompat.hasTransientState(this)) {
+      return;
+    }
+
     if (currentVisibleArea == null) {
       mPreviousMountBounds.setEmpty();
     } else {
