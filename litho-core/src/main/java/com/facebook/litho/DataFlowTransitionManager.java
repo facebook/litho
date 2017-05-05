@@ -10,6 +10,7 @@
 package com.facebook.litho;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.support.v4.util.Pools;
 import android.support.v4.util.SimpleArrayMap;
@@ -165,6 +166,18 @@ public class DataFlowTransitionManager {
     return mAnimationStates.containsKey(key);
   }
 
+  void cleanupDisappearingTransitions(List<String> transitionKeys) {
+    for (int i = 0, size = transitionKeys.size(); i < size; i++) {
+      final String key = transitionKeys.get(i);
+      final AnimationState animationState = mAnimationStates.get(key);
+      if (animationState == null) {
+        continue;
+      }
+
+      setMountItem(animationState, null);
+    }
+  }
+
   private void restoreInitialStates() {
     for (int i = 0, size = mAnimationStates.size(); i < size; i++) {
       final String transitionKey = mAnimationStates.keyAt(i);
@@ -300,6 +313,10 @@ public class DataFlowTransitionManager {
   }
 
   private void fireMountItemAnimationCompleteListeners(AnimationState animationState) {
+    if (animationState.mountItem == null) {
+      return;
+    }
+
     final ArrayList<OnMountItemAnimationComplete> listeners =
         animationState.mAnimationCompleteListeners;
     for (int i = 0, listenerSize = listeners.size(); i < listenerSize; i++) {

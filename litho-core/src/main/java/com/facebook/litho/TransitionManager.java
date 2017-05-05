@@ -216,8 +216,11 @@ class TransitionManager implements TransitionKeySetListener {
   void cleanupDisappearingTransitions(List<String> transitionKeys) {
     for (int i = 0, size = transitionKeys.size(); i < size; i++) {
       final TransitionKeySet transitionKeySet = removeRunningTransition(transitionKeys.get(i));
-      transitionKeySet.cleanupAfterDisappear();
+      if (transitionKeySet != null) {
+        transitionKeySet.cleanupAfterDisappear();
+      }
     }
+    mDataFlowTransitionManager.cleanupDisappearingTransitions(transitionKeys);
   }
 
   /**

@@ -1656,7 +1656,6 @@ class MountState {
       // We need to make sure to remove any disappearing items and clean up their state if we
       // are unmounting its host.
       if (componentHost.hasDisappearingItems()) {
-        // TODO(17679035): Support cleanupDisappearingTransitions in Dataflow API
         mTransitionManager.cleanupDisappearingTransitions(componentHost.getDisappearingItemKeys());
       }
     }
