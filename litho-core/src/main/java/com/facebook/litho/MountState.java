@@ -176,7 +176,7 @@ class MountState {
         mLastMountedComponentTreeId == componentTreeId;
 
     prepareTransitionManager(layoutState);
-    if (mTransitionManager != null) {
+    if (layoutState.hasTransitionContext()) {
       if (mIsDirty) {
         if (shouldAnimateTransitions) {
           createAutoMountTransitions(layoutState);
@@ -259,7 +259,7 @@ class MountState {
 
     processVisibilityOutputs(layoutState, localVisibleRect);
 
-    if (mTransitionManager != null && shouldAnimateTransitions) {
+    if (layoutState.hasTransitionContext() && shouldAnimateTransitions) {
       recordMountedItemsWithTransitionKeys(
           mTransitionManager,
           mIndexToItemMap,
@@ -1824,11 +1824,6 @@ class MountState {
 
   void detach() {
     unbind();
-
-    if (mTransitionManager != null) {
-      ComponentsPools.release(mTransitionManager);
-      mTransitionManager = null;
-    }
   }
 
   /**
@@ -1959,10 +1954,7 @@ class MountState {
 
   private void prepareTransitionManager(LayoutState layoutState) {
     if (layoutState.hasTransitionContext() && mTransitionManager == null) {
-      mTransitionManager = ComponentsPools.acquireTransitionManager();
-    } else if (!layoutState.hasTransitionContext() && mTransitionManager != null) {
-      ComponentsPools.release(mTransitionManager);
-      mTransitionManager = null;
+      mTransitionManager = new TransitionManager();
     }
   }
 

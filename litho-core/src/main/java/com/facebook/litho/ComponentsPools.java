@@ -125,9 +125,6 @@ public class ComponentsPools {
   static final RecyclePool<TransitionContext> sTransitionContextPool =
       new RecyclePool<>("TransitionContext", 2, true);
 
-  static final RecyclePool<TransitionManager> sTransitionManagerPool =
-      new RecyclePool<>("TransitionManager", 2, false);
-
   static final RecyclePool<DisplayListDrawable> sDisplayListDrawablePool =
       new RecyclePool<>("DisplayListDrawable", 10, false);
 
@@ -423,16 +420,6 @@ public class ComponentsPools {
     return transitionContext;
   }
 
-  static TransitionManager acquireTransitionManager() {
-    TransitionManager transitionManager =
-        ComponentsConfiguration.usePooling ? sTransitionManagerPool.acquire() : null;
-    if (transitionManager == null) {
-      transitionManager = new TransitionManager();
-    }
-
-    return transitionManager;
-  }
-
   public static TreeProps acquireTreeProps() {
     TreeProps treeProps = ComponentsConfiguration.usePooling ? sTreePropsMapPool.acquire() : null;
     if (treeProps == null) {
@@ -460,15 +447,6 @@ public class ComponentsPools {
     }
     treeProps.reset();
     sTreePropsMapPool.release(treeProps);
-  }
-
-  @ThreadSafe(enableChecks = false)
-  static void release(TransitionManager transitionManager) {
-    if (!ComponentsConfiguration.usePooling) {
-      return;
-    }
-    transitionManager.reset();
-    sTransitionManagerPool.release(transitionManager);
   }
 
   @ThreadSafe(enableChecks = false)

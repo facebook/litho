@@ -220,13 +220,6 @@ class TransitionManager implements TransitionKeySetListener {
     }
   }
 
-  void reset() {
-    mPostMountKeys.clear();
-    mKeysStatus.clear();
-    mTransitions.clear();
-    mRunningTransitions.clear();
-  }
-
   /**
    * Set the clipChildren properties to all Views in the same tree branch from the given one, up to
    * the top LithoView.
