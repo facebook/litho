@@ -13,6 +13,8 @@ import java.util.ArrayList;
 
 import android.support.v4.util.Pools;
 import android.support.v4.util.SimpleArrayMap;
+import android.view.View;
+import android.view.ViewParent;
 
 import com.facebook.litho.animation.AnimatedPropertyNode;
 import com.facebook.litho.animation.AnimationBinding;
@@ -283,12 +285,18 @@ public class DataFlowTransitionManager {
       for (int i = 0, size = animatingProperties.size(); i < size; i++) {
         animatingProperties.valueAt(i).reset(animationState.mountItem);
       }
-      fireMountItemAnimationCompleteListeners(animationState);
+      onMountItemAnimationComplete(animationState);
     }
     for (int i = 0, size = animationState.animatedPropertyNodes.size(); i < size; i++) {
       animationState.animatedPropertyNodes.valueAt(i).setMountItem(newMountItem);
     }
+    recursivelySetChildClipping(newMountItem, false);
     animationState.mountItem = newMountItem;
+  }
+
+  private void onMountItemAnimationComplete(AnimationState animationState) {
+    recursivelySetChildClipping(animationState.mountItem, true);
+    fireMountItemAnimationCompleteListeners(animationState);
   }
 
   private void fireMountItemAnimationCompleteListeners(AnimationState animationState) {
@@ -341,12 +349,38 @@ public class DataFlowTransitionManager {
               animationState.animatingProperties.valueAt(j).reset(animationState.mountItem);
             }
           }
-          fireMountItemAnimationCompleteListeners(animationState);
+          onMountItemAnimationComplete(animationState);
           mAnimationStates.remove(key);
           releaseAnimationState(animationState);
         }
       }
       ComponentsPools.release(transitioningKeys);
+    }
+  }
+
+  /**
+   * Set the clipChildren properties to all Views in the same tree branch from the given one, up to
+   * the top LithoView.
+   *
+   * TODO(17934271): Handle the case where two+ animations with different lifespans share the same
+   * parent, in which case we shouldn't unset clipping until the last item is done animating.
+   */
+  private void recursivelySetChildClipping(Object mountItem, boolean clipChildren) {
+    if (!(mountItem instanceof View)) {
+      return;
+    }
+
+    recursivelySetChildClippingForView((View) mountItem, clipChildren);
+  }
+
+  private void recursivelySetChildClippingForView(View view, boolean clipChildren) {
+    if (view instanceof ComponentHost) {
+      ((ComponentHost) view).setClipChildren(clipChildren);
+    }
+
+    final ViewParent parent = view.getParent();
+    if (parent instanceof ComponentHost) {
+      recursivelySetChildClippingForView((View) parent, clipChildren);
     }
   }
 
