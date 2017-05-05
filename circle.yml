@@ -20,7 +20,6 @@ dependencies:
     - buck fetch :components
     - buck fetch litho-it/...
     - buck fetch sample/...
-
   cache_directories:
     - "/home/ubuntu/buck"
     - "/home/ubuntu/android-sdk"
@@ -34,6 +33,8 @@ test:
     - buck test litho-it-powermock/src/test/... --config build.threads=1
     # Run the tests with Gradle
     - ./gradlew test
+  post:
+    - scripts/circle-ci-publish-snapshot.sh
 
 experimental:
   notify:
