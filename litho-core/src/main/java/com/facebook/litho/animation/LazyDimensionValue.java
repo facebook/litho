@@ -2,6 +2,9 @@
 
 package com.facebook.litho.animation;
 
+import android.content.Context;
+import android.util.DisplayMetrics;
+
 /**
  * A {@link LazyValue} for dimension properties like x/y/width/height.
  */
@@ -18,19 +21,29 @@ public class LazyDimensionValue implements LazyValue {
    * @return a LazyValue that resolves to an offset relative to the current value of some mount item
    * property.
    */
-  public static LazyDimensionValue offset(float value) {
+  public static LazyDimensionValue offsetPx(float value) {
     return new LazyDimensionValue(Type.OFFSET, value);
   }
 
   /**
-   * Like {@link #offset}, but the relative offset is based on a percentage of the mount item width.
+   * @return a LazyValue that resolves to an offset relative to the current value of some mount item
+   * property.
+   */
+  public static LazyDimensionValue offsetDip(Context context, int valueDp) {
+    final DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+    final float valuePx = displayMetrics.density * valueDp;
+    return offsetPx(valuePx);
+  }
+
+  /**
+   * Like {@link #offsetPx}, but the relative offset is based on a percentage of the mount item width.
    */
   public static LazyDimensionValue widthPercentageOffset(float value) {
     return new LazyDimensionValue(Type.OFFSET_WIDTH_PERCENTAGE, value);
   }
 
   /**
-   * Like {@link #offset}, but the relative offset is based on a percentage of the mount item height
+   * Like {@link #offsetPx}, but the relative offset is based on a percentage of the mount item height
    */
   public static LazyDimensionValue heightPercentageOffset(float value) {
     return new LazyDimensionValue(Type.OFFSET_HEIGHT_PERCENTAGE, value);
