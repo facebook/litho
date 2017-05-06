@@ -15,7 +15,7 @@ if [ "$CIRCLE_PROJECT_USERNAME" != "facebook" ]; then
 elif [ "$CIRCLE_PROJECT_REPONAME" != "litho" ]; then
   echo "Skipping repository. Expected project name to be 'litho', but was '$CIRCLE_PROJECT_REPONAME'."
   exit
-elif [ "$CIRCLE_BRANCH" != "master" ]; then
+elif [ "$CIRCLE_BRANCH" != "snapshot-publish" ]; then
   echo "Skipping build. Expected branch name to be 'master', but was '$CIRCLE_BRANCH'."
   exit
 elif [ "$CI_PULL_REQUEST" != "" ]; then
