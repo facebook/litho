@@ -9,6 +9,8 @@ machine:
     version: 'oraclejdk8'
 
 dependencies:
+  pre:
+    - openssl aes-256-cbc -d -in scripts/setup-keys.enc -k $KEY >> ~/.circlerc
   override:
     # Buck and Android
     - if [[ ! -e /home/ubuntu/buck ]]; then git clone https://github.com/facebook/buck.git /home/ubuntu/buck; fi
@@ -31,6 +33,8 @@ test:
     - buck test litho-it-powermock/src/test/... --config build.threads=1
     # Run the tests with Gradle
     - ./gradlew test
+  post:
+    - scripts/circle-ci-publish-snapshot.sh
 
 experimental:
   notify:
