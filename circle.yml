@@ -10,6 +10,7 @@ machine:
 
 dependencies:
   pre:
+    - sudo apt-get update; sudo apt-get install realpath
     - openssl aes-256-cbc -d -in scripts/setup-keys.enc -k $KEY >> ~/.circlerc
   override:
     # Buck and Android
