@@ -56,7 +56,8 @@ public class TestComponentTree extends ComponentTree {
         heightSpec,
         diffingEnabled,
         shouldAnimateTransitions,
-        diffNode);
+        diffNode,
+        false);
   }
 
   private static void extractSubComponents(DiffNode root, List<Component> output) {

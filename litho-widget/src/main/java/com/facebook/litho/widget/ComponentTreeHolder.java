@@ -41,14 +41,19 @@ public class ComponentTreeHolder {
   private ComponentInfo mComponentInfo;
   private boolean mIsTreeValid;
   private LayoutHandler mLayoutHandler;
+  private boolean mCanPrefetchDisplayLists;
 
-  static ComponentTreeHolder acquire(ComponentInfo componentInfo, LayoutHandler layoutHandler) {
+  static ComponentTreeHolder acquire(
+      ComponentInfo componentInfo,
+      LayoutHandler layoutHandler,
+      boolean canPrefetchDisplayLists) {
     ComponentTreeHolder componentTreeHolder = sComponentTreeHoldersPool.acquire();
     if (componentTreeHolder == null) {
       componentTreeHolder = new ComponentTreeHolder();
     }
     componentTreeHolder.mComponentInfo = componentInfo;
     componentTreeHolder.mLayoutHandler = layoutHandler;
+    componentTreeHolder.mCanPrefetchDisplayLists = canPrefetchDisplayLists;
     return componentTreeHolder;
   }
 
@@ -134,6 +139,7 @@ public class ComponentTreeHolder {
     clearStateHandler();
     mComponentInfo = null;
     mLayoutHandler = null;
+    mCanPrefetchDisplayLists = false;
     sComponentTreeHoldersPool.release(this);
   }
 
@@ -143,6 +149,7 @@ public class ComponentTreeHolder {
       mComponentTree = ComponentTree.create(context, mComponentInfo.getComponent())
           .layoutThreadHandler(mLayoutHandler)
           .stateHandler(mStateHandler)
+          .canPrefetchDisplayLists(mCanPrefetchDisplayLists)
           .build();
     }
   }

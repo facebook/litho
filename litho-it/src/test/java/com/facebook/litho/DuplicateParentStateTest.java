@@ -92,7 +92,8 @@ public class DuplicateParentStateTest {
         mUnspecifiedSizeSpec,
         false,
         false,
-        null);
+        null,
+        false);
 
     assertEquals(12, layoutState.getMountableOutputCount());
 

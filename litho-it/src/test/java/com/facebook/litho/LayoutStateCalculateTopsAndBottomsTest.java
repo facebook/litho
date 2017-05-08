@@ -180,7 +180,8 @@ public class LayoutStateCalculateTopsAndBottomsTest {
         heightSpec,
         false,
         false,
-        null);
+        null,
+        false);
   }
 
   private static LayoutOutput createLayoutOutput(int top, int bottom, boolean isHostSpec) {

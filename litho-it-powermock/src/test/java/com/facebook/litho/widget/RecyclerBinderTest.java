@@ -87,7 +87,8 @@ public class RecyclerBinderTest {
     PowerMockito.mockStatic(ComponentTreeHolder.class);
     PowerMockito.when(ComponentTreeHolder.acquire(
         any(ComponentInfo.class),
-        any(LayoutHandler.class)))
+        any(LayoutHandler.class),
+        any(boolean.class)))
         .thenAnswer(mComponentTreeHolderAnswer);
     mLayoutInfo = mock(LayoutInfo.class);
     setupBaseLayoutInfoMock();

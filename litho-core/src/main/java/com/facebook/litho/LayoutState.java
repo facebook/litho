@@ -156,6 +156,7 @@ class LayoutState {
   private boolean mShouldAnimateTransitions = false;
 
   private StateHandler mStateHandler;
+  private boolean mCanPrefetchDisplayLists;
 
   LayoutState() {
     mLayoutStateOutputIdCalculator = new LayoutStateOutputIdCalculator();
@@ -894,7 +895,8 @@ class LayoutState {
       int heightSpec,
       boolean shouldGenerateDiffTree,
       boolean shouldAnimatedTransitions,
-      DiffNode previousDiffTreeRoot) {
+      DiffNode previousDiffTreeRoot,
+      boolean canPrefetchDisplayLists) {
 
     // Detect errors internal to components
     component.markLayoutStarted();
@@ -909,6 +911,7 @@ class LayoutState {
     layoutState.mWidthSpec = widthSpec;
     layoutState.mHeightSpec = heightSpec;
     layoutState.mShouldAnimateTransitions = shouldAnimatedTransitions;
+    layoutState.mCanPrefetchDisplayLists = canPrefetchDisplayLists;
 
     component.applyStateUpdates(c);
 

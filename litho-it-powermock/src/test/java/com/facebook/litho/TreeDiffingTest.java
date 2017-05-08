@@ -87,7 +87,8 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
         false,
         false,
-        null);
+        null,
+        false);
 
     // Check diff tree is null.
     assertNull(layoutState.getDiffTree());
@@ -115,7 +116,8 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
         true,
         false,
-        null);
+        null,
+        false);
 
     // Check diff tree is not null and consistent.
     DiffNode node = layoutState.getDiffTree();
@@ -264,7 +266,8 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
         true,
         false,
-        null);
+        null,
+        false);
 
     // Check diff tree is consistent.
     DiffNode node = prevLayoutState.getDiffTree();
@@ -311,7 +314,8 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
         true,
         false,
-        null);
+        null,
+        false);
 
     // Check diff tree is consistent.
     DiffNode node = prevLayoutState.getDiffTree();
@@ -366,7 +370,8 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
         true,
         false,
-        null);
+        null,
+        false);
 
     LayoutState layoutState = LayoutState.calculate(
         mContext,
@@ -376,7 +381,8 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
         true,
         false,
-        prevLayoutState.getDiffTree());
+        prevLayoutState.getDiffTree(),
+        false);
 
     assertEquals(prevLayoutState.getMountableOutputCount(), layoutState.getMountableOutputCount());
     for (int i = 0, count = prevLayoutState.getMountableOutputCount(); i < count; i++) {
@@ -421,7 +427,8 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
         true,
         false,
-        null);
+        null,
+        false);
     LayoutState layoutState = LayoutState.calculate(
         mContext,
         component2,
@@ -430,7 +437,8 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
         true,
         false,
-        prevLayoutState.getDiffTree());
+        prevLayoutState.getDiffTree(),
+        false);
 
     assertNotEquals(
         prevLayoutState.getMountableOutputCount(),
@@ -835,7 +843,8 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
         true,
         false,
-        null);
+        null,
+        false);
 
     assertTrue(component.wasMeasureCalled());
 
@@ -861,7 +870,8 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(90, SizeSpec.EXACTLY),
         true,
         false,
-        firstLayoutState.getDiffTree());
+        firstLayoutState.getDiffTree(),
+        false);
 
     assertFalse(secondComponent.wasMeasureCalled());
   }
@@ -889,7 +899,8 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
         true,
         false,
-        null);
+        null,
+        false);
 
     assertTrue(component.wasMeasureCalled());
 
@@ -914,7 +925,8 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
         true,
         false,
-        firstLayoutState.getDiffTree());
+        firstLayoutState.getDiffTree(),
+        false);
 
     assertFalse(secondComponent.wasMeasureCalled());
   }
@@ -957,7 +969,8 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
         true,
         false,
-        null);
+        null,
+        false);
 
     LayoutState layoutState = LayoutState.calculate(
         mContext,
@@ -967,7 +980,8 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
         true,
         false,
-        prevLayoutState.getDiffTree());
+        prevLayoutState.getDiffTree(),
+        false);
 
     // The nested root measure() was called in the first layout calculation.
     TestComponent prevNestedRoot =
@@ -1022,7 +1036,8 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
         true,
         false,
-        null);
+        null,
+        false);
 
     LayoutState layoutState = LayoutState.calculate(
         mContext,
@@ -1032,7 +1047,8 @@ public class TreeDiffingTest {
         SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
         true,
         false,
-        prevLayoutState.getDiffTree());
+        prevLayoutState.getDiffTree(),
+        false);
 
     // The nested root measure() was called in the first layout calculation.
     TestComponent prevMainTreeLeaf =
@@ -1117,7 +1133,8 @@ public class TreeDiffingTest {
         heightSpec,
         true,
         false,
-        null);
+        null,
+        false);
 
     // Make sure we reused the cached layout and it wasn't released.
     verify(sizeDependentComponentSpy1, never()).releaseCachedLayout();
@@ -1131,7 +1148,8 @@ public class TreeDiffingTest {
         heightSpec,
         true,
         false,
-        prevLayoutState.getDiffTree());
+        prevLayoutState.getDiffTree(),
+        false);
 
     // Make sure we reused the cached layout and it wasn't released.
     verify(sizeDependentComponentSpy2, never()).releaseCachedLayout();

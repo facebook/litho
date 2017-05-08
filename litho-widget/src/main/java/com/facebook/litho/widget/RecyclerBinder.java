@@ -35,6 +35,8 @@ import com.facebook.litho.MeasureComparisonUtils;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.ThreadUtils;
+import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.utils.DisplayListPrefetcherUtils;
 import com.facebook.litho.utils.IncrementalMountUtils;
 
 import static android.support.v7.widget.OrientationHelper.HORIZONTAL;
@@ -80,6 +82,7 @@ public class RecyclerBinder implements
   private int mCurrentLastVisiblePosition;
   private RangeCalculationResult mRange;
   private StickyHeaderController mStickyHeaderController;
+  private boolean mCanPrefetchDisplayLists;
 
   public RecyclerBinder(
       ComponentContext componentContext,
@@ -126,6 +129,7 @@ public class RecyclerBinder implements
     mLayoutInfo = layoutInfo;
     mLayoutHandlerFactory = layoutHandlerFactory;
     mCurrentFirstVisiblePosition = mCurrentLastVisiblePosition = 0;
+    mCanPrefetchDisplayLists = ComponentsConfiguration.shouldPrefetchDisplayLists;
   }
 
   public RecyclerBinder(ComponentContext c) {
@@ -232,7 +236,8 @@ public class RecyclerBinder implements
         componentInfo,
         mLayoutHandlerFactory != null ?
             mLayoutHandlerFactory.createLayoutCalculationHandler(componentInfo) :
-            null);
+            null,
+        mCanPrefetchDisplayLists);
     final boolean computeLayout;
     final int childrenWidthSpec, childrenHeightSpec;
     synchronized (this) {
@@ -287,7 +292,8 @@ public class RecyclerBinder implements
             componentInfo,
             mLayoutHandlerFactory != null ?
                 mLayoutHandlerFactory.createLayoutCalculationHandler(componentInfo) :
-                null);
+                null,
+            mCanPrefetchDisplayLists);
 
         mComponentTreeHolders.add(position + i, holder);
 
@@ -860,6 +866,10 @@ public class RecyclerBinder implements
       if (firstVisiblePosition != mCurrentFirstVisiblePosition
           || lastVisiblePosition != mCurrentLastVisiblePosition) {
         onNewVisibleRange(firstVisiblePosition, lastVisiblePosition);
+      }
+
+      if (mCanPrefetchDisplayLists) {
+        DisplayListPrefetcherUtils.prefetchDisplayLists(recyclerView);
       }
     }
   }

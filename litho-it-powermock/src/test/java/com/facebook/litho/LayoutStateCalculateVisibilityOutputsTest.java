@@ -289,6 +289,7 @@ public class LayoutStateCalculateVisibilityOutputsTest {
         heightSpec,
         false,
         false,
-        null);
+        null,
+        false);
   }
 }

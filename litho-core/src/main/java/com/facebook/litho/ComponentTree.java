@@ -104,6 +104,7 @@ public class ComponentTree {
   };
 
   private final ComponentContext mContext;
+  private final boolean mCanPrefetchDisplayLists;
 
   // These variables are only accessed from the main thread.
   @ThreadConfined(ThreadConfined.UI)
@@ -179,6 +180,7 @@ public class ComponentTree {
     mLayoutThreadHandler = builder.layoutThreadHandler;
     mLayoutLock = builder.layoutLock;
     mIsAsyncUpdateStateEnabled = builder.asyncStateUpdates;
+    mCanPrefetchDisplayLists = builder.canPrefetchDisplayLists;
 
     if (mLayoutThreadHandler == null) {
       mLayoutThreadHandler = new DefaultLayoutHandler(getDefaultLayoutThreadLooper());
@@ -1226,7 +1228,8 @@ public class ComponentTree {
             heightSpec,
             diffingEnabled,
             shouldAnimateTransitions,
-            diffNode);
+            diffNode,
+            mCanPrefetchDisplayLists);
       }
     } else {
       return LayoutState.calculate(
@@ -1237,7 +1240,8 @@ public class ComponentTree {
           heightSpec,
           diffingEnabled,
           shouldAnimateTransitions,
-          diffNode);
+          diffNode,
+          mCanPrefetchDisplayLists);
     }
   }
 
@@ -1282,6 +1286,7 @@ public class ComponentTree {
     private StateHandler stateHandler;
     private boolean asyncStateUpdates = true;
     private int overrideComponentTreeId = -1;
+    private boolean canPrefetchDisplayLists = false;
 
     protected Builder() {
     }
@@ -1306,6 +1311,7 @@ public class ComponentTree {
       stateHandler = null;
       asyncStateUpdates = true;
       overrideComponentTreeId = -1;
+      canPrefetchDisplayLists = false;
     }
 
     /**
@@ -1390,6 +1396,20 @@ public class ComponentTree {
      */
     public Builder overrideComponentTreeId(int overrideComponentTreeId) {
       this.overrideComponentTreeId = overrideComponentTreeId;
+      return this;
+    }
+
+    /**
+     * Specify whether the ComponentTree allows to prefetch display lists of its components
+     * on idle time of UI thread.
+     *
+     * NOTE: To make display lists prefetching work, besides setting this flag
+     * {@link com.facebook.litho.utils.DisplayListPrefetcherUtils#prefetchDisplayLists(View)}
+     * should be called on scrollable surfaces like {@link android.support.v7.widget.RecyclerView}
+     * during scrolling.
+     */
+    public Builder canPrefetchDisplayLists(boolean canPrefetch) {
+      this.canPrefetchDisplayLists = canPrefetch;
       return this;
     }
 
