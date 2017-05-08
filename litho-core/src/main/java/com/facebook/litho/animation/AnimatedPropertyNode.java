@@ -41,18 +41,22 @@ public class AnimatedPropertyNode extends ValueNode {
   @Override
   public float calculateValue(long frameTimeNanos) {
     final Object mountItem = mMountItem.get();
+    final boolean hasInput = hasInput();
 
     if (mountItem == null) {
-      // This should probably be handled more gracefully, but for now it's probably important to
-      // understand when this is happening so that we know what the proper behavior should be.
-      throw new RuntimeException("Mount item went away while we were animating it!");
+      if (hasInput) {
+        return getInput().getValue();
+      }
+
+      // If we have no input and have lost our mount content, just return our last known value.
+      return getValue();
     }
 
-    if (!hasInput()) {
+    if (!hasInput) {
       return mAnimatedProperty.get(mountItem);
     }
 
-    float value = getInput().getValue();
+    final float value = getInput().getValue();
     mAnimatedProperty.set(mountItem, value);
 
     return value;
