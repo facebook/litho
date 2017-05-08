@@ -358,7 +358,9 @@ public class LithoView extends ComponentHost {
 
   @Override
   public void setHasTransientState(boolean hasTransientState) {
-    performIncrementalMount(null);
+    if (isIncrementalMountEnabled()) {
+      performIncrementalMount(null);
+    }
 
     super.setHasTransientState(hasTransientState);
   }
@@ -477,7 +479,7 @@ public class LithoView extends ComponentHost {
   }
 
   void mount(LayoutState layoutState, Rect currentVisibleArea) {
-    if (ViewCompat.hasTransientState(this)) {
+    if (isIncrementalMountEnabled() && ViewCompat.hasTransientState(this)) {
       return;
     }
 
