@@ -33,6 +33,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.accessibility.AccessibilityManager;
 
+import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.animation.AnimationBinding;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.displaylist.DisplayList;
@@ -109,6 +110,9 @@ class LayoutState {
               : isHostSpec(lhs.getComponent()) ? 1 : -1;
         }
       };
+
+  @ThreadConfined(ThreadConfined.UI)
+  private final Rect mDisplayListCreateRect = new Rect();
 
   private static final int[] DRAWABLE_STATE_ENABLED = new int[]{android.R.attr.state_enabled};
   private static final int[] DRAWABLE_STATE_NOT_ENABLED = new int[]{};
@@ -979,8 +983,15 @@ class LayoutState {
       layoutState.mLayoutRoot = null;
     }
 
-    if (ThreadUtils.isMainThread() && ComponentsConfiguration.shouldGenerateDisplayLists) {
-      collectDisplayLists(layoutState);
+    final Activity activity = getValidActivityForContext(c);
+    if (activity != null) {
+      if (ThreadUtils.isMainThread()
+          && ComponentsConfiguration.shouldGenerateDisplayLists
+          && canCollectDisplayListsSync(activity)) {
+        collectDisplayLists(layoutState);
+      } else if (layoutState.mCanPrefetchDisplayLists) {
+        queueDisplayListsForPrefetch(layoutState);
+      }
     }
 
     return layoutState;
@@ -1015,101 +1026,131 @@ class LayoutState {
   }
 
   private static void collectDisplayLists(LayoutState layoutState) {
-    final Rect rect = new Rect();
-    final ComponentContext context = layoutState.mContext;
-    final Activity activity = findActivityInContext(context);
+    ComponentsSystrace.beginSection(
+        "collectDisplayLists:" + layoutState.mComponent.getSimpleName());
+    final Rect rect = layoutState.mDisplayListCreateRect;
 
-    if (activity == null || activity.isFinishing() || isActivityDestroyed(activity)) {
-      return;
+    for (int i = 0, count = layoutState.getMountableOutputCount(); i < count; i++) {
+      final LayoutOutput output = layoutState.getMountableOutputAt(i);
+      if (shouldCreateDisplayList(output, rect)) {
+        layoutState.createDisplayList(output);
+      }
     }
 
+    ComponentsSystrace.endSection();
+  }
+
+  private static boolean shouldCreateDisplayList(LayoutOutput output, Rect rect) {
+    final Component component = output.getComponent();
+    final ComponentLifecycle lifecycle = component.getLifecycle();
+
+    if (!lifecycle.shouldUseDisplayList()) {
+      return false;
+    }
+
+    output.getMountBounds(rect);
+
+    if (output.getDisplayList() != null && output.getDisplayList().isValid()) {
+      // This output already has a valid DisplayList from diffing. No need to re-create it.
+      // Just update its bounds.
+      try {
+        output.getDisplayList().setBounds(rect.left, rect.top, rect.right, rect.bottom);
+        return false;
+      } catch (DisplayListException e) {
+        // Nothing to do here.
+      }
+    }
+
+    return true;
+  }
+
+  private static boolean canCollectDisplayListsSync(Activity activity) {
     // If we have no window or the hierarchy has never been drawn before we cannot guarantee that
     // a valid GL context exists. In this case just bail.
     final Window window = activity.getWindow();
     if (window == null) {
-      return;
+      return false;
     }
 
     final View decorView = window.getDecorView();
     if (decorView == null || decorView.getDrawingTime() == 0) {
+      return false;
+    }
+
+    return true;
+  }
+
+  void createDisplayList(LayoutOutput output) {
+    ThreadUtils.assertMainThread();
+
+    final Component component = output.getComponent();
+    ComponentsSystrace.beginSection("createDisplayList: "+component.getSimpleName());
+    final ComponentLifecycle lifecycle = component.getLifecycle();
+    final DisplayList displayList = DisplayList.createDisplayList(
+        lifecycle.getClass().getSimpleName());
+
+    if (displayList == null) {
+      ComponentsSystrace.endSection();
       return;
     }
 
-    for (int i = 0, count = layoutState.getMountableOutputCount(); i < count; i++) {
-      final LayoutOutput output = layoutState.getMountableOutputAt(i);
-      final Component component = output.getComponent();
-      final ComponentLifecycle lifecycle = component.getLifecycle();
+    final ComponentContext context = mContext;
 
-      if (lifecycle.shouldUseDisplayList()) {
-        output.getMountBounds(rect);
+    Drawable drawable =
+        (Drawable) ComponentsPools.acquireMountContent(context, lifecycle.getId());
+    if (drawable == null) {
+      drawable = (Drawable) lifecycle.createMountContent(context);
+    }
 
-        if (output.getDisplayList() != null && output.getDisplayList().isValid()) {
-          // This output already has a valid DisplayList from diffing. No need to re-create it.
-          // Just update its bounds.
-          try {
-            output.getDisplayList().setBounds(rect.left, rect.top, rect.right, rect.bottom);
-            continue;
-          } catch (DisplayListException e) {
-            // Nothing to do here.
-          }
-        }
+    final LayoutOutput clickableOutput = findInteractiveRoot(this, output);
+    boolean isStateEnabled = false;
 
-        final DisplayList displayList = DisplayList.createDisplayList(
-            lifecycle.getClass().getSimpleName());
+    if (clickableOutput != null && clickableOutput.getNodeInfo() != null) {
+      final NodeInfo nodeInfo = clickableOutput.getNodeInfo();
 
-        if (displayList != null) {
-          Drawable drawable =
-              (Drawable) ComponentsPools.acquireMountContent(context, lifecycle.getId());
-          if (drawable == null) {
-            drawable = (Drawable) lifecycle.createMountContent(context);
-          }
-
-          final LayoutOutput clickableOutput = findInteractiveRoot(layoutState, output);
-          boolean isStateEnabled = false;
-
-          if (clickableOutput != null && clickableOutput.getNodeInfo() != null) {
-            final NodeInfo nodeInfo = clickableOutput.getNodeInfo();
-
-            if (nodeInfo.hasTouchEventHandlers() || nodeInfo.getFocusState() == FOCUS_SET_TRUE) {
-              isStateEnabled = true;
-            }
-          }
-
-          if (isStateEnabled) {
-            drawable.setState(DRAWABLE_STATE_ENABLED);
-          } else {
-            drawable.setState(DRAWABLE_STATE_NOT_ENABLED);
-          }
-
-          lifecycle.mount(
-              context,
-              drawable,
-              component);
-          lifecycle.bind(context, drawable, component);
-
-          output.getMountBounds(rect);
-          drawable.setBounds(0, 0, rect.width(), rect.height());
-
-          try {
-            final Canvas canvas = displayList.start(rect.width(), rect.height());
-            drawable.draw(canvas);
-
-            displayList.end(canvas);
-            displayList.setBounds(rect.left, rect.top, rect.right, rect.bottom);
-
-            output.setDisplayList(displayList);
-          } catch (DisplayListException e) {
-            // Display list creation failed. Make sure the DisplayList for this output is set
-            // to null.
-            output.setDisplayList(null);
-          }
-
-          lifecycle.unbind(context, drawable, component);
-          lifecycle.unmount(context, drawable, component);
-          ComponentsPools.release(context, lifecycle, drawable);
-        }
+      if (nodeInfo.hasTouchEventHandlers() || nodeInfo.getFocusState() == FOCUS_SET_TRUE) {
+        isStateEnabled = true;
       }
     }
+
+    if (isStateEnabled) {
+      drawable.setState(DRAWABLE_STATE_ENABLED);
+    } else {
+      drawable.setState(DRAWABLE_STATE_NOT_ENABLED);
+    }
+
+    lifecycle.mount(
+        context,
+        drawable,
+        component);
+    lifecycle.bind(context, drawable, component);
+
+    final Rect rect = mDisplayListCreateRect;
+
+    output.getMountBounds(rect);
+    drawable.setBounds(0, 0, rect.width(), rect.height());
+
+    try {
+      final Canvas canvas = displayList.start(rect.width(), rect.height());
+      drawable.draw(canvas);
+
+      displayList.end(canvas);
+      displayList.setBounds(rect.left, rect.top, rect.right, rect.bottom);
+
+      output.setDisplayList(displayList);
+    } catch (DisplayListException e) {
+      // Display list creation failed. Make sure the DisplayList for this output is set
+      // to null.
+      output.setDisplayList(null);
+    }
+
+    lifecycle.unbind(context, drawable, component);
+    lifecycle.unmount(context, drawable, component);
+    ComponentsPools.release(context, lifecycle, drawable);
+    ComponentsSystrace.endSection();
+  }
+
+  private static void queueDisplayListsForPrefetch(LayoutState layoutState) {
   }
 
   private static LayoutOutput findInteractiveRoot(LayoutState layoutState, LayoutOutput output) {
@@ -1150,6 +1191,16 @@ class LayoutState {
     }
 
     return null;
+  }
+
+  private static Activity getValidActivityForContext(Context context) {
+    final Activity activity = findActivityInContext(context);
+
+    if (activity == null || activity.isFinishing() || isActivityDestroyed(activity)) {
+      return null;
+    }
+
+    return activity;
   }
 
   @VisibleForTesting
