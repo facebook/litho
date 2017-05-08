@@ -372,23 +372,6 @@ public class BuilderGenerator {
         dataHolder.addTypeSpecDataHolder(
             attrBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, "resolveFloat"));
         break;
-      case DRAWABLE_REFERENCE:
-        dataHolder.addMethod(regularBuilder(specModel, prop, requiredIndex));
-        dataHolder.addMethod(
-            resBuilder(
-                specModel,
-                prop,
-                requiredIndex,
-                ClassNames.DRAWABLE_RES,
-                "resolveDrawableReference"));
-        dataHolder.addTypeSpecDataHolder(
-            attrBuilders(
-                specModel,
-                prop,
-                requiredIndex,
-                ClassNames.DRAWABLE_RES,
-                "resolveDrawableReference"));
-        break;
       case DRAWABLE:
         dataHolder.addMethod(regularBuilder(specModel, prop, requiredIndex));
         dataHolder.addMethod(

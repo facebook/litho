@@ -147,9 +147,6 @@ public class PropValidation {
       case DRAWABLE:
         validResTypes.add(ClassNames.DRAWABLE);
         break;
-      case DRAWABLE_REFERENCE:
-        validResTypes.add(ParameterizedTypeName.get(ClassNames.REFERENCE, ClassNames.DRAWABLE));
-        break;
     }
 
     if (!validResTypes.contains(prop.getType())) {
