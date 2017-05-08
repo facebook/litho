@@ -108,4 +108,16 @@ public class SpecModelUtils {
         ((ParameterizedTypeName) methodParamModel.getType()).typeArguments.get(0)
             .equals(stateValue.getType().box());
   }
+
+  public static boolean hasAnnotation(
+      MethodParamModel methodParam,
+      Class<?> annotationClass) {
+    for (Annotation annotation : methodParam.getAnnotations()) {
+      if (annotation.annotationType().equals(annotationClass)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
 }

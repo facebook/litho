@@ -11,8 +11,15 @@ package com.facebook.litho.specmodels.generator;
 
 import javax.lang.model.element.Modifier;
 
+import com.facebook.litho.annotations.FromBoundsDefined;
+import com.facebook.litho.annotations.FromMeasure;
+import com.facebook.litho.annotations.OnMount;
 import com.facebook.litho.specmodels.model.ClassNames;
+import com.facebook.litho.specmodels.model.DelegateMethodModel;
+import com.facebook.litho.specmodels.model.InterStageInputParamModel;
+import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.MountSpecModel;
+import com.facebook.litho.specmodels.model.SpecModelUtils;
 
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
@@ -79,5 +86,33 @@ public class MountSpecGenerator {
                 .addStatement("return $T", specModel.getMountType())
                 .build())
         .build();
+  }
+
+  public static TypeSpecDataHolder generateIsMountSizeDependent(MountSpecModel specModel) {
+    TypeSpecDataHolder.Builder dataHolder = TypeSpecDataHolder.newBuilder();
+
+    final DelegateMethodModel onMount =
+        SpecModelUtils.getMethodModelWithAnnotation(specModel, OnMount.class);
+
+    if (onMount == null) {
+      return dataHolder.build();
+    }
+
+    for (MethodParamModel methodParamModel : onMount.methodParams) {
+      if (methodParamModel instanceof InterStageInputParamModel &&
+          (SpecModelUtils.hasAnnotation(methodParamModel, FromMeasure.class) ||
+           SpecModelUtils.hasAnnotation(methodParamModel, FromBoundsDefined.class))) {
+        return dataHolder
+            .addMethod(MethodSpec.methodBuilder("isMountSizeDependent")
+                .addAnnotation(Override.class)
+                .addModifiers(Modifier.PROTECTED)
+                .returns(TypeName.BOOLEAN)
+                .addStatement("return true")
+                .build())
+            .build();
+      }
+    }
+
+    return dataHolder.build();
   }
 }

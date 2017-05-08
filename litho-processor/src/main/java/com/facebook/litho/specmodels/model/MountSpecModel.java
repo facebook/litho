@@ -243,6 +243,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
         .addTypeSpecDataHolder(MountSpecGenerator.generatePoolSize(this))
         .addTypeSpecDataHolder(MountSpecGenerator.generateCanMountIncrementally(this))
         .addTypeSpecDataHolder(MountSpecGenerator.generateShouldUseDisplayList(this))
+        .addTypeSpecDataHolder(MountSpecGenerator.generateIsMountSizeDependent(this))
         .addTypeSpecDataHolder(PureRenderGenerator.generate(this))
         .addTypeSpecDataHolder(EventGenerator.generate(this))
         .addTypeSpecDataHolder(StateGenerator.generate(this))
