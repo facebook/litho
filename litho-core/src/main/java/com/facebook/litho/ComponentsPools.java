@@ -252,10 +252,6 @@ public class ComponentsPools {
   }
 
   static Object acquireMountContent(Context context, int componentId) {
-    if (!ComponentsConfiguration.usePooling) {
-      return null;
-    }
-
     if (context instanceof ComponentContext) {
       context = ((ComponentContext) context).getBaseContext();
 
@@ -601,10 +597,6 @@ public class ComponentsPools {
 
   @ThreadSafe(enableChecks = false)
   static void release(Context context, ComponentLifecycle lifecycle, Object mountContent) {
-    if (!ComponentsConfiguration.usePooling) {
-      return;
-    }
-
     if (context instanceof ComponentContext) {
       context = ((ComponentContext) context).getBaseContext();
 
@@ -636,9 +628,6 @@ public class ComponentsPools {
   }
 
   static boolean canAddMountContentToPool(Context context, ComponentLifecycle lifecycle) {
-    if (!ComponentsConfiguration.usePooling) {
-      return false;
-    }
     if (lifecycle.poolSize() == 0) {
       return false;
     }
