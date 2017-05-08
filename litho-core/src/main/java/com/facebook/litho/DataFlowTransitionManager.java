@@ -213,7 +213,8 @@ public class DataFlowTransitionManager {
 
       if (animationState.changeType != TransitionManager.KeyStatus.APPEARED) {
         throw new RuntimeException(
-            "Wrong transition type for appear: " + animationState.changeType);
+            "Wrong transition type for appear of key " + property.getTransitionKey() + ": " +
+                keyStatusToString(animationState.changeType));
       }
       animationState.currentDiff.beforeValues.put(property.getProperty(), value);
     }
@@ -232,7 +233,8 @@ public class DataFlowTransitionManager {
       final AnimationState animationState = mAnimationStates.get(property.getTransitionKey());
       if (animationState.changeType != TransitionManager.KeyStatus.DISAPPEARED) {
         throw new RuntimeException(
-            "Wrong transition type for disappear: " + animationState.changeType);
+            "Wrong transition type for disappear of key " + property.getTransitionKey() + ": " +
+                keyStatusToString(animationState.changeType));
       }
       final float value = lazyValue.resolve(mResolver, property);
       animationState.currentDiff.afterValues.put(property.getProperty(), value);
@@ -398,6 +400,21 @@ public class DataFlowTransitionManager {
     final ViewParent parent = view.getParent();
     if (parent instanceof ComponentHost) {
       recursivelySetChildClippingForView((View) parent, clipChildren);
+    }
+  }
+
+  private static String keyStatusToString(int keyStatus) {
+    switch (keyStatus) {
+      case TransitionManager.KeyStatus.APPEARED:
+        return "APPEARED";
+      case TransitionManager.KeyStatus.UNCHANGED:
+        return "UNCHANGED";
+      case TransitionManager.KeyStatus.DISAPPEARED:
+        return "DISAPPEARED";
+      case TransitionManager.KeyStatus.UNSET:
+        return "UNSET";
+      default:
+        throw new RuntimeException("Unknown keyStatus: " + keyStatus);
     }
   }
 
