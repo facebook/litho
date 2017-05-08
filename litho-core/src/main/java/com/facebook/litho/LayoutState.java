@@ -12,7 +12,9 @@ package com.facebook.litho;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import android.annotation.TargetApi;
@@ -114,6 +116,9 @@ class LayoutState {
   @ThreadConfined(ThreadConfined.UI)
   private final Rect mDisplayListCreateRect = new Rect();
 
+  @ThreadConfined(ThreadConfined.ANY)
+  private final Rect mDisplayListQueueRect = new Rect();
+
   private static final int[] DRAWABLE_STATE_ENABLED = new int[]{android.R.attr.state_enabled};
   private static final int[] DRAWABLE_STATE_NOT_ENABLED = new int[]{};
 
@@ -131,6 +136,7 @@ class LayoutState {
   private final LayoutStateOutputIdCalculator mLayoutStateOutputIdCalculator;
   private final ArrayList<LayoutOutput> mMountableOutputTops = new ArrayList<>();
   private final ArrayList<LayoutOutput> mMountableOutputBottoms = new ArrayList<>();
+  private final Queue<Integer> mDisplayListsToPrefetch = new LinkedList<>();
   private final List<TestOutput> mTestOutputs;
 
   private InternalNode mLayoutRoot;
@@ -1151,6 +1157,18 @@ class LayoutState {
   }
 
   private static void queueDisplayListsForPrefetch(LayoutState layoutState) {
+    final Rect rect = layoutState.mDisplayListQueueRect;
+
+    for (int i = 0, count = layoutState.getMountableOutputCount(); i < count; i++) {
+      final LayoutOutput output = layoutState.getMountableOutputAt(i);
+      if (shouldCreateDisplayList(output, rect)) {
+        layoutState.mDisplayListsToPrefetch.add(i);
+      }
+    }
+
+    if (!layoutState.mDisplayListsToPrefetch.isEmpty()) {
+      DisplayListPrefetcher.getInstance().addLayoutState(layoutState);
+    }
   }
 
   private static LayoutOutput findInteractiveRoot(LayoutState layoutState, LayoutOutput output) {
@@ -1664,6 +1682,7 @@ class LayoutState {
       mMountableOutputTops.clear();
       mMountableOutputBottoms.clear();
       mOutputsIdToPositionMap.clear();
+      mDisplayListsToPrefetch.clear();
 
       for (int i = 0, size = mVisibilityOutputs.size(); i < size; i++) {
         ComponentsPools.release(mVisibilityOutputs.get(i));
@@ -1828,5 +1847,12 @@ class LayoutState {
       mTransitionContext = ComponentsPools.acquireTransitionContext();
     }
     return mTransitionContext;
+  }
+
+  /**
+   * @return whether there are any items in the queue for Display Lists prefetching.
+   */
+  boolean hasItemsForDLPrefetch() {
+    return !mDisplayListsToPrefetch.isEmpty();
   }
 }
