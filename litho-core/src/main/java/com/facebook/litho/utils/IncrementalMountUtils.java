@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.facebook.litho.LithoView;
+import com.facebook.litho.config.ComponentsConfiguration;
 
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 
@@ -44,6 +45,11 @@ public class IncrementalMountUtils {
    */
   public static void performIncrementalMount(ViewGroup scrollingViewParent) {
     assertMainThread();
+
+    if (ComponentsConfiguration.isIncrementalMountOnOffsetOrTranslationChangeEnabled) {
+      return;
+    }
+
     final int viewGroupWidth = scrollingViewParent.getWidth();
     final int viewGroupHeight = scrollingViewParent.getHeight();
     for (int i = 0; i < scrollingViewParent.getChildCount(); i++) {
@@ -53,6 +59,7 @@ public class IncrementalMountUtils {
           scrollingViewParent.getChildAt(i));
     }
   }
+
   /**
    * Returns a scroll listener that performs incremental mount.  This is needed
    * for feeds that do not use a ScrollingViewProxy, but rather directly use a

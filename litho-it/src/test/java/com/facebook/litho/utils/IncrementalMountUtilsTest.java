@@ -15,9 +15,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.facebook.litho.LithoView;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.utils.IncrementalMountUtils.WrapperView;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,6 +50,7 @@ public class IncrementalMountUtilsTest {
 
   @Before
   public void setUp() {
+    ComponentsConfiguration.isIncrementalMountOnOffsetOrTranslationChangeEnabled = false;
     when(mLithoView.isIncrementalMountEnabled()).thenReturn(true);
     when(mWrapperView.getWrappedView()).thenReturn(mLithoView);
 
@@ -66,6 +69,11 @@ public class IncrementalMountUtilsTest {
             return null;
           }
         }).when(mLithoView).performIncrementalMount(any(Rect.class));
+  }
+
+  @After
+  public void tearDown() {
+    ComponentsConfiguration.isIncrementalMountOnOffsetOrTranslationChangeEnabled = true;
   }
 
   @Test

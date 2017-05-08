@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityManager;
 
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
 
 import static android.content.Context.ACCESSIBILITY_SERVICE;
@@ -366,39 +367,36 @@ public class LithoView extends ComponentHost {
   public void offsetTopAndBottom(int offset) {
     super.offsetTopAndBottom(offset);
 
-    if (mIncrementalMountOnOffsetOrTranslationChange) {
-      maybePerformIncrementalMountOnView();
-    }
+    maybePerformIncrementalMountOnView();
   }
 
   @Override
   public void offsetLeftAndRight(int offset) {
     super.offsetLeftAndRight(offset);
 
-    if (mIncrementalMountOnOffsetOrTranslationChange) {
-      maybePerformIncrementalMountOnView();
-    }
+    maybePerformIncrementalMountOnView();
   }
 
   @Override
   public void setTranslationX(float translationX) {
     super.setTranslationX(translationX);
 
-    if (mIncrementalMountOnOffsetOrTranslationChange) {
-      maybePerformIncrementalMountOnView();
-    }
+    maybePerformIncrementalMountOnView();
   }
 
   @Override
   public void setTranslationY(float translationY) {
     super.setTranslationY(translationY);
 
-    if (mIncrementalMountOnOffsetOrTranslationChange) {
-      maybePerformIncrementalMountOnView();
-    }
+    maybePerformIncrementalMountOnView();
   }
 
   private void maybePerformIncrementalMountOnView() {
+    if (!mIncrementalMountOnOffsetOrTranslationChange &&
+        !ComponentsConfiguration.isIncrementalMountOnOffsetOrTranslationChangeEnabled) {
+      return;
+    }
+
     if (!isIncrementalMountEnabled() || !(getParent() instanceof View)) {
       return;
     }
