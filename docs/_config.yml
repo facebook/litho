@@ -33,8 +33,9 @@ url: "http://fblitho.com"
 # The GitHub repo for your project
 ghrepo: "facebook/litho"
 
-# This can be used in documentation with {{site.litho-version}}
+# These can be used in documentation with e.g. {{site.litho-version}}
 litho-version: 0.2.0
+litho-snapshot-version: 0.2.1-SNAPSHOT
 
 # Use these color settings to determine your colour scheme for the site.
 color:
