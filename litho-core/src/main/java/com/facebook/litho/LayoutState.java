@@ -1855,4 +1855,13 @@ class LayoutState {
   boolean hasItemsForDLPrefetch() {
     return !mDisplayListsToPrefetch.isEmpty();
   }
+
+  /**
+   * Removes and returns next {@link LayoutOutput} from the queue for Display Lists.
+   * Note that it is callers responsibility to make sure queue is not empty.
+   */
+  LayoutOutput getNextLayoutOutputForDLPrefetch() {
+    final int layoutOutputIndex = mDisplayListsToPrefetch.poll();
+    return getMountableOutputAt(layoutOutputIndex);
+  }
 }

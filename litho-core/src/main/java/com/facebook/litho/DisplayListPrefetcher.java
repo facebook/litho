@@ -27,9 +27,19 @@ import android.view.View;
  */
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public final class DisplayListPrefetcher implements Runnable {
+
+  /**
+   * Keeps average display list creation time per unique component type defined by component class
+   * name.
+   */
+  private static final HashMap<String, Long> sAverageDLPrefetchDurationNs = new HashMap<>();
+
   private static DisplayListPrefetcher sDisplayListPrefetcher = new DisplayListPrefetcher();
 
   private final Queue<WeakReference<LayoutState>> mLayoutStates;
+
+  private long mFrameIntervalNs;
+  private WeakReference<View> mHostingView;
 
   private DisplayListPrefetcher() {
     mLayoutStates = new LinkedList<>();
@@ -39,12 +49,81 @@ public final class DisplayListPrefetcher implements Runnable {
     return sDisplayListPrefetcher;
   }
 
+  public synchronized void setHostingView(View view) {
+    if (mHostingView == null || mHostingView.get() != view) {
+      mHostingView = new WeakReference<>(view);
+    }
+    initIfNeeded(view);
+  }
+
+  private void initIfNeeded(View view) {
+    if (mFrameIntervalNs > 0) {
+      return;
+    }
+
+    final Display display = view.getDisplay();
+    float refreshRate = 60.0f;
+    if (!view.isInEditMode() && display != null) {
+      final float displayRefreshRate = display.getRefreshRate();
+      if (displayRefreshRate >= 30.0f) {
+        refreshRate = displayRefreshRate;
+      }
+    }
+
+    mFrameIntervalNs = (long) (1000000000 / refreshRate);
+  }
+
   synchronized void addLayoutState(LayoutState layoutState) {
     mLayoutStates.add(new WeakReference<>(layoutState));
   }
 
   @Override
   public void run() {
+    if (mFrameIntervalNs == 0) {
+      // Not yet initialized.
+      return;
+    }
+
+    final View hostingView = mHostingView.get();
+    if (hostingView == null) {
+      return;
+    }
+
+    ComponentsSystrace.beginSection("DisplayListPrefetcher");
+
+    final long latestFrameVsyncNs = TimeUnit.MILLISECONDS.toNanos(hostingView.getDrawingTime());
+    final long nextVsyncNs = latestFrameVsyncNs + mFrameIntervalNs;
+
+    while (true) {
+      final LayoutState currentLayoutState = getValidLayoutStateFromQueue();
+      if (currentLayoutState == null) {
+        break;
+      }
+
+      final LayoutOutput currentLayoutOutput =
+          currentLayoutState.getNextLayoutOutputForDLPrefetch();
+      final String currentComponentType = currentLayoutOutput.getComponent().getSimpleName();
+      final long startPrefetchNs = System.nanoTime();
+
+      if (!canPrefetchOnTime(currentComponentType, startPrefetchNs, nextVsyncNs)) {
+        break;
+      }
+
+      currentLayoutState.createDisplayList(currentLayoutOutput);
+      if (currentLayoutOutput.getDisplayList() != null) {
+        // successfully created DL
+        final long actualElapsedNs = System.nanoTime() - startPrefetchNs;
+        updateAveragePrefetchDuration(currentComponentType, actualElapsedNs);
+      }
+    }
+
+    ComponentsSystrace.endSection();
+  }
+
+  private boolean canPrefetchOnTime(String componentType, long startTimeNs, long deadlineNs) {
+    final Long expectedPrefetchDurationNs = sAverageDLPrefetchDurationNs.get(componentType);
+    return expectedPrefetchDurationNs == null
+        || (startTimeNs + expectedPrefetchDurationNs < deadlineNs);
   }
 
   /**
@@ -68,5 +147,21 @@ public final class DisplayListPrefetcher implements Runnable {
     }
 
     return currentLayoutState.get();
+  }
+
+  private void updateAveragePrefetchDuration(String componentType, long actualElapsedNs) {
+    final Long expectedPrefetchDurationNs = sAverageDLPrefetchDurationNs.get(componentType);
+    final long updatedValue;
+    if (expectedPrefetchDurationNs == null) {
+      updatedValue = actualElapsedNs;
+    } else {
+      // Not actual average, but good approximation.
+      updatedValue = (expectedPrefetchDurationNs / 4 * 3) + (actualElapsedNs / 4);
+    }
+    sAverageDLPrefetchDurationNs.put(componentType, updatedValue);
+  }
+
+  public synchronized boolean hasPrefetchItems() {
+    return !mLayoutStates.isEmpty();
   }
 }
