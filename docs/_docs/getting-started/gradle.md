@@ -8,23 +8,23 @@ You can include Litho to your Android project via Gradle by adding the following
 dependencies {
   // ...
   // Litho
-  compile 'com.facebook.litho:litho-core:0.2.0'
-  compile 'com.facebook.litho:litho-widget:0.2.0'
-  provided 'com.facebook.litho:litho-annotations:0.2.0'
+  compile 'com.facebook.litho:litho-core:{{site.litho-version}}'
+  compile 'com.facebook.litho:litho-widget:{{site.litho-version}}'
+  provided 'com.facebook.litho:litho-annotations:{{site.litho-version}}'
 
-  annotationProcessor 'com.facebook.litho:litho-processor:0.2.0'
-  
+  annotationProcessor 'com.facebook.litho:litho-processor:{{site.litho-version}}'
+
   // SoLoader 
-  compile 'com.facebook.soloader:soloader:0.2.0'
+  compile 'com.facebook.soloader:soloader:{{site.litho-version}}'
 
   // Optional
   // For debugging
-  debugCompile 'com.facebook.litho:litho-stetho:0.2.0'
+  debugCompile 'com.facebook.litho:litho-stetho:{{site.litho-version}}'
 
   // For integration with Fresco
-  compile 'com.facebook.litho:litho-fresco:0.2.0'
+  compile 'com.facebook.litho:litho-fresco:{{site.litho-version}}'
 
   // For testing
-  testCompile 'com.facebook.litho:litho-testing:0.2.0'
+  testCompile 'com.facebook.litho:litho-testing:{{site.litho-version}}'
 }
 ```
