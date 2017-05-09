@@ -15,6 +15,7 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import android.graphics.Rect;
@@ -515,7 +516,14 @@ class MountState {
     // 2. Reset all the properties like click handler, content description and tags related to
     // this item if it needs to be updated. the update mount item will re-set the new ones.
     if (shouldUpdate) {
-      maybeDecrementTransitionKeyMountCount(currentMountItem);
+      final String transitionKey = maybeDecrementTransitionKeyMountCount(currentMountItem);
+
+      // This mount content might be animating and we may be remounting it as a different component
+      // in the same tree, or as a component in a totally different tree so we need to notify the
+      // transition manager.
+      if (transitionKey != null && mTransitionManager != null) {
+        mTransitionManager.onContentUnmounted(transitionKey);
+      }
       unsetViewAttributes(currentMountItem);
     }
 
@@ -791,7 +799,10 @@ class MountState {
       final int newPosition = newLayoutState.getLayoutOutputPositionForId(mLayoutOutputsIds[i]);
       final MountItem oldItem = getItemAt(i);
 
-      if (isItemDisappearing(oldItem, newLayoutState, mTransitionManager)) {
+      // If an item is being unmounted, has a disappearing animation, and we're still rendering the
+      // same component tree, don't actually unmount so that we can perform the disappear animation.
+      if (mLastMountedComponentTreeId == newLayoutState.getComponentTreeId() &&
+          isItemDisappearing(oldItem, newLayoutState, mTransitionManager)) {
 
         startUnmountDisappearingItem(i, oldItem.getViewNodeInfo().getTransitionKey());
 
@@ -1653,14 +1664,21 @@ class MountState {
       // We need to make sure to remove any disappearing items and clean up their state if we
       // are unmounting its host.
       if (componentHost.hasDisappearingItems()) {
-        mTransitionManager.cleanupDisappearingTransitions(componentHost.getDisappearingItemKeys());
+        List<String> disappearingKeys = componentHost.getDisappearingItemKeys();
+        for (int i = 0, size = disappearingKeys.size(); i < size; i++) {
+          mTransitionManager.onContentUnmounted(disappearingKeys.get(i));
+        }
       }
     }
 
     unbindAndUnmountLifecycle(context, item);
 
     mIndexToItemMap.remove(mLayoutOutputsIds[index]);
-    maybeDecrementTransitionKeyMountCount(item);
+    final String transitionKey = maybeDecrementTransitionKeyMountCount(item);
+
+    if (transitionKey != null && mTransitionManager != null) {
+      mTransitionManager.onContentUnmounted(transitionKey);
+    }
 
     if (component.getLifecycle().canMountIncrementally()) {
       mCanMountIncrementallyMountItems.delete(mLayoutOutputsIds[index]);
@@ -2030,15 +2048,15 @@ class MountState {
     mMountedTransitionKeys.put(transitionKey, currentCount == null ? 1 : currentCount + 1);
   }
 
-  private void maybeDecrementTransitionKeyMountCount(MountItem mountItem) {
+  private String maybeDecrementTransitionKeyMountCount(MountItem mountItem) {
     final ViewNodeInfo viewNodeInfo = mountItem.getViewNodeInfo();
     if (viewNodeInfo == null) {
-      return;
+      return null;
     }
 
     final String transitionKey = viewNodeInfo.getTransitionKey();
     if (transitionKey == null) {
-      return;
+      return null;
     }
 
     final Integer currentCount = mMountedTransitionKeys.remove(transitionKey);
@@ -2048,6 +2066,7 @@ class MountState {
     if (currentCount != 1) {
       mMountedTransitionKeys.put(transitionKey, currentCount - 1);
     }
+    return transitionKey;
   }
 
   /**

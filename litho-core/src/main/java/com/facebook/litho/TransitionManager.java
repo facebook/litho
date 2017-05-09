@@ -213,14 +213,12 @@ class TransitionManager implements TransitionKeySetListener {
     return mDataFlowTransitionManager.isKeyAnimating(key);
   }
 
-  void cleanupDisappearingTransitions(List<String> transitionKeys) {
-    for (int i = 0, size = transitionKeys.size(); i < size; i++) {
-      final TransitionKeySet transitionKeySet = removeRunningTransition(transitionKeys.get(i));
-      if (transitionKeySet != null) {
-        transitionKeySet.cleanupAfterDisappear();
-      }
+  void onContentUnmounted(String transitionKey) {
+    final TransitionKeySet transitionKeySet = removeRunningTransition(transitionKey);
+    if (transitionKeySet != null) {
+      transitionKeySet.cleanupAfterDisappear();
     }
-    mDataFlowTransitionManager.cleanupDisappearingTransitions(transitionKeys);
+    mDataFlowTransitionManager.onContentUnmounted(transitionKey);
   }
 
   /**

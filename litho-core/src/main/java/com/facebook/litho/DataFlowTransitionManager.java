@@ -112,7 +112,7 @@ public class DataFlowTransitionManager {
         if (animationState.currentDiff.beforeValues.put(prop, prop.get(mountItem)) != null) {
           throw new RuntimeException("TransitionDiff wasn't cleared properly!");
         }
-
+        
         // Unfortunately, we have no guarantee that this mountItem won't be re-used for another
         // different component during the coming mount, so we need to reset it before the actual
         // mount happens. The proper before-values will be set again before any animations start.
@@ -166,16 +166,13 @@ public class DataFlowTransitionManager {
     return mAnimationStates.containsKey(key);
   }
 
-  void cleanupDisappearingTransitions(List<String> transitionKeys) {
-    for (int i = 0, size = transitionKeys.size(); i < size; i++) {
-      final String key = transitionKeys.get(i);
-      final AnimationState animationState = mAnimationStates.get(key);
-      if (animationState == null) {
-        continue;
-      }
-
-      setMountItem(animationState, null);
+  void onContentUnmounted(String transitionKey) {
+    final AnimationState animationState = mAnimationStates.get(transitionKey);
+    if (animationState == null) {
+      return;
     }
+
+    setMountItem(animationState, null);
   }
 
   private void restoreInitialStates() {
