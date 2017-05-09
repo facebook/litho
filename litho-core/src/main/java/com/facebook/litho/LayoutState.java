@@ -547,7 +547,7 @@ class LayoutState {
 
     // If we don't need to update this output we can safely re-use the display list from the
     // previous output.
-    if (isCachedOutputUpdated) {
+    if (ThreadUtils.isMainThread() && isCachedOutputUpdated) {
       layoutOutput.setDisplayList(currentDiffNode.getContent().getDisplayList());
     }
 
