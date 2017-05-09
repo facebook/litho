@@ -173,22 +173,19 @@ class MountState {
     final boolean shouldAnimateTransitions =
         mIsDirty &&
         layoutState.shouldAnimateTransitions() &&
+        layoutState.hasTransitionContext() &&
         mLastMountedComponentTreeId == componentTreeId;
 
     prepareTransitionManager(layoutState);
-    if (layoutState.hasTransitionContext()) {
-      if (mIsDirty) {
-        if (shouldAnimateTransitions) {
-          createAutoMountTransitions(layoutState);
-        }
-        mTransitionManager.onNewTransitionContext(layoutState.getTransitionContext());
+    if (shouldAnimateTransitions) {
+      createAutoMountTransitions(layoutState);
+      mTransitionManager.onNewTransitionContext(layoutState.getTransitionContext());
 
-        mTransitionManager.onMountStart();
-        recordMountedItemsWithTransitionKeys(
-            mTransitionManager,
-            mIndexToItemMap,
-            true /* isPreMount */);
-      }
+      mTransitionManager.onMountStart();
+      recordMountedItemsWithTransitionKeys(
+          mTransitionManager,
+          mIndexToItemMap,
+          true /* isPreMount */);
     }
 
     if (mIsDirty) {
@@ -259,7 +256,7 @@ class MountState {
 
     processVisibilityOutputs(layoutState, localVisibleRect);
 
-    if (layoutState.hasTransitionContext() && shouldAnimateTransitions) {
+    if (shouldAnimateTransitions) {
       recordMountedItemsWithTransitionKeys(
           mTransitionManager,
           mIndexToItemMap,
