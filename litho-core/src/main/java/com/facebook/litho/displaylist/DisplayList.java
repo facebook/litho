@@ -36,19 +36,30 @@ public class DisplayList {
   @Nullable
   public static DisplayList createDisplayList(String name) {
     final PlatformDisplayList platformDisplayList;
-
-    if (Build.VERSION.SDK_INT >= 24) {
-      platformDisplayList = DisplayListNougat.createDisplayList(name);
-    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      platformDisplayList = DisplayListMarshmallow.createDisplayList(name);
-    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      platformDisplayList = DisplayListLollipop.createDisplayList(name);
-    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-      platformDisplayList = DisplayListJBMR2.createDisplayList(name);
-    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-      platformDisplayList = DisplayListJB.createDisplayList(name);
-    } else {
-      platformDisplayList = null;
+    switch (Build.VERSION.SDK_INT) {
+      case 25: // Nougat MR1
+      case 24: // Nougat
+        platformDisplayList = DisplayListNougat.createDisplayList(name);
+        break;
+      case Build.VERSION_CODES.M:
+        platformDisplayList = DisplayListMarshmallow.createDisplayList(name);
+        break;
+      case Build.VERSION_CODES.LOLLIPOP_MR1:
+      case Build.VERSION_CODES.LOLLIPOP:
+        platformDisplayList = DisplayListLollipop.createDisplayList(name);
+        break;
+      case Build.VERSION_CODES.KITKAT_WATCH:
+      case Build.VERSION_CODES.KITKAT:
+      case Build.VERSION_CODES.JELLY_BEAN_MR2:
+        platformDisplayList = DisplayListJBMR2.createDisplayList(name);
+        break;
+      case Build.VERSION_CODES.JELLY_BEAN_MR1:
+      case Build.VERSION_CODES.JELLY_BEAN:
+        platformDisplayList = DisplayListJB.createDisplayList(name);
+        break;
+      default:
+        platformDisplayList = null;
+        break;
     }
 
     if (platformDisplayList == null) {
