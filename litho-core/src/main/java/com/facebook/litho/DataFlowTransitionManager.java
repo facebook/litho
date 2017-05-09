@@ -363,7 +363,8 @@ public class DataFlowTransitionManager {
                   "of active animations, but it wasn't there.");
         }
         if (animationState.activeAnimations.size() == 0) {
-          if (animationState.changeType == TransitionManager.KeyStatus.DISAPPEARED) {
+          if (animationState.changeType == TransitionManager.KeyStatus.DISAPPEARED &&
+              animationState.mountItem != null) {
             for (int j = 0; j < animationState.animatingProperties.size(); j++) {
               animationState.animatingProperties.valueAt(j).reset(animationState.mountItem);
             }
