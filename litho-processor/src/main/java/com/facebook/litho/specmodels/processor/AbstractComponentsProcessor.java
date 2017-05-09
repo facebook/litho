@@ -20,7 +20,7 @@ import javax.tools.Diagnostic;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -47,7 +47,7 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
     Set<Element> mountSpecElements =
         (Set<Element>) roundEnv.getElementsAnnotatedWith(MountSpec.class);
 
-    Set<Element> allSpecElements = new HashSet<>();
+    Set<Element> allSpecElements = new LinkedHashSet<>();
     allSpecElements.addAll(layoutSpecElements);
     allSpecElements.addAll(mountSpecElements);
 
@@ -86,7 +86,7 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
 
   @Override
   public Set<String> getSupportedAnnotationTypes() {
-    return new HashSet<>(Arrays.asList(
+    return new LinkedHashSet<>(Arrays.asList(
         ClassNames.LAYOUT_SPEC.toString(),
         ClassNames.MOUNT_SPEC.toString()));
   }
