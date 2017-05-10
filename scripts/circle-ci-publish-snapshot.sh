@@ -6,7 +6,7 @@
 
 set -e
 
-BASEDIR="$(readlink -m "$(dirname "$0")/..")"
+BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 IS_SNAPSHOT="$(grep 'VERSION_NAME=[0-9\.]\+-SNAPSHOT' "$BASEDIR/gradle.properties")"
 
 if [ "$CIRCLE_PROJECT_USERNAME" != "facebook" ]; then
