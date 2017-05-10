@@ -38,9 +38,26 @@ dependencies {
     testCompile project(':litho-widget')
 
     // Testing
-    testCompile deps.robolectric
-    testCompile deps.soloader
+    testCompile deps.compileTesting
     testCompile deps.powermockMockito
     testCompile deps.powermockJunit
     testCompile deps.powermockXstream
+    testCompile deps.robolectric
+    testCompile deps.soloader
+    testCompile files(getRuntimeJar())
+
+}
+
+static def getRuntimeJar() {
+    try {
+        final File javaBase = new File(System.getProperty("java.home")).getCanonicalFile();
+        File runtimeJar = new File(javaBase, "lib/rt.jar");
+        if (runtimeJar.exists()) {
+            return runtimeJar;
+        }
+        runtimeJar = new File(javaBase, "jre/lib/rt.jar");
+        return runtimeJar.exists() ? runtimeJar : null;
+    } catch (IOException e) {
+        throw new RuntimeException(e);
+    }
 }
