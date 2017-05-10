@@ -24,7 +24,7 @@ class ColorComponentSpec {
   static ComponentLayout onCreateLayout(
       Context c,
       @Prop EventHandler colorChangedHandler,
-      @FromPrepare int color) {
+      @Prop int color) {
     ...
     ColorComponent.dispatchColorChangedEvent(
         colorChangedHandler,
