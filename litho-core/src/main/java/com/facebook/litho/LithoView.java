@@ -40,6 +40,7 @@ public class LithoView extends ComponentHost {
   private final boolean mIncrementalMountOnOffsetOrTranslationChange;
 
   private boolean mForceLayout;
+  private boolean mSuppressMeasureComponentTree;
 
   private final AccessibilityManager mAccessibilityManager;
 
@@ -188,7 +189,17 @@ public class LithoView extends ComponentHost {
       AccessibilityManagerCompat.removeAccessibilityStateChangeListener(
           mAccessibilityManager,
           mAccessibilityStateChangeListener);
+
+      mSuppressMeasureComponentTree = false;
     }
+  }
+
+  /**
+   * If set to true, the onMeasure(..) call won't measure the ComponentTree with the given
+   * measure specs, but it will just use them as measured dimensions.
+   */
+  public void suppressMeasureComponentTree(boolean suppress) {
+    mSuppressMeasureComponentTree = suppress;
   }
 
   @Override
@@ -201,7 +212,7 @@ public class LithoView extends ComponentHost {
       mTemporaryDetachedComponent = null;
     }
 
-    if (mComponentTree != null) {
+    if (mComponentTree != null && !mSuppressMeasureComponentTree) {
       boolean forceRelayout = mForceLayout;
       mForceLayout = false;
       mComponentTree.measure(widthMeasureSpec, heightMeasureSpec, sLayoutSize, forceRelayout);

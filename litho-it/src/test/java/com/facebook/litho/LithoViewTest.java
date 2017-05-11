@@ -25,6 +25,12 @@ import org.robolectric.shadows.ShadowView;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 @RunWith(ComponentsTestRunner.class)
 public class LithoViewTest {
@@ -107,5 +113,23 @@ public class LithoViewTest {
 
     assertTrue(nullLithoView.getMeasuredHeight() == 0
         && nullLithoView.getMeasuredWidth() == 0);
+  }
+
+  @Test
+  public void testSuppressMeasureComponentTree() {
+    final ComponentTree mockComponentTree = mock(ComponentTree.class);
+    final int width = 240;
+    final int height = 400;
+
+    mLithoView.setComponentTree(mockComponentTree);
+    mLithoView.suppressMeasureComponentTree(true);
+    mLithoView.measure(
+        View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
+        View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY));
+
+    verify(mockComponentTree, never())
+        .measure(anyInt(), anyInt(), any(int[].class), anyBoolean());
+    assertEquals(width, mLithoView.getMeasuredWidth());
+    assertEquals(height, mLithoView.getMeasuredHeight());
   }
 }
