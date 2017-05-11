@@ -232,7 +232,8 @@ class MountState {
                 layoutOutput,
                 currentMountItem,
                 useUpdateValueFromLayoutOutput,
-                logger);
+                logger,
+                componentTreeId);
 
             if (itemUpdated) {
               mMountStats.updatedCount++;
@@ -500,7 +501,8 @@ class MountState {
       LayoutOutput layoutOutput,
       MountItem currentMountItem,
       boolean useUpdateValueFromLayoutOutput,
-      ComponentsLogger logger) {
+      ComponentsLogger logger,
+      int componentTreeId) {
     final Component layoutOutputComponent = layoutOutput.getComponent();
     final Component itemComponent = currentMountItem.getComponent();
 
@@ -524,6 +526,19 @@ class MountState {
       if (transitionKey != null && mTransitionManager != null) {
         mTransitionManager.onContentUnmounted(transitionKey);
       }
+
+      // If we're remounting this ComponentHost for a new ComponentTree, remove all disappearing
+      // mount content that was animating since those disappearing animations belong to the old
+      // ComponentTree
+      if (mLastMountedComponentTreeId != componentTreeId) {
+        final Component<?> component = currentMountItem.getComponent();
+
+        if (isHostSpec(component)) {
+          final ComponentHost componentHost = (ComponentHost) currentMountItem.getContent();
+          removeDisappearingMountContentFromComponentHost(componentHost);
+        }
+      }
+
       unsetViewAttributes(currentMountItem);
     }
 
@@ -1661,14 +1676,7 @@ class MountState {
     if (isHostSpec(component)) {
       final ComponentHost componentHost = (ComponentHost) content;
       hostsByMarker.removeAt(hostsByMarker.indexOfValue(componentHost));
-      // We need to make sure to remove any disappearing items and clean up their state if we
-      // are unmounting its host.
-      if (componentHost.hasDisappearingItems()) {
-        List<String> disappearingKeys = componentHost.getDisappearingItemKeys();
-        for (int i = 0, size = disappearingKeys.size(); i < size; i++) {
-          mTransitionManager.onContentUnmounted(disappearingKeys.get(i));
-        }
-      }
+      removeDisappearingMountContentFromComponentHost(componentHost);
     }
 
     unbindAndUnmountLifecycle(context, item);
@@ -2026,6 +2034,15 @@ class MountState {
 
       if (animation != null) {
         transitionContext.addTransitionAnimationBinding(animation);
+      }
+    }
+  }
+
+  private void removeDisappearingMountContentFromComponentHost(ComponentHost componentHost) {
+    if (componentHost.hasDisappearingItems()) {
+      List<String> disappearingKeys = componentHost.getDisappearingItemKeys();
+      for (int i = 0, size = disappearingKeys.size(); i < size; i++) {
+        mTransitionManager.onContentUnmounted(disappearingKeys.get(i));
       }
     }
   }
