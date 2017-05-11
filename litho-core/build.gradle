@@ -48,7 +48,11 @@ dependencies {
     compile deps.supportRecyclerView
 
     // First-party dependencies
-    compile project(':yogajni')
+    if (project.hasProperty('RELEASE_MODE')) {
+        compile deps.yoga
+    } else {
+        compile project(':yogajni')
+    }
 
     // Debugging dependencies
     debugCompile deps.guava
