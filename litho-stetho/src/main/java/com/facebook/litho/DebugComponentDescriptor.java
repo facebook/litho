@@ -38,12 +38,12 @@ public final class DebugComponentDescriptor
 
   @Override
   protected void onGetChildren(DebugComponent element, Accumulator<Object> children) {
-    final ComponentsStethoManagerImpl stethoManager = getStethoManager(element);
-    if (stethoManager == null) {
+    final LithoDebugInfo debugInfo = getDebugInfo(element);
+    if (debugInfo == null) {
       return;
     }
 
-    for (DebugComponent child : element.getChildComponents(stethoManager)) {
+    for (DebugComponent child : element.getChildComponents(debugInfo)) {
       children.store(child);
     }
 
@@ -122,9 +122,9 @@ public final class DebugComponentDescriptor
       String ruleName,
       StyleAccumulator accumulator) {
 
-    final ComponentsStethoManagerImpl stethoManager = getStethoManager(element);
-    if ("layout".equals(ruleName) && stethoManager != null) {
-      final Map<String, String> styles = stethoManager.getStyles(element);
+    final LithoDebugInfo debugInfo = getDebugInfo(element);
+    if ("layout".equals(ruleName) && debugInfo != null) {
+      final Map<String, String> styles = debugInfo.getStyles(element);
       for (String key : styles.keySet()) {
         accumulator.store(key, styles.get(key), false);
       }
@@ -187,22 +187,22 @@ public final class DebugComponentDescriptor
     final ComponentContext context = element.node.getContext();
     final ComponentTree componentTree = context.getComponentTree();
     final LithoView view = componentTree == null ? null : componentTree.getLithoView();
-    final ComponentsStethoManagerImpl stethoManager = getStethoManager(element);
+    final LithoDebugInfo debugInfo = getDebugInfo(element);
 
-    if (view == null || stethoManager == null) {
+    if (view == null || debugInfo == null) {
       return;
     }
 
     if ("layout".equals(ruleName)) {
-      stethoManager.setStyleOverride(element, name, value);
+      debugInfo.setStyleOverride(element, name, value);
       view.forceRelayout();
       logStyleUpdate(context);
     } else if ("props".equals(ruleName)) {
-      stethoManager.setPropOverride(element, name, value);
+      debugInfo.setPropOverride(element, name, value);
       view.forceRelayout();
       logStyleUpdate(context);
     } else if ("state".equals(ruleName)) {
-      stethoManager.setStateOverride(element, name, value);
+      debugInfo.setStateOverride(element, name, value);
       view.forceRelayout();
       logStyleUpdate(context);
     }
@@ -222,11 +222,9 @@ public final class DebugComponentDescriptor
     }
   }
 
-  private ComponentsStethoManagerImpl getStethoManager(DebugComponent element) {
+  private LithoDebugInfo getDebugInfo(DebugComponent element) {
     final ComponentContext context = element.node.getContext();
     final ComponentTree componentTree = context == null ? null : context.getComponentTree();
-    return componentTree == null
-        ? null :
-        (ComponentsStethoManagerImpl) componentTree.getStethoManager();
+    return componentTree == null ? null : componentTree.getLithoDebugInfo();
   }
 }

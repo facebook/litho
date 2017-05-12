@@ -56,10 +56,10 @@ class DebugComponent {
    *
    * @return A list of child components.
    */
-  public List<DebugComponent> getChildComponents(ComponentsStethoManagerImpl stethoManager) {
+  public List<DebugComponent> getChildComponents(LithoDebugInfo debugInfo) {
     if (componentIndex > 0) {
       final int wrappedComponentIndex = componentIndex - 1;
-      return Arrays.asList(stethoManager.getComponentsStethoNode(node, wrappedComponentIndex));
+      return Arrays.asList(debugInfo.getComponentsStethoNode(node, wrappedComponentIndex));
     }
 
     final ArrayList<DebugComponent> children = new ArrayList<>();
@@ -67,7 +67,7 @@ class DebugComponent {
     for (int i = 0, count = node.getChildCount(); i < count; i++) {
       final InternalNode childNode = node.getChildAt(i);
       final int outerWrapperComponentIndex = Math.max(0, childNode.getComponents().size() - 1);
-      children.add(stethoManager.getComponentsStethoNode(childNode, outerWrapperComponentIndex));
+      children.add(debugInfo.getComponentsStethoNode(childNode, outerWrapperComponentIndex));
     }
 
     if (node.hasNestedTree()) {
@@ -75,7 +75,7 @@ class DebugComponent {
       for (int i = 0, count = nestedTree.getChildCount(); i < count; i++) {
         final InternalNode childNode = nestedTree.getChildAt(i);
         children.add(
-            stethoManager.getComponentsStethoNode(
+            debugInfo.getComponentsStethoNode(
                 childNode,
                 Math.max(0, childNode.getComponents().size() - 1)));
       }

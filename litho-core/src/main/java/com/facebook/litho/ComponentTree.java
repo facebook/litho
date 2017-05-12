@@ -72,7 +72,7 @@ public class ComponentTree {
   private static final int SCHEDULE_NONE = 0;
   private static final int SCHEDULE_LAYOUT_ASYNC = 1;
   private static final int SCHEDULE_LAYOUT_SYNC = 2;
-  private ComponentsStethoManager mStethoManager;
+  private LithoDebugInfo mLithoDebugInfo;
 
   @IntDef({SCHEDULE_NONE, SCHEDULE_LAYOUT_ASYNC, SCHEDULE_LAYOUT_SYNC})
   @Retention(RetentionPolicy.SOURCE)
@@ -1246,13 +1246,13 @@ public class ComponentTree {
   }
 
 @ThreadConfined(ThreadConfined.UI)
-  ComponentsStethoManager getStethoManager() {
-    return mStethoManager;
+  LithoDebugInfo getLithoDebugInfo() {
+    return mLithoDebugInfo;
   }
 
 @ThreadConfined(ThreadConfined.UI)
-  void setStethoManager(ComponentsStethoManager stethoManager) {
-    mStethoManager = stethoManager;
+  void setLithoDebugInfo(LithoDebugInfo lithoDebugInfo) {
+    mLithoDebugInfo = lithoDebugInfo;
   }
 
   /**

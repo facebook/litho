@@ -1367,23 +1367,23 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     final ComponentTree tree = mComponentContext == null
         ? null
         : mComponentContext.getComponentTree();
-    final ComponentsStethoManager stethoManager = tree == null ? null : tree.getStethoManager();
-    if (stethoManager != null) {
-      applyOverridesRecursive(stethoManager, this);
+    final LithoDebugInfo debugInfo = tree == null ? null : tree.getLithoDebugInfo();
+    if (debugInfo != null) {
+      applyOverridesRecursive(debugInfo, this);
     }
 
     mYogaNode.calculateLayout(width, height);
   }
 
   private static void applyOverridesRecursive(
-      ComponentsStethoManager stethoManager,
+      LithoDebugInfo debugInfo,
       InternalNode node) {
-    stethoManager.applyOverrides(node);
+    debugInfo.applyOverrides(node);
     for (int i = 0, count = node.getChildCount(); i < count; i++) {
-      applyOverridesRecursive(stethoManager, node.getChildAt(i));
+      applyOverridesRecursive(debugInfo, node.getChildAt(i));
     }
     if (node.hasNestedTree()) {
-      applyOverridesRecursive(stethoManager, node.getNestedTree());
+      applyOverridesRecursive(debugInfo, node.getNestedTree());
     }
   }
 

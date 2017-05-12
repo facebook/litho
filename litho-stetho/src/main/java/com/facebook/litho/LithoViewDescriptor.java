@@ -120,17 +120,17 @@ public final class LithoViewDescriptor
     final LayoutState layoutState = component == null ? null : component.getMainThreadLayoutState();
     final InternalNode root = layoutState == null ? null : layoutState.getLayoutRoot();
     if (root != null) {
-      final ComponentsStethoManagerImpl stethoManager =
-          (ComponentsStethoManagerImpl) component.getStethoManager();
-      if (stethoManager == null) {
+      final LithoDebugInfo debugInfo =
+          (LithoDebugInfo) component.getLithoDebugInfo();
+      if (debugInfo == null) {
         // Stetho has not been attached previously in this session. Create a stetho manager
         // and re-render the tree using that manager before exposing children nodes to stetho.
-        component.setStethoManager(new ComponentsStethoManagerImpl());
+        component.setLithoDebugInfo(new LithoDebugInfo());
         element.forceRelayout();
       } else {
         final int outerWrapperComponentIndex = Math.max(0, root.getComponents().size() - 1);
         final DebugComponent debugComponent =
-            stethoManager.getComponentsStethoNode(root, outerWrapperComponentIndex);
+            debugInfo.getComponentsStethoNode(root, outerWrapperComponentIndex);
         children.store(debugComponent);
       }
     }
