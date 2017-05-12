@@ -311,7 +311,18 @@ public final class DebugComponent {
               props.put(field.getName(), "null");
             } else if (propAnnotation.resType() == ResType.COLOR) {
               final int i = (Integer) value;
-              props.put(field.getName(), String.format("#%06X", i & 0xFFFFF).toUpperCase());
+              props.put(
+                  field.getName(),
+                  ("#" +
+                      Integer.toHexString(((i & 0xF0000000) >> 28) & 0xf) +
+                      Integer.toHexString(((i & 0x0F000000) >> 24) & 0xf) +
+                      Integer.toHexString(((i & 0x00F00000) >> 20) & 0xf) +
+                      Integer.toHexString(((i & 0x000F0000) >> 16) & 0xf) +
+                      Integer.toHexString(((i & 0x0000F000) >> 12) & 0xf) +
+                      Integer.toHexString(((i & 0x00000F00) >> 8) & 0xf) +
+                      Integer.toHexString(((i & 0x000000F0) >> 4) & 0xf) +
+                      Integer.toHexString((i & 0x0000000F) & 0xf)
+                  ).toUpperCase());
             } else {
               props.put(field.getName(), value.toString());
             }
