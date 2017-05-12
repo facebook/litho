@@ -1,8 +1,10 @@
+set -e
+
 function download() {
   if hash curl 2>/dev/null; then
-    curl -L -o $2 $1
+    curl -L -o "$2" "$1"
   elif hash wget 2>/dev/null; then
-    wget -o $2 $1
+    wget -O "$2" "$1"
   else
     echo >&2 "No supported download tool installed. Please get either wget or curl."
     exit
@@ -11,13 +13,13 @@ function download() {
 
 function installsdk() {
   PROXY_ARGS=""
-  if [[ -z "$https_proxy" ]]; then
-    PROXY_HOST="$(cut -d : "$https_proxy" -f 1,1)"
-    PROXY_PORT="$(cut -d : "$https_proxy" -f 2,2)"
+  if [[ ! -z "$https_proxy" ]]; then
+    PROXY_HOST="$(echo $https_proxy | cut -d : -f 1,1)"
+    PROXY_PORT="$(echo $https_proxy | cut -d : -f 2,2)"
     PROXY_ARGS="--proxy=http --proxy_host=$PROXY_HOST --proxy_port=$PROXY_PORT"
   fi
 
-  echo y | sdkmanager $PROXY_ARGS $@
+  echo y | "$ANDROID_HOME"/tools/bin/sdkmanager $PROXY_ARGS "$@"
 }
 
 function installAndroidSDK {
@@ -29,6 +31,7 @@ function installAndroidSDK {
   export ANDROID_HOME=$HOME/android-sdk
   export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$PATH"
 
+  mkdir -p $ANDROID_HOME/licenses/
   echo > $ANDROID_HOME/licenses/android-sdk-license
   echo -n 8933bad161af4178b1185d1a37fbf41ea5269c55 > $ANDROID_HOME/licenses/android-sdk-license
 
