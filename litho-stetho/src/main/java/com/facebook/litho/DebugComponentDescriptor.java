@@ -10,6 +10,7 @@
 package com.facebook.litho;
 
 import java.lang.reflect.Field;
+import java.util.Map;
 
 import android.graphics.Rect;
 import android.view.View;
@@ -123,7 +124,10 @@ public final class DebugComponentDescriptor
 
     final ComponentsStethoManagerImpl stethoManager = getStethoManager(element);
     if ("layout".equals(ruleName) && stethoManager != null) {
-      stethoManager.getStyles(element, accumulator);
+      final Map<String, String> styles = stethoManager.getStyles(element);
+      for (String key : styles.keySet()) {
+        accumulator.store(key, styles.get(key), false);
+      }
     }
 
     if (element.node.getComponents().isEmpty()) {
