@@ -7,11 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.litho;
+package com.facebook.litho.stetho;
 
 import android.graphics.Rect;
 import android.view.View;
 
+import com.facebook.litho.DebugComponent;
+import com.facebook.litho.LithoView;
 import com.facebook.stetho.common.Accumulator;
 import com.facebook.stetho.inspector.elements.AttributeAccumulator;
 import com.facebook.stetho.inspector.elements.ChainedDescriptor;
@@ -116,13 +118,7 @@ public final class LithoViewDescriptor
     // the component hierarchy. View children of LithoView are of type ComponentHost which is
     // an implementation detail of the Components framework.
 
-    final ComponentTree component = element.getComponentTree();
-    final LayoutState layoutState = component == null ? null : component.getMainThreadLayoutState();
-    final InternalNode root = layoutState == null ? null : layoutState.getLayoutRoot();
-    if (root != null) {
-      final int outerWrapperComponentIndex = Math.max(0, root.getComponents().size() - 1);
-      children.store(DebugComponent.getInstance(root, outerWrapperComponentIndex));
-    }
+    children.store(DebugComponent.getRootInstance(element));
   }
 
   @Override

@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.litho;
+package com.facebook.litho.stetho;
 
 import android.app.Application;
 

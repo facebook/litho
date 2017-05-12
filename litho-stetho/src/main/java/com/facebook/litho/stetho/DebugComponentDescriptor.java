@@ -7,13 +7,18 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.litho;
+package com.facebook.litho.stetho;
 
 import java.util.Map;
 
 import android.graphics.Rect;
 import android.view.View;
 
+import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentTree;
+import com.facebook.litho.ComponentsLogger;
+import com.facebook.litho.DebugComponent;
+import com.facebook.litho.LithoView;
 import com.facebook.stetho.common.Accumulator;
 import com.facebook.stetho.inspector.elements.AbstractChainedDescriptor;
 import com.facebook.stetho.inspector.elements.StyleAccumulator;
@@ -131,26 +136,15 @@ public final class DebugComponentDescriptor
       String ruleName,
       String name,
       String value) {
-    final ComponentContext context = element.getContext();
-    final ComponentTree componentTree = context.getComponentTree();
-    final LithoView view = componentTree == null ? null : componentTree.getLithoView();
-
-    if (view == null) {
-      return;
-    }
-
     if ("layout".equals(ruleName)) {
       element.setStyleOverride(name, value);
-      view.forceRelayout();
-      logStyleUpdate(context);
+      logStyleUpdate(element.getContext());
     } else if ("props".equals(ruleName)) {
       element.setPropOverride(name, value);
-      view.forceRelayout();
-      logStyleUpdate(context);
+      logStyleUpdate(element.getContext());
     } else if ("state".equals(ruleName)) {
       element.setStateOverride(name, value);
-      view.forceRelayout();
-      logStyleUpdate(context);
+      logStyleUpdate(element.getContext());
     }
   }
 

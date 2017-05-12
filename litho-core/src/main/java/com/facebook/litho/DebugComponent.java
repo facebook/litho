@@ -47,7 +47,7 @@ import static com.facebook.yoga.YogaUnit.POINT;
  * Stetho's UI inspector to be able to easily visualize a component hierarchy without worrying about
  * implementation details of Litho.
  */
-class DebugComponent {
+public final class DebugComponent {
 
   private static final YogaValue YOGA_VALUE_UNDEFINED =
       new YogaValue(YogaConstants.UNDEFINED, YogaUnit.UNDEFINED);
@@ -66,6 +66,8 @@ class DebugComponent {
   private final SimpleArrayMap<String, SimpleArrayMap<String, String>> mStateOverrides =
       new SimpleArrayMap<>();
 
+  private DebugComponent() {}
+
   static DebugComponent getInstance(InternalNode node, int componentIndex) {
     final String globalKey = createKey(node, componentIndex);
     DebugComponent debugComponent = mDebugNodes.get(globalKey);
@@ -80,6 +82,21 @@ class DebugComponent {
     debugComponent.mComponentIndex = componentIndex;
 
     return debugComponent;
+  }
+
+  /**
+   * @return The root {@link DebugComponent} of a LithoView. This should be the start of your
+   * traversal.
+   */
+  public static DebugComponent getRootInstance(LithoView view) {
+    final ComponentTree component = view.getComponentTree();
+    final LayoutState layoutState = component == null ? null : component.getMainThreadLayoutState();
+    final InternalNode root = layoutState == null ? null : layoutState.getLayoutRoot();
+    if (root != null) {
+      final int outerWrapperComponentIndex = Math.max(0, root.getComponents().size() - 1);
+      return DebugComponent.getInstance(root, outerWrapperComponentIndex);
+    }
+    return null;
   }
 
   /**
@@ -164,7 +181,7 @@ class DebugComponent {
   /**
    * @return The litho view hosting this component.
    */
-  public View getLithoView() {
+  public LithoView getLithoView() {
     final ComponentContext c = mNode.getContext();
     final ComponentTree tree = c == null ? null : c.getComponentTree();
     return tree == null ? null : tree.getLithoView();
@@ -323,6 +340,7 @@ class DebugComponent {
     }
 
     styles.put(key, value);
+    getLithoView().forceRelayout();
   }
 
   /**
@@ -337,6 +355,7 @@ class DebugComponent {
     }
 
     props.put(key, value);
+    getLithoView().forceRelayout();
   }
 
   /**
@@ -351,6 +370,7 @@ class DebugComponent {
     }
 
     props.put(key, value);
+    getLithoView().forceRelayout();
   }
 
   /**
@@ -795,6 +815,6 @@ class DebugComponent {
       key = tree == null ? "null" : tree.toString();
     }
 
-    return key + "(" + componentIndex + ")";
+    return key;
   }
 }

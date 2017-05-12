@@ -7,8 +7,10 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.litho;
+package com.facebook.litho.stetho;
 
+import com.facebook.litho.DebugComponent;
+import com.facebook.litho.LithoView;
 import com.facebook.stetho.inspector.elements.DescriptorProvider;
 import com.facebook.stetho.inspector.elements.DescriptorRegistrar;
 

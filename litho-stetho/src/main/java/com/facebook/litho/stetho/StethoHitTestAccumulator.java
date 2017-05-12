@@ -7,11 +7,12 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.litho;
+package com.facebook.litho.stetho;
 
 import android.graphics.Rect;
 import android.view.View;
 
+import com.facebook.litho.DebugComponent;
 import com.facebook.stetho.common.Accumulator;
 
 class StethoHitTestAccumulator implements Accumulator<Object> {

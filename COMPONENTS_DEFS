@@ -10,7 +10,7 @@ COMPONENTS_ROOT_TARGET = make_dep_path(":components")
 
 # Java source
 COMPONENTS_JAVA_TARGET                     = make_dep_path('litho-core/src/main/java/com/facebook/litho:components')
-COMPONENTS_STETHO_JAVA_TARGET              = make_dep_path('litho-stetho/src/main/java/com/facebook/litho:stetho')
+COMPONENTS_STETHO_JAVA_TARGET              = make_dep_path('litho-stetho/src/main/java/com/facebook/litho/stetho:stetho')
 COMPONENTS_ANNOTATIONS_TARGET              = make_dep_path('litho-annotations/src/main/java/com/facebook/litho/annotations:annotations')
 COMPONENTS_CONFIG_TARGET                   = make_dep_path('litho-core/src/main/java/com/facebook/litho/config:config')
 COMPONENTS_DISPLAYLISTSTUBS_TARGET         = make_dep_path('litho-stubs:stubs')
