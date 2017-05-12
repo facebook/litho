@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import android.support.annotation.IntDef;
 import android.support.v4.util.Pools;
 import android.support.v4.util.SimpleArrayMap;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewParent;
 
@@ -49,6 +50,9 @@ public class DataFlowTransitionManager {
   public interface OnMountItemAnimationComplete {
     void onMountItemAnimationComplete(Object mountItem);
   }
+
+  private static final boolean DEBUG = false;
+  private static final String TAG = "LithoAnimationDebug";
 
   private static final Pools.SimplePool<AnimationState> sAnimationStatePool =
       new Pools.SimplePool<>(20);
@@ -106,6 +110,10 @@ public class DataFlowTransitionManager {
     mAnimationBindings.clear();
     mAnimationBindings.addAll(transitionContext.getTransitionAnimationBindings());
 
+    if (DEBUG) {
+      Log.d(TAG, "Got new TransitionContext with " + mAnimationBindings.size() + " animations");
+    }
+
     for (int i = 0, size = mAnimationStates.size(); i < size; i++) {
       final AnimationState animationState = mAnimationStates.valueAt(i);
       animationState.sawInPreMount = false;
@@ -162,6 +170,11 @@ public class DataFlowTransitionManager {
   void runTransitions() {
     restoreInitialStates();
     setDisappearToValues();
+
+    if (DEBUG) {
+      debugLogStartingAnimations();
+    }
+
     for (int i = 0, size = mAnimationBindings.size(); i < size; i++) {
       final AnimationBinding binding = mAnimationBindings.get(i);
       binding.addListener(mAnimationBindingListener);
@@ -179,6 +192,10 @@ public class DataFlowTransitionManager {
   }
 
   void onContentUnmounted(String transitionKey) {
+    if (DEBUG) {
+      Log.d(TAG, "Content unmounted for key: " + transitionKey);
+    }
+
     final AnimationState animationState = mAnimationStates.get(transitionKey);
     if (animationState == null) {
       return;
@@ -336,6 +353,78 @@ public class DataFlowTransitionManager {
     listeners.clear();
   }
 
+  /**
+   * Set the clipChildren properties to all Views in the same tree branch from the given one, up to
+   * the top LithoView.
+   *
+   * TODO(17934271): Handle the case where two+ animations with different lifespans share the same
+   * parent, in which case we shouldn't unset clipping until the last item is done animating.
+   */
+  private void recursivelySetChildClipping(Object mountItem, boolean clipChildren) {
+    if (!(mountItem instanceof View)) {
+      return;
+    }
+
+    recursivelySetChildClippingForView((View) mountItem, clipChildren);
+  }
+
+  private void recursivelySetChildClippingForView(View view, boolean clipChildren) {
+    if (view instanceof ComponentHost) {
+      ((ComponentHost) view).setClipChildren(clipChildren);
+    }
+
+    final ViewParent parent = view.getParent();
+    if (parent instanceof ComponentHost) {
+      recursivelySetChildClippingForView((View) parent, clipChildren);
+    }
+  }
+
+  private void debugLogStartingAnimations() {
+    if (!DEBUG) {
+      throw new RuntimeException("Trying to debug log animations without debug flag set!");
+    }
+
+    Log.d(TAG, "Starting animations:");
+
+    final ArraySet<ComponentProperty> transitioningProperties = new ArraySet<>();
+    for (int i = 0, size = mAnimationBindings.size(); i < size; i++) {
+      final AnimationBinding binding = mAnimationBindings.get(i);
+
+      binding.collectTransitioningProperties(transitioningProperties);
+
+      for (int j = 0, propSize = transitioningProperties.size(); j < propSize; j++) {
+        final ComponentProperty property = transitioningProperties.valueAt(j);
+        final String key = property.getTransitionKey();
+        final AnimatedProperty animatedProperty = property.getProperty();
+        final AnimationState animationState = mAnimationStates.get(key);
+        final float beforeValue = animationState.currentDiff.beforeValues.get(animatedProperty);
+        final float afterValue = animationState.currentDiff.afterValues.get(animatedProperty);
+        final String changeType = keyStatusToString(animationState.changeType);
+
+        Log.d(
+            TAG,
+            " - " + key + "." + animatedProperty.getName() + " will animate from " + beforeValue +
+                " to " + afterValue + " (" + changeType + ")");
+      }
+      transitioningProperties.clear();
+    }
+  }
+
+  private static String keyStatusToString(int keyStatus) {
+    switch (keyStatus) {
+      case KeyStatus.APPEARED:
+        return "APPEARED";
+      case KeyStatus.UNCHANGED:
+        return "UNCHANGED";
+      case KeyStatus.DISAPPEARED:
+        return "DISAPPEARED";
+      case KeyStatus.UNSET:
+        return "UNSET";
+      default:
+        throw new RuntimeException("Unknown keyStatus: " + keyStatus);
+    }
+  }
+
   private static AnimationState acquireAnimationState() {
     AnimationState animationState = sAnimationStatePool.acquire();
     if (animationState == null) {
@@ -384,47 +473,6 @@ public class DataFlowTransitionManager {
         }
       }
       ComponentsPools.release(transitioningKeys);
-    }
-  }
-
-  /**
-   * Set the clipChildren properties to all Views in the same tree branch from the given one, up to
-   * the top LithoView.
-   *
-   * TODO(17934271): Handle the case where two+ animations with different lifespans share the same
-   * parent, in which case we shouldn't unset clipping until the last item is done animating.
-   */
-  private void recursivelySetChildClipping(Object mountItem, boolean clipChildren) {
-    if (!(mountItem instanceof View)) {
-      return;
-    }
-
-    recursivelySetChildClippingForView((View) mountItem, clipChildren);
-  }
-
-  private void recursivelySetChildClippingForView(View view, boolean clipChildren) {
-    if (view instanceof ComponentHost) {
-      ((ComponentHost) view).setClipChildren(clipChildren);
-    }
-
-    final ViewParent parent = view.getParent();
-    if (parent instanceof ComponentHost) {
-      recursivelySetChildClippingForView((View) parent, clipChildren);
-    }
-  }
-
-  private static String keyStatusToString(int keyStatus) {
-    switch (keyStatus) {
-      case KeyStatus.APPEARED:
-        return "APPEARED";
-      case KeyStatus.UNCHANGED:
-        return "UNCHANGED";
-      case KeyStatus.DISAPPEARED:
-        return "DISAPPEARED";
-      case KeyStatus.UNSET:
-        return "UNSET";
-      default:
-        throw new RuntimeException("Unknown keyStatus: " + keyStatus);
     }
   }
 
