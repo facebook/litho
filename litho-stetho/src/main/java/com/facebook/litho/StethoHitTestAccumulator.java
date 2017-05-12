@@ -14,7 +14,7 @@ import android.view.View;
 
 import com.facebook.stetho.common.Accumulator;
 
-class HitTestAccumulator implements Accumulator<Object> {
+class StethoHitTestAccumulator implements Accumulator<Object> {
   private final Rect mHitTestRect = new Rect();
 
   private final Rect mOutBounds;
@@ -22,7 +22,7 @@ class HitTestAccumulator implements Accumulator<Object> {
   private final int mY;
   private Object mElementToHighlight;
 
-  HitTestAccumulator(Rect outBounds, int x, int y) {
+  StethoHitTestAccumulator(Rect outBounds, int x, int y) {
     mOutBounds = outBounds;
     mX = x;
     mY = y;

@@ -81,7 +81,7 @@ public final class DebugComponentDescriptor
       int x,
       int y,
       Rect bounds) {
-    final HitTestAccumulator hitTestAccumulator = new HitTestAccumulator(bounds, x, y);
+    final StethoHitTestAccumulator hitTestAccumulator = new StethoHitTestAccumulator(bounds, x, y);
     getChildren(element, hitTestAccumulator);
 
     final Object childElement = hitTestAccumulator.getElement();
