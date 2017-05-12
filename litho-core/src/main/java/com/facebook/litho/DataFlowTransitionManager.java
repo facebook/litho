@@ -9,9 +9,11 @@
 
 package com.facebook.litho;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
-import java.util.List;
 
+import android.support.annotation.IntDef;
 import android.support.v4.util.Pools;
 import android.support.v4.util.SimpleArrayMap;
 import android.view.View;
@@ -27,9 +29,19 @@ import com.facebook.litho.animation.ComponentProperty;
 import com.facebook.litho.internal.ArraySet;
 
 /**
- * Implementation of transitions in Litho via a dataflow graph.
+ * Unique per MountState instance. Called from MountState on mount calls to process the transition
+ * keys and handles which transitions to run and when.
  */
 public class DataFlowTransitionManager {
+
+  @IntDef({KeyStatus.APPEARED, KeyStatus.UNCHANGED, KeyStatus.DISAPPEARED, KeyStatus.UNSET})
+  @Retention(RetentionPolicy.SOURCE)
+  @interface KeyStatus {
+    int UNSET = -1;
+    int APPEARED = 0;
+    int UNCHANGED = 1;
+    int DISAPPEARED = 2;
+  }
 
   /**
    * A listener that will be invoked when a mount item has stopped animating.
@@ -67,7 +79,7 @@ public class DataFlowTransitionManager {
     public Object mountItem;
     public ArrayList<OnMountItemAnimationComplete> mAnimationCompleteListeners = new ArrayList<>();
     public TransitionDiff currentDiff = new TransitionDiff();
-    public int changeType = TransitionManager.KeyStatus.UNSET;
+    public int changeType = KeyStatus.UNSET;
     public boolean sawInPreMount = false;
 
     public void reset() {
@@ -77,7 +89,7 @@ public class DataFlowTransitionManager {
       mountItem = null;
       mAnimationCompleteListeners.clear();
       currentDiff.reset();
-      changeType = TransitionManager.KeyStatus.UNSET;
+      changeType = KeyStatus.UNSET;
       sawInPreMount = false;
     }
   }
@@ -122,7 +134,7 @@ public class DataFlowTransitionManager {
 
       // We set the change type to disappeared for now: if we see it again in onPostMountItem we'll
       // update it there
-      animationState.changeType = TransitionManager.KeyStatus.DISAPPEARED;
+      animationState.changeType = KeyStatus.DISAPPEARED;
       animationState.sawInPreMount = true;
     }
   }
@@ -131,9 +143,9 @@ public class DataFlowTransitionManager {
     final AnimationState animationState = mAnimationStates.get(transitionKey);
     if (animationState != null) {
       if (!animationState.sawInPreMount) {
-        animationState.changeType = TransitionManager.KeyStatus.APPEARED;
+        animationState.changeType = KeyStatus.APPEARED;
       } else {
-        animationState.changeType = TransitionManager.KeyStatus.UNCHANGED;
+        animationState.changeType = KeyStatus.UNCHANGED;
       }
 
       setMountItem(animationState, mountItem);
@@ -147,7 +159,7 @@ public class DataFlowTransitionManager {
     }
   }
 
-  void activateBindings() {
+  void runTransitions() {
     restoreInitialStates();
     setDisappearToValues();
     for (int i = 0, size = mAnimationBindings.size(); i < size; i++) {
@@ -182,7 +194,7 @@ public class DataFlowTransitionManager {
       // If the component is appearing, we will instead restore the initial value in
       // setAppearFromValues. This is necessary since appearFrom values can be written in terms of
       // the end state (e.g. appear from an offset of -10dp)
-      if (animationState.changeType != TransitionManager.KeyStatus.APPEARED) {
+      if (animationState.changeType != KeyStatus.APPEARED) {
         for (int j = 0; j < animationState.currentDiff.beforeValues.size(); j++) {
           final AnimatedProperty property = animationState.currentDiff.beforeValues.keyAt(j);
           property.set(
@@ -208,7 +220,7 @@ public class DataFlowTransitionManager {
       final float value = lazyValue.resolve(mResolver, property);
       property.getProperty().set(animationState.mountItem, value);
 
-      if (animationState.changeType != TransitionManager.KeyStatus.APPEARED) {
+      if (animationState.changeType != KeyStatus.APPEARED) {
         throw new RuntimeException(
             "Wrong transition type for appear of key " + property.getTransitionKey() + ": " +
                 keyStatusToString(animationState.changeType));
@@ -228,7 +240,7 @@ public class DataFlowTransitionManager {
       final ComponentProperty property = disappearToValues.keyAt(i);
       final LazyValue lazyValue = disappearToValues.valueAt(i);
       final AnimationState animationState = mAnimationStates.get(property.getTransitionKey());
-      if (animationState.changeType != TransitionManager.KeyStatus.DISAPPEARED) {
+      if (animationState.changeType != KeyStatus.DISAPPEARED) {
         throw new RuntimeException(
             "Wrong transition type for disappear of key " + property.getTransitionKey() + ": " +
                 keyStatusToString(animationState.changeType));
@@ -360,7 +372,7 @@ public class DataFlowTransitionManager {
                   "of active animations, but it wasn't there.");
         }
         if (animationState.activeAnimations.size() == 0) {
-          if (animationState.changeType == TransitionManager.KeyStatus.DISAPPEARED &&
+          if (animationState.changeType == KeyStatus.DISAPPEARED &&
               animationState.mountItem != null) {
             for (int j = 0; j < animationState.animatingProperties.size(); j++) {
               animationState.animatingProperties.valueAt(j).reset(animationState.mountItem);
@@ -403,13 +415,13 @@ public class DataFlowTransitionManager {
 
   private static String keyStatusToString(int keyStatus) {
     switch (keyStatus) {
-      case TransitionManager.KeyStatus.APPEARED:
+      case KeyStatus.APPEARED:
         return "APPEARED";
-      case TransitionManager.KeyStatus.UNCHANGED:
+      case KeyStatus.UNCHANGED:
         return "UNCHANGED";
-      case TransitionManager.KeyStatus.DISAPPEARED:
+      case KeyStatus.DISAPPEARED:
         return "DISAPPEARED";
-      case TransitionManager.KeyStatus.UNSET:
+      case KeyStatus.UNSET:
         return "UNSET";
       default:
         throw new RuntimeException("Unknown keyStatus: " + keyStatus);

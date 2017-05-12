@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +33,6 @@ import com.facebook.infer.annotation.ThreadConfined;
 
 import com.facebook.litho.animation.AnimationBinding;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.internal.ArraySet;
 import com.facebook.litho.reference.Reference;
 
 import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
@@ -103,7 +101,7 @@ class MountState {
   private final Rect mPreviousLocalVisibleRect = new Rect();
   private final PrepareMountStats mPrepareMountStats = new PrepareMountStats();
   private final MountStats mMountStats = new MountStats();
-  private TransitionManager mTransitionManager;
+  private DataFlowTransitionManager mTransitionManager;
   private int mPreviousTopsIndex;
   private int mPreviousBottomsIndex;
   private int mLastMountedComponentTreeId;
@@ -182,7 +180,6 @@ class MountState {
       createAutoMountTransitions(layoutState);
       mTransitionManager.onNewTransitionContext(layoutState.getTransitionContext());
 
-      mTransitionManager.onMountStart();
       recordMountedItemsWithTransitionKeys(
           mTransitionManager,
           mIndexToItemMap,
@@ -263,7 +260,7 @@ class MountState {
           mTransitionManager,
           mIndexToItemMap,
           false /* isPreMount */);
-      mTransitionManager.processTransitions(true);
+      mTransitionManager.runTransitions();
     }
 
     processTestOutputs(layoutState);
@@ -768,7 +765,7 @@ class MountState {
   private static boolean isItemDisappearing(
       MountItem mountItem,
       LayoutState newLayoutState,
-      TransitionManager transitionManager) {
+      DataFlowTransitionManager transitionManager) {
     if (mountItem == null || mountItem.getViewNodeInfo() == null) {
       return false;
     }
@@ -1725,30 +1722,19 @@ class MountState {
 
     final ComponentHost host = item.getHost();
     host.startUnmountDisappearingItem(index, item);
-    TransitionKeySet transitionKeySet = mTransitionManager.getTransitionKeySet(key);
-    if (transitionKeySet != null) {
-      transitionKeySet.setTransitionCleanupListener(
-          new TransitionKeySet.TransitionCleanupListener() {
-            @Override
-            public void onTransitionCleanup() {
-              endUnmountDisappearingItem(mContext, item);
+    mTransitionManager.addMountItemAnimationCompleteListener(
+        key,
+        new DataFlowTransitionManager.OnMountItemAnimationComplete() {
+          @Override
+          public void onMountItemAnimationComplete(Object currentMountItem) {
+            if (item.getContent() != currentMountItem) {
+              throw new RuntimeException(
+                  "Got animation complete callback for wrong mount item (expected " +
+                      item.getContent() + ", got " + currentMountItem + ")");
             }
-          });
-    } else {
-      mTransitionManager.addMountItemAnimationCompleteListener(
-          key,
-          new DataFlowTransitionManager.OnMountItemAnimationComplete() {
-            @Override
-            public void onMountItemAnimationComplete(Object currentMountItem) {
-              if (item.getContent() != currentMountItem) {
-                throw new RuntimeException(
-                    "Got animation complete callback for wrong mount item (expected " +
-                        item.getContent() + ", got " + currentMountItem + ")");
-              }
-              endUnmountDisappearingItem(mContext, item);
-            }
-          });
-    }
+            endUnmountDisappearingItem(mContext, item);
+          }
+        });
   }
 
   private void endUnmountDisappearingItem(ComponentContext context, MountItem item) {
@@ -1976,12 +1962,12 @@ class MountState {
 
   private void prepareTransitionManager(LayoutState layoutState) {
     if (layoutState.hasTransitionContext() && mTransitionManager == null) {
-      mTransitionManager = new TransitionManager();
+      mTransitionManager = new DataFlowTransitionManager();
     }
   }
 
   private static void recordMountedItemsWithTransitionKeys(
-      TransitionManager transitionManager,
+      DataFlowTransitionManager transitionManager,
       LongSparseArray<MountItem> indexToItemMap,
       boolean isPreMount) {
     for (int i = 0, size = indexToItemMap.size(); i < size; i++) {

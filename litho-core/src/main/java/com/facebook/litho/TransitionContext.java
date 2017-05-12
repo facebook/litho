@@ -22,34 +22,11 @@ import com.facebook.litho.animation.AnimationBinding;
  */
 class TransitionContext {
 
-  // User defined transitions
-  private final SimpleArrayMap<String, TransitionKeySet> mKeyToTransitionKeySets =
-      new SimpleArrayMap<>();
   private final ArrayList<AnimationBinding> mTransitionAnimationBindings = new ArrayList<>();
   private final AutoTransitionSet mAutoTransitionSets = new AutoTransitionSet();
 
   // Transition keys of given layout tree
   private final HashSet<String> mTransitionKeys = new HashSet<>(8);
-
-  void add(Transition transition) {
-    if (transition instanceof TransitionSet) {
-      add((TransitionSet) transition);
-    } else {
-      final String key = transition.getKey();
-
-      if (!mKeyToTransitionKeySets.containsKey(key)) {
-        mKeyToTransitionKeySets.put(key, new TransitionKeySet(key));
-      }
-
-      mKeyToTransitionKeySets.get(key).add(transition);
-    }
-  }
-
-  void add(TransitionSet transitions) {
-    for (int i = 0, size = transitions.size(); i < size; i++) {
-      add(transitions.get(i));
-    }
-  }
 
   void addTransitionAnimationBinding(AnimationBinding binding) {
     mTransitionAnimationBindings.add(binding);
@@ -57,10 +34,6 @@ class TransitionContext {
 
   void addAutoTransitions(AutoTransitionSet autoTransitionSet) {
     mAutoTransitionSets.mergeIn(autoTransitionSet);
-  }
-
-  SimpleArrayMap<String, TransitionKeySet> getTransitionKeySets() {
-    return mKeyToTransitionKeySets;
   }
 
   ArrayList<AnimationBinding> getTransitionAnimationBindings() {
@@ -73,7 +46,6 @@ class TransitionContext {
 
   void reset() {
     mTransitionAnimationBindings.clear();
-    mKeyToTransitionKeySets.clear();
     mAutoTransitionSets.clear();
     mTransitionKeys.clear();
   }
@@ -86,20 +58,12 @@ class TransitionContext {
     return mTransitionKeys.contains(transitionKey);
   }
 
-  HashSet<String> getTransitionKeys() {
-    return mTransitionKeys;
-  }
-
   /**
    * @return Whether item with the given {@param transitionKey} is being removed from layout tree.
    */
   boolean isDisappearingKey(String transitionKey) {
     if (transitionKey == null || mTransitionKeys.contains(transitionKey)) {
       return false;
-    }
-    final TransitionKeySet transitionKeySet = mKeyToTransitionKeySets.get(transitionKey);
-    if (transitionKeySet != null && transitionKeySet.hasDisappearingTransitions()) {
-      return true;
     }
     return mAutoTransitionSets.hasDisappearAnimation(transitionKey);
   }

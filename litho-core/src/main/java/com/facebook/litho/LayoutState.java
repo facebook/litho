@@ -615,19 +615,10 @@ class LayoutState {
             .addTransitionKey(node.getTransitionKey());
       }
       if (component != null) {
-        final Transition transition = component.getLifecycle().onLayoutTransition(
-            layoutState.mContext,
-            component);
         final AutoTransitionSet autoTransitionSet =
             component.getLifecycle().onCreateAutoTransition(layoutState.mContext, component);
 
-        if (transition != null) {
-          if (autoTransitionSet != null) {
-              throw new RuntimeException(
-                  "Defined multiple transition animations in the same component!");
-          }
-          layoutState.getOrCreateTransitionContext().add(transition);
-        } else if (autoTransitionSet != null) {
+        if (autoTransitionSet != null) {
           layoutState.getOrCreateTransitionContext().addAutoTransitions(autoTransitionSet);
         }
       }
