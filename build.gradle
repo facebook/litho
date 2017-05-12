@@ -56,7 +56,7 @@ ext.deps = [
         assertjCore        : 'org.assertj:assertj-core:2.6.0',
         compileTesting     : 'com.google.testing.compile:compile-testing:0.10',
         // Processor
-        javapoet           : 'com.squareup:javapoet:1.2.0',
+        javapoet           : 'com.squareup:javapoet:1.8.0',
 ]
 
 // This should hopefully only serve as a temporary measure until

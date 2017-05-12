@@ -15,7 +15,7 @@ java_library(
         COMPONENTS_JSR_TARGET,
     ],
     tests = [
-        make_dep_path("litho-it/src/test/java/com/facebook/litho/specmodels:specmodels"),
+        "//javatests/com/facebook/litho/specmodels:specmodels",
     ],
     visibility = [
         "PUBLIC",
