@@ -37,7 +37,6 @@ import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.reference.DrawableReference;
 import com.facebook.litho.reference.Reference;
-import com.facebook.litho.reference.ResourceDrawableReference;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaConstants;
@@ -1065,13 +1064,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Override
   public InternalNode backgroundRes(@DrawableRes int resId) {
     if (resId == 0) {
-      return background((Reference<Drawable>) null);
+      return background((Drawable) null);
     }
 
-    return background(
-        ResourceDrawableReference.create(mComponentContext)
-            .resId(resId)
-            .build());
+    return background(mComponentContext.getResources().getDrawable(resId));
   }
 
   @Override

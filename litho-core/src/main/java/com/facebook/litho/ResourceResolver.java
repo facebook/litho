@@ -22,9 +22,6 @@ import android.support.annotation.IntegerRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
-import com.facebook.litho.reference.Reference;
-import com.facebook.litho.reference.ResourceDrawableReference;
-
 public class ResourceResolver {
   private ComponentContext mContext;
   private Resources mResources;
@@ -217,17 +214,6 @@ public class ResourceResolver {
     return mResources.getDrawable(resId);
   }
 
-  @Nullable
-  protected final Reference<Drawable> resolveDrawableReferenceRes(@DrawableRes int resId) {
-    if (resId == 0) {
-      return null;
-    }
-
-    return ResourceDrawableReference.create(mContext)
-        .resId(resId)
-        .build();
-  }
-
   protected final String resolveStringAttr(@AttrRes int attrResId, @StringRes int defResId) {
     mAttrs[0] = attrResId;
     TypedArray a = mTheme.obtainStyledAttributes(mAttrs);
@@ -327,24 +313,6 @@ public class ResourceResolver {
 
     try {
       return a.getDimension(0, resolveFloatRes(defResId));
-    } finally {
-      a.recycle();
-    }
-  }
-
-  @Nullable
-  protected final Reference<Drawable> resolveDrawableReferenceAttr(
-      @AttrRes int attrResId,
-      @DrawableRes int defResId) {
-    if (attrResId == 0) {
-      return null;
-    }
-
-    mAttrs[0] = attrResId;
-    TypedArray a = mTheme.obtainStyledAttributes(mAttrs);
-
-    try {
-      return resolveDrawableReferenceRes(a.getResourceId(0, defResId));
     } finally {
       a.recycle();
     }
