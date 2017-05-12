@@ -23,7 +23,6 @@ import com.facebook.litho.annotations.FromMeasure;
 import com.facebook.litho.annotations.FromMeasureBaseline;
 import com.facebook.litho.annotations.FromPrepare;
 import com.facebook.litho.annotations.OnCreateAutoTransition;
-import com.facebook.litho.annotations.OnCreateTransitionAnimation;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.annotations.GetExtraAccessibilityNodeAt;
 import com.facebook.litho.annotations.GetExtraAccessibilityNodesCount;
@@ -117,16 +116,6 @@ public final class DelegateMethodDescriptions {
           .accessType(Modifier.PROTECTED)
           .returnType(ClassNames.ANIMATION)
           .name("onLayoutTransition")
-          .definedParameterTypes(ImmutableList.<TypeName>of(ClassNames.COMPONENT_CONTEXT))
-          .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE))
-          .build();
-
-  public static final DelegateMethodDescription ON_CREATE_TRANSITION_ANIMATION =
-      DelegateMethodDescription.newBuilder()
-          .annotations(ImmutableList.of(AnnotationSpec.builder(Override.class).build()))
-          .accessType(Modifier.PROTECTED)
-          .returnType(ClassNames.TRANSITION_ANIMATION)
-          .name("onCreateTransitionAnimation")
           .definedParameterTypes(ImmutableList.<TypeName>of(ClassNames.COMPONENT_CONTEXT))
           .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE))
           .build();
@@ -392,8 +381,6 @@ public final class DelegateMethodDescriptions {
         OnCreateLayoutWithSizeSpec.class, ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
     layoutSpecDelegateMethodsMap.put(OnCreateInitialState.class, ON_CREATE_INITIAL_STATE);
     layoutSpecDelegateMethodsMap.put(OnLayoutTransition.class, ON_LAYOUT_TRANSITION);
-    layoutSpecDelegateMethodsMap.put(
-        OnCreateTransitionAnimation.class, ON_CREATE_TRANSITION_ANIMATION);
     layoutSpecDelegateMethodsMap.put(
         OnCreateAutoTransition.class, ON_CREATE_AUTO_TRANSITION);
     LAYOUT_SPEC_DELEGATE_METHODS_MAP = Collections.unmodifiableMap(layoutSpecDelegateMethodsMap);

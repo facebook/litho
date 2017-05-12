@@ -615,30 +615,20 @@ class LayoutState {
             .addTransitionKey(node.getTransitionKey());
       }
       if (component != null) {
-        Transition transition = component.getLifecycle().onLayoutTransition(
+        final Transition transition = component.getLifecycle().onLayoutTransition(
             layoutState.mContext,
             component);
-        final AnimationBinding transitionAnimation =
-            component.getLifecycle().onCreateTransitionAnimation(layoutState.mContext, component);
         final AutoTransitionSet autoTransitionSet =
             component.getLifecycle().onCreateAutoTransition(layoutState.mContext, component);
 
-        if (transition != null || transitionAnimation != null || autoTransitionSet != null) {
-          if (transition != null) {
-            if (transitionAnimation != null || autoTransitionSet != null) {
+        if (transition != null) {
+          if (autoTransitionSet != null) {
               throw new RuntimeException(
                   "Defined multiple transition animations in the same component!");
-            }
-            layoutState.getOrCreateTransitionContext().add(transition);
-          } else if (transitionAnimation != null) {
-            if (autoTransitionSet != null) {
-              throw new RuntimeException(
-                  "Defined multiple transition animations in the same component!");
-            }
-            layoutState.getOrCreateTransitionContext().addTransitionAnimationBinding(transitionAnimation);
-          } else {
-            layoutState.getOrCreateTransitionContext().addAutoTransitions(autoTransitionSet);
           }
+          layoutState.getOrCreateTransitionContext().add(transition);
+        } else if (autoTransitionSet != null) {
+          layoutState.getOrCreateTransitionContext().addAutoTransitions(autoTransitionSet);
         }
       }
     }

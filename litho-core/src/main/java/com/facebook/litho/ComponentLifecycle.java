@@ -597,18 +597,6 @@ public abstract class ComponentLifecycle implements EventDispatcher {
   }
 
   /**
-   * @return a {@link AnimationBinding} specifying how to animate this component to its new layout
-   * and props.
-   *
-   * Note: This API is in progress, use {@link #onLayoutTransition} for now.
-   */
-  protected AnimationBinding onCreateTransitionAnimation(
-      ComponentContext c,
-      Component<?> component) {
-    return null;
-  }
-
-  /**
    * @return a {@link AutoTransitionSet} specifying how to animate this component to its new layout
    * and props.
    */
