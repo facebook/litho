@@ -26,77 +26,33 @@ import com.facebook.stetho.inspector.elements.android.HighlightableDescriptor;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_STETHO_INSPECT_COMPONENT;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_STETHO_UPDATE_COMPONENT;
 
-public final class ComponentStethoNodeDescriptor
-    extends AbstractChainedDescriptor<ComponentStethoNode>
-    implements HighlightableDescriptor<ComponentStethoNode> {
+public final class DebugComponentDescriptor
+    extends AbstractChainedDescriptor<DebugComponent>
+    implements HighlightableDescriptor<DebugComponent> {
 
   @Override
-  protected String onGetNodeName(ComponentStethoNode element) {
-    if (element.node.getComponents().isEmpty()) {
-      switch (element.node.mYogaNode.getFlexDirection()) {
-        case COLUMN: return Column.class.getName();
-        case COLUMN_REVERSE: return ColumnReverse.class.getName();
-        case ROW: return Row.class.getName();
-        case ROW_REVERSE: return RowReverse.class.getName();
-      }
-    }
-
-    return element.node
-        .getComponents()
-        .get(element.componentIndex)
-        .getLifecycle()
-        .getClass()
-        .getName();
+  protected String onGetNodeName(DebugComponent element) {
+    return element.getName();
   }
 
   @Override
-  protected void onGetChildren(ComponentStethoNode element, Accumulator<Object> children) {
+  protected void onGetChildren(DebugComponent element, Accumulator<Object> children) {
     final ComponentsStethoManagerImpl stethoManager = getStethoManager(element);
     if (stethoManager == null) {
       return;
     }
 
-    if (element.componentIndex > 0) {
-      final int wrappedComponentIndex = element.componentIndex - 1;
-      children.store(stethoManager.getComponentsStethoNode(element.node, wrappedComponentIndex));
-      return;
+    for (DebugComponent child : element.getChildComponents(stethoManager)) {
+      children.store(child);
     }
 
-    for (int i = 0, count = element.node.getChildCount(); i < count; i++) {
-      final InternalNode childNode = element.node.getChildAt(i);
-      final int outerWrapperComponentIndex = Math.max(0, childNode.getComponents().size() - 1);
-      children.store(stethoManager.getComponentsStethoNode(childNode, outerWrapperComponentIndex));
-    }
-
-    if (element.node.hasNestedTree()) {
-      final InternalNode nestedTree = element.node.getNestedTree();
-      for (int i = 0, count = nestedTree.getChildCount(); i < count; i++) {
-        final InternalNode childNode = nestedTree.getChildAt(i);
-        children.store(stethoManager.getComponentsStethoNode(childNode, Math.max(0, childNode.getComponents().size() - 1)));
-      }
-    }
-
-    final ComponentContext context = element.node.getContext();
-    final ComponentTree tree = context == null ? null : context.getComponentTree();
-    final LithoView view = tree == null ? null : tree.getLithoView();
-    final MountState mountState = view == null ? null : view.getMountState();
-
-    if (mountState != null) {
-      for (int i = 0, count = mountState.getItemCount(); i < count; i++) {
-        final MountItem mountItem = mountState.getItemAt(i);
-        final Component component = mountItem == null ? null : mountItem.getComponent();
-
-        if (component != null &&
-            component == element.node.getRootComponent() &&
-            Component.isMountSpec(component)) {
-          children.store(mountItem.getContent());
-        }
-      }
+    for (View child : element.getMountedViews()) {
+      children.store(child);
     }
   }
 
   @Override
-  protected void onGetAttributes(ComponentStethoNode element, AttributeAccumulator attributes) {
+  protected void onGetAttributes(DebugComponent element, AttributeAccumulator attributes) {
     final String testKey = element.node.getTestKey();
     if (testKey != null) {
       attributes.store("testKey", testKey);
@@ -114,22 +70,14 @@ public final class ComponentStethoNodeDescriptor
   }
 
   @Override
-  public View getViewAndBoundsForHighlighting(ComponentStethoNode element, Rect bounds) {
-    final int x = getXFromRoot(element.node);
-    final int y = getYFromRoot(element.node);
-    bounds.set(x, y, x + element.node.getWidth(), y + element.node.getHeight());
-
-    if (element.node.getContext() != null &&
-        element.node.getContext().getComponentTree() != null) {
-      return element.node.getContext().getComponentTree().getLithoView();
-    } else {
-      return null;
-    }
+  public View getViewAndBoundsForHighlighting(DebugComponent element, Rect bounds) {
+    bounds.set(element.getBoundsInLithoView());
+    return element.getLithoView();
   }
 
   @Override
   public Object getElementToHighlightAtPosition(
-      ComponentStethoNode element,
+      DebugComponent element,
       int x,
       int y,
       Rect bounds) {
@@ -146,7 +94,7 @@ public final class ComponentStethoNodeDescriptor
 
   @Override
   protected void onGetStyleRuleNames(
-      ComponentStethoNode element,
+      DebugComponent element,
       StyleRuleNameAccumulator accumulator) {
 
     if (!element.node.getComponents().isEmpty()) {
@@ -169,7 +117,7 @@ public final class ComponentStethoNodeDescriptor
 
   @Override
   protected void onGetStyles(
-      ComponentStethoNode element,
+      DebugComponent element,
       String ruleName,
       StyleAccumulator accumulator) {
 
@@ -228,7 +176,7 @@ public final class ComponentStethoNodeDescriptor
   }
 
   protected void onSetStyle(
-      ComponentStethoNode element,
+      DebugComponent element,
       String ruleName,
       String name,
       String value) {
@@ -270,30 +218,11 @@ public final class ComponentStethoNodeDescriptor
     }
   }
 
-  private ComponentsStethoManagerImpl getStethoManager(ComponentStethoNode element) {
+  private ComponentsStethoManagerImpl getStethoManager(DebugComponent element) {
     final ComponentContext context = element.node.getContext();
     final ComponentTree componentTree = context == null ? null : context.getComponentTree();
     return componentTree == null
         ? null :
         (ComponentsStethoManagerImpl) componentTree.getStethoManager();
-  }
-
-  private InternalNode parent(InternalNode node) {
-    final InternalNode parent = node.getParent();
-    return parent != null ? parent : node.getNestedTreeHolder();
-  }
-
-  private int getXFromRoot(InternalNode node) {
-    if (node == null) {
-      return 0;
-    }
-    return node.getX() + getXFromRoot(parent(node));
-  }
-
-  private int getYFromRoot(InternalNode node) {
-    if (node == null) {
-      return 0;
-    }
-    return node.getY() + getYFromRoot(parent(node));
   }
 }

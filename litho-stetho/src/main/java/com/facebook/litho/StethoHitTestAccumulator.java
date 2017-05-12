@@ -30,16 +30,12 @@ class HitTestAccumulator implements Accumulator<Object> {
 
   @Override
   public void store(Object obj) {
-    if (obj instanceof ComponentStethoNode) {
-      final ComponentStethoNode stethoNode = (ComponentStethoNode) obj;
-      mHitTestRect.set(
-          stethoNode.node.getX(),
-          stethoNode.node.getY(),
-          stethoNode.node.getX() + stethoNode.node.getWidth(),
-          stethoNode.node.getY() + stethoNode.node.getHeight());
+    if (obj instanceof DebugComponent) {
+      final DebugComponent debugComponent = (DebugComponent) obj;
+      mHitTestRect.set(debugComponent.getBounds());
       if (mHitTestRect.contains(mX, mY)) {
         mOutBounds.set(mHitTestRect);
-        mElementToHighlight = stethoNode;
+        mElementToHighlight = debugComponent;
       }
     } else if (obj instanceof View) {
       final View view = (View) obj;

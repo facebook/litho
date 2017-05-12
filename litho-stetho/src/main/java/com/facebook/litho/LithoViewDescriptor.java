@@ -129,9 +129,9 @@ public final class LithoViewDescriptor
         element.forceRelayout();
       } else {
         final int outerWrapperComponentIndex = Math.max(0, root.getComponents().size() - 1);
-        final ComponentStethoNode componentStethoNode =
+        final DebugComponent debugComponent =
             stethoManager.getComponentsStethoNode(root, outerWrapperComponentIndex);
-        children.store(componentStethoNode);
+        children.store(debugComponent);
       }
     }
   }

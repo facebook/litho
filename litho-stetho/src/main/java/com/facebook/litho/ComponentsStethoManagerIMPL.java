@@ -42,7 +42,7 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
       new SimpleArrayMap<>();
   private final SimpleArrayMap<String, SimpleArrayMap<String, String>> mStateOverrides =
       new SimpleArrayMap<>();
-  private final SimpleArrayMap<String, ComponentStethoNode> mComponentsStethoNodes =
+  private final SimpleArrayMap<String, DebugComponent> mComponentsStethoNodes =
       new SimpleArrayMap<>();
 
   private static String toCSSString(String str) {
@@ -149,7 +149,7 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
     }
   }
 
-  void getStyles(ComponentStethoNode stethoNode, StyleAccumulator accumulator) {
+  void getStyles(DebugComponent stethoNode, StyleAccumulator accumulator) {
     final YogaNode yogaNode = stethoNode.node.mYogaNode;
     final YogaNode defaults = ComponentsPools.acquireYogaNode(stethoNode.node.getContext());
 
@@ -516,7 +516,7 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
     } catch (Exception ignored) {}
   }
 
-  public void setStyleOverride(ComponentStethoNode stethoNode, String key, String value) {
+  public void setStyleOverride(DebugComponent stethoNode, String key, String value) {
     SimpleArrayMap<String, String> styles = mStyleOverrides.get(stethoNode.key);
     if (styles == null) {
       styles = new SimpleArrayMap<>();
@@ -526,7 +526,7 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
     styles.put(key, value);
   }
 
-  public void setPropOverride(ComponentStethoNode element, String key, String value) {
+  public void setPropOverride(DebugComponent element, String key, String value) {
     SimpleArrayMap<String, String> props = mPropOverrides.get(element.key);
     if (props == null) {
       props = new SimpleArrayMap<>();
@@ -536,7 +536,7 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
     props.put(key, value);
   }
 
-  public void setStateOverride(ComponentStethoNode element, String key, String value) {
+  public void setStateOverride(DebugComponent element, String key, String value) {
     SimpleArrayMap<String, String> props = mStateOverrides.get(element.key);
     if (props == null) {
       props = new SimpleArrayMap<>();
@@ -582,20 +582,20 @@ class ComponentsStethoManagerImpl implements ComponentsStethoManager {
     return key + "(" + componentIndex + ")";
   }
 
-  public ComponentStethoNode getComponentsStethoNode(InternalNode node, int componentIndex) {
+  public DebugComponent getComponentsStethoNode(InternalNode node, int componentIndex) {
     final String globalKey = getGlobalKey(node, componentIndex);
-    ComponentStethoNode componentStethoNode =
+    DebugComponent debugComponent =
         mComponentsStethoNodes.get(globalKey);
 
-    if (componentStethoNode == null) {
-      componentStethoNode = new ComponentStethoNode();
-      mComponentsStethoNodes.put(globalKey, componentStethoNode);
+    if (debugComponent == null) {
+      debugComponent = new DebugComponent();
+      mComponentsStethoNodes.put(globalKey, debugComponent);
     }
 
-    componentStethoNode.key = globalKey;
-    componentStethoNode.node = node;
-    componentStethoNode.componentIndex = componentIndex;
+    debugComponent.key = globalKey;
+    debugComponent.node = node;
+    debugComponent.componentIndex = componentIndex;
 
-    return componentStethoNode;
+    return debugComponent;
   }
 }
