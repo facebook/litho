@@ -48,7 +48,6 @@ import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaNode;
-import com.facebook.yoga.YogaOverflow;
 import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaWrap;
 
@@ -1498,7 +1497,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
    * the hierarchy of components in the debugger as well as in stetho.
    */
   void appendComponent(Component component) {
-    if (mComponents.size() == 0 || ComponentsConfiguration.isStethoEnabled) {
+    if (mComponents.size() == 0 || ComponentsConfiguration.isDebugModeEnabled) {
       mComponents.add(component);
     }
   }

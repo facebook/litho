@@ -30,11 +30,14 @@ public class ComponentsConfiguration {
   public static final boolean IS_INTERNAL_BUILD = BuildConfig.IS_INTERNAL_BUILD;
 
   /**
-   * Option to enabled stetho debugging.
-   * We default to `IS_INTERNAL_BUILD` which is false for release builds but
-   * allow overriding at runtime.
+   * Option to enabled debug mode. This will save extra data asscociated with each node and allow
+   * more info about the hierarchy to be retrieved. Used to enable stetho integration.
+   * It is highly discouraged to enable this in production builds. Due to how the Litho releases
+   * are distributed in open source IS_INTERNAL_BUILD will always be false. It is therefore required
+   * to override this value using your own application build configs. Recommended place for this is
+   * in a Application subclass onCreate() method.
    */
-  public static boolean isStethoEnabled = BuildConfig.IS_INTERNAL_BUILD;
+  public static boolean isDebugModeEnabled = IS_INTERNAL_BUILD;
 
   /**
    * Debug option to highlight interactive areas in mounted components.

@@ -25,7 +25,7 @@ public class LithoWebKitInspector implements InspectorModulesProvider {
 
   public LithoWebKitInspector(Application application) {
     mApplication = application;
-    ComponentsConfiguration.isStethoEnabled = true;
+    ComponentsConfiguration.isDebugModeEnabled = true;
   }
 
   @Override

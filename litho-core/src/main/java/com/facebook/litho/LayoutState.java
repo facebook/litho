@@ -984,7 +984,7 @@ class LayoutState {
     }
     ComponentsSystrace.endSection();
 
-    if (!ComponentsConfiguration.isStethoEnabled && layoutState.mLayoutRoot != null) {
+    if (!ComponentsConfiguration.isDebugModeEnabled && layoutState.mLayoutRoot != null) {
       releaseNodeTree(layoutState.mLayoutRoot, false /* isNestedTree */);
       layoutState.mLayoutRoot = null;
     }
