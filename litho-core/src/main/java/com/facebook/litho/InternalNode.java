@@ -35,7 +35,6 @@ import android.util.SparseArray;
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.reference.ColorDrawableReference;
 import com.facebook.litho.reference.DrawableReference;
 import com.facebook.litho.reference.Reference;
 import com.facebook.litho.reference.ResourceDrawableReference;
@@ -1077,10 +1076,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode backgroundColor(@ColorInt int backgroundColor) {
-    return background(
-        ColorDrawableReference.create(mComponentContext)
-            .color(backgroundColor)
-            .build());
+    return background(new ColorDrawable(backgroundColor));
   }
 
   @Override
