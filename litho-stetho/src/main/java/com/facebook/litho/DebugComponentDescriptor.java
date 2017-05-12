@@ -9,14 +9,11 @@
 
 package com.facebook.litho;
 
-import java.lang.reflect.Field;
 import java.util.Map;
 
 import android.graphics.Rect;
 import android.view.View;
 
-import com.facebook.litho.annotations.Prop;
-import com.facebook.litho.annotations.State;
 import com.facebook.stetho.common.Accumulator;
 import com.facebook.stetho.inspector.elements.AbstractChainedDescriptor;
 import com.facebook.stetho.inspector.elements.StyleAccumulator;
@@ -38,12 +35,7 @@ public final class DebugComponentDescriptor
 
   @Override
   protected void onGetChildren(DebugComponent element, Accumulator<Object> children) {
-    final LithoDebugInfo debugInfo = getDebugInfo(element);
-    if (debugInfo == null) {
-      return;
-    }
-
-    for (DebugComponent child : element.getChildComponents(debugInfo)) {
+    for (DebugComponent child : element.getChildComponents()) {
       children.store(child);
     }
 
@@ -54,19 +46,14 @@ public final class DebugComponentDescriptor
 
   @Override
   protected void onGetAttributes(DebugComponent element, AttributeAccumulator attributes) {
-    final String testKey = element.node.getTestKey();
+    final String testKey = element.getTestKey();
     if (testKey != null) {
       attributes.store("testKey", testKey);
     }
 
-    if (!element.node.getComponents().isEmpty()) {
-      final Component component = element.node.getComponents().get(element.componentIndex);
-      if (component != null) {
-        final String key = component.getKey();
-        if (key != null) {
-          attributes.store("key", key);
-        }
-      }
+    final String key = element.getKey();
+    if (key != null) {
+      attributes.store("key", key);
     }
   }
 
@@ -98,22 +85,21 @@ public final class DebugComponentDescriptor
       DebugComponent element,
       StyleRuleNameAccumulator accumulator) {
 
-    if (!element.node.getComponents().isEmpty()) {
-      // We currently have no way of overriding props / state of non-root components
-      accumulator.store("state", element.componentIndex == 0);
-      accumulator.store("props", element.componentIndex == 0);
+    if (!element.getState().isEmpty()) {
+      accumulator.store("state", element.isLayoutNode());
+    }
 
-      // Only the root component has actual layout info
-      if (element.componentIndex == 0) {
-        accumulator.store("layout", true);
-      }
-    } else {
-      accumulator.store("layout", true);
+    if (!element.getProps().isEmpty()) {
+      accumulator.store("props", element.isLayoutNode());
+    }
+
+    if (!element.getStyles().isEmpty()) {
+      accumulator.store("layout", element.isLayoutNode());
     }
 
     // This method is called once a node is inspected and not during tree creation like many of the
     // other lifecycle methods.
-    logInspected(element.node.getContext());
+    logInspected(element.getContext());
   }
 
   @Override
@@ -122,61 +108,22 @@ public final class DebugComponentDescriptor
       String ruleName,
       StyleAccumulator accumulator) {
 
-    final LithoDebugInfo debugInfo = getDebugInfo(element);
-    if ("layout".equals(ruleName) && debugInfo != null) {
-      final Map<String, String> styles = debugInfo.getStyles(element);
+    if ("layout".equals(ruleName)) {
+      final Map<String, String> styles = element.getStyles();
       for (String key : styles.keySet()) {
         accumulator.store(key, styles.get(key), false);
       }
-    }
-
-    if (element.node.getComponents().isEmpty()) {
-      return;
-    }
-
-    final Component component = element.node.getComponents().get(element.componentIndex);
-    if (component == null) {
-      return;
-    }
-
-    final ComponentLifecycle.StateContainer stateContainer = component.getStateContainer();
-
-    if ("props".equals(ruleName)) {
-      for (Field field : component.getClass().getDeclaredFields()) {
-        try {
-          field.setAccessible(true);
-          if (isPrimitiveField(field) && field.getAnnotation(Prop.class) != null) {
-            final Object value = field.get(component);
-            if (value != stateContainer && !(value instanceof ComponentLifecycle)) {
-              accumulator.store(
-                  field.getName(),
-                  value == null ? "null" : value.toString(),
-                  false);
-            }
-          }
-        } catch (IllegalAccessException ignored) {}
+    } else if ("props".equals(ruleName)) {
+      final Map<String, String> props = element.getProps();
+      for (String key : props.keySet()) {
+        accumulator.store(key, props.get(key), false);
       }
-    } else if ("state".equals(ruleName) && stateContainer != null) {
-      for (Field field : stateContainer.getClass().getDeclaredFields()) {
-        try {
-          field.setAccessible(true);
-          if (isPrimitiveField(field) && field.getAnnotation(State.class) != null) {
-            final Object value = field.get(stateContainer);
-            if (!(value instanceof ComponentLifecycle)) {
-              accumulator.store(
-                  field.getName(),
-                  value == null ? "null" : value.toString(),
-                  false);
-            }
-          }
-        } catch (IllegalAccessException ignored) {}
+    } else if ("state".equals(ruleName)) {
+      final Map<String, String> state = element.getState();
+      for (String key : state.keySet()) {
+        accumulator.store(key, state.get(key), false);
       }
     }
-  }
-
-  private static boolean isPrimitiveField(Field field) {
-    return field.getType().isPrimitive() ||
-        CharSequence.class.isAssignableFrom(field.getType());
   }
 
   protected void onSetStyle(
@@ -184,25 +131,24 @@ public final class DebugComponentDescriptor
       String ruleName,
       String name,
       String value) {
-    final ComponentContext context = element.node.getContext();
+    final ComponentContext context = element.getContext();
     final ComponentTree componentTree = context.getComponentTree();
     final LithoView view = componentTree == null ? null : componentTree.getLithoView();
-    final LithoDebugInfo debugInfo = getDebugInfo(element);
 
-    if (view == null || debugInfo == null) {
+    if (view == null) {
       return;
     }
 
     if ("layout".equals(ruleName)) {
-      debugInfo.setStyleOverride(element, name, value);
+      element.setStyleOverride(name, value);
       view.forceRelayout();
       logStyleUpdate(context);
     } else if ("props".equals(ruleName)) {
-      debugInfo.setPropOverride(element, name, value);
+      element.setPropOverride(name, value);
       view.forceRelayout();
       logStyleUpdate(context);
     } else if ("state".equals(ruleName)) {
-      debugInfo.setStateOverride(element, name, value);
+      element.setStateOverride(name, value);
       view.forceRelayout();
       logStyleUpdate(context);
     }
@@ -220,11 +166,5 @@ public final class DebugComponentDescriptor
     if (logger != null) {
       logger.log(logger.newEvent(EVENT_STETHO_INSPECT_COMPONENT));
     }
-  }
-
-  private LithoDebugInfo getDebugInfo(DebugComponent element) {
-    final ComponentContext context = element.node.getContext();
-    final ComponentTree componentTree = context == null ? null : context.getComponentTree();
-    return componentTree == null ? null : componentTree.getLithoDebugInfo();
   }
 }

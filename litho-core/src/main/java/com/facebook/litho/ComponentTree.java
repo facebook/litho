@@ -1245,16 +1245,6 @@ public class ComponentTree {
     }
   }
 
-@ThreadConfined(ThreadConfined.UI)
-  LithoDebugInfo getLithoDebugInfo() {
-    return mLithoDebugInfo;
-  }
-
-@ThreadConfined(ThreadConfined.UI)
-  void setLithoDebugInfo(LithoDebugInfo lithoDebugInfo) {
-    mLithoDebugInfo = lithoDebugInfo;
-  }
-
   /**
    * A default {@link LayoutHandler} that will use a {@link Handler} with a {@link Thread}'s
    * {@link Looper}.

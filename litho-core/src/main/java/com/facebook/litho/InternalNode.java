@@ -1364,26 +1364,20 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   void calculateLayout(float width, float height) {
-    final ComponentTree tree = mComponentContext == null
-        ? null
-        : mComponentContext.getComponentTree();
-    final LithoDebugInfo debugInfo = tree == null ? null : tree.getLithoDebugInfo();
-    if (debugInfo != null) {
-      applyOverridesRecursive(debugInfo, this);
+    if (ComponentsConfiguration.isDebugModeEnabled) {
+      applyOverridesRecursive(this);
     }
 
     mYogaNode.calculateLayout(width, height);
   }
 
-  private static void applyOverridesRecursive(
-      LithoDebugInfo debugInfo,
-      InternalNode node) {
-    debugInfo.applyOverrides(node);
+  private static void applyOverridesRecursive(InternalNode node) {
+    DebugComponent.getInstance(node, 0).applyOverrides();
     for (int i = 0, count = node.getChildCount(); i < count; i++) {
-      applyOverridesRecursive(debugInfo, node.getChildAt(i));
+      applyOverridesRecursive(node.getChildAt(i));
     }
     if (node.hasNestedTree()) {
-      applyOverridesRecursive(debugInfo, node.getNestedTree());
+      applyOverridesRecursive(node.getNestedTree());
     }
   }
 
