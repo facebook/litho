@@ -19,6 +19,7 @@ import java.util.Locale;
 
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.ClassNames;
@@ -32,6 +33,7 @@ import com.facebook.litho.specmodels.model.StateParamModel;
 import com.facebook.litho.specmodels.model.TreePropModel;
 import com.facebook.litho.specmodels.model.UpdateStateMethodModel;
 
+import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
@@ -155,7 +157,11 @@ public class ComponentImplGenerator {
 
     for (PropModel prop : props) {
       final FieldSpec.Builder fieldBuilder = FieldSpec.builder(prop.getType(), prop.getName())
-          .addAnnotation(Prop.class);
+          .addAnnotation(
+              AnnotationSpec.builder(Prop.class)
+                  .addMember("resType", "$T.$L", ResType.class, prop.getResType())
+                  .addMember("optional", "$L", prop.isOptional())
+                  .build());
       if (prop.hasDefault(specModel.getPropDefaults())) {
         fieldBuilder.initializer("$L.$L", specModel.getSpecName(), prop.getName());
       }

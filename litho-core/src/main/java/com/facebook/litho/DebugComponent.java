@@ -25,6 +25,7 @@ import android.support.v4.util.SimpleArrayMap;
 import android.view.View;
 
 import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaConstants;
@@ -279,10 +280,18 @@ public final class DebugComponent {
     for (Field field : component.getClass().getDeclaredFields()) {
       try {
         field.setAccessible(true);
-        if (isPrimitiveField(field) && field.getAnnotation(Prop.class) != null) {
+        final Prop propAnnotation = field.getAnnotation(Prop.class);
+        if (isPrimitiveField(field) && propAnnotation != null) {
           final Object value = field.get(component);
           if (value != stateContainer && !(value instanceof ComponentLifecycle)) {
-            props.put(field.getName(), value == null ? "null" : value.toString());
+            if (value == null) {
+              props.put(field.getName(), "null");
+            } else if (propAnnotation.resType() == ResType.COLOR) {
+              final int i = (Integer) value;
+              props.put(field.getName(), String.format("#%06X", i & 0xFFFFF).toUpperCase());
+            } else {
+              props.put(field.getName(), value.toString());
+            }
           }
         }
       } catch (IllegalAccessException e) {
