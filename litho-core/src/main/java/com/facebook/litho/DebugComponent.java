@@ -824,7 +824,7 @@ public final class DebugComponent {
       key = tree == null ? "null" : tree.toString();
     }
 
-    return key;
+    return key + "(" + componentIndex + ")";
   }
 
   public String getId() {
