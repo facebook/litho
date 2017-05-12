@@ -9,6 +9,7 @@
 
 package com.facebook.litho;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,7 +59,7 @@ public final class DebugComponent {
   private final static SimpleArrayMap<String, DebugComponent> mDebugNodes = new SimpleArrayMap<>();
 
   private String mKey;
-  private InternalNode mNode;
+  private WeakReference<InternalNode> mNode;
   private int mComponentIndex;
   private final SimpleArrayMap<String, SimpleArrayMap<String, String>> mStyleOverrides =
       new SimpleArrayMap<>();
@@ -79,7 +80,7 @@ public final class DebugComponent {
     }
 
     debugComponent.mKey = globalKey;
-    debugComponent.mNode = node;
+    debugComponent.mNode = new WeakReference<>(node);
     debugComponent.mComponentIndex = componentIndex;
 
     return debugComponent;
@@ -104,8 +105,13 @@ public final class DebugComponent {
    * @return A conanical name for this component. Suitable to present to the user.
    */
   public String getName() {
-    if (mNode.getComponents().isEmpty()) {
-      switch (mNode.mYogaNode.getFlexDirection()) {
+    final InternalNode node = mNode.get();
+    if (node == null) {
+      return null;
+    }
+
+    if (node.getComponents().isEmpty()) {
+      switch (node.mYogaNode.getFlexDirection()) {
         case COLUMN: return Column.class.getName();
         case COLUMN_REVERSE: return ColumnReverse.class.getName();
         case ROW: return Row.class.getName();
@@ -113,7 +119,7 @@ public final class DebugComponent {
       }
     }
 
-    return mNode
+    return node
         .getComponents()
         .get(mComponentIndex)
         .getLifecycle()
@@ -129,21 +135,26 @@ public final class DebugComponent {
    * @return A list of child components.
    */
   public List<DebugComponent> getChildComponents() {
+    final InternalNode node = mNode.get();
+    if (node == null) {
+      return Collections.EMPTY_LIST;
+    }
+
     if (mComponentIndex > 0) {
       final int wrappedComponentIndex = mComponentIndex - 1;
-      return Arrays.asList(getInstance(mNode, wrappedComponentIndex));
+      return Arrays.asList(getInstance(node, wrappedComponentIndex));
     }
 
     final ArrayList<DebugComponent> children = new ArrayList<>();
 
-    for (int i = 0, count = mNode.getChildCount(); i < count; i++) {
-      final InternalNode childNode = mNode.getChildAt(i);
+    for (int i = 0, count = node.getChildCount(); i < count; i++) {
+      final InternalNode childNode = node.getChildAt(i);
       final int outerWrapperComponentIndex = Math.max(0, childNode.getComponents().size() - 1);
       children.add(getInstance(childNode, outerWrapperComponentIndex));
     }
 
-    if (mNode.hasNestedTree()) {
-      final InternalNode nestedTree = mNode.getNestedTree();
+    if (node.hasNestedTree()) {
+      final InternalNode nestedTree = node.getNestedTree();
       for (int i = 0, count = nestedTree.getChildCount(); i < count; i++) {
         final InternalNode childNode = nestedTree.getChildAt(i);
         children.add(getInstance(childNode, Math.max(0, childNode.getComponents().size() - 1)));
@@ -157,7 +168,8 @@ public final class DebugComponent {
    * @return A list of mounted views.
    */
   public List<View> getMountedViews() {
-    final ComponentContext context = mNode.getContext();
+    final InternalNode node = mNode.get();
+    final ComponentContext context = node == null ? null : node.getContext();
     final ComponentTree tree = context == null ? null : context.getComponentTree();
     final LithoView view = tree == null ? null : tree.getLithoView();
     final MountState mountState = view == null ? null : view.getMountState();
@@ -169,7 +181,7 @@ public final class DebugComponent {
         final Component component = mountItem == null ? null : mountItem.getComponent();
 
         if (component != null &&
-            component == mNode.getRootComponent() &&
+            component == node.getRootComponent() &&
             Component.isMountViewSpec(component)) {
           children.add((View) mountItem.getContent());
         }
@@ -183,7 +195,8 @@ public final class DebugComponent {
    * @return The litho view hosting this component.
    */
   public LithoView getLithoView() {
-    final ComponentContext c = mNode.getContext();
+    final InternalNode node = mNode.get();
+    final ComponentContext c = node == null ? null : node.getContext();
     final ComponentTree tree = c == null ? null : c.getComponentTree();
     return tree == null ? null : tree.getLithoView();
   }
@@ -192,31 +205,40 @@ public final class DebugComponent {
    * @return The bounds of this component relative to its hosting {@link LithoView}.
    */
   public Rect getBoundsInLithoView() {
-    final int x = getXFromRoot(mNode);
-    final int y = getYFromRoot(mNode);
-    return new Rect(x, y, x + mNode.getWidth(), y + mNode.getHeight());
+    final InternalNode node = mNode.get();
+    if (node == null) {
+      return new Rect();
+    }
+    final int x = getXFromRoot(node);
+    final int y = getYFromRoot(node);
+    return new Rect(x, y, x + node.getWidth(), y + node.getHeight());
   }
 
   /**
    * @return The bounds of this component relative to its parent.
    */
   public Rect getBounds() {
-    final int x = mNode.getX();
-    final int y = mNode.getY();
-    return new Rect(x, y, x + mNode.getWidth(), y + mNode.getHeight());
+    final InternalNode node = mNode.get();
+    if (node == null) {
+      return new Rect();
+    }
+    final int x = node.getX();
+    final int y = node.getY();
+    return new Rect(x, y, x + node.getWidth(), y + node.getHeight());
   }
 
   /**
    * @return Key-value mapping of this components layout styles.
    */
   public Map<String, String> getStyles() {
-    if (!isLayoutNode()) {
+    final InternalNode node = mNode.get();
+    if (node == null || !isLayoutNode()) {
       return Collections.EMPTY_MAP;
     }
 
     final Map<String, String> styles = new ArrayMap<>();
-    final YogaNode yogaNode = mNode.mYogaNode;
-    final YogaNode defaults = ComponentsPools.acquireYogaNode(mNode.getContext());
+    final YogaNode yogaNode = node.mYogaNode;
+    final YogaNode defaults = ComponentsPools.acquireYogaNode(node.getContext());
 
     styles.put("background", "<drawable>");
     styles.put("foreground", "<drawable>");
@@ -267,9 +289,10 @@ public final class DebugComponent {
    * @return Key-value mapping of this components props.
    */
   public Map<String, String> getProps() {
-    final Component component = mNode.getComponents().isEmpty()
+    final InternalNode node = mNode.get();
+    final Component component = node == null || node.getComponents().isEmpty()
         ? null
-        : mNode.getComponents().get(mComponentIndex);
+        : node.getComponents().get(mComponentIndex);
     if (component == null) {
       return Collections.EMPTY_MAP;
     }
@@ -306,9 +329,10 @@ public final class DebugComponent {
    * @return Key-value mapping of this components state.
    */
   public Map<String, String> getState() {
-    final Component component = mNode.getComponents().isEmpty()
+    final InternalNode node = mNode.get();
+    final Component component = node == null || node.getComponents().isEmpty()
         ? null
-        : mNode.getComponents().get(mComponentIndex);
+        : node.getComponents().get(mComponentIndex);
     if (component == null) {
       return Collections.EMPTY_MAP;
     }
@@ -386,35 +410,41 @@ public final class DebugComponent {
    * @return the {@link ComponentContext} for this component.
    */
   public ComponentContext getContext() {
-    return mNode.getContext();
+    return mNode.get().getContext();
   }
 
   /**
    * @return True if this not has layout information attached to it (backed by a Yoga node)
    */
   public boolean isLayoutNode() {
-    return mNode.getComponents().isEmpty() || mComponentIndex == 0;
+    return mNode.get().getComponents().isEmpty() || mComponentIndex == 0;
   }
 
   /**
    * @return This component's testKey or null if none is set.
    */
   public String getTestKey() {
-    return isLayoutNode() ? mNode.getTestKey() : null;
+    return isLayoutNode() ? mNode.get().getTestKey() : null;
   }
 
   /**
    * @return This component's key or null if none is set.
    */
   public String getKey() {
-    if (!mNode.getComponents().isEmpty()) {
-      final Component component = mNode.getComponents().get(mComponentIndex);
+    final InternalNode node = mNode.get();
+    if (node != null && !node.getComponents().isEmpty()) {
+      final Component component = node.getComponents().get(mComponentIndex);
       return component == null ? null : component.getKey();
     }
     return null;
   }
 
   void applyOverrides() {
+    final InternalNode node = mNode.get();
+    if (node == null) {
+      return;
+    }
+
     if (mStyleOverrides.containsKey(mKey)) {
       final SimpleArrayMap<String, String> styles = mStyleOverrides.get(mKey);
       for (int i = 0, size = styles.size(); i < size; i++) {
@@ -423,47 +453,47 @@ public final class DebugComponent {
 
         try {
           if (key.equals("background")) {
-            mNode.backgroundColor(parseColor(value));
+            node.backgroundColor(parseColor(value));
           }
 
           if (key.equals("foreground")) {
-            mNode.foregroundColor(parseColor(value));
+            node.foregroundColor(parseColor(value));
           }
 
           if (key.equals("direction")) {
-            mNode.layoutDirection(YogaDirection.valueOf(toEnumString(value)));
+            node.layoutDirection(YogaDirection.valueOf(toEnumString(value)));
           }
 
           if (key.equals("flex-direction")) {
-            mNode.flexDirection(YogaFlexDirection.valueOf(toEnumString(value)));
+            node.flexDirection(YogaFlexDirection.valueOf(toEnumString(value)));
           }
 
           if (key.equals("justify-content")) {
-            mNode.justifyContent(YogaJustify.valueOf(toEnumString(value)));
+            node.justifyContent(YogaJustify.valueOf(toEnumString(value)));
           }
 
           if (key.equals("align-items")) {
-            mNode.alignItems(YogaAlign.valueOf(toEnumString(value)));
+            node.alignItems(YogaAlign.valueOf(toEnumString(value)));
           }
 
           if (key.equals("align-self")) {
-            mNode.alignSelf(YogaAlign.valueOf(toEnumString(value)));
+            node.alignSelf(YogaAlign.valueOf(toEnumString(value)));
           }
 
           if (key.equals("align-content")) {
-            mNode.alignContent(YogaAlign.valueOf(toEnumString(value)));
+            node.alignContent(YogaAlign.valueOf(toEnumString(value)));
           }
 
           if (key.equals("position")) {
-            mNode.positionType(YogaPositionType.valueOf(toEnumString(value)));
+            node.positionType(YogaPositionType.valueOf(toEnumString(value)));
           }
 
           if (key.equals("flex-grow")) {
-            mNode.flexGrow(parseFloat(value));
+            node.flexGrow(parseFloat(value));
           }
 
           if (key.equals("flex-shrink")) {
-            mNode.flexShrink(parseFloat(value));
+            node.flexShrink(parseFloat(value));
           }
         } catch (IllegalArgumentException ignored) {
           // ignore errors when the user suplied an invalid enum value
@@ -476,14 +506,14 @@ public final class DebugComponent {
           }
           switch (flexBasis.unit) {
             case AUTO:
-              mNode.flexBasisAuto();
+              node.flexBasisAuto();
               break;
             case UNDEFINED:
             case POINT:
-              mNode.flexBasisPx(FastMath.round(flexBasis.value));
+              node.flexBasisPx(FastMath.round(flexBasis.value));
               break;
             case PERCENT:
-              mNode.flexBasisPercent(FastMath.round(flexBasis.value));
+              node.flexBasisPercent(FastMath.round(flexBasis.value));
               break;
           }
         }
@@ -495,14 +525,14 @@ public final class DebugComponent {
           }
           switch (width.unit) {
             case AUTO:
-              mNode.widthAuto();
+              node.widthAuto();
               break;
             case UNDEFINED:
             case POINT:
-              mNode.widthPx(FastMath.round(width.value));
+              node.widthPx(FastMath.round(width.value));
               break;
             case PERCENT:
-              mNode.widthPercent(FastMath.round(width.value));
+              node.widthPercent(FastMath.round(width.value));
               break;
           }
         }
@@ -515,10 +545,10 @@ public final class DebugComponent {
           switch (minWidth.unit) {
             case UNDEFINED:
             case POINT:
-              mNode.minWidthPx(FastMath.round(minWidth.value));
+              node.minWidthPx(FastMath.round(minWidth.value));
               break;
             case PERCENT:
-              mNode.minWidthPercent(FastMath.round(minWidth.value));
+              node.minWidthPercent(FastMath.round(minWidth.value));
               break;
           }
         }
@@ -531,10 +561,10 @@ public final class DebugComponent {
           switch (maxWidth.unit) {
             case UNDEFINED:
             case POINT:
-              mNode.maxWidthPx(FastMath.round(maxWidth.value));
+              node.maxWidthPx(FastMath.round(maxWidth.value));
               break;
             case PERCENT:
-              mNode.maxWidthPercent(FastMath.round(maxWidth.value));
+              node.maxWidthPercent(FastMath.round(maxWidth.value));
               break;
           }
         }
@@ -546,14 +576,14 @@ public final class DebugComponent {
           }
           switch (height.unit) {
             case AUTO:
-              mNode.heightAuto();
+              node.heightAuto();
               break;
             case UNDEFINED:
             case POINT:
-              mNode.heightPx(FastMath.round(height.value));
+              node.heightPx(FastMath.round(height.value));
               break;
             case PERCENT:
-              mNode.heightPercent(FastMath.round(height.value));
+              node.heightPercent(FastMath.round(height.value));
               break;
           }
         }
@@ -566,10 +596,10 @@ public final class DebugComponent {
           switch (minHeight.unit) {
             case UNDEFINED:
             case POINT:
-              mNode.minHeightPx(FastMath.round(minHeight.value));
+              node.minHeightPx(FastMath.round(minHeight.value));
               break;
             case PERCENT:
-              mNode.minHeightPercent(FastMath.round(minHeight.value));
+              node.minHeightPercent(FastMath.round(minHeight.value));
               break;
           }
         }
@@ -582,10 +612,10 @@ public final class DebugComponent {
           switch (maxHeight.unit) {
             case UNDEFINED:
             case POINT:
-              mNode.maxHeightPx(FastMath.round(maxHeight.value));
+              node.maxHeightPx(FastMath.round(maxHeight.value));
               break;
             case PERCENT:
-              mNode.maxHeightPercent(FastMath.round(maxHeight.value));
+              node.maxHeightPercent(FastMath.round(maxHeight.value));
               break;
           }
         }
@@ -599,13 +629,13 @@ public final class DebugComponent {
             switch (margin.unit) {
               case UNDEFINED:
               case POINT:
-                mNode.marginPx(edge, FastMath.round(margin.value));
+                node.marginPx(edge, FastMath.round(margin.value));
                 break;
               case AUTO:
-                mNode.marginAuto(edge);
+                node.marginAuto(edge);
                 break;
               case PERCENT:
-                mNode.marginPercent(edge, FastMath.round(margin.value));
+                node.marginPercent(edge, FastMath.round(margin.value));
                 break;
             }
           }
@@ -620,10 +650,10 @@ public final class DebugComponent {
             switch (padding.unit) {
               case UNDEFINED:
               case POINT:
-                mNode.paddingPx(edge, FastMath.round(padding.value));
+                node.paddingPx(edge, FastMath.round(padding.value));
                 break;
               case PERCENT:
-                mNode.paddingPercent(edge, FastMath.round(padding.value));
+                node.paddingPercent(edge, FastMath.round(padding.value));
                 break;
             }
           }
@@ -638,10 +668,10 @@ public final class DebugComponent {
             switch (position.unit) {
               case UNDEFINED:
               case POINT:
-                mNode.positionPx(edge, FastMath.round(position.value));
+                node.positionPx(edge, FastMath.round(position.value));
                 break;
               case PERCENT:
-                mNode.positionPercent(edge, FastMath.round(position.value));
+                node.positionPercent(edge, FastMath.round(position.value));
                 break;
             }
           }
@@ -650,14 +680,14 @@ public final class DebugComponent {
         for (YogaEdge edge : edges) {
           if (key.equals("border-" + toCSSString(edge))) {
             final float border = parseFloat(value);
-            mNode.borderWidthPx(edge, FastMath.round(border));
+            node.borderWidthPx(edge, FastMath.round(border));
           }
         }
       }
     }
 
     if (mPropOverrides.containsKey(mKey)) {
-      final Component component = mNode.getRootComponent();
+      final Component component = node.getRootComponent();
       if (component != null) {
         final SimpleArrayMap<String, String> props = mPropOverrides.get(mKey);
         for (int i = 0, size = props.size(); i < size; i++) {
@@ -668,7 +698,7 @@ public final class DebugComponent {
     }
 
     if (mStateOverrides.containsKey(mKey)) {
-      final Component component = mNode.getRootComponent();
+      final Component component = node.getRootComponent();
       final ComponentLifecycle.StateContainer stateContainer =
           component == null ? null : component.getStateContainer();
       if (stateContainer != null) {
