@@ -56,25 +56,6 @@ public class ComponentsConfiguration {
   public static boolean isEndToEndTestRun = System.getProperty("IS_TESTING") != null;
 
   /**
-   * Indicates whether LayoutState should try to generate DisplayLists for Components that support
-   * that.
-   */
-  public static volatile boolean shouldGenerateDisplayLists =
-      Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
-
-  /**
-   * Indicates whether LayoutState should queue LayoutOutputs for further generating DisplayLists
-   * in the main thread.
-   *
-   * The difference of this one from `shouldGenerateDisplayLists` is that the latter
-   * generates Display lists only when calculating layout and only when that happens in the main
-   * thread. This flag will enable splitting up that operation into two parts, queueing outputs of
-   * layout calculation (either in background thread or in main thread) and processing these outputs
-   * later in the main thread.
-   */
-  public static boolean shouldPrefetchDisplayLists = false;
-
-  /**
    * Use the new bootstrap ranges code instead of initializing all the items when the binder view
    * is measured (t12986103).
    */

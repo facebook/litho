@@ -971,9 +971,9 @@ class LayoutState {
     }
 
     final Activity activity = getValidActivityForContext(c);
-    if (activity != null) {
+    if (activity != null && isEligibleForCreatingDisplayLists()) {
       if (ThreadUtils.isMainThread()
-          && ComponentsConfiguration.shouldGenerateDisplayLists
+          && !layoutState.mCanPrefetchDisplayLists
           && canCollectDisplayListsSync(activity)) {
         collectDisplayLists(layoutState);
       } else if (layoutState.mCanPrefetchDisplayLists) {
@@ -1150,6 +1150,10 @@ class LayoutState {
     if (!layoutState.mDisplayListsToPrefetch.isEmpty()) {
       DisplayListPrefetcher.getInstance().addLayoutState(layoutState);
     }
+  }
+
+  public static boolean isEligibleForCreatingDisplayLists() {
+    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
   }
 
   private static LayoutOutput findInteractiveRoot(LayoutState layoutState, LayoutOutput output) {

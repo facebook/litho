@@ -88,7 +88,7 @@ public class RecyclerBinder implements
       ComponentContext componentContext,
       float rangeRatio,
       LayoutInfo layoutInfo) {
-    this(componentContext, rangeRatio, layoutInfo, null, false);
+    this(componentContext, rangeRatio, layoutInfo, null, false, false);
   }
 
   public RecyclerBinder(
@@ -96,7 +96,7 @@ public class RecyclerBinder implements
       float rangeRatio,
       LayoutInfo layoutInfo,
       @Nullable LayoutHandlerFactory layoutHandlerFactory) {
-    this(componentContext, rangeRatio, layoutInfo, layoutHandlerFactory, false);
+    this(componentContext, rangeRatio, layoutInfo, layoutHandlerFactory, false, false);
   }
 
   /**
@@ -112,13 +112,15 @@ public class RecyclerBinder implements
    * @param layoutHandlerFactory the RecyclerBinder will use this layoutHandlerFactory when creating
    * {@link ComponentTree}s in order to specify on which thread layout calculation should happen.
    * @param useNewIncrementalMount
+   * @param canPrefetchDisplayLists
    */
   public RecyclerBinder(
       ComponentContext componentContext,
       float rangeRatio,
       LayoutInfo layoutInfo,
       @Nullable LayoutHandlerFactory layoutHandlerFactory,
-      boolean useNewIncrementalMount) {
+      boolean useNewIncrementalMount,
+      boolean canPrefetchDisplayLists) {
     mComponentContext = componentContext;
     mUseNewIncrementalMount = useNewIncrementalMount;
     mComponentTreeHolders = new ArrayList<>();
@@ -129,15 +131,15 @@ public class RecyclerBinder implements
     mLayoutInfo = layoutInfo;
     mLayoutHandlerFactory = layoutHandlerFactory;
     mCurrentFirstVisiblePosition = mCurrentLastVisiblePosition = 0;
-    mCanPrefetchDisplayLists = ComponentsConfiguration.shouldPrefetchDisplayLists;
+    mCanPrefetchDisplayLists = canPrefetchDisplayLists;
   }
 
   public RecyclerBinder(ComponentContext c) {
-    this(c, 4f, new LinearLayoutInfo(c, VERTICAL, false), null, false);
+    this(c, 4f, new LinearLayoutInfo(c, VERTICAL, false), null, false, false);
   }
 
   public RecyclerBinder(ComponentContext c, LayoutInfo layoutInfo) {
-    this(c, 4f, layoutInfo, null, false);
+    this(c, 4f, layoutInfo, null, false, false);
   }
 
   /**
