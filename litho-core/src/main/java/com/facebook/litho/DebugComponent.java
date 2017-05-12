@@ -817,4 +817,8 @@ public final class DebugComponent {
 
     return key;
   }
+
+  public String getId() {
+    return mKey;
+  }
 }
