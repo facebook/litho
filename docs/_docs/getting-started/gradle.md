@@ -4,7 +4,7 @@
 
 You can include Litho to your Android project via Gradle by adding the following to your `build.gradle` file:
 
-```java
+```groovy
 dependencies {
   // ...
   // Litho
