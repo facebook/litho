@@ -34,7 +34,6 @@ import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.ShouldUpdate;
-import com.facebook.litho.reference.DrawableUtils;
 import com.facebook.litho.utils.MeasureUtils;
 
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
@@ -177,6 +176,6 @@ class ImageSpec {
       Diff<ScaleType> scaleType,
       Diff<Drawable> drawable) {
     return (scaleType.getNext() != scaleType.getPrevious()) ||
-        !DrawableUtils.areDrawablesEqual(drawable.getNext(), drawable.getPrevious());
+        drawable.getNext() != drawable.getPrevious();
   }
 }
