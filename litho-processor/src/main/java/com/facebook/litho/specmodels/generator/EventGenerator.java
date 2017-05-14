@@ -9,17 +9,14 @@
 
 package com.facebook.litho.specmodels.generator;
 
-import javax.lang.model.element.Modifier;
-
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.Param;
+import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethodModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.MethodParamModelUtils;
-import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.SpecModel;
-
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
@@ -27,12 +24,14 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeVariableName;
 
+import javax.lang.model.element.Modifier;
+
+import static com.facebook.litho.specmodels.generator.ComponentImplGenerator.getImplAccessor;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.ABSTRACT_IMPL_PARAM_NAME;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.DELEGATE_FIELD_NAME;
-import static com.facebook.litho.specmodels.model.ClassNames.EVENT_HANDLER;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.IMPL_VARIABLE_NAME;
+import static com.facebook.litho.specmodels.model.ClassNames.EVENT_HANDLER;
 import static com.facebook.litho.specmodels.model.ClassNames.OBJECT;
-import static com.facebook.litho.specmodels.generator.ComponentImplGenerator.getImplAccessor;
 
 /**
  * Class that generates the event methods for a Component.
@@ -114,6 +113,9 @@ public class EventGenerator {
         eventDeclaration.name);
 
     for (EventDeclarationModel.FieldModel fieldModel : eventDeclaration.fields) {
+      if (fieldModel.field.modifiers.contains(Modifier.FINAL)) {
+        continue;
+      }
       eventDispatcherMethod
           .addParameter(fieldModel.field.type, fieldModel.field.name)
           .addStatement("_eventState.$L = $L", fieldModel.field.name, fieldModel.field.name);
