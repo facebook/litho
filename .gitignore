@@ -13,3 +13,9 @@ docs/_site/
 
 # Output files
 build/
+docs/.bundle/
+
+# Android Studio/IntelliJ
+.idea
+*.iml
+local.properties
