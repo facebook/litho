@@ -41,14 +41,20 @@ public class MethodExtractorUtils {
       List<Class<? extends Annotation>> permittedInterStageInputAnnotations) {
     final List<MethodParamModel> methodParams = new ArrayList<>();
     for (VariableElement param : method.getParameters()) {
-      methodParams.add(
-          MethodParamModelFactory.create(
-              TypeName.get(param.asType()),
-              param.getSimpleName().toString(),
-              getLibraryAnnotations(param, permittedAnnotations),
-              getExternalAnnotations(param),
-              permittedInterStageInputAnnotations,
-              param));
+      try {
+        methodParams.add(
+            MethodParamModelFactory.create(
+                TypeName.get(param.asType()),
+                param.getSimpleName().toString(),
+                getLibraryAnnotations(param, permittedAnnotations),
+                getExternalAnnotations(param),
+                permittedInterStageInputAnnotations,
+                param));
+      } catch (Exception e) {
+        throw new ComponentsProcessingException(
+            param,
+            "Error processing this param. Are your imports set up correctly?");
+      }
     }
 
     return methodParams;
