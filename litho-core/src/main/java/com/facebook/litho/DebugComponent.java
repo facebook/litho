@@ -804,12 +804,17 @@ public final class DebugComponent {
     try {
       final Field field = o.getClass().getDeclaredField(key);
       final Class type = field.getType();
+      final Prop prop = field.getAnnotation(Prop.class);
       field.setAccessible(true);
 
       if (type.equals(short.class)) {
         field.set(o, Short.parseShort(value));
       } else if (type.equals(int.class)) {
-        field.set(o, Integer.parseInt(value));
+        if (prop != null && prop.resType() == ResType.COLOR) {
+          field.set(o, parseColor(value));
+        } else {
+          field.set(o, Integer.parseInt(value));
+        }
       } else if (type.equals(long.class)) {
         field.set(o, Long.parseLong(value));
       } else if (type.equals(float.class)) {
