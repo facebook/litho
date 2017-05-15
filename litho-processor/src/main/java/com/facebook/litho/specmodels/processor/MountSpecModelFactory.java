@@ -23,7 +23,6 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.annotations.FromBind;
 import com.facebook.litho.annotations.FromBoundsDefined;
 import com.facebook.litho.annotations.FromMeasure;
@@ -33,6 +32,7 @@ import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.ShouldUpdate;
+import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DelegateMethodDescriptions;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
@@ -71,7 +71,7 @@ public class MountSpecModelFactory {
       @Nullable DependencyInjectionHelper dependencyInjectionHelper) {
     return new MountSpecModel(
         element.getQualifiedName().toString(),
-        element.getAnnotation(MountSpec.class).value(),
+        getValue(element),
         DelegateMethodExtractor.getDelegateMethods(
             element,
             DELEGATE_METHOD_ANNOTATIONS,
@@ -86,14 +86,44 @@ public class MountSpecModelFactory {
         EventDeclarationsExtractor.getEventDeclarations(elements, element, MountSpec.class),
         JavadocExtractor.getClassJavadoc(elements, element),
         JavadocExtractor.getPropJavadocs(elements, element),
-        element.getAnnotation(MountSpec.class).isPublic(),
+        isPublic(element),
         dependencyInjectionHelper,
-        element.getAnnotation(MountSpec.class).isPureRender(),
-        element.getAnnotation(MountSpec.class).canMountIncrementally(),
-        element.getAnnotation(MountSpec.class).shouldUseDisplayList(),
-        element.getAnnotation(MountSpec.class).poolSize(),
+        isPureRender(element),
+        canMountIncrementally(element),
+        shouldUseDisplayList(element),
+        getPoolSize(element),
         getMountType(element),
         element);
+  }
+
+  private static String getValue(TypeElement element) {
+    final MountSpec mountSpec = element.getAnnotation(MountSpec.class);
+    return mountSpec != null ? mountSpec.value() : "";
+  }
+
+  private static boolean isPublic(TypeElement element) {
+    final MountSpec mountSpec = element.getAnnotation(MountSpec.class);
+    return mountSpec == null || mountSpec.isPublic();
+  }
+
+  private static boolean isPureRender(TypeElement element) {
+    final MountSpec mountSpec = element.getAnnotation(MountSpec.class);
+    return mountSpec != null && mountSpec.isPureRender();
+  }
+
+  private static boolean canMountIncrementally(TypeElement element) {
+    final MountSpec mountSpec = element.getAnnotation(MountSpec.class);
+    return mountSpec != null && mountSpec.canMountIncrementally();
+  }
+
+  private static boolean shouldUseDisplayList(TypeElement element) {
+    final MountSpec mountSpec = element.getAnnotation(MountSpec.class);
+    return mountSpec != null && mountSpec.shouldUseDisplayList();
+  }
+
+  private static int getPoolSize(TypeElement element) {
+    final MountSpec mountSpec = element.getAnnotation(MountSpec.class);
+    return mountSpec != null ? mountSpec.poolSize() : 15;
   }
 
   private static TypeName getMountType(TypeElement element) {

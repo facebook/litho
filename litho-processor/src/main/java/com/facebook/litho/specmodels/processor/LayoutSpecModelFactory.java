@@ -66,7 +66,7 @@ public class LayoutSpecModelFactory {
       LayoutSpecGenerator layoutSpecGenerator) {
     return new LayoutSpecModel(
         element.getQualifiedName().toString(),
-        element.getAnnotation(LayoutSpec.class).value(),
+        getValue(element),
         DelegateMethodExtractor.getDelegateMethods(
             element,
             delegateMethodAnnotations,
@@ -81,10 +81,25 @@ public class LayoutSpecModelFactory {
         EventDeclarationsExtractor.getEventDeclarations(elements, element, LayoutSpec.class),
         JavadocExtractor.getClassJavadoc(elements, element),
         JavadocExtractor.getPropJavadocs(elements, element),
-        element.getAnnotation(LayoutSpec.class).isPublic(),
+        isPublic(element),
         dependencyInjectionHelper,
-        element.getAnnotation(LayoutSpec.class).isPureRender(),
+        isPureRender(element),
         element,
         layoutSpecGenerator);
+  }
+
+  private static String getValue(TypeElement element) {
+    final LayoutSpec layoutSpec = element.getAnnotation(LayoutSpec.class);
+    return layoutSpec != null ? layoutSpec.value() : "";
+  }
+
+  private static boolean isPublic(TypeElement element) {
+    final LayoutSpec layoutSpec = element.getAnnotation(LayoutSpec.class);
+    return layoutSpec == null || layoutSpec.isPublic();
+  }
+
+  private static boolean isPureRender(TypeElement element) {
+    final LayoutSpec layoutSpec = element.getAnnotation(LayoutSpec.class);
+    return layoutSpec != null && layoutSpec.isPureRender();
   }
 }
