@@ -120,13 +120,14 @@ class ComponentHostUtils {
   }
 
   static List<?> extractContent(SparseArrayCompat<MountItem> items) {
-    if (items.size() == 1) {
+    final int size = items.size();
+    if (size == 1) {
       return Collections.singletonList(items.valueAt(0).getContent());
     }
 
-    final List<Object> content = new ArrayList<>();
+    final List<Object> content = new ArrayList<>(size);
 
-    for (int i = 0; i < items.size(); i++) {
+    for (int i = 0; i < size; i++) {
       content.add(items.valueAt(i).getContent());
     }
 
@@ -134,14 +135,16 @@ class ComponentHostUtils {
   }
 
   static TextContent extractTextContent(List<?> items) {
-    if (items.size() == 1) {
+    final int size = items.size();
+    if (size == 1) {
       Object item = items.get(0);
       return item instanceof TextContent ? (TextContent) item : TextContent.EMPTY;
     }
 
     final List<CharSequence> textContent = new ArrayList<>();
 
-    for (Object item : items) {
+    for (int i = 0; i < size; ++i) {
+      final Object item = items.get(i);
       if (item instanceof TextContent) {
         textContent.addAll(((TextContent) item).getTextItems());
       }
@@ -156,14 +159,16 @@ class ComponentHostUtils {
   }
 
   static ImageContent extractImageContent(List<?> items) {
-    if (items.size() == 1) {
+    final int size = items.size();
+    if (size == 1) {
       Object item = items.get(0);
       return item instanceof ImageContent ? (ImageContent) item : ImageContent.EMPTY;
     }
 
     final List<Drawable> imageContent = new ArrayList<>();
 
-    for (Object item : items) {
+    for (int i = 0; i < size; ++i) {
+      final Object item = items.get(i);
       if (item instanceof ImageContent) {
         imageContent.addAll(((ImageContent) item).getImageItems());
       }
