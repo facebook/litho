@@ -9,13 +9,13 @@
 
 package com.facebook.litho.specmodels.model;
 
-import javax.lang.model.element.Modifier;
+import com.facebook.litho.annotations.FromEvent;
+import com.facebook.litho.specmodels.internal.ImmutableList;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.facebook.litho.specmodels.internal.ImmutableList;
-import com.facebook.litho.annotations.FromEvent;
+import javax.lang.model.element.Modifier;
 
 /**
  * Class for validating that the event declarations and event methods within a {@link SpecModel}
@@ -44,7 +44,8 @@ public class EventValidation {
 
       for (EventDeclarationModel.FieldModel fieldModel : eventDeclaration.fields) {
         if (!fieldModel.field.modifiers.contains(Modifier.PUBLIC) ||
-            fieldModel.field.modifiers.contains(Modifier.FINAL)) {
+                (fieldModel.field.modifiers.contains(Modifier.FINAL)
+                        && !fieldModel.field.modifiers.contains(Modifier.STATIC))) {
           validationErrors.add(
               new SpecModelValidationError(
                   fieldModel.representedObject,
