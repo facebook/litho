@@ -185,6 +185,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private boolean mCachedMeasuresValid;
   private TreeProps mPendingTreeProps;
 
+  private boolean mIsMutable;
+
   void init(YogaNode yogaNode, ComponentContext componentContext, Resources resources) {
     yogaNode.setData(this);
     mYogaNode = yogaNode;
@@ -194,6 +196,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     mResourceResolver.init(
         mComponentContext,
         componentContext.getResourceCache());
+
+    mIsMutable = false;
   }
 
   @Px
@@ -365,6 +369,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode layoutDirection(YogaDirection direction) {
+	  checkIfMutable();
+
     mPrivateFlags |= PFLAG_LAYOUT_DIRECTION_IS_SET;
     mYogaNode.setDirection(direction);
     return this;
@@ -377,30 +383,40 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode wrap(YogaWrap wrap) {
+    checkIfMutable();
+
     mYogaNode.setWrap(wrap);
     return this;
   }
 
   @Override
   public InternalNode justifyContent(YogaJustify justifyContent) {
+    checkIfMutable();
+
     mYogaNode.setJustifyContent(justifyContent);
     return this;
   }
 
   @Override
   public InternalNode alignItems(YogaAlign alignItems) {
+    checkIfMutable();
+
     mYogaNode.setAlignItems(alignItems);
     return this;
   }
 
   @Override
   public InternalNode alignContent(YogaAlign alignContent) {
+    checkIfMutable();
+
     mYogaNode.setAlignContent(alignContent);
     return this;
   }
 
   @Override
   public InternalNode alignSelf(YogaAlign alignSelf) {
+    checkIfMutable();
+
     mPrivateFlags |= PFLAG_ALIGN_SELF_IS_SET;
     mYogaNode.setAlignSelf(alignSelf);
     return this;
@@ -408,6 +424,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode positionType(YogaPositionType positionType) {
+	  checkIfMutable();
+
     mPrivateFlags |= PFLAG_POSITION_TYPE_IS_SET;
     mYogaNode.setPositionType(positionType);
     return this;
@@ -415,6 +433,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode flex(float flex) {
+    checkIfMutable();
+
     mPrivateFlags |= PFLAG_FLEX_IS_SET;
     mYogaNode.setFlex(flex);
     return this;
@@ -422,6 +442,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode flexGrow(float flexGrow) {
+    checkIfMutable();
+
     mPrivateFlags |= PFLAG_FLEX_GROW_IS_SET;
     mYogaNode.setFlexGrow(flexGrow);
     return this;
@@ -429,6 +451,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode flexShrink(float flexShrink) {
+    checkIfMutable();
+
     mPrivateFlags |= PFLAG_FLEX_SHRINK_IS_SET;
     mYogaNode.setFlexShrink(flexShrink);
     return this;
@@ -436,6 +460,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode flexBasisPx(@Px int flexBasis) {
+    checkIfMutable();
+
     mPrivateFlags |= PFLAG_FLEX_BASIS_IS_SET;
     mYogaNode.setFlexBasis(flexBasis);
     return this;
@@ -449,6 +475,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode flexBasisPercent(float percent) {
+    checkIfMutable();
+
     mPrivateFlags |= PFLAG_FLEX_BASIS_IS_SET;
     mYogaNode.setFlexBasisPercent(percent);
     return this;
@@ -476,6 +504,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode importantForAccessibility(int importantForAccessibility) {
+    checkIfMutable();
+
     mPrivateFlags |= PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET;
     mImportantForAccessibility = importantForAccessibility;
     return this;
@@ -483,6 +513,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode duplicateParentState(boolean duplicateParentState) {
+    checkIfMutable();
+
     mPrivateFlags |= PFLAG_DUPLICATE_PARENT_STATE_IS_SET;
     mDuplicateParentState = duplicateParentState;
     return this;
@@ -490,6 +522,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode marginPx(YogaEdge edge, @Px int margin) {
+    checkIfMutable();
+
     mPrivateFlags |= PFLAG_MARGIN_IS_SET;
     mYogaNode.setMargin(edge, margin);
     return this;
@@ -497,6 +531,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode marginPercent(YogaEdge edge, float percent) {
+    checkIfMutable();
+
     mPrivateFlags |= PFLAG_MARGIN_IS_SET;
     mYogaNode.setMarginPercent(edge, percent);
     return this;
@@ -504,6 +540,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode marginAuto(YogaEdge edge) {
+    checkIfMutable();
+
     mPrivateFlags |= PFLAG_MARGIN_IS_SET;
     mYogaNode.setMarginAuto(edge);
     return this;
@@ -539,11 +577,14 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     if (mNestedTreePadding == null) {
       mNestedTreePadding = ComponentsPools.acquireEdges();
     }
+
     return mNestedTreePadding;
   }
 
   @Override
   public InternalNode paddingPx(YogaEdge edge, @Px int padding) {
+    checkIfMutable();
+
     mPrivateFlags |= PFLAG_PADDING_IS_SET;
 
     if (mIsNestedTreeHolder) {
@@ -558,6 +599,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode paddingPercent(YogaEdge edge, float percent) {
+    checkIfMutable();
+
     mPrivateFlags |= PFLAG_PADDING_IS_SET;
 
     if (mIsNestedTreeHolder) {
@@ -597,6 +640,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode borderWidthPx(YogaEdge edge, @Px int borderWidth) {
+    checkIfMutable();
+
     mPrivateFlags |= PFLAG_BORDER_WIDTH_IS_SET;
 
     if (mIsNestedTreeHolder) {
@@ -641,6 +686,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public Builder borderColor(@ColorInt int borderColor) {
+    checkIfMutable();
+
     mPrivateFlags |= PFLAG_BORDER_COLOR_IS_SET;
     mBorderColor = borderColor;
     return this;
@@ -648,6 +695,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode positionPx(YogaEdge edge, @Px int position) {
+    checkIfMutable();
+
     mPrivateFlags |= PFLAG_POSITION_IS_SET;
     mYogaNode.setPosition(edge, position);
     return this;
@@ -655,6 +704,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode positionPercent(YogaEdge edge, float percent) {
+    checkIfMutable();
+
     mPrivateFlags |= PFLAG_POSITION_IS_SET;
     mYogaNode.setPositionPercent(edge, percent);
     return this;
@@ -687,6 +738,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode widthPx(@Px int width) {
+    checkIfMutable();
+
     mPrivateFlags |= PFLAG_WIDTH_IS_SET;
     mYogaNode.setWidth(width);
     return this;
@@ -700,6 +753,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode widthPercent(float percent) {
+    checkIfMutable();
+
     mPrivateFlags |= PFLAG_WIDTH_IS_SET;
     mYogaNode.setWidthPercent(percent);
     return this;
@@ -727,6 +782,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode minWidthPx(@Px int minWidth) {
+    checkIfMutable();
+
     mPrivateFlags |= PFLAG_MIN_WIDTH_IS_SET;
     mYogaNode.setMinWidth(minWidth);
     return this;
@@ -734,6 +791,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode minWidthPercent(float percent) {
+    checkIfMutable();
+
     mPrivateFlags |= PFLAG_MIN_WIDTH_IS_SET;
     mYogaNode.setMinWidthPercent(percent);
     return this;
@@ -761,6 +820,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode maxWidthPx(@Px int maxWidth) {
+    checkIfMutable();
+
     mPrivateFlags |= PFLAG_MAX_WIDTH_IS_SET;
     mYogaNode.setMaxWidth(maxWidth);
     return this;
@@ -768,6 +829,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode maxWidthPercent(float percent) {
+    checkIfMutable();
+
     mPrivateFlags |= PFLAG_MAX_WIDTH_IS_SET;
     mYogaNode.setMaxWidthPercent(percent);
     return this;
@@ -795,6 +858,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode heightPx(@Px int height) {
+    checkIfMutable();
+
     mPrivateFlags |= PFLAG_HEIGHT_IS_SET;
     mYogaNode.setHeight(height);
     return this;
@@ -808,6 +873,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode heightPercent(float percent) {
+    checkIfMutable();
+
     mPrivateFlags |= PFLAG_HEIGHT_IS_SET;
     mYogaNode.setHeightPercent(percent);
     return this;
@@ -835,6 +902,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode minHeightPx(@Px int minHeight) {
+    checkIfMutable();
+
     mPrivateFlags |= PFLAG_MIN_HEIGHT_IS_SET;
     mYogaNode.setMinHeight(minHeight);
     return this;
@@ -842,6 +911,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode minHeightPercent(float percent) {
+    checkIfMutable();
+
     mPrivateFlags |= PFLAG_MIN_HEIGHT_IS_SET;
     mYogaNode.setMinHeightPercent(percent);
     return this;
@@ -869,6 +940,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode maxHeightPx(@Px int maxHeight) {
+    checkIfMutable();
+
     mPrivateFlags |= PFLAG_MAX_HEIGHT_IS_SET;
     mYogaNode.setMaxHeight(maxHeight);
     return this;
@@ -876,6 +949,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode maxHeightPercent(float percent) {
+    checkIfMutable();
+
     mPrivateFlags |= PFLAG_MAX_HEIGHT_IS_SET;
     mYogaNode.setMaxHeightPercent(percent);
     return this;
@@ -903,6 +978,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode aspectRatio(float aspectRatio) {
+    checkIfMutable();
+
     mPrivateFlags |= PFLAG_ASPECT_RATIO_IS_SET;
     mYogaNode.setAspectRatio(aspectRatio);
     return this;
@@ -962,6 +1039,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode touchExpansionPx(YogaEdge edge, @Px int touchExpansion) {
+    checkIfMutable();
+
     if (mTouchExpansion == null) {
       mTouchExpansion = ComponentsPools.acquireEdges();
     }
@@ -1003,6 +1082,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode child(ComponentLayout child) {
+    checkIfMutable();
+
     if (child != null && child != NULL_LAYOUT) {
       addChildAt((InternalNode) child, mYogaNode.getChildCount());
     }
@@ -1011,6 +1092,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode child(ComponentLayout.Builder child) {
+    checkIfMutable();
+
     if (child != null && child != NULL_LAYOUT) {
       child(child.build());
     }
@@ -1019,6 +1102,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode child(Component<?> child) {
+    checkIfMutable();
+
     if (child != null) {
       child(Layout.create(mComponentContext, child));
     }
@@ -1027,6 +1112,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode child(Component.Builder<?> child) {
+    checkIfMutable();
+
     if (child != null) {
       child(child.build());
     }
@@ -1035,6 +1122,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode background(Reference<? extends Drawable> background) {
+    checkIfMutable();
+
     mPrivateFlags |= PFLAG_BACKGROUND_IS_SET;
     mBackground = background;
     setPaddingFromDrawableReference(background);
@@ -1063,6 +1152,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode backgroundRes(@DrawableRes int resId) {
+    checkIfMutable();
+
     if (resId == 0) {
       return background((Drawable) null);
     }
@@ -1077,6 +1168,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode foreground(Drawable foreground) {
+    checkIfMutable();
+
     mPrivateFlags |= PFLAG_FOREGROUND_IS_SET;
     mForeground = foreground;
     return this;
@@ -1094,6 +1187,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode foregroundRes(@DrawableRes int resId) {
+    checkIfMutable();
+
     if (resId == 0) {
       return foreground(null);
     }
@@ -1108,6 +1203,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode wrapInView() {
+    checkIfMutable();
+
     mForceViewWrapping = true;
     return this;
   }
@@ -1118,30 +1215,40 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode clickHandler(EventHandler clickHandler) {
+    checkIfMutable();
+
     getOrCreateNodeInfo().setClickHandler(clickHandler);
     return this;
   }
 
   @Override
   public InternalNode longClickHandler(EventHandler longClickHandler) {
+    checkIfMutable();
+
     getOrCreateNodeInfo().setLongClickHandler(longClickHandler);
     return this;
   }
 
   @Override
   public InternalNode touchHandler(EventHandler touchHandler) {
+    checkIfMutable();
+
     getOrCreateNodeInfo().setTouchHandler(touchHandler);
     return this;
   }
 
   @Override
   public ContainerBuilder focusable(boolean isFocusable) {
+    checkIfMutable();
+
     getOrCreateNodeInfo().setFocusable(isFocusable);
     return this;
   }
 
   @Override
   public InternalNode visibleHandler(EventHandler visibleHandler) {
+    checkIfMutable();
+
     mPrivateFlags |= PFLAG_VISIBLE_HANDLER_IS_SET;
     mVisibleHandler = visibleHandler;
     return this;
@@ -1153,6 +1260,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode focusedHandler(EventHandler focusedHandler) {
+    checkIfMutable();
+
     mPrivateFlags |= PFLAG_FOCUSED_HANDLER_IS_SET;
     mFocusedHandler = focusedHandler;
     return this;
@@ -1164,6 +1273,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode unfocusedHandler(EventHandler unfocusedHandler) {
+    checkIfMutable();
+
     mPrivateFlags |= PFLAG_UNFOCUSED_HANDLER_IS_SET;
     mUnfocusedHandler = unfocusedHandler;
     return this;
@@ -1175,6 +1286,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode fullImpressionHandler(EventHandler fullImpressionHandler) {
+    checkIfMutable();
+
     mPrivateFlags |= PFLAG_FULL_IMPRESSION_HANDLER_IS_SET;
     mFullImpressionHandler = fullImpressionHandler;
     return this;
@@ -1186,6 +1299,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode invisibleHandler(EventHandler invisibleHandler) {
+    checkIfMutable();
+
     mPrivateFlags |= PFLAG_INVISIBLE_HANDLER_IS_SET;
     mInvisibleHandler = invisibleHandler;
     return this;
@@ -1197,6 +1312,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode contentDescription(CharSequence contentDescription) {
+    checkIfMutable();
+
     getOrCreateNodeInfo().setContentDescription(contentDescription);
     return this;
   }
@@ -1213,6 +1330,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode viewTag(Object viewTag) {
+    checkIfMutable();
+
     getOrCreateNodeInfo().setViewTag(viewTag);
     return this;
   }
@@ -1225,6 +1344,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode testKey(String testKey) {
+    checkIfMutable();
+
     mTestKey = testKey;
     return this;
   }
@@ -1233,6 +1354,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   public InternalNode dispatchPopulateAccessibilityEventHandler(
       EventHandler<DispatchPopulateAccessibilityEventEvent>
           dispatchPopulateAccessibilityEventHandler) {
+    checkIfMutable();
+
     getOrCreateNodeInfo().setDispatchPopulateAccessibilityEventHandler(
         dispatchPopulateAccessibilityEventHandler);
     return this;
@@ -1241,6 +1364,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Override
   public InternalNode onInitializeAccessibilityEventHandler(
       EventHandler<OnInitializeAccessibilityEventEvent> onInitializeAccessibilityEventHandler) {
+    checkIfMutable();
+
     getOrCreateNodeInfo().setOnInitializeAccessibilityEventHandler(
         onInitializeAccessibilityEventHandler);
     return this;
@@ -1250,6 +1375,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   public InternalNode onInitializeAccessibilityNodeInfoHandler(
       EventHandler<OnInitializeAccessibilityNodeInfoEvent>
           onInitializeAccessibilityNodeInfoHandler) {
+    checkIfMutable();
+
     getOrCreateNodeInfo().setOnInitializeAccessibilityNodeInfoHandler(
         onInitializeAccessibilityNodeInfoHandler);
     return this;
@@ -1258,6 +1385,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Override
   public InternalNode onPopulateAccessibilityEventHandler(
       EventHandler<OnPopulateAccessibilityEventEvent> onPopulateAccessibilityEventHandler) {
+    checkIfMutable();
+
     getOrCreateNodeInfo().setOnPopulateAccessibilityEventHandler(
         onPopulateAccessibilityEventHandler);
     return this;
@@ -1266,6 +1395,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Override
   public InternalNode onRequestSendAccessibilityEventHandler(
       EventHandler<OnRequestSendAccessibilityEventEvent> onRequestSendAccessibilityEventHandler) {
+    checkIfMutable();
+
     getOrCreateNodeInfo().setOnRequestSendAccessibilityEventHandler(
         onRequestSendAccessibilityEventHandler);
     return this;
@@ -1274,6 +1405,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Override
   public InternalNode performAccessibilityActionHandler(
       EventHandler<PerformAccessibilityActionEvent> performAccessibilityActionHandler) {
+    checkIfMutable();
+
     getOrCreateNodeInfo().setPerformAccessibilityActionHandler(performAccessibilityActionHandler);
     return this;
   }
@@ -1281,6 +1414,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Override
   public InternalNode sendAccessibilityEventHandler(
       EventHandler<SendAccessibilityEventEvent> sendAccessibilityEventHandler) {
+    checkIfMutable();
+
     getOrCreateNodeInfo().setSendAccessibilityEventHandler(sendAccessibilityEventHandler);
     return this;
   }
@@ -1288,6 +1423,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Override
   public InternalNode sendAccessibilityEventUncheckedHandler(
       EventHandler<SendAccessibilityEventUncheckedEvent> sendAccessibilityEventUncheckedHandler) {
+    checkIfMutable();
+
     getOrCreateNodeInfo().setSendAccessibilityEventUncheckedHandler(
         sendAccessibilityEventUncheckedHandler);
     return this;
@@ -1416,8 +1553,17 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return (InternalNode) mYogaNode.removeChildAt(index).getData();
   }
 
+  private void checkIfMutable() {
+    if (mIsMutable) {
+      throw new UnsupportedOperationException("Attempt to mutate object after creation.");
+    }
+  }
+
   @Override
   public ComponentLayout build() {
+    checkIfMutable();
+
+    mIsMutable = true;
     return this;
   }
 
