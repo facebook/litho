@@ -18,7 +18,7 @@ import static com.facebook.litho.EventDispatcherUtils.dispatchOnLongClick;
  */
 class ComponentLongClickListener implements View.OnLongClickListener {
 
-  private EventHandler mEventHandler;
+  private EventHandler<LongClickEvent> mEventHandler;
 
   @Override
   public boolean onLongClick(View view) {
@@ -29,11 +29,11 @@ class ComponentLongClickListener implements View.OnLongClickListener {
     return false;
   }
 
-  EventHandler getEventHandler() {
+  EventHandler<LongClickEvent> getEventHandler() {
     return mEventHandler;
   }
 
-  void setEventHandler(EventHandler eventHandler) {
+  void setEventHandler(EventHandler<LongClickEvent> eventHandler) {
     mEventHandler = eventHandler;
   }
 }

@@ -18,13 +18,13 @@ import static com.facebook.litho.EventDispatcherUtils.dispatchOnTouch;
  * Touch listener that triggers its underlying event handler.
  */
 class ComponentTouchListener implements View.OnTouchListener {
-  private EventHandler mEventHandler;
+  private EventHandler<TouchEvent> mEventHandler;
 
-  EventHandler getEventHandler() {
+  EventHandler<TouchEvent> getEventHandler() {
     return mEventHandler;
   }
 
-  void setEventHandler(EventHandler eventHandler) {
+  void setEventHandler(EventHandler<TouchEvent> eventHandler) {
     mEventHandler = eventHandler;
   }
 

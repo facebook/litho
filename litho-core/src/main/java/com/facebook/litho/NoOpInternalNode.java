@@ -616,37 +616,38 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
-  public InternalNode clickHandler(EventHandler clickHandler) {
+  public InternalNode clickHandler(EventHandler<ClickEvent> clickHandler) {
     return this;
   }
 
   @Override
-  public InternalNode touchHandler(EventHandler touchHandler) {
+  public InternalNode touchHandler(EventHandler<TouchEvent> touchHandler) {
     return this;
   }
 
   @Override
-  public InternalNode visibleHandler(EventHandler visibleHandler) {
+  public InternalNode visibleHandler(EventHandler<VisibleEvent> visibleHandler) {
     return this;
   }
 
   @Override
-  public InternalNode focusedHandler(EventHandler focusedHandler) {
+  public InternalNode focusedHandler(EventHandler<FocusedVisibleEvent> focusedHandler) {
     return this;
   }
 
   @Override
-  public InternalNode fullImpressionHandler(EventHandler fullImpressionHandler) {
+  public InternalNode fullImpressionHandler(
+      EventHandler<FullImpressionVisibleEvent> fullImpressionHandler) {
     return this;
   }
 
   @Override
-  public InternalNode invisibleHandler(EventHandler invisibleHandler) {
+  public InternalNode invisibleHandler(EventHandler<InvisibleEvent> invisibleHandler) {
     return this;
   }
 
   @Override
-  public InternalNode unfocusedHandler(EventHandler unfocusedHandler) {
+  public InternalNode unfocusedHandler(EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
     return this;
   }
 

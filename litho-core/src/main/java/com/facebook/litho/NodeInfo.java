@@ -68,9 +68,9 @@ class NodeInfo {
   private CharSequence mContentDescription;
   private Object mViewTag;
   private SparseArray<Object> mViewTags;
-  private EventHandler mClickHandler;
-  private EventHandler mLongClickHandler;
-  private EventHandler mTouchHandler;
+  private EventHandler<ClickEvent> mClickHandler;
+  private EventHandler<LongClickEvent> mLongClickHandler;
+  private EventHandler<TouchEvent> mTouchHandler;
   private EventHandler<DispatchPopulateAccessibilityEventEvent>
       mDispatchPopulateAccessibilityEventHandler;
   private EventHandler<OnInitializeAccessibilityEventEvent>
@@ -115,12 +115,12 @@ class NodeInfo {
     return mViewTags;
   }
 
-  void setClickHandler(EventHandler clickHandler) {
+  void setClickHandler(EventHandler<ClickEvent> clickHandler) {
     mPrivateFlags |= PFLAG_CLICK_HANDLER_IS_SET;
     mClickHandler = clickHandler;
   }
 
-  EventHandler getClickHandler() {
+  EventHandler<ClickEvent> getClickHandler() {
     return mClickHandler;
   }
 
@@ -128,12 +128,12 @@ class NodeInfo {
     return (mClickHandler != null);
   }
 
-  void setLongClickHandler(EventHandler longClickHandler) {
+  void setLongClickHandler(EventHandler<LongClickEvent> longClickHandler) {
     mPrivateFlags |= PFLAG_LONG_CLICK_HANDLER_IS_SET;
     mLongClickHandler = longClickHandler;
   }
 
-  EventHandler getLongClickHandler() {
+  EventHandler<LongClickEvent> getLongClickHandler() {
     mPrivateFlags |= PFLAG_TOUCH_HANDLER_IS_SET;
     return mLongClickHandler;
   }
@@ -142,11 +142,11 @@ class NodeInfo {
     return (mLongClickHandler != null);
   }
 
-  void setTouchHandler(EventHandler touchHandler) {
+  void setTouchHandler(EventHandler<TouchEvent> touchHandler) {
     mTouchHandler = touchHandler;
   }
 
-  EventHandler getTouchHandler() {
+  EventHandler<TouchEvent> getTouchHandler() {
     return mTouchHandler;
   }
 

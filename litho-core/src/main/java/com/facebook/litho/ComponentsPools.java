@@ -313,8 +313,8 @@ public class ComponentsPools {
   }
 
   static VisibilityItem acquireVisibilityItem(
-      EventHandler invisibleHandler,
-      EventHandler unfocusedHandler) {
+      EventHandler<InvisibleEvent> invisibleHandler,
+      EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
     VisibilityItem item = ComponentsConfiguration.usePooling ? sVisibilityItemPool.acquire() : null;
     if (item == null) {
       item = new VisibilityItem();

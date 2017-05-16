@@ -18,7 +18,7 @@ import static com.facebook.litho.EventDispatcherUtils.dispatchOnClick;
  */
 class ComponentClickListener implements View.OnClickListener {
 
-  private EventHandler mEventHandler;
+  private EventHandler<ClickEvent> mEventHandler;
 
   @Override
   public void onClick(View view) {
@@ -27,11 +27,11 @@ class ComponentClickListener implements View.OnClickListener {
     }
   }
 
-  EventHandler getEventHandler() {
+  EventHandler<ClickEvent> getEventHandler() {
     return mEventHandler;
   }
 
-  void setEventHandler(EventHandler eventHandler) {
+  void setEventHandler(EventHandler<ClickEvent> eventHandler) {
     mEventHandler = eventHandler;
   }
 }

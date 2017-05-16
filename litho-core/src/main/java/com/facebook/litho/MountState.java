@@ -290,11 +290,15 @@ class MountState {
     for (int j = 0, size = layoutState.getVisibilityOutputCount(); j < size; j++) {
       final VisibilityOutput visibilityOutput = layoutState.getVisibilityOutputAt(j);
 
-      final EventHandler visibleHandler = visibilityOutput.getVisibleEventHandler();
-      final EventHandler focusedHandler = visibilityOutput.getFocusedEventHandler();
-      final EventHandler unfocusedHandler = visibilityOutput.getUnfocusedEventHandler();
-      final EventHandler fullImpressionHandler = visibilityOutput.getFullImpressionEventHandler();
-      final EventHandler invisibleHandler = visibilityOutput.getInvisibleEventHandler();
+      final EventHandler<VisibleEvent> visibleHandler = visibilityOutput.getVisibleEventHandler();
+      final EventHandler<FocusedVisibleEvent> focusedHandler =
+          visibilityOutput.getFocusedEventHandler();
+      final EventHandler<UnfocusedVisibleEvent> unfocusedHandler =
+          visibilityOutput.getUnfocusedEventHandler();
+      final EventHandler<FullImpressionVisibleEvent> fullImpressionHandler =
+          visibilityOutput.getFullImpressionEventHandler();
+      final EventHandler<InvisibleEvent> invisibleHandler =
+          visibilityOutput.getInvisibleEventHandler();
       final long visibilityOutputId = visibilityOutput.getId();
       final Rect visibilityOutputBounds = visibilityOutput.getBounds();
 
@@ -442,8 +446,9 @@ class MountState {
   private void clearVisibilityItems() {
     for (int i = mVisibilityIdToItemMap.size() - 1; i >= 0; i--) {
       final VisibilityItem visibilityItem = mVisibilityIdToItemMap.valueAt(i);
-      final EventHandler invisibleHandler = visibilityItem.getInvisibleHandler();
-      final EventHandler unfocusedHandler = visibilityItem.getUnfocusedHandler();
+      final EventHandler<InvisibleEvent> invisibleHandler = visibilityItem.getInvisibleHandler();
+      final EventHandler<UnfocusedVisibleEvent> unfocusedHandler =
+          visibilityItem.getUnfocusedHandler();
 
       if (invisibleHandler != null) {
         EventDispatcherUtils.dispatchOnInvisible(invisibleHandler);
@@ -1198,7 +1203,7 @@ class MountState {
    * defined in the component's props. Unconditionally set the clickable
    * flag on the view.
    */
-  private static void setClickHandler(EventHandler clickHandler, View view) {
+  private static void setClickHandler(EventHandler<ClickEvent> clickHandler, View view) {
     if (clickHandler == null) {
       return;
     }
@@ -1244,7 +1249,8 @@ class MountState {
    * defined in the component's props. Unconditionally set the clickable
    * flag on the view.
    */
-  private static void setLongClickHandler(EventHandler longClickHandler, View view) {
+  private static void setLongClickHandler(
+      EventHandler<LongClickEvent> longClickHandler, View view) {
     if (longClickHandler != null) {
       ComponentLongClickListener listener = getComponentLongClickListener(view);
 
@@ -1288,7 +1294,7 @@ class MountState {
    * Installs the touch listeners that will dispatch the touch handler
    * defined in the component's props.
    */
-  private static void setTouchHandler(EventHandler touchHandler, View view) {
+  private static void setTouchHandler(EventHandler<TouchEvent> touchHandler, View view) {
     if (touchHandler != null) {
       ComponentTouchListener listener = getComponentTouchListener(view);
 

@@ -307,11 +307,12 @@ class LayoutState {
     final int r = l + node.getWidth();
     final int b = t + node.getHeight();
 
-    final EventHandler visibleHandler = node.getVisibleHandler();
-    final EventHandler focusedHandler = node.getFocusedHandler();
-    final EventHandler unfocusedHandler = node.getUnfocusedHandler();
-    final EventHandler fullImpressionHandler = node.getFullImpressionHandler();
-    final EventHandler invisibleHandler = node.getInvisibleHandler();
+    final EventHandler<VisibleEvent> visibleHandler = node.getVisibleHandler();
+    final EventHandler<FocusedVisibleEvent> focusedHandler = node.getFocusedHandler();
+    final EventHandler<UnfocusedVisibleEvent> unfocusedHandler = node.getUnfocusedHandler();
+    final EventHandler<FullImpressionVisibleEvent> fullImpressionHandler =
+        node.getFullImpressionHandler();
+    final EventHandler<InvisibleEvent> invisibleHandler = node.getInvisibleHandler();
     final VisibilityOutput visibilityOutput = ComponentsPools.acquireVisibilityOutput();
     final Component<?> handlerComponent;
 

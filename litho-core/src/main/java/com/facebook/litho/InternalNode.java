@@ -158,11 +158,11 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private NodeInfo mNodeInfo;
   private boolean mForceViewWrapping;
   private String mTransitionKey;
-  private EventHandler mVisibleHandler;
-  private EventHandler mFocusedHandler;
-  private EventHandler mUnfocusedHandler;
-  private EventHandler mFullImpressionHandler;
-  private EventHandler mInvisibleHandler;
+  private EventHandler<VisibleEvent> mVisibleHandler;
+  private EventHandler<FocusedVisibleEvent> mFocusedHandler;
+  private EventHandler<UnfocusedVisibleEvent> mUnfocusedHandler;
+  private EventHandler<FullImpressionVisibleEvent> mFullImpressionHandler;
+  private EventHandler<InvisibleEvent> mInvisibleHandler;
   private String mTestKey;
   private Edges mTouchExpansion;
   private Edges mNestedTreePadding;
@@ -1117,19 +1117,19 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
-  public InternalNode clickHandler(EventHandler clickHandler) {
+  public InternalNode clickHandler(EventHandler<ClickEvent> clickHandler) {
     getOrCreateNodeInfo().setClickHandler(clickHandler);
     return this;
   }
 
   @Override
-  public InternalNode longClickHandler(EventHandler longClickHandler) {
+  public InternalNode longClickHandler(EventHandler<LongClickEvent> longClickHandler) {
     getOrCreateNodeInfo().setLongClickHandler(longClickHandler);
     return this;
   }
 
   @Override
-  public InternalNode touchHandler(EventHandler touchHandler) {
+  public InternalNode touchHandler(EventHandler<TouchEvent> touchHandler) {
     getOrCreateNodeInfo().setTouchHandler(touchHandler);
     return this;
   }
@@ -1141,57 +1141,58 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
-  public InternalNode visibleHandler(EventHandler visibleHandler) {
+  public InternalNode visibleHandler(EventHandler<VisibleEvent> visibleHandler) {
     mPrivateFlags |= PFLAG_VISIBLE_HANDLER_IS_SET;
     mVisibleHandler = visibleHandler;
     return this;
   }
 
-  EventHandler getVisibleHandler() {
+  EventHandler<VisibleEvent> getVisibleHandler() {
     return mVisibleHandler;
   }
 
   @Override
-  public InternalNode focusedHandler(EventHandler focusedHandler) {
+  public InternalNode focusedHandler(EventHandler<FocusedVisibleEvent> focusedHandler) {
     mPrivateFlags |= PFLAG_FOCUSED_HANDLER_IS_SET;
     mFocusedHandler = focusedHandler;
     return this;
   }
 
-  EventHandler getFocusedHandler() {
+  EventHandler<FocusedVisibleEvent> getFocusedHandler() {
     return mFocusedHandler;
   }
 
   @Override
-  public InternalNode unfocusedHandler(EventHandler unfocusedHandler) {
+  public InternalNode unfocusedHandler(EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
     mPrivateFlags |= PFLAG_UNFOCUSED_HANDLER_IS_SET;
     mUnfocusedHandler = unfocusedHandler;
     return this;
   }
 
-  EventHandler getUnfocusedHandler() {
+  EventHandler<UnfocusedVisibleEvent> getUnfocusedHandler() {
     return mUnfocusedHandler;
   }
 
   @Override
-  public InternalNode fullImpressionHandler(EventHandler fullImpressionHandler) {
+  public InternalNode fullImpressionHandler(
+      EventHandler<FullImpressionVisibleEvent> fullImpressionHandler) {
     mPrivateFlags |= PFLAG_FULL_IMPRESSION_HANDLER_IS_SET;
     mFullImpressionHandler = fullImpressionHandler;
     return this;
   }
 
-  EventHandler getFullImpressionHandler() {
+  EventHandler<FullImpressionVisibleEvent> getFullImpressionHandler() {
     return mFullImpressionHandler;
   }
 
   @Override
-  public InternalNode invisibleHandler(EventHandler invisibleHandler) {
+  public InternalNode invisibleHandler(EventHandler<InvisibleEvent> invisibleHandler) {
     mPrivateFlags |= PFLAG_INVISIBLE_HANDLER_IS_SET;
     mInvisibleHandler = invisibleHandler;
     return this;
   }
 
-  EventHandler getInvisibleHandler() {
+  EventHandler<InvisibleEvent> getInvisibleHandler() {
     return mInvisibleHandler;
   }
 

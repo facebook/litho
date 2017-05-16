@@ -21,11 +21,11 @@ class VisibilityOutput {
   private long mId;
   private Component<?> mComponent;
   private final Rect mBounds = new Rect();
-  private EventHandler mVisibleEventHandler;
-  private EventHandler mFocusedEventHandler;
-  private EventHandler mUnfocusedEventHandler;
-  private EventHandler mFullImpressionEventHandler;
-  private EventHandler mInvisibleEventHandler;
+  private EventHandler<VisibleEvent> mVisibleEventHandler;
+  private EventHandler<FocusedVisibleEvent> mFocusedEventHandler;
+  private EventHandler<UnfocusedVisibleEvent> mUnfocusedEventHandler;
+  private EventHandler<FullImpressionVisibleEvent> mFullImpressionEventHandler;
+  private EventHandler<InvisibleEvent> mInvisibleEventHandler;
 
   long getId() {
     return mId;
@@ -55,43 +55,44 @@ class VisibilityOutput {
     mBounds.set(bounds);
   }
 
-  void setVisibleEventHandler(EventHandler visibleEventHandler) {
+  void setVisibleEventHandler(EventHandler<VisibleEvent> visibleEventHandler) {
     mVisibleEventHandler = visibleEventHandler;
   }
 
-  EventHandler getVisibleEventHandler() {
+  EventHandler<VisibleEvent> getVisibleEventHandler() {
     return mVisibleEventHandler;
   }
 
-  void setFocusedEventHandler(EventHandler focusedEventHandler) {
+  void setFocusedEventHandler(EventHandler<FocusedVisibleEvent> focusedEventHandler) {
     mFocusedEventHandler = focusedEventHandler;
   }
 
-  EventHandler getFocusedEventHandler() {
+  EventHandler<FocusedVisibleEvent> getFocusedEventHandler() {
     return mFocusedEventHandler;
   }
 
-  void setUnfocusedEventHandler(EventHandler unfocusedEventHandler) {
+  void setUnfocusedEventHandler(EventHandler<UnfocusedVisibleEvent> unfocusedEventHandler) {
     mUnfocusedEventHandler = unfocusedEventHandler;
   }
 
-  EventHandler getUnfocusedEventHandler() {
+  EventHandler<UnfocusedVisibleEvent> getUnfocusedEventHandler() {
     return mUnfocusedEventHandler;
   }
 
-  void setFullImpressionEventHandler(EventHandler visibleEventHandler) {
-    mFullImpressionEventHandler = visibleEventHandler;
+  void setFullImpressionEventHandler(
+      EventHandler<FullImpressionVisibleEvent> fullImpressionEventHandler) {
+    mFullImpressionEventHandler = fullImpressionEventHandler;
   }
 
-  EventHandler getFullImpressionEventHandler() {
+  EventHandler<FullImpressionVisibleEvent> getFullImpressionEventHandler() {
     return mFullImpressionEventHandler;
   }
 
-  void setInvisibleEventHandler(EventHandler invisibleEventHandler) {
+  void setInvisibleEventHandler(EventHandler<InvisibleEvent> invisibleEventHandler) {
     mInvisibleEventHandler = invisibleEventHandler;
   }
 
-  EventHandler getInvisibleEventHandler() {
+  EventHandler<InvisibleEvent> getInvisibleEventHandler() {
     return mInvisibleEventHandler;
   }
 
