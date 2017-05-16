@@ -1082,46 +1082,33 @@ class MountState {
     final NodeInfo nodeInfo = item.getNodeInfo();
 
     if (nodeInfo != null) {
-      // 1. Setup click handler for the component, if applicable.
       setClickHandler(nodeInfo.getClickHandler(), view);
-
-      // 2. Setup long click handler for the component, if applicable.
       setLongClickHandler(nodeInfo.getLongClickHandler(), view);
-
-      // 3. Setup click handler for the component, if applicable.
       setTouchHandler(nodeInfo.getTouchHandler(), view);
 
-      // 4. Set listeners for AccessibilityDelegate methods
       setAccessibilityDelegate(view, nodeInfo);
 
-      // 5. Setup view tags for the component, if applicable.
       setViewTag(view, nodeInfo.getViewTag());
       setViewTags(view, nodeInfo.getViewTags());
 
-      // 6. Set content description.
       setContentDescription(view, nodeInfo.getContentDescription());
 
-      // 7. Set setFocusable flag.
       setFocusable(view, nodeInfo.getFocusState());
     }
 
-    // 8. Set important for accessibility flag
     setImportantForAccessibility(view, item.getImportantForAccessibility());
 
     final ViewNodeInfo viewNodeInfo = item.getViewNodeInfo();
     if (viewNodeInfo != null && !isHostSpec(component)) {
 
-      // 9. Set view background, if applicable.  Do this before padding
+      // Set view background, if applicable.  Do this before padding
       // as it otherwise overrides the padding.
       setViewBackground(view, viewNodeInfo);
 
-      // 10. Set view padding, if applicable.
       setViewPadding(view, viewNodeInfo);
 
-      // 11. Set view foreground, if applicable.
       setViewForeground(view, viewNodeInfo);
 
-      // 12. Set view layout direction, if applicable.
       setViewLayoutDirection(view, viewNodeInfo);
     }
   }
@@ -1136,38 +1123,29 @@ class MountState {
     final NodeInfo nodeInfo = item.getNodeInfo();
 
     if (nodeInfo != null) {
-      // Reset the click handler.
       if (nodeInfo.getClickHandler() != null) {
         unsetClickHandler(view);
       }
 
-      // Reset the click handler.
       if (nodeInfo.getLongClickHandler() != null) {
         unsetLongClickHandler(view);
       }
 
-      // Reset the touch handler.
       if (nodeInfo.getTouchHandler() != null) {
         unsetTouchHandler(view);
       }
 
-      // Reset the view tags.
       unsetViewTag(view);
       unsetViewTags(view, nodeInfo.getViewTags());
 
-      // Reset content description.
       if (!TextUtils.isEmpty(nodeInfo.getContentDescription())) {
         unsetContentDescription(view);
       }
     }
 
-    // Reset isClickable flag.
     view.setClickable(MountItem.isViewClickable(item.getFlags()));
-
-    // Reset isLongClickable flag.
     view.setLongClickable(MountItem.isViewLongClickable(item.getFlags()));
 
-    // Reset setFocusable flag.
     unsetFocusable(view, item);
 
     if (item.getImportantForAccessibility() != IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
