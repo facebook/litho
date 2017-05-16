@@ -28,6 +28,7 @@ import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.TextUtils.TruncateAt;
 import android.text.style.ClickableSpan;
+import android.text.style.ImageSpan;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -665,7 +666,8 @@ class TextSpec {
       @FromMeasure Integer measuredHeight,
       Output<Layout> textLayout,
       Output<Float> textLayoutTranslationY,
-      Output<ClickableSpan[]> clickableSpans) {
+      Output<ClickableSpan[]> clickableSpans,
+      Output<ImageSpan[]> imageSpans) {
 
     if (TextUtils.isEmpty(text)) {
       return;
@@ -735,10 +737,15 @@ class TextSpec {
     }
 
     if (text instanceof Spanned) {
-      clickableSpans.set(((Spanned) text).getSpans(
+      Spanned spanned = (Spanned) text;
+      clickableSpans.set(spanned.getSpans(
           0,
           text.length() - 1,
           ClickableSpan.class));
+      imageSpans.set(spanned.getSpans(
+          0,
+          text.length() - 1,
+          ImageSpan.class));
     }
   }
 
@@ -757,7 +764,8 @@ class TextSpec {
       @Prop(optional = true) ColorStateList textColorStateList,
       @FromBoundsDefined Layout textLayout,
       @FromBoundsDefined Float textLayoutTranslationY,
-      @FromBoundsDefined ClickableSpan[] clickableSpans) {
+      @FromBoundsDefined ClickableSpan[] clickableSpans,
+      @FromBoundsDefined ImageSpan[] imageSpans) {
 
     //make sure we set default state to drawable because default dummy state set in Drawable
     //matches anything which can cause wrong text color to be selected by default
@@ -769,7 +777,8 @@ class TextSpec {
         textColorStateList,
         textColor,
         highlightColor,
-        clickableSpans);
+        clickableSpans,
+        imageSpans);
 
     if (text instanceof MountableCharSequence) {
       ((MountableCharSequence) text).onMount(textDrawable);

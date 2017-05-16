@@ -26,6 +26,7 @@ import android.graphics.drawable.Drawable;
 import android.text.Layout;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
+import android.text.style.ImageSpan;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
@@ -45,7 +46,7 @@ import static android.view.MotionEvent.ACTION_UP;
  * @see Component
  * @see TextSpec
  */
-public class TextDrawable extends Drawable implements Touchable, TextContent {
+public class TextDrawable extends Drawable implements Touchable, TextContent, Drawable.Callback {
 
   private static final float DEFAULT_TOUCH_RADIUS_IN_SP = 18f;
 
@@ -150,11 +151,11 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
       Layout layout,
       int userColor,
       ClickableSpan[] clickableSpans) {
-    mount(text, layout, 0, null, userColor, 0, clickableSpans);
+    mount(text, layout, 0, null, userColor, 0, clickableSpans, null);
   }
 
   public void mount(CharSequence text, Layout layout, int userColor, int highlightColor) {
-    mount(text, layout, 0, null, userColor, highlightColor, null);
+    mount(text, layout, 0, null, userColor, highlightColor, null, null);
   }
 
   public void mount(
@@ -165,6 +166,18 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
       int userColor,
       int highlightColor,
       ClickableSpan[] clickableSpans) {
+    mount(text, layout, 0, null, userColor, highlightColor, clickableSpans, null);
+  }
+
+  public void mount(
+      CharSequence text,
+      Layout layout,
+      float layoutTranslationY,
+      ColorStateList colorStateList,
+      int userColor,
+      int highlightColor,
+      ClickableSpan[] clickableSpans,
+      ImageSpan[] imageSpans) {
     mLayout = layout;
     mLayoutTranslationY = layoutTranslationY;
     mText = text;
@@ -179,6 +192,11 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
       mUserColor = mColorStateList.getDefaultColor();
       if (mLayout != null) {
         mLayout.getPaint().setColor(mColorStateList.getColorForState(getState(), mUserColor));
+      }
+    }
+    if (imageSpans != null) {
+      for (ImageSpan imageSpan: imageSpans) {
+        imageSpan.getDrawable().setCallback(this);
       }
     }
 
@@ -379,5 +397,20 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
     clickableSpanAreaRegion.setPath(clickableSpanAreaPath, clipBoundsRegion);
 
     return clickableSpanAreaRegion.op(touchAreaRegion, Region.Op.INTERSECT);
+  }
+
+  @Override
+  public void invalidateDrawable(Drawable drawable) {
+    invalidateSelf();
+  }
+
+  @Override
+  public void scheduleDrawable(Drawable drawable, Runnable runnable, long l) {
+    scheduleSelf(runnable, l);
+  }
+
+  @Override
+  public void unscheduleDrawable(Drawable drawable, Runnable runnable) {
+    unscheduleSelf(runnable);
   }
 }
