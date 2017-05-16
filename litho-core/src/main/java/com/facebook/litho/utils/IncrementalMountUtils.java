@@ -44,9 +44,20 @@ public class IncrementalMountUtils {
    * @param scrollingViewParent ViewGroup container of views that will be incrementally mounted.
    */
   public static void performIncrementalMount(ViewGroup scrollingViewParent) {
+    performIncrementalMount(scrollingViewParent, /* force */ false);
+  }
+
+  /**
+   * Performs incremental mount on the children views of the given ViewGroup.
+   * @param scrollingViewParent ViewGroup container of views that will be incrementally mounted.
+   * @param force whether the incremental mount should always take place, or only if
+   * {@link ComponentsConfiguration.isIncrementalMountOnOffsetOrTranslationChangeEnabled} returns
+   * false.
+   */
+  public static void performIncrementalMount(ViewGroup scrollingViewParent, boolean force) {
     assertMainThread();
 
-    if (ComponentsConfiguration.isIncrementalMountOnOffsetOrTranslationChangeEnabled) {
+    if (!force && ComponentsConfiguration.isIncrementalMountOnOffsetOrTranslationChangeEnabled) {
       return;
     }
 
