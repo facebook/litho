@@ -25,8 +25,8 @@ public class DisappearingPositionComponentProperty extends PositionComponentProp
   public static class TransitionBuilder implements Animated.AnimationBuilder {
 
     private final Animated.AbstractPointBuilder mBuilderDelegate;
-    private LazyValue mToX;
-    private LazyValue mToY;
+    private RuntimeValue mToX;
+    private RuntimeValue mToY;
 
     public TransitionBuilder(Animated.AbstractPointBuilder builderDelegate) {
       mBuilderDelegate = builderDelegate;
@@ -35,7 +35,7 @@ public class DisappearingPositionComponentProperty extends PositionComponentProp
     /**
      * Transition this property on a disappearing component to the given values.
      */
-    public TransitionBuilder from(LazyValue toX, LazyValue toY) {
+    public TransitionBuilder from(RuntimeValue toX, RuntimeValue toY) {
       mToX = toX;
       mToY = toY;
       return this;

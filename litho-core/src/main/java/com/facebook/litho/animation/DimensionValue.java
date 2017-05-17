@@ -1,4 +1,12 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/*
+ * Copyright (c) 2017-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
 
 package com.facebook.litho.animation;
 
@@ -6,30 +14,30 @@ import android.content.Context;
 import android.util.DisplayMetrics;
 
 /**
- * A {@link LazyValue} for dimension properties like x/y/width/height.
+ * A {@link RuntimeValue} for dimension properties like x/y/width/height.
  */
-public class LazyDimensionValue implements LazyValue {
+public class DimensionValue implements RuntimeValue {
 
   /**
-   * @return a LazyValue that resolves to an absolute value.
+   * @return a RuntimeValue that resolves to an absolute value.
    */
-  public static LazyDimensionValue absolute(float value) {
-    return new LazyDimensionValue(Type.ABSOLUTE, value);
+  public static DimensionValue absolute(float value) {
+    return new DimensionValue(Type.ABSOLUTE, value);
   }
 
   /**
-   * @return a LazyValue that resolves to an offset relative to the current value of some mount item
+   * @return a RuntimeValue that resolves to an offset relative to the current value of some mount item
    * property.
    */
-  public static LazyDimensionValue offsetPx(float value) {
-    return new LazyDimensionValue(Type.OFFSET, value);
+  public static DimensionValue offsetPx(float value) {
+    return new DimensionValue(Type.OFFSET, value);
   }
 
   /**
-   * @return a LazyValue that resolves to an offset relative to the current value of some mount item
+   * @return a RuntimeValue that resolves to an offset relative to the current value of some mount item
    * property.
    */
-  public static LazyDimensionValue offsetDip(Context context, int valueDp) {
+  public static DimensionValue offsetDip(Context context, int valueDp) {
     final DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
     final float valuePx = displayMetrics.density * valueDp;
     return offsetPx(valuePx);
@@ -38,15 +46,15 @@ public class LazyDimensionValue implements LazyValue {
   /**
    * Like {@link #offsetPx}, but the relative offset is based on a percentage of the mount item width.
    */
-  public static LazyDimensionValue widthPercentageOffset(float value) {
-    return new LazyDimensionValue(Type.OFFSET_WIDTH_PERCENTAGE, value);
+  public static DimensionValue widthPercentageOffset(float value) {
+    return new DimensionValue(Type.OFFSET_WIDTH_PERCENTAGE, value);
   }
 
   /**
    * Like {@link #offsetPx}, but the relative offset is based on a percentage of the mount item height
    */
-  public static LazyDimensionValue heightPercentageOffset(float value) {
-    return new LazyDimensionValue(Type.OFFSET_HEIGHT_PERCENTAGE, value);
+  public static DimensionValue heightPercentageOffset(float value) {
+    return new DimensionValue(Type.OFFSET_HEIGHT_PERCENTAGE, value);
   }
 
   private enum Type {
@@ -60,7 +68,7 @@ public class LazyDimensionValue implements LazyValue {
   private final Type mType;
   private final float mValue;
 
-  private LazyDimensionValue(Type type, float value) {
+  private DimensionValue(Type type, float value) {
     mType = type;
     mValue = value;
   }
@@ -81,7 +89,7 @@ public class LazyDimensionValue implements LazyValue {
             resolver.getCurrentState(componentProperty.getAnimatedComponent().height());
         return mValue / 100 * height + currentValue;
       default:
-        throw new RuntimeException("Missing LazyValue type: " + mType);
+        throw new RuntimeException("Missing RuntimeValue type: " + mType);
     }
   }
 }

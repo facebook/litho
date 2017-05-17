@@ -24,7 +24,7 @@ public class DisappearingFloatComponentProperty extends FloatComponentProperty {
   public static class TransitionBuilder implements Animated.AnimationBuilder {
 
     private final Animated.AbstractBuilder mBuilderDelegate;
-    private LazyFloatValue mToValue;
+    private FloatValue mToValue;
 
     public TransitionBuilder(Animated.AbstractBuilder builderDelegate) {
       mBuilderDelegate = builderDelegate;
@@ -34,7 +34,7 @@ public class DisappearingFloatComponentProperty extends FloatComponentProperty {
      * Transition this property on a disappearing component to the given absolute value.
      */
     public TransitionBuilder to(float value) {
-      mToValue = new LazyFloatValue(value);
+      mToValue = new FloatValue(value);
       return this;
     }
 

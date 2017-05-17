@@ -25,8 +25,8 @@ public class AppearingPositionComponentProperty extends PositionComponentPropert
   public static class TransitionBuilder implements Animated.AnimationBuilder {
 
     private final Animated.AbstractPointBuilder mBuilderDelegate;
-    private LazyValue mFromX;
-    private LazyValue mFromY;
+    private RuntimeValue mFromX;
+    private RuntimeValue mFromY;
 
     public TransitionBuilder(Animated.AbstractPointBuilder builderDelegate) {
       mBuilderDelegate = builderDelegate;
@@ -35,7 +35,7 @@ public class AppearingPositionComponentProperty extends PositionComponentPropert
     /**
      * Transition this property on an appearing component from the given values.
      */
-    public TransitionBuilder from(LazyValue fromX, LazyValue fromY) {
+    public TransitionBuilder from(RuntimeValue fromX, RuntimeValue fromY) {
       mFromX = fromX;
       mFromY = fromY;
       return this;

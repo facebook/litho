@@ -1,4 +1,12 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/*
+ * Copyright (c) 2017-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
 
 package com.facebook.litho.animation;
 
@@ -147,14 +155,14 @@ public class ParallelBinding implements AnimationBinding {
   }
 
   @Override
-  public void collectAppearFromValues(SimpleArrayMap<ComponentProperty, LazyValue> outMap) {
+  public void collectAppearFromValues(SimpleArrayMap<ComponentProperty, RuntimeValue> outMap) {
     for (int i = 0; i < mBindings.length; i++) {
       mBindings[i].collectAppearFromValues(outMap);
     }
   }
 
   @Override
-  public void collectDisappearToValues(SimpleArrayMap<ComponentProperty, LazyValue> outMap) {
+  public void collectDisappearToValues(SimpleArrayMap<ComponentProperty, RuntimeValue> outMap) {
     for (int i = 0; i < mBindings.length; i++) {
       mBindings[i].collectDisappearToValues(outMap);
     }

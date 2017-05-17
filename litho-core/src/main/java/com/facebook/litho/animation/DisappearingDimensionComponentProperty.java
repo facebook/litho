@@ -24,7 +24,7 @@ public class DisappearingDimensionComponentProperty extends DimensionComponentPr
   public static class TransitionBuilder implements Animated.AnimationBuilder {
 
     private final Animated.AbstractBuilder mBuilderDelegate;
-    private LazyDimensionValue mToValue;
+    private DimensionValue mToValue;
 
     public TransitionBuilder(Animated.AbstractBuilder builderDelegate) {
       mBuilderDelegate = builderDelegate;
@@ -34,7 +34,7 @@ public class DisappearingDimensionComponentProperty extends DimensionComponentPr
      * Transition this property on a disappearing component to the given absolute value.
      */
     public TransitionBuilder to(float value) {
-      mToValue = LazyDimensionValue.absolute(value);
+      mToValue = DimensionValue.absolute(value);
       return this;
     }
 
@@ -43,7 +43,7 @@ public class DisappearingDimensionComponentProperty extends DimensionComponentPr
      * item's width.
      */
     public TransitionBuilder toOffsetByWidth(float percentage) {
-      mToValue = LazyDimensionValue.widthPercentageOffset(percentage);
+      mToValue = DimensionValue.widthPercentageOffset(percentage);
       return this;
     }
 
@@ -68,7 +68,7 @@ public class DisappearingDimensionComponentProperty extends DimensionComponentPr
      * item's height.
      */
     public TransitionBuilder toOffsetByHeight(float percentage) {
-      mToValue = LazyDimensionValue.heightPercentageOffset(percentage);
+      mToValue = DimensionValue.heightPercentageOffset(percentage);
       return this;
     }
 

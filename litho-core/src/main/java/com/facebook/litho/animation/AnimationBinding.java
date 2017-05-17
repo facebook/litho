@@ -53,7 +53,7 @@ public interface AnimationBinding extends AnimationForVarArgs {
    * Note: This is a 'collect' call instead of a getter to allocating more maps then necessary for
    * animations with nested animation (e.g. a sequence of animations). Yay Java.
    */
-   void collectAppearFromValues(SimpleArrayMap<ComponentProperty, LazyValue> outMap);
+   void collectAppearFromValues(SimpleArrayMap<ComponentProperty, RuntimeValue> outMap);
 
   /**
    * Collects a mapping from {@link ComponentProperty} to its end value. This is used to set up
@@ -62,7 +62,7 @@ public interface AnimationBinding extends AnimationForVarArgs {
    * Note: This is a 'collect' call instead of a getter to allocating more maps then necessary for
    * animations with nested animation (e.g. a sequence of animations).
    */
-  void collectDisappearToValues(SimpleArrayMap<ComponentProperty, LazyValue> outMap);
+  void collectDisappearToValues(SimpleArrayMap<ComponentProperty, RuntimeValue> outMap);
 
   /**
    * Adds a {@link AnimationBindingListener}.

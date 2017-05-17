@@ -23,10 +23,10 @@ import android.view.ViewParent;
 import com.facebook.litho.animation.AnimatedPropertyNode;
 import com.facebook.litho.animation.AnimationBinding;
 import com.facebook.litho.animation.AnimationBindingListener;
-import com.facebook.litho.animation.LazyValue;
 import com.facebook.litho.animation.AnimatedProperty;
 import com.facebook.litho.animation.Resolver;
 import com.facebook.litho.animation.ComponentProperty;
+import com.facebook.litho.animation.RuntimeValue;
 import com.facebook.litho.internal.ArraySet;
 
 /**
@@ -224,7 +224,7 @@ public class DataFlowTransitionManager {
   }
 
   private void setAppearFromValues() {
-    SimpleArrayMap<ComponentProperty, LazyValue> appearFromValues = new SimpleArrayMap<>();
+    SimpleArrayMap<ComponentProperty, RuntimeValue> appearFromValues = new SimpleArrayMap<>();
     for (int i = 0, size = mAnimationBindings.size(); i < size; i++) {
       final AnimationBinding binding = mAnimationBindings.get(i);
       binding.collectAppearFromValues(appearFromValues);
@@ -232,9 +232,9 @@ public class DataFlowTransitionManager {
 
     for (int i = 0, size = appearFromValues.size(); i < size; i++) {
       final ComponentProperty property = appearFromValues.keyAt(i);
-      final LazyValue lazyValue = appearFromValues.valueAt(i);
+      final RuntimeValue runtimeValue = appearFromValues.valueAt(i);
       final AnimationState animationState = mAnimationStates.get(property.getTransitionKey());
-      final float value = lazyValue.resolve(mResolver, property);
+      final float value = runtimeValue.resolve(mResolver, property);
       property.getProperty().set(animationState.mountItem, value);
 
       if (animationState.changeType != KeyStatus.APPEARED) {
@@ -247,7 +247,7 @@ public class DataFlowTransitionManager {
   }
 
   private void setDisappearToValues() {
-    SimpleArrayMap<ComponentProperty, LazyValue> disappearToValues = new SimpleArrayMap<>();
+    SimpleArrayMap<ComponentProperty, RuntimeValue> disappearToValues = new SimpleArrayMap<>();
     for (int i = 0, size = mAnimationBindings.size(); i < size; i++) {
       final AnimationBinding binding = mAnimationBindings.get(i);
       binding.collectDisappearToValues(disappearToValues);
@@ -255,14 +255,14 @@ public class DataFlowTransitionManager {
 
     for (int i = 0, size = disappearToValues.size(); i < size; i++) {
       final ComponentProperty property = disappearToValues.keyAt(i);
-      final LazyValue lazyValue = disappearToValues.valueAt(i);
+      final RuntimeValue runtimeValue = disappearToValues.valueAt(i);
       final AnimationState animationState = mAnimationStates.get(property.getTransitionKey());
       if (animationState.changeType != KeyStatus.DISAPPEARED) {
         throw new RuntimeException(
             "Wrong transition type for disappear of key " + property.getTransitionKey() + ": " +
                 keyStatusToString(animationState.changeType));
       }
-      final float value = lazyValue.resolve(mResolver, property);
+      final float value = runtimeValue.resolve(mResolver, property);
       animationState.currentDiff.afterValues.put(property.getProperty(), value);
     }
   }

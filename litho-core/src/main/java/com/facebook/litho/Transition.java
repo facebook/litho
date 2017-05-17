@@ -17,9 +17,9 @@ import com.facebook.litho.animation.AppearingComponent;
 import com.facebook.litho.animation.ChangingComponent;
 import com.facebook.litho.animation.ComponentProperty;
 import com.facebook.litho.animation.DisappearingComponent;
-import com.facebook.litho.animation.LazyDimensionValue;
-import com.facebook.litho.animation.LazyFloatValue;
-import com.facebook.litho.animation.LazyValue;
+import com.facebook.litho.animation.DimensionValue;
+import com.facebook.litho.animation.FloatValue;
+import com.facebook.litho.animation.RuntimeValue;
 import com.facebook.litho.animation.SpringTransition;
 import com.facebook.litho.animation.TransitionAnimationBinding;
 
@@ -62,15 +62,15 @@ public class Transition {
   private final String mTransitionKey;
   private final AnimatedProperty mAnimatedProperty;
   private final TransitionAnimator mTransitionAnimator;
-  private final LazyValue mAppearFrom;
-  private final LazyValue mDisappearTo;
+  private final RuntimeValue mAppearFrom;
+  private final RuntimeValue mDisappearTo;
 
   public Transition(
       String transitionKey,
       AnimatedProperty animatedProperty,
       TransitionAnimator transitionAnimator,
-      LazyValue appearFrom,
-      LazyValue disappearTo) {
+      RuntimeValue appearFrom,
+      RuntimeValue disappearTo) {
     mTransitionKey = transitionKey;
     mAnimatedProperty = animatedProperty;
     mTransitionAnimator = transitionAnimator;
@@ -141,8 +141,8 @@ public class Transition {
 
     private AnimatedProperty mAnimatedProperty;
     private TransitionAnimator mTransitionAnimator = DEFAULT_ANIMATOR;
-    private LazyValue mAppearFrom;
-    private LazyValue mDisappearTo;
+    private RuntimeValue mAppearFrom;
+    private RuntimeValue mDisappearTo;
 
     Builder(String key) {
       mKey = key;
@@ -166,10 +166,10 @@ public class Transition {
     /**
      * Define where appear animations should start from.
      *
-     * @see LazyFloatValue
-     * @see LazyDimensionValue
+     * @see FloatValue
+     * @see DimensionValue
      */
-    public Builder appearFrom(LazyValue value) {
+    public Builder appearFrom(RuntimeValue value) {
       mAppearFrom = value;
       return this;
     }
@@ -177,10 +177,10 @@ public class Transition {
     /**
      * Define where disappear animations should end at.
      *
-     * @see LazyFloatValue
-     * @see LazyDimensionValue
+     * @see FloatValue
+     * @see DimensionValue
      */
-    public Builder disappearTo(LazyValue value) {
+    public Builder disappearTo(RuntimeValue value) {
       mDisappearTo = value;
       return this;
     }
@@ -189,7 +189,7 @@ public class Transition {
      * Define a constant value where appear animations should start from.
      */
     public Builder appearFrom(float value) {
-      mAppearFrom = new LazyFloatValue(value);
+      mAppearFrom = new FloatValue(value);
       return this;
     }
 
@@ -197,7 +197,7 @@ public class Transition {
      * Define a constant value where disappear animations should end at.
      */
     public Builder disappearTo(float value) {
-      mDisappearTo = new LazyFloatValue(value);
+      mDisappearTo = new FloatValue(value);
       return this;
     }
 

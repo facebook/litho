@@ -24,7 +24,7 @@ public class AppearingDimensionComponentProperty extends DimensionComponentPrope
   public static class TransitionBuilder implements Animated.AnimationBuilder {
 
     private final Animated.AbstractBuilder mBuilderDelegate;
-    private LazyDimensionValue mFromValue;
+    private DimensionValue mFromValue;
 
     public TransitionBuilder(Animated.AbstractBuilder builderDelegate) {
       mBuilderDelegate = builderDelegate;
@@ -34,7 +34,7 @@ public class AppearingDimensionComponentProperty extends DimensionComponentPrope
      * Transition this property on an appearing component from the given absolute value.
      */
     public TransitionBuilder from(float value) {
-      mFromValue = LazyDimensionValue.absolute(value);
+      mFromValue = DimensionValue.absolute(value);
       return this;
     }
 
@@ -43,7 +43,7 @@ public class AppearingDimensionComponentProperty extends DimensionComponentPrope
      * item's width.
      */
     public TransitionBuilder fromOffsetByWidth(float percentage) {
-      mFromValue = LazyDimensionValue.widthPercentageOffset(percentage);
+      mFromValue = DimensionValue.widthPercentageOffset(percentage);
       return this;
     }
 
@@ -68,7 +68,7 @@ public class AppearingDimensionComponentProperty extends DimensionComponentPrope
      * item's height.
      */
     public TransitionBuilder fromOffsetByHeight(float percentage) {
-      mFromValue = LazyDimensionValue.heightPercentageOffset(percentage);
+      mFromValue = DimensionValue.heightPercentageOffset(percentage);
       return this;
     }
 

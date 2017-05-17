@@ -124,7 +124,7 @@ public final class Animated {
       return new DisappearingFloatComponentProperty.TransitionBuilder(this);
     }
 
-    final TransitionAnimationBinding buildForAppear(LazyValue fromValue) {
+    final TransitionAnimationBinding buildForAppear(RuntimeValue fromValue) {
       final TransitionAnimationBinding transition = buildTransition(mProperty);
       transition.addAppearFromValue(mProperty, fromValue);
       return transition;
@@ -134,7 +134,7 @@ public final class Animated {
       return buildTransition(mProperty);
     }
 
-    final TransitionAnimationBinding buildForDisappear(LazyValue toValue) {
+    final TransitionAnimationBinding buildForDisappear(RuntimeValue toValue) {
       final TransitionAnimationBinding transition = buildTransition(mProperty);
       transition.addDisappearToValue(mProperty, toValue);
       return transition;
@@ -164,7 +164,7 @@ public final class Animated {
       return new DisappearingPositionComponentProperty.TransitionBuilder(this);
     }
 
-    final TransitionAnimationBinding buildForAppear(LazyValue fromX, LazyValue fromY) {
+    final TransitionAnimationBinding buildForAppear(RuntimeValue fromX, RuntimeValue fromY) {
       final TransitionAnimationBinding transition = buildTransition(mProperty);
       transition.addAppearFromValue(mProperty.getXProperty(), fromX);
       transition.addAppearFromValue(mProperty.getYProperty(), fromY);
@@ -175,7 +175,7 @@ public final class Animated {
       return buildTransition(mProperty);
     }
 
-    final TransitionAnimationBinding buildForDisappear(LazyValue toX, LazyValue toY) {
+    final TransitionAnimationBinding buildForDisappear(RuntimeValue toX, RuntimeValue toY) {
       final TransitionAnimationBinding transition = buildTransition(mProperty);
       transition.addDisappearToValue(mProperty.getXProperty(), toX);
       transition.addDisappearToValue(mProperty.getYProperty(), toY);

@@ -1,4 +1,12 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/*
+ * Copyright (c) 2017-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
 
 package com.facebook.litho.animation;
 
@@ -21,9 +29,9 @@ public abstract class TransitionAnimationBinding implements AnimationBinding {
   private final GraphBinding mGraphBinding;
   private final CopyOnWriteArrayList<AnimationBindingListener> mListeners =
       new CopyOnWriteArrayList<>();
-  private final SimpleArrayMap<ComponentProperty, LazyValue> mAppearFromValues =
+  private final SimpleArrayMap<ComponentProperty, RuntimeValue> mAppearFromValues =
       new SimpleArrayMap<>();
-  private final SimpleArrayMap<ComponentProperty, LazyValue> mDisappearToValues =
+  private final SimpleArrayMap<ComponentProperty, RuntimeValue> mDisappearToValues =
       new SimpleArrayMap<>();
 
   public TransitionAnimationBinding() {
@@ -57,17 +65,17 @@ public abstract class TransitionAnimationBinding implements AnimationBinding {
 
   /**
    * For appear animations, sets the value that the property should have before the animation
-   * starts. See {@link LazyValue} for more info.
+   * starts. See {@link RuntimeValue} for more info.
    */
-  public void addAppearFromValue(ComponentProperty property, LazyValue value) {
+  public void addAppearFromValue(ComponentProperty property, RuntimeValue value) {
     mAppearFromValues.put(property, value);
   }
 
   /**
    * For disappear animations, sets the value that the property should end at by the time the
-   * animation ends and before the item is unmounted. See {@link LazyValue} for more info.
+   * animation ends and before the item is unmounted. See {@link RuntimeValue} for more info.
    */
-  public void addDisappearToValue(ComponentProperty property, LazyValue value) {
+  public void addDisappearToValue(ComponentProperty property, RuntimeValue value) {
     mDisappearToValues.put(property, value);
   }
 
@@ -101,12 +109,12 @@ public abstract class TransitionAnimationBinding implements AnimationBinding {
   }
 
   @Override
-  public void collectAppearFromValues(SimpleArrayMap<ComponentProperty, LazyValue> outMap) {
+  public void collectAppearFromValues(SimpleArrayMap<ComponentProperty, RuntimeValue> outMap) {
     outMap.putAll(mAppearFromValues);
   }
 
   @Override
-  public void collectDisappearToValues(SimpleArrayMap<ComponentProperty, LazyValue> outMap) {
+  public void collectDisappearToValues(SimpleArrayMap<ComponentProperty, RuntimeValue> outMap) {
     outMap.putAll(mDisappearToValues);
   }
 
