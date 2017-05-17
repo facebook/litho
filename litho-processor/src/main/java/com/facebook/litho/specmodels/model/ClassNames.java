@@ -47,8 +47,8 @@ public interface ClassNames {
   ClassName DIFF = ClassName.bestGuess("com.facebook.litho.Diff");
   ClassName SIZE = ClassName.bestGuess("com.facebook.litho.Size");
 
-  ClassName AUTO_TRANSITION_SET =
-      ClassName.bestGuess("com.facebook.litho.AutoTransitionSet");
+  ClassName TRANSITION_SET =
+      ClassName.bestGuess("com.facebook.litho.TransitionSet");
 
   ClassName COMPONENTS_CONFIGURATION =
       ClassName.bestGuess("com.facebook.litho.config.ComponentsConfiguration");

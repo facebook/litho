@@ -13,16 +13,16 @@ import java.util.ArrayList;
 import com.facebook.litho.internal.ArraySet;
 
 /**
- * A set of {@link AutoTransition}s.
+ * A set of {@link Transition}s.
  */
-public class AutoTransitionSet {
+public class TransitionSet {
 
-  private final ArrayList<AutoTransition> mAutoTransitions = new ArrayList<>();
+  private final ArrayList<Transition> mTransitions = new ArrayList<>();
   private final ArraySet<String> mKeysWithDisappearAnimations = new ArraySet<>();
 
-  AutoTransitionSet(AutoTransition.Builder... transitionBuilders) {
+  TransitionSet(Transition.Builder... transitionBuilders) {
     for (int i = 0; i < transitionBuilders.length; i++) {
-      mAutoTransitions.addAll(transitionBuilders[i].getTransitions());
+      mTransitions.addAll(transitionBuilders[i].getTransitions());
     }
   }
 
@@ -30,17 +30,17 @@ public class AutoTransitionSet {
     return mKeysWithDisappearAnimations.contains(key);
   }
 
-  ArrayList<AutoTransition> getAutoTransitions() {
-    return mAutoTransitions;
+  ArrayList<Transition> getTransitions() {
+    return mTransitions;
   }
 
-  void mergeIn(AutoTransitionSet set) {
-    mAutoTransitions.addAll(set.mAutoTransitions);
+  void mergeIn(TransitionSet set) {
+    mTransitions.addAll(set.mTransitions);
     mKeysWithDisappearAnimations.addAll(set.mKeysWithDisappearAnimations);
   }
 
   void clear() {
-    mAutoTransitions.clear();
+    mTransitions.clear();
     mKeysWithDisappearAnimations.clear();
   }
 }

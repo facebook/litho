@@ -17,5 +17,5 @@ import java.lang.annotation.RetentionPolicy;
  * and props.
  */
 @Retention(RetentionPolicy.SOURCE)
-public @interface OnCreateAutoTransition {
+public @interface OnCreateTransition {
 }

@@ -588,10 +588,10 @@ public abstract class ComponentLifecycle implements EventDispatcher {
   }
 
   /**
-   * @return a {@link AutoTransitionSet} specifying how to animate this component to its new layout
+   * @return a {@link TransitionSet} specifying how to animate this component to its new layout
    * and props.
    */
-  protected AutoTransitionSet onCreateAutoTransition(
+  protected TransitionSet onCreateTransition(
       ComponentContext c,
       Component<?> component) {
     return null;

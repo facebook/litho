@@ -36,7 +36,6 @@ import android.view.Window;
 import android.view.accessibility.AccessibilityManager;
 
 import com.facebook.infer.annotation.ThreadConfined;
-import com.facebook.litho.animation.AnimationBinding;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.displaylist.DisplayList;
 import com.facebook.litho.displaylist.DisplayListException;
@@ -616,11 +615,11 @@ class LayoutState {
             .addTransitionKey(node.getTransitionKey());
       }
       if (component != null) {
-        final AutoTransitionSet autoTransitionSet =
-            component.getLifecycle().onCreateAutoTransition(layoutState.mContext, component);
+        final TransitionSet transitionSet =
+            component.getLifecycle().onCreateTransition(layoutState.mContext, component);
 
-        if (autoTransitionSet != null) {
-          layoutState.getOrCreateTransitionContext().addAutoTransitions(autoTransitionSet);
+        if (transitionSet != null) {
+          layoutState.getOrCreateTransitionContext().addAutoTransitions(transitionSet);
         }
       }
     }

@@ -17,6 +17,7 @@ import com.facebook.litho.animation.AppearingComponent;
 import com.facebook.litho.animation.ChangingComponent;
 import com.facebook.litho.animation.ComponentProperty;
 import com.facebook.litho.animation.DisappearingComponent;
+import com.facebook.litho.animation.LazyDimensionValue;
 import com.facebook.litho.animation.LazyFloatValue;
 import com.facebook.litho.animation.LazyValue;
 import com.facebook.litho.animation.SpringTransition;
@@ -26,7 +27,7 @@ import com.facebook.litho.animation.TransitionAnimationBinding;
  * Defines how a property on a component should animate as it changes, allowing you to optionally
  * define appear-from values for appear animations and disappear-to values for disappear animations.
  */
-public class AutoTransition {
+public class Transition {
 
   private static final TransitionAnimator DEFAULT_ANIMATOR = new SpringTransitionAnimator();
 
@@ -45,17 +46,17 @@ public class AutoTransition {
   }
 
   /**
-   * Creates a AutoTransition for the given property on the component with the given key.
+   * Creates a Transition for the given property on the component with the given key.
    */
-  public static AutoTransition.Builder create(String key) {
-    return new AutoTransition.Builder(key);
+  public static Transition.Builder create(String key) {
+    return new Transition.Builder(key);
   }
 
   /**
-   * Creates a set of {@link AutoTransition}s.
+   * Creates a set of {@link Transition}s.
    */
-  public static AutoTransitionSet createSet(AutoTransition.Builder... transitions) {
-    return new AutoTransitionSet(transitions);
+  public static TransitionSet createSet(Transition.Builder... transitions) {
+    return new TransitionSet(transitions);
   }
 
   private final String mTransitionKey;
@@ -64,7 +65,7 @@ public class AutoTransition {
   private final LazyValue mAppearFrom;
   private final LazyValue mDisappearTo;
 
-  public AutoTransition(
+  public Transition(
       String transitionKey,
       AnimatedProperty animatedProperty,
       TransitionAnimator transitionAnimator,
@@ -136,7 +137,7 @@ public class AutoTransition {
   public static class Builder {
 
     private final String mKey;
-    private final ArrayList<AutoTransition> mBuiltTransitions = new ArrayList<>();
+    private final ArrayList<Transition> mBuiltTransitions = new ArrayList<>();
 
     private AnimatedProperty mAnimatedProperty;
     private TransitionAnimator mTransitionAnimator = DEFAULT_ANIMATOR;
@@ -166,7 +167,7 @@ public class AutoTransition {
      * Define where appear animations should start from.
      *
      * @see LazyFloatValue
-     * @see com.facebook.litho.animation.LazyDimensionValue
+     * @see LazyDimensionValue
      */
     public Builder appearFrom(LazyValue value) {
       mAppearFrom = value;
@@ -177,7 +178,7 @@ public class AutoTransition {
      * Define where disappear animations should end at.
      *
      * @see LazyFloatValue
-     * @see com.facebook.litho.animation.LazyDimensionValue
+     * @see LazyDimensionValue
      */
     public Builder disappearTo(LazyValue value) {
       mDisappearTo = value;
@@ -200,7 +201,7 @@ public class AutoTransition {
       return this;
     }
 
-    ArrayList<AutoTransition> getTransitions() {
+    ArrayList<Transition> getTransitions() {
       maybeCommitCurrentBuilder();
       return mBuiltTransitions;
     }
@@ -210,7 +211,7 @@ public class AutoTransition {
         return;
       }
       mBuiltTransitions.add(
-          new AutoTransition(
+          new Transition(
               mKey,
               mAnimatedProperty,
               mTransitionAnimator,

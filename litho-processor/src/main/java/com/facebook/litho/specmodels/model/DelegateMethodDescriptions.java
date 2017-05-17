@@ -22,7 +22,7 @@ import com.facebook.litho.annotations.FromBoundsDefined;
 import com.facebook.litho.annotations.FromMeasure;
 import com.facebook.litho.annotations.FromMeasureBaseline;
 import com.facebook.litho.annotations.FromPrepare;
-import com.facebook.litho.annotations.OnCreateAutoTransition;
+import com.facebook.litho.annotations.OnCreateTransition;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.annotations.GetExtraAccessibilityNodeAt;
 import com.facebook.litho.annotations.GetExtraAccessibilityNodesCount;
@@ -109,12 +109,12 @@ public final class DelegateMethodDescriptions {
           .optionalParameterTypes(ImmutableList.of(PROP, STATE_VALUE))
           .build();
 
-  public static final DelegateMethodDescription ON_CREATE_AUTO_TRANSITION =
+  public static final DelegateMethodDescription ON_CREATE_TRANSITION =
       DelegateMethodDescription.newBuilder()
           .annotations(ImmutableList.of(AnnotationSpec.builder(Override.class).build()))
           .accessType(Modifier.PROTECTED)
-          .returnType(ClassNames.AUTO_TRANSITION_SET)
-          .name("onCreateAutoTransition")
+          .returnType(ClassNames.TRANSITION_SET)
+          .name("onCreateTransition")
           .definedParameterTypes(ImmutableList.<TypeName>of(ClassNames.COMPONENT_CONTEXT))
           .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE))
           .build();
@@ -370,7 +370,7 @@ public final class DelegateMethodDescriptions {
         OnCreateLayoutWithSizeSpec.class, ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
     layoutSpecDelegateMethodsMap.put(OnCreateInitialState.class, ON_CREATE_INITIAL_STATE);
     layoutSpecDelegateMethodsMap.put(
-        OnCreateAutoTransition.class, ON_CREATE_AUTO_TRANSITION);
+        OnCreateTransition.class, ON_CREATE_TRANSITION);
     LAYOUT_SPEC_DELEGATE_METHODS_MAP = Collections.unmodifiableMap(layoutSpecDelegateMethodsMap);
 
     Map<Class<? extends Annotation>, DelegateMethodDescription> mountSpecDelegateMethodsMap =

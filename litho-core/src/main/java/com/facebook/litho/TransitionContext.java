@@ -12,8 +12,6 @@ package com.facebook.litho;
 import java.util.HashSet;
 import java.util.ArrayList;
 
-import android.support.v4.util.SimpleArrayMap;
-
 import com.facebook.litho.animation.AnimationBinding;
 
 /**
@@ -23,7 +21,7 @@ import com.facebook.litho.animation.AnimationBinding;
 class TransitionContext {
 
   private final ArrayList<AnimationBinding> mTransitionAnimationBindings = new ArrayList<>();
-  private final AutoTransitionSet mAutoTransitionSets = new AutoTransitionSet();
+  private final TransitionSet mTransitionSets = new TransitionSet();
 
   // Transition keys of given layout tree
   private final HashSet<String> mTransitionKeys = new HashSet<>(8);
@@ -32,21 +30,21 @@ class TransitionContext {
     mTransitionAnimationBindings.add(binding);
   }
 
-  void addAutoTransitions(AutoTransitionSet autoTransitionSet) {
-    mAutoTransitionSets.mergeIn(autoTransitionSet);
+  void addAutoTransitions(TransitionSet transitionSet) {
+    mTransitionSets.mergeIn(transitionSet);
   }
 
   ArrayList<AnimationBinding> getTransitionAnimationBindings() {
     return mTransitionAnimationBindings;
   }
 
-  AutoTransitionSet getAutoTransitionSet() {
-    return mAutoTransitionSets;
+  TransitionSet getAutoTransitionSet() {
+    return mTransitionSets;
   }
 
   void reset() {
     mTransitionAnimationBindings.clear();
-    mAutoTransitionSets.clear();
+    mTransitionSets.clear();
     mTransitionKeys.clear();
   }
 
@@ -65,6 +63,6 @@ class TransitionContext {
     if (transitionKey == null || mTransitionKeys.contains(transitionKey)) {
       return false;
     }
-    return mAutoTransitionSets.hasDisappearAnimation(transitionKey);
+    return mTransitionSets.hasDisappearAnimation(transitionKey);
   }
 }
