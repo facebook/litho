@@ -11,6 +11,7 @@ package com.facebook.litho;
 
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v4.util.SparseArrayCompat;
 
@@ -568,12 +569,16 @@ public class TreeDiffingTest {
 
   @Test
   public void testLayoutOutputUpdateStateWithBackground() {
+    final Drawable redDrawable = new ColorDrawable(Color.RED);
+    final Drawable blackDrawable = new ColorDrawable(Color.BLACK);
+    final Drawable transparentDrawable = new ColorDrawable(Color.TRANSPARENT);
+
     final Component component1 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Column.create(c)
-            .backgroundColor(Color.RED)
-            .foreground(new ColorDrawable(Color.TRANSPARENT))
+            .background(redDrawable)
+            .foreground(transparentDrawable)
             .child(TestDrawableComponent.create(c))
             .child(
                 Column.create(c)
@@ -586,8 +591,8 @@ public class TreeDiffingTest {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Column.create(c)
-            .backgroundColor(Color.RED)
-            .foreground(new ColorDrawable(Color.TRANSPARENT))
+            .background(redDrawable)
+            .foreground(transparentDrawable)
             .child(TestDrawableComponent.create(c))
             .child(
                 Column.create(c)
@@ -600,8 +605,8 @@ public class TreeDiffingTest {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Column.create(c)
-            .backgroundColor(Color.BLACK)
-            .foreground(new ColorDrawable(Color.TRANSPARENT))
+            .background(blackDrawable)
+            .foreground(transparentDrawable)
             .child(TestDrawableComponent.create(c))
             .child(
                 Column.create(c)
@@ -659,16 +664,19 @@ public class TreeDiffingTest {
   // This test covers the same case with the foreground since the code path is the same!
   @Test
   public void testLayoutOutputUpdateStateWithBackgroundInWithLayout() {
+    final Drawable redDrawable = new ColorDrawable(Color.RED);
+    final Drawable blackDrawable = new ColorDrawable(Color.BLACK);
+
     final Component component1 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Column.create(c)
-            .backgroundColor(Color.RED)
+            .background(redDrawable)
             .foregroundRes(android.R.drawable.btn_default)
             .child(
                 TestDrawableComponent.create(c)
                     .withLayout()
-                    .backgroundColor(Color.BLACK))
+                    .background(blackDrawable))
             .child(
                 Column.create(c)
                     .child(TestDrawableComponent.create(c)))
@@ -680,11 +688,11 @@ public class TreeDiffingTest {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Column.create(c)
-            .backgroundColor(Color.RED)
+            .background(redDrawable)
             .foregroundRes(android.R.drawable.btn_default)
             .child(TestDrawableComponent.create(c)
                 .withLayout()
-                .backgroundColor(Color.BLACK))
+                .background(blackDrawable))
             .child(
                 Column.create(c)
                     .child(TestDrawableComponent.create(c)))
@@ -696,11 +704,11 @@ public class TreeDiffingTest {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Column.create(c)
-            .backgroundColor(Color.RED)
+            .background(redDrawable)
             .foregroundRes(android.R.drawable.btn_default)
             .child(TestDrawableComponent.create(c)
                 .withLayout()
-                .backgroundColor(Color.RED))
+                .background(redDrawable))
             .child(
                 Column.create(c)
                     .child(TestDrawableComponent.create(c)))

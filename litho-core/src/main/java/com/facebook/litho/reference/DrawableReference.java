@@ -71,7 +71,7 @@ public final class DrawableReference extends ReferenceLifecycle<Drawable> {
       }
 
       State state = (State) o;
-      return DrawableUtils.areDrawablesEqual(mDrawable, state.mDrawable);
+      return mDrawable == state.mDrawable;
     }
 
     protected State() {
