@@ -32,7 +32,6 @@ import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
 import com.facebook.litho.annotations.OnCreateMountContent;
-import com.facebook.litho.annotations.OnLayoutTransition;
 import com.facebook.litho.annotations.OnLoadStyle;
 import com.facebook.litho.annotations.OnMeasure;
 import com.facebook.litho.annotations.OnMeasureBaseline;
@@ -108,16 +107,6 @@ public final class DelegateMethodDescriptions {
           .name("createInitialState")
           .definedParameterTypes(ImmutableList.<TypeName>of(ClassNames.COMPONENT_CONTEXT))
           .optionalParameterTypes(ImmutableList.of(PROP, STATE_VALUE))
-          .build();
-
-  public static final DelegateMethodDescription ON_LAYOUT_TRANSITION =
-      DelegateMethodDescription.newBuilder()
-          .annotations(ImmutableList.of(AnnotationSpec.builder(Override.class).build()))
-          .accessType(Modifier.PROTECTED)
-          .returnType(ClassNames.ANIMATION)
-          .name("onLayoutTransition")
-          .definedParameterTypes(ImmutableList.<TypeName>of(ClassNames.COMPONENT_CONTEXT))
-          .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE))
           .build();
 
   public static final DelegateMethodDescription ON_CREATE_AUTO_TRANSITION =
@@ -380,7 +369,6 @@ public final class DelegateMethodDescriptions {
     layoutSpecDelegateMethodsMap.put(
         OnCreateLayoutWithSizeSpec.class, ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
     layoutSpecDelegateMethodsMap.put(OnCreateInitialState.class, ON_CREATE_INITIAL_STATE);
-    layoutSpecDelegateMethodsMap.put(OnLayoutTransition.class, ON_LAYOUT_TRANSITION);
     layoutSpecDelegateMethodsMap.put(
         OnCreateAutoTransition.class, ON_CREATE_AUTO_TRANSITION);
     LAYOUT_SPEC_DELEGATE_METHODS_MAP = Collections.unmodifiableMap(layoutSpecDelegateMethodsMap);

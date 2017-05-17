@@ -21,7 +21,6 @@ import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.support.v4.widget.ExploreByTouchHelper;
 import android.view.View;
 
-import com.facebook.litho.animation.AnimationBinding;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaMeasureMode;
@@ -586,14 +585,6 @@ public abstract class ComponentLifecycle implements EventDispatcher {
    */
   protected boolean shouldUpdate(Component previous, Component next) {
     return !previous.equals(next);
-  }
-
-  /**
-   * Return a {@link Transition} or a {@link TransitionSet} to be animated at the appropriate time
-   * when the layout changes.
-   */
-  protected Transition onLayoutTransition(ComponentContext c, Component<?> component) {
-    return null;
   }
 
   /**
