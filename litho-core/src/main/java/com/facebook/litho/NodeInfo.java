@@ -71,6 +71,7 @@ class NodeInfo {
   private EventHandler<ClickEvent> mClickHandler;
   private EventHandler<LongClickEvent> mLongClickHandler;
   private EventHandler<TouchEvent> mTouchHandler;
+  private EventHandler<InterceptTouchEvent> mInterceptTouchHandler;
   private EventHandler<DispatchPopulateAccessibilityEventEvent>
       mDispatchPopulateAccessibilityEventHandler;
   private EventHandler<OnInitializeAccessibilityEventEvent>
@@ -148,6 +149,14 @@ class NodeInfo {
 
   EventHandler<TouchEvent> getTouchHandler() {
     return mTouchHandler;
+  }
+
+  void setInterceptTouchHandler(EventHandler interceptTouchHandler) {
+    mInterceptTouchHandler = interceptTouchHandler;
+  }
+
+  EventHandler<InterceptTouchEvent> getInterceptTouchHandler() {
+    return mInterceptTouchHandler;
   }
 
   boolean isTouchable() {

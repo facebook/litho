@@ -28,6 +28,7 @@ class EventDispatcherUtils {
   private static ClickEvent sClickEvent;
   private static LongClickEvent sLongClickEvent;
   private static TouchEvent sTouchEvent;
+  private static InterceptTouchEvent sInterceptTouchEvent;
   private static VisibleEvent sVisibleEvent;
   private static InvisibleEvent sInvisibleEvent;
   private static FocusedVisibleEvent sFocusedVisibleEvent;
@@ -155,6 +156,27 @@ class EventDispatcherUtils {
 
     sTouchEvent.view = null;
     sTouchEvent.motionEvent = null;
+
+    return returnValue;
+  }
+
+  static boolean dispatchOnInterceptTouch(
+      EventHandler<InterceptTouchEvent> interceptTouchHandler,
+      MotionEvent event) {
+    assertMainThread();
+
+    if (sInterceptTouchEvent == null) {
+      sInterceptTouchEvent = new InterceptTouchEvent();
+    }
+
+    sInterceptTouchEvent.motionEvent = event;
+
+    final EventDispatcher eventDispatcher =
+        interceptTouchHandler.mHasEventDispatcher.getEventDispatcher();
+    final boolean returnValue =
+        (boolean) eventDispatcher.dispatchOnEvent(interceptTouchHandler, sInterceptTouchEvent);
+
+    sInterceptTouchEvent.motionEvent = null;
 
     return returnValue;
   }

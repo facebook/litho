@@ -1090,6 +1090,7 @@ class MountState {
       setClickHandler(nodeInfo.getClickHandler(), view);
       setLongClickHandler(nodeInfo.getLongClickHandler(), view);
       setTouchHandler(nodeInfo.getTouchHandler(), view);
+      setInterceptTouchHandler(nodeInfo.getInterceptTouchHandler(), view);
 
       setAccessibilityDelegate(view, nodeInfo);
 
@@ -1138,6 +1139,10 @@ class MountState {
 
       if (nodeInfo.getTouchHandler() != null) {
         unsetTouchHandler(view);
+      }
+
+      if (nodeInfo.getInterceptTouchHandler() != null) {
+        unsetInterceptTouchEventHandler(view);
       }
 
       unsetViewTag(view);
@@ -1312,6 +1317,27 @@ class MountState {
 
     if (listener != null) {
       listener.setEventHandler(null);
+    }
+  }
+
+  /**
+   * Sets the intercept touch handler defined in the component's props.
+   */
+  private static void setInterceptTouchHandler(
+      EventHandler<InterceptTouchEvent> interceptTouchHandler,
+      View view) {
+    if (interceptTouchHandler == null) {
+      return;
+    }
+
+    if (view instanceof ComponentHost) {
+      ((ComponentHost) view).setInterceptTouchEventHandler(interceptTouchHandler);
+    }
+  }
+
+  private static void unsetInterceptTouchEventHandler(View view) {
+    if (view instanceof ComponentHost) {
+      ((ComponentHost) view).setInterceptTouchEventHandler(null);
     }
   }
 

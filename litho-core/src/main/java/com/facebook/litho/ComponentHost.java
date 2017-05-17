@@ -79,6 +79,7 @@ public class ComponentHost extends ViewGroup {
   private ComponentClickListener mOnClickListener;
   private ComponentLongClickListener mOnLongClickListener;
   private ComponentTouchListener mOnTouchListener;
+  private EventHandler<InterceptTouchEvent> mOnInterceptTouchEventHandler;
 
   private TouchExpansionDelegate mTouchExpansionDelegate;
 
@@ -491,6 +492,24 @@ public class ComponentHost extends ViewGroup {
   void setComponentTouchListener(ComponentTouchListener listener) {
     mOnTouchListener = listener;
     setOnTouchListener(listener);
+  }
+
+  /**
+   * Sets an {@link EventHandler} that will be invoked when
+   * {@link ComponentHost#onInterceptTouchEvent} is called.
+   * @param interceptTouchEventHandler the handler to be set on this host.
+   */
+  void setInterceptTouchEventHandler(EventHandler<InterceptTouchEvent> interceptTouchEventHandler) {
+    mOnInterceptTouchEventHandler = interceptTouchEventHandler;
+  }
+
+  @Override
+  public boolean onInterceptTouchEvent(MotionEvent ev) {
+    if (mOnInterceptTouchEventHandler != null) {
+      return EventDispatcherUtils.dispatchOnInterceptTouch(mOnInterceptTouchEventHandler, ev);
+    }
+
+    return super.onInterceptTouchEvent(ev);
   }
 
   /**

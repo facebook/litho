@@ -1135,6 +1135,12 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public InternalNode interceptTouchHandler(EventHandler interceptTouchHandler) {
+    getOrCreateNodeInfo().setInterceptTouchHandler(interceptTouchHandler);
+    return this;
+  }
+
+  @Override
   public ContainerBuilder focusable(boolean isFocusable) {
     getOrCreateNodeInfo().setFocusable(isFocusable);
     return this;

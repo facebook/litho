@@ -205,6 +205,7 @@ public interface ComponentLayout {
     Builder clickHandler(EventHandler<ClickEvent> clickHandler);
     Builder longClickHandler(EventHandler<LongClickEvent> clickHandler);
     Builder touchHandler(EventHandler<TouchEvent> touchHandler);
+    Builder interceptTouchHandler(EventHandler<InterceptTouchEvent> interceptTouchHandler);
     Builder focusable(boolean isFocusable);
     Builder visibleHandler(EventHandler<VisibleEvent> visibleHandler);
     Builder focusedHandler(EventHandler<FocusedVisibleEvent> focusedHandler);
@@ -388,6 +389,7 @@ public interface ComponentLayout {
     ContainerBuilder clickHandler(EventHandler<ClickEvent> clickHandler);
     ContainerBuilder longClickHandler(EventHandler<LongClickEvent> clickHandler);
     ContainerBuilder touchHandler(EventHandler<TouchEvent> touchHandler);
+    ContainerBuilder interceptTouchHandler(EventHandler<InterceptTouchEvent> interceptTouchHandler);
     ContainerBuilder focusable(boolean isFocusable);
     ContainerBuilder visibleHandler(EventHandler<VisibleEvent> visibleHandler);
     ContainerBuilder focusedHandler(EventHandler<FocusedVisibleEvent> focusedHandler);
