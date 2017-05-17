@@ -15,7 +15,7 @@ dependencies {
   annotationProcessor 'com.facebook.litho:litho-processor:{{site.litho-version}}'
 
   // SoLoader
-  compile 'com.facebook.soloader:soloader:{{site.litho-version}}'
+  compile 'com.facebook.soloader:soloader:0.2.0'
 
   // Optional
   // For debugging
