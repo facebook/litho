@@ -158,6 +158,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private NodeInfo mNodeInfo;
   private boolean mForceViewWrapping;
   private String mTransitionKey;
+  private float mVisibleRatio;
   private EventHandler<VisibleEvent> mVisibleHandler;
   private EventHandler<FocusedVisibleEvent> mFocusedHandler;
   private EventHandler<UnfocusedVisibleEvent> mUnfocusedHandler;
@@ -1147,6 +1148,16 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public ContainerBuilder visibleRatio(float visibleRatio) {
+    mVisibleRatio = visibleRatio;
+    return this;
+  }
+
+  float getVisibleRatio() {
+    return mVisibleRatio;
+  }
+
+  @Override
   public InternalNode visibleHandler(EventHandler<VisibleEvent> visibleHandler) {
     mPrivateFlags |= PFLAG_VISIBLE_HANDLER_IS_SET;
     mVisibleHandler = visibleHandler;
@@ -1656,6 +1667,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     if ((mPrivateFlags & PFLAG_BORDER_COLOR_IS_SET) != 0L) {
       node.mBorderColor = mBorderColor;
     }
+    if (mVisibleRatio != 0) {
+      node.mVisibleRatio = mVisibleRatio;
+    }
   }
 
   void setStyleWidthFromSpec(int widthSpec) {
@@ -1824,6 +1838,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     mBackground = null;
     mForeground = null;
     mForceViewWrapping = false;
+    mVisibleRatio = 0;
     mVisibleHandler = null;
     mFocusedHandler = null;
     mUnfocusedHandler = null;

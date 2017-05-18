@@ -21,6 +21,7 @@ class VisibilityOutput {
   private long mId;
   private Component<?> mComponent;
   private final Rect mBounds = new Rect();
+  private float mVisibleRatio;
   private EventHandler<VisibleEvent> mVisibleEventHandler;
   private EventHandler<FocusedVisibleEvent> mFocusedEventHandler;
   private EventHandler<UnfocusedVisibleEvent> mUnfocusedEventHandler;
@@ -53,6 +54,14 @@ class VisibilityOutput {
 
   void setBounds(Rect bounds) {
     mBounds.set(bounds);
+  }
+
+  void setVisibleRatio(float visibleRatio) {
+    mVisibleRatio = visibleRatio;
+  }
+
+  float getVisibleRatio() {
+    return mVisibleRatio;
   }
 
   void setVisibleEventHandler(EventHandler<VisibleEvent> visibleEventHandler) {
@@ -97,6 +106,7 @@ class VisibilityOutput {
   }
 
   void release() {
+    mVisibleRatio = 0;
     mComponent = null;
     mVisibleEventHandler = null;
     mFocusedEventHandler = null;

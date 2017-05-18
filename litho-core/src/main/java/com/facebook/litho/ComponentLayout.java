@@ -207,6 +207,7 @@ public interface ComponentLayout {
     Builder touchHandler(EventHandler<TouchEvent> touchHandler);
     Builder interceptTouchHandler(EventHandler<InterceptTouchEvent> interceptTouchHandler);
     Builder focusable(boolean isFocusable);
+    Builder visibleRatio(float visibleRatio);
     Builder visibleHandler(EventHandler<VisibleEvent> visibleHandler);
     Builder focusedHandler(EventHandler<FocusedVisibleEvent> focusedHandler);
     Builder unfocusedHandler(EventHandler<UnfocusedVisibleEvent> unfocusedHandler);
@@ -391,6 +392,7 @@ public interface ComponentLayout {
     ContainerBuilder touchHandler(EventHandler<TouchEvent> touchHandler);
     ContainerBuilder interceptTouchHandler(EventHandler<InterceptTouchEvent> interceptTouchHandler);
     ContainerBuilder focusable(boolean isFocusable);
+    ContainerBuilder visibleRatio(float visibleRatio);
     ContainerBuilder visibleHandler(EventHandler<VisibleEvent> visibleHandler);
     ContainerBuilder focusedHandler(EventHandler<FocusedVisibleEvent> focusedHandler);
     ContainerBuilder unfocusedHandler(EventHandler<UnfocusedVisibleEvent> unfocusedHandler);

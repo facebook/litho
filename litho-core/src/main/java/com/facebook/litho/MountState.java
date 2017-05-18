@@ -303,7 +303,8 @@ class MountState {
       final Rect visibilityOutputBounds = visibilityOutput.getBounds();
 
       sTempRect.set(visibilityOutputBounds);
-      final boolean isCurrentlyVisible = sTempRect.intersect(localVisibleRect);
+      final boolean isCurrentlyVisible = sTempRect.intersect(localVisibleRect) &&
+          isInVisibleRange(visibilityOutput.getVisibleRatio(), visibilityOutputBounds, sTempRect);
 
       VisibilityItem visibilityItem = mVisibilityIdToItemMap.get(visibilityOutputId);
 
@@ -321,12 +322,7 @@ class MountState {
 
         // Check if the component has entered or exited the focused range.
         if (focusedHandler != null || unfocusedHandler != null) {
-          final View parent = (View) mLithoView.getParent();
-          if (isInFocusedRange(
-              parent.getWidth(),
-              parent.getHeight(),
-              visibilityOutputBounds,
-              sTempRect)) {
+          if (isInFocusedRange(visibilityOutputBounds, sTempRect)) {
             if (!visibilityItem.isInFocusedRange()) {
               visibilityItem.setFocusedRange(true);
               if (focusedHandler != null) {
@@ -469,15 +465,26 @@ class MountState {
     mHostsByMarker.put(id, host);
   }
 
+  private boolean isInVisibleRange(
+      float ratio,
+      Rect componentBounds,
+      Rect componentVisibleBounds) {
+    if (ratio <= 0) {
+      return true;
+    }
+
+    return computeRectArea(componentVisibleBounds) >= ratio * computeRectArea(componentBounds)
+        || isInFocusedRange(componentBounds, componentVisibleBounds);
+  }
+
   /**
    * Returns true if the component is in the focused visible range.
    */
-  static boolean isInFocusedRange(
-      int viewportWidth,
-      int viewportHeight,
+  private boolean isInFocusedRange(
       Rect componentBounds,
       Rect componentVisibleBounds) {
-    final int halfViewportArea = viewportWidth * viewportHeight / 2;
+    final View parent = (View) mLithoView.getParent();
+    final int halfViewportArea = parent.getWidth() * parent.getHeight() / 2;
     final int totalComponentArea = computeRectArea(componentBounds);
     final int visibleComponentArea = computeRectArea(componentVisibleBounds);
 

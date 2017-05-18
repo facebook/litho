@@ -332,6 +332,7 @@ class LayoutState {
     visibilityOutput.setComponent(handlerComponent);
 
     visibilityOutput.setBounds(l, t, r, b);
+    visibilityOutput.setVisibleRatio(node.getVisibleRatio());
     visibilityOutput.setVisibleEventHandler(visibleHandler);
     visibilityOutput.setFocusedEventHandler(focusedHandler);
     visibilityOutput.setUnfocusedEventHandler(unfocusedHandler);
