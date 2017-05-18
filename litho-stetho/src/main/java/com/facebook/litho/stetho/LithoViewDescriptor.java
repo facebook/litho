@@ -118,7 +118,10 @@ public final class LithoViewDescriptor
     // the component hierarchy. View children of LithoView are of type ComponentHost which is
     // an implementation detail of the Components framework.
 
-    children.store(DebugComponent.getRootInstance(element));
+    final DebugComponent component = DebugComponent.getRootInstance(element);
+    if (component != null) {
+      children.store(component);
+    }
   }
 
   @Override

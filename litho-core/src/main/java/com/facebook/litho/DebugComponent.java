@@ -168,6 +168,10 @@ public final class DebugComponent {
    * @return A list of mounted views.
    */
   public List<View> getMountedViews() {
+    if (mComponentIndex > 0) {
+      return Collections.EMPTY_LIST;
+    }
+
     final InternalNode node = mNode.get();
     final ComponentContext context = node == null ? null : node.getContext();
     final ComponentTree tree = context == null ? null : context.getComponentTree();
@@ -863,11 +867,11 @@ public final class DebugComponent {
     if (parent != null) {
       key = createKey(parent, 0) + "." + parent.getChildIndex(node);
     } else if (nestedTreeHolder != null) {
-      key = "nested";
+      key = createKey(nestedTreeHolder, 0) + ".nested";
     } else {
       final ComponentContext c = node.getContext();
-      final ComponentTree tree = c == null ? null : c.getComponentTree();
-      key = tree == null ? "null" : tree.toString();
+      final ComponentTree tree = c.getComponentTree();
+      key = Integer.toString(System.identityHashCode(tree));
     }
 
     return key + "(" + componentIndex + ")";

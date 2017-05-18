@@ -15,10 +15,8 @@ import android.graphics.Rect;
 import android.view.View;
 
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.DebugComponent;
-import com.facebook.litho.LithoView;
 import com.facebook.stetho.common.Accumulator;
 import com.facebook.stetho.inspector.elements.AbstractChainedDescriptor;
 import com.facebook.stetho.inspector.elements.StyleAccumulator;
