@@ -17,12 +17,22 @@ import java.util.List;
 
 import com.squareup.javapoet.ParameterizedTypeName;
 
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.DELEGATE_FIELD_NAME;
 import static com.facebook.litho.specmodels.model.ClassNames.OUTPUT;
 
 /**
  * Utility methods for {@link SpecModel}s.
  */
 public class SpecModelUtils {
+
+  public static String getSpecAccessor(SpecModel specModel) {
+    if (specModel.hasInjectedDependencies()) {
+      return DELEGATE_FIELD_NAME +
+          specModel.getDependencyInjectionHelper().getSourceDelegateAccessorMethod(specModel);
+    }
+
+    return specModel.getSpecName();
+  }
 
   @Nullable
   public static PropModel getPropWithName(SpecModel specModel, String name) {

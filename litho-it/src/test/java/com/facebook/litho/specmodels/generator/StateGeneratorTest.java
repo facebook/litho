@@ -170,7 +170,7 @@ public class StateGeneratorTest {
             "      com.facebook.litho.Component newComponent) {\n" +
             "    TestWithStateStateContainerImpl stateContainerImpl = (TestWithStateStateContainerImpl) stateContainer;\n" +
             "    TestWithStateImpl newComponentStateUpdate = (TestWithStateImpl) newComponent;\n" +
-            "    sInstance.mSpec.updateCurrentState();\n" +
+            "    TestWithStateSpec.updateCurrentState();\n" +
             "  }\n" +
             "\n" +
             "  public boolean isLazyStateUpdate() {\n" +

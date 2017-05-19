@@ -87,13 +87,9 @@ public class PreambleGeneratorTest {
     TypeSpecDataHolder typeSpecDataHolder =
         PreambleGenerator.generateSourceDelegate(mSpecModelWithoutDI);
 
-    assertThat(typeSpecDataHolder.getFieldSpecs().size()).isEqualTo(1);
+    assertThat(typeSpecDataHolder.getFieldSpecs().size()).isEqualTo(0);
     assertThat(typeSpecDataHolder.getMethodSpecs().size()).isEqualTo(0);
     assertThat(typeSpecDataHolder.getTypeSpecs().size()).isEqualTo(0);
-
-    assertThat(typeSpecDataHolder.getFieldSpecs().get(0).toString()).isEqualTo(
-        "private com.facebook.litho.TestSpec mSpec = " +
-            "new com.facebook.litho.TestSpec();\n");
   }
 
   @Test

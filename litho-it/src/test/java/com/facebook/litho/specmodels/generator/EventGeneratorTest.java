@@ -97,7 +97,7 @@ public class EventGeneratorTest {
             "private void testEventMethod1(com.facebook.litho.HasEventDispatcher _abstractImpl,\n" +
             "    java.lang.Object arg2, T arg3) {\n" +
             "  TestImpl _impl = (TestImpl) _abstractImpl;\n" +
-            "  mSpec.testEventMethod1(\n" +
+            "  TestSpec.testEventMethod1(\n" +
             "    (boolean) _impl.arg0,\n" +
             "    (int) _impl.mStateContainerImpl.arg1,\n" +
             "    arg2,\n" +
@@ -109,7 +109,7 @@ public class EventGeneratorTest {
         .isEqualTo(
             "private void testEventMethod2(com.facebook.litho.HasEventDispatcher _abstractImpl) {\n" +
             "  TestImpl _impl = (TestImpl) _abstractImpl;\n" +
-            "  mSpec.testEventMethod2(\n" +
+            "  TestSpec.testEventMethod2(\n" +
             "    (boolean) _impl.arg0,\n" +
             "    (int) _impl.mStateContainerImpl.arg1);\n" +
             "}\n");

@@ -14,10 +14,11 @@ import javax.lang.model.element.Modifier;
 import java.util.Locale;
 
 import com.facebook.litho.annotations.Param;
+import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.MethodParamModelUtils;
-import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.SpecModel;
+import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.facebook.litho.specmodels.model.StateParamModel;
 import com.facebook.litho.specmodels.model.UpdateStateMethodModel;
 
@@ -29,8 +30,6 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.DELEGATE_FIELD_NAME;
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.SPEC_INSTANCE_NAME;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_FIELD_NAME;
 
 /**
@@ -249,13 +248,10 @@ public class StateGenerator {
       }
     }
 
-    final String target = !specModel.hasInjectedDependencies() ?
-        SPEC_INSTANCE_NAME + "." + DELEGATE_FIELD_NAME :
-        DELEGATE_FIELD_NAME + specModel.getDependencyInjectionHelper().getSourceDelegateAccessorMethod(specModel);
 
     // Call the spec's update method.
     updateStateMethodBuilder.addStatement(
-        target + "." +
+        SpecModelUtils.getSpecAccessor(specModel) + "." +
             updateStateMethod.name + "(" +
             getParamsForSpecUpdateMethodCall(updateStateMethod) + ")");
 

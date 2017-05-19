@@ -26,7 +26,6 @@ import com.squareup.javapoet.TypeName;
 
 import static com.facebook.litho.specmodels.generator.ComponentImplGenerator.getImplAccessor;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.ABSTRACT_IMPL_PARAM_NAME;
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.DELEGATE_FIELD_NAME;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.IMPL_VARIABLE_NAME;
 import static com.facebook.litho.specmodels.model.ClassNames.COMPONENT;
 import static com.facebook.litho.specmodels.model.ClassNames.OUTPUT;
@@ -108,10 +107,7 @@ public class DelegateMethodGenerator {
     final CodeBlock.Builder delegation = CodeBlock.builder();
     final CodeBlock.Builder releaseOutputs = CodeBlock.builder();
 
-    final String sourceDelegateAccessor = DELEGATE_FIELD_NAME +
-        (!specModel.hasInjectedDependencies() ?
-            "" :
-            specModel.getDependencyInjectionHelper().getSourceDelegateAccessorMethod(specModel));
+    final String sourceDelegateAccessor = SpecModelUtils.getSpecAccessor(specModel);
     if (methodDescription.returnType.equals(TypeName.VOID)) {
       delegation.add("$L.$L(\n", sourceDelegateAccessor, delegateMethod.name);
     } else {

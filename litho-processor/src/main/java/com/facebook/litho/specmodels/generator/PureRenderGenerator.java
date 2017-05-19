@@ -24,8 +24,6 @@ import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.DELEGATE_FIELD_NAME;
-
 /**
  * Class that generates the pure render methods for a Component.
  */
@@ -120,11 +118,7 @@ public class PureRenderGenerator {
 
     shouldUpdateComponent.addStatement(
         "boolean shouldUpdate = $L.$L($L)",
-        DELEGATE_FIELD_NAME +
-            (!specModel.hasInjectedDependencies() ?
-                "" :
-                specModel.getDependencyInjectionHelper()
-                    .getSourceDelegateAccessorMethod(specModel)),
+        SpecModelUtils.getSpecAccessor(specModel),
         methodModel.name,
         delegateParameters.build());
     shouldUpdateComponent.addCode(releaseDiffs.build());

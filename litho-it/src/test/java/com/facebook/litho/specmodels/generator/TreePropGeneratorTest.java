@@ -85,6 +85,7 @@ public class TreePropGeneratorTest {
     when(mSpecModel.getContextClass()).thenReturn(ClassNames.COMPONENT_CONTEXT);
     when(mSpecModel.getComponentClass()).thenReturn(ClassNames.COMPONENT);
     when(mSpecModel.getComponentName()).thenReturn("Test");
+    when(mSpecModel.getSpecName()).thenReturn("TestSpec");
     when(mSpecModel.getDelegateMethods())
         .thenReturn(ImmutableList.of(mOnCreateTreePropMethodModel));
     when(mSpecModel.getTreeProps()).thenReturn(ImmutableList.of(mTreeProp));
@@ -116,7 +117,7 @@ public class TreePropGeneratorTest {
         "    com.facebook.litho.Component _abstractImpl, com.facebook.litho.TreeProps parentTreeProps) {\n" +
         "  final TestImpl _impl = (TestImpl) _abstractImpl;\n" +
         "  final com.facebook.litho.TreeProps childTreeProps = com.facebook.litho.TreeProps.copy(parentTreeProps);\n" +
-        "  childTreeProps.put(boolean.class, mSpec.onCreateTreeProp(\n" +
+        "  childTreeProps.put(boolean.class, TestSpec.onCreateTreeProp(\n" +
         "      (com.facebook.litho.ComponentContext) c,\n" +
         "      (boolean) _impl.prop,\n" +
         "      (int) _impl.state));\n" +

@@ -40,18 +40,15 @@ public class PreambleGenerator {
    * Generate a delegate to the Spec that defines this component.
    */
   static TypeSpecDataHolder generateSourceDelegate(SpecModel specModel) {
-    final TypeName delegateTypeName =
-        specModel.hasInjectedDependencies() ?
-            specModel.getDependencyInjectionHelper().getSourceDelegateTypeName(specModel) :
-            specModel.getSpecTypeName();
+    if (!specModel.hasInjectedDependencies()) {
+      return TypeSpecDataHolder.newBuilder().build();
+    }
 
+    final TypeName delegateTypeName =
+            specModel.getDependencyInjectionHelper().getSourceDelegateTypeName(specModel);
     final FieldSpec.Builder builder =
         FieldSpec.builder(delegateTypeName, DELEGATE_FIELD_NAME)
             .addModifiers(Modifier.PRIVATE);
-
-    if (!specModel.hasInjectedDependencies()) {
-      builder.initializer("new $T()", specModel.getSpecTypeName());
-    }
 
     return TypeSpecDataHolder.newBuilder().addField(builder.build()).build();
   }

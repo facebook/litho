@@ -23,8 +23,6 @@ import com.facebook.litho.specmodels.model.TreePropModel;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
 
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.DELEGATE_FIELD_NAME;
-
 /**
  * Class that generates the tree prop methods for a Component.
  */
@@ -76,12 +74,7 @@ public class TreePropGenerator {
       return TypeSpecDataHolder.newBuilder().build();
     }
 
-    final String delegateName = DELEGATE_FIELD_NAME +
-        (!specModel.hasInjectedDependencies() ?
-            "" :
-            specModel.getDependencyInjectionHelper()
-                .getSourceDelegateAccessorMethod(specModel));
-
+    final String delegateName = SpecModelUtils.getSpecAccessor(specModel);
     final MethodSpec.Builder builder = MethodSpec.methodBuilder("getTreePropsForChildren")
         .addAnnotation(Override.class)
         .addModifiers(Modifier.PROTECTED)
