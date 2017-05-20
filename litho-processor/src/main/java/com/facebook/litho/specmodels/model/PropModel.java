@@ -28,14 +28,17 @@ public class PropModel implements MethodParamModel {
   private final MethodParamModel mParamModel;
   private final boolean mIsOptional;
   private final ResType mResType;
+  private final String mVarArgSingleArgName;
 
   PropModel(
       MethodParamModel paramModel,
       boolean isOptional,
-      ResType resType) {
+      ResType resType,
+      String varArg) {
     mParamModel = paramModel;
     mIsOptional = isOptional;
     mResType = resType;
+    mVarArgSingleArgName = varArg;
   }
 
   @Override
@@ -71,6 +74,14 @@ public class PropModel implements MethodParamModel {
     return mResType;
   }
 
+  public boolean hasVarArgs() {
+    return !mVarArgSingleArgName.isEmpty();
+  }
+
+  public String getVarArgsSingleName() {
+    return mVarArgSingleArgName;
+  }
+
   /**
    * @return true if this prop has a default specified in the given set of defaults, false
    * otherwise.
@@ -92,7 +103,8 @@ public class PropModel implements MethodParamModel {
       final PropModel p = (PropModel) o;
       return mParamModel.equals(p.mParamModel)
           && mIsOptional == p.mIsOptional
-          && mResType.equals(p.mResType);
+          && mResType.equals(p.mResType)
+          && mVarArgSingleArgName.equals(p.getVarArgsSingleName());
     }
 
     return false;
@@ -103,6 +115,7 @@ public class PropModel implements MethodParamModel {
     int result = mParamModel.hashCode();
     result = 17 * result + (mIsOptional ? 1 : 0);
     result = 31 * result + mResType.hashCode();
+    result = 43 * result + mVarArgSingleArgName.hashCode();
     return result;
   }
 }

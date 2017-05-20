@@ -80,6 +80,32 @@ public class PropValidation {
                     "value."));
       }
 
+      if (prop.hasVarArgs() && prop.getResType() != ResType.NONE) {
+        validationErrors.add(
+            new SpecModelValidationError(
+                prop.getRepresentedObject(),
+                prop.getName() + " is a variable argument, and thus should not set a resType."));
+      }
+
+      if (prop.hasVarArgs()) {
+        TypeName typeName = prop.getType();
+        if (typeName instanceof ParameterizedTypeName) {
+          ParameterizedTypeName parameterizedTypeName = (ParameterizedTypeName) typeName;
+          if (!parameterizedTypeName.rawType.equals(ClassNames.LIST)) {
+            validationErrors.add(
+                new SpecModelValidationError(
+                    prop.getRepresentedObject(),
+                    prop.getName() + " is a variable argument, and thus should be a List<> type."));
+          }
+        } else {
+          validationErrors.add(
+              new SpecModelValidationError(
+                  prop.getRepresentedObject(),
+                  prop.getName() +
+                      " is a variable argument, and thus requires a parameterized List type."));
+        }
+      }
+
       validationErrors.addAll(validateResType(prop));
     }
 

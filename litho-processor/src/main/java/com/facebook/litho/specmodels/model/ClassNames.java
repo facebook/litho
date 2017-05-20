@@ -11,6 +11,8 @@ package com.facebook.litho.specmodels.model;
 
 import com.squareup.javapoet.ClassName;
 
+import java.util.List;
+
 /**
  * Constants used in {@link SpecModel}s.
  */
@@ -36,6 +38,8 @@ public interface ClassNames {
   ClassName ARRAY_RES = ClassName.bestGuess("android.support.annotation.ArrayRes");
   ClassName DIMENSION = ClassName.bestGuess("android.support.annotation.Dimension");
   ClassName PX = ClassName.bestGuess("android.support.annotation.Px");
+
+  ClassName LIST = ClassName.get(List.class);
 
   ClassName SYNCHRONIZED_POOL =
       ClassName.bestGuess("android.support.v4.util.Pools.SynchronizedPool");

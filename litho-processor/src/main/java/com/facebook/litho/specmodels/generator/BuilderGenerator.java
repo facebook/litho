@@ -24,6 +24,7 @@ import com.facebook.litho.specmodels.model.SpecModel;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
@@ -281,6 +282,14 @@ public class BuilderGenerator {
       PropModel prop,
       int requiredIndex) {
     final TypeSpecDataHolder.Builder dataHolder = TypeSpecDataHolder.newBuilder();
+    if (prop.hasVarArgs()) {
+      dataHolder.addMethod(varArgBuilder(specModel, prop, requiredIndex));
+      ParameterizedTypeName type = (ParameterizedTypeName) prop.getType();
+      if (getRawType(type.typeArguments.get(0)).equals(ClassNames.COMPONENT)) {
+        dataHolder.addMethod(varArgBuilderBuilder(prop, requiredIndex));
+      }
+      return dataHolder.build();
+    }
 
     switch (prop.getResType()) {
       case STRING:
@@ -444,6 +453,60 @@ public class BuilderGenerator {
         prop.getName());
   }
 
+  private static MethodSpec varArgBuilder(
+      SpecModel specModel,
+      PropModel prop,
+      int requiredIndex,
+      AnnotationSpec... extraAnnotations) {
+    ParameterizedTypeName parameterizedTypeName = (ParameterizedTypeName) prop.getType();
+    TypeName singleParameterType = parameterizedTypeName.typeArguments.get(0);
+    String varArgName = prop.getVarArgsSingleName();
+
+    final String propName = prop.getName();
+    final String implMemberInstanceName = getImplMemberInstanceName(specModel);
+    final ParameterizedTypeName varArgType = (ParameterizedTypeName) prop.getType();
+    final ParameterizedTypeName listType = ParameterizedTypeName.get(
+        ClassName.get(ArrayList.class),
+        varArgType.typeArguments.get(0));
+    CodeBlock codeBlock = CodeBlock.builder()
+        .beginControlFlow("if (this.$L.$L == null)", implMemberInstanceName, propName)
+        .addStatement("this.$L.$L = new $T()", implMemberInstanceName, propName, listType)
+        .endControlFlow()
+        .addStatement(
+        "this.$L.$L.add($L)",
+        implMemberInstanceName,
+        propName,
+        varArgName)
+        .build();
+
+    return getMethodSpecBuilder(
+        prop,
+        requiredIndex,
+        varArgName,
+        Arrays.asList(parameter(prop, singleParameterType, varArgName, extraAnnotations)),
+        codeBlock).build();
+  }
+
+  private static MethodSpec varArgBuilderBuilder(
+      PropModel prop,
+      int requiredIndex) {
+    String varArgName = prop.getVarArgsSingleName();
+    final ParameterizedTypeName varArgType = (ParameterizedTypeName) prop.getType();
+    final TypeName internalType = varArgType.typeArguments.get(0);
+    CodeBlock codeBlock = CodeBlock.builder()
+        .addStatement("$L($L.build())", varArgName, varArgName + "Builder")
+        .build();
+    TypeName builderParameterType = ParameterizedTypeName.get(
+        ClassNames.COMPONENT_BUILDER,
+        getBuilderGenericTypes(internalType));
+    return getMethodSpecBuilder(
+        prop,
+        requiredIndex,
+        varArgName,
+        Arrays.asList(parameter(prop, builderParameterType, varArgName + "Builder")),
+        codeBlock).build();
+  }
+
   private static MethodSpec resBuilder(
       SpecModel specModel,
       PropModel prop,
@@ -579,10 +642,14 @@ public class BuilderGenerator {
   }
 
   private static TypeName[] getBuilderGenericTypes(PropModel prop) {
+    return getBuilderGenericTypes(prop.getType());
+  }
+
+  private static TypeName[] getBuilderGenericTypes(TypeName type) {
     final TypeName typeParameter =
-        prop.getType() instanceof ParameterizedTypeName &&
-            !((ParameterizedTypeName) prop.getType()).typeArguments.isEmpty() ?
-            ((ParameterizedTypeName) prop.getType()).typeArguments.get(0) :
+        type instanceof ParameterizedTypeName &&
+            !((ParameterizedTypeName) type).typeArguments.isEmpty() ?
+            ((ParameterizedTypeName) type).typeArguments.get(0) :
             WildcardTypeName.subtypeOf(ClassNames.COMPONENT_LIFECYCLE);
 
     return new TypeName[]{typeParameter};
@@ -634,12 +701,24 @@ public class BuilderGenerator {
       List<ParameterSpec> parameters,
       String statement,
       Object... formatObjects) {
+    CodeBlock codeBlock = CodeBlock.builder()
+        .add("this.$L.$L = ", getImplMemberInstanceName(specModel), prop.getName())
+        .addStatement(statement, formatObjects)
+        .build();
+    return getMethodSpecBuilder(prop, requiredIndex, name, parameters, codeBlock);
+  }
+
+  private static MethodSpec.Builder getMethodSpecBuilder(
+      PropModel prop,
+      int requiredIndex,
+      String name,
+      List<ParameterSpec> parameters,
+      CodeBlock codeBlock) {
     final MethodSpec.Builder builder =
         MethodSpec.methodBuilder(name)
             .addModifiers(Modifier.PUBLIC)
             .returns(BUILDER_CLASS_NAME)
-            .addCode("this.$L.$L = ", getImplMemberInstanceName(specModel), prop.getName())
-            .addStatement(statement, formatObjects);
+            .addCode(codeBlock);
 
     for (ParameterSpec param : parameters) {
       builder.addParameter(param);

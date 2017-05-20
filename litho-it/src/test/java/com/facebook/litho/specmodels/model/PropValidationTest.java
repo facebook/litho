@@ -11,11 +11,13 @@ package com.facebook.litho.specmodels.model;
 
 import javax.lang.model.element.Modifier;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 
+import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import org.junit.Before;
 import org.junit.Test;
@@ -176,5 +178,34 @@ public class PropValidationTest {
     assertThat(validationErrors.get(1).element).isEqualTo(propDefaultObject2);
     assertThat(validationErrors.get(1).message).isEqualTo(
         "PropDefault notAPropName of type char does not correspond to any defined prop");
+  }
+
+  @Test
+  public void testVarArgPropMustHaveListType() {
+    when(mPropModel1.getResType()).thenReturn(ResType.NONE);
+    when(mPropModel1.getVarArgsSingleName()).thenReturn("test");
+    when(mPropModel1.hasVarArgs()).thenReturn(true);
+    when(mPropModel1.getType()).thenReturn(TypeName.get(String.class));
+
+    List<SpecModelValidationError> validationErrors = PropValidation.validate(mSpecModel);
+    assertThat(validationErrors).hasSize(1);
+    assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
+    assertThat(validationErrors.get(0).message).isEqualTo(
+        "name1 is a variable argument, and thus requires a parameterized List type.");
+  }
+
+  @Test
+  public void testVarArgPropMustHaveParameterizedListType() {
+    when(mPropModel1.getResType()).thenReturn(ResType.NONE);
+    when(mPropModel1.getVarArgsSingleName()).thenReturn("test");
+    when(mPropModel1.hasVarArgs()).thenReturn(true);
+    when(mPropModel1.getType())
+        .thenReturn(ParameterizedTypeName.get(ArrayList.class, String.class));
+
+    List<SpecModelValidationError> validationErrors = PropValidation.validate(mSpecModel);
+    assertThat(validationErrors).hasSize(1);
+    assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
+    assertThat(validationErrors.get(0).message).isEqualTo(
+        "name1 is a variable argument, and thus should be a List<> type.");
   }
 }

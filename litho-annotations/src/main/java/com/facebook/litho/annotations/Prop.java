@@ -48,4 +48,13 @@ public @interface Prop {
 
   String docString() default "";
 
+  /**
+   * Marks this prop as one supporting a variable number of arguments, and therefore adds methods
+   * to make it easier to build lists of this argument.
+   *
+   * For example, having {@code @Prop(@varArg="name") List<CharSequence> names} would generate
+   * an {@code name} method which can be called multiple times to add a set of names. These props
+   * should be a parameterized list with a resource type of {@code resType = ResType.NONE}.
+   */
+  String varArg() default "";
 }

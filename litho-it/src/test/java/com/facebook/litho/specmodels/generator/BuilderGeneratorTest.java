@@ -28,6 +28,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.util.List;
+
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 /**
@@ -44,7 +46,8 @@ public class BuilderGeneratorTest {
         @Prop boolean arg0,
         @State int arg1,
         @Param Object arg2,
-        @Prop(optional = true) boolean arg3) {
+        @Prop(optional = true) boolean arg3,
+        @Prop(varArg = "name") List<String> names) {
     }
 
     @OnEvent(Object.class)
@@ -95,9 +98,9 @@ public class BuilderGeneratorTest {
     assertThat(dataHolder.getTypeSpecs()).hasSize(1);
     assertThat(dataHolder.getTypeSpecs().get(0).toString()).isEqualTo(
         "public static class Builder extends com.facebook.litho.Component.Builder<com.facebook.litho.specmodels.generator.BuilderGeneratorTest.Test> {\n" +
-        "  private static final java.lang.String[] REQUIRED_PROPS_NAMES = new String[] {\"arg0\"};\n" +
+        "  private static final java.lang.String[] REQUIRED_PROPS_NAMES = new String[] {\"arg0\", \"arg4\"};\n" +
         "\n" +
-        "  private static final int REQUIRED_PROPS_COUNT = 1;\n" +
+        "  private static final int REQUIRED_PROPS_COUNT = 2;\n" +
         "\n" +
         "  TestImpl mTestImpl;\n" +
         "\n" +
@@ -121,6 +124,15 @@ public class BuilderGeneratorTest {
         "\n" +
         "  public Builder arg3(boolean arg3) {\n" +
         "    this.mTestImpl.arg3 = arg3;\n" +
+        "    return this;\n" +
+        "  }\n" +
+        "\n" +
+        "  public Builder name(java.lang.String name) {\n" +
+        "    if (this.mTestImpl.arg4 == null) {\n" +
+        "      this.mTestImpl.arg4 = new java.util.ArrayList<java.lang.String>();\n" +
+        "    }\n" +
+        "    this.mTestImpl.arg4.add(name);\n" +
+        "    mRequired.set(1);\n" +
         "    return this;\n" +
         "  }\n" +
         "\n" +

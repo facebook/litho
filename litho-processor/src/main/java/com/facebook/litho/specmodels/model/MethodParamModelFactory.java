@@ -39,7 +39,8 @@ public final class MethodParamModelFactory {
         return new PropModel(
             simpleMethodParamModel,
             ((Prop) annotation).optional(),
-            ((Prop) annotation).resType());
+            ((Prop) annotation).resType(),
+            ((Prop) annotation).varArg());
       }
 
       if (annotation instanceof State) {
