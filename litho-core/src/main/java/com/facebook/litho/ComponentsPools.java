@@ -251,7 +251,7 @@ public class ComponentsPools {
     return item;
   }
 
-  static Object acquireMountContent(Context context, int componentId) {
+  static Object acquireMountContent(Context context, int componentId, boolean allocatePool) {
     if (context instanceof ComponentContext) {
       context = ((ComponentContext) context).getBaseContext();
 
@@ -264,23 +264,27 @@ public class ComponentsPools {
 
     synchronized (mountContentLock) {
 
-      if (sActivityCallbacks == null && !sIsManualCallbacks) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-          throw new RuntimeException(
-              "Activity callbacks must be invoked manually below ICS (API level 14)");
+      if (allocatePool) {
+        if (sActivityCallbacks == null && !sIsManualCallbacks) {
+          if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            throw new RuntimeException(
+                "Activity callbacks must be invoked manually below ICS (API level 14)");
+          }
+          sActivityCallbacks = new PoolsActivityCallback();
+          ((Application) context.getApplicationContext())
+              .registerActivityLifecycleCallbacks(sActivityCallbacks);
         }
-        sActivityCallbacks = new PoolsActivityCallback();
-        ((Application) context.getApplicationContext())
-            .registerActivityLifecycleCallbacks(sActivityCallbacks);
       }
 
       SparseArray<RecyclePool> poolsArray =
           sMountContentPoolsByContext.get(context);
 
       if (poolsArray == null) {
-        // The context is created here because we are sure the Activity is alive at this point in
-        // contrast of the release call where the Activity might by gone.
-        sMountContentPoolsByContext.put(context, new SparseArray<RecyclePool>());
+        if (allocatePool) {
+          // The context is created here because we are sure the Activity is alive at this point in
+          // contrast of the release call where the Activity might by gone.
+          sMountContentPoolsByContext.put(context, new SparseArray<RecyclePool>());
+        }
         return null;
       }
 
@@ -291,6 +295,10 @@ public class ComponentsPools {
     }
 
     return pool.acquire();
+  }
+
+  static Object acquireMountContent(Context context, int componentId) {
+    return acquireMountContent(context, componentId, true);
   }
 
   static LayoutOutput acquireLayoutOutput() {

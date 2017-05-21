@@ -18,6 +18,8 @@ import android.view.ViewGroup;
 
 import com.facebook.litho.viewcompatcreator.ViewCompatCreator;
 
+import static com.facebook.litho.ContextUtils.getValidActivityForContext;
+
 /**
  * A component that can wrap a view using a {@link ViewBinder} class to bind the view
  * and a {@link ViewCompatCreator} to create the mount contents.
@@ -111,7 +113,9 @@ public class ViewCompatComponent<V extends View> extends ComponentLifecycle {
     final ViewCompatComponentImpl impl = (ViewCompatComponentImpl) component;
     final ViewBinder viewBinder = impl.mViewBinder;
 
-    View toMeasure = (View) ComponentsPools.acquireMountContent(c, getId());
+    final boolean isSafeToAllocatePool = getValidActivityForContext(c) != null;
+
+    View toMeasure = (View) ComponentsPools.acquireMountContent(c, getId(), isSafeToAllocatePool);
     if (toMeasure == null) {
       toMeasure = mViewCompatCreator.createView(c);
     }

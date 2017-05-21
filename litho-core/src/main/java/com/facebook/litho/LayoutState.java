@@ -20,7 +20,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.pm.ApplicationInfo;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -70,6 +69,7 @@ import static com.facebook.litho.MountItem.FLAG_DUPLICATE_PARENT_STATE;
 import static com.facebook.litho.MountState.ROOT_HOST_ID;
 import static com.facebook.litho.NodeInfo.FOCUS_SET_TRUE;
 import static com.facebook.litho.SizeSpec.EXACTLY;
+import static com.facebook.litho.ContextUtils.getValidActivityForContext;
 
 /**
  * The main role of {@link LayoutState} is to hold the output of layout calculation. This includes
@@ -1177,34 +1177,6 @@ class LayoutState {
     }
 
     return output;
-  }
-
-  private static boolean isActivityDestroyed(Activity activity) {
-    if (SDK_INT >= JELLY_BEAN_MR1) {
-      return activity.isDestroyed();
-    }
-
-    return false;
-  }
-
-  private static Activity findActivityInContext(Context context) {
-    if (context instanceof Activity) {
-      return (Activity) context;
-    } else if (context instanceof ContextWrapper) {
-      return findActivityInContext(((ContextWrapper) context).getBaseContext());
-    }
-
-    return null;
-  }
-
-  private static Activity getValidActivityForContext(Context context) {
-    final Activity activity = findActivityInContext(context);
-
-    if (activity == null || activity.isFinishing() || isActivityDestroyed(activity)) {
-      return null;
-    }
-
-    return activity;
   }
 
   @VisibleForTesting
