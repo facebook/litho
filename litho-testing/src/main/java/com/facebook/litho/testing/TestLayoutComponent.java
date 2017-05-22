@@ -31,7 +31,7 @@ import com.facebook.litho.Layout;
 
 public class TestLayoutComponent extends ComponentLifecycle {
   private static final List<TestLayoutComponent> sInstances = new ArrayList<>();
-  private static final Pools.SynchronizedPool<Builder> mBuilderPool =
+  private static final Pools.SynchronizedPool<Builder> sBuilderPool =
       new Pools.SynchronizedPool<>(2);
 
   private final boolean mCallsShouldUpdateOnMount;
@@ -154,7 +154,7 @@ public class TestLayoutComponent extends ComponentLifecycle {
       @AttrRes int defStyleAttr,
       @StyleRes int defStyleRes,
       State state) {
-    Builder builder = mBuilderPool.acquire();
+    Builder builder = sBuilderPool.acquire();
     if (builder == null) {
       builder = new Builder();
     }
@@ -227,7 +227,7 @@ public class TestLayoutComponent extends ComponentLifecycle {
     protected void release() {
       super.release();
       mState = null;
-      mBuilderPool.release(this);
+      sBuilderPool.release(this);
     }
   }
 }

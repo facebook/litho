@@ -24,7 +24,7 @@ import com.facebook.litho.ComponentsPools;
 public class BorderColorDrawableReference extends ReferenceLifecycle<Drawable> {
 
   private static final Pools.SynchronizedPool<BorderColorDrawableReference.PropsBuilder>
-      mBuilderPool = new Pools.SynchronizedPool<BorderColorDrawableReference.PropsBuilder>(2);
+      sBuilderPool = new Pools.SynchronizedPool<BorderColorDrawableReference.PropsBuilder>(2);
 
   private static BorderColorDrawableReference sInstance;
 
@@ -42,7 +42,7 @@ public class BorderColorDrawableReference extends ReferenceLifecycle<Drawable> {
   private static BorderColorDrawableReference.PropsBuilder newBuilder(
       ComponentContext context,
       BorderColorDrawableReference.State state) {
-    BorderColorDrawableReference.PropsBuilder builder = mBuilderPool.acquire();
+    BorderColorDrawableReference.PropsBuilder builder = sBuilderPool.acquire();
     if (builder == null) {
       builder = new BorderColorDrawableReference.PropsBuilder();
     }
@@ -150,7 +150,7 @@ public class BorderColorDrawableReference extends ReferenceLifecycle<Drawable> {
 
       mState = null;
       mContext = null;
-      mBuilderPool.release(this);
+      sBuilderPool.release(this);
     }
 
     public BorderColorDrawableReference.PropsBuilder color(int color) {

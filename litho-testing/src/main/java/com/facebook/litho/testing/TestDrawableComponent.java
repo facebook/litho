@@ -27,7 +27,7 @@ import com.facebook.litho.SizeSpec;
 
 public class TestDrawableComponent extends ComponentLifecycle {
   private static final List<TestDrawableComponent> sInstances = new ArrayList<>();
-  private static final Pools.SynchronizedPool<Builder> mBuilderPool =
+  private static final Pools.SynchronizedPool<Builder> sBuilderPool =
       new Pools.SynchronizedPool<>(2);
 
   private static final long CALLS_SHOULD_UPDATE_ON_MOUNT = 1L << 0;
@@ -249,7 +249,7 @@ public class TestDrawableComponent extends ComponentLifecycle {
       @AttrRes int defStyleAttr,
       @StyleRes int defStyleRes,
       State state) {
-    Builder builder = mBuilderPool.acquire();
+    Builder builder = sBuilderPool.acquire();
     if (builder == null) {
       builder = new Builder();
     }
@@ -331,7 +331,7 @@ public class TestDrawableComponent extends ComponentLifecycle {
     protected void release() {
       super.release();
       mState = null;
-      mBuilderPool.release(this);
+      sBuilderPool.release(this);
     }
 
     public Builder key(String key) {

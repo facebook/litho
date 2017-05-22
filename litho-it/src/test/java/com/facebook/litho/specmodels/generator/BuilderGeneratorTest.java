@@ -74,7 +74,7 @@ public class BuilderGeneratorTest {
     assertThat(dataHolder.getMethodSpecs().get(0).toString()).isEqualTo(
         "private static Builder newBuilder(com.facebook.litho.ComponentContext context, int defStyleAttr,\n" +
             "    int defStyleRes, TestImpl testImpl) {\n" +
-            "  Builder builder = mBuilderPool.acquire();\n" +
+            "  Builder builder = sBuilderPool.acquire();\n" +
             "  if (builder == null) {\n" +
             "    builder = new Builder();\n" +
             "  }\n" +
@@ -93,7 +93,7 @@ public class BuilderGeneratorTest {
 
     assertThat(dataHolder.getFieldSpecs()).hasSize(1);
     assertThat(dataHolder.getFieldSpecs().get(0).toString()).isEqualTo(
-        "private static final android.support.v4.util.Pools.SynchronizedPool<Builder> mBuilderPool = new android.support.v4.util.Pools.SynchronizedPool<Builder>(2);\n");
+        "private static final android.support.v4.util.Pools.SynchronizedPool<Builder> sBuilderPool = new android.support.v4.util.Pools.SynchronizedPool<Builder>(2);\n");
 
     assertThat(dataHolder.getTypeSpecs()).hasSize(1);
     assertThat(dataHolder.getTypeSpecs().get(0).toString()).isEqualTo(
@@ -154,7 +154,7 @@ public class BuilderGeneratorTest {
         "    super.release();\n" +
         "    mTestImpl = null;\n" +
         "    mContext = null;\n" +
-        "    mBuilderPool.release(this);\n" +
+        "    sBuilderPool.release(this);\n" +
         "  }\n" +
         "}\n");
   }

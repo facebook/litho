@@ -39,7 +39,7 @@ import com.squareup.javapoet.WildcardTypeName;
 public class BuilderGenerator {
 
   private static final String BUILDER = "Builder";
-  private static final String BUILDER_POOL_FIELD = "mBuilderPool";
+  private static final String BUILDER_POOL_FIELD = "sBuilderPool";
   private static final ClassName BUILDER_CLASS_NAME = ClassName.bestGuess(BUILDER);
   private static final String CONTEXT_MEMBER_NAME = "mContext";
   private static final String CONTEXT_PARAM_NAME = "context";
