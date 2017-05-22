@@ -53,4 +53,5 @@
 - title: Contributing
   items:
   - id: contributing
+  - id: community-showcase
   - id: repo-structure
