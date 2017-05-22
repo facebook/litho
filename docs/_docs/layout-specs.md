@@ -49,7 +49,7 @@ The first child is a [SolidColor](/javadoc/com/facebook/litho/widget/SolidColor)
 
 ```java
 SolidColor.create(c)
-    .uri(imageUri)
+    .colorRes(color)
     .withLayout()
     .width(40)
     .height(40)
