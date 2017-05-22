@@ -32,6 +32,7 @@ url: "http://fblitho.com"
 
 # The GitHub repo for your project
 ghrepo: "facebook/litho"
+repository: "facebook/litho"
 
 # These can be used in documentation with e.g. {{site.litho-version}}
 litho-version: 0.2.1
