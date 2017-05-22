@@ -1,6 +1,6 @@
 ---
 docid: view-flattening
-title: View flattening
+title: View Flattening
 layout: docs
 permalink: /docs/view-flattening
 ---

@@ -1,6 +1,6 @@
 ---
 docid: dev-options
-title: Developer options
+title: Developer Options
 layout: docs
 permalink: /docs/developer-options
 ---

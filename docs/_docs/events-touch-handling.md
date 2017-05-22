@@ -1,6 +1,6 @@
 ---
 docid: events-touch-handling
-title: Touch handling
+title: Touch Handling
 layout: docs
 permalink: /docs/events-touch-handling
 ---
