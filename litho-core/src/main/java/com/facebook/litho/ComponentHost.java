@@ -475,7 +475,7 @@ public class ComponentHost extends ViewGroup {
    */
   void setComponentLongClickListener(ComponentLongClickListener listener) {
     mOnLongClickListener = listener;
-    this.setOnLongClickListener(listener);
+    setOnLongClickListener(listener);
   }
 
   /**
@@ -684,6 +684,13 @@ public class ComponentHost extends ViewGroup {
 
   @Override
   public boolean onTouchEvent(MotionEvent event) {
+    if (event.getAction() == MotionEvent.ACTION_UP
+        && mOnLongClickListener != null
+        && mOnLongClickListener.shouldIgnoreMotionEventUp()) {
+      mOnLongClickListener.resetShouldIgnoreMotionEventUp();
+      return false;
+    }
+
     boolean handled = false;
 
     // Iterate drawable from last to first to respect drawing order.
@@ -695,8 +702,8 @@ public class ComponentHost extends ViewGroup {
       }
     }
 
-    if (!handled) {
-      handled = super.onTouchEvent(event);
+    if (!handled || event.getAction() == MotionEvent.ACTION_DOWN) {
+      handled |= super.onTouchEvent(event);
     }
 
     return handled;
