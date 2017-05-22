@@ -70,26 +70,21 @@ public class BuilderGeneratorTest {
   public void testGenerate() {
     TypeSpecDataHolder dataHolder = BuilderGenerator.generate(mSpecModel);
 
-    assertThat(dataHolder.getMethodSpecs()).hasSize(3);
+    assertThat(dataHolder.getMethodSpecs()).hasSize(2);
     assertThat(dataHolder.getMethodSpecs().get(0).toString()).isEqualTo(
-        "private static Builder newBuilder(com.facebook.litho.ComponentContext context, int defStyleAttr,\n" +
-            "    int defStyleRes, TestImpl testImpl) {\n" +
+        "public static Builder create(com.facebook.litho.ComponentContext context) {\n" +
+        "  return create(context, 0, 0);\n" +
+        "}\n");
+    assertThat(dataHolder.getMethodSpecs().get(1).toString()).isEqualTo(
+        "public static Builder create(com.facebook.litho.ComponentContext context, int defStyleAttr,\n" +
+            "    int defStyleRes) {\n" +
             "  Builder builder = sBuilderPool.acquire();\n" +
             "  if (builder == null) {\n" +
             "    builder = new Builder();\n" +
             "  }\n" +
-            "  builder.init(context, defStyleAttr, defStyleRes, testImpl);\n" +
+            "  builder.init(context, defStyleAttr, defStyleRes, new TestImpl());\n" +
             "  return builder;\n" +
             "}\n");
-    assertThat(dataHolder.getMethodSpecs().get(1).toString()).isEqualTo(
-        "public static Builder create(com.facebook.litho.ComponentContext context, int defStyleAttr,\n" +
-            "    int defStyleRes) {\n" +
-            "  return newBuilder(context, defStyleAttr, defStyleRes, new TestImpl());\n" +
-            "}\n");
-    assertThat(dataHolder.getMethodSpecs().get(2).toString()).isEqualTo(
-        "public static Builder create(com.facebook.litho.ComponentContext context) {\n" +
-        "  return create(context, 0, 0);\n" +
-        "}\n");
 
     assertThat(dataHolder.getFieldSpecs()).hasSize(1);
     assertThat(dataHolder.getFieldSpecs().get(0).toString()).isEqualTo(

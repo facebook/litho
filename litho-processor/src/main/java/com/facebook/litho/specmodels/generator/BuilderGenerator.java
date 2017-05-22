@@ -51,42 +51,13 @@ public class BuilderGenerator {
 
   public static TypeSpecDataHolder generate(SpecModel specModel) {
     return TypeSpecDataHolder.newBuilder()
-        .addTypeSpecDataHolder(generateFactoryMethod(specModel))
-        .addMethod(generateCreateBuilderMethodWithStyle(specModel))
-        .addMethod(generateCreateBuilderMethod(specModel))
+        .addTypeSpecDataHolder(generateFactoryMethods(specModel))
         .addTypeSpecDataHolder(generateBuilder(specModel))
         .build();
   }
 
-  static MethodSpec generateCreateBuilderMethod(SpecModel specModel) {
-    return MethodSpec.methodBuilder("create")
-        .addModifiers(Modifier.PUBLIC)
-        .returns(BUILDER_CLASS_NAME)
-        .addParameter(specModel.getContextClass(), "context")
-        .addStatement("return create(context, 0, 0)")
-        .addModifiers(!specModel.hasInjectedDependencies() ? Modifier.STATIC : Modifier.FINAL)
-        .build();
-  }
-
-  static MethodSpec generateCreateBuilderMethodWithStyle(SpecModel specModel) {
-    return MethodSpec.methodBuilder("create")
-        .addModifiers(Modifier.PUBLIC)
-        .returns(BUILDER_CLASS_NAME)
-        .addParameter(specModel.getContextClass(), "context")
-        .addParameter(int.class, "defStyleAttr")
-        .addParameter(int.class, "defStyleRes")
-        .addStatement(
-            "return new$L(context, defStyleAttr, defStyleRes, new $L())",
-            BUILDER_CLASS_NAME,
-            ComponentImplGenerator.getImplClassName(specModel))
-        .addModifiers(!specModel.hasInjectedDependencies() ? Modifier.STATIC : Modifier.FINAL)
-        .build();
-  }
-
-  static TypeSpecDataHolder generateFactoryMethod(SpecModel specModel) {
-    final String implClassName = ComponentImplGenerator.getImplClassName(specModel);
-    final String implParamName = ComponentImplGenerator.getImplInstanceName(specModel);
-    final ClassName stateClass = ClassName.bestGuess(implClassName);
+  static TypeSpecDataHolder generateFactoryMethods(SpecModel specModel) {
+    final TypeSpecDataHolder.Builder dataHolder = TypeSpecDataHolder.newBuilder();
 
     final ParameterizedTypeName synchronizedPoolClass =
         ParameterizedTypeName.get(ClassNames.SYNCHRONIZED_POOL, BUILDER_CLASS_NAME);
@@ -95,8 +66,9 @@ public class BuilderGenerator {
         .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
         .initializer("new $T(2)", synchronizedPoolClass);
 
-    final MethodSpec.Builder factoryMethod = MethodSpec.methodBuilder(getFactoryMethodName())
-        .addModifiers(Modifier.PRIVATE)
+    final MethodSpec.Builder factoryMethod = MethodSpec.methodBuilder("create")
+        .addModifiers(Modifier.PUBLIC)
+        .addModifiers(!specModel.hasInjectedDependencies() ? Modifier.STATIC : Modifier.FINAL)
         .returns(BUILDER_CLASS_NAME)
         .addParameter(specModel.getContextClass(), "context")
         .addStatement("$T builder = $L.acquire()", BUILDER_CLASS_NAME, BUILDER_POOL_FIELD)
@@ -105,28 +77,39 @@ public class BuilderGenerator {
         .endControlFlow();
 
     if (specModel.isStylingSupported()) {
+      dataHolder.addMethod(generateDelegatingCreateBuilderMethod(specModel));
       factoryMethod
           .addParameter(int.class, "defStyleAttr")
           .addParameter(int.class, "defStyleRes")
-          .addParameter(stateClass, implParamName)
           .addStatement(
-              "builder.init(context, defStyleAttr, defStyleRes, $L)", implParamName);
+              "builder.init(context, defStyleAttr, defStyleRes, new $L())",
+              ComponentImplGenerator.getImplClassName(specModel));
     } else {
       factoryMethod
-          .addParameter(stateClass, implParamName)
-          .addStatement("builder.init(context, $L)", implParamName);
+          .addStatement(
+          "builder.init(context, new $L())",
+          ComponentImplGenerator.getImplClassName(specModel));
     }
 
     factoryMethod.addStatement("return builder");
 
     if (!specModel.hasInjectedDependencies() || specModel.getTypeVariables().isEmpty()) {
-      factoryMethod.addModifiers(Modifier.STATIC);
       poolField.addModifiers(Modifier.STATIC);
     }
 
-    return TypeSpecDataHolder.newBuilder()
+    return dataHolder
         .addMethod(factoryMethod.build())
         .addField(poolField.build())
+        .build();
+  }
+
+  private static MethodSpec generateDelegatingCreateBuilderMethod(SpecModel specModel) {
+    return MethodSpec.methodBuilder("create")
+        .addModifiers(Modifier.PUBLIC)
+        .returns(BUILDER_CLASS_NAME)
+        .addParameter(specModel.getContextClass(), "context")
+        .addStatement("return create(context, 0, 0)")
+        .addModifiers(!specModel.hasInjectedDependencies() ? Modifier.STATIC : Modifier.FINAL)
         .build();
   }
 
