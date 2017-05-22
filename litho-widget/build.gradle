@@ -15,27 +15,6 @@ android {
     lintOptions {
         abortOnError false
     }
-
-    testOptions {
-        unitTests.all {
-            // We use PowerMock now, so we need to limit the classloader reuse.
-            forkEvery = 1
-            maxParallelForks = 2
-            jvmArgs '-Dcom.facebook.litho.is_oss=true'
-            testLogging {
-                events "passed", "skipped", "failed", "standardOut", "standardError"
-            }
-        }
-    }
-}
-
-afterEvaluate {
-    tasks.withType(Test) {
-        it.dependsOn rootProject.copyYogaLibs
-        systemProperty 'java.library.path', "${rootDir}/build/jniLibs"
-        environment 'LD_LIBRARY_PATH', "${rootDir}/build/jniLibs"
-        environment 'DYLD_LIBRARY_PATH', "${rootDir}/build/jniLibs"
-    }
 }
 
 dependencies {
@@ -52,14 +31,6 @@ dependencies {
 
     // Android Support Library
     compile deps.supportCoreUi
-
-    // Testing
-    testCompile project(':litho-testing')
-    testCompile deps.robolectric
-    testCompile deps.soloader
-    testCompile deps.powermockMockito
-    testCompile deps.powermockJunit
-    testCompile deps.powermockXstream
 }
 
 apply from: rootProject.file('gradle/release.gradle')
