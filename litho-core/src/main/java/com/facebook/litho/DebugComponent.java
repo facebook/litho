@@ -91,8 +91,13 @@ public final class DebugComponent {
    * traversal.
    */
   public static DebugComponent getRootInstance(LithoView view) {
-    final ComponentTree component = view.getComponentTree();
-    final LayoutState layoutState = component == null ? null : component.getMainThreadLayoutState();
+    return getRootInstance(view.getComponentTree());
+  }
+
+  public static DebugComponent getRootInstance(ComponentTree componentTree) {
+    final LayoutState layoutState = componentTree == null ?
+        null :
+        componentTree.getMainThreadLayoutState();
     final InternalNode root = layoutState == null ? null : layoutState.getLayoutRoot();
     if (root != null) {
       final int outerWrapperComponentIndex = Math.max(0, root.getComponents().size() - 1);
