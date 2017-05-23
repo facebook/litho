@@ -65,7 +65,6 @@ public class ComponentHost extends ViewGroup {
   private final InterleavedDispatchDraw mDispatchDraw = new InterleavedDispatchDraw();
 
   private final List<ComponentHost> mScrapHosts = new ArrayList<>(3);
-  private final ComponentsLogger mLogger;
 
   private int[] mChildDrawingOrder = new int[0];
   private boolean mIsChildDrawingOrderDirty;
@@ -100,7 +99,6 @@ public class ComponentHost extends ViewGroup {
     setWillNotDraw(false);
     setChildrenDrawingOrderEnabled(true);
 
-    mLogger = context.getLogger();
     mComponentAccessibilityDelegate = new ComponentAccessibilityDelegate(this);
     refreshAccessibilityDelegatesIfNeeded(isAccessibilityEnabled(context));
   }
