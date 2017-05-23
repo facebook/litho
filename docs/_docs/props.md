@@ -133,6 +133,36 @@ MyComponent.create(c)
 
 Other supported resource types are `ResType.STRING_ARRAY`, `ResType.INT`, `ResType.INT_ARRAY`, `ResType.BOOL`, `ResType.COLOR`, `ResType.DIMEN_OFFSET`, `ResType.FLOAT`, and `ResType.DRAWABLE`.
 
+## Variable Arguments
+Sometimes, you want to support having a list of items. This can unfortunately
+be a bit painful since it requires the developer to make a list, add all the
+items to it, and pass those items to the component create. The `varArg`
+parameter aims to makes this a little easier.
+
+```java
+@LayoutSpec
+public class MyComponentSpec {
+
+   @OnCreateLayout
+   static ComponentLayout onCreateLayout(
+      LayoutContext context,
+      @Prop(varArg = "name") List<String> names) {
+      ...
+   }
+}
+```
+
+This can then be used as follows:
+
+```java
+MyComponent.create(c)
+   .name("One")
+   .name("Two")
+   .name("Three")
+```
+
+Note that, when using `varArg`, `resType`s are not supported.
+
 ## Immutability
 The props of a Component are read-only. The Component's parent passes down values for the props when it creates the Component and they cannot change throughout the lifecycle of the Component. If the props values must be updated, the parent has to create a new Component and pass down new values for the props.
 The props objects should be made immutable. Due to [background layout](/docs/asynchronous-layout), props may be accessed on multiple threads. Props immutability ensures that no thread safety issues enter into your component hierarchy.
