@@ -200,6 +200,8 @@ class MountState {
 
     if (!isIncrementalMountEnabled ||
         !performIncrementalMount(layoutState, localVisibleRect)) {
+      final MountItem rootMountItem = mIndexToItemMap.get(ROOT_HOST_ID);
+
       for (int i = 0, size = layoutState.getMountableOutputCount(); i < size; i++) {
         final LayoutOutput layoutOutput = layoutState.getMountableOutputAt(i);
         final Component component = layoutOutput.getComponent();
@@ -210,7 +212,8 @@ class MountState {
         final boolean isMountable =
             !isIncrementalMountEnabled ||
                 isMountedHostWithChildContent(currentMountItem) ||
-                Rect.intersects(localVisibleRect, layoutOutput.getBounds());
+                Rect.intersects(localVisibleRect, layoutOutput.getBounds()) ||
+                (currentMountItem != null && currentMountItem == rootMountItem);
 
         if (isMountable && !isMounted) {
           mountLayoutOutput(i, layoutOutput, layoutState);
