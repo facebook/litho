@@ -20,16 +20,6 @@ android {
     }
 }
 
-afterEvaluate {
-    tasks.withType(Test) {
-        it.dependsOn rootProject.copyYogaLibs
-        systemProperty 'java.library.path', "${rootDir}/build/jniLibs"
-        environment 'LD_LIBRARY_PATH', "${rootDir}/build/jniLibs"
-        environment 'DYLD_LIBRARY_PATH', "${rootDir}/build/jniLibs"
-    }
-}
-
-
 dependencies {
     compile project(':litho-core')
     provided project(':litho-annotations')
