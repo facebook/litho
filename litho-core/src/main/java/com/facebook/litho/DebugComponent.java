@@ -70,7 +70,7 @@ public final class DebugComponent {
 
   private DebugComponent() {}
 
-  static DebugComponent getInstance(InternalNode node, int componentIndex) {
+  static synchronized DebugComponent getInstance(InternalNode node, int componentIndex) {
     final String globalKey = createKey(node, componentIndex);
     DebugComponent debugComponent = mDebugNodes.get(globalKey);
 
@@ -385,7 +385,7 @@ public final class DebugComponent {
    * @return Registed an override for a style key with a certain value. This override will be used
    * The next time this component is rendered.
    */
-  public void setStyleOverride(String key, String value) {
+  public synchronized void setStyleOverride(String key, String value) {
     SimpleArrayMap<String, String> styles = mStyleOverrides.get(mKey);
     if (styles == null) {
       styles = new SimpleArrayMap<>();
@@ -400,7 +400,7 @@ public final class DebugComponent {
    * @return Registed an override for a prop key with a certain value. This override will be used
    * The next time this component is rendered.
    */
-  public void setPropOverride(String key, String value) {
+  public synchronized void setPropOverride(String key, String value) {
     SimpleArrayMap<String, String> props = mPropOverrides.get(mKey);
     if (props == null) {
       props = new SimpleArrayMap<>();
@@ -415,7 +415,7 @@ public final class DebugComponent {
    * @return Registed an override for a state key with a certain value. This override will be used
    * The next time this component is rendered.
    */
-  public void setStateOverride(String key, String value) {
+  public synchronized void setStateOverride(String key, String value) {
     SimpleArrayMap<String, String> props = mStateOverrides.get(mKey);
     if (props == null) {
       props = new SimpleArrayMap<>();
