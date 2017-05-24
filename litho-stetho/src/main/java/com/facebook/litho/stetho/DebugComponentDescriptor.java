@@ -61,6 +61,10 @@ public final class DebugComponentDescriptor
     if (key != null) {
       attributes.store("key", key);
     }
+
+    if (element.isClickable()) {
+      attributes.store("clickable", "true");
+    }
   }
 
   @Override

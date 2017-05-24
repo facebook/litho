@@ -768,4 +768,17 @@ public final class DebugComponent {
   public String getId() {
     return mKey;
   }
+
+  public boolean isClickable() {
+    if (mComponentIndex > 0) {
+      return false;
+    }
+
+    final InternalNode node = mNode.get();
+    if (node == null) {
+      return false;
+    }
+
+    return node.isClickable();
+  }
 }
