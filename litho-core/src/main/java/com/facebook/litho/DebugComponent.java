@@ -100,17 +100,26 @@ public final class DebugComponent {
    * @return A conanical name for this component. Suitable to present to the user.
    */
   public String getName() {
+    return getComponentClass().getName();
+  }
+
+
+  /**
+   * @return A simpler conanical name for this component. Suitable to present to the user.
+   */
+  public String getSimpleName() {
+    return getComponentClass().getSimpleName();
+  }
+
+  private Class getComponentClass() {
     final InternalNode node = mNode.get();
-    if (node == null) {
-      return null;
-    }
 
     if (node.getComponents().isEmpty()) {
       switch (node.mYogaNode.getFlexDirection()) {
-        case COLUMN: return Column.class.getName();
-        case COLUMN_REVERSE: return ColumnReverse.class.getName();
-        case ROW: return Row.class.getName();
-        case ROW_REVERSE: return RowReverse.class.getName();
+        case COLUMN: return Column.class;
+        case COLUMN_REVERSE: return ColumnReverse.class;
+        case ROW: return Row.class;
+        case ROW_REVERSE: return RowReverse.class;
       }
     }
 
@@ -118,8 +127,7 @@ public final class DebugComponent {
         .getComponents()
         .get(mComponentIndex)
         .getLifecycle()
-        .getClass()
-        .getName();
+        .getClass();
   }
 
   /**
