@@ -177,6 +177,7 @@ class MountState {
 
     prepareTransitionManager(layoutState);
     if (shouldAnimateTransitions) {
+      collectPendingAnimations(layoutState);
       createAutoMountTransitions(layoutState);
       mTransitionManager.onNewTransitionContext(layoutState.getTransitionContext());
 
@@ -2090,6 +2091,25 @@ class MountState {
       mMountedTransitionKeys.put(transitionKey, currentCount - 1);
     }
     return transitionKey;
+  }
+
+  private static void collectPendingAnimations(LayoutState layoutState) {
+    final List<Component> componentsNeedingPreviousRenderInfo =
+        layoutState.getComponentsNeedingPreviousRenderInfo();
+
+    if (componentsNeedingPreviousRenderInfo == null) {
+      return;
+    }
+
+    for (int i = 0, size = componentsNeedingPreviousRenderInfo.size(); i < size; i++) {
+      final Component component = componentsNeedingPreviousRenderInfo.get(i);
+      final TransitionSet transitionSet =
+          component.getLifecycle().onCreateTransition(component.getScopedContext(), component);
+
+      if (transitionSet != null) {
+        layoutState.getTransitionContext().addAutoTransitions(transitionSet);
+      }
+    }
   }
 
   /**

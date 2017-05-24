@@ -166,6 +166,7 @@ class LayoutState {
 
   private StateHandler mStateHandler;
   private boolean mCanPrefetchDisplayLists;
+  private ArrayList<Component> mComponentsNeedingPreviousRenderInfo;
 
   LayoutState() {
     mLayoutStateOutputIdCalculator = new LayoutStateOutputIdCalculator();
@@ -616,11 +617,20 @@ class LayoutState {
             .addTransitionKey(node.getTransitionKey());
       }
       if (component != null) {
-        final TransitionSet transitionSet =
-            component.getLifecycle().onCreateTransition(layoutState.mContext, component);
+        final ComponentLifecycle lifecycle = component.getLifecycle();
+        if (!lifecycle.needsPreviousRenderInfo()) {
+          final TransitionSet transitionSet =
+              component.getLifecycle().onCreateTransition(layoutState.mContext, component);
 
-        if (transitionSet != null) {
-          layoutState.getOrCreateTransitionContext().addAutoTransitions(transitionSet);
+          if (transitionSet != null) {
+            layoutState.getOrCreateTransitionContext().addAutoTransitions(transitionSet);
+          }
+        } else {
+          if (layoutState.mComponentsNeedingPreviousRenderInfo == null) {
+            layoutState.mComponentsNeedingPreviousRenderInfo = new ArrayList<>();
+          }
+          // We'll check for animations in mount
+          layoutState.mComponentsNeedingPreviousRenderInfo.add(component);
         }
       }
     }
@@ -1677,6 +1687,10 @@ class LayoutState {
         mLayoutRoot = null;
       }
 
+      if (mComponentsNeedingPreviousRenderInfo != null) {
+        mComponentsNeedingPreviousRenderInfo.clear();
+      }
+
       ComponentsPools.release(this);
     }
   }
@@ -1821,5 +1835,13 @@ class LayoutState {
   LayoutOutput getNextLayoutOutputForDLPrefetch() {
     final int layoutOutputIndex = mDisplayListsToPrefetch.poll();
     return getMountableOutputAt(layoutOutputIndex);
+  }
+
+  /**
+   * @return the list of Components in this LayoutState that care about the previously mounted
+   * versions of their @Prop/@State params.
+   */
+  @Nullable List<Component> getComponentsNeedingPreviousRenderInfo() {
+    return mComponentsNeedingPreviousRenderInfo;
   }
 }

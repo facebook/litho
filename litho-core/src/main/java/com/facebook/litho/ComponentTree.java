@@ -150,6 +150,12 @@ public class ComponentTree {
   @GuardedBy("this")
   private StateHandler mStateHandler;
 
+  @ThreadConfined(ThreadConfined.UI)
+  private RenderState mPreviousRenderState;
+
+  @ThreadConfined(ThreadConfined.UI)
+  private boolean mPreviousRenderStateSetFromBuilder = false;
+
   private Object mLayoutLock;
 
   protected final int mId;
@@ -190,6 +196,11 @@ public class ComponentTree {
     mStateHandler = builderStateHandler == null
         ? StateHandler.acquireNewInstance(null)
         : builderStateHandler;
+
+    if (builder.previousRenderState != null) {
+      mPreviousRenderState = builder.previousRenderState;
+      mPreviousRenderStateSetFromBuilder = true;
+    }
 
     if (builder.overrideComponentTreeId != -1) {
       mId = builder.overrideComponentTreeId;
@@ -440,11 +451,49 @@ public class ComponentTree {
 
   void mountComponent(Rect currentVisibleArea) {
     assertMainThread();
+
+    final boolean isDirtyMount = mLithoView.isMountStateDirty();
+
     mIsMounting = true;
+
+    if (isDirtyMount) {
+      applyPreviousRenderInfo(mMainThreadLayoutState);
+    }
+
     // currentVisibleArea null or empty => mount all
     mLithoView.mount(mMainThreadLayoutState, currentVisibleArea);
 
+    if (isDirtyMount) {
+      recordRenderInfo(mMainThreadLayoutState);
+    }
+
     mIsMounting = false;
+  }
+
+  private void applyPreviousRenderInfo(LayoutState layoutState) {
+    final List<Component> components = layoutState.getComponentsNeedingPreviousRenderInfo();
+    if (components == null || components.isEmpty()) {
+      return;
+    }
+
+    if (mPreviousRenderState == null) {
+      return;
+    }
+
+    mPreviousRenderState.applyPreviousRenderInfo(components);
+  }
+
+  private void recordRenderInfo(LayoutState layoutState) {
+    final List<Component> components = layoutState.getComponentsNeedingPreviousRenderInfo();
+    if (components == null || components.isEmpty()) {
+      return;
+    }
+
+    if (mPreviousRenderState == null) {
+      mPreviousRenderState = ComponentsPools.acquireRenderState();
+    }
+
+    mPreviousRenderState.recordRenderInfo(components);
   }
 
   void detach() {
@@ -872,6 +921,20 @@ public class ComponentTree {
     return StateHandler.acquireNewInstance(mStateHandler);
   }
 
+  /**
+   * Takes ownership of the {@link RenderState} object from this ComponentTree - this allows the
+   * RenderState to be persisted somewhere and then set back on another ComponentTree using the
+   * {@link Builder}. See {@link RenderState} for more information on the purpose of this object.
+   */
+  @ThreadConfined(ThreadConfined.UI)
+  public RenderState consumePreviousRenderState() {
+    final RenderState previousRenderState = mPreviousRenderState;
+
+    mPreviousRenderState = null;
+    mPreviousRenderStateSetFromBuilder = false;
+    return previousRenderState;
+  }
+
   private void setRootAndSizeSpecInternal(
       Component<?> root,
       int widthSpec,
@@ -1112,6 +1175,12 @@ public class ComponentTree {
 
       // TODO t15532529
       mStateHandler = null;
+
+      if (mPreviousRenderState != null && !mPreviousRenderStateSetFromBuilder) {
+        ComponentsPools.release(mPreviousRenderState);
+      }
+      mPreviousRenderState = null;
+      mPreviousRenderStateSetFromBuilder = false;
     }
 
     if (mainThreadLayoutState != null) {
@@ -1274,6 +1343,7 @@ public class ComponentTree {
     private LayoutHandler layoutThreadHandler;
     private Object layoutLock;
     private StateHandler stateHandler;
+    private RenderState previousRenderState;
     private boolean asyncStateUpdates = true;
     private int overrideComponentTreeId = -1;
     private boolean canPrefetchDisplayLists = false;
@@ -1299,6 +1369,7 @@ public class ComponentTree {
       layoutThreadHandler = null;
       layoutLock = null;
       stateHandler = null;
+      previousRenderState = null;
       asyncStateUpdates = true;
       overrideComponentTreeId = -1;
       canPrefetchDisplayLists = false;
@@ -1368,6 +1439,15 @@ public class ComponentTree {
      */
     public Builder stateHandler(StateHandler stateHandler) {
       this.stateHandler = stateHandler;
+      return this;
+    }
+
+    /**
+     * Specify an existing previous render state that the ComponentTree can use to set the current
+     * values for providing previous versions of @Prop/@State variables.
+     */
+    public Builder previousRenderState(RenderState previousRenderState) {
+      this.previousRenderState = previousRenderState;
       return this;
     }
 

@@ -34,7 +34,6 @@ import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.internal.ArraySet;
 import com.facebook.yoga.YogaConfig;
 import com.facebook.yoga.YogaDirection;
-import com.facebook.yoga.YogaExperimentalFeature;
 import com.facebook.yoga.YogaNode;
 
 import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
@@ -139,6 +138,9 @@ public class ComponentsPools {
 
   static final RecyclePool<LogEvent> sLogEventPool =
       new RecyclePool<>("LogEvent", 10, true);
+
+  static final RecyclePool<RenderState> sRenderStatePool =
+      new RecyclePool<>("RenderState", 4, true);
 
   // Lazily initialized when acquired first time, as this is not a common use case.
   static RecyclePool<BorderColorDrawable> sBorderColorDrawablePool = null;
@@ -921,5 +923,24 @@ public class ComponentsPools {
     }
     event.reset();
     sLogEventPool.release(event);
+  }
+
+  public static RenderState acquireRenderState() {
+    RenderState renderState =
+        ComponentsConfiguration.usePooling ? sRenderStatePool.acquire() : null;
+    if (renderState == null) {
+      renderState = new RenderState();
+    }
+    return renderState;
+  }
+
+  @ThreadSafe(enableChecks = false)
+  public static void release(RenderState renderState) {
+    if (!ComponentsConfiguration.usePooling) {
+      return;
+    }
+
+    renderState.reset();
+    sRenderStatePool.release(renderState);
   }
 }

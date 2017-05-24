@@ -51,6 +51,14 @@ public abstract class ComponentLifecycle implements EventDispatcher {
 
   public interface StateContainer {}
 
+  /**
+   * A per-Component-class data structure to keep track of some of the last mounted @Prop/@State
+   * params a component was rendered with. The exact params that are tracked are just the ones
+   * needed to support that Component's use of {@link Diff} params in their lifecycle methods that
+   * allow Diff params (e.g. {@link #onCreateTransition}).
+   */
+  public interface RenderInfo {}
+
   private static final YogaBaselineFunction sBaselineFunction = new YogaBaselineFunction() {
     public float baseline(YogaNode cssNode, float width, float height) {
       final InternalNode node = (InternalNode) cssNode.getData();
@@ -609,6 +617,17 @@ public abstract class ComponentLifecycle implements EventDispatcher {
       int id,
       Object[] params) {
     return new EventHandler<E>(c, id, params);
+  }
+
+  protected boolean needsPreviousRenderInfo() {
+    return false;
+  }
+
+  protected RenderInfo recordRenderInfo(Component component, RenderInfo toRecycle) {
+    return null;
+  }
+
+  protected void applyPreviousRenderInfo(Component component, RenderInfo previousRenderInfo) {
   }
 
   public interface StateUpdate {
