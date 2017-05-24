@@ -9,6 +9,7 @@
 
 package com.facebook.litho.stetho;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import android.graphics.Rect;
@@ -33,6 +34,8 @@ import static com.facebook.litho.FrameworkLogEvents.EVENT_STETHO_UPDATE_COMPONEN
 public final class DebugComponentDescriptor
     extends AbstractChainedDescriptor<DebugComponent>
     implements HighlightableDescriptor<DebugComponent> {
+
+  private Map<String, Class> mTypeMap = new HashMap<>();
 
   @Override
   protected String onGetNodeName(DebugComponent element) {
@@ -123,6 +126,7 @@ public final class DebugComponentDescriptor
       for (String key : styles.keySet()) {
         final Object value = styles.get(key);
         if (isSupportedType(value.getClass())) {
+          mTypeMap.put(key, value.getClass());
           accumulator.store(key, styles.get(key).toString(), false);
         }
       }
@@ -131,6 +135,7 @@ public final class DebugComponentDescriptor
       for (String key : props.keySet()) {
         final Object value = props.get(key).second;
         if (isSupportedType(value.getClass())) {
+          mTypeMap.put(key, value.getClass());
           accumulator.store(key, value.toString(), false);
         }
       }
@@ -139,6 +144,7 @@ public final class DebugComponentDescriptor
       for (String key : state.keySet()) {
         final Object value = state.get(key);
         if (isSupportedType(value.getClass())) {
+          mTypeMap.put(key, value.getClass());
           accumulator.store(key, value.toString(), false);
         }
       }
@@ -151,15 +157,35 @@ public final class DebugComponentDescriptor
       String name,
       String value) {
     if ("layout".equals(ruleName)) {
-      element.setStyleOverride(name, value);
+      element.setStyleOverride(name, cast(name, value));
       logStyleUpdate(element.getContext());
     } else if ("props".equals(ruleName)) {
-      element.setPropOverride(name, value);
+      element.setPropOverride(name, cast(name, value));
       logStyleUpdate(element.getContext());
     } else if ("state".equals(ruleName)) {
-      element.setStateOverride(name, value);
+      element.setStateOverride(name, cast(name, value));
       logStyleUpdate(element.getContext());
     }
+  }
+
+  private Object cast(String name, String value) {
+    final Class type = mTypeMap.get(name);
+    if (type == int.class || type == Integer.class) {
+      return Integer.parseInt(value);
+    }
+    if (type == long.class || type == Long.class) {
+      return Long.parseLong(value);
+    }
+    if (type == float.class || type == Float.class) {
+      return Float.parseFloat(value);
+    }
+    if (type == double.class || type == Double.class) {
+      return Double.parseDouble(value);
+    }
+    if (type == boolean.class || type == Boolean.class) {
+      return Boolean.parseBoolean(value);
+    }
+    return value;
   }
 
   private void logStyleUpdate(ComponentContext context) {
