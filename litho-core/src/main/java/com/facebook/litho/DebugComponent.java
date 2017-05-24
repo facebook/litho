@@ -17,30 +17,25 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import android.graphics.Color;
 import android.graphics.Rect;
-import android.support.annotation.ColorInt;
-import android.support.annotation.Nullable;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.v4.util.ArrayMap;
+import android.support.v4.util.Pair;
 import android.support.v4.util.SimpleArrayMap;
 import android.view.View;
 
 import com.facebook.litho.annotations.Prop;
-import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
+import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaAlign;
-import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
 import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaPositionType;
-import com.facebook.yoga.YogaUnit;
 import com.facebook.yoga.YogaValue;
-
-import static com.facebook.yoga.YogaUnit.PERCENT;
-import static com.facebook.yoga.YogaUnit.POINT;
 
 /**
  * A DebugComponent represents a node in Litho's component hierarchy. DebugComponent removes the
@@ -50,22 +45,17 @@ import static com.facebook.yoga.YogaUnit.POINT;
  * implementation details of Litho.
  */
 public final class DebugComponent {
-
-  private static final YogaValue YOGA_VALUE_UNDEFINED =
-      new YogaValue(YogaConstants.UNDEFINED, YogaUnit.UNDEFINED);
-  private static final YogaValue YOGA_VALUE_AUTO =
-      new YogaValue(YogaConstants.UNDEFINED, YogaUnit.AUTO);
   private final static YogaEdge[] edges = YogaEdge.values();
   private final static SimpleArrayMap<String, DebugComponent> mDebugNodes = new SimpleArrayMap<>();
 
   private String mKey;
   private WeakReference<InternalNode> mNode;
   private int mComponentIndex;
-  private final SimpleArrayMap<String, SimpleArrayMap<String, String>> mStyleOverrides =
+  private final SimpleArrayMap<String, SimpleArrayMap<String, Object>> mStyleOverrides =
       new SimpleArrayMap<>();
-  private final SimpleArrayMap<String, SimpleArrayMap<String, String>> mPropOverrides =
+  private final SimpleArrayMap<String, SimpleArrayMap<String, Object>> mPropOverrides =
       new SimpleArrayMap<>();
-  private final SimpleArrayMap<String, SimpleArrayMap<String, String>> mStateOverrides =
+  private final SimpleArrayMap<String, SimpleArrayMap<String, Object>> mStateOverrides =
       new SimpleArrayMap<>();
 
   private DebugComponent() {}
@@ -239,65 +229,81 @@ public final class DebugComponent {
   /**
    * @return Key-value mapping of this components layout styles.
    */
-  public Map<String, String> getStyles() {
+  public Map<String, Object> getStyles() {
     final InternalNode node = mNode.get();
     if (node == null || !isLayoutNode()) {
       return Collections.EMPTY_MAP;
     }
 
-    final Map<String, String> styles = new ArrayMap<>();
+    final Map<String, Object> styles = new ArrayMap<>();
     final YogaNode yogaNode = node.mYogaNode;
     final YogaNode defaults = ComponentsPools.acquireYogaNode(node.getContext());
+    final ComponentContext context = node.getContext();
 
-    styles.put("background", "<drawable>");
-    styles.put("foreground", "<drawable>");
+    styles.put("background", getReferenceColor(context, node.getBackground()));
+    styles.put("foreground", getDrawableColor(node.getForeground()));
 
-    styles.put("direction", toCSSString(yogaNode.getStyleDirection()));
-    styles.put("flex-direction", toCSSString(yogaNode.getFlexDirection()));
-    styles.put("justify-content", toCSSString(yogaNode.getJustifyContent()));
-    styles.put("align-items", toCSSString(yogaNode.getAlignItems()));
-    styles.put("align-self", toCSSString(yogaNode.getAlignSelf()));
-    styles.put("align-content", toCSSString(yogaNode.getAlignContent()));
-    styles.put("position", toCSSString(yogaNode.getPositionType()));
-    styles.put("flex-grow", Float.toString(yogaNode.getFlexGrow()));
-    styles.put("flex-shrink", Float.toString(yogaNode.getFlexShrink()));
-    styles.put("flex-basis", yogaNode.getFlexBasis().toString());
+    styles.put("direction", yogaNode.getStyleDirection());
+    styles.put("flex-direction", yogaNode.getFlexDirection());
+    styles.put("justify-content", yogaNode.getJustifyContent());
+    styles.put("align-items", yogaNode.getAlignItems());
+    styles.put("align-self", yogaNode.getAlignSelf());
+    styles.put("align-content", yogaNode.getAlignContent());
+    styles.put("position", yogaNode.getPositionType());
+    styles.put("flex-grow", yogaNode.getFlexGrow());
+    styles.put("flex-shrink", yogaNode.getFlexShrink());
+    styles.put("flex-basis", yogaNode.getFlexBasis());
 
-    styles.put("width", yogaNode.getWidth().toString());
-    styles.put("min-width", yogaNode.getMinWidth().toString());
-    styles.put("max-width", yogaNode.getMaxWidth().toString());
-    styles.put("height", yogaNode.getHeight().toString());
-    styles.put("min-height", yogaNode.getMinHeight().toString());
-    styles.put("max-height", yogaNode.getMaxHeight().toString());
+    styles.put("width", yogaNode.getWidth());
+    styles.put("min-width", yogaNode.getMinWidth());
+    styles.put("max-width", yogaNode.getMaxWidth());
+    styles.put("height", yogaNode.getHeight());
+    styles.put("min-height", yogaNode.getMinHeight());
+    styles.put("max-height", yogaNode.getMaxHeight());
 
     for (YogaEdge edge : edges) {
-      final String key = "margin-" + toCSSString(edge);
-      styles.put(key, yogaNode.getMargin(edge).toString());
+      final String key = "margin-" + edge.toString().toLowerCase();
+      styles.put(key, yogaNode.getMargin(edge));
     }
 
     for (YogaEdge edge : edges) {
-      final String key = "padding-" + toCSSString(edge);
-      styles.put(key, yogaNode.getPadding(edge).toString());
+      final String key = "padding-" + edge.toString().toLowerCase();
+      styles.put(key, yogaNode.getPadding(edge));
     }
 
     for (YogaEdge edge : edges) {
-      final String key = "position-" + toCSSString(edge);
-      styles.put(key, yogaNode.getPosition(edge).toString());
+      final String key = "position-" + edge.toString().toLowerCase();
+      styles.put(key, yogaNode.getPosition(edge));
     }
 
     for (YogaEdge edge : edges) {
-      final String key = "border-" + toCSSString(edge);
-      styles.put(key, Float.toString(yogaNode.getBorder(edge)));
+      final String key = "border-" + edge.toString().toLowerCase();
+      final float border = yogaNode.getBorder(edge);
+      styles.put(key, Float.isNaN(border) ? 0 : border);
     }
 
     ComponentsPools.release(defaults);
     return styles;
   }
 
+  private Object getDrawableColor(Drawable drawable) {
+    if (drawable instanceof ColorDrawable) {
+      return ((ColorDrawable) drawable).getColor();
+    }
+    return 0;
+  }
+
+  private Object getReferenceColor(ComponentContext c, Reference<? extends Drawable> reference) {
+    if (reference != null) {
+      getDrawableColor(Reference.acquire(c, reference));
+    }
+    return 0;
+  }
+
   /**
    * @return Key-value mapping of this components props.
    */
-  public Map<String, String> getProps() {
+  public Map<String, Pair<Prop, Object>> getProps() {
     final InternalNode node = mNode.get();
     final Component component = node == null || node.getComponents().isEmpty()
         ? null
@@ -306,35 +312,17 @@ public final class DebugComponent {
       return Collections.EMPTY_MAP;
     }
 
-    final Map<String, String> props = new ArrayMap<>();
+    final Map<String, Pair<Prop, Object>> props = new ArrayMap<>();
     final ComponentLifecycle.StateContainer stateContainer = component.getStateContainer();
 
     for (Field field : component.getClass().getDeclaredFields()) {
       try {
         field.setAccessible(true);
         final Prop propAnnotation = field.getAnnotation(Prop.class);
-        if (isPrimitiveField(field) && propAnnotation != null) {
+        if (propAnnotation != null) {
           final Object value = field.get(component);
           if (value != stateContainer && !(value instanceof ComponentLifecycle)) {
-            if (value == null) {
-              props.put(field.getName(), "null");
-            } else if (propAnnotation.resType() == ResType.COLOR) {
-              final int i = (Integer) value;
-              props.put(
-                  field.getName(),
-                  ("#" +
-                      Integer.toHexString(((i & 0xF0000000) >> 28) & 0xf) +
-                      Integer.toHexString(((i & 0x0F000000) >> 24) & 0xf) +
-                      Integer.toHexString(((i & 0x00F00000) >> 20) & 0xf) +
-                      Integer.toHexString(((i & 0x000F0000) >> 16) & 0xf) +
-                      Integer.toHexString(((i & 0x0000F000) >> 12) & 0xf) +
-                      Integer.toHexString(((i & 0x00000F00) >> 8) & 0xf) +
-                      Integer.toHexString(((i & 0x000000F0) >> 4) & 0xf) +
-                      Integer.toHexString((i & 0x0000000F) & 0xf)
-                  ).toUpperCase());
-            } else {
-              props.put(field.getName(), value.toString());
-            }
+            props.put(field.getName(), new Pair<>(propAnnotation, value));
           }
         }
       } catch (IllegalAccessException e) {
@@ -348,7 +336,7 @@ public final class DebugComponent {
   /**
    * @return Key-value mapping of this components state.
    */
-  public Map<String, String> getState() {
+  public Map<String, Object> getState() {
     final InternalNode node = mNode.get();
     final Component component = node == null || node.getComponents().isEmpty()
         ? null
@@ -362,15 +350,15 @@ public final class DebugComponent {
       return Collections.EMPTY_MAP;
     }
 
-    final Map<String, String> state = new ArrayMap<>();
+    final Map<String, Object> state = new ArrayMap<>();
 
     for (Field field : stateContainer.getClass().getDeclaredFields()) {
       try {
         field.setAccessible(true);
-        if (isPrimitiveField(field) && field.getAnnotation(State.class) != null) {
+        if (field.getAnnotation(State.class) != null) {
           final Object value = field.get(stateContainer);
           if (!(value instanceof ComponentLifecycle)) {
-            state.put(field.getName(), value == null ? "null" : value.toString());
+            state.put(field.getName(), value);
           }
         }
       } catch (IllegalAccessException e) {
@@ -385,8 +373,8 @@ public final class DebugComponent {
    * @return Registed an override for a style key with a certain value. This override will be used
    * The next time this component is rendered.
    */
-  public synchronized void setStyleOverride(String key, String value) {
-    SimpleArrayMap<String, String> styles = mStyleOverrides.get(mKey);
+  public synchronized void setStyleOverride(String key, Object value) {
+    SimpleArrayMap<String, Object> styles = mStyleOverrides.get(mKey);
     if (styles == null) {
       styles = new SimpleArrayMap<>();
       mStyleOverrides.put(mKey, styles);
@@ -400,8 +388,8 @@ public final class DebugComponent {
    * @return Registed an override for a prop key with a certain value. This override will be used
    * The next time this component is rendered.
    */
-  public synchronized void setPropOverride(String key, String value) {
-    SimpleArrayMap<String, String> props = mPropOverrides.get(mKey);
+  public synchronized void setPropOverride(String key, Object value) {
+    SimpleArrayMap<String, Object> props = mPropOverrides.get(mKey);
     if (props == null) {
       props = new SimpleArrayMap<>();
       mPropOverrides.put(mKey, props);
@@ -415,8 +403,8 @@ public final class DebugComponent {
    * @return Registed an override for a state key with a certain value. This override will be used
    * The next time this component is rendered.
    */
-  public synchronized void setStateOverride(String key, String value) {
-    SimpleArrayMap<String, String> props = mStateOverrides.get(mKey);
+  public synchronized void setStateOverride(String key, Object value) {
+    SimpleArrayMap<String, Object> props = mStateOverrides.get(mKey);
     if (props == null) {
       props = new SimpleArrayMap<>();
       mStateOverrides.put(mKey, props);
@@ -466,61 +454,61 @@ public final class DebugComponent {
     }
 
     if (mStyleOverrides.containsKey(mKey)) {
-      final SimpleArrayMap<String, String> styles = mStyleOverrides.get(mKey);
+      final SimpleArrayMap<String, Object> styles = mStyleOverrides.get(mKey);
       for (int i = 0, size = styles.size(); i < size; i++) {
         final String key = styles.keyAt(i);
-        final String value = styles.get(key);
+        final Object value = styles.get(key);
 
         try {
           if (key.equals("background")) {
-            node.backgroundColor(parseColor(value));
+            node.backgroundColor((Integer) value);
           }
 
           if (key.equals("foreground")) {
-            node.foregroundColor(parseColor(value));
+            node.foregroundColor((Integer) value);
           }
 
           if (key.equals("direction")) {
-            node.layoutDirection(YogaDirection.valueOf(toEnumString(value)));
+            node.layoutDirection(YogaDirection.valueOf(((String) value).toUpperCase()));
           }
 
           if (key.equals("flex-direction")) {
-            node.flexDirection(YogaFlexDirection.valueOf(toEnumString(value)));
+            node.flexDirection(YogaFlexDirection.valueOf(((String) value).toUpperCase()));
           }
 
           if (key.equals("justify-content")) {
-            node.justifyContent(YogaJustify.valueOf(toEnumString(value)));
+            node.justifyContent(YogaJustify.valueOf(((String) value).toUpperCase()));
           }
 
           if (key.equals("align-items")) {
-            node.alignItems(YogaAlign.valueOf(toEnumString(value)));
+            node.alignItems(YogaAlign.valueOf(((String) value).toUpperCase()));
           }
 
           if (key.equals("align-self")) {
-            node.alignSelf(YogaAlign.valueOf(toEnumString(value)));
+            node.alignSelf(YogaAlign.valueOf(((String) value).toUpperCase()));
           }
 
           if (key.equals("align-content")) {
-            node.alignContent(YogaAlign.valueOf(toEnumString(value)));
+            node.alignContent(YogaAlign.valueOf(((String) value).toUpperCase()));
           }
 
           if (key.equals("position")) {
-            node.positionType(YogaPositionType.valueOf(toEnumString(value)));
+            node.positionType(YogaPositionType.valueOf(((String) value).toUpperCase()));
           }
 
           if (key.equals("flex-grow")) {
-            node.flexGrow(parseFloat(value));
+            node.flexGrow((Float) value);
           }
 
           if (key.equals("flex-shrink")) {
-            node.flexShrink(parseFloat(value));
+            node.flexShrink((Float) value);
           }
         } catch (IllegalArgumentException ignored) {
           // ignore errors when the user suplied an invalid enum value
         }
 
         if (key.equals("flex-basis")) {
-          final YogaValue flexBasis = yogaValueFromString(value);
+          final YogaValue flexBasis = YogaValue.parse(((String) value).toLowerCase());
           if (flexBasis == null) {
             continue;
           }
@@ -539,7 +527,7 @@ public final class DebugComponent {
         }
 
         if (key.equals("width")) {
-          final YogaValue width = yogaValueFromString(value);
+          final YogaValue width = YogaValue.parse(((String) value).toLowerCase());
           if (width == null) {
             continue;
           }
@@ -558,7 +546,7 @@ public final class DebugComponent {
         }
 
         if (key.equals("min-width")) {
-          final YogaValue minWidth = yogaValueFromString(value);
+          final YogaValue minWidth = YogaValue.parse(((String) value).toLowerCase());
           if (minWidth == null) {
             continue;
           }
@@ -574,7 +562,7 @@ public final class DebugComponent {
         }
 
         if (key.equals("max-width")) {
-          final YogaValue maxWidth = yogaValueFromString(value);
+          final YogaValue maxWidth = YogaValue.parse(((String) value).toLowerCase());
           if (maxWidth == null) {
             continue;
           }
@@ -590,7 +578,7 @@ public final class DebugComponent {
         }
 
         if (key.equals("height")) {
-          final YogaValue height = yogaValueFromString(value);
+          final YogaValue height = YogaValue.parse(((String) value).toLowerCase());
           if (height == null) {
             continue;
           }
@@ -609,7 +597,7 @@ public final class DebugComponent {
         }
 
         if (key.equals("min-height")) {
-          final YogaValue minHeight = yogaValueFromString(value);
+          final YogaValue minHeight = YogaValue.parse(((String) value).toLowerCase());
           if (minHeight == null) {
             continue;
           }
@@ -625,7 +613,7 @@ public final class DebugComponent {
         }
 
         if (key.equals("max-height")) {
-          final YogaValue maxHeight = yogaValueFromString(value);
+          final YogaValue maxHeight = YogaValue.parse(((String) value).toLowerCase());
           if (maxHeight == null) {
             continue;
           }
@@ -641,8 +629,8 @@ public final class DebugComponent {
         }
 
         for (YogaEdge edge : edges) {
-          if (key.equals("margin-" + toCSSString(edge))) {
-            final YogaValue margin = yogaValueFromString(value);
+          if (key.equals("margin-" + edge.toString().toLowerCase())) {
+            final YogaValue margin = YogaValue.parse(((String) value).toLowerCase());
             if (margin == null) {
               continue;
             }
@@ -662,8 +650,8 @@ public final class DebugComponent {
         }
 
         for (YogaEdge edge : edges) {
-          if (key.equals("padding-" + toCSSString(edge))) {
-            final YogaValue padding = yogaValueFromString(value);
+          if (key.equals("padding-" + edge.toString().toLowerCase())) {
+            final YogaValue padding = YogaValue.parse(((String) value).toLowerCase());
             if (padding == null) {
               continue;
             }
@@ -680,8 +668,8 @@ public final class DebugComponent {
         }
 
         for (YogaEdge edge : edges) {
-          if (key.equals("position-" + toCSSString(edge))) {
-            final YogaValue position = yogaValueFromString(value);
+          if (key.equals("position-" + edge.toString().toLowerCase())) {
+            final YogaValue position = YogaValue.parse(((String) value).toLowerCase());
             if (position == null) {
               continue;
             }
@@ -698,9 +686,8 @@ public final class DebugComponent {
         }
 
         for (YogaEdge edge : edges) {
-          if (key.equals("border-" + toCSSString(edge))) {
-            final float border = parseFloat(value);
-            node.borderWidthPx(edge, FastMath.round(border));
+          if (key.equals("border-" + edge.toString().toLowerCase())) {
+            node.borderWidthPx(edge, FastMath.round((Float) value));
           }
         }
       }
@@ -709,7 +696,7 @@ public final class DebugComponent {
     if (mPropOverrides.containsKey(mKey)) {
       final Component component = node.getRootComponent();
       if (component != null) {
-        final SimpleArrayMap<String, String> props = mPropOverrides.get(mKey);
+        final SimpleArrayMap<String, Object> props = mPropOverrides.get(mKey);
         for (int i = 0, size = props.size(); i < size; i++) {
           final String key = props.keyAt(i);
           applyReflectiveOverride(component, key, props.get(key));
@@ -722,7 +709,7 @@ public final class DebugComponent {
       final ComponentLifecycle.StateContainer stateContainer =
           component == null ? null : component.getStateContainer();
       if (stateContainer != null) {
-        final SimpleArrayMap<String, String> state = mStateOverrides.get(mKey);
+        final SimpleArrayMap<String, Object> state = mStateOverrides.get(mKey);
         for (int i = 0, size = state.size(); i < size; i++) {
           final String key = state.keyAt(i);
           applyReflectiveOverride(stateContainer, key, state.get(key));
@@ -750,118 +737,14 @@ public final class DebugComponent {
     return node.getY() + getYFromRoot(parent(node));
   }
 
-  private static String toCSSString(Object obj) {
-    final String str = obj.toString();
-    final StringBuilder builder = new StringBuilder(str.length());
-    builder.append(str);
-    for (int i = 0, length = builder.length(); i < length; ++i) {
-      final char oldChar = builder.charAt(i);
-      final char lowerChar = Character.toLowerCase(oldChar);
-      final char newChar = lowerChar == '_' ? '-' : lowerChar;
-      builder.setCharAt(i, newChar);
-    }
-    return builder.toString();
-  }
-
-  private static boolean isPrimitiveField(Field field) {
-    return field.getType().isPrimitive() ||
-        CharSequence.class.isAssignableFrom(field.getType());
-  }
-
-  private static String toEnumString(String str) {
-    final StringBuilder builder = new StringBuilder(str.length());
-    builder.append(str);
-    for (int i = 0, length = builder.length(); i < length; ++i) {
-      final char oldChar = builder.charAt(i);
-      final char upperChar = Character.toUpperCase(oldChar);
-      final char newChar = upperChar == '-' ? '_' : upperChar;
-      builder.setCharAt(i, newChar);
-    }
-    return builder.toString();
-  }
-
-  private static float parseFloat(@Nullable String s) {
-    if (s == null) {
-      return 0;
-    }
-
-    try {
-      return Float.parseFloat(s);
-    } catch (NumberFormatException e) {
-      return 0;
-    }
-  }
-
-  @ColorInt
-  private static int parseColor(String color) {
-    if (color == null || color.length() == 0) {
-      return Color.TRANSPARENT;
-    }
-
-    // Color.parse does not handle hax code with 3 ints e.g. #123
-    if (color.length() == 4) {
-      final char r = color.charAt(1);
-      final char g = color.charAt(2);
-      final char b = color.charAt(3);
-      color = "#" + r + r + g + g + b + b;
-    }
-
-    return Color.parseColor(color);
-  }
-
-  private void applyReflectiveOverride(Object o, String key, String value) {
+  private void applyReflectiveOverride(Object o, String key, Object value) {
     try {
       final Field field = o.getClass().getDeclaredField(key);
-      final Class type = field.getType();
-      final Prop prop = field.getAnnotation(Prop.class);
       field.setAccessible(true);
-
-      if (type.equals(short.class)) {
-        field.set(o, Short.parseShort(value));
-      } else if (type.equals(int.class)) {
-        if (prop != null && prop.resType() == ResType.COLOR) {
-          field.set(o, parseColor(value));
-        } else {
-          field.set(o, Integer.parseInt(value));
-        }
-      } else if (type.equals(long.class)) {
-        field.set(o, Long.parseLong(value));
-      } else if (type.equals(float.class)) {
-        field.set(o, Float.parseFloat(value));
-      } else if (type.equals(double.class)) {
-        field.set(o, Double.parseDouble(value));
-      } else if (type.equals(boolean.class)) {
-        field.set(o, Boolean.parseBoolean(value));
-      } else if (type.equals(byte.class)) {
-        field.set(o, Byte.parseByte(value));
-      } else if (type.equals(char.class)) {
-        field.set(o, value.charAt(0));
-      } else if (CharSequence.class.isAssignableFrom(type)) {
-        field.set(o, value);
-      }
+      field.set(o, value);
     } catch (Exception e) {
       e.printStackTrace();
     }
-  }
-
-  private static YogaValue yogaValueFromString(String s) {
-    if (s == null) {
-      return null;
-    }
-
-    if ("undefined".equals(s)) {
-      return YOGA_VALUE_UNDEFINED;
-    }
-
-    if ("auto".equals(s)) {
-      return YOGA_VALUE_AUTO;
-    }
-
-    if (s.endsWith("%")) {
-      return new YogaValue(parseFloat(s.substring(0, s.length() - 1)), PERCENT);
-    }
-
-    return new YogaValue(parseFloat(s), POINT);
   }
 
   private static String createKey(InternalNode node, int componentIndex) {

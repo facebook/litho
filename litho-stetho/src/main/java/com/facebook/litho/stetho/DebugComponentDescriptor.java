@@ -12,17 +12,20 @@ package com.facebook.litho.stetho;
 import java.util.Map;
 
 import android.graphics.Rect;
+import android.support.v4.util.Pair;
 import android.view.View;
 
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.DebugComponent;
+import com.facebook.litho.annotations.Prop;
 import com.facebook.stetho.common.Accumulator;
 import com.facebook.stetho.inspector.elements.AbstractChainedDescriptor;
 import com.facebook.stetho.inspector.elements.StyleAccumulator;
 import com.facebook.stetho.inspector.elements.StyleRuleNameAccumulator;
 import com.facebook.stetho.inspector.elements.AttributeAccumulator;
 import com.facebook.stetho.inspector.elements.android.HighlightableDescriptor;
+import com.facebook.yoga.YogaValue;
 
 import static com.facebook.litho.FrameworkLogEvents.EVENT_STETHO_INSPECT_COMPONENT;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_STETHO_UPDATE_COMPONENT;
@@ -112,19 +115,28 @@ public final class DebugComponentDescriptor
       StyleAccumulator accumulator) {
 
     if ("layout".equals(ruleName)) {
-      final Map<String, String> styles = element.getStyles();
+      final Map<String, Object> styles = element.getStyles();
       for (String key : styles.keySet()) {
-        accumulator.store(key, styles.get(key), false);
+        final Object value = styles.get(key);
+        if (isSupportedType(value.getClass())) {
+          accumulator.store(key, styles.get(key).toString(), false);
+        }
       }
     } else if ("props".equals(ruleName)) {
-      final Map<String, String> props = element.getProps();
+      final Map<String, Pair<Prop, Object>> props = element.getProps();
       for (String key : props.keySet()) {
-        accumulator.store(key, props.get(key), false);
+        final Object value = props.get(key).second;
+        if (isSupportedType(value.getClass())) {
+          accumulator.store(key, value.toString(), false);
+        }
       }
     } else if ("state".equals(ruleName)) {
-      final Map<String, String> state = element.getState();
+      final Map<String, Object> state = element.getState();
       for (String key : state.keySet()) {
-        accumulator.store(key, state.get(key), false);
+        final Object value = state.get(key);
+        if (isSupportedType(value.getClass())) {
+          accumulator.store(key, value.toString(), false);
+        }
       }
     }
   }
@@ -158,5 +170,21 @@ public final class DebugComponentDescriptor
     if (logger != null) {
       logger.log(logger.newEvent(EVENT_STETHO_INSPECT_COMPONENT));
     }
+  }
+
+  public boolean isSupportedType(Class c) {
+    return c == YogaValue.class ||
+        c == int.class ||
+        c == Integer.class ||
+        c == long.class ||
+        c == Long.class ||
+        c == float.class ||
+        c == Float.class ||
+        c == double.class ||
+        c == Double.class ||
+        c == boolean.class ||
+        c == Boolean.class ||
+        Enum.class.isAssignableFrom(c) ||
+        CharSequence.class.isAssignableFrom(c);
   }
 }
