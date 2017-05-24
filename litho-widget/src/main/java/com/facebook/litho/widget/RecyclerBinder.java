@@ -45,6 +45,7 @@ import com.facebook.litho.utils.IncrementalMountUtils;
 
 import static android.support.v7.widget.OrientationHelper.HORIZONTAL;
 import static android.support.v7.widget.OrientationHelper.VERTICAL;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static com.facebook.litho.MeasureComparisonUtils.isMeasureSpecCompatible;
 
 /**
@@ -907,11 +908,23 @@ public class RecyclerBinder implements
 
   @GuardedBy("this")
   private int getActualChildrenWidthSpec(final ComponentTreeHolder treeHolder) {
+    if (mIsMeasured.get() && !mRequiresRemeasure.get()) {
+      return mLayoutInfo.getChildWidthSpec(
+          SizeSpec.makeSizeSpec(mMeasuredSize.width, SizeSpec.EXACTLY),
+          treeHolder.getComponentInfo());
+    }
+
     return mLayoutInfo.getChildWidthSpec(mLastWidthSpec, treeHolder.getComponentInfo());
   }
 
   @GuardedBy("this")
   private int getActualChildrenHeightSpec(final ComponentTreeHolder treeHolder) {
+    if (mIsMeasured.get() && !mRequiresRemeasure.get()) {
+      return mLayoutInfo.getChildHeightSpec(
+          SizeSpec.makeSizeSpec(mMeasuredSize.height, SizeSpec.EXACTLY),
+          treeHolder.getComponentInfo());
+    }
+
     return mLayoutInfo.getChildHeightSpec(mLastHeightSpec, treeHolder.getComponentInfo());
   }
 
@@ -952,12 +965,12 @@ public class RecyclerBinder implements
           lithoView.setLayoutParams(
               new RecyclerView.LayoutParams(
                   ViewGroup.LayoutParams.MATCH_PARENT,
-                  ViewGroup.LayoutParams.WRAP_CONTENT));
+                  WRAP_CONTENT));
           break;
         default:
           lithoView.setLayoutParams(
               new RecyclerView.LayoutParams(
-                  ViewGroup.LayoutParams.WRAP_CONTENT,
+                  WRAP_CONTENT,
                   ViewGroup.LayoutParams.MATCH_PARENT));
       }
     }
@@ -982,6 +995,19 @@ public class RecyclerBinder implements
       if (!componentTreeHolder.isTreeValid()) {
         componentTreeHolder
             .computeLayoutSync(mComponentContext, childrenWidthSpec, childrenHeightSpec, null);
+      }
+
+      final RecyclerView.LayoutParams layoutParams =
+          (RecyclerView.LayoutParams) lithoView.getLayoutParams();
+
+      switch (mLayoutInfo.getScrollDirection()) {
+        case OrientationHelper.VERTICAL:
+          layoutParams.width = SizeSpec.getSize(childrenWidthSpec);
+          layoutParams.height = WRAP_CONTENT;
+          break;
+        default:
+          layoutParams.width = WRAP_CONTENT;
+          layoutParams.height = SizeSpec.getSize(childrenHeightSpec);
       }
 
       lithoView.setComponentTree(componentTreeHolder.getComponentTree());
