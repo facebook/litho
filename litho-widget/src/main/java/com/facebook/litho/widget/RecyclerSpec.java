@@ -29,11 +29,13 @@ import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnBind;
 import com.facebook.litho.annotations.OnBoundsDefined;
 import com.facebook.litho.annotations.OnCreateMountContent;
+import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnMeasure;
 import com.facebook.litho.annotations.OnMount;
 import com.facebook.litho.annotations.OnPrepare;
 import com.facebook.litho.annotations.OnUnbind;
 import com.facebook.litho.annotations.OnUnmount;
+import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
@@ -64,13 +66,18 @@ class RecyclerSpec {
 
   @OnMeasure
   static void onMeasure(
-      ComponentContext context,
+      ComponentContext c,
       ComponentLayout layout,
       int widthSpec,
       int heightSpec,
       Size measureOutput,
-      @Prop Binder<RecyclerView> binder) {
-    binder.measure(measureOutput, widthSpec, heightSpec);
+      @Prop Binder<RecyclerView> binder,
+      @Prop(optional = true) boolean canMeasure) {
+    binder.measure(
+        measureOutput,
+        widthSpec,
+        heightSpec,
+        canMeasure ? Recycler.onRemeasure(c) : null);
   }
 
   @OnBoundsDefined
@@ -267,6 +274,17 @@ class RecyclerSpec {
         (previous == null) ? (next == null) : previous.equals(next);
 
     return !itemDecorationIsEqual;
+  }
+
+  @OnEvent(ReMeasureEvent.class)
+  protected static void onRemeasure(ComponentContext c) {
+    Recycler.onUpdateMeasure(c);
+  }
+
+  @OnUpdateState
+  protected static void onUpdateMeasure() {
+    // We don't really need to update a state here. This state update is only really used to force
+    // a re-layout on the tree containing this Recycler.
   }
 
   public static class NoUpdateItemAnimator extends DefaultItemAnimator {

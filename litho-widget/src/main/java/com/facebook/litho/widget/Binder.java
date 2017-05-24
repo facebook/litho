@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
+import com.facebook.litho.EventHandler;
 import com.facebook.litho.Size;
 
 import static com.facebook.litho.ThreadUtils.assertMainThread;
@@ -40,7 +41,11 @@ public interface Binder<V extends ViewGroup> {
   /**
    * Measure the content of this Binder. Call this method from the Component's onMeasure.
    */
-  void measure(Size outSize, int widthSpec, int heightSpec);
+  void measure(
+      Size outSize,
+      int widthSpec,
+      int heightSpec,
+      EventHandler<ReMeasureEvent> reMeasureEventHandler);
 
   /**
    * Returns the component at the given position in the binder.

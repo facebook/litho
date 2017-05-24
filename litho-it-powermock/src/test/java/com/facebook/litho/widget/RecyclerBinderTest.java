@@ -23,6 +23,7 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentInfo;
 import com.facebook.litho.ComponentTree;
+import com.facebook.litho.EventHandler;
 import com.facebook.litho.LayoutHandler;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
@@ -47,6 +48,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -140,7 +142,7 @@ public class RecyclerBinderTest {
     final int widthSpec = SizeSpec.makeSizeSpec(200, SizeSpec.AT_MOST);
     final int heightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
 
-    mRecyclerBinder.measure(size, widthSpec, heightSpec);
+    mRecyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
 
     TestComponentTreeHolder componentTreeHolder =
         mHoldersForComponents.get(components.get(0).getComponent());
@@ -298,7 +300,7 @@ public class RecyclerBinderTest {
     int widthSpec = SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY);
     int heightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
 
-    mRecyclerBinder.measure(new Size(), widthSpec, heightSpec);
+    mRecyclerBinder.measure(new Size(), widthSpec, heightSpec, null);
     final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
 
     TestComponentTreeHolder holder = mHoldersForComponents.get(components.get(0).getComponent());
@@ -350,7 +352,7 @@ public class RecyclerBinderTest {
     int widthSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
     int heightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
 
-    mRecyclerBinder.measure(size, widthSpec, heightSpec);
+    mRecyclerBinder.measure(size, widthSpec, heightSpec, null);
 
     TestComponentTreeHolder componentTreeHolder =
         mHoldersForComponents.get(components.get(0).getComponent());
@@ -379,7 +381,7 @@ public class RecyclerBinderTest {
     final int widthSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
     final int heightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
 
-    mRecyclerBinder.measure(size, widthSpec, heightSpec);
+    mRecyclerBinder.measure(size, widthSpec, heightSpec, null);
 
     Assert.assertEquals(200, size.width);
 
@@ -422,6 +424,50 @@ public class RecyclerBinderTest {
   }
 
   @Test
+    public void testRequestRemeasure() {
+      final Size size = new Size();
+      final int widthSpec = SizeSpec.makeSizeSpec(200, SizeSpec.AT_MOST);
+      final int heightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
+      final RecyclerView recyclerView = mock(RecyclerView.class);
+
+      mRecyclerBinder.mount(recyclerView);
+      mRecyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
+
+      Assert.assertEquals(0, size.width);
+
+      final List<ComponentInfo> components = new ArrayList<>();
+      for (int i = 0; i < 100; i++) {
+        components.add(ComponentInfo.create().component(mock(Component.class)).build());
+        mRecyclerBinder.insertItemAt(i, components.get(i));
+      }
+
+      verify(recyclerView, times(100)).removeCallbacks(any(Runnable.class));
+      verify(recyclerView, times(100)).postOnAnimation(any(Runnable.class));
+    }
+
+    @Test
+    public void testDoesntRequestRemeasure() {
+      final Size size = new Size();
+      final int widthSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
+      final int heightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
+      final RecyclerView recyclerView = mock(RecyclerView.class);
+
+      mRecyclerBinder.mount(recyclerView);
+      mRecyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
+
+      Assert.assertEquals(200, size.width);
+
+      final List<ComponentInfo> components = new ArrayList<>();
+      for (int i = 0; i < 100; i++) {
+        components.add(ComponentInfo.create().component(mock(Component.class)).build());
+        mRecyclerBinder.insertItemAt(i, components.get(i));
+      }
+
+      verify(recyclerView, never()).removeCallbacks(any(Runnable.class));
+      verify(recyclerView, never()).postOnAnimation(any(Runnable.class));
+    }
+
+  @Test
   public void testRangeBiggerThanContent() {
     final List<ComponentInfo> components = new ArrayList<>();
     for (int i = 0; i < 2; i++) {
@@ -437,7 +483,7 @@ public class RecyclerBinderTest {
     int widthSpec = SizeSpec.makeSizeSpec(200, SizeSpec.AT_MOST);
     int heightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
 
-    mRecyclerBinder.measure(size, widthSpec, heightSpec);
+    mRecyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
 
     TestComponentTreeHolder componentTreeHolder =
         mHoldersForComponents.get(components.get(0).getComponent());
@@ -523,7 +569,7 @@ public class RecyclerBinderTest {
     int widthSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
     int heightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
 
-    mRecyclerBinder.measure(size, widthSpec, heightSpec);
+    mRecyclerBinder.measure(size, widthSpec, heightSpec, null);
 
     assertTrue(mHoldersForComponents.get(components.get(5).getComponent()).isTreeValid());
 
@@ -931,7 +977,7 @@ public class RecyclerBinderTest {
     int widthSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
     int heightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
 
-    mRecyclerBinder.measure(size, widthSpec, heightSpec);
+    mRecyclerBinder.measure(size, widthSpec, heightSpec, null);
 
     return components;
   }
