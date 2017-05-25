@@ -10,7 +10,7 @@
 package com.facebook.litho;
 
 import java.lang.ref.WeakReference;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
@@ -32,7 +32,8 @@ public final class DisplayListPrefetcher implements Runnable {
    * Keeps average display list creation time per unique component type defined by component class
    * name.
    */
-  private static final HashMap<String, Long> sAverageDLPrefetchDurationNs = new HashMap<>();
+  private static final AverageDLPrefetchDuration sAverageDLPrefetchDurationNs
+      = new AverageDLPrefetchDuration();
 
   private static DisplayListPrefetcher sDisplayListPrefetcher = new DisplayListPrefetcher();
 
@@ -121,8 +122,8 @@ public final class DisplayListPrefetcher implements Runnable {
   }
 
   private boolean canPrefetchOnTime(String componentType, long startTimeNs, long deadlineNs) {
-    final Long expectedPrefetchDurationNs = sAverageDLPrefetchDurationNs.get(componentType);
-    return expectedPrefetchDurationNs == null
+    final long expectedPrefetchDurationNs = sAverageDLPrefetchDurationNs.get(componentType);
+    return expectedPrefetchDurationNs == -1L
         || (startTimeNs + expectedPrefetchDurationNs < deadlineNs);
   }
 
@@ -150,9 +151,9 @@ public final class DisplayListPrefetcher implements Runnable {
   }
 
   private void updateAveragePrefetchDuration(String componentType, long actualElapsedNs) {
-    final Long expectedPrefetchDurationNs = sAverageDLPrefetchDurationNs.get(componentType);
+    final long expectedPrefetchDurationNs = sAverageDLPrefetchDurationNs.get(componentType);
     final long updatedValue;
-    if (expectedPrefetchDurationNs == null) {
+    if (expectedPrefetchDurationNs == -1L) {
       updatedValue = actualElapsedNs;
     } else {
       // Not actual average, but good approximation.
@@ -163,5 +164,44 @@ public final class DisplayListPrefetcher implements Runnable {
 
   public synchronized boolean hasPrefetchItems() {
     return !mLayoutStates.isEmpty();
+  }
+
+  /**
+   * Data structure to hold mapping between String and long primitive. We are using custom data
+   * structure instead of using HashMap&lt;String, Long&gt; to avoid boxing/unboxing of Long type.
+   *
+   * NOTE: get() and put() are linear operations, but we don't expect to have large number of items
+   *       so for our case that is acceptable.
+   */
+  static final class AverageDLPrefetchDuration {
+    static final int INITIAL_SIZE = 10;
+
+    private long[] durationsNs = new long[INITIAL_SIZE];
+    private final ArrayList<String> componentTypes = new ArrayList<>();
+
+    long get(String componentType) {
+      final int indexOf = componentTypes.indexOf(componentType);
+      if (indexOf < 0) {
+        return -1L;
+      }
+
+      return durationsNs[indexOf];
+    }
+
+    void put(String componentType, long durationNs) {
+      final int indexOfKey = componentTypes.indexOf(componentType);
+      if (indexOfKey == -1) {
+        if (componentTypes.size() >= durationsNs.length) {
+          final long[] oldDurationsNs = durationsNs;
+          durationsNs = new long[durationsNs.length + INITIAL_SIZE];
+          System.arraycopy(oldDurationsNs, 0, durationsNs, 0, oldDurationsNs.length);
+        }
+
+        durationsNs[componentTypes.size()] = durationNs;
+        componentTypes.add(componentType);
+      } else {
+        durationsNs[indexOfKey] = durationNs;
+      }
+    }
   }
 }
