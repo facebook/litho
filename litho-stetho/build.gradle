@@ -16,15 +16,15 @@ android {
 }
 
 dependencies {
-    compile project(':litho-core')
-    compile project(':litho-annotations')
+    implementation project(':litho-core')
+    implementation project(':litho-annotations')
 
     // Annotations
-    provided deps.jsr305
-    provided deps.inferAnnotations
+    compileOnly deps.jsr305
+    compileOnly deps.inferAnnotations
 
     // First-party
-    compile deps.stetho
+    implementation deps.stetho
 }
 
 apply from: rootProject.file('gradle/release.gradle')

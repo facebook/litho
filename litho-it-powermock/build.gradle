@@ -26,17 +26,17 @@ android {
 }
 
 dependencies {
-    compile project(':litho-core')
+    implementation project(':litho-core')
     // We are reusing some of the testing resources
-    compile project(':litho-it')
-    testCompile project(':litho-stubs')
-    testCompile project(':litho-testing')
-    testCompile project(':litho-widget')
+    implementation project(':litho-it')
+    testImplementation project(':litho-stubs')
+    testImplementation project(':litho-testing')
+    testImplementation project(':litho-widget')
 
     // Testing
-    testCompile deps.robolectric
-    testCompile deps.soloader
-    testCompile deps.powermockMockito
-    testCompile deps.powermockJunit
-    testCompile deps.powermockXstream
+    testImplementation deps.robolectric
+    testImplementation deps.soloader
+    testImplementation deps.powermockMockito
+    testImplementation deps.powermockJunit
+    testImplementation deps.powermockXstream
 }

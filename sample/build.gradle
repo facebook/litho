@@ -18,21 +18,23 @@ android {
 }
 
 dependencies {
-    compile project(':litho-core')
-    compile project(':litho-stetho')
-    compile project(':litho-widget')
-    compile project(':litho-fresco')
-    provided project(':litho-annotations')
+    implementation project(':litho-core')
+    implementation project(':litho-stetho')
+    implementation project(':litho-widget')
+    implementation project(':litho-fresco')
+    compileOnly project(':litho-annotations')
     annotationProcessor project(':litho-processor')
 
     // First-party
-    compile deps.soloader
+    implementation deps.soloader
+    implementation deps.fresco
+    implementation deps.stetho
 
     // Annotations
-    provided deps.jsr305
-    provided deps.inferAnnotations
+    compileOnly deps.jsr305
+    compileOnly deps.inferAnnotations
 
     // Support Library
-    compile deps.supportAppCompat
-    compile deps.supportRecyclerView
+    implementation deps.supportAppCompat
+    implementation deps.supportRecyclerView
 }

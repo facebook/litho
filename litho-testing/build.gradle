@@ -13,16 +13,20 @@ android {
 }
 
 dependencies {
-    compile project(':litho-core')
-    compile project(':litho-processor')
+    implementation project(':litho-core')
+    implementation project(':litho-processor')
+    annotationProcessor project(':litho-processor')
 
-    compile deps.assertjCore
-    compile deps.guava
-    compile deps.jsr305
-    compile deps.junit
-    compile deps.mockitoCore
-    compile deps.powermockReflect
-    compile deps.robolectric
+    implementation deps.javapoet
+    implementation deps.assertjCore
+    implementation deps.guava
+    implementation deps.jsr305
+    implementation deps.junit
+    implementation deps.mockitoCore
+    implementation deps.powermockReflect
+    implementation deps.robolectric
+    implementation deps.supportAppCompat
+    compileOnly deps.supportAnnotations
 }
 
 apply from: rootProject.file('gradle/release.gradle')

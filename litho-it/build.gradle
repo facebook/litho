@@ -8,6 +8,15 @@ android {
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                // We transitively depend on auto-value which we don't want to
+                // use as annotation processor at this time, so we can safely
+                // disable this warning.
+                includeCompileClasspath false
+            }
+        }
     }
 
     testOptions {
@@ -21,20 +30,27 @@ android {
 }
 
 dependencies {
-    compile project(':litho-core')
-    provided project(':litho-annotations')
-    testCompile project(':litho-stubs')
-    testCompile project(':litho-testing')
-    testCompile project(':litho-widget')
+    api project(':litho-core')
+    compileOnly project(':litho-annotations')
+    testImplementation project(':litho-stubs')
+    testImplementation project(':litho-testing')
+    testImplementation project(':litho-widget')
+    testImplementation project(':litho-processor')
 
     // Testing
-    testCompile deps.compileTesting
-    testCompile deps.powermockMockito
-    testCompile deps.powermockJunit
-    testCompile deps.powermockXstream
-    testCompile deps.robolectric
-    testCompile deps.soloader
-    testCompile files(getRuntimeJar())
+    testCompileOnly deps.jsr305
+    testImplementation deps.assertjCore
+    testImplementation deps.compileTesting
+    testImplementation deps.javapoet
+    testImplementation deps.powermockJunit
+    testImplementation deps.powermockMockito
+    testImplementation deps.powermockXstream
+    testImplementation deps.robolectric
+    testImplementation deps.soloader
+    testImplementation deps.supportAppCompat
+    testImplementation deps.supportCoreUi
+    testImplementation deps.supportRecyclerView
+    testImplementation files(getRuntimeJar())
 
 }
 

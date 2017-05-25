@@ -18,11 +18,11 @@ android {
 }
 
 dependencies {
-    compile project(':litho-core')
-    compile project(':litho-widget')
-    provided project(':litho-annotations')
+    implementation project(':litho-core')
+    implementation project(':litho-widget')
+    compileOnly project(':litho-annotations')
     annotationProcessor project(':litho-processor')
 
-    compile deps.soloader
-    compile deps.supportRecyclerView
+    implementation deps.soloader
+    implementation deps.supportRecyclerView
 }
