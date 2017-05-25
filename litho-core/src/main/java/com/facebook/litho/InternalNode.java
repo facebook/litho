@@ -158,7 +158,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private NodeInfo mNodeInfo;
   private boolean mForceViewWrapping;
   private String mTransitionKey;
-  private float mVisibleRatio;
+  private float mVisibleHeightRatio;
+  private float mVisibleWidthRatio;
   private EventHandler<VisibleEvent> mVisibleHandler;
   private EventHandler<FocusedVisibleEvent> mFocusedHandler;
   private EventHandler<UnfocusedVisibleEvent> mUnfocusedHandler;
@@ -1152,13 +1153,23 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
-  public ContainerBuilder visibleRatio(float visibleRatio) {
-    mVisibleRatio = visibleRatio;
+  public ContainerBuilder visibleHeightRatio(float visibleHeightRatio) {
+    mVisibleHeightRatio = visibleHeightRatio;
     return this;
   }
 
-  float getVisibleRatio() {
-    return mVisibleRatio;
+  float getVisibleHeightRatio() {
+    return mVisibleHeightRatio;
+  }
+
+  @Override
+  public ContainerBuilder visibleWidthRatio(float visibleWidthRatio) {
+    mVisibleWidthRatio = visibleWidthRatio;
+    return this;
+  }
+
+  float getVisibleWidthRatio() {
+    return mVisibleWidthRatio;
   }
 
   @Override
@@ -1671,8 +1682,11 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     if ((mPrivateFlags & PFLAG_BORDER_COLOR_IS_SET) != 0L) {
       node.mBorderColor = mBorderColor;
     }
-    if (mVisibleRatio != 0) {
-      node.mVisibleRatio = mVisibleRatio;
+    if (mVisibleHeightRatio != 0) {
+      node.mVisibleHeightRatio = mVisibleHeightRatio;
+    }
+    if (mVisibleWidthRatio != 0) {
+      node.mVisibleWidthRatio = mVisibleWidthRatio;
     }
   }
 
@@ -1842,7 +1856,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     mBackground = null;
     mForeground = null;
     mForceViewWrapping = false;
-    mVisibleRatio = 0;
+    mVisibleHeightRatio = 0;
+    mVisibleWidthRatio = 0;
     mVisibleHandler = null;
     mFocusedHandler = null;
     mUnfocusedHandler = null;

@@ -307,8 +307,8 @@ class MountState {
       final Rect visibilityOutputBounds = visibilityOutput.getBounds();
 
       sTempRect.set(visibilityOutputBounds);
-      final boolean isCurrentlyVisible = sTempRect.intersect(localVisibleRect) &&
-          isInVisibleRange(visibilityOutput.getVisibleRatio(), visibilityOutputBounds, sTempRect);
+      final boolean isCurrentlyVisible = sTempRect.intersect(localVisibleRect)
+          && isInVisibleRange(visibilityOutput, visibilityOutputBounds, localVisibleRect);
 
       VisibilityItem visibilityItem = mVisibilityIdToItemMap.get(visibilityOutputId);
 
@@ -470,15 +470,22 @@ class MountState {
   }
 
   private boolean isInVisibleRange(
-      float ratio,
-      Rect componentBounds,
-      Rect componentVisibleBounds) {
-    if (ratio <= 0) {
+      VisibilityOutput visibilityOutput,
+      Rect bounds,
+      Rect visibleBounds) {
+    float heightRatio = visibilityOutput.getVisibleHeightRatio();
+    float widthRatio = visibilityOutput.getVisibleWidthRatio();
+
+    if (heightRatio == 0 && widthRatio == 0) {
       return true;
     }
 
-    return computeRectArea(componentVisibleBounds) >= ratio * computeRectArea(componentBounds)
-        || isInFocusedRange(componentBounds, componentVisibleBounds);
+    return isInRatioRange(heightRatio, bounds.height(), visibleBounds.height())
+        && isInRatioRange(widthRatio, bounds.width(), visibleBounds.width());
+  }
+
+  private static boolean isInRatioRange(float ratio, int length, int visiblelength) {
+    return visiblelength >= ratio * length;
   }
 
   /**
