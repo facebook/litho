@@ -23,10 +23,12 @@ function installsdk() {
 }
 
 function installAndroidSDK {
-  TMP=/tmp/sdk$$.zip
-  download 'https://dl.google.com/android/repository/tools_r25.2.3-linux.zip' $TMP
-  unzip -d $HOME/android-sdk $TMP
-  rm $TMP
+  if [[ ! -d "$HOME/android-sdk" ]]; then
+    TMP=/tmp/sdk$$.zip
+    download 'https://dl.google.com/android/repository/tools_r25.2.3-linux.zip' $TMP
+    unzip -qod "$HOME/android-sdk" $TMP
+    rm $TMP
+  fi
 
   export ANDROID_HOME=$HOME/android-sdk
   export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$PATH"
