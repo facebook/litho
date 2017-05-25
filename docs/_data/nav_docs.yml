@@ -17,6 +17,7 @@
   - id: state
   - id: layout
   - id: recycler-component
+  - id: glossary
 - title: Handling Events
   items:
   - id: events-overview
