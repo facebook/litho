@@ -53,14 +53,6 @@ dependencies {
     } else {
         compile project(':yogajni')
     }
-
-    // Debugging dependencies
-    debugCompile deps.guava
-    debugCompile deps.robolectric
-    debugCompile deps.junit
-    debugCompile deps.powermockReflect
-    debugCompile deps.mockitoCore
-    debugCompile deps.assertjCore
 }
 
 apply from: rootProject.file('gradle/release.gradle')
