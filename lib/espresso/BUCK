@@ -1,0 +1,30 @@
+# Copyright (c) 2014-present, Facebook, Inc.
+# All rights reserved.
+#
+# This source code is licensed under the BSD-style license found in the
+# LICENSE file in the root directory of this source tree. An additional grant
+# of patent rights can be found in the PATENTS file in the same directory.
+
+include_defs("//COMPONENTS_DEFS")
+
+android_library(
+    name = "espresso",
+    exported_deps = [
+        ":espresso-core-prebuilt",
+        make_dep_path("lib/hamcrest:hamcrest"),
+    ],
+    visibility = [
+        COMPONENTS_VISIBILITY,
+    ],
+)
+
+android_prebuilt_aar(
+    name = "espresso-core-prebuilt",
+    aar = ":espresso-core-aar",
+)
+
+remote_file(
+    name = "espresso-core-aar",
+    sha1 = "9463febe11441cdbae07a5b6cddff972279ae991",
+    url = "mvn:https://maven.google.com:com.android.support.test.espresso:espresso-core:aar:2.2.2",
+)
