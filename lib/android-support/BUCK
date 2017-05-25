@@ -8,6 +8,17 @@
 include_defs("//COMPONENTS_DEFS")
 
 android_prebuilt_aar(
+    name = "android-support-test-rules-aar",
+    aar = ":android-support-test-rules.aar",
+)
+
+remote_file(
+    name = "android-support-test-rules.aar",
+    sha1 = "f62d39eb9fede7f037699965d10188d992e835f6",
+    url = "mvn:com.android.support.test:rules:aar:0.5",
+)
+
+android_prebuilt_aar(
     name = "android-support-compat-aar",
     aar = ":android-support-compat.aar",
 )
@@ -93,6 +104,16 @@ java_library(
         ":android-support-core-utils-aar",
         ":android-support-fragment-aar",
         ":android-support-vector-drawable-aar",
+    ],
+    visibility = [
+        COMPONENTS_VISIBILITY,
+    ],
+)
+
+litho_android_library(
+    name = "android-support-testing",
+    exported_deps = [
+        ":android-support-test-rules-aar",
     ],
     visibility = [
         COMPONENTS_VISIBILITY,
