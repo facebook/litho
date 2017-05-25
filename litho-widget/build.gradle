@@ -18,19 +18,28 @@ android {
 }
 
 dependencies {
-    compile project(':litho-core')
-    provided project(':litho-annotations')
+    implementation project(':litho-core')
+    implementation deps.supportRecyclerView
+    compileOnly project(':litho-annotations')
     annotationProcessor project(':litho-processor')
 
     // Annotations
-    provided deps.jsr305
-    provided deps.inferAnnotations
+    compileOnly deps.jsr305
+    compileOnly deps.inferAnnotations
 
     // First-party
-    compile deps.textlayoutbuilder
+    implementation deps.textlayoutbuilder
 
     // Android Support Library
-    compile deps.supportCoreUi
+    implementation deps.supportCoreUi
+
+    // Testing
+    testImplementation project(':litho-testing')
+    testImplementation deps.robolectric
+    testImplementation deps.soloader
+    testImplementation deps.powermockMockito
+    testImplementation deps.powermockJunit
+    testImplementation deps.powermockXstream
 }
 
 apply from: rootProject.file('gradle/release.gradle')

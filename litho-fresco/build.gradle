@@ -16,19 +16,19 @@ android {
 }
 
 dependencies {
-    compile project(':litho-core')
-    provided project(':litho-annotations')
+    implementation project(':litho-core')
+    compileOnly project(':litho-annotations')
     annotationProcessor project(':litho-processor')
 
     // Annotations
-    provided deps.jsr305
-    provided deps.inferAnnotations
+    compileOnly deps.jsr305
+    compileOnly deps.inferAnnotations
 
     // First-party
-    compile deps.fresco
+    implementation deps.fresco
 
     // Android Support Library
-    compile deps.supportCoreUi
+    implementation deps.supportCoreUi
 }
 
 apply from: rootProject.file('gradle/release.gradle')

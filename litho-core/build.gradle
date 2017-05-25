@@ -35,23 +35,23 @@ android {
 
 dependencies {
     // Project dependencies
-    provided project(':litho-annotations')
-    provided project(':litho-stubs')
+    compileOnly project(':litho-annotations')
+    compileOnly project(':litho-stubs')
 
-    // Provided dependencies
-    provided deps.jsr305
-    provided deps.inferAnnotations
+    // compileOnly dependencies
+    compileOnly deps.jsr305
+    compileOnly deps.inferAnnotations
 
     // Android Support Library
-    provided deps.supportAnnotations
-    compile deps.supportCoreUi
-    compile deps.supportRecyclerView
+    compileOnly deps.supportAnnotations
+    implementation deps.supportCoreUi
+    implementation deps.supportRecyclerView
 
     // First-party dependencies
     if (project.hasProperty('RELEASE_MODE')) {
-        compile deps.yoga
+        api deps.yoga
     } else {
-        compile project(':yogajni')
+        api project(':yogajni')
     }
 }
 
