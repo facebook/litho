@@ -6,6 +6,7 @@ android {
     buildToolsVersion rootProject.buildToolsVersion
 
     defaultConfig {
+        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
         minSdkVersion rootProject.minSdkVersion
     }
 }
@@ -14,6 +15,10 @@ dependencies {
     compile project(':litho-core')
 
     compile deps.supportEspresso
+    compile deps.screenshot
+    androidTestProvided project(':litho-annotations')
+    androidTestCompile project(':litho-widget')
+    androidTestAnnotationProcessor project(':litho-processor')
 }
 
 apply from: rootProject.file('gradle/release.gradle')
