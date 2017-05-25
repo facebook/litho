@@ -109,6 +109,10 @@ def components_robolectric_test(
         *args,
         **kwargs)
 
+def fb_instrumentation_test(*args, **kwargs):
+    # Not supported in OSS at the moment.
+    pass
+
 # Within the OSS export, these are just aliases.
 litho_android_library = android_library
 components_robolectric_powermock_test = components_robolectric_test
