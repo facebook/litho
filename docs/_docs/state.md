@@ -217,7 +217,9 @@ static ComponentLayout onCreateLayout(
 }
 
 @OnCreateInitialState
-static void onCreateInitialState(StateValue<String> foo) {
+static void onCreateInitialState(
+    ComponentContext c,
+    StateValue<String> foo) {
   foo.set("first foo");
 }
 ```
