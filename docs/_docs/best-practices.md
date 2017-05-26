@@ -10,7 +10,7 @@ permalink: /docs/best-practices
 #### Guidelines: ####
 
  * Name your specs consistently with *NAMEComponentSpec* to generate a component called *NAMEComponent*.
- * The *ComponentContext* argument should be simply called `c` to make your layout code less verbose and move readable.
+ * The *ComponentContext* argument should be simply called `c` to make your layout code less verbose and more readable.
  * Use resource types (`ResType.STRING`, `ResType.COLOR`, `ResType.DIMEN_SIZE`, etc) where appropriate to make it easier to set prop values from Android resources.  
  * Declare all required props first then optional ones (`optional = true`).
  * Use static imports on all layout enums (`YogaEdge`, `YogaAlign`, `YogaJustify`, etc) to reduce your layout code and make it more readable.
