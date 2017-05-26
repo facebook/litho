@@ -807,6 +807,16 @@ public class RecyclerBinder implements
     mLayoutInfo.setComponentInfoCollection(null);
   }
 
+  @UiThread
+  public void scrollToPosition(int position) {
+    if (mMountedView == null) {
+      mCurrentFirstVisiblePosition = position;
+      return;
+    }
+
+    mMountedView.scrollToPosition(position);
+  }
+
   @GuardedBy("this")
   private boolean isCompatibleSize(int widthSpec, int heightSpec) {
     final int scrollDirection = mLayoutInfo.getScrollDirection();
