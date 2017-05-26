@@ -847,6 +847,13 @@ public class RecyclerBinder implements
     return mComponentTreeHolders.get(position).getComponentInfo().isSticky();
   }
 
+  @Override
+  @UiThread
+  @GuardedBy("this")
+  public boolean isValidPosition(int position) {
+    return position >= 0 && position < mComponentTreeHolders.size();
+  }
+
   private static class RangeCalculationResult {
 
     // The estimated number of items needed to fill the viewport.

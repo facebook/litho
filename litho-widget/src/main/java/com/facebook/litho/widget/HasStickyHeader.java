@@ -31,6 +31,12 @@ interface HasStickyHeader {
 
   /**
    * @param position
+   * @return Whether the item at given position is *valid*, i.e. whether such position exists.
+   */
+  boolean isValidPosition(int position);
+
+  /**
+   * @param position
    * @return a component tree for the idem at position.
    */
   ComponentTree getComponentAt(int position);
