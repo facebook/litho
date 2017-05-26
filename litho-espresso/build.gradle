@@ -6,7 +6,7 @@ android {
     buildToolsVersion rootProject.buildToolsVersion
 
     defaultConfig {
-        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+        testInstrumentationRunner 'com.facebook.litho.testing.espresso.LithoEspressoTestRunner'
         minSdkVersion rootProject.minSdkVersion
     }
 }

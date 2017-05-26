@@ -42,19 +42,17 @@ public class ComponentHostMatchersTest {
   @Rule
   public UiThreadTestRule mUiThreadRule = new UiThreadTestRule();
 
-  private ComponentContext mComponentContext;
-  private Component mTextComponent;
   private LithoView mView;
 
   @Before
   public void before() throws Throwable {
-    mComponentContext = new ComponentContext(
+    final ComponentContext mComponentContext = new ComponentContext(
         InstrumentationRegistry.getTargetContext());
-    mTextComponent = MyComponent.create(mComponentContext)
+    final Component mTextComponent = MyComponent.create(mComponentContext)
         .text("foobar")
         .customViewTag("zoidberg")
         .build();
-    ComponentTree tree = ComponentTree.create(
+    final ComponentTree tree = ComponentTree.create(
         mComponentContext,
         mTextComponent)
         .build();
@@ -66,7 +64,6 @@ public class ComponentHostMatchersTest {
         .layout();
   }
 
-  @UiThreadTest
   @Test
   public void testContentDescriptionMatching() throws Throwable {
 
@@ -81,7 +78,6 @@ public class ComponentHostMatchersTest {
         componentHostWithText(containsString("oob")));
   }
 
-  @UiThreadTest
   @Test
   public void testIsComponentHost() throws Throwable {
     assertThat(
@@ -92,7 +88,6 @@ public class ComponentHostMatchersTest {
         is(componentHost()));
   }
 
-  @UiThreadTest
   @Test
   public void testIsComponentHostWithMatcher() throws Throwable {
     assertThat(
@@ -103,7 +98,6 @@ public class ComponentHostMatchersTest {
         is(not(componentHost(withText("blah")))));
   }
 
-  @UiThreadTest
   @Test
   public void testContentDescription() throws Throwable {
     assertThat(
@@ -111,7 +105,6 @@ public class ComponentHostMatchersTest {
         is(componentHost(withContentDescription("foobar2"))));
   }
 
-  @UiThreadTest
   @Test
   public void testMountedComponent() throws Throwable {
     assertThat(
