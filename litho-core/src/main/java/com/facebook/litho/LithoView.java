@@ -377,6 +377,15 @@ public class LithoView extends ComponentHost {
   }
 
   @Override
+  public void childHasTransientStateChanged(View child, boolean childHasTransientState) {
+    if (isIncrementalMountEnabled()) {
+      performIncrementalMount(null);
+    }
+
+    super.childHasTransientStateChanged(child, childHasTransientState);
+  }
+
+  @Override
   public void offsetTopAndBottom(int offset) {
     super.offsetTopAndBottom(offset);
 
