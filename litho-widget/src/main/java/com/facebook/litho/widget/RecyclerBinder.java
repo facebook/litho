@@ -57,6 +57,7 @@ public class RecyclerBinder implements
     Binder<RecyclerView>,
     LayoutInfo.ComponentInfoCollection,
     HasStickyHeader {
+  public static final float DEFAULT_RANGE_RATIO = 4f;
 
   private static final int UNINITIALIZED = -1;
   private static final Size sDummySize = new Size();
@@ -151,11 +152,11 @@ public class RecyclerBinder implements
   }
 
   public RecyclerBinder(ComponentContext c) {
-    this(c, 4f, new LinearLayoutInfo(c, VERTICAL, false), null, false, false);
+    this(c, DEFAULT_RANGE_RATIO, new LinearLayoutInfo(c, VERTICAL, false), null, false, false);
   }
 
   public RecyclerBinder(ComponentContext c, LayoutInfo layoutInfo) {
-    this(c, 4f, layoutInfo, null, false, false);
+    this(c, DEFAULT_RANGE_RATIO, layoutInfo, null, false, false);
   }
 
   /**
