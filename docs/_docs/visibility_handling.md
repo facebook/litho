@@ -28,16 +28,16 @@ class MyLayoutSpec {
 
   @OnCreateLayout
   static ComponentLayout onCreateLayout(ComponentContext c) {
-  
+
     return Column.create(c)
-        .alignItems(Align.STRETCH)
+        .alignItems(YogaAlign.STRETCH)
         .child(Text.create(c)
             .text("This is MY layout spec")
             .withLayout()
-            .visibleHandler(MyLayoutSpec.onTitleVisible(c))
-            .invisibleHandler(MyLayoutSpec.onTitleInvisible(c)))
-        .focusedHandler(MyLayoutSpec.onComponentFocused(c, "someStringParam"))
-        .fullImpressionHandler(MyLayoutSpec.onComponentFullImpression(c)))
+            .visibleHandler(MyLayout.onTitleVisible(c))
+            .invisibleHandler(MyLayout.onTitleInvisible(c))
+            .focusedHandler(MyLayout.onComponentFocused(c, "someStringParam"))
+            .fullImpressionHandler(MyLayout.onComponentFullImpression(c)))
         .build();
   }
 
@@ -56,13 +56,13 @@ class MyLayoutSpec {
       ComponentContext c,
       @Param String stringParam) {
     Log.d(
-      "VisibilityRanges",
-      "The component is focused with param: " + contentString);
+        "VisibilityRanges",
+        "The component is focused with param: " + stringParam);
   }
 
   @OnEvent(FullImpressionVisibleEvent.class)
   static void onComponentFullImpression(ComponentContext c) {
     Log.d("VisibilityRanges", "The component has logged a full impression");
   }
-};
+}
 ```
