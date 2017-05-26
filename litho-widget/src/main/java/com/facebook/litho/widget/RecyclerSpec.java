@@ -44,6 +44,7 @@ import com.facebook.litho.annotations.ShouldUpdate;
 /**
  * Components that renders a {@link RecyclerView}.
  *
+ * @uidocs
  * @prop binder Binder for RecyclerView.
  * @prop refreshHandler Event handler for refresh event.
  * @prop hasFixedSize If set, makes RecyclerView not affected by adapter changes.

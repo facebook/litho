@@ -54,6 +54,7 @@ import static android.view.View.TEXT_ALIGNMENT_TEXT_START;
 /**
  * Component that renders an {@link EditText}.
  *
+ * @uidocs
  * @prop text Text to display.
  * @prop hint Hint text to display.
  * @prop ellipsize If sets, specifies the position of the text to be ellispized.

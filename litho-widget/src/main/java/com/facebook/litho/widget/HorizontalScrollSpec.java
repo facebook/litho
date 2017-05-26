@@ -44,6 +44,8 @@ import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 /**
  * A component that wraps another component and allow it to be horizontally scrollable. It's
  * analogous to a {@link android.widget.HorizontalScrollView}.
+ *
+ * @uidocs
  */
 @MountSpec(canMountIncrementally = true)
 class HorizontalScrollSpec {

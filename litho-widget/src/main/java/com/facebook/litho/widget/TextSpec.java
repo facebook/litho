@@ -80,6 +80,7 @@ import static com.facebook.litho.widget.VerticalGravity.TOP;
 /**
  * Component to render text.
  *
+ * @uidocs
  * @prop text Text to display.
  * @prop ellipsize If set, specifies the position of the text to be ellipsized.
  * @prop minLines Minimum number of lines to show.
