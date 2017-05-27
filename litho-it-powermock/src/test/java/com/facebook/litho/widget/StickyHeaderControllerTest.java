@@ -145,6 +145,6 @@ public class StickyHeaderControllerTest {
     mStickyHeaderController.onScrolled(null, 0, 0);
 
     verify(lithoView, never()).setTranslationY(any(Integer.class));
-    verify(wrapper, times(1)).hideStickyHeader();
+    verify(wrapper, times(2)).hideStickyHeader();
   }
 }

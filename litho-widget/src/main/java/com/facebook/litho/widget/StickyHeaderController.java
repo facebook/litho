@@ -102,18 +102,18 @@ class StickyHeaderController extends RecyclerView.OnScrollListener {
 
     if (firstVisiblePosition == stickyHeaderPosition) {
 
-      if (mHasStickyHeader.isValidPosition(stickyHeaderPosition + 1) &&
-          mHasStickyHeader.isSticky(stickyHeaderPosition + 1)) {
-        // Next item is also sticky. If two sticky items are stacked at the top we don't want
-        // to translate the first one, as it would hide the second one under the first one which is
-        // undesirable.
-        return;
-      }
-
       final LithoView firstVisibleView = firstVisibleItemComponentTree.getLithoView();
 
-      // Translate first child, no need for sticky header
-      firstVisibleView.setTranslationY(-firstVisibleView.getTop());
+      // Translate first child, no need for sticky header.
+      //
+      // NOTE: Translate only if the next item is not also sticky header. If two sticky items are
+      // stacked we don't want to translate the first one, as it would hide the second one under
+      // the first one which is undesirable.
+      if (!mHasStickyHeader.isValidPosition(stickyHeaderPosition + 1) ||
+          !mHasStickyHeader.isSticky(stickyHeaderPosition + 1)) {
+        firstVisibleView.setTranslationY(-firstVisibleView.getTop());
+      }
+
       lastTranslatedView = firstVisibleView;
       mRecyclerViewWrapper.hideStickyHeader();
       previousStickyHeaderPosition = RecyclerView.NO_POSITION;
