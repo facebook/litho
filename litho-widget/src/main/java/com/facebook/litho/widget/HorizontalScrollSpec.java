@@ -12,31 +12,35 @@ package com.facebook.litho.widget;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.v4.util.Pools.SynchronizedPool;
+import android.view.ViewTreeObserver;
 import android.widget.HorizontalScrollView;
 
-import com.facebook.litho.R;
-import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentTree;
 import com.facebook.litho.Component;
+import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
+import com.facebook.litho.ComponentTree;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.Output;
+import com.facebook.litho.R;
+import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
-import com.facebook.litho.annotations.OnCreateMountContent;
-import com.facebook.litho.annotations.OnLoadStyle;
-import com.facebook.litho.annotations.PropDefault;
+import com.facebook.litho.StateValue;
 import com.facebook.litho.annotations.FromBoundsDefined;
-import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.FromMeasure;
 import com.facebook.litho.annotations.FromPrepare;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnBoundsDefined;
+import com.facebook.litho.annotations.OnCreateInitialState;
+import com.facebook.litho.annotations.OnCreateMountContent;
+import com.facebook.litho.annotations.OnLoadStyle;
 import com.facebook.litho.annotations.OnMeasure;
 import com.facebook.litho.annotations.OnMount;
 import com.facebook.litho.annotations.OnPrepare;
 import com.facebook.litho.annotations.OnUnmount;
+import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
-import com.facebook.litho.Size;
+import com.facebook.litho.annotations.State;
 
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
@@ -168,14 +172,32 @@ class HorizontalScrollSpec {
   @OnMount
   static void onMount(
       ComponentContext context,
-      HorizontalScrollLithoView horizontalScrollLithoView,
+      final HorizontalScrollLithoView horizontalScrollLithoView,
       @Prop(optional = true, resType = ResType.BOOL) boolean scrollbarEnabled,
+      @State final ScrollPosition lastScrollPosition,
       @FromPrepare ComponentTree contentComponent,
       @FromBoundsDefined int componentWidth,
       @FromBoundsDefined int componentHeight) {
 
     horizontalScrollLithoView.setHorizontalScrollBarEnabled(scrollbarEnabled);
     horizontalScrollLithoView.mount(contentComponent, componentWidth, componentHeight);
+    final ViewTreeObserver viewTreeObserver = horizontalScrollLithoView.getViewTreeObserver();
+    viewTreeObserver.addOnPreDrawListener(
+        new ViewTreeObserver.OnPreDrawListener() {
+          @Override
+          public boolean onPreDraw() {
+            horizontalScrollLithoView.getViewTreeObserver().removeOnPreDrawListener(this);
+            horizontalScrollLithoView.setScrollX(lastScrollPosition.x);
+            return true;
+          }
+        });
+    viewTreeObserver.addOnScrollChangedListener(
+        new ViewTreeObserver.OnScrollChangedListener() {
+          @Override
+          public void onScrollChanged() {
+            lastScrollPosition.x = horizontalScrollLithoView.getScrollX();
+          }
+        });
   }
 
   @OnUnmount
@@ -183,6 +205,13 @@ class HorizontalScrollSpec {
       ComponentContext context,
       HorizontalScrollLithoView mountedView) {
     mountedView.unmount();
+  }
+
+  @OnCreateInitialState
+  static void onCreateInitialState(
+      ComponentContext c,
+      StateValue<ScrollPosition> lastScrollPosition) {
+    lastScrollPosition.set(new ScrollPosition());
   }
 
   static class HorizontalScrollLithoView extends HorizontalScrollView {
@@ -250,5 +279,9 @@ class HorizontalScrollSpec {
 
   private static void releaseSize(Size size) {
     sSizePool.release(size);
+  }
+
+  static class ScrollPosition {
+    int x = 0;
   }
 }
