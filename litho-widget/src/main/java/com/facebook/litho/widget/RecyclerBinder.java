@@ -1015,19 +1015,6 @@ public class RecyclerBinder implements
             .computeLayoutSync(mComponentContext, childrenWidthSpec, childrenHeightSpec, null);
       }
 
-      final RecyclerView.LayoutParams layoutParams =
-          (RecyclerView.LayoutParams) lithoView.getLayoutParams();
-
-      switch (mLayoutInfo.getScrollDirection()) {
-        case OrientationHelper.VERTICAL:
-          layoutParams.width = SizeSpec.getSize(childrenWidthSpec);
-          layoutParams.height = WRAP_CONTENT;
-          break;
-        default:
-          layoutParams.width = WRAP_CONTENT;
-          layoutParams.height = SizeSpec.getSize(childrenHeightSpec);
-      }
-
       lithoView.setComponentTree(componentTreeHolder.getComponentTree());
     }
 
