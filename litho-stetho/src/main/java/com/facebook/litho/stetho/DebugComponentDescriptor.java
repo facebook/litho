@@ -44,12 +44,13 @@ public final class DebugComponentDescriptor
 
   @Override
   protected void onGetChildren(DebugComponent element, Accumulator<Object> children) {
-    for (DebugComponent child : element.getChildComponents()) {
-      children.store(child);
-    }
-
-    for (View child : element.getMountedViews()) {
-      children.store(child);
+    final View mountedView = element.getMountedView();
+    if (mountedView != null) {
+      children.store(mountedView);
+    } else {
+      for (DebugComponent child : element.getChildComponents()) {
+        children.store(child);
+      }
     }
   }
 

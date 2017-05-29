@@ -133,7 +133,7 @@ public final class DebugComponent {
   /**
    * Get the list of components composed by this component. This will not include any {@link View}s
    * that are mounted by this component as those are not components.
-   * Use {@link this#getMountedViews} for that.
+   * Use {@link this#getMountedView} for that.
    *
    * @return A list of child components.
    */
@@ -168,11 +168,11 @@ public final class DebugComponent {
   }
 
   /**
-   * @return A list of mounted views.
+   * @return A mounted view or null if this component does not mount a view.
    */
-  public List<View> getMountedViews() {
+  public View getMountedView() {
     if (mComponentIndex > 0) {
-      return Collections.EMPTY_LIST;
+      return null;
     }
 
     final InternalNode node = mNode.get();
@@ -180,7 +180,6 @@ public final class DebugComponent {
     final ComponentTree tree = context == null ? null : context.getComponentTree();
     final LithoView view = tree == null ? null : tree.getLithoView();
     final MountState mountState = view == null ? null : view.getMountState();
-    final ArrayList<View> children = new ArrayList<>();
 
     if (mountState != null) {
       for (int i = 0, count = mountState.getItemCount(); i < count; i++) {
@@ -190,12 +189,12 @@ public final class DebugComponent {
         if (component != null &&
             component == node.getRootComponent() &&
             Component.isMountViewSpec(component)) {
-          children.add((View) mountItem.getContent());
+          return (View) mountItem.getContent();
         }
       }
     }
 
-    return children;
+    return null;
   }
 
   /**
