@@ -171,27 +171,23 @@ public final class DebugComponent {
    * @return A mounted view or null if this component does not mount a view.
    */
   public View getMountedView() {
-    if (mComponentIndex > 0) {
-      return null;
+    final InternalNode node = mNode.get();
+    final Component component = node == null ? null : node.getRootComponent();
+    if (component != null && Component.isMountViewSpec(component)) {
+      return (View) getMountedContent();
     }
 
+    return null;
+  }
+
+  /**
+   * @return A mounted drawable or null if this component does not mount a drawable.
+   */
+  public Drawable getMountedDrawable() {
     final InternalNode node = mNode.get();
-    final ComponentContext context = node == null ? null : node.getContext();
-    final ComponentTree tree = context == null ? null : context.getComponentTree();
-    final LithoView view = tree == null ? null : tree.getLithoView();
-    final MountState mountState = view == null ? null : view.getMountState();
-
-    if (mountState != null) {
-      for (int i = 0, count = mountState.getItemCount(); i < count; i++) {
-        final MountItem mountItem = mountState.getItemAt(i);
-        final Component component = mountItem == null ? null : mountItem.getComponent();
-
-        if (component != null &&
-            component == node.getRootComponent() &&
-            Component.isMountViewSpec(component)) {
-          return (View) mountItem.getContent();
-        }
-      }
+    final Component component = node == null ? null : node.getRootComponent();
+    if (component != null && Component.isMountDrawableSpec(component)) {
+      return (Drawable) getMountedContent();
     }
 
     return null;
@@ -787,5 +783,31 @@ public final class DebugComponent {
     }
 
     return node.isClickable();
+  }
+
+  private Object getMountedContent() {
+    if (mComponentIndex > 0) {
+      return null;
+    }
+
+    final InternalNode node = mNode.get();
+    final ComponentContext context = node == null ? null : node.getContext();
+    final ComponentTree tree = context == null ? null : context.getComponentTree();
+    final LithoView view = tree == null ? null : tree.getLithoView();
+    final MountState mountState = view == null ? null : view.getMountState();
+
+    if (mountState != null) {
+      for (int i = 0, count = mountState.getItemCount(); i < count; i++) {
+        final MountItem mountItem = mountState.getItemAt(i);
+        final Component component = mountItem == null ? null : mountItem.getComponent();
+
+        if (component != null &&
+            component == node.getRootComponent()) {
+          return mountItem.getContent();
+        }
+      }
+    }
+
+    return null;
   }
 }
