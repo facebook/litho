@@ -9,6 +9,7 @@ android {
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
+        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
 
     // TODO(#62): Re-enable abort on error.
@@ -35,4 +36,9 @@ dependencies {
     // Support Library
     compile deps.supportAppCompat
     compile deps.supportRecyclerView
+
+    androidTestCompile project(':litho-espresso')
+    androidTestCompile deps.supportEspresso
+    androidTestCompile deps.supportEspressoIntents
+    androidTestCompile deps.junit
 }
