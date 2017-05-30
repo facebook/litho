@@ -26,8 +26,12 @@ public class LinearLayoutInfo implements LayoutInfo {
 
   private final LinearLayoutManager mLinearLayoutManager;
 
+  public LinearLayoutInfo(LinearLayoutManager linearLayoutManager) {
+    mLinearLayoutManager = linearLayoutManager;
+  }
+
   public LinearLayoutInfo(Context context, int orientation, boolean reverseLayout) {
-    mLinearLayoutManager = new LinearLayoutManager(context, orientation, reverseLayout);
+      mLinearLayoutManager = new LinearLayoutManager(context, orientation, reverseLayout);
   }
 
   @Override
