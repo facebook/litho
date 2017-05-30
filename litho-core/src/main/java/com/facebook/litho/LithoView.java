@@ -15,7 +15,6 @@ import java.util.Deque;
 import android.content.Context;
 import android.graphics.Rect;
 import android.support.annotation.VisibleForTesting;
-import android.support.v4.view.ViewCompat;
 import android.support.v4.view.accessibility.AccessibilityManagerCompat;
 import android.support.v4.view.accessibility.AccessibilityManagerCompat.AccessibilityStateChangeListenerCompat;
 import android.util.AttributeSet;
@@ -53,6 +52,7 @@ public class LithoView extends ComponentHost {
   // sticky header and RecyclerView's binder
   // TODO T14859077 Replace with proper solution
   private ComponentTree mTemporaryDetachedComponent;
+  private int mTransientStateCount;
 
   /**
    * Create a new {@link LithoView} instance and initialize it
@@ -369,8 +369,16 @@ public class LithoView extends ComponentHost {
 
   @Override
   public void setHasTransientState(boolean hasTransientState) {
-    if (isIncrementalMountEnabled()) {
-      performIncrementalMount(null);
+    if (hasTransientState) {
+      if (mTransientStateCount == 0 && isIncrementalMountEnabled()) {
+        performIncrementalMount(null);
+      }
+      mTransientStateCount++;
+    } else {
+      mTransientStateCount--;
+      if (mTransientStateCount < 0) {
+        mTransientStateCount = 0;
+      }
     }
 
     super.setHasTransientState(hasTransientState);
@@ -490,8 +498,15 @@ public class LithoView extends ComponentHost {
   }
 
   void mount(LayoutState layoutState, Rect currentVisibleArea) {
-    if (isIncrementalMountEnabled() && ViewCompat.hasTransientState(this)) {
-      return;
+    if (mTransientStateCount > 0 && isIncrementalMountEnabled()) {
+      // If transient state is set but the MountState is dirty we want to re-mount everything.
+      // Otherwise, we don't need to do anything as the entire LithoView was mounted when the
+      // transient state was set.
+      if (!mMountState.isDirty()) {
+        return;
+      } else {
+        currentVisibleArea = null;
+      }
     }
 
     if (currentVisibleArea == null) {
