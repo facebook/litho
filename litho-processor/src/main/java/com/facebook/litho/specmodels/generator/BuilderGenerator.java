@@ -271,7 +271,7 @@ public class BuilderGenerator {
       if (getRawType(type.typeArguments.get(0)).equals(ClassNames.COMPONENT)) {
         dataHolder.addMethod(varArgBuilderBuilder(prop, requiredIndex));
       }
-      return dataHolder.build();
+      // fall through to generate builder method for List<T>
     }
 
     switch (prop.getResType()) {

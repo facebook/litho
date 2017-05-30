@@ -131,6 +131,12 @@ public class BuilderGeneratorTest {
         "    return this;\n" +
         "  }\n" +
         "\n" +
+        "  public Builder arg4(java.util.List<java.lang.String> arg4) {\n" +
+        "    this.mTestImpl.arg4 = arg4;\n" +
+        "    mRequired.set(1);\n" +
+        "    return this;\n" +
+        "  }\n" +
+        "\n" +
         "  public Builder key(java.lang.String key) {\n" +
         "    super.setKey(key);\n" +
         "    return this;\n" +
