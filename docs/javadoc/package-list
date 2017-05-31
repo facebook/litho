@@ -5,16 +5,20 @@ com.facebook.litho.config
 com.facebook.litho.dataflow
 com.facebook.litho.dataflow.springs
 com.facebook.litho.displaylist
+com.facebook.litho.fresco
 com.facebook.litho.internal
 com.facebook.litho.reference
 com.facebook.litho.specmodels.generator
 com.facebook.litho.specmodels.internal
 com.facebook.litho.specmodels.model
 com.facebook.litho.specmodels.processor
+com.facebook.litho.stetho
 com.facebook.litho.testing
 com.facebook.litho.testing.assertj
+com.facebook.litho.testing.espresso
 com.facebook.litho.testing.eventhandler
 com.facebook.litho.testing.shadows
+com.facebook.litho.testing.specmodels
 com.facebook.litho.testing.testrunner
 com.facebook.litho.testing.viewtree
 com.facebook.litho.utils
@@ -22,3 +26,4 @@ com.facebook.litho.viewcompatcreator
 com.facebook.litho.widget
 com.facebook.proguard.annotations
 com.facebook.widget.accessibility.delegates
+com.facebook.yoga
