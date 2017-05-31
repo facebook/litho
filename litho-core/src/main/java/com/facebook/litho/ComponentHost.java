@@ -223,7 +223,7 @@ public class ComponentHost extends ViewGroup {
         newIndex);
   }
 
-  private void maybeRegisterTouchExpansion(int index, MountItem mountItem) {
+  void maybeRegisterTouchExpansion(int index, MountItem mountItem) {
     final ViewNodeInfo viewNodeInfo = mountItem.getViewNodeInfo();
     if (viewNodeInfo == null) {
       return;
@@ -245,7 +245,7 @@ public class ComponentHost extends ViewGroup {
         expandedTouchBounds);
   }
 
-  private void maybeUnregisterTouchExpansion(int index, MountItem mountItem) {
+  void maybeUnregisterTouchExpansion(int index, MountItem mountItem) {
     final ViewNodeInfo viewNodeInfo = mountItem.getViewNodeInfo();
     if (viewNodeInfo == null) {
       return;

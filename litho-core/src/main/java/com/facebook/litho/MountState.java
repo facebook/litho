@@ -234,7 +234,8 @@ class MountState {
                 currentMountItem,
                 useUpdateValueFromLayoutOutput,
                 logger,
-                componentTreeId);
+                componentTreeId,
+                i);
 
             if (itemUpdated) {
               mMountStats.updatedCount++;
@@ -522,7 +523,8 @@ class MountState {
       MountItem currentMountItem,
       boolean useUpdateValueFromLayoutOutput,
       ComponentsLogger logger,
-      int componentTreeId) {
+      int componentTreeId,
+      int index) {
     final Component layoutOutputComponent = layoutOutput.getComponent();
     final Component itemComponent = currentMountItem.getComponent();
 
@@ -560,6 +562,9 @@ class MountState {
       }
 
       unsetViewAttributes(currentMountItem);
+
+      final ComponentHost host = currentMountItem.getHost();
+      host.maybeUnregisterTouchExpansion(index, currentMountItem);
     }
 
     // 3. We will re-bind this later in 7 regardless so let's make sure it's currently unbound.
@@ -576,6 +581,9 @@ class MountState {
 
     // 5. If the mount item is not valid for this component update its content and view attributes.
     if (shouldUpdate) {
+      final ComponentHost host = currentMountItem.getHost();
+      host.maybeRegisterTouchExpansion(index, currentMountItem);
+
       updateMountedContent(currentMountItem, layoutOutput, itemComponent);
       setViewAttributes(currentMountItem);
       maybeIncrementTransitionKeyMountCount(currentMountItem);
