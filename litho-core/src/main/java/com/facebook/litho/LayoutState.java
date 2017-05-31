@@ -706,8 +706,10 @@ class LayoutState {
     }
     layoutState.mShouldDuplicateParentState = shouldDuplicateParentState;
 
-    Collections.sort(layoutState.mMountableOutputTops, sTopsComparator);
-    Collections.sort(layoutState.mMountableOutputBottoms, sBottomsComparator);
+    if (!ComponentsConfiguration.collectResultFix) {
+      Collections.sort(layoutState.mMountableOutputTops, sTopsComparator);
+      Collections.sort(layoutState.mMountableOutputBottoms, sBottomsComparator);
+    }
   }
 
   private static void calculateAndSetHostOutputIdAndUpdateState(
@@ -971,6 +973,11 @@ class LayoutState {
     }
 
     collectResults(root, layoutState, null);
+
+    if (ComponentsConfiguration.collectResultFix) {
+      Collections.sort(layoutState.mMountableOutputTops, sTopsComparator);
+      Collections.sort(layoutState.mMountableOutputBottoms, sBottomsComparator);
+    }
 
     if (logger != null) {
       logger.log(collectResultsEvent);

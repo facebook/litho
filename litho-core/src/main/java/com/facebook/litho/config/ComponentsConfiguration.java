@@ -72,4 +72,10 @@ public class ComponentsConfiguration {
    * Whether to enable incremental mount that operates directly from LithoView's methods.
    */
   public static boolean isIncrementalMountOnOffsetOrTranslationChangeEnabled = true;
+
+  /**
+   * Fixes an important perf bug in LayoutState output collection. We're gating it to better
+   * understand the impact and implications of how perf move metrics and where bottlenecks are.
+   */
+  public static boolean collectResultFix = false;
 }
