@@ -25,6 +25,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.isClickable;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static com.facebook.litho.testing.espresso.ComponentHostMatchers.componentHostWithText;
 import static com.facebook.litho.testing.espresso.LithoViewMatchers.withTestKey;
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 
 @RunWith(AndroidJUnit4.class)
@@ -37,8 +38,7 @@ public class DemoListActivityEspressoTest {
   @Test
   public void testLithographyIsVisibleAndClickable() {
     onView(componentHostWithText(containsString("Lithography")))
-        .check(matches(isDisplayed()))
-        .check(matches(isClickable()));
+        .check(matches(allOf(isDisplayed(), isClickable())));
   }
 
   @Test
