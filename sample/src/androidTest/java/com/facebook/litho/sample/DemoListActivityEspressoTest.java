@@ -10,9 +10,9 @@
 package com.facebook.litho.sample;
 
 import android.support.test.filters.LargeTest;
-import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.facebook.litho.testing.espresso.LithoActivityTestRule;
 import com.facebook.samples.litho.DemoListActivity;
 
 import org.junit.Rule;
@@ -24,20 +24,27 @@ import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isClickable;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static com.facebook.litho.testing.espresso.ComponentHostMatchers.componentHostWithText;
+import static com.facebook.litho.testing.espresso.LithoViewMatchers.withTestKey;
 import static org.hamcrest.Matchers.containsString;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 public class DemoListActivityEspressoTest {
   @Rule
-  public ActivityTestRule<DemoListActivity> mActivity =
-      new ActivityTestRule<>(DemoListActivity.class);
+  public LithoActivityTestRule<DemoListActivity> mActivity =
+      new LithoActivityTestRule<>(DemoListActivity.class);
 
   @Test
   public void testLithographyIsVisibleAndClickable() {
     onView(componentHostWithText(containsString("Lithography")))
         .check(matches(isDisplayed()))
         .check(matches(isClickable()));
+  }
+
+  @Test
+  public void testTestKeyLookup() {
+    onView(withTestKey("main_screen"))
+        .check(matches(isDisplayed()));
   }
 
   @Test

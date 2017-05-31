@@ -17,7 +17,10 @@ android_library(
         "PUBLIC",
     ],
     deps = [
+        COMPONENTS_ANDROIDSUPPORT_TESTING_TARGET,
         COMPONENTS_ESPRESSO_TARGET,
+        COMPONENTS_HAMCREST_TARGET,
         COMPONENTS_JAVA_TARGET,
+        COMPONENTS_JUNIT_TARGET,
     ],
 )
