@@ -157,6 +157,10 @@ class MountState {
   void mount(LayoutState layoutState, Rect localVisibleRect) {
     assertMainThread();
 
+    if (layoutState == null) {
+      throw new IllegalStateException("Trying to mount a null layoutState");
+    }
+
     ComponentsSystrace.beginSection("mount");
 
     final ComponentTree componentTree = mLithoView.getComponentTree();
