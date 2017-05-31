@@ -29,17 +29,14 @@ import static org.hamcrest.CoreMatchers.any;
 import static org.hamcrest.CoreMatchers.is;
 
 /**
- * Espresso matchers ComponentHost.
- *
- * Espresso's in-built matchers only work on Android Views, so this helps
- * us write checks in NewsFeed which is heavily reliant on LithoView.
+ * Espresso matchers for {@link ComponentHost}.
  */
 public class ComponentHostMatchers {
 
   /**
    * Matches a view that is a ComponentHost that matches subMatcher.
    *
-   * In Espresso tests, when you need to match a View, we recomment
+   * In Espresso tests, when you need to match a View, we recommend
    * using this matcher and nest any of the other matchers in this
    * class along with it. For example
    * <code>componentHost(withText("foobar"))</code> or
