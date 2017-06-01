@@ -58,6 +58,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
   private int mUserColor;
   private int mHighlightColor;
   private ClickableSpan[] mClickableSpans;
+  private ImageSpan[] mImageSpans;
 
   private int mSelectionStart;
   private int mSelectionEnd;
@@ -195,10 +196,13 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       }
     }
     if (imageSpans != null) {
-      for (ImageSpan imageSpan: imageSpans) {
-        imageSpan.getDrawable().setCallback(this);
+      for (int i = 0, size = imageSpans.length; i < size; i++) {
+        Drawable drawable = imageSpans[i].getDrawable();
+        drawable.setCallback(this);
+        drawable.setVisible(true, false);
       }
     }
+    mImageSpans = imageSpans;
 
     invalidateSelf();
   }
@@ -212,6 +216,14 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     mHighlightColor = 0;
     mColorStateList = null;
     mUserColor = 0;
+    if (mImageSpans != null) {
+      for (int i = 0, size = mImageSpans.length; i < size; i++) {
+        Drawable drawable = mImageSpans[i].getDrawable();
+        drawable.setCallback(null);
+        drawable.setVisible(false, false);
+      }
+      mImageSpans = null;
+    }
   }
 
   public ClickableSpan[] getClickableSpans() {
