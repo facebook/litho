@@ -27,8 +27,19 @@ public class PropDefaultModel {
   public final ImmutableList<Modifier> mModifiers;
   public final Object mRepresentedObject;
   public final String mName;
-  private final ResType mResType;
-  private final int mResId;
+  private ResType mResType;
+  private int mResId;
+
+  public PropDefaultModel(
+      TypeName type,
+      String name,
+      ImmutableList<Modifier> modifiers,
+      Object representedObject) {
+    mType = type;
+    mName = name;
+    mModifiers = modifiers;
+    mRepresentedObject = representedObject;
+  }
 
   public PropDefaultModel(
       TypeName type,
