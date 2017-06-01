@@ -18,9 +18,4 @@ docs/.bundle/
 # Android Studio/IntelliJ
 .idea
 *.iml
-.gradle/
-lib/fb/
-lib/yoga/
-lib/yogajni/
-*/**.iml
 local.properties
