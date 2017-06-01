@@ -225,7 +225,8 @@ public class BuilderGenerator {
         if (!propDefault.isResResolvable()) continue;
 
         initResTypePropDefaultsSpec.addStatement("this.$L.$L = $L",
-            getImplMemberInstanceName(specModel), propDefault.getName(),
+            getImplMemberInstanceName(specModel),
+            propDefault.getName(),
             generatePropsDefaultInitializers(specModel, propDefault));
       }
     }
