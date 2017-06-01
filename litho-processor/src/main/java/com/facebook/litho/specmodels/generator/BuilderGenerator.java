@@ -463,8 +463,6 @@ public class BuilderGenerator {
         return generatePropDefaultResInitializer("resolveDimenOffsetRes", propDefault, specModel);
       case FLOAT:
         return generatePropDefaultResInitializer("resolveFloatRes", propDefault, specModel);
-      case DRAWABLE_REFERENCE:
-        return generatePropDefaultResInitializer("resolveDrawableReferenceRes", propDefault, specModel);
       case DRAWABLE:
         return generatePropDefaultResInitializer("resolveDrawableRes", propDefault, specModel);
     }
