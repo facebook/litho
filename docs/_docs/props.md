@@ -8,7 +8,7 @@ permalink: /docs/props
 Litho uses a unidirectional data flow with immutable inputs. Following the name established by [React](https://facebook.github.io/react/), the inputs that a `Component` takes are known as *props*.
 
 ## Defining and using Props
-The props for a given `Component` are the union of all arguments annotated with `@Prop` in your spec methods. You can access the value of the props in all the methods that declare it as an `@Prop` parameter. 
+The props for a given `Component` are the union of all arguments annotated with `@Prop` in your spec methods. You can access the value of the props in all the methods that declare it as an `@Prop` parameter.
 
 The same prop can be defined and accessed in multiple lifecycle methods. The annotation processor will ensure you're using consistent prop types and consistent annotation parameters across all the spec methods.
 
@@ -38,7 +38,7 @@ class MyComponentSpec {
 }
 ```
 
-`MyComponentSpec` defines two props: a *String* prop called `prop1` and an *int* prop named `prop2`. `prop1` is optional and it needs to be marked as such in all the methods that define it, otherwise the annotation processor will throw an exception. 
+`MyComponentSpec` defines two props: a *String* prop called `prop1` and an *int* prop named `prop2`. `prop1` is optional and it needs to be marked as such in all the methods that define it, otherwise the annotation processor will throw an exception.
 
 When the lifecycle methods get called, the `@Prop` parameters will hold the value passed down from the Component's parent when the Component was created (or their default values).
 
@@ -46,7 +46,7 @@ Props are defined and used the same way in `LayoutSpecs` and `MountSpecs`.
 
 ## Setting Props
 
-For each unique prop defined on the spec, the annotation processor creates a builder pattern method on the Component Builder that has the same name as the prop and that takes as only parameter the value to set for that prop. 
+For each unique prop defined on the spec, the annotation processor creates a builder pattern method on the Component Builder that has the same name as the prop and that takes as only parameter the value to set for that prop.
 
 You pass down values for these props by calling the appropriate methods on the generated Component Builder:
 
@@ -71,6 +71,12 @@ public class MyComponentSpec {
 
   ...
 }
+```
+
+Prop defaults also support default values from Resources via setting a `resType` and `resId`. Let's define a default resource value for a `@PropDefault` annotated variable:
+
+```java
+@PropDefault(resType = ResType.DIMEN_SIZE, resId = R.dimen.default_spacing) static float prop3;
 ```
 
 ## Resource Types

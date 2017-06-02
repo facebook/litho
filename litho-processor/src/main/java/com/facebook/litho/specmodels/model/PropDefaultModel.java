@@ -9,6 +9,7 @@
 
 package com.facebook.litho.specmodels.model;
 
+import com.facebook.litho.annotations.ResType;
 import javax.annotation.concurrent.Immutable;
 import javax.lang.model.element.Modifier;
 
@@ -23,9 +24,11 @@ import com.squareup.javapoet.TypeName;
 @Immutable
 public class PropDefaultModel {
   public final TypeName mType;
-  public final String mName;
   public final ImmutableList<Modifier> mModifiers;
   public final Object mRepresentedObject;
+  public final String mName;
+  private ResType mResType;
+  private int mResId;
 
   public PropDefaultModel(
       TypeName type,
@@ -38,11 +41,51 @@ public class PropDefaultModel {
     mRepresentedObject = representedObject;
   }
 
+  public PropDefaultModel(
+      TypeName type,
+      String name,
+      ImmutableList<Modifier> modifiers,
+      Object representedObject,
+      ResType resType,
+      int resId) {
+    mType = type;
+    mName = name;
+    mModifiers = modifiers;
+    mRepresentedObject = representedObject;
+    mResType = resType;
+    mResId = resId;
+  }
+
+  public String getName() {
+    return mName;
+  }
+
+  public ResType getResType() {
+    return mResType;
+  }
+
+  public int getResId() {
+    return mResId;
+  }
+
+  public boolean isResResolvable() {
+    return hasResType() && hasResId();
+  }
+
+  private boolean hasResType() {
+    return mResType != ResType.NONE;
+  }
+
+  private boolean hasResId() {
+    return mResId != 0;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (o instanceof PropDefaultModel) {
       final PropDefaultModel p = (PropDefaultModel) o;
-      return mType.equals(p.mType) && mName.equals(p.mName) && mModifiers.equals(p.mModifiers);
+      return mType.equals(p.mType) && mName.equals(p.mName) && mModifiers.equals(p.mModifiers)
+          && mResType.equals(p.mResType) && mResId == p.mResId;
     }
 
     return false;
@@ -53,6 +96,8 @@ public class PropDefaultModel {
     int result = mType.hashCode();
     result = 17 * result + mName.hashCode();
     result = 31 * result + mModifiers.hashCode();
+    result = 43 * result + mResType.hashCode();
+    result = 47 * result + mResId;
     return result;
   }
 }

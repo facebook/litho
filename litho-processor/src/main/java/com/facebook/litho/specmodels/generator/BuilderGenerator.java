@@ -9,6 +9,9 @@
 
 package com.facebook.litho.specmodels.generator;
 
+import com.facebook.litho.annotations.ResType;
+import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.model.PropDefaultModel;
 import javax.lang.model.element.Modifier;
 
 import java.util.ArrayList;
@@ -122,6 +125,16 @@ public class BuilderGenerator {
         .addModifiers(Modifier.PRIVATE)
         .addParameter(specModel.getContextClass(), CONTEXT_PARAM_NAME);
 
+    final ImmutableList<PropDefaultModel> propDefaults = specModel.getPropDefaults();
+    boolean isResResolvable = false;
+
+    for (PropDefaultModel propDefault : propDefaults) {
+      if (propDefault.isResResolvable()) {
+        isResResolvable = true;
+        break;
+      }
+    }
+
     if (specModel.isStylingSupported()) {
       initMethodSpec
           .addParameter(int.class, "defStyleAttr")
@@ -137,6 +150,10 @@ public class BuilderGenerator {
     initMethodSpec
         .addStatement("$L = $L", implMemberInstanceName, implParamName)
         .addStatement("$L = $L", CONTEXT_MEMBER_NAME, CONTEXT_PARAM_NAME);
+
+    if (isResResolvable) {
+      initMethodSpec.addStatement("initPropDefaults()");
+    }
 
     final TypeSpec.Builder propsBuilderClassBuilder = TypeSpec.classBuilder(BUILDER)
         .addModifiers(Modifier.PUBLIC)
@@ -200,6 +217,21 @@ public class BuilderGenerator {
     }
 
     propsBuilderClassBuilder.addMethod(initMethodSpec.build());
+
+    if (isResResolvable) {
+      MethodSpec.Builder initResTypePropDefaultsSpec = MethodSpec.methodBuilder("initPropDefaults");
+
+      for (PropDefaultModel propDefault : propDefaults) {
+        if (!propDefault.isResResolvable()) continue;
+
+        initResTypePropDefaultsSpec.addStatement("this.$L.$L = $L",
+            getImplMemberInstanceName(specModel),
+            propDefault.getName(),
+            generatePropsDefaultInitializers(specModel, propDefault));
+      }
+
+      propsBuilderClassBuilder.addMethod(initResTypePropDefaultsSpec.build());
+    }
 
     // If there are no type variables, then this class can always be static.
     // If the component implementation class is static, and there are type variables, then this
@@ -401,6 +433,38 @@ public class BuilderGenerator {
     }
 
     return dataHolder.build();
+  }
+
+  static String generatePropsDefaultInitializers(
+      SpecModel specModel,
+      PropDefaultModel propDefault) {
+
+    switch (propDefault.getResType()) {
+      case STRING:
+        return generatePropDefaultResInitializer("resolveStringRes", propDefault, specModel);
+      case STRING_ARRAY:
+        return generatePropDefaultResInitializer("resolveStringArrayRes", propDefault, specModel);
+      case INT:
+        return generatePropDefaultResInitializer("resolveIntRes", propDefault, specModel);
+      case INT_ARRAY:
+        return generatePropDefaultResInitializer("resolveIntArrayRes", propDefault, specModel);
+      case BOOL:
+        return generatePropDefaultResInitializer("resolveBoolRes", propDefault, specModel);
+      case COLOR:
+        return generatePropDefaultResInitializer("resolveColorRes", propDefault, specModel);
+      case DIMEN_SIZE:
+        return generatePropDefaultResInitializer("resolveDimenSizeRes", propDefault, specModel);
+      case DIMEN_TEXT:
+        return generatePropDefaultResInitializer("resolveDimenSizeRes", propDefault, specModel);
+      case DIMEN_OFFSET:
+        return generatePropDefaultResInitializer("resolveDimenOffsetRes", propDefault, specModel);
+      case FLOAT:
+        return generatePropDefaultResInitializer("resolveFloatRes", propDefault, specModel);
+      case DRAWABLE:
+        return generatePropDefaultResInitializer("resolveDrawableRes", propDefault, specModel);
+    }
+
+    return "";
   }
 
   static TypeName getRawType(TypeName type) {
@@ -777,5 +841,24 @@ public class BuilderGenerator {
         .addStatement(CONTEXT_MEMBER_NAME + " = null")
         .addStatement("$L.release(this)", BUILDER_POOL_FIELD)
         .build();
+  }
+
+  private static String generatePropDefaultResInitializer(
+      String resourceResolveMethodName,
+      PropDefaultModel propDefaultModel,
+      SpecModel specModel) {
+    StringBuilder builtInitializer = new StringBuilder();
+
+    if (propDefaultModel.isResResolvable()) {
+      return String.format(
+          builtInitializer
+              .append(resourceResolveMethodName)
+              .append("(")
+              .append(propDefaultModel.getResId())
+              .append(")")
+              .toString(), specModel.getSpecName(), propDefaultModel.getName());
+    }
+
+    return builtInitializer.toString();
   }
 }

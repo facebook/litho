@@ -9,6 +9,8 @@
 
 package com.facebook.litho.specmodels.processor;
 
+import com.facebook.litho.annotations.ResType;
+import java.lang.annotation.Annotation;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
@@ -41,16 +43,21 @@ public class PropDefaultsExtractor {
       }
 
       final VariableElement variableElement = (VariableElement) enclosedElement;
-      if (variableElement.getAnnotation(PropDefault.class) == null) {
+      final Annotation propDefaultAnnotation = variableElement.getAnnotation(PropDefault.class);
+      if (propDefaultAnnotation == null) {
         continue;
       }
+
+      final ResType propDefaultResType = ((PropDefault) propDefaultAnnotation).resType();
+      final int propDefaultResId = ((PropDefault) propDefaultAnnotation).resId();
 
       propDefaults.add(
           new PropDefaultModel(
               TypeName.get(variableElement.asType()),
               variableElement.getSimpleName().toString(),
-              ImmutableList.copyOf(new ArrayList<>(variableElement.getModifiers())),
-              variableElement));
+              ImmutableList.copyOf(new ArrayList<>(variableElement.getModifiers())), variableElement,
+              propDefaultResType,
+              propDefaultResId));
     }
 
     return ImmutableList.copyOf(propDefaults);

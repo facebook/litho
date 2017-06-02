@@ -10,6 +10,8 @@
 
 package com.facebook.litho.specmodels.generator;
 
+import com.facebook.litho.annotations.ResType;
+import com.facebook.litho.it.R;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 
@@ -41,13 +43,17 @@ public class BuilderGeneratorTest {
   static class TestSpec {
     @PropDefault protected static boolean arg0 = true;
 
+    @PropDefault(resType = ResType.DIMEN_SIZE, resId = 12345)
+    protected static float arg5;
+
     @OnCreateLayout
     public void testDelegateMethod(
         @Prop boolean arg0,
         @State int arg1,
         @Param Object arg2,
         @Prop(optional = true) boolean arg3,
-        @Prop(varArg = "name") List<String> names) {
+        @Prop(varArg = "name") List<String> names,
+        @Prop(optional = true) float arg5) {
     }
 
     @OnEvent(Object.class)
@@ -108,7 +114,12 @@ public class BuilderGeneratorTest {
         "    super.init(context, defStyleAttr, defStyleRes, testImpl);\n" +
         "    mTestImpl = testImpl;\n" +
         "    mContext = context;\n" +
+        "    initPropDefaults();\n" +
         "    mRequired.clear();\n" +
+        "  }\n" +
+        "\n" +
+        "  void initPropDefaults() {\n" +
+        "    this.mTestImpl.arg5 = resolveDimenSizeRes(12345);\n" +
         "  }\n" +
         "\n" +
         "  public Builder arg0(boolean arg0) {\n" +
@@ -134,6 +145,11 @@ public class BuilderGeneratorTest {
         "  public Builder arg4(java.util.List<java.lang.String> arg4) {\n" +
         "    this.mTestImpl.arg4 = arg4;\n" +
         "    mRequired.set(1);\n" +
+        "    return this;\n" +
+        "  }\n" +
+        "\n" +
+        "  public Builder arg5(float arg5) {\n" +
+        "    this.mTestImpl.arg5 = arg5;\n" +
         "    return this;\n" +
         "  }\n" +
         "\n" +
