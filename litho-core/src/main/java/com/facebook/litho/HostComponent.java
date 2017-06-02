@@ -44,4 +44,9 @@ class HostComponent extends ComponentLifecycle {
   protected int poolSize() {
     return HOST_POOL_SIZE;
   }
+
+  @Override
+  protected boolean shouldUpdate(Component previous, Component next) {
+    return true;
+  }
 }
