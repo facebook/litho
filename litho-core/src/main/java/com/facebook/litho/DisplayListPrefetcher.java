@@ -101,6 +101,14 @@ public final class DisplayListPrefetcher implements Runnable {
         break;
       }
 
+      if (!currentLayoutState.isActivityValid()) {
+        // There might be the case when LayoutState was posted when app was in foreground, but by
+        // the time this runnable is executed we no longer can create displaylist, i.e. GLContext
+        // has been killed, for example, if activity has finished.
+        mLayoutStates.remove();
+        continue;
+      }
+
       final LayoutOutput currentLayoutOutput =
           currentLayoutState.getNextLayoutOutputForDLPrefetch();
       final String currentComponentType = currentLayoutOutput.getComponent().getSimpleName();

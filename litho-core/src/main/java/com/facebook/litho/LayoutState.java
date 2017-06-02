@@ -1086,6 +1086,10 @@ class LayoutState {
     return true;
   }
 
+  boolean isActivityValid() {
+    return getValidActivityForContext(mContext) != null;
+  }
+
   void createDisplayList(LayoutOutput output) {
     ThreadUtils.assertMainThread();
 
