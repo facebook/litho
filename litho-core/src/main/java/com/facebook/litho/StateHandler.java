@@ -116,7 +116,7 @@ public class StateHandler {
       throw new RuntimeException(
           "Cannot set State for " +
               component.getSimpleName() +
-              ", found another Component with the same key");
+              ", found another Component with the same key: " + key);
     }
     mKnownGlobalKeys.add(key);
 
