@@ -121,7 +121,7 @@ Instead of performing assertions on the content rendered by your Component, it
 might be useful to test for the rendering of sub-components instead.
 [SubComponent](/javadoc/com/facebook/litho/testing/SubComponent) is a convenience class that allows for easier comparison of Component
 types. You can, again, use AssertJ to verify the presence or absence of
-the subcomponents.
+the sub-Components.
 
 ```java
 public class StoryTest {
@@ -132,11 +132,11 @@ public class StoryTest {
     ComponentContext c = mComponentsRule.getContext();
     Story story = ...
 
-    Component<StoryComponent> component =
+    StoryComponent.Builder componentBuilder =
         StoryComponent.create(c)
             .story(story);
 
-    assertThat(subComponents).hasSubComponents(
+    assertThat(componentBuilder).hasSubComponents(
         SubComponent.of(HeaderComponent.class),
         SubComponent.of(MessageComponent.class),
         SubComponent.of(LikersComponent.class),
@@ -152,7 +152,7 @@ public class StoryTest {
         .story(storyWithZeroLikes)
         .build();
 
-    assertThat(component)
+    assertThat(c, component)
         .doesNotContainSubComponent(SubComponent.of(LikersComponent.class));
   }
 }
