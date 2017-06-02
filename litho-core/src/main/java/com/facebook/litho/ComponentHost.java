@@ -173,6 +173,7 @@ public class ComponentHost extends ViewGroup {
     }
     mIsChildDrawingOrderDirty = true;
 
+    maybeUnregisterTouchExpansion(index, mountItem);
     ComponentHostUtils.removeItem(index, mViewMountItems, mScrapViewMountItemsArray);
     ComponentHostUtils.removeItem(index, mMountItems, mScrapMountItemsArray);
     releaseScrapDataStructuresIfNeeded();
@@ -187,7 +188,6 @@ public class ComponentHost extends ViewGroup {
     final View content = (View) disappearingItem.getContent();
 
     unmountView(content);
-    maybeUnregisterTouchExpansion(key, disappearingItem);
     maybeInvalidateAccessibilityState(disappearingItem);
   }
 
