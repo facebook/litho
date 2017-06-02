@@ -97,7 +97,7 @@ public class PropDefaultModel {
     result = 17 * result + mName.hashCode();
     result = 31 * result + mModifiers.hashCode();
     result = 43 * result + mResType.hashCode();
-    result = 65 * result + mResId;
+    result = 47 * result + mResId;
     return result;
   }
 }

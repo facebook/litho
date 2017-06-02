@@ -10,8 +10,6 @@ package com.facebook.samples.litho.playground;
 
 import com.facebook.litho.Column;
 
-import com.facebook.litho.widget.Text;
-
 import android.graphics.Color;
 
 import com.facebook.litho.ComponentLayout;
@@ -19,6 +17,7 @@ import com.facebook.litho.ComponentContext;
 
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
+import com.facebook.litho.widget.Text;
 
 @LayoutSpec
 public class PlaygroundComponentSpec {

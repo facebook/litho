@@ -216,10 +216,10 @@ public class BuilderGenerator {
       initMethodSpec.addStatement("mRequired.clear()");
     }
 
-    MethodSpec.Builder initResTypePropDefaultsSpec = null;
+    propsBuilderClassBuilder.addMethod(initMethodSpec.build());
 
     if (isResResolvable) {
-      initResTypePropDefaultsSpec = MethodSpec.methodBuilder("initPropDefaults");
+      MethodSpec.Builder initResTypePropDefaultsSpec = MethodSpec.methodBuilder("initPropDefaults");
 
       for (PropDefaultModel propDefault : propDefaults) {
         if (!propDefault.isResResolvable()) continue;
@@ -229,11 +229,7 @@ public class BuilderGenerator {
             propDefault.getName(),
             generatePropsDefaultInitializers(specModel, propDefault));
       }
-    }
 
-    propsBuilderClassBuilder.addMethod(initMethodSpec.build());
-
-    if (initResTypePropDefaultsSpec != null) {
       propsBuilderClassBuilder.addMethod(initResTypePropDefaultsSpec.build());
     }
 
