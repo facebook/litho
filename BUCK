@@ -12,8 +12,8 @@ litho_android_library(
     exported_deps = [
         COMPONENTS_STETHO_JAVA_TARGET,
         COMPONENTS_JAVA_TARGET,
-        COMPONENTS_YOGAPREBUILT_TARGET,
         COMPONENTS_ANDROIDSUPPORT_TARGET,
+        COMPONENTS_YOGA_TARGET,
     ],
     visibility = [
         "PUBLIC",

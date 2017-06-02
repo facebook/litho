@@ -18,15 +18,3 @@ litho_android_library(
         COMPONENTS_JSR_TARGET,
     ],
 )
-
-android_prebuilt_aar(
-    name = "yoga-prebuilt",
-    aar = ":yoga-aar",
-    visibility = [COMPONENTS_VISIBILITY],
-)
-
-remote_file(
-    name = "yoga-aar",
-    sha1 = "f3bc510a25015781183da9791010dcaca0537fe2",
-    url = "mvn:com.facebook.yoga:yoga:aar:1.4.2",
-)

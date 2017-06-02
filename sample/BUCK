@@ -13,7 +13,6 @@ android_binary(
     manifest = "src/main/AndroidManifest.xml",
     deps = [
         COMPONENTS_SAMPLE_JAVA,
-        COMPONENTS_YOGAPREBUILT_TARGET,
     ],
 )
 
