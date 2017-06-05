@@ -14,5 +14,6 @@ import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.CLASS)
 public @interface PropDefault {
-
+  ResType resType() default ResType.NONE;
+  int resId() default 0;
 }

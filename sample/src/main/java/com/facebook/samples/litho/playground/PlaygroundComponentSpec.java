@@ -10,10 +10,6 @@ package com.facebook.samples.litho.playground;
 
 import com.facebook.litho.Column;
 
-import com.facebook.yoga.YogaAlign;
-
-import com.facebook.yoga.YogaFlexDirection;
-
 import android.graphics.Color;
 
 import com.facebook.litho.ComponentLayout;
