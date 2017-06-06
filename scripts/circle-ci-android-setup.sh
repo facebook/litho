@@ -2,7 +2,7 @@ set -e
 
 function download() {
   if hash curl 2>/dev/null; then
-    curl -L -o "$2" "$1"
+    curl -s -L -o "$2" "$1"
   elif hash wget 2>/dev/null; then
     wget -O "$2" "$1"
   else
@@ -13,9 +13,9 @@ function download() {
 
 function installsdk() {
   PROXY_ARGS=""
-  if [[ ! -z "$https_proxy" ]]; then
-    PROXY_HOST="$(echo $https_proxy | cut -d : -f 1,1)"
-    PROXY_PORT="$(echo $https_proxy | cut -d : -f 2,2)"
+  if [[ ! -z "$HTTPS_PROXY" ]]; then
+    PROXY_HOST="$(echo $HTTPS_PROXY | cut -d : -f 1,1)"
+    PROXY_PORT="$(echo $HTTPS_PROXY | cut -d : -f 2,2)"
     PROXY_ARGS="--proxy=http --proxy_host=$PROXY_HOST --proxy_port=$PROXY_PORT"
   fi
 
