@@ -67,7 +67,8 @@ public final class AnimatedProperties {
   private static View assertIsView(Object mountItem, AnimatedProperty property) {
     if (!(mountItem instanceof View)) {
       throw new RuntimeException(
-          "Animating '" + property.getName() + "' is only supported on Views");
+          "Animating '" + property.getName() + "' is only supported on Views (got " + mountItem +
+              ")");
     }
     return (View) mountItem;
   }
