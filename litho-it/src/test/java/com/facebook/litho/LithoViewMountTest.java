@@ -61,11 +61,11 @@ public class LithoViewMountTest {
   }
 
   @Test
-  public void testNothingCalledUntilMeasured() {
+  public void testOnlyRequestLayoutCalledUntilMeasured() {
     mLithoView.setComponentTree(mComponentTree);
     mLithoView.onAttachedToWindow();
 
-    assertEquals(0, mLithoView.getRequestLayoutInvocationCount());
+    assertEquals(1, mLithoView.getRequestLayoutInvocationCount());
   }
 
   @Test
@@ -74,7 +74,7 @@ public class LithoViewMountTest {
     mLithoView.setComponentTree(mComponentTree);
     mLithoView.onAttachedToWindow();
 
-    assertEquals(1, mLithoView.getRequestLayoutInvocationCount());
+    assertEquals(2, mLithoView.getRequestLayoutInvocationCount());
   }
 
   @Test
@@ -83,7 +83,7 @@ public class LithoViewMountTest {
     mLithoView.setComponentTree(mComponentTree);
     mLithoView.onAttachedToWindow();
 
-    assertEquals(1, mLithoView.getRequestLayoutInvocationCount());
+    assertEquals(2, mLithoView.getRequestLayoutInvocationCount());
   }
 
   @Test
@@ -98,7 +98,7 @@ public class LithoViewMountTest {
     mLithoView.setMeasured(100, 100);
     mLithoView.onAttachedToWindow();
 
-    assertEquals(1, mLithoView.getRequestLayoutInvocationCount());
+    assertEquals(2, mLithoView.getRequestLayoutInvocationCount());
 
     mLithoView.onDetachedFromWindow();
 
@@ -116,7 +116,7 @@ public class LithoViewMountTest {
     mLithoView.onAttachedToWindow();
     mLithoView.setComponentTree(mComponentTree);
 
-    assertEquals(1, mLithoView.getRequestLayoutInvocationCount());
+    assertEquals(2, mLithoView.getRequestLayoutInvocationCount());
   }
 
   @Test
@@ -125,7 +125,7 @@ public class LithoViewMountTest {
     mLithoView.onAttachedToWindow();
     mLithoView.setComponentTree(mComponentTree);
 
-    assertEquals(1, mLithoView.getRequestLayoutInvocationCount());
+    assertEquals(2, mLithoView.getRequestLayoutInvocationCount());
   }
 
   @Test
@@ -134,7 +134,7 @@ public class LithoViewMountTest {
     mLithoView.setComponentTree(mComponentTree);
     mLithoView.onAttachedToWindow();
 
-    assertEquals(1, mLithoView.getRequestLayoutInvocationCount());
+    assertEquals(2, mLithoView.getRequestLayoutInvocationCount());
 
     mLithoView.onDetachedFromWindow();
     mLithoView.resetRequestLayoutInvocationCount();
@@ -154,7 +154,7 @@ public class LithoViewMountTest {
     mLithoView.resetRequestLayoutInvocationCount();
     mLithoView.setComponentTree(newComponentTree);
 
-    assertEquals(1, mLithoView.getRequestLayoutInvocationCount());
+    assertEquals(2, mLithoView.getRequestLayoutInvocationCount());
   }
 
   private static class TestLithoView extends LithoView {

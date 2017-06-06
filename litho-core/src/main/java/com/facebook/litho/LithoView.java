@@ -299,7 +299,9 @@ public class LithoView extends ComponentHost {
       }
       return;
     }
+
     setMountStateDirty();
+    requestLayout();
 
     if (mComponentTree != null) {
       if (mIsAttached) {
