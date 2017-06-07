@@ -30,7 +30,7 @@ public class JavadocExtractor {
    * Get the class javadoc from the given {@link TypeElement}.
    */
   @Nullable
-  static String getClassJavadoc(Elements elements, TypeElement typeElement) {
+  public static String getClassJavadoc(Elements elements, TypeElement typeElement) {
     final String unsanitizedJavadoc = elements.getDocComment(typeElement);
 
     if (unsanitizedJavadoc == null || unsanitizedJavadoc.isEmpty()) {
@@ -43,7 +43,7 @@ public class JavadocExtractor {
     return firstPropJavadocIndex < 0 ? javadoc : javadoc.substring(0, firstPropJavadocIndex);
   }
 
-  static ImmutableList<PropJavadocModel> getPropJavadocs(
+  public static ImmutableList<PropJavadocModel> getPropJavadocs(
       Elements elements,
       TypeElement typeElement) {
     final String unsanitizedJavadoc = elements.getDocComment(typeElement);
