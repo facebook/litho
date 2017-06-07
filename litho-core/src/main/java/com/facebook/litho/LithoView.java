@@ -127,7 +127,7 @@ public class LithoView extends ComponentHost {
     }
   }
 
-  void forceRelayout() {
+  protected void forceRelayout() {
     mForceLayout = true;
     requestLayout();
   }
