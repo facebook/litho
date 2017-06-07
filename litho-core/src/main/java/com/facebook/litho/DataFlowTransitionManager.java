@@ -127,6 +127,11 @@ public class DataFlowTransitionManager {
 
     final AnimationState animationState = mAnimationStates.get(transitionKey);
     if (animationState != null) {
+      if (mountItem == null) {
+        throw new RuntimeException(
+            "Transition key '" + transitionKey + "' recorded null mount content in pre-mount!");
+      }
+
       for (int i = 0; i < animationState.animatingProperties.size(); i++) {
         final AnimatedProperty prop = animationState.animatingProperties.valueAt(i);
         if (animationState.currentDiff.beforeValues.put(prop, prop.get(mountItem)) != null) {
@@ -150,6 +155,11 @@ public class DataFlowTransitionManager {
   void onPostMountItem(String transitionKey, Object mountItem) {
     final AnimationState animationState = mAnimationStates.get(transitionKey);
     if (animationState != null) {
+      if (mountItem == null) {
+        throw new RuntimeException(
+            "Transition key '" + transitionKey + "' recorded null mount content in post-mount!");
+      }
+
       if (!animationState.sawInPreMount) {
         animationState.changeType = KeyStatus.APPEARED;
       } else {
