@@ -15,8 +15,12 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.util.Elements;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import com.facebook.litho.specmodels.model.SpecModel;
+import com.facebook.litho.specmodels.model.SpecModelValidationError;
 
 /**
  * Utility class for processing specs.
@@ -56,5 +60,28 @@ public class ProcessorUtils {
     }
 
     return null;
+  }
+
+  /**
+   * Creates printable exceptions for the validation errors found while running the annotation
+   * processor for the given specmodel and throws a {@link MultiPrintableException} if any such
+   * errors are found.
+   */
+  public final static void validate(SpecModel specModel) {
+    List<SpecModelValidationError> validationErrors = specModel.validate();
+
+    if (validationErrors == null || validationErrors.isEmpty()) {
+      return;
+    }
+
+    final List<PrintableException> printableExceptions = new ArrayList<>();
+    for (SpecModelValidationError validationError : validationErrors) {
+      printableExceptions.add(
+          new ComponentsProcessingException(
+              (Element) validationError.element,
+              validationError.message));
+    }
+
+    throw new MultiPrintableException(printableExceptions);
   }
 }

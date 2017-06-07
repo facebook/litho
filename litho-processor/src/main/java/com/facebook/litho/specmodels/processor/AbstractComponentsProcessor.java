@@ -18,10 +18,8 @@ import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 import com.facebook.litho.annotations.LayoutSpec;
@@ -29,9 +27,10 @@ import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.SpecModel;
-import com.facebook.litho.specmodels.model.SpecModelValidationError;
 
 import com.squareup.javapoet.JavaFile;
+
+import static com.facebook.litho.specmodels.processor.ProcessorUtils.validate;
 
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public abstract class AbstractComponentsProcessor extends AbstractProcessor {
@@ -58,7 +57,7 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
         if (element.getAnnotation(LayoutSpec.class) != null) {
           specModel = getLayoutSpecModel(typeElement);
         } else if (element.getAnnotation(MountSpec.class) != null) {
-           specModel =
+          specModel =
               MountSpecModelFactory.create(
                   processingEnv.getElementUtils(),
                   (TypeElement) element,
@@ -96,30 +95,12 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
 
   abstract protected SpecModel getLayoutSpecModel(TypeElement typeElement);
 
-  void validate(SpecModel specModel) {
-    List<SpecModelValidationError> validationErrors = specModel.validate();
-
-    if (validationErrors.isEmpty()) {
-      return;
-    }
-
-    final List<PrintableException> printableExceptions = new ArrayList<>();
-    for (SpecModelValidationError validationError : validationErrors) {
-      printableExceptions.add(
-          new ComponentsProcessingException(
-              (Element) validationError.element,
-              validationError.message));
-    }
-
-    throw new MultiPrintableException(printableExceptions);
-  }
-
   protected void generate(SpecModel specModel) throws IOException {
     JavaFile.builder(
         getPackageName(specModel.getComponentTypeName().toString()), specModel.generate())
-            .skipJavaLangImports(true)
-            .build()
-            .writeTo(processingEnv.getFiler());
+        .skipJavaLangImports(true)
+        .build()
+        .writeTo(processingEnv.getFiler());
   }
 
   protected static String getPackageName(String qualifiedName) {
