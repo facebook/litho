@@ -172,10 +172,9 @@ class TouchExpansionDelegate extends TouchDelegate {
 
       switch (event.getAction()) {
         case MotionEvent.ACTION_DOWN:
-          if (mDelegateBounds.contains(x, y)) {
-            mIsHandlingTouch = true;
-            shouldDelegateTouchEvent = true;
-          }
+          mIsHandlingTouch = mDelegateBounds.contains(x, y);
+          shouldDelegateTouchEvent = mIsHandlingTouch;
+
           break;
 
         case MotionEvent.ACTION_UP:
@@ -185,6 +184,9 @@ class TouchExpansionDelegate extends TouchDelegate {
             if (!mDelegateSlopBounds.contains(x, y)) {
               touchWithinViewBounds = false;
             }
+          }
+          if (event.getAction() == MotionEvent.ACTION_UP) {
+            mIsHandlingTouch = false;
           }
           break;
 
