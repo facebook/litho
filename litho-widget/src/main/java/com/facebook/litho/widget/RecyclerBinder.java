@@ -23,10 +23,12 @@ import android.os.Looper;
 import android.support.annotation.UiThread;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.view.ViewCompat;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.LayoutManager;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
 
 import com.facebook.litho.Component;
@@ -96,6 +98,7 @@ public class RecyclerBinder implements
   private RecyclerView mMountedView;
   private int mCurrentFirstVisiblePosition;
   private int mCurrentLastVisiblePosition;
+  private int mCurrentOffset;
   private RangeCalculationResult mRange;
   private StickyHeaderController mStickyHeaderController;
   private boolean mCanPrefetchDisplayLists;
@@ -747,7 +750,9 @@ public class RecyclerBinder implements
 
     mMountedView = view;
 
-    view.setLayoutManager(mLayoutInfo.getLayoutManager());
+    final LayoutManager layoutManager = mLayoutInfo.getLayoutManager();
+
+    view.setLayoutManager(layoutManager);
     view.setAdapter(mInternalAdapter);
     view.addOnScrollListener(mRangeScrollListener);
 
@@ -755,7 +760,12 @@ public class RecyclerBinder implements
 
     if (mCurrentFirstVisiblePosition != RecyclerView.NO_POSITION &&
         mCurrentFirstVisiblePosition > 0) {
-      view.scrollToPosition(mCurrentFirstVisiblePosition);
+      if (layoutManager instanceof LinearLayoutManager) {
+        ((LinearLayoutManager) layoutManager)
+            .scrollToPositionWithOffset(mCurrentFirstVisiblePosition, mCurrentOffset);
+      } else {
+        view.scrollToPosition(mCurrentFirstVisiblePosition);
+      }
     }
 
     enableStickyHeader(mMountedView);
@@ -792,6 +802,20 @@ public class RecyclerBinder implements
   public void unmount(RecyclerView view) {
     ThreadUtils.assertMainThread();
 
+    final View firstView = view.getChildAt(0);
+
+    if (firstView != null) {
+      mCurrentOffset = mLayoutInfo.getScrollDirection() == HORIZONTAL
+          ? firstView.getLeft()
+          : firstView.getTop();
+    } else {
+      mCurrentOffset = 0;
+    }
+
+    view.removeOnScrollListener(mRangeScrollListener);
+    view.setAdapter(null);
+    view.setLayoutManager(null);
+
     // We might have already unmounted this view when calling mount with a different view. In this
     // case we can just return here.
     if (mMountedView != view) {
@@ -802,9 +826,7 @@ public class RecyclerBinder implements
     if (mStickyHeaderController != null) {
       mStickyHeaderController.reset();
     }
-    view.removeOnScrollListener(mRangeScrollListener);
-    view.setAdapter(null);
-    view.setLayoutManager(null);
+
     mLayoutInfo.setComponentInfoCollection(null);
   }
 
