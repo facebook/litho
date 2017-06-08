@@ -301,7 +301,6 @@ public class LithoView extends ComponentHost {
     }
 
     setMountStateDirty();
-    requestLayout();
 
     if (mComponentTree != null) {
       if (mIsAttached) {
@@ -318,6 +317,8 @@ public class LithoView extends ComponentHost {
 
       if (mIsAttached) {
         mComponentTree.attach();
+      } else {
+        requestLayout();
       }
     }
   }
