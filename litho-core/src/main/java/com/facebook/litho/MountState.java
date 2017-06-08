@@ -28,6 +28,7 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
+import android.view.ViewOutlineProvider;
 
 import com.facebook.infer.annotation.ThreadConfined;
 
@@ -1127,6 +1128,9 @@ class MountState {
       setViewTag(view, nodeInfo.getViewTag());
       setViewTags(view, nodeInfo.getViewTags());
 
+      setShadowElevation(view, nodeInfo.getShadowElevation());
+      setOutlineProvider(view, nodeInfo.getOutlineProvider());
+
       setContentDescription(view, nodeInfo.getContentDescription());
 
       setFocusable(view, nodeInfo.getFocusState());
@@ -1177,6 +1181,9 @@ class MountState {
 
       unsetViewTag(view);
       unsetViewTags(view, nodeInfo.getViewTags());
+
+      unsetShadowElevation(view, nodeInfo.getShadowElevation());
+      unsetOutlineProvider(view, nodeInfo.getOutlineProvider());
 
       if (!TextUtils.isEmpty(nodeInfo.getContentDescription())) {
         unsetContentDescription(view);
@@ -1431,6 +1438,30 @@ class MountState {
           view.setTag(viewTags.keyAt(i), null);
         }
       }
+    }
+  }
+
+  private static void setShadowElevation(View view, float shadowElevation) {
+    if (shadowElevation != 0) {
+      ViewCompat.setElevation(view, shadowElevation);
+    }
+  }
+
+  private static void unsetShadowElevation(View view, float shadowElevation) {
+    if (shadowElevation != 0) {
+      ViewCompat.setElevation(view, 0);
+    }
+  }
+
+  private static void setOutlineProvider(View view, ViewOutlineProvider outlineProvider) {
+    if (outlineProvider != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      view.setOutlineProvider(outlineProvider);
+    }
+  }
+
+  private static void unsetOutlineProvider(View view, ViewOutlineProvider outlineProvider) {
+    if (outlineProvider != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      view.setOutlineProvider(ViewOutlineProvider.BACKGROUND);
     }
   }
 

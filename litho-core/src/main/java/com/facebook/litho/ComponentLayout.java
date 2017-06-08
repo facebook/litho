@@ -18,6 +18,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.Px;
 import android.support.annotation.StringRes;
 import android.util.SparseArray;
+import android.view.ViewOutlineProvider;
 
 import com.facebook.infer.annotation.ReturnsOwnership;
 
@@ -219,6 +220,16 @@ public interface ComponentLayout {
     Builder contentDescription(@StringRes int stringId, Object... formatArgs);
     Builder viewTag(Object viewTag);
     Builder viewTags(SparseArray<Object> viewTags);
+    /**
+     * Shadow elevation and outline provider methods are only functional on
+     * {@link android.os.Build.VERSION_CODES#LOLLIPOP} and above.
+     */
+    Builder shadowElevationPx(float shadowElevation);
+    Builder shadowElevationAttr(@AttrRes int resId, @DimenRes int defaultResId);
+    Builder shadowElevationAttr(@AttrRes int resId);
+    Builder shadowElevationRes(@DimenRes int resId);
+    Builder shadowElevationDip(@Dimension(unit = DP) int shadowElevation);
+    Builder outlineProvider(ViewOutlineProvider outlineProvider);
     Builder transitionKey(String key);
     Builder testKey(String testKey);
     Builder dispatchPopulateAccessibilityEventHandler(
@@ -405,6 +416,16 @@ public interface ComponentLayout {
     ContainerBuilder contentDescription(@StringRes int stringId);
     ContainerBuilder viewTag(Object viewTag);
     ContainerBuilder viewTags(SparseArray<Object> viewTags);
+    /**
+     * Shadow elevation and outline provider methods are only functional on
+     * {@link android.os.Build.VERSION_CODES#LOLLIPOP} and above.
+     */
+    ContainerBuilder shadowElevationPx(float shadowElevation);
+    ContainerBuilder shadowElevationAttr(@AttrRes int resId, @DimenRes int defaultResId);
+    ContainerBuilder shadowElevationAttr(@AttrRes int resId);
+    ContainerBuilder shadowElevationRes(@DimenRes int resId);
+    ContainerBuilder shadowElevationDip(@Dimension(unit = DP) int shadowElevation);
+    ContainerBuilder outlineProvider(ViewOutlineProvider outlineProvider);
     ContainerBuilder transitionKey(String key);
     ContainerBuilder dispatchPopulateAccessibilityEventHandler(
         EventHandler<DispatchPopulateAccessibilityEventEvent>

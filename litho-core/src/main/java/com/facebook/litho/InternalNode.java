@@ -31,6 +31,7 @@ import android.support.annotation.StringRes;
 import android.support.v4.view.ViewCompat;
 import android.text.TextUtils;
 import android.util.SparseArray;
+import android.view.ViewOutlineProvider;
 
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -1253,6 +1254,38 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Override
   public InternalNode viewTags(SparseArray<Object> viewTags) {
     getOrCreateNodeInfo().setViewTags(viewTags);
+    return this;
+  }
+
+  @Override
+  public ContainerBuilder shadowElevationPx(float shadowElevation) {
+    getOrCreateNodeInfo().setShadowElevation(shadowElevation);
+    return this;
+  }
+
+  @Override
+  public ContainerBuilder shadowElevationAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+    return shadowElevationPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
+  }
+
+  @Override
+  public ContainerBuilder shadowElevationAttr(@AttrRes int resId) {
+    return shadowElevationAttr(resId, 0);
+  }
+
+  @Override
+  public ContainerBuilder shadowElevationRes(@DimenRes int resId) {
+    return shadowElevationPx(mResourceResolver.resolveDimenSizeRes(resId));
+  }
+
+  @Override
+  public ContainerBuilder shadowElevationDip(@Dimension(unit = DP) int shadowElevation) {
+    return shadowElevationPx(mResourceResolver.dipsToPixels(shadowElevation));
+  }
+
+  @Override
+  public ContainerBuilder outlineProvider(ViewOutlineProvider outlineProvider) {
+    getOrCreateNodeInfo().setOutlineProvider(outlineProvider);
     return this;
   }
 

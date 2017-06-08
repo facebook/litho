@@ -15,6 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import android.support.annotation.IntDef;
 import android.util.SparseArray;
+import android.view.ViewOutlineProvider;
 
 import com.facebook.infer.annotation.ThreadConfined;
 
@@ -62,12 +63,18 @@ class NodeInfo {
   private static final int PFLAG_SEND_ACCESSIBILITY_EVENT_HANDLER_IS_SET = 1 << 12;
   // When this flag is set, sendAccessibilityEventUncheckedHandler was explicitly set on this node.
   private static final int PFLAG_SEND_ACCESSIBILITY_EVENT_UNCHECKED_HANDLER_IS_SET = 1 << 13;
+  // When this flag is set, shadowElevation was explicitly set on this node.
+  private static final int PFLAG_SHADOW_ELEVATION_IS_SET = 1 << 14;
+  // When this flag is set, outlineProvider was explicitly set on this node.
+  private static final int PFLAG_OUTINE_PROVIDER_IS_SET = 1 << 15;
 
   private final AtomicInteger mReferenceCount = new AtomicInteger(0);
 
   private CharSequence mContentDescription;
   private Object mViewTag;
   private SparseArray<Object> mViewTags;
+  private float mShadowElevation;
+  private ViewOutlineProvider mOutlineProvider;
   private EventHandler<ClickEvent> mClickHandler;
   private EventHandler<LongClickEvent> mLongClickHandler;
   private EventHandler<TouchEvent> mTouchHandler;
@@ -110,6 +117,24 @@ class NodeInfo {
   void setViewTags(SparseArray<Object> viewTags) {
     mPrivateFlags |= PFLAG_VIEW_TAGS_IS_SET;
     mViewTags = viewTags;
+  }
+
+  float getShadowElevation() {
+    return mShadowElevation;
+  }
+
+  public void setShadowElevation(float shadowElevation) {
+    mPrivateFlags |= PFLAG_SHADOW_ELEVATION_IS_SET;
+    mShadowElevation = shadowElevation;
+  }
+
+  ViewOutlineProvider getOutlineProvider() {
+    return mOutlineProvider;
+  }
+
+  public void setOutlineProvider(ViewOutlineProvider outlineProvider) {
+    mPrivateFlags |= PFLAG_OUTINE_PROVIDER_IS_SET;
+    mOutlineProvider = outlineProvider;
   }
 
   SparseArray<Object> getViewTags() {
@@ -317,6 +342,12 @@ class NodeInfo {
     if ((newInfo.mPrivateFlags & PFLAG_CONTENT_DESCRIPTION_IS_SET) != 0) {
       mContentDescription = newInfo.mContentDescription;
     }
+    if ((newInfo.mPrivateFlags & PFLAG_SHADOW_ELEVATION_IS_SET) != 0) {
+      mShadowElevation = newInfo.mShadowElevation;
+    }
+    if ((newInfo.mPrivateFlags & PFLAG_OUTINE_PROVIDER_IS_SET) != 0) {
+      mOutlineProvider = newInfo.mOutlineProvider;
+    }
     if (newInfo.mViewTag != null) {
       mViewTag = newInfo.mViewTag;
     }
@@ -371,6 +402,8 @@ class NodeInfo {
     mSendAccessibilityEventUncheckedHandler = null;
     mFocusState = FOCUS_UNSET;
     mPrivateFlags = 0;
+    mShadowElevation = 0;
+    mOutlineProvider = null;
 
     ComponentsPools.release(this);
   }

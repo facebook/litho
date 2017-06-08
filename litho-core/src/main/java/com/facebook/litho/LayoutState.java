@@ -420,12 +420,16 @@ class LayoutState {
     final boolean hasTouchEventHandlers = (nodeInfo != null && nodeInfo.hasTouchEventHandlers());
     final boolean hasViewTag = (nodeInfo != null && nodeInfo.getViewTag() != null);
     final boolean hasViewTags = (nodeInfo != null && nodeInfo.getViewTags() != null);
+    final boolean hasShadowElevation = (nodeInfo != null && nodeInfo.getShadowElevation() != 0);
+    final boolean hasOutlineProvider = (nodeInfo != null && nodeInfo.getOutlineProvider() != null);
     final boolean isFocusableSetTrue =
         (nodeInfo != null && nodeInfo.getFocusState() == FOCUS_SET_TRUE);
 
     return hasTouchEventHandlers
         || hasViewTag
         || hasViewTags
+        || hasShadowElevation
+        || hasOutlineProvider
         || hasAccessibilityContent
         || isFocusableSetTrue;
   }
