@@ -33,7 +33,7 @@ class LikersComponentSpec {
   protected static ComponentLayout onCreateLayout(
       ComponentContext c,
       @Prop List<User> likers) {
-      
+
     return Row.create(c)
         .alignItems(FLEX_START)
         .child(
@@ -57,7 +57,7 @@ For our test, we want to verify the rendering of the text and the icon.
 
 ## Setup
 
-The Components testing framework provides a JUnit
+The Litho testing framework provides a JUnit
 [`@Rule`](https://github.com/junit-team/junit4/wiki/Rules) which
 sets up overrides for
 [Styleables](https://developer.android.com/reference/android/R.styleable.html)
@@ -74,7 +74,7 @@ public class LikersComponentTest {
 ```
 
 ## Testing Component Rendering
-The Components framework includes a set of AssertJ-style helpers for verifying
+The Litho framework includes a set of AssertJ-style helpers for verifying
 properties of your Components. Behind the scenes, this will mount the
 Component for you.
 
@@ -174,12 +174,12 @@ Robolectric, for instance, you may run into issues as Robolectric spins up new
 for every test suite with a different configuration. The same goes for PowerMock, which
 prepares the ClassLoaders on a per-suite basis and leaves them in a non-reusable state.
 
-The JVM has two important limitations that are relevant to this: 
+The JVM has two important limitations that are relevant to this:
 
 1. A shared library can only ever be loaded once per process.
 2. `ClassLoader`s do not share information about the libraries loaded.
 
-Because of that, using multiple ClassLoaders for test runs, is highly problematic
+Because of that, using multiple ClassLoaders for test runs is highly problematic
 as every instance will attempt to load Yoga and every but the first will fail with
 a `libyoga.so already loaded in another classloader` exception.
 
