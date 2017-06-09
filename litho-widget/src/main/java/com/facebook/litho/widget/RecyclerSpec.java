@@ -122,6 +122,9 @@ class RecyclerSpec {
       @Prop(optional = true) int scrollBarStyle,
       @Prop(optional = true) RecyclerView.ItemDecoration itemDecoration,
       @Prop(optional = true, resType = ResType.COLOR) int refreshProgressBarColor,
+      @Prop(optional = true) boolean horizontalFadingEdgeEnabled,
+      @Prop(optional = true) boolean verticalFadingEdgeEnabled,
+      @Prop(optional = true, resType = ResType.DIMEN_SIZE) int fadingEdgeLength,
       @Prop(optional = true) @IdRes int recyclerViewId) {
     final RecyclerView recyclerView = recyclerViewWrapper.getRecyclerView();
 
@@ -136,6 +139,9 @@ class RecyclerSpec {
     recyclerView.setNestedScrollingEnabled(nestedScrollingEnabled);
     recyclerViewWrapper.setNestedScrollingEnabled(nestedScrollingEnabled);
     recyclerView.setScrollBarStyle(scrollBarStyle);
+    recyclerView.setHorizontalFadingEdgeEnabled(horizontalFadingEdgeEnabled);
+    recyclerView.setVerticalFadingEdgeEnabled(verticalFadingEdgeEnabled);
+    recyclerView.setFadingEdgeLength(fadingEdgeLength);
     // TODO (t14949498) determine if this is necessary
     recyclerView.setId(recyclerViewId);
 
@@ -252,7 +258,10 @@ class RecyclerSpec {
       Diff<Boolean> hasFixedSize,
       Diff<Boolean> clipToPadding,
       Diff<Integer> scrollBarStyle,
-      Diff<RecyclerView.ItemDecoration> itemDecoration) {
+      Diff<RecyclerView.ItemDecoration> itemDecoration,
+      Diff<Boolean> horizontalFadingEdgeEnabled,
+      Diff<Boolean> verticalFadingEdgeEnabled,
+      Diff<Integer> fadingEdgeLength) {
     if (binder.getPrevious() != binder.getNext()) {
       return true;
     }
@@ -266,6 +275,18 @@ class RecyclerSpec {
     }
 
     if (!scrollBarStyle.getPrevious().equals(scrollBarStyle.getNext())) {
+      return true;
+    }
+
+    if (!horizontalFadingEdgeEnabled.getPrevious().equals(horizontalFadingEdgeEnabled.getNext())) {
+      return true;
+    }
+
+    if (!verticalFadingEdgeEnabled.getPrevious().equals(verticalFadingEdgeEnabled.getNext())) {
+      return true;
+    }
+
+    if (!fadingEdgeLength.getPrevious().equals(fadingEdgeLength.getNext())) {
       return true;
     }
 
