@@ -42,6 +42,7 @@ public final class DelegateMethodDescription {
     PROP_OUTPUT,
     STATE_OUTPUT,
     STATE_VALUE,
+    DIFF,
   }
 
   public final ImmutableList<AnnotationSpec> annotations;

@@ -45,6 +45,7 @@ public final class SpecModelImpl implements SpecModel {
   private final ImmutableList<InterStageInputParamModel> mInterStageInputs;
   private final ImmutableList<TreePropModel> mTreeProps;
   private final ImmutableList<EventDeclarationModel> mEventDeclarations;
+  private final ImmutableList<DiffModel> mDiffs;
   private final String mClassJavadoc;
   private final ImmutableList<PropJavadocModel> mPropJavadocs;
   private final boolean mIsPublic;
@@ -80,6 +81,7 @@ public final class SpecModelImpl implements SpecModel {
     mInterStageInputs = getInterStageInputs(delegateMethods, eventMethods, updateStateMethods);
     mTreeProps = getTreeProps(delegateMethods, eventMethods, updateStateMethods);
     mEventDeclarations = eventDeclarations;
+    mDiffs = getDiffs(delegateMethods);
     mClassJavadoc = classJavadoc;
     mPropJavadocs = propJavadocs;
     mIsPublic = isPublic;
@@ -156,6 +158,11 @@ public final class SpecModelImpl implements SpecModel {
   @Override
   public ImmutableList<EventDeclarationModel> getEventDeclarations() {
     return mEventDeclarations;
+  }
+
+  @Override
+  public ImmutableList<DiffModel> getDiffs() {
+    return mDiffs;
   }
 
   @Override
@@ -312,6 +319,20 @@ public final class SpecModelImpl implements SpecModel {
     }
 
     return ImmutableList.copyOf(new ArrayList<>(stateValues));
+  }
+
+  private static ImmutableList<DiffModel> getDiffs(
+      ImmutableList<DelegateMethodModel> delegateMethods) {
+    final Set<DiffModel> diffs = new LinkedHashSet<>();
+    for (DelegateMethodModel delegateMethod : delegateMethods) {
+      for (MethodParamModel param : delegateMethod.methodParams) {
+        if (param instanceof DiffModel) {
+          diffs.add((DiffModel) param);
+        }
+      }
+    }
+
+    return ImmutableList.copyOf(new ArrayList<>(diffs));
   }
 
   private static ImmutableList<InterStageInputParamModel> getInterStageInputs(

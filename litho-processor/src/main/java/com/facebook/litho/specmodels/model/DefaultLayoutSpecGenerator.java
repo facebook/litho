@@ -18,6 +18,7 @@ import com.facebook.litho.specmodels.generator.EventGenerator;
 import com.facebook.litho.specmodels.generator.JavadocGenerator;
 import com.facebook.litho.specmodels.generator.PreambleGenerator;
 import com.facebook.litho.specmodels.generator.PureRenderGenerator;
+import com.facebook.litho.specmodels.generator.RenderInfoGenerator;
 import com.facebook.litho.specmodels.generator.StateGenerator;
 import com.facebook.litho.specmodels.generator.TreePropGenerator;
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
@@ -54,6 +55,7 @@ public class DefaultLayoutSpecGenerator implements LayoutSpecGenerator {
         .addTypeSpecDataHolder(PureRenderGenerator.generate(layoutSpecModel))
         .addTypeSpecDataHolder(EventGenerator.generate(layoutSpecModel))
         .addTypeSpecDataHolder(StateGenerator.generate(layoutSpecModel))
+        .addTypeSpecDataHolder(RenderInfoGenerator.generate(layoutSpecModel))
         .addTypeSpecDataHolder(BuilderGenerator.generate(layoutSpecModel))
         .build()
         .addToTypeSpec(typeSpec);

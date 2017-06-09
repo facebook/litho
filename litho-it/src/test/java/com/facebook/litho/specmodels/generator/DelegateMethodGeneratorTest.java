@@ -10,6 +10,7 @@
 
 package com.facebook.litho.specmodels.generator;
 
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 
 import java.lang.annotation.Annotation;
@@ -59,6 +60,7 @@ public class DelegateMethodGeneratorTest {
         DelegateMethodDescriptions.ON_CREATE_LAYOUT.returnType,
         ImmutableList.of(
             MethodParamModelFactory.create(
+                mock(ExecutableElement.class),
                 ClassNames.COMPONENT_CONTEXT,
                 "c",
                 ImmutableList.<Annotation>of(),
@@ -66,6 +68,7 @@ public class DelegateMethodGeneratorTest {
                 ImmutableList.<Class<? extends Annotation>>of(),
                 null),
             MethodParamModelFactory.create(
+                mock(ExecutableElement.class),
                 TypeName.BOOLEAN,
                 "prop",
                 ImmutableList.of(createAnnotation(Prop.class)),
@@ -73,6 +76,7 @@ public class DelegateMethodGeneratorTest {
                 ImmutableList.<Class<? extends Annotation>>of(),
                 null),
             MethodParamModelFactory.create(
+                mock(ExecutableElement.class),
                 TypeName.INT,
                 "state",
                 ImmutableList.of(createAnnotation(State.class)),

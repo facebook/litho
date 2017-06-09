@@ -15,6 +15,9 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.annotations.State;
+
 import com.squareup.javapoet.ParameterizedTypeName;
 
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.DELEGATE_FIELD_NAME;
@@ -119,6 +122,22 @@ public class SpecModelUtils {
             .equals(stateValue.getType().box());
   }
 
+  /**
+   * @return the model for state/prop that this Diff is refering to.
+   */
+  public static MethodParamModel getReferencedParamModelForDiff(
+      SpecModel specModel,
+      DiffModel diffModel) {
+    if (MethodParamModelUtils.isAnnotatedWith(diffModel, Prop.class)) {
+      return SpecModelUtils.getPropWithName(specModel, diffModel.getName());
+    } else if (MethodParamModelUtils.isAnnotatedWith(diffModel, State.class)) {
+      return SpecModelUtils.getStateValueWithName(specModel, diffModel.getName());
+    }
+
+    throw new RuntimeException(
+        "Diff model wasn't annotated with @State or @Prop, some validation failed");
+  }
+
   public static boolean hasAnnotation(
       MethodParamModel methodParam,
       Class<?> annotationClass) {
@@ -128,6 +147,15 @@ public class SpecModelUtils {
       }
     }
 
+    return false;
+  }
+
+  public static boolean hasDiffThatNeedsRenderInfoInfra(SpecModel specModel) {
+    for (DiffModel diff : specModel.getDiffs()) {
+      if (diff.needsRenderInfoInfra()) {
+        return true;
+      }
+    }
     return false;
   }
 }

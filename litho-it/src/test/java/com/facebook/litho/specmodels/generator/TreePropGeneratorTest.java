@@ -9,6 +9,7 @@
 
 package com.facebook.litho.specmodels.generator;
 
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 
 import java.lang.annotation.Annotation;
@@ -57,6 +58,7 @@ public class TreePropGeneratorTest {
         TypeName.BOOLEAN,
         ImmutableList.of(
             MethodParamModelFactory.create(
+                mock(ExecutableElement.class),
                 ClassNames.COMPONENT_CONTEXT,
                 "componentContext",
                 new ArrayList<Annotation>(),
@@ -64,6 +66,7 @@ public class TreePropGeneratorTest {
                 new ArrayList<Class<? extends Annotation>>(),
                 null),
             MethodParamModelFactory.create(
+                mock(ExecutableElement.class),
                 TypeName.BOOLEAN,
                 "prop",
                 ImmutableList.of(createAnnotation(Prop.class)),
@@ -71,6 +74,7 @@ public class TreePropGeneratorTest {
                 new ArrayList<Class<? extends Annotation>>(),
                 null),
             MethodParamModelFactory.create(
+                mock(ExecutableElement.class),
                 TypeName.INT,
                 "state",
                 ImmutableList.of(createAnnotation(State.class)),

@@ -289,6 +289,8 @@ public class DelegateMethodValidation {
         return SpecModelUtils.isStateOutput(specModel, methodParamModel);
       case STATE_VALUE:
         return SpecModelUtils.isStateValue(specModel, methodParamModel);
+      case DIFF:
+        return methodParamModel instanceof DiffModel;
     }
 
     return false;
@@ -328,6 +330,9 @@ public class DelegateMethodValidation {
       case STATE_VALUE:
         return "StateValue<T> stateName, where a state param with type T and name stateName is " +
             "declared elsewhere in the spec";
+      case DIFF:
+        return "@State Diff<T> stateName or @Prop Diff<T> propName, where stateName/propName is " +
+            "a declared state or prop param declared elsewhere in the spec.";
     }
 
     return "Unexpected parameter type - please report to the Components team";

@@ -44,6 +44,7 @@ public class MethodExtractorUtils {
       try {
         methodParams.add(
             MethodParamModelFactory.create(
+                method,
                 TypeName.get(param.asType()),
                 param.getSimpleName().toString(),
                 getLibraryAnnotations(param, permittedAnnotations),

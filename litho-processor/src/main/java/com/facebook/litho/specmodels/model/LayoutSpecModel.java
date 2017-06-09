@@ -134,6 +134,11 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
+  public ImmutableList<DiffModel> getDiffs() {
+    return mSpecModel.getDiffs();
+  }
+
+  @Override
   public String getClassJavadoc() {
     return mSpecModel.getClassJavadoc();
   }

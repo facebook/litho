@@ -19,6 +19,7 @@ public interface GeneratorConstants {
   String IMPL_VARIABLE_NAME = "_impl";
   String IMPL_CLASS_NAME_SUFFIX = "Impl";
   String STATE_CONTAINER_FIELD_NAME = "mStateContainerImpl";
+  String PREVIOUS_RENDER_INFO_FIELD_NAME = "mPreviousRenderInfo";
   String STATE_CONTAINER_IMPL_NAME_SUFFIX = "StateContainerImpl";
   String STATE_UPDATE_IMPL_NAME_SUFFIX = "StateUpdate";
 }

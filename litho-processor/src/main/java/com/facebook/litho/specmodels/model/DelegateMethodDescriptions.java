@@ -46,6 +46,7 @@ import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 
+import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.INTER_STAGE_OUTPUT;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.PROP;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.PROP_OUTPUT;
@@ -116,7 +117,7 @@ public final class DelegateMethodDescriptions {
           .returnType(ClassNames.TRANSITION_SET)
           .name("onCreateTransition")
           .definedParameterTypes(ImmutableList.<TypeName>of(ClassNames.COMPONENT_CONTEXT))
-          .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE))
+          .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE, DIFF))
           .build();
 
   public static final DelegateMethodDescription ON_PREPARE =

@@ -17,4 +17,9 @@ public class SpecModelValidationError {
     this.element = element;
     this.message = message;
   }
+
+  @Override
+  public String toString() {
+    return getClass().getSimpleName() + " { " + message + " }";
+  }
 }

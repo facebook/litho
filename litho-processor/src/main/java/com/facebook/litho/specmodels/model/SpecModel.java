@@ -96,6 +96,11 @@ public interface SpecModel {
   ImmutableList<EventDeclarationModel> getEventDeclarations();
 
   /**
+   * @return the set of diff params used within lifecycle methods in the spec.
+   */
+  ImmutableList<DiffModel> getDiffs();
+
+  /**
    * @return the javadoc for this spec.
    */
   String getClassJavadoc();

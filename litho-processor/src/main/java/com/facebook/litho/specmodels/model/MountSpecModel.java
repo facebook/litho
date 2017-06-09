@@ -21,6 +21,7 @@ import com.facebook.litho.specmodels.generator.JavadocGenerator;
 import com.facebook.litho.specmodels.generator.MountSpecGenerator;
 import com.facebook.litho.specmodels.generator.PreambleGenerator;
 import com.facebook.litho.specmodels.generator.PureRenderGenerator;
+import com.facebook.litho.specmodels.generator.RenderInfoGenerator;
 import com.facebook.litho.specmodels.generator.StateGenerator;
 import com.facebook.litho.specmodels.generator.TreePropGenerator;
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
@@ -156,6 +157,11 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
+  public ImmutableList<DiffModel> getDiffs() {
+    return mSpecModel.getDiffs();
+  }
+
+  @Override
   public String getClassJavadoc() {
     return mSpecModel.getClassJavadoc();
   }
@@ -247,6 +253,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
         .addTypeSpecDataHolder(PureRenderGenerator.generate(this))
         .addTypeSpecDataHolder(EventGenerator.generate(this))
         .addTypeSpecDataHolder(StateGenerator.generate(this))
+        .addTypeSpecDataHolder(RenderInfoGenerator.generate(this))
         .addTypeSpecDataHolder(BuilderGenerator.generate(this))
         .build()
         .addToTypeSpec(typeSpec);

@@ -23,6 +23,7 @@ import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.ClassNames;
+import com.facebook.litho.specmodels.model.DiffModel;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.InterStageInputParamModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
@@ -45,6 +46,7 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.IMPL_CLASS_NAME_SUFFIX;
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.PREVIOUS_RENDER_INFO_FIELD_NAME;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_FIELD_NAME;
 import static com.facebook.litho.specmodels.model.ClassNames.COMPONENT;
 
@@ -73,14 +75,21 @@ public class ComponentImplGenerator {
     }
 
     final boolean hasState = !specModel.getStateValues().isEmpty();
+    final boolean needsRenderInfoInfra = SpecModelUtils.hasDiffThatNeedsRenderInfoInfra(specModel);
 
     final ClassName stateContainerImplClass =
         ClassName.bestGuess(getStateContainerImplClassName(specModel));
+    final ClassName previousRenderInfoImplClass =
+        ClassName.bestGuess(RenderInfoGenerator.getRenderInfoImplClassName(specModel));
 
     if (hasState) {
       implClassBuilder.addField(stateContainerImplClass, STATE_CONTAINER_FIELD_NAME);
       implClassBuilder.addMethod(
           generateStateContainerGetter(specModel.getStateContainerClass()));
+    }
+
+    if (needsRenderInfoInfra) {
+      implClassBuilder.addField(previousRenderInfoImplClass, PREVIOUS_RENDER_INFO_FIELD_NAME);
     }
 
     generateProps(specModel).addToTypeSpec(implClassBuilder);
@@ -101,6 +110,9 @@ public class ComponentImplGenerator {
     final TypeSpecDataHolder.Builder builder = TypeSpecDataHolder.newBuilder();
     if (hasState) {
       builder.addType(generateStateContainerImpl(specModel));
+    }
+    if (needsRenderInfoInfra) {
+      builder.addType(generatePreviousRenderInfoContainerImpl(specModel));
     }
     builder.addType(implClassBuilder.build());
     return builder.build();
@@ -123,6 +135,69 @@ public class ComponentImplGenerator {
     }
 
     return stateContainerImplClassBuilder.build();
+  }
+
+  static TypeSpec generatePreviousRenderInfoContainerImpl(SpecModel specModel) {
+    final String className = RenderInfoGenerator.getRenderInfoImplClassName(specModel);
+    final TypeSpec.Builder renderInfoClassBuilder =
+        TypeSpec.classBuilder(className)
+            .addSuperinterface(ClassNames.RENDER_INFO);
+
+    if (!specModel.hasInjectedDependencies()) {
+      renderInfoClassBuilder.addModifiers(Modifier.STATIC, Modifier.PRIVATE);
+      renderInfoClassBuilder.addTypeVariables(specModel.getTypeVariables());
+    }
+
+    final String copyParamName = "info";
+    final String recordParamName = "component";
+    final MethodSpec.Builder copyBuilder = MethodSpec.methodBuilder("copy")
+        .addParameter(ClassName.bestGuess(className), copyParamName);
+    final MethodSpec.Builder recordBuilder = MethodSpec.methodBuilder("record")
+        .addParameter(ClassName.bestGuess(specModel.getComponentName() + "Impl"), recordParamName);
+
+    for (DiffModel diff : specModel.getDiffs()) {
+      if (!diff.needsRenderInfoInfra()) {
+        continue;
+      }
+
+      final MethodParamModel modelToDiff = SpecModelUtils.getReferencedParamModelForDiff(specModel, diff);
+
+      if (modelToDiff == null) {
+        throw new RuntimeException(
+            "Got Diff of a param that doesn't seem to exist: " + diff.getName() + ". This should " +
+                "have been caught in the validation pass.");
+      }
+
+      if (!(modelToDiff instanceof PropModel || modelToDiff instanceof StateParamModel)) {
+        throw new RuntimeException(
+            "Got Diff of a param that is not a @Prop or @State! (" + diff.getName() + ", a " +
+                modelToDiff.getClass().getSimpleName() + "). This should have been caught in the " +
+                "validation pass.");
+      }
+
+      final String name = modelToDiff.getName();
+      if (modelToDiff instanceof PropModel) {
+        renderInfoClassBuilder.addField(FieldSpec.builder(
+            modelToDiff.getType(),
+            name).addAnnotation(Prop.class).build());
+      } else {
+        renderInfoClassBuilder.addField(FieldSpec.builder(
+            modelToDiff.getType(),
+            modelToDiff.getName()).addAnnotation(State.class).build());
+      }
+
+      copyBuilder.addStatement("$L = $L.$L", name, copyParamName, name);
+      recordBuilder.addStatement(
+          "$L = $L.$L",
+          name,
+          recordParamName,
+          getImplAccessor(specModel, modelToDiff));
+    }
+
+    return renderInfoClassBuilder
+        .addMethod(copyBuilder.build())
+        .addMethod(recordBuilder.build())
+        .build();
   }
 
   public static String getImplClassName(SpecModel specModel) {
