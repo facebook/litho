@@ -759,7 +759,7 @@ public class RecyclerBinder implements
     mLayoutInfo.setComponentInfoCollection(this);
 
     if (mCurrentFirstVisiblePosition != RecyclerView.NO_POSITION &&
-        mCurrentFirstVisiblePosition > 0) {
+        mCurrentFirstVisiblePosition >= 0) {
       if (layoutManager instanceof LinearLayoutManager) {
         ((LinearLayoutManager) layoutManager)
             .scrollToPositionWithOffset(mCurrentFirstVisiblePosition, mCurrentOffset);
@@ -806,8 +806,8 @@ public class RecyclerBinder implements
 
     if (firstView != null) {
       mCurrentOffset = mLayoutInfo.getScrollDirection() == HORIZONTAL
-          ? firstView.getLeft()
-          : firstView.getTop();
+          ? mLayoutInfo.getLayoutManager().getDecoratedLeft(firstView)
+          : mLayoutInfo.getLayoutManager().getDecoratedTop(firstView);
     } else {
       mCurrentOffset = 0;
     }
