@@ -29,9 +29,7 @@ dependencies {
 
     // Testing
     testCompile deps.compileTesting
-    testCompile deps.powermockMockito
-    testCompile deps.powermockJunit
-    testCompile deps.powermockXstream
+    testCompile deps.junit
     testCompile deps.robolectric
     testCompile deps.soloader
     testCompile files(getRuntimeJar())
