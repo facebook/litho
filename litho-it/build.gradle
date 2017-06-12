@@ -30,6 +30,7 @@ dependencies {
     // Testing
     testCompile deps.compileTesting
     testCompile deps.junit
+    testCompile deps.assertjCore
     testCompile deps.mockitoCore
     testCompile deps.robolectric
     testCompile deps.soloader
