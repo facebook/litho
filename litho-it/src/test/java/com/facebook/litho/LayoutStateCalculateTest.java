@@ -31,14 +31,9 @@ import com.facebook.yoga.YogaJustify;
 import com.facebook.yoga.YogaPositionType;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
@@ -61,16 +56,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-@PrepareForTest(Component.class)
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
 @RunWith(ComponentsTestRunner.class)
 public class LayoutStateCalculateTest {
-
-  @Rule
-  public PowerMockRule mPowerMockRule = new PowerMockRule();
 
   @Before
   public void setup() throws Exception {
@@ -1843,7 +1834,7 @@ public class LayoutStateCalculateTest {
         SizeSpec.getSize(widthSpecContainer) - horizontalPadding - horizontalPadding,
         SizeSpec.EXACTLY);
 
-    final Component<?> componentSpy = PowerMockito.spy(
+    final Component<?> componentSpy = Mockito.spy(
         TestLayoutComponent.create(c, 0, 0, true, true, true, false).build());
     Size sizeOutput = new Size();
     componentSpy.measure(
@@ -1851,6 +1842,9 @@ public class LayoutStateCalculateTest {
         widthMeasuredComponent,
         heightSpec,
         sizeOutput);
+
+    // Reset the checks for layout release and clearing that happen during measurement
+    reset(componentSpy);
 
     // Check the cached measured component tree
     assertTrue(componentSpy.hasCachedLayout());
@@ -1905,7 +1899,7 @@ public class LayoutStateCalculateTest {
         SizeSpec.getSize(widthSpecContainer) - horizontalPadding - horizontalPadding,
         SizeSpec.EXACTLY);
 
-    final Component<?> sizeDependentComponentSpy = PowerMockito.spy(
+    final Component<?> sizeDependentComponentSpy = Mockito.spy(
         TestSizeDependentComponent.create(c)
             .setFixSizes(false)
             .setDelegate(false)
@@ -1916,6 +1910,9 @@ public class LayoutStateCalculateTest {
         widthMeasuredComponent,
         heightSpec,
         sizeOutput);
+
+    // Reset the checks for layout release and clearing that happen during measurement
+    reset(sizeDependentComponentSpy);
 
     // Check the cached measured component tree
     assertTrue(sizeDependentComponentSpy.hasCachedLayout());
@@ -1980,7 +1977,7 @@ public class LayoutStateCalculateTest {
         SizeSpec.getSize(widthSpecContainer) - horizontalPadding - horizontalPadding,
         SizeSpec.EXACTLY);
 
-    final Component<?> componentSpy = PowerMockito.spy(
+    final Component<?> componentSpy = Mockito.spy(
         TestLayoutComponent.create(c, 0, 0, true, true, true, true).build());
     Size sizeOutput = new Size();
     componentSpy.measure(
@@ -1988,6 +1985,9 @@ public class LayoutStateCalculateTest {
         widthMeasuredComponent,
         heightSpec,
         sizeOutput);
+
+    // Reset the checks for layout release and clearing that happen during measurement
+    reset(componentSpy);
 
     // Check the cached measured component tree
     assertTrue(componentSpy.hasCachedLayout());
@@ -2041,7 +2041,7 @@ public class LayoutStateCalculateTest {
         SizeSpec.getSize(widthSpecContainer) - horizontalPadding - horizontalPadding,
         SizeSpec.EXACTLY);
 
-    final Component<?> sizeDependentComponentSpy = PowerMockito.spy(
+    final Component<?> sizeDependentComponentSpy = Mockito.spy(
         TestSizeDependentComponent.create(c)
             .setFixSizes(false)
             .setDelegate(true)
@@ -2052,6 +2052,9 @@ public class LayoutStateCalculateTest {
         widthMeasuredComponent,
         heightSpec,
         sizeOutput);
+
+    // Reset the checks for layout release and clearing that happen during measurement
+    reset(sizeDependentComponentSpy);
 
     // Check the cached measured component tree
     assertTrue(sizeDependentComponentSpy.hasCachedLayout());

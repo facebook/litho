@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import android.support.annotation.AttrRes;
 import android.support.annotation.StyleRes;
+import android.support.annotation.VisibleForTesting;
 
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
@@ -226,14 +227,16 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
     return mLastMeasuredLayout;
   }
 
-  void releaseCachedLayout() {
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  protected void releaseCachedLayout() {
     if (mLastMeasuredLayout != null) {
       LayoutState.releaseNodeTree(mLastMeasuredLayout, true /* isNestedTree */);
       mLastMeasuredLayout = null;
     }
   }
 
-  void clearCachedLayout() {
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  protected void clearCachedLayout() {
     mLastMeasuredLayout = null;
   }
 

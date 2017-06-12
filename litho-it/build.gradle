@@ -30,10 +30,10 @@ dependencies {
     // Testing
     testCompile deps.compileTesting
     testCompile deps.junit
+    testCompile deps.mockitoCore
     testCompile deps.robolectric
     testCompile deps.soloader
     testCompile files(getRuntimeJar())
-
 }
 
 static def getRuntimeJar() {
