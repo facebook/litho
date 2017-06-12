@@ -78,4 +78,14 @@ public class ComponentsConfiguration {
    * understand the impact and implications of how perf move metrics and where bottlenecks are.
    */
   public static boolean collectResultFix = false;
+
+  /**
+   * Force all section component prop updates to be async
+   */
+  public static boolean sectionComponentsAsyncPropUpdates = false;
+
+  /**
+   * Force all section component state updates to be async
+   */
+  public static boolean sectionComponentsAsyncStateUpdates = false;
 }
