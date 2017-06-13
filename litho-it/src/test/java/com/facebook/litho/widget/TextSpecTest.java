@@ -105,7 +105,7 @@ public class TextSpecTest {
         mContext,
         Text.create(mContext)
             .text("Some text")
-            .textOffsetOnTouchEventHandler(eventHandler)
+            .textOffsetOnTouchHandler(eventHandler)
             .build());
     TextDrawable textDrawable = (TextDrawable) (lithoView.getDrawables().get(0));
     MotionEvent motionEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0);
@@ -133,7 +133,7 @@ public class TextSpecTest {
         mContext,
         Text.create(mContext)
             .text("Text2")
-            .textOffsetOnTouchEventHandler(eventHandler)
+            .textOffsetOnTouchHandler(eventHandler)
             .build());
 
     TextDrawable textDrawable = (TextDrawable) (lithoView.getDrawables().get(0));

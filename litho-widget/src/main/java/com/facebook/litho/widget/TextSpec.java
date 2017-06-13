@@ -770,6 +770,7 @@ class TextSpec {
       @Prop(optional = true, resType = ResType.COLOR) int textColor,
       @Prop(optional = true, resType = ResType.COLOR) int highlightColor,
       @Prop(optional = true) ColorStateList textColorStateList,
+      @Prop(optional = true) final EventHandler textOffsetOnTouchHandler,
       @Prop(optional = true) int highlightStartOffset,
       @Prop(optional = true) int highlightEndOffset,
       @FromBoundsDefined Layout textLayout,
@@ -782,7 +783,6 @@ class TextSpec {
     textDrawable.setState(DEFAULT_TEXT_DRAWABLE_STATE);
     TextDrawable.TextOffsetOnTouchListener textOffsetOnTouchListener = null;
 
-    final EventHandler textOffsetOnTouchHandler = Text.getTextOffsetOnTouchEventHandler(c);
     if (textOffsetOnTouchHandler != null) {
       textOffsetOnTouchListener = new TextDrawable.TextOffsetOnTouchListener() {
         @Override
