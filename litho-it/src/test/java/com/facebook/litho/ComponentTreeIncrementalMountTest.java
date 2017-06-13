@@ -14,8 +14,8 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.view.ViewGroup;
 
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.TestDrawableComponent;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 
 import org.junit.Before;
 import org.junit.Test;

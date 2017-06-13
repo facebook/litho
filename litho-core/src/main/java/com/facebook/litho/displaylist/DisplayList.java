@@ -9,7 +9,6 @@
 
 package com.facebook.litho.displaylist;
 
-import android.app.Activity;
 import android.graphics.Canvas;
 import android.os.Build;
 import android.support.annotation.Nullable;

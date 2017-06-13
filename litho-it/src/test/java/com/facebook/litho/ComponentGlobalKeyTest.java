@@ -9,17 +9,15 @@
 
 package com.facebook.litho;
 
-import com.facebook.yoga.YogaAlign;
-
 import android.view.View;
 
 import com.facebook.litho.annotations.OnCreateLayout;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-import com.facebook.litho.widget.CardClip;
-import com.facebook.litho.widget.Text;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
+import com.facebook.litho.widget.CardClip;
+import com.facebook.litho.widget.Text;
 
 import org.junit.Assert;
 import org.junit.Before;

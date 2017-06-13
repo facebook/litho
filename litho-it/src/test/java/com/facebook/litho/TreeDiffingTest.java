@@ -11,8 +11,8 @@ package com.facebook.litho;
 
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.v4.util.SparseArrayCompat;
 
 import com.facebook.litho.testing.TestComponent;
@@ -20,14 +20,9 @@ import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestSizeDependentComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
-import com.facebook.yoga.YogaAlign;
-import com.facebook.yoga.YogaConstants;
-import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaMeasureFunction;
-import com.facebook.yoga.YogaMeasureOutput;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.reflect.Whitebox;
@@ -55,12 +50,7 @@ import static com.facebook.yoga.YogaMeasureMode.EXACTLY;
 import static com.facebook.yoga.YogaMeasureOutput.getHeight;
 import static com.facebook.yoga.YogaMeasureOutput.getWidth;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;

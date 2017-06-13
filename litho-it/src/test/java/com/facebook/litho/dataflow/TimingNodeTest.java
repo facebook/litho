@@ -14,13 +14,11 @@ import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 import static com.facebook.litho.dataflow.GraphBinding.create;
 import static com.facebook.litho.dataflow.TimingNode.END_INPUT;
 import static com.facebook.litho.dataflow.TimingNode.INITIAL_INPUT;
 import static com.facebook.litho.dataflow.UnitTestTimingSource.FRAME_TIME_MS;
-import static junit.framework.Assert.assertEquals;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(ComponentsTestRunner.class)

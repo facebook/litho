@@ -9,15 +9,12 @@
 
 package com.facebook.litho;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.graphics.Rect;
 import android.support.v4.util.LongSparseArray;
 
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.TestLayoutComponent;
 import com.facebook.litho.testing.TestViewComponent;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,9 +22,11 @@ import org.junit.runner.RunWith;
 import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.facebook.litho.testing.TestViewComponent.create;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;

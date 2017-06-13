@@ -9,9 +9,9 @@
 
 package com.facebook.litho.animation;
 
-import java.lang.ref.WeakReference;
-
 import com.facebook.litho.dataflow.ValueNode;
+
+import java.lang.ref.WeakReference;
 
 /**
  * A ValueNode that allows getting and/or setting the value of a specific property (x, y, scale,

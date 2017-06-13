@@ -18,15 +18,15 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.facebook.litho.it.R;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.it.R;
 import com.facebook.litho.testing.ComponentTestHelper;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.shadows.ColorDrawableShadow;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.Text;
-
 import com.google.common.base.Predicate;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

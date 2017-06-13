@@ -9,12 +9,10 @@
 
 package com.facebook.litho;
 
-import com.facebook.litho.testing.ComponentTestHelper;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
-import com.facebook.yoga.YogaAlign;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -24,8 +22,6 @@ import org.robolectric.RuntimeEnvironment;
 import static com.facebook.litho.Column.create;
 import static com.facebook.litho.testing.ComponentTestHelper.mountComponent;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(ComponentsTestRunner.class)
 public class MountStateFocusableTest {

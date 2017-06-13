@@ -9,11 +9,11 @@
 
 package com.facebook.litho;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.os.Looper;
 import android.support.annotation.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A {@link ComponentTree} for testing purposes. Leverages test classes to create component layouts

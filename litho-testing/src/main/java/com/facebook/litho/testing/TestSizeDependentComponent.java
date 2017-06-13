@@ -9,15 +9,13 @@
 
 package com.facebook.litho.testing;
 
-import com.facebook.litho.Column;
-
 import android.support.v4.util.Pools;
 
+import com.facebook.litho.Column;
 import com.facebook.litho.Component;
+import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.ComponentLifecycle;
-
-import com.facebook.litho.ComponentContext;
 import com.facebook.yoga.YogaEdge;
 
 public class TestSizeDependentComponent extends ComponentLifecycle {

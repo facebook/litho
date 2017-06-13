@@ -9,14 +9,11 @@
 
 package com.facebook.litho.displaylist;
 
-import java.lang.reflect.Method;
-
-import android.app.Activity;
-import android.content.Context;
 import android.graphics.Canvas;
 import android.view.DisplayListCanvas;
 import android.view.RenderNode;
-import android.view.View;
+
+import java.lang.reflect.Method;
 
 import static com.facebook.litho.displaylist.Utils.safeInvoke;
 

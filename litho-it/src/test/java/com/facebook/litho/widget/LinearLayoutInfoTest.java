@@ -11,19 +11,16 @@ package com.facebook.litho.widget;
 
 import android.support.v7.widget.LinearLayoutManager;
 
-import com.facebook.litho.SizeSpec;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 import static android.support.v7.widget.OrientationHelper.HORIZONTAL;
 import static android.support.v7.widget.OrientationHelper.VERTICAL;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
-import static junit.framework.Assert.assertEquals;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.robolectric.RuntimeEnvironment.application;
 

@@ -18,7 +18,6 @@ import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.litho.widget.SolidColor;
 import com.facebook.litho.widget.Text;
-import com.facebook.yoga.YogaAlign;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +33,6 @@ import static com.facebook.litho.FrameworkLogEvents.EVENT_PREPARE_MOUNT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_MOVED_COUNT;
 import static com.facebook.litho.testing.ComponentTestHelper.mountComponent;
 import static com.facebook.litho.testing.TestDrawableComponent.create;
-import static junit.framework.Assert.assertFalse;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;

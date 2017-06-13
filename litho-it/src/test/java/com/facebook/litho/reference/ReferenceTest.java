@@ -23,7 +23,6 @@ import org.robolectric.RuntimeEnvironment;
 import static com.facebook.litho.reference.Reference.acquire;
 import static com.facebook.litho.reference.Reference.release;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(ComponentsTestRunner.class)
 public class ReferenceTest {

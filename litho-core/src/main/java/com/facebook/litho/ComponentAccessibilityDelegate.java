@@ -9,8 +9,6 @@
 
 package com.facebook.litho;
 
-import java.util.List;
-
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -19,10 +17,11 @@ import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.support.v4.view.accessibility.AccessibilityNodeProviderCompat;
 import android.support.v4.widget.ExploreByTouchHelper;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
+
+import java.util.List;
 
 /**
  * Class that is used to set up accessibility for {@link ComponentHost}s.

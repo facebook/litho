@@ -9,33 +9,27 @@
 
 package com.facebook.litho.widget;
 
-import com.facebook.litho.Column;
-
-import com.facebook.yoga.YogaAlign;
-
-import com.facebook.yoga.YogaFlexDirection;
-
 import android.content.res.Resources;
 import android.graphics.Color;
 
+import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
-
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 
-import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
+import static com.facebook.litho.widget.CardShadowDrawable.getShadowBottom;
+import static com.facebook.litho.widget.CardShadowDrawable.getShadowHorizontal;
+import static com.facebook.litho.widget.CardShadowDrawable.getShadowTop;
 import static com.facebook.yoga.YogaEdge.ALL;
 import static com.facebook.yoga.YogaEdge.BOTTOM;
 import static com.facebook.yoga.YogaEdge.HORIZONTAL;
 import static com.facebook.yoga.YogaEdge.TOP;
-import static com.facebook.litho.widget.CardShadowDrawable.getShadowBottom;
-import static com.facebook.litho.widget.CardShadowDrawable.getShadowHorizontal;
-import static com.facebook.litho.widget.CardShadowDrawable.getShadowTop;
+import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 
 /**
  * A component that renders a given component into a card border with shadow.

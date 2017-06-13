@@ -9,12 +9,12 @@
 
 package com.facebook.litho.specmodels.processor;
 
+import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
+import com.facebook.litho.specmodels.model.SpecModel;
+
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.TypeElement;
-
-import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
-import com.facebook.litho.specmodels.model.SpecModel;
 
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class ComponentsProcessor extends AbstractComponentsProcessor {

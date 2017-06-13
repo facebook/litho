@@ -14,12 +14,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.facebook.litho.Component;
-import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.Size;
-
-import static com.facebook.litho.ThreadUtils.assertMainThread;
 
 /**
  * This binder class is used to asynchronously layout Components given a list of

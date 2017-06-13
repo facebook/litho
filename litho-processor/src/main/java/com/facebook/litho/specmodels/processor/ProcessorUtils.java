@@ -9,18 +9,18 @@
 
 package com.facebook.litho.specmodels.processor;
 
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.AnnotationValue;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.util.Elements;
+import com.facebook.litho.specmodels.model.SpecModel;
+import com.facebook.litho.specmodels.model.SpecModelValidationError;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.facebook.litho.specmodels.model.SpecModel;
-import com.facebook.litho.specmodels.model.SpecModelValidationError;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.util.Elements;
 
 /**
  * Utility class for processing specs.

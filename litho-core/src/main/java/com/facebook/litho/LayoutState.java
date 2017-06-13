@@ -9,14 +9,6 @@
 
 package com.facebook.litho;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
@@ -35,16 +27,24 @@ import android.view.Window;
 import android.view.accessibility.AccessibilityManager;
 
 import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.displaylist.DisplayList;
 import com.facebook.litho.displaylist.DisplayListException;
 import com.facebook.litho.reference.BorderColorDrawableReference;
 import com.facebook.litho.reference.DrawableReference;
 import com.facebook.litho.reference.Reference;
-import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static android.content.Context.ACCESSIBILITY_SERVICE;
 import static android.os.Build.VERSION.SDK_INT;
@@ -59,6 +59,7 @@ import static com.facebook.litho.Component.isMountSpec;
 import static com.facebook.litho.Component.isMountViewSpec;
 import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
 import static com.facebook.litho.ComponentLifecycle.MountType.NONE;
+import static com.facebook.litho.ContextUtils.getValidActivityForContext;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_COLLECT_RESULTS;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_CREATE_LAYOUT;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_CSS_LAYOUT;
@@ -69,7 +70,6 @@ import static com.facebook.litho.MountItem.FLAG_DUPLICATE_PARENT_STATE;
 import static com.facebook.litho.MountState.ROOT_HOST_ID;
 import static com.facebook.litho.NodeInfo.FOCUS_SET_TRUE;
 import static com.facebook.litho.SizeSpec.EXACTLY;
-import static com.facebook.litho.ContextUtils.getValidActivityForContext;
 
 /**
  * The main role of {@link LayoutState} is to hold the output of layout calculation. This includes

@@ -13,8 +13,6 @@ import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import javax.tools.Diagnostic;
 
-import com.facebook.litho.specmodels.processor.PrintableException;
-
 public class ComponentsProcessingException extends PrintableException {
   private final Element element;
 

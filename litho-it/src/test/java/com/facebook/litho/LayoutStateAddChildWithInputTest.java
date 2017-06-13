@@ -9,12 +9,8 @@
 
 package com.facebook.litho;
 
-import com.facebook.yoga.YogaAlign;
-
-import com.facebook.yoga.YogaFlexDirection;
-
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.TestLayoutComponent;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 
 import org.junit.Before;
 import org.junit.Test;

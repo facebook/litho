@@ -9,16 +9,9 @@
 
 package com.facebook.litho.displaylist;
 
-import java.lang.reflect.Method;
-
-import android.app.Activity;
-import android.content.Context;
 import android.graphics.Canvas;
 import android.view.HardwareCanvas;
 import android.view.RenderNode;
-import android.view.View;
-
-import static com.facebook.litho.displaylist.Utils.safeInvoke;
 
 /**
  * Implementation of {@link PlatformDisplayList} for Android Lollipop.

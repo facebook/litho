@@ -9,29 +9,29 @@
 
 package com.facebook.litho.specmodels.processor;
 
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.Elements;
-
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.List;
-
-import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
-import com.facebook.litho.specmodels.model.DelegateMethodModel;
+import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.DelegateMethodDescriptions;
-
+import com.facebook.litho.specmodels.model.DelegateMethodModel;
 import com.google.testing.compile.CompilationRule;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
+
 import org.junit.Rule;
 import org.junit.Test;
+
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.lang.model.element.Modifier;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Elements;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 

@@ -11,9 +11,6 @@ package com.facebook.samples.litho;
 import android.content.Context;
 import android.support.v7.widget.OrientationHelper;
 
-import java.util.Map;
-import java.util.LinkedHashMap;
-
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentInfo;
@@ -22,6 +19,9 @@ import com.facebook.litho.widget.RecyclerBinder;
 import com.facebook.samples.litho.lithography.DataModel;
 import com.facebook.samples.litho.lithography.LithographyRootComponent;
 import com.facebook.samples.litho.playground.PlaygroundComponent;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * The list of Litho demos -- Add your demos below!

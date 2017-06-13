@@ -9,10 +9,8 @@
 
 package com.facebook.litho.displaylist;
 
-import android.app.Activity;
 import android.graphics.Canvas;
 import android.view.DisplayList;
-import android.view.HardwareCanvas;
 
 /**
  * Implementation of {@link PlatformDisplayList} for Android JellyBeans MR2 and KitKat.

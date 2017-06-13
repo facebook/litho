@@ -62,7 +62,6 @@ import static com.facebook.yoga.YogaEdge.TOP;
 import static com.facebook.yoga.YogaJustify.SPACE_AROUND;
 import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;

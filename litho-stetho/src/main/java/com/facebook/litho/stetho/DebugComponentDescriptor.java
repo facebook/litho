@@ -9,9 +9,6 @@
 
 package com.facebook.litho.stetho;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import android.graphics.Rect;
 import android.support.v4.util.Pair;
 import android.view.View;
@@ -22,11 +19,14 @@ import com.facebook.litho.DebugComponent;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.stetho.common.Accumulator;
 import com.facebook.stetho.inspector.elements.AbstractChainedDescriptor;
+import com.facebook.stetho.inspector.elements.AttributeAccumulator;
 import com.facebook.stetho.inspector.elements.StyleAccumulator;
 import com.facebook.stetho.inspector.elements.StyleRuleNameAccumulator;
-import com.facebook.stetho.inspector.elements.AttributeAccumulator;
 import com.facebook.stetho.inspector.elements.android.HighlightableDescriptor;
 import com.facebook.yoga.YogaValue;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.facebook.litho.FrameworkLogEvents.EVENT_STETHO_INSPECT_COMPONENT;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_STETHO_UPDATE_COMPONENT;

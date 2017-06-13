@@ -9,23 +9,23 @@
 
 package com.facebook.litho.specmodels.processor;
 
-import javax.annotation.Nullable;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.Elements;
+import com.facebook.litho.annotations.LayoutSpec;
+import com.facebook.litho.annotations.OnCreateTreeProp;
+import com.facebook.litho.annotations.ShouldUpdate;
+import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.model.DefaultLayoutSpecGenerator;
+import com.facebook.litho.specmodels.model.DelegateMethodDescriptions;
+import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
+import com.facebook.litho.specmodels.model.LayoutSpecGenerator;
+import com.facebook.litho.specmodels.model.LayoutSpecModel;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.facebook.litho.specmodels.internal.ImmutableList;
-import com.facebook.litho.annotations.LayoutSpec;
-import com.facebook.litho.annotations.OnCreateTreeProp;
-import com.facebook.litho.annotations.ShouldUpdate;
-import com.facebook.litho.specmodels.model.DelegateMethodDescriptions;
-import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
-import com.facebook.litho.specmodels.model.LayoutSpecGenerator;
-import com.facebook.litho.specmodels.model.DefaultLayoutSpecGenerator;
-import com.facebook.litho.specmodels.model.LayoutSpecModel;
+import javax.annotation.Nullable;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Elements;
 
 /**
  * Factory for creating {@link LayoutSpecModel}s.

@@ -8,15 +8,12 @@
 
 package com.facebook.samples.litho.lithography;
 
-import com.facebook.litho.Row;
-
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
-
+import com.facebook.litho.Row;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.yoga.YogaEdge;
-import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaPositionType;
 
 

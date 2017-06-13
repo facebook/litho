@@ -9,11 +9,9 @@
 
 package com.facebook.litho;
 
-import com.facebook.litho.testing.ComponentTestHelper;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
-import com.facebook.yoga.YogaAlign;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,9 +23,6 @@ import static com.facebook.litho.MountState.getComponentClickListener;
 import static com.facebook.litho.MountState.getComponentLongClickListener;
 import static com.facebook.litho.MountState.getComponentTouchListener;
 import static com.facebook.litho.testing.ComponentTestHelper.mountComponent;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(ComponentsTestRunner.class)

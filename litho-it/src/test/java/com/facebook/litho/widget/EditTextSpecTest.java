@@ -12,8 +12,8 @@ package com.facebook.litho.widget;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.testing.ComponentTestHelper;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.ComponentsRule;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 
 import org.junit.Rule;
 import org.junit.Test;

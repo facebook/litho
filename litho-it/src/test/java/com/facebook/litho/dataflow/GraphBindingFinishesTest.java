@@ -19,7 +19,6 @@ import static com.facebook.litho.dataflow.GraphBinding.create;
 import static com.facebook.litho.dataflow.TimingNode.END_INPUT;
 import static com.facebook.litho.dataflow.TimingNode.INITIAL_INPUT;
 import static com.facebook.litho.dataflow.UnitTestTimingSource.FRAME_TIME_MS;
-import static junit.framework.Assert.assertEquals;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(ComponentsTestRunner.class)

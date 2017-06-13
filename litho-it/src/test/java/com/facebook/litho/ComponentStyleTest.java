@@ -9,23 +9,17 @@
 
 package com.facebook.litho;
 
-import com.facebook.yoga.YogaAlign;
-
-import com.facebook.yoga.YogaFlexDirection;
-
 import android.view.ContextThemeWrapper;
 
 import com.facebook.litho.it.R;
+import com.facebook.litho.testing.ComponentsRule;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.Text;
-import com.facebook.litho.testing.ComponentsRule;
-import com.facebook.yoga.YogaEdge;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 
 import static com.facebook.litho.it.R.attr.testAttrLargePadding;

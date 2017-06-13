@@ -9,15 +9,10 @@
 
 package com.facebook.litho;
 
-import com.facebook.yoga.YogaAlign;
-
-import com.facebook.yoga.YogaFlexDirection;
-
 import android.graphics.drawable.Drawable;
 import android.view.ContextThemeWrapper;
 
 import com.facebook.litho.it.R;
-import com.facebook.litho.reference.Reference;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 
 import org.junit.Before;
@@ -30,7 +25,6 @@ import static com.facebook.litho.it.R.attr.testAttrDimen;
 import static com.facebook.litho.it.R.attr.testAttrDrawable;
 import static com.facebook.litho.it.R.attr.undefinedAttrDimen;
 import static com.facebook.litho.it.R.attr.undefinedAttrDrawable;
-import static com.facebook.litho.it.R.dimen;
 import static com.facebook.litho.it.R.dimen.default_dimen;
 import static com.facebook.litho.it.R.dimen.test_dimen;
 import static com.facebook.litho.it.R.drawable.test_bg;

@@ -14,13 +14,9 @@ import android.content.Context;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
-import com.facebook.yoga.YogaAlign;
-import com.facebook.yoga.YogaEdge;
-import com.facebook.yoga.YogaPositionType;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 import static com.facebook.litho.Column.create;
 import static com.facebook.litho.LayoutState.sBottomsComparator;
@@ -32,7 +28,6 @@ import static com.facebook.yoga.YogaEdge.BOTTOM;
 import static com.facebook.yoga.YogaEdge.TOP;
 import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
 import static org.robolectric.RuntimeEnvironment.application;
 
 @RunWith(ComponentsTestRunner.class)

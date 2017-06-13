@@ -9,12 +9,9 @@
 
 package com.facebook.litho;
 
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 
-import com.facebook.litho.testing.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-import com.facebook.litho.testing.TestDrawableComponent;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -24,7 +21,6 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.Shadows;
 
 import static android.graphics.Color.BLACK;
 import static android.graphics.Color.YELLOW;

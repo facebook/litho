@@ -9,21 +9,21 @@
 
 package com.facebook.litho.fresco;
 
-import java.util.Collections;
-import java.util.List;
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.facebook.litho.ImageContent;
-import com.facebook.litho.Touchable;
 import com.facebook.drawee.drawable.ForwardingDrawable;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.interfaces.DraweeHierarchy;
 import com.facebook.drawee.view.DraweeHolder;
+import com.facebook.litho.ImageContent;
+import com.facebook.litho.Touchable;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * A Drawable that draws images using Drawee.

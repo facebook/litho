@@ -9,8 +9,6 @@
 
 package com.facebook.litho;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -23,10 +21,12 @@ import android.view.View;
 
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.yoga.YogaBaselineFunction;
-import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureFunction;
+import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.yoga.YogaNode;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * {@link ComponentLifecycle} is a stateless singleton object that defines how {@link Component}

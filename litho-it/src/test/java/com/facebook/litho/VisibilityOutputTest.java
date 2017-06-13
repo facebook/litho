@@ -21,8 +21,6 @@ import static com.facebook.litho.LayoutStateOutputIdCalculator.calculateVisibili
 import static com.facebook.litho.LayoutStateOutputIdCalculator.getLevelFromId;
 import static com.facebook.litho.LayoutStateOutputIdCalculator.getSequenceFromId;
 import static java.lang.Long.toBinaryString;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(ComponentsTestRunner.class)

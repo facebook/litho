@@ -15,7 +15,6 @@ import android.support.v4.util.Pools;
 
 import com.facebook.litho.BorderColorDrawable;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.ComponentsPools;
 
 /**

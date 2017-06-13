@@ -9,9 +9,9 @@
 
 package com.facebook.litho.dataflow;
 
-import java.util.ArrayList;
-
 import android.support.v4.util.SimpleArrayMap;
+
+import java.util.ArrayList;
 
 /**
  * A single node in a {@link DataFlowGraph}. Nodes are added to a {@link DataFlowGraph} using

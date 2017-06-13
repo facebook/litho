@@ -9,10 +9,10 @@
 
 package com.facebook.litho.annotations;
 
+import android.support.annotation.IntDef;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-
-import android.support.annotation.IntDef;
 
 @IntDef({
     ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_AUTO,

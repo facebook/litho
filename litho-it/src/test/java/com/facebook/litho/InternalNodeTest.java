@@ -9,15 +9,9 @@
 
 package com.facebook.litho;
 
-import android.graphics.Color;
-import android.support.v4.view.ViewCompat;
-
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaAlign;
-import com.facebook.yoga.YogaDirection;
-import com.facebook.yoga.YogaEdge;
-import com.facebook.yoga.YogaPositionType;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -37,9 +31,6 @@ import static com.facebook.yoga.YogaDirection.RTL;
 import static com.facebook.yoga.YogaEdge.ALL;
 import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.powermock.reflect.Whitebox.getInternalState;
 import static org.robolectric.RuntimeEnvironment.application;

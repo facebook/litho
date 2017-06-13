@@ -10,9 +10,8 @@
 package com.facebook.litho.testing.espresso;
 
 import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnit4;
-import android.test.UiThreadTest;
 import android.support.test.rule.UiThreadTestRule;
+import android.support.test.runner.AndroidJUnit4;
 import android.widget.TextView;
 
 import com.facebook.litho.Component;
@@ -26,7 +25,12 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import static com.facebook.litho.testing.espresso.ComponentHostMatchers.*;
+
+import static com.facebook.litho.testing.espresso.ComponentHostMatchers.componentHost;
+import static com.facebook.litho.testing.espresso.ComponentHostMatchers.componentHostWithText;
+import static com.facebook.litho.testing.espresso.ComponentHostMatchers.withContentDescription;
+import static com.facebook.litho.testing.espresso.ComponentHostMatchers.withLifecycle;
+import static com.facebook.litho.testing.espresso.ComponentHostMatchers.withText;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.isA;

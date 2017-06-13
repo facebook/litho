@@ -9,21 +9,20 @@
 
 package com.facebook.litho.specmodels.generator;
 
-import java.lang.annotation.Annotation;
-import java.util.Map;
-
 import com.facebook.litho.specmodels.model.DelegateMethodDescription;
 import com.facebook.litho.specmodels.model.DelegateMethodModel;
 import com.facebook.litho.specmodels.model.DiffModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
-
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
+
+import java.lang.annotation.Annotation;
+import java.util.Map;
 
 import static com.facebook.litho.specmodels.generator.ComponentImplGenerator.getImplAccessor;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.ABSTRACT_IMPL_PARAM_NAME;

@@ -9,14 +9,6 @@
 
 package com.facebook.litho;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -31,10 +23,17 @@ import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
 
 import com.facebook.infer.annotation.ThreadConfined;
-
 import com.facebook.litho.animation.AnimationBinding;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.reference.Reference;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static android.view.View.MeasureSpec.makeMeasureSpec;

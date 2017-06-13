@@ -8,10 +8,6 @@
 
 package com.facebook.samples.litho;
 
-import com.facebook.yoga.YogaAlign;
-
-import com.facebook.yoga.YogaFlexDirection;
-
 import android.support.v7.widget.OrientationHelper;
 
 import com.facebook.litho.ComponentContext;

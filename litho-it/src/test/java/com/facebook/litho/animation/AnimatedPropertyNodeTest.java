@@ -11,8 +11,6 @@ package com.facebook.litho.animation;
 
 import android.view.View;
 
-import com.facebook.litho.animation.AnimatedProperties;
-import com.facebook.litho.animation.AnimatedPropertyNode;
 import com.facebook.litho.dataflow.DataFlowGraph;
 import com.facebook.litho.dataflow.GraphBinding;
 import com.facebook.litho.dataflow.OutputOnlyNode;
@@ -24,7 +22,6 @@ import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 import static com.facebook.litho.animation.AnimatedProperties.SCALE;
 import static com.facebook.litho.dataflow.GraphBinding.create;

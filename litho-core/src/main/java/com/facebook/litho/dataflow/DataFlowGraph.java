@@ -9,16 +9,16 @@
 
 package com.facebook.litho.dataflow;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.SimpleArrayMap;
 
 import com.facebook.litho.ComponentsPools;
 import com.facebook.litho.internal.ArraySet;
+
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * A directed acyclic graph (DAG) created from one or more {@link GraphBinding}s. These component

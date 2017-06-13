@@ -9,31 +9,29 @@
 
 package com.facebook.litho.specmodels.processor;
 
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Elements;
-
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.List;
-
-import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
+import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethodModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
-
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
+
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.util.Elements;
 
 import static com.facebook.litho.specmodels.processor.MethodExtractorUtils.getMethodParams;
 

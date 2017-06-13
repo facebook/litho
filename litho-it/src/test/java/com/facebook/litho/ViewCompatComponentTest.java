@@ -12,7 +12,6 @@ package com.facebook.litho;
 import android.content.Context;
 import android.widget.TextView;
 
-import com.facebook.litho.testing.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.viewcompatcreator.ViewCompatCreator;
 
@@ -25,7 +24,6 @@ import static com.facebook.litho.ViewCompatComponent.get;
 import static com.facebook.litho.testing.ComponentTestHelper.mountComponent;
 import static com.facebook.litho.testing.ComponentTestHelper.unbindComponent;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
 
 /**
  * Tests {@link ViewCompatComponent}

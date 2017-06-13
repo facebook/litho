@@ -9,25 +9,19 @@
 
 package com.facebook.litho.testing;
 
-import com.facebook.litho.Column;
-
-import com.facebook.yoga.YogaAlign;
-
-import com.facebook.yoga.YogaFlexDirection;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import android.support.annotation.AttrRes;
 import android.support.annotation.StyleRes;
 import android.support.v4.util.Pools;
 
+import com.facebook.litho.Column;
 import com.facebook.litho.Component;
+import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.ComponentLifecycle;
-
-import com.facebook.litho.ComponentContext;
 import com.facebook.litho.Layout;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class TestLayoutComponent extends ComponentLifecycle {
   private static final List<TestLayoutComponent> sInstances = new ArrayList<>();

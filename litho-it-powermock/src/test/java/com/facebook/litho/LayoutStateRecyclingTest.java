@@ -11,7 +11,6 @@ package com.facebook.litho;
 
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
-import com.facebook.yoga.YogaAlign;
 
 import org.junit.Before;
 import org.junit.Rule;

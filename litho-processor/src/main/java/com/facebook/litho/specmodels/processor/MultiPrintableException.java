@@ -9,9 +9,9 @@
 
 package com.facebook.litho.specmodels.processor;
 
-import javax.annotation.processing.Messager;
-
 import java.util.List;
+
+import javax.annotation.processing.Messager;
 
 public class MultiPrintableException extends PrintableException {
   private final List<PrintableException> exceptions;

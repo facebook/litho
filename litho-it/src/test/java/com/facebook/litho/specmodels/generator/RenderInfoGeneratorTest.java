@@ -12,8 +12,8 @@ package com.facebook.litho.specmodels.generator;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.DiffModel;
 import com.facebook.litho.specmodels.model.SpecModel;
-
 import com.google.testing.compile.CompilationRule;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

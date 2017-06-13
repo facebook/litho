@@ -9,24 +9,19 @@
 
 package com.facebook.litho;
 
-import android.graphics.Color;
-
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
-import com.facebook.yoga.YogaAlign;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 import static android.graphics.Color.BLUE;
 import static android.graphics.Color.RED;
 import static com.facebook.litho.Column.create;
 import static com.facebook.litho.LayoutState.calculate;
 import static com.facebook.litho.MountItem.isDuplicateParentState;
-import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.assertj.core.api.Java6Assertions.assertThat;

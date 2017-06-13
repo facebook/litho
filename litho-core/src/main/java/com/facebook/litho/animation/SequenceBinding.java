@@ -10,11 +10,11 @@
 
 package com.facebook.litho.animation;
 
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import android.support.v4.util.SimpleArrayMap;
 
 import com.facebook.litho.internal.ArraySet;
+
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * An {@link AnimationBinding} that's a sequence of other {@link AnimationBinding}s.

@@ -13,7 +13,6 @@ import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.drawable.Drawable;
 
-import com.facebook.litho.testing.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 
 import org.junit.Before;
@@ -22,7 +21,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
 import static com.facebook.litho.testing.ComponentTestHelper.measureAndLayout;
-import static junit.framework.Assert.assertEquals;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(ComponentsTestRunner.class)

@@ -9,11 +9,6 @@
 
 package com.facebook.litho.widget;
 
-import javax.annotation.Nullable;
-
-import java.util.Collections;
-import java.util.List;
-
 import android.content.res.ColorStateList;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -31,9 +26,14 @@ import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
 import com.facebook.litho.TextContent;
 import com.facebook.litho.Touchable;
-import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
+
+import java.util.Collections;
+import java.util.List;
+
+import javax.annotation.Nullable;
 
 import static android.view.MotionEvent.ACTION_CANCEL;
 import static android.view.MotionEvent.ACTION_DOWN;

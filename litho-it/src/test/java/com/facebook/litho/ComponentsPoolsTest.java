@@ -23,8 +23,6 @@ import org.robolectric.RuntimeEnvironment;
 import static com.facebook.litho.ComponentsPools.acquireMountContent;
 import static com.facebook.litho.ComponentsPools.release;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
 
 @RunWith(ComponentsTestRunner.class)
 public class ComponentsPoolsTest {

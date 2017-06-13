@@ -16,8 +16,6 @@ import com.facebook.litho.testing.TestLayoutComponent;
 import com.facebook.litho.testing.TestNullLayoutComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
-import com.facebook.yoga.YogaAlign;
-import com.facebook.yoga.YogaEdge;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,7 +24,6 @@ import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
-import org.robolectric.RuntimeEnvironment;
 
 import static com.facebook.litho.Column.create;
 import static com.facebook.litho.SizeSpec.EXACTLY;

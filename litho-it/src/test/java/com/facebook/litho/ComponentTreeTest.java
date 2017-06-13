@@ -11,9 +11,9 @@ package com.facebook.litho;
 
 import android.os.Looper;
 
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestLayoutComponent;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -29,7 +29,6 @@ import static com.facebook.litho.SizeSpec.AT_MOST;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.fail;

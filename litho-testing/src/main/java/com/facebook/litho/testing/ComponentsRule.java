@@ -11,13 +11,13 @@ package com.facebook.litho.testing;
 
 import android.app.Activity;
 
+import com.facebook.litho.ComponentContext;
+import com.facebook.litho.R;
+
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.robolectric.Robolectric;
-
-import com.facebook.litho.R;
-import com.facebook.litho.ComponentContext;
 
 public class ComponentsRule implements TestRule {
 

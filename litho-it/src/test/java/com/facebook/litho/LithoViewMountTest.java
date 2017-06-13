@@ -11,8 +11,8 @@ package com.facebook.litho;
 
 import android.content.Context;
 
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.TestDrawableComponent;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 
 import org.junit.Before;
@@ -24,7 +24,6 @@ import static com.facebook.litho.ComponentTree.create;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link LithoView} and {@link MountState} to make sure mount only happens once when

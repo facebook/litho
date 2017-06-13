@@ -13,10 +13,10 @@ import android.content.Context;
 import android.support.annotation.AttrRes;
 import android.support.annotation.StyleRes;
 
-import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureFunction;
-import com.facebook.yoga.YogaNode;
+import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
+import com.facebook.yoga.YogaNode;
 
 /**
  * {@link ComponentContext} for use within a test environment that is compatible with mock

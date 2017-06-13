@@ -9,11 +9,11 @@
 
 package com.facebook.litho;
 
-import java.util.Collections;
-import java.util.List;
-
 import android.graphics.Rect;
 import android.support.annotation.VisibleForTesting;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Holds information about a {@link TestOutput}.

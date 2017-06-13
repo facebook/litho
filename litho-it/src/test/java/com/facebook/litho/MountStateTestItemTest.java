@@ -16,7 +16,6 @@ import com.facebook.litho.testing.assertj.LithoViewAssert;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.litho.widget.Text;
-import com.facebook.yoga.YogaAlign;
 
 import org.junit.After;
 import org.junit.Before;

@@ -9,7 +9,7 @@
 
 package com.facebook.litho.internal;
 
-import javax.annotation.Nullable;
+import android.support.v4.util.SimpleArrayMap;
 
 import java.lang.reflect.Array;
 import java.util.Collection;
@@ -17,7 +17,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-import android.support.v4.util.SimpleArrayMap;
+import javax.annotation.Nullable;
 
 /**
  * A simple Set implementation backed by an array. Currently implemented as a wrapper around

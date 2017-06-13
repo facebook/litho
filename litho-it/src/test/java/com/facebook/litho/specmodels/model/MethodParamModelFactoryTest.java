@@ -9,24 +9,24 @@
 
 package com.facebook.litho.specmodels.model;
 
-import javax.lang.model.element.ExecutableElement;
-
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.facebook.litho.annotations.FromPrepare;
 import com.facebook.litho.annotations.OnCreateTransition;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.specmodels.internal.ImmutableList;
-
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
+
 import org.junit.Before;
 import org.junit.Test;
+
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.lang.model.element.ExecutableElement;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;

@@ -9,9 +9,6 @@
 
 package com.facebook.litho.testing.assertj;
 
-import java.util.Deque;
-import java.util.Locale;
-
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
@@ -24,6 +21,9 @@ import com.facebook.litho.testing.viewtree.ViewTreeAssert;
 
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Java6Assertions;
+
+import java.util.Deque;
+import java.util.Locale;
 
 /**
  * Assertion methods for {@link LithoView}s.

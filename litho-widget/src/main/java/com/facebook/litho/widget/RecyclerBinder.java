@@ -9,14 +9,6 @@
 
 package com.facebook.litho.widget;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.GuardedBy;
-import javax.annotation.concurrent.ThreadSafe;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -41,9 +33,16 @@ import com.facebook.litho.MeasureComparisonUtils;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.ThreadUtils;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.utils.DisplayListPrefetcherUtils;
 import com.facebook.litho.utils.IncrementalMountUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.GuardedBy;
+import javax.annotation.concurrent.ThreadSafe;
 
 import static android.support.v7.widget.OrientationHelper.HORIZONTAL;
 import static android.support.v7.widget.OrientationHelper.VERTICAL;

@@ -10,26 +10,26 @@
 
 package com.facebook.litho.specmodels.generator;
 
-import com.facebook.litho.annotations.ResType;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.Elements;
-
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
+import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.processor.LayoutSpecModelFactory;
-
 import com.google.testing.compile.CompilationRule;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.List;
+
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Elements;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 

@@ -11,6 +11,7 @@ package com.facebook.litho;
 
 import android.graphics.Rect;
 import android.support.annotation.IntDef;
+
 import com.facebook.litho.displaylist.DisplayList;
 
 import java.lang.annotation.Retention;

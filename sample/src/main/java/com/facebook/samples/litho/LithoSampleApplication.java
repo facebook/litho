@@ -10,8 +10,8 @@ package com.facebook.samples.litho;
 
 import android.app.Application;
 
-import com.facebook.litho.stetho.LithoWebKitInspector;
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.litho.stetho.LithoWebKitInspector;
 import com.facebook.soloader.SoLoader;
 import com.facebook.stetho.Stetho;
 

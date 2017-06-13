@@ -9,17 +9,13 @@
 
 package com.facebook.litho;
 
-import com.facebook.yoga.YogaAlign;
-
-import com.facebook.yoga.YogaFlexDirection;
-
-import java.util.Deque;
-
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
+
+import java.util.Deque;
 
 /**
  * Helper class to access metadata from {@link LithoView} that is relevant during end to end

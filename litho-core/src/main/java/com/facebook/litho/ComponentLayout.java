@@ -21,16 +21,14 @@ import android.util.SparseArray;
 import android.view.ViewOutlineProvider;
 
 import com.facebook.infer.annotation.ReturnsOwnership;
-
-import com.facebook.yoga.YogaAlign;
-import com.facebook.yoga.YogaJustify;
-import com.facebook.yoga.YogaDirection;
-import com.facebook.yoga.YogaPositionType;
-import com.facebook.yoga.YogaWrap;
-import com.facebook.yoga.YogaEdge;
-
 import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.reference.Reference;
+import com.facebook.yoga.YogaAlign;
+import com.facebook.yoga.YogaDirection;
+import com.facebook.yoga.YogaEdge;
+import com.facebook.yoga.YogaJustify;
+import com.facebook.yoga.YogaPositionType;
+import com.facebook.yoga.YogaWrap;
 
 import static android.support.annotation.Dimension.DP;
 

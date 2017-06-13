@@ -9,16 +9,16 @@
 
 package com.facebook.litho;
 
+import android.annotation.TargetApi;
+import android.os.Build;
+import android.view.Display;
+import android.view.View;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
-
-import android.annotation.TargetApi;
-import android.os.Build;
-import android.view.Display;
-import android.view.View;
 
 /**
  * {@link Runnable} that is used to prefetch display lists of components for which layout has been

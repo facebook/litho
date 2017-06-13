@@ -9,10 +9,10 @@
 
 package com.facebook.litho.displaylist;
 
-import java.lang.reflect.Constructor;
-
 import android.view.DisplayList;
 import android.view.HardwareCanvas;
+
+import java.lang.reflect.Constructor;
 
 /**
  * Implementation of {@link PlatformDisplayList} for Android JellyBeans.

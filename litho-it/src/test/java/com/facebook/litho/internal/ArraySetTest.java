@@ -9,14 +9,11 @@
 
 package com.facebook.litho.internal;
 
-import java.util.Iterator;
-
-import com.facebook.litho.internal.ArraySet;
-
 import org.junit.Test;
 
+import java.util.Iterator;
+
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.junit.Assert.*;
 
 public class ArraySetTest {
 

@@ -9,21 +9,11 @@
 
 package com.facebook.litho.specmodels.model;
 
-import javax.lang.model.element.Modifier;
-
-import java.lang.annotation.Annotation;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.TreeMap;
-
 import com.facebook.litho.annotations.FromBind;
 import com.facebook.litho.annotations.FromBoundsDefined;
 import com.facebook.litho.annotations.FromMeasure;
 import com.facebook.litho.annotations.FromMeasureBaseline;
 import com.facebook.litho.annotations.FromPrepare;
-import com.facebook.litho.annotations.OnCreateTransition;
-import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.annotations.GetExtraAccessibilityNodeAt;
 import com.facebook.litho.annotations.GetExtraAccessibilityNodesCount;
 import com.facebook.litho.annotations.OnBind;
@@ -32,6 +22,7 @@ import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
 import com.facebook.litho.annotations.OnCreateMountContent;
+import com.facebook.litho.annotations.OnCreateTransition;
 import com.facebook.litho.annotations.OnLoadStyle;
 import com.facebook.litho.annotations.OnMeasure;
 import com.facebook.litho.annotations.OnMeasureBaseline;
@@ -41,10 +32,18 @@ import com.facebook.litho.annotations.OnPopulateExtraAccessibilityNode;
 import com.facebook.litho.annotations.OnPrepare;
 import com.facebook.litho.annotations.OnUnbind;
 import com.facebook.litho.annotations.OnUnmount;
-
+import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
+
+import java.lang.annotation.Annotation;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.TreeMap;
+
+import javax.lang.model.element.Modifier;
 
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.INTER_STAGE_OUTPUT;

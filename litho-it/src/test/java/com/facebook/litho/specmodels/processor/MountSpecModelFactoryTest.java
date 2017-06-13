@@ -10,9 +10,6 @@
 
 package com.facebook.litho.specmodels.processor;
 
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.Elements;
-
 import com.facebook.litho.annotations.FromMeasure;
 import com.facebook.litho.annotations.OnBoundsDefined;
 import com.facebook.litho.annotations.OnCreateInitialState;
@@ -24,10 +21,13 @@ import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.MountSpecModel;
-
 import com.google.testing.compile.CompilationRule;
+
 import org.junit.Rule;
 import org.junit.Test;
+
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Elements;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;

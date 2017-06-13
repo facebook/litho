@@ -9,9 +9,10 @@
 
 package com.facebook.litho;
 
+import com.facebook.litho.DisplayListPrefetcher.AverageDLPrefetchDuration;
+
 import org.junit.Before;
 import org.junit.Test;
-import com.facebook.litho.DisplayListPrefetcher.AverageDLPrefetchDuration;
 
 import static com.facebook.litho.DisplayListPrefetcher.AverageDLPrefetchDuration.INITIAL_SIZE;
 import static org.assertj.core.api.Java6Assertions.assertThat;

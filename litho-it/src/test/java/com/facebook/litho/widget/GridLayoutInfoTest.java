@@ -11,9 +11,9 @@ package com.facebook.litho.widget;
 
 import android.support.v7.widget.GridLayoutManager;
 
+import com.facebook.litho.ComponentInfo;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-import com.facebook.litho.ComponentInfo;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
