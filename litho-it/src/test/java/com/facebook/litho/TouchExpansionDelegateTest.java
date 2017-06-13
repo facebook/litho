@@ -21,13 +21,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
-import static junit.framework.Assert.assertEquals;
+import static android.os.SystemClock.uptimeMillis;
+import static android.view.MotionEvent.ACTION_DOWN;
+import static android.view.MotionEvent.obtain;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.RuntimeEnvironment.application;
 
 @RunWith(ComponentsTestRunner.class)
 public class TouchExpansionDelegateTest {
@@ -53,16 +57,16 @@ public class TouchExpansionDelegateTest {
   @Test
   public void testTouchWithinBounds() {
     final View view = mock(View.class);
-    when(view.getContext()).thenReturn(RuntimeEnvironment.application);
+    when(view.getContext()).thenReturn(application);
     when(view.getWidth()).thenReturn(4);
     when(view.getHeight()).thenReturn(6);
 
     mTouchDelegate.registerTouchExpansion(0, view, new Rect(0, 0, 10, 10));
 
-    MotionEvent event = MotionEvent.obtain(
-        SystemClock.uptimeMillis(),
-        SystemClock.uptimeMillis(),
-        MotionEvent.ACTION_DOWN,
+    MotionEvent event = obtain(
+        uptimeMillis(),
+        uptimeMillis(),
+        ACTION_DOWN,
         5,
         5,
         0);
@@ -70,8 +74,8 @@ public class TouchExpansionDelegateTest {
     mTouchDelegate.onTouchEvent(event);
 
     verify(view, times(1)).dispatchTouchEvent(event);
-    assertEquals(2f, event.getX());
-    assertEquals(3f, event.getY());
+    assertThat(event.getX()).isEqualTo(2f);
+    assertThat(event.getY()).isEqualTo(3f);
   }
 
   @Test

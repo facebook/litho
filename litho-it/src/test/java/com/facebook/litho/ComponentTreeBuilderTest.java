@@ -21,11 +21,13 @@ import org.junit.runner.RunWith;
 import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.powermock.reflect.Whitebox.getInternalState;
 
 /**
  * Tests for {@link ComponentTree.Builder}
@@ -73,12 +75,12 @@ public class ComponentTreeBuilderTest {
     assertEqualToInternalState(componentTree, true, "mIsLayoutDiffingEnabled");
     assertSameAsInternalState(componentTree, mLayoutLock, "mLayoutLock");
 
-    assertTrue(componentTree.isIncrementalMountEnabled());
-    assertEquals(mComponentsLogger, mContext.getLogger());
-    assertEquals(mLogTag, mContext.getLogTag());
+    assertThat(componentTree.isIncrementalMountEnabled()).isTrue();
+    assertThat(mContext.getLogger()).isEqualTo(mComponentsLogger);
+    assertThat(mContext.getLogTag()).isEqualTo(mLogTag);
 
-    Handler handler = Whitebox.getInternalState(componentTree, "mLayoutThreadHandler");
-    assertSame(mLooper, handler.getLooper());
+    Handler handler = getInternalState(componentTree, "mLayoutThreadHandler");
+    assertThat(mLooper).isSameAs(handler.getLooper());
   }
 
   @Test
@@ -104,20 +106,20 @@ public class ComponentTreeBuilderTest {
       ComponentTree componentTree,
       Object object,
       String internalName) {
-    assertSame(object, Whitebox.getInternalState(componentTree, internalName));
+    assertThat(object).isSameAs(getInternalState(componentTree, internalName));
   }
 
   private static void assertEqualToInternalState(
       ComponentTree componentTree,
       Object object,
       String internalName) {
-    assertEquals(object, Whitebox.getInternalState(componentTree, internalName));
+    assertThat(getInternalState(componentTree, internalName)).isEqualTo(object);
   }
 
   private static void assertDefaults(ComponentTree componentTree) {
     assertEqualToInternalState(componentTree, true, "mIsLayoutDiffingEnabled");
     assertSameAsInternalState(componentTree, null, "mLayoutLock");
 
-    assertTrue(componentTree.isIncrementalMountEnabled());
+    assertThat(componentTree.isIncrementalMountEnabled()).isTrue();
   }
 }

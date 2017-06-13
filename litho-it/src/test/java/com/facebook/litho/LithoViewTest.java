@@ -23,6 +23,11 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowView;
 
+import static android.view.View.MeasureSpec.EXACTLY;
+import static android.view.View.MeasureSpec.UNSPECIFIED;
+import static android.view.View.MeasureSpec.makeMeasureSpec;
+import static com.facebook.litho.ComponentTree.create;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
@@ -31,6 +36,8 @@ import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.robolectric.RuntimeEnvironment.application;
+import static org.robolectric.Shadows.shadowOf;
 
 @RunWith(ComponentsTestRunner.class)
 public class LithoViewTest {
@@ -62,8 +69,8 @@ public class LithoViewTest {
   @Test
   public void measureBeforeBeingAttached() {
     mLithoView.measure(
-        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        makeMeasureSpec(0, UNSPECIFIED),
+        makeMeasureSpec(0, UNSPECIFIED));
     mLithoView.layout(
         0,
         0,
@@ -71,13 +78,13 @@ public class LithoViewTest {
         mLithoView.getMeasuredHeight());
 
     // View got measured.
-    assertTrue(mLithoView.getMeasuredHeight() != 0 && mLithoView.getMeasuredWidth() != 0);
+    assertThat(mLithoView.getMeasuredHeight() != 0 && mLithoView.getMeasuredWidth() != 0).isTrue();
 
     // Attaching will automatically mount since we already have a layout fitting our size.
-    ShadowView shadow = Shadows.shadowOf(mLithoView);
+    ShadowView shadow = shadowOf(mLithoView);
     shadow.callOnAttachedToWindow();
 
-    assertEquals(2, getInternalMountItems(mLithoView).length);
+    assertThat(getInternalMountItems(mLithoView).length).isEqualTo(2);
   }
 
   private static long[] getInternalMountItems(LithoView lithoView) {
@@ -94,25 +101,25 @@ public class LithoViewTest {
       }
     };
 
-    LithoView nullLithoView = new LithoView(RuntimeEnvironment.application);
+    LithoView nullLithoView = new LithoView(application);
     nullLithoView.setComponentTree(
-        ComponentTree.create(
-            new ComponentContext(RuntimeEnvironment.application),
+        create(
+            new ComponentContext(application),
             component)
             .incrementalMount(false)
             .build());
 
     nullLithoView.measure(
-        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        makeMeasureSpec(0, UNSPECIFIED),
+        makeMeasureSpec(0, UNSPECIFIED));
     nullLithoView.layout(
         0,
         0,
         nullLithoView.getMeasuredWidth(),
         nullLithoView.getMeasuredHeight());
 
-    assertTrue(nullLithoView.getMeasuredHeight() == 0
-        && nullLithoView.getMeasuredWidth() == 0);
+    assertThat(nullLithoView.getMeasuredHeight() == 0
+        && nullLithoView.getMeasuredWidth() == 0).isTrue();
   }
 
   @Test
@@ -124,12 +131,12 @@ public class LithoViewTest {
     mLithoView.setComponentTree(mockComponentTree);
     mLithoView.suppressMeasureComponentTree(true);
     mLithoView.measure(
-        View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
-        View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY));
+        makeMeasureSpec(width, EXACTLY),
+        makeMeasureSpec(height, EXACTLY));
 
     verify(mockComponentTree, never())
         .measure(anyInt(), anyInt(), any(int[].class), anyBoolean());
-    assertEquals(width, mLithoView.getMeasuredWidth());
-    assertEquals(height, mLithoView.getMeasuredHeight());
+    assertThat(mLithoView.getMeasuredWidth()).isEqualTo(width);
+    assertThat(mLithoView.getMeasuredHeight()).isEqualTo(height);
   }
 }

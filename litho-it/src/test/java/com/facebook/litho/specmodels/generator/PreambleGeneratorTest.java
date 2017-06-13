@@ -21,6 +21,12 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import org.junit.Before;
 import org.junit.Test;
 
+import static com.facebook.litho.specmodels.generator.PreambleGenerator.generateConstructor;
+import static com.facebook.litho.specmodels.generator.PreambleGenerator.generateGetter;
+import static com.facebook.litho.specmodels.generator.PreambleGenerator.generateSourceDelegate;
+import static com.squareup.javapoet.ClassName.bestGuess;
+import static com.squareup.javapoet.MethodSpec.constructorBuilder;
+import static com.squareup.javapoet.ParameterizedTypeName.get;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -56,11 +62,11 @@ public class PreambleGeneratorTest {
   @Test
   public void testGenerateConstructorWithoutDependencyInjection() {
     TypeSpecDataHolder typeSpecDataHolder =
-        PreambleGenerator.generateConstructor(mSpecModelWithoutDI);
+        generateConstructor(mSpecModelWithoutDI);
 
-    assertThat(typeSpecDataHolder.getFieldSpecs().size()).isEqualTo(0);
-    assertThat(typeSpecDataHolder.getMethodSpecs().size()).isEqualTo(1);
-    assertThat(typeSpecDataHolder.getTypeSpecs().size()).isEqualTo(0);
+    assertThat(typeSpecDataHolder.getFieldSpecs()).isEmpty();
+    assertThat(typeSpecDataHolder.getMethodSpecs()).hasSize(1);
+    assertThat(typeSpecDataHolder.getTypeSpecs()).isEmpty();
 
     assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString()).isEqualTo(
         "private Constructor() {\n" +
@@ -69,15 +75,15 @@ public class PreambleGeneratorTest {
 
   @Test
   public void testGenerateConstructorWithDependencyInjection() {
-    MethodSpec constructor = MethodSpec.constructorBuilder().build();
+    MethodSpec constructor = constructorBuilder().build();
     when(mDependencyInjectionHelper.generateConstructor(mSpecModelWithDI))
         .thenReturn(constructor);
 
-    TypeSpecDataHolder typeSpecDataHolder = PreambleGenerator.generateConstructor(mSpecModelWithDI);
+    TypeSpecDataHolder typeSpecDataHolder = generateConstructor(mSpecModelWithDI);
 
-    assertThat(typeSpecDataHolder.getFieldSpecs().size()).isEqualTo(0);
-    assertThat(typeSpecDataHolder.getMethodSpecs().size()).isEqualTo(1);
-    assertThat(typeSpecDataHolder.getTypeSpecs().size()).isEqualTo(0);
+    assertThat(typeSpecDataHolder.getFieldSpecs()).isEmpty();
+    assertThat(typeSpecDataHolder.getMethodSpecs()).hasSize(1);
+    assertThat(typeSpecDataHolder.getTypeSpecs()).isEmpty();
 
     assertThat(typeSpecDataHolder.getMethodSpecs().get(0)).isSameAs(constructor);
   }
@@ -85,27 +91,27 @@ public class PreambleGeneratorTest {
   @Test
   public void testGenerateSourceDelegateWithoutDependencyInjection() {
     TypeSpecDataHolder typeSpecDataHolder =
-        PreambleGenerator.generateSourceDelegate(mSpecModelWithoutDI);
+        generateSourceDelegate(mSpecModelWithoutDI);
 
-    assertThat(typeSpecDataHolder.getFieldSpecs().size()).isEqualTo(0);
-    assertThat(typeSpecDataHolder.getMethodSpecs().size()).isEqualTo(0);
-    assertThat(typeSpecDataHolder.getTypeSpecs().size()).isEqualTo(0);
+    assertThat(typeSpecDataHolder.getFieldSpecs()).isEmpty();
+    assertThat(typeSpecDataHolder.getMethodSpecs()).isEmpty();
+    assertThat(typeSpecDataHolder.getTypeSpecs()).isEmpty();
   }
 
   @Test
   public void testGenerateSourceDelegateWithDependencyInjection() {
     when(mDependencyInjectionHelper.getSourceDelegateTypeName(mSpecModelWithDI))
         .thenReturn(
-            ParameterizedTypeName.get(
-                ClassName.bestGuess("Lazy"),
+            get(
+                bestGuess("Lazy"),
                 mSpecModelWithDI.getSpecTypeName()));
 
     TypeSpecDataHolder typeSpecDataHolder =
-        PreambleGenerator.generateSourceDelegate(mSpecModelWithDI);
+        generateSourceDelegate(mSpecModelWithDI);
 
-    assertThat(typeSpecDataHolder.getFieldSpecs().size()).isEqualTo(1);
-    assertThat(typeSpecDataHolder.getMethodSpecs().size()).isEqualTo(0);
-    assertThat(typeSpecDataHolder.getTypeSpecs().size()).isEqualTo(0);
+    assertThat(typeSpecDataHolder.getFieldSpecs()).hasSize(1);
+    assertThat(typeSpecDataHolder.getMethodSpecs()).isEmpty();
+    assertThat(typeSpecDataHolder.getTypeSpecs()).isEmpty();
 
     assertThat(typeSpecDataHolder.getFieldSpecs().get(0).toString()).isEqualTo(
         "private Lazy<com.facebook.litho.TestSpec> mSpec;\n");
@@ -113,11 +119,11 @@ public class PreambleGeneratorTest {
 
   @Test
   public void testGenerateGetterWithoutDependencyInjection() {
-    TypeSpecDataHolder typeSpecDataHolder = PreambleGenerator.generateGetter(mSpecModelWithoutDI);
+    TypeSpecDataHolder typeSpecDataHolder = generateGetter(mSpecModelWithoutDI);
 
-    assertThat(typeSpecDataHolder.getFieldSpecs().size()).isEqualTo(1);
-    assertThat(typeSpecDataHolder.getMethodSpecs().size()).isEqualTo(1);
-    assertThat(typeSpecDataHolder.getTypeSpecs().size()).isEqualTo(0);
+    assertThat(typeSpecDataHolder.getFieldSpecs()).hasSize(1);
+    assertThat(typeSpecDataHolder.getMethodSpecs()).hasSize(1);
+    assertThat(typeSpecDataHolder.getTypeSpecs()).isEmpty();
 
     assertThat(typeSpecDataHolder.getFieldSpecs().get(0).toString()).isEqualTo(
         "private static com.facebook.litho.Test sInstance = null;\n");
@@ -132,11 +138,11 @@ public class PreambleGeneratorTest {
 
   @Test
   public void testGenerateGetterWithDependencyInjection() {
-    TypeSpecDataHolder typeSpecDataHolder = PreambleGenerator.generateGetter(mSpecModelWithDI);
+    TypeSpecDataHolder typeSpecDataHolder = generateGetter(mSpecModelWithDI);
 
-    assertThat(typeSpecDataHolder.getFieldSpecs().size()).isEqualTo(0);
-    assertThat(typeSpecDataHolder.getMethodSpecs().size()).isEqualTo(1);
-    assertThat(typeSpecDataHolder.getTypeSpecs().size()).isEqualTo(0);
+    assertThat(typeSpecDataHolder.getFieldSpecs()).isEmpty();
+    assertThat(typeSpecDataHolder.getMethodSpecs()).hasSize(1);
+    assertThat(typeSpecDataHolder.getTypeSpecs()).isEmpty();
 
     assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString()).isEqualTo(
         "public com.facebook.litho.Test get() {\n" +

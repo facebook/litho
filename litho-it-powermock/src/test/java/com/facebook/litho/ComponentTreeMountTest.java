@@ -26,7 +26,12 @@ import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 
-import static org.junit.Assert.assertEquals;
+import static android.graphics.Color.BLACK;
+import static android.graphics.Color.YELLOW;
+import static com.facebook.litho.testing.ComponentTestHelper.mountComponent;
+import static com.facebook.litho.testing.TestDrawableComponent.create;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.robolectric.Shadows.shadowOf;
 
 @PrepareForTest(ThreadUtils.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
@@ -45,21 +50,21 @@ public class ComponentTreeMountTest {
 
   @Test
   public void testRemountsWithNewInputOnSameLayout() {
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = mountComponent(
         mContext,
-        TestDrawableComponent.create(mContext)
-          .color(Color.BLACK)
-          .build());
-    Shadows.shadowOf(lithoView).callOnAttachedToWindow();
+        create(mContext)
+            .color(BLACK)
+            .build());
+    shadowOf(lithoView).callOnAttachedToWindow();
 
-    assertEquals(1, lithoView.getDrawables().size());
-    assertEquals(Color.BLACK, ((ColorDrawable) lithoView.getDrawables().get(0)).getColor());
+    assertThat(lithoView.getDrawables()).hasSize(1);
+    assertThat(((ColorDrawable) lithoView.getDrawables().get(0)).getColor()).isEqualTo(BLACK);
 
     lithoView.getComponentTree().setRoot(
-        TestDrawableComponent.create(mContext)
-            .color(Color.YELLOW)
+        create(mContext)
+            .color(YELLOW)
             .build());
-    assertEquals(1, lithoView.getDrawables().size());
-    assertEquals(Color.YELLOW, ((ColorDrawable) lithoView.getDrawables().get(0)).getColor());
+    assertThat(lithoView.getDrawables()).hasSize(1);
+    assertThat(((ColorDrawable) lithoView.getDrawables().get(0)).getColor()).isEqualTo(YELLOW);
   }
 }

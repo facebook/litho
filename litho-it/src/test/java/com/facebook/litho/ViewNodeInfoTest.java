@@ -21,6 +21,7 @@ import org.powermock.reflect.Whitebox;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.fail;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 /**
  * Tests {@link ViewNodeInfo}
@@ -41,7 +42,7 @@ public class ViewNodeInfoTest {
 
     mViewNodeInfo.setExpandedTouchBounds(node, 10, 10, 20, 20);
 
-    assertEquals(new Rect(9, 8, 23, 24), mViewNodeInfo.getExpandedTouchBounds());
+    assertThat(mViewNodeInfo.getExpandedTouchBounds()).isEqualTo(new Rect(9, 8, 23, 24));
   }
 
   @Test

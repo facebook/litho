@@ -18,7 +18,7 @@ import org.junit.runner.RunWith;
 import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 
-import static junit.framework.Assert.assertFalse;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(ComponentsTestRunner.class)
@@ -49,24 +49,24 @@ public class LayoutStateSpecTest {
 
   @Test
   public void testCompatibleInputAndSpec() {
-    assertTrue(mLayoutState.isCompatibleComponentAndSpec(COMPONENT_ID, mWidthSpec, mHeightSpec));
+    assertThat(mLayoutState.isCompatibleComponentAndSpec(COMPONENT_ID, mWidthSpec, mHeightSpec)).isTrue();
   }
 
   @Test
   public void testIncompatibleInput() {
-    assertFalse(mLayoutState.isCompatibleComponentAndSpec(
-            COMPONENT_ID + 1000, mWidthSpec, mHeightSpec));
+    assertThat(mLayoutState.isCompatibleComponentAndSpec(
+        COMPONENT_ID + 1000, mWidthSpec, mHeightSpec)).isFalse();
   }
 
   @Test
   public void testIncompatibleWidthSpec() {
-    assertFalse(mLayoutState.isCompatibleComponentAndSpec(
-            COMPONENT_ID, mWidthSpec + 1000, mHeightSpec));
+    assertThat(mLayoutState.isCompatibleComponentAndSpec(
+        COMPONENT_ID, mWidthSpec + 1000, mHeightSpec)).isFalse();
   }
 
   @Test
   public void testIncompatibleHeightSpec() {
-    assertFalse(mLayoutState.isCompatibleComponentAndSpec(
-            COMPONENT_ID, mWidthSpec, mHeightSpec + 1000));
+    assertThat(mLayoutState.isCompatibleComponentAndSpec(
+        COMPONENT_ID, mWidthSpec, mHeightSpec + 1000)).isFalse();
   }
 }

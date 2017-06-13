@@ -32,6 +32,14 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import static android.os.Build.VERSION_CODES.LOLLIPOP;
+import static android.view.View.LAYOUT_DIRECTION_RTL;
+import static com.facebook.litho.testing.ComponentTestHelper.mountComponent;
+import static com.facebook.litho.testing.TestViewComponent.create;
+import static com.facebook.yoga.YogaDirection.LTR;
+import static com.facebook.yoga.YogaDirection.RTL;
+import static com.facebook.yoga.YogaEdge.END;
+import static com.facebook.yoga.YogaEdge.START;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
 @Config(
@@ -56,92 +64,84 @@ public class LayoutDirectionTest {
   @Test
   public void testViewChildrenLayoutDirection() {
     final TestComponent child1 =
-        TestViewComponent.create(mContext, true, true, true, false)
+        create(mContext, true, true, true, false)
             .build();
     final TestComponent child2 =
-        TestViewComponent.create(mContext, true, true, true, false)
+        create(mContext, true, true, true, false)
             .build();
 
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = mountComponent(
         mContext,
         new InlineLayoutSpec() {
-              @Override
-              protected ComponentLayout onCreateLayout(ComponentContext c) {
-                return Row.create(c)
-                    .layoutDirection(YogaDirection.LTR)
-                    .child(
-                        Layout.create(c, child1)
-                            .widthPx(10)
-                            .heightPx(10))
-                    .child(
-                        Layout.create(c, child2)
-                            .widthPx(10)
-                            .heightPx(10))
-                    .build();
-              }
-            },
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Row.create(c)
+                .layoutDirection(LTR)
+                .child(
+                    Layout.create(c, child1)
+                        .widthPx(10)
+                        .heightPx(10))
+                .child(
+                    Layout.create(c, child2)
+                        .widthPx(10)
+                        .heightPx(10))
+                .build();
+          }
+        },
         20,
         10);
 
     View view1 = lithoView.getChildAt(0);
     View view2 = lithoView.getChildAt(1);
 
-    assertEquals(
-        new Rect(0, 0, 10, 10),
-        new Rect(
-            view1.getLeft(),
-            view1.getTop(),
-            view1.getRight(),
-            view1.getBottom()));
+    assertThat(new Rect(
+        view1.getLeft(),
+        view1.getTop(),
+        view1.getRight(),
+        view1.getBottom())).isEqualTo(new Rect(0, 0, 10, 10));
 
-    assertEquals(
-        new Rect(10, 0, 20, 10),
-        new Rect(
-            view2.getLeft(),
-            view2.getTop(),
-            view2.getRight(),
-            view2.getBottom()));
+    assertThat(new Rect(
+        view2.getLeft(),
+        view2.getTop(),
+        view2.getRight(),
+        view2.getBottom())).isEqualTo(new Rect(10, 0, 20, 10));
 
-    ComponentTestHelper.mountComponent(
+    mountComponent(
         mContext,
         lithoView,
         new InlineLayoutSpec() {
-              @Override
-              protected ComponentLayout onCreateLayout(ComponentContext c) {
-                return Row.create(c)
-                    .layoutDirection(YogaDirection.RTL)
-                    .child(
-                        Layout.create(c, child1)
-                            .widthPx(10)
-                            .heightPx(10))
-                    .child(
-                        Layout.create(c, child2)
-                            .widthPx(10)
-                            .heightPx(10))
-                    .build();
-              }
-            },
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Row.create(c)
+                .layoutDirection(RTL)
+                .child(
+                    Layout.create(c, child1)
+                        .widthPx(10)
+                        .heightPx(10))
+                .child(
+                    Layout.create(c, child2)
+                        .widthPx(10)
+                        .heightPx(10))
+                .build();
+          }
+        },
         20,
         10);
 
     view1 = lithoView.getChildAt(0);
     view2 = lithoView.getChildAt(1);
 
-    assertEquals(
-        new Rect(10, 0, 20, 10),
-        new Rect(
-            view1.getLeft(),
-            view1.getTop(),
-            view1.getRight(),
-            view1.getBottom()));
+    assertThat(new Rect(
+        view1.getLeft(),
+        view1.getTop(),
+        view1.getRight(),
+        view1.getBottom())).isEqualTo(new Rect(10, 0, 20, 10));
 
-    assertEquals(
-        new Rect(0, 0, 10, 10),
-        new Rect(
-            view2.getLeft(),
-            view2.getTop(),
-            view2.getRight(),
-            view2.getBottom()));
+    assertThat(new Rect(
+        view2.getLeft(),
+        view2.getTop(),
+        view2.getRight(),
+        view2.getBottom())).isEqualTo(new Rect(0, 0, 10, 10));
   }
 
   /**
@@ -155,60 +155,60 @@ public class LayoutDirectionTest {
     final TestComponent child2 = TestDrawableComponent.create(mContext)
         .build();
 
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = mountComponent(
         mContext,
         new InlineLayoutSpec() {
-              @Override
-              protected ComponentLayout onCreateLayout(ComponentContext c) {
-                return Row.create(c)
-                    .layoutDirection(YogaDirection.LTR)
-                    .child(
-                        Layout.create(c, child1)
-                            .widthPx(10)
-                            .heightPx(10))
-                    .child(
-                        Layout.create(c, child2)
-                            .widthPx(10)
-                            .heightPx(10))
-                    .build();
-              }
-            },
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Row.create(c)
+                .layoutDirection(LTR)
+                .child(
+                    Layout.create(c, child1)
+                        .widthPx(10)
+                        .heightPx(10))
+                .child(
+                    Layout.create(c, child2)
+                        .widthPx(10)
+                        .heightPx(10))
+                .build();
+          }
+        },
         20,
         10);
 
     Drawable drawable1 = lithoView.getDrawables().get(0);
     Drawable drawable2 = lithoView.getDrawables().get(1);
 
-    assertEquals(new Rect(0, 0, 10, 10), drawable1.getBounds());
-    assertEquals(new Rect(10, 0, 20, 10), drawable2.getBounds());
+    assertThat(drawable1.getBounds()).isEqualTo(new Rect(0, 0, 10, 10));
+    assertThat(drawable2.getBounds()).isEqualTo(new Rect(10, 0, 20, 10));
 
-    ComponentTestHelper.mountComponent(
+    mountComponent(
         mContext,
         lithoView,
         new InlineLayoutSpec() {
-              @Override
-              protected ComponentLayout onCreateLayout(ComponentContext c) {
-                return Row.create(c)
-                    .layoutDirection(YogaDirection.RTL)
-                    .child(
-                        Layout.create(c, child1)
-                            .widthPx(10)
-                            .heightPx(10))
-                    .child(
-                        Layout.create(c, child2)
-                            .widthPx(10)
-                            .heightPx(10))
-                    .build();
-              }
-            },
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Row.create(c)
+                .layoutDirection(RTL)
+                .child(
+                    Layout.create(c, child1)
+                        .widthPx(10)
+                        .heightPx(10))
+                .child(
+                    Layout.create(c, child2)
+                        .widthPx(10)
+                        .heightPx(10))
+                .build();
+          }
+        },
         20,
         10);
 
     drawable1 = lithoView.getDrawables().get(0);
     drawable2 = lithoView.getDrawables().get(1);
 
-    assertEquals(new Rect(10, 0, 20, 10), drawable1.getBounds());
-    assertEquals(new Rect(0, 0, 10, 10), drawable2.getBounds());
+    assertThat(drawable1.getBounds()).isEqualTo(new Rect(10, 0, 20, 10));
+    assertThat(drawable2.getBounds()).isEqualTo(new Rect(0, 0, 10, 10));
   }
 
   /**
@@ -222,27 +222,27 @@ public class LayoutDirectionTest {
     final TestComponent child2 = TestDrawableComponent.create(mContext)
         .build();
 
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = mountComponent(
         mContext,
         new InlineLayoutSpec() {
-              @Override
-              protected ComponentLayout onCreateLayout(ComponentContext c) {
-                return Row.create(c)
-                    .layoutDirection(YogaDirection.RTL)
-                    .child(
-                        Row.create(c)
-                            .wrapInView()
-                            .child(
-                                Layout.create(c, child1)
-                                    .widthPx(10)
-                                    .heightPx(10))
-                            .child(
-                                Layout.create(c, child2)
-                                    .widthPx(10)
-                                    .heightPx(10)))
-                    .build();
-              }
-            },
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Row.create(c)
+                .layoutDirection(RTL)
+                .child(
+                    Row.create(c)
+                        .wrapInView()
+                        .child(
+                            Layout.create(c, child1)
+                                .widthPx(10)
+                                .heightPx(10))
+                        .child(
+                            Layout.create(c, child2)
+                                .widthPx(10)
+                                .heightPx(10)))
+                .build();
+          }
+        },
         20,
         10);
 
@@ -250,8 +250,8 @@ public class LayoutDirectionTest {
     final Drawable drawable1 = host.getDrawables().get(0);
     final Drawable drawable2 = host.getDrawables().get(1);
 
-    assertEquals(new Rect(10, 0, 20, 10), drawable1.getBounds());
-    assertEquals(new Rect(0, 0, 10, 10), drawable2.getBounds());
+    assertThat(drawable1.getBounds()).isEqualTo(new Rect(10, 0, 20, 10));
+    assertThat(drawable2.getBounds()).isEqualTo(new Rect(0, 0, 10, 10));
   }
 
   /**
@@ -265,28 +265,28 @@ public class LayoutDirectionTest {
     final TestComponent child2 = TestDrawableComponent.create(mContext)
         .build();
 
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = mountComponent(
         mContext,
         new InlineLayoutSpec() {
-              @Override
-              protected ComponentLayout onCreateLayout(ComponentContext c) {
-                return Row.create(c)
-                    .layoutDirection(YogaDirection.RTL)
-                    .child(
-                        Row.create(c)
-                            .layoutDirection(YogaDirection.LTR)
-                            .wrapInView()
-                            .child(
-                                Layout.create(c, child1)
-                                    .widthPx(10)
-                                    .heightPx(10))
-                            .child(
-                                Layout.create(c, child2)
-                                    .widthPx(10)
-                                    .heightPx(10)))
-                    .build();
-              }
-            },
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Row.create(c)
+                .layoutDirection(RTL)
+                .child(
+                    Row.create(c)
+                        .layoutDirection(LTR)
+                        .wrapInView()
+                        .child(
+                            Layout.create(c, child1)
+                                .widthPx(10)
+                                .heightPx(10))
+                        .child(
+                            Layout.create(c, child2)
+                                .widthPx(10)
+                                .heightPx(10)))
+                .build();
+          }
+        },
         20,
         10);
 
@@ -294,8 +294,8 @@ public class LayoutDirectionTest {
     final Drawable drawable1 = host.getDrawables().get(0);
     final Drawable drawable2 = host.getDrawables().get(1);
 
-    assertEquals(new Rect(0, 0, 10, 10), drawable1.getBounds());
-    assertEquals(new Rect(10, 0, 20, 10), drawable2.getBounds());
+    assertThat(drawable1.getBounds()).isEqualTo(new Rect(0, 0, 10, 10));
+    assertThat(drawable2.getBounds()).isEqualTo(new Rect(10, 0, 20, 10));
   }
 
   /**
@@ -307,50 +307,50 @@ public class LayoutDirectionTest {
     final TestComponent child = TestDrawableComponent.create(mContext)
         .build();
 
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = mountComponent(
         mContext,
         new InlineLayoutSpec() {
-              @Override
-              protected ComponentLayout onCreateLayout(ComponentContext c) {
-                return Column.create(c)
-                    .layoutDirection(YogaDirection.LTR)
-                    .child(
-                        Layout.create(c, child)
-                            .widthPx(10)
-                            .heightPx(10)
-                            .marginPx(YogaEdge.START, 10)
-                            .marginPx(YogaEdge.END, 20))
-                    .build();
-              }
-            },
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Column.create(c)
+                .layoutDirection(LTR)
+                .child(
+                    Layout.create(c, child)
+                        .widthPx(10)
+                        .heightPx(10)
+                        .marginPx(START, 10)
+                        .marginPx(END, 20))
+                .build();
+          }
+        },
         40,
         10);
 
     Drawable drawable = lithoView.getDrawables().get(0);
-    assertEquals(new Rect(10, 0, 20, 10), drawable.getBounds());
+    assertThat(drawable.getBounds()).isEqualTo(new Rect(10, 0, 20, 10));
 
-    ComponentTestHelper.mountComponent(
+    mountComponent(
         mContext,
         lithoView,
         new InlineLayoutSpec() {
-              @Override
-              protected ComponentLayout onCreateLayout(ComponentContext c) {
-                return Column.create(c)
-                    .layoutDirection(YogaDirection.RTL)
-                    .child(
-                        Layout.create(c, child)
-                            .widthPx(10)
-                            .heightPx(10)
-                            .marginPx(YogaEdge.START, 10)
-                            .marginPx(YogaEdge.END, 20))
-                    .build();
-              }
-            },
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Column.create(c)
+                .layoutDirection(RTL)
+                .child(
+                    Layout.create(c, child)
+                        .widthPx(10)
+                        .heightPx(10)
+                        .marginPx(START, 10)
+                        .marginPx(END, 20))
+                .build();
+          }
+        },
         40,
         10);
 
     drawable = lithoView.getDrawables().get(0);
-    assertEquals(new Rect(20, 0, 30, 10), drawable.getBounds());
+    assertThat(drawable.getBounds()).isEqualTo(new Rect(20, 0, 30, 10));
   }
 
   /**
@@ -362,50 +362,50 @@ public class LayoutDirectionTest {
     final TestComponent child = TestDrawableComponent.create(mContext)
         .build();
 
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = mountComponent(
         mContext,
         new InlineLayoutSpec() {
-              @Override
-              protected ComponentLayout onCreateLayout(ComponentContext c) {
-                return Column.create(c)
-                    .layoutDirection(YogaDirection.LTR)
-                    .paddingPx(YogaEdge.START, 10)
-                    .paddingPx(YogaEdge.END, 20)
-                    .child(
-                        Layout.create(c, child)
-                            .widthPx(10)
-                            .heightPx(10))
-                    .build();
-              }
-            },
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Column.create(c)
+                .layoutDirection(LTR)
+                .paddingPx(START, 10)
+                .paddingPx(END, 20)
+                .child(
+                    Layout.create(c, child)
+                        .widthPx(10)
+                        .heightPx(10))
+                .build();
+          }
+        },
         40,
         10);
 
     Drawable drawable = lithoView.getDrawables().get(0);
-    assertEquals(new Rect(10, 0, 20, 10), drawable.getBounds());
+    assertThat(drawable.getBounds()).isEqualTo(new Rect(10, 0, 20, 10));
 
-    ComponentTestHelper.mountComponent(
+    mountComponent(
         mContext,
         lithoView,
         new InlineLayoutSpec() {
-              @Override
-              protected ComponentLayout onCreateLayout(ComponentContext c) {
-                return Column.create(c)
-                    .layoutDirection(YogaDirection.RTL)
-                    .paddingPx(YogaEdge.START, 10)
-                    .paddingPx(YogaEdge.END, 20)
-                    .child(
-                        Layout.create(c, child)
-                            .widthPx(10)
-                            .heightPx(10))
-                    .build();
-              }
-            },
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Column.create(c)
+                .layoutDirection(RTL)
+                .paddingPx(START, 10)
+                .paddingPx(END, 20)
+                .child(
+                    Layout.create(c, child)
+                        .widthPx(10)
+                        .heightPx(10))
+                .build();
+          }
+        },
         40,
         10);
 
     drawable = lithoView.getDrawables().get(0);
-    assertEquals(new Rect(20, 0, 30, 10), drawable.getBounds());
+    assertThat(drawable.getBounds()).isEqualTo(new Rect(20, 0, 30, 10));
   }
 
   /**
@@ -414,22 +414,22 @@ public class LayoutDirectionTest {
    */
   @Test
   public void testLayoutDirectionPropagation() {
-    final TestComponent child = TestViewComponent.create(mContext)
+    final TestComponent child = create(mContext)
         .build();
 
-    LithoView lithoView = ComponentTestHelper.mountComponent(
+    LithoView lithoView = mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
             return Column.create(c)
-                .layoutDirection(YogaDirection.RTL)
+                .layoutDirection(RTL)
                 .child(child)
                 .build();
           }
         });
 
     final View childView = lithoView.getChildAt(0);
-    assertEquals(View.LAYOUT_DIRECTION_RTL, childView.getLayoutDirection());
+    assertThat(childView.getLayoutDirection()).isEqualTo(LAYOUT_DIRECTION_RTL);
   }
 }

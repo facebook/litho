@@ -21,7 +21,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
-import static junit.framework.Assert.assertEquals;
+import static com.facebook.litho.Column.create;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(ComponentsTestRunner.class)
 public class LayoutStateAddChildWithInputTest {
@@ -34,13 +35,13 @@ public class LayoutStateAddChildWithInputTest {
 
   @Test
   public void testNewEmptyLayout() {
-    InternalNode node = (InternalNode) Column.create(mContext)
+    InternalNode node = (InternalNode) create(mContext)
         .child(TestLayoutComponent.create(mContext))
         .child(TestLayoutComponent.create(mContext))
         .build();
 
-    assertEquals(2, node.getChildCount());
-    assertEquals(0, node.getChildAt(0).getChildCount());
-    assertEquals(0, node.getChildAt(1).getChildCount());
+    assertThat(node.getChildCount()).isEqualTo(2);
+    assertThat(node.getChildAt(0).getChildCount()).isEqualTo(0);
+    assertThat(node.getChildAt(1).getChildCount()).isEqualTo(0);
   }
 }

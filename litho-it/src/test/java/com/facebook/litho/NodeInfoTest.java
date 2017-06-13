@@ -25,7 +25,8 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertSame;
 import static junit.framework.Assert.fail;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.powermock.reflect.Whitebox.getInternalState;
 
 @RunWith(ComponentsTestRunner.class)
 public class NodeInfoTest {
@@ -42,10 +43,10 @@ public class NodeInfoTest {
     EventHandler touchHandler = new EventHandler(null, 1);
 
     mNodeInfo.setTouchHandler(touchHandler);
-    assertSame(touchHandler, mNodeInfo.getTouchHandler());
+    assertThat(touchHandler).isSameAs(mNodeInfo.getTouchHandler());
 
     mNodeInfo.release();
-    assertNull(mNodeInfo.getTouchHandler());
+    assertThat(mNodeInfo.getTouchHandler()).isNull();
   }
 
   @Test
@@ -54,10 +55,10 @@ public class NodeInfoTest {
         new EventHandler<>(null, 1);
 
     mNodeInfo.setDispatchPopulateAccessibilityEventHandler(handler);
-    assertSame(handler, mNodeInfo.getDispatchPopulateAccessibilityEventHandler());
+    assertThat(handler).isSameAs(mNodeInfo.getDispatchPopulateAccessibilityEventHandler());
 
     mNodeInfo.release();
-    assertNull(mNodeInfo.getDispatchPopulateAccessibilityEventHandler());
+    assertThat(mNodeInfo.getDispatchPopulateAccessibilityEventHandler()).isNull();
   }
 
   @Test
@@ -66,10 +67,10 @@ public class NodeInfoTest {
         new EventHandler<>(null, 1);
 
     mNodeInfo.setOnInitializeAccessibilityEventHandler(handler);
-    assertSame(handler, mNodeInfo.getOnInitializeAccessibilityEventHandler());
+    assertThat(handler).isSameAs(mNodeInfo.getOnInitializeAccessibilityEventHandler());
 
     mNodeInfo.release();
-    assertNull(mNodeInfo.getOnInitializeAccessibilityEventHandler());
+    assertThat(mNodeInfo.getOnInitializeAccessibilityEventHandler()).isNull();
   }
 
   @Test
@@ -77,10 +78,10 @@ public class NodeInfoTest {
     EventHandler<OnPopulateAccessibilityEventEvent> handler = new EventHandler<>(null, 1);
 
     mNodeInfo.setOnPopulateAccessibilityEventHandler(handler);
-    assertSame(handler, mNodeInfo.getOnPopulateAccessibilityEventHandler());
+    assertThat(handler).isSameAs(mNodeInfo.getOnPopulateAccessibilityEventHandler());
 
     mNodeInfo.release();
-    assertNull(mNodeInfo.getOnPopulateAccessibilityEventHandler());
+    assertThat(mNodeInfo.getOnPopulateAccessibilityEventHandler()).isNull();
   }
 
   @Test
@@ -88,10 +89,10 @@ public class NodeInfoTest {
     EventHandler<OnInitializeAccessibilityNodeInfoEvent> handler = new EventHandler<>(null, 1);
 
     mNodeInfo.setOnInitializeAccessibilityNodeInfoHandler(handler);
-    assertSame(handler, mNodeInfo.getOnInitializeAccessibilityNodeInfoHandler());
+    assertThat(handler).isSameAs(mNodeInfo.getOnInitializeAccessibilityNodeInfoHandler());
 
     mNodeInfo.release();
-    assertNull(mNodeInfo.getOnInitializeAccessibilityNodeInfoHandler());
+    assertThat(mNodeInfo.getOnInitializeAccessibilityNodeInfoHandler()).isNull();
   }
 
   @Test
@@ -100,10 +101,10 @@ public class NodeInfoTest {
         new EventHandler<>(null, 1);
 
     mNodeInfo.setOnRequestSendAccessibilityEventHandler(handler);
-    assertSame(handler, mNodeInfo.getOnRequestSendAccessibilityEventHandler());
+    assertThat(handler).isSameAs(mNodeInfo.getOnRequestSendAccessibilityEventHandler());
 
     mNodeInfo.release();
-    assertNull(mNodeInfo.getOnRequestSendAccessibilityEventHandler());
+    assertThat(mNodeInfo.getOnRequestSendAccessibilityEventHandler()).isNull();
   }
 
   @Test
@@ -112,10 +113,10 @@ public class NodeInfoTest {
         new EventHandler<>(null, 1);
 
     mNodeInfo.setPerformAccessibilityActionHandler(handler);
-    assertSame(handler, mNodeInfo.getPerformAccessibilityActionHandler());
+    assertThat(handler).isSameAs(mNodeInfo.getPerformAccessibilityActionHandler());
 
     mNodeInfo.release();
-    assertNull(mNodeInfo.getPerformAccessibilityActionHandler());
+    assertThat(mNodeInfo.getPerformAccessibilityActionHandler()).isNull();
   }
 
   @Test
@@ -123,10 +124,10 @@ public class NodeInfoTest {
     EventHandler<SendAccessibilityEventEvent> handler = new EventHandler<>(null, 1);
 
     mNodeInfo.setSendAccessibilityEventHandler(handler);
-    assertSame(handler, mNodeInfo.getSendAccessibilityEventHandler());
+    assertThat(handler).isSameAs(mNodeInfo.getSendAccessibilityEventHandler());
 
     mNodeInfo.release();
-    assertNull(mNodeInfo.getSendAccessibilityEventHandler());
+    assertThat(mNodeInfo.getSendAccessibilityEventHandler()).isNull();
   }
 
   @Test
@@ -134,10 +135,10 @@ public class NodeInfoTest {
     EventHandler<SendAccessibilityEventUncheckedEvent> handler = new EventHandler<>(null, 1);
 
     mNodeInfo.setSendAccessibilityEventUncheckedHandler(handler);
-    assertSame(handler, mNodeInfo.getSendAccessibilityEventUncheckedHandler());
+    assertThat(handler).isSameAs(mNodeInfo.getSendAccessibilityEventUncheckedHandler());
 
     mNodeInfo.release();
-    assertNull(mNodeInfo.getSendAccessibilityEventUncheckedHandler());
+    assertThat(mNodeInfo.getSendAccessibilityEventUncheckedHandler()).isNull();
   }
 
   @Test
@@ -222,24 +223,24 @@ public class NodeInfoTest {
 
   @Test
   public void testFocusableTrue() {
-    assertEquals(FOCUS_UNSET, mNodeInfo.getFocusState());
+    assertThat(mNodeInfo.getFocusState()).isEqualTo(FOCUS_UNSET);
     mNodeInfo.setFocusable(true);
 
-    assertEquals(FOCUS_SET_TRUE, mNodeInfo.getFocusState());
+    assertThat(mNodeInfo.getFocusState()).isEqualTo(FOCUS_SET_TRUE);
 
     mNodeInfo.release();
-    assertEquals(FOCUS_UNSET, mNodeInfo.getFocusState());
+    assertThat(mNodeInfo.getFocusState()).isEqualTo(FOCUS_UNSET);
   }
 
   @Test
   public void testFocusableFalse() {
-    assertEquals(FOCUS_UNSET, mNodeInfo.getFocusState());
+    assertThat(mNodeInfo.getFocusState()).isEqualTo(FOCUS_UNSET);
     mNodeInfo.setFocusable(false);
 
-    assertEquals(FOCUS_SET_FALSE, mNodeInfo.getFocusState());
+    assertThat(mNodeInfo.getFocusState()).isEqualTo(FOCUS_SET_FALSE);
 
     mNodeInfo.release();
-    assertEquals(FOCUS_UNSET, mNodeInfo.getFocusState());
+    assertThat(mNodeInfo.getFocusState()).isEqualTo(FOCUS_UNSET);
   }
 
   @Test
@@ -281,7 +282,7 @@ public class NodeInfoTest {
   }
 
   private static void testFlagIsSetThenClear(NodeInfo nodeInfo, String flagName) {
-    assertTrue(isFlagSet(nodeInfo, flagName));
+    assertThat(isFlagSet(nodeInfo, flagName)).isTrue();
     clearFlag(nodeInfo, flagName);
     assertEmptyFlags(nodeInfo);
   }
@@ -301,7 +302,7 @@ public class NodeInfoTest {
   }
 
   private static void assertEmptyFlags(NodeInfo nodeInfo) {
-    assertTrue(((int) Whitebox.getInternalState(nodeInfo, "mPrivateFlags")) == 0);
+    assertThat(((int) getInternalState(nodeInfo, "mPrivateFlags")) == 0).isTrue();
   }
 
   private static void clearNodeInfoPool() {

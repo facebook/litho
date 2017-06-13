@@ -32,6 +32,8 @@ import org.junit.runner.RunWith;
 import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 
+import static android.graphics.Color.BLACK;
+import static android.view.MotionEvent.obtain;
 import static android.view.View.GONE;
 import static android.view.View.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static android.view.View.INVISIBLE;
@@ -39,6 +41,7 @@ import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static android.view.View.VISIBLE;
 import static com.facebook.litho.MountItem.FLAG_DUPLICATE_PARENT_STATE;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -79,30 +82,30 @@ public class ComponentHostTest {
 
   @Test
   public void testParentHostMarker() {
-    assertEquals(0, mHost.getParentHostMarker());
+    assertThat(mHost.getParentHostMarker()).isEqualTo(0);
 
     mHost.setParentHostMarker(1);
-    assertEquals(1, mHost.getParentHostMarker());
+    assertThat(mHost.getParentHostMarker()).isEqualTo(1);
   }
 
   @Test
   public void testInvalidations() {
-    assertEquals(0, mHost.getInvalidationCount());
-    assertNull(mHost.getInvalidationRect());
+    assertThat(mHost.getInvalidationCount()).isEqualTo(0);
+    assertThat(mHost.getInvalidationRect()).isNull();
 
     Drawable d1 = new ColorDrawable();
     d1.setBounds(0, 0, 1, 1);
 
     MountItem mountItem1 = mount(0, d1);
-    assertEquals(1, mHost.getInvalidationCount());
-    assertEquals(d1.getBounds(), mHost.getInvalidationRect());
+    assertThat(mHost.getInvalidationCount()).isEqualTo(1);
+    assertThat(mHost.getInvalidationRect()).isEqualTo(d1.getBounds());
 
     Drawable d2 = new ColorDrawable();
     d2.setBounds(0, 0, 2, 2);
 
     MountItem mountItem2 = mount(1, d2);
-    assertEquals(2, mHost.getInvalidationCount());
-    assertEquals(d2.getBounds(), mHost.getInvalidationRect());
+    assertThat(mHost.getInvalidationCount()).isEqualTo(2);
+    assertThat(mHost.getInvalidationRect()).isEqualTo(d2.getBounds());
 
     View v1 = new View(mContext);
     Rect v1Bounds = new Rect(0, 0, 10, 10);
@@ -112,82 +115,82 @@ public class ComponentHostTest {
     v1.layout(v1Bounds.left, v1Bounds.top, v1Bounds.right, v1Bounds.bottom);
 
     MountItem mountItem3 = mount(2, v1);
-    assertEquals(3, mHost.getInvalidationCount());
-    assertEquals(v1Bounds, mHost.getInvalidationRect());
+    assertThat(mHost.getInvalidationCount()).isEqualTo(3);
+    assertThat(mHost.getInvalidationRect()).isEqualTo(v1Bounds);
 
     unmount(0, mountItem1);
-    assertEquals(4, mHost.getInvalidationCount());
-    assertEquals(d1.getBounds(), mHost.getInvalidationRect());
+    assertThat(mHost.getInvalidationCount()).isEqualTo(4);
+    assertThat(mHost.getInvalidationRect()).isEqualTo(d1.getBounds());
 
     unmount(1, mountItem2);
-    assertEquals(5, mHost.getInvalidationCount());
-    assertEquals(d2.getBounds(), mHost.getInvalidationRect());
+    assertThat(mHost.getInvalidationCount()).isEqualTo(5);
+    assertThat(mHost.getInvalidationRect()).isEqualTo(d2.getBounds());
 
     unmount(2, mountItem3);
-    assertEquals(6, mHost.getInvalidationCount());
-    assertEquals(v1Bounds, mHost.getInvalidationRect());
+    assertThat(mHost.getInvalidationCount()).isEqualTo(6);
+    assertThat(mHost.getInvalidationRect()).isEqualTo(v1Bounds);
   }
 
   @Test
   public void testCallbacks() {
     Drawable d = new ColorDrawable();
-    assertNull(d.getCallback());
+    assertThat(d.getCallback()).isNull();
 
     MountItem mountItem = mount(0, d);
-    assertEquals(mHost, d.getCallback());
+    assertThat(d.getCallback()).isEqualTo(mHost);
 
     unmount(0, mountItem);
-    assertNull(d.getCallback());
+    assertThat(d.getCallback()).isNull();
   }
 
   @Test
   public void testGetMountItemCount() {
-    assertEquals(0, mHost.getMountItemCount());
+    assertThat(mHost.getMountItemCount()).isEqualTo(0);
 
     MountItem mountItem1 = mount(0, new ColorDrawable());
-    assertEquals(1, mHost.getMountItemCount());
+    assertThat(mHost.getMountItemCount()).isEqualTo(1);
 
     mount(1, new ColorDrawable());
-    assertEquals(2, mHost.getMountItemCount());
+    assertThat(mHost.getMountItemCount()).isEqualTo(2);
 
     MountItem mountItem3 = mount(2, new View(mContext));
-    assertEquals(3, mHost.getMountItemCount());
+    assertThat(mHost.getMountItemCount()).isEqualTo(3);
 
     unmount(0, mountItem1);
-    assertEquals(2, mHost.getMountItemCount());
+    assertThat(mHost.getMountItemCount()).isEqualTo(2);
 
     MountItem mountItem4 = mount(1, new ColorDrawable());
-    assertEquals(2, mHost.getMountItemCount());
+    assertThat(mHost.getMountItemCount()).isEqualTo(2);
 
     unmount(2, mountItem3);
-    assertEquals(1, mHost.getMountItemCount());
+    assertThat(mHost.getMountItemCount()).isEqualTo(1);
 
     unmount(1, mountItem4);
-    assertEquals(0, mHost.getMountItemCount());
+    assertThat(mHost.getMountItemCount()).isEqualTo(0);
   }
 
   @Test
   public void testGetMountItemAt() {
-    assertNull(mHost.getMountItemAt(0));
-    assertNull(mHost.getMountItemAt(1));
-    assertNull(mHost.getMountItemAt(2));
+    assertThat(mHost.getMountItemAt(0)).isNull();
+    assertThat(mHost.getMountItemAt(1)).isNull();
+    assertThat(mHost.getMountItemAt(2)).isNull();
 
     MountItem mountItem1 = mount(0, new ColorDrawable());
     MountItem mountItem2 = mount(1, new View(mContext));
     MountItem mountItem3 = mount(5, new ColorDrawable());
 
-    assertEquals(mountItem1, mHost.getMountItemAt(0));
-    assertEquals(mountItem2, mHost.getMountItemAt(1));
-    assertEquals(mountItem3, mHost.getMountItemAt(2));
+    assertThat(mHost.getMountItemAt(0)).isEqualTo(mountItem1);
+    assertThat(mHost.getMountItemAt(1)).isEqualTo(mountItem2);
+    assertThat(mHost.getMountItemAt(2)).isEqualTo(mountItem3);
 
     unmount(1, mountItem2);
 
-    assertEquals(mountItem1, mHost.getMountItemAt(0));
-    assertEquals(mountItem3, mHost.getMountItemAt(1));
+    assertThat(mHost.getMountItemAt(0)).isEqualTo(mountItem1);
+    assertThat(mHost.getMountItemAt(1)).isEqualTo(mountItem3);
 
     unmount(0, mountItem1);
 
-    assertEquals(mountItem3, mHost.getMountItemAt(0));
+    assertThat(mHost.getMountItemAt(0)).isEqualTo(mountItem3);
   }
 
   @Test
@@ -195,46 +198,46 @@ public class ComponentHostTest {
     MountItem mountItem1 = mount(1, new ColorDrawable());
     MountItem mountItem2 = mount(2, new View(mContext));
 
-    assertEquals(2, mHost.getMountItemCount());
+    assertThat(mHost.getMountItemCount()).isEqualTo(2);
 
-    assertEquals(mountItem1, mHost.getMountItemAt(0));
-    assertEquals(mountItem2, mHost.getMountItemAt(1));
+    assertThat(mHost.getMountItemAt(0)).isEqualTo(mountItem1);
+    assertThat(mHost.getMountItemAt(1)).isEqualTo(mountItem2);
 
     mHost.moveItem(mountItem2, 2, 0);
 
-    assertEquals(2, mHost.getMountItemCount());
-    assertEquals(mountItem2, mHost.getMountItemAt(0));
-    assertEquals(mountItem1, mHost.getMountItemAt(1));
+    assertThat(mHost.getMountItemCount()).isEqualTo(2);
+    assertThat(mHost.getMountItemAt(0)).isEqualTo(mountItem2);
+    assertThat(mHost.getMountItemAt(1)).isEqualTo(mountItem1);
 
     mHost.moveItem(mountItem2, 0, 1);
 
-    assertEquals(1, mHost.getMountItemCount());
-    assertEquals(mountItem2, mHost.getMountItemAt(0));
+    assertThat(mHost.getMountItemCount()).isEqualTo(1);
+    assertThat(mHost.getMountItemAt(0)).isEqualTo(mountItem2);
 
     mHost.moveItem(mountItem2, 1, 0);
 
-    assertEquals(2, mHost.getMountItemCount());
-    assertEquals(mountItem1, mHost.getMountItemAt(0));
-    assertEquals(mountItem2, mHost.getMountItemAt(1));
+    assertThat(mHost.getMountItemCount()).isEqualTo(2);
+    assertThat(mHost.getMountItemAt(0)).isEqualTo(mountItem1);
+    assertThat(mHost.getMountItemAt(1)).isEqualTo(mountItem2);
   }
 
   @Test
   public void testMoveItemWithoutTouchables()
       throws Exception {
-    Drawable d1 = new ColorDrawable(Color.BLACK);
+    Drawable d1 = new ColorDrawable(BLACK);
     MountItem mountItem1 = mount(1, d1);
 
-    Drawable d2 = new ColorDrawable(Color.BLACK);
+    Drawable d2 = new ColorDrawable(BLACK);
     MountItem mountItem2 = mount(2, d2);
 
-    assertEquals(2, getDrawableItemsSize());
-    assertEquals(mountItem1, getDrawableMountItemAt(0));
-    assertEquals(mountItem2, getDrawableMountItemAt(1));
+    assertThat(getDrawableItemsSize()).isEqualTo(2);
+    assertThat(getDrawableMountItemAt(0)).isEqualTo(mountItem1);
+    assertThat(getDrawableMountItemAt(1)).isEqualTo(mountItem2);
 
     mHost.moveItem(mountItem2, 2, 0);
 
     // There are no Touchable Drawables so this call should return false and not crash.
-    assertFalse(mHost.onTouchEvent(MotionEvent.obtain(0, 0, 0, 0, 0, 0)));
+    assertThat(mHost.onTouchEvent(obtain(0, 0, 0, 0, 0, 0))).isFalse();
   }
 
   @Test
@@ -341,39 +344,39 @@ public class ComponentHostTest {
     MountItem mountItem3 = mount(2, new View(mContext));
 
     List<Drawable> drawables = mHost.getDrawables();
-    assertEquals(2, drawables.size());
-    assertEquals(d1, drawables.get(0));
-    assertEquals(d2, drawables.get(1));
+    assertThat(drawables).hasSize(2);
+    assertThat(drawables.get(0)).isEqualTo(d1);
+    assertThat(drawables.get(1)).isEqualTo(d2);
 
     unmount(0, mountItem1);
 
     drawables = mHost.getDrawables();
-    assertEquals(1, drawables.size());
-    assertEquals(d2, drawables.get(0));
+    assertThat(drawables).hasSize(1);
+    assertThat(drawables.get(0)).isEqualTo(d2);
 
     unmount(2, mountItem3);
 
     drawables = mHost.getDrawables();
-    assertEquals(1, drawables.size());
-    assertEquals(d2, drawables.get(0));
+    assertThat(drawables).hasSize(1);
+    assertThat(drawables.get(0)).isEqualTo(d2);
   }
 
   @Test
   public void testViewTag() {
-    assertNull(mHost.getTag());
+    assertThat(mHost.getTag()).isNull();
 
     Object tag = new Object();
     mHost.setViewTag(tag);
-    assertEquals(tag, mHost.getTag());
+    assertThat(mHost.getTag()).isEqualTo(tag);
 
     mHost.setViewTag(null);
-    assertNull(mHost.getTag());
+    assertThat(mHost.getTag()).isNull();
   }
 
   @Test
   public void testViewTags() {
-    assertNull(mHost.getTag(1));
-    assertNull(mHost.getTag(2));
+    assertThat(mHost.getTag(1)).isNull();
+    assertThat(mHost.getTag(2)).isNull();
 
     Object value1 = new Object();
     Object value2 = new Object();
@@ -384,52 +387,52 @@ public class ComponentHostTest {
 
     mHost.setViewTags(viewTags);
 
-    assertEquals(value1, mHost.getTag(1));
-    assertEquals(value2, mHost.getTag(2));
+    assertThat(mHost.getTag(1)).isEqualTo(value1);
+    assertThat(mHost.getTag(2)).isEqualTo(value2);
 
     mHost.setViewTags(null);
 
-    assertNull(mHost.getTag(1));
-    assertNull(mHost.getTag(2));
+    assertThat(mHost.getTag(1)).isNull();
+    assertThat(mHost.getTag(2)).isNull();
   }
 
   @Test
   public void testComponentClickListener() {
-    assertNull(mHost.getComponentClickListener());
+    assertThat(mHost.getComponentClickListener()).isNull();
 
     ComponentClickListener listener = new ComponentClickListener();
     mHost.setComponentClickListener(listener);
 
-    assertEquals(listener, mHost.getComponentClickListener());
+    assertThat(mHost.getComponentClickListener()).isEqualTo(listener);
 
     mHost.setComponentClickListener(null);
-    assertNull(mHost.getComponentClickListener());
+    assertThat(mHost.getComponentClickListener()).isNull();
   }
 
   @Test
   public void testComponentLongClickListener() {
-    assertNull(mHost.getComponentLongClickListener());
+    assertThat(mHost.getComponentLongClickListener()).isNull();
 
     ComponentLongClickListener listener = new ComponentLongClickListener();
     mHost.setComponentLongClickListener(listener);
 
-    assertEquals(listener, mHost.getComponentLongClickListener());
+    assertThat(mHost.getComponentLongClickListener()).isEqualTo(listener);
 
     mHost.setComponentLongClickListener(null);
-    assertNull(mHost.getComponentLongClickListener());
+    assertThat(mHost.getComponentLongClickListener()).isNull();
   }
 
   @Test
   public void testComponentTouchListener() {
-    assertNull(mHost.getComponentTouchListener());
+    assertThat(mHost.getComponentTouchListener()).isNull();
 
     ComponentTouchListener listener = new ComponentTouchListener();
     mHost.setComponentTouchListener(listener);
 
-    assertEquals(listener, mHost.getComponentTouchListener());
+    assertThat(mHost.getComponentTouchListener()).isEqualTo(listener);
 
     mHost.setComponentTouchListener(null);
-    assertNull(mHost.getComponentTouchListener());
+    assertThat(mHost.getComponentTouchListener()).isNull();
   }
 
   @Test
@@ -437,7 +440,7 @@ public class ComponentHostTest {
     mHost.layout(0, 0, 100, 100);
 
     mHost.invalidate();
-    assertEquals(new Rect(0, 0, 100, 100), mHost.getInvalidationRect());
+    assertThat(mHost.getInvalidationRect()).isEqualTo(new Rect(0, 0, 100, 100));
 
     mHost.suppressInvalidations(true);
 
@@ -446,7 +449,7 @@ public class ComponentHostTest {
 
     mHost.suppressInvalidations(false);
 
-    assertEquals(new Rect(0, 0, 100, 100), mHost.getInvalidationRect());
+    assertThat(mHost.getInvalidationRect()).isEqualTo(new Rect(0, 0, 100, 100));
   }
 
   @Test
@@ -454,7 +457,7 @@ public class ComponentHostTest {
     mHost.layout(0, 0, 100, 100);
 
     mHost.invalidate(0, 0, 20, 20);
-    assertEquals(new Rect(0, 0, 20, 20), mHost.getInvalidationRect());
+    assertThat(mHost.getInvalidationRect()).isEqualTo(new Rect(0, 0, 20, 20));
 
     mHost.suppressInvalidations(true);
 
@@ -463,7 +466,7 @@ public class ComponentHostTest {
 
     mHost.suppressInvalidations(false);
 
-    assertEquals(new Rect(0, 0, 100, 100), mHost.getInvalidationRect());
+    assertThat(mHost.getInvalidationRect()).isEqualTo(new Rect(0, 0, 100, 100));
   }
 
   @Test
@@ -471,7 +474,7 @@ public class ComponentHostTest {
     mHost.layout(0, 0, 100, 100);
 
     mHost.invalidate(new Rect(0, 0, 20, 20));
-    assertEquals(new Rect(0, 0, 20, 20), mHost.getInvalidationRect());
+    assertThat(mHost.getInvalidationRect()).isEqualTo(new Rect(0, 0, 20, 20));
 
     mHost.suppressInvalidations(true);
 
@@ -480,12 +483,12 @@ public class ComponentHostTest {
 
     mHost.suppressInvalidations(false);
 
-    assertEquals(new Rect(0, 0, 100, 100), mHost.getInvalidationRect());
+    assertThat(mHost.getInvalidationRect()).isEqualTo(new Rect(0, 0, 100, 100));
   }
 
   @Test
   public void testNoScrapHosts() {
-    assertNull(mHost.recycleHost());
+    assertThat(mHost.recycleHost()).isNull();
   }
 
   @Test
@@ -503,15 +506,15 @@ public class ComponentHostTest {
     CharSequence viewContentDescription = "viewContentDescription";
     mount(1, mock(View.class), 0, viewContentDescription);
 
-    assertTrue(mHost.getContentDescriptions().contains(hostContentDescription));
-    assertTrue(mHost.getContentDescriptions().contains(drawableContentDescription));
-    assertFalse(mHost.getContentDescriptions().contains(viewContentDescription));
+    assertThat(mHost.getContentDescriptions()).contains(hostContentDescription);
+    assertThat(mHost.getContentDescriptions()).contains(drawableContentDescription);
+    assertThat(mHost.getContentDescriptions()).doesNotContain(viewContentDescription);
 
     unmount(0, mountItem0);
 
-    assertTrue(mHost.getContentDescriptions().contains(hostContentDescription));
-    assertFalse(mHost.getContentDescriptions().contains(drawableContentDescription));
-    assertFalse(mHost.getContentDescriptions().contains(viewContentDescription));
+    assertThat(mHost.getContentDescriptions()).contains(hostContentDescription);
+    assertThat(mHost.getContentDescriptions()).doesNotContain(drawableContentDescription);
+    assertThat(mHost.getContentDescriptions()).doesNotContain(viewContentDescription);
   }
 
   @Test
@@ -522,36 +525,36 @@ public class ComponentHostTest {
     View v2 = new View(mContext);
     MountItem mountItem2 = mount(0, v2);
 
-    assertEquals(1, mHost.getChildDrawingOrder(mHost.getChildCount(), 0));
-    assertEquals(0, mHost.getChildDrawingOrder(mHost.getChildCount(), 1));
+    assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 0)).isEqualTo(1);
+    assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 1)).isEqualTo(0);
 
     View v3 = new ComponentHost(mContext);
     MountItem mountItem3 = mount(1, v3);
 
-    assertEquals(1, mHost.getChildDrawingOrder(mHost.getChildCount(), 0));
-    assertEquals(2, mHost.getChildDrawingOrder(mHost.getChildCount(), 1));
-    assertEquals(0, mHost.getChildDrawingOrder(mHost.getChildCount(), 2));
+    assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 0)).isEqualTo(1);
+    assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 1)).isEqualTo(2);
+    assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 2)).isEqualTo(0);
 
     mHost.unmount(1, mountItem3);
 
-    assertEquals(1, mHost.getChildDrawingOrder(mHost.getChildCount(), 0));
-    assertEquals(0, mHost.getChildDrawingOrder(mHost.getChildCount(), 1));
+    assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 0)).isEqualTo(1);
+    assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 1)).isEqualTo(0);
 
     mount(1, v3);
 
-    assertEquals(1, mHost.getChildDrawingOrder(mHost.getChildCount(), 0));
-    assertEquals(2, mHost.getChildDrawingOrder(mHost.getChildCount(), 1));
-    assertEquals(0, mHost.getChildDrawingOrder(mHost.getChildCount(), 2));
+    assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 0)).isEqualTo(1);
+    assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 1)).isEqualTo(2);
+    assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 2)).isEqualTo(0);
 
     mHost.unmount(0, mountItem2);
 
-    assertEquals(1, mHost.getChildDrawingOrder(mHost.getChildCount(), 0));
-    assertEquals(0, mHost.getChildDrawingOrder(mHost.getChildCount(), 1));
+    assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 0)).isEqualTo(1);
+    assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 1)).isEqualTo(0);
 
     mHost.moveItem(mountItem3, 1, 3);
 
-    assertEquals(0, mHost.getChildDrawingOrder(mHost.getChildCount(), 0));
-    assertEquals(1, mHost.getChildDrawingOrder(mHost.getChildCount(), 1));
+    assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 0)).isEqualTo(0);
+    assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 1)).isEqualTo(1);
   }
 
   @Test
@@ -568,96 +571,96 @@ public class ComponentHostTest {
     View v4 = new View(mContext);
     MountItem mountItem4 = mount(0, v4);
 
-    assertEquals(3, mHost.getChildDrawingOrder(mHost.getChildCount(), 0));
-    assertEquals(1, mHost.getChildDrawingOrder(mHost.getChildCount(), 1));
-    assertEquals(2, mHost.getChildDrawingOrder(mHost.getChildCount(), 2));
-    assertEquals(0, mHost.getChildDrawingOrder(mHost.getChildCount(), 3));
+    assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 0)).isEqualTo(3);
+    assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 1)).isEqualTo(1);
+    assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 2)).isEqualTo(2);
+    assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 3)).isEqualTo(0);
 
-    assertEquals(4, mHost.getMountItemCount());
-    assertEquals(4, mHost.getChildCount());
+    assertThat(mHost.getMountItemCount()).isEqualTo(4);
+    assertThat(mHost.getChildCount()).isEqualTo(4);
 
     // mountItem3 started disappearing
     mHost.startUnmountDisappearingItem(4, mountItem3);
 
-    assertEquals(3, mHost.getMountItemCount());
-    assertEquals(4, mHost.getChildCount());
+    assertThat(mHost.getMountItemCount()).isEqualTo(3);
+    assertThat(mHost.getChildCount()).isEqualTo(4);
 
-    assertEquals(3, mHost.getChildDrawingOrder(mHost.getChildCount(), 0));
-    assertEquals(1, mHost.getChildDrawingOrder(mHost.getChildCount(), 1));
-    assertEquals(0, mHost.getChildDrawingOrder(mHost.getChildCount(), 2));
-    assertEquals(2, mHost.getChildDrawingOrder(mHost.getChildCount(), 3));
+    assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 0)).isEqualTo(3);
+    assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 1)).isEqualTo(1);
+    assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 2)).isEqualTo(0);
+    assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 3)).isEqualTo(2);
 
     // mountItem4 started disappearing
     mHost.startUnmountDisappearingItem(0, mountItem4);
 
-    assertEquals(2, mHost.getMountItemCount());
-    assertEquals(4, mHost.getChildCount());
+    assertThat(mHost.getMountItemCount()).isEqualTo(2);
+    assertThat(mHost.getChildCount()).isEqualTo(4);
 
-    assertEquals(1, mHost.getChildDrawingOrder(mHost.getChildCount(), 0));
-    assertEquals(0, mHost.getChildDrawingOrder(mHost.getChildCount(), 1));
-    assertEquals(3, mHost.getChildDrawingOrder(mHost.getChildCount(), 2));
-    assertEquals(2, mHost.getChildDrawingOrder(mHost.getChildCount(), 3));
+    assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 0)).isEqualTo(1);
+    assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 1)).isEqualTo(0);
+    assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 2)).isEqualTo(3);
+    assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 3)).isEqualTo(2);
 
     // mountItem4 finished disappearing
     mHost.unmountDisappearingItem(mountItem4);
-    assertEquals(2, mHost.getMountItemCount());
-    assertEquals(3, mHost.getChildCount());
+    assertThat(mHost.getMountItemCount()).isEqualTo(2);
+    assertThat(mHost.getChildCount()).isEqualTo(3);
 
-    assertEquals(1, mHost.getChildDrawingOrder(mHost.getChildCount(), 0));
-    assertEquals(0, mHost.getChildDrawingOrder(mHost.getChildCount(), 1));
-    assertEquals(2, mHost.getChildDrawingOrder(mHost.getChildCount(), 2));
+    assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 0)).isEqualTo(1);
+    assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 1)).isEqualTo(0);
+    assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 2)).isEqualTo(2);
 
     // mountItem3 finished disappearing
     mHost.unmountDisappearingItem(mountItem3);
-    assertEquals(2, mHost.getMountItemCount());
-    assertEquals(2, mHost.getChildCount());
+    assertThat(mHost.getMountItemCount()).isEqualTo(2);
+    assertThat(mHost.getChildCount()).isEqualTo(2);
 
-    assertEquals(1, mHost.getChildDrawingOrder(mHost.getChildCount(), 0));
-    assertEquals(0, mHost.getChildDrawingOrder(mHost.getChildCount(), 1));
+    assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 0)).isEqualTo(1);
+    assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 1)).isEqualTo(0);
   }
 
   @Test
   public void testDrawableItemsSize()
       throws Exception {
 
-    assertEquals(0, getDrawableItemsSize());
+    assertThat(getDrawableItemsSize()).isEqualTo(0);
 
-    assertEquals(0, getDrawableItemsSize());
+    assertThat(getDrawableItemsSize()).isEqualTo(0);
 
-    Drawable d1 = new ColorDrawable(Color.BLACK);
+    Drawable d1 = new ColorDrawable(BLACK);
     MountItem m1 = mount(0, d1);
-    assertEquals(1, getDrawableItemsSize());
+    assertThat(getDrawableItemsSize()).isEqualTo(1);
 
-    Drawable d2 = new ColorDrawable(Color.BLACK);
+    Drawable d2 = new ColorDrawable(BLACK);
     mount(1, d2);
-    assertEquals(2, getDrawableItemsSize());
+    assertThat(getDrawableItemsSize()).isEqualTo(2);
 
     unmount(0, m1);
-    assertEquals(1, getDrawableItemsSize());
+    assertThat(getDrawableItemsSize()).isEqualTo(1);
 
-    Drawable d3 = new ColorDrawable(Color.BLACK);
+    Drawable d3 = new ColorDrawable(BLACK);
     MountItem m3 = mount(1, d3);
-    assertEquals(1, getDrawableItemsSize());
+    assertThat(getDrawableItemsSize()).isEqualTo(1);
 
     unmount(1, m3);
-    assertEquals(0, getDrawableItemsSize());
+    assertThat(getDrawableItemsSize()).isEqualTo(0);
   }
 
   @Test
   public void testGetDrawableMountItem()
       throws Exception {
-    Drawable d1 = new ColorDrawable(Color.BLACK);
+    Drawable d1 = new ColorDrawable(BLACK);
     MountItem mountItem1 = mount(0, d1);
 
-    Drawable d2 = new ColorDrawable(Color.BLACK);
+    Drawable d2 = new ColorDrawable(BLACK);
     MountItem mountItem2 = mount(1, d2);
 
-    Drawable d3 = new ColorDrawable(Color.BLACK);
+    Drawable d3 = new ColorDrawable(BLACK);
     MountItem mountItem3 = mount(5, d3);
 
-    assertEquals(mountItem1, getDrawableMountItemAt(0));
-    assertEquals(mountItem2, getDrawableMountItemAt(1));
-    assertEquals(mountItem3, getDrawableMountItemAt(2));
+    assertThat(getDrawableMountItemAt(0)).isEqualTo(mountItem1);
+    assertThat(getDrawableMountItemAt(1)).isEqualTo(mountItem2);
+    assertThat(getDrawableMountItemAt(2)).isEqualTo(mountItem3);
   }
 
   private int getDrawableItemsSize()
@@ -688,25 +691,25 @@ public class ComponentHostTest {
         IMPORTANT_FOR_ACCESSIBILITY_AUTO);
 
     mHost.mount(0, mountItem, new Rect());
-    assertNull(mHost.recycleHost());
-    assertEquals(1, mHost.getChildCount());
+    assertThat(mHost.recycleHost()).isNull();
+    assertThat(mHost.getChildCount()).isEqualTo(1);
 
     mHost.unmount(0, mountItem);
-    assertNotNull(mHost.recycleHost());
-    assertEquals(1, mHost.getChildCount());
+    assertThat(mHost.recycleHost()).isNotNull();
+    assertThat(mHost.getChildCount()).isEqualTo(1);
 
-    assertNull(mHost.recycleHost());
+    assertThat(mHost.recycleHost()).isNull();
 
     when(view.getParent()).thenReturn(mHost);
 
     mHost.mount(0, mountItem, new Rect());
-    assertNull(mHost.recycleHost());
-    assertEquals(1, mHost.getChildCount());
+    assertThat(mHost.recycleHost()).isNull();
+    assertThat(mHost.getChildCount()).isEqualTo(1);
 
-    assertNull(mHost.recycleHost());
+    assertThat(mHost.recycleHost()).isNull();
 
-    verify(view).setVisibility(View.GONE);
-    verify(view).setVisibility(View.VISIBLE);
+    verify(view).setVisibility(GONE);
+    verify(view).setVisibility(VISIBLE);
   }
 
   private MountItem mount(int index, Object content) {

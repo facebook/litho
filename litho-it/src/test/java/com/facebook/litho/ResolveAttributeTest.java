@@ -25,7 +25,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
-import static junit.framework.Assert.assertEquals;
+import static com.facebook.litho.Column.create;
+import static com.facebook.litho.it.R.attr.testAttrDimen;
+import static com.facebook.litho.it.R.attr.testAttrDrawable;
+import static com.facebook.litho.it.R.attr.undefinedAttrDimen;
+import static com.facebook.litho.it.R.attr.undefinedAttrDrawable;
+import static com.facebook.litho.it.R.dimen;
+import static com.facebook.litho.it.R.dimen.default_dimen;
+import static com.facebook.litho.it.R.dimen.test_dimen;
+import static com.facebook.litho.it.R.drawable.test_bg;
+import static com.facebook.litho.reference.Reference.acquire;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(ComponentsTestRunner.class)
 public class ResolveAttributeTest {
@@ -39,45 +49,45 @@ public class ResolveAttributeTest {
 
   @Test
   public void testResolveDrawableAttribute() {
-    InternalNode node = (InternalNode) Column.create(mContext)
-        .backgroundAttr(R.attr.testAttrDrawable, 0)
+    InternalNode node = (InternalNode) create(mContext)
+        .backgroundAttr(testAttrDrawable, 0)
         .build();
 
-    Drawable d = mContext.getResources().getDrawable(R.drawable.test_bg);
-    assertEquals(d, Reference.acquire(mContext, node.getBackground()));
+    Drawable d = mContext.getResources().getDrawable(test_bg);
+    assertThat(acquire(mContext, node.getBackground())).isEqualTo(d);
   }
 
   @Test
   public void testResolveDimenAttribute() {
-    InternalNode node = (InternalNode) Column.create(mContext)
-        .widthAttr(R.attr.testAttrDimen, R.dimen.default_dimen)
+    InternalNode node = (InternalNode) create(mContext)
+        .widthAttr(testAttrDimen, default_dimen)
         .build();
     node.calculateLayout();
 
     int dimen =
         mContext.getResources().getDimensionPixelSize(R.dimen.test_dimen);
-    assertEquals(dimen, (int) node.getWidth());
+    assertThat((int) node.getWidth()).isEqualTo(dimen);
   }
 
   @Test
   public void testDefaultDrawableAttribute() {
-    InternalNode node = (InternalNode) Column.create(mContext)
-        .backgroundAttr(R.attr.undefinedAttrDrawable, R.drawable.test_bg)
+    InternalNode node = (InternalNode) create(mContext)
+        .backgroundAttr(undefinedAttrDrawable, test_bg)
         .build();
 
-    Drawable d = mContext.getResources().getDrawable(R.drawable.test_bg);
-    assertEquals(d, Reference.acquire(mContext, node.getBackground()));
+    Drawable d = mContext.getResources().getDrawable(test_bg);
+    assertThat(acquire(mContext, node.getBackground())).isEqualTo(d);
   }
 
   @Test
   public void testDefaultDimenAttribute() {
-    InternalNode node = (InternalNode) Column.create(mContext)
-        .widthAttr(R.attr.undefinedAttrDimen, R.dimen.test_dimen)
+    InternalNode node = (InternalNode) create(mContext)
+        .widthAttr(undefinedAttrDimen, test_dimen)
         .build();
     node.calculateLayout();
 
     int dimen =
         mContext.getResources().getDimensionPixelSize(R.dimen.test_dimen);
-    assertEquals(dimen, (int) node.getWidth());
+    assertThat((int) node.getWidth()).isEqualTo(dimen);
   }
 }

@@ -28,8 +28,11 @@ import org.junit.runner.RunWith;
 import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 
+import static com.facebook.litho.testing.ComponentTestHelper.mountComponent;
+import static com.facebook.litho.testing.TestDrawableComponent.create;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.powermock.reflect.Whitebox.getInternalState;
 
 @RunWith(ComponentsTestRunner.class)
 public class MountStateRemountTest {
@@ -42,16 +45,16 @@ public class MountStateRemountTest {
 
   @Test
   public void testRemountSameLayoutState() {
-    final TestComponent component1 = TestDrawableComponent.create(mContext)
+    final TestComponent component1 = create(mContext)
         .build();
-    final TestComponent component2 = TestDrawableComponent.create(mContext)
+    final TestComponent component2 = create(mContext)
         .build();
-    final TestComponent component3 = TestDrawableComponent.create(mContext)
+    final TestComponent component3 = create(mContext)
         .build();
-    final TestComponent component4 = TestDrawableComponent.create(mContext)
+    final TestComponent component4 = create(mContext)
         .build();
 
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -63,10 +66,10 @@ public class MountStateRemountTest {
           }
         });
 
-    assertTrue(component1.isMounted());
-    assertTrue(component2.isMounted());
+    assertThat(component1.isMounted()).isTrue();
+    assertThat(component2.isMounted()).isTrue();
 
-    ComponentTestHelper.mountComponent(
+    mountComponent(
         mContext,
         lithoView,
         new InlineLayoutSpec() {
@@ -79,24 +82,24 @@ public class MountStateRemountTest {
           }
         });
 
-    assertTrue(component1.isMounted());
-    assertTrue(component2.isMounted());
-    assertFalse(component3.isMounted());
-    assertFalse(component4.isMounted());
+    assertThat(component1.isMounted()).isTrue();
+    assertThat(component2.isMounted()).isTrue();
+    assertThat(component3.isMounted()).isFalse();
+    assertThat(component4.isMounted()).isFalse();
 
-    final MountState mountState = Whitebox.getInternalState(lithoView,"mMountState");
+    final MountState mountState = getInternalState(lithoView, "mMountState");
     final LongSparseArray<MountItem> indexToItemMap =
-        Whitebox.getInternalState(mountState,"mIndexToItemMap");
+        getInternalState(mountState, "mIndexToItemMap");
 
     final List<Component> components = new ArrayList<>();
     for (int i = 0; i < indexToItemMap.size(); i++) {
       components.add(indexToItemMap.valueAt(i).getComponent());
     }
 
-    assertFalse(containsRef(components, component1));
-    assertFalse(containsRef(components, component2));
-    assertTrue(containsRef(components, component3));
-    assertTrue(containsRef(components, component4));
+    assertThat(containsRef(components, component1)).isFalse();
+    assertThat(containsRef(components, component2)).isFalse();
+    assertThat(containsRef(components, component3)).isTrue();
+    assertThat(containsRef(components, component4)).isTrue();
   }
 
   /**
@@ -131,20 +134,20 @@ public class MountStateRemountTest {
 
   @Test
   public void testRemountNewLayoutState() {
-    final TestComponent component1 = TestDrawableComponent.create(mContext)
+    final TestComponent component1 = create(mContext)
         .unique()
         .build();
-    final TestComponent component2 = TestDrawableComponent.create(mContext)
+    final TestComponent component2 = create(mContext)
         .unique()
         .build();
-    final TestComponent component3 = TestDrawableComponent.create(mContext)
+    final TestComponent component3 = create(mContext)
         .unique()
         .build();
-    final TestComponent component4 = TestDrawableComponent.create(mContext)
+    final TestComponent component4 = create(mContext)
         .unique()
         .build();
 
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -156,10 +159,10 @@ public class MountStateRemountTest {
           }
         });
 
-    assertTrue(component1.isMounted());
-    assertTrue(component2.isMounted());
+    assertThat(component1.isMounted()).isTrue();
+    assertThat(component2.isMounted()).isTrue();
 
-    ComponentTestHelper.mountComponent(
+    mountComponent(
         mContext,
         lithoView,
         new InlineLayoutSpec() {
@@ -172,24 +175,24 @@ public class MountStateRemountTest {
           }
         });
 
-    assertFalse(component1.isMounted());
-    assertFalse(component2.isMounted());
-    assertTrue(component3.isMounted());
-    assertTrue(component4.isMounted());
+    assertThat(component1.isMounted()).isFalse();
+    assertThat(component2.isMounted()).isFalse();
+    assertThat(component3.isMounted()).isTrue();
+    assertThat(component4.isMounted()).isTrue();
   }
 
   @Test
   public void testRemountPartiallyDifferentLayoutState() {
-    final TestComponent component1 = TestDrawableComponent.create(mContext)
+    final TestComponent component1 = create(mContext)
         .build();
-    final TestComponent component2 = TestDrawableComponent.create(mContext)
+    final TestComponent component2 = create(mContext)
         .build();
-    final TestComponent component3 = TestDrawableComponent.create(mContext)
+    final TestComponent component3 = create(mContext)
         .build();
-    final TestComponent component4 = TestDrawableComponent.create(mContext)
+    final TestComponent component4 = create(mContext)
         .build();
 
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -201,10 +204,10 @@ public class MountStateRemountTest {
           }
         });
 
-    assertTrue(component1.isMounted());
-    assertTrue(component2.isMounted());
+    assertThat(component1.isMounted()).isTrue();
+    assertThat(component2.isMounted()).isTrue();
 
-    ComponentTestHelper.mountComponent(
+    mountComponent(
         mContext,
         lithoView,
         new InlineLayoutSpec() {
@@ -220,10 +223,10 @@ public class MountStateRemountTest {
           }
         });
 
-    assertTrue(component1.isMounted());
-    assertFalse(component2.isMounted());
-    assertFalse(component3.isMounted());
-    assertTrue(component4.isMounted());
+    assertThat(component1.isMounted()).isTrue();
+    assertThat(component2.isMounted()).isFalse();
+    assertThat(component3.isMounted()).isFalse();
+    assertThat(component4.isMounted()).isTrue();
   }
 
   private boolean containsRef(List<?> list, Object object) {

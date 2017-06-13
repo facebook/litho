@@ -13,7 +13,8 @@ import org.junit.Before;
 import org.junit.Test;
 import com.facebook.litho.DisplayListPrefetcher.AverageDLPrefetchDuration;
 
-import static junit.framework.Assert.assertEquals;
+import static com.facebook.litho.DisplayListPrefetcher.AverageDLPrefetchDuration.INITIAL_SIZE;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 /**
  * Test for {@link DisplayListPrefetcher}
@@ -29,14 +30,14 @@ public class DisplayListPrefetcherTest {
 
   @Test
   public void testAverageDLPrefetchDurationEmpty() {
-    assertEquals(mAverageDLPrefetchDuration.get("Text"), -1);
+    assertThat(-1L).isEqualTo(mAverageDLPrefetchDuration.get("Text"));
   }
 
   @Test
   public void testAverageDLPrefetchDurationAddItem() {
     mAverageDLPrefetchDuration.put("Image", 100L);
-    assertEquals(mAverageDLPrefetchDuration.get("Text"), -1);
-    assertEquals(mAverageDLPrefetchDuration.get("Image"), 100L);
+    assertThat(-1L).isEqualTo(mAverageDLPrefetchDuration.get("Text"));
+    assertThat(100L).isEqualTo(mAverageDLPrefetchDuration.get("Image"));
   }
 
   @Test
@@ -44,16 +45,16 @@ public class DisplayListPrefetcherTest {
     mAverageDLPrefetchDuration.put("Image", 100L);
     mAverageDLPrefetchDuration.put("Image", 200L);
     mAverageDLPrefetchDuration.put("Image", 250L);
-    assertEquals(mAverageDLPrefetchDuration.get("Image"), 250L);
+    assertThat(250L).isEqualTo(mAverageDLPrefetchDuration.get("Image"));
   }
 
   @Test
   public void testAverageDLPrefetchDurationAddItemsExceedInitialSize() {
-    int initialSize = AverageDLPrefetchDuration.INITIAL_SIZE;
+    int initialSize = INITIAL_SIZE;
     for (int i = 0; i < initialSize; i++) {
-      mAverageDLPrefetchDuration.put("Image"+i, 100L + i * 10);
+      mAverageDLPrefetchDuration.put("Image" + i, 100L + i * 10);
     }
-    mAverageDLPrefetchDuration.put("Image"+initialSize, 111L);
-    assertEquals(mAverageDLPrefetchDuration.get("Image"+initialSize), 111L);
+    mAverageDLPrefetchDuration.put("Image" + initialSize, 111L);
+    assertThat(111L).isEqualTo(mAverageDLPrefetchDuration.get("Image" + initialSize));
   }
 }

@@ -21,9 +21,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
+import static android.graphics.Color.BLUE;
+import static android.graphics.Color.RED;
+import static com.facebook.litho.Column.create;
+import static com.facebook.litho.LayoutState.calculate;
+import static com.facebook.litho.MountItem.isDuplicateParentState;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.robolectric.RuntimeEnvironment.application;
 
 @RunWith(ComponentsTestRunner.class)
 public class DuplicateParentStateTest {
@@ -40,52 +47,52 @@ public class DuplicateParentStateTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c)
+        return create(c)
             .duplicateParentState(true)
             .clickHandler(c.newEventHandler(1))
             .child(
-                Column.create(c)
+                create(c)
                     .duplicateParentState(false)
                     .child(
                         TestDrawableComponent.create(c)
                             .withLayout()
                             .duplicateParentState(true)))
             .child(
-                Column.create(c)
+                create(c)
                     .duplicateParentState(true)
                     .child(
                         TestDrawableComponent.create(c)
                             .withLayout()
                             .duplicateParentState(true)))
             .child(
-                Column.create(c)
+                create(c)
                     .clickHandler(c.newEventHandler(2))
                     .child(
                         TestDrawableComponent.create(c)
                             .withLayout()
                             .duplicateParentState(true)))
             .child(
-                Column.create(c)
+                create(c)
                     .clickHandler(c.newEventHandler(3))
                     .child(
                         TestDrawableComponent.create(c)
                             .withLayout()
                             .duplicateParentState(false)))
             .child(
-                Column.create(c)
+                create(c)
                     .clickHandler(c.newEventHandler(3))
-                    .backgroundColor(Color.RED)
-                    .foregroundColor(Color.RED))
+                    .backgroundColor(RED)
+                    .foregroundColor(RED))
             .child(
-                Column.create(c)
-                    .backgroundColor(Color.BLUE)
-                    .foregroundColor(Color.BLUE))
+                create(c)
+                    .backgroundColor(BLUE)
+                    .foregroundColor(BLUE))
             .build();
       }
     };
 
-    LayoutState layoutState = LayoutState.calculate(
-        new ComponentContext(RuntimeEnvironment.application),
+    LayoutState layoutState = calculate(
+        new ComponentContext(application),
         component,
         -1,
         mUnspecifiedSizeSpec,
@@ -95,40 +102,40 @@ public class DuplicateParentStateTest {
         null,
         false);
 
-    assertEquals(12, layoutState.getMountableOutputCount());
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(12);
 
     assertTrue(
         "Clickable root output has duplicate state",
-        MountItem.isDuplicateParentState(layoutState.getMountableOutputAt(0).getFlags()));
+        isDuplicateParentState(layoutState.getMountableOutputAt(0).getFlags()));
 
     assertFalse(
         "Parent doesn't duplicate host state",
-        MountItem.isDuplicateParentState(layoutState.getMountableOutputAt(1).getFlags()));
+        isDuplicateParentState(layoutState.getMountableOutputAt(1).getFlags()));
 
     assertTrue(
         "Parent does duplicate host state",
-        MountItem.isDuplicateParentState(layoutState.getMountableOutputAt(2).getFlags()));
+        isDuplicateParentState(layoutState.getMountableOutputAt(2).getFlags()));
 
     assertTrue(
         "Drawable duplicates clickable parent state",
-        MountItem.isDuplicateParentState(layoutState.getMountableOutputAt(4).getFlags()));
+        isDuplicateParentState(layoutState.getMountableOutputAt(4).getFlags()));
 
     assertFalse(
         "Drawable doesn't duplicate clickable parent state",
-        MountItem.isDuplicateParentState(layoutState.getMountableOutputAt(6).getFlags()));
+        isDuplicateParentState(layoutState.getMountableOutputAt(6).getFlags()));
 
     assertTrue(
         "Background should duplicate clickable node state",
-        MountItem.isDuplicateParentState(layoutState.getMountableOutputAt(8).getFlags()));
+        isDuplicateParentState(layoutState.getMountableOutputAt(8).getFlags()));
     assertTrue(
         "Foreground should duplicate clickable node state",
-        MountItem.isDuplicateParentState(layoutState.getMountableOutputAt(9).getFlags()));
+        isDuplicateParentState(layoutState.getMountableOutputAt(9).getFlags()));
 
     assertFalse(
         "Background should duplicate non-clickable node state",
-        MountItem.isDuplicateParentState(layoutState.getMountableOutputAt(10).getFlags()));
+        isDuplicateParentState(layoutState.getMountableOutputAt(10).getFlags()));
     assertFalse(
         "Foreground should duplicate non-clickable node state",
-        MountItem.isDuplicateParentState(layoutState.getMountableOutputAt(11).getFlags()));
+        isDuplicateParentState(layoutState.getMountableOutputAt(11).getFlags()));
   }
 }

@@ -15,15 +15,19 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
-import static junit.framework.Assert.assertEquals;
+import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
+import static com.facebook.litho.ComponentLayout.Builder;
+import static com.facebook.litho.Layout.create;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.robolectric.RuntimeEnvironment.application;
 
 @RunWith(ComponentsTestRunner.class)
 public class LayoutTest {
 
   @Test
   public void testLayoutWithNullComponentReturnsNullLayout() {
-    ComponentContext c = new ComponentContext(RuntimeEnvironment.application);
-    ComponentLayout.Builder builder = Layout.create(c, null);
-    assertEquals(builder.build(), c.NULL_LAYOUT);
+    ComponentContext c = new ComponentContext(application);
+    Builder builder = create(c, null);
+    assertThat(NULL_LAYOUT).isEqualTo(builder.build());
   }
 }

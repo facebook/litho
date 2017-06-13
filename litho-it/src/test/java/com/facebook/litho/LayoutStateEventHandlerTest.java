@@ -18,7 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
-import static junit.framework.Assert.assertEquals;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(ComponentsTestRunner.class)
 public class LayoutStateEventHandlerTest {
@@ -31,8 +31,8 @@ public class LayoutStateEventHandlerTest {
       EventHandler eventHandler,
       int expectedId,
       Component<?> expectedInput) {
-    assertEquals(expectedInput, eventHandler.mHasEventDispatcher);
-    assertEquals(expectedId, eventHandler.id);
+    assertThat(eventHandler.mHasEventDispatcher).isEqualTo(expectedInput);
+    assertThat(eventHandler.id).isEqualTo(expectedId);
   }
 
   @Before

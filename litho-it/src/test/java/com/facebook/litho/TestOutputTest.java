@@ -17,6 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -33,20 +34,20 @@ public class TestOutputTest {
   public void testPositionAndSizeSet() {
     mTestOutput.setBounds(0, 1, 3, 4);
 
-    assertEquals(0, mTestOutput.getBounds().left);
-    assertEquals(1, mTestOutput.getBounds().top);
-    assertEquals(3, mTestOutput.getBounds().right);
-    assertEquals(4, mTestOutput.getBounds().bottom);
+    assertThat(mTestOutput.getBounds().left).isEqualTo(0);
+    assertThat(mTestOutput.getBounds().top).isEqualTo(1);
+    assertThat(mTestOutput.getBounds().right).isEqualTo(3);
+    assertThat(mTestOutput.getBounds().bottom).isEqualTo(4);
   }
 
   @Test
   public void testRectBoundsSet() {
     final Rect bounds = new Rect(0, 1, 3, 4);
     mTestOutput.setBounds(bounds);
-    assertEquals(0, mTestOutput.getBounds().left);
-    assertEquals(1, mTestOutput.getBounds().top);
-    assertEquals(3, mTestOutput.getBounds().right);
-    assertEquals(4, mTestOutput.getBounds().bottom);
+    assertThat(mTestOutput.getBounds().left).isEqualTo(0);
+    assertThat(mTestOutput.getBounds().top).isEqualTo(1);
+    assertThat(mTestOutput.getBounds().right).isEqualTo(3);
+    assertThat(mTestOutput.getBounds().bottom).isEqualTo(4);
   }
 
   @Test
@@ -74,9 +75,9 @@ public class TestOutputTest {
   }
 
   private static void assertDefaultValues(TestOutput testOutput) {
-    assertEquals(new Rect(), testOutput.getBounds());
-    assertNull(testOutput.getTestKey());
-    assertEquals(-1, testOutput.getHostMarker());
-    assertEquals(-1, testOutput.getLayoutOutputId());
+    assertThat(testOutput.getBounds()).isEqualTo(new Rect());
+    assertThat(testOutput.getTestKey()).isNull();
+    assertThat(testOutput.getHostMarker()).isEqualTo(-1);
+    assertThat(testOutput.getLayoutOutputId()).isEqualTo(-1);
   }
 }

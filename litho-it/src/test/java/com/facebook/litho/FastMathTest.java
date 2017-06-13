@@ -14,34 +14,35 @@ import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static junit.framework.Assert.assertEquals;
+import static com.facebook.litho.FastMath.round;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(ComponentsTestRunner.class)
 public class FastMathTest {
 
   @Test
   public void testRoundPositiveUp() {
-    assertEquals(FastMath.round(1.6f), 2);
+    assertThat(2).isEqualTo(round(1.6f));
   }
 
   @Test
   public void testRoundPositiveDown() {
-    assertEquals(FastMath.round(1.3f), 1);
+    assertThat(1).isEqualTo(round(1.3f));
   }
 
   @Test
   public void testRoundZero() {
-    assertEquals(FastMath.round(0f), 0);
+    assertThat(0).isEqualTo(round(0f));
   }
 
   @Test
   public void testRoundNegativeUp() {
-    assertEquals(FastMath.round(-1.3f), -1);
+    assertThat(-1).isEqualTo(round(-1.3f));
   }
 
   @Test
   public void testRoundNegativeDown() {
-    assertEquals(FastMath.round(-1.6f), -2);
+    assertThat(-2).isEqualTo(round(-1.6f));
   }
 
 }

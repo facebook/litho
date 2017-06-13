@@ -20,7 +20,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
+import static com.facebook.litho.ComponentTree.create;
 import static com.facebook.litho.SizeSpec.EXACTLY;
+import static com.facebook.litho.SizeSpec.makeSizeSpec;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -65,7 +68,7 @@ public class LithoViewMountTest {
     mLithoView.setComponentTree(mComponentTree);
     mLithoView.onAttachedToWindow();
 
-    assertEquals(1, mLithoView.getRequestLayoutInvocationCount());
+    assertThat(mLithoView.getRequestLayoutInvocationCount()).isEqualTo(1);
   }
 
   @Test
@@ -74,7 +77,7 @@ public class LithoViewMountTest {
     mLithoView.setComponentTree(mComponentTree);
     mLithoView.onAttachedToWindow();
 
-    assertEquals(2, mLithoView.getRequestLayoutInvocationCount());
+    assertThat(mLithoView.getRequestLayoutInvocationCount()).isEqualTo(2);
   }
 
   @Test
@@ -83,12 +86,12 @@ public class LithoViewMountTest {
     mLithoView.setComponentTree(mComponentTree);
     mLithoView.onAttachedToWindow();
 
-    assertEquals(2, mLithoView.getRequestLayoutInvocationCount());
+    assertThat(mLithoView.getRequestLayoutInvocationCount()).isEqualTo(2);
   }
 
   @Test
   public void testSetComponentTwiceWithResetAndAttachRequestsLayout() {
-    ComponentTree ct = ComponentTree.create(mContext, mComponent)
+    ComponentTree ct = create(mContext, mComponent)
         .incrementalMount(false)
         .layoutDiffing(false)
         .build();
@@ -98,7 +101,7 @@ public class LithoViewMountTest {
     mLithoView.setMeasured(100, 100);
     mLithoView.onAttachedToWindow();
 
-    assertEquals(2, mLithoView.getRequestLayoutInvocationCount());
+    assertThat(mLithoView.getRequestLayoutInvocationCount()).isEqualTo(2);
 
     mLithoView.onDetachedFromWindow();
 
@@ -107,7 +110,7 @@ public class LithoViewMountTest {
     mLithoView.setComponentTree(ct);
     mLithoView.onAttachedToWindow();
 
-    assertEquals(1, mLithoView.getRequestLayoutInvocationCount());
+    assertThat(mLithoView.getRequestLayoutInvocationCount()).isEqualTo(1);
   }
 
   @Test
@@ -116,7 +119,7 @@ public class LithoViewMountTest {
     mLithoView.onAttachedToWindow();
     mLithoView.setComponentTree(mComponentTree);
 
-    assertEquals(1, mLithoView.getRequestLayoutInvocationCount());
+    assertThat(mLithoView.getRequestLayoutInvocationCount()).isEqualTo(1);
   }
 
   @Test
@@ -125,7 +128,7 @@ public class LithoViewMountTest {
     mLithoView.onAttachedToWindow();
     mLithoView.setComponentTree(mComponentTree);
 
-    assertEquals(1, mLithoView.getRequestLayoutInvocationCount());
+    assertThat(mLithoView.getRequestLayoutInvocationCount()).isEqualTo(1);
   }
 
   @Test
@@ -134,27 +137,27 @@ public class LithoViewMountTest {
     mLithoView.setComponentTree(mComponentTree);
     mLithoView.onAttachedToWindow();
 
-    assertEquals(2, mLithoView.getRequestLayoutInvocationCount());
+    assertThat(mLithoView.getRequestLayoutInvocationCount()).isEqualTo(2);
 
     mLithoView.onDetachedFromWindow();
     mLithoView.resetRequestLayoutInvocationCount();
     mLithoView.onAttachedToWindow();
 
-    assertEquals(1, mLithoView.getRequestLayoutInvocationCount());
+    assertThat(mLithoView.getRequestLayoutInvocationCount()).isEqualTo(1);
 
     ComponentTree newComponentTree =
-        ComponentTree.create(mContext, mComponent)
+        create(mContext, mComponent)
             .incrementalMount(false)
             .layoutDiffing(false)
             .build();
     newComponentTree.setSizeSpec(
-        SizeSpec.makeSizeSpec(100, EXACTLY),
-        SizeSpec.makeSizeSpec(100, EXACTLY));
+        makeSizeSpec(100, EXACTLY),
+        makeSizeSpec(100, EXACTLY));
 
     mLithoView.resetRequestLayoutInvocationCount();
     mLithoView.setComponentTree(newComponentTree);
 
-    assertEquals(1, mLithoView.getRequestLayoutInvocationCount());
+    assertThat(mLithoView.getRequestLayoutInvocationCount()).isEqualTo(1);
   }
 
   private static class TestLithoView extends LithoView {

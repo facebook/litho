@@ -18,7 +18,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(ComponentsTestRunner.class)
 public class InternalNodeReleaseTest {
@@ -32,11 +32,11 @@ public class InternalNodeReleaseTest {
   }
 
   private static void assertDefaultValues(InternalNode node) {
-    assertEquals(false, node.isForceViewWrapping());
+    assertThat(node.isForceViewWrapping()).isEqualTo(false);
 
-    assertNull(node.getNodeInfo());
-    assertNull(node.getTouchExpansion());
-    assertNull(node.getTestKey());
+    assertThat(node.getNodeInfo()).isNull();
+    assertThat(node.getTouchExpansion()).isNull();
+    assertThat(node.getTestKey()).isNull();
   }
 
   @Test

@@ -22,6 +22,9 @@ import com.squareup.javapoet.TypeVariableName;
 import org.junit.Before;
 import org.junit.Test;
 
+import static com.facebook.litho.specmodels.internal.ImmutableList.copyOf;
+import static com.facebook.litho.specmodels.internal.ImmutableList.of;
+import static com.facebook.litho.specmodels.model.SpecModelImpl.newBuilder;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -86,11 +89,11 @@ public class SpecModelImplTest {
 
   @Test
   public void testCreateSpecModelImplWithoutDependencyInjection() {
-    SpecModel specModel = SpecModelImpl.newBuilder()
+    SpecModel specModel = newBuilder()
         .qualifiedSpecClassName(TEST_QUALIFIED_SPEC_NAME)
-        .delegateMethods(ImmutableList.of(mMethodModel1, mMethodModel2))
-        .typeVariables(ImmutableList.copyOf(mTypeVariableNames))
-        .propDefaults(ImmutableList.of(mPropDefaultModel1))
+        .delegateMethods(of(mMethodModel1, mMethodModel2))
+        .typeVariables(copyOf(mTypeVariableNames))
+        .propDefaults(of(mPropDefaultModel1))
         .representedObject(new Object())
         .build();
 
@@ -100,16 +103,16 @@ public class SpecModelImplTest {
     assertThat(specModel.getComponentTypeName().toString())
         .isEqualTo(TEST_QUALIFIED_COMPONENT_NAME);
 
-    assertThat(specModel.getDelegateMethods().size()).isEqualTo(2);
+    assertThat(specModel.getDelegateMethods()).hasSize(2);
     assertThat(specModel.getDelegateMethods()).contains(mMethodModel1, mMethodModel2);
 
-    assertThat(specModel.getProps().size()).isEqualTo(3);
+    assertThat(specModel.getProps()).hasSize(3);
     assertThat(specModel.getProps()).contains(mPropModel1, mPropModel2, mPropModel3);
 
-    assertThat(specModel.getPropDefaults().size()).isEqualTo(1);
+    assertThat(specModel.getPropDefaults()).hasSize(1);
     assertThat(specModel.getPropDefaults()).contains(mPropDefaultModel1);
 
-    assertThat(specModel.getTypeVariables().size()).isEqualTo(2);
+    assertThat(specModel.getTypeVariables()).hasSize(2);
     assertThat(specModel.getTypeVariables()).contains(mTypeVariableName1, mTypeVariableName2);
 
     assertThat(specModel.getTreeProps()).hasSize(1);

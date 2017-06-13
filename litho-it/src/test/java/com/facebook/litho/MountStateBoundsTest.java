@@ -25,7 +25,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
+import static com.facebook.litho.testing.ComponentTestHelper.mountComponent;
+import static com.facebook.litho.testing.TestDrawableComponent.create;
+import static com.facebook.yoga.YogaAlign.FLEX_END;
 import static com.facebook.yoga.YogaEdge.ALL;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(ComponentsTestRunner.class)
@@ -40,12 +44,12 @@ public class MountStateBoundsTest {
 
   @Test
   public void testMountedDrawableBounds() {
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return TestDrawableComponent.create(c)
+            return create(c)
                 .withLayout()
                 .widthPx(10)
                 .heightPx(10)
@@ -53,12 +57,12 @@ public class MountStateBoundsTest {
           }
         });
 
-    assertEquals(new Rect(0, 0, 10, 10), lithoView.getDrawables().get(0).getBounds());
+    assertThat(lithoView.getDrawables().get(0).getBounds()).isEqualTo(new Rect(0, 0, 10, 10));
   }
 
   @Test
   public void testMountedViewBounds() {
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -72,18 +76,16 @@ public class MountStateBoundsTest {
         });
 
     final View mountedView = lithoView.getChildAt(0);
-    assertEquals(
-        new Rect(0, 0, 10, 10),
-        new Rect(
-            mountedView.getLeft(),
-            mountedView.getTop(),
-            mountedView.getRight(),
-            mountedView.getBottom()));
+    assertThat(new Rect(
+        mountedView.getLeft(),
+        mountedView.getTop(),
+        mountedView.getRight(),
+        mountedView.getBottom())).isEqualTo(new Rect(0, 0, 10, 10));
   }
 
   @Test
   public void testInnerComponentHostBounds() {
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -95,7 +97,7 @@ public class MountStateBoundsTest {
                         .heightPx(20)
                         .wrapInView()
                         .child(
-                            TestDrawableComponent.create(c)
+                            create(c)
                                 .withLayout()
                                 .widthPx(10)
                                 .heightPx(10)))
@@ -104,25 +106,23 @@ public class MountStateBoundsTest {
         });
 
     final ComponentHost host = (ComponentHost) lithoView.getChildAt(0);
-    assertEquals(new Rect(0, 0, 10, 10), host.getDrawables().get(0).getBounds());
-    assertEquals(
-        new Rect(0, 0, 20, 20),
-        new Rect(
-            host.getLeft(),
-            host.getTop(),
-            host.getRight(),
-            host.getBottom()));
+    assertThat(host.getDrawables().get(0).getBounds()).isEqualTo(new Rect(0, 0, 10, 10));
+    assertThat(new Rect(
+        host.getLeft(),
+        host.getTop(),
+        host.getRight(),
+        host.getBottom())).isEqualTo(new Rect(0, 0, 20, 20));
   }
 
   @Test
   public void testDoubleInnerComponentHostBounds() {
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
             return Column.create(c)
-                .alignItems(YogaAlign.FLEX_END)
+                .alignItems(FLEX_END)
                 .justifyContent(YogaJustify.FLEX_END)
                 .child(
                     Column.create(c)
@@ -136,7 +136,7 @@ public class MountStateBoundsTest {
                                 .heightPx(60)
                                 .wrapInView()
                                 .child(
-                                    TestDrawableComponent.create(c)
+                                    create(c)
                                         .withLayout()
                                         .widthPx(20)
                                         .heightPx(20)
@@ -150,22 +150,18 @@ public class MountStateBoundsTest {
     final ComponentHost host = (ComponentHost) lithoView.getChildAt(0);
     final ComponentHost nestedHost = (ComponentHost) host.getChildAt(0);
 
-    assertEquals(
-        new Rect(100, 100, 200, 200),
-        new Rect(
-            host.getLeft(),
-            host.getTop(),
-            host.getRight(),
-            host.getBottom()));
+    assertThat(new Rect(
+        host.getLeft(),
+        host.getTop(),
+        host.getRight(),
+        host.getBottom())).isEqualTo(new Rect(100, 100, 200, 200));
 
-    assertEquals(new Rect(20, 20, 40, 40), nestedHost.getDrawables().get(0).getBounds());
+    assertThat(nestedHost.getDrawables().get(0).getBounds()).isEqualTo(new Rect(20, 20, 40, 40));
 
-    assertEquals(
-        new Rect(20, 20, 80, 80),
-        new Rect(
-            nestedHost.getLeft(),
-            nestedHost.getTop(),
-            nestedHost.getRight(),
-            nestedHost.getBottom()));
+    assertThat(new Rect(
+        nestedHost.getLeft(),
+        nestedHost.getTop(),
+        nestedHost.getRight(),
+        nestedHost.getBottom())).isEqualTo(new Rect(20, 20, 80, 80));
   }
 }

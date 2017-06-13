@@ -17,9 +17,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static com.facebook.litho.LayoutStateOutputIdCalculator.calculateVisibilityOutputId;
+import static com.facebook.litho.LayoutStateOutputIdCalculator.getLevelFromId;
+import static com.facebook.litho.LayoutStateOutputIdCalculator.getSequenceFromId;
+import static java.lang.Long.toBinaryString;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertSame;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(ComponentsTestRunner.class)
 public class VisibilityOutputTest {
@@ -54,20 +58,20 @@ public class VisibilityOutputTest {
   @Test
   public void testPositionAndSizeSet() {
     mVisibilityOutput.setBounds(0, 1, 3, 4);
-    assertEquals(0, mVisibilityOutput.getBounds().left);
-    assertEquals(1, mVisibilityOutput.getBounds().top);
-    assertEquals(3, mVisibilityOutput.getBounds().right);
-    assertEquals(4, mVisibilityOutput.getBounds().bottom);
+    assertThat(mVisibilityOutput.getBounds().left).isEqualTo(0);
+    assertThat(mVisibilityOutput.getBounds().top).isEqualTo(1);
+    assertThat(mVisibilityOutput.getBounds().right).isEqualTo(3);
+    assertThat(mVisibilityOutput.getBounds().bottom).isEqualTo(4);
   }
 
   @Test
   public void testRectBoundsSet() {
     Rect bounds = new Rect(0, 1, 3, 4);
     mVisibilityOutput.setBounds(bounds);
-    assertEquals(0, mVisibilityOutput.getBounds().left);
-    assertEquals(1, mVisibilityOutput.getBounds().top);
-    assertEquals(3, mVisibilityOutput.getBounds().right);
-    assertEquals(4, mVisibilityOutput.getBounds().bottom);
+    assertThat(mVisibilityOutput.getBounds().left).isEqualTo(0);
+    assertThat(mVisibilityOutput.getBounds().top).isEqualTo(1);
+    assertThat(mVisibilityOutput.getBounds().right).isEqualTo(3);
+    assertThat(mVisibilityOutput.getBounds().bottom).isEqualTo(4);
   }
 
   @Test
@@ -77,74 +81,68 @@ public class VisibilityOutputTest {
 
     mVisibilityOutput.setVisibleEventHandler(visibleHandler);
     mVisibilityOutput.setInvisibleEventHandler(invisibleHandler);
-    assertSame(visibleHandler, mVisibilityOutput.getVisibleEventHandler());
-    assertSame(invisibleHandler, mVisibilityOutput.getInvisibleEventHandler());
+    assertThat(visibleHandler).isSameAs(mVisibilityOutput.getVisibleEventHandler());
+    assertThat(invisibleHandler).isSameAs(mVisibilityOutput.getInvisibleEventHandler());
 
     mVisibilityOutput.release();
-    assertNull(mVisibilityOutput.getVisibleEventHandler());
-    assertNull(mVisibilityOutput.getInvisibleEventHandler());
+    assertThat(mVisibilityOutput.getVisibleEventHandler()).isNull();
+    assertThat(mVisibilityOutput.getInvisibleEventHandler()).isNull();
   }
 
   @Test
   public void testStableIdCalculation() {
     mVisibilityOutput.setComponent(mComponent);
 
-    long stableId = LayoutStateOutputIdCalculator.calculateVisibilityOutputId(
+    long stableId = calculateVisibilityOutputId(
         mVisibilityOutput,
         LEVEL_TEST,
         SEQ_TEST);
 
-    long stableIdSeq2 = LayoutStateOutputIdCalculator.calculateVisibilityOutputId(
+    long stableIdSeq2 = calculateVisibilityOutputId(
         mVisibilityOutput,
         LEVEL_TEST + 1,
         SEQ_TEST + 1);
 
-    assertEquals("100000001000000000000000001", Long.toBinaryString(stableId));
-    assertEquals("100000010000000000000000010", Long.toBinaryString(stableIdSeq2));
+    assertThat(toBinaryString(stableId)).isEqualTo("100000001000000000000000001");
+    assertThat(toBinaryString(stableIdSeq2)).isEqualTo("100000010000000000000000010");
   }
 
   @Test
   public void testGetIdLevel() {
     mVisibilityOutput.setComponent(mComponent);
     mVisibilityOutput.setId(
-        LayoutStateOutputIdCalculator.calculateVisibilityOutputId(
+        calculateVisibilityOutputId(
             mVisibilityOutput,
             LEVEL_TEST,
             SEQ_TEST));
-    assertEquals(
-        LayoutStateOutputIdCalculator.getLevelFromId(mVisibilityOutput.getId()),
-        LEVEL_TEST);
+    assertThat(LEVEL_TEST).isEqualTo(getLevelFromId(mVisibilityOutput.getId()));
 
     mVisibilityOutput.setId(
-        LayoutStateOutputIdCalculator.calculateVisibilityOutputId(
+        calculateVisibilityOutputId(
             mVisibilityOutput,
             MAX_LEVEL_TEST,
             SEQ_TEST));
 
-    assertEquals(
-        LayoutStateOutputIdCalculator.getLevelFromId(mVisibilityOutput.getId()),
-        MAX_LEVEL_TEST);
+    assertThat(MAX_LEVEL_TEST).isEqualTo(getLevelFromId(mVisibilityOutput.getId()));
   }
 
   @Test
   public void testGetIdSequence() {
     mVisibilityOutput.setComponent(mComponent);
     mVisibilityOutput.setId(
-        LayoutStateOutputIdCalculator.calculateVisibilityOutputId(
+        calculateVisibilityOutputId(
             mVisibilityOutput,
             LEVEL_TEST,
             SEQ_TEST));
-    assertEquals(LayoutStateOutputIdCalculator.getSequenceFromId(mVisibilityOutput.getId()), SEQ_TEST);
+    assertThat(SEQ_TEST).isEqualTo(getSequenceFromId(mVisibilityOutput.getId()));
 
     mVisibilityOutput.setId(
-        LayoutStateOutputIdCalculator.calculateVisibilityOutputId(
+        calculateVisibilityOutputId(
             mVisibilityOutput,
             LEVEL_TEST,
             MAX_SEQ_TEST));
 
-    assertEquals(
-        LayoutStateOutputIdCalculator.getSequenceFromId(mVisibilityOutput.getId()),
-        MAX_SEQ_TEST);
+    assertThat(MAX_SEQ_TEST).isEqualTo(getSequenceFromId(mVisibilityOutput.getId()));
   }
 
   @Test(expected = IllegalArgumentException.class)

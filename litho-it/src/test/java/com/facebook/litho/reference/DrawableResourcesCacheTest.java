@@ -22,9 +22,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.robolectric.RuntimeEnvironment.application;
 
 @RunWith(ComponentsTestRunner.class)
 public class DrawableResourcesCacheTest {
@@ -39,7 +40,7 @@ public class DrawableResourcesCacheTest {
   @Test
   public void testPoolIsNeverEmpty() {
 
-    Resources resources = RuntimeEnvironment.application.getResources();
+    Resources resources = application.getResources();
     // This being null is ok since we are only using this drawable to test the cache.
     // We still need to declare the variable though otherewise the call to the constructor would be
     // ambiguous.
@@ -53,17 +54,17 @@ public class DrawableResourcesCacheTest {
     Drawable second = mCache.get(1, resources, null);
     Drawable third = mCache.get(2, resources, null);
 
-    assertNotNull(first);
-    assertNotNull(second);
-    assertNotNull(third);
+    assertThat(first).isNotNull();
+    assertThat(second).isNotNull();
+    assertThat(third).isNotNull();
 
-    assertEquals(first.getConstantState(), second.getConstantState());
+    assertThat(second.getConstantState()).isEqualTo(first.getConstantState());
     assertNotEquals(first.getConstantState(), third.getConstantState());
   }
 
   @Test
   public void testReleaseAndGet() {
-    Resources resources = RuntimeEnvironment.application.getResources();
+    Resources resources = application.getResources();
 
     ColorDrawable drawable = new ColorDrawable();
     ColorDrawable drawable2 = new ColorDrawable();
@@ -72,9 +73,9 @@ public class DrawableResourcesCacheTest {
     mCache.release(drawable2, 1);
     mCache.release(drawable3, 1);
 
-    assertEquals(drawable, mCache.get(1, resources));
-    assertEquals(drawable2, mCache.get(1, resources));
-    assertEquals(drawable3, mCache.get(1, resources));
+    assertThat(mCache.get(1, resources)).isEqualTo(drawable);
+    assertThat(mCache.get(1, resources)).isEqualTo(drawable2);
+    assertThat(mCache.get(1, resources)).isEqualTo(drawable3);
   }
 
 }

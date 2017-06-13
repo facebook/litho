@@ -26,7 +26,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
-import static junit.framework.Assert.assertEquals;
+import static com.facebook.litho.animation.AnimatedProperties.SCALE;
+import static com.facebook.litho.dataflow.GraphBinding.create;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.robolectric.RuntimeEnvironment.application;
 
 @RunWith(ComponentsTestRunner.class)
 public class AnimatedPropertyNodeTest {
@@ -42,70 +45,70 @@ public class AnimatedPropertyNodeTest {
 
   @Test
   public void testViewPropertyNodeWithInput() {
-    View view = new View(RuntimeEnvironment.application);
+    View view = new View(application);
     SettableNode source = new SettableNode();
     SimpleNode middle = new SimpleNode();
-    AnimatedPropertyNode destination = new AnimatedPropertyNode(view, AnimatedProperties.SCALE);
+    AnimatedPropertyNode destination = new AnimatedPropertyNode(view, SCALE);
 
-    GraphBinding binding = GraphBinding.create(mDataFlowGraph);
+    GraphBinding binding = create(mDataFlowGraph);
     binding.addBinding(source, middle);
     binding.addBinding(middle, destination);
     binding.activate();
 
     mTestTimingSource.step(1);
 
-    assertEquals(0f, view.getScaleX());
+    assertThat(view.getScaleX()).isEqualTo(0f);
 
     source.setValue(37);
     mTestTimingSource.step(1);
 
-    assertEquals(37f, view.getScaleX());
+    assertThat(view.getScaleX()).isEqualTo(37f);
   }
 
   @Test
   public void testViewPropertyNodeWithOutput() {
-    View view = new View(RuntimeEnvironment.application);
-    AnimatedPropertyNode source = new AnimatedPropertyNode(view, AnimatedProperties.SCALE);
+    View view = new View(application);
+    AnimatedPropertyNode source = new AnimatedPropertyNode(view, SCALE);
     SimpleNode middle = new SimpleNode();
     OutputOnlyNode destination = new OutputOnlyNode();
 
-    GraphBinding binding = GraphBinding.create(mDataFlowGraph);
+    GraphBinding binding = create(mDataFlowGraph);
     binding.addBinding(source, middle);
     binding.addBinding(middle, destination);
     binding.activate();
 
     mTestTimingSource.step(1);
 
-    assertEquals(1f, destination.getValue());
+    assertThat(destination.getValue()).isEqualTo(1f);
 
     view.setScaleX(101);
     view.setScaleY(101);
     mTestTimingSource.step(1);
 
-    assertEquals(101f, destination.getValue());
+    assertThat(destination.getValue()).isEqualTo(101f);
   }
 
   @Test
   public void testViewPropertyNodeWithInputAndOutput() {
-    View view = new View(RuntimeEnvironment.application);
+    View view = new View(application);
     SettableNode source = new SettableNode();
-    AnimatedPropertyNode viewNode = new AnimatedPropertyNode(view, AnimatedProperties.SCALE);
+    AnimatedPropertyNode viewNode = new AnimatedPropertyNode(view, SCALE);
     OutputOnlyNode destination = new OutputOnlyNode();
 
-    GraphBinding binding = GraphBinding.create(mDataFlowGraph);
+    GraphBinding binding = create(mDataFlowGraph);
     binding.addBinding(source, viewNode);
     binding.addBinding(viewNode, destination);
     binding.activate();
 
     mTestTimingSource.step(1);
 
-    assertEquals(0f, view.getScaleX());
-    assertEquals(0f, destination.getValue());
+    assertThat(view.getScaleX()).isEqualTo(0f);
+    assertThat(destination.getValue()).isEqualTo(0f);
 
     source.setValue(123);
     mTestTimingSource.step(1);
 
-    assertEquals(123f, view.getScaleX());
-    assertEquals(123f, destination.getValue());
+    assertThat(view.getScaleX()).isEqualTo(123f);
+    assertThat(destination.getValue()).isEqualTo(123f);
   }
 }

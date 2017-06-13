@@ -42,6 +42,11 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RuntimeEnvironment;
 
+import static com.facebook.litho.ComponentInfo.create;
+import static com.facebook.litho.SizeSpec.AT_MOST;
+import static com.facebook.litho.SizeSpec.EXACTLY;
+import static com.facebook.litho.SizeSpec.makeSizeSpec;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -130,42 +135,42 @@ public class RecyclerBinderTest {
   public void testOnMeasureAfterAddingItems() {
     final List<ComponentInfo> components = new ArrayList<>();
     for (int i = 0; i < 100; i++) {
-      components.add(ComponentInfo.create().component(mock(Component.class)).build());
+      components.add(create().component(mock(Component.class)).build());
       mRecyclerBinder.insertItemAt(i, components.get(i));
     }
 
     for (int i = 0; i < 100; i++) {
-      Assert.assertNotNull(mHoldersForComponents.get(components.get(i).getComponent()));
+      assertThat(mHoldersForComponents.get(components.get(i).getComponent())).isNotNull();
     }
 
     final Size size = new Size();
-    final int widthSpec = SizeSpec.makeSizeSpec(200, SizeSpec.AT_MOST);
-    final int heightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
+    final int widthSpec = makeSizeSpec(200, AT_MOST);
+    final int heightSpec = makeSizeSpec(200, EXACTLY);
 
     mRecyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
 
     TestComponentTreeHolder componentTreeHolder =
         mHoldersForComponents.get(components.get(0).getComponent());
 
-    assertTrue(componentTreeHolder.isTreeValid());
-    assertTrue(componentTreeHolder.mLayoutSyncCalled);
+    assertThat(componentTreeHolder.isTreeValid()).isTrue();
+    assertThat(componentTreeHolder.mLayoutSyncCalled).isTrue();
 
     int rangeTotal = RANGE_SIZE + (int) (RANGE_SIZE * RANGE_RATIO);
 
     for (int i = 1; i <= rangeTotal; i++) {
       componentTreeHolder = mHoldersForComponents.get(components.get(i).getComponent());
 
-      assertTrue(componentTreeHolder.isTreeValid());
-      assertTrue(componentTreeHolder.mLayoutAsyncCalled);
-      assertFalse(componentTreeHolder.mLayoutSyncCalled);
+      assertThat(componentTreeHolder.isTreeValid()).isTrue();
+      assertThat(componentTreeHolder.mLayoutAsyncCalled).isTrue();
+      assertThat(componentTreeHolder.mLayoutSyncCalled).isFalse();
     }
 
     for (int k = rangeTotal + 1; k < components.size(); k++) {
       componentTreeHolder = mHoldersForComponents.get(components.get(k).getComponent());
 
-      assertFalse(componentTreeHolder.isTreeValid());
-      assertFalse(componentTreeHolder.mLayoutAsyncCalled);
-      assertFalse(componentTreeHolder.mLayoutSyncCalled);
+      assertThat(componentTreeHolder.isTreeValid()).isFalse();
+      assertThat(componentTreeHolder.mLayoutAsyncCalled).isFalse();
+      assertThat(componentTreeHolder.mLayoutSyncCalled).isFalse();
     }
 
     Assert.assertEquals(100, size.width);
@@ -186,8 +191,8 @@ public class RecyclerBinderTest {
     for (int i = 0; i < components.size(); i++) {
       final TestComponentTreeHolder holder =
           mHoldersForComponents.get(components.get(i).getComponent());
-      assertFalse(holder.mLayoutAsyncCalled);
-      assertFalse(holder.mLayoutSyncCalled);
+      assertThat(holder.mLayoutAsyncCalled).isFalse();
+      assertThat(holder.mLayoutSyncCalled).isFalse();
     }
   }
 
@@ -206,20 +211,20 @@ public class RecyclerBinderTest {
     final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
 
     TestComponentTreeHolder holder = mHoldersForComponents.get(components.get(0).getComponent());
-    assertTrue(holder.isTreeValid());
-    assertTrue(holder.mLayoutSyncCalled);
+    assertThat(holder.isTreeValid()).isTrue();
+    assertThat(holder.mLayoutSyncCalled).isTrue();
 
     for (int i = 1; i <= rangeTotal; i++) {
       holder = mHoldersForComponents.get(components.get(i).getComponent());
-      assertTrue(holder.isTreeValid());
-      assertTrue(holder.mLayoutAsyncCalled);
+      assertThat(holder.isTreeValid()).isTrue();
+      assertThat(holder.mLayoutAsyncCalled).isTrue();
     }
 
     for (int i = rangeTotal + 1; i < components.size(); i++) {
       holder = mHoldersForComponents.get(components.get(i).getComponent());
-      assertFalse(holder.isTreeValid());
-      assertFalse(holder.mLayoutAsyncCalled);
-      assertFalse(holder.mLayoutSyncCalled);
+      assertThat(holder.isTreeValid()).isFalse();
+      assertThat(holder.mLayoutAsyncCalled).isFalse();
+      assertThat(holder.mLayoutSyncCalled).isFalse();
     }
   }
 
@@ -297,27 +302,27 @@ public class RecyclerBinderTest {
       holder.mLayoutSyncCalled = false;
     }
 
-    int widthSpec = SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY);
-    int heightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
+    int widthSpec = makeSizeSpec(100, EXACTLY);
+    int heightSpec = makeSizeSpec(200, EXACTLY);
 
     mRecyclerBinder.measure(new Size(), widthSpec, heightSpec, null);
     final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
 
     TestComponentTreeHolder holder = mHoldersForComponents.get(components.get(0).getComponent());
-    assertTrue(holder.isTreeValid());
-    assertTrue(holder.mLayoutSyncCalled);
+    assertThat(holder.isTreeValid()).isTrue();
+    assertThat(holder.mLayoutSyncCalled).isTrue();
 
     for (int i = 1; i <= rangeTotal; i++) {
       holder = mHoldersForComponents.get(components.get(i).getComponent());
-      assertTrue(holder.isTreeValid());
-      assertTrue(holder.mLayoutAsyncCalled);
+      assertThat(holder.isTreeValid()).isTrue();
+      assertThat(holder.mLayoutAsyncCalled).isTrue();
     }
 
     for (int i = rangeTotal + 1; i < components.size(); i++) {
       holder = mHoldersForComponents.get(components.get(i).getComponent());
-      assertFalse(holder.isTreeValid());
-      assertFalse(holder.mLayoutAsyncCalled);
-      assertFalse(holder.mLayoutSyncCalled);
+      assertThat(holder.isTreeValid()).isFalse();
+      assertThat(holder.mLayoutAsyncCalled).isFalse();
+      assertThat(holder.mLayoutSyncCalled).isFalse();
     }
   }
 
@@ -325,7 +330,7 @@ public class RecyclerBinderTest {
   public void testComponentWithDifferentSpanSize() {
     final List<ComponentInfo> components = new ArrayList<>();
     for (int i = 0; i < 100; i++) {
-      components.add(ComponentInfo.create()
+      components.add(create()
           .component(mock(Component.class))
           .spanSize((i == 0 || i % 3 == 0) ? 2 : 1)
           .build());
@@ -340,25 +345,25 @@ public class RecyclerBinderTest {
             final ComponentInfo componentInfo = (ComponentInfo) invocation.getArguments()[1];
             final int spanSize = componentInfo.getSpanSize();
 
-            return SizeSpec.makeSizeSpec(100 * spanSize, SizeSpec.EXACTLY);
+            return makeSizeSpec(100 * spanSize, EXACTLY);
           }
         });
 
     for (int i = 0; i < 100; i++) {
-      Assert.assertNotNull(mHoldersForComponents.get(components.get(i).getComponent()));
+      assertThat(mHoldersForComponents.get(components.get(i).getComponent())).isNotNull();
     }
 
     Size size = new Size();
-    int widthSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
-    int heightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
+    int widthSpec = makeSizeSpec(200, EXACTLY);
+    int heightSpec = makeSizeSpec(200, EXACTLY);
 
     mRecyclerBinder.measure(size, widthSpec, heightSpec, null);
 
     TestComponentTreeHolder componentTreeHolder =
         mHoldersForComponents.get(components.get(0).getComponent());
 
-    assertTrue(componentTreeHolder.isTreeValid());
-    assertTrue(componentTreeHolder.mLayoutSyncCalled);
+    assertThat(componentTreeHolder.isTreeValid()).isTrue();
+    assertThat(componentTreeHolder.mLayoutSyncCalled).isTrue();
     Assert.assertEquals(200, size.width);
 
     final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
@@ -366,8 +371,8 @@ public class RecyclerBinderTest {
     for (int i = 1; i <= rangeTotal; i++) {
       componentTreeHolder = mHoldersForComponents.get(components.get(i).getComponent());
 
-      assertTrue(componentTreeHolder.isTreeValid());
-      assertTrue(componentTreeHolder.mLayoutAsyncCalled);
+      assertThat(componentTreeHolder.isTreeValid()).isTrue();
+      assertThat(componentTreeHolder.mLayoutAsyncCalled).isTrue();
 
       final int expectedWidth = i % 3 == 0 ? 200 : 100;
       Assert.assertEquals(expectedWidth, componentTreeHolder.mChildWidth);
@@ -402,24 +407,24 @@ public class RecyclerBinderTest {
     for (int i = 0; i < RANGE_SIZE; i++) {
       componentTreeHolder = mHoldersForComponents.get(components.get(i).getComponent());
 
-      assertTrue(componentTreeHolder.isTreeValid());
-      assertTrue(componentTreeHolder.mLayoutSyncCalled);
+      assertThat(componentTreeHolder.isTreeValid()).isTrue();
+      assertThat(componentTreeHolder.mLayoutSyncCalled).isTrue();
     }
 
     for (int i = RANGE_SIZE; i <= rangeTotal; i++) {
       componentTreeHolder = mHoldersForComponents.get(components.get(i).getComponent());
 
-      assertTrue(componentTreeHolder.isTreeValid());
-      assertTrue(componentTreeHolder.mLayoutAsyncCalled);
-      assertFalse(componentTreeHolder.mLayoutSyncCalled);
+      assertThat(componentTreeHolder.isTreeValid()).isTrue();
+      assertThat(componentTreeHolder.mLayoutAsyncCalled).isTrue();
+      assertThat(componentTreeHolder.mLayoutSyncCalled).isFalse();
     }
 
     for (int i = rangeTotal + 1; i < components.size(); i++) {
       componentTreeHolder = mHoldersForComponents.get(components.get(i).getComponent());
 
-      assertFalse(componentTreeHolder.isTreeValid());
-      assertFalse(componentTreeHolder.mLayoutAsyncCalled);
-      assertFalse(componentTreeHolder.mLayoutSyncCalled);
+      assertThat(componentTreeHolder.isTreeValid()).isFalse();
+      assertThat(componentTreeHolder.mLayoutAsyncCalled).isFalse();
+      assertThat(componentTreeHolder.mLayoutSyncCalled).isFalse();
     }
   }
 
@@ -471,32 +476,32 @@ public class RecyclerBinderTest {
   public void testRangeBiggerThanContent() {
     final List<ComponentInfo> components = new ArrayList<>();
     for (int i = 0; i < 2; i++) {
-      components.add(ComponentInfo.create().component(mock(Component.class)).build());
+      components.add(create().component(mock(Component.class)).build());
       mRecyclerBinder.insertItemAt(i, components.get(i));
     }
 
     for (int i = 0; i < 2; i++) {
-      Assert.assertNotNull(mHoldersForComponents.get(components.get(i).getComponent()));
+      assertThat(mHoldersForComponents.get(components.get(i).getComponent())).isNotNull();
     }
 
     Size size = new Size();
-    int widthSpec = SizeSpec.makeSizeSpec(200, SizeSpec.AT_MOST);
-    int heightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
+    int widthSpec = makeSizeSpec(200, AT_MOST);
+    int heightSpec = makeSizeSpec(200, EXACTLY);
 
     mRecyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
 
     TestComponentTreeHolder componentTreeHolder =
         mHoldersForComponents.get(components.get(0).getComponent());
 
-    assertTrue(componentTreeHolder.isTreeValid());
-    assertTrue(componentTreeHolder.mLayoutSyncCalled);
+    assertThat(componentTreeHolder.isTreeValid()).isTrue();
+    assertThat(componentTreeHolder.mLayoutSyncCalled).isTrue();
 
     for (int i = 1; i < 2; i++) {
       componentTreeHolder = mHoldersForComponents.get(components.get(i).getComponent());
 
-      assertTrue(componentTreeHolder.isTreeValid());
-      assertTrue(componentTreeHolder.mLayoutAsyncCalled);
-      assertFalse(componentTreeHolder.mLayoutSyncCalled);
+      assertThat(componentTreeHolder.isTreeValid()).isTrue();
+      assertThat(componentTreeHolder.mLayoutAsyncCalled).isTrue();
+      assertThat(componentTreeHolder.mLayoutSyncCalled).isFalse();
     }
 
     Assert.assertEquals(100, size.width);
@@ -516,17 +521,17 @@ public class RecyclerBinderTest {
       componentTreeHolder = mHoldersForComponents.get(components.get(i).getComponent());
 
       if (i >= newRangeStart - (RANGE_RATIO * RANGE_SIZE) && i <= newRangeStart + rangeTotal) {
-        assertTrue(componentTreeHolder.isTreeValid());
-        assertTrue(componentTreeHolder.mLayoutAsyncCalled);
-        assertFalse(componentTreeHolder.mLayoutSyncCalled);
+        assertThat(componentTreeHolder.isTreeValid()).isTrue();
+        assertThat(componentTreeHolder.mLayoutAsyncCalled).isTrue();
+        assertThat(componentTreeHolder.mLayoutSyncCalled).isFalse();
       } else {
-        assertFalse(componentTreeHolder.isTreeValid());
-        assertFalse(componentTreeHolder.mLayoutAsyncCalled);
-        assertFalse(componentTreeHolder.mLayoutSyncCalled);
+        assertThat(componentTreeHolder.isTreeValid()).isFalse();
+        assertThat(componentTreeHolder.mLayoutAsyncCalled).isFalse();
+        assertThat(componentTreeHolder.mLayoutSyncCalled).isFalse();
         if (i <= rangeTotal) {
-          assertTrue(componentTreeHolder.mDidAcquireStateHandler);
+          assertThat(componentTreeHolder.mDidAcquireStateHandler).isTrue();
         } else {
-          assertFalse(componentTreeHolder.mDidAcquireStateHandler);
+          assertThat(componentTreeHolder.mDidAcquireStateHandler).isFalse();
         }
       }
     }
@@ -547,13 +552,13 @@ public class RecyclerBinderTest {
       componentTreeHolder = mHoldersForComponents.get(components.get(i).getComponent());
 
       if (i >= newRangeStart - (RANGE_RATIO * rangeSize) && i <= newRangeStart + rangeTotal) {
-        assertTrue(componentTreeHolder.isTreeValid());
-        assertTrue(componentTreeHolder.mLayoutAsyncCalled);
-        assertFalse(componentTreeHolder.mLayoutSyncCalled);
+        assertThat(componentTreeHolder.isTreeValid()).isTrue();
+        assertThat(componentTreeHolder.mLayoutAsyncCalled).isTrue();
+        assertThat(componentTreeHolder.mLayoutSyncCalled).isFalse();
       } else {
-        assertFalse(componentTreeHolder.isTreeValid());
-        assertFalse(componentTreeHolder.mLayoutAsyncCalled);
-        assertFalse(componentTreeHolder.mLayoutSyncCalled);
+        assertThat(componentTreeHolder.isTreeValid()).isFalse();
+        assertThat(componentTreeHolder.mLayoutAsyncCalled).isFalse();
+        assertThat(componentTreeHolder.mLayoutSyncCalled).isFalse();
       }
     }
   }
@@ -566,12 +571,12 @@ public class RecyclerBinderTest {
     makeIndexSticky(components, 80);
 
     Size size = new Size();
-    int widthSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
-    int heightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
+    int widthSpec = makeSizeSpec(200, EXACTLY);
+    int heightSpec = makeSizeSpec(200, EXACTLY);
 
     mRecyclerBinder.measure(size, widthSpec, heightSpec, null);
 
-    assertTrue(mHoldersForComponents.get(components.get(5).getComponent()).isTreeValid());
+    assertThat(mHoldersForComponents.get(components.get(5).getComponent()).isTreeValid()).isTrue();
 
     final int newRangeStart = 40;
     final int newRangeEnd = 50;
@@ -589,13 +594,13 @@ public class RecyclerBinderTest {
           i <= newRangeStart + rangeTotal && componentTreeHolder.getComponentInfo().isSticky();
 
       if (isIndexInRange || isPreviouslyComputedTreeAndSticky) {
-        assertTrue(componentTreeHolder.isTreeValid());
-        assertTrue(componentTreeHolder.mLayoutAsyncCalled);
-        assertFalse(componentTreeHolder.mLayoutSyncCalled);
+        assertThat(componentTreeHolder.isTreeValid()).isTrue();
+        assertThat(componentTreeHolder.mLayoutAsyncCalled).isTrue();
+        assertThat(componentTreeHolder.mLayoutSyncCalled).isFalse();
       } else {
-        assertFalse(componentTreeHolder.isTreeValid());
-        assertFalse(componentTreeHolder.mLayoutAsyncCalled);
-        assertFalse(componentTreeHolder.mLayoutSyncCalled);
+        assertThat(componentTreeHolder.isTreeValid()).isFalse();
+        assertThat(componentTreeHolder.mLayoutAsyncCalled).isFalse();
+        assertThat(componentTreeHolder.mLayoutSyncCalled).isFalse();
       }
     }
   }
@@ -615,17 +620,17 @@ public class RecyclerBinderTest {
       componentTreeHolder = mHoldersForComponents.get(components.get(i).getComponent());
 
       if (i >= newRangeStart - (RANGE_RATIO * RANGE_SIZE) && i <= newRangeStart + rangeTotal) {
-        assertTrue(componentTreeHolder.isTreeValid());
-        assertTrue(componentTreeHolder.mLayoutAsyncCalled);
-        assertFalse(componentTreeHolder.mLayoutSyncCalled);
+        assertThat(componentTreeHolder.isTreeValid()).isTrue();
+        assertThat(componentTreeHolder.mLayoutAsyncCalled).isTrue();
+        assertThat(componentTreeHolder.mLayoutSyncCalled).isFalse();
       } else {
-        assertFalse(componentTreeHolder.isTreeValid());
-        assertFalse(componentTreeHolder.mLayoutAsyncCalled);
-        assertFalse(componentTreeHolder.mLayoutSyncCalled);
+        assertThat(componentTreeHolder.isTreeValid()).isFalse();
+        assertThat(componentTreeHolder.mLayoutAsyncCalled).isFalse();
+        assertThat(componentTreeHolder.mLayoutSyncCalled).isFalse();
         if (i <= rangeTotal) {
-          assertTrue(componentTreeHolder.mDidAcquireStateHandler);
+          assertThat(componentTreeHolder.mDidAcquireStateHandler).isTrue();
         } else {
-          assertFalse(componentTreeHolder.mDidAcquireStateHandler);
+          assertThat(componentTreeHolder.mDidAcquireStateHandler).isFalse();
         }
       }
     }
@@ -638,18 +643,18 @@ public class RecyclerBinderTest {
 
     final TestComponentTreeHolder movedHolder =
         mHoldersForComponents.get(components.get(0).getComponent());
-    assertFalse(movedHolder.isTreeValid());
-    assertFalse(movedHolder.mLayoutAsyncCalled);
-    assertFalse(movedHolder.mLayoutSyncCalled);
-    assertTrue(movedHolder.mDidAcquireStateHandler);
+    assertThat(movedHolder.isTreeValid()).isFalse();
+    assertThat(movedHolder.mLayoutAsyncCalled).isFalse();
+    assertThat(movedHolder.mLayoutSyncCalled).isFalse();
+    assertThat(movedHolder.mDidAcquireStateHandler).isTrue();
 
     final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
     final TestComponentTreeHolder holderMovedIntoRange =
         mHoldersForComponents.get(components.get(rangeTotal + 1).getComponent());
 
-    assertTrue(holderMovedIntoRange.isTreeValid());
-    assertTrue(holderMovedIntoRange.mLayoutAsyncCalled);
-    assertFalse(holderMovedIntoRange.mLayoutSyncCalled);
+    assertThat(holderMovedIntoRange.isTreeValid()).isTrue();
+    assertThat(holderMovedIntoRange.mLayoutAsyncCalled).isTrue();
+    assertThat(holderMovedIntoRange.mLayoutSyncCalled).isFalse();
   }
 
   @Test
@@ -659,18 +664,18 @@ public class RecyclerBinderTest {
 
     TestComponentTreeHolder movedHolder =
         mHoldersForComponents.get(components.get(99).getComponent());
-    assertTrue(movedHolder.isTreeValid());
-    assertTrue(movedHolder.mLayoutAsyncCalled);
-    assertFalse(movedHolder.mLayoutSyncCalled);
-    assertFalse(movedHolder.mDidAcquireStateHandler);
+    assertThat(movedHolder.isTreeValid()).isTrue();
+    assertThat(movedHolder.mLayoutAsyncCalled).isTrue();
+    assertThat(movedHolder.mLayoutSyncCalled).isFalse();
+    assertThat(movedHolder.mDidAcquireStateHandler).isFalse();
     final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
 
     TestComponentTreeHolder holderMovedOutsideRange =
         mHoldersForComponents.get(components.get(rangeTotal).getComponent());
 
-    assertFalse(holderMovedOutsideRange.isTreeValid());
-    assertFalse(holderMovedOutsideRange.mLayoutAsyncCalled);
-    assertFalse(holderMovedOutsideRange.mLayoutSyncCalled);
+    assertThat(holderMovedOutsideRange.isTreeValid()).isFalse();
+    assertThat(holderMovedOutsideRange.mLayoutAsyncCalled).isFalse();
+    assertThat(holderMovedOutsideRange.mLayoutSyncCalled).isFalse();
   }
 
   @Test
@@ -681,19 +686,19 @@ public class RecyclerBinderTest {
     final TestComponentTreeHolder movedHolder =
         mHoldersForComponents.get(components.get(99).getComponent());
 
-    assertTrue(movedHolder.isTreeValid());
-    assertFalse(movedHolder.mLayoutAsyncCalled);
-    assertTrue(movedHolder.mLayoutSyncCalled);
-    assertFalse(movedHolder.mDidAcquireStateHandler);
+    assertThat(movedHolder.isTreeValid()).isTrue();
+    assertThat(movedHolder.mLayoutAsyncCalled).isFalse();
+    assertThat(movedHolder.mLayoutSyncCalled).isTrue();
+    assertThat(movedHolder.mDidAcquireStateHandler).isFalse();
     final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
 
     final TestComponentTreeHolder holderMovedOutsideRange =
         mHoldersForComponents.get(components.get(rangeTotal).getComponent());
 
-    assertFalse(holderMovedOutsideRange.isTreeValid());
-    assertFalse(holderMovedOutsideRange.mLayoutAsyncCalled);
-    assertFalse(holderMovedOutsideRange.mLayoutSyncCalled);
-    assertTrue(holderMovedOutsideRange.mDidAcquireStateHandler);
+    assertThat(holderMovedOutsideRange.isTreeValid()).isFalse();
+    assertThat(holderMovedOutsideRange.mLayoutAsyncCalled).isFalse();
+    assertThat(holderMovedOutsideRange.mLayoutSyncCalled).isFalse();
+    assertThat(holderMovedOutsideRange.mDidAcquireStateHandler).isTrue();
   }
 
   @Test
@@ -703,19 +708,19 @@ public class RecyclerBinderTest {
 
     final TestComponentTreeHolder movedHolder =
         mHoldersForComponents.get(components.get(2).getComponent());
-    assertFalse(movedHolder.isTreeValid());
-    assertFalse(movedHolder.mLayoutAsyncCalled);
-    assertFalse(movedHolder.mLayoutSyncCalled);
-    assertTrue(movedHolder.mDidAcquireStateHandler);
+    assertThat(movedHolder.isTreeValid()).isFalse();
+    assertThat(movedHolder.mLayoutAsyncCalled).isFalse();
+    assertThat(movedHolder.mLayoutSyncCalled).isFalse();
+    assertThat(movedHolder.mDidAcquireStateHandler).isTrue();
 
     final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
     final TestComponentTreeHolder holderMovedInsideRange =
         mHoldersForComponents.get(components.get(rangeTotal + 1).getComponent());
 
-    assertTrue(holderMovedInsideRange.isTreeValid());
-    assertTrue(holderMovedInsideRange.mLayoutAsyncCalled);
-    assertFalse(holderMovedInsideRange.mLayoutSyncCalled);
-    assertFalse(holderMovedInsideRange.mDidAcquireStateHandler);
+    assertThat(holderMovedInsideRange.isTreeValid()).isTrue();
+    assertThat(holderMovedInsideRange.mLayoutAsyncCalled).isTrue();
+    assertThat(holderMovedInsideRange.mLayoutSyncCalled).isFalse();
+    assertThat(holderMovedInsideRange.mDidAcquireStateHandler).isFalse();
   }
 
   @Test
@@ -737,65 +742,65 @@ public class RecyclerBinderTest {
 
     mRecyclerBinder.moveItem(0, 1);
 
-    assertTrue(movedHolderOne.isTreeValid());
-    assertFalse(movedHolderOne.mLayoutAsyncCalled);
-    assertFalse(movedHolderOne.mLayoutSyncCalled);
-    assertFalse(movedHolderOne.mDidAcquireStateHandler);
+    assertThat(movedHolderOne.isTreeValid()).isTrue();
+    assertThat(movedHolderOne.mLayoutAsyncCalled).isFalse();
+    assertThat(movedHolderOne.mLayoutSyncCalled).isFalse();
+    assertThat(movedHolderOne.mDidAcquireStateHandler).isFalse();
 
-    assertTrue(movedHolderTwo.isTreeValid());
-    assertFalse(movedHolderTwo.mLayoutAsyncCalled);
-    assertFalse(movedHolderTwo.mLayoutSyncCalled);
-    assertFalse(movedHolderTwo.mDidAcquireStateHandler);
+    assertThat(movedHolderTwo.isTreeValid()).isTrue();
+    assertThat(movedHolderTwo.mLayoutAsyncCalled).isFalse();
+    assertThat(movedHolderTwo.mLayoutSyncCalled).isFalse();
+    assertThat(movedHolderTwo.mDidAcquireStateHandler).isFalse();
   }
 
   @Test
   public void testInsertInVisibleRange() {
     final List<ComponentInfo> components = prepareLoadedBinder();
     final ComponentInfo newComponentInfo =
-        ComponentInfo.create().component(mock(Component.class)).build();
+        create().component(mock(Component.class)).build();
 
     mRecyclerBinder.insertItemAt(1, newComponentInfo);
     final TestComponentTreeHolder holder =
         mHoldersForComponents.get(newComponentInfo.getComponent());
 
-    assertTrue(holder.isTreeValid());
-    assertTrue(holder.mLayoutSyncCalled);
-    assertFalse(holder.mLayoutAsyncCalled);
-    assertFalse(holder.mDidAcquireStateHandler);
+    assertThat(holder.isTreeValid()).isTrue();
+    assertThat(holder.mLayoutSyncCalled).isTrue();
+    assertThat(holder.mLayoutAsyncCalled).isFalse();
+    assertThat(holder.mDidAcquireStateHandler).isFalse();
 
     final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
     final TestComponentTreeHolder holderMovedOutsideRange =
         mHoldersForComponents.get(components.get(rangeTotal).getComponent());
 
-    assertFalse(holderMovedOutsideRange.isTreeValid());
-    assertFalse(holderMovedOutsideRange.mLayoutSyncCalled);
-    assertFalse(holderMovedOutsideRange.mLayoutAsyncCalled);
-    assertTrue(holderMovedOutsideRange.mDidAcquireStateHandler);
+    assertThat(holderMovedOutsideRange.isTreeValid()).isFalse();
+    assertThat(holderMovedOutsideRange.mLayoutSyncCalled).isFalse();
+    assertThat(holderMovedOutsideRange.mLayoutAsyncCalled).isFalse();
+    assertThat(holderMovedOutsideRange.mDidAcquireStateHandler).isTrue();
   }
 
   @Test
   public void testInsertInRange() {
     final List<ComponentInfo> components = prepareLoadedBinder();
     final ComponentInfo newComponentInfo =
-        ComponentInfo.create().component(mock(Component.class)).build();
+        create().component(mock(Component.class)).build();
 
     mRecyclerBinder.insertItemAt(RANGE_SIZE + 1, newComponentInfo);
     final TestComponentTreeHolder holder =
         mHoldersForComponents.get(newComponentInfo.getComponent());
 
-    assertTrue(holder.isTreeValid());
-    assertFalse(holder.mLayoutSyncCalled);
-    assertTrue(holder.mLayoutAsyncCalled);
-    assertFalse(holder.mDidAcquireStateHandler);
+    assertThat(holder.isTreeValid()).isTrue();
+    assertThat(holder.mLayoutSyncCalled).isFalse();
+    assertThat(holder.mLayoutAsyncCalled).isTrue();
+    assertThat(holder.mDidAcquireStateHandler).isFalse();
 
     final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
     final TestComponentTreeHolder holderMovedOutsideRange =
         mHoldersForComponents.get(components.get(rangeTotal).getComponent());
 
-    assertFalse(holderMovedOutsideRange.isTreeValid());
-    assertFalse(holderMovedOutsideRange.mLayoutSyncCalled);
-    assertFalse(holderMovedOutsideRange.mLayoutAsyncCalled);
-    assertTrue(holderMovedOutsideRange.mDidAcquireStateHandler);
+    assertThat(holderMovedOutsideRange.isTreeValid()).isFalse();
+    assertThat(holderMovedOutsideRange.mLayoutSyncCalled).isFalse();
+    assertThat(holderMovedOutsideRange.mLayoutAsyncCalled).isFalse();
+    assertThat(holderMovedOutsideRange.mDidAcquireStateHandler).isTrue();
   }
 
   @Test
@@ -814,10 +819,10 @@ public class RecyclerBinderTest {
     for (int i = 0; i < 3; i++) {
       final TestComponentTreeHolder holder =
           mHoldersForComponents.get(newComponents.get(i).getComponent());
-      assertTrue(holder.isTreeValid());
-      assertFalse(holder.mLayoutSyncCalled);
-      assertTrue(holder.mLayoutAsyncCalled);
-      assertFalse(holder.mDidAcquireStateHandler);
+      assertThat(holder.isTreeValid()).isTrue();
+      assertThat(holder.mLayoutSyncCalled).isFalse();
+      assertThat(holder.mLayoutAsyncCalled).isTrue();
+      assertThat(holder.mDidAcquireStateHandler).isFalse();
     }
 
     final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
@@ -826,10 +831,10 @@ public class RecyclerBinderTest {
     for (int i = rangeTotal - 2; i <= rangeTotal; i++) {
       final TestComponentTreeHolder holder =
           mHoldersForComponents.get(components.get(i).getComponent());
-      assertFalse(holder.isTreeValid());
-      assertFalse(holder.mLayoutSyncCalled);
-      assertFalse(holder.mLayoutAsyncCalled);
-      assertTrue(holder.mDidAcquireStateHandler);
+      assertThat(holder.isTreeValid()).isFalse();
+      assertThat(holder.mLayoutSyncCalled).isFalse();
+      assertThat(holder.mLayoutAsyncCalled).isFalse();
+      assertThat(holder.mDidAcquireStateHandler).isTrue();
     }
   }
 
@@ -837,7 +842,7 @@ public class RecyclerBinderTest {
   public void testInsertOusideRange() {
     prepareLoadedBinder();
     final ComponentInfo newComponentInfo =
-        ComponentInfo.create().component(mock(Component.class)).build();
+        create().component(mock(Component.class)).build();
     final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
 
     mRecyclerBinder.insertItemAt(rangeTotal + 1, newComponentInfo);
@@ -845,10 +850,10 @@ public class RecyclerBinderTest {
     final TestComponentTreeHolder holder =
         mHoldersForComponents.get(newComponentInfo.getComponent());
 
-    assertFalse(holder.isTreeValid());
-    assertFalse(holder.mLayoutSyncCalled);
-    assertFalse(holder.mLayoutAsyncCalled);
-    assertFalse(holder.mDidAcquireStateHandler);
+    assertThat(holder.isTreeValid()).isFalse();
+    assertThat(holder.mLayoutSyncCalled).isFalse();
+    assertThat(holder.mLayoutAsyncCalled).isFalse();
+    assertThat(holder.mDidAcquireStateHandler).isFalse();
   }
 
   @Test
@@ -860,7 +865,7 @@ public class RecyclerBinderTest {
 
     final TestComponentTreeHolder holder =
         mHoldersForComponents.get(components.get(rangeTotal + 1).getComponent());
-    assertTrue(holder.mReleased);
+    assertThat(holder.mReleased).isTrue();
   }
 
   @Test
@@ -872,14 +877,14 @@ public class RecyclerBinderTest {
 
     final TestComponentTreeHolder holder =
         mHoldersForComponents.get(components.get(rangeTotal).getComponent());
-    assertTrue(holder.mReleased);
+    assertThat(holder.mReleased).isTrue();
 
     final TestComponentTreeHolder holderMovedInRange =
         mHoldersForComponents.get(components.get(rangeTotal + 1).getComponent());
-    assertTrue(holderMovedInRange.isTreeValid());
-    assertFalse(holderMovedInRange.mLayoutSyncCalled);
-    assertTrue(holderMovedInRange.mLayoutAsyncCalled);
-    assertFalse(holderMovedInRange.mDidAcquireStateHandler);
+    assertThat(holderMovedInRange.isTreeValid()).isTrue();
+    assertThat(holderMovedInRange.mLayoutSyncCalled).isFalse();
+    assertThat(holderMovedInRange.mLayoutAsyncCalled).isTrue();
+    assertThat(holderMovedInRange.mDidAcquireStateHandler).isFalse();
   }
 
   @Test
@@ -893,17 +898,17 @@ public class RecyclerBinderTest {
     for (int i = 0; i < RANGE_SIZE; i++) {
       final TestComponentTreeHolder holder =
           mHoldersForComponents.get(components.get(i).getComponent());
-      assertTrue(holder.mReleased);
+      assertThat(holder.mReleased).isTrue();
     }
 
     // The elements that are now in the range get their layout computed
     for (int i = rangeTotal + 1; i <= rangeTotal + RANGE_SIZE; i++) {
       final TestComponentTreeHolder holder =
           mHoldersForComponents.get(components.get(i).getComponent());
-      assertTrue(holder.isTreeValid());
-      assertFalse(holder.mLayoutSyncCalled);
-      assertTrue(holder.mLayoutAsyncCalled);
-      assertFalse(holder.mDidAcquireStateHandler);
+      assertThat(holder.isTreeValid()).isTrue();
+      assertThat(holder.mLayoutSyncCalled).isFalse();
+      assertThat(holder.mLayoutAsyncCalled).isTrue();
+      assertThat(holder.mDidAcquireStateHandler).isFalse();
     }
   }
 
@@ -913,16 +918,16 @@ public class RecyclerBinderTest {
 
     final TestComponentTreeHolder holder =
         mHoldersForComponents.get(components.get(0).getComponent());
-    assertTrue(holder.isTreeValid());
+    assertThat(holder.isTreeValid()).isTrue();
     holder.mTreeValid = false;
-    assertFalse(holder.isTreeValid());
+    assertThat(holder.isTreeValid()).isFalse();
 
     final ComponentInfo newComponentInfo =
-        ComponentInfo.create().component(mock(Component.class)).build();
+        create().component(mock(Component.class)).build();
     mRecyclerBinder.updateItemAt(0, newComponentInfo);
 
-    assertEquals(holder.getComponentInfo(), newComponentInfo);
-    assertTrue(holder.isTreeValid());
+    assertThat(newComponentInfo).isEqualTo(holder.getComponentInfo());
+    assertThat(holder.isTreeValid()).isTrue();
   }
 
   @Test
@@ -932,9 +937,9 @@ public class RecyclerBinderTest {
     for (int i = 0; i < RANGE_SIZE; i++) {
       final TestComponentTreeHolder holder =
           mHoldersForComponents.get(components.get(i).getComponent());
-      assertTrue(holder.isTreeValid());
+      assertThat(holder.isTreeValid()).isTrue();
       holder.mTreeValid = false;
-      assertFalse(holder.isTreeValid());
+      assertThat(holder.isTreeValid()).isFalse();
     }
 
     final List<ComponentInfo> newInfos = new ArrayList<>();
@@ -947,18 +952,18 @@ public class RecyclerBinderTest {
     for (int i = 0; i < RANGE_SIZE; i++) {
       final TestComponentTreeHolder holder =
           mHoldersForComponents.get(components.get(i).getComponent());
-      assertEquals(holder.getComponentInfo(), newInfos.get(i));
-      assertTrue(holder.isTreeValid());
+      assertThat(newInfos.get(i)).isEqualTo(holder.getComponentInfo());
+      assertThat(holder.isTreeValid()).isTrue();
     }
   }
 
   @Test
   public void testGetItemCount() {
     for (int i = 0; i < 100; i++) {
-      assertEquals(i, mRecyclerBinder.getItemCount());
+      assertThat(mRecyclerBinder.getItemCount()).isEqualTo(i);
       mRecyclerBinder.insertItemAt(
           i,
-          ComponentInfo.create().component(mock(Component.class)).build());
+          create().component(mock(Component.class)).build());
     }
   }
 

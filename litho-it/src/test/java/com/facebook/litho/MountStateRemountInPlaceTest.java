@@ -25,13 +25,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
+import static android.graphics.Color.BLACK;
+import static android.graphics.Color.WHITE;
 import static android.view.View.MeasureSpec.AT_MOST;
 import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_PREPARE_MOUNT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_MOVED_COUNT;
+import static com.facebook.litho.testing.ComponentTestHelper.mountComponent;
+import static com.facebook.litho.testing.TestDrawableComponent.create;
 import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.spy;
@@ -55,11 +59,11 @@ public class MountStateRemountInPlaceTest {
   @Test
   public void testMountUnmountWithShouldUpdate() {
     final TestComponent firstComponent =
-        TestDrawableComponent.create(mContext)
+        create(mContext)
             .unique()
             .build();
 
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -70,12 +74,12 @@ public class MountStateRemountInPlaceTest {
           }
         });
 
-    assertTrue(firstComponent.wasOnMountCalled());
-    assertTrue(firstComponent.wasOnBindCalled());
-    assertFalse(firstComponent.wasOnUnmountCalled());
+    assertThat(firstComponent.wasOnMountCalled()).isTrue();
+    assertThat(firstComponent.wasOnBindCalled()).isTrue();
+    assertThat(firstComponent.wasOnUnmountCalled()).isFalse();
 
     final TestComponent secondComponent =
-        TestDrawableComponent.create(mContext)
+        create(mContext)
             .unique()
             .build();
 
@@ -88,18 +92,18 @@ public class MountStateRemountInPlaceTest {
       }
     });
 
-    assertTrue(secondComponent.wasOnMountCalled());
-    assertTrue(secondComponent.wasOnBindCalled());
-    assertTrue(firstComponent.wasOnUnmountCalled());
+    assertThat(secondComponent.wasOnMountCalled()).isTrue();
+    assertThat(secondComponent.wasOnBindCalled()).isTrue();
+    assertThat(firstComponent.wasOnUnmountCalled()).isTrue();
   }
 
   @Test
   public void testMountUnmountWithNoShouldUpdate() {
     final TestComponent firstComponent =
-        TestDrawableComponent.create(mContext)
+        create(mContext)
             .build();
 
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -110,12 +114,12 @@ public class MountStateRemountInPlaceTest {
           }
         });
 
-    assertTrue(firstComponent.wasOnMountCalled());
-    assertTrue(firstComponent.wasOnBindCalled());
-    assertFalse(firstComponent.wasOnUnmountCalled());
+    assertThat(firstComponent.wasOnMountCalled()).isTrue();
+    assertThat(firstComponent.wasOnBindCalled()).isTrue();
+    assertThat(firstComponent.wasOnUnmountCalled()).isFalse();
 
     final TestComponent secondComponent =
-        TestDrawableComponent.create(mContext)
+        create(mContext)
             .build();
 
     lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
@@ -127,29 +131,28 @@ public class MountStateRemountInPlaceTest {
       }
     });
 
-    assertFalse(secondComponent.wasOnMountCalled());
-    assertTrue(secondComponent.wasOnBindCalled());
-    assertFalse(firstComponent.wasOnUnmountCalled());
+    assertThat(secondComponent.wasOnMountCalled()).isFalse();
+    assertThat(secondComponent.wasOnBindCalled()).isTrue();
+    assertThat(firstComponent.wasOnUnmountCalled()).isFalse();
   }
 
   @Test
   public void testMountUnmountWithNoShouldUpdateAndDifferentSize() {
     final TestComponent firstComponent =
-        TestDrawableComponent
-            .create(
-                mContext,
-                0,
-                0,
-                true,
-                true,
-                true,
-                false,
-                false,
-                true /*isMountSizeDependent*/)
+        create(
+            mContext,
+            0,
+            0,
+            true,
+            true,
+            true,
+            false,
+            false,
+            true /*isMountSizeDependent*/)
             .measuredHeight(10)
             .build();
 
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -160,22 +163,21 @@ public class MountStateRemountInPlaceTest {
           }
         });
 
-    assertTrue(firstComponent.wasOnMountCalled());
-    assertTrue(firstComponent.wasOnBindCalled());
-    assertFalse(firstComponent.wasOnUnmountCalled());
+    assertThat(firstComponent.wasOnMountCalled()).isTrue();
+    assertThat(firstComponent.wasOnBindCalled()).isTrue();
+    assertThat(firstComponent.wasOnUnmountCalled()).isFalse();
 
     final TestComponent secondComponent =
-        TestDrawableComponent
-            .create(
-                mContext,
-                0,
-                0,
-                true,
-                true,
-                true,
-                false,
-                false,
-                true /*isMountSizeDependent*/)
+        create(
+            mContext,
+            0,
+            0,
+            true,
+            true,
+            true,
+            false,
+            false,
+            true /*isMountSizeDependent*/)
             .measuredHeight(11)
             .build();
 
@@ -188,29 +190,28 @@ public class MountStateRemountInPlaceTest {
       }
     });
 
-    assertTrue(secondComponent.wasOnMountCalled());
-    assertTrue(secondComponent.wasOnBindCalled());
-    assertTrue(firstComponent.wasOnUnmountCalled());
+    assertThat(secondComponent.wasOnMountCalled()).isTrue();
+    assertThat(secondComponent.wasOnBindCalled()).isTrue();
+    assertThat(firstComponent.wasOnUnmountCalled()).isTrue();
   }
 
   @Test
   public void testMountUnmountWithNoShouldUpdateAndSameSize() {
     final TestComponent firstComponent =
-        TestDrawableComponent
-            .create(
-                mContext,
-                0,
-                0,
-                true,
-                true,
-                true,
-                false,
-                false,
-                true /*isMountSizeDependent*/)
+        create(
+            mContext,
+            0,
+            0,
+            true,
+            true,
+            true,
+            false,
+            false,
+            true /*isMountSizeDependent*/)
             .measuredHeight(10)
             .build();
 
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -221,22 +222,21 @@ public class MountStateRemountInPlaceTest {
           }
         });
 
-    assertTrue(firstComponent.wasOnMountCalled());
-    assertTrue(firstComponent.wasOnBindCalled());
-    assertFalse(firstComponent.wasOnUnmountCalled());
+    assertThat(firstComponent.wasOnMountCalled()).isTrue();
+    assertThat(firstComponent.wasOnBindCalled()).isTrue();
+    assertThat(firstComponent.wasOnUnmountCalled()).isFalse();
 
     final TestComponent secondComponent =
-        TestDrawableComponent
-            .create(
-                mContext,
-                0,
-                0,
-                true,
-                true,
-                true,
-                false,
-                false,
-                true /*isMountSizeDependent*/)
+        create(
+            mContext,
+            0,
+            0,
+            true,
+            true,
+            true,
+            false,
+            false,
+            true /*isMountSizeDependent*/)
             .measuredHeight(10)
             .build();
 
@@ -249,18 +249,18 @@ public class MountStateRemountInPlaceTest {
       }
     });
 
-    assertFalse(secondComponent.wasOnMountCalled());
-    assertTrue(secondComponent.wasOnBindCalled());
-    assertFalse(firstComponent.wasOnUnmountCalled());
+    assertThat(secondComponent.wasOnMountCalled()).isFalse();
+    assertThat(secondComponent.wasOnBindCalled()).isTrue();
+    assertThat(firstComponent.wasOnUnmountCalled()).isFalse();
   }
 
   @Test
   public void testMountUnmountWithNoShouldUpdateAndDifferentMeasures() {
     final TestComponent firstComponent =
-        TestDrawableComponent.create(mContext)
+        create(mContext)
             .build();
 
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = mountComponent(
         new LithoView(mContext),
         ComponentTree.create(mContext, new InlineLayoutSpec() {
           @Override
@@ -276,12 +276,12 @@ public class MountStateRemountInPlaceTest {
         makeMeasureSpec(100, AT_MOST),
         makeMeasureSpec(100, AT_MOST));
 
-    assertTrue(firstComponent.wasOnMountCalled());
-    assertTrue(firstComponent.wasOnBindCalled());
-    assertFalse(firstComponent.wasOnUnmountCalled());
+    assertThat(firstComponent.wasOnMountCalled()).isTrue();
+    assertThat(firstComponent.wasOnBindCalled()).isTrue();
+    assertThat(firstComponent.wasOnUnmountCalled()).isFalse();
 
     final TestComponent secondComponent =
-        TestDrawableComponent.create(mContext)
+        create(mContext)
             .build();
 
     lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
@@ -295,19 +295,19 @@ public class MountStateRemountInPlaceTest {
       }
     });
 
-    assertTrue(lithoView.isLayoutRequested());
-    assertFalse(secondComponent.wasOnMountCalled());
-    assertFalse(secondComponent.wasOnBindCalled());
-    assertFalse(firstComponent.wasOnUnmountCalled());
+    assertThat(lithoView.isLayoutRequested()).isTrue();
+    assertThat(secondComponent.wasOnMountCalled()).isFalse();
+    assertThat(secondComponent.wasOnBindCalled()).isFalse();
+    assertThat(firstComponent.wasOnUnmountCalled()).isFalse();
   }
 
   @Test
   public void testMountUnmountWithNoShouldUpdateAndSameMeasures() {
     final TestComponent firstComponent =
-        TestDrawableComponent.create(mContext, 0, 0, true, true, true, false, false, true)
+        create(mContext, 0, 0, true, true, true, false, false, true)
             .build();
 
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = mountComponent(
         new LithoView(mContext),
         ComponentTree.create(mContext, new InlineLayoutSpec() {
           @Override
@@ -323,12 +323,12 @@ public class MountStateRemountInPlaceTest {
         makeMeasureSpec(100, EXACTLY),
         makeMeasureSpec(100, EXACTLY));
 
-    assertTrue(firstComponent.wasOnMountCalled());
-    assertTrue(firstComponent.wasOnBindCalled());
-    assertFalse(firstComponent.wasOnUnmountCalled());
+    assertThat(firstComponent.wasOnMountCalled()).isTrue();
+    assertThat(firstComponent.wasOnBindCalled()).isTrue();
+    assertThat(firstComponent.wasOnUnmountCalled()).isFalse();
 
     final TestComponent secondComponent =
-        TestDrawableComponent.create(mContext)
+        create(mContext)
             .build();
 
     lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
@@ -342,19 +342,19 @@ public class MountStateRemountInPlaceTest {
       }
     });
 
-    assertFalse(lithoView.isLayoutRequested());
-    assertTrue(secondComponent.wasOnMountCalled());
-    assertTrue(secondComponent.wasOnBindCalled());
-    assertTrue(firstComponent.wasOnUnmountCalled());
+    assertThat(lithoView.isLayoutRequested()).isFalse();
+    assertThat(secondComponent.wasOnMountCalled()).isTrue();
+    assertThat(secondComponent.wasOnBindCalled()).isTrue();
+    assertThat(firstComponent.wasOnUnmountCalled()).isTrue();
   }
 
   @Test
   public void testRebindWithNoShouldUpdateAndSameMeasures() {
     final TestComponent firstComponent =
-        TestDrawableComponent.create(mContext)
+        create(mContext)
             .build();
 
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = mountComponent(
         new LithoView(mContext),
         ComponentTree.create(mContext, new InlineLayoutSpec() {
           @Override
@@ -370,12 +370,12 @@ public class MountStateRemountInPlaceTest {
         makeMeasureSpec(100, EXACTLY),
         makeMeasureSpec(100, EXACTLY));
 
-    assertTrue(firstComponent.wasOnMountCalled());
-    assertTrue(firstComponent.wasOnBindCalled());
-    assertFalse(firstComponent.wasOnUnmountCalled());
+    assertThat(firstComponent.wasOnMountCalled()).isTrue();
+    assertThat(firstComponent.wasOnBindCalled()).isTrue();
+    assertThat(firstComponent.wasOnUnmountCalled()).isFalse();
 
     final TestComponent secondComponent =
-        TestDrawableComponent.create(mContext)
+        create(mContext)
             .build();
 
     lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
@@ -389,20 +389,20 @@ public class MountStateRemountInPlaceTest {
       }
     });
 
-    assertFalse(lithoView.isLayoutRequested());
-    assertFalse(secondComponent.wasOnMountCalled());
-    assertTrue(secondComponent.wasOnBindCalled());
-    assertFalse(firstComponent.wasOnUnmountCalled());
+    assertThat(lithoView.isLayoutRequested()).isFalse();
+    assertThat(secondComponent.wasOnMountCalled()).isFalse();
+    assertThat(secondComponent.wasOnBindCalled()).isTrue();
+    assertThat(firstComponent.wasOnUnmountCalled()).isFalse();
   }
 
   @Test
   public void testMountUnmountWithSkipShouldUpdate() {
     final TestComponent firstComponent =
-        TestDrawableComponent.create(mContext)
-            .color(Color.BLACK)
+        create(mContext)
+            .color(BLACK)
             .build();
 
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -413,13 +413,13 @@ public class MountStateRemountInPlaceTest {
           }
         });
 
-    assertTrue(firstComponent.wasOnMountCalled());
-    assertTrue(firstComponent.wasOnBindCalled());
-    assertFalse(firstComponent.wasOnUnmountCalled());
+    assertThat(firstComponent.wasOnMountCalled()).isTrue();
+    assertThat(firstComponent.wasOnBindCalled()).isTrue();
+    assertThat(firstComponent.wasOnUnmountCalled()).isFalse();
 
     final TestComponent secondComponent =
-        TestDrawableComponent.create(mContext)
-            .color(Color.BLACK)
+        create(mContext)
+            .color(BLACK)
             .build();
 
     lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
@@ -431,19 +431,19 @@ public class MountStateRemountInPlaceTest {
       }
     });
 
-    assertFalse(secondComponent.wasOnMountCalled());
-    assertTrue(secondComponent.wasOnBindCalled());
-    assertFalse(firstComponent.wasOnUnmountCalled());
+    assertThat(secondComponent.wasOnMountCalled()).isFalse();
+    assertThat(secondComponent.wasOnBindCalled()).isTrue();
+    assertThat(firstComponent.wasOnUnmountCalled()).isFalse();
   }
 
   @Test
   public void testMountUnmountWithSkipShouldUpdateAndRemount() {
     final TestComponent firstComponent =
-        TestDrawableComponent.create(mContext)
-            .color(Color.BLACK)
+        create(mContext)
+            .color(BLACK)
             .build();
 
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -454,13 +454,13 @@ public class MountStateRemountInPlaceTest {
           }
         });
 
-    assertTrue(firstComponent.wasOnMountCalled());
-    assertTrue(firstComponent.wasOnBindCalled());
-    assertFalse(firstComponent.wasOnUnmountCalled());
+    assertThat(firstComponent.wasOnMountCalled()).isTrue();
+    assertThat(firstComponent.wasOnBindCalled()).isTrue();
+    assertThat(firstComponent.wasOnUnmountCalled()).isFalse();
 
     final TestComponent secondComponent =
-        TestDrawableComponent.create(mContext)
-            .color(Color.WHITE)
+        create(mContext)
+            .color(WHITE)
             .build();
 
     lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
@@ -472,19 +472,19 @@ public class MountStateRemountInPlaceTest {
       }
     });
 
-    assertTrue(secondComponent.wasOnMountCalled());
-    assertTrue(secondComponent.wasOnBindCalled());
-    assertTrue(firstComponent.wasOnUnmountCalled());
+    assertThat(secondComponent.wasOnMountCalled()).isTrue();
+    assertThat(secondComponent.wasOnBindCalled()).isTrue();
+    assertThat(firstComponent.wasOnUnmountCalled()).isTrue();
   }
 
   @Test
   public void testMountUnmountDoesNotSkipShouldUpdateAndRemount() {
     final TestComponent firstComponent =
-        TestDrawableComponent.create(mContext)
+        create(mContext)
             .unique()
             .build();
 
-    final LithoView firstLithoView = ComponentTestHelper.mountComponent(
+    final LithoView firstLithoView = mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -495,12 +495,12 @@ public class MountStateRemountInPlaceTest {
           }
         });
 
-    assertTrue(firstComponent.wasOnMountCalled());
-    assertTrue(firstComponent.wasOnBindCalled());
-    assertFalse(firstComponent.wasOnUnmountCalled());
+    assertThat(firstComponent.wasOnMountCalled()).isTrue();
+    assertThat(firstComponent.wasOnBindCalled()).isTrue();
+    assertThat(firstComponent.wasOnUnmountCalled()).isFalse();
 
     final TestComponent secondComponent =
-        TestDrawableComponent.create(mContext)
+        create(mContext)
             .unique()
             .build();
 
@@ -520,7 +520,7 @@ public class MountStateRemountInPlaceTest {
     secondTree.setSizeSpec(100, 100);
 
     final TestComponent thirdComponent =
-        TestDrawableComponent.create(mContext)
+        create(mContext)
             .build();
 
     secondTree.setRoot(new InlineLayoutSpec() {
@@ -532,17 +532,17 @@ public class MountStateRemountInPlaceTest {
       }
     });
 
-    ComponentTestHelper.mountComponent(firstLithoView, secondTree);
+    mountComponent(firstLithoView, secondTree);
 
-    assertTrue(thirdComponent.wasOnMountCalled());
-    assertTrue(thirdComponent.wasOnBindCalled());
-    assertTrue(firstComponent.wasOnUnmountCalled());
+    assertThat(thirdComponent.wasOnMountCalled()).isTrue();
+    assertThat(thirdComponent.wasOnBindCalled()).isTrue();
+    assertThat(firstComponent.wasOnUnmountCalled()).isTrue();
   }
 
   @Test
   public void testSkipShouldUpdateAndRemountForUnsupportedComponent() {
     final TestComponent firstComponent =
-        TestDrawableComponent.create(
+        create(
             mContext,
             false,
             true,
@@ -551,7 +551,7 @@ public class MountStateRemountInPlaceTest {
             false)
             .build();
 
-    final LithoView firstLithoView = ComponentTestHelper.mountComponent(
+    final LithoView firstLithoView = mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
@@ -562,12 +562,12 @@ public class MountStateRemountInPlaceTest {
           }
         });
 
-    assertTrue(firstComponent.wasOnMountCalled());
-    assertTrue(firstComponent.wasOnBindCalled());
-    assertFalse(firstComponent.wasOnUnmountCalled());
+    assertThat(firstComponent.wasOnMountCalled()).isTrue();
+    assertThat(firstComponent.wasOnBindCalled()).isTrue();
+    assertThat(firstComponent.wasOnUnmountCalled()).isFalse();
 
     final TestComponent secondComponent =
-        TestDrawableComponent.create(
+        create(
             mContext,
             false,
             true,
@@ -591,11 +591,11 @@ public class MountStateRemountInPlaceTest {
         .build();
     secondTree.setSizeSpec(100, 100);
 
-    ComponentTestHelper.mountComponent(firstLithoView, secondTree);
+    mountComponent(firstLithoView, secondTree);
 
-    assertTrue(secondComponent.wasOnMountCalled());
-    assertTrue(secondComponent.wasOnBindCalled());
-    assertTrue(firstComponent.wasOnUnmountCalled());
+    assertThat(secondComponent.wasOnMountCalled()).isTrue();
+    assertThat(secondComponent.wasOnBindCalled()).isTrue();
+    assertThat(firstComponent.wasOnUnmountCalled()).isTrue();
   }
 
   @Test

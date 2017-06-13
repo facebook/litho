@@ -20,6 +20,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
+import static com.facebook.litho.reference.Reference.acquire;
+import static com.facebook.litho.reference.Reference.release;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(ComponentsTestRunner.class)
@@ -36,11 +39,11 @@ public class ReferenceTest {
     TestReferenceLifecycle referenceLifecycle = new TestReferenceLifecycle();
     TestReference reference = new TestReference(referenceLifecycle);
 
-    Drawable acquiredDrawable = Reference.acquire(mContext, reference);
-    assertTrue(referenceLifecycle.mAcquired);
+    Drawable acquiredDrawable = acquire(mContext, reference);
+    assertThat(referenceLifecycle.mAcquired).isTrue();
 
-    Reference.release(mContext, acquiredDrawable, reference);
-    assertTrue(referenceLifecycle.mReleased);
+    release(mContext, acquiredDrawable, reference);
+    assertThat(referenceLifecycle.mReleased).isTrue();
   }
 
   private static class TestReference extends Reference<Drawable> {

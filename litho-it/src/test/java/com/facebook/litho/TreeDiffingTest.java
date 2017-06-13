@@ -33,7 +33,28 @@ import org.junit.runner.RunWith;
 import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 
+import static android.R.drawable.btn_default;
+import static android.graphics.Color.BLACK;
+import static android.graphics.Color.RED;
+import static android.graphics.Color.TRANSPARENT;
+import static com.facebook.litho.Column.create;
+import static com.facebook.litho.LayoutOutput.STATE_DIRTY;
+import static com.facebook.litho.LayoutOutput.STATE_UNKNOWN;
+import static com.facebook.litho.LayoutOutput.STATE_UPDATED;
+import static com.facebook.litho.LayoutState.calculate;
+import static com.facebook.litho.LayoutState.createDiffNode;
+import static com.facebook.litho.SizeSpec.AT_MOST;
+import static com.facebook.litho.SizeSpec.getMode;
+import static com.facebook.litho.SizeSpec.getSize;
+import static com.facebook.litho.SizeSpec.makeSizeSpec;
+import static com.facebook.yoga.YogaAlign.FLEX_START;
+import static com.facebook.yoga.YogaConstants.UNDEFINED;
+import static com.facebook.yoga.YogaEdge.ALL;
+import static com.facebook.yoga.YogaEdge.HORIZONTAL;
 import static com.facebook.yoga.YogaMeasureMode.EXACTLY;
+import static com.facebook.yoga.YogaMeasureOutput.getHeight;
+import static com.facebook.yoga.YogaMeasureOutput.getWidth;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -45,6 +66,8 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.powermock.reflect.Whitebox.getInternalState;
+import static org.robolectric.RuntimeEnvironment.application;
 
 @RunWith(ComponentsTestRunner.class)
 public class TreeDiffingTest {
@@ -64,28 +87,28 @@ public class TreeDiffingTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c)
-                .child(TestDrawableComponent.create(c))
-                .child(
-                        Column.create(c)
-                                .child(TestDrawableComponent.create(c)))
-                .build();
+        return create(c)
+            .child(TestDrawableComponent.create(c))
+            .child(
+                create(c)
+                    .child(TestDrawableComponent.create(c)))
+            .build();
       }
     };
 
-    LayoutState layoutState = LayoutState.calculate(
-            mContext,
-            component,
-            -1,
-            SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
-            SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
-            false,
-            false,
-            null,
-            false);
+    LayoutState layoutState = calculate(
+        mContext,
+        component,
+        -1,
+        makeSizeSpec(350, SizeSpec.EXACTLY),
+        makeSizeSpec(200, SizeSpec.EXACTLY),
+        false,
+        false,
+        null,
+        false);
 
     // Check diff tree is null.
-    assertNull(layoutState.getDiffTree());
+    assertThat(layoutState.getDiffTree()).isNull();
   }
 
   @Test
@@ -93,30 +116,30 @@ public class TreeDiffingTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c)
-                .child(TestDrawableComponent.create(c))
-                .child(
-                        Column.create(c)
-                                .child(TestDrawableComponent.create(c)))
-                .build();
+        return create(c)
+            .child(TestDrawableComponent.create(c))
+            .child(
+                create(c)
+                    .child(TestDrawableComponent.create(c)))
+            .build();
       }
     };
 
-    LayoutState layoutState = LayoutState.calculate(
-            mContext,
-            component,
-            -1,
-            SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
-            SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
-            true,
-            false,
-            null,
-            false);
+    LayoutState layoutState = calculate(
+        mContext,
+        component,
+        -1,
+        makeSizeSpec(350, SizeSpec.EXACTLY),
+        makeSizeSpec(200, SizeSpec.EXACTLY),
+        true,
+        false,
+        null,
+        false);
 
     // Check diff tree is not null and consistent.
     DiffNode node = layoutState.getDiffTree();
-    assertNotNull(node);
-    assertEquals(countNodes(node), 4);
+    assertThat(node).isNotNull();
+    assertThat(4).isEqualTo(countNodes(node));
   }
 
   private static int countNodes(DiffNode node) {
@@ -157,7 +180,7 @@ public class TreeDiffingTest {
   @Test
   public void testCachedMeasureFunction() {
     final Component component = TestDrawableComponent.create(mContext)
-            .build();
+        .build();
 
     InternalNode node = createInternalNodeForMeasurableComponent(component);
     DiffNode diffNode = new DiffNode();
@@ -171,23 +194,23 @@ public class TreeDiffingTest {
     node.setDiffNode(diffNode);
 
     long output = measureInternalNode(
-            node,
-            YogaConstants.UNDEFINED,
-            YogaConstants.UNDEFINED);
+        node,
+        UNDEFINED,
+        UNDEFINED);
 
-    assertTrue(YogaMeasureOutput.getHeight(output) == (int) diffNode.getLastMeasuredHeight());
-    assertTrue(YogaMeasureOutput.getWidth(output) == (int) diffNode.getLastMeasuredWidth());
+    assertThat(getHeight(output) == (int) diffNode.getLastMeasuredHeight()).isTrue();
+    assertThat(getWidth(output) == (int) diffNode.getLastMeasuredWidth()).isTrue();
   }
 
   @Test
   public void tesLastConstraints() {
     final Component component = TestDrawableComponent.create(mContext)
-            .build();
+        .build();
 
     InternalNode node = createInternalNodeForMeasurableComponent(component);
     DiffNode diffNode = new DiffNode();
-    diffNode.setLastWidthSpec(SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY));
-    diffNode.setLastHeightSpec(SizeSpec.makeSizeSpec(5, SizeSpec.EXACTLY));
+    diffNode.setLastWidthSpec(makeSizeSpec(10, SizeSpec.EXACTLY));
+    diffNode.setLastHeightSpec(makeSizeSpec(5, SizeSpec.EXACTLY));
     diffNode.setLastMeasuredWidth(10f);
     diffNode.setLastMeasuredHeight(5f);
     diffNode.setComponent(component);
@@ -197,33 +220,33 @@ public class TreeDiffingTest {
 
     long output = measureInternalNode(node, 10f, 5f);
 
-    assertTrue(YogaMeasureOutput.getHeight(output) == (int) diffNode.getLastMeasuredHeight());
-    assertTrue(YogaMeasureOutput.getWidth(output) == (int) diffNode.getLastMeasuredWidth());
+    assertThat(getHeight(output) == (int) diffNode.getLastMeasuredHeight()).isTrue();
+    assertThat(getWidth(output) == (int) diffNode.getLastMeasuredWidth()).isTrue();
 
     int lastWidthSpec = node.getLastWidthSpec();
     int lastHeightSpec = node.getLastHeightSpec();
 
-    assertTrue(SizeSpec.getMode(lastWidthSpec) == SizeSpec.EXACTLY);
-    assertTrue(SizeSpec.getMode(lastHeightSpec) == SizeSpec.EXACTLY);
-    assertTrue(SizeSpec.getSize(lastWidthSpec) == 10);
-    assertTrue(SizeSpec.getSize(lastHeightSpec) == 5);
+    assertThat(getMode(lastWidthSpec) == SizeSpec.EXACTLY).isTrue();
+    assertThat(getMode(lastHeightSpec) == SizeSpec.EXACTLY).isTrue();
+    assertThat(getSize(lastWidthSpec) == 10).isTrue();
+    assertThat(getSize(lastHeightSpec) == 5).isTrue();
   }
 
   @Test
   public void measureAndCreateDiffNode() {
     final Component component = TestDrawableComponent.create(mContext)
-            .build();
+        .build();
 
     InternalNode node = createInternalNodeForMeasurableComponent(component);
     long output = measureInternalNode(
-            node,
-            YogaConstants.UNDEFINED,
-            YogaConstants.UNDEFINED);
+        node,
+        UNDEFINED,
+        UNDEFINED);
 
     node.setCachedMeasuresValid(false);
-    DiffNode diffNode = LayoutState.createDiffNode(node, null);
-    assertTrue(YogaMeasureOutput.getHeight(output) == (int) diffNode.getLastMeasuredHeight());
-    assertTrue(YogaMeasureOutput.getWidth(output) == (int) diffNode.getLastMeasuredWidth());
+    DiffNode diffNode = createDiffNode(node, null);
+    assertThat(getHeight(output) == (int) diffNode.getLastMeasuredHeight()).isTrue();
+    assertThat(getWidth(output) == (int) diffNode.getLastMeasuredWidth()).isTrue();
   }
 
   @Test
@@ -335,54 +358,52 @@ public class TreeDiffingTest {
     final Component component1 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c)
-                .child(TestDrawableComponent.create(c))
-                .child(
-                        Column.create(c)
-                                .child(TestDrawableComponent.create(c)))
-                .build();
+        return create(c)
+            .child(TestDrawableComponent.create(c))
+            .child(
+                create(c)
+                    .child(TestDrawableComponent.create(c)))
+            .build();
       }
     };
 
     final Component component2 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c)
-                .child(TestDrawableComponent.create(c))
-                .child(
-                        Column.create(c)
-                                .child(TestDrawableComponent.create(c)))
-                .build();
+        return create(c)
+            .child(TestDrawableComponent.create(c))
+            .child(
+                create(c)
+                    .child(TestDrawableComponent.create(c)))
+            .build();
       }
     };
 
-    LayoutState prevLayoutState = LayoutState.calculate(
-            mContext,
-            component1,
-            -1,
-            SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
-            SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
-            true,
-            false,
-            null,
-            false);
+    LayoutState prevLayoutState = calculate(
+        mContext,
+        component1,
+        -1,
+        makeSizeSpec(350, SizeSpec.EXACTLY),
+        makeSizeSpec(200, SizeSpec.EXACTLY),
+        true,
+        false,
+        null,
+        false);
 
-    LayoutState layoutState = LayoutState.calculate(
-            mContext,
-            component2,
-            -1,
-            SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
-            SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
-            true,
-            false,
-            prevLayoutState.getDiffTree(),
-            false);
+    LayoutState layoutState = calculate(
+        mContext,
+        component2,
+        -1,
+        makeSizeSpec(350, SizeSpec.EXACTLY),
+        makeSizeSpec(200, SizeSpec.EXACTLY),
+        true,
+        false,
+        prevLayoutState.getDiffTree(),
+        false);
 
-    assertEquals(prevLayoutState.getMountableOutputCount(), layoutState.getMountableOutputCount());
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(prevLayoutState.getMountableOutputCount());
     for (int i = 0, count = prevLayoutState.getMountableOutputCount(); i < count; i++) {
-      assertEquals(
-              prevLayoutState.getMountableOutputAt(i).getId(),
-              layoutState.getMountableOutputAt(i).getId());
+      assertThat(layoutState.getMountableOutputAt(i).getId()).isEqualTo(prevLayoutState.getMountableOutputAt(i).getId());
     }
   }
 
@@ -438,14 +459,12 @@ public class TreeDiffingTest {
             prevLayoutState.getMountableOutputCount(),
             layoutState.getMountableOutputCount());
     for (int i = 0, count = prevLayoutState.getMountableOutputCount(); i < count; i++) {
-      assertEquals(
-              prevLayoutState.getMountableOutputAt(i).getId(),
-              layoutState.getMountableOutputAt(i).getId());
+      assertThat(layoutState.getMountableOutputAt(i).getId()).isEqualTo(prevLayoutState.getMountableOutputAt(i).getId());
     }
   }
 
   private void assertCachedMeasurementsNotDefined(InternalNode node) {
-    assertFalse(node.areCachedMeasuresValid());
+    assertThat(node.areCachedMeasuresValid()).isFalse();
   }
 
   private void checkAllComponentsHaveMeasureCache(InternalNode node) {
@@ -467,14 +486,14 @@ public class TreeDiffingTest {
     hostHolder.mount(0, mountItem, new Rect());
     hostHolder.mount(1, mountItem1, new Rect());
     hostHolder.mount(2, mountItem2, new Rect());
-    assertEquals(hostHolder.getMountItemAt(0), mountItem);
-    assertEquals(hostHolder.getMountItemAt(1), mountItem1);
-    assertEquals(hostHolder.getMountItemAt(2), mountItem2);
+    assertThat(mountItem).isEqualTo(hostHolder.getMountItemAt(0));
+    assertThat(mountItem1).isEqualTo(hostHolder.getMountItemAt(1));
+    assertThat(mountItem2).isEqualTo(hostHolder.getMountItemAt(2));
     hostHolder.moveItem(mountItem, 0, 2);
     hostHolder.moveItem(mountItem2, 2, 0);
-    assertEquals(hostHolder.getMountItemAt(0), mountItem2);
-    assertEquals(hostHolder.getMountItemAt(1), mountItem1);
-    assertEquals(hostHolder.getMountItemAt(2), mountItem);
+    assertThat(mountItem2).isEqualTo(hostHolder.getMountItemAt(0));
+    assertThat(mountItem1).isEqualTo(hostHolder.getMountItemAt(1));
+    assertThat(mountItem).isEqualTo(hostHolder.getMountItemAt(2));
   }
 
   @Test
@@ -486,25 +505,21 @@ public class TreeDiffingTest {
     hostHolder.mount(0, mountItem, new Rect());
     hostHolder.mount(1, mountItem1, new Rect());
     hostHolder.mount(2, mountItem2, new Rect());
-    assertEquals(hostHolder.getMountItemAt(0), mountItem);
-    assertEquals(hostHolder.getMountItemAt(1), mountItem1);
-    assertEquals(hostHolder.getMountItemAt(2), mountItem2);
+    assertThat(mountItem).isEqualTo(hostHolder.getMountItemAt(0));
+    assertThat(mountItem1).isEqualTo(hostHolder.getMountItemAt(1));
+    assertThat(mountItem2).isEqualTo(hostHolder.getMountItemAt(2));
     hostHolder.moveItem(mountItem2, 2, 0);
-    assertEquals(hostHolder.getMountItemAt(0), mountItem2);
-    assertEquals(hostHolder.getMountItemAt(1), mountItem1);
+    assertThat(mountItem2).isEqualTo(hostHolder.getMountItemAt(0));
+    assertThat(mountItem1).isEqualTo(hostHolder.getMountItemAt(1));
 
-    assertEquals(
-            ((SparseArrayCompat<MountItem>) Whitebox
-                    .getInternalState(hostHolder, "mScrapMountItemsArray")).size(),
-            1);
+    assertThat(1).isEqualTo(((SparseArrayCompat<MountItem>)
+        getInternalState(hostHolder, "mScrapMountItemsArray")).size());
 
     hostHolder.unmount(0, mountItem);
 
-    assertEquals(
-            ((SparseArrayCompat<MountItem>) Whitebox
-                    .getInternalState(hostHolder, "mMountItems")).size(),
-            2);
-    assertNull(Whitebox.getInternalState(hostHolder, "mScrapMountItemsArray"));
+    assertThat(2).isEqualTo(((SparseArrayCompat<MountItem>)
+        getInternalState(hostHolder, "mMountItems")).size());
+    assertThat(getInternalState(hostHolder, "mScrapMountItemsArray")).isNull();
   }
 
   @Test
@@ -562,192 +577,192 @@ public class TreeDiffingTest {
 
   @Test
   public void testLayoutOutputUpdateStateWithBackground() {
-    final Drawable redDrawable = new ColorDrawable(Color.RED);
-    final Drawable blackDrawable = new ColorDrawable(Color.BLACK);
-    final Drawable transparentDrawable = new ColorDrawable(Color.TRANSPARENT);
+    final Drawable redDrawable = new ColorDrawable(RED);
+    final Drawable blackDrawable = new ColorDrawable(BLACK);
+    final Drawable transparentDrawable = new ColorDrawable(TRANSPARENT);
 
     final Component component1 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c)
-                .background(redDrawable)
-                .foreground(transparentDrawable)
-                .child(TestDrawableComponent.create(c))
-                .child(
-                        Column.create(c)
-                                .child(TestDrawableComponent.create(c)))
-                .build();
+        return create(c)
+            .background(redDrawable)
+            .foreground(transparentDrawable)
+            .child(TestDrawableComponent.create(c))
+            .child(
+                create(c)
+                    .child(TestDrawableComponent.create(c)))
+            .build();
       }
     };
 
     final Component component2 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c)
-                .background(redDrawable)
-                .foreground(transparentDrawable)
-                .child(TestDrawableComponent.create(c))
-                .child(
-                        Column.create(c)
-                                .child(TestDrawableComponent.create(c)))
-                .build();
+        return create(c)
+            .background(redDrawable)
+            .foreground(transparentDrawable)
+            .child(TestDrawableComponent.create(c))
+            .child(
+                create(c)
+                    .child(TestDrawableComponent.create(c)))
+            .build();
       }
     };
 
     final Component component3 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c)
-                .background(blackDrawable)
-                .foreground(transparentDrawable)
-                .child(TestDrawableComponent.create(c))
-                .child(
-                        Column.create(c)
-                                .child(TestDrawableComponent.create(c)))
-                .build();
+        return create(c)
+            .background(blackDrawable)
+            .foreground(transparentDrawable)
+            .child(TestDrawableComponent.create(c))
+            .child(
+                create(c)
+                    .child(TestDrawableComponent.create(c)))
+            .build();
       }
     };
 
     ComponentTree componentTree = ComponentTree.create(mContext, component1)
-            .incrementalMount(false)
-            .layoutDiffing(false)
-            .build();
+        .incrementalMount(false)
+        .layoutDiffing(false)
+        .build();
     LayoutState state = componentTree.calculateLayoutState(
-            null,
-            mContext,
-            component1,
-            SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
-            SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
-            true,
-            false,
-            null);
+        null,
+        mContext,
+        component1,
+        makeSizeSpec(10, SizeSpec.EXACTLY),
+        makeSizeSpec(10, SizeSpec.EXACTLY),
+        true,
+        false,
+        null);
 
-    assertOutputsState(state, LayoutOutput.STATE_UNKNOWN);
+    assertOutputsState(state, STATE_UNKNOWN);
 
     LayoutState secondState = componentTree.calculateLayoutState(
-            null,
-            mContext,
-            component2,
-            SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
-            SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
-            true,
-            false,
-            state.getDiffTree());
+        null,
+        mContext,
+        component2,
+        makeSizeSpec(10, SizeSpec.EXACTLY),
+        makeSizeSpec(10, SizeSpec.EXACTLY),
+        true,
+        false,
+        state.getDiffTree());
 
-    assertEquals(secondState.getMountableOutputCount(), 5);
-    assertOutputsState(secondState, LayoutOutput.STATE_UPDATED);
+    assertThat(5).isEqualTo(secondState.getMountableOutputCount());
+    assertOutputsState(secondState, STATE_UPDATED);
 
     LayoutState thirdState = componentTree.calculateLayoutState(
-            null,
-            mContext,
-            component3,
-            SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
-            SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
-            true,
-            false,
-            secondState.getDiffTree());
+        null,
+        mContext,
+        component3,
+        makeSizeSpec(10, SizeSpec.EXACTLY),
+        makeSizeSpec(10, SizeSpec.EXACTLY),
+        true,
+        false,
+        secondState.getDiffTree());
 
-    assertEquals(thirdState.getMountableOutputCount(), 5);
-    assertEquals(LayoutOutput.STATE_DIRTY, thirdState.getMountableOutputAt(1).getUpdateState());
-    assertEquals(LayoutOutput.STATE_UPDATED, thirdState.getMountableOutputAt(2).getUpdateState());
-    assertEquals(LayoutOutput.STATE_UPDATED, thirdState.getMountableOutputAt(3).getUpdateState());
-    assertEquals(LayoutOutput.STATE_UPDATED, thirdState.getMountableOutputAt(4).getUpdateState());
+    assertThat(5).isEqualTo(thirdState.getMountableOutputCount());
+    assertThat(thirdState.getMountableOutputAt(1).getUpdateState()).isEqualTo(STATE_DIRTY);
+    assertThat(thirdState.getMountableOutputAt(2).getUpdateState()).isEqualTo(STATE_UPDATED);
+    assertThat(thirdState.getMountableOutputAt(3).getUpdateState()).isEqualTo(STATE_UPDATED);
+    assertThat(thirdState.getMountableOutputAt(4).getUpdateState()).isEqualTo(STATE_UPDATED);
   }
 
   // This test covers the same case with the foreground since the code path is the same!
   @Test
   public void testLayoutOutputUpdateStateWithBackgroundInWithLayout() {
-    final Drawable redDrawable = new ColorDrawable(Color.RED);
-    final Drawable blackDrawable = new ColorDrawable(Color.BLACK);
+    final Drawable redDrawable = new ColorDrawable(RED);
+    final Drawable blackDrawable = new ColorDrawable(BLACK);
 
     final Component component1 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c)
-                .background(redDrawable)
-                .foregroundRes(android.R.drawable.btn_default)
-                .child(
-                        TestDrawableComponent.create(c)
-                                .withLayout()
-                                .background(blackDrawable))
-                .child(
-                        Column.create(c)
-                                .child(TestDrawableComponent.create(c)))
-                .build();
+        return create(c)
+            .background(redDrawable)
+            .foregroundRes(btn_default)
+            .child(
+                TestDrawableComponent.create(c)
+                    .withLayout()
+                    .background(blackDrawable))
+            .child(
+                create(c)
+                    .child(TestDrawableComponent.create(c)))
+            .build();
       }
     };
 
     final Component component2 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c)
-                .background(redDrawable)
-                .foregroundRes(android.R.drawable.btn_default)
-                .child(TestDrawableComponent.create(c)
-                        .withLayout()
-                        .background(blackDrawable))
-                .child(
-                        Column.create(c)
-                                .child(TestDrawableComponent.create(c)))
-                .build();
+        return create(c)
+            .background(redDrawable)
+            .foregroundRes(btn_default)
+            .child(TestDrawableComponent.create(c)
+                .withLayout()
+                .background(blackDrawable))
+            .child(
+                create(c)
+                    .child(TestDrawableComponent.create(c)))
+            .build();
       }
     };
 
     final Component component3 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c)
-                .background(redDrawable)
-                .foregroundRes(android.R.drawable.btn_default)
-                .child(TestDrawableComponent.create(c)
-                        .withLayout()
-                        .background(redDrawable))
-                .child(
-                        Column.create(c)
-                                .child(TestDrawableComponent.create(c)))
-                .build();
+        return create(c)
+            .background(redDrawable)
+            .foregroundRes(btn_default)
+            .child(TestDrawableComponent.create(c)
+                .withLayout()
+                .background(redDrawable))
+            .child(
+                create(c)
+                    .child(TestDrawableComponent.create(c)))
+            .build();
       }
     };
 
     ComponentTree componentTree = ComponentTree.create(mContext, component1)
-            .incrementalMount(false)
-            .layoutDiffing(false)
-            .build();
+        .incrementalMount(false)
+        .layoutDiffing(false)
+        .build();
     LayoutState state = componentTree.calculateLayoutState(
-            null,
-            mContext,
-            component1,
-            SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
-            SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
-            true,
-            false,
-            null);
+        null,
+        mContext,
+        component1,
+        makeSizeSpec(10, SizeSpec.EXACTLY),
+        makeSizeSpec(10, SizeSpec.EXACTLY),
+        true,
+        false,
+        null);
 
-    assertEquals(LayoutOutput.STATE_UNKNOWN, state.getMountableOutputAt(2).getUpdateState());
+    assertThat(state.getMountableOutputAt(2).getUpdateState()).isEqualTo(STATE_UNKNOWN);
 
     LayoutState secondState = componentTree.calculateLayoutState(
-            null,
-            mContext,
-            component2,
-            SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
-            SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
-            true,
-            false,
-            state.getDiffTree());
+        null,
+        mContext,
+        component2,
+        makeSizeSpec(10, SizeSpec.EXACTLY),
+        makeSizeSpec(10, SizeSpec.EXACTLY),
+        true,
+        false,
+        state.getDiffTree());
 
-    assertEquals(LayoutOutput.STATE_UPDATED, secondState.getMountableOutputAt(2).getUpdateState());
+    assertThat(secondState.getMountableOutputAt(2).getUpdateState()).isEqualTo(STATE_UPDATED);
 
     LayoutState thirdState = componentTree.calculateLayoutState(
-            null,
-            mContext,
-            component3,
-            SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
-            SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
-            true,
-            false,
-            secondState.getDiffTree());
+        null,
+        mContext,
+        component3,
+        makeSizeSpec(10, SizeSpec.EXACTLY),
+        makeSizeSpec(10, SizeSpec.EXACTLY),
+        true,
+        false,
+        secondState.getDiffTree());
 
-    assertEquals(LayoutOutput.STATE_DIRTY, thirdState.getMountableOutputAt(2).getUpdateState());
+    assertThat(thirdState.getMountableOutputAt(2).getUpdateState()).isEqualTo(STATE_DIRTY);
   }
 
   @Test
@@ -755,181 +770,181 @@ public class TreeDiffingTest {
     final Component component1 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c)
-                .child(
-                        Column.create(c)
-                                .wrapInView()
-                                .child(TestDrawableComponent.create(c)))
-                .child(
-                        Column.create(c)
-                                .wrapInView()
-                                .child(TestDrawableComponent.create(c)))
-                .build();
+        return create(c)
+            .child(
+                create(c)
+                    .wrapInView()
+                    .child(TestDrawableComponent.create(c)))
+            .child(
+                create(c)
+                    .wrapInView()
+                    .child(TestDrawableComponent.create(c)))
+            .build();
       }
     };
 
     final Component component2 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c)
-                .child(
-                        Column.create(c)
-                                .wrapInView()
-                                .child(TestDrawableComponent.create(c))
-                                .child(TestDrawableComponent.create(c)))
-                .child(
-                        Column.create(c)
-                                .wrapInView()
-                                .child(TestDrawableComponent.create(c)))
-                .build();
+        return create(c)
+            .child(
+                create(c)
+                    .wrapInView()
+                    .child(TestDrawableComponent.create(c))
+                    .child(TestDrawableComponent.create(c)))
+            .child(
+                create(c)
+                    .wrapInView()
+                    .child(TestDrawableComponent.create(c)))
+            .build();
       }
     };
 
     ComponentTree componentTree = ComponentTree.create(mContext, component1)
-            .incrementalMount(false)
-            .layoutDiffing(false)
-            .build();
+        .incrementalMount(false)
+        .layoutDiffing(false)
+        .build();
     LayoutState state = componentTree.calculateLayoutState(
-            null,
-            mContext,
-            component1,
-            SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
-            SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
-            true,
-            false,
-            null);
+        null,
+        mContext,
+        component1,
+        makeSizeSpec(10, SizeSpec.EXACTLY),
+        makeSizeSpec(10, SizeSpec.EXACTLY),
+        true,
+        false,
+        null);
 
-    assertOutputsState(state, LayoutOutput.STATE_UNKNOWN);
+    assertOutputsState(state, STATE_UNKNOWN);
 
     LayoutState secondState = componentTree.calculateLayoutState(
-            null,
-            mContext,
-            component2,
-            SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
-            SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
-            true,
-            false,
-            state.getDiffTree());
+        null,
+        mContext,
+        component2,
+        makeSizeSpec(10, SizeSpec.EXACTLY),
+        makeSizeSpec(10, SizeSpec.EXACTLY),
+        true,
+        false,
+        state.getDiffTree());
 
-    assertEquals(secondState.getMountableOutputCount(), 6);
-    assertEquals(secondState.getMountableOutputAt(0).getUpdateState(), LayoutOutput.STATE_DIRTY);
-    assertEquals(secondState.getMountableOutputAt(1).getUpdateState(), LayoutOutput.STATE_UNKNOWN);
-    assertEquals(secondState.getMountableOutputAt(2).getUpdateState(), LayoutOutput.STATE_UPDATED);
-    assertEquals(secondState.getMountableOutputAt(3).getUpdateState(), LayoutOutput.STATE_UNKNOWN);
-    assertEquals(secondState.getMountableOutputAt(4).getUpdateState(), LayoutOutput.STATE_UNKNOWN);
-    assertEquals(secondState.getMountableOutputAt(5).getUpdateState(), LayoutOutput.STATE_UNKNOWN);
+    assertThat(6).isEqualTo(secondState.getMountableOutputCount());
+    assertThat(STATE_DIRTY).isEqualTo(secondState.getMountableOutputAt(0).getUpdateState());
+    assertThat(STATE_UNKNOWN).isEqualTo(secondState.getMountableOutputAt(1).getUpdateState());
+    assertThat(STATE_UPDATED).isEqualTo(secondState.getMountableOutputAt(2).getUpdateState());
+    assertThat(STATE_UNKNOWN).isEqualTo(secondState.getMountableOutputAt(3).getUpdateState());
+    assertThat(STATE_UNKNOWN).isEqualTo(secondState.getMountableOutputAt(4).getUpdateState());
+    assertThat(STATE_UNKNOWN).isEqualTo(secondState.getMountableOutputAt(5).getUpdateState());
   }
 
   @Test
   public void testDiffTreeUsedIfRootMeasureSpecsAreDifferentButChildHasSame() {
     final TestComponent component = TestDrawableComponent.create(mContext)
-            .color(Color.BLACK)
-            .build();
+        .color(BLACK)
+        .build();
 
     final Component layoutComponent = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c)
-                .alignItems(YogaAlign.FLEX_START)
-                .child(Layout.create(c, component).heightPx(50))
-                .build();
+        return create(c)
+            .alignItems(FLEX_START)
+            .child(Layout.create(c, component).heightPx(50))
+            .build();
       }
     };
 
-    LayoutState firstLayoutState = LayoutState.calculate(
-            mContext,
-            layoutComponent,
-            0,
-            SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
-            SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
-            true,
-            false,
-            null,
-            false);
+    LayoutState firstLayoutState = calculate(
+        mContext,
+        layoutComponent,
+        0,
+        makeSizeSpec(100, SizeSpec.EXACTLY),
+        makeSizeSpec(100, SizeSpec.EXACTLY),
+        true,
+        false,
+        null,
+        false);
 
-    assertTrue(component.wasMeasureCalled());
+    assertThat(component.wasMeasureCalled()).isTrue();
 
     final TestComponent secondComponent = TestDrawableComponent.create(mContext)
-            .color(Color.BLACK)
-            .build();
+        .color(BLACK)
+        .build();
 
     final Component secondLayoutComponent = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c)
-                .alignItems(YogaAlign.FLEX_START)
-                .child(Layout.create(c, secondComponent).heightPx(50))
-                .build();
+        return create(c)
+            .alignItems(FLEX_START)
+            .child(Layout.create(c, secondComponent).heightPx(50))
+            .build();
       }
     };
 
-    LayoutState.calculate(
-            mContext,
-            secondLayoutComponent,
-            0,
-            SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
-            SizeSpec.makeSizeSpec(90, SizeSpec.EXACTLY),
-            true,
-            false,
-            firstLayoutState.getDiffTree(),
-            false);
+    calculate(
+        mContext,
+        secondLayoutComponent,
+        0,
+        makeSizeSpec(100, SizeSpec.EXACTLY),
+        makeSizeSpec(90, SizeSpec.EXACTLY),
+        true,
+        false,
+        firstLayoutState.getDiffTree(),
+        false);
 
-    assertFalse(secondComponent.wasMeasureCalled());
+    assertThat(secondComponent.wasMeasureCalled()).isFalse();
   }
 
   @Test
   public void testDiffTreeUsedIfMeasureSpecsAreSame() {
     final TestComponent component = TestDrawableComponent.create(mContext)
-            .color(Color.BLACK)
-            .build();
+        .color(BLACK)
+        .build();
 
     final Component layoutComponent = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c)
-                .child(component)
-                .build();
+        return create(c)
+            .child(component)
+            .build();
       }
     };
 
-    LayoutState firstLayoutState = LayoutState.calculate(
-            mContext,
-            layoutComponent,
-            0,
-            SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
-            SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
-            true,
-            false,
-            null,
-            false);
+    LayoutState firstLayoutState = calculate(
+        mContext,
+        layoutComponent,
+        0,
+        makeSizeSpec(100, SizeSpec.EXACTLY),
+        makeSizeSpec(100, SizeSpec.EXACTLY),
+        true,
+        false,
+        null,
+        false);
 
-    assertTrue(component.wasMeasureCalled());
+    assertThat(component.wasMeasureCalled()).isTrue();
 
     final TestComponent secondComponent = TestDrawableComponent.create(mContext)
-            .color(Color.BLACK)
-            .build();
+        .color(BLACK)
+        .build();
 
     final Component secondLayoutComponent = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c)
-                .child(secondComponent)
-                .build();
+        return create(c)
+            .child(secondComponent)
+            .build();
       }
     };
 
-    LayoutState.calculate(
-            mContext,
-            secondLayoutComponent,
-            0,
-            SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
-            SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
-            true,
-            false,
-            firstLayoutState.getDiffTree(),
-            false);
+    calculate(
+        mContext,
+        secondLayoutComponent,
+        0,
+        makeSizeSpec(100, SizeSpec.EXACTLY),
+        makeSizeSpec(100, SizeSpec.EXACTLY),
+        true,
+        false,
+        firstLayoutState.getDiffTree(),
+        false);
 
-    assertFalse(secondComponent.wasMeasureCalled());
+    assertThat(secondComponent.wasMeasureCalled()).isFalse();
   }
 
   @Test
@@ -937,60 +952,60 @@ public class TreeDiffingTest {
     final Component component1 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c)
-                .paddingPx(YogaEdge.ALL, 2)
-                .child(
-                        TestSizeDependentComponent.create(c)
-                                .setDelegate(true)
-                                .withLayout()
-                                .marginPx(YogaEdge.ALL, 11))
-                .build();
+        return create(c)
+            .paddingPx(ALL, 2)
+            .child(
+                TestSizeDependentComponent.create(c)
+                    .setDelegate(true)
+                    .withLayout()
+                    .marginPx(ALL, 11))
+            .build();
       }
     };
 
     final Component component2 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c)
-                .paddingPx(YogaEdge.ALL, 2)
-                .child(
-                        TestSizeDependentComponent.create(c)
-                                .setDelegate(true)
-                                .withLayout()
-                                .marginPx(YogaEdge.ALL, 11))
-                .build();
+        return create(c)
+            .paddingPx(ALL, 2)
+            .child(
+                TestSizeDependentComponent.create(c)
+                    .setDelegate(true)
+                    .withLayout()
+                    .marginPx(ALL, 11))
+            .build();
       }
     };
 
-    LayoutState prevLayoutState = LayoutState.calculate(
-            mContext,
-            component1,
-            -1,
-            SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
-            SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
-            true,
-            false,
-            null,
-            false);
+    LayoutState prevLayoutState = calculate(
+        mContext,
+        component1,
+        -1,
+        makeSizeSpec(350, SizeSpec.EXACTLY),
+        makeSizeSpec(200, SizeSpec.EXACTLY),
+        true,
+        false,
+        null,
+        false);
 
-    LayoutState layoutState = LayoutState.calculate(
-            mContext,
-            component2,
-            -1,
-            SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
-            SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
-            true,
-            false,
-            prevLayoutState.getDiffTree(),
-            false);
+    LayoutState layoutState = calculate(
+        mContext,
+        component2,
+        -1,
+        makeSizeSpec(350, SizeSpec.EXACTLY),
+        makeSizeSpec(200, SizeSpec.EXACTLY),
+        true,
+        false,
+        prevLayoutState.getDiffTree(),
+        false);
 
     // The nested root measure() was called in the first layout calculation.
     TestComponent prevNestedRoot =
-            (TestComponent) prevLayoutState.getMountableOutputAt(2).getComponent();
-    assertTrue(prevNestedRoot.wasMeasureCalled());
+        (TestComponent) prevLayoutState.getMountableOutputAt(2).getComponent();
+    assertThat(prevNestedRoot.wasMeasureCalled()).isTrue();
 
     TestComponent nestedRoot = (TestComponent) layoutState.getMountableOutputAt(2).getComponent();
-    assertFalse(nestedRoot.wasMeasureCalled());
+    assertThat(nestedRoot.wasMeasureCalled()).isFalse();
   }
 
   @Test
@@ -998,162 +1013,162 @@ public class TreeDiffingTest {
     final Component component1 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c)
-                .paddingPx(YogaEdge.ALL, 2)
-                .child(
-                        TestDrawableComponent.create(c, false, true, true, false, false))
-                .child(
-                        TestSizeDependentComponent.create(c)
-                                .setDelegate(false)
-                                .withLayout()
-                                .flexShrink(0)
-                                .marginPx(YogaEdge.ALL, 11))
-                .build();
+        return create(c)
+            .paddingPx(ALL, 2)
+            .child(
+                TestDrawableComponent.create(c, false, true, true, false, false))
+            .child(
+                TestSizeDependentComponent.create(c)
+                    .setDelegate(false)
+                    .withLayout()
+                    .flexShrink(0)
+                    .marginPx(ALL, 11))
+            .build();
       }
     };
 
     final Component component2 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c)
-                .paddingPx(YogaEdge.ALL, 2)
-                .child(
-                        TestDrawableComponent.create(c, false, true, true, false, false))
-                .child(
-                        TestSizeDependentComponent.create(c)
-                                .setDelegate(false)
-                                .withLayout()
-                                .flexShrink(0)
-                                .marginPx(YogaEdge.ALL, 11))
-                .build();
+        return create(c)
+            .paddingPx(ALL, 2)
+            .child(
+                TestDrawableComponent.create(c, false, true, true, false, false))
+            .child(
+                TestSizeDependentComponent.create(c)
+                    .setDelegate(false)
+                    .withLayout()
+                    .flexShrink(0)
+                    .marginPx(ALL, 11))
+            .build();
       }
     };
 
-    LayoutState prevLayoutState = LayoutState.calculate(
-            mContext,
-            component1,
-            -1,
-            SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
-            SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
-            true,
-            false,
-            null,
-            false);
+    LayoutState prevLayoutState = calculate(
+        mContext,
+        component1,
+        -1,
+        makeSizeSpec(350, SizeSpec.EXACTLY),
+        makeSizeSpec(200, SizeSpec.EXACTLY),
+        true,
+        false,
+        null,
+        false);
 
-    LayoutState layoutState = LayoutState.calculate(
-            mContext,
-            component2,
-            -1,
-            SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
-            SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
-            true,
-            false,
-            prevLayoutState.getDiffTree(),
-            false);
+    LayoutState layoutState = calculate(
+        mContext,
+        component2,
+        -1,
+        makeSizeSpec(350, SizeSpec.EXACTLY),
+        makeSizeSpec(200, SizeSpec.EXACTLY),
+        true,
+        false,
+        prevLayoutState.getDiffTree(),
+        false);
 
     // The nested root measure() was called in the first layout calculation.
     TestComponent prevMainTreeLeaf =
-            (TestComponent) prevLayoutState.getMountableOutputAt(1).getComponent();
-    assertTrue(prevMainTreeLeaf.wasMeasureCalled());
+        (TestComponent) prevLayoutState.getMountableOutputAt(1).getComponent();
+    assertThat(prevMainTreeLeaf.wasMeasureCalled()).isTrue();
     TestComponent prevNestedLeaf1 =
-            (TestComponent) prevLayoutState.getMountableOutputAt(3).getComponent();
-    assertTrue(prevNestedLeaf1.wasMeasureCalled());
+        (TestComponent) prevLayoutState.getMountableOutputAt(3).getComponent();
+    assertThat(prevNestedLeaf1.wasMeasureCalled()).isTrue();
     TestComponent prevNestedLeaf2 =
-            (TestComponent) prevLayoutState.getMountableOutputAt(4).getComponent();
-    assertTrue(prevNestedLeaf2.wasMeasureCalled());
+        (TestComponent) prevLayoutState.getMountableOutputAt(4).getComponent();
+    assertThat(prevNestedLeaf2.wasMeasureCalled()).isTrue();
 
     TestComponent mainTreeLeaf = (TestComponent) layoutState.getMountableOutputAt(1).getComponent();
-    assertFalse(mainTreeLeaf.wasMeasureCalled());
+    assertThat(mainTreeLeaf.wasMeasureCalled()).isFalse();
     TestComponent nestedLeaf1 = (TestComponent) layoutState.getMountableOutputAt(3).getComponent();
-    assertFalse(nestedLeaf1.wasMeasureCalled());
+    assertThat(nestedLeaf1.wasMeasureCalled()).isFalse();
     TestComponent nestedLeaf2 = (TestComponent) layoutState.getMountableOutputAt(4).getComponent();
-    assertFalse(nestedLeaf2.wasMeasureCalled());
+    assertThat(nestedLeaf2.wasMeasureCalled()).isFalse();
   }
 
   @Test
   public void testCachedMeasuresForCachedLayoutSpecWithMeasure() {
-    final ComponentContext c = new ComponentContext(RuntimeEnvironment.application);
-    final int widthSpecContainer = SizeSpec.makeSizeSpec(300, SizeSpec.EXACTLY);
-    final int heightSpec = SizeSpec.makeSizeSpec(40, SizeSpec.AT_MOST);
+    final ComponentContext c = new ComponentContext(application);
+    final int widthSpecContainer = makeSizeSpec(300, SizeSpec.EXACTLY);
+    final int heightSpec = makeSizeSpec(40, AT_MOST);
     final int horizontalPadding = 20;
-    final int widthMeasuredComponent = SizeSpec.makeSizeSpec(
-            SizeSpec.getSize(widthSpecContainer) - horizontalPadding - horizontalPadding,
-            SizeSpec.EXACTLY);
+    final int widthMeasuredComponent = makeSizeSpec(
+        getSize(widthSpecContainer) - horizontalPadding - horizontalPadding,
+        SizeSpec.EXACTLY);
 
     final Component<?> sizeDependentComponentSpy1 = spy(
-            TestSizeDependentComponent.create(c)
-                    .setFixSizes(false)
-                    .setDelegate(false)
-                    .build());
+        TestSizeDependentComponent.create(c)
+            .setFixSizes(false)
+            .setDelegate(false)
+            .build());
     Size sizeOutput1 = new Size();
     sizeDependentComponentSpy1.measure(
-            c,
-            widthMeasuredComponent,
-            heightSpec,
-            sizeOutput1);
+        c,
+        widthMeasuredComponent,
+        heightSpec,
+        sizeOutput1);
 
     // Now embed the measured component in another container and calculate a layout.
     final Component rootContainer1 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c)
-                .paddingPx(YogaEdge.HORIZONTAL, horizontalPadding)
-                .child(sizeDependentComponentSpy1)
-                .build();
+        return create(c)
+            .paddingPx(HORIZONTAL, horizontalPadding)
+            .child(sizeDependentComponentSpy1)
+            .build();
       }
     };
 
     final Component<?> sizeDependentComponentSpy2 = spy(
-            TestSizeDependentComponent.create(c)
-                    .setFixSizes(false)
-                    .setDelegate(false)
-                    .build());
+        TestSizeDependentComponent.create(c)
+            .setFixSizes(false)
+            .setDelegate(false)
+            .build());
     Size sizeOutput2 = new Size();
     sizeDependentComponentSpy1.measure(
-            c,
-            widthMeasuredComponent,
-            heightSpec,
-            sizeOutput2);
+        c,
+        widthMeasuredComponent,
+        heightSpec,
+        sizeOutput2);
 
     // Now embed the measured component in another container and calculate a layout.
     final Component rootContainer2 = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c)
-                .paddingPx(YogaEdge.HORIZONTAL, horizontalPadding)
-                .child(sizeDependentComponentSpy2)
-                .build();
+        return create(c)
+            .paddingPx(HORIZONTAL, horizontalPadding)
+            .child(sizeDependentComponentSpy2)
+            .build();
       }
     };
 
     // Reset the release/clear counts before issuing calculate().
     reset(sizeDependentComponentSpy1);
 
-    LayoutState prevLayoutState = LayoutState.calculate(
-            mContext,
-            rootContainer1,
-            -1,
-            widthSpecContainer,
-            heightSpec,
-            true,
-            false,
-            null,
-            false);
+    LayoutState prevLayoutState = calculate(
+        mContext,
+        rootContainer1,
+        -1,
+        widthSpecContainer,
+        heightSpec,
+        true,
+        false,
+        null,
+        false);
 
     // Make sure we reused the cached layout and it wasn't released.
     verify(sizeDependentComponentSpy1, never()).releaseCachedLayout();
     verify(sizeDependentComponentSpy1, times(1)).clearCachedLayout();
 
-    LayoutState layoutState = LayoutState.calculate(
-            mContext,
-            rootContainer2,
-            -1,
-            widthSpecContainer,
-            heightSpec,
-            true,
-            false,
-            prevLayoutState.getDiffTree(),
-            false);
+    LayoutState layoutState = calculate(
+        mContext,
+        rootContainer2,
+        -1,
+        widthSpecContainer,
+        heightSpec,
+        true,
+        false,
+        prevLayoutState.getDiffTree(),
+        false);
 
     // Make sure we reused the cached layout and it wasn't released.
     verify(sizeDependentComponentSpy2, never()).releaseCachedLayout();
@@ -1161,33 +1176,33 @@ public class TreeDiffingTest {
 
     // The nested root measure() was called in the first layout calculation.
     TestComponent prevNestedLeaf1 =
-            (TestComponent) prevLayoutState.getMountableOutputAt(2).getComponent();
-    assertTrue(prevNestedLeaf1.wasMeasureCalled());
+        (TestComponent) prevLayoutState.getMountableOutputAt(2).getComponent();
+    assertThat(prevNestedLeaf1.wasMeasureCalled()).isTrue();
     TestComponent prevNestedLeaf2 =
-            (TestComponent) prevLayoutState.getMountableOutputAt(3).getComponent();
-    assertTrue(prevNestedLeaf2.wasMeasureCalled());
+        (TestComponent) prevLayoutState.getMountableOutputAt(3).getComponent();
+    assertThat(prevNestedLeaf2.wasMeasureCalled()).isTrue();
 
     TestComponent nestedLeaf1 = (TestComponent) layoutState.getMountableOutputAt(2).getComponent();
-    assertFalse(nestedLeaf1.wasMeasureCalled());
+    assertThat(nestedLeaf1.wasMeasureCalled()).isFalse();
     TestComponent nestedLeaf2 = (TestComponent) layoutState.getMountableOutputAt(3).getComponent();
-    assertFalse(nestedLeaf2.wasMeasureCalled());
+    assertThat(nestedLeaf2.wasMeasureCalled()).isFalse();
   }
 
   private static void assertOutputsState(
           LayoutState layoutState,
           @LayoutOutput.UpdateState int state) {
-    assertEquals(layoutState.getMountableOutputAt(0).getUpdateState(), LayoutOutput.STATE_DIRTY);
+    assertThat(STATE_DIRTY).isEqualTo(layoutState.getMountableOutputAt(0).getUpdateState());
     for (int i = 1; i < layoutState.getMountableOutputCount(); i++) {
       LayoutOutput output = layoutState.getMountableOutputAt(i);
-      assertEquals(output.getUpdateState(), state);
+      assertThat(state).isEqualTo(output.getUpdateState());
     }
   }
 
   private static void assertCachedMeasurementsDefined(InternalNode node) {
     float diffHeight = node.getDiffNode() == null ? -1 : node.getDiffNode().getLastMeasuredHeight();
     float diffWidth = node.getDiffNode() == null ? -1 : node.getDiffNode().getLastMeasuredWidth();
-    assertTrue(diffHeight != -1);
-    assertTrue(diffWidth != -1);
-    assertTrue(node.areCachedMeasuresValid());
+    assertThat(diffHeight != -1).isTrue();
+    assertThat(diffWidth != -1).isTrue();
+    assertThat(node.areCachedMeasuresValid()).isTrue();
   }
 }

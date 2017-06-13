@@ -20,6 +20,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
+import static com.facebook.litho.ComponentsPools.acquireMountContent;
+import static com.facebook.litho.ComponentsPools.release;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
@@ -47,28 +50,28 @@ public class ComponentsPoolsTest {
 
   @Test
   public void testAcquireMountContentWithSameContext() {
-    assertNull(ComponentsPools.acquireMountContent(mContext1, mLifecycle.getId()));
+    assertThat(acquireMountContent(mContext1, mLifecycle.getId())).isNull();
 
-    ComponentsPools.release(mContext1, mLifecycle, mMountContent);
+    release(mContext1, mLifecycle, mMountContent);
 
-    assertSame(mMountContent, ComponentsPools.acquireMountContent(mContext1, mLifecycle.getId()));
+    assertThat(mMountContent).isSameAs(acquireMountContent(mContext1, mLifecycle.getId()));
   }
 
   @Test
   public void testAcquireMountContentWithSameUnderlyingContext() {
-    assertNull(ComponentsPools.acquireMountContent(mContext1, mLifecycle.getId()));
+    assertThat(acquireMountContent(mContext1, mLifecycle.getId())).isNull();
 
-    ComponentsPools.release(mContext1, mLifecycle, mMountContent);
+    release(mContext1, mLifecycle, mMountContent);
 
-    assertSame(mMountContent, ComponentsPools.acquireMountContent(mContext2, mLifecycle.getId()));
+    assertThat(mMountContent).isSameAs(acquireMountContent(mContext2, mLifecycle.getId()));
   }
 
   @Test
   public void testAcquireMountContentWithDifferentUnderlyingContext() {
-    assertNull(ComponentsPools.acquireMountContent(mContext1, mLifecycle.getId()));
+    assertThat(acquireMountContent(mContext1, mLifecycle.getId())).isNull();
 
-    ComponentsPools.release(mContext1, mLifecycle, mMountContent);
+    release(mContext1, mLifecycle, mMountContent);
 
-    assertNull(ComponentsPools.acquireMountContent(mContext3, mLifecycle.getId()));
+    assertThat(acquireMountContent(mContext3, mLifecycle.getId())).isNull();
   }
 }

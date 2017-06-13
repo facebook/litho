@@ -28,7 +28,12 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RuntimeEnvironment;
 
-import static org.junit.Assert.assertEquals;
+import static com.facebook.litho.Column.create;
+import static com.facebook.litho.SizeSpec.EXACTLY;
+import static com.facebook.litho.SizeSpec.makeSizeSpec;
+import static com.facebook.yoga.YogaEdge.ALL;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.robolectric.RuntimeEnvironment.application;
 
 @PrepareForTest({Component.class})
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
@@ -47,9 +52,9 @@ public class LayoutStateCalculateVisibilityOutputsTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c)
+        return create(c)
             .child(
-                Column.create(c)
+                create(c)
                     .child(
                         TestDrawableComponent.create(c)
                             .withLayout()
@@ -64,13 +69,13 @@ public class LayoutStateCalculateVisibilityOutputsTest {
     };
 
     LayoutState layoutState = calculateLayoutState(
-        RuntimeEnvironment.application,
+        application,
         component,
         -1,
-        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
-        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
+        makeSizeSpec(100, EXACTLY),
+        makeSizeSpec(100, EXACTLY));
 
-    assertEquals(2, layoutState.getVisibilityOutputCount());
+    assertThat(layoutState.getVisibilityOutputCount()).isEqualTo(2);
   }
 
   @Test
@@ -78,9 +83,9 @@ public class LayoutStateCalculateVisibilityOutputsTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c)
+        return create(c)
             .child(
-                Column.create(c)
+                create(c)
                     .child(
                         TestDrawableComponent.create(c)
                             .withLayout()
@@ -95,13 +100,13 @@ public class LayoutStateCalculateVisibilityOutputsTest {
     };
 
     LayoutState layoutState = calculateLayoutState(
-        RuntimeEnvironment.application,
+        application,
         component,
         -1,
-        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
-        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
+        makeSizeSpec(100, EXACTLY),
+        makeSizeSpec(100, EXACTLY));
 
-    assertEquals(2, layoutState.getVisibilityOutputCount());
+    assertThat(layoutState.getVisibilityOutputCount()).isEqualTo(2);
   }
 
   @Test
@@ -109,9 +114,9 @@ public class LayoutStateCalculateVisibilityOutputsTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c)
+        return create(c)
             .child(
-                Column.create(c)
+                create(c)
                     .child(
                         TestDrawableComponent.create(c)
                             .withLayout()
@@ -126,13 +131,13 @@ public class LayoutStateCalculateVisibilityOutputsTest {
     };
 
     LayoutState layoutState = calculateLayoutState(
-        RuntimeEnvironment.application,
+        application,
         component,
         -1,
-        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
-        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
+        makeSizeSpec(100, EXACTLY),
+        makeSizeSpec(100, EXACTLY));
 
-    assertEquals(2, layoutState.getVisibilityOutputCount());
+    assertThat(layoutState.getVisibilityOutputCount()).isEqualTo(2);
   }
 
   @Test
@@ -141,7 +146,7 @@ public class LayoutStateCalculateVisibilityOutputsTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c)
+        return create(c)
             .child(
                 TestLayoutComponent.create(c, 0, 0, true, true, false, isDelegate)
                     .withLayout()
@@ -152,13 +157,13 @@ public class LayoutStateCalculateVisibilityOutputsTest {
     };
 
     LayoutState layoutState = calculateLayoutState(
-        RuntimeEnvironment.application,
+        application,
         component,
         -1,
-        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
-        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
+        makeSizeSpec(100, EXACTLY),
+        makeSizeSpec(100, EXACTLY));
 
-    assertEquals(1, layoutState.getVisibilityOutputCount());
+    assertThat(layoutState.getVisibilityOutputCount()).isEqualTo(1);
   }
 
   @Test
@@ -166,16 +171,16 @@ public class LayoutStateCalculateVisibilityOutputsTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c)
+        return create(c)
             .child(
-                Column.create(c)
+                create(c)
                     .child(
                         TestLayoutComponent.create(c)
                             .withLayout()
                             .visibleHandler(c.newEventHandler(1)))
                     .invisibleHandler(c.newEventHandler(2)))
             .child(
-                Column.create(c)
+                create(c)
                     .child(
                         TestLayoutComponent.create(c)
                             .withLayout()
@@ -187,14 +192,14 @@ public class LayoutStateCalculateVisibilityOutputsTest {
     };
 
     LayoutState layoutState = calculateLayoutState(
-        RuntimeEnvironment.application,
+        application,
         component,
         -1,
-        SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
-        SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY));
+        makeSizeSpec(350, EXACTLY),
+        makeSizeSpec(200, EXACTLY));
 
     // Check total layout outputs.
-    assertEquals(4, layoutState.getVisibilityOutputCount());
+    assertThat(layoutState.getVisibilityOutputCount()).isEqualTo(4);
 
     // Check number of Components with VisibleEvent handlers.
     int visibleHandlerCount = 0;
@@ -204,7 +209,7 @@ public class LayoutStateCalculateVisibilityOutputsTest {
       }
     }
 
-    assertEquals(2, visibleHandlerCount);
+    assertThat(visibleHandlerCount).isEqualTo(2);
   }
 
   @Test
@@ -212,7 +217,7 @@ public class LayoutStateCalculateVisibilityOutputsTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c)
+        return create(c)
             .child(
                 TestDrawableComponent.create(c)
                     .withLayout()
@@ -223,13 +228,13 @@ public class LayoutStateCalculateVisibilityOutputsTest {
     };
 
     final LayoutState layoutState = calculateLayoutState(
-        RuntimeEnvironment.application,
+        application,
         component,
         -1,
-        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
-        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
+        makeSizeSpec(100, EXACTLY),
+        makeSizeSpec(100, EXACTLY));
 
-    assertEquals(1, layoutState.getVisibilityOutputCount());
+    assertThat(layoutState.getVisibilityOutputCount()).isEqualTo(1);
   }
 
   @Test
@@ -242,13 +247,13 @@ public class LayoutStateCalculateVisibilityOutputsTest {
     };
 
     LayoutState layoutState = calculateLayoutState(
-        RuntimeEnvironment.application,
+        application,
         componentWithNullLayout,
         -1,
-        SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
-        SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY));
+        makeSizeSpec(350, EXACTLY),
+        makeSizeSpec(200, EXACTLY));
 
-    assertEquals(0, layoutState.getVisibilityOutputCount());
+    assertThat(layoutState.getVisibilityOutputCount()).isEqualTo(0);
   }
 
   @Test
@@ -256,8 +261,8 @@ public class LayoutStateCalculateVisibilityOutputsTest {
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c)
-            .paddingPx(YogaEdge.ALL, 2)
+        return create(c)
+            .paddingPx(ALL, 2)
             .child(new TestNullLayoutComponent())
             .invisibleHandler(c.newEventHandler(2))
             .build();
@@ -265,13 +270,13 @@ public class LayoutStateCalculateVisibilityOutputsTest {
     };
 
     LayoutState layoutState = calculateLayoutState(
-        RuntimeEnvironment.application,
+        application,
         component,
         -1,
-        SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
-        SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY));
+        makeSizeSpec(350, EXACTLY),
+        makeSizeSpec(200, EXACTLY));
 
-    assertEquals(1, layoutState.getVisibilityOutputCount());
+    assertThat(layoutState.getVisibilityOutputCount()).isEqualTo(1);
   }
 
   private static LayoutState calculateLayoutState(

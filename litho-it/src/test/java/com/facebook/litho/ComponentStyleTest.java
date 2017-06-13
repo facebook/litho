@@ -28,7 +28,13 @@ import org.junit.runner.RunWith;
 import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 
-import static org.junit.Assert.assertEquals;
+import static com.facebook.litho.it.R.attr.testAttrLargePadding;
+import static com.facebook.litho.it.R.attr.testAttrLargeText;
+import static com.facebook.litho.it.R.style.PaddingStyle;
+import static com.facebook.litho.it.R.style.TextSizeStyle;
+import static com.facebook.yoga.YogaEdge.ALL;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.powermock.reflect.Whitebox.getInternalState;
 
 @RunWith(ComponentsTestRunner.class)
 @org.junit.Ignore("t16280359")
@@ -51,101 +57,101 @@ public class ComponentStyleTest {
   @Test
   public void testStyleProp() {
     Component<Text> component =
-        Text.create(mContext, 0, R.style.TextSizeStyle)
+        Text.create(mContext, 0, TextSizeStyle)
             .text("text")
             .build();
-    assertEquals(mDimen, Whitebox.getInternalState(component, "textSize"));
+    assertThat(getInternalState(component, "textSize")).isEqualTo(mDimen);
   }
 
   @Test
   public void testOverrideStyleProp() {
     Component<Text> component =
-        Text.create(mContext, 0, R.style.TextSizeStyle)
+        Text.create(mContext, 0, TextSizeStyle)
             .text("text")
             .textSizePx(2 * mDimen)
             .build();
-    assertEquals(2 * mDimen, Whitebox.getInternalState(component, "textSize"));
+    assertThat(getInternalState(component, "textSize")).isEqualTo(2 * mDimen);
   }
 
   @Test
   public void testStyleLayout() {
     InternalNode node = (InternalNode)
-        Text.create(mContext, 0, R.style.PaddingStyle)
+        Text.create(mContext, 0, PaddingStyle)
             .text("text")
             .buildWithLayout();
     node.calculateLayout();
-    assertEquals(mDimen, node.getPaddingLeft());
+    assertThat(node.getPaddingLeft()).isEqualTo(mDimen);
   }
 
   @Test
   public void testOverrideStyleLayout() {
     InternalNode node = (InternalNode)
-        Text.create(mContext, 0, R.style.PaddingStyle)
+        Text.create(mContext, 0, PaddingStyle)
             .text("text")
             .withLayout()
-            .paddingPx(YogaEdge.ALL, mDimen * 2)
+            .paddingPx(ALL, mDimen * 2)
             .build();
     node.calculateLayout();
-    assertEquals(2 * mDimen, node.getPaddingLeft());
+    assertThat(node.getPaddingLeft()).isEqualTo(2 * mDimen);
   }
 
   @Test
   public void testAttributeStyleProp() {
     Component<Text> component =
-        Text.create(mContext, R.attr.testAttrLargeText, 0)
+        Text.create(mContext, testAttrLargeText, 0)
             .text("text")
             .build();
-    assertEquals(mLargeDimen, Whitebox.getInternalState(component, "textSize"));
+    assertThat(getInternalState(component, "textSize")).isEqualTo(mLargeDimen);
   }
 
   @Test
   public void testOverrideAttributeStyleProp() {
     Component<Text> component =
-        Text.create(mContext, R.attr.testAttrLargeText, 0)
+        Text.create(mContext, testAttrLargeText, 0)
             .text("text")
             .textSizePx(mDimen)
             .build();
-    assertEquals(mDimen, Whitebox.getInternalState(component, "textSize"));
+    assertThat(getInternalState(component, "textSize")).isEqualTo(mDimen);
   }
 
   @Test
   public void testAttributeStyleLayout() {
     InternalNode node = (InternalNode)
-        Text.create(mContext, R.attr.testAttrLargePadding, 0)
+        Text.create(mContext, testAttrLargePadding, 0)
             .text("text")
             .buildWithLayout();
     node.calculateLayout();
-    assertEquals(mLargeDimen, node.getPaddingLeft());
+    assertThat(node.getPaddingLeft()).isEqualTo(mLargeDimen);
   }
 
   @Test
   public void testOverrideAttributeStyleLayout() {
     InternalNode node = (InternalNode)
-        Text.create(mContext, R.attr.testAttrLargePadding, 0)
+        Text.create(mContext, testAttrLargePadding, 0)
             .text("text")
             .withLayout()
-            .paddingPx(YogaEdge.ALL, mDimen * 2)
+            .paddingPx(ALL, mDimen * 2)
             .build();
     node.calculateLayout();
-    assertEquals(2 * mDimen, node.getPaddingLeft());
+    assertThat(node.getPaddingLeft()).isEqualTo(2 * mDimen);
   }
 
   @Test
   public void testStyleResOverridenByAttrResForProp() {
     Component<Text> component =
-        Text.create(mContext, R.attr.testAttrLargeText, R.style.TextSizeStyle)
+        Text.create(mContext, testAttrLargeText, TextSizeStyle)
             .text("text")
             .build();
-    assertEquals(mLargeDimen, Whitebox.getInternalState(component, "textSize"));
+    assertThat(getInternalState(component, "textSize")).isEqualTo(mLargeDimen);
   }
 
   @Test
   public void testStyleResOverridenByAttrResForLayout() {
     InternalNode node = (InternalNode)
-        Text.create(mContext, R.attr.testAttrLargePadding, R.style.PaddingStyle)
+        Text.create(mContext, testAttrLargePadding, PaddingStyle)
             .text("text")
             .buildWithLayout();
     node.calculateLayout();
-    assertEquals(mLargeDimen, node.getPaddingLeft());
+    assertThat(node.getPaddingLeft()).isEqualTo(mLargeDimen);
   }
 }

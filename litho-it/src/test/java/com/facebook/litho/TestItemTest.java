@@ -34,20 +34,20 @@ public class TestItemTest {
   public void testPositionAndSizeSet() {
     mTestItem.setBounds(0, 1, 3, 4);
 
-    assertEquals(0, mTestItem.getBounds().left);
-    assertEquals(1, mTestItem.getBounds().top);
-    assertEquals(3, mTestItem.getBounds().right);
-    assertEquals(4, mTestItem.getBounds().bottom);
+    assertThat(mTestItem.getBounds().left).isEqualTo(0);
+    assertThat(mTestItem.getBounds().top).isEqualTo(1);
+    assertThat(mTestItem.getBounds().right).isEqualTo(3);
+    assertThat(mTestItem.getBounds().bottom).isEqualTo(4);
   }
 
   @Test
   public void testRectBoundsSet() {
     final Rect bounds = new Rect(0, 1, 3, 4);
     mTestItem.setBounds(bounds);
-    assertEquals(0, mTestItem.getBounds().left);
-    assertEquals(1, mTestItem.getBounds().top);
-    assertEquals(3, mTestItem.getBounds().right);
-    assertEquals(4, mTestItem.getBounds().bottom);
+    assertThat(mTestItem.getBounds().left).isEqualTo(0);
+    assertThat(mTestItem.getBounds().top).isEqualTo(1);
+    assertThat(mTestItem.getBounds().right).isEqualTo(3);
+    assertThat(mTestItem.getBounds().bottom).isEqualTo(4);
   }
 
   @Test

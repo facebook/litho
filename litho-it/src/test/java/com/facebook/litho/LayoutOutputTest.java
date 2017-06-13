@@ -17,7 +17,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static junit.framework.Assert.assertEquals;
+import static com.facebook.litho.LayoutOutput.TYPE_BACKGROUND;
+import static com.facebook.litho.LayoutOutput.TYPE_CONTENT;
+import static com.facebook.litho.LayoutOutput.TYPE_FOREGROUND;
+import static com.facebook.litho.LayoutOutput.TYPE_HOST;
+import static com.facebook.litho.LayoutStateOutputIdCalculator.calculateLayoutOutputId;
+import static com.facebook.litho.LayoutStateOutputIdCalculator.getLevelFromId;
+import static com.facebook.litho.LayoutStateOutputIdCalculator.getSequenceFromId;
+import static java.lang.Long.toBinaryString;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(ComponentsTestRunner.class)
 public class LayoutOutputTest {
@@ -55,22 +63,22 @@ public class LayoutOutputTest {
   @Test
   public void testPositionAndSizeSet() {
     mLayoutOutput.setBounds(0, 1, 3, 4);
-    assertEquals(0, mLayoutOutput.getBounds().left);
-    assertEquals(1, mLayoutOutput.getBounds().top);
-    assertEquals(3, mLayoutOutput.getBounds().right);
-    assertEquals(4, mLayoutOutput.getBounds().bottom);
+    assertThat(mLayoutOutput.getBounds().left).isEqualTo(0);
+    assertThat(mLayoutOutput.getBounds().top).isEqualTo(1);
+    assertThat(mLayoutOutput.getBounds().right).isEqualTo(3);
+    assertThat(mLayoutOutput.getBounds().bottom).isEqualTo(4);
   }
 
   @Test
   public void testHostMarkerSet() {
     mLayoutOutput.setHostMarker(10l);
-    assertEquals(10, mLayoutOutput.getHostMarker());
+    assertThat(mLayoutOutput.getHostMarker()).isEqualTo(10);
   }
 
   @Test
   public void testFlagsSet() {
     mLayoutOutput.setFlags(1);
-    assertEquals(1, mLayoutOutput.getFlags());
+    assertThat(mLayoutOutput.getFlags()).isEqualTo(1);
   }
 
   @Test
@@ -81,24 +89,25 @@ public class LayoutOutputTest {
         return LIFECYCLE_TEST_ID;
       }
     };
-    Component component = new TestComponent(lifecycle) {};
+    Component component = new TestComponent(lifecycle) {
+    };
 
     mLayoutOutput.setComponent(component);
 
-    long stableId = LayoutStateOutputIdCalculator.calculateLayoutOutputId(
+    long stableId = calculateLayoutOutputId(
         mLayoutOutput,
         LEVEL_TEST,
-        LayoutOutput.TYPE_CONTENT,
+        TYPE_CONTENT,
         SEQ_TEST);
 
-    long stableIdSeq2 = LayoutStateOutputIdCalculator.calculateLayoutOutputId(
+    long stableIdSeq2 = calculateLayoutOutputId(
         mLayoutOutput,
         LEVEL_TEST + 1,
-        LayoutOutput.TYPE_CONTENT,
+        TYPE_CONTENT,
         SEQ_TEST + 1);
 
-    assertEquals("100000001000000000000000001", Long.toBinaryString(stableId));
-    assertEquals("100000010000000000000000010", Long.toBinaryString(stableIdSeq2));
+    assertThat(toBinaryString(stableId)).isEqualTo("100000001000000000000000001");
+    assertThat(toBinaryString(stableIdSeq2)).isEqualTo("100000010000000000000000010");
   }
 
   @Test
@@ -109,18 +118,19 @@ public class LayoutOutputTest {
         return LIFECYCLE_TEST_ID;
       }
     };
-    Component component = new TestComponent(lifecycle) {};
+    Component component = new TestComponent(lifecycle) {
+    };
 
     mLayoutOutput.setComponent(component);
     mLayoutOutput.setId(
-        LayoutStateOutputIdCalculator.calculateLayoutOutputId(
+        calculateLayoutOutputId(
             mLayoutOutput,
             LEVEL_TEST,
-            LayoutOutput.TYPE_BACKGROUND,
+            TYPE_BACKGROUND,
             SEQ_TEST));
 
     long stableId = mLayoutOutput.getId();
-    assertEquals("100000001010000000000000001", Long.toBinaryString(stableId));
+    assertThat(toBinaryString(stableId)).isEqualTo("100000001010000000000000001");
   }
 
   @Test
@@ -131,18 +141,19 @@ public class LayoutOutputTest {
         return LIFECYCLE_TEST_ID;
       }
     };
-    Component component = new TestComponent(lifecycle) {};
+    Component component = new TestComponent(lifecycle) {
+    };
 
     mLayoutOutput.setComponent(component);
     mLayoutOutput.setId(
-        LayoutStateOutputIdCalculator.calculateLayoutOutputId(
+        calculateLayoutOutputId(
             mLayoutOutput,
             LEVEL_TEST,
-            LayoutOutput.TYPE_FOREGROUND,
+            TYPE_FOREGROUND,
             SEQ_TEST));
 
     long stableId = mLayoutOutput.getId();
-    assertEquals("100000001100000000000000001", Long.toBinaryString(stableId));
+    assertThat(toBinaryString(stableId)).isEqualTo("100000001100000000000000001");
   }
 
   @Test
@@ -153,18 +164,19 @@ public class LayoutOutputTest {
         return LIFECYCLE_TEST_ID;
       }
     };
-    Component component = new TestComponent(lifecycle) {};
+    Component component = new TestComponent(lifecycle) {
+    };
 
     mLayoutOutput.setComponent(component);
     mLayoutOutput.setId(
-        LayoutStateOutputIdCalculator.calculateLayoutOutputId(
+        calculateLayoutOutputId(
             mLayoutOutput,
             LEVEL_TEST,
-            LayoutOutput.TYPE_HOST,
+            TYPE_HOST,
             SEQ_TEST));
 
     long stableId = mLayoutOutput.getId();
-    assertEquals("100000001110000000000000001", Long.toBinaryString(stableId));
+    assertThat(toBinaryString(stableId)).isEqualTo("100000001110000000000000001");
   }
 
   @Test
@@ -175,25 +187,26 @@ public class LayoutOutputTest {
         return LIFECYCLE_TEST_ID;
       }
     };
-    Component component = new TestComponent(lifecycle) {};
+    Component component = new TestComponent(lifecycle) {
+    };
 
     mLayoutOutput.setComponent(component);
     mLayoutOutput.setId(
-        LayoutStateOutputIdCalculator.calculateLayoutOutputId(
+        calculateLayoutOutputId(
             mLayoutOutput,
             LEVEL_TEST,
-            LayoutOutput.TYPE_HOST,
+            TYPE_HOST,
             SEQ_TEST));
-    assertEquals(LayoutStateOutputIdCalculator.getLevelFromId(mLayoutOutput.getId()), LEVEL_TEST);
+    assertThat(LEVEL_TEST).isEqualTo(getLevelFromId(mLayoutOutput.getId()));
 
     mLayoutOutput.setId(
-        LayoutStateOutputIdCalculator.calculateLayoutOutputId(
+        calculateLayoutOutputId(
             mLayoutOutput,
             MAX_LEVEL_TEST,
-            LayoutOutput.TYPE_CONTENT,
+            TYPE_CONTENT,
             SEQ_TEST));
 
-    assertEquals(LayoutStateOutputIdCalculator.getLevelFromId(mLayoutOutput.getId()), MAX_LEVEL_TEST);
+    assertThat(MAX_LEVEL_TEST).isEqualTo(getLevelFromId(mLayoutOutput.getId()));
   }
 
   @Test
@@ -204,25 +217,26 @@ public class LayoutOutputTest {
         return LIFECYCLE_TEST_ID;
       }
     };
-    Component component = new TestComponent(lifecycle) {};
+    Component component = new TestComponent(lifecycle) {
+    };
 
     mLayoutOutput.setComponent(component);
     mLayoutOutput.setId(
-        LayoutStateOutputIdCalculator.calculateLayoutOutputId(
+        calculateLayoutOutputId(
             mLayoutOutput,
             LEVEL_TEST,
-            LayoutOutput.TYPE_HOST,
+            TYPE_HOST,
             SEQ_TEST));
-    assertEquals(LayoutStateOutputIdCalculator.getSequenceFromId(mLayoutOutput.getId()), SEQ_TEST);
+    assertThat(SEQ_TEST).isEqualTo(getSequenceFromId(mLayoutOutput.getId()));
 
     mLayoutOutput.setId(
-        LayoutStateOutputIdCalculator.calculateLayoutOutputId(
+        calculateLayoutOutputId(
             mLayoutOutput,
             LEVEL_TEST,
-            LayoutOutput.TYPE_CONTENT,
+            TYPE_CONTENT,
             MAX_SEQ_TEST));
 
-    assertEquals(LayoutStateOutputIdCalculator.getSequenceFromId(mLayoutOutput.getId()), MAX_SEQ_TEST);
+    assertThat(MAX_SEQ_TEST).isEqualTo(getSequenceFromId(mLayoutOutput.getId()));
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -270,7 +284,7 @@ public class LayoutOutputTest {
     Rect mountBounds = new Rect();
     mLayoutOutput.getMountBounds(mountBounds);
 
-    assertEquals(mLayoutOutput.getBounds(), mountBounds);
+    assertThat(mountBounds).isEqualTo(mLayoutOutput.getBounds());
   }
 
   @Test
@@ -282,6 +296,6 @@ public class LayoutOutputTest {
     Rect mountBounds = new Rect();
     mLayoutOutput.getMountBounds(mountBounds);
 
-    assertEquals(new Rect(5, 8, 5, 8), mountBounds);
+    assertThat(mountBounds).isEqualTo(new Rect(5, 8, 5, 8));
   }
 }

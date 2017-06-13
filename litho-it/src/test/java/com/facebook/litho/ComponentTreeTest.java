@@ -24,14 +24,16 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowLooper;
 
+import static com.facebook.litho.ComponentTree.create;
 import static com.facebook.litho.SizeSpec.AT_MOST;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.fail;
+import static org.powermock.reflect.Whitebox.getInternalState;
 
 @RunWith(ComponentsTestRunner.class)
 public class ComponentTreeTest {
@@ -105,19 +107,15 @@ public class ComponentTreeTest {
       int heightSpec) {
     // Spec specified in create
 
-    Assert.assertTrue(componentTreeHasSizeSpec(componentTree));
-    assertEquals(
-        widthSpec,
-        Whitebox.getInternalState(componentTree, "mWidthSpec"));
+    assertThat(componentTreeHasSizeSpec(componentTree)).isTrue();
+    assertThat(getInternalState(componentTree, "mWidthSpec")).isEqualTo(widthSpec);
 
-    assertEquals(
-        heightSpec,
-        Whitebox.getInternalState(componentTree, "mHeightSpec"));
+    assertThat(getInternalState(componentTree, "mHeightSpec")).isEqualTo(heightSpec);
 
-    LayoutState mainThreadLayoutState = Whitebox.getInternalState(
+    LayoutState mainThreadLayoutState = getInternalState(
         componentTree, "mMainThreadLayoutState");
 
-    LayoutState backgroundLayoutState = Whitebox.getInternalState(
+    LayoutState backgroundLayoutState = getInternalState(
         componentTree, "mBackgroundLayoutState");
 
     LayoutState layoutState = null;
@@ -133,11 +131,10 @@ public class ComponentTreeTest {
     }
 
     Assert.assertNull(nullLayoutState);
-    Assert.assertTrue(
-        layoutState.isCompatibleComponentAndSpec(
-            mComponent.getId(),
-            widthSpec,
-            heightSpec));
+    assertThat(layoutState.isCompatibleComponentAndSpec(
+        mComponent.getId(),
+        widthSpec,
+        heightSpec)).isTrue();
   }
 
   @Test
@@ -174,7 +171,7 @@ public class ComponentTreeTest {
   @Test
   public void testSetSizeSpecAsync() {
     ComponentTree componentTree =
-        ComponentTree.create(mContext, mComponent)
+        create(mContext, mComponent)
             .incrementalMount(false)
             .layoutDiffing(false)
             .build();
@@ -182,15 +179,11 @@ public class ComponentTreeTest {
 
     // Only fields changed but no layout is done yet.
 
-    Assert.assertTrue(componentTreeHasSizeSpec(componentTree));
-    assertEquals(
-        mWidthSpec,
-        Whitebox.getInternalState(componentTree, "mWidthSpec"));
-    assertEquals(
-        mHeightSpec,
-        Whitebox.getInternalState(componentTree, "mHeightSpec"));
-    Assert.assertNull(Whitebox.getInternalState(componentTree, "mMainThreadLayoutState"));
-    Assert.assertNull(Whitebox.getInternalState(componentTree, "mBackgroundLayoutState"));
+    assertThat(componentTreeHasSizeSpec(componentTree)).isTrue();
+    assertThat(getInternalState(componentTree, "mWidthSpec")).isEqualTo(mWidthSpec);
+    assertThat(getInternalState(componentTree, "mHeightSpec")).isEqualTo(mHeightSpec);
+    Assert.assertNull(getInternalState(componentTree, "mMainThreadLayoutState"));
+    Assert.assertNull(getInternalState(componentTree, "mBackgroundLayoutState"));
 
     // Now the background thread run the queued task.
     mLayoutThreadShadowLooper.runOneTask();
@@ -267,7 +260,7 @@ public class ComponentTreeTest {
   @Test
   public void testSetCompatibleSizeSpec() {
     ComponentTree componentTree =
-        ComponentTree.create(mContext, mComponent)
+        create(mContext, mComponent)
             .incrementalMount(false)
             .layoutDiffing(false)
             .build();
@@ -275,31 +268,31 @@ public class ComponentTreeTest {
     Size size = new Size();
 
     componentTree.setSizeSpec(
-        SizeSpec.makeSizeSpec(100, AT_MOST),
-        SizeSpec.makeSizeSpec(100, AT_MOST),
+        makeSizeSpec(100, AT_MOST),
+        makeSizeSpec(100, AT_MOST),
         size);
 
     assertEquals(100, size.width, 0.0);
     assertEquals(100, size.height, 0.0);
 
     LayoutState firstLayoutState = componentTree.getBackgroundLayoutState();
-    assertNotNull(firstLayoutState);
+    assertThat(firstLayoutState).isNotNull();
 
     componentTree.setSizeSpec(
-        SizeSpec.makeSizeSpec(100, EXACTLY),
-        SizeSpec.makeSizeSpec(100, EXACTLY),
+        makeSizeSpec(100, EXACTLY),
+        makeSizeSpec(100, EXACTLY),
         size);
 
     assertEquals(100, size.width, 0.0);
     assertEquals(100, size.height, 0.0);
 
-    assertEquals(firstLayoutState, componentTree.getBackgroundLayoutState());
+    assertThat(componentTree.getBackgroundLayoutState()).isEqualTo(firstLayoutState);
   }
 
   @Test
   public void testSetCompatibleSizeSpecWithDifferentRoot() {
     ComponentTree componentTree =
-        ComponentTree.create(mContext, mComponent)
+        create(mContext, mComponent)
             .incrementalMount(false)
             .layoutDiffing(false)
             .build();
@@ -307,20 +300,20 @@ public class ComponentTreeTest {
     Size size = new Size();
 
     componentTree.setSizeSpec(
-        SizeSpec.makeSizeSpec(100, AT_MOST),
-        SizeSpec.makeSizeSpec(100, AT_MOST),
+        makeSizeSpec(100, AT_MOST),
+        makeSizeSpec(100, AT_MOST),
         size);
 
     assertEquals(100, size.width, 0.0);
     assertEquals(100, size.height, 0.0);
 
     LayoutState firstLayoutState = componentTree.getBackgroundLayoutState();
-    assertNotNull(firstLayoutState);
+    assertThat(firstLayoutState).isNotNull();
 
     componentTree.setRootAndSizeSpec(
         TestDrawableComponent.create(mContext).build(),
-        SizeSpec.makeSizeSpec(100, EXACTLY),
-        SizeSpec.makeSizeSpec(100, EXACTLY),
+        makeSizeSpec(100, EXACTLY),
+        makeSizeSpec(100, EXACTLY),
         size);
 
     assertNotEquals(firstLayoutState, componentTree.getBackgroundLayoutState());
@@ -389,7 +382,7 @@ public class ComponentTreeTest {
   public void testComponentTreeReleaseClearsView() {
     Component component = TestDrawableComponent.create(mContext)
         .build();
-    ComponentTree componentTree = ComponentTree.create(
+    ComponentTree componentTree = create(
         mContext,
         component)
         .incrementalMount(false)
@@ -399,11 +392,11 @@ public class ComponentTreeTest {
     LithoView lithoView = new LithoView(mContext);
     lithoView.setComponentTree(componentTree);
 
-    assertEquals(lithoView.getComponentTree(), componentTree);
+    assertThat(componentTree).isEqualTo(lithoView.getComponentTree());
 
     componentTree.release();
 
-    assertNull(lithoView.getComponentTree());
+    assertThat(lithoView.getComponentTree()).isNull();
   }
 
   @Test
@@ -437,7 +430,7 @@ public class ComponentTreeTest {
     Component component = TestDrawableComponent.create(mContext)
         .build();
 
-    ComponentTree componentTree = ComponentTree.create(
+    ComponentTree componentTree = create(
         mContext,
         component)
         .incrementalMount(false)
@@ -448,8 +441,8 @@ public class ComponentTreeTest {
     LithoView lithoView1 = new LithoView(mContext);
     lithoView1.setComponentTree(componentTree);
 
-    assertEquals(lithoView1, getLithoView(componentTree));
-    assertEquals(componentTree, getComponentTree(lithoView1));
+    assertThat(getLithoView(componentTree)).isEqualTo(lithoView1);
+    assertThat(getComponentTree(lithoView1)).isEqualTo(componentTree);
 
     // Attach second view.
     LithoView lithoView2 = new LithoView(mContext);
@@ -458,8 +451,8 @@ public class ComponentTreeTest {
 
     lithoView2.setComponentTree(componentTree);
 
-    assertEquals(lithoView2, getLithoView(componentTree));
-    assertEquals(componentTree, getComponentTree(lithoView2));
+    assertThat(getLithoView(componentTree)).isEqualTo(lithoView2);
+    assertThat(getComponentTree(lithoView2)).isEqualTo(componentTree);
 
     Assert.assertNull(getComponentTree(lithoView1));
   }

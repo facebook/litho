@@ -21,6 +21,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
+import static com.facebook.litho.Column.create;
+import static com.facebook.litho.testing.ComponentTestHelper.mountComponent;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -37,83 +40,83 @@ public class MountStateViewClickTest {
 
   @Test
   public void testInnerComponentHostClickable() {
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c)
+            return create(c)
                 .child(
-                    Column.create(c)
+                    create(c)
                         .clickHandler(c.newEventHandler(1))
                         .child(TestViewComponent.create(c)))
                 .build();
           }
         });
 
-    assertEquals(1, lithoView.getChildCount());
-    assertFalse(lithoView.isClickable());
+    assertThat(lithoView.getChildCount()).isEqualTo(1);
+    assertThat(lithoView.isClickable()).isFalse();
 
     ComponentHost innerHost = (ComponentHost) lithoView.getChildAt(0);
-    assertTrue(innerHost.isClickable());
+    assertThat(innerHost.isClickable()).isTrue();
   }
 
   @Test
   public void testInnerComponentHostClickableWithLongClickHandler() {
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c)
+            return create(c)
                 .child(
-                    Column.create(c)
+                    create(c)
                         .longClickHandler(c.newEventHandler(1))
                         .child(TestViewComponent.create(c)))
                 .build();
           }
         });
 
-    assertEquals(1, lithoView.getChildCount());
-    assertFalse(lithoView.isClickable());
+    assertThat(lithoView.getChildCount()).isEqualTo(1);
+    assertThat(lithoView.isClickable()).isFalse();
 
     ComponentHost innerHost = (ComponentHost) lithoView.getChildAt(0);
-    assertTrue(innerHost.isLongClickable());
+    assertThat(innerHost.isLongClickable()).isTrue();
   }
 
   @Test
   public void testRootHostClickable() {
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c)
+            return create(c)
                 .clickHandler(c.newEventHandler(1))
                 .child(TestDrawableComponent.create(c))
                 .build();
           }
         });
 
-    assertEquals(0, lithoView.getChildCount());
-    assertTrue(lithoView.isClickable());
+    assertThat(lithoView.getChildCount()).isEqualTo(0);
+    assertThat(lithoView.isClickable()).isTrue();
   }
 
   @Test
   public void testRootHostClickableWithLongClickHandler() {
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
+    final LithoView lithoView = mountComponent(
         mContext,
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c)
+            return create(c)
                 .longClickHandler(c.newEventHandler(1))
                 .child(TestDrawableComponent.create(c))
                 .build();
           }
         });
 
-    assertEquals(0, lithoView.getChildCount());
-    assertTrue(lithoView.isLongClickable());
+    assertThat(lithoView.getChildCount()).isEqualTo(0);
+    assertThat(lithoView.isLongClickable()).isTrue();
   }
 }

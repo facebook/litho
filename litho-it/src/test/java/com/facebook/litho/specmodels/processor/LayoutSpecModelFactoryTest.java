@@ -20,6 +20,7 @@ import com.facebook.litho.specmodels.model.LayoutSpecModel;
 import org.junit.Before;
 import org.junit.Test;
 
+import static com.facebook.litho.specmodels.processor.LayoutSpecModelFactory.create;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -47,7 +48,7 @@ public class LayoutSpecModelFactoryTest {
   @Test
   public void testCreate() {
     LayoutSpecModel layoutSpecModel =
-        LayoutSpecModelFactory.create(mElements, mTypeElement, mDependencyInjectionHelper);
+        create(mElements, mTypeElement, mDependencyInjectionHelper);
 
     assertThat(layoutSpecModel.getSpecName()).isEqualTo("TestSpec");
     assertThat(layoutSpecModel.getComponentName()).isEqualTo("Test");
@@ -55,9 +56,9 @@ public class LayoutSpecModelFactoryTest {
     assertThat(layoutSpecModel.getComponentTypeName().toString())
         .isEqualTo(TEST_QUALIFIED_COMPONENT_NAME);
 
-    assertThat(layoutSpecModel.getDelegateMethods().size()).isEqualTo(0);
+    assertThat(layoutSpecModel.getDelegateMethods()).isEmpty();
 
-    assertThat(layoutSpecModel.getProps().size()).isEqualTo(0);
+    assertThat(layoutSpecModel.getProps()).isEmpty();
 
     assertThat(layoutSpecModel.hasInjectedDependencies()).isTrue();
     assertThat(layoutSpecModel.getDependencyInjectionHelper())

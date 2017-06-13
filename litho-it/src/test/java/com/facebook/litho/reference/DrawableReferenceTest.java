@@ -19,7 +19,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
-import static org.junit.Assert.assertEquals;
+import static com.facebook.litho.reference.DrawableReference.create;
+import static com.facebook.litho.reference.Reference.acquire;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.robolectric.RuntimeEnvironment.application;
 
 @RunWith(ComponentsTestRunner.class)
 public class DrawableReferenceTest {
@@ -27,15 +30,13 @@ public class DrawableReferenceTest {
   @Test
   public void testAcquire() {
     Drawable drawable = new ColorDrawable();
-    ComponentContext context = new ComponentContext(RuntimeEnvironment.application);
+    ComponentContext context = new ComponentContext(application);
 
-    assertEquals(
-        Reference.acquire(
-            context,
-            DrawableReference.create()
-                .drawable(drawable)
-                .build()),
-        drawable);
+    assertThat(drawable).isEqualTo(acquire(
+        context,
+        create()
+            .drawable(drawable)
+            .build()));
   }
 
 }

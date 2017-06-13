@@ -15,8 +15,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static com.facebook.litho.dataflow.GraphBinding.create;
+import static com.facebook.litho.dataflow.TimingNode.END_INPUT;
+import static com.facebook.litho.dataflow.TimingNode.INITIAL_INPUT;
+import static com.facebook.litho.dataflow.UnitTestTimingSource.FRAME_TIME_MS;
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(ComponentsTestRunner.class)
 public class GraphBindingFinishesTest {
@@ -47,17 +51,17 @@ public class GraphBindingFinishesTest {
   @Test
   public void testBindingThatFinishes() {
     int durationMs = 300;
-    int numExpectedFrames = durationMs / UnitTestTimingSource.FRAME_TIME_MS + 2;
+    int numExpectedFrames = durationMs / FRAME_TIME_MS + 2;
 
     TimingNode timingNode = new TimingNode(durationMs);
     SimpleNode middle = new SimpleNode();
     OutputOnlyNode destination = new OutputOnlyNode();
 
-    GraphBinding binding = GraphBinding.create(mDataFlowGraph);
+    GraphBinding binding = create(mDataFlowGraph);
     binding.addBinding(timingNode, middle);
     binding.addBinding(middle, destination);
-    binding.addBinding(new ConstantNode(0f), timingNode, TimingNode.INITIAL_INPUT);
-    binding.addBinding(new ConstantNode(100f), timingNode, TimingNode.END_INPUT);
+    binding.addBinding(new ConstantNode(0f), timingNode, INITIAL_INPUT);
+    binding.addBinding(new ConstantNode(100f), timingNode, END_INPUT);
 
     TrackingBindingListener testListener = new TrackingBindingListener();
     binding.setListener(testListener);
@@ -65,13 +69,13 @@ public class GraphBindingFinishesTest {
 
     mTestTimingSource.step(numExpectedFrames / 2);
 
-    assertTrue(destination.getValue() < 100);
-    assertTrue(destination.getValue() > 0);
-    assertEquals(0, testListener.getNumFinishCalls());
+    assertThat(destination.getValue() < 100).isTrue();
+    assertThat(destination.getValue() > 0).isTrue();
+    assertThat(testListener.getNumFinishCalls()).isEqualTo(0);
 
     mTestTimingSource.step(numExpectedFrames / 2 + 1);
 
-    assertEquals(100f, destination.getValue());
-    assertEquals(1, testListener.getNumFinishCalls());
+    assertThat(destination.getValue()).isEqualTo(100f);
+    assertThat(testListener.getNumFinishCalls()).isEqualTo(1);
   }
 }

@@ -22,8 +22,10 @@ import static android.support.v7.widget.OrientationHelper.HORIZONTAL;
 import static android.support.v7.widget.OrientationHelper.VERTICAL;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
+import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.robolectric.RuntimeEnvironment.application;
 
 /**
  * Tests for {@link LinearLayoutInfo}
@@ -34,81 +36,81 @@ public class LinearLayoutInfoTest {
   @Test
   public void testOrientations() {
     final LinearLayoutInfo verticalLinearLayoutInfo = new LinearLayoutInfo(
-        RuntimeEnvironment.application,
+        application,
         VERTICAL,
         false);
 
-    assertEquals(verticalLinearLayoutInfo.getScrollDirection(), VERTICAL);
+    assertThat(VERTICAL).isEqualTo(verticalLinearLayoutInfo.getScrollDirection());
 
     final LinearLayoutInfo horizontalLinearLayoutInfo = new LinearLayoutInfo(
-        RuntimeEnvironment.application,
+        application,
         HORIZONTAL,
         false);
 
-    assertEquals(horizontalLinearLayoutInfo.getScrollDirection(), HORIZONTAL);
+    assertThat(HORIZONTAL).isEqualTo(horizontalLinearLayoutInfo.getScrollDirection());
   }
 
   @Test
   public void testGetLayoutManager() {
     final LinearLayoutInfo linearLayoutInfo = new LinearLayoutInfo(
-        RuntimeEnvironment.application,
+        application,
         VERTICAL,
         false);
 
-    assertTrue(linearLayoutInfo.getLayoutManager() instanceof LinearLayoutManager);
+    assertThat(linearLayoutInfo.getLayoutManager()).isInstanceOf(LinearLayoutManager.class);
   }
 
   @Test
   public void testApproximateRangeVertical() {
     final LinearLayoutInfo linearLayoutInfo = new LinearLayoutInfo(
-        RuntimeEnvironment.application,
+        application,
         VERTICAL,
         false);
 
     int rangeSize = linearLayoutInfo.approximateRangeSize(10, 10, 10, 100);
 
-    assertEquals(10, rangeSize);
+    assertThat(rangeSize).isEqualTo(10);
   }
 
   @Test
   public void testApproximateRangeHorizontal() {
     final LinearLayoutInfo linearLayoutInfo = new LinearLayoutInfo(
-        RuntimeEnvironment.application,
+        application,
         HORIZONTAL,
         false);
 
     int rangeSize = linearLayoutInfo.approximateRangeSize(10, 10, 100, 10);
 
-    assertEquals(10, rangeSize);
+    assertThat(rangeSize).isEqualTo(10);
   }
 
   @Test
   public void testGetChildMeasureSpecVertical() {
     final LinearLayoutInfo linearLayoutInfo = new LinearLayoutInfo(
-        RuntimeEnvironment.application,
+        application,
         VERTICAL,
         false);
-    final int sizeSpec = SizeSpec.makeSizeSpec(200, EXACTLY);
+    final int sizeSpec = makeSizeSpec(200, EXACTLY);
 
     final int heightSpec = linearLayoutInfo.getChildHeightSpec(sizeSpec, null);
-    assertEquals(heightSpec, SizeSpec.makeSizeSpec(0, UNSPECIFIED));
+    assertThat(makeSizeSpec(0, UNSPECIFIED)).isEqualTo(heightSpec);
 
     final int widthSpec = linearLayoutInfo.getChildWidthSpec(sizeSpec, null);
-    assertEquals(widthSpec, sizeSpec);
+    assertThat(sizeSpec).isEqualTo(widthSpec);
   }
 
   @Test
   public void testGetChildMeasureSpecHorizontal() {
     final LinearLayoutInfo linearLayoutInfo = new LinearLayoutInfo(
-        RuntimeEnvironment.application,
+        application,
         HORIZONTAL,
         false);
-    final int sizeSpec = SizeSpec.makeSizeSpec(200, EXACTLY);
+    final int sizeSpec = makeSizeSpec(200, EXACTLY);
 
     final int heightSpec = linearLayoutInfo.getChildHeightSpec(sizeSpec, null);
-    assertEquals(heightSpec, sizeSpec);
+    assertThat(sizeSpec).isEqualTo(heightSpec);
 
     final int widthSpec = linearLayoutInfo.getChildWidthSpec(sizeSpec, null);
-    assertEquals(widthSpec, SizeSpec.makeSizeSpec(0, UNSPECIFIED));
+    assertThat(makeSizeSpec(0, UNSPECIFIED)).isEqualTo(widthSpec);
   }
 }

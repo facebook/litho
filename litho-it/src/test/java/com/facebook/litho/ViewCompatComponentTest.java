@@ -21,6 +21,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
+import static com.facebook.litho.ViewCompatComponent.get;
+import static com.facebook.litho.testing.ComponentTestHelper.mountComponent;
+import static com.facebook.litho.testing.ComponentTestHelper.unbindComponent;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -64,14 +68,14 @@ public class ViewCompatComponentTest {
           }
         };
 
-    LithoView lithoView = ComponentTestHelper.mountComponent(
-        ViewCompatComponent.get(TEXT_VIEW_CREATOR, "TextView")
+    LithoView lithoView = mountComponent(
+        get(TEXT_VIEW_CREATOR, "TextView")
             .create(mContext)
             .viewBinder(binder));
 
-    assertEquals(1, lithoView.getMountItemCount());
+    assertThat(lithoView.getMountItemCount()).isEqualTo(1);
     TextView view = (TextView) lithoView.getMountItemAt(0).getContent();
-    assertEquals("Hello World!", view.getText());
+    assertThat(view.getText()).isEqualTo("Hello World!");
   }
 
   @Test
@@ -96,14 +100,14 @@ public class ViewCompatComponentTest {
           }
         };
 
-    LithoView lithoView = ComponentTestHelper.mountComponent(
-        ViewCompatComponent.get(TEXT_VIEW_CREATOR, "TextView")
+    LithoView lithoView = mountComponent(
+        get(TEXT_VIEW_CREATOR, "TextView")
             .create(mContext)
             .viewBinder(binder));
 
-    assertEquals(1, lithoView.getMountItemCount());
+    assertThat(lithoView.getMountItemCount()).isEqualTo(1);
     TextView view = (TextView) lithoView.getMountItemAt(0).getContent();
-    assertEquals("Hello World!", view.getText());
+    assertThat(view.getText()).isEqualTo("Hello World!");
   }
 
   @Test
@@ -128,15 +132,15 @@ public class ViewCompatComponentTest {
           }
         };
 
-    LithoView lithoView = ComponentTestHelper.mountComponent(
-        ViewCompatComponent.get(TEXT_VIEW_CREATOR, "TextView")
+    LithoView lithoView = mountComponent(
+        get(TEXT_VIEW_CREATOR, "TextView")
             .create(mContext)
             .viewBinder(binder));
 
-    ComponentTestHelper.unbindComponent(lithoView);
+    unbindComponent(lithoView);
 
-    assertEquals(1, lithoView.getMountItemCount());
+    assertThat(lithoView.getMountItemCount()).isEqualTo(1);
     TextView view = (TextView) lithoView.getMountItemAt(0).getContent();
-    assertEquals("", view.getText());
+    assertThat(view.getText()).isEqualTo("");
   }
 }

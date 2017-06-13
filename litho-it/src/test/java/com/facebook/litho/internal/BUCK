@@ -13,5 +13,6 @@ components_robolectric_test(
     deps = [
         make_dep_path("litho-core/src/main/java/com/facebook/litho/internal:internal"),
         COMPONENTS_JUNIT_TARGET,
+        COMPONENTS_ASSERTJ_TARGET,
     ],
 )

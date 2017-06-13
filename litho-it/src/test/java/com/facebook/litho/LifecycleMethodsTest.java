@@ -21,8 +21,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
+import static com.facebook.litho.testing.ComponentTestHelper.measureAndLayout;
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(ComponentsTestRunner.class)
 public class LifecycleMethodsTest {
@@ -61,28 +62,28 @@ public class LifecycleMethodsTest {
   @Test
   public void testLifecycle() {
     mLithoView.onAttachedToWindow();
-    ComponentTestHelper.measureAndLayout(mLithoView);
+    measureAndLayout(mLithoView);
 
-    assertEquals(LifecycleStep.ON_BIND, mComponent.getCurrentStep());
+    assertThat(mComponent.getCurrentStep()).isEqualTo(LifecycleStep.ON_BIND);
 
     mLithoView.onDetachedFromWindow();
-    assertEquals(LifecycleStep.ON_UNBIND, mComponent.getCurrentStep());
+    assertThat(mComponent.getCurrentStep()).isEqualTo(LifecycleStep.ON_UNBIND);
 
     mLithoView.onAttachedToWindow();
-    assertEquals(LifecycleStep.ON_BIND, mComponent.getCurrentStep());
+    assertThat(mComponent.getCurrentStep()).isEqualTo(LifecycleStep.ON_BIND);
 
     mComponentTree.setRoot(mLifecycle.create(20));
-    ComponentTestHelper.measureAndLayout(mLithoView);
-    assertEquals(LifecycleStep.ON_UNMOUNT, mComponent.getCurrentStep());
+    measureAndLayout(mLithoView);
+    assertThat(mComponent.getCurrentStep()).isEqualTo(LifecycleStep.ON_UNMOUNT);
 
     mComponentTree.setRoot(mComponent);
-    ComponentTestHelper.measureAndLayout(mLithoView);
-    assertEquals(LifecycleStep.ON_BIND, mComponent.getCurrentStep());
+    measureAndLayout(mLithoView);
+    assertThat(mComponent.getCurrentStep()).isEqualTo(LifecycleStep.ON_BIND);
 
     mLithoView.onDetachedFromWindow();
     mComponentTree.setRoot(mComponent);
-    ComponentTestHelper.measureAndLayout(mLithoView);
-    assertEquals(LifecycleStep.ON_UNBIND, mComponent.getCurrentStep());
+    measureAndLayout(mLithoView);
+    assertThat(mComponent.getCurrentStep()).isEqualTo(LifecycleStep.ON_UNBIND);
   }
 
   private class LifecycleMethodsComponent extends ComponentLifecycle {
@@ -214,47 +215,42 @@ public class LifecycleMethodsTest {
     void setCurrentStep(LifecycleStep currentStep) {
       switch (currentStep) {
         case ON_CREATE_LAYOUT:
-          assertEquals(LifecycleStep.ON_UNMOUNT, mCurrentStep);
+          assertThat(mCurrentStep).isEqualTo(LifecycleStep.ON_UNMOUNT);
           break;
 
         case ON_PREPARE:
-          assertEquals(LifecycleStep.ON_CREATE_LAYOUT, mCurrentStep);
+          assertThat(mCurrentStep).isEqualTo(LifecycleStep.ON_CREATE_LAYOUT);
           break;
 
         case ON_MEASURE:
-          assertTrue(
-              mCurrentStep == LifecycleStep.ON_PREPARE ||
-              mCurrentStep == LifecycleStep.ON_MEASURE);
+          assertThat(mCurrentStep == LifecycleStep.ON_PREPARE ||
+              mCurrentStep == LifecycleStep.ON_MEASURE).isTrue();
           break;
 
         case ON_BOUNDS_DEFINED:
-          assertTrue(
-              mCurrentStep == LifecycleStep.ON_PREPARE ||
-              mCurrentStep == LifecycleStep.ON_MEASURE);
+          assertThat(mCurrentStep == LifecycleStep.ON_PREPARE ||
+              mCurrentStep == LifecycleStep.ON_MEASURE).isTrue();
           break;
 
         case ON_CREATE_MOUNT_CONTENT:
-          assertTrue(
-              mCurrentStep == LifecycleStep.ON_BOUNDS_DEFINED);
+          assertThat(mCurrentStep == LifecycleStep.ON_BOUNDS_DEFINED).isTrue();
 
         case ON_MOUNT:
-          assertTrue(
-              mCurrentStep == LifecycleStep.ON_BOUNDS_DEFINED ||
-              mCurrentStep == LifecycleStep.ON_CREATE_MOUNT_CONTENT);
+          assertThat(mCurrentStep == LifecycleStep.ON_BOUNDS_DEFINED ||
+              mCurrentStep == LifecycleStep.ON_CREATE_MOUNT_CONTENT).isTrue();
           break;
 
         case ON_BIND:
-          assertTrue(
-              mCurrentStep == LifecycleStep.ON_MOUNT ||
-              mCurrentStep == LifecycleStep.ON_UNBIND);
+          assertThat(mCurrentStep == LifecycleStep.ON_MOUNT ||
+              mCurrentStep == LifecycleStep.ON_UNBIND).isTrue();
           break;
 
         case ON_UNBIND:
-          assertEquals(LifecycleStep.ON_BIND, mCurrentStep);
+          assertThat(mCurrentStep).isEqualTo(LifecycleStep.ON_BIND);
           break;
 
         case ON_UNMOUNT:
-          assertEquals(LifecycleStep.ON_UNBIND, mCurrentStep);
+          assertThat(mCurrentStep).isEqualTo(LifecycleStep.ON_UNBIND);
           break;
       }
 
@@ -276,26 +272,25 @@ public class LifecycleMethodsTest {
     private LifecycleMethodsInstance mComponent;
 
     private LifecycleMethodsDrawable(LifecycleMethodsInstance component) {
-      assertEquals(LifecycleStep.ON_CREATE_MOUNT_CONTENT, component.getCurrentStep());
+      assertThat(component.getCurrentStep()).isEqualTo(LifecycleStep.ON_CREATE_MOUNT_CONTENT);
     }
 
     void setComponent(LifecycleMethodsInstance component) {
       mComponent = component;
-      assertEquals(LifecycleStep.ON_MOUNT, mComponent.getCurrentStep());
+      assertThat(mComponent.getCurrentStep()).isEqualTo(LifecycleStep.ON_MOUNT);
     }
 
     @Override
     public void setBounds(int l, int t, int r, int b) {
       super.setBounds(l, t, r, b);
 
-      assertTrue(
-          mComponent.getCurrentStep() == LifecycleStep.ON_BIND ||
-              mComponent.getCurrentStep() == LifecycleStep.ON_UNBIND);
+      assertThat(mComponent.getCurrentStep() == LifecycleStep.ON_BIND ||
+          mComponent.getCurrentStep() == LifecycleStep.ON_UNBIND).isTrue();
     }
 
     @Override
     public void draw(Canvas canvas) {
-      assertEquals(mComponent.getCurrentStep(), LifecycleStep.ON_BIND);
+      assertThat(LifecycleStep.ON_BIND).isEqualTo(mComponent.getCurrentStep());
     }
 
     @Override

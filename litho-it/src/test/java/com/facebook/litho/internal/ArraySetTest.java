@@ -15,6 +15,7 @@ import com.facebook.litho.internal.ArraySet;
 
 import org.junit.Test;
 
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.*;
 
 public class ArraySetTest {
@@ -29,114 +30,120 @@ public class ArraySetTest {
     String testElt4 = "test4";
     String testElt5 = null;
 
-    assertTrue(set.isEmpty());
-    assertEquals(0, set.size());
+    assertThat(set).isEmpty();
+    assertThat(set).isEmpty();
 
     set.add(testElt1);
-    assertTrue(set.contains(testElt1));
+    assertThat(set).contains(testElt1);
     // Can't add more than once
-    assertFalse(set.add(testElt1));
-    assertEquals(1, set.size());
+    assertThat(set.add(testElt1)).isFalse();
+    assertThat(set).hasSize(1);
     set.remove(testElt1);
-    assertFalse(set.contains(testElt1));
-    assertEquals(0, set.size());
-    assertTrue(set.isEmpty());
-    assertTrue(checkIterator(set));
+    assertThat(set)
+        .doesNotContain(testElt1)
+        .isEmpty();
+    assertThat(checkIterator(set)).isTrue();
 
-    assertTrue(set.add(testElt1));
-    assertTrue(set.add(testElt2));
-    assertTrue(set.add(testElt3));
-    assertTrue(set.contains(testElt1));
-    assertTrue(set.contains(testElt2));
-    assertTrue(set.contains(testElt3));
-    assertFalse(set.contains(testElt4));
-    assertFalse(set.contains(testElt5));
-    assertEquals(3, set.size());
-    assertFalse(set.isEmpty());
-    assertTrue(checkIterator(set));
+    assertThat(set.add(testElt1)).isTrue();
+    assertThat(set.add(testElt2)).isTrue();
+    assertThat(set.add(testElt3)).isTrue();
+    assertThat(set)
+        .contains(testElt1)
+        .contains(testElt2)
+        .contains(testElt3)
+        .doesNotContain(testElt4)
+        .doesNotContain(testElt5)
+        .hasSize(3)
+        .isNotEmpty();
+    assertThat(checkIterator(set)).isTrue();
 
-    assertTrue(set.remove(testElt1));
-    assertFalse(set.contains(testElt1));
-    assertTrue(set.contains(testElt2));
-    assertTrue(set.contains(testElt3));
-    assertFalse(set.contains(testElt4));
-    assertEquals(2, set.size());
-    assertTrue(checkIterator(set));
+    assertThat(set.remove(testElt1)).isTrue();
+    assertThat(set)
+        .doesNotContain(testElt1)
+        .contains(testElt2)
+        .contains(testElt3)
+        .doesNotContain(testElt4)
+        .hasSize(2);
+    assertThat(checkIterator(set)).isTrue();
 
-    assertTrue(set.add(testElt4));
-    assertFalse(set.contains(testElt1));
-    assertTrue(set.contains(testElt2));
-    assertTrue(set.contains(testElt3));
-    assertTrue(set.contains(testElt4));
-    assertEquals(3, set.size());
-    assertTrue(checkIterator(set));
+    assertThat(set.add(testElt4)).isTrue();
+    assertThat(set)
+        .doesNotContain(testElt1)
+        .contains(testElt2)
+        .contains(testElt3)
+        .contains(testElt4)
+        .hasSize(3);
+    assertThat(checkIterator(set)).isTrue();
 
-    assertTrue(set.add(testElt5));
-    assertTrue(set.contains(testElt5));
-    assertEquals(4, set.size());
-    assertTrue(checkIterator(set));
-    assertTrue(set.remove(testElt5));
+    assertThat(set.add(testElt5)).isTrue();
+    assertThat(set)
+        .contains(testElt5)
+        .hasSize(4);
+    assertThat(checkIterator(set)).isTrue();
+    assertThat(set.remove(testElt5)).isTrue();
 
-    assertFalse(set.remove(testElt1));
-    assertFalse(set.contains(testElt1));
-    assertTrue(set.contains(testElt2));
-    assertTrue(set.contains(testElt3));
-    assertTrue(set.contains(testElt4));
-    assertEquals(3, set.size());
-    assertTrue(checkIterator(set));
+    assertThat(set.remove(testElt1)).isFalse();
+    assertThat(set)
+        .doesNotContain(testElt1)
+        .contains(testElt2)
+        .contains(testElt3)
+        .contains(testElt4)
+        .hasSize(3);
+    assertThat(checkIterator(set)).isTrue();
 
-    assertTrue(set.remove(testElt4));
-    assertFalse(set.contains(testElt1));
-    assertTrue(set.contains(testElt2));
-    assertTrue(set.contains(testElt3));
-    assertFalse(set.contains(testElt4));
-    assertEquals(2, set.size());
-    assertTrue(checkIterator(set));
+    assertThat(set.remove(testElt4)).isTrue();
+    assertThat(set)
+        .doesNotContain(testElt1)
+        .contains(testElt2)
+        .contains(testElt3)
+        .doesNotContain(testElt4)
+        .hasSize(2);
+    assertThat(checkIterator(set)).isTrue();
 
-    assertTrue(set.remove(testElt2));
-    assertFalse(set.contains(testElt1));
-    assertFalse(set.contains(testElt2));
-    assertTrue(set.contains(testElt3));
-    assertFalse(set.contains(testElt4));
-    assertEquals(1, set.size());
-    assertTrue(checkIterator(set));
+    assertThat(set.remove(testElt2)).isTrue();
+    assertThat(set).doesNotContain(testElt1)
+        .doesNotContain(testElt2)
+        .contains(testElt3)
+        .doesNotContain(testElt4)
+        .hasSize(1);
+    assertThat(checkIterator(set)).isTrue();
 
-    assertTrue(set.remove(testElt3));
-    assertFalse(set.contains(testElt1));
-    assertFalse(set.contains(testElt2));
-    assertFalse(set.contains(testElt3));
-    assertFalse(set.contains(testElt4));
-    assertEquals(0, set.size());
-    assertTrue(set.isEmpty());
-    assertTrue(checkIterator(set));
+    assertThat(set.remove(testElt3)).isTrue();
+    assertThat(set)
+        .doesNotContain(testElt1)
+        .doesNotContain(testElt2)
+        .doesNotContain(testElt3)
+        .doesNotContain(testElt4)
+        .isEmpty();
+    assertThat(checkIterator(set)).isTrue();
 
-    assertTrue(set.add(testElt1));
-    assertTrue(set.add(testElt2));
-    assertTrue(set.add(testElt3));
-    assertTrue(checkIterator(set));
+    assertThat(set.add(testElt1)).isTrue();
+    assertThat(set.add(testElt2)).isTrue();
+    assertThat(set.add(testElt3)).isTrue();
+    assertThat(checkIterator(set)).isTrue();
     set.clear();
-    assertFalse(set.contains(testElt1));
-    assertFalse(set.contains(testElt2));
-    assertFalse(set.contains(testElt3));
-    assertEquals(0, set.size());
-    assertTrue(set.isEmpty());
-    assertTrue(checkIterator(set));
+    assertThat(set).doesNotContain(testElt1);
+    assertThat(set).doesNotContain(testElt2);
+    assertThat(set).doesNotContain(testElt3);
+    assertThat(set).isEmpty();
+    assertThat(set).isEmpty();
+    assertThat(checkIterator(set)).isTrue();
 
     set.add(testElt1);
     set.add(testElt2);
     set.add(testElt3);
     Iterator<String> it = set.iterator();
-    assertTrue(it.hasNext());
+    assertThat(it.hasNext()).isTrue();
     while (it.hasNext()) {
       String value = it.next();
-      assertNotNull(value);
+      assertThat(value).isNotNull();
       if (value == testElt2) {
         it.remove();
       }
     }
-    assertTrue(set.contains(testElt1));
-    assertFalse(set.contains(testElt2));
-    assertTrue(set.contains(testElt3));
+    assertThat(set).contains(testElt1)
+        .doesNotContain(testElt2)
+        .contains(testElt3);
   }
 
   private <T> boolean checkIterator(ArraySet<T> set) {
