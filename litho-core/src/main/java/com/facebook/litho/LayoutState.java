@@ -422,6 +422,7 @@ class LayoutState {
     final boolean hasViewTags = (nodeInfo != null && nodeInfo.getViewTags() != null);
     final boolean hasShadowElevation = (nodeInfo != null && nodeInfo.getShadowElevation() != 0);
     final boolean hasOutlineProvider = (nodeInfo != null && nodeInfo.getOutlineProvider() != null);
+    final boolean hasClipToOutline = (nodeInfo != null && nodeInfo.getClipToOutline());
     final boolean isFocusableSetTrue =
         (nodeInfo != null && nodeInfo.getFocusState() == FOCUS_SET_TRUE);
 
@@ -430,6 +431,7 @@ class LayoutState {
         || hasViewTags
         || hasShadowElevation
         || hasOutlineProvider
+        || hasClipToOutline
         || hasAccessibilityContent
         || isFocusableSetTrue;
   }

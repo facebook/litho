@@ -67,6 +67,8 @@ class NodeInfo {
   private static final int PFLAG_SHADOW_ELEVATION_IS_SET = 1 << 14;
   // When this flag is set, outlineProvider was explicitly set on this node.
   private static final int PFLAG_OUTINE_PROVIDER_IS_SET = 1 << 15;
+  // When this flag is set, clipToOutline was explicitly set on this node.
+  private static final int PFLAG_CLIP_TO_OUTLINE_IS_SET = 1 << 16;
 
   private final AtomicInteger mReferenceCount = new AtomicInteger(0);
 
@@ -75,6 +77,7 @@ class NodeInfo {
   private SparseArray<Object> mViewTags;
   private float mShadowElevation;
   private ViewOutlineProvider mOutlineProvider;
+  private boolean mClipToOutline;
   private EventHandler<ClickEvent> mClickHandler;
   private EventHandler<LongClickEvent> mLongClickHandler;
   private EventHandler<TouchEvent> mTouchHandler;
@@ -135,6 +138,15 @@ class NodeInfo {
   public void setOutlineProvider(ViewOutlineProvider outlineProvider) {
     mPrivateFlags |= PFLAG_OUTINE_PROVIDER_IS_SET;
     mOutlineProvider = outlineProvider;
+  }
+
+  public boolean getClipToOutline() {
+    return mClipToOutline;
+  }
+
+  public void setClipToOutline(boolean clipToOutline) {
+    mPrivateFlags |= PFLAG_CLIP_TO_OUTLINE_IS_SET;
+    mClipToOutline = clipToOutline;
   }
 
   SparseArray<Object> getViewTags() {
@@ -348,6 +360,9 @@ class NodeInfo {
     if ((newInfo.mPrivateFlags & PFLAG_OUTINE_PROVIDER_IS_SET) != 0) {
       mOutlineProvider = newInfo.mOutlineProvider;
     }
+    if ((newInfo.mPrivateFlags & PFLAG_CLIP_TO_OUTLINE_IS_SET) != 0) {
+      mClipToOutline = newInfo.mClipToOutline;
+    }
     if (newInfo.mViewTag != null) {
       mViewTag = newInfo.mViewTag;
     }
@@ -404,6 +419,7 @@ class NodeInfo {
     mPrivateFlags = 0;
     mShadowElevation = 0;
     mOutlineProvider = null;
+    mClipToOutline = false;
 
     ComponentsPools.release(this);
   }

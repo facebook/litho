@@ -228,6 +228,7 @@ public interface ComponentLayout {
     Builder shadowElevationRes(@DimenRes int resId);
     Builder shadowElevationDip(@Dimension(unit = DP) int shadowElevation);
     Builder outlineProvider(ViewOutlineProvider outlineProvider);
+    Builder clipToOutline(boolean clipToOutline);
     Builder transitionKey(String key);
     Builder testKey(String testKey);
     Builder dispatchPopulateAccessibilityEventHandler(
@@ -424,6 +425,7 @@ public interface ComponentLayout {
     ContainerBuilder shadowElevationRes(@DimenRes int resId);
     ContainerBuilder shadowElevationDip(@Dimension(unit = DP) int shadowElevation);
     ContainerBuilder outlineProvider(ViewOutlineProvider outlineProvider);
+    ContainerBuilder clipToOutline(boolean clipToOutline);
     ContainerBuilder transitionKey(String key);
     ContainerBuilder dispatchPopulateAccessibilityEventHandler(
         EventHandler<DispatchPopulateAccessibilityEventEvent>

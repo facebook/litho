@@ -1290,6 +1290,12 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public ContainerBuilder clipToOutline(boolean clipToOutline) {
+    getOrCreateNodeInfo().setClipToOutline(clipToOutline);
+    return this;
+  }
+
+  @Override
   public InternalNode testKey(String testKey) {
     mTestKey = testKey;
     return this;

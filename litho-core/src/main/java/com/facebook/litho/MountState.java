@@ -1129,6 +1129,7 @@ class MountState {
 
       setShadowElevation(view, nodeInfo.getShadowElevation());
       setOutlineProvider(view, nodeInfo.getOutlineProvider());
+      setClipToOutline(view, nodeInfo.getClipToOutline());
 
       setContentDescription(view, nodeInfo.getContentDescription());
 
@@ -1183,6 +1184,7 @@ class MountState {
 
       unsetShadowElevation(view, nodeInfo.getShadowElevation());
       unsetOutlineProvider(view, nodeInfo.getOutlineProvider());
+      unsetClipToOutline(view, nodeInfo.getClipToOutline());
 
       if (!TextUtils.isEmpty(nodeInfo.getContentDescription())) {
         unsetContentDescription(view);
@@ -1461,6 +1463,18 @@ class MountState {
   private static void unsetOutlineProvider(View view, ViewOutlineProvider outlineProvider) {
     if (outlineProvider != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       view.setOutlineProvider(ViewOutlineProvider.BACKGROUND);
+    }
+  }
+
+  private static void setClipToOutline(View view, boolean clipToOutline) {
+    if (clipToOutline && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      view.setClipToOutline(clipToOutline);
+    }
+  }
+
+  private static void unsetClipToOutline(View view, boolean clipToOutline) {
+    if (clipToOutline && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      view.setClipToOutline(false);
     }
   }
 
