@@ -14,7 +14,9 @@ import android.support.v4.util.SimpleArrayMap;
 import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.RandomAccess;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -66,6 +68,11 @@ public class ArraySet<E> implements Set<E> {
       int oldSize = size();
       mMap.putAll(arraySet.mMap);
       added = size() != oldSize;
+    } else if (collection instanceof List && collection instanceof RandomAccess) {
+      List<? extends E> list = (List) collection;
+      for (int i = 0, size = list.size(); i < size; ++i) {
+        added |= add(list.get(i));
+      }
     } else {
       for (E value : collection) {
         added |= add(value);
@@ -97,10 +104,19 @@ public class ArraySet<E> implements Set<E> {
 
   @Override
   public boolean containsAll(Collection<?> collection) {
-    Iterator<?> it = collection.iterator();
-    while (it.hasNext()) {
-      if (!contains(it.next())) {
-        return false;
+    if (collection instanceof List && collection instanceof RandomAccess) {
+      List<?> list = (List) collection;
+      for (int i = 0, size = list.size(); i < size; ++i) {
+        if (!contains(list.get(i))) {
+          return false;
+        }
+      }
+    } else {
+      Iterator<?> it = collection.iterator();
+      while (it.hasNext()) {
+        if (!contains(it.next())) {
+          return false;
+        }
       }
     }
     return true;
@@ -184,8 +200,16 @@ public class ArraySet<E> implements Set<E> {
   @Override
   public boolean removeAll(Collection<?> collection) {
     boolean removed = false;
-    for (Object value : collection) {
-      removed |= remove(value);
+    if (collection instanceof List && collection instanceof RandomAccess) {
+      // If possible, avoid the iterator allocation inherent in for-each
+      final List<?> list = (List) collection;
+      for (int i = 0, size = list.size(); i < size; ++i) {
+        removed |= remove(list.get(i));
+      }
+    } else {
+      for (Object value : collection) {
+        removed |= remove(value);
+      }
     }
     return removed;
   }
