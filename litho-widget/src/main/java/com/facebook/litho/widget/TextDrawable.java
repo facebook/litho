@@ -186,11 +186,11 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       Layout layout,
       int userColor,
       ClickableSpan[] clickableSpans) {
-    mount(text, layout, 0, null, userColor, 0, clickableSpans, null, null);
+    mount(text, layout, 0, null, userColor, 0, clickableSpans, null, null, -1, -1);
   }
 
   public void mount(CharSequence text, Layout layout, int userColor, int highlightColor) {
-    mount(text, layout, 0, null, userColor, highlightColor, null, null, null);
+    mount(text, layout, 0, null, userColor, highlightColor, null, null, null, -1, -1);
   }
 
   public void mount(
@@ -201,7 +201,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       int userColor,
       int highlightColor,
       ClickableSpan[] clickableSpans) {
-    mount(text, layout, 0, null, userColor, highlightColor, clickableSpans, null, null);
+    mount(text, layout, 0, null, userColor, highlightColor, clickableSpans, null, null, -1, -1);
   }
 
   public void mount(
@@ -213,7 +213,9 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       int highlightColor,
       ClickableSpan[] clickableSpans,
       ImageSpan[] imageSpans,
-      TextOffsetOnTouchListener textOffsetOnTouchListener) {
+      TextOffsetOnTouchListener textOffsetOnTouchListener,
+      int highlightStartOffset,
+      int highlightEndOffset) {
     mLayout = layout;
     mLayoutTranslationY = layoutTranslationY;
     mText = text;
@@ -231,6 +233,13 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
         mLayout.getPaint().setColor(mColorStateList.getColorForState(getState(), mUserColor));
       }
     }
+
+    if (highlightOffsetsValid(text, highlightStartOffset, highlightEndOffset)) {
+      setSelection(highlightStartOffset, highlightEndOffset);
+    } else {
+      clearSelection();
+    }
+
     if (imageSpans != null) {
       for (int i = 0, size = imageSpans.length; i < size; i++) {
         Drawable drawable = imageSpans[i].getDrawable();
@@ -241,6 +250,10 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     mImageSpans = imageSpans;
 
     invalidateSelf();
+  }
+
+  private boolean highlightOffsetsValid(CharSequence text, int highlightStart, int highlightEnd) {
+    return highlightStart >= 0 && highlightEnd <= text.length() && highlightStart < highlightEnd;
   }
 
   public void unmount() {

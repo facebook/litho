@@ -150,6 +150,8 @@ class TextSpec {
   @PropDefault protected static final boolean glyphWarming = false;
   @PropDefault protected static final boolean shouldIncludeFontPadding = true;
   @PropDefault protected static final Alignment textAlignment = ALIGN_NORMAL;
+  @PropDefault protected static final int highlightStartOffset = -1;
+  @PropDefault protected static final int highlightEndOffset = -1;
 
   private static final Path sTempPath = new Path();
   private static final Rect sTempRect = new Rect();
@@ -798,7 +800,9 @@ class TextSpec {
         highlightColor,
         clickableSpans,
         imageSpans,
-        textOffsetOnTouchListener);
+        textOffsetOnTouchListener,
+        highlightStartOffset,
+        highlightEndOffset);
 
     if (text instanceof MountableCharSequence) {
       ((MountableCharSequence) text).onMount(textDrawable);
