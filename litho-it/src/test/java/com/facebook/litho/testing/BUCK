@@ -1,0 +1,13 @@
+include_defs("//COMPONENTS_DEFS")
+
+components_robolectric_test(
+    name = "testing",
+    srcs = glob(["*Test.java"]),
+    contacts = ["oncall+components_for_android@xmail.facebook.com"],
+    deps = [
+        COMPONENTS_JUNIT_TARGET,
+        COMPONENTS_ROBOLECTRIC_TARGET,
+        COMPONENTS_TESTING_TARGET,
+        COMPONENTS_ASSERTJ_TARGET,
+    ],
+)
