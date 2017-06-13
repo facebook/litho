@@ -38,6 +38,7 @@ import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.ComponentsLogger;
+import com.facebook.litho.EventHandler;
 import com.facebook.litho.LogEvent;
 import com.facebook.litho.Output;
 import com.facebook.litho.R;
@@ -108,7 +109,11 @@ import static com.facebook.litho.widget.VerticalGravity.TOP;
  * @prop shouldIncludeFontPadding If set, uses extra padding for ascenders and descenders.
  * @prop verticalGravity Vertical gravity for the text within its container.
  */
-@MountSpec(isPureRender = true, shouldUseDisplayList = true, poolSize = 30)
+@MountSpec(
+    isPureRender = true,
+    shouldUseDisplayList = true,
+    poolSize = 30,
+    events = {TextOffsetOnTouchEvent.class})
 class TextSpec {
 
   private static final TruncateAt[] TRUNCATE_AT = TruncateAt.values();
@@ -759,10 +764,12 @@ class TextSpec {
   static void onMount(
       ComponentContext c,
       TextDrawable textDrawable,
-      @Prop(resType = ResType.STRING) CharSequence text,
+      @Prop(resType = ResType.STRING) final CharSequence text,
       @Prop(optional = true, resType = ResType.COLOR) int textColor,
       @Prop(optional = true, resType = ResType.COLOR) int highlightColor,
       @Prop(optional = true) ColorStateList textColorStateList,
+      @Prop(optional = true) int highlightStartOffset,
+      @Prop(optional = true) int highlightEndOffset,
       @FromBoundsDefined Layout textLayout,
       @FromBoundsDefined Float textLayoutTranslationY,
       @FromBoundsDefined ClickableSpan[] clickableSpans,
@@ -771,6 +778,17 @@ class TextSpec {
     //make sure we set default state to drawable because default dummy state set in Drawable
     //matches anything which can cause wrong text color to be selected by default
     textDrawable.setState(DEFAULT_TEXT_DRAWABLE_STATE);
+    TextDrawable.TextOffsetOnTouchListener textOffsetOnTouchListener = null;
+
+    final EventHandler textOffsetOnTouchHandler = Text.getTextOffsetOnTouchEventHandler(c);
+    if (textOffsetOnTouchHandler != null) {
+      textOffsetOnTouchListener = new TextDrawable.TextOffsetOnTouchListener() {
+        @Override
+        public void textOffsetOnTouch(int textOffset) {
+          Text.dispatchTextOffsetOnTouchEvent(textOffsetOnTouchHandler, text, textOffset);
+        }
+      };
+    }
     textDrawable.mount(
         text,
         textLayout,
@@ -779,7 +797,8 @@ class TextSpec {
         textColor,
         highlightColor,
         clickableSpans,
-        imageSpans);
+        imageSpans,
+        textOffsetOnTouchListener);
 
     if (text instanceof MountableCharSequence) {
       ((MountableCharSequence) text).onMount(textDrawable);

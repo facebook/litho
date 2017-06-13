@@ -13,10 +13,14 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.text.Spannable;
 import android.text.style.ClickableSpan;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.EventHandler;
+import com.facebook.litho.LithoView;
 import com.facebook.litho.testing.ComponentTestHelper;
+import com.facebook.litho.testing.eventhandler.EventHandlerTestHelper;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 
 import org.junit.Before;
@@ -24,6 +28,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -82,6 +88,68 @@ public class TextSpecTest {
   }
 
   @Test
+  public void testTouchOffsetChangeHandlerFired() {
+    final boolean[] eventFired = new boolean[] {false};
+    EventHandler<TextOffsetOnTouchEvent> eventHandler =
+        EventHandlerTestHelper.createMockEventHandler(
+            TextOffsetOnTouchEvent.class,
+            new EventHandlerTestHelper.MockEventHandler<TextOffsetOnTouchEvent, Void>() {
+              @Override
+              public Void handleEvent(TextOffsetOnTouchEvent event) {
+                eventFired[0] = true;
+                return null;
+              }
+            });
+
+    LithoView lithoView = ComponentTestHelper.mountComponent(
+        mContext,
+        Text.create(mContext)
+            .text("Some text")
+            .textOffsetOnTouchEventHandler(eventHandler)
+            .build());
+    TextDrawable textDrawable = (TextDrawable) (lithoView.getDrawables().get(0));
+    MotionEvent motionEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0);
+    boolean handled = textDrawable.onTouchEvent(motionEvent, lithoView);
+    // We don't consume touch events from TextTouchOffsetChange event
+    assertFalse(handled);
+    assertTrue(eventFired[0]);
+  }
+
+  @Test
+  public void testTouchOffsetChangeHandlerNotFired() {
+    final boolean[] eventFired = new boolean[] {false};
+    EventHandler<TextOffsetOnTouchEvent> eventHandler =
+        EventHandlerTestHelper.createMockEventHandler(
+            TextOffsetOnTouchEvent.class,
+            new EventHandlerTestHelper.MockEventHandler<TextOffsetOnTouchEvent, Void>() {
+              @Override
+              public Void handleEvent(TextOffsetOnTouchEvent event) {
+                eventFired[0] = true;
+                return null;
+              }
+            });
+
+    LithoView lithoView = ComponentTestHelper.mountComponent(
+        mContext,
+        Text.create(mContext)
+            .text("Text2")
+            .textOffsetOnTouchEventHandler(eventHandler)
+            .build());
+
+    TextDrawable textDrawable = (TextDrawable) (lithoView.getDrawables().get(0));
+
+    MotionEvent actionUp = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0, 0, 0);
+    boolean handledActionUp = textDrawable.onTouchEvent(actionUp, lithoView);
+    assertFalse(handledActionUp);
+    assertFalse(eventFired[0]);
+
+    MotionEvent actionDown = MotionEvent.obtain(0, 0, MotionEvent.ACTION_MOVE, 0, 0, 0);
+    boolean handledActionMove = textDrawable.onTouchEvent(actionDown, lithoView);
+    assertFalse(handledActionMove);
+    assertFalse(eventFired[0]);
+  }
+
+  @Test
   public void testColorDefault() {
     TextDrawable drawable = getMountedDrawableForText("Some text");
     assertThat(drawable.getColor()).isEqualTo(Color.BLACK);
@@ -100,8 +168,7 @@ public class TextSpecTest {
   }
 
   @Test
-  public void testColor()
-  {
+  public void testColor() {
     TextDrawable drawable = getMountedDrawableForTextWithColors(
         "Some text",
         Color. RED,
@@ -110,8 +177,7 @@ public class TextSpecTest {
   }
 
   @Test
-  public void testColorStateList()
-  {
+  public void testColorStateList() {
     int[][] states = {{0}};
     int[] colors = {Color.GREEN};
     ColorStateList colorStateList = new ColorStateList(states, colors);
@@ -123,8 +189,7 @@ public class TextSpecTest {
   }
 
   @Test
-  public void testColorStateListMultipleStates()
-  {
+  public void testColorStateListMultipleStates() {
     ColorStateList colorStateList = new ColorStateList(
         new int[][]{
             new int[]{-android.R.attr.state_enabled}, //disabled state

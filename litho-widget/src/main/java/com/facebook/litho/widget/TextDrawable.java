@@ -66,6 +66,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
   private Path mTouchAreaPath;
   private boolean mSelectionPathNeedsUpdate;
   private Paint mHighlightPaint;
+  private TextOffsetOnTouchListener mTextOffsetOnTouchListener;
 
   @Override
   public void draw(Canvas canvas) {
@@ -102,6 +103,20 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
 
   @Override
   public boolean onTouchEvent(MotionEvent event, View view) {
+    if (shouldHandleTouchForClickableSpan(event) && handleTouchForClickableSpan(event, view)) {
+      return true;
+    }
+
+    if (shouldHandleTextOffsetOnTouch(event)) {
+      handleTextOffsetChange(event);
+      // We will not consume touch events at this point because TextOffsetOnTouch event has
+      // lower priority than click/longclick events.
+    }
+
+    return false;
+  }
+
+  private boolean handleTouchForClickableSpan(MotionEvent event, View view) {
     final int action = event.getActionMasked();
     if (action == ACTION_CANCEL) {
       clearSelection();
@@ -138,8 +153,23 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     return false;
   }
 
+  private void handleTextOffsetChange(MotionEvent event) {
+    final Rect bounds = getBounds();
+    final int x = (int) event.getX() - bounds.left;
+    final int y = (int) event.getY() - bounds.top;
+
+    final int offset = getTextOffsetAt(x, y);
+    if (offset >= 0 && offset <= mText.length()) {
+      mTextOffsetOnTouchListener.textOffsetOnTouch(offset);
+    }
+  }
+
   @Override
   public boolean shouldHandleTouchEvent(MotionEvent event) {
+    return shouldHandleTouchForClickableSpan(event) || shouldHandleTextOffsetOnTouch(event);
+  }
+
+  private boolean shouldHandleTouchForClickableSpan(MotionEvent event) {
     final int action = event.getActionMasked();
 
     boolean isWithinBounds = getBounds().contains((int) event.getX(), (int) event.getY());
@@ -147,16 +177,20 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     return (mShouldHandleTouch && isWithinBounds && isUpOrDown) || action == ACTION_CANCEL;
   }
 
+  private boolean shouldHandleTextOffsetOnTouch(MotionEvent event) {
+    return mTextOffsetOnTouchListener != null && event.getActionMasked() == ACTION_DOWN;
+  }
+
   public void mount(
       CharSequence text,
       Layout layout,
       int userColor,
       ClickableSpan[] clickableSpans) {
-    mount(text, layout, 0, null, userColor, 0, clickableSpans, null);
+    mount(text, layout, 0, null, userColor, 0, clickableSpans, null, null);
   }
 
   public void mount(CharSequence text, Layout layout, int userColor, int highlightColor) {
-    mount(text, layout, 0, null, userColor, highlightColor, null, null);
+    mount(text, layout, 0, null, userColor, highlightColor, null, null, null);
   }
 
   public void mount(
@@ -167,7 +201,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       int userColor,
       int highlightColor,
       ClickableSpan[] clickableSpans) {
-    mount(text, layout, 0, null, userColor, highlightColor, clickableSpans, null);
+    mount(text, layout, 0, null, userColor, highlightColor, clickableSpans, null, null);
   }
 
   public void mount(
@@ -178,11 +212,13 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       int userColor,
       int highlightColor,
       ClickableSpan[] clickableSpans,
-      ImageSpan[] imageSpans) {
+      ImageSpan[] imageSpans,
+      TextOffsetOnTouchListener textOffsetOnTouchListener) {
     mLayout = layout;
     mLayoutTranslationY = layoutTranslationY;
     mText = text;
     mClickableSpans = clickableSpans;
+    mTextOffsetOnTouchListener = textOffsetOnTouchListener;
     mShouldHandleTouch = (clickableSpans != null && clickableSpans.length > 0);
     mHighlightColor = highlightColor;
     if (userColor != 0) {
@@ -214,6 +250,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     mClickableSpans = null;
     mShouldHandleTouch = false;
     mHighlightColor = 0;
+    mTextOffsetOnTouchListener = null;
     mColorStateList = null;
     mUserColor = 0;
     if (mImageSpans != null) {
@@ -265,6 +302,23 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
    */
   @Nullable
   private ClickableSpan getClickableSpanInCoords(int x, int y) {
+    final int offset = getTextOffsetAt(x, y);
+    if (offset < 0) {
+      return null;
+    }
+    final ClickableSpan[] clickableSpans = ((Spanned) mText).getSpans(
+        offset,
+        offset,
+        ClickableSpan.class);
+
+    if (clickableSpans != null && clickableSpans.length > 0) {
+      return clickableSpans[0];
+    }
+
+    return null;
+  }
+
+  private int getTextOffsetAt(int x, int y) {
     final int line = mLayout.getLineForVertical(y);
     float start = mLayout.getPrimaryHorizontal(mLayout.getLineStart(line));
     float end = mLayout.getPrimaryHorizontal(mLayout.getLineVisibleEnd(line));
@@ -275,20 +329,11 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       end = temp;
     }
 
-    if (x >= start && x <= end) {
-      final int offset = mLayout.getOffsetForHorizontal(line, x);
-
-      final ClickableSpan[] clickableSpans = ((Spanned) mText).getSpans(
-          offset,
-          offset,
-          ClickableSpan.class);
-
-      if (clickableSpans != null && clickableSpans.length > 0) {
-        return clickableSpans[0];
-      }
+    if (x < start || x > end) {
+      return -1;
     }
 
-    return null;
+    return mLayout.getOffsetForHorizontal(line, x);
   }
 
   /**
@@ -424,5 +469,9 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
   @Override
   public void unscheduleDrawable(Drawable drawable, Runnable runnable) {
     unscheduleSelf(runnable);
+  }
+
+  interface TextOffsetOnTouchListener {
+    void textOffsetOnTouch(int textOffset);
   }
 }
