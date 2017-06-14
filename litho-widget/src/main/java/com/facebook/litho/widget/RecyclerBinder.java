@@ -28,6 +28,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentInfo;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.EventHandler;
+import com.facebook.litho.LayoutHandler;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.MeasureComparisonUtils;
 import com.facebook.litho.Size;
@@ -72,6 +73,7 @@ public class RecyclerBinder implements
   private final RangeScrollListener mRangeScrollListener = new RangeScrollListener();
   private final LayoutHandlerFactory mLayoutHandlerFactory;
   private final boolean mUseNewIncrementalMount;
+  private final ComponentTreeHolderFactory mComponentTreeHolderFactory;
   private final Handler mMainThreadHandler = new Handler(Looper.getMainLooper());
 
   // Data structure to be used to hold Components and ComponentTreeHolders before adding them to
@@ -103,11 +105,36 @@ public class RecyclerBinder implements
   private boolean mCanPrefetchDisplayLists;
   private EventHandler<ReMeasureEvent> mReMeasureEventEventHandler;
 
+  interface ComponentTreeHolderFactory {
+    ComponentTreeHolder create(
+        ComponentInfo componentInfo,
+        LayoutHandler layoutHandler,
+        boolean canPrefetchDisplayLists);
+  }
+
+  static final ComponentTreeHolderFactory DEFAULT_COMPONENT_TREE_HOLDER_FACTORY =
+          new ComponentTreeHolderFactory() {
+    @Override
+    public ComponentTreeHolder create(
+        ComponentInfo componentInfo,
+        LayoutHandler layoutHandler,
+        boolean canPrefetchDisplayLists) {
+      return ComponentTreeHolder.acquire(componentInfo, layoutHandler, canPrefetchDisplayLists);
+    }
+  };
+
   public RecyclerBinder(
       ComponentContext componentContext,
       float rangeRatio,
       LayoutInfo layoutInfo) {
-    this(componentContext, rangeRatio, layoutInfo, null, false, false);
+    this(
+        componentContext,
+        rangeRatio,
+        layoutInfo,
+        null,
+        false,
+        false,
+        DEFAULT_COMPONENT_TREE_HOLDER_FACTORY);
   }
 
   public RecyclerBinder(
@@ -115,7 +142,36 @@ public class RecyclerBinder implements
       float rangeRatio,
       LayoutInfo layoutInfo,
       @Nullable LayoutHandlerFactory layoutHandlerFactory) {
-    this(componentContext, rangeRatio, layoutInfo, layoutHandlerFactory, false, false);
+    this(
+        componentContext,
+        rangeRatio,
+        layoutInfo,
+        layoutHandlerFactory,
+        false,
+        false,
+        DEFAULT_COMPONENT_TREE_HOLDER_FACTORY);
+  }
+
+  public RecyclerBinder(ComponentContext c) {
+    this(
+        c,
+        DEFAULT_RANGE_RATIO,
+        new LinearLayoutInfo(c, VERTICAL, false),
+        null,
+        false,
+        false,
+        DEFAULT_COMPONENT_TREE_HOLDER_FACTORY);
+  }
+
+  public RecyclerBinder(ComponentContext c, LayoutInfo layoutInfo) {
+    this(
+        c,
+        DEFAULT_RANGE_RATIO,
+        layoutInfo,
+        null,
+        false,
+        false,
+        DEFAULT_COMPONENT_TREE_HOLDER_FACTORY);
   }
 
   /**
@@ -140,8 +196,33 @@ public class RecyclerBinder implements
       @Nullable LayoutHandlerFactory layoutHandlerFactory,
       boolean useNewIncrementalMount,
       boolean canPrefetchDisplayLists) {
+    this(
+        componentContext,
+        rangeRatio,
+        layoutInfo,
+        layoutHandlerFactory,
+        useNewIncrementalMount,
+        canPrefetchDisplayLists,
+        DEFAULT_COMPONENT_TREE_HOLDER_FACTORY);
+  }
+
+  /**
+   * @see #RecyclerBinder(ComponentContext, float, LayoutInfo, LayoutHandlerFactory, boolean, boolean)
+   *
+   * @param componentTreeHolderFactory Factory to acquire a new ComponentTreeHolder. Defaults to
+   *                                   {@link #DEFAULT_COMPONENT_TREE_HOLDER_FACTORY}.
+   */
+  RecyclerBinder(
+      ComponentContext componentContext,
+      float rangeRatio,
+      LayoutInfo layoutInfo,
+      @Nullable LayoutHandlerFactory layoutHandlerFactory,
+      boolean useNewIncrementalMount,
+      boolean canPrefetchDisplayLists,
+      ComponentTreeHolderFactory componentTreeHolderFactory) {
     mComponentContext = componentContext;
     mUseNewIncrementalMount = useNewIncrementalMount;
+    mComponentTreeHolderFactory = componentTreeHolderFactory;
     mComponentTreeHolders = new ArrayList<>();
     mPendingComponentTreeHolders = new ArrayList<>();
     mInternalAdapter = new InternalAdapter();
@@ -151,14 +232,6 @@ public class RecyclerBinder implements
     mLayoutHandlerFactory = layoutHandlerFactory;
     mCurrentFirstVisiblePosition = mCurrentLastVisiblePosition = 0;
     mCanPrefetchDisplayLists = canPrefetchDisplayLists;
-  }
-
-  public RecyclerBinder(ComponentContext c) {
-    this(c, DEFAULT_RANGE_RATIO, new LinearLayoutInfo(c, VERTICAL, false), null, false, false);
-  }
-
-  public RecyclerBinder(ComponentContext c, LayoutInfo layoutInfo) {
-    this(c, DEFAULT_RANGE_RATIO, layoutInfo, null, false, false);
   }
 
   /**
@@ -253,7 +326,7 @@ public class RecyclerBinder implements
   public final void insertItemAt(int position, ComponentInfo componentInfo) {
     ThreadUtils.assertMainThread();
 
-    final ComponentTreeHolder holder = ComponentTreeHolder.acquire(
+    final ComponentTreeHolder holder = mComponentTreeHolderFactory.create(
         componentInfo,
         mLayoutHandlerFactory != null ?
             mLayoutHandlerFactory.createLayoutCalculationHandler(componentInfo) :
@@ -324,7 +397,7 @@ public class RecyclerBinder implements
 
       synchronized (this) {
         final ComponentInfo componentInfo = componentInfos.get(i);
-        final ComponentTreeHolder holder = ComponentTreeHolder.acquire(
+        final ComponentTreeHolder holder = mComponentTreeHolderFactory.create(
             componentInfo,
             mLayoutHandlerFactory != null ?
                 mLayoutHandlerFactory.createLayoutCalculationHandler(componentInfo) :

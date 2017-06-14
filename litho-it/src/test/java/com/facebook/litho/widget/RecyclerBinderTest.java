@@ -27,15 +27,10 @@ import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import junit.framework.Assert;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RuntimeEnvironment;
 
 import java.util.ArrayList;
@@ -60,12 +55,7 @@ import static org.mockito.Mockito.when;
  * Tests for {@link RecyclerBinder}
  */
 @RunWith(ComponentsTestRunner.class)
-@PrepareForTest(ComponentTreeHolder.class)
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
 public class RecyclerBinderTest {
-
-  @Rule
-  public PowerMockRule mPowerMockRule = new PowerMockRule();
 
   private static final float RANGE_RATIO = 2.0f;
   private static final int RANGE_SIZE = 3;
@@ -74,31 +64,35 @@ public class RecyclerBinderTest {
   private LayoutInfo mLayoutInfo;
   private ComponentContext mComponentContext;
 
-  private final Answer<ComponentTreeHolder> mComponentTreeHolderAnswer =
-      new Answer<ComponentTreeHolder>() {
-        @Override
-        public ComponentTreeHolder answer(InvocationOnMock invocation) throws Throwable {
-          final ComponentInfo componentInfo = (ComponentInfo) invocation.getArguments()[0];
-          final TestComponentTreeHolder holder = new TestComponentTreeHolder(componentInfo);
-          mHoldersForComponents.put(componentInfo.getComponent(), holder);
-
-          return holder;
-        }
-      };
-
   @Before
-  public void setup() {
+  public void setup() throws NoSuchFieldException, IllegalAccessException {
     mComponentContext = new ComponentContext(RuntimeEnvironment.application);
-    PowerMockito.mockStatic(ComponentTreeHolder.class);
-    PowerMockito.when(ComponentTreeHolder.acquire(
-        any(ComponentInfo.class),
-        any(LayoutHandler.class),
-        any(boolean.class)))
-        .thenAnswer(mComponentTreeHolderAnswer);
+
+    final RecyclerBinder.ComponentTreeHolderFactory componentTreeHolderFactory =
+            new RecyclerBinder.ComponentTreeHolderFactory() {
+      @Override
+      public ComponentTreeHolder create(
+              ComponentInfo componentInfo,
+              LayoutHandler layoutHandler,
+              boolean canPrefetchDisplayLists) {
+        final TestComponentTreeHolder holder = new TestComponentTreeHolder(componentInfo);
+        mHoldersForComponents.put(componentInfo.getComponent(), holder);
+
+        return holder;
+      }
+    };
+
     mLayoutInfo = mock(LayoutInfo.class);
     setupBaseLayoutInfoMock();
 
-    mRecyclerBinder = new RecyclerBinder(mComponentContext, RANGE_RATIO, mLayoutInfo);
+    mRecyclerBinder = new RecyclerBinder(
+        mComponentContext,
+        RANGE_RATIO,
+        mLayoutInfo,
+        null,
+        false,
+        false,
+        componentTreeHolderFactory);
   }
 
   private void setupBaseLayoutInfoMock() {
