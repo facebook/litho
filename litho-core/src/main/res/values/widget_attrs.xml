@@ -39,6 +39,7 @@
     <attr name="android:minWidth" />
     <attr name="android:maxWidth" />
     <attr name="android:inputType" />
+    <attr name="android:fontFamily" />
   </declare-styleable>
 
   <declare-styleable name="Image">

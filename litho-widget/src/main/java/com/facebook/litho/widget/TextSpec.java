@@ -184,7 +184,8 @@ class TextSpec {
       Output<Float> shadowDx,
       Output<Float> shadowDy,
       Output<Integer> shadowColor,
-      Output<VerticalGravity> verticalGravity) {
+      Output<VerticalGravity> verticalGravity,
+      Output<Typeface> typeface) {
 
     //check first if provided attributes contain textAppearance. As an analogy to TextView behavior,
     //we will parse textAppearance attributes first and then will override leftovers from main style
@@ -223,7 +224,8 @@ class TextSpec {
           shadowDx,
           shadowDy,
           shadowColor,
-          verticalGravity);
+          verticalGravity,
+          typeface);
       a.recycle();
     }
 
@@ -254,7 +256,8 @@ class TextSpec {
         shadowDx,
         shadowDy,
         shadowColor,
-        verticalGravity);
+        verticalGravity,
+        typeface);
 
     a.recycle();
   }
@@ -282,10 +285,12 @@ class TextSpec {
       Output<Float> shadowDx,
       Output<Float> shadowDy,
       Output<Integer> shadowColor,
-      Output<VerticalGravity> verticalGravity
+      Output<VerticalGravity> verticalGravity,
+      Output<Typeface> typeface
   ) {
     int viewTextAlignment = View.TEXT_ALIGNMENT_GRAVITY;
     int gravity = Gravity.NO_GRAVITY;
+    String fontFamily = null;
 
     for (int i = 0, size = a.getIndexCount(); i < size; i++) {
       final int attr = a.getIndex(i);
@@ -341,7 +346,14 @@ class TextSpec {
         minWidth.set(a.getDimensionPixelSize(attr, DEFAULT_MIN_WIDTH));
       } else if (attr == R.styleable.Text_android_maxWidth) {
         maxWidth.set(a.getDimensionPixelSize(attr, DEFAULT_MAX_WIDTH));
+      } else if (attr == R.styleable.Text_android_fontFamily) {
+        fontFamily = a.getString(attr);
       }
+    }
+
+    if (fontFamily != null) {
+      final Integer value = textStyle.get();
+      typeface.set(Typeface.create(fontFamily, value == null ? -1 : value));
     }
   }
 
