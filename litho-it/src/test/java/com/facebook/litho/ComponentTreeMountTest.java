@@ -14,12 +14,8 @@ import android.graphics.drawable.ColorDrawable;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RuntimeEnvironment;
 
 import static android.graphics.Color.BLACK;
@@ -29,13 +25,8 @@ import static com.facebook.litho.testing.TestDrawableComponent.create;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.robolectric.Shadows.shadowOf;
 
-@PrepareForTest(ThreadUtils.class)
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
 @RunWith(ComponentsTestRunner.class)
 public class ComponentTreeMountTest {
-
-  @Rule
-  public PowerMockRule mPowerMockRule = new PowerMockRule();
 
   private ComponentContext mContext;
 
