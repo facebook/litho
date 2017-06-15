@@ -105,8 +105,6 @@ public class RecyclerBinder implements
   private int mLastHeightSpec = UNINITIALIZED;
   private Size mMeasuredSize;
   private RecyclerView mMountedView;
-  private int mCurrentFirstVisiblePosition;
-  private int mCurrentLastVisiblePosition;
   private int mCurrentOffset;
   private RangeCalculationResult mRange;
   private StickyHeaderController mStickyHeaderController;
@@ -239,12 +237,11 @@ public class RecyclerBinder implements
     mRangeRatio = rangeRatio;
     mLayoutInfo = layoutInfo;
     mLayoutHandlerFactory = layoutHandlerFactory;
-    mCurrentFirstVisiblePosition = mCurrentLastVisiblePosition = 0;
     mCanPrefetchDisplayLists = canPrefetchDisplayLists;
 
     mViewportManager = new ViewportManager(
-        mCurrentFirstVisiblePosition,
-        mCurrentLastVisiblePosition,
+        0,
+        0,
         layoutInfo,
         mMainThreadHandler,
         RecyclerView.SCROLL_STATE_IDLE,
@@ -372,8 +369,9 @@ public class RecyclerBinder implements
           requestUpdate();
           computeLayout = false;
         } else {
-          computeLayout = position >= mCurrentFirstVisiblePosition &&
-              position < mCurrentFirstVisiblePosition + mRange.estimatedViewportCount;
+          final int currentFirstVisiblePosition = mViewportManager.findFirstVisibleItemPosition();
+          computeLayout = position >= currentFirstVisiblePosition &&
+              position < currentFirstVisiblePosition + mRange.estimatedViewportCount;
         }
       } else {
         computeLayout = false;
@@ -384,8 +382,9 @@ public class RecyclerBinder implements
       holder.computeLayoutSync(mComponentContext, childrenWidthSpec, childrenHeightSpec, null);
     }
     mInternalAdapter.notifyItemInserted(position);
-
-    computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+    computeRange(
+        mViewportManager.findFirstVisibleItemPosition(),
+        mViewportManager.findLastVisibleItemPosition());
   }
 
   private void requestUpdate() {
@@ -435,8 +434,9 @@ public class RecyclerBinder implements
       }
     }
     mInternalAdapter.notifyItemRangeInserted(position, componentInfos.size());
-
-    computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+    computeRange(
+        mViewportManager.findFirstVisibleItemPosition(),
+        mViewportManager.findLastVisibleItemPosition());
   }
 
   /**
@@ -460,9 +460,11 @@ public class RecyclerBinder implements
     final boolean shouldComputeLayout;
     final int childrenWidthSpec, childrenHeightSpec;
     synchronized (this) {
+      final int currentFirstVisiblePosition = mViewportManager.findFirstVisibleItemPosition();
+
       holder = mComponentTreeHolders.get(position);
-      shouldComputeLayout = mRange != null && position >= mCurrentFirstVisiblePosition &&
-          position < mCurrentFirstVisiblePosition + mRange.estimatedViewportCount;
+      shouldComputeLayout = mRange != null && position >= currentFirstVisiblePosition &&
+          position < currentFirstVisiblePosition + mRange.estimatedViewportCount;
 
       holder.setComponentInfo(componentInfo);
 
@@ -476,8 +478,9 @@ public class RecyclerBinder implements
       holder.computeLayoutSync(mComponentContext, childrenWidthSpec, childrenHeightSpec, null);
     }
     mInternalAdapter.notifyItemChanged(position);
-
-    computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+    computeRange(
+        mViewportManager.findFirstVisibleItemPosition(),
+        mViewportManager.findLastVisibleItemPosition());
   }
 
   /**
@@ -495,8 +498,9 @@ public class RecyclerBinder implements
       }
     }
     mInternalAdapter.notifyItemRangeChanged(position, componentInfos.size());
-
-    computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+    computeRange(
+        mViewportManager.findFirstVisibleItemPosition(),
+        mViewportManager.findLastVisibleItemPosition());
   }
 
   /**
@@ -514,14 +518,15 @@ public class RecyclerBinder implements
       holder = mComponentTreeHolders.remove(fromPosition);
       mComponentTreeHolders.add(toPosition, holder);
       final int mRangeSize = mRange != null ? mRange.estimatedViewportCount : -1;
+      final int currentFirstVisiblePosition = mViewportManager.findFirstVisibleItemPosition();
 
       isNewPositionInRange = mRangeSize > 0 &&
-          toPosition >= mCurrentFirstVisiblePosition - (mRangeSize * mRangeRatio) &&
-          toPosition <= mCurrentFirstVisiblePosition + mRangeSize + (mRangeSize * mRangeRatio);
+          toPosition >= currentFirstVisiblePosition - (mRangeSize * mRangeRatio) &&
+          toPosition <= currentFirstVisiblePosition + mRangeSize + (mRangeSize * mRangeRatio);
 
       isNewPositionInVisibleRange = mRangeSize > 0 &&
-          toPosition >= mCurrentFirstVisiblePosition &&
-          toPosition <= mCurrentFirstVisiblePosition + mRangeSize;
+          toPosition >= currentFirstVisiblePosition &&
+          toPosition <= currentFirstVisiblePosition + mRangeSize;
 
       childrenWidthSpec = getActualChildrenWidthSpec(holder);
       childrenHeightSpec = getActualChildrenHeightSpec(holder);
@@ -534,8 +539,9 @@ public class RecyclerBinder implements
       holder.computeLayoutSync(mComponentContext, childrenWidthSpec, childrenHeightSpec, null);
     }
     mInternalAdapter.notifyItemMoved(fromPosition, toPosition);
-
-    computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+    computeRange(
+        mViewportManager.findFirstVisibleItemPosition(),
+        mViewportManager.findLastVisibleItemPosition());
   }
 
   /**
@@ -551,7 +557,9 @@ public class RecyclerBinder implements
     mInternalAdapter.notifyItemRemoved(position);
 
     holder.release();
-    computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+    computeRange(
+        mViewportManager.findFirstVisibleItemPosition(),
+        mViewportManager.findLastVisibleItemPosition());
   }
 
   /**
@@ -567,8 +575,9 @@ public class RecyclerBinder implements
       }
     }
     mInternalAdapter.notifyItemRangeRemoved(position, count);
-
-    computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+    computeRange(
+        mViewportManager.findFirstVisibleItemPosition(),
+        mViewportManager.findLastVisibleItemPosition());
   }
 
   /**
@@ -676,16 +685,16 @@ public class RecyclerBinder implements
     mLastWidthSpec = widthSpec;
     mLastHeightSpec = heightSpec;
 
-
+    final int currentFirstVisiblePosition = mViewportManager.findFirstVisibleItemPosition();
     // We now need to compute the size of the non scrolling side. We try to do this by using the
     // calculated range (if we have one) or computing one.
-    if (mRange == null && mCurrentFirstVisiblePosition < mComponentTreeHolders.size()) {
+    if (mRange == null && currentFirstVisiblePosition < mComponentTreeHolders.size()) {
       initRange(
           SizeSpec.getSize(widthSpec),
           SizeSpec.getSize(heightSpec),
-          mCurrentFirstVisiblePosition,
-          getActualChildrenWidthSpec(mComponentTreeHolders.get(mCurrentFirstVisiblePosition)),
-          getActualChildrenHeightSpec(mComponentTreeHolders.get(mCurrentFirstVisiblePosition)),
+          currentFirstVisiblePosition,
+          getActualChildrenWidthSpec(mComponentTreeHolders.get(currentFirstVisiblePosition)),
+          getActualChildrenHeightSpec(mComponentTreeHolders.get(currentFirstVisiblePosition)),
           scrollDirection);
     }
 
@@ -749,7 +758,9 @@ public class RecyclerBinder implements
     mIsMeasured.set(true);
 
     if (mRange != null) {
-      computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+      computeRange(
+          mViewportManager.findFirstVisibleItemPosition(),
+          mViewportManager.findLastVisibleItemPosition());
     }
   }
 
@@ -849,13 +860,13 @@ public class RecyclerBinder implements
 
     mLayoutInfo.setComponentInfoCollection(this);
 
-    if (mCurrentFirstVisiblePosition != RecyclerView.NO_POSITION &&
-        mCurrentFirstVisiblePosition >= 0) {
+    final int firstVisibleItemPosition = mViewportManager.findFirstVisibleItemPosition();
+    if (firstVisibleItemPosition != RecyclerView.NO_POSITION && firstVisibleItemPosition >= 0) {
       if (layoutManager instanceof LinearLayoutManager) {
         ((LinearLayoutManager) layoutManager)
-            .scrollToPositionWithOffset(mCurrentFirstVisiblePosition, mCurrentOffset);
+            .scrollToPositionWithOffset(firstVisibleItemPosition, mCurrentOffset);
       } else {
-        view.scrollToPosition(mCurrentFirstVisiblePosition);
+        view.scrollToPosition(firstVisibleItemPosition);
       }
     }
 
@@ -925,7 +936,7 @@ public class RecyclerBinder implements
   @UiThread
   public void scrollToPosition(int position) {
     if (mMountedView == null) {
-      mCurrentFirstVisiblePosition = position;
+      mViewportManager.setCurrentFirstVisiblePositionTo(position);
       return;
     }
 
@@ -957,22 +968,22 @@ public class RecyclerBinder implements
 
   @Override
   public int findFirstVisibleItemPosition() {
-    return mLayoutInfo.findFirstVisibleItemPosition();
+    return mViewportManager.findFirstVisibleItemPosition();
   }
 
   @Override
   public int findFirstFullyVisibleItemPosition() {
-    return mLayoutInfo.findFirstFullyVisibleItemPosition();
+    return mViewportManager.findFirstFullyVisibleItemPosition();
   }
 
   @Override
   public int findLastVisibleItemPosition() {
-    return mLayoutInfo.findLastVisibleItemPosition();
+    return mViewportManager.findLastVisibleItemPosition();
   }
 
   @Override
   public int findLastFullyVisibleItemPosition() {
-    return mLayoutInfo.findLastFullyVisibleItemPosition();
+    return mViewportManager.findLastFullyVisibleItemPosition();
   }
 
   @Override
@@ -1005,8 +1016,6 @@ public class RecyclerBinder implements
 
   @VisibleForTesting
   void onNewVisibleRange(int firstVisiblePosition, int lastVisiblePosition) {
-    mCurrentFirstVisiblePosition = firstVisiblePosition;
-    mCurrentLastVisiblePosition = lastVisiblePosition;
     computeRange(firstVisiblePosition, lastVisiblePosition);
   }
 
