@@ -275,7 +275,7 @@ class EditTextSpec {
   @OnMount
   static void onMount(
       final ComponentContext c,
-      EditTextTextTextChangedEventHandler editTextView,
+      EditTextTextTextChangedEventHandler editText,
       @Prop(optional = true, resType = ResType.STRING) CharSequence text,
       @Prop(optional = true, resType = ResType.STRING) CharSequence hint,
       @Prop(optional = true) TextUtils.TruncateAt ellipsize,
@@ -303,11 +303,9 @@ class EditTextSpec {
       @Prop(optional = true) boolean editable,
       @Prop(optional = true) int selection,
       @Prop(optional = true) int inputType) {
-    editTextView.setEventHandler(
-        com.facebook.litho.widget.EditText.getTextChangedEventHandler(c));
 
     initEditText(
-        editTextView,
+        editText,
         text,
         hint,
         ellipsize,
@@ -341,6 +339,8 @@ class EditTextSpec {
   static void onBind(
       ComponentContext c,
       EditTextTextTextChangedEventHandler editText) {
+    editText.setEventHandler(
+        com.facebook.litho.widget.EditText.getTextChangedEventHandler(c));
     editText.attachWatcher();
   }
 
@@ -348,6 +348,7 @@ class EditTextSpec {
   static void onUnbind(
       ComponentContext c,
       EditTextTextTextChangedEventHandler editText) {
+    editText.setEventHandler(null);
     editText.detachWatcher();
   }
 
@@ -355,7 +356,6 @@ class EditTextSpec {
   static void onUnmount(
       ComponentContext c,
       EditTextTextTextChangedEventHandler editText) {
-    editText.setEventHandler(null);
   }
 
   private static void initEditText(
