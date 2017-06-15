@@ -44,7 +44,7 @@ public final class DebugComponent {
     void applyOverrides(DebugComponent node);
   }
 
-  private final static SimpleArrayMap<String, DebugComponent> mDebugNodes = new SimpleArrayMap<>();
+  private static final SimpleArrayMap<String, DebugComponent> mDebugNodes = new SimpleArrayMap<>();
 
   private String mKey;
   private WeakReference<InternalNode> mNode;

@@ -43,7 +43,7 @@ public class MountSpecModelFactoryTest {
 
   static class TestTreeProp {
 
-    final private long mValue;
+    private final long mValue;
 
     public TestTreeProp(long value) {
       mValue = value;

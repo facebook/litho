@@ -85,7 +85,7 @@ public final class Animated {
     AnimationBinding build();
   }
 
-  public static abstract class AbstractBuilder {
+  public abstract static class AbstractBuilder {
 
     private ComponentProperty mProperty;
 
@@ -143,7 +143,7 @@ public final class Animated {
     abstract TransitionAnimationBinding buildTransition(ComponentProperty property);
   }
 
-  public static abstract class AbstractPointBuilder {
+  public abstract static class AbstractPointBuilder {
 
     private PositionComponentProperty mProperty;
 

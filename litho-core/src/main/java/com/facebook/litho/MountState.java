@@ -630,7 +630,7 @@ class MountState {
       LongSparseArray<MountItem> indexToItemMap,
       long[] layoutOutputsIds,
       ComponentsLogger logger) {
-    final @LayoutOutput.UpdateState int updateState = layoutOutput.getUpdateState();
+    @LayoutOutput.UpdateState final int updateState = layoutOutput.getUpdateState();
     final Component currentComponent = currentMountItem.getComponent();
     final ComponentLifecycle currentLifecycle = currentComponent.getLifecycle();
     final Component nextComponent = layoutOutput.getComponent();

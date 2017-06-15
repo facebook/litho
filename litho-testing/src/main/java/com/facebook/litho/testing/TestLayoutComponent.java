@@ -33,7 +33,7 @@ public class TestLayoutComponent extends ComponentLifecycle {
   private final boolean mHasMountSpecChild;
   private final boolean mIsDelegate;
 
-  private synchronized static TestLayoutComponent get(
+  private static synchronized TestLayoutComponent get(
       boolean callsShouldUpdateOnMount,
       boolean isPureRender,
       boolean hasMountSpecChild,

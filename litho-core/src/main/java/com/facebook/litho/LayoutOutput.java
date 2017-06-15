@@ -139,7 +139,8 @@ class LayoutOutput implements Cloneable {
     mUpdateState = state;
   }
 
-  public @UpdateState int getUpdateState() {
+  @UpdateState
+  public int getUpdateState() {
     return mUpdateState;
   }
 

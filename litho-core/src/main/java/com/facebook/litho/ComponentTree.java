@@ -162,8 +162,9 @@ public class ComponentTree {
 
   @GuardedBy("this")
   private boolean mIsMeasuring;
+  @PendingLayoutCalculation
   @GuardedBy("this")
-  private @PendingLayoutCalculation int mScheduleLayoutAfterMeasure;
+  private int mScheduleLayoutAfterMeasure;
 
   // This flag is so we use the correct shouldAnimateTransitions flag when calculating
   // the LayoutState in measure -- we should respect the most recent setRoot* call.

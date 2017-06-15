@@ -33,11 +33,13 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public abstract class Component<L extends ComponentLifecycle> implements HasEventDispatcher {
 
-  public static abstract class Builder<L extends ComponentLifecycle>
+  public abstract static class Builder<L extends ComponentLifecycle>
       extends ResourceResolver {
     private ComponentContext mContext;
-    private @AttrRes int mDefStyleAttr;
-    private @StyleRes int mDefStyleRes;
+    @AttrRes
+    private int mDefStyleAttr;
+    @StyleRes
+    private int mDefStyleRes;
     private Component mComponent;
 
     protected void init(
@@ -123,14 +125,16 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
   private String mKey;
 
   private final L mLifecycle;
-  private @ThreadConfined(ThreadConfined.ANY) ComponentContext mScopedContext;
+  @ThreadConfined(ThreadConfined.ANY)
+  private ComponentContext mScopedContext;
 
   private boolean mIsLayoutStarted = false;
 
   // If we have a cachedLayout, onPrepare and onMeasure would have been called on it already.
-  private @ThreadConfined(ThreadConfined.ANY) InternalNode mLastMeasuredLayout;
+  @ThreadConfined(ThreadConfined.ANY)
+  private InternalNode mLastMeasuredLayout;
 
-  abstract public String getSimpleName();
+  public abstract String getSimpleName();
 
   protected StateContainer getStateContainer() {
     return null;

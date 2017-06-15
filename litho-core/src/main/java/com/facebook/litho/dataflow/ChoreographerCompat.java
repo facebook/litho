@@ -94,7 +94,7 @@ public class ChoreographerCompat {
    * to access cached wrappers for submitting a real FrameCallback to a Choreographer or a Runnable
    * to a Handler.
    */
-  public static abstract class FrameCallback {
+  public abstract static class FrameCallback {
 
     private Runnable mRunnable;
     private Choreographer.FrameCallback mFrameCallback;

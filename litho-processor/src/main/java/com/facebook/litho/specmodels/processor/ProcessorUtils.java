@@ -67,7 +67,7 @@ public class ProcessorUtils {
    * processor for the given specmodel and throws a {@link MultiPrintableException} if any such
    * errors are found.
    */
-  public final static void validate(SpecModel specModel) {
+  public static final void validate(SpecModel specModel) {
     List<SpecModelValidationError> validationErrors = specModel.validate();
 
     if (validationErrors == null || validationErrors.isEmpty()) {

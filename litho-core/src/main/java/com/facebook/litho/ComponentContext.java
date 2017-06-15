@@ -32,17 +32,27 @@ public class ComponentContext extends ContextWrapper {
   private String mNoStateUpdatesMethod;
 
   // Hold a reference to the component which scope we are currently within.
-  private @ThreadConfined(ThreadConfined.ANY) Component<?> mComponentScope;
-  private @ThreadConfined(ThreadConfined.ANY) ResourceCache mResourceCache;
-  private @ThreadConfined(ThreadConfined.ANY) int mWidthSpec;
-  private @ThreadConfined(ThreadConfined.ANY) int mHeightSpec;
-  protected @ThreadConfined(ThreadConfined.ANY) TreeProps mTreeProps;
+  @ThreadConfined(ThreadConfined.ANY)
+  private Component<?> mComponentScope;
+  @ThreadConfined(ThreadConfined.ANY)
+  private ResourceCache mResourceCache;
+  @ThreadConfined(ThreadConfined.ANY)
+  private int mWidthSpec;
+  @ThreadConfined(ThreadConfined.ANY)
+  private int mHeightSpec;
+  @ThreadConfined(ThreadConfined.ANY)
+  protected TreeProps mTreeProps;
 
-  private @ThreadConfined(ThreadConfined.ANY) ComponentTree mComponentTree;
+  @ThreadConfined(ThreadConfined.ANY)
+  private ComponentTree mComponentTree;
 
   // Used to hold styling information applied to components
-  private @ThreadConfined(ThreadConfined.ANY) @StyleRes int mDefStyleRes = 0;
-  private @ThreadConfined(ThreadConfined.ANY) @AttrRes int mDefStyleAttr = 0;
+  @StyleRes
+  @ThreadConfined(ThreadConfined.ANY)
+  private int mDefStyleRes = 0;
+  @AttrRes
+  @ThreadConfined(ThreadConfined.ANY)
+  private int mDefStyleAttr = 0;
 
   public ComponentContext(Context context) {
     this(context, null, null, null);
@@ -203,7 +213,8 @@ public class ComponentContext extends ContextWrapper {
     return mLogTag;
   }
 
-  public @Nullable ComponentsLogger getLogger() {
+  @Nullable
+  public ComponentsLogger getLogger() {
     return mLogger;
   }
 
@@ -215,7 +226,8 @@ public class ComponentContext extends ContextWrapper {
     mTreeProps = treeProps;
   }
 
-  protected @Nullable TreeProps getTreeProps() {
+  @Nullable
+  protected TreeProps getTreeProps() {
     return mTreeProps;
   }
 

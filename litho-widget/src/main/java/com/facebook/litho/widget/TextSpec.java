@@ -497,7 +497,7 @@ class TextSpec {
       layoutBuilder.setShouldCacheLayout(false);
     }
 
-    final @TextLayoutBuilder.MeasureMode int textMeasureMode;
+    @TextLayoutBuilder.MeasureMode final int textMeasureMode;
     switch (SizeSpec.getMode(widthSpec)) {
       case UNSPECIFIED:
         textMeasureMode = TextLayoutBuilder.MEASURE_MODE_UNSPECIFIED;

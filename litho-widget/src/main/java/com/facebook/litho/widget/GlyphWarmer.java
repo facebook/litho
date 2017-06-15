@@ -45,7 +45,7 @@ public class GlyphWarmer {
   /**
    * @return the global {@link GlyphWarmer} instance.
    */
-  public synchronized static GlyphWarmer getInstance() {
+  public static synchronized GlyphWarmer getInstance() {
     if (sInstance == null) {
       sInstance = new GlyphWarmer();
     }

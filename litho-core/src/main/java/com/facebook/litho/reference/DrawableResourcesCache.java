@@ -47,12 +47,14 @@ class DrawableResourcesCache {
   /**
    * @deprecated use {@link #get(int, Resources, Resources.Theme)}
    */
+  @Nullable
   @Deprecated
-  public @Nullable Drawable get(int resId, Resources resources) {
+  public Drawable get(int resId, Resources resources) {
     return get(resId, resources, null);
   }
 
-  public @Nullable Drawable get(int resId, Resources resources, @Nullable Resources.Theme theme) {
+  @Nullable
+  public Drawable get(int resId, Resources resources, @Nullable Resources.Theme theme) {
     SimplePoolWithCount<Drawable> drawablesPool = mDrawableCache.get(resId);
 
     if (drawablesPool == null) {

@@ -89,10 +89,10 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
         ClassNames.MOUNT_SPEC.toString()));
   }
 
-  abstract protected DependencyInjectionHelper getDependencyInjectionGenerator(
+  protected abstract DependencyInjectionHelper getDependencyInjectionGenerator(
       TypeElement typeElement);
 
-  abstract protected SpecModel getLayoutSpecModel(TypeElement typeElement);
+  protected abstract SpecModel getLayoutSpecModel(TypeElement typeElement);
 
   protected void generate(SpecModel specModel) throws IOException {
     JavaFile.builder(

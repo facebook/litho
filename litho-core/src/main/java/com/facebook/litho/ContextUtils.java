@@ -23,7 +23,8 @@ public class ContextUtils {
    * @return the Activity representing this Context if the Context is backed by an Activity and the
    * Activity has not been finished/destroyed yet. Returns null otherwise.
    */
-  static @Nullable Activity getValidActivityForContext(Context context) {
+  @Nullable
+  static Activity getValidActivityForContext(Context context) {
     final Activity activity = findActivityInContext(context);
 
     if (activity == null || activity.isFinishing() || isActivityDestroyed(activity)) {
@@ -33,7 +34,8 @@ public class ContextUtils {
     return activity;
   }
 
-  private @Nullable static Activity findActivityInContext(Context context) {
+  @Nullable
+  private static Activity findActivityInContext(Context context) {
     if (context instanceof Activity) {
       return (Activity) context;
     } else if (context instanceof ContextWrapper) {

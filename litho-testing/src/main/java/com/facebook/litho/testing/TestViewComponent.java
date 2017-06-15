@@ -34,7 +34,7 @@ public class TestViewComponent extends ComponentLifecycle {
   private final boolean mCanMeasure;
   private final boolean mCanMountIncrementally;
 
-  private synchronized static TestViewComponent get(
+  private static synchronized TestViewComponent get(
       boolean callsShouldUpdateOnMount,
       boolean isPureRender,
       boolean canMeasure,

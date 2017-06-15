@@ -95,7 +95,8 @@ class NodeInfo {
   private EventHandler<SendAccessibilityEventEvent> mSendAccessibilityEventHandler;
   private EventHandler<SendAccessibilityEventUncheckedEvent>
       mSendAccessibilityEventUncheckedHandler;
-  private @NodeInfo.FocusState short mFocusState = FOCUS_UNSET;
+  @FocusState
+  private short mFocusState = FOCUS_UNSET;
 
   private int mPrivateFlags;
 

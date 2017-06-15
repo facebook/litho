@@ -39,7 +39,7 @@ public class TestDrawableComponent extends ComponentLifecycle {
 
   private long mProperties;
 
-  private synchronized static TestDrawableComponent get(long properties) {
+  private static synchronized TestDrawableComponent get(long properties) {
     for (TestDrawableComponent lifecycle : sInstances) {
       if (lifecycle.mProperties == properties) {
         return lifecycle;
