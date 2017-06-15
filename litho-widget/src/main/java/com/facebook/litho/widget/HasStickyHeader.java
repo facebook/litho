@@ -11,18 +11,7 @@ package com.facebook.litho.widget;
 
 import com.facebook.litho.ComponentTree;
 
-interface HasStickyHeader {
-
-  /**
-   * @return the adapter position of the first visible view.
-   */
-  int findFirstVisibleItemPosition();
-
-  /**
-   * @return the adapter position of the last visible view.
-   */
-  int findLastVisibleItemPosition();
-
+interface HasStickyHeader extends ViewportInfo {
   /**
    * @param position
    * @return Whether the item at given position is *sticky*

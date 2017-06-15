@@ -51,13 +51,28 @@ public class LinearLayoutInfo implements LayoutInfo {
   }
 
   @Override
-  public int findFirstVisiblePosition() {
+  public int findFirstVisibleItemPosition() {
     return mLinearLayoutManager.findFirstVisibleItemPosition();
   }
 
   @Override
-  public int findLastVisiblePosition() {
+  public int findLastVisibleItemPosition() {
     return mLinearLayoutManager.findLastVisibleItemPosition();
+  }
+
+  @Override
+  public int findFirstFullyVisibleItemPosition() {
+    return mLinearLayoutManager.findFirstCompletelyVisibleItemPosition();
+  }
+
+  @Override
+  public int findLastFullyVisibleItemPosition() {
+    return mLinearLayoutManager.findLastCompletelyVisibleItemPosition();
+  }
+
+  @Override
+  public int getItemCount() {
+    return mLinearLayoutManager.getItemCount();
   }
 
   @Override

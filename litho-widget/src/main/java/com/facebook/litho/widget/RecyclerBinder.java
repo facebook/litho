@@ -739,6 +739,7 @@ public class RecyclerBinder implements
   /**
    * Gets the number of items in this binder.
    */
+  @Override
   public int getItemCount() {
     return mInternalAdapter.getItemCount();
   }
@@ -937,12 +938,22 @@ public class RecyclerBinder implements
 
   @Override
   public int findFirstVisibleItemPosition() {
-    return mLayoutInfo.findFirstVisiblePosition();
+    return mLayoutInfo.findFirstVisibleItemPosition();
+  }
+
+  @Override
+  public int findFirstFullyVisibleItemPosition() {
+    return mLayoutInfo.findFirstFullyVisibleItemPosition();
   }
 
   @Override
   public int findLastVisibleItemPosition() {
-    return mLayoutInfo.findLastVisiblePosition();
+    return mLayoutInfo.findLastVisibleItemPosition();
+  }
+
+  @Override
+  public int findLastFullyVisibleItemPosition() {
+    return mLayoutInfo.findLastFullyVisibleItemPosition();
   }
 
   @Override
@@ -965,6 +976,11 @@ public class RecyclerBinder implements
     private int estimatedViewportCount;
     // The size computed for the first Component.
     private int measuredSize;
+  }
+
+  @Override
+  public void setViewportChangedListener(@Nullable ViewportChanged viewportChangedListener) {
+    // TODO t18189539: Handle viewport changes from non-scrolling events
   }
 
   @VisibleForTesting
@@ -1049,8 +1065,8 @@ public class RecyclerBinder implements
         IncrementalMountUtils.performIncrementalMount(recyclerView);
       }
 
-      final int firstVisiblePosition = mLayoutInfo.findFirstVisiblePosition();
-      final int lastVisiblePosition = mLayoutInfo.findLastVisiblePosition();
+      final int firstVisiblePosition = mLayoutInfo.findFirstVisibleItemPosition();
+      final int lastVisiblePosition = mLayoutInfo.findLastVisibleItemPosition();
 
       if (firstVisiblePosition < 0 || lastVisiblePosition < 0) {
         return;

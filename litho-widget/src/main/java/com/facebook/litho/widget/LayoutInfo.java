@@ -19,7 +19,7 @@ import com.facebook.litho.ComponentInfo;
  * An implementation of this interface will provide the {@link RecyclerBinder} with all the
  * information about the {@link RecyclerView} layout.
  */
-public interface LayoutInfo {
+public interface LayoutInfo extends ViewportInfo {
 
   /**
    * This is the main scrolling direction that the {@link LayoutManager} passed to this binder will
@@ -28,16 +28,6 @@ public interface LayoutInfo {
    * @return either {@link OrientationHelper#HORIZONTAL} or {@link OrientationHelper#VERTICAL}.
    */
   int getScrollDirection();
-
-  /**
-   * @return The first visible position in the current {@link RecyclerView} layout.
-   */
-  int findFirstVisiblePosition();
-
-  /**
-   * @return The last visible position in the current {@link RecyclerView} layout.
-   */
-  int findLastVisiblePosition();
 
   /**
    * @return The {@link LayoutManager} to be used with the {@link RecyclerView}.

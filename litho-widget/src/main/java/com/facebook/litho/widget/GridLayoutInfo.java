@@ -43,13 +43,28 @@ public class GridLayoutInfo implements LayoutInfo {
   }
 
   @Override
-  public int findFirstVisiblePosition() {
+  public int findFirstVisibleItemPosition() {
     return mGridLayoutManager.findFirstVisibleItemPosition();
   }
 
   @Override
-  public int findLastVisiblePosition() {
+  public int findLastVisibleItemPosition() {
     return mGridLayoutManager.findLastVisibleItemPosition();
+  }
+
+  @Override
+  public int findFirstFullyVisibleItemPosition() {
+    return mGridLayoutManager.findFirstCompletelyVisibleItemPosition();
+  }
+
+  @Override
+  public int findLastFullyVisibleItemPosition() {
+    return mGridLayoutManager.findLastCompletelyVisibleItemPosition();
+  }
+
+  @Override
+  public int getItemCount() {
+    return mGridLayoutManager.getItemCount();
   }
 
   @Override

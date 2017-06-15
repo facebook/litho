@@ -9,6 +9,8 @@
 
 package com.facebook.litho.widget;
 
+import javax.annotation.Nullable;
+
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,24 +55,31 @@ public interface Binder<V extends ViewGroup> {
    * Call this method before the {@link View} is mounted, i.e. within
    * {@link com.facebook.litho.ComponentLifecycle#onMount(Context, Object, Component)}
    */
-  abstract void mount(V view);
+  void mount(V view);
 
   /**
    * Bind this {@link Binder} to a {@link View}. Remember to call
    * {@link #notifyDataSetChanged()} when your {@link Component}s are
    * ready to be used.
    */
-  abstract void bind(V view);
+  void bind(V view);
 
   /**
    * Call this method when the view is unbound.
    * @param view the view being unbound.
    */
-  abstract void unbind(V view);
+  void unbind(V view);
 
   /**
    * Call this method when the view is unmounted.
    * @param view the view being unmounted.
    */
-  abstract void unmount(V view);
+  void unmount(V view);
+
+  /**
+   * Bind a {@link ViewportInfo.ViewportChanged} listener to this {@link Binder}.
+   * The listener will be notified of Viewport changes.
+   * @param viewportChangedListener
+   */
+  void setViewportChangedListener(@Nullable ViewportInfo.ViewportChanged viewportChangedListener);
 }
