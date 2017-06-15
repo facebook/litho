@@ -36,6 +36,7 @@ import com.facebook.litho.SizeSpec;
 import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.utils.DisplayListPrefetcherUtils;
 import com.facebook.litho.utils.IncrementalMountUtils;
+import com.facebook.litho.widget.ViewportManager.ViewportChangedWhileScrolling;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,6 +93,13 @@ public class RecyclerBinder implements
       }
     }
   };
+  private final ViewportChangedWhileScrolling mViewportChangedWhileScrolling =
+      new ViewportChangedWhileScrolling() {
+        @Override
+        public void viewportChanged(int firstVisiblePosition, int lastVisiblePosition) {
+          onNewVisibleRange(firstVisiblePosition, lastVisiblePosition);
+        }
+      };
 
   private int mLastWidthSpec = UNINITIALIZED;
   private int mLastHeightSpec = UNINITIALIZED;
@@ -104,6 +112,7 @@ public class RecyclerBinder implements
   private StickyHeaderController mStickyHeaderController;
   private boolean mCanPrefetchDisplayLists;
   private EventHandler<ReMeasureEvent> mReMeasureEventEventHandler;
+  private final ViewportManager mViewportManager;
 
   interface ComponentTreeHolderFactory {
     ComponentTreeHolder create(
@@ -232,6 +241,14 @@ public class RecyclerBinder implements
     mLayoutHandlerFactory = layoutHandlerFactory;
     mCurrentFirstVisiblePosition = mCurrentLastVisiblePosition = 0;
     mCanPrefetchDisplayLists = canPrefetchDisplayLists;
+
+    mViewportManager = new ViewportManager(
+        mCurrentFirstVisiblePosition,
+        mCurrentLastVisiblePosition,
+        layoutInfo,
+        mMainThreadHandler,
+        RecyclerView.SCROLL_STATE_IDLE,
+        mViewportChangedWhileScrolling);
   }
 
   /**
@@ -828,6 +845,7 @@ public class RecyclerBinder implements
     view.setLayoutManager(layoutManager);
     view.setAdapter(mInternalAdapter);
     view.addOnScrollListener(mRangeScrollListener);
+    view.addOnScrollListener(mViewportManager.getScrollListener());
 
     mLayoutInfo.setComponentInfoCollection(this);
 
@@ -886,6 +904,7 @@ public class RecyclerBinder implements
     }
 
     view.removeOnScrollListener(mRangeScrollListener);
+    view.removeOnScrollListener(mViewportManager.getScrollListener());
     view.setAdapter(null);
     view.setLayoutManager(null);
 
@@ -979,8 +998,9 @@ public class RecyclerBinder implements
   }
 
   @Override
+  @UiThread
   public void setViewportChangedListener(@Nullable ViewportChanged viewportChangedListener) {
-    // TODO t18189539: Handle viewport changes from non-scrolling events
+    mViewportManager.setViewportChangedListener(viewportChangedListener);
   }
 
   @VisibleForTesting
@@ -1065,18 +1085,6 @@ public class RecyclerBinder implements
         IncrementalMountUtils.performIncrementalMount(recyclerView);
       }
 
-      final int firstVisiblePosition = mLayoutInfo.findFirstVisibleItemPosition();
-      final int lastVisiblePosition = mLayoutInfo.findLastVisibleItemPosition();
-
-      if (firstVisiblePosition < 0 || lastVisiblePosition < 0) {
-        return;
-      }
-
-      if (firstVisiblePosition != mCurrentFirstVisiblePosition
-          || lastVisiblePosition != mCurrentLastVisiblePosition) {
-        onNewVisibleRange(firstVisiblePosition, lastVisiblePosition);
-      }
-
       if (mCanPrefetchDisplayLists) {
         DisplayListPrefetcherUtils.prefetchDisplayLists(recyclerView);
       }
@@ -1126,6 +1134,13 @@ public class RecyclerBinder implements
       }
 
       lithoView.setComponentTree(componentTreeHolder.getComponentTree());
+    }
+
+    @Override
+    public void onViewDetachedFromWindow(RecyclerView.ViewHolder holder) {
+      // LayoutPosition of the detached ViewHolder is always 1 position less than
+      // the actual on screen.
+      mViewportManager.onViewportChangedAfterViewRemoval(holder.getLayoutPosition() + 1);
     }
 
     @Override

@@ -228,7 +228,7 @@ public class RecyclerBinderTest {
     verify(recyclerView).setLayoutManager(mLayoutInfo.getLayoutManager());
     verify(recyclerView).setAdapter(any(RecyclerView.Adapter.class));
     verify(mLayoutInfo).setComponentInfoCollection(mRecyclerBinder);
-    verify(recyclerView).addOnScrollListener(any(OnScrollListener.class));
+    verify(recyclerView, times(2)).addOnScrollListener(any(OnScrollListener.class));
   }
 
   @Test
@@ -238,18 +238,18 @@ public class RecyclerBinderTest {
 
     verify(recyclerView).setLayoutManager(mLayoutInfo.getLayoutManager());
     verify(recyclerView).setAdapter(any(RecyclerView.Adapter.class));
-    verify(recyclerView).addOnScrollListener(any(OnScrollListener.class));
+    verify(recyclerView, times(2)).addOnScrollListener(any(OnScrollListener.class));
 
     RecyclerView secondRecyclerView = mock(RecyclerView.class);
     mRecyclerBinder.mount(secondRecyclerView);
 
     verify(recyclerView).setLayoutManager(null);
     verify(recyclerView).setAdapter(null);
-    verify(recyclerView).removeOnScrollListener(any(OnScrollListener.class));
+    verify(recyclerView, times(2)).removeOnScrollListener(any(OnScrollListener.class));
 
     verify(secondRecyclerView).setLayoutManager(mLayoutInfo.getLayoutManager());
     verify(secondRecyclerView).setAdapter(any(RecyclerView.Adapter.class));
-    verify(secondRecyclerView).addOnScrollListener(any(OnScrollListener.class));
+    verify(secondRecyclerView, times(2)).addOnScrollListener(any(OnScrollListener.class));
   }
 
   @Test
@@ -259,14 +259,14 @@ public class RecyclerBinderTest {
 
     verify(recyclerView).setLayoutManager(mLayoutInfo.getLayoutManager());
     verify(recyclerView).setAdapter(any(RecyclerView.Adapter.class));
-    verify(recyclerView).addOnScrollListener(any(OnScrollListener.class));
+    verify(recyclerView, times(2)).addOnScrollListener(any(OnScrollListener.class));
 
     mRecyclerBinder.unmount(recyclerView);
 
     verify(recyclerView).setLayoutManager(null);
     verify(recyclerView).setAdapter(null);
     verify(mLayoutInfo).setComponentInfoCollection(null);
-    verify(recyclerView).removeOnScrollListener(any(OnScrollListener.class));
+    verify(recyclerView, times(2)).removeOnScrollListener(any(OnScrollListener.class));
   }
 
   @Test
@@ -281,7 +281,7 @@ public class RecyclerBinderTest {
     mRecyclerBinder.mount(recyclerView);
 
     verify(recyclerView).setAdapter(any(RecyclerView.Adapter.class));
-    verify(recyclerView, times(2)).addOnScrollListener(any(OnScrollListener.class));
+    verify(recyclerView, times(3)).addOnScrollListener(any(OnScrollListener.class));
   }
 
   @Test
