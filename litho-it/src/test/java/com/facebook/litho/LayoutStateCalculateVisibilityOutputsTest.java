@@ -18,12 +18,8 @@ import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.rule.PowerMockRule;
 
 import static com.facebook.litho.Column.create;
 import static com.facebook.litho.SizeSpec.EXACTLY;
@@ -32,13 +28,8 @@ import static com.facebook.yoga.YogaEdge.ALL;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.robolectric.RuntimeEnvironment.application;
 
-@PrepareForTest({Component.class})
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
 @RunWith(ComponentsTestRunner.class)
 public class LayoutStateCalculateVisibilityOutputsTest {
-
-  @Rule
-  public PowerMockRule mPowerMockRule = new PowerMockRule();
 
   @Before
   public void setup() throws Exception {
