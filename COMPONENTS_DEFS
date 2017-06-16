@@ -70,6 +70,8 @@ COMPONENTS_PROCESSOR_LIB_TARGET = make_dep_path('litho-processor/src/main/java/c
 
 # Sample app
 COMPONENTS_SAMPLE_JAVA = make_dep_path('sample/src/main/java/com/facebook/samples/litho:litho')
+COMPONENTS_SAMPLE_APP_TARGET = make_dep_path('sample/src/oss-only/java/com/facebook/samples/litho:litho')
+COMPONENTS_SAMPLE_APP_EXTRAS = []
 COMPONENTS_SAMPLE_BAREBONES_JAVA = make_dep_path('sample-barebones/src/main/java/com/facebook/samples/lithobarebones:lithobarebones')
 COMPONENTS_SAMPLE_RES  = make_dep_path('sample:res')
 

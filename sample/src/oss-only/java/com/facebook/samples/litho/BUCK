@@ -8,17 +8,12 @@ include_defs("//COMPONENTS_DEFS")
 
 android_library(
     name = "litho",
-    srcs = glob(["**/*.java"]),
-    annotation_processor_deps = [
-        COMPONENTS_PROCESSOR_LIB_TARGET,
-    ],
-    annotation_processors = [
-        "com.facebook.litho.specmodels.processor.ComponentsProcessor",
-    ],
+    srcs = glob(["*.java"]),
     visibility = [
         "PUBLIC",
     ],
     deps =
+        COMPONENTS_SAMPLE_APP_EXTRAS +
         COMPONENTS_FRESCO_PIPELINE_TARGET +
         COMPONENTS_FRESCO_CONTROLLER_TARGET +
         COMPONENTS_FRESCO_INTERFACES_TARGET +
@@ -36,6 +31,5 @@ android_library(
             COMPONENTS_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
             COMPONENTS_JSR_TARGET,
             COMPONENTS_YOGA_TARGET,
-            COMPONENTS_SAMPLE_APP_TARGET,
         ],
 )
