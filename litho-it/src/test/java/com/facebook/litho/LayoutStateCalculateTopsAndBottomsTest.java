@@ -174,11 +174,7 @@ public class LayoutStateCalculateTopsAndBottomsTest {
         component,
         componentTreeId,
         widthSpec,
-        heightSpec,
-        false,
-        false,
-        null,
-        false);
+        heightSpec);
   }
 
   private static LayoutOutput createLayoutOutput(int top, int bottom, boolean isHostSpec) {

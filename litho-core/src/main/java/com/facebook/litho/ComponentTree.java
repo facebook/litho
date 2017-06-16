@@ -105,6 +105,7 @@ public class ComponentTree {
 
   private final ComponentContext mContext;
   private final boolean mCanPrefetchDisplayLists;
+  private final boolean mShouldClipChildren;
 
   // These variables are only accessed from the main thread.
   @ThreadConfined(ThreadConfined.UI)
@@ -188,6 +189,7 @@ public class ComponentTree {
     mLayoutLock = builder.layoutLock;
     mIsAsyncUpdateStateEnabled = builder.asyncStateUpdates;
     mCanPrefetchDisplayLists = builder.canPrefetchDisplayLists;
+    mShouldClipChildren = builder.shouldClipChildren;
 
     if (mLayoutThreadHandler == null) {
       mLayoutThreadHandler = new DefaultLayoutHandler(getDefaultLayoutThreadLooper());
@@ -1299,7 +1301,8 @@ public class ComponentTree {
             diffingEnabled,
             shouldAnimateTransitions,
             diffNode,
-            mCanPrefetchDisplayLists);
+            mCanPrefetchDisplayLists,
+            mShouldClipChildren);
       }
     } else {
       return LayoutState.calculate(
@@ -1311,7 +1314,8 @@ public class ComponentTree {
           diffingEnabled,
           shouldAnimateTransitions,
           diffNode,
-          mCanPrefetchDisplayLists);
+          mCanPrefetchDisplayLists,
+          mShouldClipChildren);
     }
   }
 
@@ -1348,6 +1352,7 @@ public class ComponentTree {
     private boolean asyncStateUpdates = true;
     private int overrideComponentTreeId = -1;
     private boolean canPrefetchDisplayLists = false;
+    private boolean shouldClipChildren = true;
 
     protected Builder() {
     }
@@ -1374,6 +1379,7 @@ public class ComponentTree {
       asyncStateUpdates = true;
       overrideComponentTreeId = -1;
       canPrefetchDisplayLists = false;
+      shouldClipChildren = true;
     }
 
     /**
@@ -1481,6 +1487,15 @@ public class ComponentTree {
      */
     public Builder canPrefetchDisplayLists(boolean canPrefetch) {
       this.canPrefetchDisplayLists = canPrefetch;
+      return this;
+    }
+
+    /**
+     * Specify whether the ComponentHosts created by this tree will clip their children.
+     * Default value is 'true' as in Android views.
+     */
+    public Builder shouldClipChildren(boolean shouldClipChildren) {
+      this.shouldClipChildren = shouldClipChildren;
       return this;
     }
 

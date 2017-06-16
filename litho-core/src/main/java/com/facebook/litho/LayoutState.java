@@ -166,6 +166,7 @@ class LayoutState {
 
   private StateHandler mStateHandler;
   private boolean mCanPrefetchDisplayLists;
+  private boolean mClipChildren = true;
   private ArrayList<Component> mComponentsNeedingPreviousRenderInfo;
 
   LayoutState() {
@@ -273,6 +274,7 @@ class LayoutState {
       viewNodeInfo.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
       viewNodeInfo.setLayoutDirection(node.getResolvedLayoutDirection());
       viewNodeInfo.setExpandedTouchBounds(node, l, t, r, b);
+      viewNodeInfo.setClipChildren(layoutState.mClipChildren);
       layoutOutput.setViewNodeInfo(viewNodeInfo);
       viewNodeInfo.release();
     } else {
@@ -903,11 +905,31 @@ class LayoutState {
       Component<T> component,
       int componentTreeId,
       int widthSpec,
+      int heightSpec) {
+    return calculate(
+        c,
+        component,
+        componentTreeId,
+        widthSpec,
+        heightSpec,
+        false /* shouldGenerateDiffTree */,
+        false /* shouldAnimatedTransitions */,
+        null /* previousDiffTreeRoot */,
+        false /* canPrefetchDisplayLists */,
+        true /* clipChildren */);
+  }
+
+  static <T extends ComponentLifecycle> LayoutState calculate(
+      ComponentContext c,
+      Component<T> component,
+      int componentTreeId,
+      int widthSpec,
       int heightSpec,
       boolean shouldGenerateDiffTree,
       boolean shouldAnimatedTransitions,
       DiffNode previousDiffTreeRoot,
-      boolean canPrefetchDisplayLists) {
+      boolean canPrefetchDisplayLists,
+      boolean clipChildren) {
 
     // Detect errors internal to components
     component.markLayoutStarted();
@@ -923,6 +945,7 @@ class LayoutState {
     layoutState.mHeightSpec = heightSpec;
     layoutState.mShouldAnimateTransitions = shouldAnimatedTransitions;
     layoutState.mCanPrefetchDisplayLists = canPrefetchDisplayLists;
+    layoutState.mClipChildren = clipChildren;
 
     component.applyStateUpdates(c);
 
@@ -1660,6 +1683,7 @@ class LayoutState {
       mComponentTreeId = -1;
 
       mShouldDuplicateParentState = true;
+      mClipChildren = true;
 
       for (int i = 0, size = mMountableOutputs.size(); i < size; i++) {
         ComponentsPools.release(mMountableOutputs.get(i));

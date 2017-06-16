@@ -2359,10 +2359,6 @@ public class LayoutStateCalculateTest {
         component,
         componentTreeId,
         widthSpec,
-        heightSpec,
-        false,
-        false,
-        null,
-        false);
+        heightSpec);
   }
 }

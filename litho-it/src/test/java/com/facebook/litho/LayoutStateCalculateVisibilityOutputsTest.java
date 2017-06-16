@@ -280,9 +280,10 @@ public class LayoutStateCalculateVisibilityOutputsTest {
         componentTreeId,
         widthSpec,
         heightSpec,
-        false,
-        false,
-        null,
-        false);
+        false /* shouldGenerateDiffTree */,
+        false /* shouldAnimatedTransitions */,
+        null /* previousDiffTreeRoot */,
+        false /* canPrefetchDisplayLists */,
+        true /* clipChildren */);
   }
 }

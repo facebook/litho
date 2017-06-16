@@ -146,10 +146,15 @@ public class ComponentTreeHolder {
   @GuardedBy("this")
   private void ensureComponentTree(ComponentContext context) {
     if (mComponentTree == null) {
+      final Object clipChildrenAttr =
+          mComponentInfo.getCustomAttribute(ComponentInfo.CLIP_CHILDREN);
+      final boolean clipChildren = clipChildrenAttr == null ? true : (boolean) clipChildrenAttr;
+
       mComponentTree = ComponentTree.create(context, mComponentInfo.getComponent())
           .layoutThreadHandler(mLayoutHandler)
           .stateHandler(mStateHandler)
           .canPrefetchDisplayLists(mCanPrefetchDisplayLists)
+          .shouldClipChildren(clipChildren)
           .build();
     }
   }

@@ -92,10 +92,11 @@ public class TreeDiffingTest {
         -1,
         makeSizeSpec(350, SizeSpec.EXACTLY),
         makeSizeSpec(200, SizeSpec.EXACTLY),
-        false,
-        false,
-        null,
-        false);
+        false /* shouldGenerateDiffTree */,
+        false /* shouldAnimatedTransitions */,
+        null /* previousDiffTreeRoot */,
+        false /* canPrefetchDisplayLists */,
+        true /* clipChildren */);
 
     // Check diff tree is null.
     assertThat(layoutState.getDiffTree()).isNull();
@@ -121,10 +122,11 @@ public class TreeDiffingTest {
         -1,
         makeSizeSpec(350, SizeSpec.EXACTLY),
         makeSizeSpec(200, SizeSpec.EXACTLY),
-        true,
-        false,
-        null,
-        false);
+        true /* shouldGenerateDiffTree */,
+        false /* shouldAnimatedTransitions */,
+        null /* previousDiffTreeRoot */,
+        false /* canPrefetchDisplayLists */,
+        true /* clipChildren */);
 
     // Check diff tree is not null and consistent.
     DiffNode node = layoutState.getDiffTree();
@@ -271,10 +273,11 @@ public class TreeDiffingTest {
             -1,
             SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
             SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
-            true,
-            false,
-            null,
-            false);
+            true /* shouldGenerateDiffTree */,
+            false /* shouldAnimatedTransitions */,
+            null /* previousDiffTreeRoot */,
+            false /* canPrefetchDisplayLists */,
+            true /* clipChildren */);
 
     // Check diff tree is consistent.
     DiffNode node = prevLayoutState.getDiffTree();
@@ -319,10 +322,11 @@ public class TreeDiffingTest {
             -1,
             SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
             SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
-            true,
-            false,
-            null,
-            false);
+            true /* shouldGenerateDiffTree */,
+            false /* shouldAnimatedTransitions */,
+            null /* previousDiffTreeRoot */,
+            false /* canPrefetchDisplayLists */,
+            true /* clipChildren */);
 
     // Check diff tree is consistent.
     DiffNode node = prevLayoutState.getDiffTree();
@@ -375,10 +379,11 @@ public class TreeDiffingTest {
         -1,
         makeSizeSpec(350, SizeSpec.EXACTLY),
         makeSizeSpec(200, SizeSpec.EXACTLY),
-        true,
-        false,
-        null,
-        false);
+        true /* shouldGenerateDiffTree */,
+        false /* shouldAnimatedTransitions */,
+        null /* previousDiffTreeRoot */,
+        false /* canPrefetchDisplayLists */,
+        true /* clipChildren */);
 
     LayoutState layoutState = calculate(
         mContext,
@@ -386,10 +391,11 @@ public class TreeDiffingTest {
         -1,
         makeSizeSpec(350, SizeSpec.EXACTLY),
         makeSizeSpec(200, SizeSpec.EXACTLY),
-        true,
-        false,
+        true /* shouldGenerateDiffTree */,
+        false /* shouldAnimatedTransitions */,
         prevLayoutState.getDiffTree(),
-        false);
+        false /* canPrefetchDisplayLists */,
+        true /* clipChildren */);
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(prevLayoutState.getMountableOutputCount());
     for (int i = 0, count = prevLayoutState.getMountableOutputCount(); i < count; i++) {
@@ -430,20 +436,22 @@ public class TreeDiffingTest {
             -1,
             SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
             SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
-            true,
-            false,
-            null,
-            false);
+            true /* shouldGenerateDiffTree */,
+            false /* shouldAnimatedTransitions */,
+            null /* previousDiffTreeRoot */,
+            false /* canPrefetchDisplayLists */,
+            true /* clipChildren */);
     LayoutState layoutState = LayoutState.calculate(
             mContext,
             component2,
             -1,
             SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
             SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
-            true,
-            false,
+            true /* shouldGenerateDiffTree */,
+            false /* shouldAnimatedTransitions */,
             prevLayoutState.getDiffTree(),
-            false);
+            false /* canPrefetchDisplayLists */,
+            true /* clipChildren */);
 
     assertNotEquals(
             prevLayoutState.getMountableOutputCount(),
@@ -847,10 +855,11 @@ public class TreeDiffingTest {
         0,
         makeSizeSpec(100, SizeSpec.EXACTLY),
         makeSizeSpec(100, SizeSpec.EXACTLY),
-        true,
-        false,
-        null,
-        false);
+        true /* shouldGenerateDiffTree */,
+        false /* shouldAnimatedTransitions */,
+        null /* previousDiffTreeRoot */,
+        false /* canPrefetchDisplayLists */,
+        true /* clipChildren */);
 
     assertThat(component.wasMeasureCalled()).isTrue();
 
@@ -874,10 +883,11 @@ public class TreeDiffingTest {
         0,
         makeSizeSpec(100, SizeSpec.EXACTLY),
         makeSizeSpec(90, SizeSpec.EXACTLY),
-        true,
-        false,
+        true /* shouldGenerateDiffTree */,
+        false /* shouldAnimatedTransitions */,
         firstLayoutState.getDiffTree(),
-        false);
+        false /* canPrefetchDisplayLists */,
+        true /* clipChildren */);
 
     assertThat(secondComponent.wasMeasureCalled()).isFalse();
   }
@@ -903,10 +913,11 @@ public class TreeDiffingTest {
         0,
         makeSizeSpec(100, SizeSpec.EXACTLY),
         makeSizeSpec(100, SizeSpec.EXACTLY),
-        true,
-        false,
-        null,
-        false);
+        true /* shouldGenerateDiffTree */,
+        false /* shouldAnimatedTransitions */,
+        null /* previousDiffTreeRoot */,
+        false /* canPrefetchDisplayLists */,
+        true /* clipChildren */);
 
     assertThat(component.wasMeasureCalled()).isTrue();
 
@@ -929,10 +940,11 @@ public class TreeDiffingTest {
         0,
         makeSizeSpec(100, SizeSpec.EXACTLY),
         makeSizeSpec(100, SizeSpec.EXACTLY),
-        true,
-        false,
+        true /* shouldGenerateDiffTree */,
+        false /* shouldAnimatedTransitions */,
         firstLayoutState.getDiffTree(),
-        false);
+        false /* canPrefetchDisplayLists */,
+        true /* clipChildren */);
 
     assertThat(secondComponent.wasMeasureCalled()).isFalse();
   }
@@ -973,10 +985,11 @@ public class TreeDiffingTest {
         -1,
         makeSizeSpec(350, SizeSpec.EXACTLY),
         makeSizeSpec(200, SizeSpec.EXACTLY),
-        true,
-        false,
-        null,
-        false);
+        true /* shouldGenerateDiffTree */,
+        false /* shouldAnimatedTransitions */,
+        null /* previousDiffTreeRoot */,
+        false /* canPrefetchDisplayLists */,
+        true /* clipChildren */);
 
     LayoutState layoutState = calculate(
         mContext,
@@ -984,10 +997,11 @@ public class TreeDiffingTest {
         -1,
         makeSizeSpec(350, SizeSpec.EXACTLY),
         makeSizeSpec(200, SizeSpec.EXACTLY),
-        true,
-        false,
+        true /* shouldGenerateDiffTree */,
+        false /* shouldAnimatedTransitions */,
         prevLayoutState.getDiffTree(),
-        false);
+        false /* canPrefetchDisplayLists */,
+        true /* clipChildren */);
 
     // The nested root measure() was called in the first layout calculation.
     TestComponent prevNestedRoot =
@@ -1040,10 +1054,11 @@ public class TreeDiffingTest {
         -1,
         makeSizeSpec(350, SizeSpec.EXACTLY),
         makeSizeSpec(200, SizeSpec.EXACTLY),
-        true,
-        false,
-        null,
-        false);
+        true /* shouldGenerateDiffTree */,
+        false /* shouldAnimatedTransitions */,
+        null /* previousDiffTreeRoot */,
+        false /* canPrefetchDisplayLists */,
+        true /* clipChildren */);
 
     LayoutState layoutState = calculate(
         mContext,
@@ -1051,10 +1066,11 @@ public class TreeDiffingTest {
         -1,
         makeSizeSpec(350, SizeSpec.EXACTLY),
         makeSizeSpec(200, SizeSpec.EXACTLY),
-        true,
-        false,
+        true /* shouldGenerateDiffTree */,
+        false /* shouldAnimatedTransitions */,
         prevLayoutState.getDiffTree(),
-        false);
+        false /* canPrefetchDisplayLists */,
+        true /* clipChildren */);
 
     // The nested root measure() was called in the first layout calculation.
     TestComponent prevMainTreeLeaf =
@@ -1140,10 +1156,11 @@ public class TreeDiffingTest {
         -1,
         widthSpecContainer,
         heightSpec,
-        true,
-        false,
-        null,
-        false);
+        true /* shouldGenerateDiffTree */,
+        false /* shouldAnimatedTransitions */,
+        null /* previousDiffTreeRoot */,
+        false /* canPrefetchDisplayLists */,
+        true /* clipChildren */);
 
     // Make sure we reused the cached layout and it wasn't released.
     verify(sizeDependentComponentSpy1, never()).releaseCachedLayout();
@@ -1155,10 +1172,11 @@ public class TreeDiffingTest {
         -1,
         widthSpecContainer,
         heightSpec,
-        true,
-        false,
+        true /* shouldGenerateDiffTree */,
+        false /* shouldAnimatedTransitions */,
         prevLayoutState.getDiffTree(),
-        false);
+        false /* canPrefetchDisplayLists */,
+        true /* clipChildren */);
 
     // Make sure we reused the cached layout and it wasn't released.
     verify(sizeDependentComponentSpy2, never()).releaseCachedLayout();

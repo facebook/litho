@@ -25,6 +25,8 @@ import android.support.v4.util.SimpleArrayMap;
  */
 public class ComponentInfo {
 
+  public static final String CLIP_CHILDREN = "clip_children";
+
   private static final Pool<Builder> sBuilderPool = new Pools.SynchronizedPool<>(2);
   private static final String IS_STICKY = "is_sticky";
   private static final String SPAN_SIZE = "span_size";

@@ -1139,17 +1139,19 @@ class MountState {
     setImportantForAccessibility(view, item.getImportantForAccessibility());
 
     final ViewNodeInfo viewNodeInfo = item.getViewNodeInfo();
-    if (viewNodeInfo != null && !isHostSpec(component)) {
+    if (viewNodeInfo != null) {
+      setViewClipChildren(view, viewNodeInfo);
+      if (!isHostSpec(component)) {
+        // Set view background, if applicable.  Do this before padding
+        // as it otherwise overrides the padding.
+        setViewBackground(view, viewNodeInfo);
 
-      // Set view background, if applicable.  Do this before padding
-      // as it otherwise overrides the padding.
-      setViewBackground(view, viewNodeInfo);
+        setViewPadding(view, viewNodeInfo);
 
-      setViewPadding(view, viewNodeInfo);
+        setViewForeground(view, viewNodeInfo);
 
-      setViewForeground(view, viewNodeInfo);
-
-      setViewLayoutDirection(view, viewNodeInfo);
+        setViewLayoutDirection(view, viewNodeInfo);
+      }
     }
   }
 
@@ -1203,11 +1205,14 @@ class MountState {
     unsetAccessibilityDelegate(view);
 
     final ViewNodeInfo viewNodeInfo = item.getViewNodeInfo();
-    if (viewNodeInfo != null && !isHostSpec(component)) {
-      unsetViewPadding(view, viewNodeInfo);
-      unsetViewBackground(view, viewNodeInfo);
-      unsetViewForeground(view, viewNodeInfo);
-      unsetViewLayoutDirection(view, viewNodeInfo);
+    if (viewNodeInfo != null) {
+      unsetViewClipChildren(view);
+      if (!isHostSpec(component)) {
+        unsetViewPadding(view, viewNodeInfo);
+        unsetViewBackground(view, viewNodeInfo);
+        unsetViewForeground(view, viewNodeInfo);
+        unsetViewLayoutDirection(view, viewNodeInfo);
+      }
     }
   }
 
@@ -1613,6 +1618,19 @@ class MountState {
     }
 
     view.setLayoutDirection(View.LAYOUT_DIRECTION_INHERIT);
+  }
+
+  private static void setViewClipChildren(View view, ViewNodeInfo viewNodeInfo) {
+    if (view instanceof ViewGroup) {
+      ((ViewGroup) view).setClipChildren(viewNodeInfo.getClipChildren());
+    }
+  }
+
+  private static void unsetViewClipChildren(View view) {
+    if (view instanceof ViewGroup) {
+      // Default value for clipChildren is 'true'.
+      ((ViewGroup) view).setClipChildren(true);
+    }
   }
 
   private static void mountItemIncrementally(

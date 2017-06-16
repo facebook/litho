@@ -88,11 +88,7 @@ public class LayoutStateRecyclingTest {
         input,
         -1,
         mUnspecifiedSizeSpec,
-        mUnspecifiedSizeSpec,
-        false,
-        false,
-        null,
-        false);
+        mUnspecifiedSizeSpec);
     layoutState.releaseRef();
 
     // Verify that the nodes did get recycled

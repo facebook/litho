@@ -69,10 +69,6 @@ public class LayoutStateEventHandlerTest {
         mRootComponent,
         -1,
         mUnspecifiedSizeSpec,
-        mUnspecifiedSizeSpec,
-        false,
-        false,
-        null,
-        false);
+        mUnspecifiedSizeSpec);
   }
 }

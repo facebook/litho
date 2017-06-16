@@ -32,6 +32,7 @@ class ViewNodeInfo {
   private Rect mExpandedTouchBounds;
   private YogaDirection mLayoutDirection;
   private String mTransitionKey;
+  private boolean mClipChildren;
 
   void setBackground(Reference<? extends Drawable> background) {
     mBackground = (Reference<Drawable>) background;
@@ -134,6 +135,14 @@ class ViewNodeInfo {
 
   String getTransitionKey() {
     return mTransitionKey;
+  }
+
+  void setClipChildren(boolean clipChildren) {
+    mClipChildren = clipChildren;
+  }
+
+  boolean getClipChildren() {
+    return mClipChildren;
   }
 
   static ViewNodeInfo acquire() {

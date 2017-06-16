@@ -91,11 +91,7 @@ public class DuplicateParentStateTest {
         component,
         -1,
         mUnspecifiedSizeSpec,
-        mUnspecifiedSizeSpec,
-        false,
-        false,
-        null,
-        false);
+        mUnspecifiedSizeSpec);
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(12);
 

@@ -57,7 +57,8 @@ public class TestComponentTree extends ComponentTree {
         diffingEnabled,
         shouldAnimateTransitions,
         diffNode,
-        false);
+        false /* canPrefetchDisplayLists */,
+        true /* clipChildren */);
   }
 
   private static void extractSubComponents(DiffNode root, List<Component> output) {
