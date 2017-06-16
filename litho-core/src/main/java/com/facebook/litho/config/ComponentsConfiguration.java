@@ -72,12 +72,6 @@ public class ComponentsConfiguration {
   public static boolean isIncrementalMountOnOffsetOrTranslationChangeEnabled = true;
 
   /**
-   * Fixes an important perf bug in LayoutState output collection. We're gating it to better
-   * understand the impact and implications of how perf move metrics and where bottlenecks are.
-   */
-  public static boolean collectResultFix = false;
-
-  /**
    * Force all section component prop updates to be async
    */
   public static boolean sectionComponentsAsyncPropUpdates = false;
