@@ -49,6 +49,7 @@ import com.facebook.litho.annotations.ShouldUpdate;
  * @prop refreshHandler Event handler for refresh event.
  * @prop hasFixedSize If set, makes RecyclerView not affected by adapter changes.
  * @prop clipToPadding Clip RecyclerView to its padding.
+ * @prop clipChildren Clip RecyclerView children to their bounds.
  * @prop nestedScrollingEnabled Enables nested scrolling on the RecyclerView.
  * @prop itemDecoration Item decoration for the RecyclerView.
  * @prop refreshProgressBarColor Color for progress animation.
@@ -64,6 +65,7 @@ class RecyclerSpec {
   @PropDefault static final ItemAnimator itemAnimator = new NoUpdateItemAnimator();
   @PropDefault static final int recyclerViewId = View.NO_ID;
   @PropDefault static final int refreshProgressBarColor = Color.BLACK;
+  @PropDefault static final boolean clipChildren = true;
 
   @OnMeasure
   static void onMeasure(
@@ -118,6 +120,7 @@ class RecyclerSpec {
       @Prop Binder<RecyclerView> binder,
       @Prop(optional = true) boolean hasFixedSize,
       @Prop(optional = true) boolean clipToPadding,
+      @Prop(optional = true) boolean clipChildren,
       @Prop(optional = true) boolean nestedScrollingEnabled,
       @Prop(optional = true) int scrollBarStyle,
       @Prop(optional = true) RecyclerView.ItemDecoration itemDecoration,
@@ -136,6 +139,7 @@ class RecyclerSpec {
     recyclerViewWrapper.setColorSchemeColors(refreshProgressBarColor);
     recyclerView.setHasFixedSize(hasFixedSize);
     recyclerView.setClipToPadding(clipToPadding);
+    recyclerView.setClipChildren(clipChildren);
     recyclerView.setNestedScrollingEnabled(nestedScrollingEnabled);
     recyclerViewWrapper.setNestedScrollingEnabled(nestedScrollingEnabled);
     recyclerView.setScrollBarStyle(scrollBarStyle);
@@ -257,6 +261,7 @@ class RecyclerSpec {
       Diff<Binder<RecyclerView>> binder,
       Diff<Boolean> hasFixedSize,
       Diff<Boolean> clipToPadding,
+      Diff<Boolean> clipChildren,
       Diff<Integer> scrollBarStyle,
       Diff<RecyclerView.ItemDecoration> itemDecoration,
       Diff<Boolean> horizontalFadingEdgeEnabled,
@@ -271,6 +276,10 @@ class RecyclerSpec {
     }
 
     if (!clipToPadding.getPrevious().equals(clipToPadding.getNext())) {
+      return true;
+    }
+
+    if (!clipChildren.getPrevious().equals(clipChildren.getNext())) {
       return true;
     }
 
