@@ -18,6 +18,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.OnScrollListener;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 
+import com.facebook.litho.widget.ViewportInfo.ViewportChanged;
+
 /**
  * This class will handle all viewport changes due to both scrolling and
  * {@link ViewHolder} removal that is not related to scrolling.
@@ -27,10 +29,10 @@ import android.support.v7.widget.RecyclerView.ViewHolder;
  * in the {@link RecyclerView}
  */
 @ThreadSafe
-final class ViewportManager implements ViewportInfo {
+final class ViewportManager {
 
-  private volatile int mCurrentFirstVisiblePosition;
-  private volatile int mCurrentLastVisiblePosition;
+  private int mCurrentFirstVisiblePosition;
+  private int mCurrentLastVisiblePosition;
   private int mScrollingState;
   private @Nullable ViewportChanged mViewportChangedListener;
 
@@ -92,8 +94,8 @@ final class ViewportManager implements ViewportInfo {
       return;
     }
 
-    setCurrentFirstVisiblePositionTo(firstVisiblePosition);
-    setCurrentLastVisiblePosition(lastVisiblePosition);
+    mCurrentFirstVisiblePosition = firstVisiblePosition;
+    mCurrentLastVisiblePosition = lastVisiblePosition;
 
     if (handler != null) {
       handler.viewportChanged(firstVisiblePosition, lastVisiblePosition);
@@ -147,41 +149,6 @@ final class ViewportManager implements ViewportInfo {
   @UiThread
   ViewportScrollListener getScrollListener() {
     return mViewportScrollListener;
-  }
-
-  @UiThread
-  void setCurrentFirstVisiblePositionTo(int currentFirstVisiblePosition) {
-    mCurrentFirstVisiblePosition = currentFirstVisiblePosition;
-  }
-
-  @UiThread
-  void setCurrentLastVisiblePosition(int currentLastVisiblePosition) {
-    mCurrentLastVisiblePosition = currentLastVisiblePosition;
-  }
-
-  @Override
-  public int findFirstVisibleItemPosition() {
-    return mCurrentFirstVisiblePosition;
-  }
-
-  @Override
-  public int findLastVisibleItemPosition() {
-    return mCurrentLastVisiblePosition;
-  }
-
-  @Override
-  public int findFirstFullyVisibleItemPosition() {
-    return mLayoutInfo.findFirstFullyVisibleItemPosition();
-  }
-
-  @Override
-  public int findLastFullyVisibleItemPosition() {
-    return mLayoutInfo.findLastFullyVisibleItemPosition();
-  }
-
-  @Override
-  public int getItemCount() {
-    return mLayoutInfo.getItemCount();
   }
 
   private boolean isScrolling() {
