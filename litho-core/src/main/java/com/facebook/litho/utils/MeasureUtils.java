@@ -24,6 +24,8 @@ import static com.facebook.litho.SizeSpec.getSize;
 
 public final class MeasureUtils {
 
+  private static final String TAG = "MeasureUtils";
+
   public static int getViewMeasureSpec(int sizeSpec) {
     switch (getMode(sizeSpec)) {
       case SizeSpec.EXACTLY:
@@ -81,9 +83,7 @@ public final class MeasureUtils {
       outputSize.height = 0;
 
       if (ComponentsConfiguration.IS_INTERNAL_BUILD) {
-        Log.d(
-            "com.facebook.litho.utils.MeasureUtils",
-            "Default to size {0, 0} because both width and height are UNSPECIFIED");
+        Log.d(TAG, "Default to size {0, 0} because both width and height are UNSPECIFIED");
       }
       return;
     }
@@ -184,9 +184,7 @@ public final class MeasureUtils {
       outputSize.height = 0;
 
       if (ComponentsConfiguration.IS_INTERNAL_BUILD) {
-        Log.d(
-            "com.facebook.litho.utils.MeasureUtils",
-            "Default to size {0, 0} because both width and height are UNSPECIFIED");
+        Log.d(TAG, "Default to size {0, 0} because both width and height are UNSPECIFIED");
       }
       return;
     }
@@ -212,7 +210,7 @@ public final class MeasureUtils {
         outputSize.height = heightSize;
         if (ComponentsConfiguration.IS_INTERNAL_BUILD) {
           Log.d(
-              "com.facebook.litho.utils.MeasureUtils",
+              TAG,
               String.format(
                   "Ratio makes height larger than allowed. w:%s h:%s aspectRatio:%f",
                   SizeSpec.toString(widthSpec),
@@ -232,7 +230,7 @@ public final class MeasureUtils {
         outputSize.width = widthSize;
         if (ComponentsConfiguration.IS_INTERNAL_BUILD) {
           Log.d(
-              "com.facebook.litho.utils.MeasureUtils",
+              TAG,
               String.format(
                   "Ratio makes width larger than allowed. w:%s h:%s aspectRatio:%f",
                   SizeSpec.toString(widthSpec),
