@@ -116,8 +116,8 @@ public class StickyHeaderControllerTest {
     when(mHasStickyHeader.findFirstVisibleItemPosition()).thenReturn(6);
     when(mHasStickyHeader.isSticky(2)).thenReturn(true);
 
-    ComponentTree componentTree = mock(ComponentTree.class);
-    when(mHasStickyHeader.getComponentAt(6)).thenReturn(componentTree);
+    when(mHasStickyHeader.getComponentAt(2)).thenReturn(mock(ComponentTree.class));
+    when(mHasStickyHeader.getComponentAt(6)).thenReturn(mock(ComponentTree.class));
 
     mStickyHeaderController.onScrolled(null, 0, 0);
 
