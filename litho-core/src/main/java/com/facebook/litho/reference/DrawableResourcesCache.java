@@ -99,7 +99,7 @@ class DrawableResourcesCache {
 
   private static class SimplePoolWithCount<T> extends Pools.SynchronizedPool<T> {
 
-    private AtomicInteger mPoolSize;
+    private final AtomicInteger mPoolSize;
 
     public SimplePoolWithCount(int maxPoolSize) {
       super(maxPoolSize);

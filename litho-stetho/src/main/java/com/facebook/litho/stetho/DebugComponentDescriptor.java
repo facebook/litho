@@ -52,7 +52,7 @@ public final class DebugComponentDescriptor
     extends AbstractChainedDescriptor<DebugComponent>
     implements HighlightableDescriptor<DebugComponent> {
 
-  private Map<String, Class> mTypeMap = new HashMap<>();
+  private final Map<String, Class> mTypeMap = new HashMap<>();
 
   private final SimpleArrayMap<DebugComponent, SimpleArrayMap<String, Object>> mStyleOverrides =
       new SimpleArrayMap<>();

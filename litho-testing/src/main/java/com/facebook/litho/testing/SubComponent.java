@@ -26,8 +26,8 @@ public class SubComponent {
     return new SubComponent(component.getLifecycle().getClass(), component);
   }
 
-  private Class<? extends ComponentLifecycle> mComponentType;
-  private Component<?> mComponent;
+  private final Class<? extends ComponentLifecycle> mComponentType;
+  private final Component<?> mComponent;
 
   private SubComponent(Class<? extends ComponentLifecycle> componentType, Component<?> component) {
     mComponentType = componentType;

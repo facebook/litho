@@ -41,7 +41,7 @@ public class Edges {
   };
 
   private int mValueFlags = 0;
-  private float mDefaultValue = 0;
+  private final float mDefaultValue = 0;
   private boolean mHasAliasesSet;
 
   public boolean set(YogaEdge edge, float value) {

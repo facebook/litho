@@ -38,8 +38,8 @@ import static org.mockito.Mockito.when;
  * Tests {@link TreePropGenerator}
  */
 public class TreePropGeneratorTest {
-  private SpecModel mSpecModel = mock(SpecModel.class);
-  private TreePropModel mTreeProp = mock(TreePropModel.class);
+  private final SpecModel mSpecModel = mock(SpecModel.class);
+  private final TreePropModel mTreeProp = mock(TreePropModel.class);
   private DelegateMethodModel mOnCreateTreePropMethodModel;
 
   @Before

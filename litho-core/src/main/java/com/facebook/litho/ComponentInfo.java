@@ -31,8 +31,8 @@ public class ComponentInfo {
   private static final String IS_STICKY = "is_sticky";
   private static final String SPAN_SIZE = "span_size";
 
-  private Component mComponent;
-  private SimpleArrayMap<String, Object> mCustomAttributes;
+  private final Component mComponent;
+  private final SimpleArrayMap<String, Object> mCustomAttributes;
 
   public static Builder create() {
     Builder builder = sBuilderPool.acquire();

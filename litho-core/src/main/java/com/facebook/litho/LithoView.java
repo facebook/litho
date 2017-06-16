@@ -546,7 +546,7 @@ public class LithoView extends ComponentHost {
 
   private static class AccessibilityStateChangeListener extends
       AccessibilityStateChangeListenerCompat {
-    private WeakReference<LithoView> mLithoView;
+    private final WeakReference<LithoView> mLithoView;
 
     private AccessibilityStateChangeListener(LithoView lithoView) {
       mLithoView = new WeakReference<>(lithoView);

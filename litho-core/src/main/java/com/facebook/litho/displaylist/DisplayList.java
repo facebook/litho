@@ -22,7 +22,7 @@ import android.support.annotation.Nullable;
  * onDraw/draw methods avoids translating the {@link Canvas} commands into OpenGL calls.
  */
 public class DisplayList {
-  private PlatformDisplayList mDisplayListImpl;
+  private final PlatformDisplayList mDisplayListImpl;
   private boolean mStarted;
 
   private DisplayList(PlatformDisplayList displayListImpl) {

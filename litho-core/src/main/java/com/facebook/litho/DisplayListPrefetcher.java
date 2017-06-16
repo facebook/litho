@@ -35,7 +35,7 @@ public final class DisplayListPrefetcher implements Runnable {
   private static final AverageDLPrefetchDuration sAverageDLPrefetchDurationNs
       = new AverageDLPrefetchDuration();
 
-  private static DisplayListPrefetcher sDisplayListPrefetcher = new DisplayListPrefetcher();
+  private static final DisplayListPrefetcher sDisplayListPrefetcher = new DisplayListPrefetcher();
 
   private final Queue<WeakReference<LayoutState>> mLayoutStates;
 

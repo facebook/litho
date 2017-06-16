@@ -40,7 +40,7 @@ public class GlyphWarmer {
       (THREAD_PRIORITY_BACKGROUND + THREAD_PRIORITY_LOWEST) / 2;
 
   private static GlyphWarmer sInstance;
-  private WarmerHandler mHandler;
+  private final WarmerHandler mHandler;
 
   /**
    * @return the global {@link GlyphWarmer} instance.

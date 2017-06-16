@@ -35,7 +35,7 @@ public class ComponentContext extends ContextWrapper {
   @ThreadConfined(ThreadConfined.ANY)
   private Component<?> mComponentScope;
   @ThreadConfined(ThreadConfined.ANY)
-  private ResourceCache mResourceCache;
+  private final ResourceCache mResourceCache;
   @ThreadConfined(ThreadConfined.ANY)
   private int mWidthSpec;
   @ThreadConfined(ThreadConfined.ANY)

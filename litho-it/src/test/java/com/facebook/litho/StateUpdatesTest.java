@@ -84,7 +84,7 @@ public class StateUpdatesTest {
   static class TestComponent<L extends ComponentLifecycle>
       extends Component<L> implements Cloneable {
 
-    private TestStateContainer mStateContainer;
+    private final TestStateContainer mStateContainer;
     private TestComponent shallowCopy;
     private int mId;
     private static final AtomicInteger sIdGenerator = new AtomicInteger(0);

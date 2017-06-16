@@ -70,7 +70,7 @@ public class ComponentHost extends ViewGroup {
   private long mParentHostMarker;
   private boolean mInLayout;
 
-  private ComponentAccessibilityDelegate mComponentAccessibilityDelegate;
+  private final ComponentAccessibilityDelegate mComponentAccessibilityDelegate;
   private boolean mIsComponentAccessibilityDelegateSet = false;
 
   private ComponentClickListener mOnClickListener;

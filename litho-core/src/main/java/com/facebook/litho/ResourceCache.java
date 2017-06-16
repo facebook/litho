@@ -22,7 +22,7 @@ class ResourceCache {
     return latest;
   }
 
-  private Configuration mConfiguration;
+  private final Configuration mConfiguration;
   private final LruCache<Integer, Object> mCache = new LruCache<Integer, Object>(500) {
     @Override
     protected int sizeOf(Integer key, Object value) {

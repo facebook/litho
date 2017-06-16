@@ -19,7 +19,7 @@ import android.support.v4.util.SimpleArrayMap;
  * re-used.
  */
 public final class LogEvent {
-  private SimpleArrayMap<String, Object> mParams = new SimpleArrayMap<>();
+  private final SimpleArrayMap<String, Object> mParams = new SimpleArrayMap<>();
   private int mEventId = -1;
   private boolean mIsPerformanceEvent = false;
 

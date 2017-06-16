@@ -37,7 +37,7 @@ public class TestDrawableComponent extends ComponentLifecycle {
   private static final long IMPLEMENTS_ACCESSIBILITY = 1L << 4;
   private static final long IS_MOUNT_SIZE_DEPENDENT = 1L << 5;
 
-  private long mProperties;
+  private final long mProperties;
 
   private static synchronized TestDrawableComponent get(long properties) {
     for (TestDrawableComponent lifecycle : sInstances) {

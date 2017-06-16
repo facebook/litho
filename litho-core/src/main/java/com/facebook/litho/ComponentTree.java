@@ -111,13 +111,13 @@ public class ComponentTree {
   @ThreadConfined(ThreadConfined.UI)
   private boolean mIsMounting;
   @ThreadConfined(ThreadConfined.UI)
-  private boolean mIncrementalMountEnabled;
+  private final boolean mIncrementalMountEnabled;
   @ThreadConfined(ThreadConfined.UI)
-  private boolean mIsLayoutDiffingEnabled;
+  private final boolean mIsLayoutDiffingEnabled;
   @ThreadConfined(ThreadConfined.UI)
   private boolean mIsAttached;
   @ThreadConfined(ThreadConfined.UI)
-  private boolean mIsAsyncUpdateStateEnabled;
+  private final boolean mIsAsyncUpdateStateEnabled;
   @ThreadConfined(ThreadConfined.UI)
   private LithoView mLithoView;
   @ThreadConfined(ThreadConfined.UI)
@@ -157,7 +157,7 @@ public class ComponentTree {
   @ThreadConfined(ThreadConfined.UI)
   private boolean mPreviousRenderStateSetFromBuilder = false;
 
-  private Object mLayoutLock;
+  private final Object mLayoutLock;
 
   protected final int mId;
 

@@ -81,7 +81,7 @@ public final class DrawableReference extends ReferenceLifecycle<Drawable> {
 
   public static class PropsBuilder extends Reference.Builder<Drawable> {
 
-    private State mState;
+    private final State mState;
 
     public PropsBuilder(State state) {
       mState = state;

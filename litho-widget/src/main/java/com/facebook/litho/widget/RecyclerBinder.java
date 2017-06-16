@@ -110,7 +110,7 @@ public class RecyclerBinder implements
   private int mCurrentOffset;
   private RangeCalculationResult mRange;
   private StickyHeaderController mStickyHeaderController;
-  private boolean mCanPrefetchDisplayLists;
+  private final boolean mCanPrefetchDisplayLists;
   private EventHandler<ReMeasureEvent> mReMeasureEventEventHandler;
   private final ViewportManager mViewportManager;
 
