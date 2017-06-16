@@ -139,7 +139,9 @@ class RecyclerSpec {
     recyclerViewWrapper.setColorSchemeColors(refreshProgressBarColor);
     recyclerView.setHasFixedSize(hasFixedSize);
     recyclerView.setClipToPadding(clipToPadding);
+    recyclerViewWrapper.setClipToPadding(clipToPadding);
     recyclerView.setClipChildren(clipChildren);
+    recyclerViewWrapper.setClipChildren(clipChildren);
     recyclerView.setNestedScrollingEnabled(nestedScrollingEnabled);
     recyclerViewWrapper.setNestedScrollingEnabled(nestedScrollingEnabled);
     recyclerView.setScrollBarStyle(scrollBarStyle);
