@@ -10,6 +10,8 @@
 package com.facebook.litho;
 
 import android.os.Looper;
+import android.support.annotation.IntDef;
+import android.support.annotation.VisibleForTesting;
 
 import com.facebook.litho.config.ComponentsConfiguration;
 
@@ -17,11 +19,33 @@ import com.facebook.litho.config.ComponentsConfiguration;
  * Thread assertion utilities.
  */
 public class ThreadUtils {
+  public static final int OVERRIDE_DISABLED = 0;
+  public static final int OVERRIDE_MAIN_THREAD_TRUE = 1;
+  public static final int OVERRIDE_MAIN_THREAD_FALSE = 2;
+
+  @IntDef({OVERRIDE_DISABLED, OVERRIDE_MAIN_THREAD_FALSE, OVERRIDE_MAIN_THREAD_TRUE})
+  public @interface MainThreadOverride {}
+
+  @MainThreadOverride
+  private static int sMainThreadOverride = OVERRIDE_DISABLED;
+
   private ThreadUtils() {
   }
 
+  @VisibleForTesting
+  public static void setMainThreadOverride(@MainThreadOverride int override) {
+    sMainThreadOverride = override;
+  }
+
   public static boolean isMainThread() {
-    return Looper.getMainLooper().getThread() == Thread.currentThread();
+    switch (sMainThreadOverride) {
+      case OVERRIDE_MAIN_THREAD_FALSE:
+        return false;
+      case OVERRIDE_MAIN_THREAD_TRUE:
+        return true;
+      default:
+        return Looper.getMainLooper().getThread() == Thread.currentThread();
+    }
   }
 
   public static void assertMainThread() {

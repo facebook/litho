@@ -12,14 +12,10 @@ package com.facebook.litho.widget;
 import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 
+import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.rule.PowerMockRule;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
@@ -30,12 +26,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(ComponentsTestRunner.class)
-@PrepareForTest(ThreadUtils.class)
-@PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*" })
 public class RecyclerEventsControllerTest {
-
-  @Rule
-  public PowerMockRule rule = new PowerMockRule();
 
   private RecyclerViewWrapper mRecyclerViewWrapper;
   private RecyclerEventsController mRecyclerEventsController;
@@ -45,7 +36,11 @@ public class RecyclerEventsControllerTest {
     mRecyclerEventsController = new RecyclerEventsController();
     mRecyclerViewWrapper = mock(RecyclerViewWrapper.class);
     mRecyclerEventsController.setRecyclerViewWrapper(mRecyclerViewWrapper);
-    PowerMockito.mockStatic(ThreadUtils.class);
+  }
+
+  @After
+  public void teardown() {
+    ThreadUtils.setMainThreadOverride(ThreadUtils.OVERRIDE_DISABLED);
   }
 
   @Test
@@ -62,7 +57,7 @@ public class RecyclerEventsControllerTest {
   @Test
   public void testClearRefreshingFromUIThread() {
     when(mRecyclerViewWrapper.isRefreshing()).thenReturn(true);
-    PowerMockito.when(ThreadUtils.isMainThread()).thenReturn(true);
+    ThreadUtils.setMainThreadOverride(ThreadUtils.OVERRIDE_MAIN_THREAD_TRUE);
 
     mRecyclerEventsController.clearRefreshing();
 
@@ -74,7 +69,7 @@ public class RecyclerEventsControllerTest {
   @Test
   public void testClearRefreshingFromNonUIThread() {
     when(mRecyclerViewWrapper.isRefreshing()).thenReturn(true);
-    PowerMockito.when(ThreadUtils.isMainThread()).thenReturn(false);
+    ThreadUtils.setMainThreadOverride(ThreadUtils.OVERRIDE_MAIN_THREAD_FALSE);
 
     mRecyclerEventsController.clearRefreshing();
 
@@ -85,7 +80,7 @@ public class RecyclerEventsControllerTest {
   @Test
   public void testShowRefreshingFromUIThread() {
     when(mRecyclerViewWrapper.isRefreshing()).thenReturn(false);
-    PowerMockito.when(ThreadUtils.isMainThread()).thenReturn(true);
+    ThreadUtils.setMainThreadOverride(ThreadUtils.OVERRIDE_MAIN_THREAD_TRUE);
 
     mRecyclerEventsController.showRefreshing();
     verify(mRecyclerViewWrapper).setRefreshing(true);
