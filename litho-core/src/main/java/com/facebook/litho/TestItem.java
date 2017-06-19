@@ -15,15 +15,19 @@ import android.support.annotation.VisibleForTesting;
 import java.util.Collections;
 import java.util.List;
 
+import com.facebook.proguard.annotations.DoNotStrip;
+
 /**
  * Holds information about a {@link TestOutput}.
  */
+@DoNotStrip
 public class TestItem {
   private String mTestKey;
   private final Rect mBounds = new Rect();
   private ComponentHost mHost;
   private Object mContent;
 
+  @DoNotStrip
   @VisibleForTesting
   public String getTestKey() {
     return mTestKey;
@@ -33,6 +37,7 @@ public class TestItem {
     mTestKey = testKey;
   }
 
+  @DoNotStrip
   @VisibleForTesting
   public Rect getBounds() {
     return mBounds;
@@ -46,11 +51,13 @@ public class TestItem {
     mBounds.set(left, top, right, bottom);
   }
 
+  @DoNotStrip
   @VisibleForTesting
   public ComponentHost getHost() {
     return mHost;
   }
 
+  @DoNotStrip
   @VisibleForTesting
   public String getTextContent() {
     final List<CharSequence> textItems = getTextItems();
