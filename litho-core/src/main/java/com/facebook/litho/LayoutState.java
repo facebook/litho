@@ -1115,6 +1115,12 @@ class LayoutState {
   void createDisplayList(LayoutOutput output) {
     ThreadUtils.assertMainThread();
 
+    final ComponentContext context = mContext;
+    if (context == null) {
+      // This instance has been released.
+      return;
+    }
+
     final Component component = output.getComponent();
     ComponentsSystrace.beginSection("createDisplayList: "+component.getSimpleName());
     final ComponentLifecycle lifecycle = component.getLifecycle();
@@ -1125,8 +1131,6 @@ class LayoutState {
       ComponentsSystrace.endSection();
       return;
     }
-
-    final ComponentContext context = mContext;
 
     Drawable drawable =
         (Drawable) ComponentsPools.acquireMountContent(context, lifecycle.getId());
