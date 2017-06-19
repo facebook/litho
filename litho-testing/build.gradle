@@ -27,6 +27,10 @@ dependencies {
     implementation deps.robolectric
     implementation deps.supportAppCompat
     compileOnly deps.supportAnnotations
+
+    // There are no tests in here but the plugin will complain
+    // if we don't list it.
+    testAnnotationProcessor project(':litho-processor')
 }
 
 apply from: rootProject.file('gradle/release.gradle')
