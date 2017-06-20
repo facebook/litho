@@ -13,7 +13,6 @@ import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-import com.facebook.litho.widget.ViewportManager.ViewportChangedWhileScrolling;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -32,14 +31,12 @@ import static org.mockito.Mockito.when;
 public class ViewportManagerTest {
 
   private LayoutInfo mLayoutInfo;
-  private ViewportChangedWhileScrolling mViewportChangedWhileScrolling;
   private ViewportInfo.ViewportChanged mViewportChangedListener;
   private Handler mMainThreadHandler;
 
   @Before
   public void setup() {
     mLayoutInfo = mock(LayoutInfo.class);
-    mViewportChangedWhileScrolling = mock(ViewportChangedWhileScrolling.class);
     mViewportChangedListener = mock(ViewportInfo.ViewportChanged.class);
     mMainThreadHandler = mock(Handler.class);
   }
@@ -52,9 +49,8 @@ public class ViewportManagerTest {
     setFullyVisibleItemPositionInMockedLayoutManager(1, 4);
     setTotalItemInMockedLayoutManager(20);
 
-    viewportManager.onViewportChanged(mViewportChangedWhileScrolling);
+    viewportManager.onViewportChanged();
 
-    verify(mViewportChangedWhileScrolling).viewportChanged(0, 5);
     verify(mViewportChangedListener).viewportChanged(0, 5, 1, 4);
   }
 
@@ -66,7 +62,7 @@ public class ViewportManagerTest {
     setFullyVisibleItemPositionInMockedLayoutManager(7, 18);
     setTotalItemInMockedLayoutManager(20);
 
-    viewportManager.onViewportChanged(null);
+    viewportManager.onViewportChanged();
 
     verify(mViewportChangedListener).viewportChanged(5, 20, 7, 18);
   }
@@ -80,9 +76,8 @@ public class ViewportManagerTest {
     setFullyVisibleItemPositionInMockedLayoutManager(7, 9);
     setTotalItemInMockedLayoutManager(13);
 
-    viewportManager.onViewportChanged(mViewportChangedWhileScrolling);
+    viewportManager.onViewportChanged();
 
-    verifyZeroInteractions(mViewportChangedWhileScrolling);
     verifyZeroInteractions(mViewportChangedListener);
   }
 
@@ -94,9 +89,8 @@ public class ViewportManagerTest {
     setFullyVisibleItemPositionInMockedLayoutManager(7, 9);
     setTotalItemInMockedLayoutManager(12);
 
-    viewportManager.onViewportChanged(mViewportChangedWhileScrolling);
+    viewportManager.onViewportChanged();
 
-    verifyZeroInteractions(mViewportChangedWhileScrolling);
     verify(mViewportChangedListener).viewportChanged(5, 10, 7, 9);
   }
 
@@ -125,9 +119,8 @@ public class ViewportManagerTest {
     setFullyVisibleItemPositionInMockedLayoutManager(7, 9);
     setTotalItemInMockedLayoutManager(12);
 
-    viewportManager.onViewportChanged(mViewportChangedWhileScrolling);
+    viewportManager.onViewportChanged();
 
-    verifyZeroInteractions(mViewportChangedWhileScrolling);
     verify(mViewportChangedListener).viewportChanged(5, 10, 7, 9);
   }
 
@@ -160,9 +153,8 @@ public class ViewportManagerTest {
         lastFullyVisiblePosition,
         mLayoutInfo,
         mMainThreadHandler,
-        scrollState,
-        mViewportChangedWhileScrolling);
-    viewportManager.setViewportChangedListener(mViewportChangedListener);
+        scrollState);
+    viewportManager.addViewportChangedListener(mViewportChangedListener);
 
     return viewportManager;
   }

@@ -44,7 +44,6 @@ import com.facebook.litho.SizeSpec;
 import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.utils.DisplayListPrefetcherUtils;
 import com.facebook.litho.utils.IncrementalMountUtils;
-import com.facebook.litho.widget.ViewportManager.ViewportChangedWhileScrolling;
 
 import static android.support.v7.widget.OrientationHelper.HORIZONTAL;
 import static android.support.v7.widget.OrientationHelper.VERTICAL;
@@ -93,13 +92,6 @@ public class RecyclerBinder implements
       }
     }
   };
-  private final ViewportChangedWhileScrolling mViewportChangedWhileScrolling =
-      new ViewportChangedWhileScrolling() {
-        @Override
-        public void viewportChanged(int firstVisiblePosition, int lastVisiblePosition) {
-          onNewVisibleRange(firstVisiblePosition, lastVisiblePosition);
-        }
-      };
 
   private int mLastWidthSpec = UNINITIALIZED;
   private int mLastHeightSpec = UNINITIALIZED;
@@ -112,7 +104,18 @@ public class RecyclerBinder implements
   private StickyHeaderController mStickyHeaderController;
   private final boolean mCanPrefetchDisplayLists;
   private EventHandler<ReMeasureEvent> mReMeasureEventEventHandler;
+
   private final ViewportManager mViewportManager;
+  private final ViewportChanged mViewportChangedListener = new ViewportChanged() {
+    @Override
+    public void viewportChanged(
+        int firstVisibleIndex,
+        int lastVisibleIndex,
+        int firstFullyVisibleIndex,
+        int lastFullyVisibleIndex) {
+      onNewVisibleRange(firstVisibleIndex, lastVisibleIndex);
+    }
+  };
 
   interface ComponentTreeHolderFactory {
     ComponentTreeHolder create(
@@ -247,8 +250,7 @@ public class RecyclerBinder implements
         mCurrentLastVisiblePosition,
         layoutInfo,
         mMainThreadHandler,
-        RecyclerView.SCROLL_STATE_IDLE,
-        mViewportChangedWhileScrolling);
+        RecyclerView.SCROLL_STATE_IDLE);
   }
 
   /**
@@ -849,6 +851,8 @@ public class RecyclerBinder implements
 
     mLayoutInfo.setComponentInfoCollection(this);
 
+    mViewportManager.addViewportChangedListener(mViewportChangedListener);
+
     if (mCurrentFirstVisiblePosition != RecyclerView.NO_POSITION &&
         mCurrentFirstVisiblePosition >= 0) {
       if (layoutManager instanceof LinearLayoutManager) {
@@ -907,6 +911,8 @@ public class RecyclerBinder implements
     view.removeOnScrollListener(mViewportManager.getScrollListener());
     view.setAdapter(null);
     view.setLayoutManager(null);
+
+    mViewportManager.removeViewportChangedListener(mViewportChangedListener);
 
     // We might have already unmounted this view when calling mount with a different view. In this
     // case we can just return here.
@@ -1000,7 +1006,7 @@ public class RecyclerBinder implements
   @Override
   @UiThread
   public void setViewportChangedListener(@Nullable ViewportChanged viewportChangedListener) {
-    mViewportManager.setViewportChangedListener(viewportChangedListener);
+    mViewportManager.addViewportChangedListener(viewportChangedListener);
   }
 
   @VisibleForTesting

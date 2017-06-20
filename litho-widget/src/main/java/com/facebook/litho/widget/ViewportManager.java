@@ -11,6 +11,9 @@ package com.facebook.litho.widget;
 
 import javax.annotation.concurrent.ThreadSafe;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
@@ -35,51 +38,39 @@ final class ViewportManager {
   private int mCurrentLastVisiblePosition;
   private int mTotalItemCount;
   private int mScrollingState;
-  private @Nullable ViewportChanged mViewportChangedListener;
 
-  private final @Nullable ViewportChangedWhileScrolling mViewportChangedWhileScrolling;
+  @Nullable private List<ViewportChanged> mViewportChangedListeners;
+
   private final LayoutInfo mLayoutInfo;
   private final Handler mMainThreadHandler;
   private final ViewportScrollListener mViewportScrollListener = new ViewportScrollListener();
   private final Runnable mViewportChangedRunnable = new Runnable() {
     @Override
     public void run() {
-      onViewportChanged(null);
+      onViewportChanged();
     }
   };
-
-  /**
-   * Implement this interface if you are interested to process your own work due to a
-   * viewport change.
-   */
-  interface ViewportChangedWhileScrolling {
-    void viewportChanged(int firstVisiblePosition, int lastVisiblePosition);
-  }
 
   ViewportManager(
       int currentFirstVisiblePosition,
       int currentLastVisiblePosition,
       LayoutInfo layoutInfo,
       Handler mainThreadHandler,
-      int initialScrollingState,
-      @Nullable ViewportChangedWhileScrolling viewportChangedWhileScrolling) {
+      int initialScrollingState) {
     mCurrentFirstVisiblePosition = currentFirstVisiblePosition;
     mCurrentLastVisiblePosition = currentLastVisiblePosition;
     mTotalItemCount = layoutInfo.getItemCount();
     mScrollingState = initialScrollingState;
     mLayoutInfo = layoutInfo;
     mMainThreadHandler = mainThreadHandler;
-    mViewportChangedWhileScrolling = viewportChangedWhileScrolling;
   }
 
   /**
    * Handles a change in viewport. This method should not be called outside of the method
    * {@link OnScrollListener#onScrolled(RecyclerView, int, int)}
-   *
-   * @param viewportChangedWhileScrolling
    */
   @UiThread
-  void onViewportChanged(@Nullable ViewportChangedWhileScrolling viewportChangedWhileScrolling) {
+  void onViewportChanged() {
     final int firstVisiblePosition = mLayoutInfo.findFirstVisibleItemPosition();
     final int lastVisiblePosition = mLayoutInfo.findLastVisibleItemPosition();
     final int firstFullyVisibleItemPosition = mLayoutInfo.findFirstFullyVisibleItemPosition();
@@ -103,19 +94,17 @@ final class ViewportManager {
     mCurrentLastVisiblePosition = lastVisiblePosition;
     mTotalItemCount = totalItemCount;
 
-    if (viewportChangedWhileScrolling != null && isScrolling()) {
-      viewportChangedWhileScrolling.viewportChanged(firstVisiblePosition, lastVisiblePosition);
-    }
-
-    if (mViewportChangedListener == null) {
+    if (mViewportChangedListeners == null || mViewportChangedListeners.isEmpty()) {
       return;
     }
 
-    mViewportChangedListener.viewportChanged(
-        firstVisiblePosition,
-        lastVisiblePosition,
-        mLayoutInfo.findFirstFullyVisibleItemPosition(),
-        mLayoutInfo.findLastFullyVisibleItemPosition());
+    for (ViewportChanged viewportChangedListener : mViewportChangedListeners) {
+      viewportChangedListener.viewportChanged(
+          firstVisiblePosition,
+          lastVisiblePosition,
+          firstFullyVisibleItemPosition,
+          lastFullyVisibleItemPosition);
+    }
   }
 
   /**
@@ -148,8 +137,25 @@ final class ViewportManager {
   }
 
   @UiThread
-  void setViewportChangedListener(@Nullable ViewportChanged viewportChangedListener) {
-    mViewportChangedListener = viewportChangedListener;
+  void addViewportChangedListener(@Nullable ViewportChanged viewportChangedListener) {
+    if (viewportChangedListener == null) {
+      return;
+    }
+
+    if (mViewportChangedListeners == null) {
+      mViewportChangedListeners = new ArrayList<>(2);
+    }
+
+    mViewportChangedListeners.add(viewportChangedListener);
+  }
+
+  @UiThread
+  void removeViewportChangedListener(@Nullable ViewportChanged viewportChangedListener) {
+    if (viewportChangedListener == null || mViewportChangedListeners == null) {
+      return;
+    }
+
+    mViewportChangedListeners.remove(viewportChangedListener);
   }
 
   @UiThread
@@ -165,7 +171,7 @@ final class ViewportManager {
 
     @Override
     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-      onViewportChanged(mViewportChangedWhileScrolling);
+      onViewportChanged();
     }
 
     @Override
