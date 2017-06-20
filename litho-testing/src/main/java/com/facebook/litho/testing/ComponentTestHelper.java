@@ -11,6 +11,7 @@ package com.facebook.litho.testing;
 
 import android.graphics.Rect;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -21,6 +22,7 @@ import com.facebook.litho.EventHandler;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.TestComponentTree;
 import com.facebook.litho.TreeProps;
+import com.facebook.litho.VisibleEvent;
 
 import org.powermock.reflect.Whitebox;
 
@@ -370,19 +372,26 @@ public final class ComponentTestHelper {
       EventHandler onVisibleHandler,
       Component component) {
     LithoView lithoView = new LithoView(context);
+    FrameLayout parent = new FrameLayout(context);
+
+    parent.addView(lithoView);
 
     mountComponent(
+        context,
         lithoView,
-        ComponentTree.create(context, component)
-            .layoutDiffing(false)
-            .build(),
-        makeMeasureSpec(100, EXACTLY),
-        makeMeasureSpec(100, EXACTLY));
+        component,
+        true,
+        100,
+        100);
 
     lithoView.performIncrementalMount();
 
     try {
-      Whitebox.invokeMethod(component.getLifecycle(), "dispatchOnVisible", onVisibleHandler);
+      Whitebox.invokeMethod(
+          component.getEventDispatcher(),
+          "dispatchOnEvent",
+          onVisibleHandler,
+          new VisibleEvent());
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
