@@ -2,11 +2,11 @@ apply plugin: 'java'
 apply plugin: 'maven-publish'
 
 dependencies {
-    compile project(':litho-annotations')
-    compile deps.jsr305
+    implementation project(':litho-annotations')
+    compileOnly deps.jsr305
 
     // Processor
-    compile deps.javapoet
+    implementation deps.javapoet
 }
 
 apply from: rootProject.file('gradle/release.gradle')

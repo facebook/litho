@@ -12,12 +12,12 @@ android {
 }
 
 dependencies {
-    compile project(':litho-core')
+    implementation project(':litho-core')
 
-    compile deps.supportEspresso
-    compile deps.screenshot
-    androidTestProvided project(':litho-annotations')
-    androidTestCompile project(':litho-widget')
+    implementation deps.supportEspresso
+    implementation deps.screenshot
+    androidTestCompileOnly project(':litho-annotations')
+    androidTestImplementation project(':litho-widget')
     androidTestAnnotationProcessor project(':litho-processor')
 }
 
