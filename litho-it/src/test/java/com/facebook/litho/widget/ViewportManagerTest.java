@@ -50,6 +50,7 @@ public class ViewportManagerTest {
 
     setVisibleItemPositionInMockedLayoutManager(0, 5);
     setFullyVisibleItemPositionInMockedLayoutManager(1, 4);
+    setTotalItemInMockedLayoutManager(20);
 
     viewportManager.onViewportChanged(mViewportChangedWhileScrolling);
 
@@ -63,6 +64,7 @@ public class ViewportManagerTest {
 
     setVisibleItemPositionInMockedLayoutManager(5, 20);
     setFullyVisibleItemPositionInMockedLayoutManager(7, 18);
+    setTotalItemInMockedLayoutManager(20);
 
     viewportManager.onViewportChanged(null);
 
@@ -71,10 +73,12 @@ public class ViewportManagerTest {
 
   @Test
   public void testNoViewportChangedWithScrolling() {
+    setTotalItemInMockedLayoutManager(13);
     ViewportManager viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_DRAGGING, 5, 10);
 
     setVisibleItemPositionInMockedLayoutManager(5, 10);
     setFullyVisibleItemPositionInMockedLayoutManager(7, 9);
+    setTotalItemInMockedLayoutManager(13);
 
     viewportManager.onViewportChanged(mViewportChangedWhileScrolling);
 
@@ -88,10 +92,11 @@ public class ViewportManagerTest {
 
     setVisibleItemPositionInMockedLayoutManager(5, 10);
     setFullyVisibleItemPositionInMockedLayoutManager(7, 9);
+    setTotalItemInMockedLayoutManager(12);
 
     viewportManager.onViewportChanged(mViewportChangedWhileScrolling);
 
-    verify(mViewportChangedWhileScrolling).viewportChanged(5, 10);
+    verifyZeroInteractions(mViewportChangedWhileScrolling);
     verify(mViewportChangedListener).viewportChanged(5, 10, 7, 9);
   }
 
@@ -111,6 +116,21 @@ public class ViewportManagerTest {
     verify(mMainThreadHandler).post(any(Runnable.class));
   }
 
+  @Test
+  public void testTotalItemChangedWhileVisiblePositionsRemainTheSame() {
+    setTotalItemInMockedLayoutManager(13);
+    ViewportManager viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_IDLE, 5, 10);
+
+    setVisibleItemPositionInMockedLayoutManager(5, 10);
+    setFullyVisibleItemPositionInMockedLayoutManager(7, 9);
+    setTotalItemInMockedLayoutManager(12);
+
+    viewportManager.onViewportChanged(mViewportChangedWhileScrolling);
+
+    verifyZeroInteractions(mViewportChangedWhileScrolling);
+    verify(mViewportChangedListener).viewportChanged(5, 10, 7, 9);
+  }
+
   private void setVisibleItemPositionInMockedLayoutManager(
       int firstVisibleItemPosition,
       int lastVisibleItemPosition) {
@@ -125,6 +145,10 @@ public class ViewportManagerTest {
         .thenReturn(firstFullyVisiblePosition);
     when(mLayoutInfo.findLastFullyVisibleItemPosition())
         .thenReturn(lastFullyVisiblePosition);
+  }
+
+  private void setTotalItemInMockedLayoutManager(int totalItem) {
+    when(mLayoutInfo.getItemCount()).thenReturn(totalItem);
   }
 
   private ViewportManager getViewportManager(

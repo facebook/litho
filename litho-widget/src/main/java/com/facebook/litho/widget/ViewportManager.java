@@ -33,6 +33,7 @@ final class ViewportManager {
 
   private int mCurrentFirstVisiblePosition;
   private int mCurrentLastVisiblePosition;
+  private int mTotalItemCount;
   private int mScrollingState;
   private @Nullable ViewportChanged mViewportChangedListener;
 
@@ -64,6 +65,7 @@ final class ViewportManager {
       @Nullable ViewportChangedWhileScrolling viewportChangedWhileScrolling) {
     mCurrentFirstVisiblePosition = currentFirstVisiblePosition;
     mCurrentLastVisiblePosition = currentLastVisiblePosition;
+    mTotalItemCount = layoutInfo.getItemCount();
     mScrollingState = initialScrollingState;
     mLayoutInfo = layoutInfo;
     mMainThreadHandler = mainThreadHandler;
@@ -74,31 +76,35 @@ final class ViewportManager {
    * Handles a change in viewport. This method should not be called outside of the method
    * {@link OnScrollListener#onScrolled(RecyclerView, int, int)}
    *
-   * @param handler
+   * @param viewportChangedWhileScrolling
    */
   @UiThread
-  void onViewportChanged(@Nullable ViewportChangedWhileScrolling handler) {
+  void onViewportChanged(@Nullable ViewportChangedWhileScrolling viewportChangedWhileScrolling) {
     final int firstVisiblePosition = mLayoutInfo.findFirstVisibleItemPosition();
     final int lastVisiblePosition = mLayoutInfo.findLastVisibleItemPosition();
+    final int firstFullyVisibleItemPosition = mLayoutInfo.findFirstFullyVisibleItemPosition();
+    final int lastFullyVisibleItemPosition = mLayoutInfo.findLastFullyVisibleItemPosition();
+    final int totalItemCount = mLayoutInfo.getItemCount();
 
-    if (firstVisiblePosition < 0 || lastVisiblePosition < 0) {
+    if (firstVisiblePosition < 0
+        || lastVisiblePosition < 0
+        || firstFullyVisibleItemPosition < 0
+        || lastFullyVisibleItemPosition < 0) {
       return;
     }
 
     if (firstVisiblePosition == mCurrentFirstVisiblePosition
         && lastVisiblePosition == mCurrentLastVisiblePosition
-        && isScrolling()) {
-      // firstVisiblePosition and lastVisiblePosition will remove unchanged if the viewport
-      // change is due to a view removal without scrolling, and we need to notify a viewport
-      // change for this case
+        && totalItemCount == mTotalItemCount) {
       return;
     }
 
     mCurrentFirstVisiblePosition = firstVisiblePosition;
     mCurrentLastVisiblePosition = lastVisiblePosition;
+    mTotalItemCount = totalItemCount;
 
-    if (handler != null) {
-      handler.viewportChanged(firstVisiblePosition, lastVisiblePosition);
+    if (viewportChangedWhileScrolling != null && isScrolling()) {
+      viewportChangedWhileScrolling.viewportChanged(firstVisiblePosition, lastVisiblePosition);
     }
 
     if (mViewportChangedListener == null) {
