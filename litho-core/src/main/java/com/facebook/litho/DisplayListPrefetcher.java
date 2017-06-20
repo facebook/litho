@@ -90,10 +90,15 @@ public final class DisplayListPrefetcher implements Runnable {
       return;
     }
 
-    ComponentsSystrace.beginSection("DisplayListPrefetcher");
-
     final long latestFrameVsyncNs = TimeUnit.MILLISECONDS.toNanos(hostingView.getDrawingTime());
     final long nextVsyncNs = latestFrameVsyncNs + mFrameIntervalNs;
+
+    if (System.nanoTime() > nextVsyncNs) {
+      // We are over the frame, bail.
+      return;
+    }
+
+    ComponentsSystrace.beginSection("DisplayListPrefetcher");
 
     while (true) {
       final LayoutState currentLayoutState = getValidLayoutStateFromQueue();
