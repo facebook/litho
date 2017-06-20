@@ -9,19 +9,20 @@
 
 package com.facebook.litho.specmodels.model;
 
+import javax.lang.model.element.Modifier;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.specmodels.internal.ImmutableList;
+
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.WildcardTypeName;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.lang.model.element.Modifier;
 
 import static com.facebook.litho.specmodels.model.ClassNames.STATE_VALUE;
 

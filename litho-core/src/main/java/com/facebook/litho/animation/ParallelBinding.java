@@ -10,13 +10,13 @@
 
 package com.facebook.litho.animation;
 
+import java.util.HashSet;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import android.support.v4.util.SimpleArrayMap;
 
 import com.facebook.litho.dataflow.ChoreographerCompat;
 import com.facebook.litho.internal.ArraySet;
-
-import java.util.HashSet;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * An {@link AnimationBinding} that's composed of other {@link AnimationBinding}s running in

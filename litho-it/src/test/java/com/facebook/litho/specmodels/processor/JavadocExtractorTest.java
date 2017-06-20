@@ -9,14 +9,14 @@
 
 package com.facebook.litho.specmodels.processor;
 
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Elements;
+
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.PropJavadocModel;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.Elements;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;

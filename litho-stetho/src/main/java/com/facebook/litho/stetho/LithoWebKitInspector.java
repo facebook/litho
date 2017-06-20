@@ -9,6 +9,8 @@
 
 package com.facebook.litho.stetho;
 
+import java.util.Arrays;
+
 import android.app.Application;
 
 import com.facebook.litho.config.ComponentsConfiguration;
@@ -17,8 +19,6 @@ import com.facebook.stetho.Stetho;
 import com.facebook.stetho.inspector.elements.DescriptorProvider;
 import com.facebook.stetho.inspector.elements.android.AndroidDocumentProviderFactory;
 import com.facebook.stetho.inspector.protocol.ChromeDevtoolsDomain;
-
-import java.util.Arrays;
 
 public class LithoWebKitInspector implements InspectorModulesProvider {
   private final Application mApplication;

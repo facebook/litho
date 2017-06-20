@@ -9,15 +9,16 @@
 
 package com.facebook.litho.specmodels.model;
 
-import com.facebook.litho.annotations.ResType;
-import com.facebook.litho.specmodels.internal.ImmutableList;
-import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.TypeName;
+import javax.annotation.concurrent.Immutable;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
 
-import javax.annotation.concurrent.Immutable;
+import com.facebook.litho.annotations.ResType;
+import com.facebook.litho.specmodels.internal.ImmutableList;
+
+import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.TypeName;
 
 /**
  * Model that is an abstract representation of a {@link com.facebook.litho.annotations.Prop}.

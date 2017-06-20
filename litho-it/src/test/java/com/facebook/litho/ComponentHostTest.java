@@ -9,6 +9,8 @@
 
 package com.facebook.litho;
 
+import java.util.List;
+
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
@@ -27,8 +29,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
-
-import java.util.List;
 
 import static android.graphics.Color.BLACK;
 import static android.view.MotionEvent.obtain;

@@ -9,6 +9,15 @@
 
 package com.facebook.litho;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.concurrent.GuardedBy;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.graphics.Rect;
@@ -28,15 +37,6 @@ import android.view.ViewParent;
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.annotation.CheckReturnValue;
-import javax.annotation.concurrent.GuardedBy;
 
 import static com.facebook.litho.ComponentLifecycle.StateUpdate;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_LAYOUT_CALCULATE;

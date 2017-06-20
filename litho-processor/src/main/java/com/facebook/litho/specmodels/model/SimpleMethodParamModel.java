@@ -9,13 +9,13 @@
 
 package com.facebook.litho.specmodels.model;
 
-import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.TypeName;
+import javax.annotation.concurrent.Immutable;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
 
-import javax.annotation.concurrent.Immutable;
+import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.TypeName;
 
 /**
  * Model that is a simple base representation of a method param.

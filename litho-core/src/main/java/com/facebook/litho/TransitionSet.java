@@ -8,9 +8,9 @@
  */
 package com.facebook.litho;
 
-import com.facebook.litho.internal.ArraySet;
-
 import java.util.ArrayList;
+
+import com.facebook.litho.internal.ArraySet;
 
 /**
  * A set of {@link Transition}s.

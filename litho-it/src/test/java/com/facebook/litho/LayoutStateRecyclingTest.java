@@ -9,6 +9,8 @@
 
 package com.facebook.litho;
 
+import java.lang.reflect.Field;
+
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 
@@ -23,8 +25,6 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.robolectric.RuntimeEnvironment;
-
-import java.lang.reflect.Field;
 
 import static com.facebook.litho.testing.ReflectionHelper.setFinalStatic;
 import static junit.framework.Assert.assertNull;

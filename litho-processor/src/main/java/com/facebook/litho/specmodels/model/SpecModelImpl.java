@@ -9,19 +9,20 @@
 
 package com.facebook.litho.specmodels.model;
 
-import com.facebook.litho.specmodels.internal.ImmutableList;
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
-import com.squareup.javapoet.TypeVariableName;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
+import com.facebook.litho.specmodels.internal.ImmutableList;
+
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.TypeVariableName;
 
 /**
  * Simple implementation of {@link SpecModel}.

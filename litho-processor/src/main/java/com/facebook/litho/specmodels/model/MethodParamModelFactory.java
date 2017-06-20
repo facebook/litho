@@ -9,18 +9,19 @@
 
 package com.facebook.litho.specmodels.model;
 
-import com.facebook.litho.annotations.Prop;
-import com.facebook.litho.annotations.ShouldUpdate;
-import com.facebook.litho.annotations.State;
-import com.facebook.litho.annotations.TreeProp;
-import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.ParameterizedTypeName;
-import com.squareup.javapoet.TypeName;
+import javax.lang.model.element.ExecutableElement;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
 
-import javax.lang.model.element.ExecutableElement;
+import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.annotations.ShouldUpdate;
+import com.facebook.litho.annotations.State;
+import com.facebook.litho.annotations.TreeProp;
+
+import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
+import com.squareup.javapoet.TypeName;
 
 /**
  * Factory for creating {@link MethodParamModel}s.

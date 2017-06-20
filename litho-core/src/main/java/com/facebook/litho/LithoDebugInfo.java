@@ -9,10 +9,10 @@
 
 package com.facebook.litho;
 
-import android.util.SparseArray;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import android.util.SparseArray;
 
 /**
  * A set of methods which expose internals of the framework. These APIs should not be considered

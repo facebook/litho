@@ -9,11 +9,12 @@
 
 package com.facebook.litho.specmodels.model;
 
-import com.facebook.litho.annotations.OnCreateTreeProp;
-import com.squareup.javapoet.TypeName;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import com.facebook.litho.annotations.OnCreateTreeProp;
+
+import com.squareup.javapoet.TypeName;
 
 class TreePropValidation {
 

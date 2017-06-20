@@ -9,6 +9,8 @@
 
 package com.facebook.litho.specmodels.generator;
 
+import javax.lang.model.element.Modifier;
+
 import com.facebook.litho.annotations.FromBoundsDefined;
 import com.facebook.litho.annotations.FromMeasure;
 import com.facebook.litho.annotations.OnMount;
@@ -18,10 +20,9 @@ import com.facebook.litho.specmodels.model.InterStageInputParamModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.MountSpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
+
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
-
-import javax.lang.model.element.Modifier;
 
 /**
  * Class that generates methods for Mount Specs.

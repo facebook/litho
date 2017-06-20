@@ -9,14 +9,14 @@
 
 package com.facebook.litho;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import android.support.v4.util.Pools;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.facebook.litho.viewcompatcreator.ViewCompatCreator;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static com.facebook.litho.ContextUtils.getValidActivityForContext;
 

@@ -9,14 +9,14 @@
 
 package com.facebook.litho;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.v4.util.SparseArrayCompat;
 import android.view.View;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 class ComponentHostUtils {
 

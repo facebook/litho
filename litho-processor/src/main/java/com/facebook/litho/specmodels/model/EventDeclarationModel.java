@@ -9,12 +9,13 @@
 
 package com.facebook.litho.specmodels.model;
 
+import javax.annotation.concurrent.Immutable;
+
 import com.facebook.litho.specmodels.internal.ImmutableList;
+
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.TypeName;
-
-import javax.annotation.concurrent.Immutable;
 
 /**
  * Model that is an abstract representation of a {@link com.facebook.litho.annotations.Event}.

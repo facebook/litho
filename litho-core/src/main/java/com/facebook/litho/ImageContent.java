@@ -9,10 +9,10 @@
 
 package com.facebook.litho;
 
-import android.graphics.drawable.Drawable;
-
 import java.util.Collections;
 import java.util.List;
+
+import android.graphics.drawable.Drawable;
 
 /**
  * A UI element that contains simple resource drawables.

@@ -8,11 +8,11 @@
  */
 package com.facebook.litho;
 
+import java.util.List;
+
 import android.support.v4.util.SimpleArrayMap;
 
 import com.facebook.litho.internal.ArraySet;
-
-import java.util.List;
 
 /**
  * Keeps track of the last mounted @Prop/@State a component was rendered with for components that

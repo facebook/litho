@@ -9,20 +9,21 @@
 
 package com.facebook.litho.specmodels.generator;
 
+import javax.annotation.concurrent.Immutable;
+import javax.lang.model.element.Modifier;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.facebook.litho.specmodels.internal.ImmutableList;
+
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
-
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.concurrent.Immutable;
-import javax.lang.model.element.Modifier;
 
 /**
  * An object that holds data that can be used in the construction of a

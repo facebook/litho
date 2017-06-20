@@ -9,6 +9,10 @@
 
 package com.facebook.litho;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
+
 import android.support.annotation.IntDef;
 import android.support.v4.util.Pools;
 import android.support.v4.util.SimpleArrayMap;
@@ -24,10 +28,6 @@ import com.facebook.litho.animation.ComponentProperty;
 import com.facebook.litho.animation.Resolver;
 import com.facebook.litho.animation.RuntimeValue;
 import com.facebook.litho.internal.ArraySet;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
 
 /**
  * Unique per MountState instance. Called from MountState on mount calls to process the transition

@@ -9,13 +9,13 @@
 
 package com.facebook.litho;
 
+import java.util.WeakHashMap;
+
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-
-import java.util.WeakHashMap;
 
 /**
  * Callbacks that must be invoked to avoid leaking memory if using Components

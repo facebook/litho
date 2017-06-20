@@ -9,6 +9,9 @@
 
 package com.facebook.litho.testing;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.AttrRes;
@@ -21,9 +24,6 @@ import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class TestDrawableComponent extends ComponentLifecycle {
   private static final List<TestDrawableComponent> sInstances = new ArrayList<>();

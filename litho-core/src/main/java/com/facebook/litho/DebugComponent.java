@@ -9,6 +9,12 @@
 
 package com.facebook.litho;
 
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.v4.util.SimpleArrayMap;
@@ -24,12 +30,6 @@ import com.facebook.yoga.YogaJustify;
 import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaValue;
-
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * A DebugComponent represents a node in Litho's component hierarchy. DebugComponent removes the

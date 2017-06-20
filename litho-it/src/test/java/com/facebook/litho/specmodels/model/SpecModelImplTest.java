@@ -9,18 +9,18 @@
 
 package com.facebook.litho.specmodels.model;
 
-import com.facebook.litho.specmodels.internal.ImmutableList;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeVariableName;
-
-import org.junit.Before;
-import org.junit.Test;
+import javax.lang.model.element.Modifier;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.lang.model.element.Modifier;
+import com.facebook.litho.specmodels.internal.ImmutableList;
+
+import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeVariableName;
+import org.junit.Before;
+import org.junit.Test;
 
 import static com.facebook.litho.specmodels.internal.ImmutableList.copyOf;
 import static com.facebook.litho.specmodels.internal.ImmutableList.of;

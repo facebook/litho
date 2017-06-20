@@ -9,6 +9,9 @@
 
 package com.facebook.litho;
 
+import java.lang.ref.WeakReference;
+import java.util.Deque;
+
 import android.content.Context;
 import android.graphics.Rect;
 import android.support.annotation.VisibleForTesting;
@@ -21,9 +24,6 @@ import android.view.accessibility.AccessibilityManager;
 
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
-
-import java.lang.ref.WeakReference;
-import java.util.Deque;
 
 import static android.content.Context.ACCESSIBILITY_SERVICE;
 import static com.facebook.litho.AccessibilityUtils.isAccessibilityEnabled;

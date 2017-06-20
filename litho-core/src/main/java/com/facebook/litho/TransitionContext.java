@@ -9,10 +9,10 @@
 
 package com.facebook.litho;
 
-import com.facebook.litho.animation.AnimationBinding;
-
 import java.util.ArrayList;
 import java.util.HashSet;
+
+import com.facebook.litho.animation.AnimationBinding;
 
 /**
  * TransitionContext is unique per LayoutState and contains all the transitions defined

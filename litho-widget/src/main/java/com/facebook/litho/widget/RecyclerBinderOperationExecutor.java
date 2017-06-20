@@ -2,13 +2,13 @@
 
 package com.facebook.litho.widget;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.facebook.litho.ComponentInfo;
 import com.facebook.litho.widget.RecyclerBinderUpdateCallback.ComponentContainer;
 import com.facebook.litho.widget.RecyclerBinderUpdateCallback.Operation;
 import com.facebook.litho.widget.RecyclerBinderUpdateCallback.OperationExecutor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * An implementation of {@link OperationExecutor} that uses {@link RecyclerBinder}.

@@ -9,6 +9,9 @@
 
 package com.facebook.litho.testing;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.graphics.Rect;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -25,9 +28,6 @@ import com.facebook.litho.TreeProps;
 import com.facebook.litho.VisibleEvent;
 
 import org.powermock.reflect.Whitebox;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.UNSPECIFIED;

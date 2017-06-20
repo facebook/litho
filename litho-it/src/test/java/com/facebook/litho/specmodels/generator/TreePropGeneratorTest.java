@@ -9,6 +9,12 @@
 
 package com.facebook.litho.specmodels.generator;
 
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
+
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
@@ -18,17 +24,11 @@ import com.facebook.litho.specmodels.model.DelegateMethodModel;
 import com.facebook.litho.specmodels.model.MethodParamModelFactory;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.TreePropModel;
+
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.TypeName;
-
 import org.junit.Before;
 import org.junit.Test;
-
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;

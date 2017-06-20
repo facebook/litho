@@ -9,11 +9,11 @@
 
 package com.facebook.litho.dataflow;
 
+import java.util.ArrayList;
+
 import android.support.annotation.VisibleForTesting;
 
 import com.facebook.litho.internal.ArraySet;
-
-import java.util.ArrayList;
 
 /**
  * Defines the relationship of a set of input values to a set of output values where the values from

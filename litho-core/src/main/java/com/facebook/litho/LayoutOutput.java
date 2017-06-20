@@ -9,13 +9,13 @@
 
 package com.facebook.litho;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 import android.graphics.Rect;
 import android.support.annotation.IntDef;
 
 import com.facebook.litho.displaylist.DisplayList;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 

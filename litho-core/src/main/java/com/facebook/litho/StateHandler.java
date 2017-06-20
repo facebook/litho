@@ -9,17 +9,17 @@
 
 package com.facebook.litho;
 
-import android.support.v4.util.Pools;
-
-import com.facebook.infer.annotation.ThreadSafe;
-import com.facebook.litho.ComponentLifecycle.StateContainer;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import android.support.v4.util.Pools;
+
+import com.facebook.infer.annotation.ThreadSafe;
+import com.facebook.litho.ComponentLifecycle.StateContainer;
 
 import static com.facebook.litho.ComponentLifecycle.StateUpdate;
 

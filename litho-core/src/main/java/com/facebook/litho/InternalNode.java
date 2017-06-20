@@ -9,6 +9,12 @@
 
 package com.facebook.litho;
 
+import javax.annotation.Nullable;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -43,12 +49,6 @@ import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaWrap;
-
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.annotation.Nullable;
 
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;

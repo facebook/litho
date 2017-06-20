@@ -9,10 +9,10 @@
 
 package com.facebook.litho.specmodels.model;
 
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.List;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;

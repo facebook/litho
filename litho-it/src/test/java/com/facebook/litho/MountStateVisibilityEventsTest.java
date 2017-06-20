@@ -9,6 +9,9 @@
 
 package com.facebook.litho;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.graphics.Rect;
 import android.support.v4.util.LongSparseArray;
 
@@ -21,9 +24,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.facebook.litho.testing.TestViewComponent.create;
 import static org.assertj.core.api.Java6Assertions.assertThat;

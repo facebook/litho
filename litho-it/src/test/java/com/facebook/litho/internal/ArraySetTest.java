@@ -9,9 +9,9 @@
 
 package com.facebook.litho.internal;
 
-import org.junit.Test;
-
 import java.util.Iterator;
+
+import org.junit.Test;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 

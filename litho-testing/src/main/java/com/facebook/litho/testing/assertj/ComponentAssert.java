@@ -9,6 +9,8 @@
 
 package com.facebook.litho.testing.assertj;
 
+import java.util.List;
+
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 
@@ -22,8 +24,6 @@ import com.facebook.litho.testing.SubComponent;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Java6Assertions;
 import org.powermock.reflect.Whitebox;
-
-import java.util.List;
 
 /**
  * Assertion methods for {@link Component}s.

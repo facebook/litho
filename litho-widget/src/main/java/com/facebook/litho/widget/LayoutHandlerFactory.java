@@ -9,10 +9,10 @@
 
 package com.facebook.litho.widget;
 
+import javax.annotation.Nullable;
+
 import com.facebook.litho.ComponentInfo;
 import com.facebook.litho.LayoutHandler;
-
-import javax.annotation.Nullable;
 
 /**
  * A Factory used to create {@link LayoutHandler}s in {@link RecyclerBinder}.
