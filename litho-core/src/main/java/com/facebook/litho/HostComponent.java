@@ -38,6 +38,11 @@ class HostComponent extends ComponentLifecycle {
     public String getSimpleName() {
       return "HostComponent";
     }
+
+    @Override
+    public boolean isEquivalentTo(Component<?> other) {
+      return this == other;
+    }
   }
 
   @Override

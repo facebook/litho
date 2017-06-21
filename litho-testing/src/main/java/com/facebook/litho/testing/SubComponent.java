@@ -69,6 +69,6 @@ public class SubComponent {
   private static boolean arePropsEqual(Component<?> thatComponent, Component<?> thisComponent) {
     return thatComponent == null ||
         thisComponent == null ||
-        thatComponent.equals(thisComponent);
+        thatComponent.isEquivalentTo(thisComponent);
   }
 }

@@ -136,6 +136,20 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
 
   public abstract String getSimpleName();
 
+  /**
+   * Compares this component to a different one to check if they are the same
+   *
+   * This is used to be able to skip rendering a component again. We avoid using the
+   * {@link Object#equals(Object)} so we can optimize the code better over time since we don't have
+   * to adhere to the contract required for a equals method.
+   *
+   * @param other the component to compare to
+   * @return true if the components are of the same type and have the same props
+   */
+  public boolean isEquivalentTo(Component<?> other) {
+    return this == other;
+  }
+
   protected StateContainer getStateContainer() {
     return null;
   }

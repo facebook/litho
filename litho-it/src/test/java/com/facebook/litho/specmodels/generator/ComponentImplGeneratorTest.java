@@ -156,11 +156,11 @@ public class ComponentImplGeneratorTest {
   }
 
   @Test
-  public void testGenerateEqualsMethod() {
-    assertThat(ComponentImplGenerator.generateEqualsMethod(mSpecModelDI, true).toString())
+  public void testGenerateIsEquivalentMethod() {
+    assertThat(ComponentImplGenerator.generateIsEquivalentMethod(mSpecModelDI, true).toString())
         .isEqualTo(
             "@java.lang.Override\n" +
-            "public boolean equals(java.lang.Object other) {\n" +
+            "public boolean isEquivalentTo(com.facebook.litho.Component<?> other) {\n" +
             "  if (this == other) {\n" +
             "    return true;\n" +
             "  }\n" +

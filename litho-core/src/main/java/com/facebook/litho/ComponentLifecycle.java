@@ -592,7 +592,7 @@ public abstract class ComponentLifecycle implements EventDispatcher {
    * @return true if the component needs an update, false otherwise.
    */
   protected boolean shouldUpdate(Component previous, Component next) {
-    return !previous.equals(next);
+    return !previous.isEquivalentTo(next);
   }
 
   /**

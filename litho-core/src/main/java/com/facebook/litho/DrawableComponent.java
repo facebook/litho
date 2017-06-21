@@ -119,12 +119,7 @@ private static class State<T extends Drawable> extends Component<DrawableCompone
     }
 
     @Override
-    public int hashCode() {
-      return mDrawable.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object o) {
+    public boolean isEquivalentTo(Component<?> o) {
       if (this == o) {
         return true;
       }

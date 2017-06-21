@@ -44,6 +44,7 @@ import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.WildcardTypeName;
 
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.IMPL_CLASS_NAME_SUFFIX;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.PREVIOUS_RENDER_INFO_FIELD_NAME;
@@ -99,7 +100,7 @@ public class ComponentImplGenerator {
 
     implClassBuilder.addMethod(generateImplConstructor(stateContainerImplClass, hasState));
     implClassBuilder.addMethod(generateGetSimpleName(specModel));
-    implClassBuilder.addMethod(generateEqualsMethod(specModel, true));
+    implClassBuilder.addMethod(generateIsEquivalentMethod(specModel, true));
 
     generateCopyInterStageImpl(specModel).addToTypeSpec(implClassBuilder);
 
@@ -314,15 +315,19 @@ public class ComponentImplGenerator {
         .build();
   }
 
-  static MethodSpec generateEqualsMethod(SpecModel specModel, boolean shouldCheckId) {
+  static MethodSpec generateIsEquivalentMethod(SpecModel specModel, boolean shouldCheckId) {
     final String implClassName = getImplClassName(specModel);
     final String implInstanceName = getImplInstanceName(specModel);
 
-    MethodSpec.Builder equalsBuilder = MethodSpec.methodBuilder("equals")
+    MethodSpec.Builder isEquivalentBuilder = MethodSpec.methodBuilder("isEquivalentTo")
         .addAnnotation(Override.class)
         .addModifiers(Modifier.PUBLIC)
         .returns(TypeName.BOOLEAN)
-        .addParameter(TypeName.OBJECT, "other")
+        .addParameter(
+            ParameterizedTypeName.get(
+                ClassNames.COMPONENT,
+                WildcardTypeName.subtypeOf(TypeName.OBJECT)),
+            "other")
         .beginControlFlow("if (this == other)")
         .addStatement("return true")
         .endControlFlow()
@@ -332,27 +337,27 @@ public class ComponentImplGenerator {
         .addStatement(implClassName + " " + implInstanceName + " = (" + implClassName + ") other");
 
     if (shouldCheckId) {
-      equalsBuilder
+      isEquivalentBuilder
           .beginControlFlow("if (this.getId() == " + implInstanceName + ".getId())")
           .addStatement("return true")
           .endControlFlow();
     }
 
     for (PropModel prop : specModel.getProps()) {
-      equalsBuilder.addCode(getCompareStatement(specModel, implInstanceName, prop));
+      isEquivalentBuilder.addCode(getCompareStatement(specModel, implInstanceName, prop));
     }
 
     for (StateParamModel state : specModel.getStateValues()) {
-      equalsBuilder.addCode(getCompareStatement(specModel, implInstanceName, state));
+      isEquivalentBuilder.addCode(getCompareStatement(specModel, implInstanceName, state));
     }
 
     for (TreePropModel treeProp : specModel.getTreeProps()) {
-      equalsBuilder.addCode(getCompareStatement(specModel, implInstanceName, treeProp));
+      isEquivalentBuilder.addCode(getCompareStatement(specModel, implInstanceName, treeProp));
     }
 
-    equalsBuilder.addStatement("return true");
+    isEquivalentBuilder.addStatement("return true");
 
-    return equalsBuilder.build();
+    return isEquivalentBuilder.build();
   }
 
   static TypeSpecDataHolder generateCopyInterStageImpl(SpecModel specModel) {
