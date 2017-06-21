@@ -9,12 +9,15 @@
 
 package com.facebook.litho.widget;
 
+import java.util.List;
+
 import android.graphics.Color;
 import android.support.annotation.IdRes;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ItemAnimator;
+import android.support.v7.widget.RecyclerView.OnScrollListener;
 import android.view.View;
 
 import com.facebook.litho.ComponentContext;
@@ -166,7 +169,7 @@ class RecyclerSpec {
       @Prop(optional = true) ItemAnimator itemAnimator,
       @Prop Binder<RecyclerView> binder,
       @Prop(optional = true) final RecyclerEventsController recyclerEventsController,
-      @Prop(optional = true) RecyclerView.OnScrollListener onScrollListener,
+      @Prop(optional = true, varArg = "onScrollListener") List<OnScrollListener> onScrollListeners,
       @FromPrepare OnRefreshListener onRefreshListener,
       Output<ItemAnimator> oldAnimator) {
 
@@ -188,8 +191,10 @@ class RecyclerSpec {
       recyclerView.setItemAnimator(new NoUpdateItemAnimator());
     }
 
-    if (onScrollListener != null) {
-      recyclerView.addOnScrollListener(onScrollListener);
+    if (onScrollListeners != null) {
+      for (OnScrollListener onScrollListener : onScrollListeners) {
+        recyclerView.addOnScrollListener(onScrollListener);
+      }
     }
 
     binder.bind(recyclerView);
@@ -210,7 +215,7 @@ class RecyclerSpec {
       RecyclerViewWrapper recyclerViewWrapper,
       @Prop Binder<RecyclerView> binder,
       @Prop(optional =  true) RecyclerEventsController recyclerEventsController,
-      @Prop(optional = true) RecyclerView.OnScrollListener onScrollListener,
+      @Prop(optional = true, varArg = "onScrollListener") List<OnScrollListener> onScrollListeners,
       @FromBind ItemAnimator oldAnimator) {
     final RecyclerView recyclerView = recyclerViewWrapper.getRecyclerView();
 
@@ -228,9 +233,10 @@ class RecyclerSpec {
       recyclerEventsController.setRecyclerViewWrapper(null);
     }
 
-
-    if (onScrollListener != null) {
-      recyclerView.removeOnScrollListener(onScrollListener);
+    if (onScrollListeners != null) {
+      for (OnScrollListener onScrollListener : onScrollListeners) {
+        recyclerView.removeOnScrollListener(onScrollListener);
+      }
     }
 
     recyclerViewWrapper.setOnRefreshListener(null);
