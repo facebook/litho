@@ -42,6 +42,9 @@ repositories {
 }
 ```
 
+Then you can access the snapshot versions of all Litho artifacts that we
+publish:
+
 ```
 dependencies {
   // ...
