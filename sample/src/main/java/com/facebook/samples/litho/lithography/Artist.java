@@ -32,10 +32,9 @@ public class Artist implements Datum {
 
   @Override
   public Component createComponent(ComponentContext c) {
-    final RecyclerBinder imageRecyclerBinder = new RecyclerBinder(
-        c,
-        4.0f,
-        new LinearLayoutInfo(c, OrientationHelper.HORIZONTAL, false));
+    final RecyclerBinder imageRecyclerBinder = new RecyclerBinder.Builder()
+        .layoutInfo(new LinearLayoutInfo(c, OrientationHelper.HORIZONTAL, false))
+        .build(c);
 
     for (String image : images) {
       ComponentInfo.Builder imageComponentInfoBuilder = ComponentInfo.create();

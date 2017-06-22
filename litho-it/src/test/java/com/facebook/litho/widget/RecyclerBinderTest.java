@@ -84,14 +84,11 @@ public class RecyclerBinderTest {
     mLayoutInfo = mock(LayoutInfo.class);
     setupBaseLayoutInfoMock();
 
-    mRecyclerBinder = new RecyclerBinder(
-        mComponentContext,
-        RANGE_RATIO,
-        mLayoutInfo,
-        null,
-        false,
-        false,
-        componentTreeHolderFactory);
+    mRecyclerBinder = new RecyclerBinder.Builder()
+        .rangeRatio(RANGE_RATIO)
+        .layoutInfo(mLayoutInfo)
+        .componentTreeHolderFactory(componentTreeHolderFactory)
+        .build(mComponentContext);
   }
 
   private void setupBaseLayoutInfoMock() {

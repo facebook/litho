@@ -35,10 +35,10 @@ public final class Demos {
 
   public static void initialize(Context context) {
     final ComponentContext c = new ComponentContext(context);
-    final RecyclerBinder recyclerBinder = new RecyclerBinder(
-        c,
-        4.0f,
-        new LinearLayoutInfo(c, OrientationHelper.VERTICAL, false));
+    final RecyclerBinder recyclerBinder = new RecyclerBinder.Builder()
+        .layoutInfo(new LinearLayoutInfo(c, OrientationHelper.VERTICAL, false))
+        .build(c);
+
     DataModel.populateBinderWithSampleData(recyclerBinder, c);
     demoModels = new LinkedHashMap<>();
     demoModels.put(

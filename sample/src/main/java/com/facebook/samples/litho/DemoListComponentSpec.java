@@ -25,10 +25,9 @@ public class DemoListComponentSpec {
 
   @OnCreateLayout
   static ComponentLayout onCreateLayout(ComponentContext c) {
-    final RecyclerBinder recyclerBinder = new RecyclerBinder(
-        c,
-        4.0f,
-        new LinearLayoutInfo(c, OrientationHelper.VERTICAL, false));
+    final RecyclerBinder recyclerBinder = new RecyclerBinder.Builder()
+        .layoutInfo(new LinearLayoutInfo(c, OrientationHelper.VERTICAL, false))
+        .build(c);
 
     Demos.addAllToBinder(recyclerBinder, c);
 

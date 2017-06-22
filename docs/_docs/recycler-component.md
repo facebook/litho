@@ -40,14 +40,17 @@ It keeps a list of all the components contained in the list and as the user scro
 Let's start creating a `RecyclerBinder`:
 
 ``` java
-final RecyclerBinder recyclerBinder = new RecyclerBinder(c);
+final RecyclerBinder recyclerBinder = new RecyclerBinder.Builder()
+    .build(c);
 ```
 This will create the simplest possible `RecyclerBinder` that will layout the content of the `Recycler` as a vertical list.
 
-To have `Recycler` use a grid layout we can use this constructor instead:
+To have `Recycler` use a grid layout we set it on the Builder:
 
 ``` java
-final RecyclerBinder recyclerBinder = new RecyclerBinder(c, new GridLayoutInfo(c, spanCount));
+final RecyclerBinder recyclerBinder = new RecyclerBinder.Builder()
+    .layoutInfo(new GridLayoutInfo(c, spanCount))
+    .build(c);
 ```
 
 `RecyclerBinder` exposes a set of APIs to manipulate the items that will be displayed in the `Recycler`.

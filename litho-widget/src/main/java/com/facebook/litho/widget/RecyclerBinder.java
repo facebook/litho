@@ -59,7 +59,6 @@ public class RecyclerBinder implements
     Binder<RecyclerView>,
     LayoutInfo.ComponentInfoCollection,
     HasStickyHeader {
-  public static final float DEFAULT_RANGE_RATIO = 4f;
 
   private static final int UNINITIALIZED = -1;
   private static final Size sDummySize = new Size();
@@ -135,120 +134,104 @@ public class RecyclerBinder implements
     }
   };
 
-  public RecyclerBinder(
-      ComponentContext componentContext,
-      float rangeRatio,
-      LayoutInfo layoutInfo) {
-    this(
-        componentContext,
-        rangeRatio,
-        layoutInfo,
-        null,
-        false,
-        false,
-        DEFAULT_COMPONENT_TREE_HOLDER_FACTORY);
+  public static class Builder {
+
+    private float rangeRatio = 4f;
+    private LayoutInfo layoutInfo;
+    private @Nullable LayoutHandlerFactory layoutHandlerFactory;
+    private boolean useNewIncrementalMount;
+    private boolean canPrefetchDisplayLists;
+    private ComponentTreeHolderFactory componentTreeHolderFactory =
+        DEFAULT_COMPONENT_TREE_HOLDER_FACTORY;
+    private ComponentContext componentContext;
+
+    /**
+     * @param rangeRatio specifies how big a range this binder should try to compute. The range is
+     * computed as number of items in the viewport (when the binder is measured) multiplied by the
+     * range ratio. The ratio is to be intended in both directions. For example a ratio of 1 means
+     * that if there are currently N components on screen, the binder should try to compute the
+     * layout for the N components before the first component on screen and for the N components
+     * after the last component on screen. If not set, defaults to 4f.
+     */
+    public Builder rangeRatio(float rangeRatio) {
+      this.rangeRatio = rangeRatio;
+      return this;
+    }
+
+    /**
+     * @param layoutInfo an implementation of {@link LayoutInfo} that will expose information about
+     * the {@link LayoutManager} this RecyclerBinder will use. If not set, it will default to a
+     * vertical list.
+     */
+    public Builder layoutInfo(LayoutInfo layoutInfo) {
+      this.layoutInfo = layoutInfo;
+      return this;
+    }
+
+    /**
+     *
+     * @param layoutHandlerFactory the RecyclerBinder will use this layoutHandlerFactory when
+     * creating {@link ComponentTree}s in order to specify on which thread layout calculation
+     * should happen.
+     */
+    public Builder layoutHandlerFactory(LayoutHandlerFactory layoutHandlerFactory) {
+      this.layoutHandlerFactory = layoutHandlerFactory;
+      return this;
+    }
+
+    public Builder useNewIncrementalMount(boolean useNewIncrementalMount) {
+      this.useNewIncrementalMount = useNewIncrementalMount;
+      return this;
+    }
+
+    public Builder canPrefetchDisplayLists(boolean canPrefetchDisplayLists) {
+      this.canPrefetchDisplayLists = canPrefetchDisplayLists;
+      return this;
+    }
+
+    /**
+     *
+     * @param componentTreeHolderFactory Factory to acquire a new ComponentTreeHolder. Defaults to
+     * {@link #DEFAULT_COMPONENT_TREE_HOLDER_FACTORY}.
+     */
+    public Builder componentTreeHolderFactory(
+        ComponentTreeHolderFactory componentTreeHolderFactory) {
+      this.componentTreeHolderFactory = componentTreeHolderFactory;
+      return this;
+    }
+
+    /**
+     * @param c The {@link ComponentContext} the RecyclerBinder will use.
+     */
+    public RecyclerBinder build(ComponentContext c) {
+      componentContext = c;
+
+      if (layoutInfo == null) {
+        layoutInfo = new LinearLayoutInfo(c, VERTICAL, false);
+      }
+
+      return new RecyclerBinder(this);
+    }
   }
 
-  public RecyclerBinder(
-      ComponentContext componentContext,
-      float rangeRatio,
-      LayoutInfo layoutInfo,
-      @Nullable LayoutHandlerFactory layoutHandlerFactory) {
-    this(
-        componentContext,
-        rangeRatio,
-        layoutInfo,
-        layoutHandlerFactory,
-        false,
-        false,
-        DEFAULT_COMPONENT_TREE_HOLDER_FACTORY);
-  }
-
-  public RecyclerBinder(ComponentContext c) {
-    this(
-        c,
-        DEFAULT_RANGE_RATIO,
-        new LinearLayoutInfo(c, VERTICAL, false),
-        null,
-        false,
-        false,
-        DEFAULT_COMPONENT_TREE_HOLDER_FACTORY);
-  }
-
-  public RecyclerBinder(ComponentContext c, LayoutInfo layoutInfo) {
-    this(
-        c,
-        DEFAULT_RANGE_RATIO,
-        layoutInfo,
-        null,
-        false,
-        false,
-        DEFAULT_COMPONENT_TREE_HOLDER_FACTORY);
-  }
-
-  /**
-   * @param componentContext The {@link ComponentContext} this RecyclerBinder will use.
-   * @param rangeRatio specifies how big a range this binder should try to compute. The range is
-   * computed as number of items in the viewport (when the binder is measured) multiplied by the
-   * range ratio. The ratio is to be intended in both directions. For example a ratio of 1 means
-   * that if there are currently N components on screen, the binder should try to compute the layout
-   * for the N components before the first component on screen and for the N components after the
-   * last component on screen.
-   * @param layoutInfo an implementation of {@link LayoutInfo} that will expose information about
-   * the {@link LayoutManager} this RecyclerBinder will use.
-   * @param layoutHandlerFactory the RecyclerBinder will use this layoutHandlerFactory when creating
-   * {@link ComponentTree}s in order to specify on which thread layout calculation should happen.
-   * @param useNewIncrementalMount
-   * @param canPrefetchDisplayLists
-   */
-  public RecyclerBinder(
-      ComponentContext componentContext,
-      float rangeRatio,
-      LayoutInfo layoutInfo,
-      @Nullable LayoutHandlerFactory layoutHandlerFactory,
-      boolean useNewIncrementalMount,
-      boolean canPrefetchDisplayLists) {
-    this(
-        componentContext,
-        rangeRatio,
-        layoutInfo,
-        layoutHandlerFactory,
-        useNewIncrementalMount,
-        canPrefetchDisplayLists,
-        DEFAULT_COMPONENT_TREE_HOLDER_FACTORY);
-  }
-
-  /**
-   * @see #RecyclerBinder(ComponentContext, float, LayoutInfo, LayoutHandlerFactory, boolean, boolean)
-   *
-   * @param componentTreeHolderFactory Factory to acquire a new ComponentTreeHolder. Defaults to
-   *                                   {@link #DEFAULT_COMPONENT_TREE_HOLDER_FACTORY}.
-   */
-  RecyclerBinder(
-      ComponentContext componentContext,
-      float rangeRatio,
-      LayoutInfo layoutInfo,
-      @Nullable LayoutHandlerFactory layoutHandlerFactory,
-      boolean useNewIncrementalMount,
-      boolean canPrefetchDisplayLists,
-      ComponentTreeHolderFactory componentTreeHolderFactory) {
-    mComponentContext = componentContext;
-    mUseNewIncrementalMount = useNewIncrementalMount;
-    mComponentTreeHolderFactory = componentTreeHolderFactory;
+  private RecyclerBinder(Builder builder) {
+    mComponentContext = builder.componentContext;
+    mUseNewIncrementalMount = builder.useNewIncrementalMount;
+    mComponentTreeHolderFactory = builder.componentTreeHolderFactory;
     mComponentTreeHolders = new ArrayList<>();
     mPendingComponentTreeHolders = new ArrayList<>();
     mInternalAdapter = new InternalAdapter();
 
-    mRangeRatio = rangeRatio;
-    mLayoutInfo = layoutInfo;
-    mLayoutHandlerFactory = layoutHandlerFactory;
+    mRangeRatio = builder.rangeRatio;
+    mLayoutInfo = builder.layoutInfo;
+    mLayoutHandlerFactory = builder.layoutHandlerFactory;
     mCurrentFirstVisiblePosition = mCurrentLastVisiblePosition = 0;
-    mCanPrefetchDisplayLists = canPrefetchDisplayLists;
+    mCanPrefetchDisplayLists = builder.canPrefetchDisplayLists;
 
     mViewportManager = new ViewportManager(
         mCurrentFirstVisiblePosition,
         mCurrentLastVisiblePosition,
-        layoutInfo,
+        builder.layoutInfo,
         mMainThreadHandler,
         RecyclerView.SCROLL_STATE_IDLE);
   }

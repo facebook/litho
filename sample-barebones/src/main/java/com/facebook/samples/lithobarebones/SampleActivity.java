@@ -28,9 +28,9 @@ public class SampleActivity extends Activity {
 
     final ComponentContext context = new ComponentContext(this);
 
-    final RecyclerBinder recyclerBinder = new RecyclerBinder(
-        context,
-        new LinearLayoutInfo(this, OrientationHelper.VERTICAL, false));
+    final RecyclerBinder recyclerBinder = new RecyclerBinder.Builder()
+        .layoutInfo(new LinearLayoutInfo(this, OrientationHelper.VERTICAL, false))
+        .build(context);
 
     final Component component = Recycler.create(context)
             .binder(recyclerBinder)
