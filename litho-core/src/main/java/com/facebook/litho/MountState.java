@@ -1119,6 +1119,7 @@ class MountState {
     if (nodeInfo != null) {
       setClickHandler(nodeInfo.getClickHandler(), view);
       setLongClickHandler(nodeInfo.getLongClickHandler(), view);
+      setFocusChangeHandler(nodeInfo.getFocusChangeHandler(), view);
       setTouchHandler(nodeInfo.getTouchHandler(), view);
       setInterceptTouchHandler(nodeInfo.getInterceptTouchHandler(), view);
 
@@ -1171,6 +1172,10 @@ class MountState {
 
       if (nodeInfo.getLongClickHandler() != null) {
         unsetLongClickHandler(view);
+      }
+
+      if (nodeInfo.getFocusChangeHandler() != null) {
+        unsetFocusChangeHandler(view);
       }
 
       if (nodeInfo.getTouchHandler() != null) {
@@ -1335,6 +1340,52 @@ class MountState {
     } else {
       v.setOnLongClickListener(listener);
       v.setTag(R.id.component_long_click_listener, listener);
+    }
+  }
+
+  /**
+   * Installs the on focus change listeners that will dispatch the click handler
+   * defined in the component's props. Unconditionally set the clickable
+   * flag on the view.
+   */
+  private static void setFocusChangeHandler(
+      EventHandler<FocusChangedEvent> focusChangeHandler, View view) {
+    if (focusChangeHandler == null) {
+      return;
+    }
+
+    ComponentFocusChangeListener listener = getComponentFocusChangeListener(view);
+
+    if (listener == null) {
+      listener = new ComponentFocusChangeListener();
+      setComponentFocusChangeListener(view, listener);
+    }
+
+    listener.setEventHandler(focusChangeHandler);
+  }
+
+  private static void unsetFocusChangeHandler(View view) {
+    final ComponentFocusChangeListener listener = getComponentFocusChangeListener(view);
+
+    if (listener != null) {
+      listener.setEventHandler(null);
+    }
+  }
+
+  static ComponentFocusChangeListener getComponentFocusChangeListener(View v) {
+    if (v instanceof ComponentHost) {
+      return ((ComponentHost) v).getComponentFocusChangeListener();
+    } else {
+      return (ComponentFocusChangeListener) v.getTag(R.id.component_focus_change_listener);
+    }
+  }
+
+  static void setComponentFocusChangeListener(View v, ComponentFocusChangeListener listener) {
+    if (v instanceof ComponentHost) {
+      ((ComponentHost) v).setComponentFocusChangeListener(listener);
+    } else {
+      v.setOnFocusChangeListener(listener);
+      v.setTag(R.id.component_focus_change_listener, listener);
     }
   }
 

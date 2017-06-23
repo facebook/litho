@@ -149,6 +149,7 @@ public class LayoutStateCalculateTest {
     assertThat(nodeInfo).isNotNull();
     assertThat(nodeInfo.getClickHandler()).isNotNull();
     assertThat(nodeInfo.getLongClickHandler()).isNull();
+    assertThat(nodeInfo.getFocusChangeHandler()).isNull();
     assertThat(nodeInfo.getTouchHandler()).isNull();
   }
 
@@ -179,6 +180,38 @@ public class LayoutStateCalculateTest {
     assertThat(nodeInfo).isNotNull();
     assertThat(nodeInfo.getClickHandler()).isNull();
     assertThat(nodeInfo.getLongClickHandler()).isNotNull();
+    assertThat(nodeInfo.getFocusChangeHandler()).isNull();
+    assertThat(nodeInfo.getTouchHandler()).isNull();
+  }
+
+  @Test
+  public void testLayoutOutputsForSpecsWithFocusChangeHandling() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(final ComponentContext c) {
+        return create(c)
+            .child(
+                create(c)
+                    .child(TestDrawableComponent.create(c))
+                    .focusChangeHandler(c.newEventHandler(1)))
+            .build();
+      }
+    };
+
+    final LayoutState layoutState = calculateLayoutState(
+        application,
+        component,
+        -1,
+        makeSizeSpec(100, EXACTLY),
+        makeSizeSpec(100, EXACTLY));
+
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
+
+    final NodeInfo nodeInfo = layoutState.getMountableOutputAt(1).getNodeInfo();
+    assertThat(nodeInfo).isNotNull();
+    assertThat(nodeInfo.getClickHandler()).isNull();
+    assertThat(nodeInfo.getLongClickHandler()).isNull();
+    assertThat(nodeInfo.getFocusChangeHandler()).isNotNull();
     assertThat(nodeInfo.getTouchHandler()).isNull();
   }
 
@@ -210,6 +243,7 @@ public class LayoutStateCalculateTest {
     assertThat(nodeInfo.getTouchHandler()).isNotNull();
     assertThat(nodeInfo.getClickHandler()).isNull();
     assertThat(nodeInfo.getLongClickHandler()).isNull();
+    assertThat(nodeInfo.getFocusChangeHandler()).isNull();
   }
 
   @Test

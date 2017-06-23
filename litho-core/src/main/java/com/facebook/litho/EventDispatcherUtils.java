@@ -26,6 +26,7 @@ import static com.facebook.litho.ThreadUtils.assertMainThread;
 class EventDispatcherUtils {
 
   private static ClickEvent sClickEvent;
+  private static FocusChangedEvent sFocusChangedEvent;
   private static LongClickEvent sLongClickEvent;
   private static TouchEvent sTouchEvent;
   private static InterceptTouchEvent sInterceptTouchEvent;
@@ -56,6 +57,26 @@ class EventDispatcherUtils {
     eventDispatcher.dispatchOnEvent(clickHandler, sClickEvent);
 
     sClickEvent.view = null;
+  }
+
+  static void dispatchOnFocusChanged(
+      EventHandler<FocusChangedEvent> focusChangeHandler,
+      View view,
+      boolean hasFocus) {
+    assertMainThread();
+
+    if (sFocusChangedEvent == null) {
+      sFocusChangedEvent = new FocusChangedEvent();
+    }
+
+    sFocusChangedEvent.view = view;
+    sFocusChangedEvent.hasFocus = hasFocus;
+
+    final EventDispatcher eventDispatcher =
+        focusChangeHandler.mHasEventDispatcher.getEventDispatcher();
+    eventDispatcher.dispatchOnEvent(focusChangeHandler, sFocusChangedEvent);
+
+    sFocusChangedEvent.view = null;
   }
 
   static void dispatchOnVisible(EventHandler<VisibleEvent> visibleHandler) {

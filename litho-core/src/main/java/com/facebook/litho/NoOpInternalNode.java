@@ -620,6 +620,11 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
+  public InternalNode focusChangeHandler(EventHandler<FocusChangedEvent> focusChangeHandler) {
+    return this;
+  }
+
+  @Override
   public InternalNode touchHandler(EventHandler<TouchEvent> touchHandler) {
     return this;
   }

@@ -47,6 +47,17 @@ public class NodeInfoTest {
   }
 
   @Test
+  public void testFocusChangeHandler() {
+    EventHandler focusChangeHandler = new EventHandler(null, 1);
+
+    mNodeInfo.setFocusChangeHandler(focusChangeHandler);
+    assertThat(focusChangeHandler).isSameAs(mNodeInfo.getFocusChangeHandler());
+
+    mNodeInfo.release();
+    assertThat(mNodeInfo.getFocusChangeHandler()).isNull();
+  }
+
+  @Test
   public void testDispatchPopulateAccessibilityEventHandler() {
     EventHandler<DispatchPopulateAccessibilityEventEvent> handler =
         new EventHandler<>(null, 1);
@@ -148,6 +159,12 @@ public class NodeInfoTest {
   public void testLongClickHandlerFlag() {
     mNodeInfo.setLongClickHandler(new EventHandler(null, 1));
     testFlagIsSetThenClear(mNodeInfo, "PFLAG_LONG_CLICK_HANDLER_IS_SET");
+  }
+
+  @Test
+  public void testFocusChangeHandlerFlag() {
+    mNodeInfo.setFocusChangeHandler(new EventHandler(null, 1));
+    testFlagIsSetThenClear(mNodeInfo, "PFLAG_FOCUS_CHANGE_HANDLER_IS_SET");
   }
 
   @Test

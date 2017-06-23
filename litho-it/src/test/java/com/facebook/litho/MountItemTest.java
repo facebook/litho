@@ -41,6 +41,7 @@ public class MountItemTest {
   private SparseArray<Object> mViewTags;
   private EventHandler mClickHandler;
   private EventHandler mLongClickHandler;
+  private EventHandler mFocusChangeHandler;
   private EventHandler mTouchHandler;
   private EventHandler mDispatchPopulateAccessibilityEventHandler;
   private int mFlags;
@@ -65,6 +66,7 @@ public class MountItemTest {
     mViewTags = new SparseArray<>();
     mClickHandler = new EventHandler(mComponent, 5);
     mLongClickHandler = new EventHandler(mComponent, 3);
+    mFocusChangeHandler = new EventHandler(mComponent, 9);
     mTouchHandler = new EventHandler(mComponent, 1);
     mDispatchPopulateAccessibilityEventHandler = new EventHandler(mComponent, 7);
     mFlags = 114;
@@ -73,6 +75,7 @@ public class MountItemTest {
     mNodeInfo.setContentDescription(mContentDescription);
     mNodeInfo.setClickHandler(mClickHandler);
     mNodeInfo.setLongClickHandler(mLongClickHandler);
+    mNodeInfo.setFocusChangeHandler(mFocusChangeHandler);
     mNodeInfo.setTouchHandler(mTouchHandler);
     mNodeInfo.setViewTag(mViewTag);
     mNodeInfo.setViewTags(mViewTags);
@@ -104,6 +107,7 @@ public class MountItemTest {
     assertThat(mMountItem.getContent()).isSameAs(mContent);
     assertThat(mMountItem.getNodeInfo().getContentDescription()).isSameAs(mContentDescription);
     assertThat(mMountItem.getNodeInfo().getClickHandler()).isSameAs(mClickHandler);
+    assertThat(mMountItem.getNodeInfo().getFocusChangeHandler()).isSameAs(mFocusChangeHandler);
     assertThat(mMountItem.getNodeInfo().getTouchHandler()).isSameAs(mTouchHandler);
     assertThat(mMountItem.getFlags()).isEqualTo(mFlags);
     assertThat(mMountItem.getImportantForAccessibility())

@@ -1136,6 +1136,12 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public InternalNode focusChangeHandler(EventHandler<FocusChangedEvent> focusChangeHandler) {
+    getOrCreateNodeInfo().setFocusChangeHandler(focusChangeHandler);
+    return this;
+  }
+
+  @Override
   public InternalNode touchHandler(EventHandler<TouchEvent> touchHandler) {
     getOrCreateNodeInfo().setTouchHandler(touchHandler);
     return this;

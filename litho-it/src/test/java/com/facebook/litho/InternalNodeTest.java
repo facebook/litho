@@ -250,6 +250,7 @@ public class InternalNodeTest {
     assertEmptyFlags(mNode);
   }
 
+  @Test
   public void testTransitionKeyFlag() {
     mNode.transitionKey("key");
     assertThat(isFlagSet(mNode, "PFLAG_TRANSITION_KEY_IS_SET")).isTrue();

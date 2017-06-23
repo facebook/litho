@@ -75,6 +75,7 @@ public class ComponentHost extends ViewGroup {
 
   private ComponentClickListener mOnClickListener;
   private ComponentLongClickListener mOnLongClickListener;
+  private ComponentFocusChangeListener mOnFocusChangeListener;
   private ComponentTouchListener mOnTouchListener;
   private EventHandler<InterceptTouchEvent> mOnInterceptTouchEventHandler;
 
@@ -480,6 +481,22 @@ public class ComponentHost extends ViewGroup {
    */
   ComponentLongClickListener getComponentLongClickListener() {
     return mOnLongClickListener;
+  }
+
+  /**
+   * Sets a focus change listener on this host.
+   * @param listener The listener to set on this host.
+   */
+  void setComponentFocusChangeListener(ComponentFocusChangeListener listener) {
+    mOnFocusChangeListener = listener;
+    this.setOnFocusChangeListener(listener);
+  }
+
+  /**
+   * @return The previously set focus change listener
+   */
+  ComponentFocusChangeListener getComponentFocusChangeListener() {
+    return mOnFocusChangeListener;
   }
 
   /**

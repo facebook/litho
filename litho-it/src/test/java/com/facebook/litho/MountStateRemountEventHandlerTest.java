@@ -21,6 +21,7 @@ import org.robolectric.RuntimeEnvironment;
 import static com.facebook.litho.Column.create;
 import static com.facebook.litho.MountState.getComponentClickListener;
 import static com.facebook.litho.MountState.getComponentLongClickListener;
+import static com.facebook.litho.MountState.getComponentFocusChangeListener;
 import static com.facebook.litho.MountState.getComponentTouchListener;
 import static com.facebook.litho.testing.ComponentTestHelper.mountComponent;
 import static org.assertj.core.api.Java6Assertions.assertThat;
@@ -99,6 +100,39 @@ public class MountStateRemountEventHandlerTest {
     });
 
     assertThat(longClickListener == getComponentLongClickListener(lithoView)).isTrue();
+  }
+
+  @Test
+  public void testReuseFocusChangeListenerListenerOnSameView() {
+    final LithoView lithoView = mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return create(c)
+                .focusChangeHandler(c.newEventHandler(1))
+                .child(TestDrawableComponent.create(c))
+                .child(TestDrawableComponent.create(c))
+                .build();
+          }
+        });
+
+    ComponentFocusChangeListener focusChangeListener =
+        getComponentFocusChangeListener(lithoView);
+    assertThat(focusChangeListener).isNotNull();
+
+    lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return create(c)
+            .focusChangeHandler(c.newEventHandler(1))
+            .child(TestDrawableComponent.create(c))
+            .child(TestDrawableComponent.create(c))
+            .build();
+      }
+    });
+
+    assertThat(focusChangeListener == getComponentFocusChangeListener(lithoView)).isTrue();
   }
 
   @Test
@@ -200,6 +234,38 @@ public class MountStateRemountEventHandlerTest {
   }
 
   @Test
+  public void testUnsetFocusChangeHandler() {
+    final LithoView lithoView = mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return create(c)
+                .focusChangeHandler(c.newEventHandler(1))
+                .child(TestDrawableComponent.create(c))
+                .child(TestDrawableComponent.create(c))
+                .build();
+          }
+        });
+
+    assertThat(getComponentFocusChangeListener(lithoView)).isNotNull();
+
+    lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return create(c)
+            .child(TestDrawableComponent.create(c))
+            .child(TestDrawableComponent.create(c))
+            .build();
+      }
+    });
+
+    final ComponentFocusChangeListener listener = getComponentFocusChangeListener(lithoView);
+    assertThat(listener).isNotNull();
+    assertThat(listener.getEventHandler()).isNull();
+  }
+
+  @Test
   public void testUnsetTouchHandler() {
     final LithoView lithoView = mountComponent(
         mContext,
@@ -294,6 +360,38 @@ public class MountStateRemountEventHandlerTest {
   }
 
   @Test
+  public void testSetFocusChangeHandler() {
+    final LithoView lithoView = mountComponent(
+        mContext,
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return create(c)
+                .child(TestDrawableComponent.create(c))
+                .child(TestDrawableComponent.create(c))
+                .build();
+          }
+        });
+
+    assertThat(getComponentFocusChangeListener(lithoView)).isNull();
+
+    lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(ComponentContext c) {
+        return create(c)
+            .focusChangeHandler(c.newEventHandler(1))
+            .child(TestDrawableComponent.create(c))
+            .child(TestDrawableComponent.create(c))
+            .build();
+      }
+    });
+
+    final ComponentFocusChangeListener listener = getComponentFocusChangeListener(lithoView);
+    assertThat(listener).isNotNull();
+    assertThat(listener.getEventHandler()).isNotNull();
+  }
+
+  @Test
   public void testSetTouchHandler() {
     final LithoView lithoView = mountComponent(
         mContext,
@@ -307,7 +405,7 @@ public class MountStateRemountEventHandlerTest {
           }
         });
 
-    assertThat(getComponentClickListener(lithoView)).isNull();
+    assertThat(getComponentTouchListener(lithoView)).isNull();
 
     lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
       @Override

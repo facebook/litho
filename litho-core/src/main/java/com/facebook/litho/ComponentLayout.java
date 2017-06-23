@@ -202,6 +202,7 @@ public interface ComponentLayout {
 
     Builder wrapInView();
     Builder clickHandler(EventHandler<ClickEvent> clickHandler);
+    Builder focusChangeHandler(EventHandler<FocusChangedEvent> focusChangeHandler);
     Builder longClickHandler(EventHandler<LongClickEvent> clickHandler);
     Builder touchHandler(EventHandler<TouchEvent> touchHandler);
     Builder interceptTouchHandler(EventHandler<InterceptTouchEvent> interceptTouchHandler);
@@ -399,6 +400,7 @@ public interface ComponentLayout {
 
     ContainerBuilder wrapInView();
     ContainerBuilder clickHandler(EventHandler<ClickEvent> clickHandler);
+    ContainerBuilder focusChangeHandler(EventHandler<FocusChangedEvent> focusChangeHandler);
     ContainerBuilder longClickHandler(EventHandler<LongClickEvent> clickHandler);
     ContainerBuilder touchHandler(EventHandler<TouchEvent> touchHandler);
     ContainerBuilder interceptTouchHandler(EventHandler<InterceptTouchEvent> interceptTouchHandler);

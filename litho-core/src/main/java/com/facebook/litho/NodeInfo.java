@@ -69,6 +69,8 @@ class NodeInfo {
   private static final int PFLAG_OUTINE_PROVIDER_IS_SET = 1 << 15;
   // When this flag is set, clipToOutline was explicitly set on this node.
   private static final int PFLAG_CLIP_TO_OUTLINE_IS_SET = 1 << 16;
+  // When this flag is set, focusChangeHandler was explicitly set on this code.
+  private static final int PFLAG_FOCUS_CHANGE_HANDLER_IS_SET = 1 << 17;
 
   private final AtomicInteger mReferenceCount = new AtomicInteger(0);
 
@@ -79,6 +81,7 @@ class NodeInfo {
   private ViewOutlineProvider mOutlineProvider;
   private boolean mClipToOutline;
   private EventHandler<ClickEvent> mClickHandler;
+  private EventHandler<FocusChangedEvent> mFocusChangeHandler;
   private EventHandler<LongClickEvent> mLongClickHandler;
   private EventHandler<TouchEvent> mTouchHandler;
   private EventHandler<InterceptTouchEvent> mInterceptTouchHandler;
@@ -179,6 +182,19 @@ class NodeInfo {
 
   boolean isLongClickable() {
     return (mLongClickHandler != null);
+  }
+
+  void setFocusChangeHandler(EventHandler<FocusChangedEvent> focusChangedHandler) {
+    mPrivateFlags |= PFLAG_FOCUS_CHANGE_HANDLER_IS_SET;
+    mFocusChangeHandler = focusChangedHandler;
+  }
+
+  EventHandler<FocusChangedEvent> getFocusChangeHandler() {
+    return mFocusChangeHandler;
+  }
+
+  boolean hasFocusChangeHandler() {
+    return mFocusChangeHandler != null;
   }
 
   void setTouchHandler(EventHandler<TouchEvent> touchHandler) {
@@ -324,6 +340,9 @@ class NodeInfo {
     if ((newInfo.mPrivateFlags & PFLAG_LONG_CLICK_HANDLER_IS_SET) != 0) {
       mLongClickHandler = newInfo.mLongClickHandler;
     }
+    if ((newInfo.mPrivateFlags & PFLAG_FOCUS_CHANGE_HANDLER_IS_SET) != 0) {
+      mFocusChangeHandler = newInfo.mFocusChangeHandler;
+    }
     if ((newInfo.mPrivateFlags & PFLAG_TOUCH_HANDLER_IS_SET) != 0) {
       mTouchHandler = newInfo.mTouchHandler;
     }
@@ -407,6 +426,7 @@ class NodeInfo {
     mViewTags = null;
     mClickHandler = null;
     mLongClickHandler = null;
+    mFocusChangeHandler = null;
     mTouchHandler = null;
     mDispatchPopulateAccessibilityEventHandler = null;
     mOnInitializeAccessibilityEventHandler = null;

@@ -416,6 +416,19 @@ public class ComponentHostTest {
   }
 
   @Test
+  public void testComponentFocusChangeListener() {
+    assertThat(mHost.getComponentFocusChangeListener()).isNull();
+
+    ComponentFocusChangeListener listener = new ComponentFocusChangeListener();
+    mHost.setComponentFocusChangeListener(listener);
+
+    assertThat(mHost.getComponentFocusChangeListener()).isEqualTo(listener);
+
+    mHost.setComponentFocusChangeListener(null);
+    assertThat(mHost.getComponentFocusChangeListener()).isNull();
+  }
+
+  @Test
   public void testComponentTouchListener() {
     assertThat(mHost.getComponentTouchListener()).isNull();
 
