@@ -73,6 +73,7 @@ public class ComponentTree {
   private static final int SCHEDULE_LAYOUT_ASYNC = 1;
   private static final int SCHEDULE_LAYOUT_SYNC = 2;
   private LithoDebugInfo mLithoDebugInfo;
+  private boolean mReleased;
 
   @IntDef({SCHEDULE_NONE, SCHEDULE_LAYOUT_ASYNC, SCHEDULE_LAYOUT_SYNC})
   @Retention(RetentionPolicy.SOURCE)
@@ -1165,6 +1166,7 @@ public class ComponentTree {
     LayoutState mainThreadLayoutState;
     LayoutState backgroundLayoutState;
     synchronized (this) {
+      mReleased = true;
       if (mLithoView != null) {
         mLithoView.setComponentTree(null);
       }
@@ -1250,6 +1252,10 @@ public class ComponentTree {
         && layoutState.isComponentId(componentId)
         && layoutState.isCompatibleSize(width, height)
         && layoutState.isCompatibleAccessibility();
+  }
+
+  public synchronized boolean isReleased() {
+    return mReleased;
   }
 
   public ComponentContext getContext() {

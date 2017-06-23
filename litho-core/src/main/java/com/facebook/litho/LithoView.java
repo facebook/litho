@@ -228,6 +228,11 @@ public class LithoView extends ComponentHost {
   protected void performLayout(boolean changed, int left, int top, int right, int bottom) {
 
     if (mComponentTree != null) {
+      if (mComponentTree.isReleased()) {
+        throw new IllegalStateException(
+            "Trying to layout a LithoView holding onto a released ComponentTree");
+      }
+
       boolean wasMountTriggered = mComponentTree.layout();
 
       final boolean isRectSame = mPreviousMountBounds != null
