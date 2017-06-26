@@ -50,7 +50,7 @@ public class ComponentHost extends ViewGroup {
   private final SparseArrayCompat<Touchable> mTouchables = new SparseArrayCompat<>();
   private SparseArrayCompat<Touchable> mScrapTouchables;
 
-  private final SparseArrayCompat<MountItem> mDisappearingItems = new SparseArrayCompat<>();
+  private final ArrayList<MountItem> mDisappearingItems = new ArrayList<>();
 
   private CharSequence mContentDescription;
   private Object mViewTag;
@@ -177,13 +177,17 @@ public class ComponentHost extends ViewGroup {
     ComponentHostUtils.removeItem(index, mViewMountItems, mScrapViewMountItemsArray);
     ComponentHostUtils.removeItem(index, mMountItems, mScrapMountItemsArray);
     releaseScrapDataStructuresIfNeeded();
-    mDisappearingItems.put(index, mountItem);
+    mDisappearingItems.add(mountItem);
   }
 
   void unmountDisappearingItem(MountItem disappearingItem) {
-    final int indexOfValue = mDisappearingItems.indexOfValue(disappearingItem);
-    final int key = mDisappearingItems.keyAt(indexOfValue);
-    mDisappearingItems.removeAt(indexOfValue);
+    if (!mDisappearingItems.remove(disappearingItem)) {
+      final String key = (disappearingItem.getViewNodeInfo() != null) ?
+          disappearingItem.getViewNodeInfo().getTransitionKey() :
+          null;
+      throw new RuntimeException(
+          "Tried to remove non-existent disappearing item, transitionKey: " + key);
+    }
 
     final View content = (View) disappearingItem.getContent();
 
@@ -201,7 +205,7 @@ public class ComponentHost extends ViewGroup {
     }
     final List<String> keys = new ArrayList<>();
     for (int i = 0, size = mDisappearingItems.size(); i < size; i++) {
-      keys.add(mDisappearingItems.valueAt(i).getViewNodeInfo().getTransitionKey());
+      keys.add(mDisappearingItems.get(i).getViewNodeInfo().getTransitionKey());
     }
 
     return keys;
@@ -896,7 +900,7 @@ public class ComponentHost extends ViewGroup {
 
     // Draw disappearing items on top of mounted views.
     for (int i = 0, size = mDisappearingItems.size(); i < size; i++) {
-      final View child = (View) mDisappearingItems.valueAt(i).getContent();
+      final View child = (View) mDisappearingItems.get(i).getContent();
       mChildDrawingOrder[index++] = indexOfChild(child);
     }
 

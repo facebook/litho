@@ -25,6 +25,7 @@ import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.yoga.YogaDirection;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.reflect.Whitebox;
@@ -563,6 +564,7 @@ public class ComponentHostTest {
     assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 1)).isEqualTo(1);
   }
 
+  @Ignore("t19681984")
   @Test
   public void testDisappearingItemDrawingOrder() {
     View v1 = new View(mContext);
