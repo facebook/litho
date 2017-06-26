@@ -167,6 +167,7 @@ public class ComponentTree {
   @PendingLayoutCalculation
   @GuardedBy("this")
   private int mScheduleLayoutAfterMeasure;
+  private boolean mHasMeasured = false;
 
   // This flag is so we use the correct shouldAnimateTransitions flag when calculating
   // the LayoutState in measure -- we should respect the most recent setRoot* call.
@@ -456,6 +457,10 @@ public class ComponentTree {
   void mountComponent(Rect currentVisibleArea) {
     assertMainThread();
 
+    if (!mHasMeasured) {
+      throw new RuntimeException("Trying to mount a component before it was measured!");
+    }
+
     final boolean isDirtyMount = mLithoView.isMountStateDirty();
 
     mIsMounting = true;
@@ -647,6 +652,8 @@ public class ComponentTree {
           true /* = shouldAnimateTransitions */,
           null /*output */);
     }
+
+    mHasMeasured = true;
   }
 
   /**
@@ -1197,6 +1204,7 @@ public class ComponentTree {
       backgroundLayoutState.releaseRef();
       backgroundLayoutState = null;
     }
+    mHasMeasured = false;
   }
 
   private boolean isCompatibleComponentAndSpec(LayoutState layoutState) {
