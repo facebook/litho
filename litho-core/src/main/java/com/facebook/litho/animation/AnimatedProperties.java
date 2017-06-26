@@ -11,6 +11,7 @@ package com.facebook.litho.animation;
 
 import android.view.View;
 
+import com.facebook.litho.AnimatableItem;
 import com.facebook.litho.LithoView;
 
 /**
@@ -84,6 +85,11 @@ public final class AnimatedProperties {
     }
 
     @Override
+    public float get(AnimatableItem animatableItem) {
+      return animatableItem.getBounds().left;
+    }
+
+    @Override
     public void set(Object mountItem, float value) {
       View mountView = assertIsView(mountItem, this);
       float parentX = getPositionRelativeToLithoView((View) mountView.getParent(), true);
@@ -105,6 +111,11 @@ public final class AnimatedProperties {
     @Override
     public float get(Object mountItem) {
       return getPositionRelativeToLithoView(assertIsView(mountItem, this), false);
+    }
+
+    @Override
+    public float get(AnimatableItem animatableItem) {
+      return animatableItem.getBounds().top;
     }
 
     @Override
@@ -132,6 +143,11 @@ public final class AnimatedProperties {
     }
 
     @Override
+    public float get(AnimatableItem animatableItem) {
+      return animatableItem.getBounds().width();
+    }
+
+    @Override
     public void set(Object mountItem, float value) {
       throw new UnsupportedOperationException("Setting width in animations is not supported yet.");
     }
@@ -154,6 +170,11 @@ public final class AnimatedProperties {
     }
 
     @Override
+    public float get(AnimatableItem animatableItem) {
+      return animatableItem.getBounds().height();
+    }
+
+    @Override
     public void set(Object mountItem, float value) {
       throw new UnsupportedOperationException("Setting height in animations is not supported yet.");
     }
@@ -173,6 +194,11 @@ public final class AnimatedProperties {
     @Override
     public float get(Object mountItem) {
       return assertIsView(mountItem, this).getAlpha();
+    }
+
+    @Override
+    public float get(AnimatableItem animatableItem) {
+      return 1;
     }
 
     @Override
@@ -204,6 +230,11 @@ public final class AnimatedProperties {
     }
 
     @Override
+    public float get(AnimatableItem animatableItem) {
+      return 1;
+    }
+
+    @Override
     public void set(Object mountItem, float value) {
       final View asView = assertIsView(mountItem, this);
       asView.setScaleX(value);
@@ -230,6 +261,11 @@ public final class AnimatedProperties {
     }
 
     @Override
+    public float get(AnimatableItem animatableItem) {
+      return 1;
+    }
+
+    @Override
     public void set(Object mountItem, float value) {
       assertIsView(mountItem, this).setScaleX(value);
     }
@@ -249,6 +285,11 @@ public final class AnimatedProperties {
     @Override
     public float get(Object mountItem) {
       return assertIsView(mountItem, this).getScaleY();
+    }
+
+    @Override
+    public float get(AnimatableItem animatableItem) {
+      return 1;
     }
 
     @Override

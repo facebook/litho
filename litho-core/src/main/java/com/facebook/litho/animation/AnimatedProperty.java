@@ -9,6 +9,8 @@
 
 package com.facebook.litho.animation;
 
+import com.facebook.litho.AnimatableItem;
+
 /**
  * A property on a mount item (View or Drawable), e.g. x, y, scale, text color, etc.
  */
@@ -24,6 +26,11 @@ public interface AnimatedProperty {
    * @return the current value of this property on the given mount item (View or Drawable).
    */
   float get(Object mountItem);
+
+  /**
+   * @return the current value of this property on the given {@link AnimatableItem}.
+   */
+  float get(AnimatableItem animatableItem);
 
   /**
    * Updates the value of this property on the given mount item to the given value.

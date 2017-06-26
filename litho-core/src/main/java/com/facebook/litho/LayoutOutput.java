@@ -23,7 +23,7 @@ import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUT
  * The output of a layout pass for a given {@link Component}. It's used by
  * {@link MountState} to mount a component.
  */
-class LayoutOutput implements Cloneable {
+class LayoutOutput implements Cloneable, AnimatableItem {
   public static final int TYPE_CONTENT = 0;
   public static final int TYPE_BACKGROUND = 1;
   public static final int TYPE_FOREGROUND = 2;
@@ -77,7 +77,8 @@ class LayoutOutput implements Cloneable {
     outRect.bottom = mBounds.bottom - mHostTranslationY;
   }
 
-  Rect getBounds() {
+  @Override
+  public Rect getBounds() {
     return mBounds;
   }
 
