@@ -11,8 +11,10 @@ package com.facebook.litho;
 
 import java.util.Deque;
 
+import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
@@ -77,5 +79,61 @@ public class LithoViewTestHelper {
   @NonNull
   public static Deque<TestItem> findTestItems(LithoView lithoView, String testKey) {
     return lithoView.findTestItems(testKey);
+  }
+
+  /**
+   * Provide a nested string representation of a LithoView and its nested
+   * components for debugging purposes.
+   *
+   * @param view A Litho view with mounted components.
+   */
+  public static String viewToString(LithoView view) {
+    return viewToString(DebugComponent.getRootInstance(view), 0);
+  }
+
+  private static String viewToString(@Nullable DebugComponent debugComponent, int depth) {
+    if (debugComponent == null) {
+      return "";
+    }
+
+    final StringBuilder sb = new StringBuilder();
+
+    if (depth > 0) {
+      sb.append('\n');
+    }
+
+    for (int i = 0; i < depth; i++) {
+      sb.append("  ");
+    }
+
+    sb.append(debugComponent.getSimpleName());
+
+    final Rect bounds = debugComponent.getBounds();
+    sb.append('{');
+
+    sb.append(bounds.left);
+    sb.append(", ");
+    sb.append(bounds.top);
+    sb.append(" - ");
+    sb.append(bounds.right);
+    sb.append(", ");
+    sb.append(bounds.bottom);
+
+    final String testKey = debugComponent.getTestKey();
+    if (!TextUtils.isEmpty(testKey)) {
+      sb.append(String.format(" testKey=%s", testKey));
+    }
+
+    if (debugComponent.isClickable()) {
+      sb.append(" [clickable]");
+    }
+
+    sb.append('}');
+
+    for (DebugComponent child : debugComponent.getChildComponents()) {
+      sb.append(viewToString(child, depth + 1));
+    }
+
+    return sb.toString();
   }
 }
