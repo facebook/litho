@@ -9,6 +9,8 @@
 
 package com.facebook.litho;
 
+import javax.annotation.Nullable;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -73,11 +75,13 @@ public final class DebugComponent {
    * @return The root {@link DebugComponent} of a LithoView. This should be the start of your
    * traversal.
    */
+  @Nullable
   public static DebugComponent getRootInstance(LithoView view) {
     return getRootInstance(view.getComponentTree());
   }
 
-  public static DebugComponent getRootInstance(ComponentTree componentTree) {
+  @Nullable
+  public static DebugComponent getRootInstance(@Nullable ComponentTree componentTree) {
     final LayoutState layoutState = componentTree == null ?
         null :
         componentTree.getMainThreadLayoutState();

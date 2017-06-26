@@ -9,6 +9,8 @@
 
 package com.facebook.litho;
 
+import javax.annotation.Nullable;
+
 import java.lang.ref.WeakReference;
 import java.util.Deque;
 
@@ -292,6 +294,7 @@ public class LithoView extends ComponentHost {
     return super.shouldRequestLayout();
   }
 
+  @Nullable
   public ComponentTree getComponentTree() {
     return mComponentTree;
   }
