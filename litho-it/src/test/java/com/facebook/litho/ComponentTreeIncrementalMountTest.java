@@ -12,7 +12,6 @@ package com.facebook.litho;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.view.View;
 import android.view.ViewGroup;
 
 import com.facebook.litho.testing.TestDrawableComponent;
@@ -44,10 +43,6 @@ public class ComponentTreeIncrementalMountTest {
   @Before
   public void setup() {
     ComponentContext context = new ComponentContext(RuntimeEnvironment.application);
-
-    mLithoView = mock(TestLithoView.class);
-    when(mLithoView.getContext()).thenReturn(context);
-
     mComponentTree = ComponentTree.create(
         context,
         TestDrawableComponent.create(context)
@@ -55,13 +50,8 @@ public class ComponentTreeIncrementalMountTest {
             .build())
         .layoutDiffing(false)
         .build();
-    mComponentTree.setLithoView(mLithoView);
-    mComponentTree.measure(
-        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-        new int[]{0, 0},
-        false);
 
+    mLithoView = mock(TestLithoView.class);
     Whitebox.setInternalState(mComponentTree, "mLithoView", mLithoView);
 
     // Can't use verify as the rect is reset when it is released back to the pool, which occurs
