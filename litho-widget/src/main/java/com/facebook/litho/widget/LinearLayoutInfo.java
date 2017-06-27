@@ -43,6 +43,8 @@ public class LinearLayoutInfo implements LayoutInfo {
     } else {
       mLinearLayoutManager = new LinearLayoutManager(context, orientation, reverseLayout);
     }
+
+    mLinearLayoutManager.setMeasurementCacheEnabled(false);
   }
 
   @Override
