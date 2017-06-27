@@ -9,10 +9,12 @@
 
 package com.facebook.litho;
 
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,6 +27,13 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 @RunWith(ComponentsTestRunner.class)
 public class LithoViewTestHelperTest {
   private LithoView mLithoView;
+
+  @Before
+  public void skipIfRelease() {
+    Assume.assumeTrue("These tests cover debug functionality and can only be run " +
+            "for internal builds.",
+        ComponentsConfiguration.IS_INTERNAL_BUILD);
+  }
 
   @Before
   public void setup() {
