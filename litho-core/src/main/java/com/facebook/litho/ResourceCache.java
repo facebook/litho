@@ -9,39 +9,28 @@
 
 package com.facebook.litho;
 
-import android.content.res.Configuration;
-import android.support.v4.util.LruCache;
+import javax.annotation.Nullable;
 
-class ResourceCache {
+import android.content.res.Configuration;
+
+abstract class ResourceCache {
   private static ResourceCache latest;
 
   static synchronized ResourceCache getLatest(Configuration configuration) {
     if (latest == null || !latest.mConfiguration.equals(configuration)) {
-      latest = new ResourceCache(configuration);
+      latest = new LruResourceCache(configuration);
     }
     return latest;
   }
 
   private final Configuration mConfiguration;
-  private final LruCache<Integer, Object> mCache = new LruCache<Integer, Object>(500) {
-    @Override
-    protected int sizeOf(Integer key, Object value) {
-      if (value instanceof String) {
-        return ((String) value).length();
-      }
-      return 1;
-    }
-  };
 
-  private ResourceCache(Configuration configuration) {
+  protected ResourceCache(Configuration configuration) {
     mConfiguration = configuration;
   }
 
-  void put(int key, Object object) {
-    mCache.put(key, object);
-  }
+  @Nullable
+  abstract <T> T get(int key);
 
-  <T> T get(int key) {
-    return (T) mCache.get(key);
-  }
+  abstract void put(int key, Object object);
 }
