@@ -1,5 +1,6 @@
 [download]
   maven_repo = https://jcenter.bintray.com/
+  max_number_of_retries = 10
 
 [ndk]
   ndk_version = 13.1.3345770
