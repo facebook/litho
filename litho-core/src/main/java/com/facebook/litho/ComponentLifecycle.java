@@ -21,6 +21,7 @@ import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.support.v4.widget.ExploreByTouchHelper;
 import android.view.View;
 
+import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaMeasureFunction;
@@ -41,7 +42,8 @@ public abstract class ComponentLifecycle implements EventDispatcher {
   private static final AtomicInteger sComponentId = new AtomicInteger();
   private static final int DEFAULT_MAX_PREALLOCATION = 15;
 
-  private boolean mPreallocationDone;
+  private final Object mPreallocationLock = new Object();
+  private volatile boolean mPreallocationDone;
 
   public enum MountType {
     NONE,
@@ -173,6 +175,7 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     return mId;
   }
 
+  @ThreadSafe(enableChecks = false)
   Object createMountContent(ComponentContext c) {
     return onCreateMountContent(c);
   }
@@ -542,12 +545,30 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     return null;
   }
 
-  boolean hasBeenPreallocated() {
-    return mPreallocationDone;
-  }
+  @ThreadSafe(enableChecks = false)
+  void preAllocateMountContent(ComponentContext context) {
+    if (mPreallocationDone) {
+      return;
+    }
 
-  void setWasPreallocated() {
-    mPreallocationDone = true;
+    synchronized (mPreallocationLock) {
+      if (mPreallocationDone) {
+        return;
+      }
+      mPreallocationDone = true;
+    }
+
+    final int poolSize = poolSize();
+
+    int insertedCount = 0;
+    while (insertedCount < poolSize &&
+        ComponentsPools.canAddMountContentToPool(context, this)) {
+      ComponentsPools.release(
+          context,
+          this,
+          createMountContent(context));
+      insertedCount++;
+    }
   }
 
   protected boolean isPureRender() {
@@ -565,6 +586,7 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     return false;
   }
 
+  @ThreadSafe
   protected int poolSize() {
     return DEFAULT_MAX_PREALLOCATION;
   }

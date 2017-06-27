@@ -103,6 +103,12 @@ public class ComponentTree {
       calculateLayout(null, true);
     }
   };
+  private final Runnable mPreAllocateMountContentRunnable = new Runnable() {
+    @Override
+    public void run() {
+      preAllocateMountContent();
+    }
+  };
 
   private final ComponentContext mContext;
   private final boolean mCanPrefetchDisplayLists;
@@ -698,23 +704,39 @@ public class ComponentTree {
         null /* output */);
   }
 
-  public void preAllocateMountContent() {
-    assertMainThread();
+  /**
+   * Schedule to asynchronizely pre-allocate the mount content of all MountSpec in this tree.
+   * Must be called after layout is created, or after async layout is scheduled.
+   */
+  @ThreadSafe(enableChecks = false)
+  public void preAllocateMountContentAsync() {
+    mLayoutThreadHandler.removeCallbacks(mPreAllocateMountContentRunnable);
+    mLayoutThreadHandler.post(mPreAllocateMountContentRunnable);
+  }
 
+  /**
+   * Pre-allocate the mount content of all MountSpec in this tree.
+   * Must be called after layout is created.
+   */
+  @ThreadSafe(enableChecks = false)
+  public void preAllocateMountContent() {
     final LayoutState toPrePopulate;
 
-    if (mMainThreadLayoutState != null) {
-      toPrePopulate = mMainThreadLayoutState.acquireRef();
-    } else {
+    // Cancel any scheduled preallocate requests we might have in the background queue
+    // since we are starting the preallocation.
+    mLayoutThreadHandler.removeCallbacks(mPreAllocateMountContentRunnable);
 
-      synchronized (this) {
+    synchronized (this) {
+      if (mMainThreadLayoutState != null) {
+        toPrePopulate = mMainThreadLayoutState;
+      } else {
         toPrePopulate = mBackgroundLayoutState;
-        if (toPrePopulate == null) {
-          return;
-        }
-        toPrePopulate.acquireRef();
       }
     }
+    if (toPrePopulate == null) {
+      return;
+    }
+    toPrePopulate.acquireRef();
 
     final ComponentsLogger logger = mContext.getLogger();
     LogEvent event = null;
@@ -1039,9 +1061,10 @@ public class ComponentTree {
     Component<?> root;
     LayoutState previousLayoutState = null;
 
-    // Cancel any scheduled requests we might have in the background queue since we are starting
-    // a new layout computation.
-    mLayoutThreadHandler.removeCallbacksAndMessages(null);
+    // Cancel any scheduled layout requests we might have in the background queue
+    // since we are starting a new layout computation.
+    mLayoutThreadHandler.removeCallbacks(mCalculateLayoutRunnable);
+    mLayoutThreadHandler.removeCallbacks(mAnimatedCalculateLayoutRunnable);
 
     synchronized (this) {
       // Can't compute a layout if specs or root are missing

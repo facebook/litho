@@ -637,20 +637,23 @@ public class ComponentsPools {
     }
   }
 
+  @ThreadSafe(enableChecks = false)
   static boolean canAddMountContentToPool(Context context, ComponentLifecycle lifecycle) {
-    if (lifecycle.poolSize() == 0) {
-      return false;
+    synchronized (mountContentLock) {
+      if (lifecycle.poolSize() == 0) {
+        return false;
+      }
+
+      final SparseArray<RecyclePool> poolsArray =
+          sMountContentPoolsByContext.get(context);
+
+      if (poolsArray == null) {
+        return true;
+      }
+
+      final RecyclePool pool = poolsArray.get(lifecycle.getId());
+      return pool == null || !pool.isFull();
     }
-
-    final SparseArray<RecyclePool> poolsArray =
-        sMountContentPoolsByContext.get(context);
-
-    if (poolsArray == null) {
-      return true;
-    }
-
-    final RecyclePool pool = poolsArray.get(lifecycle.getId());
-    return pool == null || !pool.isFull();
   }
 
   static SparseArrayCompat<MountItem> acquireScrapMountItemsArray() {

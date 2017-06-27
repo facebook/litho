@@ -121,7 +121,7 @@ class LayoutState {
   private static final int[] DRAWABLE_STATE_ENABLED = new int[]{android.R.attr.state_enabled};
   private static final int[] DRAWABLE_STATE_NOT_ENABLED = new int[]{};
 
-  private ComponentContext mContext;
+  private volatile ComponentContext mContext;
   private TransitionContext mTransitionContext;
 
   private Component<?> mComponent;
@@ -1027,32 +1027,25 @@ class LayoutState {
     return layoutState;
   }
 
+  @ThreadSafe(enableChecks = false)
   void preAllocateMountContent() {
+    ComponentsSystrace.beginSection(
+      "preAllocateMountContent:" + mComponent.getSimpleName());
+
     if (mMountableOutputs != null && !mMountableOutputs.isEmpty()) {
       for (int i = 0, size = mMountableOutputs.size(); i < size; i++) {
         final Component component = mMountableOutputs.get(i).getComponent();
 
         if (Component.isMountViewSpec(component)) {
-          final ComponentLifecycle lifecycle = component.getLifecycle();
-
-          if (!lifecycle.hasBeenPreallocated()) {
-            final int poolSize = lifecycle.poolSize();
-
-            int insertedCount = 0;
-            while (insertedCount < poolSize &&
-                ComponentsPools.canAddMountContentToPool(mContext, lifecycle)) {
-              ComponentsPools.release(
-                  mContext,
-                  lifecycle,
-                  lifecycle.createMountContent(mContext));
-              insertedCount++;
-            }
-
-            lifecycle.setWasPreallocated();
-          }
+          ComponentsSystrace.beginSection(
+              "preAllocateMountContent:" + component.getSimpleName());
+          component.getLifecycle().preAllocateMountContent(mContext);
+          ComponentsSystrace.endSection();
         }
       }
     }
+
+    ComponentsSystrace.endSection();
   }
 
   private static void collectDisplayLists(LayoutState layoutState) {
