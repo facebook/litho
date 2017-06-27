@@ -518,6 +518,9 @@ public class BuilderGenerator {
         ClassName.get(ArrayList.class),
         varArgType.typeArguments.get(0));
     CodeBlock codeBlock = CodeBlock.builder()
+        .beginControlFlow("if ($L == null)", varArgName)
+        .addStatement("return this")
+        .endControlFlow()
         .beginControlFlow("if (this.$L.$L == null)", implMemberInstanceName, propName)
         .addStatement("this.$L.$L = new $T()", implMemberInstanceName, propName, listType)
         .endControlFlow()

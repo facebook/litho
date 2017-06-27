@@ -133,6 +133,9 @@ public class BuilderGeneratorTest {
         "  }\n" +
         "\n" +
         "  public Builder name(java.lang.String name) {\n" +
+        "    if (name == null) {\n" +
+        "      return this;\n" +
+        "    }\n" +
         "    if (this.mTestImpl.arg4 == null) {\n" +
         "      this.mTestImpl.arg4 = new java.util.ArrayList<java.lang.String>();\n" +
         "    }\n" +
