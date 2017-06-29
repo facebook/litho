@@ -97,6 +97,7 @@ public class MountStateVisibilityEventsTest {
         null));
 
     final LayoutState layoutState = new LayoutState();
+    layoutState.init(mContext);
     setInternalState(layoutState, "mVisibilityOutputs", visibilityOutputs);
 
     mMountState.mount(layoutState, new Rect(LEFT, 0, RIGHT, 5));
@@ -130,6 +131,7 @@ public class MountStateVisibilityEventsTest {
         null));
 
     final LayoutState layoutState = new LayoutState();
+    layoutState.init(mContext);
     Whitebox.setInternalState(layoutState, "mVisibilityOutputs", visibilityOutputs);
 
     mMountState.mount(layoutState, new Rect(LEFT, 1, RIGHT, 6));
@@ -161,6 +163,7 @@ public class MountStateVisibilityEventsTest {
         null));
 
     final LayoutState layoutState = new LayoutState();
+    layoutState.init(mContext);
     Whitebox.setInternalState(layoutState, "mVisibilityOutputs", visibilityOutputs);
 
     mMountState.mount(layoutState, new Rect(LEFT, 1, RIGHT, 6));
@@ -196,6 +199,7 @@ public class MountStateVisibilityEventsTest {
         null));
 
     final LayoutState layoutState = new LayoutState();
+    layoutState.init(mContext);
     Whitebox.setInternalState(layoutState, "mVisibilityOutputs", visibilityOutputs);
 
     //Mount test view in the middle of the view port (focused)
@@ -243,6 +247,7 @@ public class MountStateVisibilityEventsTest {
         null));
 
     final LayoutState layoutState = new LayoutState();
+    layoutState.init(mContext);
     Whitebox.setInternalState(layoutState, "mVisibilityOutputs", visibilityOutputs);
 
     //Mount test view in the middle of the view port (focused)
@@ -272,6 +277,7 @@ public class MountStateVisibilityEventsTest {
         null));
 
     final LayoutState layoutState = new LayoutState();
+    layoutState.init(mContext);
     Whitebox.setInternalState(layoutState, "mVisibilityOutputs", visibilityOutputs);
 
     mMountState.mount(layoutState, new Rect(LEFT, 4, RIGHT, 9));
@@ -302,6 +308,7 @@ public class MountStateVisibilityEventsTest {
         invisibleHandler));
 
     final LayoutState layoutState = new LayoutState();
+    layoutState.init(mContext);
     setInternalState(layoutState, "mVisibilityOutputs", visibilityOutputs);
 
     mMountState.mount(layoutState, new Rect(LEFT, 5, RIGHT, 10));
@@ -335,6 +342,7 @@ public class MountStateVisibilityEventsTest {
         invisibleHandler));
 
     final LayoutState layoutState = new LayoutState();
+    layoutState.init(mContext);
     setInternalState(layoutState, "mVisibilityOutputs", visibilityOutputs);
 
     mMountState.mount(layoutState, new Rect(LEFT, 0, RIGHT, 5));
@@ -388,6 +396,7 @@ public class MountStateVisibilityEventsTest {
         null));
 
     final LayoutState layoutState = new LayoutState();
+    layoutState.init(mContext);
     setInternalState(layoutState, "mVisibilityOutputs", visibilityOutputs);
 
     mMountState.mount(layoutState, new Rect(LEFT, 5, RIGHT, 10));
@@ -440,6 +449,7 @@ public class MountStateVisibilityEventsTest {
         null));
 
     final LayoutState layoutState = new LayoutState();
+    layoutState.init(mContext);
     setInternalState(layoutState, "mVisibilityOutputs", visibilityOutputs);
 
     mMountState.mount(layoutState, new Rect(LEFT, 7, RIGHT, 12));

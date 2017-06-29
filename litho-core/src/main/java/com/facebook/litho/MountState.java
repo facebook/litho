@@ -106,6 +106,7 @@ class MountState {
   private int mPreviousBottomsIndex;
   private int mLastMountedComponentTreeId;
   private final HashMap<String, Integer> mMountedTransitionKeys = new HashMap<>();
+  private LayoutState mLastMountedLayoutState;
 
   private final MountItem mRootHostMountItem;
 
@@ -166,6 +167,11 @@ class MountState {
     final ComponentTree componentTree = mLithoView.getComponentTree();
     final ComponentsLogger logger = componentTree.getContext().getLogger();
     final int componentTreeId = layoutState.getComponentTreeId();
+    if (componentTreeId != mLastMountedComponentTreeId) {
+      // If we're mounting a new ComponentTree, don't keep around and use the previous LayoutState
+      // since things like transition animations aren't relevant.
+      releaseLastMountedLayoutState();
+    }
 
     LogEvent mountEvent = null;
     if (logger != null) {
@@ -275,8 +281,10 @@ class MountState {
     processTestOutputs(layoutState);
 
     suppressInvalidationsOnHosts(false);
-
+    
+    releaseLastMountedLayoutState();
     mLastMountedComponentTreeId = componentTreeId;
+    mLastMountedLayoutState = layoutState.acquireRef();
 
     if (logger != null) {
       mountEvent.addParam(PARAM_LOG_TAG, componentTree.getContext().getLogTag());
@@ -2266,6 +2274,13 @@ class MountState {
   private ComponentContext getContextForComponent(Component component) {
     final ComponentContext c = component.getScopedContext();
     return c == null ? mContext : c;
+  }
+
+  private void releaseLastMountedLayoutState() {
+    if (mLastMountedLayoutState != null) {
+      mLastMountedLayoutState.releaseRef();
+      mLastMountedLayoutState = null;
+    }
   }
 
   private static class LayoutOutputLog {
