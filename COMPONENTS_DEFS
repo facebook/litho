@@ -48,6 +48,7 @@ COMPONENTS_FBCORE_TARGET                      = make_dep_path('lib/fbcore:fbcore
 COMPONENTS_SOLOADER_TARGET                    = make_dep_path('lib/soloader:soloader')
 COMPONENTS_ASSERTJ_TARGET                     = make_dep_path('lib/assertj:assertj')
 COMPONENTS_COMPILE_TESTING_TARGET             = make_dep_path('lib/compile-testing:compile-testing')
+COMPONENTS_TRUTH_TARGET                       = make_dep_path('lib/truth:truth')
 COMPONENTS_MOCKITO_TARGET                     = make_dep_path('lib/mockito:mockito')
 COMPONENTS_POWERMOCK_REFLECT_TARGET           = make_dep_path('lib/powermock:powermock-reflect')
 COMPONENTS_POWERMOCK_MOCKITO_TARGET           = make_dep_path('lib/powermock:powermock-mockito')
@@ -57,6 +58,7 @@ COMPONENTS_GUAVA_TARGET                       = make_dep_path('lib/guava:guava')
 COMPONENTS_DIFFUTILS_TARGET                   = make_dep_path('lib/diff-utils:diff-utils')
 COMPONENTS_ESPRESSO_TARGET                    = make_dep_path('lib/espresso:espresso')
 COMPONENTS_SCREENSHOT_TARGET                  = make_dep_path('lib/screenshot:screenshot')
+COMPONENTS_JAVAC_TOOLS_TARGET                 = make_dep_path('lib/javac-tools:javac-tools')
 
 # Fresco
 COMPONENTS_FRESCO_TARGET                      = make_dep_path('lib/fresco:fresco')
