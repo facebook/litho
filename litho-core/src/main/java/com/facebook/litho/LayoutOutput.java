@@ -11,6 +11,7 @@ package com.facebook.litho;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import android.graphics.Rect;
 import android.support.annotation.IntDef;
@@ -51,6 +52,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   private int mHostTranslationY;
   private int mFlags;
   private long mHostMarker;
+  private AtomicInteger mRefCount = new AtomicInteger(0);
 
   private int mUpdateState;
   private int mImportantForAccessibility;
@@ -190,7 +192,31 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     return transitionKey;
   }
 
+  void acquire() {
+    if (mRefCount.getAndSet(1) != 0) {
+      throw new RuntimeException(
+          "Tried to acquire LayoutOutput that already had a non-zero ref count!");
+    }
+  }
+
+  public void incrementRefCount() {
+    if (mRefCount.getAndIncrement() < 1) {
+      throw new RuntimeException(
+          "Tried to increment ref count of a released LayoutOutput!");
+    }
+  }
+
+  public void decrementRefCount() {
+    if (mRefCount.decrementAndGet() < 1) {
+      throw new RuntimeException("Decremented external ref count below 1!");
+    }
+  }
+
   void release() {
+    if (mRefCount.getAndSet(0) != 1) {
+      throw new RuntimeException(
+          "Trying to release LayoutOutput that still has external references!");
+    }
     if (mComponent != null) {
       mComponent.release();
       mComponent = null;

@@ -308,6 +308,7 @@ public class ComponentsPools {
     if (output == null) {
       output = new LayoutOutput();
     }
+    output.acquire();
 
     return output;
   }
