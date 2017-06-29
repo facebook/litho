@@ -10,6 +10,7 @@
 package com.facebook.litho;
 
 import com.facebook.litho.testing.TestDrawableComponent;
+import com.facebook.litho.testing.assertj.LithoViewAssert;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 
@@ -73,13 +74,14 @@ public class LithoViewTest {
         mLithoView.getMeasuredHeight());
 
     // View got measured.
-    assertThat(mLithoView.getMeasuredHeight() != 0 && mLithoView.getMeasuredWidth() != 0).isTrue();
+    assertThat(mLithoView.getMeasuredHeight()).isGreaterThan(0);
+    assertThat(mLithoView.getMeasuredHeight()).isGreaterThan(0);
 
     // Attaching will automatically mount since we already have a layout fitting our size.
     ShadowView shadow = shadowOf(mLithoView);
     shadow.callOnAttachedToWindow();
 
-    assertThat(getInternalMountItems(mLithoView).length).isEqualTo(2);
+    assertThat(getInternalMountItems(mLithoView)).hasSize(2);
   }
 
   private static long[] getInternalMountItems(LithoView lithoView) {
@@ -113,8 +115,9 @@ public class LithoViewTest {
         nullLithoView.getMeasuredWidth(),
         nullLithoView.getMeasuredHeight());
 
-    assertThat(nullLithoView.getMeasuredHeight() == 0
-        && nullLithoView.getMeasuredWidth() == 0).isTrue();
+    LithoViewAssert.assertThat(nullLithoView)
+        .hasMeasuredWidthOf(0)
+        .hasMeasuredHeightOf(0);
   }
 
   @Test
@@ -131,7 +134,8 @@ public class LithoViewTest {
 
     verify(mockComponentTree, never())
         .measure(anyInt(), anyInt(), any(int[].class), anyBoolean());
-    assertThat(mLithoView.getMeasuredWidth()).isEqualTo(width);
-    assertThat(mLithoView.getMeasuredHeight()).isEqualTo(height);
+    LithoViewAssert.assertThat(mLithoView)
+        .hasMeasuredWidthOf(width)
+        .hasMeasuredHeightOf(height);
   }
 }

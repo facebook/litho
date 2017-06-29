@@ -140,6 +140,34 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
   }
 
   /**
+   * Assert that the LithoView under test has the provided measured width.
+   */
+  public LithoViewAssert hasMeasuredWidthOf(int width) {
+    Java6Assertions.assertThat(actual.getMeasuredWidth())
+        .overridingErrorMessage(
+            "Expected LithoView to have a width of %d, but was %d.",
+            width,
+            actual.getMeasuredWidth())
+        .isEqualTo(width);
+
+    return this;
+  }
+
+  /**
+   * Assert that the LithoView under test has the provided measured height.
+   */
+  public LithoViewAssert hasMeasuredHeightOf(int height) {
+    Java6Assertions.assertThat(actual.getMeasuredHeight())
+        .overridingErrorMessage(
+            "Expected LithoView to have a height of %d, but was %d.",
+            height,
+            actual.getMeasuredHeight())
+        .isEqualTo(height);
+
+    return this;
+  }
+
+  /**
    * Assert that the view tag is present for the given index.
    * @param tagId Index of the view tag.
    * @param tagValue View tag value.
