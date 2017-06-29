@@ -36,6 +36,8 @@ final class ViewportManager {
 
   private int mCurrentFirstVisiblePosition;
   private int mCurrentLastVisiblePosition;
+  private int mCurrentFirstFullyVisiblePosition;
+  private int mCurrentLastFullyVisiblePosition;
   private int mTotalItemCount;
   private int mScrollingState;
 
@@ -59,6 +61,8 @@ final class ViewportManager {
       int initialScrollingState) {
     mCurrentFirstVisiblePosition = currentFirstVisiblePosition;
     mCurrentLastVisiblePosition = currentLastVisiblePosition;
+    mCurrentFirstFullyVisiblePosition = layoutInfo.findFirstFullyVisibleItemPosition();
+    mCurrentLastFullyVisiblePosition = layoutInfo.findLastFullyVisibleItemPosition();
     mTotalItemCount = layoutInfo.getItemCount();
     mScrollingState = initialScrollingState;
     mLayoutInfo = layoutInfo;
@@ -86,12 +90,16 @@ final class ViewportManager {
 
     if (firstVisiblePosition == mCurrentFirstVisiblePosition
         && lastVisiblePosition == mCurrentLastVisiblePosition
+        && firstFullyVisibleItemPosition == mCurrentFirstFullyVisiblePosition
+        && lastFullyVisibleItemPosition == mCurrentLastFullyVisiblePosition
         && totalItemCount == mTotalItemCount) {
       return;
     }
 
     mCurrentFirstVisiblePosition = firstVisiblePosition;
     mCurrentLastVisiblePosition = lastVisiblePosition;
+    mCurrentFirstFullyVisiblePosition = firstFullyVisibleItemPosition;
+    mCurrentLastFullyVisiblePosition = lastFullyVisibleItemPosition;
     mTotalItemCount = totalItemCount;
 
     if (mViewportChangedListeners == null || mViewportChangedListeners.isEmpty()) {

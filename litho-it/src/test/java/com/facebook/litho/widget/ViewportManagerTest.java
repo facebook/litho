@@ -69,7 +69,9 @@ public class ViewportManagerTest {
 
   @Test
   public void testNoViewportChangedWithScrolling() {
+    setFullyVisibleItemPositionInMockedLayoutManager(7, 9);
     setTotalItemInMockedLayoutManager(13);
+
     ViewportManager viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_DRAGGING, 5, 10);
 
     setVisibleItemPositionInMockedLayoutManager(5, 10);
