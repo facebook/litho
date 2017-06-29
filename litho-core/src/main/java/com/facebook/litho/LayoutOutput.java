@@ -177,6 +177,19 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     return mViewNodeInfo;
   }
 
+  String getTransitionKey() {
+    if (mViewNodeInfo == null) {
+      return null;
+    }
+
+    final String transitionKey = mViewNodeInfo.getTransitionKey();
+    if (transitionKey == null || transitionKey.length() == 0) {
+      return null;
+    }
+
+    return transitionKey;
+  }
+
   void release() {
     if (mComponent != null) {
       mComponent.release();

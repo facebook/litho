@@ -29,18 +29,20 @@ import com.facebook.litho.animation.Resolver;
 import com.facebook.litho.animation.RuntimeValue;
 import com.facebook.litho.internal.ArraySet;
 
+import static com.facebook.litho.AnimationsDebug.TAG;
+
 /**
  * Unique per MountState instance. Called from MountState on mount calls to process the transition
  * keys and handles which transitions to run and when.
  */
 public class DataFlowTransitionManager {
 
-  @IntDef({KeyStatus.APPEARED, KeyStatus.UNCHANGED, KeyStatus.DISAPPEARED, KeyStatus.UNSET})
+  @IntDef({KeyStatus.APPEARED, KeyStatus.CHANGED, KeyStatus.DISAPPEARED, KeyStatus.UNSET})
   @Retention(RetentionPolicy.SOURCE)
   @interface KeyStatus {
     int UNSET = -1;
     int APPEARED = 0;
-    int UNCHANGED = 1;
+    int CHANGED = 1;
     int DISAPPEARED = 2;
   }
 
@@ -50,9 +52,6 @@ public class DataFlowTransitionManager {
   public interface OnMountItemAnimationComplete {
     void onMountItemAnimationComplete(Object mountItem);
   }
-
-  private static final boolean DEBUG = false;
-  private static final String TAG = "LithoAnimationDebug";
 
   private static final Pools.SimplePool<AnimationState> sAnimationStatePool =
       new Pools.SimplePool<>(20);
@@ -110,7 +109,7 @@ public class DataFlowTransitionManager {
     mAnimationBindings.clear();
     mAnimationBindings.addAll(transitionContext.getTransitionAnimationBindings());
 
-    if (DEBUG) {
+    if (AnimationsDebug.ENABLED) {
       Log.d(TAG, "Got new TransitionContext with " + mAnimationBindings.size() + " animations");
     }
 
@@ -163,7 +162,7 @@ public class DataFlowTransitionManager {
       if (!animationState.sawInPreMount) {
         animationState.changeType = KeyStatus.APPEARED;
       } else {
-        animationState.changeType = KeyStatus.UNCHANGED;
+        animationState.changeType = KeyStatus.CHANGED;
       }
 
       setMountItem(animationState, mountItem);
@@ -181,7 +180,7 @@ public class DataFlowTransitionManager {
     restoreInitialStates();
     setDisappearToValues();
 
-    if (DEBUG) {
+    if (AnimationsDebug.ENABLED) {
       debugLogStartingAnimations();
     }
 
@@ -202,7 +201,7 @@ public class DataFlowTransitionManager {
   }
 
   void onContentUnmounted(String transitionKey) {
-    if (DEBUG) {
+    if (AnimationsDebug.ENABLED) {
       Log.d(TAG, "Content unmounted for key: " + transitionKey);
     }
 
@@ -390,7 +389,7 @@ public class DataFlowTransitionManager {
   }
 
   private void debugLogStartingAnimations() {
-    if (!DEBUG) {
+    if (!AnimationsDebug.ENABLED) {
       throw new RuntimeException("Trying to debug log animations without debug flag set!");
     }
 
@@ -424,8 +423,8 @@ public class DataFlowTransitionManager {
     switch (keyStatus) {
       case KeyStatus.APPEARED:
         return "APPEARED";
-      case KeyStatus.UNCHANGED:
-        return "UNCHANGED";
+      case KeyStatus.CHANGED:
+        return "CHANGED";
       case KeyStatus.DISAPPEARED:
         return "DISAPPEARED";
       case KeyStatus.UNSET:
