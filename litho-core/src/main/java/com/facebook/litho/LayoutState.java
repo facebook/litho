@@ -28,6 +28,7 @@ import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.LongSparseArray;
+import android.support.v4.util.SimpleArrayMap;
 import android.support.v4.view.accessibility.AccessibilityManagerCompat;
 import android.text.TextUtils;
 import android.view.View;
@@ -168,6 +169,7 @@ class LayoutState {
   private boolean mCanPrefetchDisplayLists;
   private boolean mClipChildren = true;
   private ArrayList<Component> mComponentsNeedingPreviousRenderInfo;
+  private SimpleArrayMap<String, LayoutOutput> mTransitionKeyMapping;
 
   LayoutState() {
     mLayoutStateOutputIdCalculator = new LayoutStateOutputIdCalculator();
@@ -1725,6 +1727,8 @@ class LayoutState {
         mComponentsNeedingPreviousRenderInfo.clear();
       }
 
+      mTransitionKeyMapping = null;
+
       ComponentsPools.release(this);
     }
   }
@@ -1840,6 +1844,33 @@ class LayoutState {
 
   boolean shouldAnimateTransitions() {
     return mShouldAnimateTransitions;
+  }
+
+  /**
+   * Gets (or creates) a mapping from transition key to LayoutOutput.
+   */
+  SimpleArrayMap<String, LayoutOutput> getTransitionKeyMapping() {
+    if (mTransitionKeyMapping != null) {
+      return mTransitionKeyMapping;
+    }
+
+    mTransitionKeyMapping = new SimpleArrayMap<>();
+
+    for (int i = 0, size = getMountableOutputCount(); i < size; i++) {
+      final LayoutOutput newOutput = getMountableOutputAt(i);
+      final String transitionKey = newOutput.getTransitionKey();
+      if (transitionKey == null) {
+        continue;
+      }
+
+      mTransitionKeyMapping.put(transitionKey, newOutput);
+    }
+
+    return mTransitionKeyMapping;
+  }
+
+  LayoutOutput getLayoutOutputForTransitionKey(String transitionKey) {
+    return getTransitionKeyMapping().get(transitionKey);
   }
 
   private static void addMountableOutput(LayoutState layoutState, LayoutOutput layoutOutput) {
