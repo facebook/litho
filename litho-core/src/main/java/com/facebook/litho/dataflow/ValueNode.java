@@ -44,6 +44,13 @@ public abstract class ValueNode {
   }
 
   /**
+   * Manually sets the current value.
+   */
+  public void setValue(float value) {
+    mValue = value;
+  }
+
+  /**
    * This node should calculate and set a new value based on frame time and its parents (the nodes
    * it depends on). When this is called, it's guaranteed that the parent nodes have already been
    * updated for this frame.

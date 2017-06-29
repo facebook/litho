@@ -36,6 +36,17 @@ public class AnimatedPropertyNode extends ValueNode {
    */
   public void setMountItem(Object mountItem) {
     mMountItem = new WeakReference<>(mountItem);
+    if (mountItem != null) {
+      mAnimatedProperty.set(mountItem, getValue());
+    }
+  }
+
+  public void setValue(float value) {
+    super.setValue(value);
+    final Object mountItem = mMountItem.get();
+    if (mountItem != null) {
+      mAnimatedProperty.set(mountItem, value);
+    }
   }
 
   @Override

@@ -108,4 +108,31 @@ public class AnimatedPropertyNodeTest {
     assertThat(view.getScaleX()).isEqualTo(123f);
     assertThat(destination.getValue()).isEqualTo(123f);
   }
+
+  @Test
+  public void testSettingMountContentOnNodeWithValue() {
+    View view1 = new View(application);
+    View view2 = new View(application);
+    SettableNode source = new SettableNode();
+    AnimatedPropertyNode viewNode = new AnimatedPropertyNode(view1, SCALE);
+
+    GraphBinding binding = create(mDataFlowGraph);
+    binding.addBinding(source, viewNode);
+    binding.activate();
+
+    mTestTimingSource.step(1);
+
+    assertThat(view1.getScaleX()).isEqualTo(0f);
+
+    source.setValue(123);
+    mTestTimingSource.step(1);
+
+    assertThat(view1.getScaleX()).isEqualTo(123f);
+
+    assertThat(view2.getScaleX()).isEqualTo(1f);
+
+    viewNode.setMountItem(view2);
+
+    assertThat(view2.getScaleX()).isEqualTo(123f);
+  }
 }
