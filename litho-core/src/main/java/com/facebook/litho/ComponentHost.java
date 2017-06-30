@@ -28,6 +28,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
+import com.facebook.proguard.annotations.DoNotStrip;
+
 import static com.facebook.litho.AccessibilityUtils.isAccessibilityEnabled;
 import static com.facebook.litho.ComponentHostUtils.maybeInvalidateAccessibilityState;
 
@@ -36,6 +38,7 @@ import static com.facebook.litho.ComponentHostUtils.maybeInvalidateAccessibility
  * by {@link MountState} to wrap mounted drawables to handle click events and update drawable
  * states accordingly.
  */
+@DoNotStrip
 public class ComponentHost extends ViewGroup {
 
   private final SparseArrayCompat<MountItem> mMountItems = new SparseArrayCompat<>();
@@ -335,6 +338,7 @@ public class ComponentHost extends ViewGroup {
   /**
    * @return the text content that is mounted on this host.
    */
+  @DoNotStrip
   public TextContent getTextContent() {
     return ComponentHostUtils.extractTextContent(
         ComponentHostUtils.extractContent(mMountItems));
@@ -794,6 +798,7 @@ public class ComponentHost extends ViewGroup {
     }
   }
 
+  @DoNotStrip
   @Override
   public Object getTag() {
     if (mViewTag != null) {

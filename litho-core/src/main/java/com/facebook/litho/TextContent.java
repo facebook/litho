@@ -12,9 +12,12 @@ package com.facebook.litho;
 import java.util.Collections;
 import java.util.List;
 
+import com.facebook.proguard.annotations.DoNotStrip;
+
 /**
  * A UI element that contains text.
  */
+@DoNotStrip
 public interface TextContent {
 
   /**
@@ -31,5 +34,6 @@ public interface TextContent {
    * @return the list of text items that are rendered by this UI element. The list returned should
    * not be modified and may be unmodifiable.
    */
+  @DoNotStrip
   List<CharSequence> getTextItems();
 }
