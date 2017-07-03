@@ -121,7 +121,12 @@ public class LithoViewTestHelper {
 
     final String testKey = debugComponent.getTestKey();
     if (!TextUtils.isEmpty(testKey)) {
-      sb.append(String.format(" testKey=%s", testKey));
+      sb.append(String.format(" testKey=\"%s\"", testKey));
+    }
+
+    final String textContent = debugComponent.getTextContent();
+    if (!TextUtils.isEmpty(textContent)) {
+      sb.append(String.format(" text=\"%s\"", textContent));
     }
 
     if (debugComponent.isClickable()) {

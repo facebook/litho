@@ -252,6 +252,36 @@ public final class DebugComponent {
   }
 
   /**
+   * @return A concatenated string of all text content within the underlying LithoView.
+   *         Null if the node doesn't have an associated LithoView.
+   */
+  @Nullable
+  public String getTextContent() {
+    final LithoView lithoView = getLithoView();
+    final Component component = getComponent();
+
+    if (lithoView == null || component == null) {
+      return null;
+    }
+
+    final StringBuilder sb = new StringBuilder();
+    for (int i = 0, size = lithoView.getMountState().getItemCount(); i < size; i++) {
+      final MountItem mountItem = lithoView.getMountState().getItemAt(i);
+      if (mountItem.getComponent().isEquivalentTo(component)) {
+        final Object content = mountItem.getContent();
+
+        if (content instanceof TextContent) {
+          for (CharSequence charSequence : ((TextContent) content).getTextItems()) {
+            sb.append(charSequence);
+          }
+        }
+      }
+    }
+
+    return sb.toString();
+  }
+
+  /**
    * @return This component's key or null if none is set.
    */
   public String getKey() {
