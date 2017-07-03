@@ -35,6 +35,7 @@ import static org.mockito.Mockito.when;
 public class DisplayListDrawableTest  {
 
   private DisplayList mDisplayList;
+  private DisplayListContainer mDisplayListContainer;
   private Drawable mDrawable;
   private Canvas mCanvas;
   private Canvas mDlCanvas;
@@ -42,6 +43,8 @@ public class DisplayListDrawableTest  {
   @Before
   public void setup() throws DisplayListException {
     mDisplayList = Mockito.mock(DisplayList.class);
+    mDisplayListContainer = new DisplayListContainer();
+    mDisplayListContainer.setDisplayList(mDisplayList);
     mDrawable = Mockito.mock(Drawable.class);
     mCanvas = Mockito.mock(Canvas.class);
     mDlCanvas = Mockito.mock(Canvas.class);
@@ -52,7 +55,8 @@ public class DisplayListDrawableTest  {
 
   @Test
   public void testInvalidationSuppression() {
-    DisplayListDrawable displayListDrawable = new DisplayListDrawable(mDrawable, mDisplayList);
+    DisplayListDrawable displayListDrawable =
+        new DisplayListDrawable(mDrawable, mDisplayListContainer);
     displayListDrawable.draw(mCanvas);
     verify(mDrawable, never()).draw((Canvas) anyObject());
 
@@ -65,7 +69,8 @@ public class DisplayListDrawableTest  {
 
   @Test
   public void testInvalidation() throws DisplayListException {
-    DisplayListDrawable displayListDrawable = new DisplayListDrawable(mDrawable, mDisplayList);
+    DisplayListDrawable displayListDrawable =
+        new DisplayListDrawable(mDrawable, mDisplayListContainer);
     displayListDrawable.draw(mCanvas);
     verify(mDrawable, never()).draw((Canvas) anyObject());
 
@@ -80,7 +85,7 @@ public class DisplayListDrawableTest  {
   @Test
   public void testMountItemUpdate() {
     LayoutOutput layoutOutput = ComponentsPools.acquireLayoutOutput();
-    layoutOutput.setDisplayListContainer(new DisplayListContainer());
+    layoutOutput.initDisplayListContainer("Test", false);
     layoutOutput.setDisplayList(mDisplayList);
     MountItem mountItem = ComponentsPools.acquireMountItem(null, null, mDrawable, layoutOutput);
     DisplayListDrawable displayListDrawable = mountItem.getDisplayListDrawable();

@@ -11,6 +11,7 @@ package com.facebook.litho;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.Nullable;
 import android.view.View;
 
 import com.facebook.litho.displaylist.DisplayList;
@@ -130,23 +131,31 @@ class MountItem {
     }
   }
 
-  private DisplayListDrawable acquireDisplayListDrawableIfNeeded(
+  private @Nullable DisplayListDrawable acquireDisplayListDrawableIfNeeded(
       Object content,
       DisplayListContainer displayListContainer,
       DisplayListDrawable convertDisplayListDrawable) {
-    final DisplayList displayList =
-        displayListContainer == null ? null : displayListContainer.getDisplayList();
+
+    if (displayListContainer == null) {
+      // If we do not have DisplayListContainer it would mean that we do not support generating
+      // displaylists, hence this mount item should not have DisplayListDrawable.
+      if (convertDisplayListDrawable != null) {
+        ComponentsPools.release(convertDisplayListDrawable);
+      }
+      return null;
+    }
+
+    final DisplayList displayList = displayListContainer.getDisplayList();
+    if (convertDisplayListDrawable == null &&
+        (displayListContainer.canCacheDrawingDisplayLists() || displayList != null)) {
+      convertDisplayListDrawable = ComponentsPools.acquireDisplayListDrawable(
+            (Drawable) content, displayListContainer);
+    } else if (convertDisplayListDrawable != null) {
+      convertDisplayListDrawable.setWrappedDrawable((Drawable) content, displayListContainer);
+    }
 
     if (displayList != null) {
-      if (convertDisplayListDrawable != null) {
-        convertDisplayListDrawable.setWrappedDrawable((Drawable) content, displayList);
-      } else  {
-        convertDisplayListDrawable = ComponentsPools.acquireDisplayListDrawable(
-            (Drawable) content, displayList);
-      }
       convertDisplayListDrawable.suppressInvalidations(true);
-    } else if (convertDisplayListDrawable != null) {
-      convertDisplayListDrawable.setWrappedDrawable((Drawable) content, null);
     }
 
     return convertDisplayListDrawable;
@@ -203,6 +212,9 @@ class MountItem {
       ComponentsPools.release(mDisplayListDrawable);
       mDisplayListDrawable = null;
     }
+    // Do not release DisplayListContainer yet, just dereference the object,
+    // as it might be still referenced by LayoutOutput.
+    mDisplayListContainer = null;
 
     if (mNodeInfo != null) {
       mNodeInfo.release();
@@ -264,5 +276,13 @@ class MountItem {
 
   DisplayListDrawable getDisplayListDrawable() {
     return mDisplayListDrawable;
+  }
+
+  void setDisplayList(DisplayList displayList) {
+    mDisplayListContainer.setDisplayList(displayList);
+  }
+
+  @Nullable DisplayList getDisplayList() {
+    return mDisplayListContainer.getDisplayList();
   }
 }

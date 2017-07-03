@@ -156,12 +156,12 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     mImportantForAccessibility = importantForAccessibility;
   }
 
-  void initDisplayListContainer(boolean canCacheDrawingDisplayList) {
+  void initDisplayListContainer(String name, boolean canCacheDrawingDisplayList) {
     if (mDisplayListContainer != null) {
       throw new IllegalStateException("Trying to init displaylistcontainer but it already exists");
     }
     mDisplayListContainer = ComponentsPools.acquireDisplayListContainer();
-    mDisplayListContainer.setCacheDrawingDisplayListsEnabled(canCacheDrawingDisplayList);
+    mDisplayListContainer.init(name, canCacheDrawingDisplayList);
   }
 
   void setDisplayListContainer(DisplayListContainer displayListContainer) {

@@ -147,6 +147,10 @@ public final class DisplayListPrefetcher implements Runnable {
     WeakReference<LayoutState> currentLayoutState = mLayoutStates.peek();
     while (currentLayoutState != null) {
       final LayoutState layoutState = currentLayoutState.get();
+      if (layoutState != null) {
+        layoutState.trimDisplayListItemsQueue();
+      }
+
       if (layoutState == null || !layoutState.hasItemsForDLPrefetch()) {
         mLayoutStates.remove();
         currentLayoutState = mLayoutStates.peek();

@@ -21,6 +21,7 @@ import com.facebook.litho.displaylist.DisplayList;
 class DisplayListContainer {
   private @Nullable DisplayList mDisplayList;
   private boolean mCanCacheDrawingDisplayLists;
+  private @Nullable String mName;
 
   void setDisplayList(DisplayList displayList) {
     mDisplayList = displayList;
@@ -34,8 +35,9 @@ class DisplayListContainer {
     return mDisplayList != null;
   }
 
-  void setCacheDrawingDisplayListsEnabled(boolean canCacheDrawingDisplayLists) {
-    this.mCanCacheDrawingDisplayLists = canCacheDrawingDisplayLists;
+  void init(String name, boolean canCacheDrawingDisplayLists) {
+    mName = name;
+    mCanCacheDrawingDisplayLists = canCacheDrawingDisplayLists;
   }
 
   boolean canCacheDrawingDisplayLists() {
@@ -45,5 +47,10 @@ class DisplayListContainer {
   void release() {
     mDisplayList = null;
     mCanCacheDrawingDisplayLists = false;
+    mName = null;
+  }
+
+  @Nullable String getName() {
+    return mName;
   }
 }

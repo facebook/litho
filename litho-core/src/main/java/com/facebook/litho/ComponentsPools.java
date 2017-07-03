@@ -859,7 +859,7 @@ public class ComponentsPools {
 
   public static DisplayListDrawable acquireDisplayListDrawable(
       Drawable content,
-      DisplayList displayList) {
+      DisplayListContainer displayListContainer) {
 
     // When we are wrapping drawable with DisplayListDrawable we need to make sure that
     // wrapped DisplayListDrawable has the same view callback as original one had for correct
@@ -869,9 +869,9 @@ public class ComponentsPools {
     DisplayListDrawable displayListDrawable =
         ComponentsConfiguration.usePooling ? sDisplayListDrawablePool.acquire() : null;
     if (displayListDrawable == null) {
-      displayListDrawable = new DisplayListDrawable(content, displayList);
+      displayListDrawable = new DisplayListDrawable(content, displayListContainer);
     } else {
-      displayListDrawable.setWrappedDrawable(content, displayList);
+      displayListDrawable.setWrappedDrawable(content, displayListContainer);
     }
     displayListDrawable.setCallback(callback);
 

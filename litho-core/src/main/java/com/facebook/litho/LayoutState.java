@@ -296,8 +296,8 @@ class LayoutState {
     layoutOutput.setFlags(flags);
 
     final ComponentLifecycle lifecycle = component.getLifecycle();
-    if (lifecycle.shouldUseDisplayList()) {
-      layoutOutput.initDisplayListContainer(false);
+    if (isEligibleForCreatingDisplayLists() && lifecycle.shouldUseDisplayList()) {
+      layoutOutput.initDisplayListContainer(lifecycle.getClass().getSimpleName(), false);
     }
 
     return layoutOutput;
@@ -1899,6 +1899,24 @@ class LayoutState {
    */
   boolean hasItemsForDLPrefetch() {
     return !mDisplayListsToPrefetch.isEmpty();
+  }
+
+  /**
+   * Remove items that have already valid displaylist. This item might have been already drawn on
+   * the screen in which case we will have valid displaylist so we can skip them.
+   */
+  void trimDisplayListItemsQueue() {
+    Integer currentIndex = mDisplayListsToPrefetch.peek();
+    while (currentIndex != null) {
+      final LayoutOutput layoutOutput = mMountableOutputs.get(currentIndex);
+      if (layoutOutput.hasValidDisplayList()) {
+        // We have already computed displaylist for this item, remove it from the queue.
+        mDisplayListsToPrefetch.remove();
+        currentIndex = mDisplayListsToPrefetch.peek();
+      } else {
+        break;
+      }
+    }
   }
 
   /**
