@@ -1,5 +1,6 @@
 [maven_repositories]
   jcenter = https://jcenter.bintray.com/
+  nuiton = http://maven.nuiton.org/release/
 
 [ndk]
   ndk_version = 13.1.3345770

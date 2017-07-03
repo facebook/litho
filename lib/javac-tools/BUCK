@@ -18,5 +18,5 @@ prebuilt_jar(
 remote_file(
     name = "javac-tools.jar",
     sha1 = "b131b8c9b481c4860cc3e08ede96f2c545a369ad",
-    url = "http://maven.nuiton.org/release/com/sun/tools/1.7.0.13/tools-1.7.0.13.jar",
+    url = "mvn:com.sun:tools:jar:1.7.0.13",
 )
