@@ -112,6 +112,7 @@ public class ComponentTree {
 
   private final ComponentContext mContext;
   private final boolean mCanPrefetchDisplayLists;
+  private final boolean mCanCacheDrawingDisplayLists;
   private final boolean mShouldClipChildren;
 
   // These variables are only accessed from the main thread.
@@ -196,6 +197,7 @@ public class ComponentTree {
     mLayoutLock = builder.layoutLock;
     mIsAsyncUpdateStateEnabled = builder.asyncStateUpdates;
     mCanPrefetchDisplayLists = builder.canPrefetchDisplayLists;
+    mCanCacheDrawingDisplayLists = builder.canCacheDrawingDisplayLists;
     mShouldClipChildren = builder.shouldClipChildren;
 
     if (mLayoutThreadHandler == null) {
@@ -1331,6 +1333,7 @@ public class ComponentTree {
             shouldAnimateTransitions,
             diffNode,
             mCanPrefetchDisplayLists,
+            mCanCacheDrawingDisplayLists,
             mShouldClipChildren);
       }
     } else {
@@ -1344,6 +1347,7 @@ public class ComponentTree {
           shouldAnimateTransitions,
           diffNode,
           mCanPrefetchDisplayLists,
+          mCanCacheDrawingDisplayLists,
           mShouldClipChildren);
     }
   }
@@ -1381,6 +1385,7 @@ public class ComponentTree {
     private boolean asyncStateUpdates = true;
     private int overrideComponentTreeId = -1;
     private boolean canPrefetchDisplayLists = false;
+    private boolean canCacheDrawingDisplayLists = false;
     private boolean shouldClipChildren = true;
 
     protected Builder() {
@@ -1408,6 +1413,7 @@ public class ComponentTree {
       asyncStateUpdates = true;
       overrideComponentTreeId = -1;
       canPrefetchDisplayLists = false;
+      canCacheDrawingDisplayLists = false;
       shouldClipChildren = true;
     }
 
@@ -1516,6 +1522,18 @@ public class ComponentTree {
      */
     public Builder canPrefetchDisplayLists(boolean canPrefetch) {
       this.canPrefetchDisplayLists = canPrefetch;
+      return this;
+    }
+
+    /**
+     * Specify whether the ComponentTree allows to cache display lists of the components after it
+     * was first drawng.
+     *
+     * NOTE: To make display lists caching work, {@link #canPrefetchDisplayLists(boolean)} should
+     * be set to true.
+     */
+    public Builder canCacheDrawingDisplayLists(boolean canCacheDrawingDisplayLists) {
+      this.canCacheDrawingDisplayLists = canCacheDrawingDisplayLists;
       return this;
     }
 

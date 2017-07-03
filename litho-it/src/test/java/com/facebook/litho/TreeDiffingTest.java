@@ -96,6 +96,7 @@ public class TreeDiffingTest {
         false /* shouldAnimatedTransitions */,
         null /* previousDiffTreeRoot */,
         false /* canPrefetchDisplayLists */,
+        false /* canCacheDrawingDisplayLists */,
         true /* clipChildren */);
 
     // Check diff tree is null.
@@ -126,6 +127,7 @@ public class TreeDiffingTest {
         false /* shouldAnimatedTransitions */,
         null /* previousDiffTreeRoot */,
         false /* canPrefetchDisplayLists */,
+        false /* canCacheDrawingDisplayLists */,
         true /* clipChildren */);
 
     // Check diff tree is not null and consistent.
@@ -277,6 +279,7 @@ public class TreeDiffingTest {
             false /* shouldAnimatedTransitions */,
             null /* previousDiffTreeRoot */,
             false /* canPrefetchDisplayLists */,
+            false /* canCacheDrawingDisplayLists */,
             true /* clipChildren */);
 
     // Check diff tree is consistent.
@@ -326,6 +329,7 @@ public class TreeDiffingTest {
             false /* shouldAnimatedTransitions */,
             null /* previousDiffTreeRoot */,
             false /* canPrefetchDisplayLists */,
+            false /* canCacheDrawingDisplayLists */,
             true /* clipChildren */);
 
     // Check diff tree is consistent.
@@ -383,6 +387,7 @@ public class TreeDiffingTest {
         false /* shouldAnimatedTransitions */,
         null /* previousDiffTreeRoot */,
         false /* canPrefetchDisplayLists */,
+        false /* canCacheDrawingDisplayLists */,
         true /* clipChildren */);
 
     LayoutState layoutState = calculate(
@@ -395,6 +400,7 @@ public class TreeDiffingTest {
         false /* shouldAnimatedTransitions */,
         prevLayoutState.getDiffTree(),
         false /* canPrefetchDisplayLists */,
+        false /* canCacheDrawingDisplayLists */,
         true /* clipChildren */);
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(prevLayoutState.getMountableOutputCount());
@@ -440,6 +446,7 @@ public class TreeDiffingTest {
             false /* shouldAnimatedTransitions */,
             null /* previousDiffTreeRoot */,
             false /* canPrefetchDisplayLists */,
+            false /* canCacheDrawingDisplayLists */,
             true /* clipChildren */);
     LayoutState layoutState = LayoutState.calculate(
             mContext,
@@ -451,6 +458,7 @@ public class TreeDiffingTest {
             false /* shouldAnimatedTransitions */,
             prevLayoutState.getDiffTree(),
             false /* canPrefetchDisplayLists */,
+            false /* canCacheDrawingDisplayLists */,
             true /* clipChildren */);
 
     assertNotEquals(
@@ -859,6 +867,7 @@ public class TreeDiffingTest {
         false /* shouldAnimatedTransitions */,
         null /* previousDiffTreeRoot */,
         false /* canPrefetchDisplayLists */,
+        false /* canCacheDrawingDisplayLists */,
         true /* clipChildren */);
 
     assertThat(component.wasMeasureCalled()).isTrue();
@@ -887,6 +896,7 @@ public class TreeDiffingTest {
         false /* shouldAnimatedTransitions */,
         firstLayoutState.getDiffTree(),
         false /* canPrefetchDisplayLists */,
+        false /* canCacheDrawingDisplayLists */,
         true /* clipChildren */);
 
     assertThat(secondComponent.wasMeasureCalled()).isFalse();
@@ -917,6 +927,7 @@ public class TreeDiffingTest {
         false /* shouldAnimatedTransitions */,
         null /* previousDiffTreeRoot */,
         false /* canPrefetchDisplayLists */,
+        false /* canCacheDrawingDisplayLists */,
         true /* clipChildren */);
 
     assertThat(component.wasMeasureCalled()).isTrue();
@@ -944,6 +955,7 @@ public class TreeDiffingTest {
         false /* shouldAnimatedTransitions */,
         firstLayoutState.getDiffTree(),
         false /* canPrefetchDisplayLists */,
+        false /* canCacheDrawingDisplayLists */,
         true /* clipChildren */);
 
     assertThat(secondComponent.wasMeasureCalled()).isFalse();
@@ -989,6 +1001,7 @@ public class TreeDiffingTest {
         false /* shouldAnimatedTransitions */,
         null /* previousDiffTreeRoot */,
         false /* canPrefetchDisplayLists */,
+        false /* canCacheDrawingDisplayLists */,
         true /* clipChildren */);
 
     LayoutState layoutState = calculate(
@@ -1001,6 +1014,7 @@ public class TreeDiffingTest {
         false /* shouldAnimatedTransitions */,
         prevLayoutState.getDiffTree(),
         false /* canPrefetchDisplayLists */,
+        false /* canCacheDrawingDisplayLists */,
         true /* clipChildren */);
 
     // The nested root measure() was called in the first layout calculation.
@@ -1058,6 +1072,7 @@ public class TreeDiffingTest {
         false /* shouldAnimatedTransitions */,
         null /* previousDiffTreeRoot */,
         false /* canPrefetchDisplayLists */,
+        false /* canCacheDrawingDisplayLists */,
         true /* clipChildren */);
 
     LayoutState layoutState = calculate(
@@ -1070,6 +1085,7 @@ public class TreeDiffingTest {
         false /* shouldAnimatedTransitions */,
         prevLayoutState.getDiffTree(),
         false /* canPrefetchDisplayLists */,
+        false /* canCacheDrawingDisplayLists */,
         true /* clipChildren */);
 
     // The nested root measure() was called in the first layout calculation.
@@ -1160,6 +1176,7 @@ public class TreeDiffingTest {
         false /* shouldAnimatedTransitions */,
         null /* previousDiffTreeRoot */,
         false /* canPrefetchDisplayLists */,
+        false /* canCacheDrawingDisplayLists */,
         true /* clipChildren */);
 
     // Make sure we reused the cached layout and it wasn't released.
@@ -1176,6 +1193,7 @@ public class TreeDiffingTest {
         false /* shouldAnimatedTransitions */,
         prevLayoutState.getDiffTree(),
         false /* canPrefetchDisplayLists */,
+        false /* canCacheDrawingDisplayLists */,
         true /* clipChildren */);
 
     // Make sure we reused the cached layout and it wasn't released.

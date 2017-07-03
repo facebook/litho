@@ -73,7 +73,8 @@ public class RecyclerBinderTest {
       public ComponentTreeHolder create(
               ComponentInfo componentInfo,
               LayoutHandler layoutHandler,
-              boolean canPrefetchDisplayLists) {
+              boolean canPrefetchDisplayLists,
+              boolean canCacheDrawingDisplayLists) {
         final TestComponentTreeHolder holder = new TestComponentTreeHolder(componentInfo);
         mHoldersForComponents.put(componentInfo.getComponent(), holder);
 

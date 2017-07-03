@@ -102,6 +102,7 @@ public class RecyclerBinder implements
   private RangeCalculationResult mRange;
   private StickyHeaderController mStickyHeaderController;
   private final boolean mCanPrefetchDisplayLists;
+  private final boolean mCanCacheDrawingDisplayLists;
   private EventHandler<ReMeasureEvent> mReMeasureEventEventHandler;
 
   private final ViewportManager mViewportManager;
@@ -120,7 +121,8 @@ public class RecyclerBinder implements
     ComponentTreeHolder create(
         ComponentInfo componentInfo,
         LayoutHandler layoutHandler,
-        boolean canPrefetchDisplayLists);
+        boolean canPrefetchDisplayLists,
+        boolean canCacheDrawingDisplayLists);
   }
 
   static final ComponentTreeHolderFactory DEFAULT_COMPONENT_TREE_HOLDER_FACTORY =
@@ -129,8 +131,13 @@ public class RecyclerBinder implements
     public ComponentTreeHolder create(
         ComponentInfo componentInfo,
         LayoutHandler layoutHandler,
-        boolean canPrefetchDisplayLists) {
-      return ComponentTreeHolder.acquire(componentInfo, layoutHandler, canPrefetchDisplayLists);
+        boolean canPrefetchDisplayLists,
+        boolean canCacheDrawingDisplayLists) {
+      return ComponentTreeHolder.acquire(
+          componentInfo,
+          layoutHandler,
+          canPrefetchDisplayLists,
+          canCacheDrawingDisplayLists);
     }
   };
 
@@ -141,6 +148,7 @@ public class RecyclerBinder implements
     private @Nullable LayoutHandlerFactory layoutHandlerFactory;
     private boolean useNewIncrementalMount;
     private boolean canPrefetchDisplayLists;
+    private boolean canCacheDrawingDisplayLists;
     private ComponentTreeHolderFactory componentTreeHolderFactory =
         DEFAULT_COMPONENT_TREE_HOLDER_FACTORY;
     private ComponentContext componentContext;
@@ -189,6 +197,11 @@ public class RecyclerBinder implements
       return this;
     }
 
+    public Builder canCacheDrawingDisplayLists(boolean canCacheDrawingDisplayLists) {
+      this.canCacheDrawingDisplayLists = canCacheDrawingDisplayLists;
+      return this;
+    }
+
     /**
      *
      * @param componentTreeHolderFactory Factory to acquire a new ComponentTreeHolder. Defaults to
@@ -227,6 +240,7 @@ public class RecyclerBinder implements
     mLayoutHandlerFactory = builder.layoutHandlerFactory;
     mCurrentFirstVisiblePosition = mCurrentLastVisiblePosition = 0;
     mCanPrefetchDisplayLists = builder.canPrefetchDisplayLists;
+    mCanCacheDrawingDisplayLists = builder.canCacheDrawingDisplayLists;
 
     mViewportManager = new ViewportManager(
         mCurrentFirstVisiblePosition,
@@ -333,7 +347,8 @@ public class RecyclerBinder implements
         mLayoutHandlerFactory != null ?
             mLayoutHandlerFactory.createLayoutCalculationHandler(componentInfo) :
             null,
-        mCanPrefetchDisplayLists);
+        mCanPrefetchDisplayLists,
+        mCanCacheDrawingDisplayLists);
     final boolean computeLayout;
     final int childrenWidthSpec, childrenHeightSpec;
     synchronized (this) {
@@ -404,7 +419,8 @@ public class RecyclerBinder implements
             mLayoutHandlerFactory != null ?
                 mLayoutHandlerFactory.createLayoutCalculationHandler(componentInfo) :
                 null,
-            mCanPrefetchDisplayLists);
+            mCanPrefetchDisplayLists,
+            mCanCacheDrawingDisplayLists);
 
         mComponentTreeHolders.add(position + i, holder);
 

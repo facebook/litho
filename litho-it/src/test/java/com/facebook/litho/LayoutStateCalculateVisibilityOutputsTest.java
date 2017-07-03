@@ -284,6 +284,7 @@ public class LayoutStateCalculateVisibilityOutputsTest {
         false /* shouldAnimatedTransitions */,
         null /* previousDiffTreeRoot */,
         false /* canPrefetchDisplayLists */,
+        false /* canCacheDrawingDisplayLists */,
         true /* clipChildren */);
   }
 }

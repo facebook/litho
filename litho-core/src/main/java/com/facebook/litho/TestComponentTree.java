@@ -58,6 +58,7 @@ public class TestComponentTree extends ComponentTree {
         shouldAnimateTransitions,
         diffNode,
         false /* canPrefetchDisplayLists */,
+        false /* canCacheDrawingDisplayLists */,
         true /* clipChildren */);
   }
 

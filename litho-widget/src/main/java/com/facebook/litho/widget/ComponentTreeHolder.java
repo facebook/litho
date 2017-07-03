@@ -42,11 +42,13 @@ public class ComponentTreeHolder {
   private boolean mIsTreeValid;
   private LayoutHandler mLayoutHandler;
   private boolean mCanPrefetchDisplayLists;
+  private boolean mCanCacheDrawingDisplayLists;
 
   static ComponentTreeHolder acquire(
       ComponentInfo componentInfo,
       LayoutHandler layoutHandler,
-      boolean canPrefetchDisplayLists) {
+      boolean canPrefetchDisplayLists,
+      boolean canCacheDrawingDisplayLists) {
     ComponentTreeHolder componentTreeHolder = sComponentTreeHoldersPool.acquire();
     if (componentTreeHolder == null) {
       componentTreeHolder = new ComponentTreeHolder();
@@ -54,6 +56,7 @@ public class ComponentTreeHolder {
     componentTreeHolder.mComponentInfo = componentInfo;
     componentTreeHolder.mLayoutHandler = layoutHandler;
     componentTreeHolder.mCanPrefetchDisplayLists = canPrefetchDisplayLists;
+    componentTreeHolder.mCanCacheDrawingDisplayLists = canCacheDrawingDisplayLists;
     return componentTreeHolder;
   }
 
@@ -140,6 +143,7 @@ public class ComponentTreeHolder {
     mComponentInfo = null;
     mLayoutHandler = null;
     mCanPrefetchDisplayLists = false;
+    mCanCacheDrawingDisplayLists = false;
     sComponentTreeHoldersPool.release(this);
   }
 
@@ -154,6 +158,7 @@ public class ComponentTreeHolder {
           .layoutThreadHandler(mLayoutHandler)
           .stateHandler(mStateHandler)
           .canPrefetchDisplayLists(mCanPrefetchDisplayLists)
+          .canCacheDrawingDisplayLists(mCanCacheDrawingDisplayLists)
           .shouldClipChildren(clipChildren)
           .build();
     }

@@ -167,6 +167,7 @@ class LayoutState {
 
   private StateHandler mStateHandler;
   private boolean mCanPrefetchDisplayLists;
+  private boolean mCanCacheDrawingDisplayLists;
   private boolean mClipChildren = true;
   private ArrayList<Component> mComponentsNeedingPreviousRenderInfo;
   private SimpleArrayMap<String, LayoutOutput> mTransitionKeyMapping;
@@ -297,7 +298,9 @@ class LayoutState {
 
     final ComponentLifecycle lifecycle = component.getLifecycle();
     if (isEligibleForCreatingDisplayLists() && lifecycle.shouldUseDisplayList()) {
-      layoutOutput.initDisplayListContainer(lifecycle.getClass().getSimpleName(), false);
+      layoutOutput.initDisplayListContainer(
+        lifecycle.getClass().getSimpleName(),
+        layoutState.mCanCacheDrawingDisplayLists);
     }
 
     return layoutOutput;
@@ -920,6 +923,7 @@ class LayoutState {
         false /* shouldAnimatedTransitions */,
         null /* previousDiffTreeRoot */,
         false /* canPrefetchDisplayLists */,
+        false /* canCacheDrawingDisplayLists */,
         true /* clipChildren */);
   }
 
@@ -933,6 +937,7 @@ class LayoutState {
       boolean shouldAnimatedTransitions,
       DiffNode previousDiffTreeRoot,
       boolean canPrefetchDisplayLists,
+      boolean canCacheDrawingDisplayLists,
       boolean clipChildren) {
 
     // Detect errors internal to components
@@ -949,6 +954,7 @@ class LayoutState {
     layoutState.mHeightSpec = heightSpec;
     layoutState.mShouldAnimateTransitions = shouldAnimatedTransitions;
     layoutState.mCanPrefetchDisplayLists = canPrefetchDisplayLists;
+    layoutState.mCanCacheDrawingDisplayLists = canCacheDrawingDisplayLists;
     layoutState.mClipChildren = clipChildren;
 
     component.applyStateUpdates(c);
