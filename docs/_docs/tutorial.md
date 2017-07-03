@@ -132,9 +132,9 @@ In this part of the tutorial, you'll use a [RecyclerBinder](/javadoc/com/faceboo
 First, in your activity, modify the `Component` definition as follows:
 
 ```java
-final RecyclerBinder recyclerBinder = new RecyclerBinder.Builder()
-    .layoutInfo(new LinearLayoutInfo(this, OrientationHelper.VERTICAL, false))
-    .build(context);
+final ComponentContext context = new ComponentContext(this);
+
+final RecyclerBinder recyclerBinder = new RecyclerBinder(context, new LinearLayoutInfo(this, OrientationHelper.VERTICAL, false));
 
 final Component component = Recycler.create(context)
     .binder(recyclerBinder)
