@@ -37,6 +37,7 @@ class MountItem {
   private ComponentHost mHost;
   private boolean mIsBound;
   private int mImportantForAccessibility;
+  private DisplayListContainer mDisplayListContainer;
   private DisplayListDrawable mDisplayListDrawable;
 
   // ComponentHost flags defined in the LayoutOutput specifying
@@ -67,9 +68,10 @@ class MountItem {
         content,
         layoutOutput.getNodeInfo(),
         layoutOutput.getViewNodeInfo(),
+        layoutOutput.getDisplayListContainer(),
         acquireDisplayListDrawableIfNeeded(
             content,
-            layoutOutput.getDisplayList(),
+            layoutOutput.getDisplayListContainer(),
             displayListDrawable),
         layoutOutput.getFlags(),
         layoutOutput.getImportantForAccessibility());
@@ -81,6 +83,7 @@ class MountItem {
       Object content,
       NodeInfo nodeInfo,
       ViewNodeInfo viewNodeInfo,
+      DisplayListContainer displayListContainer,
       DisplayListDrawable displayListDrawable,
       int flags,
       int importantForAccessibility) {
@@ -89,6 +92,7 @@ class MountItem {
     mHost = host;
     mFlags = flags;
     mImportantForAccessibility = importantForAccessibility;
+    mDisplayListContainer = displayListContainer;
     mDisplayListDrawable = displayListDrawable;
 
     if (mNodeInfo != null) {
@@ -128,8 +132,11 @@ class MountItem {
 
   private DisplayListDrawable acquireDisplayListDrawableIfNeeded(
       Object content,
-      DisplayList displayList,
+      DisplayListContainer displayListContainer,
       DisplayListDrawable convertDisplayListDrawable) {
+    final DisplayList displayList =
+        displayListContainer == null ? null : displayListContainer.getDisplayList();
+
     if (displayList != null) {
       if (convertDisplayListDrawable != null) {
         convertDisplayListDrawable.setWrappedDrawable((Drawable) content, displayList);
@@ -139,8 +146,7 @@ class MountItem {
       }
       convertDisplayListDrawable.suppressInvalidations(true);
     } else if (convertDisplayListDrawable != null) {
-      convertDisplayListDrawable.setWrappedDrawable
-          ((Drawable) content, null);
+      convertDisplayListDrawable.setWrappedDrawable((Drawable) content, null);
     }
 
     return convertDisplayListDrawable;

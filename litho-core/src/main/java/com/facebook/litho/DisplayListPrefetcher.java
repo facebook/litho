@@ -124,7 +124,7 @@ public final class DisplayListPrefetcher implements Runnable {
       }
 
       currentLayoutState.createDisplayList(currentLayoutOutput);
-      if (currentLayoutOutput.getDisplayList() != null) {
+      if (currentLayoutOutput.hasValidDisplayList()) {
         // successfully created DL
         final long actualElapsedNs = System.nanoTime() - startPrefetchNs;
         updateAveragePrefetchDuration(currentComponentType, actualElapsedNs);

@@ -80,6 +80,7 @@ public class DisplayListDrawableTest  {
   @Test
   public void testMountItemUpdate() {
     LayoutOutput layoutOutput = ComponentsPools.acquireLayoutOutput();
+    layoutOutput.setDisplayListContainer(new DisplayListContainer());
     layoutOutput.setDisplayList(mDisplayList);
     MountItem mountItem = ComponentsPools.acquireMountItem(null, null, mDrawable, layoutOutput);
     DisplayListDrawable displayListDrawable = mountItem.getDisplayListDrawable();

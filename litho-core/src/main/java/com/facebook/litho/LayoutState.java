@@ -295,6 +295,11 @@ class LayoutState {
 
     layoutOutput.setFlags(flags);
 
+    final ComponentLifecycle lifecycle = component.getLifecycle();
+    if (lifecycle.shouldUseDisplayList()) {
+      layoutOutput.initDisplayListContainer(false);
+    }
+
     return layoutOutput;
   }
 
@@ -563,7 +568,7 @@ class LayoutState {
     // If we don't need to update this output we can safely re-use the display list from the
     // previous output.
     if (ThreadUtils.isMainThread() && isCachedOutputUpdated) {
-      layoutOutput.setDisplayList(currentDiffNode.getContent().getDisplayList());
+      layoutOutput.setDisplayListContainer(currentDiffNode.getContent().getDisplayListContainer());
     }
 
     // 2. Add background if defined.
@@ -1075,15 +1080,18 @@ class LayoutState {
 
     output.getMountBounds(rect);
 
-    if (output.getDisplayList() != null && output.getDisplayList().isValid()) {
-      // This output already has a valid DisplayList from diffing. No need to re-create it.
-      // Just update its bounds.
-      try {
-        output.getDisplayList().setBounds(rect.left, rect.top, rect.right, rect.bottom);
-        return false;
-      } catch (DisplayListException e) {
-        // Nothing to do here.
-      }
+    if (!output.hasValidDisplayList()) {
+      return true;
+    }
+
+    // This output already has a valid DisplayList from diffing. No need to re-create it.
+    // Just update its bounds.
+    final DisplayList displayList = output.getDisplayList();
+    try {
+      displayList.setBounds(rect.left, rect.top, rect.right, rect.bottom);
+      return false;
+    } catch (DisplayListException e) {
+      // Nothing to do here.
     }
 
     return true;

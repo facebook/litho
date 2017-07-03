@@ -15,6 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import android.graphics.Rect;
 import android.support.annotation.IntDef;
+import android.support.annotation.Nullable;
 
 import com.facebook.litho.displaylist.DisplayList;
 
@@ -56,7 +57,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
 
   private int mUpdateState;
   private int mImportantForAccessibility;
-  private DisplayList mDisplayList;
+  private @Nullable DisplayListContainer mDisplayListContainer;
 
   public LayoutOutput() {
     mUpdateState = STATE_UNKNOWN;
@@ -155,12 +156,49 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     mImportantForAccessibility = importantForAccessibility;
   }
 
-  public DisplayList getDisplayList() {
-    return mDisplayList;
+  void initDisplayListContainer(boolean canCacheDrawingDisplayList) {
+    if (mDisplayListContainer != null) {
+      throw new IllegalStateException("Trying to init displaylistcontainer but it already exists");
+    }
+    mDisplayListContainer = ComponentsPools.acquireDisplayListContainer();
+    mDisplayListContainer.setCacheDrawingDisplayListsEnabled(canCacheDrawingDisplayList);
   }
 
-  public void setDisplayList(DisplayList displayList) {
-    mDisplayList = displayList;
+  void setDisplayListContainer(DisplayListContainer displayListContainer) {
+    if (mDisplayListContainer != null) {
+      mDisplayListContainer.release();
+    }
+    mDisplayListContainer = displayListContainer;
+  }
+
+  @Nullable DisplayListContainer getDisplayListContainer() {
+    return mDisplayListContainer;
+  }
+
+  boolean hasValidDisplayList() {
+    if (mDisplayListContainer == null) {
+      throw new IllegalStateException(
+          "Trying to check displaylist validity when generating displaylist is not supported " +
+              "for this output");
+    }
+    return mDisplayListContainer.hasDisplayList()
+        && mDisplayListContainer.getDisplayList().isValid();
+  }
+
+  @Nullable DisplayList getDisplayList() {
+    if (mDisplayListContainer == null) {
+      throw new IllegalStateException(
+          "Trying to get displaylist when generating displaylist is not supported for this output");
+    }
+    return mDisplayListContainer.getDisplayList();
+  }
+
+  void setDisplayList(DisplayList displayList) {
+    if (mDisplayListContainer == null) {
+      throw new IllegalStateException(
+          "Trying to set displaylist when generating displaylist is not supported for this output");
+    }
+    mDisplayListContainer.setDisplayList(displayList);
   }
 
   void setViewNodeInfo(ViewNodeInfo viewNodeInfo) {
@@ -229,7 +267,10 @@ class LayoutOutput implements Cloneable, AnimatableItem {
       mViewNodeInfo.release();
       mViewNodeInfo = null;
     }
-    mDisplayList = null;
+    if (mDisplayListContainer != null) {
+      mDisplayListContainer.release();
+      mDisplayListContainer = null;
+    }
     mBounds.setEmpty();
     mHostTranslationX = 0;
     mHostTranslationY = 0;

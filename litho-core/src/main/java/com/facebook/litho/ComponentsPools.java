@@ -81,6 +81,9 @@ public class ComponentsPools {
   static final RecyclePool<LayoutOutput> sLayoutOutputPool =
       new RecyclePool<>("LayoutOutput", 256, true);
 
+  static final RecyclePool<DisplayListContainer> sDisplayListContainerPool =
+      new RecyclePool<>("DisplayListContainer", 64, true);
+
   static final RecyclePool<VisibilityOutput> sVisibilityOutputPool =
       new RecyclePool<>("VisibilityOutput", 64, true);
 
@@ -234,6 +237,7 @@ public class ComponentsPools {
         null,
         viewNodeInfo,
         null,
+        null,
         0,
         IMPORTANT_FOR_ACCESSIBILITY_AUTO);
     return item;
@@ -311,6 +315,16 @@ public class ComponentsPools {
     output.acquire();
 
     return output;
+  }
+
+  static DisplayListContainer acquireDisplayListContainer() {
+    DisplayListContainer displayListContainer =
+        ComponentsConfiguration.usePooling ? sDisplayListContainerPool.acquire() : null;
+    if (displayListContainer == null) {
+      displayListContainer = new DisplayListContainer();
+    }
+
+    return displayListContainer;
   }
 
   static VisibilityOutput acquireVisibilityOutput() {
@@ -541,6 +555,14 @@ public class ComponentsPools {
     }
     output.release();
     sLayoutOutputPool.release(output);
+  }
+
+  static void release(DisplayListContainer displayListContainer) {
+    if (!ComponentsConfiguration.usePooling) {
+      return;
+    }
+    displayListContainer.release();
+    sDisplayListContainerPool.release(displayListContainer);
   }
 
   @ThreadSafe(enableChecks = false)
