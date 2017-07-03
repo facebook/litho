@@ -178,7 +178,9 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
   }
 
   private boolean shouldHandleTextOffsetOnTouch(MotionEvent event) {
-    return mTextOffsetOnTouchListener != null && event.getActionMasked() == ACTION_DOWN;
+    return mTextOffsetOnTouchListener != null
+        && event.getActionMasked() == ACTION_DOWN
+        && getBounds().contains((int) event.getX(), (int) event.getY());
   }
 
   public void mount(
