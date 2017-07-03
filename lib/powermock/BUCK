@@ -31,9 +31,12 @@ java_library(
     name = "powermock-mockito",
     exported_deps = [
         ":javassist-prebuilt",
+        ":powermock-api-mockito",
+        ":powermock-api-support",
+        ":powermock-classloading-base",
         ":powermock-classloading-xstream-prebuilt",
+        ":powermock-core",
         ":powermock-junit-rule-prebuilt",
-        ":powermock-mockito-release-full-prebuilt",
         ":powermock-reflect",
         ":xstream-prebuilt",
     ],
@@ -52,14 +55,47 @@ remote_file(
 )
 
 prebuilt_jar(
-    name = "powermock-mockito-release-full-prebuilt",
-    binary_jar = ":powermock-mockito-release-full.jar",
+    name = "powermock-core",
+    binary_jar = ":powermock-core.jar",
 )
 
 remote_file(
-    name = "powermock-mockito-release-full.jar",
-    sha1 = "eb22f277a1aa4e85916fc76760ec6a07b965ff0e",
-    url = "https://bintray.com/bintray/jcenter/download_file?file_path=org%2Fpowermock%2Fpowermock-mockito-release-full%2F1.5.6%2Fpowermock-mockito-release-full-1.5.6-full.jar",
+    name = "powermock-core.jar",
+    sha1 = "2cf9445b015ff4831487b6cb7667068b3a306066",
+    url = "mvn:org.powermock:powermock-core:jar:1.5.6",
+)
+
+prebuilt_jar(
+    name = "powermock-api-support",
+    binary_jar = ":powermock-api-support.jar",
+)
+
+remote_file(
+    name = "powermock-api-support.jar",
+    sha1 = "8884532ded864f892b03a0769fd212d34653d5f3",
+    url = "mvn:org.powermock:powermock-api-support:jar:1.5.6",
+)
+
+prebuilt_jar(
+    name = "powermock-classloading-base",
+    binary_jar = ":powermock-classloading-base.jar",
+)
+
+remote_file(
+    name = "powermock-classloading-base.jar",
+    sha1 = "147d7c1a1dede5843f96993b6559e91b070d5f9b",
+    url = "mvn:org.powermock:powermock-classloading-base:jar:1.5.6",
+)
+
+prebuilt_jar(
+    name = "powermock-api-mockito",
+    binary_jar = ":powermock-api-mockito.jar",
+)
+
+remote_file(
+    name = "powermock-api-mockito.jar",
+    sha1 = "97f1e2bfbedc1a0459c4eacfe3524e367d1918d0",
+    url = "mvn:org.powermock:powermock-api-mockito:jar:1.5.6",
 )
 
 prebuilt_jar(
