@@ -15,7 +15,9 @@ import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
@@ -38,6 +40,9 @@ import static org.robolectric.Shadows.shadowOf;
 @RunWith(ComponentsTestRunner.class)
 public class LithoViewTest {
   private LithoView mLithoView;
+
+  @Rule
+  public ExpectedException mExpectedException = ExpectedException.none();
 
   @Before
   public void setup() {
@@ -137,5 +142,29 @@ public class LithoViewTest {
     LithoViewAssert.assertThat(mLithoView)
         .hasMeasuredWidthOf(width)
         .hasMeasuredHeightOf(height);
+  }
+
+  @Test
+  public void testThrowWhenMainThreadLayoutStateIsNullAndLayoutNotRequested() {
+    mExpectedException.expect(RuntimeException.class);
+    mExpectedException.expectMessage("hasn't requested layout");
+
+    final ComponentTree mockComponentTree = mock(ComponentTree.class);
+
+    mLithoView.setComponentTree(mockComponentTree);
+
+    // Clear requestLayout flag
+    mLithoView.layout(0, 0, 100, 100);
+
+    mLithoView.performIncrementalMount();
+  }
+
+  @Test
+  public void testDontThrowWhenLayoutStateIsNull() {
+    final ComponentTree mockComponentTree = mock(ComponentTree.class);
+
+    mLithoView.setComponentTree(mockComponentTree);
+    mLithoView.requestLayout();
+    mLithoView.performIncrementalMount();
   }
 }
