@@ -402,6 +402,11 @@ class EditTextSpec {
       editText.setInputType(inputType);
     }
 
+    // Needs to be set before the text so it would apply to the current text
+    editText.setFilters(new InputFilter[] {
+        new InputFilter.LengthFilter(maxLength)
+    });
+
     // If it's the same text, don't set it again so that the caret won't move to the beginning or
     // end of the string. Only looking at String instances in order to avoid span comparisons.
     if (!(text instanceof String) || !text.equals(editText.getText().toString())) {
@@ -411,7 +416,6 @@ class EditTextSpec {
     editText.setEllipsize(ellipsize);
     editText.setMinLines(minLines);
     editText.setMaxLines(maxLines);
-    editText.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLength)});
     editText.setShadowLayer(shadowRadius, shadowDx, shadowDy, shadowColor);
     editText.setLinkTextColor(linkColor);
     editText.setHighlightColor(highlightColor);
