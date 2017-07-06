@@ -14,6 +14,7 @@ import javax.annotation.concurrent.GuardedBy;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -31,6 +32,7 @@ import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewParent;
 
@@ -85,6 +87,9 @@ public class ComponentTree {
   @GuardedBy("ComponentTree.class")
   private static volatile Looper sDefaultLayoutThreadLooper;
 
+  private static final ThreadLocal<WeakReference<Handler>> sSyncStateUpdatesHandler =
+      new ThreadLocal<>();
+
   // Helpers to track view visibility when we are incrementally
   // mounting and partially invalidating
   private static final int[] sCurrentLocation = new int[2];
@@ -107,6 +112,13 @@ public class ComponentTree {
     @Override
     public void run() {
       preAllocateMountContent();
+    }
+  };
+
+  private final Runnable mUpdateStateSyncRunnable = new Runnable() {
+    @Override
+    public void run() {
+      updateStateInternal(false);
     }
   };
 
@@ -779,7 +791,41 @@ public class ComponentTree {
   }
 
   void updateState(String componentKey, StateUpdate stateUpdate) {
-    updateStateInternal(componentKey, stateUpdate, false);
+
+    synchronized (this) {
+      if (mRoot == null) {
+        return;
+      }
+
+      mStateHandler.queueStateUpdate(componentKey, stateUpdate);
+    }
+
+    Looper looper = Looper.myLooper();
+
+    if (looper == null) {
+      Log.w(
+          TAG,
+          "You cannot update state synchronously from a thread without a looper, " +
+              "using the default background layout thread instead");
+      mLayoutThreadHandler.removeCallbacks(mUpdateStateSyncRunnable);
+      mLayoutThreadHandler.post(mUpdateStateSyncRunnable);
+      return;
+    }
+
+    Handler handler;
+
+    synchronized (this) {
+      final WeakReference<Handler> handlerWr = sSyncStateUpdatesHandler.get();
+      if (handlerWr != null && handlerWr.get() != null) {
+        handler = handlerWr.get();
+        handler.removeCallbacks(mUpdateStateSyncRunnable);
+      } else {
+        handler = new Handler(looper);
+        sSyncStateUpdatesHandler.set(new WeakReference<>(handler));
+      }
+    }
+
+    handler.post(mUpdateStateSyncRunnable);
   }
 
   void updateStateAsync(String componentKey, StateUpdate stateUpdate) {
@@ -787,19 +833,23 @@ public class ComponentTree {
         throw new RuntimeException("Triggering async state updates on this component tree is " +
             "disabled, use sync state updates.");
     }
-    updateStateInternal(componentKey, stateUpdate, true);
-  }
-
-  void updateStateInternal(String key, StateUpdate stateUpdate, boolean isAsync) {
-
-    final Component<?> root;
 
     synchronized (this) {
       if (mRoot == null) {
         return;
       }
 
-      mStateHandler.queueStateUpdate(key, stateUpdate);
+      mStateHandler.queueStateUpdate(componentKey, stateUpdate);
+    }
+
+    updateStateInternal(true);
+  }
+
+  void updateStateInternal(boolean isAsync) {
+
+    final Component<?> root;
+
+    synchronized (this) {
 
       if (mIsMeasuring) {
         // If the layout calculation was already scheduled to happen synchronously let's just go
