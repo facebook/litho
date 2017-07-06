@@ -1516,7 +1516,7 @@ public class ComponentTree {
      * on idle time of UI thread.
      *
      * NOTE: To make display lists prefetching work, besides setting this flag
-     * {@link com.facebook.litho.utils.DisplayListPrefetcherUtils#prefetchDisplayLists(View)}
+     * {@link com.facebook.litho.utils.DisplayListUtils#prefetchDisplayLists(View)}
      * should be called on scrollable surfaces like {@link android.support.v7.widget.RecyclerView}
      * during scrolling.
      */

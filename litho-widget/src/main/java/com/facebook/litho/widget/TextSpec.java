@@ -60,6 +60,7 @@ import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
+import com.facebook.litho.utils.DisplayListUtils;
 import com.facebook.widget.accessibility.delegates.AccessibleClickableSpan;
 import com.facebook.yoga.YogaDirection;
 
@@ -569,15 +570,11 @@ class TextSpec {
     layoutBuilder.setText(null);
     sTextLayoutBuilderPool.release(layoutBuilder);
 
-    if (glyphWarming && !isEligibleForCreatingDisplayLists()) {
+    if (glyphWarming && !DisplayListUtils.isEligibleForCreatingDisplayLists()) {
       GlyphWarmer.getInstance().warmLayout(newLayout);
     }
 
     return newLayout;
-  }
-
-  private static boolean isEligibleForCreatingDisplayLists() {
-    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
   }
 
   private static Alignment getAlignment(int viewTextAlignment, int gravity) {

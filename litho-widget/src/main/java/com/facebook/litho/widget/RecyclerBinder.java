@@ -42,7 +42,7 @@ import com.facebook.litho.MeasureComparisonUtils;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.ThreadUtils;
-import com.facebook.litho.utils.DisplayListPrefetcherUtils;
+import com.facebook.litho.utils.DisplayListUtils;
 import com.facebook.litho.utils.IncrementalMountUtils;
 
 import static android.support.v7.widget.OrientationHelper.HORIZONTAL;
@@ -1091,7 +1091,7 @@ public class RecyclerBinder implements
       }
 
       if (mCanPrefetchDisplayLists) {
-        DisplayListPrefetcherUtils.prefetchDisplayLists(recyclerView);
+        DisplayListUtils.prefetchDisplayLists(recyclerView);
       }
     }
   }

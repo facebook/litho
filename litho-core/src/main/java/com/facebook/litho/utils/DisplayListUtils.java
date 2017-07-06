@@ -9,14 +9,15 @@
 
 package com.facebook.litho.utils;
 
+import android.os.Build;
 import android.view.View;
 
 import com.facebook.litho.DisplayListPrefetcher;
 
 /**
- * Provides static methods to initiate display list generation.
+ * Provides static methods related to display list generation.
  */
-public class DisplayListPrefetcherUtils {
+public class DisplayListUtils {
 
   public static void prefetchDisplayLists(View view) {
     final DisplayListPrefetcher displayListPrefetcher = DisplayListPrefetcher.getInstance();
@@ -25,5 +26,9 @@ public class DisplayListPrefetcherUtils {
       displayListPrefetcher.setHostingView(view);
       view.post(displayListPrefetcher);
     }
+  }
+
+  public static boolean isEligibleForCreatingDisplayLists() {
+    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
   }
 }
