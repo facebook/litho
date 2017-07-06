@@ -241,7 +241,8 @@ public final class DebugComponent {
    * @return True if this not has layout information attached to it (backed by a Yoga node)
    */
   public boolean isLayoutNode() {
-    return mNode.get().getComponents().isEmpty() || mComponentIndex == 0;
+    final InternalNode node = mNode.get();
+    return node != null && (node.getComponents().isEmpty() || mComponentIndex == 0);
   }
 
   /**
