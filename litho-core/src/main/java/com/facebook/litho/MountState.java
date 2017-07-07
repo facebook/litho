@@ -107,6 +107,7 @@ class MountState {
   private int mLastMountedComponentTreeId;
   private final HashMap<String, Integer> mMountedTransitionKeys = new HashMap<>();
   private LayoutState mLastMountedLayoutState;
+  private int[] mAnimationLockedIndices;
 
   private final MountItem mRootHostMountItem;
 
@@ -224,6 +225,7 @@ class MountState {
             !isIncrementalMountEnabled ||
                 isMountedHostWithChildContent(currentMountItem) ||
                 Rect.intersects(localVisibleRect, layoutOutput.getBounds()) ||
+                isAnimationLocked(i) ||
                 (currentMountItem != null && currentMountItem == rootMountItem);
 
         if (isMountable && !isMounted) {
@@ -1941,6 +1943,50 @@ class MountState {
     return layoutState.getMountableOutputCount() - 1;
   }
 
+  private void lockLayoutOutputForAnimation(LayoutState layoutState, int index) {
+    if (mAnimationLockedIndices == null) {
+      mAnimationLockedIndices = new int[layoutState.getMountableOutputCount()];
+    }
+
+    updateAnimationLockCount(layoutState, index, true);
+  }
+
+  private void unlockLayoutOutputForAnimation(LayoutState layoutState, int index) {
+    updateAnimationLockCount(layoutState, index, false);
+  }
+
+  /**
+   * Update the animation locked count for all children and each parent of the animating item.
+   * Mount items that have a lock count > 0 will not be unmounted during incremental mount.
+   */
+  private void updateAnimationLockCount(LayoutState layoutState, int index, boolean increment) {
+    // Update children
+    final int lastDescendantIndex = findLastDescendantIndex(layoutState, index);
+    for (int i = index; i <= lastDescendantIndex; i++) {
+      if (increment) {
+        mAnimationLockedIndices[i]++;
+      } else {
+        if (--mAnimationLockedIndices[i] < 0) {
+          throw new RuntimeException("Decremented animation lock count below 0!");
+        }
+      }
+    }
+
+    // Update parents
+    long hostId = layoutState.getMountableOutputAt(index).getHostMarker();
+    while (hostId != ROOT_HOST_ID) {
+      int hostIndex = layoutState.getLayoutOutputPositionForId(hostId);
+      if (increment) {
+        mAnimationLockedIndices[hostIndex]++;
+      } else {
+        if (--mAnimationLockedIndices[hostIndex] < 0) {
+          throw new RuntimeException("Decremented animation lock count below 0!");
+        }
+      }
+      hostId = layoutState.getMountableOutputAt(hostIndex).getHostMarker();
+    }
+  }
+
   private static class PrepareMountStats {
     private int unmountedCount = 0;
     private int movedCount = 0;
@@ -2043,6 +2089,19 @@ class MountState {
   }
 
   /**
+   * Whether the item at this index (or one of its parents) are animating. In that case, we don't
+   * want to unmount this index for visibility reasons (e.g. incremental mount). The reason for this
+   * is that this item (or it's parent) may have a translation X/Y that actually shows it on the
+   * screen, even though the non-translated bounds are off the screen.
+   */
+  private boolean isAnimationLocked(int index) {
+    if (mAnimationLockedIndices == null) {
+      return false;
+    }
+    return mAnimationLockedIndices[index] > 0;
+  }
+
+  /**
    * @return true if this method did all the work that was necessary and there is no other
    * content that needs mounting/unmounting in this mount step. If false then a full mount step
    * should take place.
@@ -2068,7 +2127,10 @@ class MountState {
           localVisibleRect.top >=
               layoutOutputBottoms.get(mPreviousBottomsIndex).getBounds().bottom) {
         final long id = layoutOutputBottoms.get(mPreviousBottomsIndex).getId();
-        unmountItem(mContext, layoutState.getLayoutOutputPositionForId(id), mHostsByMarker);
+        final int layoutOutputIndex = layoutState.getLayoutOutputPositionForId(id);
+        if (!isAnimationLocked(layoutOutputIndex)) {
+          unmountItem(mContext, layoutOutputIndex, mHostsByMarker);
+        }
         mPreviousBottomsIndex++;
       }
 
@@ -2111,7 +2173,10 @@ class MountState {
               layoutOutputTops.get(mPreviousTopsIndex - 1).getBounds().top) {
         mPreviousTopsIndex--;
         final long id = layoutOutputTops.get(mPreviousTopsIndex).getId();
-        unmountItem(mContext, layoutState.getLayoutOutputPositionForId(id), mHostsByMarker);
+        final int layoutOutputIndex = layoutState.getLayoutOutputPositionForId(id);
+        if (!isAnimationLocked(layoutOutputIndex)) {
+          unmountItem(mContext, layoutOutputIndex, mHostsByMarker);
+        }
       }
     }
 
