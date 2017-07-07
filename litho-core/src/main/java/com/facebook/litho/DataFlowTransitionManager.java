@@ -356,6 +356,58 @@ public class DataFlowTransitionManager {
     }
   }
 
+  private void createTransitionAnimations() {
+    for (int i = 0, size = mTransitions.size(); i < size; i++) {
+      final Transition transition = mTransitions.get(i);
+      final String key = transition.getTransitionKey();
+      final AnimationState animationState = mAnimationStates.get(key);
+
+      if (AnimationsDebug.ENABLED) {
+        final String propName = transition.getAnimatedProperty().getName();
+        Log.d(
+            AnimationsDebug.TAG,
+            "Creating animation for key " + key + "#" + propName + ":");
+      }
+
+      if (animationState == null) {
+        if (AnimationsDebug.ENABLED) {
+          Log.d(
+              AnimationsDebug.TAG,
+              " - this key was not seen in the before/after layout state");
+        }
+        continue;
+      }
+
+      AnimationBinding animation = null;
+      if (animationState.changeType == KeyStatus.CHANGED) {
+        animation = transition.createChangeAnimation();
+      } else if (animationState.changeType == KeyStatus.DISAPPEARED) {
+        if (transition.hasDisappearAnimation()) {
+          animation = transition.createDisappearAnimation();
+        }
+      } else if (animationState.changeType == KeyStatus.APPEARED) {
+        if (transition.hasAppearAnimation()) {
+          animation = transition.createAppearAnimation();
+        }
+      }
+
+      if (animation != null) {
+        mAnimationBindings.add(animation);
+      }
+
+      if (AnimationsDebug.ENABLED) {
+        final String changeType = keyStatusToString(animationState.changeType);
+        if (animation != null) {
+          Log.d(AnimationsDebug.TAG, " - created " + changeType + " animation");
+        } else {
+          Log.d(
+              AnimationsDebug.TAG,
+              " - did not find matching transition for status " + changeType);
+        }
+      }
+    }
+  }
+
   /**
    * This method should record the transition key and animated properties of all animating mount
    * items so that we know whether to record them in onPre/PostMountItem

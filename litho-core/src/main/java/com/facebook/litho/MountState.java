@@ -2172,43 +2172,6 @@ class MountState {
     }
   }
 
-  /**
-   * Given the transition keys currently mounted and the transition keys that are going to be
-   * mounted in the new animation state, create the proper appear/disappear/change animations for
-   * this update.
-   */
-  private void createAutoMountTransitions(LayoutState layoutState) {
-    final TransitionContext transitionContext = layoutState.getTransitionContext();
-    final TransitionSet transitionSet = transitionContext.getAutoTransitionSet();
-    final ArrayList<Transition> transitions = transitionSet.getTransitions();
-
-    transitionContext.getTransitionAnimationBindings().clear();
-
-    for (int i = 0, size = transitions.size(); i < size; i++) {
-      final Transition transition = transitions.get(i);
-      final String key = transition.getTransitionKey();
-      final boolean lastMountHadKey = mMountedTransitionKeys.containsKey(key);
-      final boolean thisMountWillHaveKey = transitionContext.hasTransitionKey(key);
-
-      AnimationBinding animation = null;
-      if (lastMountHadKey && thisMountWillHaveKey) {
-        animation = transition.createChangeAnimation();
-      } else if (lastMountHadKey && !thisMountWillHaveKey) {
-        if (transition.hasDisappearAnimation()) {
-          animation = transition.createDisappearAnimation();
-        }
-      } else if (!lastMountHadKey && thisMountWillHaveKey) {
-        if (transition.hasAppearAnimation()) {
-          animation = transition.createAppearAnimation();
-        }
-      }
-
-      if (animation != null) {
-        transitionContext.addTransitionAnimationBinding(animation);
-      }
-    }
-  }
-
   private void removeDisappearingMountContentFromComponentHost(ComponentHost componentHost) {
     if (componentHost.hasDisappearingItems()) {
       List<String> disappearingKeys = componentHost.getDisappearingItemKeys();

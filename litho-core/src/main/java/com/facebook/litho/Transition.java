@@ -90,6 +90,10 @@ public class Transition {
     return mTransitionKey;
   }
 
+  AnimatedProperty getAnimatedProperty() {
+    return mAnimatedProperty;
+  }
+
   AnimationBinding createAppearAnimation() {
     if (!hasAppearAnimation()) {
       throw new RuntimeException(
