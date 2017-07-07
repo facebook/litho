@@ -180,7 +180,7 @@ public class DataFlowTransitionManager {
 
   void runTransitions() {
     restoreInitialStates();
-    setDisappearToValues();
+    fillDisappearToValues();
 
     if (AnimationsDebug.ENABLED) {
       debugLogStartingAnimations();
@@ -290,70 +290,17 @@ public class DataFlowTransitionManager {
    * check whether certain mount content will animate.
    */
   private void commitLayoutOutputDiffs() {
-    // TODO
-  }
+    createTransitionAnimations();
 
-  private void restoreInitialStates() {
-    for (int i = 0, size = mAnimationStates.size(); i < size; i++) {
-      final String transitionKey = mAnimationStates.keyAt(i);
-      final AnimationState animationState = mAnimationStates.valueAt(i);
-      // If the component is appearing, we will instead restore the initial value in
-      // setAppearFromValues. This is necessary since appearFrom values can be written in terms of
-      // the end state (e.g. appear from an offset of -10dp)
-      if (animationState.changeType != KeyStatus.APPEARED) {
-        for (int j = 0; j < animationState.currentDiff.beforeValues.size(); j++) {
-          final AnimatedProperty property = animationState.currentDiff.beforeValues.keyAt(j);
-          property.set(
-              animationState.mountItem,
-              animationState.currentDiff.beforeValues.valueAt(j));
-        }
-      }
-    }
-    setAppearFromValues();
-  }
-
-  private void setAppearFromValues() {
-    SimpleArrayMap<ComponentProperty, RuntimeValue> appearFromValues = new SimpleArrayMap<>();
-    for (int i = 0, size = mAnimationBindings.size(); i < size; i++) {
-      final AnimationBinding binding = mAnimationBindings.get(i);
-      binding.collectAppearFromValues(appearFromValues);
-    }
-
-    for (int i = 0, size = appearFromValues.size(); i < size; i++) {
-      final ComponentProperty property = appearFromValues.keyAt(i);
-      final RuntimeValue runtimeValue = appearFromValues.valueAt(i);
-      final AnimationState animationState = mAnimationStates.get(property.getTransitionKey());
-      final float value = runtimeValue.resolve(mResolver, property);
-      property.getProperty().set(animationState.mountItem, value);
-
-      if (animationState.changeType != KeyStatus.APPEARED) {
-        throw new RuntimeException(
-            "Wrong transition type for appear of key " + property.getTransitionKey() + ": " +
-                keyStatusToString(animationState.changeType));
-      }
-      animationState.currentDiff.beforeValues.put(property.getProperty(), value);
-    }
-  }
-
-  private void setDisappearToValues() {
-    SimpleArrayMap<ComponentProperty, RuntimeValue> disappearToValues = new SimpleArrayMap<>();
-    for (int i = 0, size = mAnimationBindings.size(); i < size; i++) {
-      final AnimationBinding binding = mAnimationBindings.get(i);
-      binding.collectDisappearToValues(disappearToValues);
-    }
-
-    for (int i = 0, size = disappearToValues.size(); i < size; i++) {
-      final ComponentProperty property = disappearToValues.keyAt(i);
-      final RuntimeValue runtimeValue = disappearToValues.valueAt(i);
-      final AnimationState animationState = mAnimationStates.get(property.getTransitionKey());
-      if (animationState.changeType != KeyStatus.DISAPPEARED) {
-        throw new RuntimeException(
-            "Wrong transition type for disappear of key " + property.getTransitionKey() + ": " +
-                keyStatusToString(animationState.changeType));
-      }
-      final float value = runtimeValue.resolve(mResolver, property);
-      animationState.currentDiff.afterValues.put(property.getProperty(), value);
-    }
+    // Fill the before and after values of the diff for each animating property.
+    //
+    // The before value comes from the "before" LayoutOutput for this transition key, unless the key
+    // is appearing in which case an "appearFrom" value is resolved. Similarly, the after value
+    // comes from the "after" LayoutOutput, unless the key is disappearing in which case a
+    // "disappearTo" value is resolved.
+    recordAllTransitioningProperties();
+    fillAppearFromValues();
+    fillDisappearToValues();
   }
 
   private void createTransitionAnimations() {
@@ -409,8 +356,9 @@ public class DataFlowTransitionManager {
   }
 
   /**
-   * This method should record the transition key and animated properties of all animating mount
-   * items so that we know whether to record them in onPre/PostMountItem
+   * This method uses the set of mount content that is appearing/changing/disappearing and the
+   * corresponding calculated animations from {@link #createTransitionAnimations} to fill the proper
+   * before and after values for all the properties that will be animating.
    */
   private void recordAllTransitioningProperties() {
     final ArraySet<ComponentProperty> transitioningProperties = ComponentsPools.acquireArraySet();
@@ -427,18 +375,133 @@ public class DataFlowTransitionManager {
         final AnimatedProperty animatedProperty = property.getProperty();
         animatedKeys.add(key);
 
-        // This key will be animating - make sure it has an AnimationState
-        AnimationState animationState = mAnimationStates.get(key);
+        final AnimationState animationState = mAnimationStates.get(key);
         if (animationState == null) {
-          animationState = acquireAnimationState();
-          mAnimationStates.put(key, animationState);
+          continue;
         }
         animationState.animatingProperties.add(animatedProperty);
         animationState.activeAnimations.add(binding);
+
+        if (animationState.changeType != KeyStatus.APPEARED) {
+          final float currentValue = getCurrentValue(animationState, animatedProperty);
+
+          if (animationState.currentDiff.beforeValues.put(animatedProperty, currentValue) != null) {
+            throw new RuntimeException("TransitionDiff wasn't cleared properly!");
+          }
+        }
+
+        if (animationState.changeType != KeyStatus.DISAPPEARED) {
+          final Float previousValue = animationState.currentDiff.afterValues.put(
+              animatedProperty,
+              animatedProperty.get(animationState.nextLayoutOutput));
+          if (previousValue != null) {
+            throw new RuntimeException("TransitionDiff wasn't cleared properly!");
+          }
+        }
       }
       transitioningProperties.clear();
     }
     ComponentsPools.release(transitioningProperties);
+  }
+
+  /**
+   * Resolves the values that appearing mount content properties will appear from and sets those
+   * values in the currentDiff for the corresponding transition key.
+   */
+  private void fillAppearFromValues() {
+    SimpleArrayMap<ComponentProperty, RuntimeValue> appearFromValues = new SimpleArrayMap<>();
+    for (int i = 0, size = mAnimationBindings.size(); i < size; i++) {
+      final AnimationBinding binding = mAnimationBindings.get(i);
+      binding.collectAppearFromValues(appearFromValues);
+    }
+
+    for (int i = 0, size = appearFromValues.size(); i < size; i++) {
+      final ComponentProperty property = appearFromValues.keyAt(i);
+      final RuntimeValue runtimeValue = appearFromValues.valueAt(i);
+      final AnimationState animationState = mAnimationStates.get(property.getTransitionKey());
+      final AnimatedPropertyNode node = animationState.animatedPropertyNodes.get(
+          property.getProperty());
+
+      // If this key is already animating, use its current value, otherwise resolve the appearFrom
+      // value
+      float value;
+      if (node != null) {
+        value = node.getValue();
+      } else {
+        value = runtimeValue.resolve(mResolver, property);
+      }
+
+      if (animationState.changeType != KeyStatus.APPEARED) {
+        throw new RuntimeException(
+            "Wrong transition type for appear of key " + property.getTransitionKey() + ": " +
+                keyStatusToString(animationState.changeType));
+      }
+      animationState.currentDiff.beforeValues.put(property.getProperty(), value);
+    }
+  }
+
+  /**
+   * Resolves the values that disappearing mount content properties will disappear to and sets those
+   * values in the currentDiff for the corresponding transition key.
+   */
+  private void fillDisappearToValues() {
+    SimpleArrayMap<ComponentProperty, RuntimeValue> disappearToValues = new SimpleArrayMap<>();
+    for (int i = 0, size = mAnimationBindings.size(); i < size; i++) {
+      final AnimationBinding binding = mAnimationBindings.get(i);
+      binding.collectDisappearToValues(disappearToValues);
+    }
+
+    for (int i = 0, size = disappearToValues.size(); i < size; i++) {
+      final ComponentProperty property = disappearToValues.keyAt(i);
+      final RuntimeValue runtimeValue = disappearToValues.valueAt(i);
+      final AnimationState animationState = mAnimationStates.get(property.getTransitionKey());
+      if (animationState.changeType != KeyStatus.DISAPPEARED) {
+        throw new RuntimeException(
+            "Wrong transition type for disappear of key " + property.getTransitionKey() + ": " +
+                keyStatusToString(animationState.changeType));
+      }
+      final float value = runtimeValue.resolve(mResolver, property);
+      if (animationState.currentDiff.afterValues.put(property.getProperty(), value) != null) {
+        throw new RuntimeException("TransitionDiff wasn't cleared properly!");
+      }
+    }
+  }
+
+  private void restoreInitialStates() {
+    for (int i = 0, size = mAnimationStates.size(); i < size; i++) {
+      final String transitionKey = mAnimationStates.keyAt(i);
+      final AnimationState animationState = mAnimationStates.valueAt(i);
+      // If the component is appearing, we will instead restore the initial value in
+      // fillAppearFromValues. This is necessary since appearFrom values can be written in terms of
+      // the end state (e.g. appear from an offset of -10dp)
+      if (animationState.changeType != KeyStatus.APPEARED) {
+        for (int j = 0; j < animationState.currentDiff.beforeValues.size(); j++) {
+          final AnimatedProperty property = animationState.currentDiff.beforeValues.keyAt(j);
+          property.set(
+              animationState.mountItem,
+              animationState.currentDiff.beforeValues.valueAt(j));
+        }
+      }
+    }
+  }
+
+  private float getCurrentValue(AnimationState animationState, AnimatedProperty animatedProperty) {
+    final AnimatedPropertyNode animatedNode = animationState.animatedPropertyNodes.get(
+        animatedProperty);
+    if (animatedNode != null) {
+      return animatedNode.getValue();
+    }
+
+    // Try to use the before value, but for appearing animations, use the end state since there is
+    // no before state.
+    final LayoutOutput layoutOutputToCheck = animationState.changeType == KeyStatus.APPEARED ?
+        animationState.nextLayoutOutput :
+        animationState.currentLayoutOutput;
+    if (layoutOutputToCheck == null) {
+      throw new RuntimeException("Both LayoutOutputs were null!");
+    }
+
+    return animatedProperty.get(layoutOutputToCheck);
   }
 
   private AnimatedPropertyNode getOrCreateAnimatedPropertyNode(
