@@ -34,7 +34,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
   private final View mView;
   private NodeInfo mNodeInfo;
   private final AccessibilityDelegateCompat mSuperDelegate;
-  private static Rect sDefaultBounds;
+  private static final Rect sDefaultBounds = new Rect(0, 0, 1, 1);
 
   ComponentAccessibilityDelegate(View view, NodeInfo nodeInfo) {
     super(view);
@@ -311,12 +311,6 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
   }
 
   private static Rect getDefaultBounds() {
-    synchronized(sDefaultBounds) {
-      if (sDefaultBounds == null) {
-        sDefaultBounds = new Rect(0, 0, 1, 1);
-      }
-    }
-
     return sDefaultBounds;
   }
 
