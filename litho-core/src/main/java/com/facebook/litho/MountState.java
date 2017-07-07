@@ -1899,6 +1899,10 @@ class MountState implements DataFlowTransitionManager.OnAnimationCompleteListene
     if (shouldAnimateTransitions(layoutState)) {
       createNewTransitions(layoutState);
     }
+
+    if (!mAnimatingTransitionKeys.isEmpty()) {
+      updateAnimationLockedIndices(layoutState);
+    }
   }
 
   private void createNewTransitions(LayoutState newLayoutState) {
@@ -1917,6 +1921,27 @@ class MountState implements DataFlowTransitionManager.OnAnimationCompleteListene
       }
     }
   }
+
+  private void updateAnimationLockedIndices(LayoutState newLayoutState) {
+    mAnimationLockedIndices = null;
+    for (int i = 0, size = newLayoutState.getMountableOutputCount(); i < size; i++) {
+      final LayoutOutput output = newLayoutState.getMountableOutputAt(i);
+      final String transitionKey = output.getTransitionKey();
+      if (transitionKey == null) {
+        continue;
+      }
+
+      if (mTransitionManager.isKeyAnimating(transitionKey)) {
+        lockLayoutOutputForAnimation(newLayoutState, i);
+        mAnimatingTransitionKeys.add(transitionKey);
+      }
+    }
+
+    if (AnimationsDebug.ENABLED) {
+      AnimationsDebug.debugPrintAnimationLockedIndices(newLayoutState, mAnimationLockedIndices);
+    }
+  }
+
   private int findLastDescendantIndex(LayoutState layoutState, int index) {
     final LayoutOutput host = layoutState.getMountableOutputAt(index);
     final long hostId = host.getId();
@@ -2016,7 +2041,20 @@ class MountState implements DataFlowTransitionManager.OnAnimationCompleteListene
         throw new RuntimeException(
             "Ending animation for key " + transitionKey + " but it wasn't recorded as animating!");
       }
-      // TODO: Unlock animation locked indices
+      final LayoutOutput layoutOutput = mLastMountedLayoutState.getLayoutOutputForTransitionKey(
+          transitionKey);
+      unlockLayoutOutputForAnimation(
+          mLastMountedLayoutState,
+          mLastMountedLayoutState.getLayoutOutputPositionForId(layoutOutput.getId()));
+
+      if (ComponentsConfiguration.isDebugModeEnabled && mAnimatingTransitionKeys.isEmpty()) {
+        for (int i = 0, size = mAnimationLockedIndices.length; i < size; i++) {
+          if (mAnimationLockedIndices[i] != 0) {
+            throw new RuntimeException(
+                "No running animations but index " + i + " is still animation locked!");
+          }
+        }
+      }
     }
   }
 
