@@ -234,6 +234,24 @@ public class DataFlowTransitionManager {
   }
 
   /**
+   * To be called when a MountState is recycled for a new component tree. Clears all animations.
+   */
+  void reset() {
+    // Clear/reset all animations
+    for (int i = 0, size = mAnimationStates.size(); i < size; i++) {
+      final String key = mAnimationStates.keyAt(i);
+      final AnimationState animationState = mAnimationStates.valueAt(i);
+      setMountItem(key, animationState, null);
+      releaseAnimationState(animationState);
+    }
+    
+    mAnimationStates.clear();
+    mAnimationsToKeys.clear();
+    mTransitions.clear();
+    mAnimationBindings.clear();
+  }
+
+  /**
    * Called to signal that a new layout is being mounted that may require transition animations: the
    * specification for these animations is provided on the given {@link TransitionContext}.
    */
@@ -319,6 +337,10 @@ public class DataFlowTransitionManager {
     recordAllTransitioningProperties();
     fillAppearFromValues();
     fillDisappearToValues();
+
+    // If we recorded any mount content diffs that didn't result in an animation being created for
+    // that transition key, clean them up now.
+    cleanupNonAnimatingAnimationStates();
   }
 
   private void createTransitionAnimations() {
@@ -584,6 +606,20 @@ public class DataFlowTransitionManager {
     final ViewParent parent = view.getParent();
     if (parent instanceof ComponentHost) {
       recursivelySetChildClippingForView((View) parent, clipChildren);
+    }
+  }
+
+  /**
+   * Removes any AnimationStates that were created in {@link #recordLayoutOutputDiff} but never
+   * resulted in an animation being created.
+   */
+  private void cleanupNonAnimatingAnimationStates() {
+    for (int i = mAnimationStates.size() - 1; i >= 0; i--) {
+      final AnimationState animationState = mAnimationStates.valueAt(i);
+      if (animationState.activeAnimations.isEmpty()) {
+        setMountItem(mAnimationStates.keyAt(i), animationState, null);
+        releaseAnimationState(mAnimationStates.removeAt(i));
+      }
     }
   }
 

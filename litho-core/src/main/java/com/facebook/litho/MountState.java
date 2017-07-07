@@ -1904,6 +1904,14 @@ class MountState implements DataFlowTransitionManager.OnAnimationCompleteListene
       throw new RuntimeException("Should only process transitions on dirty mounts");
     }
 
+    // If this is a totally new component tree, then we shouldn't do any transition animations for
+    // changed mount content
+    final int componentTreeId = layoutState.getComponentTreeId();
+    if (mLastMountedComponentTreeId != componentTreeId) {
+      resetAnimationState();
+      return;
+    }
+
     if (!mDisappearingMountItems.isEmpty()) {
       updateDisappearingMountItems(layoutState);
     }
@@ -1915,6 +1923,19 @@ class MountState implements DataFlowTransitionManager.OnAnimationCompleteListene
     if (!mAnimatingTransitionKeys.isEmpty()) {
       updateAnimationLockedIndices(layoutState);
     }
+  }
+
+  private void resetAnimationState() {
+    if (mTransitionManager == null) {
+      return;
+    }
+    for (MountItem item : mDisappearingMountItems.values()) {
+      endUnmountDisappearingItem(item);
+    }
+    mDisappearingMountItems.clear();
+    mAnimatingTransitionKeys.clear();
+    mTransitionManager.reset();
+    mAnimationLockedIndices = null;
   }
 
   private void updateDisappearingMountItems(LayoutState newLayoutState) {
