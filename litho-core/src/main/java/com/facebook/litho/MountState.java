@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.LongSparseArray;
+import android.support.v4.util.SimpleArrayMap;
 import android.support.v4.view.ViewCompat;
 import android.text.TextUtils;
 import android.util.SparseArray;
@@ -31,7 +33,6 @@ import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
 
 import com.facebook.infer.annotation.ThreadConfined;
-import com.facebook.litho.animation.AnimationBinding;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.reference.Reference;
 
@@ -64,7 +65,7 @@ import static com.facebook.litho.ThreadUtils.assertMainThread;
  * @see LayoutState
  */
 @ThreadConfined(ThreadConfined.UI)
-class MountState {
+class MountState implements DataFlowTransitionManager.OnAnimationCompleteListener {
 
   static final int ROOT_HOST_ID = 0;
 
@@ -105,7 +106,8 @@ class MountState {
   private int mPreviousTopsIndex;
   private int mPreviousBottomsIndex;
   private int mLastMountedComponentTreeId;
-  private final HashMap<String, Integer> mMountedTransitionKeys = new HashMap<>();
+  private final HashMap<String, MountItem> mDisappearingMountItems = new HashMap<>();
+  private final HashSet<String> mAnimatingTransitionKeys = new HashSet<>();
   private LayoutState mLastMountedLayoutState;
   private int[] mAnimationLockedIndices;
 
@@ -180,6 +182,8 @@ class MountState {
     }
 
     if (mIsDirty) {
+      updateTransitions(layoutState);
+
       suppressInvalidationsOnHosts(true);
 
       // Prepare the data structure for the new LayoutState and removes mountItems
@@ -244,6 +248,10 @@ class MountState {
       if (isIncrementalMountEnabled) {
         setupPreviousMountableOutputData(layoutState, localVisibleRect);
       }
+    }
+
+    if (shouldAnimateTransitions(layoutState)) {
+      mTransitionManager.runTransitions();
     }
 
     mIsDirty = false;
@@ -527,14 +535,10 @@ class MountState {
     // 2. Reset all the properties like click handler, content description and tags related to
     // this item if it needs to be updated. the update mount item will re-set the new ones.
     if (shouldUpdate) {
-      final String transitionKey = maybeDecrementTransitionKeyMountCount(currentMountItem);
-
       // This mount content might be animating and we may be remounting it as a different component
       // in the same tree, or as a component in a totally different tree so we need to notify the
       // transition manager.
-      if (transitionKey != null && mTransitionManager != null) {
-        mTransitionManager.onContentUnmounted(transitionKey);
-      }
+      maybeUpdateAnimatingMountContent(currentMountItem, null);
 
       // If we're remounting this ComponentHost for a new ComponentTree, remove all disappearing
       // mount content that was animating since those disappearing animations belong to the old
@@ -573,7 +577,8 @@ class MountState {
 
       updateMountedContent(currentMountItem, layoutOutput, itemComponent);
       setViewAttributes(currentMountItem);
-      maybeIncrementTransitionKeyMountCount(currentMountItem);
+
+      maybeUpdateAnimatingMountContent(currentMountItem, currentMountItem.getContent());
     }
 
     final Object currentContent = currentMountItem.getContent();
@@ -883,7 +888,6 @@ class MountState {
 
       // We do not need this mapping for disappearing items.
       mIndexToItemMap.remove(mLayoutOutputsIds[i]);
-      maybeDecrementTransitionKeyMountCount(item);
 
       // Likewise we no longer need host mapping for disappearing items.
       if (isHostSpec(item.getComponent())) {
@@ -998,7 +1002,6 @@ class MountState {
     // Create and keep a MountItem even for the layoutSpec with null content
     // that sets the root host interactions.
     mIndexToItemMap.put(mLayoutOutputsIds[index], item);
-    maybeIncrementTransitionKeyMountCount(item);
 
     if (component.getLifecycle().canMountIncrementally()) {
       mCanMountIncrementallyMountItems.put(mLayoutOutputsIds[index], item);
@@ -1009,6 +1012,8 @@ class MountState {
     host.mount(index, item, sTempRect);
 
     setViewAttributes(item);
+
+    maybeUpdateAnimatingMountContent(item, content);
 
     return item;
   }
@@ -1798,11 +1803,7 @@ class MountState {
     unbindAndUnmountLifecycle(context, item);
 
     mIndexToItemMap.remove(mLayoutOutputsIds[index]);
-    final String transitionKey = maybeDecrementTransitionKeyMountCount(item);
-
-    if (transitionKey != null && mTransitionManager != null) {
-      mTransitionManager.onContentUnmounted(transitionKey);
-    }
+    maybeUpdateAnimatingMountContent(item, null);
 
     if (component.getLifecycle().canMountIncrementally()) {
       mCanMountIncrementallyMountItems.delete(mLayoutOutputsIds[index]);
@@ -1841,7 +1842,6 @@ class MountState {
 
     final ComponentHost host = item.getHost();
     host.startUnmountDisappearingItem(index, item);
-    // TODO: Handle end of disappearing item animation
   }
 
   private void endUnmountDisappearingItem(ComponentContext context, MountItem item) {
@@ -1880,6 +1880,43 @@ class MountState {
     return mIndexToItemMap.get(mLayoutOutputsIds[i]);
   }
 
+  /**
+   * Creates and updates transitions for a new LayoutState. The steps are as follows
+   *
+   * 1. Disappearing items: Update disappearing mount items that are no longer disappearing (e.g.
+   *    because they came back). This means canceling the animation and cleaning up the
+   *    corresponding ComponentHost.
+   * 2. New transitions: Use the transition manager to create new animations.
+   * 3. Update locked indices: Based on running/new animations, there are some mount items we want
+   *    to make sure are not unmounted due to incremental mount and being outside of visibility
+   *    bounds.
+   */
+  private void updateTransitions(LayoutState layoutState) {
+    if (!mIsDirty) {
+      throw new RuntimeException("Should only process transitions on dirty mounts");
+    }
+
+    if (shouldAnimateTransitions(layoutState)) {
+      createNewTransitions(layoutState);
+    }
+  }
+
+  private void createNewTransitions(LayoutState newLayoutState) {
+    prepareTransitionManager(newLayoutState);
+
+    collectPendingAnimations(newLayoutState);
+
+    mTransitionManager.setupTransitions(mLastMountedLayoutState, newLayoutState);
+
+    SimpleArrayMap<String, LayoutOutput> nextTransitionKeys =
+        newLayoutState.getTransitionKeyMapping();
+    for (int i = 0, size = nextTransitionKeys.size(); i < size; i++) {
+      final String transitionKey = nextTransitionKeys.keyAt(i);
+      if (mTransitionManager.isKeyAnimating(transitionKey)) {
+        mAnimatingTransitionKeys.add(transitionKey);
+      }
+    }
+  }
   private int findLastDescendantIndex(LayoutState layoutState, int index) {
     final LayoutOutput host = layoutState.getMountableOutputAt(index);
     final long hostId = host.getId();
@@ -1945,6 +1982,41 @@ class MountState {
         }
       }
       hostId = layoutState.getMountableOutputAt(hostIndex).getHostMarker();
+    }
+  }
+
+  private boolean shouldAnimateTransitions(LayoutState newLayoutState) {
+    return mIsDirty &&
+        newLayoutState.shouldAnimateTransitions() &&
+        newLayoutState.hasTransitionContext() &&
+        mLastMountedComponentTreeId == newLayoutState.getComponentTreeId();
+  }
+
+  private static String getTransitionKey(MountItem mountItem) {
+    final ViewNodeInfo viewNodeInfo = mountItem.getViewNodeInfo();
+    if (viewNodeInfo == null) {
+      return null;
+    }
+
+    final String transitionKey = viewNodeInfo.getTransitionKey();
+    if (transitionKey == null || transitionKey.length() == 0) {
+      return null;
+    }
+
+    return transitionKey;
+  }
+
+  @Override
+  public void onAnimationComplete(String transitionKey) {
+    final MountItem disappearingItem = mDisappearingMountItems.remove(transitionKey);
+    if (disappearingItem != null) {
+      // TODO: Handle end of disappearing item animation
+    } else {
+      if (!mAnimatingTransitionKeys.remove(transitionKey)) {
+        throw new RuntimeException(
+            "Ending animation for key " + transitionKey + " but it wasn't recorded as animating!");
+      }
+      // TODO: Unlock animation locked indices
     }
   }
 
@@ -2156,7 +2228,7 @@ class MountState {
 
   private void prepareTransitionManager(LayoutState layoutState) {
     if (layoutState.hasTransitionContext() && mTransitionManager == null) {
-      mTransitionManager = new DataFlowTransitionManager();
+      mTransitionManager = new DataFlowTransitionManager(this);
     }
   }
 
@@ -2164,48 +2236,22 @@ class MountState {
     if (componentHost.hasDisappearingItems()) {
       List<String> disappearingKeys = componentHost.getDisappearingItemKeys();
       for (int i = 0, size = disappearingKeys.size(); i < size; i++) {
-        mTransitionManager.onContentUnmounted(disappearingKeys.get(i));
+        // TODO
       }
     }
   }
 
-  // These increment and decrement methods are necessary because when a transition key changes what
-  // content it mounts to, it can be re-added to the mount state before its old content is removed
-  // (so we can't use a simple set).
-  private void maybeIncrementTransitionKeyMountCount(MountItem mountItem) {
-    final ViewNodeInfo viewNodeInfo = mountItem.getViewNodeInfo();
-    if (viewNodeInfo == null) {
+  private void maybeUpdateAnimatingMountContent(MountItem mountItem, Object mountContent) {
+    if (mTransitionManager == null) {
       return;
     }
 
-    final String transitionKey = viewNodeInfo.getTransitionKey();
+    final String transitionKey = getTransitionKey(mountItem);
     if (transitionKey == null) {
       return;
     }
 
-    final Integer currentCount = mMountedTransitionKeys.get(transitionKey);
-    mMountedTransitionKeys.put(transitionKey, currentCount == null ? 1 : currentCount + 1);
-  }
-
-  private String maybeDecrementTransitionKeyMountCount(MountItem mountItem) {
-    final ViewNodeInfo viewNodeInfo = mountItem.getViewNodeInfo();
-    if (viewNodeInfo == null) {
-      return null;
-    }
-
-    final String transitionKey = viewNodeInfo.getTransitionKey();
-    if (transitionKey == null) {
-      return null;
-    }
-
-    final Integer currentCount = mMountedTransitionKeys.remove(transitionKey);
-    if (currentCount == null) {
-      throw new RuntimeException("Tried to decrement mount count below 0 for key " + transitionKey);
-    }
-    if (currentCount != 1) {
-      mMountedTransitionKeys.put(transitionKey, currentCount - 1);
-    }
-    return transitionKey;
+    mTransitionManager.setMountContent(transitionKey, mountContent);
   }
 
   private static void collectPendingAnimations(LayoutState layoutState) {

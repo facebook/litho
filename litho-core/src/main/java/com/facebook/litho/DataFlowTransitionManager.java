@@ -134,7 +134,11 @@ public class DataFlowTransitionManager {
       new TransitionsAnimationBindingListener();
   private final TransitionsResolver mResolver = new TransitionsResolver();
   private final ArrayList<Transition> mTransitions = new ArrayList<>();
-  private OnAnimationCompleteListener mOnAnimationCompleteListener;
+  private final OnAnimationCompleteListener mOnAnimationCompleteListener;
+
+  public DataFlowTransitionManager(OnAnimationCompleteListener onAnimationCompleteListener) {
+    mOnAnimationCompleteListener = onAnimationCompleteListener;
+  }
 
   /**
    * Creates (but doesn't start) the animations for the next transition based on the current and
@@ -177,9 +181,13 @@ public class DataFlowTransitionManager {
     commitLayoutOutputDiffs();
   }
 
+  /**
+   * Called after {@link #commitLayoutOutputDiffs} has been called and the new layout has been
+   * mounted. This restores the state of the previous layout for content that will animate and then
+   * starts the corresponding animations.
+   */
   void runTransitions() {
     restoreInitialStates();
-    fillDisappearToValues();
 
     if (AnimationsDebug.ENABLED) {
       debugLogStartingAnimations();
@@ -190,27 +198,27 @@ public class DataFlowTransitionManager {
       binding.addListener(mAnimationBindingListener);
       binding.start(mResolver);
     }
+
+    cleanupLayoutOutputs();
   }
 
-  void setOnAnimationCompleteListener(OnAnimationCompleteListener listener) {
-    mOnAnimationCompleteListener = listener;
+  /**
+   * Sets the mount content for a given key. This is used to initially set mount content, but also
+   * to set content when content is incrementally mounted/unmounted during an animation.
+   */
+  void setMountContent(String transitionKey, Object mountContent) {
+    final AnimationState animationState = mAnimationStates.get(transitionKey);
+    if (animationState != null) {
+      setMountItem(transitionKey, animationState, mountContent);
+    }
   }
 
+  /**
+   * After mount content diffs have been committed with {@link #commitLayoutOutputDiffs}, returns
+   * whether the given key will be/is animating.
+   */
   boolean isKeyAnimating(String key) {
     return mAnimationStates.containsKey(key);
-  }
-
-  void onContentUnmounted(String transitionKey) {
-    if (AnimationsDebug.ENABLED) {
-      Log.d(TAG, "Content unmounted for key: " + transitionKey);
-    }
-
-    final AnimationState animationState = mAnimationStates.get(transitionKey);
-    if (animationState == null) {
-      return;
-    }
-
-    setMountItem(animationState, null);
   }
 
   /**
@@ -514,13 +522,17 @@ public class DataFlowTransitionManager {
     return node;
   }
 
-  private void setMountItem(AnimationState animationState, Object newMountItem) {
+  private void setMountItem(String key, AnimationState animationState, Object newMountItem) {
     // If the mount item changes, this means this transition key will be rendered with a different
     // mount item (View or Drawable) than it was during the last mount, so we need to migrate
     // animation state from the old mount item to the new one.
 
     if (animationState.mountItem == newMountItem) {
       return;
+    }
+
+    if (AnimationsDebug.ENABLED) {
+      Log.d(AnimationsDebug.TAG, "Setting mount item for " + key + " to " + newMountItem);
     }
 
     if (animationState.mountItem != null) {
@@ -560,6 +572,13 @@ public class DataFlowTransitionManager {
     final ViewParent parent = view.getParent();
     if (parent instanceof ComponentHost) {
       recursivelySetChildClippingForView((View) parent, clipChildren);
+    }
+  }
+
+  private void cleanupLayoutOutputs() {
+    for (int i = 0; i < mAnimationStates.size(); i++) {
+      final AnimationState animationState = mAnimationStates.valueAt(i);
+      clearLayoutOutputs(animationState);
     }
   }
 
@@ -682,7 +701,19 @@ public class DataFlowTransitionManager {
     @Override
     public float getCurrentState(ComponentProperty property) {
       final AnimationState animationState = mAnimationStates.get(property.getTransitionKey());
-      return property.getProperty().get(animationState.mountItem);
+
+      // We may already have an explicit beginning state for this property from
+      // recordAllTransitioningProperties or setAppearFromValues, in which case we should return it.
+      //
+      // Otherwise, it may be a property that isn't animating, but is used to calculate an appear-
+      // from value (e.g. the width for DimensionValue#widthPercentageOffset) in which case we
+      // should just grab it off the LayoutOutput.
+      Float explicitValue = animationState.currentDiff.beforeValues.get(property.getProperty());
+      if (explicitValue != null) {
+        return explicitValue;
+      }
+
+      return getCurrentValue(animationState, property.getProperty());
     }
 
     @Override
