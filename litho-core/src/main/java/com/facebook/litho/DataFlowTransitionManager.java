@@ -77,8 +77,8 @@ public class DataFlowTransitionManager {
   /**
    * A listener that will be invoked when a mount item has stopped animating.
    */
-  public interface OnMountItemAnimationComplete {
-    void onMountItemAnimationComplete(Object mountItem);
+  public interface OnAnimationCompleteListener {
+    void onAnimationComplete(String transitionKey);
   }
 
   private static final Pools.SimplePool<AnimationState> sAnimationStatePool =
@@ -110,7 +110,6 @@ public class DataFlowTransitionManager {
         new SimpleArrayMap<>();
     public ArraySet<AnimatedProperty> animatingProperties = new ArraySet<>();
     public Object mountItem;
-    public ArrayList<OnMountItemAnimationComplete> mAnimationCompleteListeners = new ArrayList<>();
     public TransitionDiff currentDiff = new TransitionDiff();
     public int changeType = KeyStatus.UNSET;
     public @Nullable LayoutOutput currentLayoutOutput;
@@ -121,7 +120,6 @@ public class DataFlowTransitionManager {
       animatedPropertyNodes.clear();
       animatingProperties.clear();
       mountItem = null;
-      mAnimationCompleteListeners.clear();
       currentDiff.reset();
       changeType = KeyStatus.UNSET;
       clearLayoutOutputs(this);
@@ -136,6 +134,7 @@ public class DataFlowTransitionManager {
       new TransitionsAnimationBindingListener();
   private final TransitionsResolver mResolver = new TransitionsResolver();
   private final ArrayList<Transition> mTransitions = new ArrayList<>();
+  private OnAnimationCompleteListener mOnAnimationCompleteListener;
 
   /**
    * Creates (but doesn't start) the animations for the next transition based on the current and
@@ -193,9 +192,8 @@ public class DataFlowTransitionManager {
     }
   }
 
-  void addMountItemAnimationCompleteListener(String key, OnMountItemAnimationComplete listener) {
-    final AnimationState state = mAnimationStates.get(key);
-    state.mAnimationCompleteListeners.add(listener);
+  void setOnAnimationCompleteListener(OnAnimationCompleteListener listener) {
+    mOnAnimationCompleteListener = listener;
   }
 
   boolean isKeyAnimating(String key) {
@@ -530,31 +528,13 @@ public class DataFlowTransitionManager {
       for (int i = 0, size = animatingProperties.size(); i < size; i++) {
         animatingProperties.valueAt(i).reset(animationState.mountItem);
       }
-      onMountItemAnimationComplete(animationState);
+      recursivelySetChildClipping(animationState.mountItem, true);
     }
     for (int i = 0, size = animationState.animatedPropertyNodes.size(); i < size; i++) {
       animationState.animatedPropertyNodes.valueAt(i).setMountItem(newMountItem);
     }
     recursivelySetChildClipping(newMountItem, false);
     animationState.mountItem = newMountItem;
-  }
-
-  private void onMountItemAnimationComplete(AnimationState animationState) {
-    recursivelySetChildClipping(animationState.mountItem, true);
-    fireMountItemAnimationCompleteListeners(animationState);
-  }
-
-  private void fireMountItemAnimationCompleteListeners(AnimationState animationState) {
-    if (animationState.mountItem == null) {
-      return;
-    }
-
-    final ArrayList<OnMountItemAnimationComplete> listeners =
-        animationState.mAnimationCompleteListeners;
-    for (int i = 0, listenerSize = listeners.size(); i < listenerSize; i++) {
-      listeners.get(i).onMountItemAnimationComplete(animationState.mountItem);
-    }
-    listeners.clear();
   }
 
   /**
@@ -662,11 +642,14 @@ public class DataFlowTransitionManager {
     @Override
     public void onFinish(AnimationBinding binding) {
       final ArraySet<String> transitioningKeys = mAnimationsToKeys.remove(binding);
+      if (transitioningKeys == null) {
+        return;
+      }
 
       // When an animation finishes, we want to go through all the mount items it was animating and
       // see if it was the last active animation. If it was, we know that item is no longer
       // animating and we can release the animation state.
-      
+
       for (int i = 0, size = transitioningKeys.size(); i < size; i++) {
         final String key = transitioningKeys.valueAt(i);
         final AnimationState animationState = mAnimationStates.get(key);
@@ -682,7 +665,10 @@ public class DataFlowTransitionManager {
               animationState.animatingProperties.valueAt(j).reset(animationState.mountItem);
             }
           }
-          onMountItemAnimationComplete(animationState);
+          recursivelySetChildClipping(animationState.mountItem, true);
+          if (mOnAnimationCompleteListener != null) {
+            mOnAnimationCompleteListener.onAnimationComplete(key);
+          }
           mAnimationStates.remove(key);
           releaseAnimationState(animationState);
         }

@@ -1841,19 +1841,7 @@ class MountState {
 
     final ComponentHost host = item.getHost();
     host.startUnmountDisappearingItem(index, item);
-    mTransitionManager.addMountItemAnimationCompleteListener(
-        key,
-        new DataFlowTransitionManager.OnMountItemAnimationComplete() {
-          @Override
-          public void onMountItemAnimationComplete(Object currentMountItem) {
-            if (item.getContent() != currentMountItem) {
-              throw new RuntimeException(
-                  "Got animation complete callback for wrong mount item (expected " +
-                      item.getContent() + ", got " + currentMountItem + ")");
-            }
-            endUnmountDisappearingItem(mContext, item);
-          }
-        });
+    // TODO: Handle end of disappearing item animation
   }
 
   private void endUnmountDisappearingItem(ComponentContext context, MountItem item) {
