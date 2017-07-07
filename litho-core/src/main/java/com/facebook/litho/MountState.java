@@ -179,25 +179,6 @@ class MountState {
       mountEvent = logger.newPerformanceEvent(EVENT_MOUNT);
     }
 
-    // the isDirty check here prevents us from animating for incremental mounts
-    final boolean shouldAnimateTransitions =
-        mIsDirty &&
-        layoutState.shouldAnimateTransitions() &&
-        layoutState.hasTransitionContext() &&
-        mLastMountedComponentTreeId == componentTreeId;
-
-    prepareTransitionManager(layoutState);
-    if (shouldAnimateTransitions) {
-      collectPendingAnimations(layoutState);
-      createAutoMountTransitions(layoutState);
-      mTransitionManager.onNewTransitionContext(layoutState.getTransitionContext());
-
-      recordMountedItemsWithTransitionKeys(
-          mTransitionManager,
-          mIndexToItemMap,
-          true /* isPreMount */);
-    }
-
     if (mIsDirty) {
       suppressInvalidationsOnHosts(true);
 
@@ -268,14 +249,6 @@ class MountState {
     mIsDirty = false;
     if (localVisibleRect != null) {
       mPreviousLocalVisibleRect.set(localVisibleRect);
-    }
-
-    if (shouldAnimateTransitions) {
-      recordMountedItemsWithTransitionKeys(
-          mTransitionManager,
-          mIndexToItemMap,
-          false /* isPreMount */);
-      mTransitionManager.runTransitions();
     }
 
     releaseLastMountedLayoutState();
@@ -2196,27 +2169,6 @@ class MountState {
   private void prepareTransitionManager(LayoutState layoutState) {
     if (layoutState.hasTransitionContext() && mTransitionManager == null) {
       mTransitionManager = new DataFlowTransitionManager();
-    }
-  }
-
-  private static void recordMountedItemsWithTransitionKeys(
-      DataFlowTransitionManager transitionManager,
-      LongSparseArray<MountItem> indexToItemMap,
-      boolean isPreMount) {
-    for (int i = 0, size = indexToItemMap.size(); i < size; i++) {
-      final MountItem item = indexToItemMap.valueAt(i);
-      final ViewNodeInfo viewNodeInfo = item.getViewNodeInfo();
-      final String transitionKey = viewNodeInfo != null
-          ? viewNodeInfo.getTransitionKey()
-          : null;
-
-      if (transitionKey != null) {
-        if (isPreMount) {
-          transitionManager.onPreMountItem(transitionKey, (View) item.getContent());
-        } else {
-          transitionManager.onPostMountItem(transitionKey, (View) item.getContent());
-        }
-      }
     }
   }
 
