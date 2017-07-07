@@ -222,6 +222,18 @@ public class DataFlowTransitionManager {
   }
 
   /**
+   * After mount content diffs have been committed with {@link #commitLayoutOutputDiffs}, returns
+   * whether the given key will be disappearing **in this layout diff**.
+   */
+  boolean isKeyDisappearing(String key) {
+    final AnimationState animationState = mAnimationStates.get(key);
+    if (animationState == null) {
+      return false;
+    }
+    return animationState.changeType == KeyStatus.DISAPPEARED;
+  }
+
+  /**
    * Called to signal that a new layout is being mounted that may require transition animations: the
    * specification for these animations is provided on the given {@link TransitionContext}.
    */
