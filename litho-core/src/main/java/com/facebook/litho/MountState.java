@@ -860,8 +860,8 @@ class MountState {
           isItemDisappearing(oldItem, newLayoutState, mTransitionManager)) {
 
         startUnmountDisappearingItem(i, oldItem.getViewNodeInfo().getTransitionKey());
-
-        final int lastDescendantOfItem = findLastDescendantOfItem(i, oldItem);
+        
+        final int lastDescendantOfItem = findLastDescendantIndex(mLastMountedLayoutState, i);
         // Disassociate disappearing items from current mounted items. The layout tree will not
         // contain disappearing items anymore, however they are kept separately in their hosts.
         removeDisappearingItemMappings(i, lastDescendantOfItem);
@@ -916,23 +916,6 @@ class MountState {
             .removeAt(mHostsByMarker.indexOfValue((ComponentHost) item.getContent()));
       }
     }
-  }
-
-  /**
-   * Find the index of last descendant of given {@link MountItem}
-   */
-  private int findLastDescendantOfItem(int disappearingItemIndex, MountItem item) {
-    for (int i = disappearingItemIndex + 1; i < mLayoutOutputsIds.length; i++) {
-      if (!ComponentHostUtils.hasAncestorHost(
-          getItemAt(i).getHost(),
-          (ComponentHost) item.getContent())) {
-        // No need to go further as the items that have common ancestor hosts are co-located.
-        // This is the first non-descendant of given MountItem, therefore last descendant is the
-        // item before.
-        return i - 1;
-      }
-    }
-    return mLayoutOutputsIds.length - 1;
   }
 
   private void updateMountedContent(
@@ -1932,6 +1915,30 @@ class MountState {
 
   MountItem getItemAt(int i) {
     return mIndexToItemMap.get(mLayoutOutputsIds[i]);
+  }
+
+  private int findLastDescendantIndex(LayoutState layoutState, int index) {
+    final LayoutOutput host = layoutState.getMountableOutputAt(index);
+    final long hostId = host.getId();
+
+    for (int i = index + 1, size = layoutState.getMountableOutputCount(); i < size; i++) {
+      final LayoutOutput layoutOutput = layoutState.getMountableOutputAt(i);
+
+      // Walk up the parents looking for the host's id: if we find it, it's a descendant. If we
+      // reach the root, then it's not a descendant and we can stop.
+      long curentHostId = layoutOutput.getHostMarker();
+      while (curentHostId != hostId) {
+        if (curentHostId == ROOT_HOST_ID) {
+          return i - 1;
+        }
+
+        final int parentIndex = layoutState.getLayoutOutputPositionForId(curentHostId);
+        final LayoutOutput parent = layoutState.getMountableOutputAt(parentIndex);
+        curentHostId = parent.getHostMarker();
+      }
+    }
+
+    return layoutState.getMountableOutputCount() - 1;
   }
 
   private static class PrepareMountStats {
