@@ -36,6 +36,10 @@ test:
     # Run the tests with Gradle
     - ./gradlew test
   post:
+    # Collect the JUnit reports
+    - mkdir -p $CIRCLE_TEST_REPORTS/junit/
+    - find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
+    # Publish snapshot
     - scripts/circle-ci-publish-snapshot.sh
 
 experimental:
