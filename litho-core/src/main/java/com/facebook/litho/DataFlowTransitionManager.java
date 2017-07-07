@@ -14,6 +14,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 
 import android.support.annotation.IntDef;
+import android.support.annotation.Nullable;
 import android.support.v4.util.Pools;
 import android.support.v4.util.SimpleArrayMap;
 import android.util.Log;
@@ -34,6 +35,33 @@ import static com.facebook.litho.AnimationsDebug.TAG;
 /**
  * Unique per MountState instance. Called from MountState on mount calls to process the transition
  * keys and handles which transitions to run and when.
+ *
+ * This class is tightly coupled to MountState. When creating new animations, the expected usage of
+ * this class is:
+ * 1. {@link #setupTransitions} is called with the current and next LayoutStates.
+ * 2. {@link #isKeyAnimating} and {@link #isKeyDisappearing} can be called to determine what is/will
+ *    be animating
+ * 3. MountState updates the mount content for changing content.
+ * 4. {@link #runTransitions} is called to restore initial states for the transition and run the new
+ *    animations.
+ *
+ * Additionally, any time the {@link MountState} is re-used for a different component tree (e.g.
+ * because it was recycled in a RecyclerView), {@link #reset} should be called to stop running
+ * all existing animations.
+ *
+ * SOME TECHNICAL DETAILS:
+ *
+ * First, we need to figure out which keys are appearing and disappearing. Based on this, we create
+ * different animations (e.g. a key could have no animation for appear, but an animation for
+ * change).
+ *
+ * These animations can reference different properties, so it's only at that point that we can
+ * actually record before/after values (in {@link #recordAllTransitioningProperties}). This is also
+ * why we keep around LayoutOutputs beyond the actual {@link #recordLayoutOutputDiff} call.
+ *
+ * Finally, in {@link #runTransitions}, the animations can configure themselves with arbitrary
+ * start/end properties via the {@link TransitionsResolver}. The animations run and we can finally
+ * release the saved LayoutOutputs and cleanup any state for animations that didn't need to run.
  */
 public class DataFlowTransitionManager {
 
@@ -71,7 +99,9 @@ public class DataFlowTransitionManager {
   }
 
   /**
-   * Animation state of a MountItem.
+   * Animation state of a MountItem. Holds everything we currently know about an animating
+   * transition key, as well as information about its most recent changes in property values and
+   * whether it's appearing, disappearing, or changing.
    */
   private static class AnimationState {
 
@@ -83,7 +113,8 @@ public class DataFlowTransitionManager {
     public ArrayList<OnMountItemAnimationComplete> mAnimationCompleteListeners = new ArrayList<>();
     public TransitionDiff currentDiff = new TransitionDiff();
     public int changeType = KeyStatus.UNSET;
-    public boolean sawInPreMount = false;
+    public @Nullable LayoutOutput currentLayoutOutput;
+    public @Nullable LayoutOutput nextLayoutOutput;
 
     public void reset() {
       activeAnimations.clear();
@@ -93,7 +124,7 @@ public class DataFlowTransitionManager {
       mAnimationCompleteListeners.clear();
       currentDiff.reset();
       changeType = KeyStatus.UNSET;
-      sawInPreMount = false;
+      clearLayoutOutputs(this);
     }
   }
 
@@ -104,6 +135,48 @@ public class DataFlowTransitionManager {
   private final TransitionsAnimationBindingListener mAnimationBindingListener =
       new TransitionsAnimationBindingListener();
   private final TransitionsResolver mResolver = new TransitionsResolver();
+  private final ArrayList<Transition> mTransitions = new ArrayList<>();
+
+  /**
+   * Creates (but doesn't start) the animations for the next transition based on the current and
+   * next layout states. After this is called, MountState can commit the layout changes and then
+   * call {@link #runTransitions} to restore the initial states and run the animations.
+   */
+  void setupTransitions(LayoutState currentLayoutState, LayoutState nextLayoutState) {
+    prepareTransitions(nextLayoutState.getTransitionContext());
+
+    final SimpleArrayMap<String, LayoutOutput> currentTransitionKeys =
+        currentLayoutState.getTransitionKeyMapping();
+    final SimpleArrayMap<String, LayoutOutput> nextTransitionKeys =
+        nextLayoutState.getTransitionKeyMapping();
+    final boolean[] seenIndicesInNewLayout = new boolean[currentTransitionKeys.size()];
+    for (int i = 0, size = nextTransitionKeys.size(); i < size; i++) {
+      final String transitionKey = nextTransitionKeys.keyAt(i);
+      final LayoutOutput nextLayoutOutput = nextTransitionKeys.valueAt(i);
+
+      final int currentIndex = currentTransitionKeys.indexOfKey(transitionKey);
+
+      LayoutOutput currentLayoutOutput = null;
+      if (currentIndex >= 0) {
+        currentLayoutOutput = currentTransitionKeys.valueAt(currentIndex);
+        seenIndicesInNewLayout[currentIndex] = true;
+      }
+
+      recordLayoutOutputDiff(transitionKey, currentLayoutOutput, nextLayoutOutput);
+    }
+
+    for (int i = 0, size = currentTransitionKeys.size(); i < size; i++) {
+      if (seenIndicesInNewLayout[i]) {
+        continue;
+      }
+      recordLayoutOutputDiff(
+          currentTransitionKeys.keyAt(i),
+          currentTransitionKeys.valueAt(i),
+          null);
+    }
+
+    commitLayoutOutputDiffs();
+  }
 
   void runTransitions() {
     restoreInitialStates();
@@ -140,6 +213,84 @@ public class DataFlowTransitionManager {
     }
 
     setMountItem(animationState, null);
+  }
+
+  /**
+   * Called to signal that a new layout is being mounted that may require transition animations: the
+   * specification for these animations is provided on the given {@link TransitionContext}.
+   */
+  private void prepareTransitions(TransitionContext transitionContext) {
+    mAnimationBindings.clear();
+    mTransitions.clear();
+    mTransitions.addAll(transitionContext.getAutoTransitionSet().getTransitions());
+
+    if (AnimationsDebug.ENABLED) {
+      Log.d(
+          AnimationsDebug.TAG,
+          "Got new TransitionContext with " + mTransitions.size() + " transitions");
+    }
+
+    for (int i = 0, size = mAnimationStates.size(); i < size; i++) {
+      final AnimationState animationState = mAnimationStates.valueAt(i);
+      animationState.currentDiff.reset();
+    }
+  }
+
+  /**
+   * Called to record the current/next content for a transition key.
+   *
+   * @param currentLayoutOutput the current LayoutOutput for this key, or null if the key is
+   * appearing
+   * @param nextLayoutOutput the new LayoutOutput for this key, or null if the key is disappearing
+   */
+  private void recordLayoutOutputDiff(
+      String transitionKey,
+      LayoutOutput currentLayoutOutput,
+      LayoutOutput nextLayoutOutput) {
+    AnimationState animationState = mAnimationStates.get(transitionKey);
+    if (animationState == null) {
+      animationState = acquireAnimationState();
+      mAnimationStates.put(transitionKey, animationState);
+    }
+
+    if (currentLayoutOutput == null && nextLayoutOutput == null) {
+      throw new RuntimeException("Both current and next LayoutOutputs were null!");
+    }
+
+    if (currentLayoutOutput == null && nextLayoutOutput != null) {
+      animationState.changeType = KeyStatus.APPEARED;
+    } else if (currentLayoutOutput != null && nextLayoutOutput != null) {
+      animationState.changeType = KeyStatus.CHANGED;
+    } else {
+      animationState.changeType = KeyStatus.DISAPPEARED;
+    }
+
+    animationState.currentLayoutOutput = currentLayoutOutput;
+    animationState.nextLayoutOutput = nextLayoutOutput;
+
+    if (animationState.currentLayoutOutput != null) {
+      animationState.currentLayoutOutput.incrementRefCount();
+    }
+    if (animationState.nextLayoutOutput != null) {
+      animationState.nextLayoutOutput.incrementRefCount();
+    }
+
+    if (AnimationsDebug.ENABLED) {
+      Log.d(AnimationsDebug.TAG, "Saw key " + transitionKey + " which is " +
+          keyStatusToString(animationState.changeType));
+    }
+  }
+
+  /**
+   * Called after all mount content diffs have been recorded for this transition. Creates all
+   * animations that will actually run after the new layout is mounted, but does not yet run the
+   * transitions.
+   *
+   * After this point, MountState can use {@link #isKeyAnimating} and {@link #isKeyDisappearing} to
+   * check whether certain mount content will animate.
+   */
+  private void commitLayoutOutputDiffs() {
+    // TODO
   }
 
   private void restoreInitialStates() {
@@ -374,6 +525,17 @@ public class DataFlowTransitionManager {
   private static void releaseAnimationState(AnimationState animationState) {
     animationState.reset();
     sAnimationStatePool.release(animationState);
+  }
+
+  private static void clearLayoutOutputs(AnimationState animationState) {
+    if (animationState.currentLayoutOutput != null) {
+      animationState.currentLayoutOutput.decrementRefCount();
+      animationState.currentLayoutOutput = null;
+    }
+    if (animationState.nextLayoutOutput != null) {
+      animationState.nextLayoutOutput.decrementRefCount();
+      animationState.nextLayoutOutput = null;
+    }
   }
 
   private class TransitionsAnimationBindingListener implements AnimationBindingListener {
