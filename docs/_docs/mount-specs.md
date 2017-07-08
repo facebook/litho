@@ -7,7 +7,7 @@ permalink: /docs/mount-specs
 
 A *mount spec* defines a component that can render views or drawables.
 
-Mount specs should only be created when you need to integrate your own views/drawables with the Components framework. *Mount* here refers to the operation performed by all components in a layout tree to extract their rendered state (a `View` or a `Drawable`) to be displayed.
+Mount specs should only be created when you need to integrate your own views/drawables with the Litho framework. *Mount* here refers to the operation performed by all components in a layout tree to extract their rendered state (a `View` or a `Drawable`) to be displayed.
 
 Mount spec classes should be annotated with `@MountSpec` and implement at least an `@OnCreateMountContent` method. The other methods listed below are optional.
 
@@ -55,7 +55,7 @@ public class ColorComponentSpec {
 
 You can move heavy operations off the UI thread by performing them in the `@OnPrepare` method, which runs only once before the layout calculation is performed and can be executed in a background thread.
 
-Let's say we want to perform the color name parsing off the UI thread in the `ColorComponent` above. In order to do this, we need a way to pass values generated in the `@OnPrepare` method to the `@OnMount` implementation. The Components framework provides *inter-stage inputs and outputs* to allow you to do exactly that.
+Let's say we want to perform the color name parsing off the UI thread in the `ColorComponent` above. In order to do this, we need a way to pass values generated in the `@OnPrepare` method to the `@OnMount` implementation. The Litho framework provides *inter-stage inputs and outputs* to allow you to do exactly that.
 
 Let's have a look at `ColorComponent` with the described `@OnPrepare` method.
 
