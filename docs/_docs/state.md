@@ -18,14 +18,14 @@ You can define a State on a Component by using the @State annotation in the spec
 Defining state elements is enabled on the lifecycle methods of Layout Specs and Mount Specs.
 
 ```java
-@LayoutSpec		
-public class CheckboxSpec {		
+@LayoutSpec
+public class CheckboxSpec {
 
   @OnCreateLayout
   static ComponentLayout onCreateLayout(
       ComponentContext c,
       @State boolean isChecked) {
-      
+
     return Column.create(c)
         .child(Image.create(c)
             .srcRes(isChecked
@@ -61,7 +61,7 @@ This is what you need to know when writing an `@OnCreateInitialState` method:
 Here's how you would initialize the checkbox state with a value passed down from the parent:
 
 ```java
-@LayoutSpec		
+@LayoutSpec
 public class CheckboxSpec {
 
   @OnCreateInitialState
@@ -76,7 +76,7 @@ public class CheckboxSpec {
 ```
 
 ## Defining State Updates
-You can define how a component's state or states should updated by declaring methods annotated with `@OnUpdateState` in the specs.
+You can define how a component's state or states should be updated by declaring methods annotated with `@OnUpdateState` in the specs.
 
 You can have as many `@OnUpdateState` methods as you need, according to what states you want to update or what parameters your states depend on.
 
@@ -91,8 +91,8 @@ This is what you need to know when writing an `@OnUpdateState`  method:
 Here's how you would define a state update method for the checkbox:
 
 ```java
-@LayoutSpec		
-public class CheckboxSpec {		
+@LayoutSpec
+public class CheckboxSpec {
 
   @OnUpdateState
   static void updateCheckboxState(StateValue<Boolean> isChecked) {
@@ -126,14 +126,14 @@ Both methods take as first parameter a `ComponentContext` followed by all the pa
 Here's how you would call the state update method to update your checkbox when a user clicks it:
 
 ```java
-@LayoutSpec		
-public class CheckboxSpec {		
+@LayoutSpec
+public class CheckboxSpec {
 
   @OnCreateLayout
   static ComponentLayout onCreateLayout(
       ComponentContext c,
       @State boolean isChecked) {
-      
+
     return Column.create(c)
         .child(Image.create(c)
         .srcRes(isChecked
