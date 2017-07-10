@@ -2086,8 +2086,15 @@ class MountState implements DataFlowTransitionManager.OnAnimationCompleteListene
         throw new RuntimeException(
             "Ending animation for key " + transitionKey + " but it wasn't recorded as animating!");
       }
+
       final LayoutOutput layoutOutput = mLastMountedLayoutState.getLayoutOutputForTransitionKey(
           transitionKey);
+      if (layoutOutput == null) {
+        throw new RuntimeException("Ending animation for key " + transitionKey + " but the last " +
+            "mounted LayoutState doesn't have that key! (total mounted items: " +
+            mLastMountedLayoutState.getMountableOutputCount() + ")");
+      }
+
       unlockLayoutOutputForAnimation(
           mLastMountedLayoutState,
           mLastMountedLayoutState.getLayoutOutputPositionForId(layoutOutput.getId()));
