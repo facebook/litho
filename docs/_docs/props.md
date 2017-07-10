@@ -80,7 +80,7 @@ Prop defaults also support default values from Resources via setting a `resType`
 ```
 
 ## Resource Types
-When creating layouts, it's very common to use values from Android's resource system such as dimensions, colors, strings, etc. The Components framework provides convenient ways to set prop values from Android resources using annotations.
+When creating layouts, it's very common to use values from Android's resource system such as dimensions, colors, strings, etc. Litho provides convenient ways to set prop values from Android resources using annotations.
 
 Let's consider a simple example:
 
