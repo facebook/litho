@@ -87,6 +87,7 @@ public class LithoViewTestHelper {
    *
    * @param view A Litho view with mounted components.
    */
+  @DoNotStrip
   public static String viewToString(LithoView view) {
     return viewToString(DebugComponent.getRootInstance(view), 0);
   }
