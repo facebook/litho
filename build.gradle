@@ -52,7 +52,7 @@ ext.deps = [
         soloader           : 'com.facebook.soloader:soloader:0.2.0',
         textlayoutbuilder  : 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.1.0',
         stetho             : 'com.facebook.stetho:stetho:1.5.0',
-        yoga               : 'com.facebook.yoga:yoga:1.5.1',
+        yoga               : 'com.facebook.yoga:yoga:1.5.2-SNAPSHOT',
         screenshot         : 'com.facebook.testing.screenshot:core:0.4.2',
         // Annotations
         jsr305             : 'com.google.code.findbugs:jsr305:3.0.1',
