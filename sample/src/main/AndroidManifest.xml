@@ -36,8 +36,8 @@
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
     </activity>
-
-    <activity android:name=".DemoActivity"></activity>
+    <activity android:name=".lithography.LithographyActivity" />
+    <activity android:name=".playground.PlaygroundActivity" />
   </application>
 
 
