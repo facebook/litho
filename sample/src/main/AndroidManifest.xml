@@ -38,6 +38,7 @@
     </activity>
     <activity android:name=".lithography.LithographyActivity" />
     <activity android:name=".playground.PlaygroundActivity" />
+    <activity android:name=".transitionsdemo.TransitionsDemoActivity" />
   </application>
 
 

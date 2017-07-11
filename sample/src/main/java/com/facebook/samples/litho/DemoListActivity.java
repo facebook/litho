@@ -24,6 +24,7 @@ import com.facebook.litho.widget.LinearLayoutInfo;
 import com.facebook.litho.widget.RecyclerBinder;
 import com.facebook.samples.litho.lithography.LithographyActivity;
 import com.facebook.samples.litho.playground.PlaygroundActivity;
+import com.facebook.samples.litho.transitionsdemo.TransitionsDemoActivity;
 
 public class DemoListActivity extends AppCompatActivity {
 
@@ -46,6 +47,11 @@ public class DemoListActivity extends AppCompatActivity {
         recyclerBinder,
         "Playground",
         new Intent(this, PlaygroundActivity.class));
+    addDemo(
+        componentContext,
+        recyclerBinder,
+        "Transitions Demo",
+        new Intent(this, TransitionsDemoActivity.class));
 
     setContentView(
         LithoView.create(
