@@ -268,7 +268,8 @@ public final class DebugComponent {
     final StringBuilder sb = new StringBuilder();
     for (int i = 0, size = lithoView.getMountState().getItemCount(); i < size; i++) {
       final MountItem mountItem = lithoView.getMountState().getItemAt(i);
-      if (mountItem.getComponent().isEquivalentTo(component)) {
+      final Component<?> mountItemComponent = mountItem.getComponent();
+      if (mountItemComponent != null && mountItemComponent.isEquivalentTo(component)) {
         final Object content = mountItem.getContent();
 
         if (content instanceof TextContent) {

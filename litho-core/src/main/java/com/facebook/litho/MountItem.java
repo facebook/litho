@@ -161,6 +161,7 @@ class MountItem {
     return convertDisplayListDrawable;
   }
 
+  @Nullable
   Component<?> getComponent() {
     return mComponent;
   }
