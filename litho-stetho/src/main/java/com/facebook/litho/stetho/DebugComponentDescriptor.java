@@ -143,7 +143,7 @@ public final class DebugComponentDescriptor
       final Map<String, Object> styles = getStyles(element);
       for (String key : styles.keySet()) {
         final Object value = styles.get(key);
-        if (isSupportedType(value.getClass())) {
+        if (value != null && isSupportedType(value.getClass())) {
           mTypeMap.put(key, value.getClass());
           accumulator.store(key, styles.get(key).toString(), false);
         }
@@ -152,7 +152,7 @@ public final class DebugComponentDescriptor
       final Map<String, Pair<Prop, Object>> props = getProps(element);
       for (String key : props.keySet()) {
         final Object value = props.get(key).second;
-        if (isSupportedType(value.getClass())) {
+        if (value != null && isSupportedType(value.getClass())) {
           mTypeMap.put(key, value.getClass());
           accumulator.store(key, value.toString(), false);
         }
@@ -161,7 +161,7 @@ public final class DebugComponentDescriptor
       final Map<String, Object> state = getState(element);
       for (String key : state.keySet()) {
         final Object value = state.get(key);
-        if (isSupportedType(value.getClass())) {
+        if (value != null && isSupportedType(value.getClass())) {
           mTypeMap.put(key, value.getClass());
           accumulator.store(key, value.toString(), false);
         }
