@@ -343,7 +343,10 @@ public final class DebugComponent {
   }
 
   public void rerender() {
-    getLithoView().forceRelayout();
+    final LithoView lithoView = getLithoView();
+    if (lithoView != null) {
+      lithoView.forceRelayout();
+    }
   }
 
   public void setBackgroundColor(int color) {
