@@ -31,8 +31,8 @@ class DisplayListContainer {
     return mDisplayList;
   }
 
-  boolean hasDisplayList() {
-    return mDisplayList != null;
+  boolean hasValidDisplayList() {
+    return mDisplayList != null && mDisplayList.isValid();
   }
 
   void init(String name, boolean canCacheDrawingDisplayLists) {

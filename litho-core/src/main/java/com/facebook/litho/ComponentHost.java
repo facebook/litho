@@ -1083,7 +1083,7 @@ public class ComponentHost extends ViewGroup {
           return;
         }
 
-        ComponentsSystrace.beginSection(mountItem.getComponent().getSimpleName());
+        ComponentsSystrace.beginSection(getTraceName(mountItem));
         ((Drawable) content).draw(mCanvas);
         ComponentsSystrace.endSection();
       }
@@ -1094,5 +1094,14 @@ public class ComponentHost extends ViewGroup {
     private void end() {
       mCanvas = null;
     }
+  }
+
+  private static String getTraceName(MountItem mountItem) {
+    String traceName = "draw: " + mountItem.getComponent().getSimpleName();
+    final DisplayListDrawable displayListDrawable = mountItem.getDisplayListDrawable();
+    if (displayListDrawable != null && displayListDrawable.willDrawDisplayList()) {
+      traceName += "DL";
+    }
+    return traceName;
   }
 }

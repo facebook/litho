@@ -18,6 +18,7 @@ import android.graphics.Rect;
 import android.graphics.Region;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 
 import com.facebook.litho.displaylist.DisplayList;
@@ -30,7 +31,7 @@ import com.facebook.litho.displaylist.DisplayListException;
 class DisplayListDrawable extends Drawable implements Drawable.Callback {
 
   private Drawable mDrawable;
-  private DisplayListContainer mDisplayListContainer;
+  private @Nullable DisplayListContainer mDisplayListContainer;
   private boolean mIgnoreInvalidations;
   private boolean mInvalidated;
 
@@ -73,6 +74,12 @@ class DisplayListDrawable extends Drawable implements Drawable.Callback {
       mDisplayListContainer = null;
       mDrawable.draw(canvas);
     }
+  }
+
+  boolean willDrawDisplayList() {
+    return mDisplayListContainer != null &&
+        (mDisplayListContainer.hasValidDisplayList()
+            || mDisplayListContainer.canCacheDrawingDisplayLists());
   }
 
   @Override

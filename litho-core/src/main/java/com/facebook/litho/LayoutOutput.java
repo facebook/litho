@@ -181,8 +181,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
           "Trying to check displaylist validity when generating displaylist is not supported " +
               "for this output");
     }
-    return mDisplayListContainer.hasDisplayList()
-        && mDisplayListContainer.getDisplayList().isValid();
+    return mDisplayListContainer.hasValidDisplayList();
   }
 
   @Nullable DisplayList getDisplayList() {
