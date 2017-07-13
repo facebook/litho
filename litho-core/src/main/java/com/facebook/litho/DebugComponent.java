@@ -595,7 +595,7 @@ public final class DebugComponent {
       key = createKey(nestedTreeHolder, 0) + ".nested";
     } else {
       final ComponentContext c = node.getContext();
-      final ComponentTree tree = c.getComponentTree();
+      final ComponentTree tree = c == null ? null : c.getComponentTree();
       key = Integer.toString(System.identityHashCode(tree));
     }
 
