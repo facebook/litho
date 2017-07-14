@@ -22,6 +22,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyFloat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -101,7 +102,7 @@ public class StickyHeaderControllerTest {
 
     mStickyHeaderController.onScrolled(null, 0, 0);
 
-    verify(lithoView).setTranslationY(any(Integer.class));
+    verify(lithoView).setTranslationY(anyFloat());
     verify(wrapper, times(2)).hideStickyHeader();
   }
 
