@@ -32,7 +32,6 @@ android {
 dependencies {
     api project(':litho-core')
     testCompileOnly project(':litho-annotations')
-    testImplementation project(':litho-stubs')
     testImplementation project(':litho-testing')
     testImplementation project(':litho-widget')
     testImplementation project(':litho-processor')
@@ -50,6 +49,7 @@ dependencies {
     testImplementation deps.supportCoreUi
     testImplementation deps.supportRecyclerView
     testImplementation deps.powermockReflect
+    testImplementation deps.khronos
     testImplementation files(getRuntimeJar())
     testImplementation files(org.gradle.internal.jvm.Jvm.current().getToolsJar())
 }

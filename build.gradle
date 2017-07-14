@@ -70,6 +70,8 @@ ext.deps = [
         compileTesting     : 'com.google.testing.compile:compile-testing:0.10',
         // Processor
         javapoet           : 'com.squareup:javapoet:1.8.0',
+        // Misc
+        khronos            : 'org.khronos:opengl-api:gl1.1-android-2.1_r1',
 ]
 
 // This should hopefully only serve as a temporary measure until
