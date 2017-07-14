@@ -937,6 +937,18 @@ public class RecyclerBinder implements
     mMountedView.scrollToPosition(position);
   }
 
+  @UiThread
+  public void scrollToPositionWithOffset(int position, int offset) {
+    if (mMountedView == null || !(mMountedView.getLayoutManager() instanceof LinearLayoutManager)) {
+      mCurrentFirstVisiblePosition = position;
+      return;
+    }
+
+    ((LinearLayoutManager) mMountedView.getLayoutManager()).scrollToPositionWithOffset(
+        position,
+        offset);
+  }
+
   @GuardedBy("this")
   private boolean isCompatibleSize(int widthSpec, int heightSpec) {
     final int scrollDirection = mLayoutInfo.getScrollDirection();
