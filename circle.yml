@@ -19,9 +19,7 @@ dependencies:
     - cd /home/ubuntu/buck && ant
     - buck --version
     - source scripts/circle-ci-android-setup.sh && installAndroidSDK
-    - buck fetch :components
-    - buck fetch litho-it/...
-    - buck fetch sample/...
+    - buck fetch //...
   cache_directories:
     - "/home/ubuntu/buck"
     - "/home/ubuntu/android-sdk"
