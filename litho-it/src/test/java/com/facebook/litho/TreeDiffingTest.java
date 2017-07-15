@@ -525,7 +525,8 @@ public class TreeDiffingTest {
 
     assertThat(2).isEqualTo(((SparseArrayCompat<MountItem>)
         getInternalState(hostHolder, "mMountItems")).size());
-    assertThat(getInternalState(hostHolder, "mScrapMountItemsArray")).isNull();
+    assertThat((Object) getInternalState(hostHolder, "mScrapMountItemsArray"))
+        .isNull();
   }
 
   @Test

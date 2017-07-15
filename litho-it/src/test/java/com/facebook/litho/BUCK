@@ -19,6 +19,8 @@ components_robolectric_test(
     provided_deps = [
         COMPONENTS_ROBOLECTRIC_TARGET,
     ],
+    source = "8",
+    target = "8",
     deps = [
         ":testutil",
         COMPONENTS_TEST_RES,
@@ -44,8 +46,8 @@ components_robolectric_test(
 litho_android_library(
     name = "testutil",
     srcs = [
-        "TouchExpansionTestInternalNode.java",
         "TestComponentsLogger.java",
+        "TouchExpansionTestInternalNode.java",
     ],
     visibility = [
         make_dep_path("litho-it/src/test/java/com/facebook/litho/..."),

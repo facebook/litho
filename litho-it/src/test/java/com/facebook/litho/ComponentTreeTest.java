@@ -107,9 +107,11 @@ public class ComponentTreeTest {
     // Spec specified in create
 
     assertThat(componentTreeHasSizeSpec(componentTree)).isTrue();
-    assertThat(getInternalState(componentTree, "mWidthSpec")).isEqualTo(widthSpec);
+    assertThat((int) getInternalState(componentTree, "mWidthSpec"))
+        .isEqualTo(widthSpec);
 
-    assertThat(getInternalState(componentTree, "mHeightSpec")).isEqualTo(heightSpec);
+    assertThat((int) getInternalState(componentTree, "mHeightSpec"))
+        .isEqualTo(heightSpec);
 
     LayoutState mainThreadLayoutState = getInternalState(
         componentTree, "mMainThreadLayoutState");
@@ -179,8 +181,10 @@ public class ComponentTreeTest {
     // Only fields changed but no layout is done yet.
 
     assertThat(componentTreeHasSizeSpec(componentTree)).isTrue();
-    assertThat(getInternalState(componentTree, "mWidthSpec")).isEqualTo(mWidthSpec);
-    assertThat(getInternalState(componentTree, "mHeightSpec")).isEqualTo(mHeightSpec);
+    assertThat((int) getInternalState(componentTree, "mWidthSpec"))
+        .isEqualTo(mWidthSpec);
+    assertThat((int) getInternalState(componentTree, "mHeightSpec"))
+        .isEqualTo(mHeightSpec);
     Assert.assertNull(getInternalState(componentTree, "mMainThreadLayoutState"));
     Assert.assertNull(getInternalState(componentTree, "mBackgroundLayoutState"));
 

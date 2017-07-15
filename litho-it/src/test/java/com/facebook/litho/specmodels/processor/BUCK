@@ -13,6 +13,8 @@ java_test(
     provided_deps = [
         COMPONENTS_ROBOLECTRIC_TARGET,
     ],
+    source = "8",
+    target = "8",
     deps = [
         COMPONENTS_ANNOTATIONS_TARGET,
         COMPONENTS_ASSERTJ_TARGET,

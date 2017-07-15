@@ -4,6 +4,8 @@ components_robolectric_test(
     name = "testing",
     srcs = glob(["*Test.java"]),
     contacts = ["oncall+components_for_android@xmail.facebook.com"],
+    source = "8",
+    target = "8",
     deps = [
         COMPONENTS_JUNIT_TARGET,
         COMPONENTS_ROBOLECTRIC_TARGET,

@@ -108,7 +108,7 @@ public class ComponentTreeBuilderTest {
       ComponentTree componentTree,
       Object object,
       String internalName) {
-    assertThat(getInternalState(componentTree, internalName)).isEqualTo(object);
+    assertThat((Object) getInternalState(componentTree, internalName)).isEqualTo(object);
   }
 
   private static void assertDefaults(ComponentTree componentTree) {

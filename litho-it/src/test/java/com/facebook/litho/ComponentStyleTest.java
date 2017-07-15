@@ -54,7 +54,8 @@ public class ComponentStyleTest {
         Text.create(mContext, 0, TextSizeStyle)
             .text("text")
             .build();
-    assertThat(getInternalState(component, "textSize")).isEqualTo(mDimen);
+    assertThat((int) getInternalState(component, "textSize"))
+        .isEqualTo(mDimen);
   }
 
   @Test
@@ -64,7 +65,8 @@ public class ComponentStyleTest {
             .text("text")
             .textSizePx(2 * mDimen)
             .build();
-    assertThat(getInternalState(component, "textSize")).isEqualTo(2 * mDimen);
+    assertThat((int) getInternalState(component, "textSize"))
+        .isEqualTo(2 * mDimen);
   }
 
   @Test
@@ -95,7 +97,8 @@ public class ComponentStyleTest {
         Text.create(mContext, testAttrLargeText, 0)
             .text("text")
             .build();
-    assertThat(getInternalState(component, "textSize")).isEqualTo(mLargeDimen);
+    assertThat((int) getInternalState(component, "textSize"))
+        .isEqualTo(mLargeDimen);
   }
 
   @Test
@@ -105,7 +108,8 @@ public class ComponentStyleTest {
             .text("text")
             .textSizePx(mDimen)
             .build();
-    assertThat(getInternalState(component, "textSize")).isEqualTo(mDimen);
+    assertThat((int) getInternalState(component, "textSize"))
+        .isEqualTo(mDimen);
   }
 
   @Test
@@ -136,7 +140,8 @@ public class ComponentStyleTest {
         Text.create(mContext, testAttrLargeText, TextSizeStyle)
             .text("text")
             .build();
-    assertThat(getInternalState(component, "textSize")).isEqualTo(mLargeDimen);
+    assertThat((int) getInternalState(component, "textSize"))
+        .isEqualTo(mLargeDimen);
   }
 
   @Test
