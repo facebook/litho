@@ -218,10 +218,6 @@ class MountState implements DataFlowTransitionManager.OnAnimationCompleteListene
         } else if (!isMountable && isMounted) {
           unmountItem(mContext, i, mHostsByMarker);
         } else if (isMounted) {
-          if (isIncrementalMountEnabled && canMountIncrementally(component)) {
-            mountItemIncrementally(currentMountItem, layoutOutput.getBounds(), localVisibleRect);
-          }
-
           if (mIsDirty) {
             final boolean useUpdateValueFromLayoutOutput =
                 (componentTreeId >= 0) && (componentTreeId == mLastMountedComponentTreeId);
@@ -239,6 +235,10 @@ class MountState implements DataFlowTransitionManager.OnAnimationCompleteListene
             } else {
               mMountStats.noOpCount++;
             }
+          }
+
+          if (isIncrementalMountEnabled && canMountIncrementally(component)) {
+            mountItemIncrementally(currentMountItem, layoutOutput.getBounds(), localVisibleRect);
           }
         }
 
