@@ -42,7 +42,7 @@ Row.create(c)
     .build();
 ```
 
-If you would like to similar a `FrameLayout` to overlay one view on top of the other Flexbox can do that with `positionType(ABSOLUTE)`.
+If you would like to overlay one view on top of the other -- similar to a `FrameLayout` -- Flexbox can do that with `positionType(ABSOLUTE)`.
 
 ```java
 Column.create(c)
