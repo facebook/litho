@@ -175,6 +175,15 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     return mDisplayListContainer;
   }
 
+  /*
+   * Usually if displaylists are supported, it means we initialized the displaylist container.
+   * However, there are cases when we need to query some displaylist data when this output has been
+   * released. In such cases we need to perform this check.
+   */
+  boolean hasDisplayListContainer() {
+    return mDisplayListContainer != null;
+  }
+
   boolean hasValidDisplayList() {
     if (mDisplayListContainer == null) {
       throw new IllegalStateException(
@@ -193,11 +202,10 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   }
 
   void setDisplayList(DisplayList displayList) {
-    if (mDisplayListContainer == null) {
-      throw new IllegalStateException(
-          "Trying to set displaylist when generating displaylist is not supported for this output");
+    // We might have recycled the container already so we need to have this check.
+    if (mDisplayListContainer != null) {
+      mDisplayListContainer.setDisplayList(displayList);
     }
-    mDisplayListContainer.setDisplayList(displayList);
   }
 
   void setViewNodeInfo(ViewNodeInfo viewNodeInfo) {

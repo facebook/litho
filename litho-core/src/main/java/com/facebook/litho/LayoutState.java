@@ -1915,8 +1915,9 @@ class LayoutState {
     Integer currentIndex = mDisplayListsToPrefetch.peek();
     while (currentIndex != null) {
       final LayoutOutput layoutOutput = mMountableOutputs.get(currentIndex);
-      if (layoutOutput.hasValidDisplayList()) {
-        // We have already computed displaylist for this item, remove it from the queue.
+      if (!layoutOutput.hasDisplayListContainer() || layoutOutput.hasValidDisplayList()) {
+        // Either this item has been released or we have already computed displaylist for this item.
+        // In either case remove it from the queue.
         mDisplayListsToPrefetch.remove();
         currentIndex = mDisplayListsToPrefetch.peek();
       } else {
