@@ -415,10 +415,6 @@ public class LithoView extends ComponentHost {
   }
 
   private void maybePerformIncrementalMountOnView() {
-    if (!ComponentsConfiguration.isIncrementalMountOnOffsetOrTranslationChangeEnabled) {
-      return;
-    }
-
     if (!isIncrementalMountEnabled() || !(getParent() instanceof View)) {
       return;
     }

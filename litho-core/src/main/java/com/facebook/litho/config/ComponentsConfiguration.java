@@ -67,11 +67,6 @@ public class ComponentsConfiguration {
   public static volatile boolean usePooling = true;
 
   /**
-   * Whether to enable incremental mount that operates directly from LithoView's methods.
-   */
-  public static boolean isIncrementalMountOnOffsetOrTranslationChangeEnabled = true;
-
-  /**
    * Force all section component prop updates to be async
    */
   public static boolean sectionComponentsAsyncPropUpdates = false;

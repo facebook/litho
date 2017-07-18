@@ -50,7 +50,6 @@ public class IncrementalMountUtilsTest {
 
   @Before
   public void setUp() {
-    ComponentsConfiguration.isIncrementalMountOnOffsetOrTranslationChangeEnabled = false;
     when(mLithoView.isIncrementalMountEnabled()).thenReturn(true);
     when(mWrapperView.getWrappedView()).thenReturn(mLithoView);
 
@@ -69,11 +68,6 @@ public class IncrementalMountUtilsTest {
             return null;
           }
         }).when(mLithoView).performIncrementalMount(any(Rect.class));
-  }
-
-  @After
-  public void tearDown() {
-    ComponentsConfiguration.isIncrementalMountOnOffsetOrTranslationChangeEnabled = true;
   }
 
   @Test
