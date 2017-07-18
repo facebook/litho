@@ -1152,5 +1152,11 @@ public class RecyclerBinder implements
       // This read only happens on the UiThread as well and we are never writing this here.
       return mComponentTreeHolders.size();
     }
+
+    @Override
+    public void onViewRecycled(RecyclerView.ViewHolder holder) {
+      final LithoView lithoView = (LithoView) holder.itemView;
+      lithoView.setComponentTree(null);
+    }
   }
 }
