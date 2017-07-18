@@ -38,7 +38,6 @@ public class LithoView extends ComponentHost {
   private final MountState mMountState;
   private boolean mIsAttached;
   private final Rect mPreviousMountBounds = new Rect();
-  private final boolean mIncrementalMountOnOffsetOrTranslationChange;
 
   private boolean mForceLayout;
   private boolean mSuppressMeasureComponentTree;
@@ -96,18 +95,10 @@ public class LithoView extends ComponentHost {
   }
 
   public LithoView(ComponentContext context, AttributeSet attrs) {
-    this(context, attrs, false);
-  }
-
-  public LithoView(
-      ComponentContext context,
-      AttributeSet attrs,
-      boolean incrementalMountOnOffsetOrTranslationChange) {
     super(context, attrs);
 
     mMountState = new MountState(this);
     mAccessibilityManager = (AccessibilityManager) context.getSystemService(ACCESSIBILITY_SERVICE);
-    mIncrementalMountOnOffsetOrTranslationChange = incrementalMountOnOffsetOrTranslationChange;
   }
 
   private static void performLayoutOnChildrenIfNecessary(ComponentHost host) {
@@ -424,8 +415,7 @@ public class LithoView extends ComponentHost {
   }
 
   private void maybePerformIncrementalMountOnView() {
-    if (!mIncrementalMountOnOffsetOrTranslationChange &&
-        !ComponentsConfiguration.isIncrementalMountOnOffsetOrTranslationChangeEnabled) {
+    if (!ComponentsConfiguration.isIncrementalMountOnOffsetOrTranslationChangeEnabled) {
       return;
     }
 

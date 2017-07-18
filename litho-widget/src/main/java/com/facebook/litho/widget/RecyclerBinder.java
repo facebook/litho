@@ -71,7 +71,6 @@ public class RecyclerBinder implements
   private final ComponentContext mComponentContext;
   private final RangeScrollListener mRangeScrollListener = new RangeScrollListener();
   private final LayoutHandlerFactory mLayoutHandlerFactory;
-  private final boolean mUseNewIncrementalMount;
   private final ComponentTreeHolderFactory mComponentTreeHolderFactory;
   private final Handler mMainThreadHandler = new Handler(Looper.getMainLooper());
 
@@ -146,7 +145,6 @@ public class RecyclerBinder implements
     private float rangeRatio = 4f;
     private LayoutInfo layoutInfo;
     private @Nullable LayoutHandlerFactory layoutHandlerFactory;
-    private boolean useNewIncrementalMount;
     private boolean canPrefetchDisplayLists;
     private boolean canCacheDrawingDisplayLists;
     private ComponentTreeHolderFactory componentTreeHolderFactory =
@@ -187,11 +185,6 @@ public class RecyclerBinder implements
       return this;
     }
 
-    public Builder useNewIncrementalMount(boolean useNewIncrementalMount) {
-      this.useNewIncrementalMount = useNewIncrementalMount;
-      return this;
-    }
-
     public Builder canPrefetchDisplayLists(boolean canPrefetchDisplayLists) {
       this.canPrefetchDisplayLists = canPrefetchDisplayLists;
       return this;
@@ -229,7 +222,6 @@ public class RecyclerBinder implements
 
   private RecyclerBinder(Builder builder) {
     mComponentContext = builder.componentContext;
-    mUseNewIncrementalMount = builder.useNewIncrementalMount;
     mComponentTreeHolderFactory = builder.componentTreeHolderFactory;
     mComponentTreeHolders = new ArrayList<>();
     mPendingComponentTreeHolders = new ArrayList<>();
@@ -1097,11 +1089,6 @@ public class RecyclerBinder implements
 
     @Override
     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-
-      if (!mUseNewIncrementalMount) {
-        IncrementalMountUtils.performIncrementalMount(recyclerView);
-      }
-
       if (mCanPrefetchDisplayLists) {
         DisplayListUtils.prefetchDisplayLists(recyclerView);
       }
@@ -1133,8 +1120,7 @@ public class RecyclerBinder implements
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-      return new LithoViewHolder(
-          new LithoView(mComponentContext, null, mUseNewIncrementalMount));
+      return new LithoViewHolder(new LithoView(mComponentContext, null));
     }
 
     @Override

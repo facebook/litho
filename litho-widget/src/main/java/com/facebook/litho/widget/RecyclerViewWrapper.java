@@ -47,7 +47,7 @@ public class RecyclerViewWrapper extends SwipeRefreshLayout {
     });
 
     addView(mRecyclerView);
-    mStickyHeader = new LithoView(new ComponentContext(getContext()), null, true);
+    mStickyHeader = new LithoView(new ComponentContext(getContext()), null);
     mStickyHeader.setLayoutParams(new ViewGroup.LayoutParams(
         ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.WRAP_CONTENT));
