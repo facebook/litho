@@ -150,7 +150,7 @@ public class ComponentTree {
   // We will need to ensure there are no background threads referencing mComponent. We'll need
   // to keep a reference count or something. :-/
   @GuardedBy("this")
-  private Component<?> mRoot;
+  private @Nullable Component<?> mRoot;
 
   @GuardedBy("this")
   private int mWidthSpec = SIZE_UNINITIALIZED;
@@ -850,6 +850,10 @@ public class ComponentTree {
     final Component<?> root;
 
     synchronized (this) {
+
+      if (mRoot == null) {
+        return;
+      }
 
       if (mIsMeasuring) {
         // If the layout calculation was already scheduled to happen synchronously let's just go
