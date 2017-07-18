@@ -64,6 +64,16 @@ See our [issues](https://github.com/facebook/litho/issues/) page for ideas on ho
 
 Please also read our [Coding Style](http://fblitho.com/docs/best-practices#coding-style) and [Code of Conduct](https://code.facebook.com/codeofconduct) before you contribute.
 
+## Getting Help
+
+- Post on [StackOverflow](https://stackoverflow.com/questions/tagged/litho)
+  using the `#litho` tag.
+- Chat with us on [Gitter](https://gitter.im/facebook/litho) or in `#lithowtf`
+  on the
+  [Android Study Group Slack](https://github.com/AndroidStudyGroup/Code-Of-Conduct#member-nomination).
+- Please open GitHub issues only if you suspect a bug in the framework or have a
+  feature request and not for general questions.
+
 ## License
 
 Litho is BSD-licensed. We also provide an additional patent grant.
