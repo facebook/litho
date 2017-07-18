@@ -99,13 +99,7 @@ public class ComponentTree {
   private final Runnable mCalculateLayoutRunnable = new Runnable() {
     @Override
     public void run() {
-      calculateLayout(null, false);
-    }
-  };
-  private final Runnable mAnimatedCalculateLayoutRunnable = new Runnable() {
-    @Override
-    public void run() {
-      calculateLayout(null, true);
+      calculateLayout(null);
     }
   };
   private final Runnable mPreAllocateMountContentRunnable = new Runnable() {
@@ -186,10 +180,6 @@ public class ComponentTree {
   @PendingLayoutCalculation
   @GuardedBy("this")
   private int mScheduleLayoutAfterMeasure;
-
-  // This flag is so we use the correct shouldAnimateTransitions flag when calculating
-  // the LayoutState in measure -- we should respect the most recent setRoot* call.
-  private volatile boolean mLastShouldAnimateTransitions;
 
   public static Builder create(ComponentContext context, Component.Builder<?> root) {
     return create(context, root.build());
@@ -622,7 +612,6 @@ public class ComponentTree {
           widthSpec,
           heightSpec,
           mIsLayoutDiffingEnabled,
-          mLastShouldAnimateTransitions,
           null);
 
       final StateHandler layoutStateStateHandler =
@@ -658,13 +647,11 @@ public class ComponentTree {
     }
 
     if (layoutScheduleType != SCHEDULE_NONE) {
-      // shouldAnimateTransitions - This is a scheduled layout from a state update, so we animate it
       setRootAndSizeSpecInternal(
           root,
           SIZE_UNINITIALIZED,
           SIZE_UNINITIALIZED,
           layoutScheduleType == SCHEDULE_LAYOUT_ASYNC,
-          true /* = shouldAnimateTransitions */,
           null /*output */);
     }
   }
@@ -695,16 +682,6 @@ public class ComponentTree {
    * relayout/invalidate.
    */
   public void setRoot(Component<?> rootComponent) {
-    setRoot(rootComponent, false);
-  }
-
-  /**
-   * Sets a new component root, specifying whether to animate transitions where transition
-   * animations have been specified.
-   *
-   * @see #setRoot
-   */
-  public void setRoot(Component<?> rootComponent, boolean shouldAnimateTransitions) {
     if (rootComponent == null) {
       throw new IllegalArgumentException("Root component can't be null");
     }
@@ -714,7 +691,6 @@ public class ComponentTree {
         SIZE_UNINITIALIZED,
         SIZE_UNINITIALIZED,
         false /* isAsync */,
-        shouldAnimateTransitions,
         null /* output */);
   }
 
@@ -778,7 +754,6 @@ public class ComponentTree {
         SIZE_UNINITIALIZED,
         SIZE_UNINITIALIZED,
         true /* isAsync */,
-        false /* shouldAnimateTransitions */,
         null /* output */);
   }
 
@@ -874,7 +849,6 @@ public class ComponentTree {
         SIZE_UNINITIALIZED,
         SIZE_UNINITIALIZED,
         isAsync,
-        true /* shouldAnimateTransitions */,
         null /*output */);
   }
 
@@ -897,7 +871,6 @@ public class ComponentTree {
         widthSpec,
         heightSpec,
         false /* isAsync */,
-        false /* shouldAnimateTransitions */,
         output /* output */);
   }
 
@@ -907,7 +880,6 @@ public class ComponentTree {
         widthSpec,
         heightSpec,
         true /* isAsync */,
-        false /* shouldAnimateTransitions */,
         null /* output */);
   }
 
@@ -915,18 +887,6 @@ public class ComponentTree {
    * Compute asynchronously a new layout with the given component root and sizes
    */
   public void setRootAndSizeSpecAsync(Component<?> root, int widthSpec, int heightSpec) {
-    setRootAndSizeSpecAsync(root, widthSpec, heightSpec, false);
-  }
-
-  /**
-   * Like {@link #setRootAndSizeSpecAsync}, allowing specification of whether transitions should be
-   * animated where transition animations have been specified.
-   */
-  public void setRootAndSizeSpecAsync(
-      Component<?> root,
-      int widthSpec,
-      int heightSpec,
-      boolean shouldAnimateTransitions) {
     if (root == null) {
       throw new IllegalArgumentException("Root component can't be null");
     }
@@ -936,7 +896,6 @@ public class ComponentTree {
         widthSpec,
         heightSpec,
         true /* isAsync */,
-        shouldAnimateTransitions,
         null /* output */);
   }
 
@@ -944,18 +903,6 @@ public class ComponentTree {
    * Compute a new layout with the given component root and sizes
    */
   public void setRootAndSizeSpec(Component<?> root, int widthSpec, int heightSpec) {
-    setRootAndSizeSpec(root, widthSpec, heightSpec, false);
-  }
-
-  /**
-   * Like {@link #setRootAndSizeSpec}, allowing specification of whether transitions should be
-   * animated where transition animations have been specified.
-   */
-  public void setRootAndSizeSpec(
-      Component<?> root,
-      int widthSpec,
-      int heightSpec,
-      boolean shouldAnimateTransitions) {
     if (root == null) {
       throw new IllegalArgumentException("Root component can't be null");
     }
@@ -965,7 +912,6 @@ public class ComponentTree {
         widthSpec,
         heightSpec,
         false /* isAsync */,
-        shouldAnimateTransitions,
         null /* output */);
   }
 
@@ -979,7 +925,6 @@ public class ComponentTree {
         widthSpec,
         heightSpec,
         false /* isAsync */,
-        false /* shouldAnimateTransitions */,
         output);
   }
 
@@ -1022,12 +967,10 @@ public class ComponentTree {
       int widthSpec,
       int heightSpec,
       boolean isAsync,
-      boolean shouldAnimateTransitions,
       Size output) {
 
     synchronized (this) {
 
-      mLastShouldAnimateTransitions = shouldAnimateTransitions;
       final Map<String, List<StateUpdate>> pendingStateUpdates =
           mStateHandler.getPendingStateUpdates();
       if (pendingStateUpdates != null && pendingStateUpdates.size() > 0 && root != null) {
@@ -1096,22 +1039,17 @@ public class ComponentTree {
           " we need the Size back");
     } else if (isAsync) {
       mLayoutThreadHandler.removeCallbacks(mCalculateLayoutRunnable);
-      mLayoutThreadHandler.removeCallbacks(mAnimatedCalculateLayoutRunnable);
-      mLayoutThreadHandler.post(
-          shouldAnimateTransitions ?
-              mAnimatedCalculateLayoutRunnable :
-              mCalculateLayoutRunnable);
+      mLayoutThreadHandler.post(mCalculateLayoutRunnable);
     } else {
-      calculateLayout(output, shouldAnimateTransitions);
+      calculateLayout(output);
     }
   }
 
   /**
    * Calculates the layout.
    * @param output a destination where the size information should be saved
-   * @param shouldAnimateTransitions whether component transitions should be animated
    */
-  private void calculateLayout(Size output, boolean shouldAnimateTransitions) {
+  private void calculateLayout(Size output) {
     int widthSpec;
     int heightSpec;
     Component<?> root;
@@ -1120,7 +1058,6 @@ public class ComponentTree {
     // Cancel any scheduled layout requests we might have in the background queue
     // since we are starting a new layout computation.
     mLayoutThreadHandler.removeCallbacks(mCalculateLayoutRunnable);
-    mLayoutThreadHandler.removeCallbacks(mAnimatedCalculateLayoutRunnable);
 
     synchronized (this) {
       // Can't compute a layout if specs or root are missing
@@ -1164,7 +1101,6 @@ public class ComponentTree {
         widthSpec,
         heightSpec,
         mIsLayoutDiffingEnabled,
-        shouldAnimateTransitions,
         previousLayoutState != null ? previousLayoutState.getDiffTree() : null);
 
     if (output != null) {
@@ -1367,7 +1303,6 @@ public class ComponentTree {
       int widthSpec,
       int heightSpec,
       boolean diffingEnabled,
-      boolean shouldAnimateTransitions,
       @Nullable DiffNode diffNode) {
     final ComponentContext contextWithStateHandler;
     synchronized (this) {
@@ -1384,7 +1319,6 @@ public class ComponentTree {
             widthSpec,
             heightSpec,
             diffingEnabled,
-            shouldAnimateTransitions,
             diffNode,
             mCanPrefetchDisplayLists,
             mCanCacheDrawingDisplayLists,
@@ -1398,7 +1332,6 @@ public class ComponentTree {
           widthSpec,
           heightSpec,
           diffingEnabled,
-          shouldAnimateTransitions,
           diffNode,
           mCanPrefetchDisplayLists,
           mCanCacheDrawingDisplayLists,

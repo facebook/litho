@@ -163,7 +163,6 @@ class LayoutState {
 
   private AccessibilityManager mAccessibilityManager;
   private boolean mAccessibilityEnabled = false;
-  private boolean mShouldAnimateTransitions = false;
 
   private StateHandler mStateHandler;
   private boolean mCanPrefetchDisplayLists;
@@ -920,7 +919,6 @@ class LayoutState {
         widthSpec,
         heightSpec,
         false /* shouldGenerateDiffTree */,
-        false /* shouldAnimatedTransitions */,
         null /* previousDiffTreeRoot */,
         false /* canPrefetchDisplayLists */,
         false /* canCacheDrawingDisplayLists */,
@@ -934,7 +932,6 @@ class LayoutState {
       int widthSpec,
       int heightSpec,
       boolean shouldGenerateDiffTree,
-      boolean shouldAnimatedTransitions,
       DiffNode previousDiffTreeRoot,
       boolean canPrefetchDisplayLists,
       boolean canCacheDrawingDisplayLists,
@@ -952,7 +949,6 @@ class LayoutState {
     layoutState.mComponent = component;
     layoutState.mWidthSpec = widthSpec;
     layoutState.mHeightSpec = heightSpec;
-    layoutState.mShouldAnimateTransitions = shouldAnimatedTransitions;
     layoutState.mCanPrefetchDisplayLists = canPrefetchDisplayLists;
     layoutState.mCanCacheDrawingDisplayLists = canCacheDrawingDisplayLists;
     layoutState.mClipChildren = clipChildren;
@@ -1717,7 +1713,6 @@ class LayoutState {
       mShouldGenerateDiffTree = false;
       mAccessibilityManager = null;
       mAccessibilityEnabled = false;
-      mShouldAnimateTransitions = false;
 
       if (mDiffTreeRoot != null) {
         ComponentsPools.release(mDiffTreeRoot);
@@ -1854,10 +1849,6 @@ class LayoutState {
 
   boolean hasTransitionContext() {
     return (mTransitionContext != null);
-  }
-
-  boolean shouldAnimateTransitions() {
-    return mShouldAnimateTransitions;
   }
 
   /**

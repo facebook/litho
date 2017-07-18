@@ -2057,7 +2057,6 @@ class MountState implements DataFlowTransitionManager.OnAnimationCompleteListene
 
   private boolean shouldAnimateTransitions(LayoutState newLayoutState) {
     return mIsDirty &&
-        newLayoutState.shouldAnimateTransitions() &&
         newLayoutState.hasTransitionContext() &&
         mLastMountedComponentTreeId == newLayoutState.getComponentTreeId();
   }

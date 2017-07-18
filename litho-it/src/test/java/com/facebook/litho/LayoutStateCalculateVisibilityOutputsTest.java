@@ -281,7 +281,6 @@ public class LayoutStateCalculateVisibilityOutputsTest {
         widthSpec,
         heightSpec,
         false /* shouldGenerateDiffTree */,
-        false /* shouldAnimatedTransitions */,
         null /* previousDiffTreeRoot */,
         false /* canPrefetchDisplayLists */,
         false /* canCacheDrawingDisplayLists */,

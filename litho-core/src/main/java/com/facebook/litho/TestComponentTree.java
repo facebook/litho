@@ -44,7 +44,6 @@ public class TestComponentTree extends ComponentTree {
       int widthSpec,
       int heightSpec,
       boolean diffingEnabled,
-      boolean shouldAnimateTransitions,
       @Nullable DiffNode diffNode) {
     return LayoutState.calculate(
         new TestComponentContext(
@@ -55,7 +54,6 @@ public class TestComponentTree extends ComponentTree {
         widthSpec,
         heightSpec,
         diffingEnabled,
-        shouldAnimateTransitions,
         diffNode,
         false /* canPrefetchDisplayLists */,
         false /* canCacheDrawingDisplayLists */,

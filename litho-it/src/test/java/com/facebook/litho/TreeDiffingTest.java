@@ -93,7 +93,6 @@ public class TreeDiffingTest {
         makeSizeSpec(350, SizeSpec.EXACTLY),
         makeSizeSpec(200, SizeSpec.EXACTLY),
         false /* shouldGenerateDiffTree */,
-        false /* shouldAnimatedTransitions */,
         null /* previousDiffTreeRoot */,
         false /* canPrefetchDisplayLists */,
         false /* canCacheDrawingDisplayLists */,
@@ -124,7 +123,6 @@ public class TreeDiffingTest {
         makeSizeSpec(350, SizeSpec.EXACTLY),
         makeSizeSpec(200, SizeSpec.EXACTLY),
         true /* shouldGenerateDiffTree */,
-        false /* shouldAnimatedTransitions */,
         null /* previousDiffTreeRoot */,
         false /* canPrefetchDisplayLists */,
         false /* canCacheDrawingDisplayLists */,
@@ -276,7 +274,6 @@ public class TreeDiffingTest {
             SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
             SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
             true /* shouldGenerateDiffTree */,
-            false /* shouldAnimatedTransitions */,
             null /* previousDiffTreeRoot */,
             false /* canPrefetchDisplayLists */,
             false /* canCacheDrawingDisplayLists */,
@@ -326,7 +323,6 @@ public class TreeDiffingTest {
             SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
             SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
             true /* shouldGenerateDiffTree */,
-            false /* shouldAnimatedTransitions */,
             null /* previousDiffTreeRoot */,
             false /* canPrefetchDisplayLists */,
             false /* canCacheDrawingDisplayLists */,
@@ -384,7 +380,6 @@ public class TreeDiffingTest {
         makeSizeSpec(350, SizeSpec.EXACTLY),
         makeSizeSpec(200, SizeSpec.EXACTLY),
         true /* shouldGenerateDiffTree */,
-        false /* shouldAnimatedTransitions */,
         null /* previousDiffTreeRoot */,
         false /* canPrefetchDisplayLists */,
         false /* canCacheDrawingDisplayLists */,
@@ -397,7 +392,6 @@ public class TreeDiffingTest {
         makeSizeSpec(350, SizeSpec.EXACTLY),
         makeSizeSpec(200, SizeSpec.EXACTLY),
         true /* shouldGenerateDiffTree */,
-        false /* shouldAnimatedTransitions */,
         prevLayoutState.getDiffTree(),
         false /* canPrefetchDisplayLists */,
         false /* canCacheDrawingDisplayLists */,
@@ -443,7 +437,6 @@ public class TreeDiffingTest {
             SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
             SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
             true /* shouldGenerateDiffTree */,
-            false /* shouldAnimatedTransitions */,
             null /* previousDiffTreeRoot */,
             false /* canPrefetchDisplayLists */,
             false /* canCacheDrawingDisplayLists */,
@@ -455,7 +448,6 @@ public class TreeDiffingTest {
             SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
             SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
             true /* shouldGenerateDiffTree */,
-            false /* shouldAnimatedTransitions */,
             prevLayoutState.getDiffTree(),
             false /* canPrefetchDisplayLists */,
             false /* canCacheDrawingDisplayLists */,
@@ -552,7 +544,6 @@ public class TreeDiffingTest {
             SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
             SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
             true,
-            false,
             null);
 
     assertOutputsState(state, LayoutOutput.STATE_UNKNOWN);
@@ -564,7 +555,6 @@ public class TreeDiffingTest {
             SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
             SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
             true,
-            false,
             state.getDiffTree());
 
     assertOutputsState(secondState, LayoutOutput.STATE_UPDATED);
@@ -576,7 +566,6 @@ public class TreeDiffingTest {
             SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
             SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
             true,
-            false,
             secondState.getDiffTree());
 
     assertOutputsState(thirdState, LayoutOutput.STATE_DIRTY);
@@ -641,7 +630,6 @@ public class TreeDiffingTest {
         makeSizeSpec(10, SizeSpec.EXACTLY),
         makeSizeSpec(10, SizeSpec.EXACTLY),
         true,
-        false,
         null);
 
     assertOutputsState(state, STATE_UNKNOWN);
@@ -653,7 +641,6 @@ public class TreeDiffingTest {
         makeSizeSpec(10, SizeSpec.EXACTLY),
         makeSizeSpec(10, SizeSpec.EXACTLY),
         true,
-        false,
         state.getDiffTree());
 
     assertThat(5).isEqualTo(secondState.getMountableOutputCount());
@@ -666,7 +653,6 @@ public class TreeDiffingTest {
         makeSizeSpec(10, SizeSpec.EXACTLY),
         makeSizeSpec(10, SizeSpec.EXACTLY),
         true,
-        false,
         secondState.getDiffTree());
 
     assertThat(5).isEqualTo(thirdState.getMountableOutputCount());
@@ -742,7 +728,6 @@ public class TreeDiffingTest {
         makeSizeSpec(10, SizeSpec.EXACTLY),
         makeSizeSpec(10, SizeSpec.EXACTLY),
         true,
-        false,
         null);
 
     assertThat(state.getMountableOutputAt(2).getUpdateState()).isEqualTo(STATE_UNKNOWN);
@@ -754,7 +739,6 @@ public class TreeDiffingTest {
         makeSizeSpec(10, SizeSpec.EXACTLY),
         makeSizeSpec(10, SizeSpec.EXACTLY),
         true,
-        false,
         state.getDiffTree());
 
     assertThat(secondState.getMountableOutputAt(2).getUpdateState()).isEqualTo(STATE_UPDATED);
@@ -766,7 +750,6 @@ public class TreeDiffingTest {
         makeSizeSpec(10, SizeSpec.EXACTLY),
         makeSizeSpec(10, SizeSpec.EXACTLY),
         true,
-        false,
         secondState.getDiffTree());
 
     assertThat(thirdState.getMountableOutputAt(2).getUpdateState()).isEqualTo(STATE_DIRTY);
@@ -818,7 +801,6 @@ public class TreeDiffingTest {
         makeSizeSpec(10, SizeSpec.EXACTLY),
         makeSizeSpec(10, SizeSpec.EXACTLY),
         true,
-        false,
         null);
 
     assertOutputsState(state, STATE_UNKNOWN);
@@ -830,7 +812,6 @@ public class TreeDiffingTest {
         makeSizeSpec(10, SizeSpec.EXACTLY),
         makeSizeSpec(10, SizeSpec.EXACTLY),
         true,
-        false,
         state.getDiffTree());
 
     assertThat(6).isEqualTo(secondState.getMountableOutputCount());
@@ -865,7 +846,6 @@ public class TreeDiffingTest {
         makeSizeSpec(100, SizeSpec.EXACTLY),
         makeSizeSpec(100, SizeSpec.EXACTLY),
         true /* shouldGenerateDiffTree */,
-        false /* shouldAnimatedTransitions */,
         null /* previousDiffTreeRoot */,
         false /* canPrefetchDisplayLists */,
         false /* canCacheDrawingDisplayLists */,
@@ -894,7 +874,6 @@ public class TreeDiffingTest {
         makeSizeSpec(100, SizeSpec.EXACTLY),
         makeSizeSpec(90, SizeSpec.EXACTLY),
         true /* shouldGenerateDiffTree */,
-        false /* shouldAnimatedTransitions */,
         firstLayoutState.getDiffTree(),
         false /* canPrefetchDisplayLists */,
         false /* canCacheDrawingDisplayLists */,
@@ -925,7 +904,6 @@ public class TreeDiffingTest {
         makeSizeSpec(100, SizeSpec.EXACTLY),
         makeSizeSpec(100, SizeSpec.EXACTLY),
         true /* shouldGenerateDiffTree */,
-        false /* shouldAnimatedTransitions */,
         null /* previousDiffTreeRoot */,
         false /* canPrefetchDisplayLists */,
         false /* canCacheDrawingDisplayLists */,
@@ -953,7 +931,6 @@ public class TreeDiffingTest {
         makeSizeSpec(100, SizeSpec.EXACTLY),
         makeSizeSpec(100, SizeSpec.EXACTLY),
         true /* shouldGenerateDiffTree */,
-        false /* shouldAnimatedTransitions */,
         firstLayoutState.getDiffTree(),
         false /* canPrefetchDisplayLists */,
         false /* canCacheDrawingDisplayLists */,
@@ -999,7 +976,6 @@ public class TreeDiffingTest {
         makeSizeSpec(350, SizeSpec.EXACTLY),
         makeSizeSpec(200, SizeSpec.EXACTLY),
         true /* shouldGenerateDiffTree */,
-        false /* shouldAnimatedTransitions */,
         null /* previousDiffTreeRoot */,
         false /* canPrefetchDisplayLists */,
         false /* canCacheDrawingDisplayLists */,
@@ -1012,7 +988,6 @@ public class TreeDiffingTest {
         makeSizeSpec(350, SizeSpec.EXACTLY),
         makeSizeSpec(200, SizeSpec.EXACTLY),
         true /* shouldGenerateDiffTree */,
-        false /* shouldAnimatedTransitions */,
         prevLayoutState.getDiffTree(),
         false /* canPrefetchDisplayLists */,
         false /* canCacheDrawingDisplayLists */,
@@ -1070,7 +1045,6 @@ public class TreeDiffingTest {
         makeSizeSpec(350, SizeSpec.EXACTLY),
         makeSizeSpec(200, SizeSpec.EXACTLY),
         true /* shouldGenerateDiffTree */,
-        false /* shouldAnimatedTransitions */,
         null /* previousDiffTreeRoot */,
         false /* canPrefetchDisplayLists */,
         false /* canCacheDrawingDisplayLists */,
@@ -1083,7 +1057,6 @@ public class TreeDiffingTest {
         makeSizeSpec(350, SizeSpec.EXACTLY),
         makeSizeSpec(200, SizeSpec.EXACTLY),
         true /* shouldGenerateDiffTree */,
-        false /* shouldAnimatedTransitions */,
         prevLayoutState.getDiffTree(),
         false /* canPrefetchDisplayLists */,
         false /* canCacheDrawingDisplayLists */,
@@ -1174,7 +1147,6 @@ public class TreeDiffingTest {
         widthSpecContainer,
         heightSpec,
         true /* shouldGenerateDiffTree */,
-        false /* shouldAnimatedTransitions */,
         null /* previousDiffTreeRoot */,
         false /* canPrefetchDisplayLists */,
         false /* canCacheDrawingDisplayLists */,
@@ -1191,7 +1163,6 @@ public class TreeDiffingTest {
         widthSpecContainer,
         heightSpec,
         true /* shouldGenerateDiffTree */,
-        false /* shouldAnimatedTransitions */,
         prevLayoutState.getDiffTree(),
         false /* canPrefetchDisplayLists */,
         false /* canCacheDrawingDisplayLists */,
