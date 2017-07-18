@@ -12,6 +12,7 @@ package com.facebook.litho.specmodels.generator;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 
+import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnUpdateState;
@@ -44,6 +45,7 @@ import static org.mockito.Mockito.when;
 public class ComponentImplGeneratorTest {
   @Rule public CompilationRule mCompilationRule = new CompilationRule();
 
+  @LayoutSpec
   static class TestSpec {
     @PropDefault protected static boolean arg0 = true;
 

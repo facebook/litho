@@ -14,6 +14,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 
 import com.facebook.litho.annotations.FromMeasure;
+import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnBoundsDefined;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateTreeProp;
@@ -71,6 +72,7 @@ public class MountSpecModelFactoryTest {
     }
   }
 
+  @MountSpec(value = "TestMountComponentName", isPublic = false, isPureRender = true)
   static class TestMountSpec {
 
     @OnCreateInitialState
@@ -111,13 +113,14 @@ public class MountSpecModelFactoryTest {
         MountSpecModelFactory.create(elements, typeElement, mDependencyInjectionHelper);
 
     assertThat(mountSpecModel.getSpecName()).isEqualTo("TestMountSpec");
-    assertThat(mountSpecModel.getComponentName()).isEqualTo("TestMount");
+    assertThat(mountSpecModel.getComponentName()).isEqualTo("TestMountComponentName");
     assertThat(mountSpecModel.getSpecTypeName().toString())
         .isEqualTo(
             "com.facebook.litho.specmodels.processor.MountSpecModelFactoryTest.TestMountSpec");
     assertThat(mountSpecModel.getComponentTypeName().toString())
         .isEqualTo(
-            "com.facebook.litho.specmodels.processor.MountSpecModelFactoryTest.TestMount");
+            "com.facebook.litho.specmodels.processor.MountSpecModelFactoryTest." +
+                "TestMountComponentName");
 
     assertThat(mountSpecModel.getDelegateMethods()).hasSize(5);
 
@@ -126,8 +129,8 @@ public class MountSpecModelFactoryTest {
     assertThat(mountSpecModel.getInterStageInputs()).hasSize(1);
     assertThat(mountSpecModel.getTreeProps()).hasSize(1);
 
-    assertThat(mountSpecModel.isPublic()).isTrue();
-    assertThat(mountSpecModel.isPureRender()).isFalse();
+    assertThat(mountSpecModel.isPublic()).isFalse();
+    assertThat(mountSpecModel.isPureRender()).isTrue();
 
     assertThat(mountSpecModel.hasInjectedDependencies()).isTrue();
     assertThat(mountSpecModel.getDependencyInjectionHelper()).isSameAs(mDependencyInjectionHelper);

@@ -15,6 +15,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 
 import com.facebook.litho.annotations.FromEvent;
+import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
@@ -44,6 +45,7 @@ import static org.mockito.Mockito.when;
 public class EventGeneratorTest {
   @Rule public CompilationRule mCompilationRule = new CompilationRule();
 
+  @LayoutSpec
   static class TestSpec<T extends CharSequence> {
     @PropDefault protected static boolean arg0 = true;
 

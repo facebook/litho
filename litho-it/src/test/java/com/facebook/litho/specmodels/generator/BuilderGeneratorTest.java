@@ -15,6 +15,7 @@ import javax.lang.model.util.Elements;
 
 import java.util.List;
 
+import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnUpdateState;
@@ -39,6 +40,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 public class BuilderGeneratorTest {
   @Rule public CompilationRule mCompilationRule = new CompilationRule();
 
+  @LayoutSpec
   static class TestSpec {
     @PropDefault protected static boolean arg0 = true;
 

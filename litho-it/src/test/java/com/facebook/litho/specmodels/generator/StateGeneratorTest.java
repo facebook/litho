@@ -13,6 +13,7 @@ package com.facebook.litho.specmodels.generator;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 
+import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnUpdateState;
@@ -36,6 +37,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 public class StateGeneratorTest {
   @Rule public CompilationRule mCompilationRule = new CompilationRule();
 
+  @LayoutSpec
   private static class TestWithStateSpec<T extends CharSequence> {
     @OnCreateLayout
     public void onCreateLayout(
@@ -56,6 +58,7 @@ public class StateGeneratorTest {
     }
   }
 
+  @LayoutSpec
   private static class TestWithoutStateSpec<T extends CharSequence> {
 
     @OnCreateLayout
