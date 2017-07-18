@@ -21,12 +21,12 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 @RunWith(ComponentsTestRunner.class)
 public class DataFlowGraphTest {
 
-  private UnitTestTimingSource mTestTimingSource;
+  private MockTimingSource mTestTimingSource;
   private DataFlowGraph mDataFlowGraph;
 
   @Before
   public void setUp() throws Exception {
-    mTestTimingSource = new UnitTestTimingSource();
+    mTestTimingSource = new MockTimingSource();
     mDataFlowGraph = DataFlowGraph.create(mTestTimingSource);
   }
 

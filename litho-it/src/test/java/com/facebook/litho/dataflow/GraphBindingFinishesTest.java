@@ -18,13 +18,13 @@ import org.junit.runner.RunWith;
 import static com.facebook.litho.dataflow.GraphBinding.create;
 import static com.facebook.litho.dataflow.TimingNode.END_INPUT;
 import static com.facebook.litho.dataflow.TimingNode.INITIAL_INPUT;
-import static com.facebook.litho.dataflow.UnitTestTimingSource.FRAME_TIME_MS;
+import static com.facebook.litho.dataflow.MockTimingSource.FRAME_TIME_MS;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(ComponentsTestRunner.class)
 public class GraphBindingFinishesTest {
 
-  private UnitTestTimingSource mTestTimingSource;
+  private MockTimingSource mTestTimingSource;
   private DataFlowGraph mDataFlowGraph;
 
   private static class TrackingBindingListener implements BindingListener {
@@ -43,7 +43,7 @@ public class GraphBindingFinishesTest {
 
   @Before
   public void setUp() throws Exception {
-    mTestTimingSource = new UnitTestTimingSource();
+    mTestTimingSource = new MockTimingSource();
     mDataFlowGraph = DataFlowGraph.create(mTestTimingSource);
   }
 

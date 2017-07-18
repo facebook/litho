@@ -12,7 +12,7 @@ package com.facebook.litho.dataflow;
 /**
  * TimingSource that allows manual stepping by frame in tests.
  */
-public class UnitTestTimingSource implements TimingSource {
+public class MockTimingSource implements TimingSource {
 
   public static int FRAME_TIME_MS = 16;
 

@@ -16,7 +16,7 @@ import com.facebook.litho.dataflow.GraphBinding;
 import com.facebook.litho.dataflow.OutputOnlyNode;
 import com.facebook.litho.dataflow.SettableNode;
 import com.facebook.litho.dataflow.SimpleNode;
-import com.facebook.litho.dataflow.UnitTestTimingSource;
+import com.facebook.litho.dataflow.MockTimingSource;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 
 import org.junit.Before;
@@ -31,12 +31,12 @@ import static org.robolectric.RuntimeEnvironment.application;
 @RunWith(ComponentsTestRunner.class)
 public class AnimatedPropertyNodeTest {
 
-  private UnitTestTimingSource mTestTimingSource;
+  private MockTimingSource mTestTimingSource;
   private DataFlowGraph mDataFlowGraph;
 
   @Before
   public void setUp() throws Exception {
-    mTestTimingSource = new UnitTestTimingSource();
+    mTestTimingSource = new MockTimingSource();
     mDataFlowGraph = DataFlowGraph.create(mTestTimingSource);
   }
 
