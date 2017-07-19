@@ -19,6 +19,7 @@ import android.support.annotation.AttrRes;
 import android.support.annotation.StyleRes;
 import android.support.annotation.VisibleForTesting;
 
+import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.ComponentLifecycle.MountType;
@@ -116,7 +117,7 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
       return Layout.create(context, build(), defStyleAttr, defStyleRes);
     }
 
-    public abstract Component<L> build();
+    @ReturnsOwnership public abstract Component<L> build();
   }
 
   private static final AtomicInteger sIdGenerator = new AtomicInteger(0);

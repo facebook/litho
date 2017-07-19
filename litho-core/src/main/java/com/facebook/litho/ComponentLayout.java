@@ -65,192 +65,200 @@ public interface ComponentLayout {
   YogaDirection getResolvedLayoutDirection();
 
   interface Builder {
-    Builder layoutDirection(YogaDirection direction);
-    Builder alignSelf(YogaAlign alignSelf);
-    Builder positionType(YogaPositionType positionType);
-    Builder flex(float flex);
-    Builder flexGrow(float flexGrow);
-    Builder flexShrink(float flexShrink);
-    Builder flexBasisPx(@Px int flexBasis);
-    Builder flexBasisAttr(@AttrRes int resId, @DimenRes int defaultResId);
-    Builder flexBasisAttr(@AttrRes int resId);
-    Builder flexBasisRes(@DimenRes int resId);
-    Builder flexBasisDip(@Dimension(unit = DP) int flexBasis);
-    Builder flexBasisPercent(float percent);
+    @ReturnsOwnership Builder layoutDirection(YogaDirection direction);
+    @ReturnsOwnership Builder alignSelf(YogaAlign alignSelf);
+    @ReturnsOwnership Builder positionType(YogaPositionType positionType);
+    @ReturnsOwnership Builder flex(float flex);
+    @ReturnsOwnership Builder flexGrow(float flexGrow);
+    @ReturnsOwnership Builder flexShrink(float flexShrink);
+    @ReturnsOwnership Builder flexBasisPx(@Px int flexBasis);
+    @ReturnsOwnership Builder flexBasisAttr(@AttrRes int resId, @DimenRes int defaultResId);
+    @ReturnsOwnership Builder flexBasisAttr(@AttrRes int resId);
+    @ReturnsOwnership Builder flexBasisRes(@DimenRes int resId);
+    @ReturnsOwnership Builder flexBasisDip(@Dimension(unit = DP) int flexBasis);
+    @ReturnsOwnership Builder flexBasisPercent(float percent);
 
-    Builder importantForAccessibility(@ImportantForAccessibility int importantForAccessibility);
-    Builder duplicateParentState(boolean duplicateParentState);
+    @ReturnsOwnership Builder importantForAccessibility(
+        @ImportantForAccessibility int importantForAccessibility);
+    @ReturnsOwnership Builder duplicateParentState(boolean duplicateParentState);
 
-    Builder marginPx(YogaEdge edge, @Px int margin);
-    Builder marginAttr(
+    @ReturnsOwnership Builder marginPx(YogaEdge edge, @Px int margin);
+    @ReturnsOwnership Builder marginAttr(
         YogaEdge edge,
         @AttrRes int resId,
         @DimenRes int defaultResId);
-    Builder marginAttr(
+    @ReturnsOwnership Builder marginAttr(
         YogaEdge edge,
         @AttrRes int resId);
-    Builder marginRes(YogaEdge edge, @DimenRes int resId);
-    Builder marginDip(YogaEdge edge, @Dimension(unit = DP) int margin);
-    Builder marginPercent(YogaEdge edge, float percent);
-    Builder marginAuto(YogaEdge edge);
+    @ReturnsOwnership Builder marginRes(YogaEdge edge, @DimenRes int resId);
+    @ReturnsOwnership Builder marginDip(YogaEdge edge, @Dimension(unit = DP) int margin);
+    @ReturnsOwnership Builder marginPercent(YogaEdge edge, float percent);
+    @ReturnsOwnership Builder marginAuto(YogaEdge edge);
 
-    Builder paddingPx(YogaEdge edge, @Px int padding);
-    Builder paddingAttr(
+    @ReturnsOwnership Builder paddingPx(YogaEdge edge, @Px int padding);
+    @ReturnsOwnership Builder paddingAttr(
         YogaEdge edge,
         @AttrRes int resId,
         @DimenRes int defaultResId);
-    Builder paddingAttr(
+    @ReturnsOwnership Builder paddingAttr(
         YogaEdge edge,
         @AttrRes int resId);
-    Builder paddingRes(YogaEdge edge, @DimenRes int resId);
-    Builder paddingDip(YogaEdge edge, @Dimension(unit = DP) int padding);
-    Builder paddingPercent(YogaEdge edge, float percent);
+    @ReturnsOwnership Builder paddingRes(YogaEdge edge, @DimenRes int resId);
+    @ReturnsOwnership Builder paddingDip(YogaEdge edge, @Dimension(unit = DP) int padding);
+    @ReturnsOwnership Builder paddingPercent(YogaEdge edge, float percent);
 
-    Builder borderWidthPx(YogaEdge edge, @Px int borderWidth);
-    Builder borderWidthAttr(
+    @ReturnsOwnership Builder borderWidthPx(YogaEdge edge, @Px int borderWidth);
+    @ReturnsOwnership Builder borderWidthAttr(
         YogaEdge edge,
         @AttrRes int resId,
         @DimenRes int defaultResId);
-    Builder borderWidthAttr(
+    @ReturnsOwnership Builder borderWidthAttr(
         YogaEdge edge,
         @AttrRes int resId);
-    Builder borderWidthRes(YogaEdge edge, @DimenRes int resId);
-    Builder borderWidthDip(YogaEdge edge, @Dimension(unit = DP) int borderWidth);
-    Builder borderColor(@ColorInt int borderColor);
+    @ReturnsOwnership Builder borderWidthRes(YogaEdge edge, @DimenRes int resId);
+    @ReturnsOwnership Builder borderWidthDip(YogaEdge edge, @Dimension(unit = DP) int borderWidth);
+    @ReturnsOwnership Builder borderColor(@ColorInt int borderColor);
 
-    Builder positionPx(YogaEdge edge, @Px int value);
-    Builder positionAttr(YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId);
-    Builder positionAttr(YogaEdge edge, @AttrRes int resId);
-    Builder positionRes(YogaEdge edge, @DimenRes int resId);
-    Builder positionDip(YogaEdge edge, @Dimension(unit = DP) int value);
-    Builder positionPercent(YogaEdge edge, float percent);
-
-    Builder widthPx(@Px int width);
-    Builder widthAttr(@AttrRes int resId, @DimenRes int defaultResId);
-    Builder widthAttr(@AttrRes int resId);
-    Builder widthRes(@DimenRes int resId);
-    Builder widthDip(@Dimension(unit = DP) int width);
-    Builder widthPercent(float percent);
-
-    Builder minWidthPx(@Px int minWidth);
-    Builder minWidthAttr(@AttrRes int resId, @DimenRes int defaultResId);
-    Builder minWidthAttr(@AttrRes int resId);
-    Builder minWidthRes(@DimenRes int resId);
-    Builder minWidthDip(@Dimension(unit = DP) int minWidth);
-    Builder minWidthPercent(float percent);
-
-    Builder maxWidthPx(@Px int maxWidth);
-    Builder maxWidthAttr(@AttrRes int resId, @DimenRes int defaultResId);
-    Builder maxWidthAttr(@AttrRes int resId);
-    Builder maxWidthRes(@DimenRes int resId);
-    Builder maxWidthDip(@Dimension(unit = DP) int maxWidth);
-    Builder maxWidthPercent(float percent);
-
-    Builder heightPx(@Px int height);
-    Builder heightAttr(@AttrRes int resId, @DimenRes int defaultResId);
-    Builder heightAttr(@AttrRes int resId);
-    Builder heightRes(@DimenRes int resId);
-    Builder heightDip(@Dimension(unit = DP) int height);
-    Builder heightPercent(float percent);
-
-    Builder minHeightPx(@Px int minHeight);
-    Builder minHeightAttr(@AttrRes int resId, @DimenRes int defaultResId);
-    Builder minHeightAttr(@AttrRes int resId);
-    Builder minHeightRes(@DimenRes int resId);
-    Builder minHeightDip(@Dimension(unit = DP) int minHeight);
-    Builder minHeightPercent(float percent);
-
-    Builder maxHeightPx(@Px int maxHeight);
-    Builder maxHeightAttr(@AttrRes int resId, @DimenRes int defaultResId);
-    Builder maxHeightAttr(@AttrRes int resId);
-    Builder maxHeightRes(@DimenRes int resId);
-    Builder maxHeightDip(@Dimension(unit = DP) int maxHeight);
-    Builder maxHeightPercent(float percent);
-
-    Builder aspectRatio(float aspectRatio);
-
-    Builder touchExpansionPx(YogaEdge edge, @Px int value);
-    Builder touchExpansionAttr(
+    @ReturnsOwnership Builder positionPx(YogaEdge edge, @Px int value);
+    @ReturnsOwnership Builder positionAttr(
         YogaEdge edge,
         @AttrRes int resId,
         @DimenRes int defaultResId);
-    Builder touchExpansionAttr(YogaEdge edge, @AttrRes int resId);
-    Builder touchExpansionRes(YogaEdge edge, @DimenRes int resId);
-    Builder touchExpansionDip(YogaEdge edge, @Dimension(unit = DP) int value);
+    @ReturnsOwnership Builder positionAttr(YogaEdge edge, @AttrRes int resId);
+    @ReturnsOwnership Builder positionRes(YogaEdge edge, @DimenRes int resId);
+    @ReturnsOwnership Builder positionDip(YogaEdge edge, @Dimension(unit = DP) int value);
+    @ReturnsOwnership Builder positionPercent(YogaEdge edge, float percent);
+
+    @ReturnsOwnership Builder widthPx(@Px int width);
+    @ReturnsOwnership Builder widthAttr(@AttrRes int resId, @DimenRes int defaultResId);
+    @ReturnsOwnership Builder widthAttr(@AttrRes int resId);
+    @ReturnsOwnership Builder widthRes(@DimenRes int resId);
+    @ReturnsOwnership Builder widthDip(@Dimension(unit = DP) int width);
+    @ReturnsOwnership Builder widthPercent(float percent);
+
+    @ReturnsOwnership Builder minWidthPx(@Px int minWidth);
+    @ReturnsOwnership Builder minWidthAttr(@AttrRes int resId, @DimenRes int defaultResId);
+    @ReturnsOwnership Builder minWidthAttr(@AttrRes int resId);
+    @ReturnsOwnership Builder minWidthRes(@DimenRes int resId);
+    @ReturnsOwnership Builder minWidthDip(@Dimension(unit = DP) int minWidth);
+    @ReturnsOwnership Builder minWidthPercent(float percent);
+
+    @ReturnsOwnership Builder maxWidthPx(@Px int maxWidth);
+    @ReturnsOwnership Builder maxWidthAttr(@AttrRes int resId, @DimenRes int defaultResId);
+    @ReturnsOwnership Builder maxWidthAttr(@AttrRes int resId);
+    @ReturnsOwnership Builder maxWidthRes(@DimenRes int resId);
+    @ReturnsOwnership Builder maxWidthDip(@Dimension(unit = DP) int maxWidth);
+    @ReturnsOwnership Builder maxWidthPercent(float percent);
+
+    @ReturnsOwnership Builder heightPx(@Px int height);
+    @ReturnsOwnership Builder heightAttr(@AttrRes int resId, @DimenRes int defaultResId);
+    @ReturnsOwnership Builder heightAttr(@AttrRes int resId);
+    @ReturnsOwnership Builder heightRes(@DimenRes int resId);
+    @ReturnsOwnership Builder heightDip(@Dimension(unit = DP) int height);
+    @ReturnsOwnership Builder heightPercent(float percent);
+
+    @ReturnsOwnership Builder minHeightPx(@Px int minHeight);
+    @ReturnsOwnership Builder minHeightAttr(@AttrRes int resId, @DimenRes int defaultResId);
+    @ReturnsOwnership Builder minHeightAttr(@AttrRes int resId);
+    @ReturnsOwnership Builder minHeightRes(@DimenRes int resId);
+    @ReturnsOwnership Builder minHeightDip(@Dimension(unit = DP) int minHeight);
+    @ReturnsOwnership Builder minHeightPercent(float percent);
+
+    @ReturnsOwnership Builder maxHeightPx(@Px int maxHeight);
+    @ReturnsOwnership Builder maxHeightAttr(@AttrRes int resId, @DimenRes int defaultResId);
+    @ReturnsOwnership Builder maxHeightAttr(@AttrRes int resId);
+    @ReturnsOwnership Builder maxHeightRes(@DimenRes int resId);
+    @ReturnsOwnership Builder maxHeightDip(@Dimension(unit = DP) int maxHeight);
+    @ReturnsOwnership Builder maxHeightPercent(float percent);
+
+    @ReturnsOwnership Builder aspectRatio(float aspectRatio);
+
+    @ReturnsOwnership Builder touchExpansionPx(YogaEdge edge, @Px int value);
+    @ReturnsOwnership Builder touchExpansionAttr(
+        YogaEdge edge,
+        @AttrRes int resId,
+        @DimenRes int defaultResId);
+    @ReturnsOwnership Builder touchExpansionAttr(YogaEdge edge, @AttrRes int resId);
+    @ReturnsOwnership Builder touchExpansionRes(YogaEdge edge, @DimenRes int resId);
+    @ReturnsOwnership Builder touchExpansionDip(YogaEdge edge, @Dimension(unit = DP) int value);
 
     /**
      * @deprecated just use {@link #background(Drawable)} instead.
      */
     @Deprecated
-    Builder background(Reference<? extends Drawable> background);
+    @ReturnsOwnership Builder background(Reference<? extends Drawable> background);
     /**
      * @deprecated just use {@link #background(Drawable)} instead.
      */
     @Deprecated
-    Builder background(Reference.Builder<? extends Drawable> backgroundBuilder);
-    Builder background(Drawable drawable);
-    Builder backgroundAttr(@AttrRes int resId, @DrawableRes int defaultResId);
-    Builder backgroundAttr(@AttrRes int resId);
-    Builder backgroundRes(@DrawableRes int resId);
-    Builder backgroundColor(@ColorInt int backgroundColor);
+    @ReturnsOwnership Builder background(Reference.Builder<? extends Drawable> backgroundBuilder);
+    @ReturnsOwnership Builder background(Drawable drawable);
+    @ReturnsOwnership Builder backgroundAttr(@AttrRes int resId, @DrawableRes int defaultResId);
+    @ReturnsOwnership Builder backgroundAttr(@AttrRes int resId);
+    @ReturnsOwnership Builder backgroundRes(@DrawableRes int resId);
+    @ReturnsOwnership Builder backgroundColor(@ColorInt int backgroundColor);
 
-    Builder foreground(Drawable drawable);
-    Builder foregroundAttr(@AttrRes int resId, @DrawableRes int defaultResId);
-    Builder foregroundAttr(@AttrRes int resId);
-    Builder foregroundRes(@DrawableRes int resId);
-    Builder foregroundColor(@ColorInt int foregroundColor);
+    @ReturnsOwnership Builder foreground(Drawable drawable);
+    @ReturnsOwnership Builder foregroundAttr(@AttrRes int resId, @DrawableRes int defaultResId);
+    @ReturnsOwnership Builder foregroundAttr(@AttrRes int resId);
+    @ReturnsOwnership Builder foregroundRes(@DrawableRes int resId);
+    @ReturnsOwnership Builder foregroundColor(@ColorInt int foregroundColor);
 
-    Builder wrapInView();
-    Builder clickHandler(EventHandler<ClickEvent> clickHandler);
-    Builder focusChangeHandler(EventHandler<FocusChangedEvent> focusChangeHandler);
-    Builder longClickHandler(EventHandler<LongClickEvent> clickHandler);
-    Builder touchHandler(EventHandler<TouchEvent> touchHandler);
-    Builder interceptTouchHandler(EventHandler<InterceptTouchEvent> interceptTouchHandler);
-    Builder focusable(boolean isFocusable);
-    Builder visibleHeightRatio(float visibleHeightRatio);
-    Builder visibleWidthRatio(float visibleWidthRatio);
-    Builder visibleHandler(EventHandler<VisibleEvent> visibleHandler);
-    Builder focusedHandler(EventHandler<FocusedVisibleEvent> focusedHandler);
-    Builder unfocusedHandler(EventHandler<UnfocusedVisibleEvent> unfocusedHandler);
-    Builder fullImpressionHandler(EventHandler<FullImpressionVisibleEvent> fullImpressionHandler);
-    Builder invisibleHandler(EventHandler<InvisibleEvent> invisibleHandler);
-    Builder contentDescription(CharSequence contentDescription);
-    Builder contentDescription(@StringRes int stringId);
-    Builder contentDescription(@StringRes int stringId, Object... formatArgs);
-    Builder viewTag(Object viewTag);
-    Builder viewTags(SparseArray<Object> viewTags);
+    @ReturnsOwnership Builder wrapInView();
+    @ReturnsOwnership Builder clickHandler(EventHandler<ClickEvent> clickHandler);
+    @ReturnsOwnership Builder focusChangeHandler(
+        EventHandler<FocusChangedEvent> focusChangeHandler);
+    @ReturnsOwnership Builder longClickHandler(EventHandler<LongClickEvent> clickHandler);
+    @ReturnsOwnership Builder touchHandler(EventHandler<TouchEvent> touchHandler);
+    @ReturnsOwnership Builder interceptTouchHandler(
+        EventHandler<InterceptTouchEvent> interceptTouchHandler);
+    @ReturnsOwnership Builder focusable(boolean isFocusable);
+    @ReturnsOwnership Builder visibleHeightRatio(float visibleHeightRatio);
+    @ReturnsOwnership Builder visibleWidthRatio(float visibleWidthRatio);
+    @ReturnsOwnership Builder visibleHandler(EventHandler<VisibleEvent> visibleHandler);
+    @ReturnsOwnership Builder focusedHandler(EventHandler<FocusedVisibleEvent> focusedHandler);
+    @ReturnsOwnership Builder unfocusedHandler(
+        EventHandler<UnfocusedVisibleEvent> unfocusedHandler);
+    @ReturnsOwnership Builder fullImpressionHandler(
+        EventHandler<FullImpressionVisibleEvent> fullImpressionHandler);
+    @ReturnsOwnership Builder invisibleHandler(EventHandler<InvisibleEvent> invisibleHandler);
+    @ReturnsOwnership Builder contentDescription(CharSequence contentDescription);
+    @ReturnsOwnership Builder contentDescription(@StringRes int stringId);
+    @ReturnsOwnership Builder contentDescription(@StringRes int stringId, Object... formatArgs);
+    @ReturnsOwnership Builder viewTag(Object viewTag);
+    @ReturnsOwnership Builder viewTags(SparseArray<Object> viewTags);
     /**
      * Shadow elevation and outline provider methods are only functional on
      * {@link android.os.Build.VERSION_CODES#LOLLIPOP} and above.
      */
-    Builder shadowElevationPx(float shadowElevation);
-    Builder shadowElevationAttr(@AttrRes int resId, @DimenRes int defaultResId);
-    Builder shadowElevationAttr(@AttrRes int resId);
-    Builder shadowElevationRes(@DimenRes int resId);
-    Builder shadowElevationDip(@Dimension(unit = DP) int shadowElevation);
-    Builder outlineProvider(ViewOutlineProvider outlineProvider);
-    Builder clipToOutline(boolean clipToOutline);
-    Builder transitionKey(String key);
-    Builder testKey(String testKey);
-    Builder dispatchPopulateAccessibilityEventHandler(
+    @ReturnsOwnership Builder shadowElevationPx(float shadowElevation);
+    @ReturnsOwnership Builder shadowElevationAttr(@AttrRes int resId, @DimenRes int defaultResId);
+    @ReturnsOwnership Builder shadowElevationAttr(@AttrRes int resId);
+    @ReturnsOwnership Builder shadowElevationRes(@DimenRes int resId);
+    @ReturnsOwnership Builder shadowElevationDip(@Dimension(unit = DP) int shadowElevation);
+    @ReturnsOwnership Builder outlineProvider(ViewOutlineProvider outlineProvider);
+    @ReturnsOwnership Builder clipToOutline(boolean clipToOutline);
+    @ReturnsOwnership Builder transitionKey(String key);
+    @ReturnsOwnership Builder testKey(String testKey);
+    @ReturnsOwnership Builder dispatchPopulateAccessibilityEventHandler(
         EventHandler<DispatchPopulateAccessibilityEventEvent>
             dispatchPopulateAccessibilityEventHandler);
-    Builder onInitializeAccessibilityEventHandler(
+    @ReturnsOwnership Builder onInitializeAccessibilityEventHandler(
         EventHandler<OnInitializeAccessibilityEventEvent> onInitializeAccessibilityEventHandler);
-    Builder onInitializeAccessibilityNodeInfoHandler(
+    @ReturnsOwnership Builder onInitializeAccessibilityNodeInfoHandler(
         EventHandler<OnInitializeAccessibilityNodeInfoEvent>
             onInitializeAccessibilityNodeInfoHandler);
-    Builder onPopulateAccessibilityEventHandler(
+    @ReturnsOwnership Builder onPopulateAccessibilityEventHandler(
         EventHandler<OnPopulateAccessibilityEventEvent> onPopulateAccessibilityEventHandler);
-    Builder onRequestSendAccessibilityEventHandler(
+    @ReturnsOwnership Builder onRequestSendAccessibilityEventHandler(
         EventHandler<OnRequestSendAccessibilityEventEvent>
             onRequestSendAccessibilityEventHandler);
-    Builder performAccessibilityActionHandler(
+    @ReturnsOwnership Builder performAccessibilityActionHandler(
         EventHandler<PerformAccessibilityActionEvent>
             performAccessibilityActionHandler);
-    Builder sendAccessibilityEventHandler(
+    @ReturnsOwnership Builder sendAccessibilityEventHandler(
     EventHandler<SendAccessibilityEventEvent> sendAccessibilityEventHandler);
-    Builder sendAccessibilityEventUncheckedHandler(
+    @ReturnsOwnership Builder sendAccessibilityEventUncheckedHandler(
         EventHandler<SendAccessibilityEventUncheckedEvent> sendAccessibilityEventUncheckedHandler);
 
     @ReturnsOwnership
@@ -258,197 +266,218 @@ public interface ComponentLayout {
   }
 
   interface ContainerBuilder extends Builder {
-    ContainerBuilder layoutDirection(YogaDirection direction);
-    ContainerBuilder alignSelf(YogaAlign alignSelf);
-    ContainerBuilder positionType(YogaPositionType positionType);
-    ContainerBuilder flex(float flex);
-    ContainerBuilder flexGrow(float flexGrow);
-    ContainerBuilder flexShrink(float flexShrink);
-    ContainerBuilder flexBasisPx(@Px int flexBasis);
-    ContainerBuilder flexBasisAttr(@AttrRes int resId, @DimenRes int defaultResId);
-    ContainerBuilder flexBasisAttr(@AttrRes int resId);
-    ContainerBuilder flexBasisRes(@DimenRes int resId);
-    ContainerBuilder flexBasisDip(@Dimension(unit = DP) int flexBasis);
-    ContainerBuilder flexBasisPercent(float percent);
+    @ReturnsOwnership ContainerBuilder layoutDirection(YogaDirection direction);
+    @ReturnsOwnership ContainerBuilder alignSelf(YogaAlign alignSelf);
+    @ReturnsOwnership ContainerBuilder positionType(YogaPositionType positionType);
+    @ReturnsOwnership ContainerBuilder flex(float flex);
+    @ReturnsOwnership ContainerBuilder flexGrow(float flexGrow);
+    @ReturnsOwnership ContainerBuilder flexShrink(float flexShrink);
+    @ReturnsOwnership ContainerBuilder flexBasisPx(@Px int flexBasis);
+    @ReturnsOwnership ContainerBuilder flexBasisAttr(
+        @AttrRes int resId,
+        @DimenRes int defaultResId);
+    @ReturnsOwnership ContainerBuilder flexBasisAttr(@AttrRes int resId);
+    @ReturnsOwnership ContainerBuilder flexBasisRes(@DimenRes int resId);
+    @ReturnsOwnership ContainerBuilder flexBasisDip(@Dimension(unit = DP) int flexBasis);
+    @ReturnsOwnership ContainerBuilder flexBasisPercent(float percent);
 
-    ContainerBuilder importantForAccessibility(
+    @ReturnsOwnership ContainerBuilder importantForAccessibility(
         @ImportantForAccessibility int importantForAccessibility
     );
 
-    ContainerBuilder duplicateParentState(boolean duplicateParentState);
+    @ReturnsOwnership ContainerBuilder duplicateParentState(boolean duplicateParentState);
 
-    ContainerBuilder marginPx(YogaEdge edge, @Px int margin);
-    ContainerBuilder marginAttr(
+    @ReturnsOwnership ContainerBuilder marginPx(YogaEdge edge, @Px int margin);
+    @ReturnsOwnership ContainerBuilder marginAttr(
         YogaEdge edge,
         @AttrRes int resId,
         @DimenRes int defaultResId);
-    ContainerBuilder marginAttr(
+    @ReturnsOwnership ContainerBuilder marginAttr(
         YogaEdge edge,
         @AttrRes int resId);
-    ContainerBuilder marginRes(YogaEdge edge, @DimenRes int resId);
-    ContainerBuilder marginDip(YogaEdge edge, @Dimension(unit = DP) int margin);
-    ContainerBuilder marginPercent(YogaEdge edge, float percent);
-    ContainerBuilder marginAuto(YogaEdge edge);
+    @ReturnsOwnership ContainerBuilder marginRes(YogaEdge edge, @DimenRes int resId);
+    @ReturnsOwnership ContainerBuilder marginDip(YogaEdge edge, @Dimension(unit = DP) int margin);
+    @ReturnsOwnership ContainerBuilder marginPercent(YogaEdge edge, float percent);
+    @ReturnsOwnership ContainerBuilder marginAuto(YogaEdge edge);
 
-    ContainerBuilder paddingPx(YogaEdge edge, @Px int padding);
-    ContainerBuilder paddingAttr(
+    @ReturnsOwnership ContainerBuilder paddingPx(YogaEdge edge, @Px int padding);
+    @ReturnsOwnership ContainerBuilder paddingAttr(
         YogaEdge edge,
         @AttrRes int resId,
         @DimenRes int defaultResId);
-    ContainerBuilder paddingAttr(
+    @ReturnsOwnership ContainerBuilder paddingAttr(
         YogaEdge edge,
         @AttrRes int resId);
-    ContainerBuilder paddingRes(YogaEdge edge, @DimenRes int resId);
-    ContainerBuilder paddingDip(YogaEdge edge, @Dimension(unit = DP) int padding);
-    ContainerBuilder paddingPercent(YogaEdge edge, float percent);
+    @ReturnsOwnership ContainerBuilder paddingRes(YogaEdge edge, @DimenRes int resId);
+    @ReturnsOwnership ContainerBuilder paddingDip(YogaEdge edge, @Dimension(unit = DP) int padding);
+    @ReturnsOwnership ContainerBuilder paddingPercent(YogaEdge edge, float percent);
 
-    ContainerBuilder positionPx(YogaEdge edge, @Px int position);
-    ContainerBuilder positionAttr(
+    @ReturnsOwnership ContainerBuilder positionPx(YogaEdge edge, @Px int position);
+    @ReturnsOwnership ContainerBuilder positionAttr(
         YogaEdge edge,
         @AttrRes int resId,
         @DimenRes int defaultResId);
-    ContainerBuilder positionAttr(YogaEdge edge, @AttrRes int resId);
-    ContainerBuilder positionRes(YogaEdge edge, @DimenRes int resId);
-    ContainerBuilder positionDip(YogaEdge edge, @Dimension(unit = DP) int position);
-    ContainerBuilder positionPercent(YogaEdge edge, float percent);
+    @ReturnsOwnership ContainerBuilder positionAttr(YogaEdge edge, @AttrRes int resId);
+    @ReturnsOwnership ContainerBuilder positionRes(YogaEdge edge, @DimenRes int resId);
+    @ReturnsOwnership ContainerBuilder positionDip(
+        YogaEdge edge,
+        @Dimension(unit = DP) int position);
+    @ReturnsOwnership ContainerBuilder positionPercent(YogaEdge edge, float percent);
 
-    ContainerBuilder widthPx(@Px int width);
-    ContainerBuilder widthAttr(@AttrRes int resId, @DimenRes int defaultResId);
-    ContainerBuilder widthAttr(@AttrRes int resId);
-    ContainerBuilder widthRes(@DimenRes int resId);
-    ContainerBuilder widthDip(@Dimension(unit = DP) int width);
-    ContainerBuilder widthPercent(float percent);
+    @ReturnsOwnership ContainerBuilder widthPx(@Px int width);
+    @ReturnsOwnership ContainerBuilder widthAttr(@AttrRes int resId, @DimenRes int defaultResId);
+    @ReturnsOwnership ContainerBuilder widthAttr(@AttrRes int resId);
+    @ReturnsOwnership ContainerBuilder widthRes(@DimenRes int resId);
+    @ReturnsOwnership ContainerBuilder widthDip(@Dimension(unit = DP) int width);
+    @ReturnsOwnership ContainerBuilder widthPercent(float percent);
 
-    ContainerBuilder minWidthPx(@Px int minWidth);
-    ContainerBuilder minWidthAttr(@AttrRes int resId, @DimenRes int defaultResId);
-    ContainerBuilder minWidthAttr(@AttrRes int resId);
-    ContainerBuilder minWidthRes(@DimenRes int resId);
-    ContainerBuilder minWidthDip(@Dimension(unit = DP) int minWidth);
-    ContainerBuilder minWidthPercent(float percent);
+    @ReturnsOwnership ContainerBuilder minWidthPx(@Px int minWidth);
+    @ReturnsOwnership ContainerBuilder minWidthAttr(@AttrRes int resId, @DimenRes int defaultResId);
+    @ReturnsOwnership ContainerBuilder minWidthAttr(@AttrRes int resId);
+    @ReturnsOwnership ContainerBuilder minWidthRes(@DimenRes int resId);
+    @ReturnsOwnership ContainerBuilder minWidthDip(@Dimension(unit = DP) int minWidth);
+    @ReturnsOwnership ContainerBuilder minWidthPercent(float percent);
 
-    ContainerBuilder maxWidthPx(@Px int maxWidth);
-    ContainerBuilder maxWidthAttr(@AttrRes int resId, @DimenRes int defaultResId);
-    ContainerBuilder maxWidthAttr(@AttrRes int resId);
-    ContainerBuilder maxWidthRes(@DimenRes int resId);
-    ContainerBuilder maxWidthDip(@Dimension(unit = DP) int maxWidth);
-    ContainerBuilder maxWidthPercent(float percent);
+    @ReturnsOwnership ContainerBuilder maxWidthPx(@Px int maxWidth);
+    @ReturnsOwnership ContainerBuilder maxWidthAttr(@AttrRes int resId, @DimenRes int defaultResId);
+    @ReturnsOwnership ContainerBuilder maxWidthAttr(@AttrRes int resId);
+    @ReturnsOwnership ContainerBuilder maxWidthRes(@DimenRes int resId);
+    @ReturnsOwnership ContainerBuilder maxWidthDip(@Dimension(unit = DP) int maxWidth);
+    @ReturnsOwnership ContainerBuilder maxWidthPercent(float percent);
 
-    ContainerBuilder heightPx(@Px int height);
-    ContainerBuilder heightAttr(@AttrRes int resId, @DimenRes int defaultResId);
-    ContainerBuilder heightAttr(@AttrRes int resId);
-    ContainerBuilder heightRes(@DimenRes int resId);
-    ContainerBuilder heightDip(@Dimension(unit = DP) int height);
-    ContainerBuilder heightPercent(float percent);
+    @ReturnsOwnership ContainerBuilder heightPx(@Px int height);
+    @ReturnsOwnership ContainerBuilder heightAttr(@AttrRes int resId, @DimenRes int defaultResId);
+    @ReturnsOwnership ContainerBuilder heightAttr(@AttrRes int resId);
+    @ReturnsOwnership ContainerBuilder heightRes(@DimenRes int resId);
+    @ReturnsOwnership ContainerBuilder heightDip(@Dimension(unit = DP) int height);
+    @ReturnsOwnership ContainerBuilder heightPercent(float percent);
 
-    ContainerBuilder minHeightPx(@Px int minHeight);
-    ContainerBuilder minHeightAttr(@AttrRes int resId, @DimenRes int defaultResId);
-    ContainerBuilder minHeightAttr(@AttrRes int resId);
-    ContainerBuilder minHeightRes(@DimenRes int resId);
-    ContainerBuilder minHeightDip(@Dimension(unit = DP) int minHeight);
-    ContainerBuilder minHeightPercent(float percent);
+    @ReturnsOwnership ContainerBuilder minHeightPx(@Px int minHeight);
+    @ReturnsOwnership ContainerBuilder minHeightAttr(
+        @AttrRes int resId,
+        @DimenRes int defaultResId);
+    @ReturnsOwnership ContainerBuilder minHeightAttr(@AttrRes int resId);
+    @ReturnsOwnership ContainerBuilder minHeightRes(@DimenRes int resId);
+    @ReturnsOwnership ContainerBuilder minHeightDip(@Dimension(unit = DP) int minHeight);
+    @ReturnsOwnership ContainerBuilder minHeightPercent(float percent);
 
-    ContainerBuilder maxHeightPx(@Px int maxHeight);
-    ContainerBuilder maxHeightAttr(@AttrRes int resId, @DimenRes int defaultResId);
-    ContainerBuilder maxHeightAttr(@AttrRes int resId);
-    ContainerBuilder maxHeightRes(@DimenRes int resId);
-    ContainerBuilder maxHeightDip(@Dimension(unit = DP) int maxHeight);
-    ContainerBuilder maxHeightPercent(float percent);
+    @ReturnsOwnership ContainerBuilder maxHeightPx(@Px int maxHeight);
+    @ReturnsOwnership ContainerBuilder maxHeightAttr(
+        @AttrRes int resId,
+        @DimenRes int defaultResId);
+    @ReturnsOwnership ContainerBuilder maxHeightAttr(@AttrRes int resId);
+    @ReturnsOwnership ContainerBuilder maxHeightRes(@DimenRes int resId);
+    @ReturnsOwnership ContainerBuilder maxHeightDip(@Dimension(unit = DP) int maxHeight);
+    @ReturnsOwnership ContainerBuilder maxHeightPercent(float percent);
 
-    ContainerBuilder aspectRatio(float aspectRatio);
+    @ReturnsOwnership ContainerBuilder aspectRatio(float aspectRatio);
 
-    ContainerBuilder touchExpansionPx(YogaEdge edge, @Px int value);
-    ContainerBuilder touchExpansionAttr(
+    @ReturnsOwnership ContainerBuilder touchExpansionPx(YogaEdge edge, @Px int value);
+    @ReturnsOwnership ContainerBuilder touchExpansionAttr(
         YogaEdge edge,
         @AttrRes int resId,
         @DimenRes int defaultResId);
-    ContainerBuilder touchExpansionAttr(YogaEdge edge, @AttrRes int resId);
-    ContainerBuilder touchExpansionRes(YogaEdge edge, @DimenRes int resId);
-    ContainerBuilder touchExpansionDip(
+    @ReturnsOwnership ContainerBuilder touchExpansionAttr(YogaEdge edge, @AttrRes int resId);
+    @ReturnsOwnership ContainerBuilder touchExpansionRes(YogaEdge edge, @DimenRes int resId);
+    @ReturnsOwnership ContainerBuilder touchExpansionDip(
         YogaEdge edge,
         @Dimension(unit = DP) int value);
 
-    ContainerBuilder wrap(YogaWrap wrap);
-    ContainerBuilder justifyContent(YogaJustify justifyContent);
-    ContainerBuilder alignItems(YogaAlign alignItems);
-    ContainerBuilder alignContent(YogaAlign alignContent);
-    ContainerBuilder child(ComponentLayout child);
-    ContainerBuilder child(ComponentLayout.Builder childBuilder);
-    ContainerBuilder child(Component<?> component);
-    ContainerBuilder child(Component.Builder<?> componentBuilder);
+    @ReturnsOwnership ContainerBuilder wrap(YogaWrap wrap);
+    @ReturnsOwnership ContainerBuilder justifyContent(YogaJustify justifyContent);
+    @ReturnsOwnership ContainerBuilder alignItems(YogaAlign alignItems);
+    @ReturnsOwnership ContainerBuilder alignContent(YogaAlign alignContent);
+    @ReturnsOwnership ContainerBuilder child(ComponentLayout child);
+    @ReturnsOwnership ContainerBuilder child(ComponentLayout.Builder childBuilder);
+    @ReturnsOwnership ContainerBuilder child(Component<?> component);
+    @ReturnsOwnership ContainerBuilder child(Component.Builder<?> componentBuilder);
 
     /**
      * @deprecated just use {@link #background(Drawable)} instead.
      */
     @Deprecated
-    ContainerBuilder background(Reference<? extends Drawable> background);
+    @ReturnsOwnership ContainerBuilder background(Reference<? extends Drawable> background);
     /**
      * @deprecated just use {@link #background(Drawable)} instead.
      */
     @Deprecated
-    ContainerBuilder background(Reference.Builder<? extends Drawable> backgroundBuilder);
-    ContainerBuilder background(Drawable drawable);
-    ContainerBuilder backgroundAttr(@AttrRes int resId, @DrawableRes int defaultResId);
-    ContainerBuilder backgroundAttr(@AttrRes int resId);
-    ContainerBuilder backgroundRes(@DrawableRes int resId);
-    ContainerBuilder backgroundColor(@ColorInt int backgroundColor);
+    @ReturnsOwnership ContainerBuilder background(
+        Reference.Builder<? extends Drawable> backgroundBuilder);
+    @ReturnsOwnership ContainerBuilder background(Drawable drawable);
+    @ReturnsOwnership ContainerBuilder backgroundAttr(
+        @AttrRes int resId,
+        @DrawableRes int defaultResId);
+    @ReturnsOwnership ContainerBuilder backgroundAttr(@AttrRes int resId);
+    @ReturnsOwnership ContainerBuilder backgroundRes(@DrawableRes int resId);
+    @ReturnsOwnership ContainerBuilder backgroundColor(@ColorInt int backgroundColor);
 
-    ContainerBuilder foreground(Drawable drawable);
-    ContainerBuilder foregroundAttr(@AttrRes int resId, @DrawableRes int defaultResId);
-    ContainerBuilder foregroundAttr(@AttrRes int resId);
-    ContainerBuilder foregroundRes(@DrawableRes int resId);
-    ContainerBuilder foregroundColor(@ColorInt int foregroundColor);
+    @ReturnsOwnership ContainerBuilder foreground(Drawable drawable);
+    @ReturnsOwnership ContainerBuilder foregroundAttr(
+        @AttrRes int resId,
+        @DrawableRes int defaultResId);
+    @ReturnsOwnership ContainerBuilder foregroundAttr(@AttrRes int resId);
+    @ReturnsOwnership ContainerBuilder foregroundRes(@DrawableRes int resId);
+    @ReturnsOwnership ContainerBuilder foregroundColor(@ColorInt int foregroundColor);
 
-    ContainerBuilder wrapInView();
-    ContainerBuilder clickHandler(EventHandler<ClickEvent> clickHandler);
-    ContainerBuilder focusChangeHandler(EventHandler<FocusChangedEvent> focusChangeHandler);
-    ContainerBuilder longClickHandler(EventHandler<LongClickEvent> clickHandler);
-    ContainerBuilder touchHandler(EventHandler<TouchEvent> touchHandler);
-    ContainerBuilder interceptTouchHandler(EventHandler<InterceptTouchEvent> interceptTouchHandler);
-    ContainerBuilder focusable(boolean isFocusable);
-    ContainerBuilder visibleHeightRatio(float visibleHeightRatio);
-    ContainerBuilder visibleWidthRatio(float visibleWidthRatio);
-    ContainerBuilder visibleHandler(EventHandler<VisibleEvent> visibleHandler);
-    ContainerBuilder focusedHandler(EventHandler<FocusedVisibleEvent> focusedHandler);
-    ContainerBuilder unfocusedHandler(EventHandler<UnfocusedVisibleEvent> unfocusedHandler);
-    ContainerBuilder fullImpressionHandler(
+    @ReturnsOwnership ContainerBuilder wrapInView();
+    @ReturnsOwnership ContainerBuilder clickHandler(EventHandler<ClickEvent> clickHandler);
+    @ReturnsOwnership ContainerBuilder focusChangeHandler(
+        EventHandler<FocusChangedEvent> focusChangeHandler);
+    @ReturnsOwnership ContainerBuilder longClickHandler(EventHandler<LongClickEvent> clickHandler);
+    @ReturnsOwnership ContainerBuilder touchHandler(EventHandler<TouchEvent> touchHandler);
+    @ReturnsOwnership ContainerBuilder interceptTouchHandler(
+        EventHandler<InterceptTouchEvent> interceptTouchHandler);
+    @ReturnsOwnership ContainerBuilder focusable(boolean isFocusable);
+    @ReturnsOwnership ContainerBuilder visibleHeightRatio(float visibleHeightRatio);
+    @ReturnsOwnership ContainerBuilder visibleWidthRatio(float visibleWidthRatio);
+    @ReturnsOwnership ContainerBuilder visibleHandler(EventHandler<VisibleEvent> visibleHandler);
+    @ReturnsOwnership ContainerBuilder focusedHandler(
+        EventHandler<FocusedVisibleEvent> focusedHandler);
+    @ReturnsOwnership ContainerBuilder unfocusedHandler(
+        EventHandler<UnfocusedVisibleEvent> unfocusedHandler);
+    @ReturnsOwnership ContainerBuilder fullImpressionHandler(
         EventHandler<FullImpressionVisibleEvent> fullImpressionHandler);
-    ContainerBuilder invisibleHandler(EventHandler<InvisibleEvent> invisibleHandler);
-    ContainerBuilder contentDescription(CharSequence contentDescription);
-    ContainerBuilder contentDescription(@StringRes int stringId);
-    ContainerBuilder viewTag(Object viewTag);
-    ContainerBuilder viewTags(SparseArray<Object> viewTags);
+    @ReturnsOwnership ContainerBuilder invisibleHandler(
+        EventHandler<InvisibleEvent> invisibleHandler);
+    @ReturnsOwnership ContainerBuilder contentDescription(CharSequence contentDescription);
+    @ReturnsOwnership ContainerBuilder contentDescription(@StringRes int stringId);
+    @ReturnsOwnership ContainerBuilder viewTag(Object viewTag);
+    @ReturnsOwnership ContainerBuilder viewTags(SparseArray<Object> viewTags);
     /**
      * Shadow elevation and outline provider methods are only functional on
      * {@link android.os.Build.VERSION_CODES#LOLLIPOP} and above.
      */
-    ContainerBuilder shadowElevationPx(float shadowElevation);
-    ContainerBuilder shadowElevationAttr(@AttrRes int resId, @DimenRes int defaultResId);
-    ContainerBuilder shadowElevationAttr(@AttrRes int resId);
-    ContainerBuilder shadowElevationRes(@DimenRes int resId);
-    ContainerBuilder shadowElevationDip(@Dimension(unit = DP) int shadowElevation);
-    ContainerBuilder outlineProvider(ViewOutlineProvider outlineProvider);
-    ContainerBuilder clipToOutline(boolean clipToOutline);
-    ContainerBuilder transitionKey(String key);
-    ContainerBuilder dispatchPopulateAccessibilityEventHandler(
+    @ReturnsOwnership ContainerBuilder shadowElevationPx(float shadowElevation);
+    @ReturnsOwnership ContainerBuilder shadowElevationAttr(
+        @AttrRes int resId,
+        @DimenRes int defaultResId);
+    @ReturnsOwnership ContainerBuilder shadowElevationAttr(@AttrRes int resId);
+    @ReturnsOwnership ContainerBuilder shadowElevationRes(@DimenRes int resId);
+    @ReturnsOwnership ContainerBuilder shadowElevationDip(
+        @Dimension(unit = DP) int shadowElevation);
+    @ReturnsOwnership ContainerBuilder outlineProvider(ViewOutlineProvider outlineProvider);
+    @ReturnsOwnership ContainerBuilder clipToOutline(boolean clipToOutline);
+    @ReturnsOwnership ContainerBuilder transitionKey(String key);
+    @ReturnsOwnership ContainerBuilder dispatchPopulateAccessibilityEventHandler(
         EventHandler<DispatchPopulateAccessibilityEventEvent>
             dispatchPopulateAccessibilityEventHandler);
-    ContainerBuilder onInitializeAccessibilityEventHandler(
+    @ReturnsOwnership ContainerBuilder onInitializeAccessibilityEventHandler(
         EventHandler<OnInitializeAccessibilityEventEvent> onInitializeAccessibilityEventHandler);
-    ContainerBuilder onInitializeAccessibilityNodeInfoHandler(
+    @ReturnsOwnership ContainerBuilder onInitializeAccessibilityNodeInfoHandler(
         EventHandler<OnInitializeAccessibilityNodeInfoEvent>
             onInitializeAccessibilityNodeInfoHandler);
-    ContainerBuilder onPopulateAccessibilityEventHandler(
+    @ReturnsOwnership ContainerBuilder onPopulateAccessibilityEventHandler(
         EventHandler<OnPopulateAccessibilityEventEvent> onPopulateAccessibilityEventHandler);
-    ContainerBuilder onRequestSendAccessibilityEventHandler(
+    @ReturnsOwnership ContainerBuilder onRequestSendAccessibilityEventHandler(
         EventHandler<OnRequestSendAccessibilityEventEvent>
             onRequestSendAccessibilityEventHandler);
-    ContainerBuilder performAccessibilityActionHandler(
+    @ReturnsOwnership ContainerBuilder performAccessibilityActionHandler(
         EventHandler<PerformAccessibilityActionEvent>
             performAccessibilityActionHandler);
-    ContainerBuilder sendAccessibilityEventHandler(
+    @ReturnsOwnership ContainerBuilder sendAccessibilityEventHandler(
         EventHandler<SendAccessibilityEventEvent> sendAccessibilityEventHandler);
-    ContainerBuilder sendAccessibilityEventUncheckedHandler(
+    @ReturnsOwnership ContainerBuilder sendAccessibilityEventUncheckedHandler(
         EventHandler<SendAccessibilityEventUncheckedEvent> sendAccessibilityEventUncheckedHandler);
-    ContainerBuilder testKey(String testKey);
+    @ReturnsOwnership ContainerBuilder testKey(String testKey);
   }
 }
