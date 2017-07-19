@@ -9,20 +9,12 @@
 
 package com.facebook.litho;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Deque;
-import java.util.List;
-import java.util.Queue;
 
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
@@ -52,34 +44,6 @@ public class LithoViewTestHelper {
     final Deque<TestItem> items = lithoView.findTestItems(testKey);
 
     return items.isEmpty() ? null : items.getLast();
-  }
-
-  public static List<LithoView> findLithoViews(View rootView) {
-    return findLithoViews(Collections.singleton(rootView));
-  }
-
-  public static List<LithoView> findLithoViews(Collection<View> topLevelViews) {
-    final Queue<View> queue = new ArrayDeque<>(topLevelViews);
-    final List<LithoView> lithoViews = new ArrayList<>();
-
-    View view = queue.poll();
-    while (view != null) {
-      if (view instanceof ViewGroup) {
-        final ViewGroup viewGroup = (ViewGroup) view;
-        for (int i = viewGroup.getChildCount() - 1; i >= 0; i--) {
-          final View child = viewGroup.getChildAt(i);
-          if (child instanceof ViewGroup) {
-            queue.add(child);
-          }
-          if (child instanceof LithoView) {
-            lithoViews.add((LithoView) child);
-          }
-        }
-      }
-      view = queue.poll();
-    }
-
-    return lithoViews;
   }
 
   /**
