@@ -217,7 +217,6 @@ public abstract class ComponentLifecycle implements EventDispatcher {
         Component.isNestedTree(component) && !resolveNestedTree;
 
     final TreeProps parentTreeProps = context.getTreeProps();
-    populateTreeProps(component, parentTreeProps);
     context.setTreeProps(getTreePropsForChildren(context, component, parentTreeProps));
 
     ComponentsSystrace.beginSection("createLayout:" + component.getSimpleName());

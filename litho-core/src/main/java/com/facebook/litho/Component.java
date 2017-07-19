@@ -334,8 +334,9 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
   }
 
   /**
-   * Prepares a component for calling any pending state updates on it by setting a global key and
-   *   a scoped component context and applies the pending state updates.
+   * Prepares a component for calling any pending state updates on it by setting a global key,
+   * setting the TreeProps which the component requires from its parent,
+   * setting a scoped component context and applies the pending state updates.
    * @param c component context
    */
   void applyStateUpdates(ComponentContext c) {
@@ -344,6 +345,8 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
     setGlobalKey(parentScope == null ? key : parentScope.getGlobalKey() + key);
 
     setScopedContext(ComponentContext.withComponentScope(c, this));
+
+    getLifecycle().populateTreeProps(this, getScopedContext().getTreeProps());
 
     if (getLifecycle().hasState()) {
       c.getStateHandler().applyStateUpdatesForComponent(this);
