@@ -1014,11 +1014,17 @@ public class ComponentTree {
       if (rootDidntChange && sizeSpecsAreCompatible) {
         // The spec and the root haven't changed. Either we have a layout already, or we're
         // currently computing one on another thread.
-        if (output != null) {
+        if (output == null) {
+          return;
+        }
+
+        // Set the output if we have a LayoutState, otherwise we need to compute one synchronously
+        // below to get the correct output.
+        if (mostRecentLayoutState != null) {
           output.height = mostRecentLayoutState.getHeight();
           output.width = mostRecentLayoutState.getWidth();
+          return;
         }
-        return;
       }
 
       if (widthSpecInitialized) {
