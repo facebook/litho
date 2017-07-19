@@ -10,7 +10,9 @@ include_defs("//COMPONENTS_DEFS")
 prebuilt_jar(
     name = "jsr-305",
     binary_jar = ":jsr-305.jar",
-    visibility = COMPONENTS_VISIBILITY,
+    visibility = [
+        COMPONENTS_VISIBILITY,
+    ],
 )
 
 remote_file(

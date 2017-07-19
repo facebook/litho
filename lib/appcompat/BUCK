@@ -23,5 +23,7 @@ java_library(
     exported_deps = [
         ":appcompat-aar",
     ],
-    visibility = COMPONENTS_VISIBILITY,
+    visibility = [
+        COMPONENTS_VISIBILITY,
+    ],
 )

@@ -10,7 +10,9 @@ include_defs("//COMPONENTS_DEFS")
 android_prebuilt_aar(
     name = "textlayoutbuilder",
     aar = ":textlayoutbuilder-aar",
-    visibility = COMPONENTS_VISIBILITY,
+    visibility = [
+        COMPONENTS_VISIBILITY,
+    ],
 )
 
 remote_file(

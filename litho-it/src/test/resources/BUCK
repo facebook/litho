@@ -11,5 +11,5 @@ java_library(
     name = "resources",
     resources = glob(["**"]),
     resources_root = ".",
-    visibility = COMPONENTS_VISIBILITY,
+    visibility = [COMPONENTS_VISIBILITY],
 )

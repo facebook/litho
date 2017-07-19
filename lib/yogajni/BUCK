@@ -27,5 +27,5 @@ if COMPONENTS_IS_OSS_BUILD:
       make_dep_path("lib/yoga/src/main/cpp:yoga"),
       COMPONENTS_FBJNI_TARGET,
     ],
-    visibility = COMPONENTS_VISIBILITY,
+    visibility = [COMPONENTS_VISIBILITY],
   )

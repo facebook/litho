@@ -10,7 +10,9 @@ include_defs("//COMPONENTS_DEFS")
 prebuilt_jar(
     name = "commons-cli",
     binary_jar = ":commons-cli.jar",
-    visibility = COMPONENTS_VISIBILITY,
+    visibility = [
+        COMPONENTS_VISIBILITY,
+    ],
 )
 
 remote_file(
