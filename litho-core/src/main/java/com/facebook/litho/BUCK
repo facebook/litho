@@ -31,9 +31,7 @@ litho_android_library(
     tests = [
         COMPONENTS_TEST_TARGET,
     ],
-    visibility = [
-        COMPONENTS_VISIBILITY,
-    ],
+    visibility = COMPONENTS_VISIBILITY,
     deps = [
         COMPONENTS_INFERANNOTATIONS_TARGET,
         COMPONENTS_RES_TARGET,

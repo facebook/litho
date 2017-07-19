@@ -13,9 +13,7 @@ java_library(
         ":hamcrest-core",
         ":hamcrest-library",
     ],
-    visibility = [
-        COMPONENTS_VISIBILITY,
-    ],
+    visibility = COMPONENTS_VISIBILITY,
 )
 
 prebuilt_jar(

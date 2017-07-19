@@ -55,7 +55,5 @@ android_build_config(
     values = [
         "boolean IS_INTERNAL_BUILD = true",
     ],
-    visibility = [
-        COMPONENTS_VISIBILITY,
-    ],
+    visibility = COMPONENTS_VISIBILITY,
 )
