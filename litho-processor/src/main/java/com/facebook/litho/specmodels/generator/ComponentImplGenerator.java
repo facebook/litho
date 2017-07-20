@@ -52,7 +52,7 @@ import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_C
 import static com.facebook.litho.specmodels.model.ClassNames.COMPONENT;
 
 /**
- * Class that generates the preamble for a Component.
+ * Class that generates the implementation of a Component.
  */
 public class ComponentImplGenerator {
 
