@@ -247,7 +247,11 @@ public class EventGenerator {
       int paramIndex = 0;
       for (MethodParamModel methodParamModel : eventMethodModel.methodParams) {
         if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, FromEvent.class)) {
-          eventHandlerParams.add(",\n$L.$L", eventVariableName, methodParamModel.getName());
+          eventHandlerParams.add(
+              ",\n($T) $L.$L",
+              methodParamModel.getType(),
+              eventVariableName,
+              methodParamModel.getName());
         } else if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, Param.class) ||
             methodParamModel.getType().equals(specModel.getContextClass())) {
           eventHandlerParams.add(

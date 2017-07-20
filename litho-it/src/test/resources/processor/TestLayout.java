@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2017-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
 package com.facebook.litho.processor.integration.resources;
 
 import android.support.v4.util.Pools;
@@ -175,7 +183,7 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
         testLayoutEvent(
             eventHandler.mHasEventDispatcher,
             (ComponentContext) eventHandler.params[0],
-            _event.view,
+            (View) _event.view,
             (int) eventHandler.params[1]);
         return null;
       }
