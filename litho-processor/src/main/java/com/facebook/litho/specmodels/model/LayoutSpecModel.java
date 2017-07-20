@@ -174,6 +174,11 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
+  public String getScopeMethodName() {
+    return "getComponentScope";
+  }
+
+  @Override
   public boolean isStylingSupported() {
     return true;
   }

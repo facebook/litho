@@ -136,6 +136,11 @@ public interface SpecModel {
   TypeName getUpdateStateInterface();
 
   /**
+   * @return the scope method name on the Context class.
+   */
+  String getScopeMethodName();
+
+  /**
    * @return true if the generated class supports styling, false otherwise.
    */
   boolean isStylingSupported();

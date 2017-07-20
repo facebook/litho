@@ -69,7 +69,7 @@ public class EventGenerator {
   static TypeSpecDataHolder generateGetEventHandlerMethod(
       SpecModel specModel,
       EventDeclarationModel eventDeclaration) {
-    final String scopeMethodName = "getComponentScope";
+    final String scopeMethodName = specModel.getScopeMethodName();
     return TypeSpecDataHolder.newBuilder()
         .addMethod(
             MethodSpec.methodBuilder("get" + eventDeclaration.name.simpleName() + "Handler")

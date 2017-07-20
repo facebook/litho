@@ -86,6 +86,7 @@ public class EventGeneratorTest {
         .thenReturn(ImmutableList.of(eventDeclarationModel));
     when(mMockSpecModel.getContextClass()).thenReturn(ClassNames.COMPONENT_CONTEXT);
     when(mMockSpecModel.getComponentName()).thenReturn("Test");
+    when(mMockSpecModel.getScopeMethodName()).thenReturn("getComponentScope");
   }
 
   @Test

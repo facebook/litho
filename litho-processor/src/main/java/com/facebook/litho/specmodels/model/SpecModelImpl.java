@@ -201,6 +201,11 @@ public final class SpecModelImpl implements SpecModel {
   }
 
   @Override
+  public String getScopeMethodName() {
+    throw new RuntimeException("Don't delegate to this method!");
+  }
+
+  @Override
   public boolean isStylingSupported() {
     throw new RuntimeException("Don't delegate to this method!");
   }
