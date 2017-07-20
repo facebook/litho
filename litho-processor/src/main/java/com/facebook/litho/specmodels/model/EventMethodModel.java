@@ -16,6 +16,7 @@ import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 
 import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeVariableName;
 
 /**
  * Model that is an abstract representation of an event method (a method annotated with
@@ -27,6 +28,7 @@ public final class EventMethodModel {
   public final ImmutableList<Modifier> modifiers;
   public final CharSequence name;
   public final TypeName returnType;
+  public final ImmutableList<TypeVariableName> typeVariables;
   public final ImmutableList<MethodParamModel> methodParams;
   public final Object representedObject;
 
@@ -35,12 +37,14 @@ public final class EventMethodModel {
       ImmutableList<Modifier> modifiers,
       CharSequence name,
       TypeName returnType,
+      ImmutableList<TypeVariableName> typeVariables,
       ImmutableList<MethodParamModel> methodParams,
       Object representedObject) {
     this.eventType = eventType;
     this.modifiers = modifiers;
     this.name = name;
     this.returnType = returnType;
+    this.typeVariables = typeVariables;
     this.methodParams = methodParams;
     this.representedObject = representedObject;
   }

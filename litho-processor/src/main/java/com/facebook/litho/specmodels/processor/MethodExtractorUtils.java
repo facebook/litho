@@ -12,6 +12,7 @@ package com.facebook.litho.specmodels.processor;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.element.VariableElement;
 
 import java.lang.annotation.Annotation;
@@ -25,6 +26,7 @@ import com.facebook.litho.specmodels.model.MethodParamModelFactory;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeVariableName;
 
 /**
  * Extracts methods from the given input.
@@ -101,5 +103,26 @@ public class MethodExtractorUtils {
     }
 
     return annotations;
+  }
+
+  static List<TypeVariableName> getTypeVariables(ExecutableElement method) {
+    final List<TypeVariableName> typeVariables = new ArrayList<>();
+    for (TypeParameterElement typeParameterElement : method.getTypeParameters()) {
+      typeVariables.add(
+          TypeVariableName.get(
+              typeParameterElement.getSimpleName().toString(),
+              getBounds(typeParameterElement)));
+    }
+
+    return typeVariables;
+  }
+
+  private static TypeName[] getBounds(TypeParameterElement typeParameterElement) {
+    final TypeName[] bounds = new TypeName[typeParameterElement.getBounds().size()];
+    for (int i = 0, size = typeParameterElement.getBounds().size(); i < size; i++) {
+      bounds[i] = TypeName.get(typeParameterElement.getBounds().get(i));
+    }
+
+    return bounds;
   }
 }

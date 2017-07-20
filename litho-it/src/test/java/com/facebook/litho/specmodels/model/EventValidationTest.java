@@ -20,6 +20,7 @@ import com.facebook.litho.testing.specmodels.TestMethodParamModel;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeVariableName;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -140,6 +141,7 @@ public class EventValidationTest {
         ImmutableList.of(Modifier.STATIC),
         "sameName",
         TypeName.INT,
+        ImmutableList.<TypeVariableName>of(),
         ImmutableList.of(methodParam),
         mRepresentedObject2);
     EventMethodModel eventMethod2 = new EventMethodModel(
@@ -151,6 +153,7 @@ public class EventValidationTest {
         ImmutableList.of(Modifier.STATIC),
         "sameName",
         TypeName.INT,
+        ImmutableList.<TypeVariableName>of(),
         ImmutableList.of(methodParam),
         mRepresentedObject4);
 
@@ -178,6 +181,7 @@ public class EventValidationTest {
         ImmutableList.of(Modifier.STATIC),
         "name",
         TypeName.INT,
+        ImmutableList.<TypeVariableName>of(),
         ImmutableList.of(methodParam),
         mRepresentedObject2);
 
@@ -205,6 +209,7 @@ public class EventValidationTest {
         ImmutableList.of(Modifier.STATIC),
         "name",
         TypeName.INT,
+        ImmutableList.<TypeVariableName>of(),
         ImmutableList.of(methodParam),
         mRepresentedObject2);
 
@@ -249,6 +254,7 @@ public class EventValidationTest {
         ImmutableList.of(Modifier.STATIC),
         "name",
         TypeName.INT,
+        ImmutableList.<TypeVariableName>of(),
         ImmutableList.of(methodParam0, methodParam1, methodParam2),
         mRepresentedObject2);
 
@@ -276,6 +282,7 @@ public class EventValidationTest {
         ImmutableList.<Modifier>of(),
         "name",
         TypeName.BOOLEAN,
+        ImmutableList.<TypeVariableName>of(),
         ImmutableList.of(methodParam),
         mRepresentedObject2);
 

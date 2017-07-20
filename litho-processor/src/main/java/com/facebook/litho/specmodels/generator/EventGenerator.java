@@ -295,6 +295,7 @@ public class EventGenerator {
       TypeName paramClass) {
     final MethodSpec.Builder builder = MethodSpec.methodBuilder(eventMethodModel.name.toString())
         .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+        .addTypeVariables(eventMethodModel.typeVariables)
         .addParameter(paramClass, "c")
         .returns(ParameterizedTypeName.get(
             ClassNames.EVENT_HANDLER,

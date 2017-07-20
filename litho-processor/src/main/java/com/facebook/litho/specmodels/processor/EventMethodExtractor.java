@@ -35,6 +35,7 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 
 import static com.facebook.litho.specmodels.processor.MethodExtractorUtils.getMethodParams;
+import static com.facebook.litho.specmodels.processor.MethodExtractorUtils.getTypeVariables;
 
 /**
  * Extracts event methods from the given input.
@@ -92,6 +93,7 @@ public class EventMethodExtractor {
                 ImmutableList.copyOf(new ArrayList<>(executableElement.getModifiers())),
                 executableElement.getSimpleName(),
                 TypeName.get(executableElement.getReturnType()),
+                ImmutableList.copyOf(getTypeVariables(executableElement)),
                 ImmutableList.copyOf(methodParams),
                 executableElement);
         delegateMethods.add(eventMethod);
