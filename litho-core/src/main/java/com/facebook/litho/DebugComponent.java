@@ -52,6 +52,7 @@ public final class DebugComponent {
   private WeakReference<InternalNode> mNode;
   private int mComponentIndex;
   private Overrider mOverrider;
+  private int mGeneration;
 
   private DebugComponent() {}
 
@@ -67,8 +68,18 @@ public final class DebugComponent {
     debugComponent.mKey = globalKey;
     debugComponent.mNode = new WeakReference<>(node);
     debugComponent.mComponentIndex = componentIndex;
+    debugComponent.mGeneration = node.getGeneration();
 
     return debugComponent;
+  }
+
+  public boolean isValidInstance() {
+    final InternalNode node = mNode.get();
+    if (node == null) {
+      return false;
+    }
+
+    return node.getGeneration() == mGeneration && mKey.equals(createKey(node, mComponentIndex));
   }
 
   /**

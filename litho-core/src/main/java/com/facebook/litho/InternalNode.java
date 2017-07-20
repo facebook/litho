@@ -187,8 +187,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   private boolean mCachedMeasuresValid;
   private TreeProps mPendingTreeProps;
+  private int mGeneration;
 
   void init(YogaNode yogaNode, ComponentContext componentContext, Resources resources) {
+    mGeneration++;
     yogaNode.setData(this);
     mYogaNode = yogaNode;
 
@@ -1576,6 +1578,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   InternalNode getNestedTreeHolder() {
     return mNestedTreeHolder;
+  }
+
+  int getGeneration() {
+    return mGeneration;
   }
 
   /**
