@@ -13,9 +13,7 @@ litho_android_library(
     provided_deps = [
         COMPONENTS_YOGA_TARGET,
     ],
-    visibility = [
-        COMPONENTS_VISIBILITY,
-    ],
+    visibility = COMPONENTS_VISIBILITY,
     deps = [
         COMPONENTS_ANDROIDSUPPORT_TARGET,
         COMPONENTS_INFERANNOTATIONS_TARGET,

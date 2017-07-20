@@ -12,9 +12,7 @@ java_library(
     exported_deps = [
         ":truth-prebuilt",
     ],
-    visibility = [
-        COMPONENTS_VISIBILITY,
-    ],
+    visibility = COMPONENTS_VISIBILITY,
 )
 
 prebuilt_jar(

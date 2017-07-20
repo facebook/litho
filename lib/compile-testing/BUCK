@@ -15,17 +15,13 @@ java_library(
         make_dep_path("lib/guava:guava"),
         make_dep_path("lib/truth:truth"),
     ],
-    visibility = [
-        COMPONENTS_VISIBILITY,
-    ],
+    visibility = COMPONENTS_VISIBILITY,
 )
 
 prebuilt_jar(
     name = "compile-testing-prebuilt",
     binary_jar = ":compile-testing.jar",
-    visibility = [
-        COMPONENTS_VISIBILITY,
-    ],
+    visibility = COMPONENTS_VISIBILITY,
 )
 
 remote_file(

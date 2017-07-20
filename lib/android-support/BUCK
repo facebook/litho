@@ -105,9 +105,7 @@ java_library(
         ":android-support-fragment-aar",
         ":android-support-vector-drawable-aar",
     ],
-    visibility = [
-        COMPONENTS_VISIBILITY,
-    ],
+    visibility = COMPONENTS_VISIBILITY,
 )
 
 litho_android_library(
@@ -115,9 +113,7 @@ litho_android_library(
     exported_deps = [
         ":android-support-test-rules-aar",
     ],
-    visibility = [
-        COMPONENTS_VISIBILITY,
-    ],
+    visibility = COMPONENTS_VISIBILITY,
 )
 
 litho_android_library(
@@ -125,7 +121,5 @@ litho_android_library(
     exported_deps = [
         ":android-support-recyclerview-aar",
     ],
-    visibility = [
-        COMPONENTS_VISIBILITY,
-    ],
+    visibility = COMPONENTS_VISIBILITY,
 )

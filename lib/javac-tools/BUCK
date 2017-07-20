@@ -10,9 +10,7 @@ include_defs("//COMPONENTS_DEFS")
 prebuilt_jar(
     name = "javac-tools",
     binary_jar = ":javac-tools.jar",
-    visibility = [
-        COMPONENTS_VISIBILITY,
-    ],
+    visibility = COMPONENTS_VISIBILITY,
 )
 
 remote_file(

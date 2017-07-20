@@ -26,7 +26,5 @@ prebuilt_jar(
 prebuilt_jar(
     name = "android-all-5.0.0",
     binary_jar = "android-all-5.0.0_r2-robolectric-1.jar",
-    visibility = [
-        COMPONENTS_VISIBILITY,
-    ],
+    visibility = COMPONENTS_VISIBILITY,
 )

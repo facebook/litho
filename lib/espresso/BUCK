@@ -13,9 +13,7 @@ android_library(
         ":espresso-core-prebuilt",
         make_dep_path("lib/hamcrest:hamcrest"),
     ],
-    visibility = [
-        COMPONENTS_VISIBILITY,
-    ],
+    visibility = COMPONENTS_VISIBILITY,
 )
 
 android_prebuilt_aar(

@@ -10,9 +10,7 @@ include_defs("//COMPONENTS_DEFS")
 prebuilt_jar(
     name = "javapoet",
     binary_jar = ":javapoet.jar",
-    visibility = [
-        COMPONENTS_VISIBILITY,
-    ],
+    visibility = COMPONENTS_VISIBILITY,
 )
 
 remote_file(
