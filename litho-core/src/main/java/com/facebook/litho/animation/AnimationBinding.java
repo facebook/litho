@@ -22,7 +22,7 @@ public interface AnimationBinding extends AnimationForVarArgs {
 
   /**
    * Starts this animation. The provided {@link Resolver} instance can be used to configure this
-   * animation appropriately using mount item property current and end values.
+   * animation appropriately using mount content property current and end values.
    */
   void start(Resolver resolver);
 

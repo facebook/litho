@@ -26,16 +26,16 @@ public class DimensionValue implements RuntimeValue {
   }
 
   /**
-   * @return a RuntimeValue that resolves to an offset relative to the current value of some mount item
-   * property.
+   * @return a RuntimeValue that resolves to an offset relative to the current value of some mount
+   * content property.
    */
   public static DimensionValue offsetPx(float value) {
     return new DimensionValue(Type.OFFSET, value);
   }
 
   /**
-   * @return a RuntimeValue that resolves to an offset relative to the current value of some mount item
-   * property.
+   * @return a RuntimeValue that resolves to an offset relative to the current value of some mount
+   * content property.
    */
   public static DimensionValue offsetDip(Context context, int valueDp) {
     final DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
@@ -44,14 +44,16 @@ public class DimensionValue implements RuntimeValue {
   }
 
   /**
-   * Like {@link #offsetPx}, but the relative offset is based on a percentage of the mount item width.
+   * Like {@link #offsetPx}, but the relative offset is based on a percentage of the mount content
+   * width.
    */
   public static DimensionValue widthPercentageOffset(float value) {
     return new DimensionValue(Type.OFFSET_WIDTH_PERCENTAGE, value);
   }
 
   /**
-   * Like {@link #offsetPx}, but the relative offset is based on a percentage of the mount item height
+   * Like {@link #offsetPx}, but the relative offset is based on a percentage of the mount content
+   * height
    */
   public static DimensionValue heightPercentageOffset(float value) {
     return new DimensionValue(Type.OFFSET_HEIGHT_PERCENTAGE, value);

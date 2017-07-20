@@ -16,7 +16,7 @@ import com.facebook.litho.dataflow.ValueNode;
 import com.facebook.litho.internal.ArraySet;
 
 /**
- * Animation for the transition of the position of a mount item on a quadratic Bezier curve.
+ * Animation for the transition of the position of a mount content on a quadratic Bezier curve.
  */
 public class BezierTransition extends TransitionAnimationBinding {
 

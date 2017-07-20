@@ -12,7 +12,7 @@ package com.facebook.litho.animation;
 
 /**
  * Class that represents a float value that may need to be resolved at runtime (since it's relative
- * to a property on a mount item for example).
+ * to a property on a mount content for example).
  */
 public interface RuntimeValue {
 

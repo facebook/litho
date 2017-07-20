@@ -1849,7 +1849,7 @@ class MountState implements DataFlowTransitionManager.OnAnimationCompleteListene
     final ComponentHost host = item.getHost();
     host.startUnmountDisappearingItem(index, item);
 
-    mTransitionManager.setMountContent(key, item.getContent());
+    mTransitionManager.setMountContentInner(key, item.getContent());
   }
 
   private void endUnmountDisappearingItem(MountItem item) {
@@ -2325,7 +2325,7 @@ class MountState implements DataFlowTransitionManager.OnAnimationCompleteListene
     if (componentHost.hasDisappearingItems()) {
       List<String> disappearingKeys = componentHost.getDisappearingItemKeys();
       for (int i = 0, size = disappearingKeys.size(); i < size; i++) {
-        mTransitionManager.setMountContent(disappearingKeys.get(i), null);
+        mTransitionManager.setMountContentInner(disappearingKeys.get(i), null);
       }
     }
   }
@@ -2340,7 +2340,7 @@ class MountState implements DataFlowTransitionManager.OnAnimationCompleteListene
       return;
     }
 
-    mTransitionManager.setMountContent(transitionKey, mountContent);
+    mTransitionManager.setMountContentInner(transitionKey, mountContent);
   }
 
   private static void collectPendingAnimations(LayoutState layoutState) {

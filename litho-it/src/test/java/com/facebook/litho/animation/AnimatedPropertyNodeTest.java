@@ -131,7 +131,7 @@ public class AnimatedPropertyNodeTest {
 
     assertThat(view2.getScaleX()).isEqualTo(1f);
 
-    viewNode.setMountItem(view2);
+    viewNode.setMountContent(view2);
 
     assertThat(view2.getScaleX()).isEqualTo(123f);
   }

@@ -20,57 +20,57 @@ import com.facebook.litho.LithoView;
 public final class AnimatedProperties {
 
   /**
-   * The absolute X-position of a mount item, relative to the {@link com.facebook.litho.LithoView}
-   * that is rendering this component tree.
+   * The absolute X-position of a mount content, relative to the
+   * {@link com.facebook.litho.LithoView} that is rendering this component tree.
    */
   public static final AnimatedProperty X = new XAnimatedProperty();
 
   /**
-   * The absolute Y-position of a mount item, relative to the {@link com.facebook.litho.LithoView}
-   * that is rendering this component tree.
+   * The absolute Y-position of a mount content, relative to the
+   * {@link com.facebook.litho.LithoView} that is rendering this component tree.
    */
   public static final AnimatedProperty Y = new YAnimatedProperty();
 
   /**
-   * The width of a mount item.
+   * The width of a mount content.
    */
   public static final AnimatedProperty WIDTH = new WidthAnimatedProperty();
 
   /**
-   * The height of a mount item.
+   * The height of a mount content.
    */
   public static final AnimatedProperty HEIGHT = new HeightAnimatedProperty();
 
   /**
-   * The transparency of a mount item.
+   * The transparency of a mount content.
    */
   public static final AnimatedProperty ALPHA = new AlphaAnimatedProperty();
 
   /**
-   * The scale of a mount item: treats both X- and Y-scales as one.
+   * The scale of a mount content: treats both X- and Y-scales as one.
    */
   public static final AnimatedProperty SCALE = new ScaleAnimatedProperty();
 
   /**
-   * The x-scale of a mount item.
+   * The x-scale of a mount content.
    */
   public static final AnimatedProperty SCALE_X = new ScaleXAnimatedProperty();
 
   /**
-   * The y-scale of a mount item.
+   * The y-scale of a mount content.
    */
   public static final AnimatedProperty SCALE_Y = new ScaleYAnimatedProperty();
 
   private AnimatedProperties() {
   }
 
-  private static View assertIsView(Object mountItem, AnimatedProperty property) {
-    if (!(mountItem instanceof View)) {
+  private static View assertIsView(Object mountContent, AnimatedProperty property) {
+    if (!(mountContent instanceof View)) {
       throw new RuntimeException(
-          "Animating '" + property.getName() + "' is only supported on Views (got " + mountItem +
+          "Animating '" + property.getName() + "' is only supported on Views (got " + mountContent +
               ")");
     }
-    return (View) mountItem;
+    return (View) mountContent;
   }
 
   private static class XAnimatedProperty implements AnimatedProperty {
@@ -80,8 +80,8 @@ public final class AnimatedProperties {
     }
 
     @Override
-    public float get(Object mountItem) {
-      return getPositionRelativeToLithoView(assertIsView(mountItem, this), true);
+    public float get(Object mountContent) {
+      return getPositionRelativeToLithoView(assertIsView(mountContent, this), true);
     }
 
     @Override
@@ -90,15 +90,15 @@ public final class AnimatedProperties {
     }
 
     @Override
-    public void set(Object mountItem, float value) {
-      View mountView = assertIsView(mountItem, this);
+    public void set(Object mountContent, float value) {
+      View mountView = assertIsView(mountContent, this);
       float parentX = getPositionRelativeToLithoView((View) mountView.getParent(), true);
       mountView.setX(value - parentX);
     }
 
     @Override
-    public void reset(Object mountItem) {
-      assertIsView(mountItem, this).setTranslationX(0);
+    public void reset(Object mountContent) {
+      assertIsView(mountContent, this).setTranslationX(0);
     }
   }
 
@@ -109,8 +109,8 @@ public final class AnimatedProperties {
     }
 
     @Override
-    public float get(Object mountItem) {
-      return getPositionRelativeToLithoView(assertIsView(mountItem, this), false);
+    public float get(Object mountContent) {
+      return getPositionRelativeToLithoView(assertIsView(mountContent, this), false);
     }
 
     @Override
@@ -119,15 +119,15 @@ public final class AnimatedProperties {
     }
 
     @Override
-    public void set(Object mountItem, float value) {
-      View mountView = assertIsView(mountItem, this);
+    public void set(Object mountContent, float value) {
+      View mountView = assertIsView(mountContent, this);
       float parentY = getPositionRelativeToLithoView((View) mountView.getParent(), false);
       mountView.setY(value - parentY);
     }
 
     @Override
-    public void reset(Object mountItem) {
-      assertIsView(mountItem, this).setTranslationY(0);
+    public void reset(Object mountContent) {
+      assertIsView(mountContent, this).setTranslationY(0);
     }
   };
 
@@ -138,8 +138,8 @@ public final class AnimatedProperties {
     }
 
     @Override
-    public float get(Object mountItem) {
-      return assertIsView(mountItem, this).getWidth();
+    public float get(Object mountContent) {
+      return assertIsView(mountContent, this).getWidth();
     }
 
     @Override
@@ -148,12 +148,12 @@ public final class AnimatedProperties {
     }
 
     @Override
-    public void set(Object mountItem, float value) {
+    public void set(Object mountContent, float value) {
       throw new UnsupportedOperationException("Setting width in animations is not supported yet.");
     }
 
     @Override
-    public void reset(Object mountItem) {
+    public void reset(Object mountContent) {
       // No-op: height/width are always properly set at mount time so we don't need to reset it.
     }
   }
@@ -165,8 +165,8 @@ public final class AnimatedProperties {
     }
 
     @Override
-    public float get(Object mountItem) {
-      return assertIsView(mountItem, this).getHeight();
+    public float get(Object mountContent) {
+      return assertIsView(mountContent, this).getHeight();
     }
 
     @Override
@@ -175,12 +175,12 @@ public final class AnimatedProperties {
     }
 
     @Override
-    public void set(Object mountItem, float value) {
+    public void set(Object mountContent, float value) {
       throw new UnsupportedOperationException("Setting height in animations is not supported yet.");
     }
 
     @Override
-    public void reset(Object mountItem) {
+    public void reset(Object mountContent) {
       // No-op: height/width are always properly set at mount time so we don't need to reset it.
     }
   };
@@ -192,8 +192,8 @@ public final class AnimatedProperties {
     }
 
     @Override
-    public float get(Object mountItem) {
-      return assertIsView(mountItem, this).getAlpha();
+    public float get(Object mountContent) {
+      return assertIsView(mountContent, this).getAlpha();
     }
 
     @Override
@@ -202,13 +202,13 @@ public final class AnimatedProperties {
     }
 
     @Override
-    public void set(Object mountItem, float value) {
-      assertIsView(mountItem, this).setAlpha(value);
+    public void set(Object mountContent, float value) {
+      assertIsView(mountContent, this).setAlpha(value);
     }
 
     @Override
-    public void reset(Object mountItem) {
-      assertIsView(mountItem, this).setAlpha(1);
+    public void reset(Object mountContent) {
+      assertIsView(mountContent, this).setAlpha(1);
     }
   }
 
@@ -219,8 +219,8 @@ public final class AnimatedProperties {
     }
 
     @Override
-    public float get(Object mountItem) {
-      final View asView = assertIsView(mountItem, this);
+    public float get(Object mountContent) {
+      final View asView = assertIsView(mountContent, this);
       final float scale = asView.getScaleX();
       if (scale != asView.getScaleY()) {
         throw new RuntimeException(
@@ -235,15 +235,15 @@ public final class AnimatedProperties {
     }
 
     @Override
-    public void set(Object mountItem, float value) {
-      final View asView = assertIsView(mountItem, this);
+    public void set(Object mountContent, float value) {
+      final View asView = assertIsView(mountContent, this);
       asView.setScaleX(value);
       asView.setScaleY(value);
     }
 
     @Override
-    public void reset(Object mountItem) {
-      final View asView = assertIsView(mountItem, this);
+    public void reset(Object mountContent) {
+      final View asView = assertIsView(mountContent, this);
       asView.setScaleX(1);
       asView.setScaleY(1);
     }
@@ -256,8 +256,8 @@ public final class AnimatedProperties {
     }
 
     @Override
-    public float get(Object mountItem) {
-      return assertIsView(mountItem, this).getScaleX();
+    public float get(Object mountContent) {
+      return assertIsView(mountContent, this).getScaleX();
     }
 
     @Override
@@ -266,13 +266,13 @@ public final class AnimatedProperties {
     }
 
     @Override
-    public void set(Object mountItem, float value) {
-      assertIsView(mountItem, this).setScaleX(value);
+    public void set(Object mountContent, float value) {
+      assertIsView(mountContent, this).setScaleX(value);
     }
 
     @Override
-    public void reset(Object mountItem) {
-      assertIsView(mountItem, this).setScaleX(1);
+    public void reset(Object mountContent) {
+      assertIsView(mountContent, this).setScaleX(1);
     }
   }
 
@@ -283,8 +283,8 @@ public final class AnimatedProperties {
     }
 
     @Override
-    public float get(Object mountItem) {
-      return assertIsView(mountItem, this).getScaleY();
+    public float get(Object mountContent) {
+      return assertIsView(mountContent, this).getScaleY();
     }
 
     @Override
@@ -293,13 +293,13 @@ public final class AnimatedProperties {
     }
 
     @Override
-    public void set(Object mountItem, float value) {
-      assertIsView(mountItem, this).setScaleY(value);
+    public void set(Object mountContent, float value) {
+      assertIsView(mountContent, this).setScaleY(value);
     }
 
     @Override
-    public void reset(Object mountItem) {
-      assertIsView(mountItem, this).setScaleY(1);
+    public void reset(Object mountContent) {
+      assertIsView(mountContent, this).setScaleY(1);
     }
   }
 
@@ -307,9 +307,9 @@ public final class AnimatedProperties {
    * @return the x or y position of the given view relative to the LithoView that this ComponentTree
    * is being rendered in to.
    */
-  private static float getPositionRelativeToLithoView(View mountItem, boolean getX) {
+  private static float getPositionRelativeToLithoView(View mountContent, boolean getX) {
     float pos = 0;
-    View currentView = mountItem;
+    View currentView = mountContent;
     while (true) {
       if (currentView == null) {
         throw new RuntimeException("Got unexpected null parent");
@@ -318,8 +318,8 @@ public final class AnimatedProperties {
         return pos;
       }
       pos += getX ? currentView.getX() : currentView.getY();
-      if (!(mountItem.getParent() instanceof View)) {
-        throw new RuntimeException("Expected parent to be View, was " + mountItem.getParent());
+      if (!(mountContent.getParent() instanceof View)) {
+        throw new RuntimeException("Expected parent to be View, was " + mountContent.getParent());
       }
       currentView = (View) currentView.getParent();
     }

@@ -75,7 +75,7 @@ public class DataFlowTransitionManager {
   }
 
   /**
-   * A listener that will be invoked when a mount item has stopped animating.
+   * A listener that will be invoked when a mount content has stopped animating.
    */
   public interface OnAnimationCompleteListener {
     void onAnimationComplete(String transitionKey);
@@ -99,7 +99,7 @@ public class DataFlowTransitionManager {
   }
 
   /**
-   * Animation state of a MountItem. Holds everything we currently know about an animating
+   * Animation state of a given mount content. Holds everything we currently know about an animating
    * transition key, as well as information about its most recent changes in property values and
    * whether it's appearing, disappearing, or changing.
    */
@@ -109,7 +109,7 @@ public class DataFlowTransitionManager {
     public final SimpleArrayMap<AnimatedProperty, AnimatedPropertyNode> animatedPropertyNodes =
         new SimpleArrayMap<>();
     public ArraySet<AnimatedProperty> animatingProperties = new ArraySet<>();
-    public Object mountItem;
+    public Object mountContent;
     public TransitionDiff currentDiff = new TransitionDiff();
     public int changeType = KeyStatus.UNSET;
     public @Nullable LayoutOutput currentLayoutOutput;
@@ -119,7 +119,7 @@ public class DataFlowTransitionManager {
       activeAnimations.clear();
       animatedPropertyNodes.clear();
       animatingProperties.clear();
-      mountItem = null;
+      mountContent = null;
       currentDiff.reset();
       changeType = KeyStatus.UNSET;
       clearLayoutOutputs(this);
@@ -206,10 +206,10 @@ public class DataFlowTransitionManager {
    * Sets the mount content for a given key. This is used to initially set mount content, but also
    * to set content when content is incrementally mounted/unmounted during an animation.
    */
-  void setMountContent(String transitionKey, Object mountContent) {
+  void setMountContentInner(String transitionKey, Object mountContent) {
     final AnimationState animationState = mAnimationStates.get(transitionKey);
     if (animationState != null) {
-      setMountItem(transitionKey, animationState, mountContent);
+      setMountContentInner(transitionKey, animationState, mountContent);
     }
   }
 
@@ -241,7 +241,7 @@ public class DataFlowTransitionManager {
     for (int i = 0, size = mAnimationStates.size(); i < size; i++) {
       final String key = mAnimationStates.keyAt(i);
       final AnimationState animationState = mAnimationStates.valueAt(i);
-      setMountItem(key, animationState, null);
+      setMountContentInner(key, animationState, null);
       releaseAnimationState(animationState);
     }
     
@@ -518,7 +518,7 @@ public class DataFlowTransitionManager {
         for (int j = 0; j < animationState.currentDiff.beforeValues.size(); j++) {
           final AnimatedProperty property = animationState.currentDiff.beforeValues.keyAt(j);
           property.set(
-              animationState.mountItem,
+              animationState.mountContent,
               animationState.currentDiff.beforeValues.valueAt(j));
         }
       }
@@ -550,37 +550,40 @@ public class DataFlowTransitionManager {
     final AnimationState state = mAnimationStates.get(key);
     AnimatedPropertyNode node = state.animatedPropertyNodes.get(animatedProperty);
     if (node == null) {
-      node = new AnimatedPropertyNode(state.mountItem, animatedProperty);
+      node = new AnimatedPropertyNode(state.mountContent, animatedProperty);
       state.animatedPropertyNodes.put(animatedProperty, node);
     }
     return node;
   }
 
-  private void setMountItem(String key, AnimationState animationState, Object newMountItem) {
-    // If the mount item changes, this means this transition key will be rendered with a different
-    // mount item (View or Drawable) than it was during the last mount, so we need to migrate
-    // animation state from the old mount item to the new one.
+  private void setMountContentInner(
+      String key,
+      AnimationState animationState,
+      Object mountContent) {
+    // If the mount content changes, this means this transition key will be rendered with a
+    // different mount content (View or Drawable) than it was during the last mount, so we need to
+    // migrate animation state from the old mount content to the new one.
 
-    if (animationState.mountItem == newMountItem) {
+    if (animationState.mountContent == mountContent) {
       return;
     }
 
     if (AnimationsDebug.ENABLED) {
-      Log.d(AnimationsDebug.TAG, "Setting mount item for " + key + " to " + newMountItem);
+      Log.d(AnimationsDebug.TAG, "Setting mount content for " + key + " to " + mountContent);
     }
 
-    if (animationState.mountItem != null) {
+    if (animationState.mountContent != null) {
       final ArraySet<AnimatedProperty> animatingProperties = animationState.animatingProperties;
       for (int i = 0, size = animatingProperties.size(); i < size; i++) {
-        animatingProperties.valueAt(i).reset(animationState.mountItem);
+        animatingProperties.valueAt(i).reset(animationState.mountContent);
       }
-      recursivelySetChildClipping(animationState.mountItem, true);
+      recursivelySetChildClipping(animationState.mountContent, true);
     }
     for (int i = 0, size = animationState.animatedPropertyNodes.size(); i < size; i++) {
-      animationState.animatedPropertyNodes.valueAt(i).setMountItem(newMountItem);
+      animationState.animatedPropertyNodes.valueAt(i).setMountContent(mountContent);
     }
-    recursivelySetChildClipping(newMountItem, false);
-    animationState.mountItem = newMountItem;
+    recursivelySetChildClipping(mountContent, false);
+    animationState.mountContent = mountContent;
   }
 
   /**
@@ -590,12 +593,12 @@ public class DataFlowTransitionManager {
    * TODO(17934271): Handle the case where two+ animations with different lifespans share the same
    * parent, in which case we shouldn't unset clipping until the last item is done animating.
    */
-  private void recursivelySetChildClipping(Object mountItem, boolean clipChildren) {
-    if (!(mountItem instanceof View)) {
+  private void recursivelySetChildClipping(Object mountContent, boolean clipChildren) {
+    if (!(mountContent instanceof View)) {
       return;
     }
 
-    recursivelySetChildClippingForView((View) mountItem, clipChildren);
+    recursivelySetChildClippingForView((View) mountContent, clipChildren);
   }
 
   private void recursivelySetChildClippingForView(View view, boolean clipChildren) {
@@ -617,7 +620,7 @@ public class DataFlowTransitionManager {
     for (int i = mAnimationStates.size() - 1; i >= 0; i--) {
       final AnimationState animationState = mAnimationStates.valueAt(i);
       if (animationState.activeAnimations.isEmpty()) {
-        setMountItem(mAnimationStates.keyAt(i), animationState, null);
+        setMountContentInner(mAnimationStates.keyAt(i), animationState, null);
         releaseAnimationState(mAnimationStates.removeAt(i));
       }
     }
@@ -713,8 +716,8 @@ public class DataFlowTransitionManager {
         return;
       }
 
-      // When an animation finishes, we want to go through all the mount items it was animating and
-      // see if it was the last active animation. If it was, we know that item is no longer
+      // When an animation finishes, we want to go through all the mount contents it was animating
+      // and see if it was the last active animation. If it was, we know that item is no longer
       // animating and we can release the animation state.
 
       for (int i = 0, size = transitioningKeys.size(); i < size; i++) {
@@ -727,12 +730,12 @@ public class DataFlowTransitionManager {
         }
         if (animationState.activeAnimations.size() == 0) {
           if (animationState.changeType == KeyStatus.DISAPPEARED &&
-              animationState.mountItem != null) {
+              animationState.mountContent != null) {
             for (int j = 0; j < animationState.animatingProperties.size(); j++) {
-              animationState.animatingProperties.valueAt(j).reset(animationState.mountItem);
+              animationState.animatingProperties.valueAt(j).reset(animationState.mountContent);
             }
           }
-          recursivelySetChildClipping(animationState.mountItem, true);
+          recursivelySetChildClipping(animationState.mountContent, true);
           if (mOnAnimationCompleteListener != null) {
             mOnAnimationCompleteListener.onAnimationComplete(key);
           }

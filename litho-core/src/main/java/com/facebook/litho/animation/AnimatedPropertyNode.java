@@ -15,46 +15,46 @@ import com.facebook.litho.dataflow.ValueNode;
 
 /**
  * A ValueNode that allows getting and/or setting the value of a specific property (x, y, scale,
- * text color, etc) on a given mount item (View or Drawable).
+ * text color, etc) on a given mount content (View or Drawable).
  *
  * If there is no input hooked up to this node, it will output the current value of this property
- * on the current mount item. Otherwise, this node will set the property of the given mount item to
- * that input value and pass on that value as an output.
+ * on the current mount content. Otherwise, this node will set the property of the given mount
+ * content to that input value and pass on that value as an output.
  */
 public class AnimatedPropertyNode extends ValueNode {
 
   private final AnimatedProperty mAnimatedProperty;
-  private WeakReference<Object> mMountItem;
+  private WeakReference<Object> mMountContent;
 
-  public AnimatedPropertyNode(Object mountItem, AnimatedProperty animatedProperty) {
-    mMountItem = new WeakReference<>(mountItem);
+  public AnimatedPropertyNode(Object mountContent, AnimatedProperty animatedProperty) {
+    mMountContent = new WeakReference<>(mountContent);
     mAnimatedProperty = animatedProperty;
   }
 
   /**
-   * Sets the mount item that this {@link AnimatedPropertyNode} updates a value on.
+   * Sets the mount content that this {@link AnimatedPropertyNode} updates a value on.
    */
-  public void setMountItem(Object mountItem) {
-    mMountItem = new WeakReference<>(mountItem);
-    if (mountItem != null) {
-      mAnimatedProperty.set(mountItem, getValue());
+  public void setMountContent(Object mountContent) {
+    mMountContent = new WeakReference<>(mountContent);
+    if (mountContent != null) {
+      mAnimatedProperty.set(mountContent, getValue());
     }
   }
 
   public void setValue(float value) {
     super.setValue(value);
-    final Object mountItem = mMountItem.get();
-    if (mountItem != null) {
-      mAnimatedProperty.set(mountItem, value);
+    final Object mountContent = mMountContent.get();
+    if (mountContent != null) {
+      mAnimatedProperty.set(mountContent, value);
     }
   }
 
   @Override
   public float calculateValue(long frameTimeNanos) {
-    final Object mountItem = mMountItem.get();
+    final Object mountContent = mMountContent.get();
     final boolean hasInput = hasInput();
 
-    if (mountItem == null) {
+    if (mountContent == null) {
       if (hasInput) {
         return getInput().getValue();
       }
@@ -64,11 +64,11 @@ public class AnimatedPropertyNode extends ValueNode {
     }
 
     if (!hasInput) {
-      return mAnimatedProperty.get(mountItem);
+      return mAnimatedProperty.get(mountContent);
     }
 
     final float value = getInput().getValue();
-    mAnimatedProperty.set(mountItem, value);
+    mAnimatedProperty.set(mountContent, value);
 
     return value;
   }
