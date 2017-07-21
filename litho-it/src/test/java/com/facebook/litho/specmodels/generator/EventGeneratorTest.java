@@ -171,7 +171,7 @@ public class EventGeneratorTest {
             "public java.lang.Object dispatchOnEvent(final com.facebook.litho.EventHandler eventHandler,\n" +
             "    final java.lang.Object eventState) {\n" +
             "  int id = eventHandler.id;\n" +
-            "  switch(id) {\n" +
+            "  switch (id) {\n" +
             "    case -1400079064: {\n" +
             "      java.lang.Object _event = (java.lang.Object) eventState;\n" +
             "      testEventMethod1(\n" +

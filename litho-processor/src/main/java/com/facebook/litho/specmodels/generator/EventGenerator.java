@@ -226,7 +226,7 @@ public class EventGenerator {
             ParameterSpec.builder(OBJECT, "eventState", Modifier.FINAL).build());
 
     methodBuilder.addStatement("int id = eventHandler.id");
-    methodBuilder.beginControlFlow("switch($L)", "id");
+    methodBuilder.beginControlFlow("switch ($L)", "id");
 
     for (EventMethodModel eventMethodModel : specModel.getEventMethods()) {
       methodBuilder.beginControlFlow("case $L:", eventMethodModel.name.toString().hashCode());
