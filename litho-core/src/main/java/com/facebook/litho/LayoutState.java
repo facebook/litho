@@ -1903,6 +1903,11 @@ class LayoutState {
    * the screen in which case we will have valid displaylist so we can skip them.
    */
   void trimDisplayListItemsQueue() {
+    if (mMountableOutputs.isEmpty()) {
+      // Item has been released, remove all pending items for displaylist prefetch.
+      mDisplayListsToPrefetch.clear();
+      return;
+    }
     Integer currentIndex = mDisplayListsToPrefetch.peek();
     while (currentIndex != null) {
       final LayoutOutput layoutOutput = mMountableOutputs.get(currentIndex);
