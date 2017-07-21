@@ -9,6 +9,7 @@
 
 package com.facebook.litho.widget;
 
+
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -116,6 +117,9 @@ import static com.facebook.litho.widget.VerticalGravity.TOP;
     poolSize = 30,
     events = {TextOffsetOnTouchEvent.class})
 class TextSpec {
+  static {
+    SynchronizedTypefaceHelper.setupSynchronizedTypeface();
+  }
 
   private static final TruncateAt[] TRUNCATE_AT = TruncateAt.values();
 
