@@ -95,8 +95,8 @@ public class RecyclerBinder implements
   private int mLastHeightSpec = UNINITIALIZED;
   private Size mMeasuredSize;
   private RecyclerView mMountedView;
-  private int mCurrentFirstVisiblePosition;
-  private int mCurrentLastVisiblePosition;
+  private int mCurrentFirstVisiblePosition = RecyclerView.NO_POSITION;
+  private int mCurrentLastVisiblePosition = RecyclerView.NO_POSITION;
   private int mCurrentOffset;
   private RangeCalculationResult mRange;
   private StickyHeaderController mStickyHeaderController;
@@ -230,7 +230,6 @@ public class RecyclerBinder implements
     mRangeRatio = builder.rangeRatio;
     mLayoutInfo = builder.layoutInfo;
     mLayoutHandlerFactory = builder.layoutHandlerFactory;
-    mCurrentFirstVisiblePosition = mCurrentLastVisiblePosition = 0;
     mCanPrefetchDisplayLists = builder.canPrefetchDisplayLists;
     mCanCacheDrawingDisplayLists = builder.canCacheDrawingDisplayLists;
 
@@ -350,7 +349,7 @@ public class RecyclerBinder implements
       childrenHeightSpec = getActualChildrenHeightSpec(holder);
 
       if (mIsMeasured.get()) {
-        if (mRange == null && ! mRequiresRemeasure.get()) {
+        if (mRange == null && !mRequiresRemeasure.get()) {
           initRange(
               mMeasuredSize.width,
               mMeasuredSize.height,
@@ -364,8 +363,9 @@ public class RecyclerBinder implements
           requestUpdate();
           computeLayout = false;
         } else {
-          computeLayout = position >= mCurrentFirstVisiblePosition &&
-              position < mCurrentFirstVisiblePosition + mRange.estimatedViewportCount;
+          final int firstVisiblePosition = Math.max(mCurrentFirstVisiblePosition, 0);
+          computeLayout = position >= firstVisiblePosition &&
+              position < firstVisiblePosition + mRange.estimatedViewportCount;
         }
       } else {
         computeLayout = false;
@@ -672,13 +672,16 @@ public class RecyclerBinder implements
 
     // We now need to compute the size of the non scrolling side. We try to do this by using the
     // calculated range (if we have one) or computing one.
-    if (mRange == null && mCurrentFirstVisiblePosition < mComponentTreeHolders.size()) {
+    if (mRange == null
+        && !mComponentTreeHolders.isEmpty()
+        && mCurrentFirstVisiblePosition < mComponentTreeHolders.size()) {
+      final int rangeStart = Math.max(mCurrentFirstVisiblePosition, 0);
       initRange(
           SizeSpec.getSize(widthSpec),
           SizeSpec.getSize(heightSpec),
-          mCurrentFirstVisiblePosition,
-          getActualChildrenWidthSpec(mComponentTreeHolders.get(mCurrentFirstVisiblePosition)),
-          getActualChildrenHeightSpec(mComponentTreeHolders.get(mCurrentFirstVisiblePosition)),
+          rangeStart,
+          getActualChildrenWidthSpec(mComponentTreeHolders.get(rangeStart)),
+          getActualChildrenHeightSpec(mComponentTreeHolders.get(rangeStart)),
           scrollDirection);
     }
 
@@ -1030,6 +1033,9 @@ public class RecyclerBinder implements
         return;
       }
 
+      if (firstVisible == RecyclerView.NO_POSITION || lastVisible == RecyclerView.NO_POSITION) {
+        firstVisible = lastVisible = 0;
+      }
       rangeSize = Math.max(mRange.estimatedViewportCount, lastVisible - firstVisible);
       rangeStart = firstVisible - (int) (rangeSize * mRangeRatio);
       rangeEnd = firstVisible + rangeSize + (int) (rangeSize * mRangeRatio);
