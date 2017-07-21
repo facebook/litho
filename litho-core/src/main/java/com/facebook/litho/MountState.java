@@ -1920,8 +1920,9 @@ class MountState implements DataFlowTransitionManager.OnAnimationCompleteListene
       createNewTransitions(layoutState);
     }
 
+    mAnimationLockedIndices = null;
     if (!mAnimatingTransitionKeys.isEmpty()) {
-      updateAnimationLockedIndices(layoutState);
+      regenerateAnimationLockedIndices(layoutState);
     }
   }
 
@@ -1967,7 +1968,7 @@ class MountState implements DataFlowTransitionManager.OnAnimationCompleteListene
     }
   }
 
-  private void updateAnimationLockedIndices(LayoutState newLayoutState) {
+  private void regenerateAnimationLockedIndices(LayoutState newLayoutState) {
     mAnimationLockedIndices = null;
     for (int i = 0, size = newLayoutState.getMountableOutputCount(); i < size; i++) {
       final LayoutOutput output = newLayoutState.getMountableOutputAt(i);
