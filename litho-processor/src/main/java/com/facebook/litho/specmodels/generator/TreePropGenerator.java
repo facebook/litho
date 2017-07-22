@@ -14,8 +14,10 @@ import javax.lang.model.element.Modifier;
 import java.util.List;
 
 import com.facebook.litho.annotations.OnCreateTreeProp;
+import com.facebook.litho.annotations.State;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DelegateMethodModel;
+import com.facebook.litho.specmodels.model.MethodParamModelUtils;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.facebook.litho.specmodels.model.TreePropModel;
@@ -105,6 +107,13 @@ public class TreePropGenerator {
       for (int i = 0, size = onCreateTreePropsMethod.methodParams.size(); i < size; i++) {
         if (i == 0) {
           block.add("($T) $L", specModel.getContextClass(), "c");
+        } else if (MethodParamModelUtils.isAnnotatedWith(
+            onCreateTreePropsMethod.methodParams.get(i), State.class)) {
+          block.add(
+              "($T) _impl.$L.$L",
+              onCreateTreePropsMethod.methodParams.get(i).getType(),
+              GeneratorConstants.STATE_CONTAINER_FIELD_NAME,
+              onCreateTreePropsMethod.methodParams.get(i).getName());
         } else {
           block.add(
               "($T) _impl.$L",

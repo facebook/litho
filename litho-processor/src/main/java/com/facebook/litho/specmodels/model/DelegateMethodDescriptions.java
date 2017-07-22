@@ -107,7 +107,7 @@ public final class DelegateMethodDescriptions {
           .returnType(TypeName.VOID)
           .name("createInitialState")
           .definedParameterTypes(ImmutableList.<TypeName>of(ClassNames.COMPONENT_CONTEXT))
-          .optionalParameterTypes(ImmutableList.of(PROP, STATE_VALUE))
+          .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE_VALUE))
           .build();
 
   public static final DelegateMethodDescription ON_CREATE_TRANSITION =

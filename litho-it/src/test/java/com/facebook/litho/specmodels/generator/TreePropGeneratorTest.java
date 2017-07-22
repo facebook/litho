@@ -124,7 +124,7 @@ public class TreePropGeneratorTest {
         "  childTreeProps.put(boolean.class, TestSpec.onCreateTreeProp(\n" +
         "      (com.facebook.litho.ComponentContext) c,\n" +
         "      (boolean) _impl.prop,\n" +
-        "      (int) _impl.state));\n" +
+        "      (int) _impl.mStateContainerImpl.state));\n" +
         "  return childTreeProps;\n" +
         "}\n");
   }
