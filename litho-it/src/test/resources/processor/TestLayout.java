@@ -40,6 +40,8 @@ import java.util.BitSet;
 public final class TestLayout<S extends View> extends ComponentLifecycle {
   private static TestLayout sInstance = null;
 
+  static final Pools.SynchronizedPool<TestEvent> sTestEventPool = new Pools.SynchronizedPool<TestEvent>(2);
+
   private static final Pools.SynchronizedPool<Builder> sBuilderPool = new Pools.SynchronizedPool<Builder>(2);
 
   private TestLayout() {
@@ -141,11 +143,17 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
   }
 
   static void dispatchTestEvent(EventHandler _eventHandler, View view, Object object) {
-    TestEvent _eventState = new TestEvent();
+    TestEvent _eventState = sTestEventPool.acquire();
+    if (_eventState == null) {
+      _eventState = new TestEvent();
+    }
     _eventState.view = view;
     _eventState.object = object;
     EventDispatcher _lifecycle = _eventHandler.mHasEventDispatcher.getEventDispatcher();
     _lifecycle.dispatchOnEvent(_eventHandler, _eventState);
+    _eventState.view = null;
+    _eventState.object = null;
+    sTestEventPool.release(_eventState);
   }
 
   private void testLayoutEvent(HasEventDispatcher _abstractImpl, ComponentContext c, View view,

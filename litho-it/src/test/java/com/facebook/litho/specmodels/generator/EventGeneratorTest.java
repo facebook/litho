@@ -216,11 +216,16 @@ public class EventGeneratorTest {
         .isEqualTo(
             "static java.lang.Object dispatchObject(com.facebook.litho.EventHandler _eventHandler, int field1,\n" +
             "    int field2) {\n" +
-            "  java.lang.Object _eventState = new java.lang.Object();\n" +
+            "  java.lang.Object _eventState = sObjectPool.acquire();\n" +
+            "  if (_eventState == null) {\n" +
+            "    _eventState = new java.lang.Object();\n" +
+            "  }\n" +
             "  _eventState.field1 = field1;\n" +
             "  _eventState.field2 = field2;\n" +
             "  com.facebook.litho.EventDispatcher _lifecycle = _eventHandler.mHasEventDispatcher.getEventDispatcher();\n" +
-            "  return (java.lang.Object) _lifecycle.dispatchOnEvent(_eventHandler, _eventState);\n" +
+            "  java.lang.Object result = (java.lang.Object) _lifecycle.dispatchOnEvent(_eventHandler, _eventState);\n" +
+            "  sObjectPool.release(_eventState);\n" +
+            "  return result;\n" +
             "}\n");
   }
 }
