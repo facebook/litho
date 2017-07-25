@@ -9,10 +9,8 @@
 
 package com.facebook.litho;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import android.support.v4.util.Pools;
+import android.support.v4.util.SimpleArrayMap;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -59,7 +57,8 @@ public class ViewCompatComponent<V extends View> extends ComponentLifecycle {
   private static final Pools.SynchronizedPool<Builder> sBuilderPool =
       new Pools.SynchronizedPool<>(2);
 
-  private static final Map<ViewCompatCreator, ViewCompatComponent> sInstances = new HashMap<>();
+  private static final SimpleArrayMap<ViewCompatCreator, ViewCompatComponent> sInstances =
+      new SimpleArrayMap<>();
 
   private final ViewCompatCreator mViewCompatCreator;
   private final String mComponentName;
