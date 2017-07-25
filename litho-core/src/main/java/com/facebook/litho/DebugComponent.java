@@ -617,17 +617,17 @@ public final class DebugComponent {
     return mKey;
   }
 
-  public boolean isClickable() {
+  public EventHandler getClickHandler() {
     if (mComponentIndex > 0) {
-      return false;
+      return null;
     }
 
     final InternalNode node = mNode.get();
     if (node == null) {
-      return false;
+      return null;
     }
 
-    return node.isClickable();
+    return node.getClickHandler();
   }
 
   private Object getMountedContent() {

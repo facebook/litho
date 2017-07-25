@@ -346,7 +346,8 @@ public class EventGenerator {
     paramsBlock.add("}");
 
     builder.addStatement(
-        "return newEventHandler(c, $L, $L)",
+        "return newEventHandler(c, $S, $L, $L)",
+        eventMethodModel.name.toString(),
         eventMethodModel.name.toString().hashCode(),
         paramsBlock.build());
 

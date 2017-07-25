@@ -75,6 +75,7 @@ public class EventHandlerTestHelper {
             return dispatcher;
           }
         },
+        null,
         0,
         null);
   }

@@ -1121,8 +1121,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return mForceViewWrapping;
   }
 
-  boolean isClickable() {
-    return getOrCreateNodeInfo().getClickHandler() != null;
+  EventHandler<ClickEvent> getClickHandler() {
+    return getOrCreateNodeInfo().getClickHandler();
   }
 
   @Override

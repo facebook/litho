@@ -628,16 +628,18 @@ public abstract class ComponentLifecycle implements EventDispatcher {
 
   protected static <E> EventHandler<E> newEventHandler(
       ComponentContext c,
+      String name,
       int id,
       Object[] params) {
-    return c.newEventHandler(id, params);
+    return c.newEventHandler(name, id, params);
   }
 
   protected static <E> EventHandler<E> newEventHandler(
       Component<?> c,
+      String name,
       int id,
       Object[] params) {
-    return new EventHandler<E>(c, id, params);
+    return new EventHandler<E>(c, name, id, params);
   }
 
   protected boolean needsPreviousRenderInfo() {

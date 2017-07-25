@@ -312,14 +312,14 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
   }
 
   public static EventHandler<ClickEvent> testLayoutEvent(ComponentContext c, int param1) {
-    return newEventHandler(c, 1328162206, new Object[] {
+    return newEventHandler(c, "testLayoutEvent", 1328162206, new Object[] {
         c,
         param1,
     });
   }
 
   public static EventHandler<ClickEvent> testLayoutEvent(Component c, int param1) {
-    return newEventHandler(c, 1328162206, new Object[] {
+    return newEventHandler(c, "testLayoutEvent", 1328162206, new Object[] {
         c,
         param1,
     });

@@ -12,15 +12,21 @@ package com.facebook.litho;
 public class EventHandler<E> {
 
   public HasEventDispatcher mHasEventDispatcher;
+  public final String name;
   public final int id;
   public final Object[] params;
 
   protected EventHandler(HasEventDispatcher hasEventDispatcher, int id) {
-    this(hasEventDispatcher, id, null);
+    this(hasEventDispatcher, null, id, null);
   }
 
-  public EventHandler(HasEventDispatcher hasEventDispatcher, int id, Object[] params) {
+  protected EventHandler(HasEventDispatcher hasEventDispatcher, String name,  int id) {
+    this(hasEventDispatcher, name, id, null);
+  }
+
+  public EventHandler(HasEventDispatcher hasEventDispatcher, String name, int id, Object[] params) {
     this.mHasEventDispatcher = hasEventDispatcher;
+    this.name = name;
     this.id = id;
     this.params = params;
   }

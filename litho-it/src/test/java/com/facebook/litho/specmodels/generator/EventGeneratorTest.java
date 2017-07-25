@@ -128,7 +128,7 @@ public class EventGeneratorTest {
         .isEqualTo(
             "public static <T extends java.lang.CharSequence> com.facebook.litho.EventHandler<java.lang.Object> testEventMethod1(com.facebook.litho.ComponentContext c,\n" +
             "    java.lang.Object arg2, T arg3) {\n" +
-            "  return newEventHandler(c, -1400079064, new Object[] {\n" +
+            "  return newEventHandler(c, \"testEventMethod1\", -1400079064, new Object[] {\n" +
             "        c,\n" +
             "        arg2,\n" +
             "        arg3,\n" +
@@ -139,7 +139,7 @@ public class EventGeneratorTest {
         .isEqualTo(
             "public static <T extends java.lang.CharSequence> com.facebook.litho.EventHandler<java.lang.Object> testEventMethod1(com.facebook.litho.Component c,\n" +
             "    java.lang.Object arg2, T arg3) {\n" +
-            "  return newEventHandler(c, -1400079064, new Object[] {\n" +
+            "  return newEventHandler(c, \"testEventMethod1\", -1400079064, new Object[] {\n" +
             "        c,\n" +
             "        arg2,\n" +
             "        arg3,\n" +
@@ -149,7 +149,7 @@ public class EventGeneratorTest {
     assertThat(dataHolder.getMethodSpecs().get(2).toString())
         .isEqualTo(
             "public static com.facebook.litho.EventHandler<java.lang.Object> testEventMethod2(com.facebook.litho.ComponentContext c) {\n" +
-            "  return newEventHandler(c, -1400079063, new Object[] {\n" +
+            "  return newEventHandler(c, \"testEventMethod2\", -1400079063, new Object[] {\n" +
             "        c,\n" +
             "      });\n" +
             "}\n");
@@ -157,7 +157,7 @@ public class EventGeneratorTest {
     assertThat(dataHolder.getMethodSpecs().get(3).toString())
         .isEqualTo(
             "public static com.facebook.litho.EventHandler<java.lang.Object> testEventMethod2(com.facebook.litho.Component c) {\n" +
-            "  return newEventHandler(c, -1400079063, new Object[] {\n" +
+            "  return newEventHandler(c, \"testEventMethod2\", -1400079063, new Object[] {\n" +
             "        c,\n" +
             "      });\n" +
             "}\n");

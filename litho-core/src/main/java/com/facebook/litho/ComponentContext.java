@@ -241,8 +241,12 @@ public class ComponentContext extends ContextWrapper {
     return new EventHandler(mComponentScope, id);
   }
 
-  <E> EventHandler<E> newEventHandler(int id, Object[] params) {
-    return new EventHandler<E>(mComponentScope, id, params);
+  EventHandler newEventHandler(String name, int id) {
+    return new EventHandler(mComponentScope, name, id);
+  }
+
+  <E> EventHandler<E> newEventHandler(String name, int id, Object[] params) {
+    return new EventHandler<E>(mComponentScope, name, id, params);
   }
 
   InternalNode newLayoutBuilder(ComponentContext c) {

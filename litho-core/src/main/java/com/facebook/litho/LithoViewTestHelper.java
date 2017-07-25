@@ -130,7 +130,7 @@ public class LithoViewTestHelper {
       sb.append(String.format(" text=\"%s\"", textContent));
     }
 
-    if (debugComponent.isClickable()) {
+    if (debugComponent.getClickHandler() != null) {
       sb.append(" [clickable]");
     }
 

@@ -27,6 +27,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.DebugComponent;
+import com.facebook.litho.EventHandler;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.reference.Reference;
@@ -90,8 +91,9 @@ public final class DebugComponentDescriptor
       attributes.store("key", key);
     }
 
-    if (element.isClickable()) {
-      attributes.store("clickable", "true");
+    final EventHandler clickHandler = element.getClickHandler();
+    if (clickHandler != null) {
+      attributes.store("onClick", clickHandler.name);
     }
   }
 
