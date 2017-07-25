@@ -9,16 +9,18 @@
 
 package com.facebook.litho.specmodels.model;
 
+import java.util.List;
+
 import com.facebook.litho.specmodels.internal.ImmutableList;
-import com.squareup.javapoet.AnnotationSpec;
+
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
-import java.util.List;
 
 /**
- * Model that is an abstract representation of a {@link com.facebook.litho.annotations.LayoutSpec}.
+ * Model that is an abstract representation of a
+ * {@link com.facebook.litho.annotations.LayoutSpec}.
  */
 public class LayoutSpecModel implements SpecModel, HasPureRender {
   private final SpecModelImpl mSpecModel;
@@ -34,7 +36,6 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
       ImmutableList<TypeVariableName> typeVariables,
       ImmutableList<PropDefaultModel> propDefaults,
       ImmutableList<EventDeclarationModel> eventDeclarations,
-      ImmutableList<AnnotationSpec> classAnnotations,
       String classJavadoc,
       ImmutableList<PropJavadocModel> propJavadocs,
       boolean isPublic,
@@ -52,7 +53,6 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
             .typeVariables(typeVariables)
             .propDefaults(propDefaults)
             .eventDeclarations(eventDeclarations)
-            .classAnnotations(classAnnotations)
             .classJavadoc(classJavadoc)
             .propJavadocs(propJavadocs)
             .isPublic(isPublic)
@@ -136,11 +136,6 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
   @Override
   public ImmutableList<DiffModel> getDiffs() {
     return mSpecModel.getDiffs();
-  }
-
-  @Override
-  public ImmutableList<AnnotationSpec> getClassAnnotations() {
-    return mSpecModel.getClassAnnotations();
   }
 
   @Override

@@ -9,20 +9,24 @@
 
 package com.facebook.litho.specmodels.model;
 
-import com.facebook.litho.specmodels.internal.ImmutableList;
-import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
-import com.squareup.javapoet.TypeVariableName;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
 
-/** Simple implementation of {@link SpecModel}. */
+import com.facebook.litho.specmodels.internal.ImmutableList;
+
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.TypeVariableName;
+
+/**
+ * Simple implementation of {@link SpecModel}.
+ */
 @Immutable
 public final class SpecModelImpl implements SpecModel {
   private static final String SPEC_SUFFIX = "Spec";
@@ -42,7 +46,6 @@ public final class SpecModelImpl implements SpecModel {
   private final ImmutableList<TreePropModel> mTreeProps;
   private final ImmutableList<EventDeclarationModel> mEventDeclarations;
   private final ImmutableList<DiffModel> mDiffs;
-  private final ImmutableList<AnnotationSpec> mClassAnnotations;
   private final String mClassJavadoc;
   private final ImmutableList<PropJavadocModel> mPropJavadocs;
   private final boolean mIsPublic;
@@ -59,7 +62,6 @@ public final class SpecModelImpl implements SpecModel {
       ImmutableList<TypeVariableName> typeVariables,
       ImmutableList<PropDefaultModel> propDefaults,
       ImmutableList<EventDeclarationModel> eventDeclarations,
-      ImmutableList<AnnotationSpec> classAnnotations,
       String classJavadoc,
       ImmutableList<PropJavadocModel> propJavadocs,
       boolean isPublic,
@@ -80,7 +82,6 @@ public final class SpecModelImpl implements SpecModel {
     mTreeProps = getTreeProps(delegateMethods, eventMethods, updateStateMethods);
     mEventDeclarations = eventDeclarations;
     mDiffs = getDiffs(delegateMethods);
-    mClassAnnotations = classAnnotations;
     mClassJavadoc = classJavadoc;
     mPropJavadocs = propJavadocs;
     mIsPublic = isPublic;
@@ -165,11 +166,6 @@ public final class SpecModelImpl implements SpecModel {
   }
 
   @Override
-  public ImmutableList<AnnotationSpec> getClassAnnotations() {
-    return mClassAnnotations;
-  }
-
-  @Override
   public String getClassJavadoc() {
     return mClassJavadoc;
   }
@@ -245,16 +241,18 @@ public final class SpecModelImpl implements SpecModel {
   }
 
   private static ClassName getComponentTypeName(
-      String componentClassName, String qualifiedSpecClassName) {
+      String componentClassName,
+      String qualifiedSpecClassName) {
     final String qualifiedComponentClassName;
     if (componentClassName == null || componentClassName.isEmpty()) {
       qualifiedComponentClassName =
           qualifiedSpecClassName.substring(
-              0, qualifiedSpecClassName.length() - SPEC_SUFFIX.length());
+              0,
+              qualifiedSpecClassName.length() - SPEC_SUFFIX.length());
     } else {
       qualifiedComponentClassName =
-          qualifiedSpecClassName.substring(0, qualifiedSpecClassName.lastIndexOf('.') + 1)
-              + componentClassName;
+          qualifiedSpecClassName.substring(0, qualifiedSpecClassName.lastIndexOf('.') + 1) +
+              componentClassName;
     }
 
     return ClassName.bestGuess(qualifiedComponentClassName);
@@ -419,14 +417,14 @@ public final class SpecModelImpl implements SpecModel {
     private ImmutableList<TypeVariableName> mTypeVariableNames;
     private ImmutableList<PropDefaultModel> mPropDefaultModels;
     private ImmutableList<EventDeclarationModel> mEventDeclarations;
-    private ImmutableList<AnnotationSpec> mClassAnnotations;
     private String mClassJavadoc;
     private ImmutableList<PropJavadocModel> mPropJavadocs;
     private boolean mIsPublic;
     @Nullable private DependencyInjectionHelper mDependencyInjectionHelper;
     private Object mRepresentedObject;
 
-    private Builder() {}
+    private Builder() {
+    }
 
     public Builder qualifiedSpecClassName(String qualifiedSpecClassName) {
       mQualifiedSpecClassName = qualifiedSpecClassName;
@@ -473,11 +471,6 @@ public final class SpecModelImpl implements SpecModel {
       return this;
     }
 
-    public Builder classAnnotations(ImmutableList<AnnotationSpec> annotations) {
-      mClassAnnotations = annotations;
-      return this;
-    }
-
     public Builder classJavadoc(String classJavadoc) {
       mClassJavadoc = classJavadoc;
       return this;
@@ -517,7 +510,6 @@ public final class SpecModelImpl implements SpecModel {
           mTypeVariableNames,
           mPropDefaultModels,
           mEventDeclarations,
-          mClassAnnotations,
           mClassJavadoc,
           mPropJavadocs,
           mIsPublic,
@@ -558,10 +550,6 @@ public final class SpecModelImpl implements SpecModel {
 
       if (mEventDeclarations == null) {
         mEventDeclarations = ImmutableList.of();
-      }
-
-      if (mClassAnnotations == null) {
-        mClassAnnotations = ImmutableList.of();
       }
     }
   }
