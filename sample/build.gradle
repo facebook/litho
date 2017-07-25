@@ -4,6 +4,8 @@ android {
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
 
+    useLibrary 'org.apache.http.legacy'
+
     targetCompatibility = targetCompatibilityVersion
     sourceCompatibility = sourceCompatibilityVersion
 
@@ -48,9 +50,16 @@ dependencies {
     implementation deps.supportAppCompat
     implementation deps.supportRecyclerView
 
-    // Test only
+    // Integration test only
     androidTestImplementation project(':litho-espresso')
     androidTestImplementation deps.supportEspresso
     androidTestImplementation deps.supportEspressoIntents
     androidTestImplementation deps.junit
+
+    // Unit test only
+    testImplementation project(':litho-testing')
+    testImplementation deps.junit
+    testImplementation deps.robolectric
+    testImplementation deps.assertjCore
+    testImplementation deps.mockitoCore
 }

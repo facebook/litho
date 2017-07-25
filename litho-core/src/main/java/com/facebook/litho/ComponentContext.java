@@ -15,6 +15,7 @@ import android.content.res.TypedArray;
 import android.support.annotation.AttrRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
+import android.support.annotation.VisibleForTesting;
 
 import com.facebook.infer.annotation.ThreadConfined;
 
@@ -127,7 +128,8 @@ public class ComponentContext extends ContextWrapper {
    * @param scope component associated with the newly created scoped context
    * @return a new ComponentContext instance scoped to the given component
    */
-  static ComponentContext withComponentScope(ComponentContext context, Component scope) {
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  public static ComponentContext withComponentScope(ComponentContext context, Component scope) {
     ComponentContext componentContext = context.makeNewCopy();
     componentContext.mComponentScope = scope;
     componentContext.mComponentTree = context.mComponentTree;
