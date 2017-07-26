@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.litho.sample;
+package com.facebook.samples.litho;
 
 import static com.facebook.litho.ComponentContext.withComponentScope;
 import static org.assertj.core.api.Java6Assertions.assertThat;
