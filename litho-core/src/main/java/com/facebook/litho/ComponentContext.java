@@ -107,9 +107,7 @@ public class ComponentContext extends ContextWrapper {
 
     mLogger = transferLogging ? componentContext.mLogger : logger;
     mLogTag = transferLogging ? componentContext.mLogTag : logTag;
-    mStateHandler = transferStateHandler
-        ? ComponentsPools.acquireStateHandler(componentContext.mStateHandler)
-        : stateHandler;
+    mStateHandler = transferStateHandler ? componentContext.mStateHandler : stateHandler;
   }
 
   static ComponentContext withComponentTree(
