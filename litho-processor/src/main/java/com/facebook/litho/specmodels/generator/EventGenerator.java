@@ -307,8 +307,6 @@ public class EventGenerator {
     for (EventMethodModel eventMethodModel : specModel.getEventMethods()) {
       typeSpecDataHolder.addMethod(
           generateEventHandlerFactory(eventMethodModel, specModel.getContextClass()));
-      typeSpecDataHolder.addMethod(
-          generateEventHandlerFactory(eventMethodModel, specModel.getComponentClass()));
     }
 
     return typeSpecDataHolder.build();

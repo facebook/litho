@@ -122,7 +122,7 @@ public class EventGeneratorTest {
   public void testGenerateEventHandlerFactories() {
     TypeSpecDataHolder dataHolder = EventGenerator.generateEventHandlerFactories(mSpecModel);
 
-    assertThat(dataHolder.getMethodSpecs()).hasSize(4);
+    assertThat(dataHolder.getMethodSpecs()).hasSize(2);
 
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
@@ -137,26 +137,7 @@ public class EventGeneratorTest {
 
     assertThat(dataHolder.getMethodSpecs().get(1).toString())
         .isEqualTo(
-            "public static <T extends java.lang.CharSequence> com.facebook.litho.EventHandler<java.lang.Object> testEventMethod1(com.facebook.litho.Component c,\n" +
-            "    java.lang.Object arg2, T arg3) {\n" +
-            "  return newEventHandler(c, \"testEventMethod1\", -1400079064, new Object[] {\n" +
-            "        c,\n" +
-            "        arg2,\n" +
-            "        arg3,\n" +
-            "      });\n" +
-            "}\n");
-
-    assertThat(dataHolder.getMethodSpecs().get(2).toString())
-        .isEqualTo(
             "public static com.facebook.litho.EventHandler<java.lang.Object> testEventMethod2(com.facebook.litho.ComponentContext c) {\n" +
-            "  return newEventHandler(c, \"testEventMethod2\", -1400079063, new Object[] {\n" +
-            "        c,\n" +
-            "      });\n" +
-            "}\n");
-
-    assertThat(dataHolder.getMethodSpecs().get(3).toString())
-        .isEqualTo(
-            "public static com.facebook.litho.EventHandler<java.lang.Object> testEventMethod2(com.facebook.litho.Component c) {\n" +
             "  return newEventHandler(c, \"testEventMethod2\", -1400079063, new Object[] {\n" +
             "        c,\n" +
             "      });\n" +
