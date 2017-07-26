@@ -10,6 +10,7 @@
 package com.facebook.litho;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import android.os.Looper;
@@ -30,10 +31,7 @@ public class TestComponentTree extends ComponentTree {
   }
 
   public List<Component> getSubComponents() {
-    final List<Component> subComponents = new ArrayList<>();
-    extractSubComponents(getMainThreadLayoutState().getDiffTree(), subComponents);
-
-    return subComponents;
+    return extractSubComponents(getMainThreadLayoutState().getDiffTree());
   }
 
   @Override
@@ -60,10 +58,12 @@ public class TestComponentTree extends ComponentTree {
         true /* clipChildren */);
   }
 
-  private static void extractSubComponents(DiffNode root, List<Component> output) {
+  private static List<Component> extractSubComponents(DiffNode root) {
     if (root == null) {
-      return;
+      return Collections.emptyList();
     }
+
+    final List<Component> output = new ArrayList<>();
 
     if (root.getChildCount() == 0) {
       if (root.getComponent() != null && root.getComponent() instanceof TestComponent) {
@@ -71,12 +71,14 @@ public class TestComponentTree extends ComponentTree {
         output.add(testSubcomponent.getWrappedComponent());
       }
 
-      return;
+      return output;
     }
 
     for (DiffNode child : root.getChildren()) {
-      extractSubComponents(child, output);
+      output.addAll(extractSubComponents(child));
     }
+
+    return output;
   }
 
   public static class Builder extends ComponentTree.Builder {
