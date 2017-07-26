@@ -15,20 +15,19 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Parameters declared in a class annotated with {@link Event} that are used in {@link OnTrigger}
  *
- *  * <p> For example
- *   <pre>
- *     {@code
+ * For example:
+ * <pre>
+ *   {@code
  *
- *     @LayoutSpec
- *     public class ComponentSpec {
+ *   {@literal @}LayoutSpec
+ *   public class ComponentSpec {
  *
- *       @OnTrigger(YourEvent.class)
- *       static Object yourEventClick(ComponentContext c, @FromTrigger YourObject obj) {
- *         return new Object();
- *       }
- *     }}
- *   </pre>
- * </p>
+ *     {@literal @}OnTrigger(YourEvent.class)
+ *     static Object yourEventClick(ComponentContext c, {@literal @}FromTrigger YourObject obj) {
+ *       return new Object();
+ *     }
+ *   }}
+ * </pre>
  */
 @Retention(RetentionPolicy.SOURCE)
 public @interface FromTrigger {
