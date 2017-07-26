@@ -112,6 +112,7 @@ public class StoryFooterComponentSpec {
                 .justifyContent(YogaJustify.CENTER)
                 .clickHandler(StoryFooterComponent.onClick(c))
                 .paddingDip(YogaEdge.HORIZONTAL, 16)
+                .testKey("like_button")
                 .child(
                     Column.create(c)
                         .transitionKey("icon_like")
