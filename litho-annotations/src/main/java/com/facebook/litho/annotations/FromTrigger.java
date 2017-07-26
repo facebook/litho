@@ -26,7 +26,7 @@ import java.lang.annotation.RetentionPolicy;
  *       static Object yourEventClick(ComponentContext c, @FromTrigger YourObject obj) {
  *         return new Object();
  *       }
- *     }
+ *     }}
  *   </pre>
  * </p>
  */
