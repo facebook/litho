@@ -60,4 +60,10 @@ public @interface LayoutSpec {
    * methods.
    */
   Class<?>[] events() default {};
+
+  /**
+   * @return List of trigger POJOs this component can dispatch. Used to generate trigger creation
+   * methods.
+   */
+  Class<?>[] triggers() default {};
 }

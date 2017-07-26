@@ -90,4 +90,10 @@ public @interface MountSpec {
    * of MountSpec
    */
   int poolSize() default 15;
+
+  /**
+   * @return List of trigger POJOs this component can dispatch. Used to generate trigger creation
+   * methods.
+   */
+  Class<?>[] triggers() default {};
 }
