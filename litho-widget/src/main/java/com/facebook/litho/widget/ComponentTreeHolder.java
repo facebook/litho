@@ -128,7 +128,7 @@ public class ComponentTreeHolder {
     return mIsTreeValid;
   }
 
-  synchronized ComponentTree getComponentTree() {
+  public synchronized ComponentTree getComponentTree() {
     return mComponentTree;
   }
 
