@@ -536,7 +536,8 @@ public class BuilderGenerator {
         requiredIndex,
         varArgName,
         Arrays.asList(parameter(prop, singleParameterType, varArgName, extraAnnotations)),
-        codeBlock).build();
+        codeBlock)
+        .build();
   }
 
   private static MethodSpec varArgBuilderBuilder(
@@ -753,10 +754,36 @@ public class BuilderGenerator {
       List<ParameterSpec> parameters,
       String statement,
       Object... formatObjects) {
+
+    if (prop.hasVarArgs()) {
+      final String propName = prop.getName();
+      final String implMemberInstanceName = getImplMemberInstanceName(specModel);
+
+      CodeBlock.Builder codeBlockBuilder = CodeBlock.builder()
+          .beginControlFlow(
+              "if (this.$L.$L == null || this.$L.$L.isEmpty() || $L == null)",
+              implMemberInstanceName,
+              propName,
+              implMemberInstanceName,
+              propName,
+              propName)
+          .addStatement("this.$L.$L = $L", implMemberInstanceName, propName, propName)
+          .nextControlFlow("else")
+          .addStatement(
+              "this.$L.$L.addAll($L)",
+              implMemberInstanceName,
+              propName,
+              propName)
+          .endControlFlow();
+
+      return getMethodSpecBuilder(prop, requiredIndex, name, parameters, codeBlockBuilder.build());
+    }
+
     CodeBlock codeBlock = CodeBlock.builder()
         .add("this.$L.$L = ", getImplMemberInstanceName(specModel), prop.getName())
         .addStatement(statement, formatObjects)
         .build();
+
     return getMethodSpecBuilder(prop, requiredIndex, name, parameters, codeBlock);
   }
 

@@ -147,7 +147,11 @@ public class BuilderGeneratorTest {
         "  }\n" +
         "\n" +
         "  public Builder arg4(java.util.List<java.lang.String> arg4) {\n" +
-        "    this.mTestImpl.arg4 = arg4;\n" +
+        "    if (this.mTestImpl.arg4 == null || this.mTestImpl.arg4.isEmpty() || arg4 == null) {\n" +
+        "      this.mTestImpl.arg4 = arg4;\n" +
+        "    } else {\n" +
+        "      this.mTestImpl.arg4.addAll(arg4);\n" +
+        "    }\n" +
         "    mRequired.set(1);\n" +
         "    return this;\n" +
         "  }\n" +
