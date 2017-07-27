@@ -1001,12 +1001,12 @@ public class RecyclerBinderTest {
     }
 
     @Override
-    protected void release() {
+    public void release() {
       mReleased = true;
     }
 
     @Override
-    protected synchronized void acquireStateHandlerAndReleaseTree() {
+    public synchronized void acquireStateHandlerAndReleaseTree() {
       mComponentTree = null;
       mTreeValid = false;
       mLayoutAsyncCalled = false;
@@ -1022,7 +1022,7 @@ public class RecyclerBinderTest {
     }
 
     @Override
-    protected synchronized void computeLayoutAsync(
+    public synchronized void computeLayoutAsync(
         ComponentContext context,
         int widthSpec,
         int heightSpec) {
@@ -1034,7 +1034,7 @@ public class RecyclerBinderTest {
     }
 
     @Override
-    protected void computeLayoutSync(
+    public void computeLayoutSync(
         ComponentContext context, int widthSpec, int heightSpec, Size size) {
       mComponentTree = mock(ComponentTree.class);
       mTreeValid = true;
@@ -1052,12 +1052,12 @@ public class RecyclerBinderTest {
     }
 
     @Override
-    protected synchronized boolean isTreeValid() {
+    public synchronized boolean isTreeValid() {
       return mTreeValid;
     }
 
     @Override
-    protected synchronized ComponentTree getComponentTree() {
+    public synchronized ComponentTree getComponentTree() {
       return mComponentTree;
     }
 

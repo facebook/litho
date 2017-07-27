@@ -44,7 +44,7 @@ public class ComponentTreeHolder {
   private boolean mCanPrefetchDisplayLists;
   private boolean mCanCacheDrawingDisplayLists;
 
-  static ComponentTreeHolder acquire(
+  public static ComponentTreeHolder acquire(
       ComponentInfo componentInfo,
       LayoutHandler layoutHandler,
       boolean canPrefetchDisplayLists,
@@ -60,7 +60,7 @@ public class ComponentTreeHolder {
     return componentTreeHolder;
   }
 
-  synchronized void acquireStateHandlerAndReleaseTree() {
+  public synchronized void acquireStateHandlerAndReleaseTree() {
     acquireStateHandler();
     releaseTree();
   }
@@ -73,7 +73,7 @@ public class ComponentTreeHolder {
     mStateHandler = null;
   }
 
-  void computeLayoutSync(
+  public void computeLayoutSync(
       ComponentContext context,
       int widthSpec,
       int heightSpec,
@@ -97,7 +97,7 @@ public class ComponentTreeHolder {
     }
   }
 
-  void computeLayoutAsync(
+  public void computeLayoutAsync(
       ComponentContext context,
       int widthSpec,
       int heightSpec) {
@@ -120,11 +120,11 @@ public class ComponentTreeHolder {
     }
   }
 
-  synchronized ComponentInfo getComponentInfo() {
+  public synchronized ComponentInfo getComponentInfo() {
     return mComponentInfo;
   }
 
-  synchronized boolean isTreeValid() {
+  public synchronized boolean isTreeValid() {
     return mIsTreeValid;
   }
 
@@ -132,12 +132,12 @@ public class ComponentTreeHolder {
     return mComponentTree;
   }
 
-  synchronized void setComponentInfo(ComponentInfo componentInfo) {
+  public synchronized void setComponentInfo(ComponentInfo componentInfo) {
     invalidateTree();
     mComponentInfo = componentInfo;
   }
 
-  synchronized void release() {
+  public synchronized void release() {
     releaseTree();
     clearStateHandler();
     mComponentInfo = null;
