@@ -8,7 +8,7 @@
 include_defs("//COMPONENTS_DEFS")
 
 components_robolectric_test(
-    name = "sample",
+    name = "litho",
     srcs = glob(["*Test.java"]),
     contacts = ["oncall+components_for_android@xmail.facebook.com"],
     source = "8",
@@ -16,10 +16,13 @@ components_robolectric_test(
     deps = [
         make_dep_path("sample/src/main/java/com/facebook/samples/litho:litho"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner"),
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj"),
         COMPONENTS_JAVA_TARGET,
         COMPONENTS_TESTING_TARGET,
         COMPONENTS_JUNIT_TARGET,
         COMPONENTS_ROBOLECTRIC_TARGET,
         COMPONENTS_ASSERTJ_TARGET,
+        COMPONENTS_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
+        COMPONENTS_WIDGET_TARGET,
     ],
 )
