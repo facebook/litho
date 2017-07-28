@@ -837,8 +837,43 @@ public class ComponentsPools {
   /**
    * Call from tests to clear external references.
    */
-  public static void clearAll() {
+  public static void clearMountContentPools() {
     sMountContentPoolsByContext.clear();
+  }
+
+  /**
+   * Clear pools for all the internal util objects, excluding mount content.
+   */
+  public static void clearInternalUtilPools() {
+    sLayoutStatePool.clear();
+    sYogaNodePool.clear();
+    sInternalNodePool.clear();
+    sNodeInfoPool.clear();
+    sViewNodeInfoPool.clear();
+    sMountItemPool.clear();
+    sLayoutOutputPool.clear();
+    sDisplayListContainerPool.clear();
+    sVisibilityOutputPool.clear();
+    sVisibilityItemPool.clear();
+    sTestOutputPool.clear();
+    sTestItemPool.clear();
+    sOutputPool.clear();
+    sDiffNodePool.clear();
+    sDiffPool.clear();
+    sComponentTreeBuilderPool.clear();
+    sStateHandlerPool.clear();
+    sTransitionContextPool.clear();
+    sTreePropsMapPool.clear();
+    sLogEventPool.clear();
+    sMountItemScrapArrayPool.clear();
+    sTouchableScrapArrayPool.clear();
+    sRectFPool.clear();
+    sEdgesPool.clear();
+    sDisplayListDrawablePool.clear();
+    sBorderColorDrawablePool.clear();
+    sArraySetPool.clear();
+    sArrayDequePool.clear();
+    sRenderStatePool.clear();
   }
 
   /**

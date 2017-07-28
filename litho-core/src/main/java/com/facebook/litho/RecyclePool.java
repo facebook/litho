@@ -71,4 +71,18 @@ public class RecyclePool<T> {
   public boolean isFull() {
     return mCurrentSize >= mMaxSize;
   }
+
+  public void clear() {
+    if (mIsSync) {
+      synchronized (this) {
+        while (acquire() != null) {
+          // no-op.
+        }
+      }
+    } else {
+      while (acquire() != null) {
+        // no-op.
+      }
+    }
+  }
 }
