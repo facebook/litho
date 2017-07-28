@@ -15,7 +15,6 @@ import java.util.ArrayList;
 
 import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
-import android.support.v4.util.Pools;
 import android.support.v4.util.SimpleArrayMap;
 import android.util.Log;
 import android.view.View;
@@ -81,9 +80,6 @@ public class DataFlowTransitionManager {
     void onAnimationComplete(String transitionKey);
   }
 
-  private static final Pools.SimplePool<AnimationState> sAnimationStatePool =
-      new Pools.SimplePool<>(20);
-
   /**
    * The before and after values of single component undergoing a transition.
    */
@@ -114,16 +110,6 @@ public class DataFlowTransitionManager {
     public int changeType = KeyStatus.UNSET;
     public @Nullable LayoutOutput currentLayoutOutput;
     public @Nullable LayoutOutput nextLayoutOutput;
-
-    public void reset() {
-      activeAnimations.clear();
-      animatedPropertyNodes.clear();
-      animatingProperties.clear();
-      mountContent = null;
-      currentDiff.reset();
-      changeType = KeyStatus.UNSET;
-      clearLayoutOutputs(this);
-    }
   }
 
   private final ArrayList<AnimationBinding> mAnimationBindings = new ArrayList<>();
@@ -242,7 +228,7 @@ public class DataFlowTransitionManager {
       final String key = mAnimationStates.keyAt(i);
       final AnimationState animationState = mAnimationStates.valueAt(i);
       setMountContentInner(key, animationState, null);
-      releaseAnimationState(animationState);
+      clearLayoutOutputs(animationState);
     }
     
     mAnimationStates.clear();
@@ -285,7 +271,7 @@ public class DataFlowTransitionManager {
       LayoutOutput nextLayoutOutput) {
     AnimationState animationState = mAnimationStates.get(transitionKey);
     if (animationState == null) {
-      animationState = acquireAnimationState();
+      animationState = new AnimationState();
       mAnimationStates.put(transitionKey, animationState);
     }
 
@@ -621,7 +607,7 @@ public class DataFlowTransitionManager {
       final AnimationState animationState = mAnimationStates.valueAt(i);
       if (animationState.activeAnimations.isEmpty()) {
         setMountContentInner(mAnimationStates.keyAt(i), animationState, null);
-        releaseAnimationState(mAnimationStates.removeAt(i));
+        clearLayoutOutputs(mAnimationStates.removeAt(i));
       }
     }
   }
@@ -679,19 +665,6 @@ public class DataFlowTransitionManager {
     }
   }
 
-  private static AnimationState acquireAnimationState() {
-    AnimationState animationState = sAnimationStatePool.acquire();
-    if (animationState == null) {
-      animationState = new AnimationState();
-    }
-    return animationState;
-  }
-
-  private static void releaseAnimationState(AnimationState animationState) {
-    animationState.reset();
-    sAnimationStatePool.release(animationState);
-  }
-
   private static void clearLayoutOutputs(AnimationState animationState) {
     if (animationState.currentLayoutOutput != null) {
       animationState.currentLayoutOutput.decrementRefCount();
@@ -740,7 +713,7 @@ public class DataFlowTransitionManager {
             mOnAnimationCompleteListener.onAnimationComplete(key);
           }
           mAnimationStates.remove(key);
-          releaseAnimationState(animationState);
+          clearLayoutOutputs(animationState);
         }
       }
       ComponentsPools.release(transitioningKeys);
