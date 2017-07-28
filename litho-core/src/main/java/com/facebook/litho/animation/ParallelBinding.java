@@ -47,7 +47,7 @@ public class ParallelBinding implements AnimationBinding {
 
     mChildListener = new AnimationBindingListener() {
       @Override
-      public void onStart(AnimationBinding binding) {
+      public void onWillStart(AnimationBinding binding) {
       }
 
       @Override
@@ -101,7 +101,7 @@ public class ParallelBinding implements AnimationBinding {
     mResolver = resolver;
 
     for (AnimationBindingListener listener : mListeners) {
-      listener.onStart(this);
+      listener.onWillStart(this);
     }
 
     for (AnimationBinding binding : mBindings) {

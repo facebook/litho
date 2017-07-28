@@ -81,6 +81,9 @@ public abstract class TransitionAnimationBinding implements AnimationBinding {
 
   @Override
   public void start(Resolver resolver) {
+    for (AnimationBindingListener listener : mListeners) {
+      listener.onWillStart(this);
+    }
     setupBinding(resolver);
     mGraphBinding.activate();
   }

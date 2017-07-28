@@ -19,7 +19,7 @@ public interface AnimationBindingListener {
   /**
    * Called when {@link GraphBinding#activate} is called on the relevant binding.
    */
-  void onStart(AnimationBinding binding);
+  void onWillStart(AnimationBinding binding);
 
   /**
    * Called when a {@link GraphBinding} is finished, meaning all of its nodes are finished.

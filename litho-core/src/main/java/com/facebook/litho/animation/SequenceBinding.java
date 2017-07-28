@@ -38,7 +38,7 @@ public class SequenceBinding implements AnimationBinding {
 
     mChildListener = new AnimationBindingListener() {
       @Override
-      public void onStart(AnimationBinding binding) {
+      public void onWillStart(AnimationBinding binding) {
       }
 
       @Override
@@ -79,7 +79,7 @@ public class SequenceBinding implements AnimationBinding {
     }
     mIsActive = true;
     for (AnimationBindingListener listener : mListeners) {
-      listener.onStart(this);
+      listener.onWillStart(this);
     }
     mResolver = resolver;
     mBindings[0].addListener(mChildListener);

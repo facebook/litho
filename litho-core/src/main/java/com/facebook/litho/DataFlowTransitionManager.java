@@ -679,7 +679,7 @@ public class DataFlowTransitionManager {
   private class TransitionsAnimationBindingListener implements AnimationBindingListener {
 
     @Override
-    public void onStart(AnimationBinding binding) {
+    public void onWillStart(AnimationBinding binding) {
     }
 
     @Override
