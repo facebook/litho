@@ -2358,7 +2358,7 @@ class MountState implements DataFlowTransitionManager.OnAnimationCompleteListene
           component.getLifecycle().onCreateTransition(component.getScopedContext(), component);
 
       if (transitionSet != null) {
-        layoutState.getTransitionContext().addAutoTransitions(transitionSet);
+        layoutState.getTransitionContext().addTransitions(transitionSet);
       }
     }
   }

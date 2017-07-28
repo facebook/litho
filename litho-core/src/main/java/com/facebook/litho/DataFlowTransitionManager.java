@@ -244,7 +244,7 @@ public class DataFlowTransitionManager {
   private void prepareTransitions(TransitionContext transitionContext) {
     mAnimationBindings.clear();
     mTransitions.clear();
-    mTransitions.addAll(transitionContext.getAutoTransitionSet().getTransitions());
+    mTransitions.addAll(transitionContext.getTransitionSet().getTransitions());
 
     if (AnimationsDebug.ENABLED) {
       Log.d(

@@ -631,11 +631,6 @@ class LayoutState {
 
     // 5. Extract the Transitions.
     if (SDK_INT >= ICE_CREAM_SANDWICH) {
-      if (node.getTransitionKey() != null) {
-        layoutState
-            .getOrCreateTransitionContext()
-            .addTransitionKey(node.getTransitionKey());
-      }
       if (component != null) {
         final ComponentLifecycle lifecycle = component.getLifecycle();
         if (!lifecycle.needsPreviousRenderInfo()) {
@@ -643,7 +638,7 @@ class LayoutState {
               component.getLifecycle().onCreateTransition(layoutState.mContext, component);
 
           if (transitionSet != null) {
-            layoutState.getOrCreateTransitionContext().addAutoTransitions(transitionSet);
+            layoutState.getOrCreateTransitionContext().addTransitions(transitionSet);
           }
         } else {
           if (layoutState.mComponentsNeedingPreviousRenderInfo == null) {
