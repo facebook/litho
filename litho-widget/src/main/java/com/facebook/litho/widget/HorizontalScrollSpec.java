@@ -51,7 +51,7 @@ import static com.facebook.litho.SizeSpec.UNSPECIFIED;
  *
  * @uidocs
  */
-@MountSpec(canMountIncrementally = true)
+@MountSpec
 class HorizontalScrollSpec {
 
   @PropDefault static final boolean scrollbarEnabled = true;
@@ -85,7 +85,9 @@ class HorizontalScrollSpec {
       @Prop Component<?> contentProps,
       Output<ComponentTree> contentComponent) {
     contentComponent.set(
-        ComponentTree.create(context, contentProps).build());
+        ComponentTree.create(context, contentProps)
+            .incrementalMount(false)
+            .build());
   }
 
   @OnMeasure
@@ -227,14 +229,6 @@ class HorizontalScrollSpec {
     }
 
     @Override
-    protected void onScrollChanged(int left, int top, int oldLeft, int oldTop) {
-      super.onScrollChanged(left, top, oldLeft, oldTop);
-
-      // Visible area changed, perform incremental mount.
-      incrementalMount();
-    }
-
-    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
       // The hosting component view always matches the component size. This will
       // ensure that there will never be a size-mismatch between the view and the
@@ -254,10 +248,6 @@ class HorizontalScrollSpec {
       mLithoView.setComponentTree(component);
       mComponentWidth = width;
       mComponentHeight = height;
-    }
-
-    void incrementalMount() {
-      mLithoView.performIncrementalMount();
     }
 
     void unmount() {
