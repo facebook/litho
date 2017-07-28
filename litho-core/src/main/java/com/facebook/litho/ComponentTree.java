@@ -619,7 +619,6 @@ public class ComponentTree {
       synchronized (this) {
         if (layoutStateStateHandler != null) {
           mStateHandler.commit(layoutStateStateHandler);
-          ComponentsPools.release(layoutStateStateHandler);
         }
 
         mMainThreadLayoutState = localLayoutState;
@@ -1132,7 +1131,6 @@ public class ComponentTree {
             if (mStateHandler != null) { // we could have been released
               mStateHandler.commit(layoutStateStateHandler);
             }
-            ComponentsPools.release(layoutStateStateHandler);
           }
         }
 

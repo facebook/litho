@@ -9,6 +9,8 @@
 
 package com.facebook.litho;
 
+import javax.annotation.concurrent.GuardedBy;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,28 +48,34 @@ public class StateHandler {
   /**
    * List of state updates that will be applied during the next layout pass.
    */
+  @GuardedBy("this")
   private Map<String, List<StateUpdate>> mPendingStateUpdates;
 
   /**
    * Maps a component key to a component object that retains the current state values for that key.
    */
+  @GuardedBy("this")
   public Map<String, StateContainer> mStateContainers;
 
+  @GuardedBy("this")
   private Set<String> mKnownGlobalKeys;
 
   void init(StateHandler stateHandler) {
     if (stateHandler == null) {
       return;
     }
-    copyPendingStateUpdatesMap(stateHandler.getPendingStateUpdates());
-    copyCurrentStateContainers(stateHandler.getStateContainers());
+
+    synchronized (this) {
+      copyPendingStateUpdatesMap(stateHandler.getPendingStateUpdates());
+      copyCurrentStateContainers(stateHandler.getStateContainers());
+    }
   }
 
   public static StateHandler acquireNewInstance(StateHandler stateHandler) {
     return ComponentsPools.acquireStateHandler(stateHandler);
   }
 
-  public boolean isEmpty() {
+  public synchronized boolean isEmpty() {
     return mStateContainers == null || mStateContainers.isEmpty();
   }
 
@@ -77,7 +85,7 @@ public class StateHandler {
    * @param key the global key of the component
    * @param stateUpdate the state update to apply to the component
    */
-  void queueStateUpdate(String key, StateUpdate stateUpdate) {
+  synchronized void queueStateUpdate(String key, StateUpdate stateUpdate) {
     maybeInitPendingUpdates();
 
     List<StateUpdate> pendingStateUpdatesForKey = mPendingStateUpdates.get(key);
@@ -108,17 +116,20 @@ public class StateHandler {
 
     final StateContainer previousStateContainer;
     final String key = component.getGlobalKey();
-    final StateContainer currentStateContainer =
-        mStateContainers.get(key);
+    final StateContainer currentStateContainer;
 
-    if (mKnownGlobalKeys.contains(key)) {
-      // We found two components with the same global key.
-      throw new RuntimeException(
-          "Cannot set State for " +
-              component.getSimpleName() +
-              ", found another Component with the same key: " + key);
+    synchronized (this) {
+      currentStateContainer = mStateContainers.get(key);
+
+      if (mKnownGlobalKeys.contains(key)) {
+        // We found two components with the same global key.
+        throw new RuntimeException(
+            "Cannot set State for " +
+                component.getSimpleName() +
+                ", found another Component with the same key: " + key);
+      }
+      mKnownGlobalKeys.add(key);
     }
-    mKnownGlobalKeys.add(key);
 
     if (currentStateContainer != null) {
       lifecycle.transferState(
@@ -131,9 +142,13 @@ public class StateHandler {
       previousStateContainer = component.getStateContainer();
     }
 
-    final List<StateUpdate> stateUpdatesForKey = mPendingStateUpdates == null
-        ? null
-        : mPendingStateUpdates.get(key);
+    final List<StateUpdate> stateUpdatesForKey;
+
+    synchronized (this) {
+      stateUpdatesForKey = mPendingStateUpdates == null
+          ? null
+          : mPendingStateUpdates.get(key);
+    }
 
     // If there are no state updates pending for this component, simply store its current state.
     if (stateUpdatesForKey != null) {
@@ -142,7 +157,9 @@ public class StateHandler {
       }
     }
 
-    mStateContainers.put(key, component.getStateContainer());
+    synchronized (this) {
+      mStateContainers.put(key, component.getStateContainer());
+    }
   }
 
   /**
@@ -156,21 +173,29 @@ public class StateHandler {
   }
 
   private void clearStateUpdates(Map<String, List<StateUpdate>> appliedStateUpdates) {
-    if (appliedStateUpdates == null ||
-        mPendingStateUpdates == null ||
-        mPendingStateUpdates.isEmpty()) {
-      return;
+    synchronized (this) {
+      if (appliedStateUpdates == null ||
+          mPendingStateUpdates == null ||
+          mPendingStateUpdates.isEmpty()) {
+        return;
+      }
     }
 
     for (String key : appliedStateUpdates.keySet()) {
-      final List<StateUpdate> pendingStateUpdatesForKey = mPendingStateUpdates.get(key);
+      final List<StateUpdate> pendingStateUpdatesForKey;
+      synchronized (this) {
+        pendingStateUpdatesForKey = mPendingStateUpdates.get(key);
+      }
+
       if (pendingStateUpdatesForKey == null) {
         continue;
       }
 
       final List<StateUpdate> appliedStateUpdatesForKey = appliedStateUpdates.get(key);
       if (pendingStateUpdatesForKey.size() == appliedStateUpdatesForKey.size()) {
-        mPendingStateUpdates.remove(key);
+        synchronized (this) {
+          mPendingStateUpdates.remove(key);
+        }
         releaseStateUpdatesList(pendingStateUpdatesForKey);
       } else {
         pendingStateUpdatesForKey.removeAll(appliedStateUpdatesForKey);
@@ -184,11 +209,13 @@ public class StateHandler {
       return;
     }
 
-    maybeInitStateContainers();
-    mStateContainers.putAll(updatedStateContainers);
+    synchronized (this) {
+      maybeInitStateContainers();
+      mStateContainers.putAll(updatedStateContainers);
+    }
   }
 
-  void release() {
+  synchronized void release() {
     if (mPendingStateUpdates != null) {
       mPendingStateUpdates.clear();
       sPendingStateUpdatesMapPool.release(mPendingStateUpdates);
@@ -230,11 +257,11 @@ public class StateHandler {
     sStateUpdatesListPool.release(list);
   }
 
-  Map<String, StateContainer> getStateContainers() {
+  synchronized Map<String, StateContainer> getStateContainers() {
     return mStateContainers;
   }
 
-  Map<String, List<StateUpdate>> getPendingStateUpdates() {
+  synchronized Map<String, List<StateUpdate>> getPendingStateUpdates() {
     return mPendingStateUpdates;
   }
 
@@ -250,7 +277,9 @@ public class StateHandler {
 
     maybeInitPendingUpdates();
     for (String key : pendingStateUpdates.keySet()) {
-      mPendingStateUpdates.put(key, acquireStateUpdatesList(pendingStateUpdates.get(key)));
+      synchronized (this) {
+        mPendingStateUpdates.put(key, acquireStateUpdatesList(pendingStateUpdates.get(key)));
+      }
     }
   }
 
@@ -265,11 +294,13 @@ public class StateHandler {
 
     maybeInitStateContainers();
     for (String key : stateContainers.keySet()) {
-      mStateContainers.put(key, stateContainers.get(key));
+      synchronized (this) {
+        mStateContainers.put(key, stateContainers.get(key));
+      }
     }
   }
 
-  private void maybeInitStateContainers() {
+  private synchronized void maybeInitStateContainers() {
     if (mStateContainers == null) {
       mStateContainers = sStateContainersMapPool.acquire();
       if (mStateContainers == null) {
@@ -278,7 +309,7 @@ public class StateHandler {
     }
   }
 
-  private void maybeInitPendingUpdates() {
+  private synchronized void maybeInitPendingUpdates() {
     if (mPendingStateUpdates == null) {
       mPendingStateUpdates = sPendingStateUpdatesMapPool.acquire();
       if (mPendingStateUpdates == null) {
@@ -287,7 +318,7 @@ public class StateHandler {
     }
   }
 
-  private void maybeInitKnownGlobalKeys() {
+  private synchronized void maybeInitKnownGlobalKeys() {
     if (mKnownGlobalKeys == null) {
       mKnownGlobalKeys = sKnownGlobalKeysSetPool.acquire();
       if (mKnownGlobalKeys == null) {
