@@ -49,7 +49,7 @@ public class LayoutOutputTest {
 
   private final ComponentLifecycle mLifecycle = new ComponentLifecycle() {
     @Override
-    int getId() {
+    int getTypeId() {
       return LIFECYCLE_TEST_ID;
     }
   };
@@ -85,7 +85,7 @@ public class LayoutOutputTest {
   public void testStableIdCalculation() {
     ComponentLifecycle lifecycle = new ComponentLifecycle() {
       @Override
-      int getId() {
+      int getTypeId() {
         return LIFECYCLE_TEST_ID;
       }
     };
@@ -114,7 +114,7 @@ public class LayoutOutputTest {
   public void testStableIdBackgroundType() {
     ComponentLifecycle lifecycle = new ComponentLifecycle() {
       @Override
-      int getId() {
+      int getTypeId() {
         return LIFECYCLE_TEST_ID;
       }
     };
@@ -137,7 +137,7 @@ public class LayoutOutputTest {
   public void testStableIdForegroundType() {
     ComponentLifecycle lifecycle = new ComponentLifecycle() {
       @Override
-      int getId() {
+      int getTypeId() {
         return LIFECYCLE_TEST_ID;
       }
     };
@@ -160,7 +160,7 @@ public class LayoutOutputTest {
   public void testStableIdHostType() {
     ComponentLifecycle lifecycle = new ComponentLifecycle() {
       @Override
-      int getId() {
+      int getTypeId() {
         return LIFECYCLE_TEST_ID;
       }
     };
@@ -183,7 +183,7 @@ public class LayoutOutputTest {
   public void testGetIdLevel() {
     ComponentLifecycle lifecycle = new ComponentLifecycle() {
       @Override
-      int getId() {
+      int getTypeId() {
         return LIFECYCLE_TEST_ID;
       }
     };
@@ -213,7 +213,7 @@ public class LayoutOutputTest {
   public void testGetIdSequence() {
     ComponentLifecycle lifecycle = new ComponentLifecycle() {
       @Override
-      int getId() {
+      int getTypeId() {
         return LIFECYCLE_TEST_ID;
       }
     };
@@ -243,7 +243,7 @@ public class LayoutOutputTest {
   public void levelOutOfRangeTest() {
     ComponentLifecycle lifecycle = new ComponentLifecycle() {
       @Override
-      int getId() {
+      int getTypeId() {
         return LIFECYCLE_TEST_ID;
       }
     };
@@ -262,7 +262,7 @@ public class LayoutOutputTest {
   public void sequenceOutOfRangeTest() {
     ComponentLifecycle lifecycle = new ComponentLifecycle() {
       @Override
-      int getId() {
+      int getTypeId() {
         return LIFECYCLE_TEST_ID;
       }
     };

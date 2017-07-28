@@ -187,7 +187,7 @@ class LayoutStateOutputIdCalculator {
     }
 
     long componentId = layoutOutput.getComponent() != null ?
-        layoutOutput.getComponent().getLifecycle().getId() :
+        layoutOutput.getComponent().getLifecycle().getTypeId() :
         0L;
 
     long componentShifted = componentId << COMPONENT_ID_SHIFT;
@@ -210,7 +210,7 @@ class LayoutStateOutputIdCalculator {
     }
 
     final long componentId = visibilityOutput.getComponent() != null ?
-        visibilityOutput.getComponent().getLifecycle().getId() :
+        visibilityOutput.getComponent().getLifecycle().getTypeId() :
         0L;
 
     final long componentShifted = componentId << COMPONENT_ID_SHIFT;

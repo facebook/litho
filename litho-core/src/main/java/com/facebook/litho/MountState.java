@@ -1027,7 +1027,7 @@ class MountState implements DataFlowTransitionManager.OnAnimationCompleteListene
       return host.recycleHost();
     }
 
-    return ComponentsPools.acquireMountContent(mContext, lifecycle.getId());
+    return ComponentsPools.acquireMountContent(mContext, lifecycle.getTypeId());
   }
 
   private static void applyBoundsToMountContent(

@@ -40,7 +40,7 @@ public class ComponentGlobalKeyTest {
     Component component = TestDrawableComponent
         .create(mContext)
         .build();
-    Assert.assertEquals(component.getKey(), component.getLifecycle().getId() + "");
+    Assert.assertEquals(component.getKey(), component.getLifecycle().getTypeId() + "");
     Assert.assertNull(component.getGlobalKey());
   }
 
@@ -59,7 +59,7 @@ public class ComponentGlobalKeyTest {
     Component component = TestDrawableComponent
         .create(mContext)
         .build();
-    System.out.println(component.getLifecycle().getId());
+    System.out.println(component.getLifecycle().getTypeId());
     ComponentTree componentTree = ComponentTree.create(mContext, component)
         .incrementalMount(false)
         .layoutDiffing(false)
@@ -77,7 +77,7 @@ public class ComponentGlobalKeyTest {
         .create(mContext)
         .key("someKey")
         .build();
-    System.out.println(component.getLifecycle().getId());
+    System.out.println(component.getLifecycle().getTypeId());
     ComponentTree componentTree = ComponentTree.create(mContext, component)
         .incrementalMount(false)
         .layoutDiffing(false)
@@ -93,7 +93,7 @@ public class ComponentGlobalKeyTest {
   public void testMultipleChildrenComponentKey() {
     Component component = getMultipleChildrenComponent();
 
-    int layoutSpecId = component.getLifecycle().getId();
+    int layoutSpecId = component.getLifecycle().getTypeId();
     int nestedLayoutSpecId = layoutSpecId - 1;
 
     ComponentTree componentTree = ComponentTree.create(mContext, component)

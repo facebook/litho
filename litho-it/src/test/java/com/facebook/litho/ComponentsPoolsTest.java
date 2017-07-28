@@ -28,7 +28,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 public class ComponentsPoolsTest {
   private final ComponentLifecycle mLifecycle = new ComponentLifecycle() {
     @Override
-    int getId() {
+    int getTypeId() {
       return 1;
     }
   };
@@ -48,28 +48,28 @@ public class ComponentsPoolsTest {
 
   @Test
   public void testAcquireMountContentWithSameContext() {
-    assertThat(acquireMountContent(mContext1, mLifecycle.getId())).isNull();
+    assertThat(acquireMountContent(mContext1, mLifecycle.getTypeId())).isNull();
 
     release(mContext1, mLifecycle, mMountContent);
 
-    assertThat(mMountContent).isSameAs(acquireMountContent(mContext1, mLifecycle.getId()));
+    assertThat(mMountContent).isSameAs(acquireMountContent(mContext1, mLifecycle.getTypeId()));
   }
 
   @Test
   public void testAcquireMountContentWithSameUnderlyingContext() {
-    assertThat(acquireMountContent(mContext1, mLifecycle.getId())).isNull();
+    assertThat(acquireMountContent(mContext1, mLifecycle.getTypeId())).isNull();
 
     release(mContext1, mLifecycle, mMountContent);
 
-    assertThat(mMountContent).isSameAs(acquireMountContent(mContext2, mLifecycle.getId()));
+    assertThat(mMountContent).isSameAs(acquireMountContent(mContext2, mLifecycle.getTypeId()));
   }
 
   @Test
   public void testAcquireMountContentWithDifferentUnderlyingContext() {
-    assertThat(acquireMountContent(mContext1, mLifecycle.getId())).isNull();
+    assertThat(acquireMountContent(mContext1, mLifecycle.getTypeId())).isNull();
 
     release(mContext1, mLifecycle, mMountContent);
 
-    assertThat(acquireMountContent(mContext3, mLifecycle.getId())).isNull();
+    assertThat(acquireMountContent(mContext3, mLifecycle.getTypeId())).isNull();
   }
 }

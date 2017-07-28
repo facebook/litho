@@ -1135,7 +1135,7 @@ class LayoutState {
     }
 
     Drawable drawable =
-        (Drawable) ComponentsPools.acquireMountContent(context, lifecycle.getId());
+        (Drawable) ComponentsPools.acquireMountContent(context, lifecycle.getTypeId());
     if (drawable == null) {
       drawable = (Drawable) lifecycle.createMountContent(context);
     }

@@ -114,7 +114,8 @@ public class ViewCompatComponent<V extends View> extends ComponentLifecycle {
 
     final boolean isSafeToAllocatePool = getValidActivityForContext(c) != null;
 
-    View toMeasure = (View) ComponentsPools.acquireMountContent(c, getId(), isSafeToAllocatePool);
+    View toMeasure =
+        (View) ComponentsPools.acquireMountContent(c, getTypeId(), isSafeToAllocatePool);
     if (toMeasure == null) {
       toMeasure = mViewCompatCreator.createView(c);
     }

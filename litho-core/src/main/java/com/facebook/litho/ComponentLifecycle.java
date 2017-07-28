@@ -39,7 +39,7 @@ import com.facebook.yoga.YogaNode;
  * it directly when implementing new component types.
  */
 public abstract class ComponentLifecycle implements EventDispatcher {
-  private static final AtomicInteger sComponentId = new AtomicInteger();
+  private static final AtomicInteger sComponentTypeId = new AtomicInteger();
   private static final int DEFAULT_MAX_PREALLOCATION = 15;
 
   private final Object mPreallocationLock = new Object();
@@ -165,14 +165,14 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     }
   };
 
-  private final int mId;
+  private final int mTypeId;
 
   protected ComponentLifecycle() {
-    mId = sComponentId.incrementAndGet();
+    mTypeId = sComponentTypeId.incrementAndGet();
   }
 
-  int getId() {
-    return mId;
+  int getTypeId() {
+    return mTypeId;
   }
 
   @ThreadSafe(enableChecks = false)

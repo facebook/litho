@@ -644,13 +644,13 @@ public class ComponentsPools {
       SparseArray<RecyclePool> poolsArray =
           sMountContentPoolsByContext.get(context);
       if (poolsArray != null) {
-        pool = poolsArray.get(lifecycle.getId());
+        pool = poolsArray.get(lifecycle.getTypeId());
         if (pool == null) {
           pool = new RecyclePool(
               "MountContent - " + lifecycle.getClass().getSimpleName(),
               lifecycle.poolSize(),
               true);
-          poolsArray.put(lifecycle.getId(), pool);
+          poolsArray.put(lifecycle.getTypeId(), pool);
         }
       }
 
@@ -674,7 +674,7 @@ public class ComponentsPools {
         return true;
       }
 
-      final RecyclePool pool = poolsArray.get(lifecycle.getId());
+      final RecyclePool pool = poolsArray.get(lifecycle.getTypeId());
       return pool == null || !pool.isFull();
     }
   }

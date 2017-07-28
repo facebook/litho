@@ -265,7 +265,7 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
 
   protected Component(L lifecycle) {
     mLifecycle = lifecycle;
-    mKey = Integer.toString(mLifecycle.getId());
+    mKey = Integer.toString(mLifecycle.getTypeId());
   }
 
   public L getLifecycle() {

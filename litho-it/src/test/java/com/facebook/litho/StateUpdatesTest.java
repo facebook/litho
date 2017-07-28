@@ -43,7 +43,7 @@ public class StateUpdatesTest {
 
   private final ComponentLifecycle mLifecycle = new ComponentLifecycle() {
     @Override
-    int getId() {
+    int getTypeId() {
       return LIFECYCLE_TEST_ID;
     }
 
