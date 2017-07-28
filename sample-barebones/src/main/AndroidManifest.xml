@@ -11,11 +11,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.facebook.samples.lithobarebones">
 
-  <uses-sdk android:minSdkVersion="15" android:targetSdkVersion="19"/>
+  <uses-sdk android:targetSdkVersion="23"/>
 
   <application
       android:name="com.facebook.samples.lithobarebones.SampleApplication"
-      android:label="Litho Barebones">
+      android:label="Litho Barebones"
+      android:allowBackup="true">
     <activity android:name="com.facebook.samples.lithobarebones.SampleActivity">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
