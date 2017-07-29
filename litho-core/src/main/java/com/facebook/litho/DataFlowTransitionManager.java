@@ -172,7 +172,7 @@ public class DataFlowTransitionManager {
    * Sets the mount content for a given key. This is used to initially set mount content, but also
    * to set content when content is incrementally mounted during an animation.
    */
-  void setMountContentInner(String transitionKey, Object mountContent) {
+  void setMountContent(String transitionKey, Object mountContent) {
     final AnimationState animationState = mAnimationStates.get(transitionKey);
     if (animationState != null) {
       setMountContentInner(transitionKey, animationState, mountContent);
