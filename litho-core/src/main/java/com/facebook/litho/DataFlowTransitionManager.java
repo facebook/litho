@@ -67,20 +67,6 @@ public class DataFlowTransitionManager {
   }
 
   /**
-   * The before and after values of single component undergoing a transition.
-   */
-  private static class TransitionDiff {
-
-    public final SimpleArrayMap<AnimatedProperty, Float> beforeValues = new SimpleArrayMap<>();
-    public final SimpleArrayMap<AnimatedProperty, Float> afterValues = new SimpleArrayMap<>();
-
-    public void reset() {
-      beforeValues.clear();
-      afterValues.clear();
-    }
-  }
-
-  /**
    * Animation state of a given mount content. Holds everything we currently know about an animating
    * transition key, as well as information about its most recent changes in property values and
    * whether it's appearing, disappearing, or changing.
@@ -92,7 +78,6 @@ public class DataFlowTransitionManager {
         new SimpleArrayMap<>();
     public ArraySet<AnimatedProperty> animatingProperties = new ArraySet<>();
     public Object mountContent;
-    public TransitionDiff currentDiff = new TransitionDiff();
     public int changeType = ChangeType.UNSET;
     public @Nullable LayoutOutput currentLayoutOutput;
     public @Nullable LayoutOutput nextLayoutOutput;
@@ -120,8 +105,6 @@ public class DataFlowTransitionManager {
    * {@link #runTransitions} to restore the initial states and run the animations.
    */
   void setupTransitions(LayoutState currentLayoutState, LayoutState nextLayoutState) {
-    prepareTransitions(nextLayoutState.getTransitionContext());
-
     final SimpleArrayMap<String, LayoutOutput> currentTransitionKeys =
         currentLayoutState.getTransitionKeyMapping();
     final SimpleArrayMap<String, LayoutOutput> nextTransitionKeys =
@@ -181,6 +164,7 @@ public class DataFlowTransitionManager {
       binding.start(mResolver);
     }
 
+    mAnimationsToRun.clear();
     cleanupLayoutOutputs();
   }
 
@@ -230,19 +214,6 @@ public class DataFlowTransitionManager {
     mAnimationStates.clear();
     mAnimationsToKeys.clear();
     mAnimationsToRun.clear();
-  }
-
-  /**
-   * Called to signal that a new layout is being mounted that may require transition animations: the
-   * specification for these animations is provided on the given {@link TransitionContext}.
-   */
-  private void prepareTransitions(TransitionContext transitionContext) {
-    mAnimationsToRun.clear();
-
-    for (int i = 0, size = mAnimationStates.size(); i < size; i++) {
-      final AnimationState animationState = mAnimationStates.valueAt(i);
-      animationState.currentDiff.reset();
-    }
   }
 
   /**
@@ -336,21 +307,7 @@ public class DataFlowTransitionManager {
   }
 
   private void restoreInitialStates() {
-    for (int i = 0, size = mAnimationStates.size(); i < size; i++) {
-      final String transitionKey = mAnimationStates.keyAt(i);
-      final AnimationState animationState = mAnimationStates.valueAt(i);
-      // If the component is appearing, we will instead restore the initial value in
-      // fillAppearFromValues. This is necessary since appearFrom values can be written in terms of
-      // the end state (e.g. appear from an offset of -10dp)
-      if (animationState.changeType != ChangeType.APPEARED) {
-        for (int j = 0; j < animationState.currentDiff.beforeValues.size(); j++) {
-          final AnimatedProperty property = animationState.currentDiff.beforeValues.keyAt(j);
-          property.set(
-              animationState.mountContent,
-              animationState.currentDiff.beforeValues.valueAt(j));
-        }
-      }
-    }
+    // todo: reimplement
   }
 
   private void setMountContentInner(
@@ -448,7 +405,7 @@ public class DataFlowTransitionManager {
         final String key = propertyAnimation.getTransitionKey();
         final AnimatedProperty animatedProperty = propertyAnimation.getProperty();
         final AnimationState animationState = mAnimationStates.get(key);
-        final float beforeValue = animationState.currentDiff.beforeValues.get(animatedProperty);
+        final float beforeValue = animationState.animatedPropertyNodes.get(animatedProperty).getValue();
         final float afterValue = propertyAnimation.getTargetValue();
         final String changeType = changeTypeToString(animationState.changeType);
 
@@ -538,16 +495,7 @@ public class DataFlowTransitionManager {
       final AnimatedProperty animatedProperty = propertyHandle.getProperty();
       final AnimationState animationState = mAnimationStates.get(propertyHandle.getTransitionKey());
 
-      // We may already have an explicit beginning state for this property from
-      // recordAllTransitioningProperties or setAppearFromValues, in which case we should return it.
-      //
-      // Otherwise, it may be a property that isn't animating, but is used to calculate an appear-
-      // from value (e.g. the width for DimensionValue#widthPercentageOffset) in which case we
-      // should just grab it off the LayoutOutput.
-      Float explicitValue = animationState.currentDiff.beforeValues.get(animatedProperty);
-      if (explicitValue != null) {
-        return explicitValue;
-      }
+      // todo: reimplement in next diff
 
       final AnimatedPropertyNode animatedNode = animationState.animatedPropertyNodes.get(
           animatedProperty);
