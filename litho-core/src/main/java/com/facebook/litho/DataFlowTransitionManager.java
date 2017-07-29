@@ -64,9 +64,9 @@ import static com.facebook.litho.AnimationsDebug.TAG;
  */
 public class DataFlowTransitionManager {
 
-  @IntDef({KeyStatus.APPEARED, KeyStatus.CHANGED, KeyStatus.DISAPPEARED, KeyStatus.UNSET})
+  @IntDef({ChangeType.APPEARED, ChangeType.CHANGED, ChangeType.DISAPPEARED, ChangeType.UNSET})
   @Retention(RetentionPolicy.SOURCE)
-  @interface KeyStatus {
+  @interface ChangeType {
     int UNSET = -1;
     int APPEARED = 0;
     int CHANGED = 1;
@@ -107,7 +107,7 @@ public class DataFlowTransitionManager {
     public ArraySet<AnimatedProperty> animatingProperties = new ArraySet<>();
     public Object mountContent;
     public TransitionDiff currentDiff = new TransitionDiff();
-    public int changeType = KeyStatus.UNSET;
+    public int changeType = ChangeType.UNSET;
     public @Nullable LayoutOutput currentLayoutOutput;
     public @Nullable LayoutOutput nextLayoutOutput;
   }
@@ -216,7 +216,7 @@ public class DataFlowTransitionManager {
     if (animationState == null) {
       return false;
     }
-    return animationState.changeType == KeyStatus.DISAPPEARED;
+    return animationState.changeType == ChangeType.DISAPPEARED;
   }
 
   /**
@@ -280,11 +280,11 @@ public class DataFlowTransitionManager {
     }
 
     if (currentLayoutOutput == null && nextLayoutOutput != null) {
-      animationState.changeType = KeyStatus.APPEARED;
+      animationState.changeType = ChangeType.APPEARED;
     } else if (currentLayoutOutput != null && nextLayoutOutput != null) {
-      animationState.changeType = KeyStatus.CHANGED;
+      animationState.changeType = ChangeType.CHANGED;
     } else {
-      animationState.changeType = KeyStatus.DISAPPEARED;
+      animationState.changeType = ChangeType.DISAPPEARED;
     }
 
     animationState.currentLayoutOutput = currentLayoutOutput;
@@ -298,8 +298,10 @@ public class DataFlowTransitionManager {
     }
 
     if (AnimationsDebug.ENABLED) {
-      Log.d(AnimationsDebug.TAG, "Saw key " + transitionKey + " which is " +
-          keyStatusToString(animationState.changeType));
+      Log.d(
+          AnimationsDebug.TAG,
+          "Saw key " + transitionKey + " which is " +
+              changeTypeToString(animationState.changeType));
     }
   }
 
@@ -352,13 +354,13 @@ public class DataFlowTransitionManager {
       }
 
       AnimationBinding animation = null;
-      if (animationState.changeType == KeyStatus.CHANGED) {
+      if (animationState.changeType == ChangeType.CHANGED) {
         animation = transition.createChangeAnimation();
-      } else if (animationState.changeType == KeyStatus.DISAPPEARED) {
+      } else if (animationState.changeType == ChangeType.DISAPPEARED) {
         if (transition.hasDisappearAnimation()) {
           animation = transition.createDisappearAnimation();
         }
-      } else if (animationState.changeType == KeyStatus.APPEARED) {
+      } else if (animationState.changeType == ChangeType.APPEARED) {
         if (transition.hasAppearAnimation()) {
           animation = transition.createAppearAnimation();
         }
@@ -369,7 +371,7 @@ public class DataFlowTransitionManager {
       }
 
       if (AnimationsDebug.ENABLED) {
-        final String changeType = keyStatusToString(animationState.changeType);
+        final String changeType = changeTypeToString(animationState.changeType);
         if (animation != null) {
           Log.d(AnimationsDebug.TAG, " - created " + changeType + " animation");
         } else {
@@ -408,7 +410,7 @@ public class DataFlowTransitionManager {
         animationState.animatingProperties.add(animatedProperty);
         animationState.activeAnimations.add(binding);
 
-        if (animationState.changeType != KeyStatus.APPEARED) {
+        if (animationState.changeType != ChangeType.APPEARED) {
           final float currentValue = getCurrentValue(animationState, animatedProperty);
 
           if (animationState.currentDiff.beforeValues.put(animatedProperty, currentValue) != null) {
@@ -416,7 +418,7 @@ public class DataFlowTransitionManager {
           }
         }
 
-        if (animationState.changeType != KeyStatus.DISAPPEARED) {
+        if (animationState.changeType != ChangeType.DISAPPEARED) {
           final Float previousValue = animationState.currentDiff.afterValues.put(
               animatedProperty,
               animatedProperty.get(animationState.nextLayoutOutput));
@@ -457,10 +459,10 @@ public class DataFlowTransitionManager {
         value = runtimeValue.resolve(mResolver, property);
       }
 
-      if (animationState.changeType != KeyStatus.APPEARED) {
+      if (animationState.changeType != ChangeType.APPEARED) {
         throw new RuntimeException(
             "Wrong transition type for appear of key " + property.getTransitionKey() + ": " +
-                keyStatusToString(animationState.changeType));
+                changeTypeToString(animationState.changeType));
       }
       animationState.currentDiff.beforeValues.put(property.getProperty(), value);
     }
@@ -481,10 +483,10 @@ public class DataFlowTransitionManager {
       final ComponentProperty property = disappearToValues.keyAt(i);
       final RuntimeValue runtimeValue = disappearToValues.valueAt(i);
       final AnimationState animationState = mAnimationStates.get(property.getTransitionKey());
-      if (animationState.changeType != KeyStatus.DISAPPEARED) {
+      if (animationState.changeType != ChangeType.DISAPPEARED) {
         throw new RuntimeException(
             "Wrong transition type for disappear of key " + property.getTransitionKey() + ": " +
-                keyStatusToString(animationState.changeType));
+                changeTypeToString(animationState.changeType));
       }
       final float value = runtimeValue.resolve(mResolver, property);
       if (animationState.currentDiff.afterValues.put(property.getProperty(), value) != null) {
@@ -500,7 +502,7 @@ public class DataFlowTransitionManager {
       // If the component is appearing, we will instead restore the initial value in
       // fillAppearFromValues. This is necessary since appearFrom values can be written in terms of
       // the end state (e.g. appear from an offset of -10dp)
-      if (animationState.changeType != KeyStatus.APPEARED) {
+      if (animationState.changeType != ChangeType.APPEARED) {
         for (int j = 0; j < animationState.currentDiff.beforeValues.size(); j++) {
           final AnimatedProperty property = animationState.currentDiff.beforeValues.keyAt(j);
           property.set(
@@ -520,7 +522,7 @@ public class DataFlowTransitionManager {
 
     // Try to use the before value, but for appearing animations, use the end state since there is
     // no before state.
-    final LayoutOutput layoutOutputToCheck = animationState.changeType == KeyStatus.APPEARED ?
+    final LayoutOutput layoutOutputToCheck = animationState.changeType == ChangeType.APPEARED ?
         animationState.nextLayoutOutput :
         animationState.currentLayoutOutput;
     if (layoutOutputToCheck == null) {
@@ -639,7 +641,7 @@ public class DataFlowTransitionManager {
         final AnimationState animationState = mAnimationStates.get(key);
         final float beforeValue = animationState.currentDiff.beforeValues.get(animatedProperty);
         final float afterValue = animationState.currentDiff.afterValues.get(animatedProperty);
-        final String changeType = keyStatusToString(animationState.changeType);
+        final String changeType = changeTypeToString(animationState.changeType);
 
         Log.d(
             TAG,
@@ -650,18 +652,18 @@ public class DataFlowTransitionManager {
     }
   }
 
-  private static String keyStatusToString(int keyStatus) {
-    switch (keyStatus) {
-      case KeyStatus.APPEARED:
+  private static String changeTypeToString(int changeType) {
+    switch (changeType) {
+      case ChangeType.APPEARED:
         return "APPEARED";
-      case KeyStatus.CHANGED:
+      case ChangeType.CHANGED:
         return "CHANGED";
-      case KeyStatus.DISAPPEARED:
+      case ChangeType.DISAPPEARED:
         return "DISAPPEARED";
-      case KeyStatus.UNSET:
+      case ChangeType.UNSET:
         return "UNSET";
       default:
-        throw new RuntimeException("Unknown keyStatus: " + keyStatus);
+        throw new RuntimeException("Unknown changeType: " + changeType);
     }
   }
 
@@ -702,7 +704,7 @@ public class DataFlowTransitionManager {
                   "of active animations, but it wasn't there.");
         }
         if (animationState.activeAnimations.size() == 0) {
-          if (animationState.changeType == KeyStatus.DISAPPEARED &&
+          if (animationState.changeType == ChangeType.DISAPPEARED &&
               animationState.mountContent != null) {
             for (int j = 0; j < animationState.animatingProperties.size(); j++) {
               animationState.animatingProperties.valueAt(j).reset(animationState.mountContent);
