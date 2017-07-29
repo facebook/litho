@@ -202,9 +202,7 @@ public class Transition {
 
     @Override
     public TransitionAnimationBinding createAnimation(PropertyAnimation propertyAnimation) {
-      // todo: re-enable. Commented out to split diffs more easily
-//      return new SpringTransition(propertyAnimation);
-      return null;
+      return new SpringTransition(propertyAnimation);
     }
   }
 }

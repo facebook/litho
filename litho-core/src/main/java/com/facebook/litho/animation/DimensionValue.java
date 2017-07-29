@@ -75,8 +75,8 @@ public class DimensionValue implements RuntimeValue {
     mValue = value;
   }
 
-  public float resolve(Resolver resolver, ComponentProperty componentProperty) {
-    final float currentValue = resolver.getCurrentState(componentProperty);
+  public float resolve(Resolver resolver, PropertyHandle propertyHandle) {
+    final float currentValue = resolver.getCurrentState(propertyHandle);
     switch (mType) {
       case ABSOLUTE:
         return mValue;
@@ -84,11 +84,11 @@ public class DimensionValue implements RuntimeValue {
         return mValue + currentValue;
       case OFFSET_WIDTH_PERCENTAGE:
         final float width =
-            resolver.getCurrentState(componentProperty.getAnimatedComponent().width());
+            resolver.getCurrentState(new PropertyHandle(propertyHandle.getTransitionKey(), AnimatedProperties.WIDTH));
         return mValue / 100 * width + currentValue;
       case OFFSET_HEIGHT_PERCENTAGE:
         final float height =
-            resolver.getCurrentState(componentProperty.getAnimatedComponent().height());
+            resolver.getCurrentState(new PropertyHandle(propertyHandle.getTransitionKey(), AnimatedProperties.HEIGHT));
         return mValue / 100 * height + currentValue;
       default:
         throw new RuntimeException("Missing RuntimeValue type: " + mType);

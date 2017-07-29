@@ -22,7 +22,7 @@ public class FloatValue implements RuntimeValue {
   }
 
   @Override
-  public float resolve(Resolver resolver, ComponentProperty componentProperty) {
+  public float resolve(Resolver resolver, PropertyHandle componentProperty) {
     return mValue;
   }
 }

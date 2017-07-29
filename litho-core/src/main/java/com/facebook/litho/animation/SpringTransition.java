@@ -10,34 +10,35 @@
 
 package com.facebook.litho.animation;
 
+import java.util.ArrayList;
+
 import com.facebook.litho.dataflow.ConstantNode;
 import com.facebook.litho.dataflow.SpringNode;
-import com.facebook.litho.internal.ArraySet;
 
 /**
- * Animation for the transition of a single {@link ComponentProperty} on a spring.
+ * Animation for the transition of a single {@link PropertyAnimation} on a spring.
  */
 public class SpringTransition extends TransitionAnimationBinding {
 
-  private final ComponentProperty mComponentProperty;
+  private final PropertyAnimation mPropertyAnimation;
 
-  public SpringTransition(ComponentProperty property) {
-    mComponentProperty = property;
+  public SpringTransition(PropertyAnimation propertyAnimation) {
+    mPropertyAnimation = propertyAnimation;
   }
 
   @Override
-  public void collectTransitioningProperties(ArraySet<ComponentProperty> outSet) {
-    outSet.add(mComponentProperty);
+  public void collectTransitioningProperties(ArrayList<PropertyAnimation> outList) {
+    outList.add(mPropertyAnimation);
   }
 
   @Override
   protected void setupBinding(Resolver resolver) {
     final SpringNode springNode = new SpringNode();
-    final ConstantNode initial = new ConstantNode(resolver.getCurrentState(mComponentProperty));
-    final ConstantNode end = new ConstantNode(resolver.getEndState(mComponentProperty));
+    final ConstantNode initial = new ConstantNode(resolver.getCurrentState(mPropertyAnimation.getPropertyHandle()));
+    final ConstantNode end = new ConstantNode(mPropertyAnimation.getTargetValue());
 
     addBinding(initial, springNode, SpringNode.INITIAL_INPUT);
     addBinding(end, springNode, SpringNode.END_INPUT);
-    addBinding(springNode, resolver.getAnimatedPropertyNode(mComponentProperty));
+    addBinding(springNode, resolver.getAnimatedPropertyNode(mPropertyAnimation.getPropertyHandle()));
   }
 }

@@ -20,5 +20,5 @@ public interface RuntimeValue {
    * Uses the given {@link Resolver} to determine the runtime value based on the given
    * {@link ComponentProperty}.
    */
-  float resolve(Resolver resolver, ComponentProperty componentProperty);
+  float resolve(Resolver resolver, PropertyHandle propertyHandle);
 }

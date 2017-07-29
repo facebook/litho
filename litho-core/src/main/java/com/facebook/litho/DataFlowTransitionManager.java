@@ -24,9 +24,9 @@ import com.facebook.litho.animation.AnimatedProperty;
 import com.facebook.litho.animation.AnimatedPropertyNode;
 import com.facebook.litho.animation.AnimationBinding;
 import com.facebook.litho.animation.AnimationBindingListener;
-import com.facebook.litho.animation.ComponentProperty;
+import com.facebook.litho.animation.PropertyAnimation;
+import com.facebook.litho.animation.PropertyHandle;
 import com.facebook.litho.animation.Resolver;
-import com.facebook.litho.animation.RuntimeValue;
 import com.facebook.litho.internal.ArraySet;
 
 import static com.facebook.litho.AnimationsDebug.TAG;
@@ -47,20 +47,6 @@ import static com.facebook.litho.AnimationsDebug.TAG;
  * Additionally, any time the {@link MountState} is re-used for a different component tree (e.g.
  * because it was recycled in a RecyclerView), {@link #reset} should be called to stop running
  * all existing animations.
- *
- * SOME TECHNICAL DETAILS:
- *
- * First, we need to figure out which keys are appearing and disappearing. Based on this, we create
- * different animations (e.g. a key could have no animation for appear, but an animation for
- * change).
- *
- * These animations can reference different properties, so it's only at that point that we can
- * actually record before/after values (in {@link #recordAllTransitioningProperties}). This is also
- * why we keep around LayoutOutputs beyond the actual {@link #recordLayoutOutputDiff} call.
- *
- * Finally, in {@link #runTransitions}, the animations can configure themselves with arbitrary
- * start/end properties via the {@link TransitionsResolver}. The animations run and we can finally
- * release the saved LayoutOutputs and cleanup any state for animations that didn't need to run.
  */
 public class DataFlowTransitionManager {
 
@@ -316,14 +302,6 @@ public class DataFlowTransitionManager {
   private void commitLayoutOutputDiffs() {
     createTransitionAnimations();
 
-    // Fill the before and after values of the diff for each animating property.
-    //
-    // The before value comes from the "before" LayoutOutput for this transition key, unless the key
-    // is appearing in which case an "appearFrom" value is resolved. Similarly, the after value
-    // comes from the "after" LayoutOutput, unless the key is disappearing in which case a
-    // "disappearTo" value is resolved.
-    recordAllTransitioningProperties();
-
     // If we recorded any mount content diffs that didn't result in an animation being created for
     // that transition key, clean them up now.
     cleanupNonAnimatingAnimationStates();
@@ -370,55 +348,6 @@ public class DataFlowTransitionManager {
         Log.d(AnimationsDebug.TAG, " - created " + changeTypeString + " animation");
       }
     }
-  }
-
-  /**
-   * This method uses the set of mount content that is appearing/changing/disappearing and the
-   * corresponding calculated animations from {@link #createTransitionAnimations} to fill the proper
-   * before and after values for all the properties that will be animating.
-   */
-  private void recordAllTransitioningProperties() {
-    final ArraySet<ComponentProperty> transitioningProperties = ComponentsPools.acquireArraySet();
-    for (int i = 0, size = mAnimationBindings.size(); i < size; i++) {
-      final AnimationBinding binding = mAnimationBindings.get(i);
-      final ArraySet<String> animatedKeys = ComponentsPools.acquireArraySet();
-      mAnimationsToKeys.put(binding, animatedKeys);
-
-      binding.collectTransitioningProperties(transitioningProperties);
-
-      for (int j = 0, propSize = transitioningProperties.size(); j < propSize; j++) {
-        final ComponentProperty property = transitioningProperties.valueAt(j);
-        final String key = property.getTransitionKey();
-        final AnimatedProperty animatedProperty = property.getProperty();
-        animatedKeys.add(key);
-
-        final AnimationState animationState = mAnimationStates.get(key);
-        if (animationState == null) {
-          continue;
-        }
-        animationState.animatingProperties.add(animatedProperty);
-        animationState.activeAnimations.add(binding);
-
-        if (animationState.changeType != ChangeType.APPEARED) {
-          final float currentValue = getCurrentValue(animationState, animatedProperty);
-
-          if (animationState.currentDiff.beforeValues.put(animatedProperty, currentValue) != null) {
-            throw new RuntimeException("TransitionDiff wasn't cleared properly!");
-          }
-        }
-
-        if (animationState.changeType != ChangeType.DISAPPEARED) {
-          final Float previousValue = animationState.currentDiff.afterValues.put(
-              animatedProperty,
-              animatedProperty.get(animationState.nextLayoutOutput));
-          if (previousValue != null) {
-            throw new RuntimeException("TransitionDiff wasn't cleared properly!");
-          }
-        }
-      }
-      transitioningProperties.clear();
-    }
-    ComponentsPools.release(transitioningProperties);
   }
 
   private void restoreInitialStates() {
@@ -554,19 +483,19 @@ public class DataFlowTransitionManager {
 
     Log.d(TAG, "Starting animations:");
 
-    final ArraySet<ComponentProperty> transitioningProperties = new ArraySet<>();
+    final ArrayList<PropertyAnimation> transitioningProperties = new ArrayList<>();
     for (int i = 0, size = mAnimationBindings.size(); i < size; i++) {
       final AnimationBinding binding = mAnimationBindings.get(i);
 
       binding.collectTransitioningProperties(transitioningProperties);
 
       for (int j = 0, propSize = transitioningProperties.size(); j < propSize; j++) {
-        final ComponentProperty property = transitioningProperties.valueAt(j);
-        final String key = property.getTransitionKey();
-        final AnimatedProperty animatedProperty = property.getProperty();
+        final PropertyAnimation propertyAnimation = transitioningProperties.get(j);
+        final String key = propertyAnimation.getTransitionKey();
+        final AnimatedProperty animatedProperty = propertyAnimation.getProperty();
         final AnimationState animationState = mAnimationStates.get(key);
         final float beforeValue = animationState.currentDiff.beforeValues.get(animatedProperty);
-        final float afterValue = animationState.currentDiff.afterValues.get(animatedProperty);
+        final float afterValue = propertyAnimation.getTargetValue();
         final String changeType = changeTypeToString(animationState.changeType);
 
         Log.d(
@@ -651,8 +580,8 @@ public class DataFlowTransitionManager {
   private class TransitionsResolver implements Resolver {
 
     @Override
-    public float getCurrentState(ComponentProperty property) {
-      final AnimationState animationState = mAnimationStates.get(property.getTransitionKey());
+    public float getCurrentState(PropertyHandle propertyHandle) {
+      final AnimationState animationState = mAnimationStates.get(propertyHandle.getTransitionKey());
 
       // We may already have an explicit beginning state for this property from
       // recordAllTransitioningProperties or setAppearFromValues, in which case we should return it.
@@ -660,23 +589,19 @@ public class DataFlowTransitionManager {
       // Otherwise, it may be a property that isn't animating, but is used to calculate an appear-
       // from value (e.g. the width for DimensionValue#widthPercentageOffset) in which case we
       // should just grab it off the LayoutOutput.
-      Float explicitValue = animationState.currentDiff.beforeValues.get(property.getProperty());
+      Float explicitValue = animationState.currentDiff.beforeValues.get(propertyHandle.getProperty());
       if (explicitValue != null) {
         return explicitValue;
       }
 
-      return getCurrentValue(animationState, property.getProperty());
+      return getCurrentValue(animationState, propertyHandle.getProperty());
     }
 
     @Override
-    public float getEndState(ComponentProperty property) {
-      final AnimationState animationState = mAnimationStates.get(property.getTransitionKey());
-      return animationState.currentDiff.afterValues.get(property.getProperty());
-    }
-
-    @Override
-    public AnimatedPropertyNode getAnimatedPropertyNode(ComponentProperty property) {
-      return getOrCreateAnimatedPropertyNode(property.getTransitionKey(), property.getProperty());
+    public AnimatedPropertyNode getAnimatedPropertyNode(PropertyHandle propertyHandle) {
+      return getOrCreateAnimatedPropertyNode(
+          propertyHandle.getTransitionKey(),
+          propertyHandle.getProperty());
     }
   }
 }

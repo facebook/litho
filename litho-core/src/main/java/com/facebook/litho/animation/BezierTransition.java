@@ -10,6 +10,8 @@
 
 package com.facebook.litho.animation;
 
+import java.util.ArrayList;
+
 import com.facebook.litho.dataflow.ConstantNode;
 import com.facebook.litho.dataflow.SpringNode;
 import com.facebook.litho.dataflow.ValueNode;
@@ -20,8 +22,8 @@ import com.facebook.litho.internal.ArraySet;
  */
 public class BezierTransition extends TransitionAnimationBinding {
 
-  private final ComponentProperty mXProperty;
-  private final ComponentProperty mYProperty;
+  private final PropertyAnimation mXPropertyAnimation;
+  private final PropertyAnimation mYPropertyAnimation;
   private final float mControlX;
   private final float mControlY;
 
@@ -44,28 +46,28 @@ public class BezierTransition extends TransitionAnimationBinding {
    * curve won't curve since it lies on the straight line between the start and end points).
    */
   public BezierTransition(
-      ComponentProperty xProperty,
-      ComponentProperty yProperty,
+      PropertyAnimation xProperty,
+      PropertyAnimation yProperty,
       float controlX,
       float controlY) {
-    mXProperty = xProperty;
-    mYProperty = yProperty;
+    mXPropertyAnimation = xProperty;
+    mYPropertyAnimation = yProperty;
     mControlX = controlX;
     mControlY = controlY;
   }
 
   @Override
-  public void collectTransitioningProperties(ArraySet<ComponentProperty> outSet) {
-    outSet.add(mXProperty);
-    outSet.add(mYProperty);
+  public void collectTransitioningProperties(ArrayList<PropertyAnimation> outList) {
+    outList.add(mXPropertyAnimation);
+    outList.add(mYPropertyAnimation);
   }
 
   @Override
   protected void setupBinding(Resolver resolver) {
-    final float startX = resolver.getCurrentState(mXProperty);
-    final float endX = resolver.getEndState(mXProperty);
-    final float startY = resolver.getCurrentState(mYProperty);
-    final float endY = resolver.getEndState(mYProperty);
+    final float startX = resolver.getCurrentState(mXPropertyAnimation.getPropertyHandle());
+    final float endX = mXPropertyAnimation.getTargetValue();
+    final float startY = resolver.getCurrentState(mYPropertyAnimation.getPropertyHandle());
+    final float endY = mYPropertyAnimation.getTargetValue();
     final float controlX = (endX - startX) * mControlX + startX;
     final float controlY = (endY - startY) * mControlY + startY;
 
@@ -77,8 +79,8 @@ public class BezierTransition extends TransitionAnimationBinding {
     addBinding(new ConstantNode(1f), springNode, SpringNode.END_INPUT);
     addBinding(springNode, xBezierNode);
     addBinding(springNode, yBezierNode);
-    addBinding(xBezierNode, resolver.getAnimatedPropertyNode(mXProperty));
-    addBinding(yBezierNode, resolver.getAnimatedPropertyNode(mYProperty));
+    addBinding(xBezierNode, resolver.getAnimatedPropertyNode(mXPropertyAnimation.getPropertyHandle()));
+    addBinding(yBezierNode, resolver.getAnimatedPropertyNode(mYPropertyAnimation.getPropertyHandle()));
   }
 
   private static class BezierNode extends ValueNode {

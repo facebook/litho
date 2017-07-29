@@ -9,9 +9,7 @@
 
 package com.facebook.litho.animation;
 
-import android.support.v4.util.SimpleArrayMap;
-
-import com.facebook.litho.internal.ArraySet;
+import java.util.ArrayList;
 
 /**
  * An animation or set of animations using {@link com.facebook.litho.dataflow.GraphBinding}s.
@@ -37,14 +35,14 @@ public interface AnimationBinding {
   boolean isActive();
 
   /**
-   * Collects the set of {@link ComponentProperty}s that this animation will animate. This is used
+   * Collects the set of {@link PropertyAnimation}s that this animation will animate. This is used
    * to make sure before/after values are recorded and accessible for the animation. Implementations
    * should add their animating properties to this set.
    *
    * Note: This is a 'collect' call instead of a getter to allocating more sets then necessary for
    * animations with nested animation (e.g. a sequence of animations). Yay Java.
    */
-   void collectTransitioningProperties(ArraySet<ComponentProperty> outSet);
+   void collectTransitioningProperties(ArrayList<PropertyAnimation> outList);
 
   /**
    * Adds a {@link AnimationBindingListener}.

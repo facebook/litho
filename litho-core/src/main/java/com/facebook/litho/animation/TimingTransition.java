@@ -10,36 +10,37 @@
 
 package com.facebook.litho.animation;
 
+import java.util.ArrayList;
+
 import com.facebook.litho.dataflow.ConstantNode;
 import com.facebook.litho.dataflow.TimingNode;
-import com.facebook.litho.internal.ArraySet;
 
 /**
- * Animation for the transition of a single {@link ComponentProperty} over a fixed amount of time.
+ * Animation for the transition of a single {@link PropertyAnimation} over a fixed amount of time.
  */
 public class TimingTransition extends TransitionAnimationBinding {
 
   private final int mDurationMs;
-  private final ComponentProperty mComponentProperty;
+  private final PropertyAnimation mPropertyAnimation;
 
-  public TimingTransition(int durationMs, ComponentProperty property) {
+  public TimingTransition(int durationMs, PropertyAnimation propertyAnimation) {
     mDurationMs = durationMs;
-    mComponentProperty = property;
+    mPropertyAnimation = propertyAnimation;
   }
 
   @Override
-  public void collectTransitioningProperties(ArraySet<ComponentProperty> outSet) {
-    outSet.add(mComponentProperty);
+  public void collectTransitioningProperties(ArrayList<PropertyAnimation> outList) {
+    outList.add(mPropertyAnimation);
   }
 
   @Override
   protected void setupBinding(Resolver resolver) {
     final TimingNode timingNode = new TimingNode(mDurationMs);
-    final ConstantNode initial = new ConstantNode(resolver.getCurrentState(mComponentProperty));
-    final ConstantNode end = new ConstantNode(resolver.getEndState(mComponentProperty));
+    final ConstantNode initial = new ConstantNode(resolver.getCurrentState(mPropertyAnimation.getPropertyHandle()));
+    final ConstantNode end = new ConstantNode(mPropertyAnimation.getTargetValue());
 
     addBinding(initial, timingNode, TimingNode.INITIAL_INPUT);
     addBinding(end, timingNode, TimingNode.END_INPUT);
-    addBinding(timingNode, resolver.getAnimatedPropertyNode(mComponentProperty));
+    addBinding(timingNode, resolver.getAnimatedPropertyNode(mPropertyAnimation.getPropertyHandle()));
   }
 }

@@ -10,13 +10,11 @@
 
 package com.facebook.litho.animation;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import android.support.v4.util.SimpleArrayMap;
-
 import com.facebook.litho.dataflow.ChoreographerCompat;
-import com.facebook.litho.internal.ArraySet;
 
 /**
  * An {@link AnimationBinding} that's composed of other {@link AnimationBinding}s running in
@@ -148,9 +146,9 @@ public class ParallelBinding implements AnimationBinding {
   }
 
   @Override
-  public void collectTransitioningProperties(ArraySet<ComponentProperty> outSet) {
+  public void collectTransitioningProperties(ArrayList<PropertyAnimation> outList) {
     for (int i = 0; i < mBindings.length; i++) {
-      mBindings[i].collectTransitioningProperties(outSet);
+      mBindings[i].collectTransitioningProperties(outList);
     }
   }
 

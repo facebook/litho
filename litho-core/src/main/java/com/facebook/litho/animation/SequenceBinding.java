@@ -10,11 +10,8 @@
 
 package com.facebook.litho.animation;
 
+import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import android.support.v4.util.SimpleArrayMap;
-
-import com.facebook.litho.internal.ArraySet;
 
 /**
  * An {@link AnimationBinding} that's a sequence of other {@link AnimationBinding}s.
@@ -101,9 +98,9 @@ public class SequenceBinding implements AnimationBinding {
   }
 
   @Override
-  public void collectTransitioningProperties(ArraySet<ComponentProperty> outSet) {
+  public void collectTransitioningProperties(ArrayList<PropertyAnimation> outList) {
     for (int i = 0; i < mBindings.length; i++) {
-      mBindings[i].collectTransitioningProperties(outSet);
+      mBindings[i].collectTransitioningProperties(outList);
     }
   }
 

@@ -21,17 +21,12 @@ public interface Resolver {
   /**
    * @return the current value of this property before the next mount state is applied.
    */
-  float getCurrentState(ComponentProperty property);
-
-  /**
-   * @return the value of this property in it's final state after the next mount state is applied.
-   */
-  float getEndState(ComponentProperty property);
+  float getCurrentState(PropertyHandle propertyHandle);
 
   /**
    * @return the {@link AnimatedPropertyNode} for this {@link ComponentProperty}. This gives
    * animations the ability to hook this mount content property into the {@link GraphBinding} they
    * create to drive their animation.
    */
-  AnimatedPropertyNode getAnimatedPropertyNode(ComponentProperty property);
+  AnimatedPropertyNode getAnimatedPropertyNode(PropertyHandle propertyHandle);
 }
