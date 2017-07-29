@@ -47,24 +47,6 @@ public interface AnimationBinding {
    void collectTransitioningProperties(ArraySet<ComponentProperty> outSet);
 
   /**
-   * Collects a mapping from {@link ComponentProperty} to its initial value. This is used to set up
-   * the initial property values for appear animations.
-   *
-   * Note: This is a 'collect' call instead of a getter to allocating more maps then necessary for
-   * animations with nested animation (e.g. a sequence of animations). Yay Java.
-   */
-   void collectAppearFromValues(SimpleArrayMap<ComponentProperty, RuntimeValue> outMap);
-
-  /**
-   * Collects a mapping from {@link ComponentProperty} to its end value. This is used to set up
-   * the end property values for disappear animations.
-   *
-   * Note: This is a 'collect' call instead of a getter to allocating more maps then necessary for
-   * animations with nested animation (e.g. a sequence of animations).
-   */
-  void collectDisappearToValues(SimpleArrayMap<ComponentProperty, RuntimeValue> outMap);
-
-  /**
    * Adds a {@link AnimationBindingListener}.
    */
   void addListener(AnimationBindingListener animationBindingListener);

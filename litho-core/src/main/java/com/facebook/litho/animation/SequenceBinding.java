@@ -108,20 +108,6 @@ public class SequenceBinding implements AnimationBinding {
   }
 
   @Override
-  public void collectAppearFromValues(SimpleArrayMap<ComponentProperty, RuntimeValue> outMap) {
-    for (int i = 0; i < mBindings.length; i++) {
-      mBindings[i].collectAppearFromValues(outMap);
-    }
-  }
-
-  @Override
-  public void collectDisappearToValues(SimpleArrayMap<ComponentProperty, RuntimeValue> outMap) {
-    for (int i = 0; i < mBindings.length; i++) {
-      mBindings[i].collectDisappearToValues(outMap);
-    }
-  }
-
-  @Override
   public void addListener(AnimationBindingListener animationBindingListener) {
     mListeners.add(animationBindingListener);
   }

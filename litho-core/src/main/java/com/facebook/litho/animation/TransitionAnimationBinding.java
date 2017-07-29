@@ -29,10 +29,6 @@ public abstract class TransitionAnimationBinding implements AnimationBinding {
   private final GraphBinding mGraphBinding;
   private final CopyOnWriteArrayList<AnimationBindingListener> mListeners =
       new CopyOnWriteArrayList<>();
-  private final SimpleArrayMap<ComponentProperty, RuntimeValue> mAppearFromValues =
-      new SimpleArrayMap<>();
-  private final SimpleArrayMap<ComponentProperty, RuntimeValue> mDisappearToValues =
-      new SimpleArrayMap<>();
 
   public TransitionAnimationBinding() {
     this(GraphBinding.create());
@@ -61,22 +57,6 @@ public abstract class TransitionAnimationBinding implements AnimationBinding {
    */
   public void addBinding(ValueNode fromNode, ValueNode toNode) {
     mGraphBinding.addBinding(fromNode, toNode);
-  }
-
-  /**
-   * For appear animations, sets the value that the property should have before the animation
-   * starts. See {@link RuntimeValue} for more info.
-   */
-  public void addAppearFromValue(ComponentProperty property, RuntimeValue value) {
-    mAppearFromValues.put(property, value);
-  }
-
-  /**
-   * For disappear animations, sets the value that the property should end at by the time the
-   * animation ends and before the item is unmounted. See {@link RuntimeValue} for more info.
-   */
-  public void addDisappearToValue(ComponentProperty property, RuntimeValue value) {
-    mDisappearToValues.put(property, value);
   }
 
   @Override
@@ -109,16 +89,6 @@ public abstract class TransitionAnimationBinding implements AnimationBinding {
       listener.onFinish(this);
     }
     stop();
-  }
-
-  @Override
-  public void collectAppearFromValues(SimpleArrayMap<ComponentProperty, RuntimeValue> outMap) {
-    outMap.putAll(mAppearFromValues);
-  }
-
-  @Override
-  public void collectDisappearToValues(SimpleArrayMap<ComponentProperty, RuntimeValue> outMap) {
-    outMap.putAll(mDisappearToValues);
   }
 
   @Override
