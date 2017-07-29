@@ -18,7 +18,7 @@ import com.facebook.litho.internal.ArraySet;
  * In {@link #start}, subclasses can use the provided Resolver instance to reference concrete mount
  * item properties when creating the GraphBinding.
  */
-public interface AnimationBinding extends AnimationForVarArgs {
+public interface AnimationBinding {
 
   /**
    * Starts this animation. The provided {@link Resolver} instance can be used to configure this

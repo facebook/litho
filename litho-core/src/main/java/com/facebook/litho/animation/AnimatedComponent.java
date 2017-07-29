@@ -20,37 +20,37 @@ public abstract class AnimatedComponent {
   /**
    * @return a handle to the 'x' property of this component.
    */
-  public abstract DimensionComponentProperty x();
+  public abstract ComponentProperty x();
 
   /**
    * @return a handle to the 'y' property of this component.
    */
-  public abstract DimensionComponentProperty y();
+  public abstract ComponentProperty y();
 
   /**
    * @return a handle to the width property of this component.
    */
-  public abstract DimensionComponentProperty width();
+  public abstract ComponentProperty width();
 
   /**
    * @return a handle to the height property of this component.
    */
-  public abstract DimensionComponentProperty height();
+  public abstract ComponentProperty height();
 
   /**
    * @return a handle to the composite 'xy' position property of this component.
    */
-  public abstract PositionComponentProperty xy();
+  public abstract ComponentProperty xy();
 
   /**
    * @return a handle to the scale property of this component.
    */
-  public abstract FloatComponentProperty scale();
+  public abstract ComponentProperty scale();
 
   /**
    * @return a handle to the alpha property of this component.
    */
-  public abstract FloatComponentProperty alpha();
+  public abstract ComponentProperty alpha();
 
   /**
    * @return the key used to identify this component in the mounted hierarchy.
