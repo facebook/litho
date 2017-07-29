@@ -98,7 +98,7 @@ public class DataFlowTransitionManager {
     public @Nullable LayoutOutput nextLayoutOutput;
   }
 
-  private final ArrayList<AnimationBinding> mAnimationBindings = new ArrayList<>();
+  private final ArrayList<AnimationBinding> mAnimationsToRun = new ArrayList<>();
   private final SimpleArrayMap<AnimationBinding, ArraySet<String>> mAnimationsToKeys =
       new SimpleArrayMap<>();
   private final SimpleArrayMap<String, AnimationState> mAnimationStates = new SimpleArrayMap<>();
@@ -175,8 +175,8 @@ public class DataFlowTransitionManager {
       debugLogStartingAnimations();
     }
 
-    for (int i = 0, size = mAnimationBindings.size(); i < size; i++) {
-      final AnimationBinding binding = mAnimationBindings.get(i);
+    for (int i = 0, size = mAnimationsToRun.size(); i < size; i++) {
+      final AnimationBinding binding = mAnimationsToRun.get(i);
       binding.addListener(mAnimationBindingListener);
       binding.start(mResolver);
     }
@@ -229,7 +229,7 @@ public class DataFlowTransitionManager {
     
     mAnimationStates.clear();
     mAnimationsToKeys.clear();
-    mAnimationBindings.clear();
+    mAnimationsToRun.clear();
   }
 
   /**
@@ -237,7 +237,7 @@ public class DataFlowTransitionManager {
    * specification for these animations is provided on the given {@link TransitionContext}.
    */
   private void prepareTransitions(TransitionContext transitionContext) {
-    mAnimationBindings.clear();
+    mAnimationsToRun.clear();
 
     for (int i = 0, size = mAnimationStates.size(); i < size; i++) {
       final AnimationState animationState = mAnimationStates.valueAt(i);
@@ -327,7 +327,7 @@ public class DataFlowTransitionManager {
       }
 
       // todo: calculate correct target value
-      mAnimationBindings.add(transition.createAnimation(0));
+      mAnimationsToRun.add(transition.createAnimation(0));
 
       if (AnimationsDebug.ENABLED) {
         Log.d(AnimationsDebug.TAG, " - created " + changeTypeString + " animation");
@@ -438,8 +438,8 @@ public class DataFlowTransitionManager {
     Log.d(TAG, "Starting animations:");
 
     final ArrayList<PropertyAnimation> transitioningProperties = new ArrayList<>();
-    for (int i = 0, size = mAnimationBindings.size(); i < size; i++) {
-      final AnimationBinding binding = mAnimationBindings.get(i);
+    for (int i = 0, size = mAnimationsToRun.size(); i < size; i++) {
+      final AnimationBinding binding = mAnimationsToRun.get(i);
 
       binding.collectTransitioningProperties(transitioningProperties);
 
