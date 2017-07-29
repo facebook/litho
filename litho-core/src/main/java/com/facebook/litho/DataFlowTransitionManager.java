@@ -353,32 +353,23 @@ public class DataFlowTransitionManager {
         continue;
       }
 
-      AnimationBinding animation = null;
-      if (animationState.changeType == ChangeType.CHANGED) {
-        animation = transition.createChangeAnimation();
-      } else if (animationState.changeType == ChangeType.DISAPPEARED) {
-        if (transition.hasDisappearAnimation()) {
-          animation = transition.createDisappearAnimation();
-        }
-      } else if (animationState.changeType == ChangeType.APPEARED) {
-        if (transition.hasAppearAnimation()) {
-          animation = transition.createAppearAnimation();
-        }
-      }
-
-      if (animation != null) {
-        mAnimationBindings.add(animation);
-      }
-
-      if (AnimationsDebug.ENABLED) {
-        final String changeType = changeTypeToString(animationState.changeType);
-        if (animation != null) {
-          Log.d(AnimationsDebug.TAG, " - created " + changeType + " animation");
-        } else {
+      final int changeType = animationState.changeType;
+      final String changeTypeString = changeTypeToString(animationState.changeType);
+      if ((changeType == ChangeType.APPEARED && !transition.hasAppearAnimation()) ||
+          (changeType == ChangeType.DISAPPEARED && !transition.hasDisappearAnimation())) {
+        if (AnimationsDebug.ENABLED) {
           Log.d(
               AnimationsDebug.TAG,
-              " - did not find matching transition for status " + changeType);
+              " - did not find matching transition for change type " + changeTypeString);
         }
+        continue;
+      }
+
+      // todo: calculate correct target value
+      mAnimationBindings.add(transition.createAnimation(0));
+
+      if (AnimationsDebug.ENABLED) {
+        Log.d(AnimationsDebug.TAG, " - created " + changeTypeString + " animation");
       }
     }
   }

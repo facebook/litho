@@ -10,15 +10,12 @@ package com.facebook.litho;
 
 import java.util.ArrayList;
 
-import com.facebook.litho.animation.AnimatedComponent;
 import com.facebook.litho.animation.AnimatedProperty;
 import com.facebook.litho.animation.AnimationBinding;
-import com.facebook.litho.animation.AppearingComponent;
-import com.facebook.litho.animation.ChangingComponent;
-import com.facebook.litho.animation.ComponentProperty;
 import com.facebook.litho.animation.DimensionValue;
-import com.facebook.litho.animation.DisappearingComponent;
 import com.facebook.litho.animation.FloatValue;
+import com.facebook.litho.animation.PropertyAnimation;
+import com.facebook.litho.animation.PropertyHandle;
 import com.facebook.litho.animation.RuntimeValue;
 import com.facebook.litho.animation.SpringTransition;
 import com.facebook.litho.animation.TransitionAnimationBinding;
@@ -33,16 +30,16 @@ public class Transition {
 
   /**
    * Class that knows how to create a {@link TransitionAnimationBinding} given a
-   * {@link ComponentProperty}. This can be used to customize the type of animation using
+   * {@link PropertyAnimation}. This can be used to customize the type of animation using
    * {@link Builder#animator}.
    */
   public interface TransitionAnimator {
 
     /**
-     * @return a {@link TransitionAnimationBinding} for the given {@link ComponentProperty} that
+     * @return a {@link TransitionAnimationBinding} for the given {@link PropertyAnimation} that
      * will animate the change in value on this property.
      */
-    TransitionAnimationBinding createAnimation(ComponentProperty property);
+    TransitionAnimationBinding createAnimation(PropertyAnimation propertyAnimation);
   }
 
   /**
@@ -94,48 +91,18 @@ public class Transition {
     return mAnimatedProperty;
   }
 
-  AnimationBinding createAppearAnimation() {
-    if (!hasAppearAnimation()) {
-      throw new RuntimeException(
-          "Trying to create an appear animation when no from value was provided!");
-    }
-
-    final AppearingComponent component = new AppearingComponent(mTransitionKey);
-    final ComponentProperty property = new AutoTransitionComponentProperty(
-        component,
-        mAnimatedProperty);
-    final TransitionAnimationBinding animation = mTransitionAnimator.createAnimation(property);
-
-    animation.addAppearFromValue(property, mAppearFrom);
-
-    return animation;
+  RuntimeValue getAppearFrom() {
+    return mAppearFrom;
   }
 
-  AnimationBinding createDisappearAnimation() {
-    if (!hasDisappearAnimation()) {
-      throw new RuntimeException(
-          "Trying to create an disappear animation when no to value was provided!");
-    }
-
-    final DisappearingComponent component = new DisappearingComponent(mTransitionKey);
-    final ComponentProperty property = new AutoTransitionComponentProperty(
-        component,
-        mAnimatedProperty);
-    final TransitionAnimationBinding animation = mTransitionAnimator.createAnimation(property);
-
-    animation.addDisappearToValue(property, mDisappearTo);
-
-    return animation;
+  RuntimeValue getDisappearTo() {
+    return mDisappearTo;
   }
 
-  AnimationBinding createChangeAnimation() {
-    final ChangingComponent component = new ChangingComponent(mTransitionKey);
-    final ComponentProperty property = new AutoTransitionComponentProperty(
-        component,
-        mAnimatedProperty);
-    final TransitionAnimationBinding animation = mTransitionAnimator.createAnimation(property);
-
-    return animation;
+  AnimationBinding createAnimation(float targetValue) {
+    final PropertyHandle propertyHandle = new PropertyHandle(mTransitionKey, mAnimatedProperty);
+    final PropertyAnimation propertyAnimation = new PropertyAnimation(propertyHandle, targetValue);
+    return mTransitionAnimator.createAnimation(propertyAnimation);
   }
 
   public static class Builder {
@@ -228,23 +195,16 @@ public class Transition {
     }
   }
 
-  private static class AutoTransitionComponentProperty extends ComponentProperty {
-
-    AutoTransitionComponentProperty(
-        AnimatedComponent animatedComponent,
-        AnimatedProperty property) {
-      super(animatedComponent, property);
-    }
-  }
-
   /**
    * Creates spring-driven animations.
    */
   public static class SpringTransitionAnimator implements TransitionAnimator {
 
     @Override
-    public TransitionAnimationBinding createAnimation(ComponentProperty property) {
-      return new SpringTransition(property);
+    public TransitionAnimationBinding createAnimation(PropertyAnimation propertyAnimation) {
+      // todo: re-enable. Commented out to split diffs more easily
+//      return new SpringTransition(propertyAnimation);
+      return null;
     }
   }
 }
