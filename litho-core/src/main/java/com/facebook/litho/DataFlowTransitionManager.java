@@ -105,7 +105,6 @@ public class DataFlowTransitionManager {
   private final TransitionsAnimationBindingListener mAnimationBindingListener =
       new TransitionsAnimationBindingListener();
   private final TransitionsResolver mResolver = new TransitionsResolver();
-  private final ArrayList<Transition> mTransitions = new ArrayList<>();
   private final OnAnimationCompleteListener mOnAnimationCompleteListener;
 
   public DataFlowTransitionManager(OnAnimationCompleteListener onAnimationCompleteListener) {
@@ -114,8 +113,11 @@ public class DataFlowTransitionManager {
 
   /**
    * Creates (but doesn't start) the animations for the next transition based on the current and
-   * next layout states. After this is called, MountState can commit the layout changes and then
-   * call {@link #runTransitions} to restore the initial states and run the animations.
+   * next layout states.
+   *
+   * After this is called, MountState can use {@link #isKeyAnimating} and {@link #isKeyDisappearing}
+   * to check whether certain mount content will animate, commit the layout changes, and then call
+   * {@link #runTransitions} to restore the initial states and run the animations.
    */
   void setupTransitions(LayoutState currentLayoutState, LayoutState nextLayoutState) {
     prepareTransitions(nextLayoutState.getTransitionContext());
@@ -150,13 +152,21 @@ public class DataFlowTransitionManager {
           null);
     }
 
-    commitLayoutOutputDiffs();
+    createTransitionAnimations(
+        nextLayoutState
+            .getTransitionContext()
+            .getTransitionSet()
+            .getTransitions());
+
+    // If we recorded any mount content diffs that didn't result in an animation being created for
+    // that transition key, clean them up now.
+    cleanupNonAnimatingAnimationStates();
   }
 
   /**
-   * Called after {@link #commitLayoutOutputDiffs} has been called and the new layout has been
-   * mounted. This restores the state of the previous layout for content that will animate and then
-   * starts the corresponding animations.
+   * Called after {@link #setupTransitions} has been called and the new layout has been mounted.
+   * This restores the state of the previous layout for content that will animate and then starts
+   * the corresponding animations.
    */
   void runTransitions() {
     restoreInitialStates();
@@ -176,7 +186,7 @@ public class DataFlowTransitionManager {
 
   /**
    * Sets the mount content for a given key. This is used to initially set mount content, but also
-   * to set content when content is incrementally mounted/unmounted during an animation.
+   * to set content when content is incrementally mounted during an animation.
    */
   void setMountContentInner(String transitionKey, Object mountContent) {
     final AnimationState animationState = mAnimationStates.get(transitionKey);
@@ -186,16 +196,16 @@ public class DataFlowTransitionManager {
   }
 
   /**
-   * After mount content diffs have been committed with {@link #commitLayoutOutputDiffs}, returns
-   * whether the given key will be/is animating.
+   * After transitions have been setup with {@link #setupTransitions}, returns whether the given key
+   * will be/is animating.
    */
   boolean isKeyAnimating(String key) {
     return mAnimationStates.containsKey(key);
   }
 
   /**
-   * After mount content diffs have been committed with {@link #commitLayoutOutputDiffs}, returns
-   * whether the given key will be disappearing **in this layout diff**.
+   * After transitions have been setup with {@link #setupTransitions}, returns whether the given key
+   * whether the given key is disappearing.
    */
   boolean isKeyDisappearing(String key) {
     final AnimationState animationState = mAnimationStates.get(key);
@@ -219,7 +229,6 @@ public class DataFlowTransitionManager {
     
     mAnimationStates.clear();
     mAnimationsToKeys.clear();
-    mTransitions.clear();
     mAnimationBindings.clear();
   }
 
@@ -229,14 +238,6 @@ public class DataFlowTransitionManager {
    */
   private void prepareTransitions(TransitionContext transitionContext) {
     mAnimationBindings.clear();
-    mTransitions.clear();
-    mTransitions.addAll(transitionContext.getTransitionSet().getTransitions());
-
-    if (AnimationsDebug.ENABLED) {
-      Log.d(
-          AnimationsDebug.TAG,
-          "Got new TransitionContext with " + mTransitions.size() + " transitions");
-    }
 
     for (int i = 0, size = mAnimationStates.size(); i < size; i++) {
       final AnimationState animationState = mAnimationStates.valueAt(i);
@@ -291,25 +292,9 @@ public class DataFlowTransitionManager {
     }
   }
 
-  /**
-   * Called after all mount content diffs have been recorded for this transition. Creates all
-   * animations that will actually run after the new layout is mounted, but does not yet run the
-   * transitions.
-   *
-   * After this point, MountState can use {@link #isKeyAnimating} and {@link #isKeyDisappearing} to
-   * check whether certain mount content will animate.
-   */
-  private void commitLayoutOutputDiffs() {
-    createTransitionAnimations();
-
-    // If we recorded any mount content diffs that didn't result in an animation being created for
-    // that transition key, clean them up now.
-    cleanupNonAnimatingAnimationStates();
-  }
-
-  private void createTransitionAnimations() {
-    for (int i = 0, size = mTransitions.size(); i < size; i++) {
-      final Transition transition = mTransitions.get(i);
+  private void createTransitionAnimations(ArrayList<Transition> transitions) {
+    for (int i = 0, size = transitions.size(); i < size; i++) {
+      final Transition transition = transitions.get(i);
       final String key = transition.getTransitionKey();
       final AnimationState animationState = mAnimationStates.get(key);
 
@@ -366,37 +351,6 @@ public class DataFlowTransitionManager {
         }
       }
     }
-  }
-
-  private float getCurrentValue(AnimationState animationState, AnimatedProperty animatedProperty) {
-    final AnimatedPropertyNode animatedNode = animationState.animatedPropertyNodes.get(
-        animatedProperty);
-    if (animatedNode != null) {
-      return animatedNode.getValue();
-    }
-
-    // Try to use the before value, but for appearing animations, use the end state since there is
-    // no before state.
-    final LayoutOutput layoutOutputToCheck = animationState.changeType == ChangeType.APPEARED ?
-        animationState.nextLayoutOutput :
-        animationState.currentLayoutOutput;
-    if (layoutOutputToCheck == null) {
-      throw new RuntimeException("Both LayoutOutputs were null!");
-    }
-
-    return animatedProperty.get(layoutOutputToCheck);
-  }
-
-  private AnimatedPropertyNode getOrCreateAnimatedPropertyNode(
-      String key,
-      AnimatedProperty animatedProperty) {
-    final AnimationState state = mAnimationStates.get(key);
-    AnimatedPropertyNode node = state.animatedPropertyNodes.get(animatedProperty);
-    if (node == null) {
-      node = new AnimatedPropertyNode(state.mountContent, animatedProperty);
-      state.animatedPropertyNodes.put(animatedProperty, node);
-    }
-    return node;
   }
 
   private void setMountContentInner(
@@ -581,6 +535,7 @@ public class DataFlowTransitionManager {
 
     @Override
     public float getCurrentState(PropertyHandle propertyHandle) {
+      final AnimatedProperty animatedProperty = propertyHandle.getProperty();
       final AnimationState animationState = mAnimationStates.get(propertyHandle.getTransitionKey());
 
       // We may already have an explicit beginning state for this property from
@@ -589,19 +544,42 @@ public class DataFlowTransitionManager {
       // Otherwise, it may be a property that isn't animating, but is used to calculate an appear-
       // from value (e.g. the width for DimensionValue#widthPercentageOffset) in which case we
       // should just grab it off the LayoutOutput.
-      Float explicitValue = animationState.currentDiff.beforeValues.get(propertyHandle.getProperty());
+      Float explicitValue = animationState.currentDiff.beforeValues.get(animatedProperty);
       if (explicitValue != null) {
         return explicitValue;
       }
 
-      return getCurrentValue(animationState, propertyHandle.getProperty());
+      final AnimatedPropertyNode animatedNode = animationState.animatedPropertyNodes.get(
+          animatedProperty);
+      if (animatedNode != null) {
+        return animatedNode.getValue();
+      }
+
+      // Try to use the before value, but for appearing animations, use the end state since there is
+      // no before state.
+      final LayoutOutput layoutOutputToCheck = animationState.changeType == ChangeType.APPEARED ?
+          animationState.nextLayoutOutput :
+          animationState.currentLayoutOutput;
+      if (layoutOutputToCheck == null) {
+        throw new RuntimeException("Both LayoutOutputs were null!");
+      }
+
+      return animatedProperty.get(layoutOutputToCheck);
     }
 
     @Override
     public AnimatedPropertyNode getAnimatedPropertyNode(PropertyHandle propertyHandle) {
-      return getOrCreateAnimatedPropertyNode(
-          propertyHandle.getTransitionKey(),
-          propertyHandle.getProperty());
+      final String key = propertyHandle.getTransitionKey();
+      final AnimatedProperty animatedProperty = propertyHandle.getProperty();
+      final AnimationState state = mAnimationStates.get(key);
+
+      AnimatedPropertyNode node = state.animatedPropertyNodes.get(animatedProperty);
+      if (node == null) {
+        node = new AnimatedPropertyNode(state.mountContent, animatedProperty);
+        state.animatedPropertyNodes.put(animatedProperty, node);
+      }
+
+      return node;
     }
   }
 }
