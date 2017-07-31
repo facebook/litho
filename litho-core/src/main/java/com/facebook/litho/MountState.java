@@ -2090,9 +2090,9 @@ class MountState implements DataFlowTransitionManager.OnAnimationCompleteListene
       final LayoutOutput layoutOutput = mLastMountedLayoutState.getLayoutOutputForTransitionKey(
           transitionKey);
       if (layoutOutput == null) {
-        throw new RuntimeException("Ending animation for key " + transitionKey + " but the last " +
-            "mounted LayoutState doesn't have that key! (total mounted items: " +
-            mLastMountedLayoutState.getMountableOutputCount() + ")");
+        // This can happen if the component was unmounted without animation or the transitionKey
+        // was removed from the component.
+        return;
       }
 
       unlockLayoutOutputForAnimation(
