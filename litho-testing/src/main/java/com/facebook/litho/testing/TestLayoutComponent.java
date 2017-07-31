@@ -205,8 +205,7 @@ public class TestLayoutComponent extends ComponentLifecycle {
     }
 
     @Override
-    public Builder key(String key) {
-      super.setKey(key);
+    public Builder getThis() {
       return this;
     }
 

@@ -1,12 +1,3 @@
-/*
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- */
-
 package com.facebook.litho.processor.integration.resources;
 
 import android.support.v4.util.Pools;
@@ -66,7 +57,7 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
 
   @Override
   protected TreeProps getTreePropsForChildren(ComponentContext c, Component _abstractImpl,
-                                              TreeProps parentTreeProps) {
+      TreeProps parentTreeProps) {
     final TestLayoutImpl _impl = (TestLayoutImpl) _abstractImpl;
     final TreeProps childTreeProps = TreeProps.copy(parentTreeProps);
     childTreeProps.put(com.facebook.litho.processor.integration.resources.TestTreeProp.class, TestLayoutSpec.onCreateFeedPrefetcherProp(
@@ -158,7 +149,7 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
   }
 
   private void testLayoutEvent(HasEventDispatcher _abstractImpl, ComponentContext c, View view,
-                               int param1) {
+      int param1) {
     TestLayoutImpl _impl = (TestLayoutImpl) _abstractImpl;
     TestLayoutSpec.testLayoutEvent(
         c,
@@ -201,7 +192,7 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
 
   @Override
   protected void transferState(ComponentContext context,
-                               ComponentLifecycle.StateContainer prevStateContainer, Component component) {
+      ComponentLifecycle.StateContainer prevStateContainer, Component component) {
     TestLayoutStateContainerImpl prevStateContainerImpl = (TestLayoutStateContainerImpl) prevStateContainer;
     TestLayoutImpl componentImpl = (TestLayoutImpl) component;
     componentImpl.mStateContainerImpl.state1 = prevStateContainerImpl.state1;
@@ -234,7 +225,7 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
     }
     ComponentLifecycle.StateUpdate _stateUpdate = new ComponentLifecycle.StateUpdate() {
       public void updateState(ComponentLifecycle.StateContainer stateContainer,
-                              Component newComponent) {
+          Component newComponent) {
         TestLayout.TestLayoutImpl newComponentStateUpdate = (TestLayout.TestLayoutImpl) newComponent;
         StateValue<Long> state1 = new StateValue<Long>();
         state1.set(lazyUpdateValue);
@@ -255,7 +246,7 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
 
   @Override
   protected ComponentLifecycle.RenderInfo recordRenderInfo(Component previousComponent,
-                                                           ComponentLifecycle.RenderInfo toRecycle) {
+      ComponentLifecycle.RenderInfo toRecycle) {
     TestLayoutImpl _impl = (TestLayoutImpl) previousComponent;
     TestLayoutRenderInfo renderInfo = toRecycle != null ?
         (TestLayoutRenderInfo) toRecycle :
@@ -266,7 +257,7 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
 
   @Override
   protected void applyPreviousRenderInfo(Component component,
-                                         ComponentLifecycle.RenderInfo previousRenderInfo) {
+      ComponentLifecycle.RenderInfo previousRenderInfo) {
     TestLayoutImpl _impl = (TestLayoutImpl) component;
     if (previousRenderInfo == null) {
       _impl.mPreviousRenderInfo = null;
@@ -441,7 +432,7 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
     }
 
     public void updateState(ComponentLifecycle.StateContainer stateContainer,
-                            Component newComponent) {
+        Component newComponent) {
       TestLayoutStateContainerImpl stateContainerImpl = (TestLayoutStateContainerImpl) stateContainer;
       TestLayoutImpl newComponentStateUpdate = (TestLayoutImpl) newComponent;
       StateValue<Long> state1 = new StateValue<Long>();
@@ -467,7 +458,7 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
     private BitSet mRequired = new BitSet(REQUIRED_PROPS_COUNT);
 
     private void init(ComponentContext context, int defStyleAttr, int defStyleRes,
-                      TestLayoutImpl testLayoutImpl) {
+        TestLayoutImpl testLayoutImpl) {
       super.init(context, defStyleAttr, defStyleRes, testLayoutImpl);
       mTestLayoutImpl = testLayoutImpl;
       mContext = context;
@@ -514,8 +505,8 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
       return this;
     }
 
-    public Builder key(String key) {
-      super.setKey(key);
+    @Override
+    public Builder getThis() {
       return this;
     }
 
@@ -536,4 +527,3 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
     }
   }
 }
-

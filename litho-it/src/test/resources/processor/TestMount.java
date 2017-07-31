@@ -1,12 +1,3 @@
-/*
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- */
-
 package com.facebook.litho.processor.integration.resources;
 
 import android.graphics.drawable.Drawable;
@@ -72,7 +63,7 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
 
   @Override
   protected TreeProps getTreePropsForChildren(ComponentContext c, Component _abstractImpl,
-                                              TreeProps parentTreeProps) {
+      TreeProps parentTreeProps) {
     final TestMountImpl _impl = (TestMountImpl) _abstractImpl;
     final TreeProps childTreeProps = TreeProps.copy(parentTreeProps);
     childTreeProps.put(com.facebook.litho.processor.integration.resources.TestTreeProp.class, TestMountSpec.onCreateFeedPrefetcherProp(
@@ -114,7 +105,7 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
 
   @Override
   protected void onMeasure(ComponentContext context, ComponentLayout layout, int widthSpec,
-                           int heightSpec, Size size, Component _abstractImpl) {
+      int heightSpec, Size size, Component _abstractImpl) {
     TestMountImpl _impl = (TestMountImpl) _abstractImpl;
     Output<Long> measureOutput = acquireOutput();
     TestMountSpec.onMeasure(
@@ -135,7 +126,7 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
 
   @Override
   protected void onBoundsDefined(ComponentContext c, ComponentLayout layout,
-                                 Component _abstractImpl) {
+      Component _abstractImpl) {
     TestMountImpl _impl = (TestMountImpl) _abstractImpl;
     Output<Integer> boundsDefinedOutput = acquireOutput();
     TestMountSpec.onBoundsDefined(
@@ -180,7 +171,7 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
 
   @Override
   protected void onPopulateAccessibilityNode(AccessibilityNodeInfoCompat node,
-                                             Component _abstractImpl) {
+      Component _abstractImpl) {
     TestMountImpl _impl = (TestMountImpl) _abstractImpl;
     TestMountSpec.onPopulateAccessibilityNode(
         (AccessibilityNodeInfoCompat) node,
@@ -204,8 +195,8 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
 
   @Override
   protected void onPopulateExtraAccessibilityNode(AccessibilityNodeInfoCompat node,
-                                                  int extraNodeIndex, int componentBoundsLeft, int componentBoundsTop,
-                                                  Component _abstractImpl) {
+      int extraNodeIndex, int componentBoundsLeft, int componentBoundsTop,
+      Component _abstractImpl) {
     TestMountImpl _impl = (TestMountImpl) _abstractImpl;
     TestMountSpec.onPopulateExtraAccessibilityNode(
         (AccessibilityNodeInfoCompat) node,
@@ -301,7 +292,7 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
   }
 
   private void testLayoutEvent(HasEventDispatcher _abstractImpl, ComponentContext c, View view,
-                               int param1) {
+      int param1) {
     TestMountImpl _impl = (TestMountImpl) _abstractImpl;
     TestMountSpec.testLayoutEvent(
         c,
@@ -344,7 +335,7 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
 
   @Override
   protected void transferState(ComponentContext context,
-                               ComponentLifecycle.StateContainer prevStateContainer, Component component) {
+      ComponentLifecycle.StateContainer prevStateContainer, Component component) {
     TestMountStateContainerImpl prevStateContainerImpl = (TestMountStateContainerImpl) prevStateContainer;
     TestMountImpl componentImpl = (TestMountImpl) component;
     componentImpl.mStateContainerImpl.state1 = prevStateContainerImpl.state1;
@@ -376,7 +367,7 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
     }
     ComponentLifecycle.StateUpdate _stateUpdate = new ComponentLifecycle.StateUpdate() {
       public void updateState(ComponentLifecycle.StateContainer stateContainer,
-                              Component newComponent) {
+          Component newComponent) {
         TestMount.TestMountImpl newComponentStateUpdate = (TestMount.TestMountImpl) newComponent;
         StateValue<Long> state1 = new StateValue<Long>();
         state1.set(lazyUpdateValue);
@@ -562,7 +553,7 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
     }
 
     public void updateState(ComponentLifecycle.StateContainer stateContainer,
-                            Component newComponent) {
+        Component newComponent) {
       TestMountStateContainerImpl stateContainerImpl = (TestMountStateContainerImpl) stateContainer;
       TestMountImpl newComponentStateUpdate = (TestMountImpl) newComponent;
       StateValue<Long> state1 = new StateValue<Long>();
@@ -588,7 +579,7 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
     private BitSet mRequired = new BitSet(REQUIRED_PROPS_COUNT);
 
     private void init(ComponentContext context, int defStyleAttr, int defStyleRes,
-                      TestMountImpl testMountImpl) {
+        TestMountImpl testMountImpl) {
       super.init(context, defStyleAttr, defStyleRes, testMountImpl);
       mTestMountImpl = testMountImpl;
       mContext = context;
@@ -671,8 +662,8 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
       return this;
     }
 
-    public Builder key(String key) {
-      super.setKey(key);
+    @Override
+    public Builder getThis() {
       return this;
     }
 
@@ -693,5 +684,3 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
     }
   }
 }
-
-

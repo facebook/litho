@@ -204,8 +204,7 @@ public class ViewCompatComponent<V extends View> extends ComponentLifecycle {
     }
 
     @Override
-    public Builder<V> key(String key) {
-      super.setKey(key);
+    public Builder<V> getThis() {
       return this;
     }
 

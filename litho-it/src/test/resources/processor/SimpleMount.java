@@ -6,7 +6,6 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-
 package com.facebook.litho.processor.integration.resources;
 
 import android.support.v4.util.Pools;
@@ -192,8 +191,8 @@ public final class SimpleMount extends ComponentLifecycle {
       return this;
     }
 
-    public Builder key(String key) {
-      super.setKey(key);
+    @Override
+    public Builder getThis() {
       return this;
     }
 

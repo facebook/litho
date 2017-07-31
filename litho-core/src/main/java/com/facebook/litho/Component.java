@@ -66,14 +66,15 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
       }
     }
 
+    public abstract T getThis();
+
     /**
      * Set a key on the component that is local to its parent.
      */
-    protected void setKey(String key) {
+    public T key(String key) {
       mComponent.setKey(key);
+      return getThis();
     }
-
-    public abstract Component.Builder<L, T> key(String key);
 
     @Override
     protected void release() {

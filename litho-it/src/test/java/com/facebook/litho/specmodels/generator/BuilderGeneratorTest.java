@@ -161,8 +161,8 @@ public class BuilderGeneratorTest {
         "    return this;\n" +
         "  }\n" +
         "\n" +
-        "  public Builder key(java.lang.String key) {\n" +
-        "    super.setKey(key);\n" +
+        "  @java.lang.Override\n" +
+        "  public Builder getThis() {\n" +
         "    return this;\n" +
         "  }\n" +
         "\n" +

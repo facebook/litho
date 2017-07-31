@@ -278,8 +278,8 @@ public class TestViewComponent extends ComponentLifecycle {
       sBuilderPool.release(this);
     }
 
-    public Builder key(String key) {
-      super.setKey(key);
+    @Override
+    public Builder getThis() {
       return this;
     }
   }

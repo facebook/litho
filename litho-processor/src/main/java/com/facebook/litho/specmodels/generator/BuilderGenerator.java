@@ -278,7 +278,7 @@ public class BuilderGenerator {
     }
 
     propsBuilderClassBuilder
-        .addMethod(generateKeySetterMethod())
+        .addMethod(generateGetThisMethod())
         .addMethod(generateBuildMethod(specModel, numRequiredProps))
         .addMethod(generateReleaseMethod(specModel));
 
@@ -842,11 +842,10 @@ public class BuilderGenerator {
         .build();
   }
 
-  private static MethodSpec generateKeySetterMethod() {
-    return MethodSpec.methodBuilder("key")
+  private static MethodSpec generateGetThisMethod() {
+    return MethodSpec.methodBuilder("getThis")
+        .addAnnotation(Override.class)
         .addModifiers(Modifier.PUBLIC)
-        .addParameter(ClassNames.STRING, "key")
-        .addStatement("super.setKey(key)")
         .addStatement("return this")
         .returns(BUILDER_CLASS_NAME)
         .build();
