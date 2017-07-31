@@ -216,6 +216,37 @@ public class LayoutStateCalculateTest {
   }
 
   @Test
+  public void testLayoutOutputsForSpecsWithInterceptTouchHandling() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(final ComponentContext c) {
+        return create(c)
+            .child(
+                create(c)
+                    .child(TestDrawableComponent.create(c))
+                    .interceptTouchHandler(c.newEventHandler(1)))
+            .build();
+      }
+    };
+
+    final LayoutState layoutState = calculateLayoutState(
+        application,
+        component,
+        -1,
+        makeSizeSpec(100, EXACTLY),
+        makeSizeSpec(100, EXACTLY));
+
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
+
+    final NodeInfo nodeInfo = layoutState.getMountableOutputAt(1).getNodeInfo();
+    assertThat(nodeInfo).isNotNull();
+    assertThat(nodeInfo.getClickHandler()).isNull();
+    assertThat(nodeInfo.getLongClickHandler()).isNull();
+    assertThat(nodeInfo.getInterceptTouchHandler()).isNotNull();
+    assertThat(nodeInfo.getTouchHandler()).isNull();
+  }
+
+  @Test
   public void testLayoutOutputsForSpecsWithTouchHandling() {
     final Component component = new InlineLayoutSpec() {
       @Override

@@ -220,7 +220,8 @@ class NodeInfo {
   boolean hasTouchEventHandlers() {
     return mClickHandler != null
         || mLongClickHandler != null
-        || mTouchHandler != null;
+        || mTouchHandler != null
+        || mInterceptTouchHandler != null;
   }
 
   void setDispatchPopulateAccessibilityEventHandler(
