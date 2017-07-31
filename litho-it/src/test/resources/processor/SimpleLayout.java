@@ -77,7 +77,7 @@ public final class SimpleLayout extends ComponentLifecycle {
     }
   }
 
-  public static class Builder extends Component.Builder<SimpleLayout> {
+  public static class Builder extends Component.Builder<SimpleLayout, Builder> {
     SimpleLayoutImpl mSimpleLayoutImpl;
 
     ComponentContext mContext;

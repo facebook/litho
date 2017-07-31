@@ -34,7 +34,13 @@ import com.facebook.litho.ComponentLifecycle.StateContainer;
  */
 public abstract class Component<L extends ComponentLifecycle> implements HasEventDispatcher {
 
-  public abstract static class Builder<L extends ComponentLifecycle>
+  /**
+   * @param <L> the {@link ComponentLifecycle} of the {@link Component} that this builder will
+   * build.
+   * @param <T> the type of this builder. Required to ensure methods defined here in the abstract
+   * class correctly return the type of the concrete subclass.
+   */
+  public abstract static class Builder<L extends ComponentLifecycle, T extends Builder<L, T>>
       extends ResourceResolver {
     private ComponentContext mContext;
     @AttrRes
@@ -67,7 +73,7 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
       mComponent.setKey(key);
     }
 
-    public abstract Component.Builder<L> key(String key);
+    public abstract Component.Builder<L, T> key(String key);
 
     @Override
     protected void release() {

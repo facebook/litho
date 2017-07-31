@@ -99,7 +99,7 @@ public class BuilderGeneratorTest {
 
     assertThat(dataHolder.getTypeSpecs()).hasSize(1);
     assertThat(dataHolder.getTypeSpecs().get(0).toString()).isEqualTo(
-        "public static class Builder extends com.facebook.litho.Component.Builder<com.facebook.litho.specmodels.generator.BuilderGeneratorTest.Test> {\n" +
+        "public static class Builder extends com.facebook.litho.Component.Builder<com.facebook.litho.specmodels.generator.BuilderGeneratorTest.Test, Builder> {\n" +
         "  private static final java.lang.String[] REQUIRED_PROPS_NAMES = new String[] {\"arg0\", \"arg4\"};\n" +
         "\n" +
         "  private static final int REQUIRED_PROPS_COUNT = 2;\n" +

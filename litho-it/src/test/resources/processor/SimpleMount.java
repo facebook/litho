@@ -155,7 +155,7 @@ public final class SimpleMount extends ComponentLifecycle {
     }
   }
 
-  public static class Builder extends Component.Builder<SimpleMount> {
+  public static class Builder extends Component.Builder<SimpleMount, Builder> {
     private static final String[] REQUIRED_PROPS_NAMES = new String[] {"ratio", "content"};
 
     private static final int REQUIRED_PROPS_COUNT = 2;
@@ -186,7 +186,7 @@ public final class SimpleMount extends ComponentLifecycle {
       return this;
     }
 
-    public Builder content(Component.Builder<? extends ComponentLifecycle> contentBuilder) {
+    public Builder content(Component.Builder<? extends ComponentLifecycle, ?> contentBuilder) {
       this.mSimpleMountImpl.content = contentBuilder.build();
       mRequired.set(1);
       return this;

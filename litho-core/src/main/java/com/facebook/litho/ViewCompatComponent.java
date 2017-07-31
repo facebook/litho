@@ -189,7 +189,7 @@ public class ViewCompatComponent<V extends View> extends ComponentLifecycle {
   }
 
   public static final class Builder<V extends View>
-      extends Component.Builder<ViewCompatComponent<V>> {
+      extends Component.Builder<ViewCompatComponent<V>, Builder<V>> {
 
     private ViewCompatComponentImpl mImpl;
 

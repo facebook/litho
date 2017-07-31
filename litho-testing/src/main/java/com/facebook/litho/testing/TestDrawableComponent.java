@@ -288,7 +288,7 @@ public class TestDrawableComponent extends ComponentLifecycle {
   }
 
   public static class Builder
-      extends com.facebook.litho.Component.Builder<TestDrawableComponent> {
+      extends com.facebook.litho.Component.Builder<TestDrawableComponent, Builder> {
     State mState;
 
     private void init(

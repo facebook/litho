@@ -154,6 +154,23 @@ public class BuilderGenerator {
       initMethodSpec.addStatement("initPropDefaults()");
     }
 
+    // If there are no type variables, then this class can always be static.
+    // If the component implementation class is static, and there are type variables, then this
+    // class can be static but must shadow the type variables from the class.
+    // If the component implementation class is not static, and there are type variables, then this
+    // class is not static and we get the type variables from the class.
+    final boolean isBuilderStatic = specModel.getTypeVariables().isEmpty() ||
+        !specModel.hasInjectedDependencies();
+    final boolean builderHasTypeVariables =
+        isBuilderStatic && !specModel.getTypeVariables().isEmpty();
+    TypeName builderType =
+        !builderHasTypeVariables ?
+            BUILDER_CLASS_NAME :
+            ParameterizedTypeName.get(
+                BUILDER_CLASS_NAME,
+                specModel.getTypeVariables().toArray(
+                    new TypeName[specModel.getTypeVariables().size()]));
+
     final TypeSpec.Builder propsBuilderClassBuilder = TypeSpec.classBuilder(BUILDER)
         .addModifiers(Modifier.PUBLIC)
         .superclass(
@@ -162,9 +179,18 @@ public class BuilderGenerator {
                     specModel.getComponentClass().packageName(),
                     specModel.getComponentClass().simpleName(),
                     BUILDER),
-                specModel.getComponentTypeName()))
+                specModel.getComponentTypeName(),
+                builderType))
         .addField(implClass, implMemberInstanceName)
         .addField(specModel.getContextClass(), CONTEXT_MEMBER_NAME);
+
+    if (isBuilderStatic) {
+      propsBuilderClassBuilder.addModifiers(Modifier.STATIC);
+
+      if (builderHasTypeVariables) {
+        propsBuilderClassBuilder.addTypeVariables(specModel.getTypeVariables());
+      }
+    }
 
     final List<String> requiredPropNames = new ArrayList<>();
     int numRequiredProps = 0;
@@ -235,20 +261,6 @@ public class BuilderGenerator {
       propsBuilderClassBuilder.addMethod(initResTypePropDefaultsSpec.build());
     }
 
-    // If there are no type variables, then this class can always be static.
-    // If the component implementation class is static, and there are type variables, then this
-    // class can be static but must shadow the type variables from the class.
-    // If the component implementation class is not static, and there are type variables, then this
-    // class is not static and we get the type variables from the class.
-    final boolean isBuilderStatic = specModel.getTypeVariables().isEmpty() ||
-        !specModel.hasInjectedDependencies();
-    if (isBuilderStatic) {
-      propsBuilderClassBuilder.addModifiers(Modifier.STATIC);
-
-      if (!specModel.getTypeVariables().isEmpty()) {
-        propsBuilderClassBuilder.addTypeVariables(specModel.getTypeVariables());
-      }
-    }
 
     int requiredPropIndex = 0;
     for (PropModel prop : specModel.getProps()) {
@@ -551,7 +563,7 @@ public class BuilderGenerator {
         .build();
     TypeName builderParameterType = ParameterizedTypeName.get(
         ClassNames.COMPONENT_BUILDER,
-        getBuilderGenericTypes(internalType));
+        getBuilderGenericTypes(internalType, ClassNames.COMPONENT_BUILDER));
     return getMethodSpecBuilder(
         prop,
         requiredIndex,
@@ -688,24 +700,28 @@ public class BuilderGenerator {
         prop.getName(),
         Arrays.asList(parameter(
             prop,
-            ParameterizedTypeName.get(builderClass, getBuilderGenericTypes(prop)),
+            ParameterizedTypeName.get(builderClass, getBuilderGenericTypes(prop, builderClass)),
             prop.getName() + "Builder")),
         "$L.build()",
         prop.getName() + "Builder");
   }
 
-  private static TypeName[] getBuilderGenericTypes(PropModel prop) {
-    return getBuilderGenericTypes(prop.getType());
+  private static TypeName[] getBuilderGenericTypes(PropModel prop, ClassName builderClass) {
+    return getBuilderGenericTypes(prop.getType(), builderClass);
   }
 
-  private static TypeName[] getBuilderGenericTypes(TypeName type) {
+  private static TypeName[] getBuilderGenericTypes(TypeName type, ClassName builderClass) {
     final TypeName typeParameter =
         type instanceof ParameterizedTypeName &&
             !((ParameterizedTypeName) type).typeArguments.isEmpty() ?
             ((ParameterizedTypeName) type).typeArguments.get(0) :
             WildcardTypeName.subtypeOf(ClassNames.COMPONENT_LIFECYCLE);
 
-    return new TypeName[]{typeParameter};
+    if (builderClass.equals(ClassNames.COMPONENT_BUILDER)) {
+      return new TypeName[]{typeParameter, WildcardTypeName.subtypeOf(TypeName.OBJECT)};
+    } else {
+      return new TypeName[]{typeParameter};
+    }
   }
 
   private static ParameterSpec parameter(

@@ -181,7 +181,7 @@ public class ComponentTree {
   @GuardedBy("this")
   private int mScheduleLayoutAfterMeasure;
 
-  public static Builder create(ComponentContext context, Component.Builder<?> root) {
+  public static Builder create(ComponentContext context, Component.Builder<?, ?> root) {
     return create(context, root.build());
   }
 

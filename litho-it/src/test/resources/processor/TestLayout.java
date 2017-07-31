@@ -455,7 +455,7 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
     }
   }
 
-  public static class Builder<S extends View> extends Component.Builder<TestLayout> {
+  public static class Builder<S extends View> extends Component.Builder<TestLayout, Builder<S>> {
     private static final String[] REQUIRED_PROPS_NAMES = new String[] {"prop1", "prop6", "prop3", "prop4", "prop5"};
 
     private static final int REQUIRED_PROPS_COUNT = 5;

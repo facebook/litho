@@ -545,7 +545,7 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
-  public InternalNode child(Component.Builder<?> child) {
+  public InternalNode child(Component.Builder<?, ?> child) {
     return this;
   }
 

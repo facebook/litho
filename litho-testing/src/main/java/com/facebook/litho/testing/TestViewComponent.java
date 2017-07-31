@@ -247,7 +247,7 @@ public class TestViewComponent extends ComponentLifecycle {
   }
 
   public static class Builder
-      extends com.facebook.litho.Component.Builder<TestViewComponent> {
+      extends com.facebook.litho.Component.Builder<TestViewComponent, Builder> {
     State mState;
 
     private void init(
