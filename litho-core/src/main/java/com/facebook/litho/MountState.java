@@ -1977,9 +1977,8 @@ class MountState implements DataFlowTransitionManager.OnAnimationCompleteListene
         continue;
       }
 
-      if (mTransitionManager.isKeyAnimating(transitionKey)) {
+      if (mAnimatingTransitionKeys.contains(transitionKey)) {
         lockLayoutOutputForAnimation(newLayoutState, i);
-        mAnimatingTransitionKeys.add(transitionKey);
       }
     }
 
