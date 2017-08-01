@@ -9,22 +9,19 @@
 
 package com.facebook.litho.testing.espresso;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import static org.hamcrest.CoreMatchers.any;
+import static org.hamcrest.CoreMatchers.is;
 
 import android.support.test.espresso.matcher.ViewMatchers;
 import android.view.View;
-
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentHost;
 import com.facebook.litho.ComponentLifecycle;
-
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-
-import static org.hamcrest.CoreMatchers.any;
-import static org.hamcrest.CoreMatchers.is;
 
 /**
  * Espresso matchers for {@link ComponentHost}.

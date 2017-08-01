@@ -9,24 +9,22 @@
 
 package com.facebook.litho.animation;
 
-import android.view.View;
-
-import com.facebook.litho.dataflow.DataFlowGraph;
-import com.facebook.litho.dataflow.GraphBinding;
-import com.facebook.litho.dataflow.OutputOnlyNode;
-import com.facebook.litho.dataflow.SettableNode;
-import com.facebook.litho.dataflow.SimpleNode;
-import com.facebook.litho.dataflow.MockTimingSource;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import static com.facebook.litho.animation.AnimatedProperties.SCALE;
 import static com.facebook.litho.dataflow.GraphBinding.create;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.robolectric.RuntimeEnvironment.application;
+
+import android.view.View;
+import com.facebook.litho.dataflow.DataFlowGraph;
+import com.facebook.litho.dataflow.GraphBinding;
+import com.facebook.litho.dataflow.MockTimingSource;
+import com.facebook.litho.dataflow.OutputOnlyNode;
+import com.facebook.litho.dataflow.SettableNode;
+import com.facebook.litho.dataflow.SimpleNode;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 @RunWith(ComponentsTestRunner.class)
 public class AnimatedPropertyNodeTest {

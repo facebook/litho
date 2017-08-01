@@ -9,17 +9,15 @@
 
 package com.facebook.litho.testing.espresso;
 
-import android.view.View;
+import static org.hamcrest.Matchers.any;
 
+import android.view.View;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.LithoViewTestHelper;
-
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
-
-import static org.hamcrest.Matchers.any;
 
 /**
  * Espresso matchers for {@link com.facebook.litho.LithoView}.

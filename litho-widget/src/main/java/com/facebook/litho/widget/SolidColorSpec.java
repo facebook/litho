@@ -9,16 +9,15 @@
 
 package com.facebook.litho.widget;
 
-import android.graphics.drawable.ColorDrawable;
+import static android.widget.ImageView.ScaleType.FIT_XY;
+import static com.facebook.litho.annotations.ResType.COLOR;
 
+import android.graphics.drawable.ColorDrawable;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
-
-import static android.widget.ImageView.ScaleType.FIT_XY;
-import static com.facebook.litho.annotations.ResType.COLOR;
 
 /**
  * A component that renders a solid color.

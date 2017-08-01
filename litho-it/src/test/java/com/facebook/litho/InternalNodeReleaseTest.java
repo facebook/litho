@@ -9,15 +9,14 @@
 
 package com.facebook.litho;
 
+import static org.assertj.core.api.Java6Assertions.assertThat;
+
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.yoga.YogaEdge;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
-
-import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(ComponentsTestRunner.class)
 public class InternalNodeReleaseTest {

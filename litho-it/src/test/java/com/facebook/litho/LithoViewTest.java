@@ -9,20 +9,6 @@
 
 package com.facebook.litho;
 
-import com.facebook.litho.testing.TestDrawableComponent;
-import com.facebook.litho.testing.assertj.LithoViewAssert;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-import com.facebook.litho.testing.util.InlineLayoutSpec;
-
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.powermock.reflect.Whitebox;
-import org.robolectric.RuntimeEnvironment;
-import org.robolectric.shadows.ShadowView;
-
 import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.UNSPECIFIED;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
@@ -36,6 +22,19 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.RuntimeEnvironment.application;
 import static org.robolectric.Shadows.shadowOf;
+
+import com.facebook.litho.testing.TestDrawableComponent;
+import com.facebook.litho.testing.assertj.LithoViewAssert;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.util.InlineLayoutSpec;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.powermock.reflect.Whitebox;
+import org.robolectric.RuntimeEnvironment;
+import org.robolectric.shadows.ShadowView;
 
 @RunWith(ComponentsTestRunner.class)
 public class LithoViewTest {

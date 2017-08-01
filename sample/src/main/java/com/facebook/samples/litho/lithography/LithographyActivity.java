@@ -16,7 +16,6 @@ package com.facebook.samples.litho.lithography;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.OrientationHelper;
-
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentInfo;
 import com.facebook.litho.LithoView;

@@ -11,7 +11,6 @@ package com.facebook.litho.stetho;
 
 import android.graphics.Rect;
 import android.view.View;
-
 import com.facebook.litho.DebugComponent;
 import com.facebook.litho.LithoView;
 import com.facebook.stetho.common.Accumulator;

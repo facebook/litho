@@ -10,7 +10,6 @@
 package com.facebook.litho;
 
 import android.support.annotation.Nullable;
-
 import com.facebook.litho.displaylist.DisplayList;
 
 /**

@@ -9,13 +9,11 @@
 
 package com.facebook.litho.specmodels.model;
 
-import javax.lang.model.element.Modifier;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import java.util.ArrayList;
+import java.util.List;
+import javax.lang.model.element.Modifier;
 
 /**
  * Class for validating that the event declarations and event methods within a {@link SpecModel}

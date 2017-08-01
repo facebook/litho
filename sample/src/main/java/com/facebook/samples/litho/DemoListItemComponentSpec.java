@@ -13,9 +13,10 @@
 
 package com.facebook.samples.litho;
 
+import static com.facebook.yoga.YogaEdge.ALL;
+
 import android.content.Intent;
 import android.view.View;
-
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
 import com.facebook.litho.ComponentContext;
@@ -26,8 +27,6 @@ import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.widget.Text;
-
-import static com.facebook.yoga.YogaEdge.ALL;
 
 @LayoutSpec
 public class DemoListItemComponentSpec {

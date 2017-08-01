@@ -9,20 +9,18 @@
 
 package com.facebook.litho.reference;
 
+import static com.facebook.litho.reference.Reference.acquire;
+import static com.facebook.litho.reference.Reference.release;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
-
-import static com.facebook.litho.reference.Reference.acquire;
-import static com.facebook.litho.reference.Reference.release;
-import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(ComponentsTestRunner.class)
 public class ReferenceTest {

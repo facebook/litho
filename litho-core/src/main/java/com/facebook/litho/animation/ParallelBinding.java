@@ -10,11 +10,10 @@
 
 package com.facebook.litho.animation;
 
+import com.facebook.litho.dataflow.ChoreographerCompat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import com.facebook.litho.dataflow.ChoreographerCompat;
 
 /**
  * An {@link AnimationBinding} that's composed of other {@link AnimationBinding}s running in

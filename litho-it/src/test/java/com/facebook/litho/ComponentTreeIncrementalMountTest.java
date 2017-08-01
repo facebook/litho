@@ -9,22 +9,6 @@
 
 package com.facebook.litho;
 
-import android.content.Context;
-import android.graphics.Color;
-import android.graphics.Rect;
-import android.view.ViewGroup;
-
-import com.facebook.litho.testing.TestDrawableComponent;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.powermock.reflect.Whitebox;
-import org.robolectric.RuntimeEnvironment;
-
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
@@ -32,6 +16,20 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Rect;
+import android.view.ViewGroup;
+import com.facebook.litho.testing.TestDrawableComponent;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.powermock.reflect.Whitebox;
+import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class ComponentTreeIncrementalMountTest {

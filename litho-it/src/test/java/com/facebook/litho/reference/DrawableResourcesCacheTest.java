@@ -9,21 +9,19 @@
 
 package com.facebook.litho.reference;
 
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.junit.Assert.assertNotEquals;
+import static org.robolectric.RuntimeEnvironment.application;
+
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.junit.Assert.assertNotEquals;
-import static org.robolectric.RuntimeEnvironment.application;
 
 @RunWith(ComponentsTestRunner.class)
 public class DrawableResourcesCacheTest {

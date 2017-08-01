@@ -9,28 +9,25 @@
 
 package com.facebook.litho.widget;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.ItemAnimator;
-import android.support.v7.widget.RecyclerView.OnScrollListener;
-
-import com.facebook.litho.ComponentContext;
-import com.facebook.litho.Output;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
-
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.ItemAnimator;
+import android.support.v7.widget.RecyclerView.OnScrollListener;
+import com.facebook.litho.ComponentContext;
+import com.facebook.litho.Output;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import java.util.ArrayList;
+import java.util.List;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RuntimeEnvironment;
 
 /**
  * Tests for {@link RecyclerSpec}

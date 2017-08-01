@@ -9,21 +9,19 @@
 
 package com.facebook.litho.specmodels.processor;
 
-import javax.lang.model.element.Name;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.Elements;
-
-import com.facebook.litho.annotations.LayoutSpec;
-import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
-import com.facebook.litho.specmodels.model.LayoutSpecModel;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import static com.facebook.litho.specmodels.processor.LayoutSpecModelFactory.create;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import com.facebook.litho.annotations.LayoutSpec;
+import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
+import com.facebook.litho.specmodels.model.LayoutSpecModel;
+import javax.lang.model.element.Name;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Elements;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Tests {@link LayoutSpecModelFactory}

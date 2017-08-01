@@ -9,18 +9,6 @@
 
 package com.facebook.litho.widget;
 
-import android.support.v7.widget.RecyclerView;
-
-import com.facebook.litho.ComponentTree;
-import com.facebook.litho.LithoView;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyFloat;
 import static org.mockito.Mockito.mock;
@@ -28,6 +16,16 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import android.support.v7.widget.RecyclerView;
+import com.facebook.litho.ComponentTree;
+import com.facebook.litho.LithoView;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
 
 /**
  * Tests for {@link StickyHeaderController}

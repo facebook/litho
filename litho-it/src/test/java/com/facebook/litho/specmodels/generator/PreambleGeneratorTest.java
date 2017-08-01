@@ -9,16 +9,6 @@
 
 package com.facebook.litho.specmodels.generator;
 
-import com.facebook.litho.specmodels.internal.ImmutableList;
-import com.facebook.litho.specmodels.model.DelegateMethodModel;
-import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
-import com.facebook.litho.specmodels.model.SpecModel;
-import com.facebook.litho.specmodels.model.SpecModelImpl;
-
-import com.squareup.javapoet.MethodSpec;
-import org.junit.Before;
-import org.junit.Test;
-
 import static com.facebook.litho.specmodels.generator.PreambleGenerator.generateConstructor;
 import static com.facebook.litho.specmodels.generator.PreambleGenerator.generateGetter;
 import static com.facebook.litho.specmodels.generator.PreambleGenerator.generateSourceDelegate;
@@ -28,6 +18,15 @@ import static com.squareup.javapoet.ParameterizedTypeName.get;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.model.DelegateMethodModel;
+import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
+import com.facebook.litho.specmodels.model.SpecModel;
+import com.facebook.litho.specmodels.model.SpecModelImpl;
+import com.squareup.javapoet.MethodSpec;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Tests {@link PreambleGenerator}

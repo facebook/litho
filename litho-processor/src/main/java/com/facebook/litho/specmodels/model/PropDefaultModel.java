@@ -9,13 +9,11 @@
 
 package com.facebook.litho.specmodels.model;
 
-import javax.annotation.concurrent.Immutable;
-import javax.lang.model.element.Modifier;
-
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.specmodels.internal.ImmutableList;
-
 import com.squareup.javapoet.TypeName;
+import javax.annotation.concurrent.Immutable;
+import javax.lang.model.element.Modifier;
 
 /**
  * Model that is a simple base representation of a

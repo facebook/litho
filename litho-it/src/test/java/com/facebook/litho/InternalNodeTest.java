@@ -9,16 +9,6 @@
 
 package com.facebook.litho;
 
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-import com.facebook.litho.widget.Text;
-import com.facebook.yoga.YogaAlign;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.reflect.Whitebox;
-import org.robolectric.RuntimeEnvironment;
-
 import static android.graphics.Color.GREEN;
 import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static com.facebook.litho.ComponentsPools.acquireInternalNode;
@@ -34,6 +24,15 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.powermock.reflect.Whitebox.getInternalState;
 import static org.robolectric.RuntimeEnvironment.application;
+
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.widget.Text;
+import com.facebook.yoga.YogaAlign;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.reflect.Whitebox;
+import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class InternalNodeTest {

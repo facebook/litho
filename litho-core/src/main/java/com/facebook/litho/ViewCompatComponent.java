@@ -9,14 +9,13 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.ContextUtils.getValidActivityForContext;
+
 import android.support.v4.util.Pools;
 import android.support.v4.util.SimpleArrayMap;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.facebook.litho.viewcompatcreator.ViewCompatCreator;
-
-import static com.facebook.litho.ContextUtils.getValidActivityForContext;
 
 /**
  * A component that can wrap a view using a {@link ViewBinder} class to bind the view

@@ -9,28 +9,6 @@
 
 package com.facebook.litho;
 
-import java.util.List;
-
-import android.content.Context;
-import android.graphics.Rect;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.support.v4.util.SparseArrayCompat;
-import android.util.SparseArray;
-import android.view.View;
-
-import com.facebook.litho.testing.TestDrawableComponent;
-import com.facebook.litho.testing.TestViewComponent;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-import com.facebook.yoga.YogaDirection;
-
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.reflect.Whitebox;
-import org.robolectric.RuntimeEnvironment;
-
 import static android.graphics.Color.BLACK;
 import static android.view.MotionEvent.obtain;
 import static android.view.View.GONE;
@@ -49,6 +27,25 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import android.content.Context;
+import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.support.v4.util.SparseArrayCompat;
+import android.util.SparseArray;
+import android.view.View;
+import com.facebook.litho.testing.TestDrawableComponent;
+import com.facebook.litho.testing.TestViewComponent;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.yoga.YogaDirection;
+import java.util.List;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.reflect.Whitebox;
+import org.robolectric.RuntimeEnvironment;
 
 /**
  * Tests {@link ComponentHost}

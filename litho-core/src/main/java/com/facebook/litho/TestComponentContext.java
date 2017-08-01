@@ -12,7 +12,6 @@ package com.facebook.litho;
 import android.content.Context;
 import android.support.annotation.AttrRes;
 import android.support.annotation.StyleRes;
-
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;

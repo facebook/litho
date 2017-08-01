@@ -9,25 +9,22 @@
 
 package com.facebook.litho.specmodels.model;
 
-import javax.lang.model.element.Modifier;
-
-import java.util.List;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.testing.specmodels.TestMethodParamModel;
-
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeVariableName;
 import com.squareup.javapoet.WildcardTypeName;
+import java.util.List;
+import javax.lang.model.element.Modifier;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Tests {@link StateValidation}

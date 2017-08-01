@@ -9,26 +9,6 @@
 
 package com.facebook.litho;
 
-import android.content.Context;
-import android.graphics.Rect;
-import android.view.ViewGroup;
-
-import com.facebook.litho.testing.ComponentTestHelper;
-import com.facebook.litho.testing.TestComponent;
-import com.facebook.litho.testing.TestComponentContextWithView;
-import com.facebook.litho.testing.TestDrawableComponent;
-import com.facebook.litho.testing.TestViewComponent;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-import com.facebook.litho.testing.util.InlineLayoutSpec;
-import com.facebook.yoga.YogaEdge;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.robolectric.RuntimeEnvironment;
-
 import static com.facebook.litho.FrameworkLogEvents.EVENT_MOUNT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_MOUNTED_COUNT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_UNMOUNTED_COUNT;
@@ -48,6 +28,24 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import android.content.Context;
+import android.graphics.Rect;
+import android.view.ViewGroup;
+import com.facebook.litho.testing.ComponentTestHelper;
+import com.facebook.litho.testing.TestComponent;
+import com.facebook.litho.testing.TestComponentContextWithView;
+import com.facebook.litho.testing.TestDrawableComponent;
+import com.facebook.litho.testing.TestViewComponent;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.util.InlineLayoutSpec;
+import com.facebook.yoga.YogaEdge;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class MountStateIncrementalMountTest {

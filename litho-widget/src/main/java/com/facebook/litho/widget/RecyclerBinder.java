@@ -9,13 +9,10 @@
 
 package com.facebook.litho.widget;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.GuardedBy;
-import javax.annotation.concurrent.ThreadSafe;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
+import static android.support.v7.widget.OrientationHelper.HORIZONTAL;
+import static android.support.v7.widget.OrientationHelper.VERTICAL;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+import static com.facebook.litho.MeasureComparisonUtils.isMeasureSpecCompatible;
 
 import android.os.Build;
 import android.os.Handler;
@@ -30,7 +27,6 @@ import android.support.v7.widget.RecyclerView.LayoutManager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentInfo;
@@ -43,11 +39,12 @@ import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.utils.DisplayListUtils;
-
-import static android.support.v7.widget.OrientationHelper.HORIZONTAL;
-import static android.support.v7.widget.OrientationHelper.VERTICAL;
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
-import static com.facebook.litho.MeasureComparisonUtils.isMeasureSpecCompatible;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.GuardedBy;
+import javax.annotation.concurrent.ThreadSafe;
 
 /**
  * This binder class is used to asynchronously layout Components given a list of {@link Component}

@@ -11,7 +11,6 @@ package com.facebook.litho;
 
 import android.view.MotionEvent;
 import android.view.ViewGroup;
-
 import com.facebook.litho.annotations.Event;
 
 /**

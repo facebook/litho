@@ -9,10 +9,8 @@
 
 package com.facebook.litho;
 
-import javax.annotation.Nullable;
-
-import java.lang.ref.WeakReference;
-import java.util.Deque;
+import static android.content.Context.ACCESSIBILITY_SERVICE;
+import static com.facebook.litho.AccessibilityUtils.isAccessibilityEnabled;
 
 import android.content.Context;
 import android.graphics.Rect;
@@ -23,12 +21,10 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityManager;
-
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
-
-import static android.content.Context.ACCESSIBILITY_SERVICE;
-import static com.facebook.litho.AccessibilityUtils.isAccessibilityEnabled;
+import java.lang.ref.WeakReference;
+import java.util.Deque;
+import javax.annotation.Nullable;
 
 /**
  * A {@link ViewGroup} that can host the mounted state of a {@link Component}.

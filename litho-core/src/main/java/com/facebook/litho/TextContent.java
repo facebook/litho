@@ -9,10 +9,9 @@
 
 package com.facebook.litho;
 
+import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.Collections;
 import java.util.List;
-
-import com.facebook.proguard.annotations.DoNotStrip;
 
 /**
  * A UI element that contains text.

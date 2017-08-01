@@ -11,7 +11,6 @@ package com.facebook.litho.utils;
 
 import android.os.Build;
 import android.view.View;
-
 import com.facebook.litho.DisplayListPrefetcher;
 
 /**

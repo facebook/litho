@@ -9,33 +9,6 @@
 
 package com.facebook.litho;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
-import android.support.annotation.VisibleForTesting;
-import android.support.v4.util.LongSparseArray;
-import android.support.v4.util.SimpleArrayMap;
-import android.support.v4.view.ViewCompat;
-import android.text.TextUtils;
-import android.util.SparseArray;
-import android.view.View;
-import android.view.View.MeasureSpec;
-import android.view.ViewGroup;
-import android.view.ViewOutlineProvider;
-
-import com.facebook.infer.annotation.ThreadConfined;
-import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.reference.Reference;
-
 import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static com.facebook.litho.Component.isHostSpec;
@@ -55,6 +28,31 @@ import static com.facebook.litho.FrameworkLogEvents.PARAM_UNCHANGED_COUNT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_UNMOUNTED_COUNT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_UPDATED_COUNT;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
+
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.support.annotation.VisibleForTesting;
+import android.support.v4.util.LongSparseArray;
+import android.support.v4.util.SimpleArrayMap;
+import android.support.v4.view.ViewCompat;
+import android.text.TextUtils;
+import android.util.SparseArray;
+import android.view.View;
+import android.view.View.MeasureSpec;
+import android.view.ViewGroup;
+import android.view.ViewOutlineProvider;
+import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.reference.Reference;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Encapsulates the mounted state of a {@link Component}. Provides APIs to update state

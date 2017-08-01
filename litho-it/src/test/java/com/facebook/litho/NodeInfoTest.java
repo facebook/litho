@@ -9,21 +9,19 @@
 
 package com.facebook.litho;
 
-import android.util.SparseArray;
-
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.reflect.Whitebox;
-
 import static com.facebook.litho.NodeInfo.FOCUS_SET_FALSE;
 import static com.facebook.litho.NodeInfo.FOCUS_SET_TRUE;
 import static com.facebook.litho.NodeInfo.FOCUS_UNSET;
 import static junit.framework.Assert.fail;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.powermock.reflect.Whitebox.getInternalState;
+
+import android.util.SparseArray;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.reflect.Whitebox;
 
 @RunWith(ComponentsTestRunner.class)
 public class NodeInfoTest {

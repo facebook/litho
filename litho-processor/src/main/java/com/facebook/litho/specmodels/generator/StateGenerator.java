@@ -9,9 +9,7 @@
 
 package com.facebook.litho.specmodels.generator;
 
-import javax.lang.model.element.Modifier;
-
-import java.util.Locale;
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_FIELD_NAME;
 
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.specmodels.model.ClassNames;
@@ -21,7 +19,6 @@ import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.facebook.litho.specmodels.model.StateParamModel;
 import com.facebook.litho.specmodels.model.UpdateStateMethodModel;
-
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
@@ -29,8 +26,8 @@ import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
-
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_FIELD_NAME;
+import java.util.Locale;
+import javax.lang.model.element.Modifier;
 
 /**
  * Class that generates the state methods for a Component.

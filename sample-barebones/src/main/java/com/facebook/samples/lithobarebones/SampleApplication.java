@@ -9,7 +9,6 @@
 package com.facebook.samples.lithobarebones;
 
 import android.app.Application;
-
 import com.facebook.soloader.SoLoader;
 
 public class SampleApplication extends Application {

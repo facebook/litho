@@ -10,6 +10,21 @@
 package com.facebook.litho.widget;
 
 
+import static android.support.v4.widget.ExploreByTouchHelper.INVALID_ID;
+import static android.text.Layout.Alignment.ALIGN_CENTER;
+import static android.text.Layout.Alignment.ALIGN_NORMAL;
+import static android.text.Layout.Alignment.ALIGN_OPPOSITE;
+import static com.facebook.litho.FrameworkLogEvents.EVENT_ERROR;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_MESSAGE;
+import static com.facebook.litho.SizeSpec.AT_MOST;
+import static com.facebook.litho.SizeSpec.EXACTLY;
+import static com.facebook.litho.SizeSpec.UNSPECIFIED;
+import static com.facebook.litho.annotations.ResType.BOOL;
+import static com.facebook.litho.annotations.ResType.STRING;
+import static com.facebook.litho.widget.VerticalGravity.BOTTOM;
+import static com.facebook.litho.widget.VerticalGravity.CENTER;
+import static com.facebook.litho.widget.VerticalGravity.TOP;
+
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -33,7 +48,6 @@ import android.text.style.ImageSpan;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-
 import com.facebook.fbui.textlayoutbuilder.TextLayoutBuilder;
 import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
 import com.facebook.litho.ComponentContext;
@@ -64,21 +78,6 @@ import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.utils.DisplayListUtils;
 import com.facebook.widget.accessibility.delegates.AccessibleClickableSpan;
 import com.facebook.yoga.YogaDirection;
-
-import static android.support.v4.widget.ExploreByTouchHelper.INVALID_ID;
-import static android.text.Layout.Alignment.ALIGN_CENTER;
-import static android.text.Layout.Alignment.ALIGN_NORMAL;
-import static android.text.Layout.Alignment.ALIGN_OPPOSITE;
-import static com.facebook.litho.FrameworkLogEvents.EVENT_ERROR;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_MESSAGE;
-import static com.facebook.litho.SizeSpec.AT_MOST;
-import static com.facebook.litho.SizeSpec.EXACTLY;
-import static com.facebook.litho.SizeSpec.UNSPECIFIED;
-import static com.facebook.litho.annotations.ResType.BOOL;
-import static com.facebook.litho.annotations.ResType.STRING;
-import static com.facebook.litho.widget.VerticalGravity.BOTTOM;
-import static com.facebook.litho.widget.VerticalGravity.CENTER;
-import static com.facebook.litho.widget.VerticalGravity.TOP;
 
 /**
  * Component to render text.

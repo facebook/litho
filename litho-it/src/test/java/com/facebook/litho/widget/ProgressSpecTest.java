@@ -9,19 +9,17 @@
 
 package com.facebook.litho.widget;
 
-import android.view.View;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
+import android.view.View;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.testing.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
-
-import static org.assertj.core.api.Java6Assertions.assertThat;
 
 /**
  * Tests {@link ProgressSpec}

@@ -9,17 +9,15 @@
 
 package com.facebook.litho;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.util.concurrent.atomic.AtomicInteger;
+import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 
 import android.graphics.Rect;
 import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
-
 import com.facebook.litho.displaylist.DisplayList;
-
-import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * The output of a layout pass for a given {@link Component}. It's used by

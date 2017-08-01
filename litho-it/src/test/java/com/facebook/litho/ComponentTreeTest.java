@@ -9,21 +9,6 @@
 
 package com.facebook.litho;
 
-import android.os.Looper;
-
-import com.facebook.litho.testing.TestDrawableComponent;
-import com.facebook.litho.testing.TestLayoutComponent;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.reflect.Whitebox;
-import org.robolectric.RuntimeEnvironment;
-import org.robolectric.Shadows;
-import org.robolectric.shadows.ShadowLooper;
-
 import static com.facebook.litho.ComponentTree.create;
 import static com.facebook.litho.SizeSpec.AT_MOST;
 import static com.facebook.litho.SizeSpec.EXACTLY;
@@ -33,6 +18,19 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.fail;
 import static org.powermock.reflect.Whitebox.getInternalState;
+
+import android.os.Looper;
+import com.facebook.litho.testing.TestDrawableComponent;
+import com.facebook.litho.testing.TestLayoutComponent;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.reflect.Whitebox;
+import org.robolectric.RuntimeEnvironment;
+import org.robolectric.Shadows;
+import org.robolectric.shadows.ShadowLooper;
 
 @RunWith(ComponentsTestRunner.class)
 public class ComponentTreeTest {

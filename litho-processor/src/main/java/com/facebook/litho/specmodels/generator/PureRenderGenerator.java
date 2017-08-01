@@ -9,20 +9,17 @@
 
 package com.facebook.litho.specmodels.generator;
 
-import javax.lang.model.element.Modifier;
-
-import java.lang.annotation.Annotation;
-
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.specmodels.model.DelegateMethodModel;
 import com.facebook.litho.specmodels.model.HasPureRender;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
-
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
+import java.lang.annotation.Annotation;
+import javax.lang.model.element.Modifier;
 
 /**
  * Class that generates the pure render methods for a Component.

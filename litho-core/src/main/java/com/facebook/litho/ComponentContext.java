@@ -16,7 +16,6 @@ import android.support.annotation.AttrRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
 import android.support.annotation.VisibleForTesting;
-
 import com.facebook.infer.annotation.ThreadConfined;
 
 /**

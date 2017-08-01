@@ -9,22 +9,20 @@
 
 package com.facebook.litho;
 
-import android.util.SparseArray;
-import android.view.View;
-
-import com.facebook.litho.testing.TestDrawableComponent;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-import com.facebook.litho.testing.util.InlineLayoutSpec;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
-
 import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
 import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+
+import android.util.SparseArray;
+import android.view.View;
+import com.facebook.litho.testing.TestDrawableComponent;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.util.InlineLayoutSpec;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RuntimeEnvironment;
 
 /**
  * Tests {@link MountItem}

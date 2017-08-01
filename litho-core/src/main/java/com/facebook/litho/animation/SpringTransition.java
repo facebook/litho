@@ -10,10 +10,9 @@
 
 package com.facebook.litho.animation;
 
-import java.util.ArrayList;
-
 import com.facebook.litho.dataflow.ConstantNode;
 import com.facebook.litho.dataflow.SpringNode;
+import java.util.ArrayList;
 
 /**
  * Animation for the transition of a single {@link PropertyAnimation} on a spring.

@@ -13,7 +13,6 @@ import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
-
 import com.facebook.litho.ComponentInfo;
 import com.facebook.litho.SizeSpec;
 

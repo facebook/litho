@@ -9,10 +9,8 @@
 
 package com.facebook.litho.testing.testrunner;
 
-import java.lang.reflect.Method;
-
 import android.app.Application;
-
+import java.lang.reflect.Method;
 import org.junit.runners.model.InitializationError;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;

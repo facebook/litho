@@ -9,10 +9,6 @@
 
 package com.facebook.litho.specmodels.generator;
 
-import javax.lang.model.element.Modifier;
-
-import java.util.List;
-
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.specmodels.model.ClassNames;
@@ -21,9 +17,10 @@ import com.facebook.litho.specmodels.model.MethodParamModelUtils;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.facebook.litho.specmodels.model.TreePropModel;
-
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
+import java.util.List;
+import javax.lang.model.element.Modifier;
 
 /**
  * Class that generates the tree prop methods for a Component.

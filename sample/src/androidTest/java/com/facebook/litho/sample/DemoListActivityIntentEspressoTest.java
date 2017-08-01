@@ -9,17 +9,6 @@
 
 package com.facebook.litho.sample;
 
-import android.support.test.espresso.intent.rule.IntentsTestRule;
-import android.support.test.filters.LargeTest;
-import android.support.test.runner.AndroidJUnit4;
-
-import com.facebook.samples.litho.DemoActivity;
-import com.facebook.samples.litho.DemoListActivity;
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
@@ -34,6 +23,15 @@ import static com.facebook.litho.testing.espresso.ComponentHostMatchers.componen
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
+
+import android.support.test.espresso.intent.rule.IntentsTestRule;
+import android.support.test.filters.LargeTest;
+import android.support.test.runner.AndroidJUnit4;
+import com.facebook.samples.litho.DemoActivity;
+import com.facebook.samples.litho.DemoListActivity;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest

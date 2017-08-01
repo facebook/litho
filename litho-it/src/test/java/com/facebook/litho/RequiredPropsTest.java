@@ -9,15 +9,14 @@
 
 package com.facebook.litho;
 
+import static org.junit.Assert.assertTrue;
+
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.Text;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
-
-import static org.junit.Assert.assertTrue;
 
 @RunWith(ComponentsTestRunner.class)
 public class RequiredPropsTest {

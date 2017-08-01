@@ -9,7 +9,8 @@
 
 package com.facebook.litho.widget;
 
-import java.lang.ref.WeakReference;
+import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
+import static android.os.Process.THREAD_PRIORITY_LOWEST;
 
 import android.graphics.Canvas;
 import android.graphics.Picture;
@@ -19,11 +20,8 @@ import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.VisibleForTesting;
 import android.text.Layout;
-
 import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
-
-import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
-import static android.os.Process.THREAD_PRIORITY_LOWEST;
+import java.lang.ref.WeakReference;
 
 /**
  * A class that schedules a background draw of a {@link Layout}. Drawing a {@link Layout} in the

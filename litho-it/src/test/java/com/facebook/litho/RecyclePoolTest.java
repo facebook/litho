@@ -9,12 +9,11 @@
 
 package com.facebook.litho;
 
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import static org.junit.Assert.assertEquals;
 
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import static org.junit.Assert.assertEquals;
 
 @RunWith(ComponentsTestRunner.class)
 public class RecyclePoolTest {

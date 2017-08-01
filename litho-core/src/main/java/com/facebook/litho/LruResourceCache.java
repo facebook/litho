@@ -9,10 +9,9 @@
 
 package com.facebook.litho;
 
-import javax.annotation.Nullable;
-
 import android.content.res.Configuration;
 import android.support.v4.util.LruCache;
+import javax.annotation.Nullable;
 
 class LruResourceCache extends ResourceCache {
   private final LruCache<Integer, Object> mCache = new LruCache<Integer, Object>(500) {

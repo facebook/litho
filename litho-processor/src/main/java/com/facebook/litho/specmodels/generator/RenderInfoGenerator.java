@@ -9,19 +9,17 @@
 
 package com.facebook.litho.specmodels.generator;
 
-import javax.lang.model.element.Modifier;
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.IMPL_VARIABLE_NAME;
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.PREVIOUS_RENDER_INFO_FIELD_NAME;
 
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
-
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
-
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.IMPL_VARIABLE_NAME;
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.PREVIOUS_RENDER_INFO_FIELD_NAME;
+import javax.lang.model.element.Modifier;
 
 /**
  * Generates delegate methods for RenderInfo (which is used by lifecycle methods that support Diff

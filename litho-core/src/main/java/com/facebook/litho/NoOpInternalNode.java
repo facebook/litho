@@ -9,6 +9,8 @@
 
 package com.facebook.litho;
 
+import static android.support.annotation.Dimension.DP;
+
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
@@ -20,7 +22,6 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.Px;
 import android.support.annotation.StringRes;
 import android.util.SparseArray;
-
 import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
@@ -31,8 +32,6 @@ import com.facebook.yoga.YogaJustify;
 import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaWrap;
-
-import static android.support.annotation.Dimension.DP;
 
 /**
  * Class representing an empty InternalNode with a null ComponentLayout. All methods

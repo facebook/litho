@@ -9,24 +9,22 @@
 
 package com.facebook.litho;
 
-import android.content.Context;
-
-import com.facebook.litho.testing.TestDrawableComponent;
-import com.facebook.litho.testing.TestLayoutComponent;
-import com.facebook.litho.testing.TestNullLayoutComponent;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-import com.facebook.litho.testing.util.InlineLayoutSpec;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import static com.facebook.litho.Column.create;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.yoga.YogaEdge.ALL;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.robolectric.RuntimeEnvironment.application;
+
+import android.content.Context;
+import com.facebook.litho.testing.TestDrawableComponent;
+import com.facebook.litho.testing.TestLayoutComponent;
+import com.facebook.litho.testing.TestNullLayoutComponent;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.util.InlineLayoutSpec;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 @RunWith(ComponentsTestRunner.class)
 public class LayoutStateCalculateVisibilityOutputsTest {

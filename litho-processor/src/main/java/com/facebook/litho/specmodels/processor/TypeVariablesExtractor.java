@@ -9,14 +9,12 @@
 
 package com.facebook.litho.specmodels.processor;
 
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.TypeParameterElement;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeVariableName;
+import java.util.ArrayList;
+import java.util.List;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.TypeParameterElement;
 
 /**
  * Extracts type variables from the given input.

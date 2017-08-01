@@ -9,13 +9,10 @@
 
 package com.facebook.litho.specmodels.generator;
 
-import javax.lang.model.element.Modifier;
-
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.IMPL_CLASS_NAME_SUFFIX;
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.PREVIOUS_RENDER_INFO_FIELD_NAME;
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_FIELD_NAME;
+import static com.facebook.litho.specmodels.model.ClassNames.COMPONENT;
 
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
@@ -33,7 +30,6 @@ import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.facebook.litho.specmodels.model.StateParamModel;
 import com.facebook.litho.specmodels.model.TreePropModel;
 import com.facebook.litho.specmodels.model.UpdateStateMethodModel;
-
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.ClassName;
@@ -45,11 +41,12 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.WildcardTypeName;
-
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.IMPL_CLASS_NAME_SUFFIX;
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.PREVIOUS_RENDER_INFO_FIELD_NAME;
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_FIELD_NAME;
-import static com.facebook.litho.specmodels.model.ClassNames.COMPONENT;
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import javax.lang.model.element.Modifier;
 
 /**
  * Class that generates the implementation of a Component.

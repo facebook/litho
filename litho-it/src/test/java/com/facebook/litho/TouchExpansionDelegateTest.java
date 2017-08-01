@@ -9,18 +9,6 @@
 
 package com.facebook.litho;
 
-import android.graphics.Rect;
-import android.os.SystemClock;
-import android.view.MotionEvent;
-import android.view.View;
-
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
-
 import static android.os.SystemClock.uptimeMillis;
 import static android.view.MotionEvent.ACTION_DOWN;
 import static android.view.MotionEvent.obtain;
@@ -32,6 +20,16 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.RuntimeEnvironment.application;
+
+import android.graphics.Rect;
+import android.os.SystemClock;
+import android.view.MotionEvent;
+import android.view.View;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class TouchExpansionDelegateTest {

@@ -9,14 +9,12 @@
 
 package com.facebook.litho.testing.specmodels;
 
+import com.facebook.litho.specmodels.model.MethodParamModel;
+import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.facebook.litho.specmodels.model.MethodParamModel;
-
-import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.TypeName;
 
 public class TestMethodParamModel implements MethodParamModel {
 

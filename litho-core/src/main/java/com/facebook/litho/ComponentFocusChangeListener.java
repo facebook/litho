@@ -9,9 +9,9 @@
 
 package com.facebook.litho;
 
-import android.view.View;
-
 import static com.facebook.litho.EventDispatcherUtils.dispatchOnFocusChanged;
+
+import android.view.View;
 
 /**
  * Focus change listener that triggers its underlying event handler.

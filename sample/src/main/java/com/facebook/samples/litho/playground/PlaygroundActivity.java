@@ -15,7 +15,6 @@ package com.facebook.samples.litho.playground;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 

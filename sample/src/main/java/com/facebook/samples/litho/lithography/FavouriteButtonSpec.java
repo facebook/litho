@@ -8,8 +8,10 @@
 
 package com.facebook.samples.litho.lithography;
 
-import android.view.View;
+import static android.R.drawable.star_off;
+import static android.R.drawable.star_on;
 
+import android.view.View;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
@@ -21,9 +23,6 @@ import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.State;
-
-import static android.R.drawable.star_off;
-import static android.R.drawable.star_on;
 
 @LayoutSpec
 public class FavouriteButtonSpec {

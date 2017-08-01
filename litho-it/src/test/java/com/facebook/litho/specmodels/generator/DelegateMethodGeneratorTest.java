@@ -10,11 +10,11 @@
 
 package com.facebook.litho.specmodels.generator;
 
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
-
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
+import static com.facebook.litho.specmodels.generator.DelegateMethodGenerator.generateDelegates;
+import static com.facebook.litho.specmodels.model.DelegateMethodDescriptions.LAYOUT_SPEC_DELEGATE_METHODS_MAP;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
@@ -27,17 +27,14 @@ import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.MethodParamModelFactory;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelImpl;
-
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.TypeName;
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
 import org.junit.Before;
 import org.junit.Test;
-
-import static com.facebook.litho.specmodels.generator.DelegateMethodGenerator.generateDelegates;
-import static com.facebook.litho.specmodels.model.DelegateMethodDescriptions.LAYOUT_SPEC_DELEGATE_METHODS_MAP;
-import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Tests {@link PreambleGenerator}

@@ -9,6 +9,8 @@
 
 package com.facebook.litho.testing.viewtree;
 
+import static org.assertj.core.api.Java6Assertions.assertThat;
+
 import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -17,7 +19,6 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.it.R;
@@ -25,7 +26,6 @@ import com.facebook.litho.testing.ComponentTestHelper;
 import com.facebook.litho.testing.shadows.ColorDrawableShadow;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.Text;
-
 import com.google.common.base.Predicate;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,8 +33,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-
-import static org.assertj.core.api.Java6Assertions.assertThat;
 
 /**
  * Tests {@link ViewPredicates}

@@ -13,7 +13,6 @@ import android.support.v4.view.AccessibilityDelegateCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
-
 import com.facebook.litho.annotations.Event;
 
 /**

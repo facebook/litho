@@ -9,10 +9,11 @@
 
 package com.facebook.litho.widget;
 
+import static com.facebook.litho.SizeSpec.UNSPECIFIED;
+
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.widget.ImageView.ScaleType;
-
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Diff;
@@ -35,8 +36,6 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.utils.MeasureUtils;
-
-import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 
 /**
  * A component that is able to display drawable resources. It takes a drawable

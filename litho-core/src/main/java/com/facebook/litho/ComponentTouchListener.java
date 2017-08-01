@@ -9,10 +9,10 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.EventDispatcherUtils.dispatchOnTouch;
+
 import android.view.MotionEvent;
 import android.view.View;
-
-import static com.facebook.litho.EventDispatcherUtils.dispatchOnTouch;
 
 /**
  * Touch listener that triggers its underlying event handler.

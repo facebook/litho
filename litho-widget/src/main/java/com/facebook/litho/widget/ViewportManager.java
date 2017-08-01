@@ -9,19 +9,16 @@
 
 package com.facebook.litho.widget;
 
-import javax.annotation.concurrent.ThreadSafe;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.OnScrollListener;
 import android.support.v7.widget.RecyclerView.ViewHolder;
-
 import com.facebook.litho.widget.ViewportInfo.ViewportChanged;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.concurrent.ThreadSafe;
 
 /**
  * This class will handle all viewport changes due to both scrolling and

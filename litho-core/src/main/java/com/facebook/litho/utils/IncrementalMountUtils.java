@@ -9,16 +9,13 @@
 
 package com.facebook.litho.utils;
 
+import static com.facebook.litho.ThreadUtils.assertMainThread;
+
 import android.graphics.Rect;
 import android.support.v4.util.Pools;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.facebook.litho.LithoView;
-import com.facebook.litho.config.ComponentsConfiguration;
-
-import static com.facebook.litho.ThreadUtils.assertMainThread;
 
 /**
  * Provides methods for enabling incremental mount.

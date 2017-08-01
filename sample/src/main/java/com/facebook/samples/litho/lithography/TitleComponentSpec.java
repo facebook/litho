@@ -8,6 +8,9 @@
 
 package com.facebook.samples.litho.lithography;
 
+import static android.graphics.Typeface.BOLD;
+import static com.facebook.litho.annotations.ResType.STRING;
+
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.annotations.LayoutSpec;
@@ -16,9 +19,6 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaPositionType;
-
-import static android.graphics.Typeface.BOLD;
-import static com.facebook.litho.annotations.ResType.STRING;
 
 @LayoutSpec
 public class TitleComponentSpec {

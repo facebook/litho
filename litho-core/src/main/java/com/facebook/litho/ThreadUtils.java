@@ -12,7 +12,6 @@ package com.facebook.litho;
 import android.os.Looper;
 import android.support.annotation.IntDef;
 import android.support.annotation.VisibleForTesting;
-
 import com.facebook.litho.config.ComponentsConfiguration;
 
 /**

@@ -9,19 +9,6 @@
 
 package com.facebook.litho;
 
-import android.view.ContextThemeWrapper;
-
-import com.facebook.litho.it.R;
-import com.facebook.litho.testing.ComponentsRule;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-import com.facebook.litho.widget.Text;
-
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
-
 import static com.facebook.litho.it.R.attr.testAttrLargePadding;
 import static com.facebook.litho.it.R.attr.testAttrLargeText;
 import static com.facebook.litho.it.R.style.PaddingStyle;
@@ -29,6 +16,17 @@ import static com.facebook.litho.it.R.style.TextSizeStyle;
 import static com.facebook.yoga.YogaEdge.ALL;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.powermock.reflect.Whitebox.getInternalState;
+
+import android.view.ContextThemeWrapper;
+import com.facebook.litho.it.R;
+import com.facebook.litho.testing.ComponentsRule;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.widget.Text;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 @org.junit.Ignore("t16280359")

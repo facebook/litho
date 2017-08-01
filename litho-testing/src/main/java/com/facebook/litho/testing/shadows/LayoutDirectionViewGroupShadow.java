@@ -10,7 +10,6 @@
 package com.facebook.litho.testing.shadows;
 
 import android.view.ViewGroup;
-
 import org.robolectric.annotation.Implements;
 
 /**

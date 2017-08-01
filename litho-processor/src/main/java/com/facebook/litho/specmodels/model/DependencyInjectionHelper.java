@@ -9,12 +9,10 @@
 
 package com.facebook.litho.specmodels.model;
 
-import java.util.List;
-
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
-
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
+import java.util.List;
 
 /**
  * An interface for generating certain methods that are required in order for Dependency

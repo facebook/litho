@@ -9,9 +9,8 @@
 
 package com.facebook.litho;
 
-import javax.annotation.Nullable;
-
 import android.content.res.Configuration;
+import javax.annotation.Nullable;
 
 abstract class ResourceCache {
   private static ResourceCache latest;

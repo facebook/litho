@@ -8,6 +8,10 @@
 
 package com.facebook.samples.litho.lithography;
 
+import static android.graphics.Color.GRAY;
+import static android.graphics.Typeface.ITALIC;
+import static com.facebook.litho.annotations.ResType.STRING;
+
 import com.facebook.litho.Column;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
@@ -16,10 +20,6 @@ import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaEdge;
-
-import static android.graphics.Color.GRAY;
-import static android.graphics.Typeface.ITALIC;
-import static com.facebook.litho.annotations.ResType.STRING;
 
 @LayoutSpec
 public class FooterComponentSpec {

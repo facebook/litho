@@ -9,8 +9,8 @@
 
 package com.facebook.litho;
 
-import java.util.ArrayList;
-import java.util.List;
+import static com.facebook.litho.AccessibilityUtils.isAccessibilityEnabled;
+import static com.facebook.litho.ComponentHostUtils.maybeInvalidateAccessibilityState;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -27,11 +27,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-
 import com.facebook.proguard.annotations.DoNotStrip;
-
-import static com.facebook.litho.AccessibilityUtils.isAccessibilityEnabled;
-import static com.facebook.litho.ComponentHostUtils.maybeInvalidateAccessibilityState;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A {@link ViewGroup} that can host the mounted state of a {@link Component}. This is used

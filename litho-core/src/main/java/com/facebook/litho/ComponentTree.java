@@ -9,15 +9,15 @@
 
 package com.facebook.litho;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.concurrent.GuardedBy;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.ref.WeakReference;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
+import static com.facebook.litho.ComponentLifecycle.StateUpdate;
+import static com.facebook.litho.FrameworkLogEvents.EVENT_LAYOUT_CALCULATE;
+import static com.facebook.litho.FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CONTENT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_BACKGROUND_LAYOUT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_LOG_TAG;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_TREE_DIFF_ENABLED;
+import static com.facebook.litho.ThreadUtils.assertHoldsLock;
+import static com.facebook.litho.ThreadUtils.assertMainThread;
+import static com.facebook.litho.ThreadUtils.isMainThread;
 
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -35,20 +35,17 @@ import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewParent;
-
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
-
-import static com.facebook.litho.ComponentLifecycle.StateUpdate;
-import static com.facebook.litho.FrameworkLogEvents.EVENT_LAYOUT_CALCULATE;
-import static com.facebook.litho.FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CONTENT;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_BACKGROUND_LAYOUT;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_LOG_TAG;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_TREE_DIFF_ENABLED;
-import static com.facebook.litho.ThreadUtils.assertHoldsLock;
-import static com.facebook.litho.ThreadUtils.assertMainThread;
-import static com.facebook.litho.ThreadUtils.isMainThread;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.ref.WeakReference;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import javax.annotation.CheckReturnValue;
+import javax.annotation.concurrent.GuardedBy;
 
 /**
  * Represents a tree of components and controls their life cycle. ComponentTree takes in a single

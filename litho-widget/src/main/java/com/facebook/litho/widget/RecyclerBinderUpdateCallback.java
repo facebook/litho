@@ -2,14 +2,12 @@
 
 package com.facebook.litho.widget;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.support.v4.util.Pools.SynchronizedPool;
 import android.support.v7.util.ListUpdateCallback;
-
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentInfo;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * An implementation of {@link ListUpdateCallback} that generates the relevant {@link Component}s

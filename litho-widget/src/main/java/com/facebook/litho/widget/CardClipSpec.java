@@ -9,18 +9,18 @@
 
 package com.facebook.litho.widget;
 
+import static com.facebook.litho.widget.CardClipDrawable.BOTTOM_LEFT;
+import static com.facebook.litho.widget.CardClipDrawable.BOTTOM_RIGHT;
+import static com.facebook.litho.widget.CardClipDrawable.NONE;
+import static com.facebook.litho.widget.CardClipDrawable.TOP_LEFT;
+import static com.facebook.litho.widget.CardClipDrawable.TOP_RIGHT;
+
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnMount;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
-
-import static com.facebook.litho.widget.CardClipDrawable.BOTTOM_LEFT;
-import static com.facebook.litho.widget.CardClipDrawable.BOTTOM_RIGHT;
-import static com.facebook.litho.widget.CardClipDrawable.NONE;
-import static com.facebook.litho.widget.CardClipDrawable.TOP_LEFT;
-import static com.facebook.litho.widget.CardClipDrawable.TOP_RIGHT;
 
 /**
  * A component that paints rounded edges to mimic a clipping operation on the

@@ -10,8 +10,8 @@
 
 package com.facebook.litho.specmodels.processor;
 
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.Elements;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 import com.facebook.litho.annotations.FromMeasure;
 import com.facebook.litho.annotations.MountSpec;
@@ -25,13 +25,11 @@ import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.MountSpecModel;
-
 import com.google.testing.compile.CompilationRule;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Elements;
 import org.junit.Rule;
 import org.junit.Test;
-
-import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests {@link MountSpecModelFactory}

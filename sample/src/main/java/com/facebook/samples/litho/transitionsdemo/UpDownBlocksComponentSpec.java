@@ -14,7 +14,6 @@
 package com.facebook.samples.litho.transitionsdemo;
 
 import android.graphics.Color;
-
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;

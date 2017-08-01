@@ -9,21 +9,19 @@
 
 package com.facebook.litho;
 
-import android.graphics.drawable.ColorDrawable;
-
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
-
 import static android.graphics.Color.BLACK;
 import static android.graphics.Color.YELLOW;
 import static com.facebook.litho.testing.ComponentTestHelper.mountComponent;
 import static com.facebook.litho.testing.TestDrawableComponent.create;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.robolectric.Shadows.shadowOf;
+
+import android.graphics.drawable.ColorDrawable;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class ComponentTreeMountTest {

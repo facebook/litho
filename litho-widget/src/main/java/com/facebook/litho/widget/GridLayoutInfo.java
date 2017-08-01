@@ -9,16 +9,15 @@
 
 package com.facebook.litho.widget;
 
+import static com.facebook.litho.SizeSpec.EXACTLY;
+import static com.facebook.litho.SizeSpec.UNSPECIFIED;
+
 import android.content.Context;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
-
 import com.facebook.litho.ComponentInfo;
 import com.facebook.litho.SizeSpec;
-
-import static com.facebook.litho.SizeSpec.EXACTLY;
-import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 
 public class GridLayoutInfo implements LayoutInfo {
 

@@ -9,14 +9,11 @@
 
 package com.facebook.litho.specmodels.model;
 
+import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.squareup.javapoet.TypeName;
+import java.lang.annotation.Annotation;
 import javax.annotation.concurrent.Immutable;
 import javax.lang.model.element.Modifier;
-
-import java.lang.annotation.Annotation;
-
-import com.facebook.litho.specmodels.internal.ImmutableList;
-
-import com.squareup.javapoet.TypeName;
 
 /**
  * Model that is an abstract representation of a delegate method.

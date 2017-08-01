@@ -9,27 +9,25 @@
 
 package com.facebook.litho.testing.espresso;
 
-import android.support.test.InstrumentationRegistry;
-import android.support.test.rule.UiThreadTestRule;
-import android.support.test.runner.AndroidJUnit4;
-import android.widget.TextView;
-
-import com.facebook.litho.Component;
-import com.facebook.litho.ComponentContext;
-import com.facebook.litho.LithoView;
-import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.testing.screenshot.ViewHelpers;
-
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import static com.facebook.litho.testing.espresso.LithoViewMatchers.lithoView;
 import static com.facebook.litho.testing.espresso.LithoViewMatchers.withTestKey;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
+
+import android.support.test.InstrumentationRegistry;
+import android.support.test.rule.UiThreadTestRule;
+import android.support.test.runner.AndroidJUnit4;
+import android.widget.TextView;
+import com.facebook.litho.Component;
+import com.facebook.litho.ComponentContext;
+import com.facebook.litho.LithoView;
+import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.testing.screenshot.ViewHelpers;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * Tests {@link LithoViewMatchers}

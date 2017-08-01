@@ -9,6 +9,18 @@
 
 package com.facebook.litho.specmodels.processor;
 
+import static com.facebook.litho.specmodels.processor.ProcessorUtils.validate;
+
+import com.facebook.litho.annotations.LayoutSpec;
+import com.facebook.litho.annotations.MountSpec;
+import com.facebook.litho.specmodels.model.ClassNames;
+import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
+import com.facebook.litho.specmodels.model.SpecModel;
+import com.squareup.javapoet.JavaFile;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedSourceVersion;
@@ -16,21 +28,6 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
-import com.facebook.litho.annotations.LayoutSpec;
-import com.facebook.litho.annotations.MountSpec;
-import com.facebook.litho.specmodels.model.ClassNames;
-import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
-import com.facebook.litho.specmodels.model.SpecModel;
-
-import com.squareup.javapoet.JavaFile;
-
-import static com.facebook.litho.specmodels.processor.ProcessorUtils.validate;
 
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public abstract class AbstractComponentsProcessor extends AbstractProcessor {

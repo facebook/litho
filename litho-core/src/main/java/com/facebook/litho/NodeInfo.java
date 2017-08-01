@@ -9,15 +9,13 @@
 
 package com.facebook.litho;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import android.support.annotation.IntDef;
 import android.util.SparseArray;
 import android.view.ViewOutlineProvider;
-
 import com.facebook.infer.annotation.ThreadConfined;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * NodeInfo holds information that are set to the {@link InternalNode} and needs to be used

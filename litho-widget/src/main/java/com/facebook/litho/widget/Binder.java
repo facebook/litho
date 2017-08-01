@@ -9,16 +9,14 @@
 
 package com.facebook.litho.widget;
 
-import javax.annotation.Nullable;
-
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.Size;
+import javax.annotation.Nullable;
 
 /**
  * This binder class is used to asynchronously layout Components given a list of

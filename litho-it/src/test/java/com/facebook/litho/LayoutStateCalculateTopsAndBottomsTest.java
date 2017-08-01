@@ -9,15 +9,6 @@
 
 package com.facebook.litho;
 
-import android.content.Context;
-
-import com.facebook.litho.testing.TestDrawableComponent;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-import com.facebook.litho.testing.util.InlineLayoutSpec;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import static com.facebook.litho.Column.create;
 import static com.facebook.litho.LayoutState.sBottomsComparator;
 import static com.facebook.litho.LayoutState.sTopsComparator;
@@ -29,6 +20,13 @@ import static com.facebook.yoga.YogaEdge.TOP;
 import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.robolectric.RuntimeEnvironment.application;
+
+import android.content.Context;
+import com.facebook.litho.testing.TestDrawableComponent;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.util.InlineLayoutSpec;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 @RunWith(ComponentsTestRunner.class)
 public class LayoutStateCalculateTopsAndBottomsTest {

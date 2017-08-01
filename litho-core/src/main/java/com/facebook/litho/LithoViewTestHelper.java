@@ -9,15 +9,13 @@
 
 package com.facebook.litho;
 
-import java.util.Deque;
-
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
+import java.util.Deque;
 
 /**
  * Helper class to access metadata from {@link LithoView} that is relevant during end to end

@@ -11,7 +11,6 @@ package com.facebook.litho.testing;
 
 import android.content.Context;
 import android.view.View;
-
 import com.facebook.litho.ComponentContext;
 
 public class TestComponentContextWithView extends ComponentContext {

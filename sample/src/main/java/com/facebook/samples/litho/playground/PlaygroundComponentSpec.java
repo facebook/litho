@@ -9,7 +9,6 @@
 package com.facebook.samples.litho.playground;
 
 import android.graphics.Color;
-
 import com.facebook.litho.Column;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;

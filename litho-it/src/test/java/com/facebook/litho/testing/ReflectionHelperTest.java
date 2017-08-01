@@ -9,11 +9,10 @@
 
 package com.facebook.litho.testing;
 
-import java.lang.reflect.Field;
-
-import org.junit.Test;
-
 import static org.assertj.core.api.Java6Assertions.assertThat;
+
+import java.lang.reflect.Field;
+import org.junit.Test;
 
 public class ReflectionHelperTest {
   @Test

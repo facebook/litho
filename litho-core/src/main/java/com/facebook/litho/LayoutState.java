@@ -9,44 +9,6 @@
 
 package com.facebook.litho;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import android.annotation.TargetApi;
-import android.app.Activity;
-import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.graphics.Canvas;
-import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
-import android.support.v4.util.LongSparseArray;
-import android.support.v4.util.SimpleArrayMap;
-import android.support.v4.view.accessibility.AccessibilityManagerCompat;
-import android.text.TextUtils;
-import android.view.View;
-import android.view.Window;
-import android.view.accessibility.AccessibilityManager;
-
-import com.facebook.infer.annotation.ThreadConfined;
-import com.facebook.infer.annotation.ThreadSafe;
-import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.displaylist.DisplayList;
-import com.facebook.litho.displaylist.DisplayListException;
-import com.facebook.litho.reference.BorderColorDrawableReference;
-import com.facebook.litho.reference.DrawableReference;
-import com.facebook.litho.reference.Reference;
-import com.facebook.yoga.YogaConstants;
-import com.facebook.yoga.YogaDirection;
-import com.facebook.yoga.YogaEdge;
-
 import static android.content.Context.ACCESSIBILITY_SERVICE;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
@@ -71,6 +33,42 @@ import static com.facebook.litho.MountItem.FLAG_DUPLICATE_PARENT_STATE;
 import static com.facebook.litho.MountState.ROOT_HOST_ID;
 import static com.facebook.litho.NodeInfo.FOCUS_SET_TRUE;
 import static com.facebook.litho.SizeSpec.EXACTLY;
+
+import android.annotation.TargetApi;
+import android.app.Activity;
+import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.graphics.Canvas;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
+import android.support.v4.util.LongSparseArray;
+import android.support.v4.util.SimpleArrayMap;
+import android.support.v4.view.accessibility.AccessibilityManagerCompat;
+import android.text.TextUtils;
+import android.view.View;
+import android.view.Window;
+import android.view.accessibility.AccessibilityManager;
+import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.infer.annotation.ThreadSafe;
+import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.displaylist.DisplayList;
+import com.facebook.litho.displaylist.DisplayListException;
+import com.facebook.litho.reference.BorderColorDrawableReference;
+import com.facebook.litho.reference.DrawableReference;
+import com.facebook.litho.reference.Reference;
+import com.facebook.yoga.YogaConstants;
+import com.facebook.yoga.YogaDirection;
+import com.facebook.yoga.YogaEdge;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * The main role of {@link LayoutState} is to hold the output of layout calculation. This includes

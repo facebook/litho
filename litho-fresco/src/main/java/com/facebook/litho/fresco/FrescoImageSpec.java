@@ -9,10 +9,11 @@
 
 package com.facebook.litho.fresco;
 
+import static com.facebook.litho.annotations.ResType.DRAWABLE;
+
 import android.graphics.ColorFilter;
 import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
-
 import com.facebook.drawee.drawable.ScalingUtils;
 import com.facebook.drawee.generic.GenericDraweeHierarchy;
 import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
@@ -32,8 +33,6 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.utils.MeasureUtils;
-
-import static com.facebook.litho.annotations.ResType.DRAWABLE;
 
 @MountSpec
 class FrescoImageSpec {

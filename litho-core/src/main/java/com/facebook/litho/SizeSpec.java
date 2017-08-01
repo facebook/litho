@@ -28,13 +28,11 @@
 
 package com.facebook.litho;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
 import android.support.annotation.IntDef;
 import android.view.View;
-
 import com.facebook.yoga.YogaMeasureMode;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * A SizeSpec encapsulates the layout requirements passed from parent to child.

@@ -9,6 +9,9 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.Component.isHostSpec;
+import static com.facebook.litho.Component.isMountViewSpec;
+
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -16,11 +19,7 @@ import android.graphics.Paint.Style;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
-
 import com.facebook.litho.config.ComponentsConfiguration;
-
-import static com.facebook.litho.Component.isHostSpec;
-import static com.facebook.litho.Component.isMountViewSpec;
 
 /**
  * Draw operations used in developer options.

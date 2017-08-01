@@ -9,6 +9,13 @@
 
 package com.facebook.litho.widget;
 
+import static android.os.Build.VERSION.SDK_INT;
+import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
+import static android.text.Layout.Alignment.ALIGN_NORMAL;
+import static android.view.View.TEXT_ALIGNMENT_CENTER;
+import static android.view.View.TEXT_ALIGNMENT_TEXT_END;
+import static android.view.View.TEXT_ALIGNMENT_TEXT_START;
+
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
@@ -23,7 +30,6 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.EventHandler;
@@ -42,13 +48,6 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.utils.MeasureUtils;
-
-import static android.os.Build.VERSION.SDK_INT;
-import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
-import static android.text.Layout.Alignment.ALIGN_NORMAL;
-import static android.view.View.TEXT_ALIGNMENT_CENTER;
-import static android.view.View.TEXT_ALIGNMENT_TEXT_END;
-import static android.view.View.TEXT_ALIGNMENT_TEXT_START;
 
 /**
  * Component that renders an {@link EditText}.

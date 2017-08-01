@@ -10,12 +10,10 @@
 
 package com.facebook.litho.animation;
 
-import java.util.ArrayList;
-
 import com.facebook.litho.dataflow.ConstantNode;
 import com.facebook.litho.dataflow.SpringNode;
 import com.facebook.litho.dataflow.ValueNode;
-import com.facebook.litho.internal.ArraySet;
+import java.util.ArrayList;
 
 /**
  * Animation for the transition of the position of a mount content on a quadratic Bezier curve.

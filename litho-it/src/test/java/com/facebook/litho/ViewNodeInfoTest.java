@@ -9,17 +9,15 @@
 
 package com.facebook.litho;
 
+import static junit.framework.Assert.fail;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+
 import android.graphics.Rect;
-
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.reflect.Whitebox;
-
-import static junit.framework.Assert.fail;
-import static org.assertj.core.api.Java6Assertions.assertThat;
 
 /**
  * Tests {@link ViewNodeInfo}

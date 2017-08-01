@@ -9,13 +9,12 @@
 
 package com.facebook.litho.widget;
 
-import java.lang.reflect.Field;
-
 import android.annotation.TargetApi;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.util.LongSparseArray;
 import android.util.SparseArray;
+import java.lang.reflect.Field;
 
 public class SynchronizedTypefaceHelper {
 

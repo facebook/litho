@@ -9,21 +9,6 @@
 
 package com.facebook.litho;
 
-import android.graphics.Color;
-
-import com.facebook.litho.testing.ComponentTestHelper;
-import com.facebook.litho.testing.TestComponent;
-import com.facebook.litho.testing.TestDrawableComponent;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-import com.facebook.litho.testing.util.InlineLayoutSpec;
-import com.facebook.litho.widget.SolidColor;
-import com.facebook.litho.widget.Text;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
-
 import static android.graphics.Color.BLACK;
 import static android.graphics.Color.WHITE;
 import static android.view.View.MeasureSpec.AT_MOST;
@@ -39,6 +24,19 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import android.graphics.Color;
+import com.facebook.litho.testing.ComponentTestHelper;
+import com.facebook.litho.testing.TestComponent;
+import com.facebook.litho.testing.TestDrawableComponent;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.util.InlineLayoutSpec;
+import com.facebook.litho.widget.SolidColor;
+import com.facebook.litho.widget.Text;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class MountStateRemountInPlaceTest {

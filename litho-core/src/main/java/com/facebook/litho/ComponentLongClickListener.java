@@ -9,9 +9,9 @@
 
 package com.facebook.litho;
 
-import android.view.View;
-
 import static com.facebook.litho.EventDispatcherUtils.dispatchOnLongClick;
+
+import android.view.View;
 
 /**
  * Long click listener that triggers its underlying event handler.

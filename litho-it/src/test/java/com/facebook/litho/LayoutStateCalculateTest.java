@@ -9,31 +9,6 @@
 
 package com.facebook.litho;
 
-import android.content.Context;
-import android.graphics.Rect;
-import android.util.SparseArray;
-import android.view.accessibility.AccessibilityManager;
-
-import com.facebook.litho.testing.TestComponent;
-import com.facebook.litho.testing.TestDrawableComponent;
-import com.facebook.litho.testing.TestLayoutComponent;
-import com.facebook.litho.testing.TestNullLayoutComponent;
-import com.facebook.litho.testing.TestSizeDependentComponent;
-import com.facebook.litho.testing.TestViewComponent;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-import com.facebook.litho.testing.util.InlineLayoutSpec;
-import com.facebook.litho.widget.Text;
-import com.facebook.yoga.YogaAlign;
-import com.facebook.yoga.YogaEdge;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.reflect.Whitebox;
-import org.robolectric.RuntimeEnvironment;
-import org.robolectric.Shadows;
-import org.robolectric.shadows.ShadowAccessibilityManager;
-
 import static android.content.Context.ACCESSIBILITY_SERVICE;
 import static android.graphics.Color.GREEN;
 import static android.graphics.Color.RED;
@@ -69,6 +44,29 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.validateMockitoUsage;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.RuntimeEnvironment.application;
+
+import android.content.Context;
+import android.graphics.Rect;
+import android.util.SparseArray;
+import android.view.accessibility.AccessibilityManager;
+import com.facebook.litho.testing.TestComponent;
+import com.facebook.litho.testing.TestDrawableComponent;
+import com.facebook.litho.testing.TestLayoutComponent;
+import com.facebook.litho.testing.TestNullLayoutComponent;
+import com.facebook.litho.testing.TestSizeDependentComponent;
+import com.facebook.litho.testing.TestViewComponent;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.util.InlineLayoutSpec;
+import com.facebook.litho.widget.Text;
+import com.facebook.yoga.YogaAlign;
+import com.facebook.yoga.YogaEdge;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.reflect.Whitebox;
+import org.robolectric.RuntimeEnvironment;
+import org.robolectric.Shadows;
+import org.robolectric.shadows.ShadowAccessibilityManager;
 
 @RunWith(ComponentsTestRunner.class)
 public class LayoutStateCalculateTest {

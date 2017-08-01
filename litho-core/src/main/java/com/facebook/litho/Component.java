@@ -9,21 +9,19 @@
 
 package com.facebook.litho;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.BitSet;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import android.support.annotation.AttrRes;
 import android.support.annotation.StyleRes;
 import android.support.annotation.VisibleForTesting;
-
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.ComponentLifecycle.MountType;
 import com.facebook.litho.ComponentLifecycle.StateContainer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Represents a unique instance of a component that is driven by its matching

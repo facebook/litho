@@ -9,20 +9,18 @@
 
 package com.facebook.litho.testing;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.support.annotation.AttrRes;
 import android.support.annotation.StyleRes;
 import android.support.v4.util.Pools;
 import android.view.View;
-
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TestViewComponent extends ComponentLifecycle {
   private static final List<TestViewComponent> sInstances = new ArrayList<>();

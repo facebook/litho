@@ -9,8 +9,6 @@
 
 package com.facebook.litho.widget;
 
-import java.util.List;
-
 import android.graphics.Color;
 import android.support.annotation.IdRes;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
@@ -19,7 +17,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ItemAnimator;
 import android.support.v7.widget.RecyclerView.OnScrollListener;
 import android.view.View;
-
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Diff;
@@ -43,6 +40,7 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.ShouldUpdate;
+import java.util.List;
 
 /**
  * Components that renders a {@link RecyclerView}.

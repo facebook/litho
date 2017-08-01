@@ -9,16 +9,15 @@
 
 package com.facebook.litho;
 
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
 import static com.facebook.litho.ComponentLayout.Builder;
 import static com.facebook.litho.Layout.create;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.robolectric.RuntimeEnvironment.application;
+
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 @RunWith(ComponentsTestRunner.class)
 public class LayoutTest {

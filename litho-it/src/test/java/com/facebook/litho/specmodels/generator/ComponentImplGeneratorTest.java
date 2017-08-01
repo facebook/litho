@@ -9,8 +9,9 @@
 
 package com.facebook.litho.specmodels.generator;
 
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.Elements;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
@@ -28,16 +29,13 @@ import com.facebook.litho.specmodels.model.PropModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.StateParamModel;
 import com.facebook.litho.specmodels.processor.LayoutSpecModelFactory;
-
 import com.google.testing.compile.CompilationRule;
 import com.squareup.javapoet.ClassName;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Elements;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-
-import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Tests {@link ComponentImplGenerator}

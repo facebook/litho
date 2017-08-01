@@ -9,9 +9,8 @@
 
 package com.facebook.litho.specmodels.model;
 
-import java.util.List;
-
 import com.squareup.javapoet.ClassName;
+import java.util.List;
 
 /**
  * Constants used in {@link SpecModel}s.

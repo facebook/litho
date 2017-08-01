@@ -9,6 +9,8 @@
 
 package com.facebook.litho;
 
+import static android.support.annotation.Dimension.DP;
+
 import android.graphics.drawable.Drawable;
 import android.support.annotation.AttrRes;
 import android.support.annotation.ColorInt;
@@ -19,7 +21,6 @@ import android.support.annotation.Px;
 import android.support.annotation.StringRes;
 import android.util.SparseArray;
 import android.view.ViewOutlineProvider;
-
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.reference.Reference;
@@ -29,8 +30,6 @@ import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaJustify;
 import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaWrap;
-
-import static android.support.annotation.Dimension.DP;
 
 /**
  * Represents a {@link Component}'s computed layout state. The computed bounds will be

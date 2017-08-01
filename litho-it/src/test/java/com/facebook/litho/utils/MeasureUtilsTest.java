@@ -9,14 +9,6 @@
 
 package com.facebook.litho.utils;
 
-import android.view.View.MeasureSpec;
-
-import com.facebook.litho.Size;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static com.facebook.litho.SizeSpec.AT_MOST;
 import static com.facebook.litho.SizeSpec.EXACTLY;
@@ -27,6 +19,12 @@ import static com.facebook.litho.utils.MeasureUtils.measureWithAspectRatio;
 import static com.facebook.litho.utils.MeasureUtils.measureWithDesiredPx;
 import static com.facebook.litho.utils.MeasureUtils.measureWithEqualDimens;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+
+import android.view.View.MeasureSpec;
+import com.facebook.litho.Size;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 @RunWith(ComponentsTestRunner.class)
 public class MeasureUtilsTest {

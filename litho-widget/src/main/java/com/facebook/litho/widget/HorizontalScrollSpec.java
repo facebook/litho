@@ -9,12 +9,14 @@
 
 package com.facebook.litho.widget;
 
+import static com.facebook.litho.SizeSpec.EXACTLY;
+import static com.facebook.litho.SizeSpec.UNSPECIFIED;
+
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.v4.util.Pools.SynchronizedPool;
 import android.view.ViewTreeObserver;
 import android.widget.HorizontalScrollView;
-
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
@@ -41,9 +43,6 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
-
-import static com.facebook.litho.SizeSpec.EXACTLY;
-import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 
 /**
  * A component that wraps another component and allow it to be horizontally scrollable. It's

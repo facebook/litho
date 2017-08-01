@@ -8,6 +8,8 @@
 
 package com.facebook.samples.lithobarebones;
 
+import static com.facebook.yoga.YogaEdge.ALL;
+
 import com.facebook.litho.Column;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
@@ -15,8 +17,6 @@ import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.widget.Text;
-
-import static com.facebook.yoga.YogaEdge.ALL;
 
 @LayoutSpec
 public class ListItemSpec {

@@ -9,9 +9,7 @@
 
 package com.facebook.litho;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
+import static com.facebook.litho.AnimationsDebug.TAG;
 
 import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
@@ -19,7 +17,6 @@ import android.support.v4.util.SimpleArrayMap;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewParent;
-
 import com.facebook.litho.animation.AnimatedProperty;
 import com.facebook.litho.animation.AnimatedPropertyNode;
 import com.facebook.litho.animation.AnimationBinding;
@@ -28,8 +25,9 @@ import com.facebook.litho.animation.PropertyAnimation;
 import com.facebook.litho.animation.PropertyHandle;
 import com.facebook.litho.animation.Resolver;
 import com.facebook.litho.internal.ArraySet;
-
-import static com.facebook.litho.AnimationsDebug.TAG;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
 
 /**
  * Handles animating transitions defined by ComponentSpec's onCreateTransition code.

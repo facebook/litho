@@ -9,10 +9,9 @@
 
 package com.facebook.litho;
 
-import java.util.Arrays;
-
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaEdge;
+import java.util.Arrays;
 
 public class Edges {
 

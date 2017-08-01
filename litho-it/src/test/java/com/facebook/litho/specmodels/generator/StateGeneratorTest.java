@@ -10,8 +10,7 @@
 
 package com.facebook.litho.specmodels.generator;
 
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.Elements;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
@@ -23,13 +22,12 @@ import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.processor.LayoutSpecModelFactory;
-
 import com.google.testing.compile.CompilationRule;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Elements;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-
-import static org.assertj.core.api.Java6Assertions.assertThat;
 
 /**
  * Tests {@link StateGenerator}

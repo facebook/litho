@@ -9,19 +9,16 @@
 
 package com.facebook.litho.specmodels.model;
 
-import javax.annotation.Nullable;
-
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.List;
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.DELEGATE_FIELD_NAME;
+import static com.facebook.litho.specmodels.model.ClassNames.OUTPUT;
 
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
-
 import com.squareup.javapoet.ParameterizedTypeName;
-
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.DELEGATE_FIELD_NAME;
-import static com.facebook.litho.specmodels.model.ClassNames.OUTPUT;
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * Utility methods for {@link SpecModel}s.

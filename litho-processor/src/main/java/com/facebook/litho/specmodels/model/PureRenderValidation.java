@@ -9,12 +9,10 @@
 
 package com.facebook.litho.specmodels.model;
 
+import com.facebook.litho.annotations.ShouldUpdate;
+import com.squareup.javapoet.ParameterizedTypeName;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.facebook.litho.annotations.ShouldUpdate;
-
-import com.squareup.javapoet.ParameterizedTypeName;
 
 /**
  * Class for validating that the pure render methods within a {@link SpecModel} are well-formed.

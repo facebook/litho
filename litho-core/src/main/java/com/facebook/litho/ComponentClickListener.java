@@ -9,9 +9,9 @@
 
 package com.facebook.litho;
 
-import android.view.View;
-
 import static com.facebook.litho.EventDispatcherUtils.dispatchOnClick;
+
+import android.view.View;
 
 /**
  * Click listener that triggers its underlying event handler.

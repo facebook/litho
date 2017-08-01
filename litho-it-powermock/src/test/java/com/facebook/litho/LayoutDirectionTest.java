@@ -9,23 +9,6 @@
 
 package com.facebook.litho;
 
-import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
-import android.view.View;
-
-import com.facebook.litho.testing.TestComponent;
-import com.facebook.litho.testing.TestDrawableComponent;
-import com.facebook.litho.testing.shadows.LayoutDirectionViewGroupShadow;
-import com.facebook.litho.testing.shadows.LayoutDirectionViewShadow;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-import com.facebook.litho.testing.util.InlineLayoutSpec;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
-
 import static android.os.Build.VERSION_CODES.LOLLIPOP;
 import static android.view.View.LAYOUT_DIRECTION_RTL;
 import static com.facebook.litho.testing.ComponentTestHelper.mountComponent;
@@ -35,6 +18,21 @@ import static com.facebook.yoga.YogaDirection.RTL;
 import static com.facebook.yoga.YogaEdge.END;
 import static com.facebook.yoga.YogaEdge.START;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.view.View;
+import com.facebook.litho.testing.TestComponent;
+import com.facebook.litho.testing.TestDrawableComponent;
+import com.facebook.litho.testing.shadows.LayoutDirectionViewGroupShadow;
+import com.facebook.litho.testing.shadows.LayoutDirectionViewShadow;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.util.InlineLayoutSpec;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 
 @Config(
     manifest = Config.NONE,

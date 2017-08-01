@@ -10,7 +10,6 @@
 package com.facebook.litho.animation;
 
 import android.view.View;
-
 import com.facebook.litho.AnimatableItem;
 import com.facebook.litho.LithoView;
 

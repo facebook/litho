@@ -9,11 +9,21 @@
 
 package com.facebook.litho;
 
-import javax.annotation.Nullable;
-
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import static android.os.Build.VERSION.SDK_INT;
+import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
+import static android.os.Build.VERSION_CODES.JELLY_BEAN;
+import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
+import static android.support.annotation.Dimension.DP;
+import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
+import static com.facebook.yoga.YogaEdge.ALL;
+import static com.facebook.yoga.YogaEdge.BOTTOM;
+import static com.facebook.yoga.YogaEdge.END;
+import static com.facebook.yoga.YogaEdge.HORIZONTAL;
+import static com.facebook.yoga.YogaEdge.LEFT;
+import static com.facebook.yoga.YogaEdge.RIGHT;
+import static com.facebook.yoga.YogaEdge.START;
+import static com.facebook.yoga.YogaEdge.TOP;
+import static com.facebook.yoga.YogaEdge.VERTICAL;
 
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -32,7 +42,6 @@ import android.support.v4.view.ViewCompat;
 import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.ViewOutlineProvider;
-
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
@@ -49,22 +58,10 @@ import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaWrap;
-
-import static android.os.Build.VERSION.SDK_INT;
-import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
-import static android.os.Build.VERSION_CODES.JELLY_BEAN;
-import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
-import static android.support.annotation.Dimension.DP;
-import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
-import static com.facebook.yoga.YogaEdge.ALL;
-import static com.facebook.yoga.YogaEdge.BOTTOM;
-import static com.facebook.yoga.YogaEdge.END;
-import static com.facebook.yoga.YogaEdge.HORIZONTAL;
-import static com.facebook.yoga.YogaEdge.LEFT;
-import static com.facebook.yoga.YogaEdge.RIGHT;
-import static com.facebook.yoga.YogaEdge.START;
-import static com.facebook.yoga.YogaEdge.TOP;
-import static com.facebook.yoga.YogaEdge.VERTICAL;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * Internal class representing both a {@link ComponentLayout} and a

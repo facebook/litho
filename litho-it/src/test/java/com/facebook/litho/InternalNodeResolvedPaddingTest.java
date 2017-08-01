@@ -9,14 +9,6 @@
 
 package com.facebook.litho;
 
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-import com.facebook.yoga.YogaDirection;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
-
 import static com.facebook.yoga.YogaDirection.LTR;
 import static com.facebook.yoga.YogaDirection.RTL;
 import static com.facebook.yoga.YogaEdge.END;
@@ -24,6 +16,13 @@ import static com.facebook.yoga.YogaEdge.LEFT;
 import static com.facebook.yoga.YogaEdge.RIGHT;
 import static com.facebook.yoga.YogaEdge.START;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.yoga.YogaDirection;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class InternalNodeResolvedPaddingTest {

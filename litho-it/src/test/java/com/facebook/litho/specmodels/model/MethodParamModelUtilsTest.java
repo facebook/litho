@@ -9,15 +9,14 @@
 
 package com.facebook.litho.specmodels.model;
 
-import com.facebook.litho.testing.specmodels.TestMethodParamModel;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
+import com.facebook.litho.testing.specmodels.TestMethodParamModel;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeVariableName;
 import org.junit.Test;
-
-import static org.assertj.core.api.Java6Assertions.assertThat;
 
 /**
  * Tests {@link MethodParamModelUtils}

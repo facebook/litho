@@ -9,13 +9,13 @@
 
 package com.facebook.litho.specmodels.model;
 
-import javax.lang.model.element.Modifier;
-
-import java.lang.annotation.Annotation;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.TreeMap;
+import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF;
+import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.INTER_STAGE_OUTPUT;
+import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.PROP;
+import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.PROP_OUTPUT;
+import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.STATE;
+import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.STATE_VALUE;
+import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.TREE_PROP;
 
 import com.facebook.litho.annotations.FromBind;
 import com.facebook.litho.annotations.FromBoundsDefined;
@@ -41,18 +41,15 @@ import com.facebook.litho.annotations.OnPrepare;
 import com.facebook.litho.annotations.OnUnbind;
 import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.specmodels.internal.ImmutableList;
-
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
-
-import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF;
-import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.INTER_STAGE_OUTPUT;
-import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.PROP;
-import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.PROP_OUTPUT;
-import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.STATE;
-import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.STATE_VALUE;
-import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.TREE_PROP;
+import java.lang.annotation.Annotation;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.TreeMap;
+import javax.lang.model.element.Modifier;
 
 /**
  * Descriptions of delegate methods.

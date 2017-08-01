@@ -10,14 +10,11 @@
 
 package com.facebook.litho.animation;
 
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import android.support.annotation.VisibleForTesting;
-import android.support.v4.util.SimpleArrayMap;
-
 import com.facebook.litho.dataflow.BindingListener;
 import com.facebook.litho.dataflow.GraphBinding;
 import com.facebook.litho.dataflow.ValueNode;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Base class for defining animations for transitions between states of the component hierarchy.

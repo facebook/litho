@@ -9,17 +9,16 @@
 
 package com.facebook.litho.widget;
 
+import static org.assertj.core.api.Java6Assertions.assertThat;
+
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.testing.ComponentTestHelper;
 import com.facebook.litho.testing.ComponentsRule;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import static org.assertj.core.api.Java6Assertions.assertThat;
 
 /**
  * Tests {@link EditText} component.

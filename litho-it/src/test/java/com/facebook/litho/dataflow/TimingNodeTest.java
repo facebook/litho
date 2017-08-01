@@ -9,17 +9,16 @@
 
 package com.facebook.litho.dataflow;
 
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import static com.facebook.litho.dataflow.GraphBinding.create;
+import static com.facebook.litho.dataflow.MockTimingSource.FRAME_TIME_MS;
+import static com.facebook.litho.dataflow.TimingNode.END_INPUT;
+import static com.facebook.litho.dataflow.TimingNode.INITIAL_INPUT;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import static com.facebook.litho.dataflow.GraphBinding.create;
-import static com.facebook.litho.dataflow.TimingNode.END_INPUT;
-import static com.facebook.litho.dataflow.TimingNode.INITIAL_INPUT;
-import static com.facebook.litho.dataflow.MockTimingSource.FRAME_TIME_MS;
-import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(ComponentsTestRunner.class)
 public class TimingNodeTest {

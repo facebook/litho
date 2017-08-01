@@ -9,16 +9,15 @@
 
 package com.facebook.litho.testing.eventhandler;
 
-import com.facebook.litho.EventDispatcher;
-import com.facebook.litho.EventHandler;
-import com.facebook.litho.HasEventDispatcher;
-
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import com.facebook.litho.EventDispatcher;
+import com.facebook.litho.EventHandler;
+import com.facebook.litho.HasEventDispatcher;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 /**
  * Provides utility functions for mocking {@link EventHandler} in a unit test.

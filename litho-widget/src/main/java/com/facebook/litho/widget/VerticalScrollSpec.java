@@ -12,7 +12,6 @@ package com.facebook.litho.widget;
 import android.content.Context;
 import android.view.ViewTreeObserver;
 import android.widget.ScrollView;
-
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;

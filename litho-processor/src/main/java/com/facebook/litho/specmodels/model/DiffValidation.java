@@ -9,15 +9,13 @@
 
 package com.facebook.litho.specmodels.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.specmodels.internal.ImmutableList;
-
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class for validating that Diff parameter usages within a {@link SpecModel} are well-formed.

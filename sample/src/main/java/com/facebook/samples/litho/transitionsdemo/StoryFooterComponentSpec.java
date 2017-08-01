@@ -14,17 +14,16 @@
 package com.facebook.samples.litho.transitionsdemo;
 
 import android.graphics.Color;
-
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Row;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.Transition;
 import com.facebook.litho.TransitionSet;
-import com.facebook.litho.animation.DimensionValue;
 import com.facebook.litho.animation.AnimatedProperties;
+import com.facebook.litho.animation.DimensionValue;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnCreateTransition;

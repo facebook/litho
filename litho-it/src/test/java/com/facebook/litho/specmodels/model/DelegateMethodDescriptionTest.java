@@ -9,19 +9,17 @@
 
 package com.facebook.litho.specmodels.model;
 
-import javax.lang.model.element.Modifier;
-
-import com.facebook.litho.specmodels.internal.ImmutableList;
-import com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType;
-
-import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.TypeName;
-import org.junit.Test;
-
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.PROP;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.STATE;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+
+import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType;
+import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.TypeName;
+import javax.lang.model.element.Modifier;
+import org.junit.Test;
 
 /**
  * Tests {@link DelegateMethodDescription}

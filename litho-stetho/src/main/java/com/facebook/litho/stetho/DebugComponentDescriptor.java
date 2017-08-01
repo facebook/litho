@@ -9,10 +9,8 @@
 
 package com.facebook.litho.stetho;
 
-import java.lang.reflect.Field;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import static com.facebook.litho.FrameworkLogEvents.EVENT_STETHO_INSPECT_COMPONENT;
+import static com.facebook.litho.FrameworkLogEvents.EVENT_STETHO_UPDATE_COMPONENT;
 
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
@@ -21,7 +19,6 @@ import android.support.v4.util.ArrayMap;
 import android.support.v4.util.Pair;
 import android.support.v4.util.SimpleArrayMap;
 import android.view.View;
-
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLifecycle;
@@ -45,9 +42,10 @@ import com.facebook.yoga.YogaJustify;
 import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaValue;
-
-import static com.facebook.litho.FrameworkLogEvents.EVENT_STETHO_INSPECT_COMPONENT;
-import static com.facebook.litho.FrameworkLogEvents.EVENT_STETHO_UPDATE_COMPONENT;
+import java.lang.reflect.Field;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class DebugComponentDescriptor
     extends AbstractChainedDescriptor<DebugComponent>

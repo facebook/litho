@@ -8,8 +8,6 @@
  */
 package com.facebook.litho;
 
-import java.util.ArrayList;
-
 import com.facebook.litho.animation.AnimatedProperty;
 import com.facebook.litho.animation.AnimationBinding;
 import com.facebook.litho.animation.DimensionValue;
@@ -19,6 +17,7 @@ import com.facebook.litho.animation.PropertyHandle;
 import com.facebook.litho.animation.RuntimeValue;
 import com.facebook.litho.animation.SpringTransition;
 import com.facebook.litho.animation.TransitionAnimationBinding;
+import java.util.ArrayList;
 
 /**
  * Defines how a property on a component should animate as it changes, allowing you to optionally

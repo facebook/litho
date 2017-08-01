@@ -9,13 +9,11 @@
 
 package com.facebook.litho.specmodels.model;
 
-import javax.annotation.concurrent.Immutable;
-
-import java.lang.annotation.Annotation;
-import java.util.List;
-
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.TypeName;
+import java.lang.annotation.Annotation;
+import java.util.List;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Model that is an abstract representation of a Diff parameter to a lifecycle method. This is used

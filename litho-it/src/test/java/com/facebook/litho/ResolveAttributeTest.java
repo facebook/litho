@@ -9,17 +9,6 @@
 
 package com.facebook.litho;
 
-import android.graphics.drawable.Drawable;
-import android.view.ContextThemeWrapper;
-
-import com.facebook.litho.it.R;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
-
 import static com.facebook.litho.Column.create;
 import static com.facebook.litho.it.R.attr.testAttrDimen;
 import static com.facebook.litho.it.R.attr.testAttrDrawable;
@@ -30,6 +19,15 @@ import static com.facebook.litho.it.R.dimen.test_dimen;
 import static com.facebook.litho.it.R.drawable.test_bg;
 import static com.facebook.litho.reference.Reference.acquire;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+
+import android.graphics.drawable.Drawable;
+import android.view.ContextThemeWrapper;
+import com.facebook.litho.it.R;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class ResolveAttributeTest {

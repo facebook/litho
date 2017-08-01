@@ -8,6 +8,9 @@
 
 package com.facebook.samples.litho.lithography;
 
+import static com.facebook.yoga.YogaEdge.HORIZONTAL;
+import static com.facebook.yoga.YogaEdge.VERTICAL;
+
 import com.facebook.litho.Column;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
@@ -16,9 +19,6 @@ import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.widget.Card;
 import com.facebook.litho.widget.RecyclerBinder;
-
-import static com.facebook.yoga.YogaEdge.HORIZONTAL;
-import static com.facebook.yoga.YogaEdge.VERTICAL;
 
 @LayoutSpec
 public class FeedItemCardSpec {

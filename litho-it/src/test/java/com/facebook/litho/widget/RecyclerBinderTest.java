@@ -9,34 +9,6 @@
 
 package com.facebook.litho.widget;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.OrientationHelper;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.OnScrollListener;
-
-import com.facebook.litho.Component;
-import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentInfo;
-import com.facebook.litho.ComponentTree;
-import com.facebook.litho.EventHandler;
-import com.facebook.litho.LayoutHandler;
-import com.facebook.litho.Size;
-import com.facebook.litho.SizeSpec;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-
-import junit.framework.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.robolectric.RuntimeEnvironment;
-
 import static com.facebook.litho.ComponentInfo.create;
 import static com.facebook.litho.SizeSpec.AT_MOST;
 import static com.facebook.litho.SizeSpec.EXACTLY;
@@ -49,6 +21,31 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.OrientationHelper;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.OnScrollListener;
+import com.facebook.litho.Component;
+import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentInfo;
+import com.facebook.litho.ComponentTree;
+import com.facebook.litho.EventHandler;
+import com.facebook.litho.LayoutHandler;
+import com.facebook.litho.Size;
+import com.facebook.litho.SizeSpec;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import junit.framework.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.robolectric.RuntimeEnvironment;
 
 /**
  * Tests for {@link RecyclerBinder}

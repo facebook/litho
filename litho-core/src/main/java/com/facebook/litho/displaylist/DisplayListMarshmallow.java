@@ -9,13 +9,12 @@
 
 package com.facebook.litho.displaylist;
 
-import java.lang.reflect.Method;
+import static com.facebook.litho.displaylist.Utils.safeInvoke;
 
 import android.graphics.Canvas;
 import android.view.DisplayListCanvas;
 import android.view.RenderNode;
-
-import static com.facebook.litho.displaylist.Utils.safeInvoke;
+import java.lang.reflect.Method;
 
 /**
  * Implementation of {@link PlatformDisplayList} for Android Marshmallow.

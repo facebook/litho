@@ -9,7 +9,8 @@
 
 package com.facebook.litho.reference;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import static android.os.Build.VERSION.SDK_INT;
+import static android.os.Build.VERSION_CODES.HONEYCOMB;
 
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -18,9 +19,7 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.util.LruCache;
 import android.support.v4.util.Pools;
 import android.util.StateSet;
-
-import static android.os.Build.VERSION.SDK_INT;
-import static android.os.Build.VERSION_CODES.HONEYCOMB;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A cache that holds Drawables retreived from Android {@link android.content.res.Resources} for
