@@ -852,8 +852,12 @@ public class ComponentsPools {
     sDisplayListContainerPool.clear();
     sVisibilityOutputPool.clear();
     sVisibilityItemPool.clear();
-    sTestOutputPool.clear();
-    sTestItemPool.clear();
+    if (sTestOutputPool != null) {
+      sTestOutputPool.clear();
+    }
+    if (sTestItemPool != null) {
+      sTestItemPool.clear();
+    }
     sOutputPool.clear();
     sDiffNodePool.clear();
     sDiffPool.clear();
@@ -867,7 +871,9 @@ public class ComponentsPools {
     sRectFPool.clear();
     sEdgesPool.clear();
     sDisplayListDrawablePool.clear();
-    sBorderColorDrawablePool.clear();
+    if (sBorderColorDrawablePool != null) {
+      sBorderColorDrawablePool.clear();
+    }
     sArraySetPool.clear();
     sArrayDequePool.clear();
     sRenderStatePool.clear();
