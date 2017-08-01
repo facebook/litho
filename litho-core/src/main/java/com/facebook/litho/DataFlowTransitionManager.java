@@ -17,6 +17,8 @@ import android.support.v4.util.SimpleArrayMap;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewParent;
+
+import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.animation.AnimatedProperty;
 import com.facebook.litho.animation.AnimatedPropertyNode;
 import com.facebook.litho.animation.AnimationBinding;
@@ -160,6 +162,12 @@ public class DataFlowTransitionManager {
      * While calculating animations, the next (after) LayoutOutput.
      */
     public @Nullable LayoutOutput nextLayoutOutput;
+
+    /**
+     * Whether this transition key was seen in the last transition, either in the current or next
+     * {@link LayoutState}s.
+     */
+    public boolean seenInLastTransition = false;
   }
 
   private final ArrayList<AnimationBinding> mAnimationsToRun = new ArrayList<>();
@@ -186,6 +194,10 @@ public class DataFlowTransitionManager {
    * {@link #runTransitions} to restore the initial states and run the animations.
    */
   void setupTransitions(LayoutState currentLayoutState, LayoutState nextLayoutState) {
+    for (int i = 0, size = mAnimationStates.size(); i < size; i++) {
+      mAnimationStates.valueAt(i).seenInLastTransition = false;
+    }
+
     final SimpleArrayMap<String, LayoutOutput> currentTransitionKeys =
         currentLayoutState.getTransitionKeyMapping();
     final SimpleArrayMap<String, LayoutOutput> nextTransitionKeys =
@@ -336,6 +348,8 @@ public class DataFlowTransitionManager {
       animationState.nextLayoutOutput.incrementRefCount();
     }
 
+    animationState.seenInLastTransition = true;
+
     if (AnimationsDebug.ENABLED) {
       Log.d(
           AnimationsDebug.TAG,
@@ -347,96 +361,149 @@ public class DataFlowTransitionManager {
   private void createTransitionAnimations(ArrayList<Transition> transitions) {
     for (int i = 0, size = transitions.size(); i < size; i++) {
       final Transition transition = transitions.get(i);
-      final String key = transition.getTransitionKey();
-      final AnimatedProperty animatedProperty = transition.getAnimatedProperty();
-      final AnimationState animationState = mAnimationStates.get(key);
+      final Transition.AnimationTarget animationTarget = transition.getAnimationTarget();
+      switch (animationTarget.componentTarget.componentTargetType) {
+        case ALL:
+          addTransitionsForAllKeys(transition);
+          break;
+        case SET:
+          final String[] keys = (String[]) animationTarget.componentTarget.componentTargetExtraData;
+          for (int j = 0; j < keys.length; j++) {
+            maybeAddTransition(transition, keys[j]);
+          }
+          break;
+        case SINGLE:
+          maybeAddTransition(
+              transition,
+              (String) animationTarget.componentTarget.componentTargetExtraData);
+          break;
+      }
+    }
+  }
 
+  private void addTransitionsForAllKeys(Transition transition) {
+    for (int i = 0, size = mAnimationStates.size(); i < size; i++) {
+      final AnimationState animationState = mAnimationStates.valueAt(i);
+      if (!animationState.seenInLastTransition) {
+        continue;
+      }
+      maybeAddTransition(transition, mAnimationStates.keyAt(i));
+    }
+  }
+
+  private void maybeAddTransition(Transition transition, String key) {
+    final Transition.AnimationTarget animationTarget = transition.getAnimationTarget();
+    switch (animationTarget.propertyTarget.propertyTargetType) {
+      case ALL:
+        // TODO(t20555897): Enumerate all animatable properties on a LayoutOutput
+        for (int i = 0; i < AnimatedProperties.ALL_PROPERTIES.length; i++) {
+          maybeAddTransition(transition, key, AnimatedProperties.ALL_PROPERTIES[i]);
+        }
+        break;
+      case SET:
+        final AnimatedProperty[] properties =
+            (AnimatedProperty[]) animationTarget.propertyTarget.propertyTargetExtraData;
+        for (int i = 0; i < properties.length; i++) {
+          maybeAddTransition(transition, key, properties[i]);
+        }
+        break;
+      case SINGLE:
+        maybeAddTransition(
+            transition,
+            key,
+            (AnimatedProperty) animationTarget.propertyTarget.propertyTargetExtraData);
+        break;
+    }
+  }
+
+  private void maybeAddTransition(Transition transition, String key, AnimatedProperty property) {
+    final AnimationState animationState = mAnimationStates.get(key);
+
+    if (AnimationsDebug.ENABLED) {
+      Log.d(
+          AnimationsDebug.TAG,
+          "Calculating transitions for " + key + "#" + property.getName() + ":");
+    }
+
+    if (animationState == null ||
+        (animationState.currentLayoutOutput == null && animationState.nextLayoutOutput == null)) {
       if (AnimationsDebug.ENABLED) {
         Log.d(
             AnimationsDebug.TAG,
-            "Calculating transitions for " + key + "#" + animatedProperty.getName() + ":");
+            " - this key was not seen in the before/after layout state");
       }
-
-      if (animationState == null ||
-          (animationState.currentLayoutOutput == null && animationState.nextLayoutOutput == null)) {
-        if (AnimationsDebug.ENABLED) {
-          Log.d(
-              AnimationsDebug.TAG,
-              " - this key was not seen in the before/after layout state");
-        }
-        continue;
-      }
-
-      final int changeType = animationState.changeType;
-      final String changeTypeString = changeTypeToString(animationState.changeType);
-      if ((changeType == ChangeType.APPEARED && !transition.hasAppearAnimation()) ||
-          (changeType == ChangeType.DISAPPEARED && !transition.hasDisappearAnimation())) {
-        if (AnimationsDebug.ENABLED) {
-          Log.d(
-              AnimationsDebug.TAG,
-              " - did not find matching transition for change type " + changeTypeString);
-        }
-        continue;
-      }
-
-      final PropertyState existingState = animationState.propertyStates.get(animatedProperty);
-      final PropertyHandle propertyHandle = new PropertyHandle(key, animatedProperty);
-      final float startValue;
-      if (existingState != null) {
-        startValue = existingState.animatedPropertyNode.getValue();
-      } else {
-        if (animationState.changeType != ChangeType.APPEARED) {
-          startValue = animatedProperty.get(animationState.currentLayoutOutput);
-        } else {
-          startValue = transition.getAppearFrom().resolve(mResolver, propertyHandle);
-        }
-      }
-
-      final float endValue;
-      if (animationState.changeType != ChangeType.DISAPPEARED) {
-        endValue = animatedProperty.get(animationState.nextLayoutOutput);
-      } else {
-        endValue = transition.getDisappearTo().resolve(mResolver, propertyHandle);
-      }
-
-      // Don't replace new animations in two cases: 1) we're already animating that property to
-      // the same end value or 2) the start and end values are already the same
-      if (existingState != null && existingState.targetValue != null) {
-        if (endValue == existingState.targetValue) {
-          if (AnimationsDebug.ENABLED) {
-            Log.d(
-                AnimationsDebug.TAG,
-                " - property is already animating to this end value: " + endValue);
-          }
-          continue;
-        }
-      } else if (startValue == endValue) {
-        if (AnimationsDebug.ENABLED) {
-          Log.d(
-              AnimationsDebug.TAG,
-              " - the start and end values were the same: " + startValue + " = " + endValue);
-        }
-        continue;
-      }
-
-      if (AnimationsDebug.ENABLED) {
-        Log.d(AnimationsDebug.TAG, " - created animation");
-      }
-
-      mAnimationsToRun.add(transition.createAnimation(endValue));
-
-      PropertyState propertyState = existingState;
-      if (propertyState == null) {
-        propertyState = new PropertyState();
-        propertyState.animatedPropertyNode = new AnimatedPropertyNode(
-            animationState.mountContent,
-            animatedProperty);
-        animationState.propertyStates.put(animatedProperty, propertyState);
-      }
-      propertyState.animatedPropertyNode.setValue(startValue);
-
-      mInitialStatesToRestore.put(propertyHandle, startValue);
+      return;
     }
+
+    final int changeType = animationState.changeType;
+    final String changeTypeString = changeTypeToString(animationState.changeType);
+    if ((changeType == ChangeType.APPEARED && !transition.hasAppearAnimation()) ||
+        (changeType == ChangeType.DISAPPEARED && !transition.hasDisappearAnimation())) {
+      if (AnimationsDebug.ENABLED) {
+        Log.d(
+            AnimationsDebug.TAG,
+            " - did not find matching transition for change type " + changeTypeString);
+      }
+      return;
+    }
+
+    final PropertyState existingState = animationState.propertyStates.get(property);
+    final PropertyHandle propertyHandle = new PropertyHandle(key, property);
+    final float startValue;
+    if (existingState != null) {
+      startValue = existingState.animatedPropertyNode.getValue();
+    } else {
+      if (animationState.changeType != ChangeType.APPEARED) {
+        startValue = property.get(animationState.currentLayoutOutput);
+      } else {
+        startValue = transition.getAppearFrom().resolve(mResolver, propertyHandle);
+      }
+    }
+
+    final float endValue;
+    if (animationState.changeType != ChangeType.DISAPPEARED) {
+      endValue = property.get(animationState.nextLayoutOutput);
+    } else {
+      endValue = transition.getDisappearTo().resolve(mResolver, propertyHandle);
+    }
+
+    // Don't replace new animations in two cases: 1) we're already animating that property to
+    // the same end value or 2) the start and end values are already the same
+    if (existingState != null && existingState.targetValue != null) {
+      if (endValue == existingState.targetValue) {
+        if (AnimationsDebug.ENABLED) {
+          Log.d(
+              AnimationsDebug.TAG,
+              " - property is already animating to this end value: " + endValue);
+        }
+        return;
+      }
+    } else if (startValue == endValue) {
+      if (AnimationsDebug.ENABLED) {
+        Log.d(
+            AnimationsDebug.TAG,
+            " - the start and end values were the same: " + startValue + " = " + endValue);
+      }
+      return;
+    }
+
+    if (AnimationsDebug.ENABLED) {
+      Log.d(AnimationsDebug.TAG, " - created animation");
+    }
+
+    mAnimationsToRun.add(transition.createAnimation(propertyHandle, endValue));
+
+    PropertyState propertyState = existingState;
+    if (propertyState == null) {
+      propertyState = new PropertyState();
+      propertyState.animatedPropertyNode = new AnimatedPropertyNode(
+          animationState.mountContent,
+          property);
+      animationState.propertyStates.put(property, propertyState);
+    }
+    propertyState.animatedPropertyNode.setValue(startValue);
+
+    mInitialStatesToRestore.put(propertyHandle, startValue);
   }
 
   private void restoreInitialStates() {

@@ -60,6 +60,12 @@ public final class AnimatedProperties {
    */
   public static final AnimatedProperty SCALE_Y = new ScaleYAnimatedProperty();
 
+  public static final AnimatedProperty[] ALL_PROPERTIES = new AnimatedProperty[] {
+      X,
+      Y,
+      ALPHA
+  };
+
   private AnimatedProperties() {
   }
 

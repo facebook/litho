@@ -80,11 +80,7 @@ public class LeftRightBlocksComponentSpec {
   static TransitionSet onCreateAutoTransition(
       ComponentContext c) {
     return Transition.createSet(
-        Transition.create("red")
-            .animate(AnimatedProperties.X),
-        Transition.create("blue")
-            .animate(AnimatedProperties.X),
-        Transition.create("green")
+        Transition.create(Transition.allKeys())
             .animate(AnimatedProperties.X));
   }
 }

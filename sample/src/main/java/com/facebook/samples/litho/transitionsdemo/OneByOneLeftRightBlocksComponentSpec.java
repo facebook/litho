@@ -91,11 +91,7 @@ public class OneByOneLeftRightBlocksComponentSpec {
   static TransitionSet onCreateAutoTransition(
       ComponentContext c) {
     return Transition.createSet(
-        Transition.create("red")
-            .animate(AnimatedProperties.X),
-        Transition.create("blue")
-            .animate(AnimatedProperties.X),
-        Transition.create("green")
-            .animate(AnimatedProperties.X));
+        Transition.create(Transition.allKeys())
+            .animate(Transition.allProperties()));
   }
 }

@@ -168,18 +168,9 @@ public class StoryFooterComponentSpec {
             .animate(AnimatedProperties.ALPHA)
             .appearFrom(0)
             .disappearTo(0),
-        Transition.create("icon_like")
+        Transition.create("icon_like", "icon_share")
             .animate(AnimatedProperties.X),
-        Transition.create("icon_share")
-            .animate(AnimatedProperties.X),
-        Transition.create("text_like")
-            .animate(AnimatedProperties.ALPHA)
-            .appearFrom(0)
-            .disappearTo(0)
-            .animate(AnimatedProperties.X)
-            .appearFrom(DimensionValue.widthPercentageOffset(50))
-            .disappearTo(DimensionValue.widthPercentageOffset(50)),
-        Transition.create("text_share")
+        Transition.create("text_like", "text_share")
             .animate(AnimatedProperties.ALPHA)
             .appearFrom(0)
             .disappearTo(0)
