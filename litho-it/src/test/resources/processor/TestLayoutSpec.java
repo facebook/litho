@@ -9,6 +9,8 @@
 
 package com.facebook.litho.processor.integration.resources;
 
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.view.View;
 
 import com.facebook.litho.ClickEvent;
@@ -35,6 +37,7 @@ import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
 
 @LayoutSpec(events = TestEvent.class)
+@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 public class TestLayoutSpec<S extends View> {
   @PropDefault protected static final boolean prop2 = true;
 

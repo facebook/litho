@@ -1,5 +1,6 @@
 package com.facebook.litho.processor.integration.resources;
 
+import android.annotation.TargetApi;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.AttrRes;
 import android.support.annotation.StringRes;
@@ -35,6 +36,7 @@ import java.util.BitSet;
  * @prop-required prop7 java.lang.CharSequence
  * @prop-required prop5 char
  */
+@TargetApi(17)
 public final class TestMount<S extends View> extends ComponentLifecycle {
   private static TestMount sInstance = null;
 
