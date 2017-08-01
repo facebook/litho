@@ -48,4 +48,9 @@ final public class PropertyHandle {
   public int hashCode() {
     return 31 * mTransitionKey.hashCode() + mProperty.hashCode();
   }
+
+  @Override
+  public String toString() {
+    return "PropertyHandle{ mTransitionKey='" + mTransitionKey + "', mProperty=" + mProperty + "}";
+  }
 }

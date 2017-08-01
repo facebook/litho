@@ -39,4 +39,33 @@ public class PropertyAnimation {
   public float getTargetValue() {
     return mTargetValue;
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    PropertyAnimation that = (PropertyAnimation) o;
+
+    return Float.compare(that.mTargetValue, mTargetValue) == 0 &&
+        mPropertyHandle.equals(that.mPropertyHandle);
+  }
+
+  @Override
+  public int hashCode() {
+    int result = mPropertyHandle.hashCode();
+    result = 31 * result + (mTargetValue != +0.0f ? Float.floatToIntBits(mTargetValue) : 0);
+    return result;
+  }
+
+  @Override
+  public String toString() {
+    return "PropertyAnimation{ PropertyHandle=" + mPropertyHandle + ", TargetValue=" +
+        mTargetValue + "}";
+  }
 }
