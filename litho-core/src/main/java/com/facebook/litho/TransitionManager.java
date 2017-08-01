@@ -83,7 +83,7 @@ import java.util.ArrayList;
  * another way, animation doesn't always imply movement, but a temporary change from a canonical
  * {@link LayoutOutput}.
  */
-public class DataFlowTransitionManager {
+public class TransitionManager {
 
   /**
    * Whether a piece of content identified by a transition key is appearing, disappearing, or just
@@ -181,7 +181,7 @@ public class DataFlowTransitionManager {
   private final TransitionsResolver mResolver = new TransitionsResolver();
   private final OnAnimationCompleteListener mOnAnimationCompleteListener;
 
-  public DataFlowTransitionManager(OnAnimationCompleteListener onAnimationCompleteListener) {
+  public TransitionManager(OnAnimationCompleteListener onAnimationCompleteListener) {
     mOnAnimationCompleteListener = onAnimationCompleteListener;
   }
 

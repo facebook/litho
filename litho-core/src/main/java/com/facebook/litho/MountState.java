@@ -63,7 +63,7 @@ import java.util.Map;
  * @see LayoutState
  */
 @ThreadConfined(ThreadConfined.UI)
-class MountState implements DataFlowTransitionManager.OnAnimationCompleteListener {
+class MountState implements TransitionManager.OnAnimationCompleteListener {
 
   static final int ROOT_HOST_ID = 0;
 
@@ -100,7 +100,7 @@ class MountState implements DataFlowTransitionManager.OnAnimationCompleteListene
   private final Rect mPreviousLocalVisibleRect = new Rect();
   private final PrepareMountStats mPrepareMountStats = new PrepareMountStats();
   private final MountStats mMountStats = new MountStats();
-  private DataFlowTransitionManager mTransitionManager;
+  private TransitionManager mTransitionManager;
   private int mPreviousTopsIndex;
   private int mPreviousBottomsIndex;
   private int mLastMountedComponentTreeId;
@@ -2315,7 +2315,7 @@ class MountState implements DataFlowTransitionManager.OnAnimationCompleteListene
 
   private void prepareTransitionManager(LayoutState layoutState) {
     if (layoutState.hasTransitionContext() && mTransitionManager == null) {
-      mTransitionManager = new DataFlowTransitionManager(this);
+      mTransitionManager = new TransitionManager(this);
     }
   }
 
