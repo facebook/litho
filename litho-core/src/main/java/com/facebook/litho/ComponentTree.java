@@ -1307,8 +1307,11 @@ public class ComponentTree {
       @Nullable DiffNode diffNode) {
     final ComponentContext contextWithStateHandler;
     synchronized (this) {
-       contextWithStateHandler =
-          new ComponentContext(context, StateHandler.acquireNewInstance(mStateHandler));
+      contextWithStateHandler =
+          new ComponentContext(
+              context,
+              StateHandler.acquireNewInstance(mStateHandler),
+              new KeyHandler(mContext.getLogger()));
     }
 
     if (lock != null) {

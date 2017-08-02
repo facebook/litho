@@ -9,6 +9,14 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.FrameworkLogEvents.EVENT_ERROR;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_MESSAGE;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import android.view.View;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.testing.TestDrawableComponent;
@@ -26,11 +34,17 @@ import org.robolectric.RuntimeEnvironment;
 @RunWith(ComponentsTestRunner.class)
 public class ComponentGlobalKeyTest {
 
+  private static final String mLogTag = "logTag";
+
   private ComponentContext mContext;
+  private ComponentsLogger mComponentsLogger;
 
   @Before
   public void setup() {
-    mContext = new ComponentContext(RuntimeEnvironment.application);
+    mComponentsLogger = mock(BaseComponentsLogger.class);
+    when(mComponentsLogger.newEvent(any(int.class))).thenCallRealMethod();
+    when(mComponentsLogger.newPerformanceEvent(any(int.class))).thenCallRealMethod();
+    mContext = new ComponentContext(RuntimeEnvironment.application, mLogTag, mComponentsLogger);
   }
 
   @Test
@@ -75,7 +89,6 @@ public class ComponentGlobalKeyTest {
         .create(mContext)
         .key("someKey")
         .build();
-    System.out.println(component.getLifecycle().getTypeId());
     ComponentTree componentTree = ComponentTree.create(mContext, component)
         .incrementalMount(false)
         .layoutDiffing(false)
@@ -116,6 +129,41 @@ public class ComponentGlobalKeyTest {
     Assert.assertEquals(layoutSpecId + "[CardClip2]", getComponentAt(lithoView, 6).getGlobalKey());
     // TestViewComponent
     Assert.assertEquals(layoutSpecId + "[TestViewComponent2]", getComponentAt(lithoView, 7).getGlobalKey());
+  }
+
+  @Test
+  public void testSiblingsUniqueKeyRequirement() {
+    Component component =
+        new InlineLayoutSpec() {
+
+          @Override
+          @OnCreateLayout
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+
+            return Column.create(c)
+                .child(Text.create(c).text(""))
+                .child(Text.create(c).text(""))
+                .build();
+          }
+        };
+
+    ComponentTree componentTree =
+        ComponentTree.create(mContext, component)
+            .incrementalMount(false)
+            .layoutDiffing(false)
+            .build();
+    getLithoView(componentTree);
+
+    final LogEvent event = mComponentsLogger.newEvent(EVENT_ERROR);
+
+    final String expectedError =
+        "Found another Text Component with the same key.\n"
+            + "Please look at the following spec hierarchy and make sure all sibling children components of the same type have unique keys:\n"
+            + "\tInlineLayoutSpec.java\n";
+
+    event.addParam(PARAM_MESSAGE, expectedError);
+
+    verify(mComponentsLogger).log(eq(event));
   }
 
   private static Component getComponentAt(LithoView lithoView, int index) {

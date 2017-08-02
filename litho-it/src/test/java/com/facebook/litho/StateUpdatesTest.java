@@ -13,6 +13,9 @@ import static com.facebook.litho.ComponentLifecycle.StateUpdate;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import android.os.Looper;
 import com.facebook.litho.ComponentLifecycle.StateContainer;
@@ -72,8 +75,6 @@ public class StateUpdatesTest {
     public void updateState(StateContainer stateContainer, Component component) {
       TestStateContainer stateContainerImpl = (TestStateContainer) stateContainer;
       TestComponent componentImpl = (TestComponent) component;
-      System.out.println("1 " + componentImpl.mStateContainer);
-      System.out.println("2 " + stateContainerImpl);
       componentImpl.mStateContainer.mCount = stateContainerImpl.mCount + 1;
     }
   }
@@ -135,14 +136,20 @@ public class StateUpdatesTest {
     protected int mCount;
   }
 
+  private static final String mLogTag = "logTag";
+
   private ShadowLooper mLayoutThreadShadowLooper;
   private ComponentContext mContext;
   private TestComponent mTestComponent;
   private ComponentTree mComponentTree;
+  private ComponentsLogger mComponentsLogger;
 
   @Before
   public void setup() throws Exception {
-    mContext = new ComponentContext(RuntimeEnvironment.application);
+    mComponentsLogger = mock(BaseComponentsLogger.class);
+    when(mComponentsLogger.newEvent(any(int.class))).thenCallRealMethod();
+    when(mComponentsLogger.newPerformanceEvent(any(int.class))).thenCallRealMethod();
+    mContext = new ComponentContext(RuntimeEnvironment.application, mLogTag, mComponentsLogger);
     mWidthSpec = makeSizeSpec(39, EXACTLY);
     mHeightSpec = makeSizeSpec(41, EXACTLY);
 
@@ -179,6 +186,28 @@ public class StateUpdatesTest {
         .incrementalMount(false)
         .layoutDiffing(false)
         .build();
+    final LithoView lithoView = new LithoView(mContext);
+    lithoView.setComponentTree(componentTree);
+    lithoView.onAttachedToWindow();
+    ComponentTestHelper.measureAndLayout(lithoView);
+  }
+
+  @Test(expected = RuntimeException.class)
+  public void testCrashOnSameComponentKeyStateless() {
+    final Component child1 = new TestComponent(mLifecycle);
+    final Component child2 = new TestComponent(mLifecycle);
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Column.create(c).child(child1).child(child1).build();
+          }
+        };
+    final ComponentTree componentTree =
+        ComponentTree.create(mContext, component)
+            .incrementalMount(false)
+            .layoutDiffing(false)
+            .build();
     final LithoView lithoView = new LithoView(mContext);
     lithoView.setComponentTree(componentTree);
     lithoView.onAttachedToWindow();

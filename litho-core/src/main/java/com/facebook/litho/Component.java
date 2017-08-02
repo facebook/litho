@@ -354,6 +354,12 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
 
     getLifecycle().populateTreeProps(this, getScopedContext().getTreeProps());
 
+    final KeyHandler keyHandler = getScopedContext().getKeyHandler();
+    /** This is for testing, the keyHandler should never be null here otherwise. */
+    if (keyHandler != null) {
+      keyHandler.registerKey(this);
+    }
+
     if (getLifecycle().hasState()) {
       c.getStateHandler().applyStateUpdatesForComponent(this);
     }

@@ -39,8 +39,6 @@ public class StateHandler {
   private static final
   Pools.SynchronizedPool<Map<String, StateContainer>> sStateContainersMapPool =
       new Pools.SynchronizedPool<>(POOL_CAPACITY);
-  private static final Pools.SynchronizedPool<Set<String>> sKnownGlobalKeysSetPool =
-      new Pools.SynchronizedPool<>(POOL_CAPACITY);
 
   /**
    * List of state updates that will be applied during the next layout pass.
@@ -53,9 +51,6 @@ public class StateHandler {
    */
   @GuardedBy("this")
   public Map<String, StateContainer> mStateContainers;
-
-  @GuardedBy("this")
-  private Set<String> mKnownGlobalKeys;
 
   void init(StateHandler stateHandler) {
     if (stateHandler == null) {
@@ -104,7 +99,6 @@ public class StateHandler {
   @ThreadSafe(enableChecks = false)
   void applyStateUpdatesForComponent(Component component) {
     maybeInitStateContainers();
-    maybeInitKnownGlobalKeys();
 
     final ComponentLifecycle lifecycle = component.getLifecycle();
     if (!lifecycle.hasState()) {
@@ -117,15 +111,6 @@ public class StateHandler {
 
     synchronized (this) {
       currentStateContainer = mStateContainers.get(key);
-
-      if (mKnownGlobalKeys.contains(key)) {
-        // We found two components with the same global key.
-        throw new RuntimeException(
-            "Cannot set State for " +
-                component.getSimpleName() +
-                ", found another Component with the same key: " + key);
-      }
-      mKnownGlobalKeys.add(key);
     }
 
     if (currentStateContainer != null) {
@@ -224,12 +209,6 @@ public class StateHandler {
       sStateContainersMapPool.release(mStateContainers);
       mStateContainers = null;
     }
-
-    if (mKnownGlobalKeys != null) {
-      mKnownGlobalKeys.clear();
-      sKnownGlobalKeysSetPool.release(mKnownGlobalKeys);
-      mKnownGlobalKeys = null;
-    }
   }
 
   private static List<StateUpdate> acquireStateUpdatesList() {
@@ -315,12 +294,4 @@ public class StateHandler {
     }
   }
 
-  private synchronized void maybeInitKnownGlobalKeys() {
-    if (mKnownGlobalKeys == null) {
-      mKnownGlobalKeys = sKnownGlobalKeysSetPool.acquire();
-      if (mKnownGlobalKeys == null) {
-        mKnownGlobalKeys = new HashSet<>(INITIAL_MAP_CAPACITY);
-      }
-    }
-  }
 }

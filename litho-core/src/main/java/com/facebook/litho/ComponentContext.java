@@ -29,6 +29,7 @@ public class ComponentContext extends ContextWrapper {
   private final String mLogTag;
   private final ComponentsLogger mLogger;
   private final StateHandler mStateHandler;
+  private final KeyHandler mKeyHandler;
   private String mNoStateUpdatesMethod;
 
   // Hold a reference to the component which scope we are currently within.
@@ -55,11 +56,15 @@ public class ComponentContext extends ContextWrapper {
   private int mDefStyleAttr = 0;
 
   public ComponentContext(Context context) {
-    this(context, null, null, null);
+    this(context, null, null, null, null);
   }
 
   public ComponentContext(Context context, StateHandler stateHandler) {
-    this(context, null, null, stateHandler);
+    this(context, stateHandler, null);
+  }
+
+  public ComponentContext(Context context, StateHandler stateHandler, KeyHandler keyHandler) {
+    this(context, null, null, stateHandler, keyHandler);
   }
 
   /**
@@ -71,14 +76,15 @@ public class ComponentContext extends ContextWrapper {
    * @param logger Specify the lifecycle logger to be used.
    */
   public ComponentContext(Context context, String logTag, ComponentsLogger logger) {
-   this(context, logTag, logger, null);
+    this(context, logTag, logger, null, null);
   }
 
   private ComponentContext(
       Context context,
       String logTag,
       ComponentsLogger logger,
-      StateHandler stateHandler) {
+      StateHandler stateHandler,
+      KeyHandler keyHandler) {
     super((context instanceof ComponentContext)
         ? ((ComponentContext) context).getBaseContext()
         : context);
@@ -92,6 +98,7 @@ public class ComponentContext extends ContextWrapper {
         : null;
     final boolean transferLogging = (componentContext != null && logTag == null && logger == null);
     final boolean transferStateHandler = (componentContext != null && stateHandler == null);
+    final boolean transferKeyHandler = (componentContext != null && keyHandler == null);
 
     if (componentContext != null) {
       mTreeProps = componentContext.mTreeProps;
@@ -107,14 +114,14 @@ public class ComponentContext extends ContextWrapper {
     mLogger = transferLogging ? componentContext.mLogger : logger;
     mLogTag = transferLogging ? componentContext.mLogTag : logTag;
     mStateHandler = transferStateHandler ? componentContext.mStateHandler : stateHandler;
+    mKeyHandler = transferKeyHandler ? componentContext.mKeyHandler : keyHandler;
   }
 
   static ComponentContext withComponentTree(
       ComponentContext context,
       ComponentTree componentTree) {
-    ComponentContext componentContext = new ComponentContext(
-        context,
-        ComponentsPools.acquireStateHandler());
+    ComponentContext componentContext =
+        new ComponentContext(context, ComponentsPools.acquireStateHandler(), context.mKeyHandler);
     componentContext.mComponentTree = componentTree;
 
     return componentContext;
@@ -312,6 +319,10 @@ public class ComponentContext extends ContextWrapper {
 
   StateHandler getStateHandler() {
     return mStateHandler;
+  }
+
+  KeyHandler getKeyHandler() {
+    return mKeyHandler;
   }
 
   private void applyStyle(InternalNode node, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
