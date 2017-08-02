@@ -11,6 +11,7 @@ package com.facebook.litho;
 
 import static android.content.Context.ACCESSIBILITY_SERVICE;
 import static com.facebook.litho.AccessibilityUtils.isAccessibilityEnabled;
+import static com.facebook.litho.ThreadUtils.assertMainThread;
 
 import android.content.Context;
 import android.graphics.Rect;
@@ -287,6 +288,8 @@ public class LithoView extends ComponentHost {
   }
 
   public void setComponentTree(ComponentTree componentTree) {
+    assertMainThread();
+
     mTemporaryDetachedComponent = null;
     if (mComponentTree == componentTree) {
       if (mIsAttached) {
@@ -358,6 +361,8 @@ public class LithoView extends ComponentHost {
    * Called from the ComponentTree when a new view want to use the same ComponentTree.
    */
   void clearComponentTree() {
+    assertMainThread();
+
     if (mIsAttached) {
       throw new IllegalStateException("Trying to clear the ComponentTree while attached.");
     }
@@ -503,6 +508,8 @@ public class LithoView extends ComponentHost {
   }
 
   public void release() {
+    assertMainThread();
+
     if (mComponentTree != null) {
       mComponentTree.release();
       mComponentTree = null;
