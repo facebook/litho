@@ -38,6 +38,7 @@ public class LithoView extends ComponentHost {
 
   private boolean mForceLayout;
   private boolean mSuppressMeasureComponentTree;
+  private boolean mIsMeasuring = false;
 
   private final AccessibilityManager mAccessibilityManager;
 
@@ -202,6 +203,8 @@ public class LithoView extends ComponentHost {
       mTemporaryDetachedComponent = null;
     }
 
+    mIsMeasuring = true;
+
     if (mComponentTree != null && !mSuppressMeasureComponentTree) {
       boolean forceRelayout = mForceLayout;
       mForceLayout = false;
@@ -212,6 +215,8 @@ public class LithoView extends ComponentHost {
     }
 
     setMeasuredDimension(width, height);
+
+    mIsMeasuring = false;
   }
 
   @Override
@@ -282,6 +287,14 @@ public class LithoView extends ComponentHost {
     return super.shouldRequestLayout();
   }
 
+  void assertNotInMeasure() {
+    if (mIsMeasuring) {
+      // If the ComponentTree is updated during measure, the following .layout() call will not run
+      // on the ComponentTree that was prepared in measure.
+      throw new RuntimeException("Cannot update ComponentTree while in the middle of measure");
+    }
+  }
+
   @Nullable
   public ComponentTree getComponentTree() {
     return mComponentTree;
@@ -289,6 +302,7 @@ public class LithoView extends ComponentHost {
 
   public void setComponentTree(ComponentTree componentTree) {
     assertMainThread();
+    assertNotInMeasure();
 
     mTemporaryDetachedComponent = null;
     if (mComponentTree == componentTree) {
