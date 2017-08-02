@@ -84,6 +84,27 @@ public final class ComponentTestHelper {
    *
    * @param context A components context
    * @param component The component to mount
+   * @param incrementalMountEnabled States whether incremental mount is enabled
+   * @return A LithoView with the component mounted in it.
+   */
+  public static LithoView mountComponent(
+      ComponentContext context,
+      Component component,
+      boolean incrementalMountEnabled) {
+    return mountComponent(
+        context,
+        new LithoView(context),
+        component,
+        incrementalMountEnabled,
+        100,
+        100);
+  }
+
+  /**
+   * Mount a component into a component view.
+   *
+   * @param context A components context
+   * @param component The component to mount
    * @param width The width of the resulting view
    * @param height The height of the resulting view
    * @return A LithoView with the component mounted in it.
