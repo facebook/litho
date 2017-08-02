@@ -530,6 +530,10 @@ public class LithoView extends ComponentHost {
     mMountState.mount(layoutState, currentVisibleArea);
   }
 
+  void unmountAllItems() {
+    mMountState.unmountAllItems();
+  }
+
   public Rect getPreviousMountBounds() {
     return mPreviousMountBounds;
   }

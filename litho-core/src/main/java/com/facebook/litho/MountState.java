@@ -32,6 +32,7 @@ import static com.facebook.litho.ThreadUtils.assertMainThread;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.LongSparseArray;
 import android.support.v4.util.SimpleArrayMap;
@@ -84,7 +85,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   // and populated during test runs.
   private final Map<String, Deque<TestItem>> mTestItemMap;
 
-  private long[] mLayoutOutputsIds;
+  private @Nullable long[] mLayoutOutputsIds;
 
   // True if we are receiving a new LayoutState and we need to completely
   // refresh the content of the HostComponent. Always set from the main thread.
@@ -94,6 +95,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   private final LongSparseArray<ComponentHost> mHostsByMarker = new LongSparseArray<>();
 
   private static final Rect sTempRect = new Rect();
+  private static final List<LithoView> sTempLithoViews = new ArrayList<>();
 
   private final ComponentContext mContext;
   private final LithoView mLithoView;
@@ -1747,6 +1749,15 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     ComponentsPools.release(context, item);
   }
 
+  void unmountAllItems() {
+    if (mLayoutOutputsIds == null) {
+      return;
+    }
+    for (int i = mLayoutOutputsIds.length - 1; i >= 0; i--) {
+      unmountItem(mContext, i, mHostsByMarker);
+    }
+  }
+
   private void unmountItem(
       ComponentContext context,
       int index,
@@ -1785,6 +1796,21 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         throw new IllegalStateException("Recursively unmounting items from a ComponentHost, left" +
             " some items behind maybe because not tracked by its MountState");
       }
+    }
+
+    /*
+     * The mounted content might contain other LithoViews which are not reachable from
+     * this MountState. If that content contains other LithoViews, we need to unmount them as well,
+     * so that their contents are recycled and reused next time.
+     */
+    if (content instanceof HasLithoViewChildren) {
+      final List<LithoView> lithoViews = sTempLithoViews;
+      ((HasLithoViewChildren) content).obtainLithoViewChildren(lithoViews);
+      for (int i = lithoViews.size() - 1; i >= 0; i--) {
+        final LithoView lithoView = lithoViews.get(i);
+        lithoView.unmountAllItems();
+      }
+      lithoViews.clear();
     }
 
     final ComponentHost host = item.getHost();

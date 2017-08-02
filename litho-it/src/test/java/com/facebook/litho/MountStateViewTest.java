@@ -17,12 +17,19 @@ import static com.facebook.yoga.YogaEdge.RIGHT;
 import static com.facebook.yoga.YogaEdge.TOP;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
+import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.view.ViewGroup;
+import com.facebook.litho.testing.ComponentTestHelper;
+import com.facebook.litho.testing.TestComponent;
+import com.facebook.litho.testing.TestComponentContextWithView;
+import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
+import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -68,5 +75,68 @@ public class MountStateViewTest {
     assertThat(child.getPaddingBottom()).isEqualTo(8);
     assertThat(background).isInstanceOf(ColorDrawable.class);
     assertThat(((ColorDrawable) background).getColor()).isEqualTo(color);
+  }
+
+  @Test
+  public void testComponentDeepUnmount() {
+    final TestComponent testComponent1 = TestDrawableComponent.create(mContext).build();
+    final TestComponent testComponent2 = TestDrawableComponent.create(mContext).build();
+
+    final Component mountedTestComponent1 =
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Column.create(c)
+                .child(Layout.create(c, testComponent1).widthPx(10).heightPx(10))
+                .build();
+          }
+        };
+    final Component mountedTestComponent2 =
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Column.create(c)
+                .child(Layout.create(c, testComponent2).widthPx(10).heightPx(10))
+                .build();
+          }
+        };
+    final LithoView child1 = mountComponent(mContext, mountedTestComponent1, true);
+    final LithoView child2 = mountComponent(mContext, mountedTestComponent2, true);
+
+    assertThat(testComponent1.isMounted()).isTrue();
+    assertThat(testComponent2.isMounted()).isTrue();
+
+    final ViewGroupWithLithoViewChildren viewGroup = new ViewGroupWithLithoViewChildren(mContext);
+    viewGroup.addView(child1);
+    viewGroup.addView(child2);
+
+    final TestComponentContextWithView testComponentContextWithView =
+        new TestComponentContextWithView(mContext, viewGroup);
+
+    final LithoView parentView =
+        mountComponent(
+            testComponentContextWithView, TestViewComponent.create(mContext).build(), true);
+
+    ComponentTestHelper.unmountComponent(parentView);
+
+    assertThat(testComponent1.isMounted()).isFalse();
+    assertThat(testComponent2.isMounted()).isFalse();
+  }
+
+  private class ViewGroupWithLithoViewChildren extends ViewGroup implements HasLithoViewChildren {
+
+    ViewGroupWithLithoViewChildren(Context context) {
+      super(context);
+    }
+
+    @Override
+    public void obtainLithoViewChildren(List<LithoView> lithoViews) {
+      for (int i = 0, size = getChildCount(); i < size; i++) {
+        lithoViews.add((LithoView) getChildAt(i));
+      }
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {}
   }
 }

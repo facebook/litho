@@ -16,13 +16,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
+import com.facebook.litho.HasLithoViewChildren;
 import com.facebook.litho.LithoView;
+import java.util.List;
 
 /**
- * Wrapper that encapsulates all the features {@link RecyclerSpec} provides such as
- * sticky header and pull-to-refresh
+ * Wrapper that encapsulates all the features {@link RecyclerSpec} provides such as sticky header
+ * and pull-to-refresh
  */
-public class RecyclerViewWrapper extends SwipeRefreshLayout {
+public class RecyclerViewWrapper extends SwipeRefreshLayout implements HasLithoViewChildren {
 
   private final LithoView mStickyHeader;
   private final RecyclerView mRecyclerView;
@@ -165,5 +167,15 @@ public class RecyclerViewWrapper extends SwipeRefreshLayout {
   public void setOnTouchListener(OnTouchListener listener) {
     // When setting touch handler for RecyclerSpec we want RecyclerView to handle it.
     mRecyclerView.setOnTouchListener(listener);
+  }
+
+  @Override
+  public void obtainLithoViewChildren(List<LithoView> lithoViews) {
+    for (int i = 0, size = mRecyclerView.getChildCount(); i < size; i++) {
+      final View child = mRecyclerView.getChildAt(i);
+      if (child instanceof LithoView) {
+        lithoViews.add((LithoView) child);
+      }
+    }
   }
 }
