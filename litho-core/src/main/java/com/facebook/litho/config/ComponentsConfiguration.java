@@ -61,14 +61,19 @@ public class ComponentsConfiguration {
 
   /**
    * Whether to use Object pooling via {@link com.facebook.litho.ComponentsPools}. This is switch
-   * beacuse we are experimenting with turning off pooling to get a sense of what its impact is
-   * in production.
+   * because we are experimenting with turning off pooling to get a sense of what its impact is in
+   * production.
    */
   public static volatile boolean usePooling = true;
 
   /**
-   * Force all section component prop updates to be async
+   * Whether we unmount children of the views implementing {@link
+   * com.facebook.litho.HasLithoViewChildren} when unmounting those views themselves. This is for
+   * experimentation purposes to see the impact of this change on different product surfaces.
    */
+  public static boolean deepUnmountEnabled = true;
+
+  /** Force all section component prop updates to be async */
   public static boolean sectionComponentsAsyncPropUpdates = false;
 
   /**
