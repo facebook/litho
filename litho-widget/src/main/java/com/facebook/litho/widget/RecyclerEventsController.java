@@ -9,6 +9,8 @@
 
 package com.facebook.litho.widget;
 
+import android.support.annotation.Nullable;
+import android.support.v7.widget.RecyclerView;
 import com.facebook.litho.ThreadUtils;
 
 /**
@@ -76,7 +78,7 @@ public class RecyclerEventsController {
     mRecyclerViewWrapper = recyclerViewWrapper;
   }
 
-  protected RecyclerViewWrapper getRecyclerViewWrapper() {
-    return mRecyclerViewWrapper;
+  protected @Nullable RecyclerView getRecyclerView() {
+    return mRecyclerViewWrapper == null ? null : mRecyclerViewWrapper.getRecyclerView();
   }
 }
