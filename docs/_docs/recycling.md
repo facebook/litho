@@ -15,8 +15,8 @@ Android solves this problem this with [RecyclerView](https://developer.android.c
 </video>
 
 
-RecyclerView supports the idea of displaying heterogeneous content. To do so it keeps views in different pools depending on their type.
-While this concept works pretty well in simple cases, for UIs with many different view types this approach can prove to be problematic.
+RecyclerView supports the idea of displaying heterogeneous content. To do so, it keeps views in different pools depending on their type.
+While this concept works pretty well in simple cases, it can prove to be problematic for UIs with many different view types.
 In a scenario with many view types, there is a bigger chance that the view coming in the viewport following a scrolling event is a view that the RecyclerView is displaying for the first time.
 If that happens, RecyclerView has to allocate a new view. The allocation will happen in the same 16ms slot in which RecyclerView also has to bind, measure and layout the newly visible view.
 
