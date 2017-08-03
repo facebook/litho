@@ -247,24 +247,8 @@ public class ComponentContext extends ContextWrapper {
     return new EventHandler(mComponentScope, id);
   }
 
-  EventHandler newEventHandler(String name, int id) {
-    return new EventHandler(mComponentScope, name, id);
-  }
-
   <E> EventHandler<E> newEventHandler(String name, int id, Object[] params) {
     return new EventHandler<E>(mComponentScope, name, id, params);
-  }
-
-  InternalNode newLayoutBuilder(ComponentContext c) {
-    return newLayoutBuilder(0, 0);
-  }
-
-  ComponentLayout.Builder newLayoutBuilder(Component<?> component) {
-    return newLayoutBuilder(component, 0, 0);
-  }
-
-  ComponentLayout.Builder newLayoutBuilder(Component.Builder componentBuilder) {
-    return newLayoutBuilder(componentBuilder.build(), 0, 0);
   }
 
   InternalNode newLayoutBuilder(
@@ -292,13 +276,6 @@ public class ComponentContext extends ContextWrapper {
     }
 
     return node;
-  }
-
-  ComponentLayout.Builder newLayoutBuilder(
-      Component.Builder componentBuilder,
-      @AttrRes int defStyleAttr,
-      @StyleRes int defStyleRes) {
-    return newLayoutBuilder(componentBuilder.build(), defStyleAttr, defStyleRes);
   }
 
   int getWidthSpec() {

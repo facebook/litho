@@ -12,28 +12,12 @@ package com.facebook.litho;
 import android.content.Context;
 import android.support.annotation.AttrRes;
 import android.support.annotation.StyleRes;
-import com.facebook.yoga.YogaMeasureFunction;
-import com.facebook.yoga.YogaMeasureMode;
-import com.facebook.yoga.YogaMeasureOutput;
-import com.facebook.yoga.YogaNode;
 
 /**
  * {@link ComponentContext} for use within a test environment that is compatible with mock
  * ComponentSpecs in addition to real implementation.
  */
 class TestComponentContext extends ComponentContext {
-
-  private static final YogaMeasureFunction FAKE_MEASURE_FUNCTION = new YogaMeasureFunction() {
-    @Override
-    public long measure(
-        YogaNode cssNode,
-        float width,
-        YogaMeasureMode widthMode,
-        float height,
-        YogaMeasureMode heightMode) {
-      return YogaMeasureOutput.make(1, 1);
-    }
-  };
 
   TestComponentContext(Context c) {
     super(c);
@@ -43,27 +27,15 @@ class TestComponentContext extends ComponentContext {
     super(c, stateHandler);
   }
 
-  /**
-   * Uses the provided component to create a layout. Only the root node is created using
-   * {@link ComponentLifecycle#onCreateLayout(ComponentContext, Component)} - below that, we just
-   * create a dummy internal node and set the lifecycle to it.
-   */
   @Override
-  public ComponentLayout.Builder newLayoutBuilder(Component<?> component) {
+  public ComponentLayout.Builder newLayoutBuilder(
+      Component<?> component, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
     final InternalNode node = ComponentsPools.acquireInternalNode(this, getResources());
     component.applyStateUpdates(this);
 
     node.appendComponent(new TestComponent(component));
 
     return node;
-  }
-
-  @Override
-  public ComponentLayout.Builder newLayoutBuilder(
-      Component<?> component,
-      @AttrRes int defStyleAttr,
-      @StyleRes int defStyleRes) {
-    return newLayoutBuilder(component);
   }
 
   @Override
