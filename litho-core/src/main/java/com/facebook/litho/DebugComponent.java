@@ -292,6 +292,29 @@ public final class DebugComponent {
   }
 
   /**
+   * @return The {@link ComponentHost} that wraps this component or null if one cannot be found.
+   */
+  @Nullable
+  public ComponentHost getComponentHost() {
+    final LithoView lithoView = getLithoView();
+    final Component component = getComponent();
+
+    if (lithoView == null || component == null) {
+      return null;
+    }
+
+    for (int i = 0, size = lithoView.getMountState().getItemCount(); i < size; i++) {
+      final MountItem mountItem = lithoView.getMountState().getItemAt(i);
+      final Component<?> mountItemComponent = mountItem.getComponent();
+      if (mountItemComponent != null && mountItemComponent.isEquivalentTo(component)) {
+        return mountItem.getHost();
+      }
+    }
+
+    return null;
+  }
+
+  /**
    * @return This component's key or null if none is set.
    */
   public String getKey() {
@@ -348,6 +371,36 @@ public final class DebugComponent {
     }
 
     return node.getBackground();
+  }
+
+  /**
+   * @return The int value of the importantForAccessibility property on this debug component.
+   */
+  public int getImportantForAccessibility() {
+    return mNode.get().getImportantForAccessibility();
+  }
+
+  /**
+   * @return The boolean value of the focusable property on this debug component.
+   */
+  public boolean getFocusable() {
+    final NodeInfo nodeInfo = mNode.get().getNodeInfo();
+    if (nodeInfo != null) {
+      return nodeInfo.getFocusState() == NodeInfo.FOCUS_SET_TRUE;
+    }
+    return false;
+  }
+
+  /**
+   * @return The content description CharSequence on this debug component.  May be null.
+   */
+  @Nullable
+  public CharSequence getContentDescription() {
+    final NodeInfo nodeInfo = mNode.get().getNodeInfo();
+    if (nodeInfo != null) {
+      return mNode.get().getNodeInfo().getContentDescription();
+    }
+    return null;
   }
 
   public void rerender() {
@@ -559,6 +612,18 @@ public final class DebugComponent {
 
   public void setBorderWidth(YogaEdge edge, float value) {
     mNode.get().borderWidthPx(edge, (int) value);
+  }
+
+  public void setContentDescription(CharSequence contentDescription) {
+    mNode.get().contentDescription(contentDescription);
+  }
+
+  public void setImportantForAccessibility(int importantForAccessibility) {
+    mNode.get().importantForAccessibility(importantForAccessibility);
+  }
+
+  public void setFocusable(boolean focusable) {
+    mNode.get().focusable(focusable);
   }
 
   public ComponentLifecycle.StateContainer getStateContainer() {
