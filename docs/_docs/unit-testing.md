@@ -12,6 +12,14 @@ AssertJ methods. They are available as:
   or Components.
 - [LithoViewAssert](/javadoc/com/facebook/litho/testing/assertj/LithoViewAssert) for assertions against mounted Components.
 
+As a convenience, a [LithoAssertions.assertThat](/javadoc/com/facebook/litho/testing/assertj/LithoAssertions) method is provided that
+can be statically imported. It provides access to all matchers provided by `ComponentAssert`, `LithoViewAssert` as well as the
+regular core AssertJ matchers:
+
+```java
+import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
+```
+
 In order to use any of the testing capabilities, you need include the optional
 `litho-testing` package in your build. It is available as
 `com.facebook.litho:litho-testing:+`.
