@@ -17,6 +17,7 @@ import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.ComponentLifecycle.MountType;
 import com.facebook.litho.ComponentLifecycle.StateContainer;
+import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
@@ -356,7 +357,7 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
 
     final KeyHandler keyHandler = getScopedContext().getKeyHandler();
     /** This is for testing, the keyHandler should never be null here otherwise. */
-    if (keyHandler != null) {
+    if (keyHandler != null && !ComponentsConfiguration.isEndToEndTestRun) {
       keyHandler.registerKey(this);
     }
 
