@@ -164,10 +164,6 @@ class NodeInfo {
     return mClickHandler;
   }
 
-  boolean isClickable() {
-    return (mClickHandler != null);
-  }
-
   void setLongClickHandler(EventHandler<LongClickEvent> longClickHandler) {
     mPrivateFlags |= PFLAG_LONG_CLICK_HANDLER_IS_SET;
     mLongClickHandler = longClickHandler;
@@ -176,10 +172,6 @@ class NodeInfo {
   EventHandler<LongClickEvent> getLongClickHandler() {
     mPrivateFlags |= PFLAG_TOUCH_HANDLER_IS_SET;
     return mLongClickHandler;
-  }
-
-  boolean isLongClickable() {
-    return (mLongClickHandler != null);
   }
 
   void setFocusChangeHandler(EventHandler<FocusChangedEvent> focusChangedHandler) {
@@ -209,10 +201,6 @@ class NodeInfo {
 
   EventHandler<InterceptTouchEvent> getInterceptTouchHandler() {
     return mInterceptTouchHandler;
-  }
-
-  boolean isTouchable() {
-    return (mTouchHandler != null);
   }
 
   boolean hasTouchEventHandlers() {
