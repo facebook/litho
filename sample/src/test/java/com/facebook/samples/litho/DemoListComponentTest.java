@@ -9,11 +9,12 @@
 
 package com.facebook.samples.litho;
 
+import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
+
 import android.support.v7.widget.OrientationHelper;
 import com.facebook.litho.Component;
 import com.facebook.litho.testing.ComponentsRule;
 import com.facebook.litho.testing.SubComponent;
-import com.facebook.litho.testing.assertj.ComponentAssert;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.LinearLayoutInfo;
 import com.facebook.litho.widget.Recycler;
@@ -41,7 +42,7 @@ public class DemoListComponentTest {
 
   @Test
   public void testSubComponents() {
-    ComponentAssert.assertThat(mComponentsRule.getContext(), mComponent)
+    assertThat(mComponentsRule.getContext(), mComponent)
         .containsOnlySubComponents(SubComponent.of(Recycler.class));
   }
 }
