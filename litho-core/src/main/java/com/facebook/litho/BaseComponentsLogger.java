@@ -9,10 +9,25 @@
 
 package com.facebook.litho;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Base implementation of {@link ComponentsLogger} which handles pooling event objects.
  */
 public abstract class BaseComponentsLogger implements ComponentsLogger {
+
+  /** Filenames that match these keywords will be added to the stack trace. */
+  private static final Set<String> sStackTraceKeywords = new HashSet<>();
+
+  /** Filenames that match these blacklisted items will be excluded from the stack trace. */
+  private static final Set<String> sStackTraceBlacklist = new HashSet<>();
+
+  static {
+    sStackTraceKeywords.add("Spec.java");
+    sStackTraceKeywords.add("Activity.java");
+  }
 
   @Override
   public LogEvent newEvent(int eventId) {
@@ -36,6 +51,16 @@ public abstract class BaseComponentsLogger implements ComponentsLogger {
     }
 
     ComponentsPools.release(event);
+  }
+
+  @Override
+  public Set<String> getKeyCollisionStackTraceKeywords() {
+    return Collections.unmodifiableSet(sStackTraceKeywords);
+  }
+
+  @Override
+  public Set<String> getKeyCollisionStackTraceBlacklist() {
+    return Collections.unmodifiableSet(sStackTraceBlacklist);
   }
 
   /**

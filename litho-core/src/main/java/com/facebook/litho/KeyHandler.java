@@ -24,22 +24,6 @@ import java.util.Set;
  */
 public class KeyHandler {
 
-  /** Filenames that match these queries will be added to the stack trace. */
-  private static final List<String> sStackTraceQuery = new ArrayList<>();
-  /** Filenames that match these blacklisted items will be excluded from the stack trace. */
-  private static final List<String> stackTraceQueryBlacklist = new ArrayList<>();
-
-  static {
-    sStackTraceQuery.add("Spec.java");
-    sStackTraceQuery.add("PartDefinition.java");
-    sStackTraceQuery.add("Activity.java");
-    stackTraceQueryBlacklist.add("ComponentPartDefinition.java");
-    stackTraceQueryBlacklist.add("PageWrapperSpec.java");
-    stackTraceQueryBlacklist.add("FeedTreePropsWrapperSpec.java");
-    stackTraceQueryBlacklist.add("FeedBackgroundStylerComponentSpec.java");
-    stackTraceQueryBlacklist.add("HierarchyLoggingComponentSpec.java");
-  }
-
   private static final String STACK_TRACE_NO_SPEC_MESSAGE =
       "Unable to determine root of duplicate key in a *Spec.java file.";
   private static final String STACK_TRACE_SPEC_MESSAGE =
@@ -63,8 +47,7 @@ public class KeyHandler {
     if (mKnownGlobalKeys.contains(component.getGlobalKey())) {
       final String message =
           "Found another " + component.getSimpleName() + " Component with the same key.";
-
-      final String errorMessage = getDuplicateKeyMessage();
+      final String errorMessage = mLogger == null ? message : getDuplicateKeyMessage();
 
       if (component.getLifecycle().hasState()) {
         throw new RuntimeException(message + "\n" + errorMessage);
@@ -97,7 +80,9 @@ public class KeyHandler {
       final boolean hasJustBeenAdded =
           !specHierarchy.isEmpty() && specHierarchy.get(specHierarchy.size() - 1).equals(fileName);
 
-      if (hasMatch(fileName) && !stackTraceQueryBlacklist.contains(fileName) && !hasJustBeenAdded) {
+      if (hasMatch(fileName)
+          && !mLogger.getKeyCollisionStackTraceBlacklist().contains(fileName)
+          && !hasJustBeenAdded) {
         specHierarchy.add(fileName);
       }
     }
@@ -128,8 +113,8 @@ public class KeyHandler {
     return messageBuilder.toString();
   }
 
-  private static boolean hasMatch(String filename) {
-    for (String query : sStackTraceQuery) {
+  private boolean hasMatch(String filename) {
+    for (String query : mLogger.getKeyCollisionStackTraceKeywords()) {
       if (filename.contains(query)) {
         return true;
       }

@@ -9,6 +9,8 @@
 
 package com.facebook.litho;
 
+import java.util.Set;
+
 /**
  * An interface for logging events and performance events in litho as well as in user defined
  * components. The ComponentsLogger is set on the {@link ComponentContext}.
@@ -32,4 +34,18 @@ public interface ComponentsLogger {
    * a performance event it will stop counting the time.
    */
   void log(LogEvent event);
+
+  /**
+   * When a component key collision occurs, filenames that contain keywords contained in the
+   * returned set will be added to the error stack trace.
+   */
+  Set<String> getKeyCollisionStackTraceKeywords();
+
+  /**
+   * When a component key collision occurs, filenames that match the names contained in the returned
+   * set will be added to the error stack trace even if they match keywords in the whitelist.
+   *
+   * @see {{@link #getKeyCollisionStackTraceKeywords()}}
+   */
+  Set<String> getKeyCollisionStackTraceBlacklist();
 }

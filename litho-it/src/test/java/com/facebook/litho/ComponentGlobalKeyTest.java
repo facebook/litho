@@ -44,6 +44,8 @@ public class ComponentGlobalKeyTest {
     mComponentsLogger = mock(BaseComponentsLogger.class);
     when(mComponentsLogger.newEvent(any(int.class))).thenCallRealMethod();
     when(mComponentsLogger.newPerformanceEvent(any(int.class))).thenCallRealMethod();
+    when(mComponentsLogger.getKeyCollisionStackTraceBlacklist()).thenCallRealMethod();
+    when(mComponentsLogger.getKeyCollisionStackTraceKeywords()).thenCallRealMethod();
     mContext = new ComponentContext(RuntimeEnvironment.application, mLogTag, mComponentsLogger);
   }
 
