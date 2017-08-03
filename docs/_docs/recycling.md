@@ -40,4 +40,4 @@ This is not possible with traditional Android Views since the layout computation
 </video>
 
 Being able to recycle individual primitive items as `Text` increases greatly the memory efficiency of an App as now you can recycle any piece of text in your list for any other piece of text.  
-On top of that, since we compute the layout ahead of time, we know exactly at which point a new items needs to become visible, this means that rather then binding and drawing a big view tree in one frame, we can use each frame to introduce a much lower number of primitive items on screen.
+On top of that, since we compute the layout ahead of time, we know exactly at which point a new items needs to become visible, this means that rather than binding and drawing a big view tree in one frame, we can use each frame to introduce a much lower number of primitive items on screen.
