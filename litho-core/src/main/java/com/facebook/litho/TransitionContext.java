@@ -17,8 +17,8 @@ class TransitionContext {
 
   private final TransitionSet mTransitionSet = new TransitionSet();
 
-  void addTransitions(TransitionSet transitionSet) {
-    mTransitionSet.mergeIn(transitionSet);
+  void addTransition(Transition transition) {
+    mTransitionSet.mergeIn((TransitionSet) transition);
   }
 
   TransitionSet getTransitionSet() {

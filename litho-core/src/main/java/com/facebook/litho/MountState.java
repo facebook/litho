@@ -2377,11 +2377,11 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     for (int i = 0, size = componentsNeedingPreviousRenderInfo.size(); i < size; i++) {
       final Component component = componentsNeedingPreviousRenderInfo.get(i);
-      final TransitionSet transitionSet =
+      final Transition transition =
           component.getLifecycle().onCreateTransition(component.getScopedContext(), component);
 
-      if (transitionSet != null) {
-        layoutState.getTransitionContext().addTransitions(transitionSet);
+      if (transition != null) {
+        layoutState.getTransitionContext().addTransition(transition);
       }
     }
   }

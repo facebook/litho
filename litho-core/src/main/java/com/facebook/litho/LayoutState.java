@@ -639,11 +639,11 @@ class LayoutState {
       if (component != null) {
         final ComponentLifecycle lifecycle = component.getLifecycle();
         if (!lifecycle.needsPreviousRenderInfo()) {
-          final TransitionSet transitionSet =
+          final Transition transition =
               component.getLifecycle().onCreateTransition(layoutState.mContext, component);
 
-          if (transitionSet != null) {
-            layoutState.getOrCreateTransitionContext().addTransitions(transitionSet);
+          if (transition != null) {
+            layoutState.getOrCreateTransitionContext().addTransition(transition);
           }
         } else {
           if (layoutState.mComponentsNeedingPreviousRenderInfo == null) {

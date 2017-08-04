@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2017-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
 package com.facebook.litho.processor.integration.resources;
 
 import android.annotation.TargetApi;
@@ -14,7 +23,7 @@ import com.facebook.litho.EventHandler;
 import com.facebook.litho.HasEventDispatcher;
 import com.facebook.litho.Output;
 import com.facebook.litho.StateValue;
-import com.facebook.litho.TransitionSet;
+import com.facebook.litho.Transition;
 import com.facebook.litho.TreeProps;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
@@ -74,10 +83,7 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
     TestLayoutImpl _impl = (TestLayoutImpl) _abstractImpl;
     Output<Boolean> prop2 = acquireOutput();
     Output<Object> prop3 = acquireOutput();
-    TestLayoutSpec.onLoadStyle(
-        (ComponentContext) c,
-        prop2,
-        prop3);
+    TestLayoutSpec.onLoadStyle((ComponentContext) c, prop2, prop3);
     if (prop2.get() != null) {
       _impl.prop2 = prop2.get();
     }
@@ -92,39 +98,41 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
   protected void createInitialState(ComponentContext c, Component _abstractImpl) {
     TestLayoutImpl _impl = (TestLayoutImpl) _abstractImpl;
     StateValue<S> state2 = new StateValue<>();
-    TestLayoutSpec.createInitialState(
-        (ComponentContext) c,
-        (int) _impl.prop1,
-        state2);
+    TestLayoutSpec.createInitialState((ComponentContext) c, (int) _impl.prop1, state2);
     _impl.mStateContainerImpl.state2 = state2.get();
   }
 
   @Override
   protected ComponentLayout onCreateLayout(ComponentContext context, Component _abstractImpl) {
     TestLayoutImpl _impl = (TestLayoutImpl) _abstractImpl;
-    ComponentLayout _result = (ComponentLayout) TestLayoutSpec.onCreateLayout(
-        (ComponentContext) context,
-        (boolean) _impl.prop2,
-        (Object) _impl.prop3,
-        (char[]) _impl.prop4,
-        (long) _impl.mStateContainerImpl.state1,
-        (S) _impl.mStateContainerImpl.state2,
-        (int) _impl.mStateContainerImpl.state3,
-        (TestTreeProp) _impl.treeProp);
+    ComponentLayout _result =
+        (ComponentLayout)
+            TestLayoutSpec.onCreateLayout(
+                (ComponentContext) context,
+                (boolean) _impl.prop2,
+                (Object) _impl.prop3,
+                (char[]) _impl.prop4,
+                (long) _impl.mStateContainerImpl.state1,
+                (S) _impl.mStateContainerImpl.state2,
+                (int) _impl.mStateContainerImpl.state3,
+                (TestTreeProp) _impl.treeProp);
     return _result;
   }
 
   @Override
-  protected TransitionSet onCreateTransition(ComponentContext c, Component _abstractImpl) {
+  protected Transition onCreateTransition(ComponentContext c, Component _abstractImpl) {
     TestLayoutImpl _impl = (TestLayoutImpl) _abstractImpl;
-    Diff<Integer> _state3Diff = acquireDiff(
-        _impl.mPreviousRenderInfo == null ? null : _impl.mPreviousRenderInfo.state3,
-        _impl.mStateContainerImpl.state3);
-    TransitionSet _result = (TransitionSet) TestLayoutSpec.onCreateTransition(
-        (ComponentContext) c,
-        (Object) _impl.prop3,
-        (long) _impl.mStateContainerImpl.state1,
-        _state3Diff);
+    Diff<Integer> _state3Diff =
+        acquireDiff(
+            _impl.mPreviousRenderInfo == null ? null : _impl.mPreviousRenderInfo.state3,
+            _impl.mStateContainerImpl.state3);
+    Transition _result =
+        (Transition)
+            TestLayoutSpec.onCreateTransition(
+                (ComponentContext) c,
+                (Object) _impl.prop3,
+                (long) _impl.mStateContainerImpl.state1,
+                _state3Diff);
     releaseDiff(_state3Diff);
     return _result;
   }
@@ -163,25 +171,29 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
   }
 
   public static EventHandler<ClickEvent> testLayoutEvent(ComponentContext c, int param1) {
-    return newEventHandler(c, "testLayoutEvent", 1328162206, new Object[] {
+    return newEventHandler(
         c,
-        param1,
-    });
+        "testLayoutEvent",
+        1328162206,
+        new Object[] {
+          c, param1,
+        });
   }
 
   @Override
   public Object dispatchOnEvent(final EventHandler eventHandler, final Object eventState) {
     int id = eventHandler.id;
     switch (id) {
-      case 1328162206: {
-        ClickEvent _event = (ClickEvent) eventState;
-        testLayoutEvent(
-            eventHandler.mHasEventDispatcher,
-            (ComponentContext) eventHandler.params[0],
-            (View) _event.view,
-            (int) eventHandler.params[1]);
-        return null;
-      }
+      case 1328162206:
+        {
+          ClickEvent _event = (ClickEvent) eventState;
+          testLayoutEvent(
+              eventHandler.mHasEventDispatcher,
+              (ComponentContext) eventHandler.params[0],
+              (View) _event.view,
+              (int) eventHandler.params[1]);
+          return null;
+        }
       default:
         return null;
     }
@@ -250,9 +262,8 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
   protected ComponentLifecycle.RenderInfo recordRenderInfo(Component previousComponent,
       ComponentLifecycle.RenderInfo toRecycle) {
     TestLayoutImpl _impl = (TestLayoutImpl) previousComponent;
-    TestLayoutRenderInfo renderInfo = toRecycle != null ?
-        (TestLayoutRenderInfo) toRecycle :
-        new TestLayoutRenderInfo();
+    TestLayoutRenderInfo renderInfo =
+        toRecycle != null ? (TestLayoutRenderInfo) toRecycle : new TestLayoutRenderInfo();
     renderInfo.record(_impl);
     return renderInfo;
   }

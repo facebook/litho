@@ -13,13 +13,13 @@ import java.util.ArrayList;
 /**
  * A set of {@link Transition}s.
  */
-public class TransitionSet {
+public class TransitionSet extends Transition {
 
   private final ArrayList<Transition> mTransitions = new ArrayList<>();
 
-  TransitionSet(Transition.Builder... transitionBuilders) {
+  TransitionSet(TransitionUnitsBuilder... transitionBuilders) {
     for (int i = 0; i < transitionBuilders.length; i++) {
-      mTransitions.addAll(transitionBuilders[i].getTransitions());
+      mTransitions.addAll(transitionBuilders[i].getTransitionUnits());
     }
   }
 

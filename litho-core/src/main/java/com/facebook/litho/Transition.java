@@ -22,8 +22,14 @@ import java.util.ArrayList;
 /**
  * Defines how a property on a component should animate as it changes, allowing you to optionally
  * define appear-from values for appear animations and disappear-to values for disappear animations.
+ *
+ * TODO(t20719329): Better documentation for Transition class
+ *
+ * Note: This abstract class has no instance methods, abstract or otherwise. It's a marker class so
+ * that {@link TransitionSet}s and {@link TransitionUnit}s can be composed with each other. It's
+ * abstract because before Java 8, static methods on interfaces are not allowed.
  */
-public class Transition {
+public abstract class Transition {
 
   /**
    * The type of a {@link ComponentTarget}.
@@ -79,7 +85,7 @@ public class Transition {
     public final ComponentTarget componentTarget;
     public final PropertyTarget propertyTarget;
 
-    public AnimationTarget(ComponentTarget componentTarget, PropertyTarget propertyTarget) {
+    AnimationTarget(ComponentTarget componentTarget, PropertyTarget propertyTarget) {
       this.componentTarget = componentTarget;
       this.propertyTarget = propertyTarget;
     }
@@ -93,9 +99,7 @@ public class Transition {
     public final ComponentTargetType componentTargetType;
     public final Object componentTargetExtraData;
 
-    public ComponentTarget(
-        ComponentTargetType componentTargetType,
-        Object componentTargetExtraData) {
+    ComponentTarget(ComponentTargetType componentTargetType, Object componentTargetExtraData) {
       this.componentTargetType = componentTargetType;
       this.componentTargetExtraData = componentTargetExtraData;
     }
@@ -109,9 +113,7 @@ public class Transition {
     public final PropertyTargetType propertyTargetType;
     public final Object propertyTargetExtraData;
 
-    public PropertyTarget(
-        PropertyTargetType propertyTargetType,
-        Object propertyTargetExtraData) {
+    PropertyTarget(PropertyTargetType propertyTargetType, Object propertyTargetExtraData) {
       this.propertyTargetType = propertyTargetType;
       this.propertyTargetExtraData = propertyTargetExtraData;
     }
@@ -122,7 +124,7 @@ public class Transition {
   /**
    * Class that knows how to create a {@link TransitionAnimationBinding} given a
    * {@link PropertyAnimation}. This can be used to customize the type of animation using
-   * {@link Builder#animator}.
+   * {@link TransitionUnitsBuilder#animator}.
    */
   public interface TransitionAnimator {
 
@@ -144,86 +146,92 @@ public class Transition {
   /**
    * Creates a Transition for the component with the given transition key.
    */
-  public static Transition.Builder create(String key) {
-    return new Transition.Builder(ComponentTargetType.SINGLE, key);
+  public static TransitionUnitsBuilder create(String key) {
+    return new TransitionUnitsBuilder(ComponentTargetType.SINGLE, key);
   }
 
   /**
    * Creates a Transition for the components with the given transition keys.
    */
-  public static Transition.Builder create(String... keys) {
-    return new Transition.Builder(ComponentTargetType.SET, keys);
+  public static TransitionUnitsBuilder create(String... keys) {
+    return new TransitionUnitsBuilder(ComponentTargetType.SET, keys);
   }
 
   /**
    * Creates a Transition for the components targeted by the given {@link ComponentTarget}.
    */
-  public static Transition.Builder create(ComponentTarget target) {
-    return new Transition.Builder(target.componentTargetType, target.componentTargetExtraData);
+  public static TransitionUnitsBuilder create(ComponentTarget target) {
+    return new TransitionUnitsBuilder(target.componentTargetType, target.componentTargetExtraData);
   }
 
   /**
    * Creates a set of {@link Transition}s.
    */
-  public static TransitionSet createSet(Transition.Builder... transitions) {
+  public static TransitionSet createSet(TransitionUnitsBuilder... transitions) {
     return new TransitionSet(transitions);
   }
 
-  private final AnimationTarget mAnimationTarget;
-  private final TransitionAnimator mTransitionAnimator;
-  private final RuntimeValue mAppearFrom;
-  private final RuntimeValue mDisappearTo;
+  public static class TransitionUnit extends Transition {
 
-  public Transition(
-      AnimationTarget animationTarget,
-      TransitionAnimator transitionAnimator,
-      RuntimeValue appearFrom,
-      RuntimeValue disappearTo) {
-    mAnimationTarget = animationTarget;
-    mTransitionAnimator = transitionAnimator;
-    mAppearFrom = appearFrom;
-    mDisappearTo = disappearTo;
+    private final AnimationTarget mAnimationTarget;
+    private final TransitionAnimator mTransitionAnimator;
+    private final RuntimeValue mAppearFrom;
+    private final RuntimeValue mDisappearTo;
+
+    TransitionUnit(
+        AnimationTarget animationTarget,
+        TransitionAnimator transitionAnimator,
+        RuntimeValue appearFrom,
+        RuntimeValue disappearTo) {
+      mAnimationTarget = animationTarget;
+      mTransitionAnimator = transitionAnimator;
+      mAppearFrom = appearFrom;
+      mDisappearTo = disappearTo;
+    }
+
+    AnimationTarget getAnimationTarget() {
+      return mAnimationTarget;
+    }
+
+    boolean hasAppearAnimation() {
+      return mAppearFrom != null;
+    }
+
+    boolean hasDisappearAnimation() {
+      return mDisappearTo != null;
+    }
+
+    RuntimeValue getAppearFrom() {
+      return mAppearFrom;
+    }
+
+    RuntimeValue getDisappearTo() {
+      return mDisappearTo;
+    }
+
+    AnimationBinding createAnimation(PropertyHandle propertyHandle, float targetValue) {
+      final PropertyAnimation propertyAnimation =
+          new PropertyAnimation(propertyHandle, targetValue);
+      return mTransitionAnimator.createAnimation(propertyAnimation);
+    }
   }
 
-  AnimationTarget getAnimationTarget() {
-    return mAnimationTarget;
-  }
+  public static class TransitionUnitsBuilder extends Transition {
 
-  boolean hasAppearAnimation() {
-    return mAppearFrom != null;
-  }
-
-  boolean hasDisappearAnimation() {
-    return mDisappearTo != null;
-  }
-
-  RuntimeValue getAppearFrom() {
-    return mAppearFrom;
-  }
-
-  RuntimeValue getDisappearTo() {
-    return mDisappearTo;
-  }
-
-  AnimationBinding createAnimation(PropertyHandle propertyHandle, float targetValue) {
-    final PropertyAnimation propertyAnimation = new PropertyAnimation(propertyHandle, targetValue);
-    return mTransitionAnimator.createAnimation(propertyAnimation);
-  }
-
-  public static class Builder {
-
-    private final ArrayList<Transition> mBuiltTransitions = new ArrayList<>();
+    private final ArrayList<TransitionUnit> mBuiltTransitions = new ArrayList<>();
     private final ComponentTarget mComponentTarget;
     private PropertyTarget mPropertyTarget;
     private TransitionAnimator mTransitionAnimator = DEFAULT_ANIMATOR;
     private RuntimeValue mAppearFrom;
     private RuntimeValue mDisappearTo;
 
-    Builder(ComponentTarget componentTarget) {
+    TransitionUnitsBuilder(ComponentTarget componentTarget) {
       mComponentTarget = componentTarget;
     }
 
-    Builder(ComponentTargetType componentTargetType, Object componentTargetExtraData) {
+    TransitionUnitsBuilder(
+        ComponentTargetType componentTargetType,
+        Object componentTargetExtraData) {
       mComponentTarget = new ComponentTarget(componentTargetType, componentTargetExtraData);
     }
 
@@ -234,7 +242,7 @@ public class Transition {
      *
      * @param property the property to animate
      */
-    public Builder animate(AnimatedProperty property) {
+    public TransitionUnitsBuilder animate(AnimatedProperty property) {
       maybeCommitCurrentBuilder();
       mPropertyTarget = new PropertyTarget(PropertyTargetType.SINGLE, property);
       return this;
@@ -247,7 +255,7 @@ public class Transition {
      *
      * @param properties the properties to animate
      */
-    public Builder animate(AnimatedProperty... properties) {
+    public TransitionUnitsBuilder animate(AnimatedProperty... properties) {
       maybeCommitCurrentBuilder();
       mPropertyTarget = new PropertyTarget(PropertyTargetType.SET, properties);
       return this;
@@ -262,7 +270,7 @@ public class Transition {
      *
      * @param propertyTarget the target properties to animate
      */
-    public Builder animate(PropertyTarget propertyTarget) {
+    public TransitionUnitsBuilder animate(PropertyTarget propertyTarget) {
       maybeCommitCurrentBuilder();
       mPropertyTarget = propertyTarget;
       return this;
@@ -272,7 +280,7 @@ public class Transition {
      * Use to define the {@link TransitionAnimator} that drives the animation. The default is a
      * spring.
      */
-    public Builder animator(TransitionAnimator animator) {
+    public TransitionUnitsBuilder animator(TransitionAnimator animator) {
       mTransitionAnimator = animator;
       return this;
     }
@@ -283,7 +291,7 @@ public class Transition {
      * @see FloatValue
      * @see DimensionValue
      */
-    public Builder appearFrom(RuntimeValue value) {
+    public TransitionUnitsBuilder appearFrom(RuntimeValue value) {
       if (mPropertyTarget == null ||
           mPropertyTarget.propertyTargetType != PropertyTargetType.SINGLE) {
         throw new RuntimeException(
@@ -300,7 +308,7 @@ public class Transition {
      * @see FloatValue
      * @see DimensionValue
      */
-    public Builder disappearTo(RuntimeValue value) {
+    public TransitionUnitsBuilder disappearTo(RuntimeValue value) {
       if (mPropertyTarget == null ||
           mPropertyTarget.propertyTargetType != PropertyTargetType.SINGLE) {
         throw new RuntimeException(
@@ -314,18 +322,18 @@ public class Transition {
     /**
      * Define a constant value where appear animations should start from.
      */
-    public Builder appearFrom(float value) {
+    public TransitionUnitsBuilder appearFrom(float value) {
       return appearFrom(new FloatValue(value));
     }
 
     /**
      * Define a constant value where disappear animations should end at.
      */
-    public Builder disappearTo(float value) {
+    public TransitionUnitsBuilder disappearTo(float value) {
       return disappearTo(new FloatValue(value));
     }
 
-    ArrayList<Transition> getTransitions() {
+    ArrayList<TransitionUnit> getTransitionUnits() {
       maybeCommitCurrentBuilder();
       return mBuiltTransitions;
     }
@@ -335,7 +343,7 @@ public class Transition {
         return;
       }
       mBuiltTransitions.add(
-          new Transition(
+          new TransitionUnit(
               new AnimationTarget(mComponentTarget, mPropertyTarget),
               mTransitionAnimator,
               mAppearFrom,

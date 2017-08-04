@@ -111,7 +111,7 @@ public final class DelegateMethodDescriptions {
       DelegateMethodDescription.newBuilder()
           .annotations(ImmutableList.of(AnnotationSpec.builder(Override.class).build()))
           .accessType(Modifier.PROTECTED)
-          .returnType(ClassNames.TRANSITION_SET)
+          .returnType(ClassNames.TRANSITION)
           .name("onCreateTransition")
           .definedParameterTypes(ImmutableList.<TypeName>of(ClassNames.COMPONENT_CONTEXT))
           .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE, DIFF))

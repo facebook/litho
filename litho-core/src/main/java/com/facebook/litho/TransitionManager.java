@@ -360,7 +360,8 @@ public class TransitionManager {
 
   private void createTransitionAnimations(ArrayList<Transition> transitions) {
     for (int i = 0, size = transitions.size(); i < size; i++) {
-      final Transition transition = transitions.get(i);
+      final Transition.TransitionUnit transition =
+          (Transition.TransitionUnit) transitions.get(i);
       final Transition.AnimationTarget animationTarget = transition.getAnimationTarget();
       switch (animationTarget.componentTarget.componentTargetType) {
         case ALL:
@@ -381,7 +382,7 @@ public class TransitionManager {
     }
   }
 
-  private void addTransitionsForAllKeys(Transition transition) {
+  private void addTransitionsForAllKeys(Transition.TransitionUnit transition) {
     for (int i = 0, size = mAnimationStates.size(); i < size; i++) {
       final AnimationState animationState = mAnimationStates.valueAt(i);
       if (!animationState.seenInLastTransition) {
@@ -391,7 +392,7 @@ public class TransitionManager {
     }
   }
 
-  private void maybeAddTransition(Transition transition, String key) {
+  private void maybeAddTransition(Transition.TransitionUnit transition, String key) {
     final Transition.AnimationTarget animationTarget = transition.getAnimationTarget();
     switch (animationTarget.propertyTarget.propertyTargetType) {
       case ALL:
@@ -416,7 +417,10 @@ public class TransitionManager {
     }
   }
 
-  private void maybeAddTransition(Transition transition, String key, AnimatedProperty property) {
+  private void maybeAddTransition(
+      Transition.TransitionUnit transition,
+      String key,
+      AnimatedProperty property) {
     final AnimationState animationState = mAnimationStates.get(key);
 
     if (AnimationsDebug.ENABLED) {
@@ -428,9 +432,7 @@ public class TransitionManager {
     if (animationState == null ||
         (animationState.currentLayoutOutput == null && animationState.nextLayoutOutput == null)) {
       if (AnimationsDebug.ENABLED) {
-        Log.d(
-            AnimationsDebug.TAG,
-            " - this key was not seen in the before/after layout state");
+        Log.d(AnimationsDebug.TAG, " - this key was not seen in the before/after layout state");
       }
       return;
     }
