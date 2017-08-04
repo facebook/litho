@@ -53,11 +53,11 @@ public class KeyHandler {
         throw new RuntimeException(message + "\n" + errorMessage);
       }
 
-      if (mLogger != null) {
+      /*if (mLogger != null) {
         final LogEvent event = mLogger.newEvent(EVENT_ERROR);
         event.addParam(PARAM_MESSAGE, message + "\n" + errorMessage);
         mLogger.log(event);
-      }
+      }*/
     }
   }
 

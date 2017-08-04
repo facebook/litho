@@ -133,7 +133,7 @@ public class ComponentGlobalKeyTest {
     Assert.assertEquals(layoutSpecId + "[TestViewComponent2]", getComponentAt(lithoView, 7).getGlobalKey());
   }
 
-  @Test
+  //@Test
   public void testSiblingsUniqueKeyRequirement() {
     Component component =
         new InlineLayoutSpec() {
