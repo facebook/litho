@@ -16,6 +16,7 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeVariableName;
+import java.lang.annotation.Annotation;
 import org.junit.Test;
 
 /**
@@ -30,6 +31,15 @@ public class MethodParamModelUtilsTest {
     assertThat(MethodParamModelUtils.isAnnotatedWith(methodParam, Override.class)).isTrue();
     assertThat(
         MethodParamModelUtils.isAnnotatedWith(methodParam, SuppressWarnings.class)).isFalse();
+  }
+
+  @Test
+  public void testGetAnnotation() {
+    MethodParamModel methodParam =
+        TestMethodParamModel.newBuilder().annotation(Override.class).build();
+    Annotation overrideAnnotation = methodParam.getAnnotations().get(0);
+    assertThat(MethodParamModelUtils.getAnnotation(methodParam, Override.class))
+        .isEqualTo(overrideAnnotation);
   }
 
   @Test

@@ -15,6 +15,7 @@ import com.squareup.javapoet.TypeVariableName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * Useful methods for {@link MethodParamModel}s.
@@ -31,6 +32,17 @@ public class MethodParamModelUtils {
     }
 
     return false;
+  }
+
+  public static @Nullable Annotation getAnnotation(
+      MethodParamModel methodParamModel, Class<? extends Annotation> annotationClass) {
+    for (Annotation annotation : methodParamModel.getAnnotations()) {
+      if (annotation.annotationType().equals(annotationClass)) {
+        return annotation;
+      }
+    }
+
+    return null;
   }
 
   public static List<TypeVariableName> getTypeVariables(MethodParamModel methodParam) {

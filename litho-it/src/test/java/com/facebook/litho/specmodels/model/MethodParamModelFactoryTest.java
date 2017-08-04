@@ -16,6 +16,7 @@ import static org.mockito.Mockito.when;
 import com.facebook.litho.annotations.FromPrepare;
 import com.facebook.litho.annotations.OnCreateTransition;
 import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.specmodels.internal.ImmutableList;
@@ -167,5 +168,26 @@ public class MethodParamModelFactoryTest {
         null);
 
     assertThat(methodParamModel).isNotInstanceOf(DiffModel.class);
+  }
+
+  @Test
+  public void testCreatePropModelWithSpecificType() {
+    MethodParamModel methodParamModel =
+        MethodParamModelFactory.create(
+            mock(ExecutableElement.class),
+            TypeName.BOOLEAN,
+            "testParam",
+            new ArrayList<Annotation>(),
+            new ArrayList<AnnotationSpec>(),
+            ImmutableList.<Class<? extends Annotation>>of(),
+            null);
+
+    PropModel prop =
+        MethodParamModelFactory.createPropModel(
+            methodParamModel, TypeName.CHAR, true, ResType.NONE, "varArgString");
+
+    assertThat(prop.getType()).isEqualTo(TypeName.CHAR);
+    assertThat(prop.isOptional()).isTrue();
+    assertThat(prop.getVarArgsSingleName()).isEqualTo("varArgString");
   }
 }

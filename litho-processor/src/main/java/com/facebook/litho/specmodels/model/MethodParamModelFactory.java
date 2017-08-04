@@ -10,6 +10,7 @@
 package com.facebook.litho.specmodels.model;
 
 import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
@@ -68,5 +69,21 @@ public final class MethodParamModelFactory {
     }
 
     return simpleMethodParamModel;
+  }
+
+  public static PropModel createPropModel(
+      MethodParamModel methodParamModel,
+      TypeName type,
+      boolean isOptional,
+      ResType resType,
+      String varArg) {
+    SimpleMethodParamModel simpleModel =
+        new SimpleMethodParamModel(
+            type,
+            methodParamModel.getName(),
+            methodParamModel.getAnnotations(),
+            methodParamModel.getExternalAnnotations(),
+            methodParamModel.getRepresentedObject());
+    return new PropModel(simpleModel, isOptional, resType, varArg);
   }
 }
