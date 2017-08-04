@@ -135,7 +135,8 @@ class LayoutState {
   private final ArrayList<LayoutOutput> mMountableOutputTops = new ArrayList<>();
   private final ArrayList<LayoutOutput> mMountableOutputBottoms = new ArrayList<>();
   private final Queue<Integer> mDisplayListsToPrefetch = new LinkedList<>();
-  private final List<TestOutput> mTestOutputs;
+
+  private List<TestOutput> mTestOutputs;
 
   private InternalNode mLayoutRoot;
   private DiffNode mDiffTreeRoot;
@@ -171,6 +172,12 @@ class LayoutState {
 
   LayoutState() {
     mLayoutStateOutputIdCalculator = new LayoutStateOutputIdCalculator();
+  }
+
+  void init(ComponentContext context) {
+    mContext = context;
+    mStateHandler = mContext.getStateHandler();
+    mReferenceCount.set(1);
     mTestOutputs = ComponentsConfiguration.isEndToEndTestRun ? new ArrayList<TestOutput>(8) : null;
   }
 
@@ -1751,12 +1758,6 @@ class LayoutState {
     }
 
     return this;
-  }
-
-  void init(ComponentContext context) {
-    mContext = context;
-    mStateHandler = mContext.getStateHandler();
-    mReferenceCount.set(1);
   }
 
   /**
