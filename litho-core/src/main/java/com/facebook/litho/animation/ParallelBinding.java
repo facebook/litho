@@ -13,6 +13,7 @@ package com.facebook.litho.animation;
 import com.facebook.litho.dataflow.ChoreographerCompat;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -23,7 +24,7 @@ public class ParallelBinding implements AnimationBinding {
 
   private final CopyOnWriteArrayList<AnimationBindingListener> mListeners =
       new CopyOnWriteArrayList<>();
-  private final AnimationBinding[] mBindings;
+  private final List<AnimationBinding> mBindings;
   private final AnimationBindingListener mChildListener;
   private final HashSet<AnimationBinding> mBindingsFinished = new HashSet<>();
   private final ChoreographerCompat.FrameCallback mStaggerCallback;
@@ -34,11 +35,11 @@ public class ParallelBinding implements AnimationBinding {
   private boolean mIsActive = false;
   private Resolver mResolver;
 
-  public ParallelBinding(int staggerMs, AnimationBinding... bindings) {
+  public ParallelBinding(int staggerMs, List<AnimationBinding> bindings) {
     mStaggerMs = staggerMs;
     mBindings = bindings;
 
-    if (mBindings.length == 0) {
+    if (mBindings.isEmpty()) {
       throw new IllegalArgumentException("Empty binding parallel");
     }
 
@@ -76,7 +77,7 @@ public class ParallelBinding implements AnimationBinding {
     mChildrenFinished++;
     binding.removeListener(mChildListener);
 
-    if (mChildrenFinished >= mBindings.length) {
+    if (mChildrenFinished >= mBindings.size()) {
       finish();
     }
   }
@@ -105,21 +106,21 @@ public class ParallelBinding implements AnimationBinding {
       binding.addListener(mChildListener);
     }
     if (mStaggerMs == 0) {
-      for (int i = 0; i < mBindings.length; i++) {
-        final AnimationBinding binding = mBindings[i];
+      for (int i = 0, size = mBindings.size(); i < size; i++) {
+        final AnimationBinding binding = mBindings.get(i);
         binding.start(mResolver);
       }
-      mNextIndexToStart = mBindings.length;
+      mNextIndexToStart = mBindings.size();
     } else {
       startNextBindingForStagger();
     }
   }
 
   private void startNextBindingForStagger() {
-    mBindings[mNextIndexToStart].start(mResolver);
+    mBindings.get(mNextIndexToStart).start(mResolver);
     mNextIndexToStart++;
 
-    if (mNextIndexToStart < mBindings.length) {
+    if (mNextIndexToStart < mBindings.size()) {
       ChoreographerCompat.getInstance().postFrameCallbackDelayed(mStaggerCallback, mStaggerMs);
     }
   }
@@ -131,8 +132,8 @@ public class ParallelBinding implements AnimationBinding {
     }
     mIsActive = false;
     mResolver = null;
-    for (int i = 0; i < mBindings.length; i++) {
-      final AnimationBinding childBinding = mBindings[i];
+    for (int i = 0, size = mBindings.size(); i < size; i++) {
+      final AnimationBinding childBinding = mBindings.get(i);
       if (childBinding.isActive()) {
         childBinding.stop();
       }
@@ -146,8 +147,8 @@ public class ParallelBinding implements AnimationBinding {
 
   @Override
   public void collectTransitioningProperties(ArrayList<PropertyAnimation> outList) {
-    for (int i = 0; i < mBindings.length; i++) {
-      mBindings[i].collectTransitioningProperties(outList);
+    for (int i = 0, size = mBindings.size(); i < size; i++) {
+      mBindings.get(i).collectTransitioningProperties(outList);
     }
   }
 

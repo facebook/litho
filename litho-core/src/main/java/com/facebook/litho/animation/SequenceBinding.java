@@ -11,6 +11,7 @@
 package com.facebook.litho.animation;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -20,16 +21,16 @@ public class SequenceBinding implements AnimationBinding {
 
   private final CopyOnWriteArrayList<AnimationBindingListener> mListeners =
       new CopyOnWriteArrayList<>();
-  private final AnimationBinding[] mBindings;
+  private final List<AnimationBinding> mBindings;
   private final AnimationBindingListener mChildListener;
   private Resolver mResolver;
   private int mCurrentIndex = 0;
   private boolean mIsActive = false;
 
-  public SequenceBinding(AnimationBinding... bindings) {
+  public SequenceBinding(List<AnimationBinding> bindings) {
     mBindings = bindings;
 
-    if (mBindings.length == 0) {
+    if (mBindings.isEmpty()) {
       throw new IllegalArgumentException("Empty binding sequence");
     }
 
@@ -46,16 +47,16 @@ public class SequenceBinding implements AnimationBinding {
   }
 
   private void onBindingFinished(AnimationBinding binding) {
-    if (binding != mBindings[mCurrentIndex]) {
+    if (binding != mBindings.get(mCurrentIndex)) {
       throw new RuntimeException("Unexpected Binding completed");
     }
     binding.removeListener(mChildListener);
     mCurrentIndex++;
 
-    if (mCurrentIndex >= mBindings.length) {
+    if (mCurrentIndex >= mBindings.size()) {
       finish();
     } else {
-      AnimationBinding next = mBindings[mCurrentIndex];
+      AnimationBinding next = mBindings.get(mCurrentIndex);
       next.addListener(mChildListener);
       next.start(mResolver);
     }
@@ -79,8 +80,9 @@ public class SequenceBinding implements AnimationBinding {
       listener.onWillStart(this);
     }
     mResolver = resolver;
-    mBindings[0].addListener(mChildListener);
-    mBindings[0].start(mResolver);
+    final AnimationBinding first = mBindings.get(0);
+    first.addListener(mChildListener);
+    first.start(mResolver);
   }
 
   @Override
@@ -89,7 +91,7 @@ public class SequenceBinding implements AnimationBinding {
       return;
     }
     mIsActive = false;
-    mBindings[mCurrentIndex].stop();
+    mBindings.get(mCurrentIndex).stop();
   }
 
   @Override
@@ -99,8 +101,8 @@ public class SequenceBinding implements AnimationBinding {
 
   @Override
   public void collectTransitioningProperties(ArrayList<PropertyAnimation> outList) {
-    for (int i = 0; i < mBindings.length; i++) {
-      mBindings[i].collectTransitioningProperties(outList);
+    for (int i = 0, size = mBindings.size(); i < size; i++) {
+      mBindings.get(i).collectTransitioningProperties(outList);
     }
   }
 
