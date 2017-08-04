@@ -27,6 +27,9 @@ import org.assertj.core.api.Java6Assertions;
  *
  * <p> To create an instance of this class, invoke
  * <code>{@link LithoViewAssert#assertThat(LithoView)}</code>.
+ *
+ * Alternatively, use {@link LithoAssertions} which provides entry points to
+ * all Litho AssertJ helpers.
  */
 public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> {
 

@@ -25,10 +25,14 @@ import org.powermock.reflect.Whitebox;
 /**
  * Assertion methods for {@link Component}s.
  *
- * <p> To create an instance of this class, invoke
- * <code>{@link ComponentAssert#assertThat(ComponentContext, Component)}</code>.
+ * <p>
+*  To create an instance of this class, invoke
+ * <code>{@link ComponentAssert#assertThat(ComponentContext, Component)}</code>
  * or
  * <code>{@link ComponentAssert#assertThat(Component.Builder)}</code>.
+ *
+ * Alternatively, use {@link LithoAssertions} which provides entry points to
+ * all Litho AssertJ helpers.
  */
 public final class ComponentAssert extends AbstractAssert<ComponentAssert, Component> {
 
