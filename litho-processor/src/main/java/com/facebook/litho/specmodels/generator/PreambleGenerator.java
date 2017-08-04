@@ -9,13 +9,11 @@
 
 package com.facebook.litho.specmodels.generator;
 
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.DELEGATE_FIELD_NAME;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.SPEC_INSTANCE_NAME;
 
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.TypeName;
 import javax.lang.model.element.Modifier;
 
 /**
@@ -38,17 +36,14 @@ public class PreambleGenerator {
    * Generate a delegate to the Spec that defines this component.
    */
   static TypeSpecDataHolder generateSourceDelegate(SpecModel specModel) {
-    if (!specModel.hasInjectedDependencies()) {
-      return TypeSpecDataHolder.newBuilder().build();
+    final TypeSpecDataHolder.Builder sourceDelegateBuilder = TypeSpecDataHolder.newBuilder();
+
+    if (specModel.hasInjectedDependencies()) {
+      sourceDelegateBuilder.addTypeSpecDataHolder(
+          specModel.getDependencyInjectionHelper().generateSourceDelegate(specModel));
     }
 
-    final TypeName delegateTypeName =
-            specModel.getDependencyInjectionHelper().getSourceDelegateTypeName(specModel);
-    final FieldSpec.Builder builder =
-        FieldSpec.builder(delegateTypeName, DELEGATE_FIELD_NAME)
-            .addModifiers(Modifier.PRIVATE);
-
-    return TypeSpecDataHolder.newBuilder().addField(builder.build()).build();
+    return sourceDelegateBuilder.build();
   }
 
   /**
@@ -56,18 +51,22 @@ public class PreambleGenerator {
    * private constructor to enforce singleton-ity.
    */
   static TypeSpecDataHolder generateConstructor(SpecModel specModel) {
-    final TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
+    final MethodSpec.Builder constructorBuilder = MethodSpec.constructorBuilder();
+
     if (specModel.hasInjectedDependencies()) {
-      typeSpecDataHolder.addMethod(
-          specModel.getDependencyInjectionHelper().generateConstructor(specModel));
+      final MethodSpec diConstructor =
+          specModel.getDependencyInjectionHelper().generateConstructor(specModel);
+
+      constructorBuilder
+          .addAnnotations(diConstructor.annotations)
+          .addCode(diConstructor.code)
+          .addModifiers(diConstructor.modifiers)
+          .addParameters(diConstructor.parameters);
     } else {
-      typeSpecDataHolder.addMethod(
-          MethodSpec.constructorBuilder()
-              .addModifiers(Modifier.PRIVATE)
-              .build());
+      constructorBuilder.addModifiers(Modifier.PRIVATE);
     }
 
-    return typeSpecDataHolder.build();
+    return TypeSpecDataHolder.newBuilder().addMethod(constructorBuilder.build()).build();
   }
 
   /**

@@ -14,7 +14,6 @@ import static com.facebook.litho.specmodels.generator.DelegateMethodGenerator.ge
 import static com.facebook.litho.specmodels.model.DelegateMethodDescriptions.LAYOUT_SPEC_DELEGATE_METHODS_MAP;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
@@ -124,8 +123,6 @@ public class DelegateMethodGeneratorTest {
 
   @Test
   public void testGenerateWithDependencyInjection() {
-    when(mDependencyInjectionHelper.getSourceDelegateAccessorMethod(mSpecModelWithDI))
-        .thenReturn(".accessorMethod()");
     TypeSpecDataHolder typeSpecDataHolder =
         generateDelegates(
             mSpecModelWithDI,
@@ -135,17 +132,18 @@ public class DelegateMethodGeneratorTest {
     assertThat(typeSpecDataHolder.getMethodSpecs()).hasSize(1);
     assertThat(typeSpecDataHolder.getTypeSpecs()).isEmpty();
 
-    assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString()).isEqualTo(
-        "@java.lang.Override\n" +
-            "protected com.facebook.litho.ComponentLayout onCreateLayout(com.facebook.litho.ComponentContext c,\n" +
-            "    com.facebook.litho.Component _abstractImpl) {\n" +
-            "  TestImpl _impl = (TestImpl) _abstractImpl;\n" +
-            "  com.facebook.litho.ComponentLayout _result = (com.facebook.litho.ComponentLayout) mSpec.accessorMethod().onCreateLayout(\n" +
-            "    (com.facebook.litho.ComponentContext) c,\n" +
-            "    (boolean) _impl.prop,\n" +
-            "    (int) _impl.state);\n" +
-            "  return _result;\n" +
-            "}\n");
+    assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString())
+        .isEqualTo(
+            "@java.lang.Override\n"
+                + "protected com.facebook.litho.ComponentLayout onCreateLayout(com.facebook.litho.ComponentContext c,\n"
+                + "    com.facebook.litho.Component _abstractImpl) {\n"
+                + "  TestImpl _impl = (TestImpl) _abstractImpl;\n"
+                + "  com.facebook.litho.ComponentLayout _result = (com.facebook.litho.ComponentLayout) mSpec.onCreateLayout(\n"
+                + "    (com.facebook.litho.ComponentContext) c,\n"
+                + "    (boolean) _impl.prop,\n"
+                + "    (int) _impl.state);\n"
+                + "  return _result;\n"
+                + "}\n");
   }
 
   private static Annotation createAnnotation(final Class<? extends Annotation> annotationClass) {

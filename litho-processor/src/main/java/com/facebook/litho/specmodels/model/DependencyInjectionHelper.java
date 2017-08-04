@@ -11,7 +11,6 @@ package com.facebook.litho.specmodels.model;
 
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.TypeName;
 import java.util.List;
 
 /**
@@ -30,20 +29,9 @@ public interface DependencyInjectionHelper {
    */
   TypeSpecDataHolder generate(SpecModel specModel);
 
-  /**
-   * Generate the source delegate that should be used for the given {@link SpecModel}
-   */
-  TypeName getSourceDelegateTypeName(SpecModel specModel);
+  /** Generate source delegate required for Dependency Injection. */
+  TypeSpecDataHolder generateSourceDelegate(SpecModel specModel);
 
-  /**
-   * Generate the method (if any) required to access the source delegate. Return an empty string
-   * if the source delegate can be accessed directly. Otherwise, provide the given method,
-   * preceded by a dot.
-   */
-  String getSourceDelegateAccessorMethod(SpecModel specModel);
-
-  /**
-   * Generate the constructor that should be used for the given {@link SpecModel}.
-   */
+  /** Generate the constructor required for Dependency Injection. */
   MethodSpec generateConstructor(SpecModel specModel);
 }

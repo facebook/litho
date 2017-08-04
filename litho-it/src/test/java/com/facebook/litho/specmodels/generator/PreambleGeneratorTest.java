@@ -12,9 +12,6 @@ package com.facebook.litho.specmodels.generator;
 import static com.facebook.litho.specmodels.generator.PreambleGenerator.generateConstructor;
 import static com.facebook.litho.specmodels.generator.PreambleGenerator.generateGetter;
 import static com.facebook.litho.specmodels.generator.PreambleGenerator.generateSourceDelegate;
-import static com.squareup.javapoet.ClassName.bestGuess;
-import static com.squareup.javapoet.MethodSpec.constructorBuilder;
-import static com.squareup.javapoet.ParameterizedTypeName.get;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -24,7 +21,9 @@ import com.facebook.litho.specmodels.model.DelegateMethodModel;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelImpl;
+import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
+import javax.lang.model.element.Modifier;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -65,14 +64,18 @@ public class PreambleGeneratorTest {
     assertThat(typeSpecDataHolder.getMethodSpecs()).hasSize(1);
     assertThat(typeSpecDataHolder.getTypeSpecs()).isEmpty();
 
-    assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString()).isEqualTo(
-        "private Constructor() {\n" +
-            "}\n");
+    assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString())
+        .isEqualTo("private Constructor() {\n" + "}\n");
   }
 
   @Test
   public void testGenerateConstructorWithDependencyInjection() {
-    MethodSpec constructor = constructorBuilder().build();
+    final MethodSpec constructor =
+        MethodSpec.constructorBuilder()
+            .addModifiers(Modifier.PUBLIC)
+            .addStatement("final Object testObject = new TestObject()")
+            .build();
+
     when(mDependencyInjectionHelper.generateConstructor(mSpecModelWithDI))
         .thenReturn(constructor);
 
@@ -82,7 +85,9 @@ public class PreambleGeneratorTest {
     assertThat(typeSpecDataHolder.getMethodSpecs()).hasSize(1);
     assertThat(typeSpecDataHolder.getTypeSpecs()).isEmpty();
 
-    assertThat(typeSpecDataHolder.getMethodSpecs().get(0)).isSameAs(constructor);
+    assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString())
+        .isEqualTo(
+            "public Constructor() {\n" + "  final Object testObject = new TestObject();\n" + "}\n");
   }
 
   @Test
@@ -97,11 +102,14 @@ public class PreambleGeneratorTest {
 
   @Test
   public void testGenerateSourceDelegateWithDependencyInjection() {
-    when(mDependencyInjectionHelper.getSourceDelegateTypeName(mSpecModelWithDI))
-        .thenReturn(
-            get(
-                bestGuess("Lazy"),
-                mSpecModelWithDI.getSpecTypeName()));
+    final FieldSpec field =
+        FieldSpec.builder(mSpecModelWithDI.getSpecTypeName(), "mSpec")
+            .addModifiers(Modifier.PRIVATE)
+            .build();
+    final TypeSpecDataHolder sourceDelegate =
+        TypeSpecDataHolder.newBuilder().addField(field).build();
+    when(mDependencyInjectionHelper.generateSourceDelegate(mSpecModelWithDI))
+        .thenReturn(sourceDelegate);
 
     TypeSpecDataHolder typeSpecDataHolder =
         generateSourceDelegate(mSpecModelWithDI);
@@ -110,8 +118,8 @@ public class PreambleGeneratorTest {
     assertThat(typeSpecDataHolder.getMethodSpecs()).isEmpty();
     assertThat(typeSpecDataHolder.getTypeSpecs()).isEmpty();
 
-    assertThat(typeSpecDataHolder.getFieldSpecs().get(0).toString()).isEqualTo(
-        "private Lazy<com.facebook.litho.TestSpec> mSpec;\n");
+    assertThat(typeSpecDataHolder.getFieldSpecs().get(0).toString())
+        .isEqualTo("private com.facebook.litho.TestSpec mSpec;\n");
   }
 
   @Test

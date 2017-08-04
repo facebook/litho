@@ -27,8 +27,7 @@ public class SpecModelUtils {
 
   public static String getSpecAccessor(SpecModel specModel) {
     if (specModel.hasInjectedDependencies()) {
-      return DELEGATE_FIELD_NAME +
-          specModel.getDependencyInjectionHelper().getSourceDelegateAccessorMethod(specModel);
+      return DELEGATE_FIELD_NAME;
     }
 
     return specModel.getSpecName();
