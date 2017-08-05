@@ -345,10 +345,8 @@ public final class DebugComponent {
     return node.mYogaNode;
   }
 
-  /**
-   * @return The foreground drawable asscociated with this debug component. May be null.
-   */
-  public Drawable getForeground() {
+  /** @return The foreground drawable asscociated with this debug component. May be null. */
+  public @Nullable Drawable getForeground() {
     final InternalNode node = mNode.get();
     if (node == null || !isLayoutNode()) {
       return null;
@@ -357,10 +355,8 @@ public final class DebugComponent {
     return node.getForeground();
   }
 
-  /**
-   * @return The background drawable asscociated with this debug component. May be null.
-   */
-  public Reference<? extends Drawable> getBackground() {
+  /** @return The background drawable associated with this debug component. May be null. */
+  public @Nullable Reference<? extends Drawable> getBackground() {
     final InternalNode node = mNode.get();
     if (node == null || !isLayoutNode()) {
       return null;
