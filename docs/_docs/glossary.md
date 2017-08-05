@@ -21,9 +21,9 @@ An annotation added to function parameters in your Spec class to describe **immu
 When a new component is set, the framework will compare the new props with previous props and, if they differ, update that component. This behavior recurses down the component hierarchy until every component in the tree has had the chance to update.
 
 ## @State
-An annotation added to function parameters in your Spec class to describe **immutable** values that are stored *inside this component* and *only matter for this component and it's children*.
+An annotation added to function parameters in your Spec class to describe **immutable** values that are stored *inside this component* and *only matter for this component and its children*.
 
-State values are initially set in a function annotated with @OnCreateInitialState and should only be updated by functions annotated with @UpdateState. Whenever a state update is made, the framework will update that component and recurse down it's children until every component in the sub-tree has had the chance to update.
+State values are initially set in a function annotated with @OnCreateInitialState and should only be updated by functions annotated with @UpdateState. Whenever a state update is made, the framework will update that component and recurse down its children until every component in the sub-tree has had the chance to update.
 
 ## @LayoutSpec
 A Litho Annotation added to a spec class that tells the framework "This component is comprised of other components arranged in a specific layout". The majority of specs you write will be LayoutSpecs. 

@@ -17,7 +17,7 @@ framework. For the time being, we only provide shallow selectors that will match
 
 We ship with a bunch of custom matchers, which will hopefully make your life easier.
 
-The matchers exist as there own `litho-espresso` package, so make sure to add the
+The matchers exist as their own `litho-espresso` package, so make sure to add the
 dependencies to your `build.gradle` file alongside your Espresso setup:
 
 ```gradle
