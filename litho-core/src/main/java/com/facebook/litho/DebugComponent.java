@@ -176,10 +176,8 @@ public final class DebugComponent {
     return children;
   }
 
-  /**
-   * @return A mounted view or null if this component does not mount a view.
-   */
-  public View getMountedView() {
+  /** @return A mounted view or null if this component does not mount a view. */
+  public @Nullable View getMountedView() {
     final InternalNode node = mNode.get();
     final Component component = node == null ? null : node.getRootComponent();
     if (component != null && Component.isMountViewSpec(component)) {
@@ -189,10 +187,8 @@ public final class DebugComponent {
     return null;
   }
 
-  /**
-   * @return A mounted drawable or null if this component does not mount a drawable.
-   */
-  public Drawable getMountedDrawable() {
+  /** @return A mounted drawable or null if this component does not mount a drawable. */
+  public @Nullable Drawable getMountedDrawable() {
     final InternalNode node = mNode.get();
     final Component component = node == null ? null : node.getRootComponent();
     if (component != null && Component.isMountDrawableSpec(component)) {
