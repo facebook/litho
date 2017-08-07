@@ -29,8 +29,11 @@ import static com.facebook.litho.FrameworkLogEvents.EVENT_CSS_LAYOUT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_COMPONENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_LOG_TAG;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_TREE_DIFF_ENABLED;
+import static com.facebook.litho.MountItem.FLAG_DISABLE_TOUCHABLE;
 import static com.facebook.litho.MountItem.FLAG_DUPLICATE_PARENT_STATE;
 import static com.facebook.litho.MountState.ROOT_HOST_ID;
+import static com.facebook.litho.NodeInfo.ENABLED_SET_FALSE;
+import static com.facebook.litho.NodeInfo.ENABLED_UNSET;
 import static com.facebook.litho.NodeInfo.FOCUS_SET_TRUE;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 
@@ -156,6 +159,7 @@ class LayoutState {
   private int mCurrentHostOutputPosition = -1;
 
   private boolean mShouldDuplicateParentState = true;
+  private @NodeInfo.EnabledState int mParentEnabledState = ENABLED_UNSET;
 
   private boolean mShouldGenerateDiffTree = false;
   private int mComponentTreeId = -1;
@@ -259,6 +263,8 @@ class LayoutState {
       layoutOutput.setHostTranslationY(hostBounds.top);
     }
 
+    int flags = 0;
+
     int l = layoutState.mCurrentX + node.getX();
     int t = layoutState.mCurrentY + node.getY();
     int r = l + node.getWidth();
@@ -289,11 +295,14 @@ class LayoutState {
       t += paddingTop;
       r -= paddingRight;
       b -= paddingBottom;
+
+      if (node.getNodeInfo() != null && node.getNodeInfo().getEnabledState() == ENABLED_SET_FALSE) {
+        flags |= FLAG_DISABLE_TOUCHABLE;
+      }
     }
 
     layoutOutput.setBounds(l, t, r, b);
 
-    int flags = 0;
     if (duplicateParentState) {
       flags |= FLAG_DUPLICATE_PARENT_STATE;
     }
@@ -434,7 +443,10 @@ class LayoutState {
             || importantForAccessibility != IMPORTANT_FOR_ACCESSIBILITY_AUTO);
 
     final boolean hasFocusChangeHandler = (nodeInfo != null && nodeInfo.hasFocusChangeHandler());
-    final boolean hasTouchEventHandlers = (nodeInfo != null && nodeInfo.hasTouchEventHandlers());
+    final boolean hasEnabledTouchEventHandlers =
+        nodeInfo != null
+        && nodeInfo.hasTouchEventHandlers()
+        && nodeInfo.getEnabledState() != ENABLED_SET_FALSE;
     final boolean hasViewTag = (nodeInfo != null && nodeInfo.getViewTag() != null);
     final boolean hasViewTags = (nodeInfo != null && nodeInfo.getViewTags() != null);
     final boolean hasShadowElevation = (nodeInfo != null && nodeInfo.getShadowElevation() != 0);
@@ -444,7 +456,7 @@ class LayoutState {
         (nodeInfo != null && nodeInfo.getFocusState() == FOCUS_SET_TRUE);
 
     return hasFocusChangeHandler
-        || hasTouchEventHandlers
+        || hasEnabledTouchEventHandlers
         || hasViewTag
         || hasViewTags
         || hasShadowElevation
@@ -533,6 +545,11 @@ class LayoutState {
       }
     } else {
       diffNode = null;
+    }
+
+    // If the parent of this node is disabled, this node has to be disabled too.
+    if (layoutState.mParentEnabledState == ENABLED_SET_FALSE) {
+      node.enabled(false);
     }
 
     final boolean needsHostView = needsHostView(node, layoutState);
@@ -657,6 +674,10 @@ class LayoutState {
 
     layoutState.mCurrentX += node.getX();
     layoutState.mCurrentY += node.getY();
+    final @NodeInfo.EnabledState int parentEnabledState = layoutState.mParentEnabledState;
+    layoutState.mParentEnabledState = (node.getNodeInfo() != null)
+        ? node.getNodeInfo().getEnabledState()
+        : ENABLED_UNSET;
 
     // We must process the nodes in order so that the layout state output order is correct.
     for (int i = 0, size = node.getChildCount(); i < size; i++) {
@@ -666,6 +687,7 @@ class LayoutState {
           diffNode);
     }
 
+    layoutState.mParentEnabledState = parentEnabledState;
     layoutState.mCurrentX -= node.getX();
     layoutState.mCurrentY -= node.getY();
 

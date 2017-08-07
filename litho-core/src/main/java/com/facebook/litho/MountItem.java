@@ -26,9 +26,11 @@ import com.facebook.litho.displaylist.DisplayList;
 class MountItem {
 
   static final int FLAG_DUPLICATE_PARENT_STATE = 1 << 0;
-  static final int FLAG_VIEW_CLICKABLE = 1 << 1;
-  static final int FLAG_VIEW_LONG_CLICKABLE = 1 << 2;
-  static final int FLAG_VIEW_FOCUSABLE = 1 << 3;
+  static final int FLAG_DISABLE_TOUCHABLE = 1 << 1;
+  static final int FLAG_VIEW_CLICKABLE = 1 << 2;
+  static final int FLAG_VIEW_LONG_CLICKABLE = 1 << 3;
+  static final int FLAG_VIEW_FOCUSABLE = 1 << 4;
+  static final int FLAG_VIEW_ENABLED = 1 << 5;
 
   private NodeInfo mNodeInfo;
   private ViewNodeInfo mViewNodeInfo;
@@ -126,6 +128,10 @@ class MountItem {
 
       if (view.isFocusable()) {
         mFlags |= FLAG_VIEW_FOCUSABLE;
+      }
+
+      if (view.isEnabled()) {
+        mFlags |= FLAG_VIEW_ENABLED;
       }
     }
   }
@@ -238,6 +244,10 @@ class MountItem {
     return (flags & FLAG_DUPLICATE_PARENT_STATE) == FLAG_DUPLICATE_PARENT_STATE;
   }
 
+  static boolean isTouchableDisabled(int flags) {
+    return (flags & FLAG_DISABLE_TOUCHABLE) == FLAG_DISABLE_TOUCHABLE;
+  }
+
   /**
    * @return Whether the view associated with this MountItem is clickable.
    */
@@ -257,6 +267,13 @@ class MountItem {
    */
   static boolean isViewFocusable(int flags) {
     return (flags & FLAG_VIEW_FOCUSABLE) == FLAG_VIEW_FOCUSABLE;
+  }
+
+  /**
+   * @return Whether the view associated with this MountItem is setEnabled.
+   */
+  static boolean isViewEnabled(int flags) {
+    return (flags & FLAG_VIEW_ENABLED) == FLAG_VIEW_ENABLED;
   }
 
   /**

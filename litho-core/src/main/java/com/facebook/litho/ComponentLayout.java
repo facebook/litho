@@ -212,6 +212,7 @@ public interface ComponentLayout {
     @ReturnsOwnership Builder interceptTouchHandler(
         EventHandler<InterceptTouchEvent> interceptTouchHandler);
     @ReturnsOwnership Builder focusable(boolean isFocusable);
+    @ReturnsOwnership Builder enabled(boolean isEnabled);
     @ReturnsOwnership Builder visibleHeightRatio(float visibleHeightRatio);
     @ReturnsOwnership Builder visibleWidthRatio(float visibleWidthRatio);
     @ReturnsOwnership Builder visibleHandler(EventHandler<VisibleEvent> visibleHandler);
@@ -427,6 +428,7 @@ public interface ComponentLayout {
     @ReturnsOwnership ContainerBuilder interceptTouchHandler(
         EventHandler<InterceptTouchEvent> interceptTouchHandler);
     @ReturnsOwnership ContainerBuilder focusable(boolean isFocusable);
+    @ReturnsOwnership ContainerBuilder enabled(boolean isEnabled);
     @ReturnsOwnership ContainerBuilder visibleHeightRatio(float visibleHeightRatio);
     @ReturnsOwnership ContainerBuilder visibleWidthRatio(float visibleWidthRatio);
     @ReturnsOwnership ContainerBuilder visibleHandler(EventHandler<VisibleEvent> visibleHandler);

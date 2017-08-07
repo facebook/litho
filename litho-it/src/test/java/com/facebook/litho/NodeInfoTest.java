@@ -9,6 +9,9 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.NodeInfo.ENABLED_SET_FALSE;
+import static com.facebook.litho.NodeInfo.ENABLED_SET_TRUE;
+import static com.facebook.litho.NodeInfo.ENABLED_UNSET;
 import static com.facebook.litho.NodeInfo.FOCUS_SET_FALSE;
 import static com.facebook.litho.NodeInfo.FOCUS_SET_TRUE;
 import static com.facebook.litho.NodeInfo.FOCUS_UNSET;
@@ -253,6 +256,28 @@ public class NodeInfoTest {
 
     mNodeInfo.release();
     assertThat(mNodeInfo.getFocusState()).isEqualTo(FOCUS_UNSET);
+  }
+
+  @Test
+  public void testEnabledTrue() {
+    assertThat(mNodeInfo.getEnabledState()).isEqualTo(ENABLED_UNSET);
+    mNodeInfo.setEnabled(true);
+
+    assertThat(mNodeInfo.getEnabledState()).isEqualTo(ENABLED_SET_TRUE);
+
+    mNodeInfo.release();
+    assertThat(mNodeInfo.getEnabledState()).isEqualTo(FOCUS_UNSET);
+  }
+
+  @Test
+  public void testEnabledFalse() {
+    assertThat(mNodeInfo.getEnabledState()).isEqualTo(ENABLED_UNSET);
+    mNodeInfo.setEnabled(false);
+
+    assertThat(mNodeInfo.getEnabledState()).isEqualTo(ENABLED_SET_FALSE);
+
+    mNodeInfo.release();
+    assertThat(mNodeInfo.getEnabledState()).isEqualTo(ENABLED_UNSET);
   }
 
   @Test

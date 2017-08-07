@@ -20,6 +20,7 @@ import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO_
 import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES;
 import static com.facebook.litho.Column.create;
 import static com.facebook.litho.LayoutState.createAndMeasureTreeForComponent;
+import static com.facebook.litho.NodeInfo.ENABLED_SET_FALSE;
 import static com.facebook.litho.NodeInfo.FOCUS_SET_TRUE;
 import static com.facebook.litho.SizeSpec.AT_MOST;
 import static com.facebook.litho.SizeSpec.EXACTLY;
@@ -1342,6 +1343,182 @@ public class LayoutStateCalculateTest {
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
     assertThat(layoutState.getMountableOutputAt(0).getNodeInfo()).isNull();
     assertThat(layoutState.getMountableOutputAt(1).getNodeInfo().getFocusState()).isEqualTo(FOCUS_SET_TRUE);
+  }
+
+  @Test
+  public void testLayoutOutputsForEnabledFalseDoesntWrap() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(final ComponentContext c) {
+        return create(c)
+            .child(
+                create(c)
+                    .child(
+                        TestDrawableComponent.create(c)
+                            .withLayout()
+                            .enabled(false)))
+            .build();
+      }
+    };
+
+    final LayoutState layoutState = calculateLayoutState(
+        application,
+        component,
+        -1,
+        makeSizeSpec(100, EXACTLY),
+        makeSizeSpec(100, EXACTLY));
+
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(2);
+
+    assertThat(layoutState.getMountableOutputAt(0).getNodeInfo()).isNull();
+    assertThat(layoutState.getMountableOutputAt(0).getComponent().getSimpleName())
+        .isEqualTo("HostComponent");
+
+    assertThat(layoutState.getMountableOutputAt(1).getComponent().getSimpleName())
+        .isEqualTo("TestComponent");
+    assertThat(MountItem.isTouchableDisabled(layoutState.getMountableOutputAt(1).getFlags()))
+        .isTrue();
+  }
+
+  @Test
+  public void testLayoutOutputsForEnabledFalseInInnerWrappedComponentDrawable() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(final ComponentContext c) {
+        return create(c)
+            .child(
+                create(c)
+                    .child(
+                        TestDrawableComponent.create(c)
+                            .withLayout()
+                            .clickHandler(c.newEventHandler(1))
+                            .enabled(false)))
+            .build();
+      }
+    };
+
+    final LayoutState layoutState = calculateLayoutState(
+        application,
+        component,
+        -1,
+        makeSizeSpec(100, EXACTLY),
+        makeSizeSpec(100, EXACTLY));
+
+    // Because the TestDrawableComponent is disabled, we don't wrap it in a host.
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(2);
+
+    assertThat(layoutState.getMountableOutputAt(0).getNodeInfo()).isNull();
+    assertThat(layoutState.getMountableOutputAt(0).getComponent().getLifecycle())
+        .isInstanceOf(HostComponent.class);
+
+    assertThat(layoutState.getMountableOutputAt(1).getComponent().getLifecycle())
+        .isInstanceOf(TestDrawableComponent.class);
+    assertThat(MountItem.isTouchableDisabled(layoutState.getMountableOutputAt(1).getFlags()))
+        .isTrue();
+  }
+
+  @Test
+  public void testLayoutOutputsForEnabledFalseInInnerComponentView() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(final ComponentContext c) {
+        return create(c)
+            .child(
+                create(c)
+                    .child(
+                        TestViewComponent.create(c)
+                            .withLayout()
+                            .enabled(false)))
+            .build();
+      }
+    };
+
+    final LayoutState layoutState = calculateLayoutState(
+        application,
+        component,
+        -1,
+        makeSizeSpec(100, EXACTLY),
+        makeSizeSpec(100, EXACTLY));
+
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(2);
+
+    assertThat(layoutState.getMountableOutputAt(0).getNodeInfo()).isNull();
+    assertThat(layoutState.getMountableOutputAt(0).getComponent().getLifecycle())
+        .isInstanceOf(HostComponent.class);
+
+    assertThat(layoutState.getMountableOutputAt(1).getComponent().getLifecycle())
+        .isInstanceOf(TestViewComponent.class);
+    assertThat(layoutState.getMountableOutputAt(1).getNodeInfo().getEnabledState())
+        .isEqualTo(ENABLED_SET_FALSE);
+  }
+
+  @Test
+  public void testLayoutOutputsForEnabledFalseApplyToDescendent() {
+    final Component component = new InlineLayoutSpec() {
+      @Override
+      protected ComponentLayout onCreateLayout(final ComponentContext c) {
+        return create(c)
+            .child(
+                create(c)
+                    .enabled(false)
+                    .child(
+                        TestViewComponent.create(c)
+                            .withLayout()
+                            .enabled(true))
+                    .child(
+                        TestDrawableComponent.create(c)
+                            .withLayout()
+                            .clickHandler(c.newEventHandler(1)))
+                    .child(
+                        TestDrawableComponent.create(c)
+                            .withLayout()
+                            .enabled(false)))
+            .child(
+                create(c)
+                    .child(TestViewComponent.create(c))
+                    .child(TestDrawableComponent.create(c)))
+            .build();
+      }
+    };
+
+    final LayoutState layoutState = calculateLayoutState(
+        application,
+        component,
+        -1,
+        makeSizeSpec(100, EXACTLY),
+        makeSizeSpec(100, EXACTLY));
+
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(6);
+
+    assertThat(layoutState.getMountableOutputAt(0).getNodeInfo()).isNull();
+    assertThat(layoutState.getMountableOutputAt(0).getComponent().getLifecycle())
+        .isInstanceOf(HostComponent.class);
+
+    assertThat(layoutState.getMountableOutputAt(1).getComponent().getLifecycle())
+        .isInstanceOf(TestViewComponent.class);
+    assertThat(layoutState.getMountableOutputAt(1).getNodeInfo().getEnabledState())
+        .isEqualTo(ENABLED_SET_FALSE);
+
+    assertThat(layoutState.getMountableOutputAt(2).getComponent().getLifecycle())
+        .isInstanceOf(TestDrawableComponent.class);
+    assertThat(layoutState.getMountableOutputAt(2).getNodeInfo()).isNull();
+    assertThat(MountItem.isTouchableDisabled(layoutState.getMountableOutputAt(2).getFlags()))
+        .isTrue();
+
+    assertThat(layoutState.getMountableOutputAt(3).getComponent().getLifecycle())
+        .isInstanceOf(TestDrawableComponent.class);
+    assertThat(layoutState.getMountableOutputAt(3).getNodeInfo()).isNull();
+    assertThat(MountItem.isTouchableDisabled(layoutState.getMountableOutputAt(3).getFlags()))
+        .isTrue();
+
+    assertThat(layoutState.getMountableOutputAt(4).getComponent().getLifecycle())
+        .isInstanceOf(TestViewComponent.class);
+    assertThat(layoutState.getMountableOutputAt(4).getNodeInfo()).isNull();
+    assertThat(layoutState.getMountableOutputAt(5).getComponent().getLifecycle())
+        .isInstanceOf(TestDrawableComponent.class);
+    assertThat(layoutState.getMountableOutputAt(5).getNodeInfo()).isNull();
+    assertThat(MountItem.isTouchableDisabled(layoutState.getMountableOutputAt(5).getFlags()))
+        .isFalse();
   }
 
   @Test

@@ -1159,6 +1159,12 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public ContainerBuilder enabled(boolean isEnabled) {
+    getOrCreateNodeInfo().setEnabled(isEnabled);
+    return this;
+  }
+
+  @Override
   public ContainerBuilder visibleHeightRatio(float visibleHeightRatio) {
     mVisibleHeightRatio = visibleHeightRatio;
     return this;

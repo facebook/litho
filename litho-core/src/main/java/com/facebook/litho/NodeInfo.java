@@ -32,6 +32,14 @@ class NodeInfo {
   @Retention(RetentionPolicy.SOURCE)
   @interface FocusState {}
 
+  static final short ENABLED_UNSET = 0;
+  static final short ENABLED_SET_TRUE = 1;
+  static final short ENABLED_SET_FALSE = 2;
+
+  @IntDef({ENABLED_UNSET, ENABLED_SET_TRUE, ENABLED_SET_FALSE})
+  @Retention(RetentionPolicy.SOURCE)
+  @interface EnabledState {}
+
   // When this flag is set, contentDescription was explicitly set on this node.
   private static final int PFLAG_CONTENT_DESCRIPTION_IS_SET = 1 << 0;
   // When this flag is set, viewTag was explicitly set on this node.
@@ -98,6 +106,8 @@ class NodeInfo {
       mSendAccessibilityEventUncheckedHandler;
   @FocusState
   private short mFocusState = FOCUS_UNSET;
+  @EnabledState
+  private short mEnabledState = ENABLED_UNSET;
 
   private int mPrivateFlags;
 
@@ -320,6 +330,19 @@ class NodeInfo {
     return mFocusState;
   }
 
+  void setEnabled(boolean isEnabled) {
+    if (isEnabled) {
+      mEnabledState = ENABLED_SET_TRUE;
+    } else {
+      mEnabledState = ENABLED_SET_FALSE;
+    }
+  }
+
+  @EnabledState
+  short getEnabledState() {
+    return mEnabledState;
+  }
+
   void updateWith(NodeInfo newInfo) {
     if ((newInfo.mPrivateFlags & PFLAG_CLICK_HANDLER_IS_SET) != 0) {
       mClickHandler = newInfo.mClickHandler;
@@ -379,6 +402,9 @@ class NodeInfo {
     if (newInfo.getFocusState() != FOCUS_UNSET) {
       mFocusState = newInfo.getFocusState();
     }
+    if (newInfo.getEnabledState() != ENABLED_UNSET) {
+      mEnabledState = newInfo.getEnabledState();
+    }
   }
 
   static NodeInfo acquire() {
@@ -424,6 +450,7 @@ class NodeInfo {
     mSendAccessibilityEventHandler = null;
     mSendAccessibilityEventUncheckedHandler = null;
     mFocusState = FOCUS_UNSET;
+    mEnabledState = ENABLED_UNSET;
     mPrivateFlags = 0;
     mShadowElevation = 0;
     mOutlineProvider = null;

@@ -1108,6 +1108,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       setContentDescription(view, nodeInfo.getContentDescription());
 
       setFocusable(view, nodeInfo.getFocusState());
+      setEnabled(view, nodeInfo.getEnabledState());
     }
 
     setImportantForAccessibility(view, item.getImportantForAccessibility());
@@ -1175,6 +1176,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     view.setLongClickable(MountItem.isViewLongClickable(item.getFlags()));
 
     unsetFocusable(view, item);
+    unsetEnabled(view, item);
 
     if (item.getImportantForAccessibility() != IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
       unsetImportantForAccessibility(view);
@@ -1541,6 +1543,18 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
   private static void unsetFocusable(View view, MountItem mountItem) {
     view.setFocusable(MountItem.isViewFocusable(mountItem.getFlags()));
+  }
+
+  private static void setEnabled(View view, @NodeInfo.EnabledState short enabledState) {
+    if (enabledState == NodeInfo.ENABLED_SET_TRUE) {
+      view.setEnabled(true);
+    } else if (enabledState == NodeInfo.ENABLED_SET_FALSE) {
+      view.setEnabled(false);
+    }
+  }
+
+  private static void unsetEnabled(View view, MountItem mountItem) {
+    view.setEnabled(MountItem.isViewEnabled(mountItem.getFlags()));
   }
 
   private static void setViewPadding(View view, ViewNodeInfo viewNodeInfo) {

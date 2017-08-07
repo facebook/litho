@@ -34,6 +34,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v4.util.SparseArrayCompat;
 import android.util.SparseArray;
+import android.view.MotionEvent;
 import android.view.View;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
@@ -182,6 +183,56 @@ public class ComponentHostTest {
     unmount(0, mountItem1);
 
     assertThat(mHost.getMountItemAt(0)).isEqualTo(mountItem3);
+  }
+
+  @Test public void testMountTouchables() {
+    assertThat(mHost.getMountItemAt(0)).isNull();
+    assertThat(mHost.getMountItemAt(1)).isNull();
+    assertThat(mHost.getMountItemAt(2)).isNull();
+
+    MountItem mountItem1 = mount(0, new ColorDrawable());
+    MountItem mountItem2 = mount(1, new TouchableDrawable());
+    MountItem mountItem3 = mount(2, new View(mContext));
+    MountItem mountItem4 = mount(5, new TouchableDrawable());
+
+    assertThat(mHost.getMountItemAt(0)).isEqualTo(mountItem1);
+    assertThat(mHost.getMountItemAt(1)).isEqualTo(mountItem2);
+    assertThat(mHost.getMountItemAt(2)).isEqualTo(mountItem3);
+    assertThat(mHost.getMountItemAt(3)).isEqualTo(mountItem4);
+
+    assertThat(mHost.getHostTouchables().size()).isEqualTo(2);
+    assertThat(mHost.getHostTouchables().get(1)).isEqualTo(mountItem2.getContent());
+    assertThat(mHost.getHostTouchables().get(5)).isEqualTo(mountItem4.getContent());
+  }
+
+  @Test public void testMountDisableTouchables() {
+    assertThat(mHost.getMountItemAt(0)).isNull();
+    assertThat(mHost.getMountItemAt(1)).isNull();
+    assertThat(mHost.getMountItemAt(2)).isNull();
+
+    MountItem mountItem1 = mount(0, new ColorDrawable());
+    MountItem mountItem2 = mount(1, new TouchableDrawable(), MountItem.FLAG_DISABLE_TOUCHABLE);
+    MountItem mountItem3 = mount(2, new View(mContext));
+    MountItem mountItem4 = mount(4, new TouchableDrawable());
+    MountItem mountItem5 = mount(5, new TouchableDrawable(), MountItem.FLAG_DISABLE_TOUCHABLE);
+    MountItem mountItem6 = mount(7, new View(mContext));
+    MountItem mountItem7 = mount(8, new TouchableDrawable(), MountItem.FLAG_DISABLE_TOUCHABLE);
+
+    assertThat(mHost.getMountItemAt(0)).isEqualTo(mountItem1);
+    assertThat(mHost.getMountItemAt(1)).isEqualTo(mountItem2);
+    assertThat(mHost.getMountItemAt(2)).isEqualTo(mountItem3);
+    assertThat(mHost.getMountItemAt(3)).isEqualTo(mountItem4);
+    assertThat(mHost.getMountItemAt(4)).isEqualTo(mountItem5);
+    assertThat(mHost.getMountItemAt(5)).isEqualTo(mountItem6);
+    assertThat(mHost.getMountItemAt(6)).isEqualTo(mountItem7);
+
+    assertThat(mHost.getHostTouchables().size()).isEqualTo(1);
+    assertThat(mHost.getHostTouchables().get(4)).isEqualTo(mountItem4.getContent());
+
+    unmount(1, mountItem2);
+
+    assertThat(mHost.getMountItemAt(1)).isEqualTo(mountItem3);
+    assertThat(mHost.getHostTouchables().size()).isEqualTo(1);
   }
 
   @Test
@@ -846,6 +897,19 @@ public class ComponentHostTest {
 
       mInvalidationRect = new Rect();
       mInvalidationRect.set(l, t, r, b);
+    }
+  }
+
+  private static class TouchableDrawable extends ColorDrawable implements Touchable {
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event, View host) {
+      return true;
+    }
+
+    @Override
+    public boolean shouldHandleTouchEvent(MotionEvent event) {
+      return true;
     }
   }
 }

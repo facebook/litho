@@ -18,6 +18,7 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.util.SparseArrayCompat;
 import android.support.v4.view.ViewCompat;
@@ -585,6 +586,10 @@ public class ComponentHost extends ViewGroup {
 
   @Override
   public boolean dispatchHoverEvent(MotionEvent event) {
+    if (!isEnabled()) {
+      return false;
+    }
+
     return (mComponentAccessibilityDelegate != null
       && implementsVirtualViews()
       && mComponentAccessibilityDelegate.dispatchHoverEvent(event))
@@ -704,6 +709,14 @@ public class ComponentHost extends ViewGroup {
 
   @Override
   public boolean onTouchEvent(MotionEvent event) {
+    if (!isEnabled()) {
+      // From View.onTouchEvent: A disabled view that is clickable still consumes the touch
+      // events, it just doesn't respond to them.
+      return isClickable()
+          || isLongClickable()
+          || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && isContextClickable());
+    }
+
     boolean handled = false;
 
     // Iterate drawable from last to first to respect drawing order.
@@ -951,7 +964,7 @@ public class ComponentHost extends ViewGroup {
         mountItem.getFlags(),
         mountItem.getNodeInfo());
 
-    if (drawable instanceof Touchable) {
+    if (drawable instanceof Touchable && !MountItem.isTouchableDisabled(mountItem.getFlags())) {
       mTouchables.put(index, (Touchable) drawable);
     }
   }
@@ -970,7 +983,8 @@ public class ComponentHost extends ViewGroup {
 
     drawable.setCallback(null);
 
-    if (contentDrawable instanceof Touchable) {
+    if (contentDrawable instanceof Touchable
+        && !MountItem.isTouchableDisabled(mountItem.getFlags())) {
       if (ComponentHostUtils.existsScrapItemAt(index, mScrapTouchables)) {
         mScrapTouchables.remove(index);
       } else {
@@ -1034,6 +1048,11 @@ public class ComponentHost extends ViewGroup {
 
   private static void finishTemporaryDetach(View view) {
     ViewCompat.dispatchFinishTemporaryDetach(view);
+  }
+
+  @VisibleForTesting
+  SparseArrayCompat<Touchable> getHostTouchables() {
+    return mTouchables;
   }
 
   /**
