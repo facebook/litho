@@ -77,6 +77,8 @@ class NodeInfo {
   private static final int PFLAG_CLIP_TO_OUTLINE_IS_SET = 1 << 16;
   // When this flag is set, focusChangeHandler was explicitly set on this code.
   private static final int PFLAG_FOCUS_CHANGE_HANDLER_IS_SET = 1 << 17;
+  // When this flag is set, interceptTouchHandler was explicitly set on this node.
+  private static final int PFLAG_INTERCEPT_TOUCH_HANDLER_IS_SET = 1 << 18;
 
   private final AtomicInteger mReferenceCount = new AtomicInteger(0);
 
@@ -180,7 +182,6 @@ class NodeInfo {
   }
 
   EventHandler<LongClickEvent> getLongClickHandler() {
-    mPrivateFlags |= PFLAG_TOUCH_HANDLER_IS_SET;
     return mLongClickHandler;
   }
 
@@ -198,6 +199,7 @@ class NodeInfo {
   }
 
   void setTouchHandler(EventHandler<TouchEvent> touchHandler) {
+    mPrivateFlags |= PFLAG_TOUCH_HANDLER_IS_SET;
     mTouchHandler = touchHandler;
   }
 
@@ -205,7 +207,8 @@ class NodeInfo {
     return mTouchHandler;
   }
 
-  void setInterceptTouchHandler(EventHandler interceptTouchHandler) {
+  void setInterceptTouchHandler(EventHandler<InterceptTouchEvent> interceptTouchHandler) {
+    mPrivateFlags |= PFLAG_INTERCEPT_TOUCH_HANDLER_IS_SET;
     mInterceptTouchHandler = interceptTouchHandler;
   }
 
@@ -356,6 +359,9 @@ class NodeInfo {
     if ((newInfo.mPrivateFlags & PFLAG_TOUCH_HANDLER_IS_SET) != 0) {
       mTouchHandler = newInfo.mTouchHandler;
     }
+    if ((newInfo.mPrivateFlags & PFLAG_INTERCEPT_TOUCH_HANDLER_IS_SET) != 0) {
+      mInterceptTouchHandler = newInfo.mInterceptTouchHandler;
+    }
     if ((newInfo.mPrivateFlags & PFLAG_DISPATCH_POPULATE_ACCESSIBILITY_EVENT_HANDLER_IS_SET) != 0) {
       mDispatchPopulateAccessibilityEventHandler =
           newInfo.mDispatchPopulateAccessibilityEventHandler;
@@ -441,6 +447,7 @@ class NodeInfo {
     mLongClickHandler = null;
     mFocusChangeHandler = null;
     mTouchHandler = null;
+    mInterceptTouchHandler = null;
     mDispatchPopulateAccessibilityEventHandler = null;
     mOnInitializeAccessibilityEventHandler = null;
     mOnPopulateAccessibilityEventHandler = null;
