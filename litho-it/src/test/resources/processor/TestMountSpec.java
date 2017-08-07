@@ -172,11 +172,11 @@ public class TestMountSpec<S extends View> {
   }
 
   @OnCreateTransition
-  static TransitionSet onCreateTransition(
+  static Transition onCreateTransition(
       ComponentContext c,
       @Prop Object prop3,
       @State(canUpdateLazily = true) long state1) {
-    return Transition.createSet(
+    return Transition.parallel(
       Transition.create("testKey"));
   }
 

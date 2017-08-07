@@ -66,10 +66,10 @@ public class TransitionManagerAnimationCreationTest {
   @Test
   public void testCreateSingleAnimation() {
     final LayoutState current = createMockLayoutState(
-        Transition.createSet(),
+        Transition.parallel(),
         createMockLayoutOutput("test", 0, 0));
     final LayoutState next = createMockLayoutState(
-        Transition.createSet(
+        Transition.parallel(
             Transition.create("test")
                 .animate(AnimatedProperties.X)
                 .animator(mTestVerificationAnimator)),
@@ -84,10 +84,10 @@ public class TransitionManagerAnimationCreationTest {
   @Test
   public void testCreateMultiPropAnimation() {
     final LayoutState current = createMockLayoutState(
-        Transition.createSet(),
+        Transition.parallel(),
         createMockLayoutOutput("test", 0, 0));
     final LayoutState next = createMockLayoutState(
-        Transition.createSet(
+        Transition.parallel(
             Transition.create("test")
                 .animate(Transition.allProperties())
                 .animator(mTestVerificationAnimator)),
@@ -103,10 +103,10 @@ public class TransitionManagerAnimationCreationTest {
   @Test
   public void testCreateMultiPropAnimationWithNonChangingProp() {
     final LayoutState current = createMockLayoutState(
-        Transition.createSet(),
+        Transition.parallel(),
         createMockLayoutOutput("test", 0, 0));
     final LayoutState next = createMockLayoutState(
-        Transition.createSet(
+        Transition.parallel(
             Transition.create("test")
                 .animate(Transition.allProperties())
                 .animator(mTestVerificationAnimator)),
@@ -121,11 +121,11 @@ public class TransitionManagerAnimationCreationTest {
   @Test
   public void testCreateMultiComponentAnimation() {
     final LayoutState current = createMockLayoutState(
-        Transition.createSet(),
+        Transition.parallel(),
         createMockLayoutOutput("test1", 0, 0),
         createMockLayoutOutput("test2", 0, 0));
     final LayoutState next = createMockLayoutState(
-        Transition.createSet(
+        Transition.parallel(
             Transition.create(Transition.allKeys())
                 .animate(AnimatedProperties.X)
                 .animator(mTestVerificationAnimator)),
@@ -142,11 +142,11 @@ public class TransitionManagerAnimationCreationTest {
   @Test
   public void testSetsOfComponentsAndPropertiesAnimation() {
     final LayoutState current = createMockLayoutState(
-        Transition.createSet(),
+        Transition.parallel(),
         createMockLayoutOutput("test1", 0, 0),
         createMockLayoutOutput("test2", 0, 0));
     final LayoutState next = createMockLayoutState(
-        Transition.createSet(
+        Transition.parallel(
             Transition.create("test1", "test2")
                 .animate(AnimatedProperties.X, AnimatedProperties.Y)
                 .animator(mTestVerificationAnimator)),
@@ -165,11 +165,11 @@ public class TransitionManagerAnimationCreationTest {
   @Test
   public void testAllKeysAllPropertiesAnimation() {
     final LayoutState current = createMockLayoutState(
-        Transition.createSet(),
+        Transition.parallel(),
         createMockLayoutOutput("test1", 0, 0),
         createMockLayoutOutput("test2", 0, 0));
     final LayoutState next = createMockLayoutState(
-        Transition.createSet(
+        Transition.parallel(
             Transition.create(Transition.allKeys())
                 .animate(Transition.allProperties())
                 .animator(mTestVerificationAnimator)),
@@ -188,10 +188,10 @@ public class TransitionManagerAnimationCreationTest {
   @Test
   public void testKeyDoesntExist() {
     final LayoutState current = createMockLayoutState(
-        Transition.createSet(),
+        Transition.parallel(),
         createMockLayoutOutput("test", 0, 0));
     final LayoutState next = createMockLayoutState(
-        Transition.createSet(
+        Transition.parallel(
             Transition.create("test", "keydoesntexist")
                 .animate(Transition.allProperties())
                 .animator(mTestVerificationAnimator)),

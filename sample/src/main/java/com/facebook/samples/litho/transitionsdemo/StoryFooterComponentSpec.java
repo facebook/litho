@@ -154,7 +154,7 @@ public class StoryFooterComponentSpec {
 
   @OnCreateTransition
   static Transition onCreateTransition(ComponentContext c) {
-    return Transition.createSet(
+    return Transition.parallel(
         Transition.create("comment_editText")
             .animate(AnimatedProperties.ALPHA)
             .appearFrom(0)

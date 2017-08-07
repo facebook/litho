@@ -165,9 +165,9 @@ public abstract class Transition {
   }
 
   /**
-   * Creates a set of {@link Transition}s.
+   * Creates a set of {@link Transition}s that will run in parallel.
    */
-  public static <T extends Transition> TransitionSet createSet(T... transitions) {
+  public static <T extends Transition> TransitionSet parallel(T... transitions) {
     return new ParallelTransitionSet(transitions);
   }
 
