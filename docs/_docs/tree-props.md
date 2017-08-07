@@ -59,3 +59,7 @@ class ChildComponentSpec {
   }
 }
 ```
+
+**_Please note_**:
+
+Once created, TreeProp value will be passed down to all children, but will not be accessible from component that created this TreeProp.
