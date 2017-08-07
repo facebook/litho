@@ -8,30 +8,46 @@
  */
 package com.facebook.litho;
 
+import com.facebook.litho.animation.AnimationBinding;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A set of {@link Transition}s.
  */
-public class TransitionSet extends Transition {
+public abstract class TransitionSet extends Transition {
 
-  private final ArrayList<Transition> mTransitions = new ArrayList<>();
+  private final ArrayList<Transition> mChildren = new ArrayList<>();
 
-  TransitionSet(TransitionUnitsBuilder... transitionBuilders) {
-    for (int i = 0; i < transitionBuilders.length; i++) {
-      mTransitions.addAll(transitionBuilders[i].getTransitionUnits());
+  <T extends Transition> TransitionSet(T... children) {
+    for (int i = 0; i < children.length; i++) {
+      addChild(children[i]);
     }
   }
 
-  ArrayList<Transition> getTransitions() {
-    return mTransitions;
+  <T extends Transition> TransitionSet(List<T> children) {
+    for (int i = 0; i < children.size(); i++) {
+      addChild(children.get(i));
+    }
   }
 
-  void mergeIn(TransitionSet set) {
-    mTransitions.addAll(set.mTransitions);
+  private void addChild(Transition child) {
+    if (child instanceof Transition.TransitionUnitsBuilder) {
+      final ArrayList<? extends Transition> transitions =
+          ((Transition.TransitionUnitsBuilder) child).getTransitionUnits();
+      if (transitions.size() > 1) {
+        mChildren.add(new ParallelTransitionSet(transitions));
+      } else {
+        mChildren.add(transitions.get(0));
+      }
+    } else {
+      mChildren.add(child);
+    }
   }
 
-  void clear() {
-    mTransitions.clear();
+  ArrayList<Transition> getChildren() {
+    return mChildren;
   }
+
+  abstract AnimationBinding createAnimation(List<AnimationBinding> children);
 }

@@ -9,11 +9,13 @@
 
 package com.facebook.litho;
 
-import java.util.ArrayList;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import android.graphics.Rect;
 import android.support.v4.util.SimpleArrayMap;
-
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.animation.AnimatedProperty;
 import com.facebook.litho.animation.PropertyAnimation;
@@ -21,18 +23,13 @@ import com.facebook.litho.animation.PropertyHandle;
 import com.facebook.litho.animation.SpringTransition;
 import com.facebook.litho.animation.TransitionAnimationBinding;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-
+import java.util.ArrayList;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-
-import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Tests for the creation of animations using the targeting API in {@link Transition}.
@@ -226,7 +223,7 @@ public class TransitionManagerAnimationCreationTest {
     }
 
     final TransitionContext transitionContext = mock(TransitionContext.class);
-    when(transitionContext.getTransitionSet()).thenReturn(transitions);
+    when(transitionContext.getRootTransition()).thenReturn(transitions);
 
     final LayoutState layoutState = mock(LayoutState.class);
     when(layoutState.getTransitionContext()).thenReturn(transitionContext);

@@ -21,7 +21,6 @@ import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Row;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.Transition;
-import com.facebook.litho.TransitionSet;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
@@ -77,10 +76,8 @@ public class LeftRightBlocksComponentSpec {
   }
 
   @OnCreateTransition
-  static TransitionSet onCreateAutoTransition(
-      ComponentContext c) {
-    return Transition.createSet(
-        Transition.create(Transition.allKeys())
-            .animate(AnimatedProperties.X));
+  static Transition onCreateTransition(ComponentContext c) {
+    return Transition.create(Transition.allKeys())
+        .animate(AnimatedProperties.X);
   }
 }

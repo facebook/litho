@@ -17,12 +17,13 @@ import android.support.v4.util.SimpleArrayMap;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewParent;
-
+import com.facebook.litho.Transition.TransitionUnit;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.animation.AnimatedProperty;
 import com.facebook.litho.animation.AnimatedPropertyNode;
 import com.facebook.litho.animation.AnimationBinding;
 import com.facebook.litho.animation.AnimationBindingListener;
+import com.facebook.litho.animation.ParallelBinding;
 import com.facebook.litho.animation.PropertyAnimation;
 import com.facebook.litho.animation.PropertyHandle;
 import com.facebook.litho.animation.Resolver;
@@ -170,7 +171,6 @@ public class TransitionManager {
     public boolean seenInLastTransition = false;
   }
 
-  private final ArrayList<AnimationBinding> mAnimationsToRun = new ArrayList<>();
   private final SimpleArrayMap<AnimationBinding, ArraySet<PropertyHandle>> mAnimationsToPropertyHandles =
       new SimpleArrayMap<>();
   private final SimpleArrayMap<String, AnimationState> mAnimationStates = new SimpleArrayMap<>();
@@ -180,6 +180,7 @@ public class TransitionManager {
       new TransitionsAnimationBindingListener();
   private final TransitionsResolver mResolver = new TransitionsResolver();
   private final OnAnimationCompleteListener mOnAnimationCompleteListener;
+  private AnimationBinding mRootAnimationToRun;
 
   public TransitionManager(OnAnimationCompleteListener onAnimationCompleteListener) {
     mOnAnimationCompleteListener = onAnimationCompleteListener;
@@ -228,11 +229,7 @@ public class TransitionManager {
           null);
     }
 
-    createTransitionAnimations(
-        nextLayoutState
-            .getTransitionContext()
-            .getTransitionSet()
-            .getTransitions());
+    createTransitionAnimations(nextLayoutState.getTransitionContext().getRootTransition());
 
     // If we recorded any mount content diffs that didn't result in an animation being created for
     // that transition key, clean them up now.
@@ -251,13 +248,11 @@ public class TransitionManager {
       debugLogStartingAnimations();
     }
 
-    for (int i = 0, size = mAnimationsToRun.size(); i < size; i++) {
-      final AnimationBinding binding = mAnimationsToRun.get(i);
-      binding.addListener(mAnimationBindingListener);
-      binding.start(mResolver);
+    if (mRootAnimationToRun != null) {
+      mRootAnimationToRun.start(mResolver);
+      mRootAnimationToRun = null;
     }
 
-    mAnimationsToRun.clear();
     cleanupLayoutOutputs();
   }
 
@@ -306,7 +301,7 @@ public class TransitionManager {
     
     mAnimationStates.clear();
     mAnimationsToPropertyHandles.clear();
-    mAnimationsToRun.clear();
+    mRootAnimationToRun = null;
   }
 
   /**
@@ -358,67 +353,122 @@ public class TransitionManager {
     }
   }
 
-  private void createTransitionAnimations(ArrayList<Transition> transitions) {
-    for (int i = 0, size = transitions.size(); i < size; i++) {
-      final Transition.TransitionUnit transition =
-          (Transition.TransitionUnit) transitions.get(i);
-      final Transition.AnimationTarget animationTarget = transition.getAnimationTarget();
-      switch (animationTarget.componentTarget.componentTargetType) {
-        case ALL:
-          addTransitionsForAllKeys(transition);
-          break;
-        case SET:
-          final String[] keys = (String[]) animationTarget.componentTarget.componentTargetExtraData;
-          for (int j = 0; j < keys.length; j++) {
-            maybeAddTransition(transition, keys[j]);
-          }
-          break;
-        case SINGLE:
-          maybeAddTransition(
-              transition,
-              (String) animationTarget.componentTarget.componentTargetExtraData);
-          break;
-      }
+  private void createTransitionAnimations(Transition rootTransition) {
+    mRootAnimationToRun = createAnimationsForTransition(rootTransition);
+  }
+
+  private AnimationBinding createAnimationsForTransition(Transition transition) {
+    if (transition instanceof TransitionUnit) {
+      return createAnimationsForTransitionUnit((TransitionUnit) transition);
+    } else if (transition instanceof TransitionSet) {
+      return createAnimationsForTransitionSet((TransitionSet) transition);
+    } else {
+      throw new RuntimeException("Unhandled Transition type: " + transition);
     }
   }
 
-  private void addTransitionsForAllKeys(Transition.TransitionUnit transition) {
+  private AnimationBinding createAnimationsForTransitionSet(TransitionSet transitionSet) {
+    final ArrayList<Transition> children = transitionSet.getChildren();
+    final ArrayList<AnimationBinding> createdAnimations = new ArrayList<>();
+    for (int i = 0, size = children.size(); i < size; i++) {
+      final AnimationBinding animation = createAnimationsForTransition(children.get(i));
+      if (animation != null) {
+        createdAnimations.add(animation);
+      }
+    }
+
+    if (createdAnimations.isEmpty()) {
+      return null;
+    }
+
+    return transitionSet.createAnimation(createdAnimations);
+  }
+
+  private AnimationBinding createAnimationsForTransitionUnit(TransitionUnit transition) {
+    final Transition.AnimationTarget animationTarget = transition.getAnimationTarget();
+    final ArrayList<AnimationBinding> createdAnimations = new ArrayList<>();
+    switch (animationTarget.componentTarget.componentTargetType) {
+      case ALL:
+        createAnimationsForTransitionUnitAllKeys(transition, createdAnimations);
+        break;
+      case SET:
+        final String[] keys = (String[]) animationTarget.componentTarget.componentTargetExtraData;
+        for (int j = 0; j < keys.length; j++) {
+          createAnimationsForTransitionUnit(transition, keys[j], createdAnimations);
+        }
+        break;
+      case SINGLE:
+        createAnimationsForTransitionUnit(
+            transition,
+            (String) animationTarget.componentTarget.componentTargetExtraData,
+            createdAnimations);
+        break;
+    }
+
+    if (createdAnimations.isEmpty()) {
+      return null;
+    }
+
+    if (createdAnimations.size() == 1) {
+      return createdAnimations.get(0);
+    }
+
+    return new ParallelBinding(0, createdAnimations);
+  }
+
+  private void createAnimationsForTransitionUnitAllKeys(
+      TransitionUnit transition,
+      ArrayList<AnimationBinding> outList) {
     for (int i = 0, size = mAnimationStates.size(); i < size; i++) {
       final AnimationState animationState = mAnimationStates.valueAt(i);
       if (!animationState.seenInLastTransition) {
         continue;
       }
-      maybeAddTransition(transition, mAnimationStates.keyAt(i));
+      createAnimationsForTransitionUnit(transition, mAnimationStates.keyAt(i), outList);
     }
   }
 
-  private void maybeAddTransition(Transition.TransitionUnit transition, String key) {
+  private void createAnimationsForTransitionUnit(
+      TransitionUnit transition, String key,
+      ArrayList<AnimationBinding> outList) {
     final Transition.AnimationTarget animationTarget = transition.getAnimationTarget();
     switch (animationTarget.propertyTarget.propertyTargetType) {
       case ALL:
         // TODO(t20555897): Enumerate all animatable properties on a LayoutOutput
         for (int i = 0; i < AnimatedProperties.ALL_PROPERTIES.length; i++) {
-          maybeAddTransition(transition, key, AnimatedProperties.ALL_PROPERTIES[i]);
+          final AnimationBinding createdAnimation =
+              maybeCreateAnimation(transition, key, AnimatedProperties.ALL_PROPERTIES[i]);
+          if (createdAnimation != null) {
+            outList.add(createdAnimation);
+          }
         }
         break;
       case SET:
         final AnimatedProperty[] properties =
             (AnimatedProperty[]) animationTarget.propertyTarget.propertyTargetExtraData;
         for (int i = 0; i < properties.length; i++) {
-          maybeAddTransition(transition, key, properties[i]);
+          final AnimationBinding createdAnimation =
+              maybeCreateAnimation(transition, key, properties[i]);
+          if (createdAnimation != null) {
+            outList.add(createdAnimation);
+          }
         }
         break;
       case SINGLE:
-        maybeAddTransition(
-            transition,
-            key,
-            (AnimatedProperty) animationTarget.propertyTarget.propertyTargetExtraData);
+        final AnimationBinding createdAnimation =
+            maybeCreateAnimation(
+                transition,
+                key,
+                (AnimatedProperty) animationTarget.propertyTarget.propertyTargetExtraData);
+        if (createdAnimation != null) {
+          outList.add(createdAnimation);
+        }
         break;
     }
   }
 
-  private void maybeAddTransition(
-      Transition.TransitionUnit transition,
+  private AnimationBinding maybeCreateAnimation(
+      TransitionUnit transition,
       String key,
       AnimatedProperty property) {
     final AnimationState animationState = mAnimationStates.get(key);
@@ -434,7 +484,7 @@ public class TransitionManager {
       if (AnimationsDebug.ENABLED) {
         Log.d(AnimationsDebug.TAG, " - this key was not seen in the before/after layout state");
       }
-      return;
+      return null;
     }
 
     final int changeType = animationState.changeType;
@@ -446,7 +496,7 @@ public class TransitionManager {
             AnimationsDebug.TAG,
             " - did not find matching transition for change type " + changeTypeString);
       }
-      return;
+      return null;
     }
 
     final PropertyState existingState = animationState.propertyStates.get(property);
@@ -478,7 +528,7 @@ public class TransitionManager {
               AnimationsDebug.TAG,
               " - property is already animating to this end value: " + endValue);
         }
-        return;
+        return null;
       }
     } else if (startValue == endValue) {
       if (AnimationsDebug.ENABLED) {
@@ -486,14 +536,15 @@ public class TransitionManager {
             AnimationsDebug.TAG,
             " - the start and end values were the same: " + startValue + " = " + endValue);
       }
-      return;
+      return null;
     }
 
     if (AnimationsDebug.ENABLED) {
       Log.d(AnimationsDebug.TAG, " - created animation");
     }
 
-    mAnimationsToRun.add(transition.createAnimation(propertyHandle, endValue));
+    final AnimationBinding animation = transition.createAnimation(propertyHandle, endValue);
+    animation.addListener(mAnimationBindingListener);
 
     PropertyState propertyState = existingState;
     if (propertyState == null) {
@@ -506,6 +557,8 @@ public class TransitionManager {
     propertyState.animatedPropertyNode.setValue(startValue);
 
     mInitialStatesToRestore.put(propertyHandle, startValue);
+
+    return animation;
   }
 
   private void restoreInitialStates() {
@@ -604,29 +657,7 @@ public class TransitionManager {
 
     Log.d(TAG, "Starting animations:");
 
-    final ArrayList<PropertyAnimation> transitioningProperties = new ArrayList<>();
-    for (int i = 0, size = mAnimationsToRun.size(); i < size; i++) {
-      final AnimationBinding binding = mAnimationsToRun.get(i);
-
-      binding.collectTransitioningProperties(transitioningProperties);
-
-      for (int j = 0, propSize = transitioningProperties.size(); j < propSize; j++) {
-        final PropertyAnimation propertyAnimation = transitioningProperties.get(j);
-        final String key = propertyAnimation.getTransitionKey();
-        final AnimatedProperty animatedProperty = propertyAnimation.getProperty();
-        final AnimationState animationState = mAnimationStates.get(key);
-        final PropertyState propertyState = animationState.propertyStates.get(animatedProperty);
-        final float beforeValue = propertyState.animatedPropertyNode.getValue();
-        final float afterValue = propertyAnimation.getTargetValue();
-        final String changeType = changeTypeToString(animationState.changeType);
-
-        Log.d(
-            TAG,
-            " - " + key + "." + animatedProperty.getName() + " will animate from " + beforeValue +
-                " to " + afterValue + " (" + changeType + ")");
-      }
-      transitioningProperties.clear();
-    }
+    // TODO(t20726089): Restore introspection of animations
   }
 
   private static String changeTypeToString(int changeType) {

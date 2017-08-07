@@ -21,7 +21,6 @@ import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Row;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.Transition;
-import com.facebook.litho.TransitionSet;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.animation.DimensionValue;
 import com.facebook.litho.annotations.LayoutSpec;
@@ -154,8 +153,7 @@ public class StoryFooterComponentSpec {
   }
 
   @OnCreateTransition
-  static TransitionSet onCreateAutoTransition(
-      ComponentContext c) {
+  static Transition onCreateTransition(ComponentContext c) {
     return Transition.createSet(
         Transition.create("comment_editText")
             .animate(AnimatedProperties.ALPHA)

@@ -21,7 +21,6 @@ import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Row;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.Transition;
-import com.facebook.litho.TransitionSet;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnCreateTransition;
@@ -87,10 +86,8 @@ public class OneByOneLeftRightBlocksComponentSpec {
   }
 
   @OnCreateTransition
-  static TransitionSet onCreateAutoTransition(
-      ComponentContext c) {
-    return Transition.createSet(
-        Transition.create(Transition.allKeys())
-            .animate(Transition.allProperties()));
+  static Transition onCreateTransition(ComponentContext c) {
+    return Transition.create(Transition.allKeys())
+        .animate(Transition.allProperties());
   }
 }

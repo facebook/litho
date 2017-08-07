@@ -167,8 +167,8 @@ public abstract class Transition {
   /**
    * Creates a set of {@link Transition}s.
    */
-  public static TransitionSet createSet(TransitionUnitsBuilder... transitions) {
-    return new TransitionSet(transitions);
+  public static <T extends Transition> TransitionSet createSet(T... transitions) {
+    return new ParallelTransitionSet(transitions);
   }
 
   public static class TransitionUnit extends Transition {

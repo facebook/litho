@@ -9,23 +9,37 @@
 
 package com.facebook.litho;
 
+import java.util.ArrayList;
+
 /**
  * TransitionContext is unique per LayoutState and contains all the transitions defined
  * in a component tree.
  */
 class TransitionContext {
 
-  private final TransitionSet mTransitionSet = new TransitionSet();
+  private final ArrayList<Transition> mTransitions = new ArrayList<>();
 
   void addTransition(Transition transition) {
-    mTransitionSet.mergeIn((TransitionSet) transition);
+    if (transition instanceof Transition.TransitionUnitsBuilder) {
+      mTransitions.addAll(((Transition.TransitionUnitsBuilder) transition).getTransitionUnits());
+    } else {
+      mTransitions.add(transition);
+    }
   }
 
-  TransitionSet getTransitionSet() {
-    return mTransitionSet;
+  Transition getRootTransition() {
+    if (mTransitions.isEmpty()) {
+      return null;
+    }
+
+    if (mTransitions.size() == 1) {
+      return mTransitions.get(0);
+    }
+
+    return new ParallelTransitionSet(mTransitions);
   }
 
   void reset() {
-    mTransitionSet.clear();
+    mTransitions.clear();
   }
 }
