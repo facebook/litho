@@ -13,20 +13,34 @@ import com.facebook.litho.animation.ParallelBinding;
 import java.util.List;
 
 /**
- * A {@link TransitionSet} that runs its child transitions in parallel.
+ * A {@link TransitionSet} that runs its child transitions in parallel, optionally with a stagger.
  */
 public class ParallelTransitionSet extends TransitionSet {
 
+  private final int mStaggerMs;
+
   public <T extends Transition> ParallelTransitionSet(T... children) {
     super(children);
+    mStaggerMs = 0;
   }
 
   public <T extends Transition> ParallelTransitionSet(List<T> children) {
     super(children);
+    mStaggerMs = 0;
+  }
+
+  public <T extends Transition> ParallelTransitionSet(int staggerMs, T... children) {
+    super(children);
+    mStaggerMs = staggerMs;
+  }
+
+  public <T extends Transition> ParallelTransitionSet(int staggerMs, List<T> children) {
+    super(children);
+    mStaggerMs = staggerMs;
   }
 
   @Override
   AnimationBinding createAnimation(List<AnimationBinding> children) {
-    return new ParallelBinding(0, children);
+    return new ParallelBinding(mStaggerMs, children);
   }
 }

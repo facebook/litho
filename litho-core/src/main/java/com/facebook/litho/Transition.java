@@ -171,6 +171,20 @@ public abstract class Transition {
     return new ParallelTransitionSet(transitions);
   }
 
+  /**
+   * Creates a set of {@link Transition}s that will run in parallel but starting on a stagger.
+   */
+  public static <T extends Transition> TransitionSet stagger(int staggerMs, T... transitions) {
+    return new ParallelTransitionSet(staggerMs, transitions);
+  }
+
+  /**
+   * Creates a sequence of {@link Transition}s that will run one after another.
+   */
+  public static <T extends Transition> TransitionSet sequence(T... transitions) {
+    return new SequenceTransitionSet(transitions);
+  }
+
   public static class TransitionUnit extends Transition {
 
     private final AnimationTarget mAnimationTarget;
