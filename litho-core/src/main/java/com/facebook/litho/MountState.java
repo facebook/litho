@@ -1919,7 +1919,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   int getItemCount() {
-    return mIndexToItemMap.size();
+    return mLayoutOutputsIds == null ? 0 : mLayoutOutputsIds.length;
   }
 
   MountItem getItemAt(int i) {

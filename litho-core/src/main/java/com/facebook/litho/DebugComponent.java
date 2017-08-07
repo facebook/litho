@@ -269,9 +269,11 @@ public final class DebugComponent {
       return null;
     }
 
+    final MountState mountState = lithoView.getMountState();
     final StringBuilder sb = new StringBuilder();
-    for (int i = 0, size = lithoView.getMountState().getItemCount(); i < size; i++) {
-      final MountItem mountItem = lithoView.getMountState().getItemAt(i);
+
+    for (int i = 0, size = mountState.getItemCount(); i < size; i++) {
+      final MountItem mountItem = mountState.getItemAt(i);
       final Component<?> mountItemComponent = mountItem.getComponent();
       if (mountItemComponent != null && mountItemComponent.isEquivalentTo(component)) {
         final Object content = mountItem.getContent();
