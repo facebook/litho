@@ -63,3 +63,38 @@ class ChildComponentSpec {
 **_Please note_**:
 
 Once created, TreeProp value will be passed down to all children, but will not be accessible from component that created this TreeProp.
+
+If you want to access a TreeProp from the component that created this TreeProp, you can transorm it into [`@State`](https://fblitho.com/docs/state) value like this:
+
+```java
+@LayoutSpec
+public class ParentComponentSpec {
+
+  @OnCreateInitialState
+  static void createInitialState(
+      ComponentContext context,
+      StateValue<ImportantHelper> helper) {
+
+    helper.set(new ImportantHelper());
+  }
+
+  @OnCreateTreeProp
+  static ImportantHelper onCreateHelper(
+      ComponentContext c,
+      @State ImportantHelper helper) {
+
+    return helper;
+  }
+```
+
+And now `ImportantHelper` instance is accessible as `@State` as usual:
+
+```java
+@OnCreateLayout
+static ComponentLayout onCreateLayout(
+    ComponentContext c,
+    @State ImportantHelper helper) {
+
+	//...
+}
+```
