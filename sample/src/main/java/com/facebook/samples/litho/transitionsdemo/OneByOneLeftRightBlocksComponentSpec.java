@@ -22,7 +22,6 @@ import com.facebook.litho.Row;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.Transition;
 import com.facebook.litho.TransitionSet;
-import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnCreateTransition;

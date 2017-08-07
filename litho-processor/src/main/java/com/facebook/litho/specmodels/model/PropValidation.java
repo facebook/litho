@@ -27,7 +27,30 @@ public class PropValidation {
   private static final List<String> RESERVED_PROP_NAMES = Arrays.asList(
       "withLayout",
       "key",
-      "loadingEventHandler");
+      "loadingEventHandler",
+      "clickHandler",
+      "focusChangeHandler",
+      "longClickHandler",
+      "touchHandler",
+      "interceptTouchHandler",
+      "focusable",
+      "contentDescription",
+      "viewTag",
+      "viewTags",
+      "shadowElevationPx",
+      "shadowElevationAttr",
+      "shadowElevationRes",
+      "shadowElevationDip",
+      "outlineProvider",
+      "clipToOutline",
+      "dispatchPopulateAccessibilityEventHandler",
+      "onInitializeAccessibilityEventHandler",
+      "onInitializeAccessibilityNodeInfoHandler",
+      "onPopulateAccessibilityEventHandler",
+      "onRequestSendAccessibilityEventHandler",
+      "performAccessibilityActionHandler",
+      "sendAccessibilityEventHandler",
+      "sendAccessibilityEventUncheckedHandler");
 
   private static final List<TypeName> ILLEGAL_PROP_TYPES = Arrays.<TypeName>asList(
       ClassNames.COMPONENT_LAYOUT,
