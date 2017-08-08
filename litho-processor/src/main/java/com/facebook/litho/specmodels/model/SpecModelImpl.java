@@ -45,6 +45,7 @@ public final class SpecModelImpl implements SpecModel {
   private final ImmutableList<InterStageInputParamModel> mInterStageInputs;
   private final ImmutableList<TreePropModel> mTreeProps;
   private final ImmutableList<EventDeclarationModel> mEventDeclarations;
+  private final ImmutableList<BuilderMethodModel> mImplicitBuilderMethods;
   private final ImmutableList<DiffModel> mDiffs;
   private final String mClassJavadoc;
   private final ImmutableList<PropJavadocModel> mPropJavadocs;
@@ -62,6 +63,7 @@ public final class SpecModelImpl implements SpecModel {
       ImmutableList<TypeVariableName> typeVariables,
       ImmutableList<PropDefaultModel> propDefaults,
       ImmutableList<EventDeclarationModel> eventDeclarations,
+      ImmutableList<BuilderMethodModel> implicitBuilderMethods,
       String classJavadoc,
       ImmutableList<PropJavadocModel> propJavadocs,
       boolean isPublic,
@@ -81,6 +83,7 @@ public final class SpecModelImpl implements SpecModel {
     mInterStageInputs = getInterStageInputs(delegateMethods, eventMethods, updateStateMethods);
     mTreeProps = getTreeProps(delegateMethods, eventMethods, updateStateMethods);
     mEventDeclarations = eventDeclarations;
+    mImplicitBuilderMethods = implicitBuilderMethods;
     mDiffs = getDiffs(delegateMethods);
     mClassJavadoc = classJavadoc;
     mPropJavadocs = propJavadocs;
@@ -158,6 +161,11 @@ public final class SpecModelImpl implements SpecModel {
   @Override
   public ImmutableList<EventDeclarationModel> getEventDeclarations() {
     return mEventDeclarations;
+  }
+
+  @Override
+  public ImmutableList<BuilderMethodModel> getExtraBuilderMethods() {
+    return mImplicitBuilderMethods;
   }
 
   @Override
@@ -417,6 +425,7 @@ public final class SpecModelImpl implements SpecModel {
     private ImmutableList<TypeVariableName> mTypeVariableNames;
     private ImmutableList<PropDefaultModel> mPropDefaultModels;
     private ImmutableList<EventDeclarationModel> mEventDeclarations;
+    private ImmutableList<BuilderMethodModel> mBuilderMethodModels;
     private String mClassJavadoc;
     private ImmutableList<PropJavadocModel> mPropJavadocs;
     private boolean mIsPublic;
@@ -471,6 +480,11 @@ public final class SpecModelImpl implements SpecModel {
       return this;
     }
 
+    public Builder extraBuilderMethods(ImmutableList<BuilderMethodModel> builderMethodModels) {
+      mBuilderMethodModels = builderMethodModels;
+      return this;
+    }
+
     public Builder classJavadoc(String classJavadoc) {
       mClassJavadoc = classJavadoc;
       return this;
@@ -510,6 +524,7 @@ public final class SpecModelImpl implements SpecModel {
           mTypeVariableNames,
           mPropDefaultModels,
           mEventDeclarations,
+          mBuilderMethodModels,
           mClassJavadoc,
           mPropJavadocs,
           mIsPublic,

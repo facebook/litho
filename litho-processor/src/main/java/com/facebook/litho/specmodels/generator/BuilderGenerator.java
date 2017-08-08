@@ -10,6 +10,7 @@
 package com.facebook.litho.specmodels.generator;
 
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.model.BuilderMethodModel;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.PropDefaultModel;
@@ -30,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
+import java.util.Locale;
 import javax.lang.model.element.Modifier;
 
 /**
@@ -272,6 +274,10 @@ public class BuilderGenerator {
     for (EventDeclarationModel eventDeclaration : specModel.getEventDeclarations()) {
       propsBuilderClassBuilder.addMethod(
           generateEventDeclarationBuilderMethod(specModel, eventDeclaration));
+    }
+
+    for (BuilderMethodModel builderMethodModel : specModel.getExtraBuilderMethods()) {
+      propsBuilderClassBuilder.addMethod(generateExtraBuilderMethod(builderMethodModel));
     }
 
     propsBuilderClassBuilder
@@ -847,6 +853,19 @@ public class BuilderGenerator {
         .returns(BUILDER_CLASS_NAME)
         .build();
   }
+
+  private static MethodSpec generateExtraBuilderMethod(BuilderMethodModel builderMethodModel) {
+    final String capitalizedName =
+        builderMethodModel.paramName.substring(0,1).toUpperCase(Locale.ROOT)
+            + builderMethodModel.paramName.substring(1);
+    return MethodSpec.methodBuilder(builderMethodModel.paramName)
+        .addModifiers(Modifier.PUBLIC)
+        .addParameter(builderMethodModel.paramType, builderMethodModel.paramName)
+        .addStatement("super.set$L($L)", capitalizedName, builderMethodModel.paramName)
+        .addStatement("return this")
+          .returns(BUILDER_CLASS_NAME)
+          .build();
+    }
 
   private static MethodSpec generateBuildMethod(SpecModel specModel, int numRequiredProps) {
     final MethodSpec.Builder buildMethodBuilder = MethodSpec.methodBuilder("build")

@@ -36,6 +36,7 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
       ImmutableList<TypeVariableName> typeVariables,
       ImmutableList<PropDefaultModel> propDefaults,
       ImmutableList<EventDeclarationModel> eventDeclarations,
+      ImmutableList<BuilderMethodModel> builderMethodModels,
       String classJavadoc,
       ImmutableList<PropJavadocModel> propJavadocs,
       boolean isPublic,
@@ -53,6 +54,7 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
             .typeVariables(typeVariables)
             .propDefaults(propDefaults)
             .eventDeclarations(eventDeclarations)
+            .extraBuilderMethods(builderMethodModels)
             .classJavadoc(classJavadoc)
             .propJavadocs(propJavadocs)
             .isPublic(isPublic)
@@ -131,6 +133,11 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
   @Override
   public ImmutableList<EventDeclarationModel> getEventDeclarations() {
     return mSpecModel.getEventDeclarations();
+  }
+
+  @Override
+  public ImmutableList<BuilderMethodModel> getExtraBuilderMethods() {
+    return mSpecModel.getExtraBuilderMethods();
   }
 
   @Override

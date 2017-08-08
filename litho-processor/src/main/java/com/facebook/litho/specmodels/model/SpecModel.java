@@ -95,9 +95,10 @@ public interface SpecModel {
    */
   ImmutableList<EventDeclarationModel> getEventDeclarations();
 
-  /**
-   * @return the set of diff params used within lifecycle methods in the spec.
-   */
+  /** @return the set of methods that are implicitly added to the builder. */
+  ImmutableList<BuilderMethodModel> getExtraBuilderMethods();
+
+  /** @return the set of diff params used within lifecycle methods in the spec. */
   ImmutableList<DiffModel> getDiffs();
 
   /**
