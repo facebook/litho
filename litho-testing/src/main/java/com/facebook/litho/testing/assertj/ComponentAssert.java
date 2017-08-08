@@ -193,7 +193,7 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
         actual);
 
     Java6Assertions.assertThat(mountedSubComponents)
-        .isEqualTo(subComponents);
+        .containsExactly(subComponents);
 
     return this;
   }
