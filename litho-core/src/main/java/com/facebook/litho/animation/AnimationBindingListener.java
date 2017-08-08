@@ -25,4 +25,17 @@ public interface AnimationBindingListener {
    * Called when a {@link GraphBinding} is finished, meaning all of its nodes are finished.
    */
   void onFinish(AnimationBinding binding);
+
+  /**
+   * Called when a listener (including this one) returns false from {@link #shouldStart}
+   */
+  void onCanceledBeforeStart(AnimationBinding binding);
+
+  /**
+   * Return 'false' to cancel this animation and keep it from starting.
+   *
+   * @return shouldStart whether to start this animation (i.e. return false to cancel it and prevent
+   * it from running)
+   */
+  boolean shouldStart(AnimationBinding binding);
 }

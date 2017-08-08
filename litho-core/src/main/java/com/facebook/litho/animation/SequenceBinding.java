@@ -43,6 +43,16 @@ public class SequenceBinding implements AnimationBinding {
       public void onFinish(AnimationBinding binding) {
         SequenceBinding.this.onBindingFinished(binding);
       }
+
+      @Override
+      public void onCanceledBeforeStart(AnimationBinding binding) {
+        SequenceBinding.this.onBindingFinished(binding);
+      }
+
+      @Override
+      public boolean shouldStart(AnimationBinding binding) {
+        return true;
+      }
     };
   }
 
@@ -70,15 +80,27 @@ public class SequenceBinding implements AnimationBinding {
     mResolver = null;
   }
 
+  private void notifyCanceledBeforeStart() {
+    for (AnimationBindingListener listener : mListeners) {
+      listener.onCanceledBeforeStart(this);
+    }
+  }
+
   @Override
   public void start(Resolver resolver) {
     if (mIsActive) {
       throw new RuntimeException("Already started");
     }
-    mIsActive = true;
+    for (AnimationBindingListener listener : mListeners) {
+      if (!listener.shouldStart(this)) {
+        notifyCanceledBeforeStart();
+        return;
+      }
+    }
     for (AnimationBindingListener listener : mListeners) {
       listener.onWillStart(this);
     }
+    mIsActive = true;
     mResolver = resolver;
     final AnimationBinding first = mBindings.get(0);
     first.addListener(mChildListener);

@@ -52,6 +52,16 @@ public class ParallelBinding implements AnimationBinding {
       public void onFinish(AnimationBinding binding) {
         ParallelBinding.this.onBindingFinished(binding);
       }
+
+      @Override
+      public void onCanceledBeforeStart(AnimationBinding binding) {
+        ParallelBinding.this.onBindingFinished(binding);
+      }
+
+      @Override
+      public boolean shouldStart(AnimationBinding binding) {
+        return true;
+      }
     };
 
     if (mStaggerMs == 0) {
@@ -95,12 +105,19 @@ public class ParallelBinding implements AnimationBinding {
       throw new RuntimeException("Starting binding multiple times");
     }
     mHasStarted = true;
-    mIsActive = true;
     mResolver = resolver;
 
     for (AnimationBindingListener listener : mListeners) {
+      if (!listener.shouldStart(this)) {
+        notifyCanceledBeforeStart();
+        return;
+      }
+    }
+    for (AnimationBindingListener listener : mListeners) {
       listener.onWillStart(this);
     }
+
+    mIsActive = true;
 
     for (AnimationBinding binding : mBindings) {
       binding.addListener(mChildListener);
@@ -122,6 +139,12 @@ public class ParallelBinding implements AnimationBinding {
 
     if (mNextIndexToStart < mBindings.size()) {
       ChoreographerCompat.getInstance().postFrameCallbackDelayed(mStaggerCallback, mStaggerMs);
+    }
+  }
+
+  private void notifyCanceledBeforeStart() {
+    for (AnimationBindingListener listener : mListeners) {
+      listener.onCanceledBeforeStart(this);
     }
   }
 

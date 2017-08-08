@@ -726,6 +726,20 @@ public class TransitionManager {
 
     @Override
     public void onFinish(AnimationBinding binding) {
+      finishAnimation(binding);
+    }
+
+    @Override
+    public void onCanceledBeforeStart(AnimationBinding binding) {
+      finishAnimation(binding);
+    }
+
+    @Override
+    public boolean shouldStart(AnimationBinding binding) {
+      return true;
+    }
+
+    private void finishAnimation(AnimationBinding binding) {
       final ArraySet<PropertyHandle> keys = mAnimationsToPropertyHandles.remove(binding);
       if (keys == null) {
         return;

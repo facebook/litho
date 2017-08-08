@@ -59,6 +59,12 @@ public abstract class TransitionAnimationBinding implements AnimationBinding {
   @Override
   public void start(Resolver resolver) {
     for (AnimationBindingListener listener : mListeners) {
+      if (!listener.shouldStart(this)) {
+        notifyCanceledBeforeStart();
+        return;
+      }
+    }
+    for (AnimationBindingListener listener : mListeners) {
       listener.onWillStart(this);
     }
     setupBinding(resolver);
@@ -73,6 +79,9 @@ public abstract class TransitionAnimationBinding implements AnimationBinding {
 
   @Override
   public void stop() {
+    if (!isActive()) {
+      return;
+    }
     mGraphBinding.deactivate();
   }
 
@@ -86,6 +95,12 @@ public abstract class TransitionAnimationBinding implements AnimationBinding {
       listener.onFinish(this);
     }
     stop();
+  }
+
+  private void notifyCanceledBeforeStart() {
+    for (AnimationBindingListener listener : mListeners) {
+      listener.onCanceledBeforeStart(this);
+    }
   }
 
   @Override
