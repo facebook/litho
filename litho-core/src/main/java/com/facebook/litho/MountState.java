@@ -577,8 +577,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
       updateMountedContent(currentMountItem, layoutOutput, itemComponent);
       setViewAttributes(currentMountItem);
-
-      maybeUpdateAnimatingMountContent(currentMountItem, currentMountItem.getContent());
     }
 
     final Object currentContent = currentMountItem.getContent();
@@ -594,6 +592,12 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     // the component has been updated or not since the mounted item might might have the same
     // size and content but a different position.
     updateBoundsForMountedLayoutOutput(layoutOutput, currentMountItem);
+
+    // This needs to happen after updating the bounds so that the right translateX/Y are applied to
+    // the mount content
+    if (shouldUpdate) {
+      maybeUpdateAnimatingMountContent(currentMountItem, currentMountItem.getContent());
+    }
 
     maybeInvalidateAccessibilityState(currentMountItem);
     if (currentMountItem.getContent() instanceof Drawable) {
