@@ -31,7 +31,7 @@ public final class SimpleMount extends ComponentLifecycle {
   private SimpleMount() {
   }
 
-  public static synchronized SimpleMount get() {
+  private static synchronized SimpleMount get() {
     if (sInstance == null) {
       sInstance = new SimpleMount();
     }

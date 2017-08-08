@@ -133,7 +133,7 @@ public class PreambleGeneratorTest {
     assertThat(typeSpecDataHolder.getFieldSpecs().get(0).toString()).isEqualTo(
         "private static com.facebook.litho.Test sInstance = null;\n");
     assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString()).isEqualTo(
-        "public static synchronized com.facebook.litho.Test get() {\n" +
+        "private static synchronized com.facebook.litho.Test get() {\n" +
             "  if (sInstance == null) {\n" +
             "    sInstance = new com.facebook.litho.Test();\n" +
             "  }\n" +
@@ -150,7 +150,7 @@ public class PreambleGeneratorTest {
     assertThat(typeSpecDataHolder.getTypeSpecs()).isEmpty();
 
     assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString()).isEqualTo(
-        "public com.facebook.litho.Test get() {\n" +
+        "private com.facebook.litho.Test get() {\n" +
             "  return this;\n" +
             "}\n");
   }

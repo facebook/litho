@@ -88,7 +88,7 @@ public class PreambleGenerator {
 
       typeSpecDataHolder.addMethod(
           MethodSpec.methodBuilder("get")
-              .addModifiers(Modifier.PUBLIC)
+              .addModifiers(Modifier.PRIVATE)
               .addModifiers(Modifier.STATIC)
               .addModifiers(Modifier.SYNCHRONIZED)
               .returns(specModel.getComponentTypeName())
@@ -100,7 +100,7 @@ public class PreambleGenerator {
     } else {
       typeSpecDataHolder.addMethod(
           MethodSpec.methodBuilder("get")
-              .addModifiers(Modifier.PUBLIC)
+              .addModifiers(Modifier.PRIVATE)
               .returns(specModel.getComponentTypeName())
               .addStatement("return this")
               .build());

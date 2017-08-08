@@ -22,7 +22,7 @@ public final class SimpleLayout extends ComponentLifecycle {
   private SimpleLayout() {
   }
 
-  public static synchronized SimpleLayout get() {
+  private static synchronized SimpleLayout get() {
     if (sInstance == null) {
       sInstance = new SimpleLayout();
     }

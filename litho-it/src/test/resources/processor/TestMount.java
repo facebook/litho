@@ -45,7 +45,7 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
   private TestMount() {
   }
 
-  public static synchronized TestMount get() {
+  private static synchronized TestMount get() {
     if (sInstance == null) {
       sInstance = new TestMount();
     }

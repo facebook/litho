@@ -48,7 +48,7 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
   private TestLayout() {
   }
 
-  public static synchronized TestLayout get() {
+  private static synchronized TestLayout get() {
     if (sInstance == null) {
       sInstance = new TestLayout();
     }
