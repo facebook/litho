@@ -126,6 +126,16 @@ public class TransitionManager {
      * If there's an {@link #animation}, the target value it's animating to.
      */
     public Float targetValue;
+
+    /**
+     * The last mounted value of this property.
+     */
+    public Float lastMountedValue;
+
+    /**
+     * How many animations are waiting to finish for this property.
+     */
+    public int numPendingAnimations;
   }
 
   /**
@@ -343,6 +353,8 @@ public class TransitionManager {
       animationState.nextLayoutOutput.incrementRefCount();
     }
 
+    recordLastMountedValues(animationState);
+
     animationState.seenInLastTransition = true;
 
     if (AnimationsDebug.ENABLED) {
@@ -350,6 +362,18 @@ public class TransitionManager {
           AnimationsDebug.TAG,
           "Saw key " + transitionKey + " which is " +
               changeTypeToString(animationState.changeType));
+    }
+  }
+
+  private void recordLastMountedValues(AnimationState animationState) {
+    for (int i = 0, size = animationState.propertyStates.size(); i < size; i++) {
+      final PropertyState propertyState = animationState.propertyStates.valueAt(i);
+      if (animationState.nextLayoutOutput == null) {
+        propertyState.lastMountedValue = null;
+      } else {
+        final AnimatedProperty property = animationState.propertyStates.keyAt(i);
+        propertyState.lastMountedValue = property.get(animationState.nextLayoutOutput);
+      }
     }
   }
 
@@ -555,6 +579,13 @@ public class TransitionManager {
       animationState.propertyStates.put(property, propertyState);
     }
     propertyState.animatedPropertyNode.setValue(startValue);
+    propertyState.numPendingAnimations++;
+
+    // Currently, all supported animations can only animate one property at a time, but we think
+    // this will change in the future so we maintain a set here.
+    final ArraySet<PropertyHandle> animatedPropertyHandles = new ArraySet<>();
+    animatedPropertyHandles.add(propertyHandle);
+    mAnimationsToPropertyHandles.put(animation, animatedPropertyHandles);
 
     mInitialStatesToRestore.put(propertyHandle, startValue);
 
@@ -694,28 +725,12 @@ public class TransitionManager {
     public void onWillStart(AnimationBinding binding) {
       binding.collectTransitioningProperties(mTempPropertyAnimations);
 
-      final ArraySet<PropertyHandle> animatedPropertyHandles = new ArraySet<>();
-      mAnimationsToPropertyHandles.put(binding, animatedPropertyHandles);
-
       for (int i = 0, size = mTempPropertyAnimations.size(); i < size; i++) {
         final PropertyAnimation propertyAnimation = mTempPropertyAnimations.get(i);
         final String key = propertyAnimation.getTransitionKey();
         final AnimationState animationState = mAnimationStates.get(key);
         final PropertyState propertyState =
             animationState.propertyStates.get(propertyAnimation.getProperty());
-
-        if (propertyState.animation == null) {
-          animatedPropertyHandles.add(propertyAnimation.getPropertyHandle());
-        } else {
-          final AnimationBinding previousAnimation = propertyState.animation;
-          final ArraySet<PropertyHandle> previousAnimatedProperties =
-              mAnimationsToPropertyHandles.get(previousAnimation);
-          if (previousAnimatedProperties != null) {
-            previousAnimatedProperties.remove(propertyAnimation.getPropertyHandle());
-          }
-          // TODO: Don't start animation if target value is the same, or if this animation is no
-          // longer valid
-        }
 
         propertyState.targetValue = propertyAnimation.getTargetValue();
         propertyState.animation = binding;
@@ -736,7 +751,42 @@ public class TransitionManager {
 
     @Override
     public boolean shouldStart(AnimationBinding binding) {
-      return true;
+      binding.collectTransitioningProperties(mTempPropertyAnimations);
+
+      boolean shouldStart = true;
+
+      // Make sure that all animating properties will animate to a valid position
+      for (int i = 0, size = mTempPropertyAnimations.size(); i < size; i++) {
+        final PropertyAnimation propertyAnimation = mTempPropertyAnimations.get(i);
+        final String key = propertyAnimation.getTransitionKey();
+        final AnimationState animationState = mAnimationStates.get(key);
+        final PropertyState propertyState =
+            animationState.propertyStates.get(propertyAnimation.getProperty());
+
+        if (AnimationsDebug.ENABLED) {
+          Log.d(
+              AnimationsDebug.TAG,
+              "Trying to start animation on " + key + "#" +
+                  propertyAnimation.getProperty().getName() + " to " +
+                  propertyAnimation.getTargetValue() + ":");
+        }
+
+        if (propertyState.lastMountedValue != null &&
+            propertyState.lastMountedValue != propertyAnimation.getTargetValue()) {
+          if (AnimationsDebug.ENABLED) {
+            Log.d(
+                AnimationsDebug.TAG,
+                " - Canceling animation, last mounted value does not equal animation target: " +
+                    propertyState.lastMountedValue + " != " + propertyAnimation.getTargetValue());
+
+          }
+
+          shouldStart = false;
+        }
+      }
+
+      mTempPropertyAnimations.clear();
+      return shouldStart;
     }
 
     private void finishAnimation(AnimationBinding binding) {
@@ -765,13 +815,13 @@ public class TransitionManager {
         final boolean didFinish;
         if (isDisappearAnimation) {
           final PropertyState propertyState = animationState.propertyStates.get(property);
-
           if (propertyState == null) {
             throw new RuntimeException(
                 "Some animation bookkeeping is wrong: tried to remove an animation from the list " +
                     "of active animations, but it wasn't there.");
           }
 
+          propertyState.numPendingAnimations--;
           didFinish = areAllDisappearingAnimationsFinished(animationState);
           if (didFinish && animationState.mountContent != null) {
             for (int j = 0; j < animationState.propertyStates.size(); j++) {
@@ -779,19 +829,31 @@ public class TransitionManager {
             }
           }
         } else {
-          final PropertyState propertyState =
-              animationState.propertyStates.remove(property);
-
-          if (propertyState == null) {
+          final int index = animationState.propertyStates.indexOfKey(property);
+          if (index < 0) {
             throw new RuntimeException(
                 "Some animation bookkeeping is wrong: tried to remove an animation from the list " +
                     "of active animations, but it wasn't there.");
           }
 
-          didFinish = animationState.propertyStates.isEmpty();
+          final PropertyState propertyState = animationState.propertyStates.valueAt(index);
+          propertyState.numPendingAnimations--;
+          if (propertyState.numPendingAnimations > 0) {
+            didFinish = false;
+          } else {
+            animationState.propertyStates.removeAt(index);
+            didFinish = animationState.propertyStates.isEmpty();
+
+            if (animationState.mountContent != null) {
+              property.reset(animationState.mountContent);
+            }
+          }
         }
 
         if (didFinish) {
+          if (AnimationsDebug.ENABLED) {
+            Log.d(AnimationsDebug.TAG, "Finished all animations for key " + key);
+          }
           recursivelySetChildClipping(animationState.mountContent, true);
           if (mOnAnimationCompleteListener != null) {
             mOnAnimationCompleteListener.onAnimationComplete(key);
@@ -807,8 +869,9 @@ public class TransitionManager {
         throw new RuntimeException("This should only be checked for disappearing animations");
       }
       for (int i = 0, size = animationState.propertyStates.size(); i < size; i++) {
-        final AnimationBinding animation = animationState.propertyStates.valueAt(i).animation;
-        if (animation != null && animation.isActive()) {
+        final PropertyState propertyState = animationState.propertyStates.valueAt(i);
+        final AnimationBinding animation = propertyState.animation;
+        if (propertyState.numPendingAnimations > 0 || (animation != null && animation.isActive())) {
           return false;
         }
       }

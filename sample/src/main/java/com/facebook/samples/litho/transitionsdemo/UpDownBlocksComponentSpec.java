@@ -77,7 +77,8 @@ public class UpDownBlocksComponentSpec {
 
   @OnCreateTransition
   static Transition onCreateTransition(ComponentContext c) {
-    return Transition.parallel(
+    return Transition.stagger(
+        200,
         Transition.create("red")
             .animate(AnimatedProperties.Y),
         Transition.create("blue")
