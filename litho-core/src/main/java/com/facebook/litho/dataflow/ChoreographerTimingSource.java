@@ -66,6 +66,7 @@ public class ChoreographerTimingSource implements TimingSource {
 
   private void stopFrameCallback() {
     mChoreographerCompat.removeFrameCallback(mFrameCallback);
+    mHasPostedFrameCallback = false;
   }
 
   private void doFrame(long frameTimeNanos) {
