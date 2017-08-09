@@ -586,10 +586,6 @@ public class ComponentHost extends ViewGroup {
 
   @Override
   public boolean dispatchHoverEvent(MotionEvent event) {
-    if (!isEnabled()) {
-      return false;
-    }
-
     return (mComponentAccessibilityDelegate != null
       && implementsVirtualViews()
       && mComponentAccessibilityDelegate.dispatchHoverEvent(event))
