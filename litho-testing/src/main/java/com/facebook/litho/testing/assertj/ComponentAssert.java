@@ -9,6 +9,8 @@
 
 package com.facebook.litho.testing.assertj;
 
+import java.util.List;
+
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import com.facebook.litho.Component;
@@ -16,10 +18,14 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.testing.ComponentTestHelper;
+import com.facebook.litho.testing.InspectableComponent;
 import com.facebook.litho.testing.SubComponent;
-import java.util.List;
+
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Java6Assertions;
+import org.assertj.core.api.ListAssert;
+import org.assertj.core.api.iterable.Extractor;
+import org.assertj.core.util.CheckReturnValue;
 import org.powermock.reflect.Whitebox;
 
 /**
@@ -211,5 +217,25 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
         .containsOnly(subComponents);
 
     return this;
+  }
+
+  /**
+   * Extract values from the underlying component based on the {@link Extractor} provided.
+   * @param extractor The extractor applied to the Component.
+   * @param <A> Type of the value extracted.
+   * @return ListAssert for the extracted values.
+   */
+  @CheckReturnValue
+  public <A> ListAssert<A> extracting(Extractor<Component<?>, List<A>> extractor) {
+    final List<A> value = extractor.extract(actual);
+    return new ListAssert<>(value);
+  }
+
+  /**
+   * Extract the sub components from the underlying Component, returning a ListAssert over it.
+   */
+  @CheckReturnValue
+  public ListAssert<InspectableComponent> extractingSubComponents(ComponentContext c) {
+    return new ListAssert<>(SubComponentExtractor.subComponents(c).extract(actual));
   }
 }
