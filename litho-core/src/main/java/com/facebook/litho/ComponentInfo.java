@@ -12,6 +12,7 @@ package com.facebook.litho;
 import android.support.v4.util.Pools;
 import android.support.v4.util.Pools.Pool;
 import android.support.v4.util.SimpleArrayMap;
+import javax.annotation.Nullable;
 
 /**
  * Keeps the {@link Component} and its information that will allow the framework
@@ -31,8 +32,8 @@ public class ComponentInfo {
   private static final String IS_STICKY = "is_sticky";
   private static final String SPAN_SIZE = "span_size";
 
-  private final Component mComponent;
-  private final SimpleArrayMap<String, Object> mCustomAttributes;
+  private final @Nullable Component mComponent;
+  private final @Nullable SimpleArrayMap<String, Object> mCustomAttributes;
 
   public static Builder create() {
     Builder builder = sBuilderPool.acquire();
@@ -43,12 +44,21 @@ public class ComponentInfo {
     return builder;
   }
 
+  public static ComponentInfo createEmpty() {
+    return new ComponentInfo();
+  }
+
   private ComponentInfo(Builder builder) {
     mComponent = builder.mComponent;
     mCustomAttributes = builder.mCustomAttributes;
   }
 
-  public Component getComponent() {
+  private ComponentInfo() {
+    mComponent = null;
+    mCustomAttributes = null;
+  }
+
+  public @Nullable Component getComponent() {
     return mComponent;
   }
 
@@ -68,14 +78,14 @@ public class ComponentInfo {
     return (int) mCustomAttributes.get(SPAN_SIZE);
   }
 
-  public Object getCustomAttribute(String key) {
+  public @Nullable Object getCustomAttribute(String key) {
     return mCustomAttributes == null ? null : mCustomAttributes.get(key);
   }
 
   public static class Builder {
 
-    private Component mComponent;
-    private SimpleArrayMap<String, Object> mCustomAttributes;
+    private @Nullable Component mComponent;
+    private @Nullable SimpleArrayMap<String, Object> mCustomAttributes;
 
     private Builder() {
       mComponent = null;
