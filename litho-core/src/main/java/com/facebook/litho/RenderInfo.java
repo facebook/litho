@@ -24,7 +24,7 @@ import javax.annotation.Nullable;
  * IsSticky will be defaulted to false. It determines if the component should be
  * a sticky header or not
  */
-public class ComponentInfo {
+public class RenderInfo {
 
   public static final String CLIP_CHILDREN = "clip_children";
 
@@ -44,16 +44,16 @@ public class ComponentInfo {
     return builder;
   }
 
-  public static ComponentInfo createEmpty() {
-    return new ComponentInfo();
+  public static RenderInfo createEmpty() {
+    return new RenderInfo();
   }
 
-  private ComponentInfo(Builder builder) {
+  private RenderInfo(Builder builder) {
     mComponent = builder.mComponent;
     mCustomAttributes = builder.mCustomAttributes;
   }
 
-  private ComponentInfo() {
+  private RenderInfo() {
     mComponent = null;
     mCustomAttributes = null;
   }
@@ -113,11 +113,11 @@ public class ComponentInfo {
       return this;
     }
 
-    public ComponentInfo build() {
-      ComponentInfo componentInfo =  new ComponentInfo(this);
+    public RenderInfo build() {
+      RenderInfo renderInfo =  new RenderInfo(this);
       release();
 
-      return componentInfo;
+      return renderInfo;
     }
 
     private void release() {

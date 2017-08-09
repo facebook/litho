@@ -9,7 +9,7 @@
 
 package com.facebook.litho.widget;
 
-import com.facebook.litho.ComponentInfo;
+import com.facebook.litho.RenderInfo;
 import com.facebook.litho.LayoutHandler;
 import javax.annotation.Nullable;
 
@@ -22,5 +22,5 @@ public interface LayoutHandlerFactory {
    * the {@link RecyclerSpec}.
    */
   @Nullable
-  LayoutHandler createLayoutCalculationHandler(ComponentInfo componentInfo);
+  LayoutHandler createLayoutCalculationHandler(RenderInfo renderInfo);
 }

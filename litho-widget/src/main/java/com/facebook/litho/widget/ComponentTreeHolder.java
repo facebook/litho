@@ -12,7 +12,7 @@ package com.facebook.litho.widget;
 import android.support.v4.util.Pools;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentInfo;
+import com.facebook.litho.RenderInfo;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.LayoutHandler;
 import com.facebook.litho.Size;
@@ -22,7 +22,7 @@ import javax.annotation.concurrent.ThreadSafe;
 
 /**
  * A class used to store the data backing a {@link RecyclerBinder}. For each item the
- * ComponentTreeHolder keeps the {@link ComponentInfo} which contains the original {@link Component}
+ * ComponentTreeHolder keeps the {@link RenderInfo} which contains the original {@link Component}
  * and either the {@link ComponentTree} or the {@link StateHandler} depending upon whether
  * the item is within the current working range or not.
  */
@@ -36,14 +36,14 @@ public class ComponentTreeHolder {
   @GuardedBy("this")
   private StateHandler mStateHandler;
   @GuardedBy("this")
-  private ComponentInfo mComponentInfo;
+  private RenderInfo mRenderInfo;
   private boolean mIsTreeValid;
   private LayoutHandler mLayoutHandler;
   private boolean mCanPrefetchDisplayLists;
   private boolean mCanCacheDrawingDisplayLists;
 
   public static ComponentTreeHolder acquire(
-      ComponentInfo componentInfo,
+      RenderInfo renderInfo,
       LayoutHandler layoutHandler,
       boolean canPrefetchDisplayLists,
       boolean canCacheDrawingDisplayLists) {
@@ -51,7 +51,7 @@ public class ComponentTreeHolder {
     if (componentTreeHolder == null) {
       componentTreeHolder = new ComponentTreeHolder();
     }
-    componentTreeHolder.mComponentInfo = componentInfo;
+    componentTreeHolder.mRenderInfo = renderInfo;
     componentTreeHolder.mLayoutHandler = layoutHandler;
     componentTreeHolder.mCanPrefetchDisplayLists = canPrefetchDisplayLists;
     componentTreeHolder.mCanCacheDrawingDisplayLists = canCacheDrawingDisplayLists;
@@ -83,13 +83,13 @@ public class ComponentTreeHolder {
       ensureComponentTree(context);
 
       componentTree = mComponentTree;
-      component = mComponentInfo.getComponent();
+      component = mRenderInfo.getComponent();
     }
 
     componentTree.setRootAndSizeSpec(component, widthSpec, heightSpec, size);
 
     synchronized (this) {
-      if (componentTree == mComponentTree && component == mComponentInfo.getComponent()) {
+      if (componentTree == mComponentTree && component == mRenderInfo.getComponent()) {
         mIsTreeValid = true;
       }
     }
@@ -106,20 +106,20 @@ public class ComponentTreeHolder {
       ensureComponentTree(context);
 
       componentTree = mComponentTree;
-      component = mComponentInfo.getComponent();
+      component = mRenderInfo.getComponent();
     }
 
     componentTree.setRootAndSizeSpecAsync(component, widthSpec, heightSpec);
 
     synchronized (this) {
-      if (mComponentTree == componentTree && component == mComponentInfo.getComponent()) {
+      if (mComponentTree == componentTree && component == mRenderInfo.getComponent()) {
         mIsTreeValid = true;
       }
     }
   }
 
-  public synchronized ComponentInfo getComponentInfo() {
-    return mComponentInfo;
+  public synchronized RenderInfo getRenderInfo() {
+    return mRenderInfo;
   }
 
   public synchronized boolean isTreeValid() {
@@ -130,15 +130,15 @@ public class ComponentTreeHolder {
     return mComponentTree;
   }
 
-  public synchronized void setComponentInfo(ComponentInfo componentInfo) {
+  public synchronized void setRenderInfo(RenderInfo renderInfo) {
     invalidateTree();
-    mComponentInfo = componentInfo;
+    mRenderInfo = renderInfo;
   }
 
   public synchronized void release() {
     releaseTree();
     clearStateHandler();
-    mComponentInfo = null;
+    mRenderInfo = null;
     mLayoutHandler = null;
     mCanPrefetchDisplayLists = false;
     mCanCacheDrawingDisplayLists = false;
@@ -149,10 +149,10 @@ public class ComponentTreeHolder {
   private void ensureComponentTree(ComponentContext context) {
     if (mComponentTree == null) {
       final Object clipChildrenAttr =
-          mComponentInfo.getCustomAttribute(ComponentInfo.CLIP_CHILDREN);
+          mRenderInfo.getCustomAttribute(RenderInfo.CLIP_CHILDREN);
       final boolean clipChildren = clipChildrenAttr == null ? true : (boolean) clipChildrenAttr;
 
-      mComponentTree = ComponentTree.create(context, mComponentInfo.getComponent())
+      mComponentTree = ComponentTree.create(context, mRenderInfo.getComponent())
           .layoutThreadHandler(mLayoutHandler)
           .stateHandler(mStateHandler)
           .canPrefetchDisplayLists(mCanPrefetchDisplayLists)

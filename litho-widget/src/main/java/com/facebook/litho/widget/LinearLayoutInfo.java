@@ -13,7 +13,7 @@ import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
-import com.facebook.litho.ComponentInfo;
+import com.facebook.litho.RenderInfo;
 import com.facebook.litho.SizeSpec;
 
 /**
@@ -116,7 +116,7 @@ public class LinearLayoutInfo implements LayoutInfo {
   }
 
   @Override
-  public int getChildHeightSpec(int heightSpec, ComponentInfo componentInfo) {
+  public int getChildHeightSpec(int heightSpec, RenderInfo renderInfo) {
     switch (mLinearLayoutManager.getOrientation()) {
       case LinearLayoutManager.HORIZONTAL:
         return heightSpec;
@@ -126,7 +126,7 @@ public class LinearLayoutInfo implements LayoutInfo {
   }
 
   @Override
-  public int getChildWidthSpec(int widthSpec, ComponentInfo componentInfo) {
+  public int getChildWidthSpec(int widthSpec, RenderInfo renderInfo) {
     switch (mLinearLayoutManager.getOrientation()) {
       case LinearLayoutManager.HORIZONTAL:
         return SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);

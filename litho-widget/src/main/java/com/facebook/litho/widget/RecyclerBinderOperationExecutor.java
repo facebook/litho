@@ -2,7 +2,7 @@
 
 package com.facebook.litho.widget;
 
-import com.facebook.litho.ComponentInfo;
+import com.facebook.litho.RenderInfo;
 import com.facebook.litho.widget.RecyclerBinderUpdateCallback.ComponentContainer;
 import com.facebook.litho.widget.RecyclerBinderUpdateCallback.Operation;
 import com.facebook.litho.widget.RecyclerBinderUpdateCallback.OperationExecutor;
@@ -25,23 +25,23 @@ public class RecyclerBinderOperationExecutor implements OperationExecutor {
     for (int i = 0, size = operations.size(); i < size; i++) {
       final Operation operation = operations.get(i);
       final List<ComponentContainer> components = operation.getComponentContainers();
-      List<ComponentInfo> componentInfos = null;
+      List<RenderInfo> renderInfos = null;
       if (components != null && components.size() > 1 ) {
-        componentInfos = new ArrayList<>();
+        renderInfos = new ArrayList<>();
         for (int j = 0, componentsSize = components.size(); j < componentsSize; j++) {
-          componentInfos.add(components.get(j).getComponentInfo());
+          renderInfos.add(components.get(j).getRenderInfo());
         }
       }
 
       switch (operation.getType()) {
 
         case Operation.INSERT:
-          if (componentInfos != null) {
-            mRecyclerBinder.insertRangeAt(operation.getIndex(), componentInfos);
+          if (renderInfos != null) {
+            mRecyclerBinder.insertRangeAt(operation.getIndex(), renderInfos);
           } else {
             mRecyclerBinder.insertItemAt(
                 operation.getIndex(),
-                operation.getComponentContainers().get(0).getComponentInfo());
+                operation.getComponentContainers().get(0).getRenderInfo());
           }
           break;
 
@@ -54,12 +54,12 @@ public class RecyclerBinderOperationExecutor implements OperationExecutor {
           break;
 
         case Operation.UPDATE:
-          if (componentInfos != null) {
-            mRecyclerBinder.updateRangeAt(operation.getIndex(), componentInfos);
+          if (renderInfos != null) {
+            mRecyclerBinder.updateRangeAt(operation.getIndex(), renderInfos);
           } else {
             mRecyclerBinder.updateItemAt(
                 operation.getIndex(),
-                operation.getComponentContainers().get(0).getComponentInfo());
+                operation.getComponentContainers().get(0).getRenderInfo());
           }
           break;
       }

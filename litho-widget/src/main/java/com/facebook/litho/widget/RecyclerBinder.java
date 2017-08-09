@@ -29,7 +29,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentInfo;
+import com.facebook.litho.RenderInfo;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LayoutHandler;
@@ -114,7 +114,7 @@ public class RecyclerBinder implements
 
   interface ComponentTreeHolderFactory {
     ComponentTreeHolder create(
-        ComponentInfo componentInfo,
+        RenderInfo renderInfo,
         LayoutHandler layoutHandler,
         boolean canPrefetchDisplayLists,
         boolean canCacheDrawingDisplayLists);
@@ -124,12 +124,12 @@ public class RecyclerBinder implements
           new ComponentTreeHolderFactory() {
     @Override
     public ComponentTreeHolder create(
-        ComponentInfo componentInfo,
+        RenderInfo renderInfo,
         LayoutHandler layoutHandler,
         boolean canPrefetchDisplayLists,
         boolean canCacheDrawingDisplayLists) {
       return ComponentTreeHolder.acquire(
-          componentInfo,
+          renderInfo,
           layoutHandler,
           canPrefetchDisplayLists,
           canCacheDrawingDisplayLists);
@@ -242,13 +242,13 @@ public class RecyclerBinder implements
    * being updated after a layout calculation has been completed for the new {@link Component}.
    */
   @UiThread
-  public final void updateItemAtAsync(int position, ComponentInfo componentInfo) {
+  public final void updateItemAtAsync(int position, RenderInfo renderInfo) {
     ThreadUtils.assertMainThread();
 
     // If the binder has not been measured yet we simply fall back on the sync implementation as
     // nothing will really happen until we compute the first range.
     if (!mIsMeasured.get()) {
-      updateItemAt(position, componentInfo);
+      updateItemAt(position, renderInfo);
       return;
     }
 
@@ -260,13 +260,13 @@ public class RecyclerBinder implements
    * inserted after a layout calculation has been completed for the new {@link Component}.
    */
   @UiThread
-  public final void insertItemAtAsync(int position, ComponentInfo componentInfo) {
+  public final void insertItemAtAsync(int position, RenderInfo renderInfo) {
     ThreadUtils.assertMainThread();
 
     // If the binder has not been measured yet we simply fall back on the sync implementation as
     // nothing will really happen until we compute the first range.
     if (!mIsMeasured.get()) {
-      insertItemAt(position, componentInfo);
+      insertItemAt(position, renderInfo);
       return;
     }
 
@@ -311,28 +311,28 @@ public class RecyclerBinder implements
   }
 
   /**
-   * See {@link RecyclerBinder#insertItemAt(int, ComponentInfo)}.
+   * See {@link RecyclerBinder#insertItemAt(int, RenderInfo)}.
    */
   @UiThread
   public final void insertItemAt(int position, Component component) {
-    insertItemAt(position, ComponentInfo.create().component(component).build());
+    insertItemAt(position, RenderInfo.create().component(component).build());
   }
 
   /**
    * Inserts a new item at position. The {@link RecyclerView} gets notified immediately about the
    * new item being inserted. If the item's position falls within the currently visible range, the
    * layout is immediately computed on the] UiThread.
-   * The ComponentInfo contains the component that will be inserted in the Binder and extra info
+   * The RenderInfo contains the component that will be inserted in the Binder and extra info
    * like isSticky or spanCount.
    */
   @UiThread
-  public final void insertItemAt(int position, ComponentInfo componentInfo) {
+  public final void insertItemAt(int position, RenderInfo renderInfo) {
     ThreadUtils.assertMainThread();
 
     final ComponentTreeHolder holder = mComponentTreeHolderFactory.create(
-        componentInfo,
+        renderInfo,
         mLayoutHandlerFactory != null ?
-            mLayoutHandlerFactory.createLayoutCalculationHandler(componentInfo) :
+            mLayoutHandlerFactory.createLayoutCalculationHandler(renderInfo) :
             null,
         mCanPrefetchDisplayLists,
         mCanCacheDrawingDisplayLists);
@@ -391,21 +391,21 @@ public class RecyclerBinder implements
   /**
    * Inserts the new items starting from position. The {@link RecyclerView} gets notified
    * immediately about the new item being inserted.
-   * The ComponentInfo contains the component that will be inserted in the Binder and extra info
+   * The RenderInfo contains the component that will be inserted in the Binder and extra info
    * like isSticky or spanCount.
    */
   @UiThread
-  public final void insertRangeAt(int position, List<ComponentInfo> componentInfos) {
+  public final void insertRangeAt(int position, List<RenderInfo> renderInfos) {
     ThreadUtils.assertMainThread();
 
-    for (int i = 0, size = componentInfos.size(); i < size; i++) {
+    for (int i = 0, size = renderInfos.size(); i < size; i++) {
 
       synchronized (this) {
-        final ComponentInfo componentInfo = componentInfos.get(i);
+        final RenderInfo renderInfo = renderInfos.get(i);
         final ComponentTreeHolder holder = mComponentTreeHolderFactory.create(
-            componentInfo,
+            renderInfo,
             mLayoutHandlerFactory != null ?
-                mLayoutHandlerFactory.createLayoutCalculationHandler(componentInfo) :
+                mLayoutHandlerFactory.createLayoutCalculationHandler(renderInfo) :
                 null,
             mCanPrefetchDisplayLists,
             mCanCacheDrawingDisplayLists);
@@ -423,7 +423,7 @@ public class RecyclerBinder implements
         }
       }
     }
-    mInternalAdapter.notifyItemRangeInserted(position, componentInfos.size());
+    mInternalAdapter.notifyItemRangeInserted(position, renderInfos.size());
 
     computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
   }
@@ -433,7 +433,7 @@ public class RecyclerBinder implements
    */
   @UiThread
   public final void updateItemAt(int position, Component component) {
-    updateItemAt(position, ComponentInfo.create().component(component).build());
+    updateItemAt(position, RenderInfo.create().component(component).build());
   }
 
   /**
@@ -442,7 +442,7 @@ public class RecyclerBinder implements
    * immediately computed on the UiThread.
    */
   @UiThread
-  public final void updateItemAt(int position, ComponentInfo componentInfo) {
+  public final void updateItemAt(int position, RenderInfo renderInfo) {
     ThreadUtils.assertMainThread();
 
     final ComponentTreeHolder holder;
@@ -453,7 +453,7 @@ public class RecyclerBinder implements
       shouldComputeLayout = mRange != null && position >= mCurrentFirstVisiblePosition &&
           position < mCurrentFirstVisiblePosition + mRange.estimatedViewportCount;
 
-      holder.setComponentInfo(componentInfo);
+      holder.setRenderInfo(renderInfo);
 
       childrenWidthSpec = getActualChildrenWidthSpec(holder);
       childrenHeightSpec = getActualChildrenHeightSpec(holder);
@@ -474,16 +474,16 @@ public class RecyclerBinder implements
    * immediately about the item being updated.
    */
   @UiThread
-  public final void updateRangeAt(int position, List<ComponentInfo> componentInfos) {
+  public final void updateRangeAt(int position, List<RenderInfo> renderInfos) {
     ThreadUtils.assertMainThread();
 
-    for (int i = 0, size = componentInfos.size(); i < size; i++) {
+    for (int i = 0, size = renderInfos.size(); i < size; i++) {
 
       synchronized (this) {
-        mComponentTreeHolders.get(position + i).setComponentInfo(componentInfos.get(i));
+        mComponentTreeHolders.get(position + i).setRenderInfo(renderInfos.get(i));
       }
     }
-    mInternalAdapter.notifyItemRangeChanged(position, componentInfos.size());
+    mInternalAdapter.notifyItemRangeChanged(position, renderInfos.size());
 
     computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
   }
@@ -571,8 +571,8 @@ public class RecyclerBinder implements
   }
 
   @Override
-  public final synchronized ComponentInfo getComponentInfoAt(int position) {
-    return mComponentTreeHolders.get(position).getComponentInfo();
+  public final synchronized RenderInfo getComponentInfoAt(int position) {
+    return mComponentTreeHolders.get(position).getRenderInfo();
   }
 
   @Override
@@ -988,7 +988,7 @@ public class RecyclerBinder implements
   @UiThread
   @GuardedBy("this")
   public boolean isSticky(int position) {
-    return mComponentTreeHolders.get(position).getComponentInfo().isSticky();
+    return mComponentTreeHolders.get(position).getRenderInfo().isSticky();
   }
 
   @Override
@@ -1060,7 +1060,7 @@ public class RecyclerBinder implements
         if (!holder.isTreeValid()) {
           holder.computeLayoutAsync(mComponentContext, childrenWidthSpec, childrenHeightSpec);
         }
-      } else if (holder.isTreeValid() && !holder.getComponentInfo().isSticky()) {
+      } else if (holder.isTreeValid() && !holder.getRenderInfo().isSticky()) {
         holder.acquireStateHandlerAndReleaseTree();
       }
     }
@@ -1071,10 +1071,10 @@ public class RecyclerBinder implements
     if (mIsMeasured.get() && !mRequiresRemeasure.get()) {
       return mLayoutInfo.getChildWidthSpec(
           SizeSpec.makeSizeSpec(mMeasuredSize.width, SizeSpec.EXACTLY),
-          treeHolder.getComponentInfo());
+          treeHolder.getRenderInfo());
     }
 
-    return mLayoutInfo.getChildWidthSpec(mLastWidthSpec, treeHolder.getComponentInfo());
+    return mLayoutInfo.getChildWidthSpec(mLastWidthSpec, treeHolder.getRenderInfo());
   }
 
   @GuardedBy("this")
@@ -1082,10 +1082,10 @@ public class RecyclerBinder implements
     if (mIsMeasured.get() && !mRequiresRemeasure.get()) {
       return mLayoutInfo.getChildHeightSpec(
           SizeSpec.makeSizeSpec(mMeasuredSize.height, SizeSpec.EXACTLY),
-          treeHolder.getComponentInfo());
+          treeHolder.getRenderInfo());
     }
 
-    return mLayoutInfo.getChildHeightSpec(mLastHeightSpec, treeHolder.getComponentInfo());
+    return mLayoutInfo.getChildHeightSpec(mLastHeightSpec, treeHolder.getRenderInfo());
   }
 
   private class RangeScrollListener extends RecyclerView.OnScrollListener {

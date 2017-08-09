@@ -12,7 +12,7 @@ package com.facebook.litho.widget;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.LayoutManager;
-import com.facebook.litho.ComponentInfo;
+import com.facebook.litho.RenderInfo;
 
 /**
  * An implementation of this interface will provide the {@link RecyclerBinder} with all the
@@ -59,21 +59,21 @@ public interface LayoutInfo extends ViewportInfo {
 
   /**
    * @param widthSpec the widthSpec used to measure the parent {@link RecyclerSpec}.
-   * @param componentInfo retrieve SpanSize of the component if it is a {@link GridLayoutInfo}
+   * @param renderInfo retrieve SpanSize of the component if it is a {@link GridLayoutInfo}
    * @return the widthSpec to be used to measure the size of the components within this
    * {@link RecyclerBinder}.
    */
-  int getChildWidthSpec(int widthSpec, ComponentInfo componentInfo);
+  int getChildWidthSpec(int widthSpec, RenderInfo renderInfo);
 
   /**
    * @param heightSpec the heightSpec used to measure the parent {@link RecyclerSpec}.
-   * @param componentInfo retrieve SpanSize of the component if it is a {@link GridLayoutInfo}
+   * @param renderInfo retrieve SpanSize of the component if it is a {@link GridLayoutInfo}
    * @return the heightSpec to be used to measure the size of the components within this
    * {@link RecyclerBinder}.
    */
-  int getChildHeightSpec(int heightSpec, ComponentInfo componentInfo);
+  int getChildHeightSpec(int heightSpec, RenderInfo renderInfo);
 
   interface ComponentInfoCollection {
-    ComponentInfo getComponentInfoAt(int position);
+    RenderInfo getComponentInfoAt(int position);
   }
 }

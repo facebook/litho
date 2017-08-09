@@ -5,7 +5,7 @@ package com.facebook.litho.widget;
 import android.support.v4.util.Pools.SynchronizedPool;
 import android.support.v7.util.ListUpdateCallback;
 import com.facebook.litho.Component;
-import com.facebook.litho.ComponentInfo;
+import com.facebook.litho.RenderInfo;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +23,7 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
       new SynchronizedPool<>(4);
 
   public interface ComponentRenderer<T> {
-    ComponentInfo render(T t, int idx);
+    RenderInfo render(T t, int idx);
   }
 
   public interface OperationExecutor {
@@ -149,7 +149,7 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
   public void applyChangeset() {
     for (int i = 0, size = mPlaceholders.size(); i < size; i++) {
       if (mPlaceholders.get(i).mNeedsComputation) {
-        mPlaceholders.get(i).mComponentInfo =
+        mPlaceholders.get(i).mRenderInfo =
             mComponentRenderer.render(mData.get(i), i);
       }
     }
@@ -230,7 +230,7 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
     private static final SynchronizedPool<ComponentContainer> sComponentContainerPool =
         new SynchronizedPool<>(8);
 
-    private ComponentInfo mComponentInfo;
+    private RenderInfo mRenderInfo;
     private boolean mNeedsComputation = false;
 
     public static ComponentContainer acquire() {
@@ -243,13 +243,13 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
     }
 
     public void release() {
-      mComponentInfo = null;
+      mRenderInfo = null;
       mNeedsComputation = false;
       sComponentContainerPool.release(this);
     }
 
-    public ComponentInfo getComponentInfo() {
-      return mComponentInfo;
+    public RenderInfo getRenderInfo() {
+      return mRenderInfo;
     }
   }
 }
