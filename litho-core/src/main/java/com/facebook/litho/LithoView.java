@@ -170,10 +170,9 @@ public class LithoView extends ComponentHost {
   private void onDetach() {
     if (mIsAttached) {
       mIsAttached = false;
+      mMountState.detach();
 
       if (mComponentTree != null) {
-        mMountState.detach();
-
         mComponentTree.detach();
       }
 
