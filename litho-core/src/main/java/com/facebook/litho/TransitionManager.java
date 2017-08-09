@@ -186,8 +186,10 @@ public class TransitionManager {
   private final SimpleArrayMap<String, AnimationState> mAnimationStates = new SimpleArrayMap<>();
   private final SimpleArrayMap<PropertyHandle, Float> mInitialStatesToRestore =
       new SimpleArrayMap<>();
+  private final ArraySet<AnimationBinding> mRunningRootAnimations = new ArraySet<>();
   private final TransitionsAnimationBindingListener mAnimationBindingListener =
       new TransitionsAnimationBindingListener();
+  private final RootAnimationListener mRootAnimationListener = new RootAnimationListener();
   private final TransitionsResolver mResolver = new TransitionsResolver();
   private final OnAnimationCompleteListener mOnAnimationCompleteListener;
   private AnimationBinding mRootAnimationToRun;
@@ -259,6 +261,7 @@ public class TransitionManager {
     }
 
     if (mRootAnimationToRun != null) {
+      mRootAnimationToRun.addListener(mRootAnimationListener);
       mRootAnimationToRun.start(mResolver);
       mRootAnimationToRun = null;
     }
@@ -301,16 +304,25 @@ public class TransitionManager {
    * To be called when a MountState is recycled for a new component tree. Clears all animations.
    */
   void reset() {
-    // Clear/reset all animations
     for (int i = 0, size = mAnimationStates.size(); i < size; i++) {
       final String key = mAnimationStates.keyAt(i);
       final AnimationState animationState = mAnimationStates.valueAt(i);
       setMountContentInner(key, animationState, null);
       clearLayoutOutputs(animationState);
     }
-    
     mAnimationStates.clear();
+
+    // Clear these so that stopping animations below doesn't cause us to trigger any useless
+    // cleanup.
     mAnimationsToPropertyHandles.clear();
+
+    // Calling stop will cause the animation to be removed from the set, so iterate in reverse
+    // order.
+    for (int i = mRunningRootAnimations.size() - 1; i >= 0; i--) {
+      mRunningRootAnimations.valueAt(i).stop();
+    }
+    mRunningRootAnimations.clear();
+
     mRootAnimationToRun = null;
   }
 
@@ -909,6 +921,29 @@ public class TransitionManager {
       final AnimationState state = mAnimationStates.get(propertyHandle.getTransitionKey());
       final PropertyState propertyState = state.propertyStates.get(propertyHandle.getProperty());
       return propertyState.animatedPropertyNode;
+    }
+  }
+
+  private class RootAnimationListener implements AnimationBindingListener {
+
+    @Override
+    public void onWillStart(AnimationBinding binding) {
+      mRunningRootAnimations.add(binding);
+    }
+
+    @Override
+    public void onFinish(AnimationBinding binding) {
+      mRunningRootAnimations.remove(binding);
+    }
+
+    @Override
+    public void onCanceledBeforeStart(AnimationBinding binding) {
+      mRunningRootAnimations.remove(binding);
+    }
+
+    @Override
+    public boolean shouldStart(AnimationBinding binding) {
+      return true;
     }
   }
 }
