@@ -705,22 +705,16 @@ public class ComponentHost extends ViewGroup {
 
   @Override
   public boolean onTouchEvent(MotionEvent event) {
-    if (!isEnabled()) {
-      // From View.onTouchEvent: A disabled view that is clickable still consumes the touch
-      // events, it just doesn't respond to them.
-      return isClickable()
-          || isLongClickable()
-          || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && isContextClickable());
-    }
-
     boolean handled = false;
 
-    // Iterate drawable from last to first to respect drawing order.
-    for (int size = mTouchables.size(), i = size - 1; i >= 0; i--) {
-      final Touchable t = mTouchables.valueAt(i);
-      if (t.shouldHandleTouchEvent(event) && t.onTouchEvent(event, this)) {
-        handled = true;
-        break;
+    if (isEnabled()) {
+      // Iterate drawable from last to first to respect drawing order.
+      for (int size = mTouchables.size(), i = size - 1; i >= 0; i--) {
+        final Touchable t = mTouchables.valueAt(i);
+        if (t.shouldHandleTouchEvent(event) && t.onTouchEvent(event, this)) {
+          handled = true;
+          break;
+        }
       }
     }
 
