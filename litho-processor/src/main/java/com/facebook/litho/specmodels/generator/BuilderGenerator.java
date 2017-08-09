@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
-import java.util.Locale;
 import javax.lang.model.element.Modifier;
 
 /**
@@ -855,16 +854,14 @@ public class BuilderGenerator {
   }
 
   private static MethodSpec generateExtraBuilderMethod(BuilderMethodModel builderMethodModel) {
-    final String capitalizedName =
-        builderMethodModel.paramName.substring(0,1).toUpperCase(Locale.ROOT)
-            + builderMethodModel.paramName.substring(1);
     return MethodSpec.methodBuilder(builderMethodModel.paramName)
+        .addAnnotation(Override.class)
         .addModifiers(Modifier.PUBLIC)
         .addParameter(builderMethodModel.paramType, builderMethodModel.paramName)
-        .addStatement("super.set$L($L)", capitalizedName, builderMethodModel.paramName)
-        .addStatement("return this")
-          .returns(BUILDER_CLASS_NAME)
-          .build();
+        .addStatement(
+            "return super.$L($L)", builderMethodModel.paramName, builderMethodModel.paramName)
+        .returns(BUILDER_CLASS_NAME)
+        .build();
     }
 
   private static MethodSpec generateBuildMethod(SpecModel specModel, int numRequiredProps) {
