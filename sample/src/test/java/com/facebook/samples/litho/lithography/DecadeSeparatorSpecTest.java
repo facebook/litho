@@ -1,7 +1,11 @@
 package com.facebook.samples.litho.lithography;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assume.assumeThat;
+
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.ComponentsRule;
 import com.facebook.litho.testing.InspectableComponent;
 import com.facebook.litho.testing.SubComponent;
@@ -26,6 +30,8 @@ public class DecadeSeparatorSpecTest {
 
   @Before
   public void setUp() {
+    assumeThat("These tests can only be run in debug mode.",
+        ComponentsConfiguration.IS_INTERNAL_BUILD, is(true));
     mComponent = DecadeSeparator.create(mComponentsRule.getContext()).decade(new Decade(2010)).build();
   }
 
