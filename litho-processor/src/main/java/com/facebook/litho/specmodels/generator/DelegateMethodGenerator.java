@@ -13,7 +13,6 @@ import static com.facebook.litho.specmodels.generator.ComponentImplGenerator.get
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.ABSTRACT_IMPL_PARAM_NAME;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.IMPL_VARIABLE_NAME;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.PREVIOUS_RENDER_DATA_FIELD_NAME;
-import static com.facebook.litho.specmodels.model.ClassNames.COMPONENT;
 import static com.facebook.litho.specmodels.model.ClassNames.OUTPUT;
 import static com.facebook.litho.specmodels.model.ClassNames.STATE_VALUE;
 
@@ -89,7 +88,7 @@ public class DelegateMethodGenerator {
     }
 
     if (!methodDescription.optionalParameterTypes.isEmpty()) {
-      methodSpec.addParameter(COMPONENT, ABSTRACT_IMPL_PARAM_NAME);
+      methodSpec.addParameter(specModel.getComponentClass(), ABSTRACT_IMPL_PARAM_NAME);
     }
 
     for (TypeName exception : methodDescription.exceptions) {

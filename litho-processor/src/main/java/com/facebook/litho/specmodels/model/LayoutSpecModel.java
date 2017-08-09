@@ -48,6 +48,7 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
         SpecModelImpl.newBuilder()
             .qualifiedSpecClassName(qualifiedSpecClassName)
             .componentClassName(componentClassName)
+            .componentClass(ClassNames.COMPONENT)
             .delegateMethods(delegateMethods)
             .eventMethods(eventMethods)
             .updateStateMethods(updateStateMethods)
@@ -167,7 +168,7 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
 
   @Override
   public ClassName getComponentClass() {
-    return ClassNames.COMPONENT;
+    return mSpecModel.getComponentClass();
   }
 
   @Override

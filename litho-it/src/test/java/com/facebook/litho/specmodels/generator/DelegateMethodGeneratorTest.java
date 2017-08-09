@@ -27,6 +27,7 @@ import com.facebook.litho.specmodels.model.MethodParamModelFactory;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelImpl;
 import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -85,12 +86,14 @@ public class DelegateMethodGeneratorTest {
 
     mSpecModelWithoutDI = SpecModelImpl.newBuilder()
         .qualifiedSpecClassName(TEST_QUALIFIED_SPEC_NAME)
+        .componentClass(ClassNames.COMPONENT)
         .delegateMethods(ImmutableList.of(mDelegateMethodModel))
         .representedObject(new Object())
         .build();
 
     mSpecModelWithDI = SpecModelImpl.newBuilder()
         .qualifiedSpecClassName(TEST_QUALIFIED_SPEC_NAME)
+        .componentClass(ClassNames.COMPONENT)
         .delegateMethods(ImmutableList.of(mDelegateMethodModel))
         .dependencyInjectionGenerator(mDependencyInjectionHelper)
         .representedObject(new Object())

@@ -35,6 +35,7 @@ public final class SpecModelImpl implements SpecModel {
   private final TypeName mSpecTypeName;
   private final String mComponentName;
   private final TypeName mComponentTypeName;
+  private final ClassName mComponentClass;
   private final ImmutableList<DelegateMethodModel> mDelegateMethods;
   private final ImmutableList<EventMethodModel> mEventMethods;
   private final ImmutableList<UpdateStateMethodModel> mUpdateStateMethods;
@@ -57,6 +58,7 @@ public final class SpecModelImpl implements SpecModel {
   private SpecModelImpl(
       String qualifiedSpecClassName,
       String componentClassName,
+      ClassName componentClass,
       ImmutableList<DelegateMethodModel> delegateMethods,
       ImmutableList<EventMethodModel> eventMethods,
       ImmutableList<UpdateStateMethodModel> updateStateMethods,
@@ -71,6 +73,7 @@ public final class SpecModelImpl implements SpecModel {
       Object representedObject) {
     mSpecName = getSpecName(qualifiedSpecClassName);
     mSpecTypeName = ClassName.bestGuess(qualifiedSpecClassName);
+    mComponentClass = componentClass;
     mComponentName = getComponentName(componentClassName, qualifiedSpecClassName);
     mComponentTypeName = getComponentTypeName(componentClassName, qualifiedSpecClassName);
     mDelegateMethods = delegateMethods;
@@ -195,7 +198,7 @@ public final class SpecModelImpl implements SpecModel {
 
   @Override
   public ClassName getComponentClass() {
-    throw new RuntimeException("Don't delegate to this method!");
+    return mComponentClass;
   }
 
   @Override
@@ -419,6 +422,7 @@ public final class SpecModelImpl implements SpecModel {
   public static class Builder {
     private String mQualifiedSpecClassName;
     private String mComponentClassName;
+    private ClassName mComponentClass;
     private ImmutableList<DelegateMethodModel> mDelegateMethodModels;
     private ImmutableList<EventMethodModel> mEventMethodModels;
     private ImmutableList<UpdateStateMethodModel> mUpdateStateMethodModels;
@@ -446,6 +450,11 @@ public final class SpecModelImpl implements SpecModel {
      */
     public Builder componentClassName(String componentClassName) {
       mComponentClassName = componentClassName;
+      return this;
+    }
+
+    public Builder componentClass(ClassName componentClass) {
+      mComponentClass= componentClass;
       return this;
     }
 
@@ -518,6 +527,7 @@ public final class SpecModelImpl implements SpecModel {
       return new SpecModelImpl(
           mQualifiedSpecClassName,
           mComponentClassName,
+          mComponentClass,
           mDelegateMethodModels,
           mEventMethodModels,
           mUpdateStateMethodModels,
