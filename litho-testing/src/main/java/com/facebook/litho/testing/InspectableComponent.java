@@ -18,6 +18,7 @@ import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.DebugComponent;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.LithoViewTestHelper;
 import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaNode;
 import java.util.ArrayList;
@@ -194,5 +195,16 @@ public class InspectableComponent {
   @Nullable
   public EventHandler getClickHandler() {
     return mComponent.getClickHandler();
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder();
+    sb.append("InspectableComponent of ");
+    sb.append(getSimpleName());
+    sb.append(" with hierarchy\n");
+    sb.append(LithoViewTestHelper.viewToString(mComponent.getLithoView()));
+
+    return sb.toString();
   }
 }
