@@ -9,7 +9,7 @@ include_defs("//COMPONENTS_DEFS")
 
 components_robolectric_test(
     name = "litho",
-    srcs = glob(["*Test.java"]),
+    srcs = glob(["**/*Test.java"]),
     contacts = ["oncall+components_for_android@xmail.facebook.com"],
     source = "8",
     target = "8",
