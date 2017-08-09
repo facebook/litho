@@ -109,12 +109,18 @@ public final class DebugComponent {
     return mComponentClass.getName();
   }
 
-
   /**
    * @return A simpler canonical name for this component. Suitable to present to the user.
    */
   public String getSimpleName() {
     return mComponentClass.getSimpleName();
+  }
+
+  /**
+   * @return The class of the underlying Component.
+   */
+  public Class getComponentClass() {
+    return mComponentClass;
   }
 
   private static Class getComponentClass(InternalNode node, int componentIndex) {

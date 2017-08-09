@@ -62,6 +62,13 @@ public class InspectableComponent {
   }
 
   /**
+   * @return The class of the underlying Component.
+   */
+  public Class getComponentClass() {
+    return mComponent.getComponentClass();
+  }
+
+  /**
    * Get the list of components composed by this component. This will not include any {@link View}s
    * that are mounted by this component as those are not components. Use {@link this#getMountedView}
    * for that.
