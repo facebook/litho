@@ -122,7 +122,7 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
     TestLayoutImpl _impl = (TestLayoutImpl) _abstractImpl;
     Diff<Integer> _state3Diff =
         acquireDiff(
-            _impl.mPreviousRenderInfo == null ? null : _impl.mPreviousRenderInfo.state3,
+            _impl.mPreviousRenderData == null ? null : _impl.mPreviousRenderData.state3,
             _impl.mStateContainerImpl.state3);
     Transition _result =
         (Transition)
@@ -252,33 +252,33 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
   }
 
   @Override
-  protected boolean needsPreviousRenderInfo() {
+  protected boolean needsPreviousRenderData() {
     return true;
   }
 
   @Override
-  protected ComponentLifecycle.RenderInfo recordRenderInfo(Component previousComponent,
-      ComponentLifecycle.RenderInfo toRecycle) {
+  protected ComponentLifecycle.RenderData recordRenderData(
+      Component previousComponent, ComponentLifecycle.RenderData toRecycle) {
     TestLayoutImpl _impl = (TestLayoutImpl) previousComponent;
-    TestLayoutRenderInfo renderInfo =
-        toRecycle != null ? (TestLayoutRenderInfo) toRecycle : new TestLayoutRenderInfo();
+    TestLayoutRenderData renderInfo =
+        toRecycle != null ? (TestLayoutRenderData) toRecycle : new TestLayoutRenderData();
     renderInfo.record(_impl);
     return renderInfo;
   }
 
   @Override
-  protected void applyPreviousRenderInfo(Component component,
-      ComponentLifecycle.RenderInfo previousRenderInfo) {
+  protected void applyPreviousRenderData(
+      Component component, ComponentLifecycle.RenderData previousRenderData) {
     TestLayoutImpl _impl = (TestLayoutImpl) component;
-    if (previousRenderInfo == null) {
-      _impl.mPreviousRenderInfo = null;
+    if (previousRenderData == null) {
+      _impl.mPreviousRenderData = null;
       return;
     }
-    if (_impl.mPreviousRenderInfo == null) {
-      _impl.mPreviousRenderInfo = new TestLayoutRenderInfo();
+    if (_impl.mPreviousRenderData == null) {
+      _impl.mPreviousRenderData = new TestLayoutRenderData();
     }
-    TestLayoutRenderInfo infoImpl = (TestLayoutRenderInfo) previousRenderInfo;
-    _impl.mPreviousRenderInfo.copy(infoImpl);
+    TestLayoutRenderData infoImpl = (TestLayoutRenderData) previousRenderData;
+    _impl.mPreviousRenderData.copy(infoImpl);
   }
 
   public static Builder create(ComponentContext context) {
@@ -305,11 +305,12 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
     int state3;
   }
 
-  private static class TestLayoutRenderInfo<S extends View> implements ComponentLifecycle.RenderInfo {
+  private static class TestLayoutRenderData<S extends View>
+      implements ComponentLifecycle.RenderData {
     @State
     int state3;
 
-    void copy(TestLayoutRenderInfo info) {
+    void copy(TestLayoutRenderData info) {
       state3 = info.state3;
     }
 
@@ -321,7 +322,7 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
   private static class TestLayoutImpl<S extends View> extends Component<TestLayout> implements Cloneable {
     TestLayoutStateContainerImpl mStateContainerImpl;
 
-    TestLayoutRenderInfo mPreviousRenderInfo;
+    TestLayoutRenderData mPreviousRenderData;
 
     @Prop(
         resType = ResType.NONE,

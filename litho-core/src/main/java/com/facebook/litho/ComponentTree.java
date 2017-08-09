@@ -468,21 +468,21 @@ public class ComponentTree {
     mIsMounting = true;
 
     if (isDirtyMount) {
-      applyPreviousRenderInfo(mMainThreadLayoutState);
+      applyPreviousRenderData(mMainThreadLayoutState);
     }
 
     // currentVisibleArea null or empty => mount all
     mLithoView.mount(mMainThreadLayoutState, currentVisibleArea);
 
     if (isDirtyMount) {
-      recordRenderInfo(mMainThreadLayoutState);
+      recordRenderData(mMainThreadLayoutState);
     }
 
     mIsMounting = false;
   }
 
-  private void applyPreviousRenderInfo(LayoutState layoutState) {
-    final List<Component> components = layoutState.getComponentsNeedingPreviousRenderInfo();
+  private void applyPreviousRenderData(LayoutState layoutState) {
+    final List<Component> components = layoutState.getComponentsNeedingPreviousRenderData();
     if (components == null || components.isEmpty()) {
       return;
     }
@@ -491,11 +491,11 @@ public class ComponentTree {
       return;
     }
 
-    mPreviousRenderState.applyPreviousRenderInfo(components);
+    mPreviousRenderState.applyPreviousRenderData(components);
   }
 
-  private void recordRenderInfo(LayoutState layoutState) {
-    final List<Component> components = layoutState.getComponentsNeedingPreviousRenderInfo();
+  private void recordRenderData(LayoutState layoutState) {
+    final List<Component> components = layoutState.getComponentsNeedingPreviousRenderData();
     if (components == null || components.isEmpty()) {
       return;
     }
@@ -504,7 +504,7 @@ public class ComponentTree {
       mPreviousRenderState = ComponentsPools.acquireRenderState();
     }
 
-    mPreviousRenderState.recordRenderInfo(components);
+    mPreviousRenderState.recordRenderData(components);
   }
 
   void detach() {

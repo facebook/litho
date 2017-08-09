@@ -146,9 +146,9 @@ public class SpecModelUtils {
     return false;
   }
 
-  public static boolean hasDiffThatNeedsRenderInfoInfra(SpecModel specModel) {
+  public static boolean hasDiffThatNeedsRenderDataInfra(SpecModel specModel) {
     for (DiffModel diff : specModel.getDiffs()) {
-      if (diff.needsRenderInfoInfra()) {
+      if (diff.needsRenderDataInfra()) {
         return true;
       }
     }

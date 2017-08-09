@@ -2386,15 +2386,15 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private static void collectPendingAnimations(LayoutState layoutState) {
-    final List<Component> componentsNeedingPreviousRenderInfo =
-        layoutState.getComponentsNeedingPreviousRenderInfo();
+    final List<Component> componentsNeedingPreviousRenderData =
+        layoutState.getComponentsNeedingPreviousRenderData();
 
-    if (componentsNeedingPreviousRenderInfo == null) {
+    if (componentsNeedingPreviousRenderData == null) {
       return;
     }
 
-    for (int i = 0, size = componentsNeedingPreviousRenderInfo.size(); i < size; i++) {
-      final Component component = componentsNeedingPreviousRenderInfo.get(i);
+    for (int i = 0, size = componentsNeedingPreviousRenderData.size(); i < size; i++) {
+      final Component component = componentsNeedingPreviousRenderData.get(i);
       final Transition transition =
           component.getLifecycle().onCreateTransition(component.getScopedContext(), component);
 

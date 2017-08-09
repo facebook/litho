@@ -57,7 +57,7 @@ public abstract class ComponentLifecycle implements EventDispatcher {
    * needed to support that Component's use of {@link Diff} params in their lifecycle methods that
    * allow Diff params (e.g. {@link #onCreateTransition}).
    */
-  public interface RenderInfo {}
+  public interface RenderData {}
 
   private static final YogaBaselineFunction sBaselineFunction = new YogaBaselineFunction() {
     public float baseline(YogaNode cssNode, float width, float height) {
@@ -638,16 +638,15 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     return new EventHandler<E>(c, name, id, params);
   }
 
-  protected boolean needsPreviousRenderInfo() {
+  protected boolean needsPreviousRenderData() {
     return false;
   }
 
-  protected RenderInfo recordRenderInfo(Component component, RenderInfo toRecycle) {
+  protected RenderData recordRenderData(Component component, RenderData toRecycle) {
     return null;
   }
 
-  protected void applyPreviousRenderInfo(Component component, RenderInfo previousRenderInfo) {
-  }
+  protected void applyPreviousRenderData(Component component, RenderData previousRenderData) {}
 
   public interface StateUpdate {
     void updateState(StateContainer stateContainer, Component newComponent);

@@ -19,36 +19,36 @@ import java.util.List;
  */
 public class RenderState {
 
-  private final SimpleArrayMap<String, ComponentLifecycle.RenderInfo> mRenderInfos =
+  private final SimpleArrayMap<String, ComponentLifecycle.RenderData> mRenderData =
       new SimpleArrayMap<>();
   private final ArraySet<String> mSeenGlobalKeys = new ArraySet<>();
 
-  void recordRenderInfo(List<Component> components) {
+  void recordRenderData(List<Component> components) {
     if (components == null) {
       return;
     }
 
     for (int i = 0, size = components.size(); i < size; i++) {
-      recordRenderInfo(components.get(i));
+      recordRenderData(components.get(i));
     }
     mSeenGlobalKeys.clear();
   }
 
-  void applyPreviousRenderInfo(List<Component> components) {
+  void applyPreviousRenderData(List<Component> components) {
     if (components == null) {
       return;
     }
 
     for (int i = 0, size = components.size(); i < size; i++) {
-      applyPreviousRenderInfo(components.get(i));
+      applyPreviousRenderData(components.get(i));
     }
   }
 
-  private void recordRenderInfo(Component component) {
+  private void recordRenderData(Component component) {
     final ComponentLifecycle lifecycle = component.getLifecycle();
-    if (!lifecycle.needsPreviousRenderInfo()) {
+    if (!lifecycle.needsPreviousRenderData()) {
       throw new RuntimeException(
-          "Trying to record previous render info for component that doesn't support it");
+          "Trying to record previous render data for component that doesn't support it");
     }
 
     final String key = component.getGlobalKey();
@@ -57,33 +57,34 @@ public class RenderState {
     if (mSeenGlobalKeys.contains(key)) {
       // We found two components with the same global key.
       throw new RuntimeException(
-          "Cannot record previous render info for " + component.getSimpleName() +
-              ", found another Component with the same key: " + key);
+          "Cannot record previous render data for "
+              + component.getSimpleName()
+              + ", found another Component with the same key: "
+              + key);
     }
     mSeenGlobalKeys.add(key);
 
-    final ComponentLifecycle.RenderInfo existingInfo = mRenderInfos.get(key);
-    final ComponentLifecycle.RenderInfo newInfo = lifecycle.recordRenderInfo(
-        component,
-        existingInfo);
+    final ComponentLifecycle.RenderData existingInfo = mRenderData.get(key);
+    final ComponentLifecycle.RenderData newInfo =
+        lifecycle.recordRenderData(component, existingInfo);
 
-    mRenderInfos.put(key, newInfo);
+    mRenderData.put(key, newInfo);
   }
 
-  private void applyPreviousRenderInfo(Component component) {
+  private void applyPreviousRenderData(Component component) {
     final ComponentLifecycle lifecycle = component.getLifecycle();
-    if (!lifecycle.needsPreviousRenderInfo()) {
+    if (!lifecycle.needsPreviousRenderData()) {
       throw new RuntimeException(
-          "Trying to apply previous render info to component that doesn't support it");
+          "Trying to apply previous render data to component that doesn't support it");
     }
 
     final String key = component.getGlobalKey();
-    ComponentLifecycle.RenderInfo previousRenderInfo = mRenderInfos.get(key);
-    lifecycle.applyPreviousRenderInfo(component, previousRenderInfo);
+    ComponentLifecycle.RenderData previousRenderData = mRenderData.get(key);
+    lifecycle.applyPreviousRenderData(component, previousRenderData);
   }
 
   void reset() {
-    mRenderInfos.clear();
+    mRenderData.clear();
     mSeenGlobalKeys.clear();
   }
 }

@@ -21,48 +21,46 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-/**
- * Tests {@link RenderInfoGenerator}
- */
-public class RenderInfoGeneratorTest {
+/** Tests {@link RenderDataGenerator} */
+public class RenderDataGeneratorTest {
 
   @Rule public CompilationRule mCompilationRule = new CompilationRule();
 
   private SpecModel mSpecModelWithDiff;
   private SpecModel mSpecModelWithoutDiff;
-  private DiffModel mDiffModelNeedsRenderInfo;
-  private DiffModel mDiffModelDoesNotNeedRenderInfo;
+  private DiffModel mDiffModelNeedsRenderData;
+  private DiffModel mDiffModelDoesNotNeedRenderData;
 
   @Before
   public void setUp() {
     mSpecModelWithDiff = mock(SpecModel.class);
     mSpecModelWithoutDiff = mock(SpecModel.class);
-    mDiffModelNeedsRenderInfo = mock(DiffModel.class);
-    mDiffModelDoesNotNeedRenderInfo = mock(DiffModel.class);
+    mDiffModelNeedsRenderData = mock(DiffModel.class);
+    mDiffModelDoesNotNeedRenderData = mock(DiffModel.class);
 
-    when(mSpecModelWithDiff.getDiffs()).thenReturn(ImmutableList.of(mDiffModelNeedsRenderInfo));
+    when(mSpecModelWithDiff.getDiffs()).thenReturn(ImmutableList.of(mDiffModelNeedsRenderData));
     when(mSpecModelWithDiff.getComponentName()).thenReturn("WithDiffSpec");
 
     when(mSpecModelWithoutDiff.getDiffs()).thenReturn(ImmutableList.<DiffModel>of());
     when(mSpecModelWithoutDiff.getComponentName()).thenReturn("WithoutDiffSpec");
 
-    when(mDiffModelNeedsRenderInfo.getName()).thenReturn("diffParam1");
-    when(mDiffModelNeedsRenderInfo.needsRenderInfoInfra()).thenReturn(true);
+    when(mDiffModelNeedsRenderData.getName()).thenReturn("diffParam1");
+    when(mDiffModelNeedsRenderData.needsRenderDataInfra()).thenReturn(true);
 
-    when(mDiffModelDoesNotNeedRenderInfo.getName()).thenReturn("diffParam2");
-    when(mDiffModelDoesNotNeedRenderInfo.needsRenderInfoInfra()).thenReturn(false);
+    when(mDiffModelDoesNotNeedRenderData.getName()).thenReturn("diffParam2");
+    when(mDiffModelDoesNotNeedRenderData.needsRenderDataInfra()).thenReturn(false);
   }
 
   @Test
   public void testGenerateWithDiff() {
-    TypeSpecDataHolder dataHolder = RenderInfoGenerator.generate(mSpecModelWithDiff);
+    TypeSpecDataHolder dataHolder = RenderDataGenerator.generate(mSpecModelWithDiff);
 
     assertThat(dataHolder.getMethodSpecs()).isNotEmpty();
   }
 
   @Test
   public void testDoNotGenerateWithoutDiff() {
-    TypeSpecDataHolder dataHolder = RenderInfoGenerator.generate(mSpecModelWithoutDiff);
+    TypeSpecDataHolder dataHolder = RenderDataGenerator.generate(mSpecModelWithoutDiff);
 
     assertThat(dataHolder.getMethodSpecs()).isEmpty();
   }
@@ -70,9 +68,9 @@ public class RenderInfoGeneratorTest {
   @Test
   public void testDoNotGenerateWithDiffThatDoesntNeedIt() {
     when(mSpecModelWithoutDiff.getDiffs())
-        .thenReturn(ImmutableList.of(mDiffModelDoesNotNeedRenderInfo));
+        .thenReturn(ImmutableList.of(mDiffModelDoesNotNeedRenderData));
 
-    TypeSpecDataHolder dataHolder = RenderInfoGenerator.generate(mSpecModelWithoutDiff);
+    TypeSpecDataHolder dataHolder = RenderDataGenerator.generate(mSpecModelWithoutDiff);
 
     assertThat(dataHolder.getMethodSpecs()).isEmpty();
   }

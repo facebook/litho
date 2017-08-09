@@ -171,7 +171,7 @@ class LayoutState {
   private boolean mCanPrefetchDisplayLists;
   private boolean mCanCacheDrawingDisplayLists;
   private boolean mClipChildren = true;
-  private ArrayList<Component> mComponentsNeedingPreviousRenderInfo;
+  private ArrayList<Component> mComponentsNeedingPreviousRenderData;
   private SimpleArrayMap<String, LayoutOutput> mTransitionKeyMapping;
 
   LayoutState() {
@@ -655,7 +655,7 @@ class LayoutState {
     if (SDK_INT >= ICE_CREAM_SANDWICH) {
       if (component != null) {
         final ComponentLifecycle lifecycle = component.getLifecycle();
-        if (!lifecycle.needsPreviousRenderInfo()) {
+        if (!lifecycle.needsPreviousRenderData()) {
           final Transition transition =
               component.getLifecycle().onCreateTransition(layoutState.mContext, component);
 
@@ -663,11 +663,11 @@ class LayoutState {
             layoutState.getOrCreateTransitionContext().addTransition(transition);
           }
         } else {
-          if (layoutState.mComponentsNeedingPreviousRenderInfo == null) {
-            layoutState.mComponentsNeedingPreviousRenderInfo = new ArrayList<>();
+          if (layoutState.mComponentsNeedingPreviousRenderData == null) {
+            layoutState.mComponentsNeedingPreviousRenderData = new ArrayList<>();
           }
           // We'll check for animations in mount
-          layoutState.mComponentsNeedingPreviousRenderInfo.add(component);
+          layoutState.mComponentsNeedingPreviousRenderData.add(component);
         }
       }
     }
@@ -1754,8 +1754,8 @@ class LayoutState {
         mLayoutRoot = null;
       }
 
-      if (mComponentsNeedingPreviousRenderInfo != null) {
-        mComponentsNeedingPreviousRenderInfo.clear();
+      if (mComponentsNeedingPreviousRenderData != null) {
+        mComponentsNeedingPreviousRenderData.clear();
       }
 
       mTransitionKeyMapping = null;
@@ -1949,9 +1949,10 @@ class LayoutState {
 
   /**
    * @return the list of Components in this LayoutState that care about the previously mounted
-   * versions of their @Prop/@State params.
+   *     versions of their @Prop/@State params.
    */
-  @Nullable List<Component> getComponentsNeedingPreviousRenderInfo() {
-    return mComponentsNeedingPreviousRenderInfo;
+  @Nullable
+  List<Component> getComponentsNeedingPreviousRenderData() {
+    return mComponentsNeedingPreviousRenderData;
   }
 }

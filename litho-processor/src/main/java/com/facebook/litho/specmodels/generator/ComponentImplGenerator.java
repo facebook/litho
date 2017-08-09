@@ -10,7 +10,7 @@
 package com.facebook.litho.specmodels.generator;
 
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.IMPL_CLASS_NAME_SUFFIX;
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.PREVIOUS_RENDER_INFO_FIELD_NAME;
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.PREVIOUS_RENDER_DATA_FIELD_NAME;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_FIELD_NAME;
 import static com.facebook.litho.specmodels.model.ClassNames.COMPONENT;
 
@@ -73,12 +73,12 @@ public class ComponentImplGenerator {
     }
 
     final boolean hasState = !specModel.getStateValues().isEmpty();
-    final boolean needsRenderInfoInfra = SpecModelUtils.hasDiffThatNeedsRenderInfoInfra(specModel);
+    final boolean needsRenderDataInfra = SpecModelUtils.hasDiffThatNeedsRenderDataInfra(specModel);
 
     final ClassName stateContainerImplClass =
         ClassName.bestGuess(getStateContainerImplClassName(specModel));
-    final ClassName previousRenderInfoImplClass =
-        ClassName.bestGuess(RenderInfoGenerator.getRenderInfoImplClassName(specModel));
+    final ClassName previousRenderDataImplClass =
+        ClassName.bestGuess(RenderDataGenerator.getRenderDataImplClassName(specModel));
 
     if (hasState) {
       implClassBuilder.addField(stateContainerImplClass, STATE_CONTAINER_FIELD_NAME);
@@ -86,8 +86,8 @@ public class ComponentImplGenerator {
           generateStateContainerGetter(specModel.getStateContainerClass()));
     }
 
-    if (needsRenderInfoInfra) {
-      implClassBuilder.addField(previousRenderInfoImplClass, PREVIOUS_RENDER_INFO_FIELD_NAME);
+    if (needsRenderDataInfra) {
+      implClassBuilder.addField(previousRenderDataImplClass, PREVIOUS_RENDER_DATA_FIELD_NAME);
     }
 
     generateProps(specModel).addToTypeSpec(implClassBuilder);
@@ -109,8 +109,8 @@ public class ComponentImplGenerator {
     if (hasState) {
       builder.addType(generateStateContainerImpl(specModel));
     }
-    if (needsRenderInfoInfra) {
-      builder.addType(generatePreviousRenderInfoContainerImpl(specModel));
+    if (needsRenderDataInfra) {
+      builder.addType(generatePreviousRenderDataContainerImpl(specModel));
     }
     builder.addType(implClassBuilder.build());
     return builder.build();
@@ -135,11 +135,10 @@ public class ComponentImplGenerator {
     return stateContainerImplClassBuilder.build();
   }
 
-  static TypeSpec generatePreviousRenderInfoContainerImpl(SpecModel specModel) {
-    final String className = RenderInfoGenerator.getRenderInfoImplClassName(specModel);
+  static TypeSpec generatePreviousRenderDataContainerImpl(SpecModel specModel) {
+    final String className = RenderDataGenerator.getRenderDataImplClassName(specModel);
     final TypeSpec.Builder renderInfoClassBuilder =
-        TypeSpec.classBuilder(className)
-            .addSuperinterface(ClassNames.RENDER_INFO);
+        TypeSpec.classBuilder(className).addSuperinterface(ClassNames.RENDER_DATA);
 
     if (!specModel.hasInjectedDependencies()) {
       renderInfoClassBuilder.addModifiers(Modifier.STATIC, Modifier.PRIVATE);
@@ -154,7 +153,7 @@ public class ComponentImplGenerator {
         .addParameter(ClassName.bestGuess(specModel.getComponentName() + "Impl"), recordParamName);
 
     for (DiffModel diff : specModel.getDiffs()) {
-      if (!diff.needsRenderInfoInfra()) {
+      if (!diff.needsRenderDataInfra()) {
         continue;
       }
 

@@ -24,11 +24,11 @@ import javax.annotation.concurrent.Immutable;
 public class DiffModel implements MethodParamModel {
 
   private final MethodParamModel mParamModel;
-  private final boolean mNeedsRenderInfoInfra;
+  private final boolean mNeedsRenderDataInfra;
 
-  DiffModel(MethodParamModel paramModel, boolean needsRenderInfoInfra) {
+  DiffModel(MethodParamModel paramModel, boolean needsRenderDataInfra) {
     mParamModel = paramModel;
-    mNeedsRenderInfoInfra = needsRenderInfoInfra;
+    mNeedsRenderDataInfra = needsRenderDataInfra;
   }
 
   @Override
@@ -41,8 +41,8 @@ public class DiffModel implements MethodParamModel {
     return mParamModel.getName();
   }
 
-  public boolean needsRenderInfoInfra() {
-    return mNeedsRenderInfoInfra;
+  public boolean needsRenderDataInfra() {
+    return mNeedsRenderDataInfra;
   }
 
   @Override

@@ -131,7 +131,7 @@ public class MethodParamModelFactoryTest {
         null);
 
     assertThat(methodParamModel).isInstanceOf(DiffModel.class);
-    assertThat(((DiffModel) methodParamModel).needsRenderInfoInfra()).isTrue();
+    assertThat(((DiffModel) methodParamModel).needsRenderDataInfra()).isTrue();
   }
 
   @Test

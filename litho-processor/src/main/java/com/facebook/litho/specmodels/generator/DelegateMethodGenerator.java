@@ -12,7 +12,7 @@ package com.facebook.litho.specmodels.generator;
 import static com.facebook.litho.specmodels.generator.ComponentImplGenerator.getImplAccessor;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.ABSTRACT_IMPL_PARAM_NAME;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.IMPL_VARIABLE_NAME;
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.PREVIOUS_RENDER_INFO_FIELD_NAME;
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.PREVIOUS_RENDER_DATA_FIELD_NAME;
 import static com.facebook.litho.specmodels.model.ClassNames.COMPONENT;
 import static com.facebook.litho.specmodels.model.ClassNames.OUTPUT;
 import static com.facebook.litho.specmodels.model.ClassNames.STATE_VALUE;
@@ -155,28 +155,23 @@ public class DelegateMethodGenerator {
             IMPL_VARIABLE_NAME,
             getImplAccessor(specModel, methodParamModel),
             methodParamModel.getName());
-      } else if (methodParamModel instanceof DiffModel &&
-          ((DiffModel) methodParamModel).needsRenderInfoInfra()) {
+      } else if (methodParamModel instanceof DiffModel
+          && ((DiffModel) methodParamModel).needsRenderDataInfra()) {
         final String diffName = "_" + methodParamModel.getName() + "Diff";
-        CodeBlock block = CodeBlock.builder()
-            .add(
-                "$T $L = acquireDiff(\n",
-                methodParamModel.getType(),
-                diffName)
-            .indent()
-            .add(
-                "$L.$L == null ? null : $L.$L.$L,\n",
-                IMPL_VARIABLE_NAME,
-                PREVIOUS_RENDER_INFO_FIELD_NAME,
-                IMPL_VARIABLE_NAME,
-                PREVIOUS_RENDER_INFO_FIELD_NAME,
-                methodParamModel.getName())
-            .add(
-                "$L.$L);\n",
-                IMPL_VARIABLE_NAME,
-                getImplAccessor(specModel, methodParamModel))
-            .unindent()
-            .build();
+        CodeBlock block =
+            CodeBlock.builder()
+                .add("$T $L = acquireDiff(\n", methodParamModel.getType(), diffName)
+                .indent()
+                .add(
+                    "$L.$L == null ? null : $L.$L.$L,\n",
+                    IMPL_VARIABLE_NAME,
+                    PREVIOUS_RENDER_DATA_FIELD_NAME,
+                    IMPL_VARIABLE_NAME,
+                    PREVIOUS_RENDER_DATA_FIELD_NAME,
+                    methodParamModel.getName())
+                .add("$L.$L);\n", IMPL_VARIABLE_NAME, getImplAccessor(specModel, methodParamModel))
+                .unindent()
+                .build();
         methodSpec.addCode(block);
         releaseOutputs.addStatement("releaseDiff($L)", diffName);
         delegation.add("$L", diffName);
