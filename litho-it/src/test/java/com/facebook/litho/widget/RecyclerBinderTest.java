@@ -28,10 +28,10 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.OnScrollListener;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.RenderInfo;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LayoutHandler;
+import com.facebook.litho.RenderInfo;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
@@ -221,7 +221,7 @@ public class RecyclerBinderTest {
 
     verify(recyclerView).setLayoutManager(mLayoutInfo.getLayoutManager());
     verify(recyclerView).setAdapter(any(RecyclerView.Adapter.class));
-    verify(mLayoutInfo).setComponentInfoCollection(mRecyclerBinder);
+    verify(mLayoutInfo).setRenderInfoCollection(mRecyclerBinder);
     verify(recyclerView, times(2)).addOnScrollListener(any(OnScrollListener.class));
   }
 
@@ -259,7 +259,7 @@ public class RecyclerBinderTest {
 
     verify(recyclerView).setLayoutManager(null);
     verify(recyclerView).setAdapter(null);
-    verify(mLayoutInfo).setComponentInfoCollection(null);
+    verify(mLayoutInfo).setRenderInfoCollection(null);
     verify(recyclerView, times(2)).removeOnScrollListener(any(OnScrollListener.class));
   }
 

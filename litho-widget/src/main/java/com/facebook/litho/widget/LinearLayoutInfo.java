@@ -82,7 +82,7 @@ public class LinearLayoutInfo implements LayoutInfo {
   }
 
   @Override
-  public void setComponentInfoCollection(ComponentInfoCollection componentInfoCollection) {
+  public void setRenderInfoCollection(RenderInfoCollection renderInfoCollection) {
     // Do nothing
   }
 

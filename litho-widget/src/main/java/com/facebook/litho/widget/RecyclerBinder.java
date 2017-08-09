@@ -29,12 +29,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.RenderInfo;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LayoutHandler;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.MeasureComparisonUtils;
+import com.facebook.litho.RenderInfo;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.ThreadUtils;
@@ -51,10 +51,8 @@ import javax.annotation.concurrent.ThreadSafe;
  * and attaching them to a {@link RecyclerSpec}.
  */
 @ThreadSafe
-public class RecyclerBinder implements
-    Binder<RecyclerView>,
-    LayoutInfo.ComponentInfoCollection,
-    HasStickyHeader {
+public class RecyclerBinder
+    implements Binder<RecyclerView>, LayoutInfo.RenderInfoCollection, HasStickyHeader {
 
   private static final int UNINITIALIZED = -1;
   private static final Size sDummySize = new Size();
@@ -571,7 +569,7 @@ public class RecyclerBinder implements
   }
 
   @Override
-  public final synchronized RenderInfo getComponentInfoAt(int position) {
+  public final synchronized RenderInfo getRenderInfoAt(int position) {
     return mComponentTreeHolders.get(position).getRenderInfo();
   }
 
@@ -839,7 +837,7 @@ public class RecyclerBinder implements
     view.addOnScrollListener(mRangeScrollListener);
     view.addOnScrollListener(mViewportManager.getScrollListener());
 
-    mLayoutInfo.setComponentInfoCollection(this);
+    mLayoutInfo.setRenderInfoCollection(this);
 
     mViewportManager.addViewportChangedListener(mViewportChangedListener);
 
@@ -915,7 +913,7 @@ public class RecyclerBinder implements
       mStickyHeaderController.reset();
     }
 
-    mLayoutInfo.setComponentInfoCollection(null);
+    mLayoutInfo.setRenderInfoCollection(null);
   }
 
   @UiThread

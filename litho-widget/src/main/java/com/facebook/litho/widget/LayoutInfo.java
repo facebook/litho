@@ -33,10 +33,8 @@ public interface LayoutInfo extends ViewportInfo {
    */
   LayoutManager getLayoutManager();
 
-  /**
-   * @param componentInfoCollection
-   */
-  void setComponentInfoCollection(ComponentInfoCollection componentInfoCollection);
+  /** @param renderInfoCollection */
+  void setRenderInfoCollection(RenderInfoCollection renderInfoCollection);
 
   /**
    * This is called when the {@link RecyclerBinder} needs to calculate a range size.
@@ -73,7 +71,7 @@ public interface LayoutInfo extends ViewportInfo {
    */
   int getChildHeightSpec(int heightSpec, RenderInfo renderInfo);
 
-  interface ComponentInfoCollection {
-    RenderInfo getComponentInfoAt(int position);
+  interface RenderInfoCollection {
+    RenderInfo getRenderInfoAt(int position);
   }
 }

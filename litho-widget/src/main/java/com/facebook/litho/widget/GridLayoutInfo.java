@@ -24,7 +24,7 @@ public class GridLayoutInfo implements LayoutInfo {
   private final GridLayoutManager mGridLayoutManager;
   private final GridSpanSizeLookup mGridSpanSizeLookup;
 
-  private ComponentInfoCollection mComponentInfoCollection;
+  private RenderInfoCollection mRenderInfoCollection;
 
   public GridLayoutInfo(Context context, int spanCount, int orientation, boolean reverseLayout) {
     mGridLayoutManager = new GridLayoutManager(context, spanCount, orientation, reverseLayout);
@@ -72,8 +72,8 @@ public class GridLayoutInfo implements LayoutInfo {
   }
 
   @Override
-  public void setComponentInfoCollection(ComponentInfoCollection componentInfoCollection) {
-    mComponentInfoCollection = componentInfoCollection;
+  public void setRenderInfoCollection(RenderInfoCollection renderInfoCollection) {
+    mRenderInfoCollection = renderInfoCollection;
   }
 
   @Override
@@ -135,11 +135,11 @@ public class GridLayoutInfo implements LayoutInfo {
 
     @Override
     public int getSpanSize(int position) {
-      if (mComponentInfoCollection == null) {
+      if (mRenderInfoCollection == null) {
         return 1;
       }
 
-      return mComponentInfoCollection.getComponentInfoAt(position).getSpanSize();
+      return mRenderInfoCollection.getRenderInfoAt(position).getSpanSize();
     }
   }
 }
