@@ -16,6 +16,8 @@ dependencies {
 
     implementation deps.supportEspresso
     implementation deps.screenshot
+    androidTestImplementation deps.soloader
+    androidTestCompileOnly deps.supportAppCompat
     androidTestCompileOnly project(':litho-annotations')
     androidTestImplementation project(':litho-widget')
     androidTestAnnotationProcessor project(':litho-processor')

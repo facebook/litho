@@ -27,7 +27,6 @@ import static org.hamcrest.Matchers.equalTo;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.filters.LargeTest;
 import android.support.test.runner.AndroidJUnit4;
-import com.facebook.samples.litho.DemoActivity;
 import com.facebook.samples.litho.DemoListActivity;
 import org.junit.Rule;
 import org.junit.Test;
@@ -48,7 +47,7 @@ public class DemoListActivityIntentEspressoTest {
 
     intended(allOf(
       toPackage("com.facebook.samples.litho"),
-      hasComponent(hasClassName(DemoActivity.class.getName())),
+      hasComponent(hasClassName(DemoListActivity.class.getName())),
       hasExtras(hasEntry(equalTo("demoName"), equalTo("Playground")))));
   }
 }
