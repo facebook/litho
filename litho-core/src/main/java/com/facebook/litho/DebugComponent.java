@@ -74,11 +74,10 @@ public final class DebugComponent {
 
   public boolean isValidInstance() {
     final InternalNode node = mNode.get();
-    if (node == null) {
-      return false;
-    }
+    return node != null
+        && node.getGeneration() == mGeneration
+        && mKey.equals(createKey(node, mComponentIndex));
 
-    return node.getGeneration() == mGeneration && mKey.equals(createKey(node, mComponentIndex));
   }
 
   /**
@@ -112,7 +111,7 @@ public final class DebugComponent {
 
 
   /**
-   * @return A simpler conanical name for this component. Suitable to present to the user.
+   * @return A simpler canonical name for this component. Suitable to present to the user.
    */
   public String getSimpleName() {
     return mComponentClass.getSimpleName();
@@ -176,8 +175,11 @@ public final class DebugComponent {
     return children;
   }
 
-  /** @return A mounted view or null if this component does not mount a view. */
-  public @Nullable View getMountedView() {
+  /**
+   * @return A mounted view or null if this component does not mount a view.
+   */
+  @Nullable
+  public View getMountedView() {
     final InternalNode node = mNode.get();
     final Component component = node == null ? null : node.getRootComponent();
     if (component != null && Component.isMountViewSpec(component)) {
@@ -187,8 +189,11 @@ public final class DebugComponent {
     return null;
   }
 
-  /** @return A mounted drawable or null if this component does not mount a drawable. */
-  public @Nullable Drawable getMountedDrawable() {
+  /**
+   * @return A mounted drawable or null if this component does not mount a drawable.
+   */
+  @Nullable
+  public Drawable getMountedDrawable() {
     final InternalNode node = mNode.get();
     final Component component = node == null ? null : node.getRootComponent();
     if (component != null && Component.isMountDrawableSpec(component)) {
@@ -201,6 +206,7 @@ public final class DebugComponent {
   /**
    * @return The litho view hosting this component.
    */
+  @Nullable
   public LithoView getLithoView() {
     final InternalNode node = mNode.get();
     final ComponentContext c = node == null ? null : node.getContext();
@@ -252,6 +258,7 @@ public final class DebugComponent {
   /**
    * @return This component's testKey or null if none is set.
    */
+  @Nullable
   public String getTestKey() {
     return isLayoutNode() ? mNode.get().getTestKey() : null;
   }
@@ -315,6 +322,7 @@ public final class DebugComponent {
   /**
    * @return This component's key or null if none is set.
    */
+  @Nullable
   public String getKey() {
     final InternalNode node = mNode.get();
     if (node != null && !node.getComponents().isEmpty()) {
@@ -327,6 +335,7 @@ public final class DebugComponent {
   /**
    * @return The Component instance this debug component wraps.
    */
+  @Nullable
   public Component getComponent() {
     final InternalNode node = mNode.get();
     if (node == null || node.getComponents().isEmpty()) {
@@ -338,6 +347,7 @@ public final class DebugComponent {
   /**
    * @return The Yoga node asscociated with this debug component. May be null.
    */
+  @Nullable
   public YogaNode getYogaNode() {
     final InternalNode node = mNode.get();
     if (node == null || !isLayoutNode()) {
@@ -347,8 +357,11 @@ public final class DebugComponent {
     return node.mYogaNode;
   }
 
-  /** @return The foreground drawable asscociated with this debug component. May be null. */
-  public @Nullable Drawable getForeground() {
+  /**
+   * @return The foreground drawable asscociated with this debug component. May be null.
+   */
+  @Nullable
+  public Drawable getForeground() {
     final InternalNode node = mNode.get();
     if (node == null || !isLayoutNode()) {
       return null;
@@ -357,8 +370,11 @@ public final class DebugComponent {
     return node.getForeground();
   }
 
-  /** @return The background drawable associated with this debug component. May be null. */
-  public @Nullable Reference<? extends Drawable> getBackground() {
+  /**
+   * @return The background drawable asscociated with this debug component. May be null.
+   */
+  @Nullable
+  public Reference<? extends Drawable> getBackground() {
     final InternalNode node = mNode.get();
     if (node == null || !isLayoutNode()) {
       return null;
@@ -370,8 +386,10 @@ public final class DebugComponent {
   /**
    * @return The int value of the importantForAccessibility property on this debug component.
    */
-  public int getImportantForAccessibility() {
-    return mNode.get().getImportantForAccessibility();
+  @Nullable
+  public Integer getImportantForAccessibility() {
+    final InternalNode node = mNode.get();
+    return node == null ? null : node.getImportantForAccessibility();
   }
 
   /**
@@ -620,6 +638,7 @@ public final class DebugComponent {
     mNode.get().focusable(focusable);
   }
 
+  @Nullable
   public ComponentLifecycle.StateContainer getStateContainer() {
     final Component component = getComponent();
     return component == null ? null : component.getStateContainer();
@@ -673,6 +692,7 @@ public final class DebugComponent {
     return mKey;
   }
 
+  @Nullable
   public EventHandler getClickHandler() {
     if (mComponentIndex > 0) {
       return null;
@@ -686,6 +706,7 @@ public final class DebugComponent {
     return node.getClickHandler();
   }
 
+  @Nullable
   private Object getMountedContent() {
     if (mComponentIndex > 0) {
       return null;
