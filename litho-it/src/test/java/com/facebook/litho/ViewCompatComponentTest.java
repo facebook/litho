@@ -17,6 +17,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import android.content.Context;
 import android.widget.TextView;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.viewcompatcreator.ViewBinder;
 import com.facebook.litho.viewcompatcreator.ViewCompatCreator;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,8 +47,8 @@ public class ViewCompatComponentTest {
 
   @Test
   public void testSimpleRendering() throws Exception {
-    ViewCompatComponent.ViewBinder<TextView> binder =
-        new ViewCompatComponent.ViewBinder<TextView>() {
+    ViewBinder<TextView> binder =
+        new ViewBinder<TextView>() {
           @Override
           public void prepare() {
 
@@ -76,8 +77,8 @@ public class ViewCompatComponentTest {
 
   @Test
   public void testPrepare() throws Exception {
-    ViewCompatComponent.ViewBinder<TextView> binder =
-        new ViewCompatComponent.ViewBinder<TextView>() {
+    ViewBinder<TextView> binder =
+        new ViewBinder<TextView>() {
           private String mState;
 
           @Override
@@ -108,8 +109,8 @@ public class ViewCompatComponentTest {
 
   @Test
   public void testUnbind() throws Exception {
-    ViewCompatComponent.ViewBinder<TextView> binder =
-        new ViewCompatComponent.ViewBinder<TextView>() {
+    ViewBinder<TextView> binder =
+        new ViewBinder<TextView>() {
           private String mState;
 
           @Override

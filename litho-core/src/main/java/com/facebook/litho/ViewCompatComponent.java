@@ -16,6 +16,7 @@ import android.support.v4.util.SimpleArrayMap;
 import android.view.View;
 import android.view.ViewGroup;
 import com.facebook.litho.viewcompatcreator.ViewCompatCreator;
+import com.facebook.litho.viewcompatcreator.ViewBinder;
 
 /**
  * A component that can wrap a view using a {@link ViewBinder} class to bind the view
@@ -23,35 +24,6 @@ import com.facebook.litho.viewcompatcreator.ViewCompatCreator;
  * This component will have a different recycle pool per {@link ViewCompatCreator}.
  */
 public class ViewCompatComponent<V extends View> extends ComponentLifecycle {
-
-  /**
-   * Binds data to a view.
-   * @param <V> the type of View.
-   */
-  public interface ViewBinder<V extends View> {
-
-    /**
-     * Prepares the binder to be bound to a view.
-     *
-     * Use this method to perform calculations ahead of time and save them.
-     */
-    void prepare();
-
-    /**
-     * Binds data to the given view so it can be rendered on screen. This will always be called
-     * after prepare so that you can use stored output from prepare here if needed.
-     *
-     * @param view the view to bind.
-     */
-    void bind(V view);
-
-    /**
-     * Cleans up a view that goes off screen after it has already been bound.
-     *
-     * @param view the view to unbind.
-     */
-    void unbind(V view);
-  }
 
   private static final Pools.SynchronizedPool<Builder> sBuilderPool =
       new Pools.SynchronizedPool<>(2);
