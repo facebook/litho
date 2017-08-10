@@ -7,18 +7,18 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.litho.viewcompatcreator;
+package com.facebook.litho.viewcompat;
 
 import android.content.Context;
 import android.view.View;
 
 /**
  * Creates a View of the specified type. Used as the mount content for ViewCompatComponent.
- * Views created with the same {@link ViewCompatCreator} will be recycled across instances of
+ * Views created with the same {@link ViewCreator} will be recycled across instances of
  * ViewCompatComponent.
  * @param <V> the type of View to create.
  */
-public interface ViewCompatCreator<V extends View> {
+public interface ViewCreator<V extends View> {
 
   /**
    * @param c android Context.

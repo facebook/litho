@@ -8,7 +8,7 @@
 include_defs("//COMPONENTS_DEFS")
 
 litho_android_library(
-    name = "viewcompatcreator",
+    name = "viewcompat",
     srcs = glob(["**/*.java"]),
     visibility = [
         "PUBLIC",

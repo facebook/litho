@@ -17,8 +17,8 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import android.content.Context;
 import android.widget.TextView;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-import com.facebook.litho.viewcompatcreator.ViewBinder;
-import com.facebook.litho.viewcompatcreator.ViewCompatCreator;
+import com.facebook.litho.viewcompat.ViewBinder;
+import com.facebook.litho.viewcompat.ViewCreator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,8 +30,8 @@ import org.robolectric.RuntimeEnvironment;
 @RunWith(ComponentsTestRunner.class)
 public class ViewCompatComponentTest {
 
-  private static final ViewCompatCreator<TextView> TEXT_VIEW_CREATOR =
-      new ViewCompatCreator<TextView>() {
+  private static final ViewCreator<TextView> TEXT_VIEW_CREATOR =
+      new ViewCreator<TextView>() {
         @Override
         public TextView createView(Context c) {
           return new TextView(c);

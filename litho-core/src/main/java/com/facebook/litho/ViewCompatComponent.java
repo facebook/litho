@@ -15,27 +15,27 @@ import android.support.v4.util.Pools;
 import android.support.v4.util.SimpleArrayMap;
 import android.view.View;
 import android.view.ViewGroup;
-import com.facebook.litho.viewcompatcreator.ViewCompatCreator;
-import com.facebook.litho.viewcompatcreator.ViewBinder;
+import com.facebook.litho.viewcompat.ViewCreator;
+import com.facebook.litho.viewcompat.ViewBinder;
 
 /**
  * A component that can wrap a view using a {@link ViewBinder} class to bind the view
- * and a {@link ViewCompatCreator} to create the mount contents.
- * This component will have a different recycle pool per {@link ViewCompatCreator}.
+ * and a {@link ViewCreator} to create the mount contents.
+ * This component will have a different recycle pool per {@link ViewCreator}.
  */
 public class ViewCompatComponent<V extends View> extends ComponentLifecycle {
 
   private static final Pools.SynchronizedPool<Builder> sBuilderPool =
       new Pools.SynchronizedPool<>(2);
 
-  private static final SimpleArrayMap<ViewCompatCreator, ViewCompatComponent> sInstances =
+  private static final SimpleArrayMap<ViewCreator, ViewCompatComponent> sInstances =
       new SimpleArrayMap<>();
 
-  private final ViewCompatCreator mViewCompatCreator;
+  private final ViewCreator mViewCreator;
   private final String mComponentName;
 
   public static <V extends View> ViewCompatComponent<V> get(
-      ViewCompatCreator<V> viewCreator,
+      ViewCreator<V> viewCreator,
       String componentName) {
     ViewCompatComponent<V> componentLifecycle;
 
@@ -61,9 +61,9 @@ public class ViewCompatComponent<V extends View> extends ComponentLifecycle {
     return builder;
   }
 
-  private ViewCompatComponent(ViewCompatCreator viewCreator, String componentName) {
+  private ViewCompatComponent(ViewCreator viewCreator, String componentName) {
     super();
-    mViewCompatCreator = viewCreator;
+    mViewCreator = viewCreator;
     mComponentName = "ViewCompatComponent_" + componentName;
   }
 
@@ -88,7 +88,7 @@ public class ViewCompatComponent<V extends View> extends ComponentLifecycle {
     View toMeasure =
         (View) ComponentsPools.acquireMountContent(c, getTypeId(), isSafeToAllocatePool);
     if (toMeasure == null) {
-      toMeasure = mViewCompatCreator.createView(c);
+      toMeasure = mViewCreator.createView(c);
     }
 
     ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(size.width, size.height);
@@ -156,7 +156,7 @@ public class ViewCompatComponent<V extends View> extends ComponentLifecycle {
 
   @Override
   V createMountContent(ComponentContext c) {
-    return (V) mViewCompatCreator.createView(c);
+    return (V) mViewCreator.createView(c);
   }
 
   public static final class Builder<V extends View>
