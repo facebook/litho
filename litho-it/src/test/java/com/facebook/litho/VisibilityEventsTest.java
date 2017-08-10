@@ -12,12 +12,7 @@ package com.facebook.litho;
 import static com.facebook.litho.testing.ComponentTestHelper.mountComponent;
 import static com.facebook.litho.testing.ComponentTestHelper.unbindComponent;
 import static com.facebook.litho.testing.TestViewComponent.create;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isA;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.powermock.reflect.Whitebox.setInternalState;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.graphics.Rect;
 import com.facebook.litho.testing.TestComponent;
@@ -40,7 +35,7 @@ public class VisibilityEventsTest {
 
   @Test
   public void testDetachWithReleasedTreeTriggersInvisibilityItems() {
-    final TestComponent content = create(mContext).build();
+    final TestComponent<?> content = create(mContext).build();
     final EventHandler<InvisibleEvent> invisibleEventHandler = new EventHandler<>(content, 2);
 
     final LithoView lithoView =
@@ -62,10 +57,9 @@ public class VisibilityEventsTest {
     lithoView.getComponentTree().mountComponent(new Rect(0, 0, 10, 10));
     lithoView.getComponentTree().release();
 
-    final ComponentLifecycle mockLifecycle = mock(ComponentLifecycle.class);
-    setInternalState(content, "mLifecycle", mockLifecycle);
+    assertThat(content.getLifecycle().getDispatchedEventHandlers())
+        .doesNotContain(invisibleEventHandler);
     unbindComponent(lithoView);
-    verify(mockLifecycle, times(1))
-        .dispatchOnEvent(eq(invisibleEventHandler), isA(InvisibleEvent.class));
+    assertThat(content.getLifecycle().getDispatchedEventHandlers()).contains(invisibleEventHandler);
   }
 }

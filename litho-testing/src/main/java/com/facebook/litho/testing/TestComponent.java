@@ -11,13 +11,17 @@ package com.facebook.litho.testing;
 
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentLifecycle;
+import com.facebook.litho.EventHandler;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Base class for test components which expose lifecycle information.
  *
  * @param <L>
  */
-public abstract class TestComponent<L extends ComponentLifecycle> extends Component<L> {
+public abstract class TestComponent<L extends TestComponent.TestComponentLifecycle>
+    extends Component<L> {
 
   private boolean mOnMountCalled;
   private boolean mMounted;
@@ -146,5 +150,19 @@ public abstract class TestComponent<L extends ComponentLifecycle> extends Compon
     mOnMountCalled = false;
     mOnUnbindCalled = false;
     mOnUnmountCalled = false;
+  }
+
+  public static class TestComponentLifecycle extends ComponentLifecycle {
+    private final List<EventHandler<?>> mDispatchedEventHandlers = new ArrayList<>();
+
+    @Override
+    public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
+      mDispatchedEventHandlers.add(eventHandler);
+      return null;
+    }
+
+    public List<EventHandler<?>> getDispatchedEventHandlers() {
+      return mDispatchedEventHandlers;
+    }
   }
 }

@@ -16,12 +16,11 @@ import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
-import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.Layout;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TestLayoutComponent extends ComponentLifecycle {
+public class TestLayoutComponent extends TestComponent.TestComponentLifecycle {
   private static final List<TestLayoutComponent> sInstances = new ArrayList<>();
   private static final Pools.SynchronizedPool<Builder> sBuilderPool =
       new Pools.SynchronizedPool<>(2);

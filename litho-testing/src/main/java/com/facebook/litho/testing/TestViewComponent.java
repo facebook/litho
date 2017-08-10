@@ -16,13 +16,12 @@ import android.view.View;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
-import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TestViewComponent extends ComponentLifecycle {
+public class TestViewComponent extends TestComponent.TestComponentLifecycle {
   private static final List<TestViewComponent> sInstances = new ArrayList<>();
   private static final Pools.SynchronizedPool<Builder> sBuilderPool =
       new Pools.SynchronizedPool<>(2);
