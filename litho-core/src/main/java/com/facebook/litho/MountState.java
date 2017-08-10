@@ -307,12 +307,42 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
           && isInVisibleRange(visibilityOutput, visibilityOutputBounds, localVisibleRect);
 
       VisibilityItem visibilityItem = mVisibilityIdToItemMap.get(visibilityOutputId);
+      if (visibilityItem != null) {
+        final String previousGlobalKey = visibilityItem.getGlobalKey();
+        final String currentGlobalKey =
+            visibilityOutput.getComponent() != null
+                ? visibilityOutput.getComponent().getGlobalKey()
+                : null;
+
+        if (!isCurrentlyVisible
+            || (previousGlobalKey != null && !previousGlobalKey.equals(currentGlobalKey))) {
+          // Either the component is invisible now, but used to be visible, or the key on the
+          // component has changed so we should generate new visibility events for the new
+          // component.
+          if (visibilityItem.getInvisibleHandler() != null) {
+            EventDispatcherUtils.dispatchOnInvisible(visibilityItem.getInvisibleHandler());
+          }
+
+          if (visibilityItem.getUnfocusedHandler() != null) {
+            visibilityItem.setFocusedRange(false);
+            EventDispatcherUtils.dispatchOnUnfocused(visibilityItem.getUnfocusedHandler());
+          }
+
+          mVisibilityIdToItemMap.remove(visibilityOutputId);
+          ComponentsPools.release(visibilityItem);
+          visibilityItem = null;
+        }
+      }
 
       if (isCurrentlyVisible) {
         // The component is visible now, but used to be outside the viewport.
         if (visibilityItem == null) {
+          final String globalKey =
+              visibilityOutput.getComponent() != null
+                  ? visibilityOutput.getComponent().getGlobalKey()
+                  : null;
           visibilityItem =
-              ComponentsPools.acquireVisibilityItem(invisibleHandler, unfocusedHandler);
+              ComponentsPools.acquireVisibilityItem(globalKey, invisibleHandler, unfocusedHandler);
           mVisibilityIdToItemMap.put(visibilityOutputId, visibilityItem);
 
           if (visibleHandler != null) {
@@ -347,19 +377,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
             EventDispatcherUtils.dispatchOnFullImpression(fullImpressionHandler);
           }
         }
-      } else if (visibilityItem != null) {
-        // The component is invisible now, but used to be visible.
-        if (invisibleHandler != null) {
-          EventDispatcherUtils.dispatchOnInvisible(invisibleHandler);
-        }
-
-        if (unfocusedHandler != null) {
-          visibilityItem.setFocusedRange(false);
-          EventDispatcherUtils.dispatchOnUnfocused(unfocusedHandler);
-        }
-
-        mVisibilityIdToItemMap.remove(visibilityOutputId);
-        ComponentsPools.release(visibilityItem);
       }
     }
   }

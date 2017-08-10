@@ -24,6 +24,7 @@ class VisibilityItem {
   private static final int FLAG_BOTTOM_EDGE_VISIBLE = 1 << 4;
   private static final int FLAG_FOCUSED_RANGE = 1 << 5;
 
+  private String mGlobalKey;
   private int mFlags;
   private boolean mFocusedFlag;
   // The invisible event and unfocused event handlers are required to make it possible to dispatch
@@ -35,6 +36,14 @@ class VisibilityItem {
     mFlags = 0;
     mInvisibleHandler = null;
     mUnfocusedHandler = null;
+  }
+
+  String getGlobalKey() {
+    return mGlobalKey;
+  }
+
+  void setGlobalKey(String globalKey) {
+    mGlobalKey = globalKey;
   }
 
   /**

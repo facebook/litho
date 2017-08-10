@@ -113,6 +113,7 @@ public class MountStateVisibilityEventsTest {
     ComponentLifecycle mockLifecycle = createLifecycleMock();
     Component<?> content = TestViewComponent.create(mContext).build();
     Whitebox.setInternalState(content, "mLifecycle", mockLifecycle);
+    Whitebox.setInternalState(content, "mGlobalKey", "testKey");
 
     final EventHandler focusedHandler = createEventHandler(content, FOCUSED);
 
@@ -145,6 +146,7 @@ public class MountStateVisibilityEventsTest {
     ComponentLifecycle mockLifecycle = createLifecycleMock();
     Component<?> content = TestViewComponent.create(mContext).build();
     Whitebox.setInternalState(content, "mLifecycle", mockLifecycle);
+    Whitebox.setInternalState(content, "mGlobalKey", "testKey");
 
     final EventHandler focusedHandler = createEventHandler(content, FOCUSED);
 
@@ -180,6 +182,7 @@ public class MountStateVisibilityEventsTest {
     ComponentLifecycle mockLifecycle = createLifecycleMock();
     Component<?> content = TestViewComponent.create(mContext).build();
     Whitebox.setInternalState(content, "mLifecycle", mockLifecycle);
+    Whitebox.setInternalState(content, "mGlobalKey", "testKey");
 
     final EventHandler focusedHandler = createEventHandler(content, FOCUSED);
     final EventHandler unfocusedHandler = createEventHandler(content, UNFOCUSED);
@@ -259,6 +262,7 @@ public class MountStateVisibilityEventsTest {
     ComponentLifecycle mockLifecycle = createLifecycleMock();
     Component<?> content = TestViewComponent.create(mContext).build();
     Whitebox.setInternalState(content, "mLifecycle", mockLifecycle);
+    Whitebox.setInternalState(content, "mGlobalKey", "testKey");
 
     final EventHandler fullImpressionHandler = createEventHandler(content, FULL_IMPRESSION);
 
