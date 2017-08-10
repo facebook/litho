@@ -101,6 +101,26 @@ public class PropValidation {
                     "value."));
       }
 
+      if ((prop.getResType() == ResType.DIMEN_SIZE
+              || prop.getResType() == ResType.DIMEN_TEXT
+              || prop.getResType() == ResType.DIMEN_OFFSET)
+          && (MethodParamModelUtils.isAnnotatedWithExternalAnnotation(prop, ClassNames.PX)
+              || MethodParamModelUtils.isAnnotatedWithExternalAnnotation(
+                  prop, ClassNames.DIMENSION))) {
+        validationErrors.add(
+            new SpecModelValidationError(
+                prop.getRepresentedObject(),
+                "Props with resType "
+                    + prop.getResType()
+                    + " should not be annotated with "
+                    + ClassNames.PX
+                    + " or "
+                    + ClassNames.DIMENSION
+                    + ", since these annotations "
+                    + "will automatically be added to the relevant builder methods in the "
+                    + "generated code."));
+      }
+
       if (prop.hasVarArgs() && prop.getResType() != ResType.NONE) {
         validationErrors.add(
             new SpecModelValidationError(

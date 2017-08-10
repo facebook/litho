@@ -9,6 +9,7 @@
 
 package com.facebook.litho.specmodels.model;
 
+import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeVariableName;
@@ -27,6 +28,17 @@ public class MethodParamModelUtils {
       Class<? extends Annotation> annotationClass) {
     for (Annotation annotation : methodParamModel.getAnnotations()) {
       if (annotation.annotationType().equals(annotationClass)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  public static boolean isAnnotatedWithExternalAnnotation(
+      MethodParamModel methodParamModel, TypeName annotationType) {
+    for (AnnotationSpec annotation : methodParamModel.getExternalAnnotations()) {
+      if (annotation.type.equals(annotationType)) {
         return true;
       }
     }

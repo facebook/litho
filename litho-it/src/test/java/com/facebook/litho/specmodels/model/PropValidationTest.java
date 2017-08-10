@@ -16,6 +16,7 @@ import static org.mockito.Mockito.when;
 
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import java.util.ArrayList;
@@ -204,5 +205,35 @@ public class PropValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message).isEqualTo(
         "name1 is a variable argument, and thus should be a List<> type.");
+  }
+
+  @Test
+  public void testResTypeDimenMustNotHavePxOrDimensionAnnotations() {
+    when(mPropModel1.getResType()).thenReturn(ResType.DIMEN_OFFSET);
+    when(mPropModel1.getType()).thenReturn(TypeName.INT);
+    when(mPropModel1.getExternalAnnotations())
+        .thenReturn(ImmutableList.of(AnnotationSpec.builder(ClassNames.PX).build()));
+
+    when(mPropModel2.getResType()).thenReturn(ResType.DIMEN_SIZE);
+    when(mPropModel2.getType()).thenReturn(TypeName.INT);
+    when(mPropModel2.getExternalAnnotations())
+        .thenReturn(ImmutableList.of(AnnotationSpec.builder(ClassNames.DIMENSION).build()));
+
+    List<SpecModelValidationError> validationErrors = PropValidation.validate(mSpecModel);
+    assertThat(validationErrors).hasSize(2);
+    assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "Props with resType DIMEN_OFFSET should not be annotated with "
+                + "android.support.annotation.Px or android.support.annotation.Dimension, since "
+                + "these annotations will automatically be added to the relevant builder methods "
+                + "in the generated code.");
+    assertThat(validationErrors.get(1).element).isEqualTo(mRepresentedObject2);
+    assertThat(validationErrors.get(1).message)
+        .isEqualTo(
+            "Props with resType DIMEN_SIZE should not be annotated with "
+                + "android.support.annotation.Px or android.support.annotation.Dimension, since "
+                + "these annotations will automatically be added to the relevant builder methods "
+                + "in the generated code.");
   }
 }
