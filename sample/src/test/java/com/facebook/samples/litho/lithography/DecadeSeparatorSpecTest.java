@@ -8,6 +8,9 @@
  */
 package com.facebook.samples.litho.lithography;
 
+import static com.facebook.litho.testing.assertj.ComponentConditions.textEquals;
+import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
+import static com.facebook.litho.testing.assertj.SubComponentExtractor.subComponentWith;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assume.assumeThat;
 
@@ -17,7 +20,6 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.ComponentsRule;
 import com.facebook.litho.testing.InspectableComponent;
 import com.facebook.litho.testing.SubComponent;
-import com.facebook.litho.testing.assertj.ComponentAssert;
 import com.facebook.litho.testing.assertj.SubComponentExtractor;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.Text;
@@ -43,24 +45,33 @@ public class DecadeSeparatorSpecTest {
   @Test
   public void testSubComponentsWithManualExtraction() {
     final ComponentContext c = mComponentsRule.getContext();
-    ComponentAssert.assertThat(c, mComponent).extractingSubComponents(c).hasSize(3);
+    assertThat(c, mComponent).extractingSubComponents(c).hasSize(3);
   }
 
   @Test
   public void testSubComponentByClass() {
     final ComponentContext c = mComponentsRule.getContext();
-    ComponentAssert.assertThat(c, mComponent).hasSubComponents(SubComponent.of(Text.class));
+    assertThat(c, mComponent).hasSubComponents(SubComponent.of(Text.class));
   }
 
   @Test
   public void testSubComponentByClassWithExtraction() {
     final ComponentContext c = mComponentsRule.getContext();
-    ComponentAssert.assertThat(c, mComponent).extracting(SubComponentExtractor.subComponents(c))
+    assertThat(c, mComponent).extracting(SubComponentExtractor.subComponents(c))
       .areExactly(1, new Condition<InspectableComponent>() {
         @Override
         public boolean matches(InspectableComponent value) {
           return value.getComponentClass() == Text.class;
         }
       });
+  }
+
+  @Test
+  public void testSubComponentWithText() {
+    final ComponentContext c = mComponentsRule.getContext();
+    assertThat(c, mComponent)
+        .has(subComponentWith(c, textEquals("2010")))
+        // Silly thing to test for, but left here to demonstrate the API.
+        .doesNotHave(subComponentWith(c, textEquals("2011")));
   }
 }

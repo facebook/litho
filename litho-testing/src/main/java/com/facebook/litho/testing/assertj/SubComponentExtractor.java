@@ -16,6 +16,7 @@ import com.facebook.litho.LithoView;
 import com.facebook.litho.testing.ComponentTestHelper;
 import com.facebook.litho.testing.InspectableComponent;
 import java.util.List;
+import org.assertj.core.api.Condition;
 import org.assertj.core.api.iterable.Extractor;
 import org.assertj.core.util.Preconditions;
 
@@ -41,5 +42,22 @@ public class SubComponentExtractor implements Extractor<Component<?>, List<Inspe
 
   public static SubComponentExtractor subComponents(ComponentContext c) {
     return new SubComponentExtractor(c);
+  }
+
+  public static Condition<? super Component> subComponentWith(final ComponentContext c, final Condition<InspectableComponent> inner) {
+    // TODO(T20862132): Provide better error messages.
+    return new Condition<Component>() {
+      @Override
+      public boolean matches(Component value) {
+        for (InspectableComponent component : new SubComponentExtractor(c)
+            .extract(value)) {
+          if (inner.matches(component)) {
+            return true;
+          }
+        }
+
+        return false;
+      }
+    };
   }
 }
