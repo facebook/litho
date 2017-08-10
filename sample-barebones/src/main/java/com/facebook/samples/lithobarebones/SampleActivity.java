@@ -12,10 +12,11 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.widget.OrientationHelper;
+
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentInfo;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.RenderInfo;
 import com.facebook.litho.widget.LinearLayoutInfo;
 import com.facebook.litho.widget.Recycler;
 import com.facebook.litho.widget.RecyclerBinder;
@@ -44,7 +45,7 @@ public class SampleActivity extends Activity {
     for (int i = 0; i < 32; i++) {
       recyclerBinder.insertItemAt(
           i,
-          ComponentInfo.create()
+          RenderInfo.create()
               .component(
                   ListItem.create(context)
                       .color(i % 2 == 0 ? Color.WHITE : Color.LTGRAY)
