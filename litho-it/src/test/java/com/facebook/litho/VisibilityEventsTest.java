@@ -119,4 +119,37 @@ public class VisibilityEventsTest {
     assertThat(component2.getLifecycle().getDispatchedEventHandlers())
         .contains(visibleEventHandler2);
   }
+
+  @Test
+  public void testTransientStateDoesNotTriggerVisibilityEvents() {
+    final TestComponent<?> content = create(mContext).build();
+    final EventHandler<VisibleEvent> visibleEventHandler = new EventHandler<>(content, 2);
+
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected ComponentLayout onCreateLayout(ComponentContext c) {
+                return Column.create(c)
+                    .child(
+                        Layout.create(c, content)
+                            .visibleHandler(visibleEventHandler)
+                            .widthPx(10)
+                            .heightPx(10))
+                    .build();
+              }
+            },
+            true);
+
+    lithoView.performIncrementalMount(new Rect(0, -10, 10, -5));
+    content.getLifecycle().getDispatchedEventHandlers().clear();
+
+    lithoView.setHasTransientState(true);
+    assertThat(content.getLifecycle().getDispatchedEventHandlers())
+        .doesNotContain(visibleEventHandler);
+
+    lithoView.setHasTransientState(false);
+    assertThat(content.getLifecycle().getDispatchedEventHandlers()).contains(visibleEventHandler);
+  }
 }

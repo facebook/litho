@@ -12,10 +12,14 @@ package com.facebook.litho;
 import static com.facebook.litho.ComponentTree.create;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
+import static com.facebook.litho.testing.ComponentTestHelper.mountComponent;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.content.Context;
+import android.graphics.Rect;
+import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
+import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import org.junit.Before;
@@ -155,6 +159,33 @@ public class LithoViewMountTest {
     mLithoView.setComponentTree(newComponentTree);
 
     assertThat(mLithoView.getRequestLayoutInvocationCount()).isEqualTo(1);
+  }
+
+  @Test
+  public void testSetHasTransientStateMountsEverythingIfIncrementalMountEnabled() {
+    final TestComponent child1 = TestViewComponent.create(mContext).build();
+    final TestComponent child2 = TestDrawableComponent.create(mContext).build();
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected ComponentLayout onCreateLayout(ComponentContext c) {
+                return Column.create(c)
+                    .child(Layout.create(c, child1).widthPx(10).heightPx(10))
+                    .child(Layout.create(c, child2).widthPx(10).heightPx(10))
+                    .build();
+              }
+            },
+            true);
+
+    lithoView.performIncrementalMount(new Rect(0, -10, 10, -5));
+    assertThat(child1.isMounted()).isFalse();
+    assertThat(child2.isMounted()).isFalse();
+
+    lithoView.setHasTransientState(true);
+    assertThat(child1.isMounted()).isTrue();
+    assertThat(child2.isMounted()).isTrue();
   }
 
   private static class TestLithoView extends LithoView {

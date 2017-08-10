@@ -91,6 +91,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   // refresh the content of the HostComponent. Always set from the main thread.
   private boolean mIsDirty;
 
+  // True if mount is taking place while the view has transient state.
+  private boolean mHasTransientState;
+
   // Holds the list of known component hosts during a mount pass.
   private final LongSparseArray<ComponentHost> mHostsByMarker = new LongSparseArray<>();
 
@@ -152,11 +155,20 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   /**
+   * Called when the {@link LithoView} has transient state. If this is the case then we don't want
+   * to process visibility outputs - we'll update them once the {@link LithoView} is no longer has
+   * transient state.
+   */
+  void setHasTransientState(boolean hasTransientState) {
+    mHasTransientState = hasTransientState;
+  }
+
+  /**
    * Mount the layoutState on the pre-set HostView.
+   *
    * @param layoutState
    * @param localVisibleRect If this variable is null, then mount everything, since incremental
-   *                         mount is not enabled.
-   *                         Otherwise mount only what the rect (in local coordinates) contains
+   *     mount is not enabled. Otherwise mount only what the rect (in local coordinates) contains
    */
   void mount(LayoutState layoutState, Rect localVisibleRect) {
     assertMainThread();
@@ -283,7 +295,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private void processVisibilityOutputs(LayoutState layoutState, Rect localVisibleRect) {
-    if (localVisibleRect == null) {
+    if (localVisibleRect == null || mHasTransientState) {
       return;
     }
 

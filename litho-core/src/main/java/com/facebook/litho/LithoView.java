@@ -387,11 +387,24 @@ public class LithoView extends ComponentHost {
   public void setHasTransientState(boolean hasTransientState) {
     if (hasTransientState) {
       if (mTransientStateCount == 0 && isIncrementalMountEnabled()) {
-        performIncrementalMount(null);
+        mMountState.setHasTransientState(true);
+
+        final Rect rect = ComponentsPools.acquireRect();
+        rect.set(0, 0, getWidth(), getHeight());
+        performIncrementalMount(rect);
+        ComponentsPools.release(rect);
       }
       mTransientStateCount++;
     } else {
       mTransientStateCount--;
+      if (mTransientStateCount == 0 && isIncrementalMountEnabled()) {
+        mMountState.setHasTransientState(false);
+
+        // We mounted everything when the transient state was set on this view. We need to do this
+        // partly to unmount content that is not visible but mostly to get the correct visibility
+        // events to be fired.
+        performIncrementalMount();
+      }
       if (mTransientStateCount < 0) {
         mTransientStateCount = 0;
       }
@@ -530,6 +543,7 @@ public class LithoView extends ComponentHost {
   }
 
   void mount(LayoutState layoutState, Rect currentVisibleArea) {
+    boolean rectNeedsRelease = false;
     if (mTransientStateCount > 0 && isIncrementalMountEnabled()) {
       // If transient state is set but the MountState is dirty we want to re-mount everything.
       // Otherwise, we don't need to do anything as the entire LithoView was mounted when the
@@ -537,7 +551,9 @@ public class LithoView extends ComponentHost {
       if (!mMountState.isDirty()) {
         return;
       } else {
-        currentVisibleArea = null;
+        currentVisibleArea = ComponentsPools.acquireRect();
+        currentVisibleArea.set(0, 0, getWidth(), getHeight());
+        rectNeedsRelease = true;
       }
     }
 
@@ -548,6 +564,10 @@ public class LithoView extends ComponentHost {
     }
 
     mMountState.mount(layoutState, currentVisibleArea);
+
+    if (rectNeedsRelease) {
+      ComponentsPools.release(currentVisibleArea);
+    }
   }
 
   void unmountAllItems() {
