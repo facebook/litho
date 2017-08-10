@@ -32,10 +32,9 @@ public class SubComponentExtractor implements Extractor<Component<?>, List<Inspe
     final LithoView lithoView = ComponentTestHelper.mountComponent(mComponentContext, input);
     final InspectableComponent component = InspectableComponent.getRootInstance(lithoView);
 
-    // This is a scenario I'm not quite sure at the moment if and how it could happen, hence
-    // the lack of advice for dealing with this.
-    Preconditions.checkNotNull(
-        component, "Could not obtain DebugComponent from the mounted Component.");
+    Preconditions.checkNotNull(component,
+        "Could not obtain DebugComponent. "
+            + "Please ensure that ComponentsConfiguration.IS_INTERNAL_BUILD is enabled.");
 
     return component.getChildComponents();
   }

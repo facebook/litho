@@ -10,10 +10,13 @@ package com.facebook.samples.litho.lithography;
 
 import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
 import static org.assertj.core.data.Index.atIndex;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assume.assumeThat;
 
 import android.support.v7.widget.OrientationHelper;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.ComponentsRule;
 import com.facebook.litho.testing.InspectableComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
@@ -35,6 +38,9 @@ public class FeedItemCardSpecTest {
 
   @Before
   public void setUp() {
+    assumeThat("These tests can only be run in debug mode.",
+        ComponentsConfiguration.IS_INTERNAL_BUILD, is(true));
+
     final ComponentContext c = mComponentsRule.getContext();
     final RecyclerBinder binder =
         new RecyclerBinder.Builder()

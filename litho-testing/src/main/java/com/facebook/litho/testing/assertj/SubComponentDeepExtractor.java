@@ -18,6 +18,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 import org.assertj.core.api.iterable.Extractor;
+import org.assertj.core.util.Preconditions;
 
 /**
  * Recursively extracts sub components from a Component, wrapping them in an {@link
@@ -42,7 +43,11 @@ public final class SubComponentDeepExtractor
     final List<InspectableComponent> res = new LinkedList<>();
     final Stack<InspectableComponent> stack = new Stack<>();
 
-    stack.add(InspectableComponent.getRootInstance(lithoView));
+    final InspectableComponent rootInstance = InspectableComponent.getRootInstance(lithoView);
+    Preconditions.checkNotNull(rootInstance,
+        "Could not obtain DebugComponent. "
+            + "Please ensure that ComponentsConfiguration.IS_INTERNAL_BUILD is enabled.");
+    stack.add(rootInstance);
 
     while (!stack.isEmpty()) {
       final InspectableComponent inspectableComponent = stack.pop();
