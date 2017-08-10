@@ -8,7 +8,10 @@
  */
 package com.facebook.samples.litho.lithography;
 
+import static com.facebook.litho.testing.assertj.ComponentConditions.textEquals;
 import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
+import static com.facebook.litho.testing.assertj.SubComponentDeepExtractor.deepSubComponentWith;
+import static org.assertj.core.api.Java6Assertions.allOf;
 import static org.assertj.core.data.Index.atIndex;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assume.assumeThat;
@@ -38,8 +41,10 @@ public class FeedItemCardSpecTest {
 
   @Before
   public void setUp() {
-    assumeThat("These tests can only be run in debug mode.",
-        ComponentsConfiguration.IS_INTERNAL_BUILD, is(true));
+    assumeThat(
+        "These tests can only be run in debug mode.",
+        ComponentsConfiguration.IS_INTERNAL_BUILD,
+        is(true));
 
     final ComponentContext c = mComponentsRule.getContext();
     final RecyclerBinder binder =
@@ -90,5 +95,16 @@ public class FeedItemCardSpecTest {
               }
             },
             atIndex(7));
+  }
+
+  @Test
+  public void testDeepSubComponentText() {
+    final ComponentContext c = mComponentsRule.getContext();
+
+    assertThat(c, mComponent)
+        .has(
+            allOf(
+                deepSubComponentWith(c, textEquals("JavaScript Rockstar")),
+                deepSubComponentWith(c, textEquals("Sindre Sorhus"))));
   }
 }

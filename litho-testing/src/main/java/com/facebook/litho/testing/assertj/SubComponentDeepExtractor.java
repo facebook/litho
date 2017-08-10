@@ -17,6 +17,7 @@ import com.facebook.litho.testing.InspectableComponent;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
+import org.assertj.core.api.Condition;
 import org.assertj.core.api.iterable.Extractor;
 import org.assertj.core.util.Preconditions;
 
@@ -44,7 +45,8 @@ public final class SubComponentDeepExtractor
     final Stack<InspectableComponent> stack = new Stack<>();
 
     final InspectableComponent rootInstance = InspectableComponent.getRootInstance(lithoView);
-    Preconditions.checkNotNull(rootInstance,
+    Preconditions.checkNotNull(
+        rootInstance,
         "Could not obtain DebugComponent. "
             + "Please ensure that ComponentsConfiguration.IS_INTERNAL_BUILD is enabled.");
     stack.add(rootInstance);
@@ -63,5 +65,22 @@ public final class SubComponentDeepExtractor
 
   public static SubComponentDeepExtractor subComponentsDeeply(ComponentContext c) {
     return new SubComponentDeepExtractor(c);
+  }
+
+  public static Condition<? super Component> deepSubComponentWith(
+      final ComponentContext c, final Condition<InspectableComponent> inner) {
+    // TODO(T20862132): Provide better error messages.
+    return new Condition<Component>() {
+      @Override
+      public boolean matches(Component value) {
+        for (InspectableComponent component : new SubComponentDeepExtractor(c).extract(value)) {
+          if (inner.matches(component)) {
+            return true;
+          }
+        }
+
+        return false;
+      }
+    };
   }
 }
