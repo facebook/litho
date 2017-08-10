@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2017-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
 package com.facebook.samples.litho.lithography;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -13,14 +21,11 @@ import com.facebook.litho.testing.assertj.ComponentAssert;
 import com.facebook.litho.testing.assertj.SubComponentExtractor;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.Text;
-
 import org.assertj.core.api.Condition;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import java.util.List;
 
 @RunWith(ComponentsTestRunner.class)
 public class DecadeSeparatorSpecTest {

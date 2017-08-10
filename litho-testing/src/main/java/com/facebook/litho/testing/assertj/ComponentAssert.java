@@ -236,6 +236,15 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
    */
   @CheckReturnValue
   public ListAssert<InspectableComponent> extractingSubComponents(ComponentContext c) {
-    return new ListAssert<>(SubComponentExtractor.subComponents(c).extract(actual));
+    return extracting(SubComponentExtractor.subComponents(c));
+  }
+
+  /**
+   * Extract the sub components recursively from the underlying Component,
+   * returning a ListAssert over it.
+   */
+  @CheckReturnValue
+  public ListAssert<InspectableComponent> extractingSubComponentsDeeply(ComponentContext c) {
+    return extracting(SubComponentDeepExtractor.subComponentsDeeply(c));
   }
 }
