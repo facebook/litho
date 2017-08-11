@@ -12,6 +12,8 @@ package com.facebook.litho.testing;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentLifecycle;
 
+import org.assertj.core.api.Condition;
+
 /**
  * Allows convenient type matching comparison for instances of {@link ComponentLifecycle}s.
  * Useful for verifying the existence of sub-components that are part of a layout.
@@ -70,5 +72,16 @@ public class SubComponent {
     return thatComponent == null ||
         thisComponent == null ||
         thatComponent.isEquivalentTo(thisComponent);
+  }
+
+  public static Condition<InspectableComponent> legacySubComponent(
+      final SubComponent subComponent) {
+    return new Condition<InspectableComponent>() {
+      @Override
+      public boolean matches(InspectableComponent value) {
+        final Component component = value.getComponent();
+        return component != null && SubComponent.of(component).equals(subComponent);
+      }
+    };
   }
 }
