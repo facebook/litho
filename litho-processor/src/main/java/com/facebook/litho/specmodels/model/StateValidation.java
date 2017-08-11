@@ -46,7 +46,7 @@ public class StateValidation {
         final StateParamModel thatStateValue = stateValues.get(j);
 
         if (thisStateValue.getName().equals(thatStateValue.getName())) {
-          if (!thisStateValue.getType().equals(thatStateValue.getType())) {
+          if (!thisStateValue.getType().box().equals(thatStateValue.getType().box())) {
             validationErrors.add(new SpecModelValidationError(
                 thatStateValue.getRepresentedObject(),
                 "State values with the same name must have the same type."));

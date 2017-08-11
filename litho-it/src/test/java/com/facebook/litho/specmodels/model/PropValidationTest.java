@@ -58,7 +58,8 @@ public class PropValidationTest {
     when(mPropModel1.getType()).thenReturn(TypeName.BOOLEAN);
     when(mPropModel2.getType()).thenReturn(TypeName.INT);
 
-    List<SpecModelValidationError> validationErrors = PropValidation.validate(mSpecModel);
+    List<SpecModelValidationError> validationErrors =
+        PropValidation.validate(mSpecModel, PropValidation.RESERVED_PROP_NAMES);
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message).isEqualTo(
@@ -75,7 +76,8 @@ public class PropValidationTest {
     when(mPropModel2.getType()).thenReturn(TypeName.INT);
     when(mPropModel1.isOptional()).thenReturn(true);
 
-    List<SpecModelValidationError> validationErrors = PropValidation.validate(mSpecModel);
+    List<SpecModelValidationError> validationErrors =
+        PropValidation.validate(mSpecModel, PropValidation.RESERVED_PROP_NAMES);
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message).isEqualTo(
@@ -92,7 +94,7 @@ public class PropValidationTest {
     when(mPropModel2.getType()).thenReturn(TypeName.INT);
     when(mPropModel1.getResType()).thenReturn(ResType.INT);
 
-    List<SpecModelValidationError> validationErrors = PropValidation.validate(mSpecModel);
+    List<SpecModelValidationError> validationErrors = PropValidation.validate(mSpecModel, PropValidation.RESERVED_PROP_NAMES);
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message).isEqualTo(
@@ -105,7 +107,7 @@ public class PropValidationTest {
   public void testPropWithReservedName() {
     when(mPropModel1.getName()).thenReturn("withLayout");
 
-    List<SpecModelValidationError> validationErrors = PropValidation.validate(mSpecModel);
+    List<SpecModelValidationError> validationErrors = PropValidation.validate(mSpecModel, PropValidation.RESERVED_PROP_NAMES);
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message).isEqualTo(
@@ -117,7 +119,7 @@ public class PropValidationTest {
   public void testPropWithReservedType() {
     when(mPropModel1.getType()).thenReturn(ClassNames.COMPONENT_LAYOUT);
 
-    List<SpecModelValidationError> validationErrors = PropValidation.validate(mSpecModel);
+    List<SpecModelValidationError> validationErrors = PropValidation.validate(mSpecModel, PropValidation.RESERVED_PROP_NAMES);
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message).isEqualTo(
@@ -135,7 +137,7 @@ public class PropValidationTest {
     when(mPropModel1.isOptional()).thenReturn(false);
     when(mPropModel1.hasDefault(any(ImmutableList.class))).thenReturn(true);
 
-    List<SpecModelValidationError> validationErrors = PropValidation.validate(mSpecModel);
+    List<SpecModelValidationError> validationErrors = PropValidation.validate(mSpecModel, PropValidation.RESERVED_PROP_NAMES);
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message).isEqualTo(
@@ -147,7 +149,7 @@ public class PropValidationTest {
     when(mPropModel1.getResType()).thenReturn(ResType.BOOL);
     when(mPropModel1.getType()).thenReturn(TypeName.INT);
 
-    List<SpecModelValidationError> validationErrors = PropValidation.validate(mSpecModel);
+    List<SpecModelValidationError> validationErrors = PropValidation.validate(mSpecModel, PropValidation.RESERVED_PROP_NAMES);
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message).isEqualTo(
@@ -168,7 +170,7 @@ public class PropValidationTest {
 
     when(mSpecModel.getPropDefaults()).thenReturn(ImmutableList.of(propDefault1, propDefault2));
 
-    List<SpecModelValidationError> validationErrors = PropValidation.validate(mSpecModel);
+    List<SpecModelValidationError> validationErrors = PropValidation.validate(mSpecModel, PropValidation.RESERVED_PROP_NAMES);
     assertThat(validationErrors).hasSize(2);
     assertThat(validationErrors.get(0).element).isEqualTo(propDefaultObject1);
     assertThat(validationErrors.get(0).message).isEqualTo(
@@ -185,7 +187,7 @@ public class PropValidationTest {
     when(mPropModel1.hasVarArgs()).thenReturn(true);
     when(mPropModel1.getType()).thenReturn(TypeName.get(String.class));
 
-    List<SpecModelValidationError> validationErrors = PropValidation.validate(mSpecModel);
+    List<SpecModelValidationError> validationErrors = PropValidation.validate(mSpecModel, PropValidation.RESERVED_PROP_NAMES);
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message).isEqualTo(
@@ -200,7 +202,7 @@ public class PropValidationTest {
     when(mPropModel1.getType())
         .thenReturn(ParameterizedTypeName.get(ArrayList.class, String.class));
 
-    List<SpecModelValidationError> validationErrors = PropValidation.validate(mSpecModel);
+    List<SpecModelValidationError> validationErrors = PropValidation.validate(mSpecModel, PropValidation.RESERVED_PROP_NAMES);
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message).isEqualTo(
@@ -219,7 +221,7 @@ public class PropValidationTest {
     when(mPropModel2.getExternalAnnotations())
         .thenReturn(ImmutableList.of(AnnotationSpec.builder(ClassNames.DIMENSION).build()));
 
-    List<SpecModelValidationError> validationErrors = PropValidation.validate(mSpecModel);
+    List<SpecModelValidationError> validationErrors = PropValidation.validate(mSpecModel, PropValidation.RESERVED_PROP_NAMES);
     assertThat(validationErrors).hasSize(2);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message)

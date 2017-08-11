@@ -128,7 +128,7 @@ public class EventValidation {
       ImmutableList<EventDeclarationModel.FieldModel> fields) {
     for (EventDeclarationModel.FieldModel field : fields) {
       if (param.getName().equals(field.field.name)
-          && (param.getType().equals(field.field.type)
+          && (param.getType().box().equals(field.field.type.box())
               || isFromEventTypeSpecifiedInAnnotation(param, field.field.type))) {
         return true;
       }

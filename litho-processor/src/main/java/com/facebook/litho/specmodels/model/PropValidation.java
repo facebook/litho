@@ -24,33 +24,33 @@ public class PropValidation {
   // Using these names in props might cause conflicts with the method names in the
   // component's generated layout builder class so we trigger a more user-friendly
   // error if the component tries to use them.
-  private static final List<String> RESERVED_PROP_NAMES = Arrays.asList(
-      "withLayout",
-      "key",
-      "loadingEventHandler",
-      "clickHandler",
-      "focusChangeHandler",
-      "longClickHandler",
-      "touchHandler",
-      "interceptTouchHandler",
-      "focusable",
-      "contentDescription",
-      "viewTag",
-      "viewTags",
-      "shadowElevationPx",
-      "shadowElevationAttr",
-      "shadowElevationRes",
-      "shadowElevationDip",
-      "outlineProvider",
-      "clipToOutline",
-      "dispatchPopulateAccessibilityEventHandler",
-      "onInitializeAccessibilityEventHandler",
-      "onInitializeAccessibilityNodeInfoHandler",
-      "onPopulateAccessibilityEventHandler",
-      "onRequestSendAccessibilityEventHandler",
-      "performAccessibilityActionHandler",
-      "sendAccessibilityEventHandler",
-      "sendAccessibilityEventUncheckedHandler");
+  static final List<String> RESERVED_PROP_NAMES =
+      Arrays.asList(
+          "withLayout",
+          "key",
+          "clickHandler",
+          "focusChangeHandler",
+          "longClickHandler",
+          "touchHandler",
+          "interceptTouchHandler",
+          "focusable",
+          "contentDescription",
+          "viewTag",
+          "viewTags",
+          "shadowElevationPx",
+          "shadowElevationAttr",
+          "shadowElevationRes",
+          "shadowElevationDip",
+          "outlineProvider",
+          "clipToOutline",
+          "dispatchPopulateAccessibilityEventHandler",
+          "onInitializeAccessibilityEventHandler",
+          "onInitializeAccessibilityNodeInfoHandler",
+          "onPopulateAccessibilityEventHandler",
+          "onRequestSendAccessibilityEventHandler",
+          "performAccessibilityActionHandler",
+          "sendAccessibilityEventHandler",
+          "sendAccessibilityEventUncheckedHandler");
 
   private static final List<TypeName> ILLEGAL_PROP_TYPES = Arrays.<TypeName>asList(
       ClassNames.COMPONENT_LAYOUT,
@@ -60,7 +60,8 @@ public class PropValidation {
       ClassNames.COMPONENT_BUILDER_WITH_LAYOUT,
       ClassNames.REFERENCE_BUILDER);
 
-  static List<SpecModelValidationError> validate(SpecModel specModel) {
+  static List<SpecModelValidationError> validate(
+      SpecModel specModel, List<String> reservedPropNames) {
     final List<SpecModelValidationError> validationErrors = new ArrayList<>();
 
     final ImmutableList<PropModel> props = specModel.getProps();
@@ -78,7 +79,7 @@ public class PropValidation {
     }
 
     for (PropModel prop : props) {
-      if (RESERVED_PROP_NAMES.contains(prop.getName())) {
+      if (reservedPropNames.contains(prop.getName())) {
         validationErrors.add(
             new SpecModelValidationError(
                 prop.getRepresentedObject(),
