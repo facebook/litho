@@ -65,6 +65,7 @@ public class RecyclerBinder
   private final ComponentContext mComponentContext;
   private final RangeScrollListener mRangeScrollListener = new RangeScrollListener();
   private final LayoutHandlerFactory mLayoutHandlerFactory;
+  private final @Nullable LithoViewFactory mLithoViewFactory;
   private final ComponentTreeHolderFactory mComponentTreeHolderFactory;
   private final Handler mMainThreadHandler = new Handler(Looper.getMainLooper());
 
@@ -144,6 +145,7 @@ public class RecyclerBinder
     private ComponentTreeHolderFactory componentTreeHolderFactory =
         DEFAULT_COMPONENT_TREE_HOLDER_FACTORY;
     private ComponentContext componentContext;
+    private LithoViewFactory lithoViewFactory;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -176,6 +178,11 @@ public class RecyclerBinder
      */
     public Builder layoutHandlerFactory(LayoutHandlerFactory layoutHandlerFactory) {
       this.layoutHandlerFactory = layoutHandlerFactory;
+      return this;
+    }
+
+    public Builder lithoViewFactory(LithoViewFactory lithoViewFactory) {
+      this.lithoViewFactory = lithoViewFactory;
       return this;
     }
 
@@ -224,6 +231,7 @@ public class RecyclerBinder
     mRangeRatio = builder.rangeRatio;
     mLayoutInfo = builder.layoutInfo;
     mLayoutHandlerFactory = builder.layoutHandlerFactory;
+    mLithoViewFactory = builder.lithoViewFactory;
     mCanPrefetchDisplayLists = builder.canPrefetchDisplayLists;
     mCanCacheDrawingDisplayLists = builder.canCacheDrawingDisplayLists;
 
@@ -1121,7 +1129,10 @@ public class RecyclerBinder
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-      return new LithoViewHolder(new LithoView(mComponentContext, null));
+      LithoView lithoView = mLithoViewFactory == null
+          ? new LithoView(mComponentContext, null)
+          : mLithoViewFactory.createLithoView(mComponentContext);
+      return new LithoViewHolder(lithoView);
     }
 
     @Override
