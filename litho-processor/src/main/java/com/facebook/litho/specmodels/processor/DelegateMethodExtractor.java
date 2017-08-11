@@ -39,13 +39,12 @@ public class DelegateMethodExtractor {
     METHOD_PARAM_ANNOTATIONS.add(TreeProp.class);
   }
 
-  /**
-   * Get the delegate methods from the given {@link TypeElement}.
-   */
+  /** Get the delegate methods from the given {@link TypeElement}. */
   public static ImmutableList<DelegateMethodModel> getDelegateMethods(
       TypeElement typeElement,
       List<Class<? extends Annotation>> permittedMethodAnnotations,
-      List<Class<? extends Annotation>> permittedInterStageInputAnnotations) {
+      List<Class<? extends Annotation>> permittedInterStageInputAnnotations,
+      List<Class<? extends Annotation>> delegateMethodAnnotationsThatSkipDiffModels) {
     final List<DelegateMethodModel> delegateMethods = new ArrayList<>();
 
     for (Element enclosedElement : typeElement.getEnclosedElements()) {
@@ -62,7 +61,8 @@ public class DelegateMethodExtractor {
             getMethodParams(
                 executableElement,
                 getPermittedMethodParamAnnotations(permittedInterStageInputAnnotations),
-                permittedInterStageInputAnnotations);
+                permittedInterStageInputAnnotations,
+                delegateMethodAnnotationsThatSkipDiffModels);
 
         final DelegateMethodModel delegateMethod =
             new DelegateMethodModel(

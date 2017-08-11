@@ -41,44 +41,48 @@ public class TreePropGeneratorTest {
 
   @Before
   public void setUp() {
-    mOnCreateTreePropMethodModel = new DelegateMethodModel(
-        ImmutableList.<Annotation>of(new OnCreateTreeProp() {
+    mOnCreateTreePropMethodModel =
+        new DelegateMethodModel(
+            ImmutableList.<Annotation>of(
+                new OnCreateTreeProp() {
 
-          @Override
-          public Class<? extends Annotation> annotationType() {
-            return OnCreateTreeProp.class;
-          }
-
-        }),
-        ImmutableList.of(Modifier.PROTECTED),
-        "onCreateTreeProp",
-        TypeName.BOOLEAN,
-        ImmutableList.of(
-            MethodParamModelFactory.create(
-                mock(ExecutableElement.class),
-                ClassNames.COMPONENT_CONTEXT,
-                "componentContext",
-                new ArrayList<Annotation>(),
-                new ArrayList<AnnotationSpec>(),
-                new ArrayList<Class<? extends Annotation>>(),
-                null),
-            MethodParamModelFactory.create(
-                mock(ExecutableElement.class),
-                TypeName.BOOLEAN,
-                "prop",
-                ImmutableList.of(createAnnotation(Prop.class)),
-                new ArrayList<AnnotationSpec>(),
-                new ArrayList<Class<? extends Annotation>>(),
-                null),
-            MethodParamModelFactory.create(
-                mock(ExecutableElement.class),
-                TypeName.INT,
-                "state",
-                ImmutableList.of(createAnnotation(State.class)),
-                new ArrayList<AnnotationSpec>(),
-                new ArrayList<Class<? extends Annotation>>(),
-                null)),
-        null);
+                  @Override
+                  public Class<? extends Annotation> annotationType() {
+                    return OnCreateTreeProp.class;
+                  }
+                }),
+            ImmutableList.of(Modifier.PROTECTED),
+            "onCreateTreeProp",
+            TypeName.BOOLEAN,
+            ImmutableList.of(
+                MethodParamModelFactory.create(
+                    mock(ExecutableElement.class),
+                    ClassNames.COMPONENT_CONTEXT,
+                    "componentContext",
+                    new ArrayList<Annotation>(),
+                    new ArrayList<AnnotationSpec>(),
+                    new ArrayList<Class<? extends Annotation>>(),
+                    new ArrayList<Class<? extends Annotation>>(),
+                    null),
+                MethodParamModelFactory.create(
+                    mock(ExecutableElement.class),
+                    TypeName.BOOLEAN,
+                    "prop",
+                    ImmutableList.of(createAnnotation(Prop.class)),
+                    new ArrayList<AnnotationSpec>(),
+                    new ArrayList<Class<? extends Annotation>>(),
+                    new ArrayList<Class<? extends Annotation>>(),
+                    null),
+                MethodParamModelFactory.create(
+                    mock(ExecutableElement.class),
+                    TypeName.INT,
+                    "state",
+                    ImmutableList.of(createAnnotation(State.class)),
+                    new ArrayList<AnnotationSpec>(),
+                    new ArrayList<Class<? extends Annotation>>(),
+                    new ArrayList<Class<? extends Annotation>>(),
+                    null)),
+            null);
 
     when(mTreeProp.getName()).thenReturn("treeProp");
     when(mTreeProp.getType()).thenReturn(TypeName.INT);

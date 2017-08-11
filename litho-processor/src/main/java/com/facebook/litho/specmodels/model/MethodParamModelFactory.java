@@ -11,7 +11,6 @@ package com.facebook.litho.specmodels.model;
 
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
-import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
 import com.squareup.javapoet.AnnotationSpec;
@@ -33,6 +32,7 @@ public final class MethodParamModelFactory {
       List<Annotation> annotations,
       List<AnnotationSpec> externalAnnotations,
       List<Class<? extends Annotation>> permittedInterStateInputAnnotations,
+      List<Class<? extends Annotation>> delegateMethodAnnotationsThatSkipDiffModels,
       Object representedObject) {
     final SimpleMethodParamModel simpleMethodParamModel =
         new SimpleMethodParamModel(type, name, annotations, externalAnnotations, representedObject);
@@ -40,9 +40,7 @@ public final class MethodParamModelFactory {
 
     // We check whether we're calling ShouldUpdate here since it uses a different infrastructure to
     // track previous props/state :(
-    if (typeName instanceof ParameterizedTypeName &&
-        ((ParameterizedTypeName) typeName).rawType.equals(ClassNames.DIFF) &&
-        method.getAnnotation(ShouldUpdate.class) == null) {
+    if (shouldCreateDiffModel(method, typeName, delegateMethodAnnotationsThatSkipDiffModels)) {
       return new DiffModel(simpleMethodParamModel, true);
     }
 
@@ -71,6 +69,21 @@ public final class MethodParamModelFactory {
     return simpleMethodParamModel;
   }
 
+  private static boolean shouldCreateDiffModel(
+      ExecutableElement method,
+      TypeName typeName,
+      List<Class<? extends Annotation>> delegateMethodAnnotationsThatSkipDiffModels) {
+
+    for (Class<? extends Annotation> delegate : delegateMethodAnnotationsThatSkipDiffModels) {
+      if (method.getAnnotation(delegate) != null) {
+        return false;
+      }
+    }
+
+    return (typeName instanceof ParameterizedTypeName
+        && ((ParameterizedTypeName) typeName).rawType.equals(ClassNames.DIFF));
+  }
+
   public static PropModel createPropModel(
       MethodParamModel methodParamModel,
       TypeName type,
@@ -85,5 +98,17 @@ public final class MethodParamModelFactory {
             methodParamModel.getExternalAnnotations(),
             methodParamModel.getRepresentedObject());
     return new PropModel(simpleModel, isOptional, resType, varArg);
+  }
+
+  public static StateParamModel createStateModel(
+      MethodParamModel methodParamModel, TypeName type, boolean canUpdateLazily) {
+    SimpleMethodParamModel simpleModel =
+        new SimpleMethodParamModel(
+            type,
+            methodParamModel.getName(),
+            methodParamModel.getAnnotations(),
+            methodParamModel.getExternalAnnotations(),
+            methodParamModel.getRepresentedObject());
+    return new StateParamModel(simpleModel, canUpdateLazily);
   }
 }

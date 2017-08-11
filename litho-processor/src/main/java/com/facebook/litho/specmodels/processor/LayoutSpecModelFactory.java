@@ -9,14 +9,6 @@
 
 package com.facebook.litho.specmodels.processor;
 
-import javax.annotation.Nullable;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.Elements;
-
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.ShouldUpdate;
@@ -27,6 +19,12 @@ import com.facebook.litho.specmodels.model.DelegateMethodDescriptions;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.LayoutSpecGenerator;
 import com.facebook.litho.specmodels.model.LayoutSpecModel;
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nullable;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Elements;
 
 /**
  * Factory for creating {@link LayoutSpecModel}s.
@@ -71,12 +69,10 @@ public class LayoutSpecModelFactory {
         DelegateMethodExtractor.getDelegateMethods(
             element,
             delegateMethodAnnotations,
-            INTER_STAGE_INPUT_ANNOTATIONS),
-        EventMethodExtractor.getOnEventMethods(
-            elements, element, INTER_STAGE_INPUT_ANNOTATIONS),
-        UpdateStateMethodExtractor.getOnUpdateStateMethods(
-            element,
-            INTER_STAGE_INPUT_ANNOTATIONS),
+            INTER_STAGE_INPUT_ANNOTATIONS,
+            ImmutableList.<Class<? extends Annotation>>of(ShouldUpdate.class)),
+        EventMethodExtractor.getOnEventMethods(elements, element, INTER_STAGE_INPUT_ANNOTATIONS),
+        UpdateStateMethodExtractor.getOnUpdateStateMethods(element, INTER_STAGE_INPUT_ANNOTATIONS),
         ImmutableList.copyOf(TypeVariablesExtractor.getTypeVariables(element)),
         ImmutableList.copyOf(PropDefaultsExtractor.getPropDefaults(element)),
         EventDeclarationsExtractor.getEventDeclarations(elements, element, LayoutSpec.class),

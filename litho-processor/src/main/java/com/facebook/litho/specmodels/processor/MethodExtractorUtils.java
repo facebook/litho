@@ -31,13 +31,12 @@ import javax.lang.model.element.VariableElement;
 public class MethodExtractorUtils {
   private static final String COMPONENTS_PACKAGE = "com.facebook.litho";
 
-  /**
-   * @return a list of params for a method.
-   */
+  /** @return a list of params for a method. */
   static List<MethodParamModel> getMethodParams(
       ExecutableElement method,
       List<Class<? extends Annotation>> permittedAnnotations,
-      List<Class<? extends Annotation>> permittedInterStageInputAnnotations) {
+      List<Class<? extends Annotation>> permittedInterStageInputAnnotations,
+      List<Class<? extends Annotation>> delegateMethodAnnotationsThatSkipDiffModels) {
     final List<MethodParamModel> methodParams = new ArrayList<>();
     for (VariableElement param : method.getParameters()) {
       try {
@@ -49,6 +48,7 @@ public class MethodExtractorUtils {
                 getLibraryAnnotations(param, permittedAnnotations),
                 getExternalAnnotations(param),
                 permittedInterStageInputAnnotations,
+                delegateMethodAnnotationsThatSkipDiffModels,
                 param));
       } catch (Exception e) {
         throw new ComponentsProcessingException(

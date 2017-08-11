@@ -68,7 +68,8 @@ public class DelegateMethodExtractorTest {
         DelegateMethodExtractor.getDelegateMethods(
             typeElement,
             new ArrayList<>(DelegateMethodDescriptions.LAYOUT_SPEC_DELEGATE_METHODS_MAP.keySet()),
-            permittedParamAnnotations);
+            permittedParamAnnotations,
+            ImmutableList.<Class<? extends Annotation>>of());
 
     assertThat(delegateMethods).hasSize(1);
 

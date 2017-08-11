@@ -27,7 +27,6 @@ import com.facebook.litho.specmodels.model.MethodParamModelFactory;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelImpl;
 import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -52,37 +51,41 @@ public class DelegateMethodGeneratorTest {
 
   @Before
   public void setUp() {
-    mDelegateMethodModel = new DelegateMethodModel(
-        ImmutableList.of(createAnnotation(OnCreateLayout.class)),
-        ImmutableList.of(Modifier.PROTECTED),
-        "onCreateLayout",
-        DelegateMethodDescriptions.ON_CREATE_LAYOUT.returnType,
-        ImmutableList.of(
-            MethodParamModelFactory.create(
-                mock(ExecutableElement.class),
-                ClassNames.COMPONENT_CONTEXT,
-                "c",
-                ImmutableList.<Annotation>of(),
-                new ArrayList<AnnotationSpec>(),
-                ImmutableList.<Class<? extends Annotation>>of(),
-                null),
-            MethodParamModelFactory.create(
-                mock(ExecutableElement.class),
-                TypeName.BOOLEAN,
-                "prop",
-                ImmutableList.of(createAnnotation(Prop.class)),
-                new ArrayList<AnnotationSpec>(),
-                ImmutableList.<Class<? extends Annotation>>of(),
-                null),
-            MethodParamModelFactory.create(
-                mock(ExecutableElement.class),
-                TypeName.INT,
-                "state",
-                ImmutableList.of(createAnnotation(State.class)),
-                new ArrayList<AnnotationSpec>(),
-                ImmutableList.<Class<? extends Annotation>>of(),
-                null)),
-        null);
+    mDelegateMethodModel =
+        new DelegateMethodModel(
+            ImmutableList.of(createAnnotation(OnCreateLayout.class)),
+            ImmutableList.of(Modifier.PROTECTED),
+            "onCreateLayout",
+            DelegateMethodDescriptions.ON_CREATE_LAYOUT.returnType,
+            ImmutableList.of(
+                MethodParamModelFactory.create(
+                    mock(ExecutableElement.class),
+                    ClassNames.COMPONENT_CONTEXT,
+                    "c",
+                    ImmutableList.<Annotation>of(),
+                    new ArrayList<AnnotationSpec>(),
+                    ImmutableList.<Class<? extends Annotation>>of(),
+                    ImmutableList.<Class<? extends Annotation>>of(),
+                    null),
+                MethodParamModelFactory.create(
+                    mock(ExecutableElement.class),
+                    TypeName.BOOLEAN,
+                    "prop",
+                    ImmutableList.of(createAnnotation(Prop.class)),
+                    new ArrayList<AnnotationSpec>(),
+                    ImmutableList.<Class<? extends Annotation>>of(),
+                    ImmutableList.<Class<? extends Annotation>>of(),
+                    null),
+                MethodParamModelFactory.create(
+                    mock(ExecutableElement.class),
+                    TypeName.INT,
+                    "state",
+                    ImmutableList.of(createAnnotation(State.class)),
+                    new ArrayList<AnnotationSpec>(),
+                    ImmutableList.<Class<? extends Annotation>>of(),
+                    ImmutableList.<Class<? extends Annotation>>of(),
+                    null)),
+            null);
 
     mSpecModelWithoutDI = SpecModelImpl.newBuilder()
         .qualifiedSpecClassName(TEST_QUALIFIED_SPEC_NAME)

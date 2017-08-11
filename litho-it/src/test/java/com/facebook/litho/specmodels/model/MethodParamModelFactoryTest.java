@@ -41,14 +41,16 @@ public class MethodParamModelFactoryTest {
 
   @Test
   public void testCreateSimpleMethodParamModel() {
-    MethodParamModel methodParamModel = MethodParamModelFactory.create(
-        mock(ExecutableElement.class),
-        TypeName.BOOLEAN,
-        "testParam",
-        new ArrayList<Annotation>(),
-        new ArrayList<AnnotationSpec>(),
-        ImmutableList.<Class<? extends Annotation>>of(),
-        null);
+    MethodParamModel methodParamModel =
+        MethodParamModelFactory.create(
+            mock(ExecutableElement.class),
+            TypeName.BOOLEAN,
+            "testParam",
+            new ArrayList<Annotation>(),
+            new ArrayList<AnnotationSpec>(),
+            ImmutableList.<Class<? extends Annotation>>of(),
+            ImmutableList.<Class<? extends Annotation>>of(),
+            null);
 
     assertThat(methodParamModel).isInstanceOf(SimpleMethodParamModel.class);
   }
@@ -57,14 +59,16 @@ public class MethodParamModelFactoryTest {
   public void testCreatePropModel() {
     final List<Annotation> annotations = new ArrayList<>();
     annotations.add(mock(Prop.class));
-    MethodParamModel methodParamModel = MethodParamModelFactory.create(
-        mock(ExecutableElement.class),
-        TypeName.BOOLEAN,
-        "testParam",
-        annotations,
-        new ArrayList<AnnotationSpec>(),
-        ImmutableList.<Class<? extends Annotation>>of(),
-        null);
+    MethodParamModel methodParamModel =
+        MethodParamModelFactory.create(
+            mock(ExecutableElement.class),
+            TypeName.BOOLEAN,
+            "testParam",
+            annotations,
+            new ArrayList<AnnotationSpec>(),
+            ImmutableList.<Class<? extends Annotation>>of(),
+            ImmutableList.<Class<? extends Annotation>>of(),
+            null);
 
     assertThat(methodParamModel).isInstanceOf(PropModel.class);
   }
@@ -73,14 +77,16 @@ public class MethodParamModelFactoryTest {
   public void testCreateStateModel() {
     final List<Annotation> annotations = new ArrayList<>();
     annotations.add(mock(State.class));
-    MethodParamModel methodParamModel = MethodParamModelFactory.create(
-        mock(ExecutableElement.class),
-        TypeName.BOOLEAN,
-        "testParam",
-        annotations,
-        new ArrayList<AnnotationSpec>(),
-        ImmutableList.<Class<? extends Annotation>>of(),
-        null);
+    MethodParamModel methodParamModel =
+        MethodParamModelFactory.create(
+            mock(ExecutableElement.class),
+            TypeName.BOOLEAN,
+            "testParam",
+            annotations,
+            new ArrayList<AnnotationSpec>(),
+            ImmutableList.<Class<? extends Annotation>>of(),
+            ImmutableList.<Class<? extends Annotation>>of(),
+            null);
 
     assertThat(methodParamModel).isInstanceOf(StateParamModel.class);
   }
@@ -95,14 +101,16 @@ public class MethodParamModelFactoryTest {
       }
     };
     annotations.add(fromPrepare);
-    MethodParamModel methodParamModel = MethodParamModelFactory.create(
-        mock(ExecutableElement.class),
-        TypeName.BOOLEAN,
-        "testParam",
-        annotations,
-        new ArrayList<AnnotationSpec>(),
-        ImmutableList.<Class<? extends Annotation>>of(FromPrepare.class),
-        null);
+    MethodParamModel methodParamModel =
+        MethodParamModelFactory.create(
+            mock(ExecutableElement.class),
+            TypeName.BOOLEAN,
+            "testParam",
+            annotations,
+            new ArrayList<AnnotationSpec>(),
+            ImmutableList.<Class<? extends Annotation>>of(FromPrepare.class),
+            ImmutableList.<Class<? extends Annotation>>of(),
+            null);
 
     assertThat(methodParamModel).isInstanceOf(InterStageInputParamModel.class);
   }
@@ -121,14 +129,16 @@ public class MethodParamModelFactoryTest {
     ExecutableElement method = mock(ExecutableElement.class);
     when(method.getAnnotation(ShouldUpdate.class)).thenReturn(null);
 
-    MethodParamModel methodParamModel = MethodParamModelFactory.create(
-        method,
-        ParameterizedTypeName.get(ClassNames.DIFF, TypeName.INT.box()),
-        "testParam",
-        annotations,
-        new ArrayList<AnnotationSpec>(),
-        ImmutableList.<Class<? extends Annotation>>of(OnCreateTransition.class),
-        null);
+    MethodParamModel methodParamModel =
+        MethodParamModelFactory.create(
+            method,
+            ParameterizedTypeName.get(ClassNames.DIFF, TypeName.INT.box()),
+            "testParam",
+            annotations,
+            new ArrayList<AnnotationSpec>(),
+            ImmutableList.<Class<? extends Annotation>>of(OnCreateTransition.class),
+            ImmutableList.<Class<? extends Annotation>>of(),
+            null);
 
     assertThat(methodParamModel).isInstanceOf(DiffModel.class);
     assertThat(((DiffModel) methodParamModel).needsRenderDataInfra()).isTrue();
@@ -158,14 +168,16 @@ public class MethodParamModelFactoryTest {
       }
     });
 
-    MethodParamModel methodParamModel = MethodParamModelFactory.create(
-        method,
-        ParameterizedTypeName.get(ClassNames.DIFF, TypeName.INT.box()),
-        "testParam",
-        annotations,
-        new ArrayList<AnnotationSpec>(),
-        ImmutableList.<Class<? extends Annotation>>of(ShouldUpdate.class),
-        null);
+    MethodParamModel methodParamModel =
+        MethodParamModelFactory.create(
+            method,
+            ParameterizedTypeName.get(ClassNames.DIFF, TypeName.INT.box()),
+            "testParam",
+            annotations,
+            new ArrayList<AnnotationSpec>(),
+            ImmutableList.<Class<? extends Annotation>>of(ShouldUpdate.class),
+            ImmutableList.<Class<? extends Annotation>>of(ShouldUpdate.class),
+            null);
 
     assertThat(methodParamModel).isNotInstanceOf(DiffModel.class);
   }
@@ -179,6 +191,7 @@ public class MethodParamModelFactoryTest {
             "testParam",
             new ArrayList<Annotation>(),
             new ArrayList<AnnotationSpec>(),
+            ImmutableList.<Class<? extends Annotation>>of(),
             ImmutableList.<Class<? extends Annotation>>of(),
             null);
 

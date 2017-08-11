@@ -63,7 +63,8 @@ public class UpdateStateMethodExtractor {
             getMethodParams(
                 executableElement,
                 getPermittedMethodParamAnnotations(permittedInterStageInputAnnotations),
-                permittedInterStageInputAnnotations);
+                permittedInterStageInputAnnotations,
+                ImmutableList.<Class<? extends Annotation>>of());
 
         final UpdateStateMethodModel delegateMethod =
             new UpdateStateMethodModel(

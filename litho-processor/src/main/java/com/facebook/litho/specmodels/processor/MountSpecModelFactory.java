@@ -73,12 +73,10 @@ public class MountSpecModelFactory {
         DelegateMethodExtractor.getDelegateMethods(
             element,
             DELEGATE_METHOD_ANNOTATIONS,
-            INTER_STAGE_INPUT_ANNOTATIONS),
-        EventMethodExtractor.getOnEventMethods(
-            elements, element, INTER_STAGE_INPUT_ANNOTATIONS),
-        UpdateStateMethodExtractor.getOnUpdateStateMethods(
-            element,
-            INTER_STAGE_INPUT_ANNOTATIONS),
+            INTER_STAGE_INPUT_ANNOTATIONS,
+            ImmutableList.<Class<? extends Annotation>>of(ShouldUpdate.class)),
+        EventMethodExtractor.getOnEventMethods(elements, element, INTER_STAGE_INPUT_ANNOTATIONS),
+        UpdateStateMethodExtractor.getOnUpdateStateMethods(element, INTER_STAGE_INPUT_ANNOTATIONS),
         ImmutableList.copyOf(TypeVariablesExtractor.getTypeVariables(element)),
         ImmutableList.copyOf(PropDefaultsExtractor.getPropDefaults(element)),
         EventDeclarationsExtractor.getEventDeclarations(elements, element, MountSpec.class),
