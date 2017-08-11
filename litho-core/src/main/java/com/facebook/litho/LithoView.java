@@ -331,8 +331,6 @@ public class LithoView extends ComponentHost {
       } else {
         requestLayout();
       }
-    } else {
-      mMountState.unmountAllItems();
     }
   }
 

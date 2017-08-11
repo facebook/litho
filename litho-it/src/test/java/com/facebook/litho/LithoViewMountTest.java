@@ -9,7 +9,6 @@
 
 package com.facebook.litho;
 
-import static android.graphics.Color.BLACK;
 import static com.facebook.litho.ComponentTree.create;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
@@ -187,28 +186,6 @@ public class LithoViewMountTest {
     lithoView.setHasTransientState(true);
     assertThat(child1.isMounted()).isTrue();
     assertThat(child2.isMounted()).isTrue();
-  }
-
-  @Test
-  public void testSetComponentTreeNullUnmountsComponent() {
-    final TestComponent<TestDrawableComponent> component =
-        TestDrawableComponent.create(mContext).color(BLACK).build();
-    final LithoView lithoView =
-        mountComponent(
-            mContext,
-            new InlineLayoutSpec() {
-              @Override
-              protected ComponentLayout onCreateLayout(ComponentContext c) {
-                return Column.create(c).child(component).build();
-              }
-            });
-
-    assertThat(component.wasOnMountCalled()).isTrue();
-    assertThat(component.isMounted()).isTrue();
-
-    lithoView.setComponentTree(null);
-    assertThat(component.wasOnUnmountCalled()).isTrue();
-    assertThat(component.isMounted()).isFalse();
   }
 
   private static class TestLithoView extends LithoView {
