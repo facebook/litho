@@ -12,7 +12,7 @@ package com.facebook.litho;
 import android.content.res.Configuration;
 import javax.annotation.Nullable;
 
-abstract class ResourceCache {
+public abstract class ResourceCache {
   private static ResourceCache latest;
 
   static synchronized ResourceCache getLatest(Configuration configuration) {
