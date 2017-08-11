@@ -9,6 +9,18 @@ include_defs("//COMPONENTS_DEFS")
 
 # This target is only used in open source
 if COMPONENTS_IS_OSS_BUILD:
+  prebuilt_cxx_library(
+      name = "ndklog",
+      exported_platform_linker_flags = [
+          (
+              "^android.*",
+              ["-llog"],
+          ),
+      ],
+      header_only = True,
+      visibility = COMPONENTS_VISIBILITY,
+  )
+
   cxx_library(
     name = 'jni',
     soname = 'libfb.$(ext)',
@@ -28,6 +40,7 @@ if COMPONENTS_IS_OSS_BUILD:
     ]),
     deps = [
       COMPONENTS_JNI_TARGET,
+      ":ndklog",
     ],
     visibility = COMPONENTS_VISIBILITY,
   )

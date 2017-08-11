@@ -10,6 +10,18 @@ include_defs("//COMPONENTS_DEFS")
 # This target is only used in open source and will break the monobuild
 # because we cannot define `soname` multiple times.
 if COMPONENTS_IS_OSS_BUILD:
+  prebuilt_cxx_library(
+      name = "ndklog",
+      exported_platform_linker_flags = [
+          (
+              "^android.*",
+              ["-llog"],
+          ),
+      ],
+      header_only = True,
+      visibility = COMPONENTS_VISIBILITY,
+  )
+
   cxx_library(
     name = 'jni',
     soname = 'libyoga.$(ext)',
@@ -26,6 +38,7 @@ if COMPONENTS_IS_OSS_BUILD:
     deps = [
       make_dep_path("lib/yoga/src/main/cpp:yoga"),
       COMPONENTS_FBJNI_TARGET,
+      ":ndklog",
     ],
     visibility = COMPONENTS_VISIBILITY,
   )
