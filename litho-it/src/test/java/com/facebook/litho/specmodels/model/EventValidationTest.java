@@ -193,6 +193,30 @@ public class EventValidationTest {
   }
 
   @Test
+  public void testEventMethodsWithPrimitiveReturnType() {
+    MethodParamModel methodParam =
+        TestMethodParamModel.newBuilder().type(ClassNames.COMPONENT_CONTEXT).build();
+    EventMethodModel eventMethod =
+        new EventMethodModel(
+            new EventDeclarationModel(
+                ClassName.OBJECT,
+                TypeName.INT.box(),
+                ImmutableList.<EventDeclarationModel.FieldModel>of(),
+                mRepresentedObject1),
+            ImmutableList.of(Modifier.STATIC),
+            "name",
+            TypeName.INT,
+            ImmutableList.<TypeVariableName>of(),
+            ImmutableList.of(methodParam),
+            mRepresentedObject2);
+
+    when(mSpecModel.getEventMethods()).thenReturn(ImmutableList.of(eventMethod));
+
+    List<SpecModelValidationError> validationErrors = EventValidation.validate(mSpecModel);
+    assertThat(validationErrors).hasSize(0);
+  }
+
+  @Test
   public void testEventMethodsWithWrongFirstParam() {
     MethodParamModel methodParam = TestMethodParamModel.newBuilder()
         .type(TypeName.BOOLEAN)

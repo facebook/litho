@@ -11,9 +11,12 @@ package com.facebook.litho.specmodels.model;
 
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.TypeName;
 import java.util.ArrayList;
 import java.util.List;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.type.MirroredTypeException;
 
 /**
  * Class for validating that the event declarations and event methods within a {@link SpecModel}
@@ -81,12 +84,15 @@ public class EventValidation {
                 "Methods in a spec that doesn't have dependency injection must be static."));
       }
 
-      if (!eventMethod.returnType.equals(eventMethod.eventType.returnType)) {
+      if (!eventMethod.returnType.box().equals(eventMethod.eventType.returnType.box())) {
         validationErrors.add(
             new SpecModelValidationError(
                 eventMethod.representedObject,
-                "Method must return " + eventMethod.eventType.returnType + " since that is what " +
-                    eventMethod.eventType.name + " expects."));
+                "Method must return "
+                    + eventMethod.eventType.returnType
+                    + " since that is what "
+                    + eventMethod.eventType.name
+                    + " expects."));
       }
 
       if (eventMethod.methodParams.isEmpty() ||
@@ -121,12 +127,26 @@ public class EventValidation {
       MethodParamModel param,
       ImmutableList<EventDeclarationModel.FieldModel> fields) {
     for (EventDeclarationModel.FieldModel field : fields) {
-      if (param.getName().equals(field.field.name) &&
-          param.getType().equals(field.field.type)) {
+      if (param.getName().equals(field.field.name)
+          && (param.getType().equals(field.field.type)
+              || isFromEventTypeSpecifiedInAnnotation(param, field.field.type))) {
         return true;
       }
     }
 
     return false;
+  }
+
+  private static boolean isFromEventTypeSpecifiedInAnnotation(
+      MethodParamModel methodParamModel, TypeName eventFieldType) {
+    FromEvent fromEvent =
+        (FromEvent) MethodParamModelUtils.getAnnotation(methodParamModel, FromEvent.class);
+    TypeName baseClassType;
+    try {
+      baseClassType = ClassName.get(fromEvent.baseClass());
+    } catch (MirroredTypeException mte) {
+      baseClassType = ClassName.get(mte.getTypeMirror());
+    }
+    return baseClassType.equals(eventFieldType);
   }
 }
