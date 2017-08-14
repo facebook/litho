@@ -1185,7 +1185,7 @@ class LayoutState {
     }
 
     lifecycle.mount(
-        context,
+        component.getScopedContext() != null ? component.getScopedContext() : context,
         drawable,
         component);
     lifecycle.bind(context, drawable, component);
