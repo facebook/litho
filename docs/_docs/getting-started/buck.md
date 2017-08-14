@@ -7,7 +7,7 @@ You can include Litho to your Android project via Buck by adding the following t
 ```python
 android_prebuilt_aar(
     name = "litho",
-    aar = ":litho.aar",
+    aar = ":litho-core.aar",
     visibility = ["PUBLIC"],
 )
 
@@ -24,9 +24,9 @@ prebuilt_jar(
 )
 
 remote_file(
-    name = "litho-processor.aar",
+    name = "litho-processor.jar",
     sha1 = "sha1here",
-    url = "mvn:com.facebook.litho:litho-processor:aar:{{site.litho-version}}",
+    url = "mvn:com.facebook.litho:litho-processor:jar:{{site.litho-version}}",
 )
 
 prebuilt_jar(
@@ -62,7 +62,7 @@ litho_android_library(
         ":litho-processor",
     ],
     annotation_processors = [
-        "com.facebook.litho.processor.ComponentsProcessor",
+        "com.facebook.litho.specmodels.processor.ComponentsProcessor",
     ],
     deps = [
         ":litho",
