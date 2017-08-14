@@ -11,6 +11,7 @@
 package com.facebook.litho.animation;
 
 import com.facebook.litho.dataflow.ChoreographerCompat;
+import com.facebook.litho.dataflow.ChoreographerCompatImpl;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -138,7 +139,7 @@ public class ParallelBinding implements AnimationBinding {
     mNextIndexToStart++;
 
     if (mNextIndexToStart < mBindings.size()) {
-      ChoreographerCompat.getInstance().postFrameCallbackDelayed(mStaggerCallback, mStaggerMs);
+      ChoreographerCompatImpl.getInstance().postFrameCallbackDelayed(mStaggerCallback, mStaggerMs);
     }
   }
 

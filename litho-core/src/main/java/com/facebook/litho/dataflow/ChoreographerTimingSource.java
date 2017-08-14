@@ -22,7 +22,7 @@ public class ChoreographerTimingSource implements TimingSource {
   private long mLastFrameTime = Long.MIN_VALUE;
 
   public ChoreographerTimingSource() {
-    mChoreographerCompat = ChoreographerCompat.getInstance();
+    mChoreographerCompat = ChoreographerCompatImpl.getInstance();
     mFrameCallback = new ChoreographerCompat.FrameCallback() {
       @Override
       public void doFrame(long frameTimeNanos) {
