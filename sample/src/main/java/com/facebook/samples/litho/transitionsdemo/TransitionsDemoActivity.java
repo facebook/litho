@@ -45,11 +45,12 @@ public class TransitionsDemoActivity extends AppCompatActivity {
         .layoutInfo(new LinearLayoutInfo(c, OrientationHelper.VERTICAL, false))
         .build(c);
 
-    for (int i = 0; i < 16; i++) {
+    final int numDemos = 5;
+    for (int i = 0; i < numDemos * 4; i++) {
       Component component;
 
       // Keep alternating between demos
-      switch (i % 4) {
+      switch (i % numDemos) {
         case 0:
           component = StoryFooterComponent.create(c).build();
           break;
@@ -61,6 +62,9 @@ public class TransitionsDemoActivity extends AppCompatActivity {
           break;
         case 3:
           component = OneByOneLeftRightBlocksComponent.create(c).build();
+          break;
+        case 4:
+          component = LeftRightBlocksSequenceComponent.create(c).build();
           break;
         default:
           throw new RuntimeException("Bad index: " + i);
