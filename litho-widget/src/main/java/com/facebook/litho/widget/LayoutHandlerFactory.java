@@ -9,7 +9,6 @@
 
 package com.facebook.litho.widget;
 
-import com.facebook.litho.RenderInfo;
 import com.facebook.litho.LayoutHandler;
 import javax.annotation.Nullable;
 

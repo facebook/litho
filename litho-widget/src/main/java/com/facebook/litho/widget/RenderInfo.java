@@ -7,11 +7,12 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.litho;
+package com.facebook.litho.widget;
 
 import android.support.v4.util.Pools;
 import android.support.v4.util.Pools.Pool;
 import android.support.v4.util.SimpleArrayMap;
+import com.facebook.litho.Component;
 import javax.annotation.Nullable;
 
 /**

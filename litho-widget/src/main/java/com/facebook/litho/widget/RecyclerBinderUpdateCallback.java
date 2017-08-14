@@ -5,7 +5,6 @@ package com.facebook.litho.widget;
 import android.support.v4.util.Pools.SynchronizedPool;
 import android.support.v7.util.ListUpdateCallback;
 import com.facebook.litho.Component;
-import com.facebook.litho.RenderInfo;
 import java.util.ArrayList;
 import java.util.List;
 

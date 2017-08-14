@@ -9,7 +9,7 @@
 
 package com.facebook.litho.widget;
 
-import static com.facebook.litho.RenderInfo.create;
+import static com.facebook.litho.widget.RenderInfo.create;
 import static com.facebook.litho.SizeSpec.AT_MOST;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
@@ -31,7 +31,6 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LayoutHandler;
-import com.facebook.litho.RenderInfo;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;

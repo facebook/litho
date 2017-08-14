@@ -34,7 +34,6 @@ import com.facebook.litho.EventHandler;
 import com.facebook.litho.LayoutHandler;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.MeasureComparisonUtils;
-import com.facebook.litho.RenderInfo;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.ThreadUtils;

@@ -2,7 +2,6 @@
 
 package com.facebook.litho.widget;
 
-import com.facebook.litho.RenderInfo;
 import com.facebook.litho.widget.RecyclerBinderUpdateCallback.ComponentContainer;
 import com.facebook.litho.widget.RecyclerBinderUpdateCallback.Operation;
 import com.facebook.litho.widget.RecyclerBinderUpdateCallback.OperationExecutor;

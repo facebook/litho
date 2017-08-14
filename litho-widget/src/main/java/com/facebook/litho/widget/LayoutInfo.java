@@ -12,7 +12,6 @@ package com.facebook.litho.widget;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.LayoutManager;
-import com.facebook.litho.RenderInfo;
 
 /**
  * An implementation of this interface will provide the {@link RecyclerBinder} with all the

@@ -11,7 +11,7 @@ package com.facebook.samples.litho.lithography;
 import android.support.v7.widget.OrientationHelper;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.RenderInfo;
+import com.facebook.litho.widget.RenderInfo;
 import com.facebook.litho.widget.LinearLayoutInfo;
 import com.facebook.litho.widget.RecyclerBinder;
 

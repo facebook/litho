@@ -17,7 +17,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.OrientationHelper;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.RenderInfo;
+import com.facebook.litho.widget.RenderInfo;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.widget.LinearLayoutInfo;
 import com.facebook.litho.widget.RecyclerBinder;

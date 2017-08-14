@@ -16,7 +16,6 @@ import android.content.Context;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
-import com.facebook.litho.RenderInfo;
 import com.facebook.litho.SizeSpec;
 
 public class GridLayoutInfo implements LayoutInfo {
