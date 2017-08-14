@@ -31,6 +31,7 @@ import com.facebook.yoga.YogaConfig;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaNode;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -141,6 +142,9 @@ public class ComponentsPools {
 
   static final RecyclePool<RenderState> sRenderStatePool =
       new RecyclePool<>("RenderState", 4, true);
+
+  static final RecyclePool<ArrayList<LithoView>> sLithoViewArrayListPool =
+      new RecyclePool<>("LithoViewArrayList", 4, false);
 
   // Lazily initialized when acquired first time, as this is not a common use case.
   static RecyclePool<BorderColorDrawable> sBorderColorDrawablePool = null;
@@ -879,6 +883,7 @@ public class ComponentsPools {
     sArraySetPool.clear();
     sArrayDequePool.clear();
     sRenderStatePool.clear();
+    sLithoViewArrayListPool.clear();
   }
 
   /**
@@ -1008,5 +1013,25 @@ public class ComponentsPools {
 
     renderState.reset();
     sRenderStatePool.release(renderState);
+  }
+
+  public static ArrayList<LithoView> acquireLithoViewArrayList() {
+    ArrayList<LithoView> arrayList =
+        ComponentsConfiguration.usePooling ? sLithoViewArrayListPool.acquire() : null;
+    if (arrayList == null) {
+      arrayList = new ArrayList<>(5);
+    }
+
+    return arrayList;
+  }
+
+  @ThreadSafe(enableChecks = false)
+  public static void release(ArrayList<LithoView> arrayList) {
+    if (!ComponentsConfiguration.usePooling) {
+      return;
+    }
+
+    arrayList.clear();
+    sLithoViewArrayListPool.release(arrayList);
   }
 }

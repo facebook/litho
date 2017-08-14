@@ -98,7 +98,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   private final LongSparseArray<ComponentHost> mHostsByMarker = new LongSparseArray<>();
 
   private static final Rect sTempRect = new Rect();
-  private static final List<LithoView> sTempLithoViews = new ArrayList<>();
 
   private final ComponentContext mContext;
   private final LithoView mLithoView;
@@ -1851,13 +1850,14 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
      * so that their contents are recycled and reused next time.
      */
     if (ComponentsConfiguration.deepUnmountEnabled && content instanceof HasLithoViewChildren) {
-      final List<LithoView> lithoViews = sTempLithoViews;
+      final ArrayList<LithoView> lithoViews = ComponentsPools.acquireLithoViewArrayList();
       ((HasLithoViewChildren) content).obtainLithoViewChildren(lithoViews);
+
       for (int i = lithoViews.size() - 1; i >= 0; i--) {
         final LithoView lithoView = lithoViews.get(i);
         lithoView.unmountAllItems();
       }
-      lithoViews.clear();
+      ComponentsPools.release(lithoViews);
     }
 
     final ComponentHost host = item.getHost();
