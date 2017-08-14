@@ -30,6 +30,15 @@ function installAndroidSDK {
     rm $TMP
   fi
 
+  export ANDROID_NDK_REPOSITORY=$HOME/android-ndk
+  if [[ ! -d "$ANDROID_NDK_REPOSITORY/android-ndk-r13b" ]]; then
+    TMP=/tmp/ndk$$.zip
+    mkdir -p "$ANDROID_NDK_REPOSITORY"
+    download 'https://dl.google.com/android/repository/android-ndk-r13b-linux-x86_64.zip' $TMP
+    unzip -qod "$ANDROID_NDK_REPOSITORY" "$TMP"
+    rm $TMP
+  fi
+
   export ANDROID_HOME=$HOME/android-sdk
   export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$PATH"
 
