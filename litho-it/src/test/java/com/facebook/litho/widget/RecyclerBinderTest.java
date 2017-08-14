@@ -9,10 +9,10 @@
 
 package com.facebook.litho.widget;
 
-import static com.facebook.litho.widget.RenderInfo.create;
 import static com.facebook.litho.SizeSpec.AT_MOST;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
+import static com.facebook.litho.widget.ComponentRenderInfo.create;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
@@ -72,7 +72,7 @@ public class RecyclerBinderTest {
               boolean canPrefetchDisplayLists,
               boolean canCacheDrawingDisplayLists) {
         final TestComponentTreeHolder holder = new TestComponentTreeHolder(componentInfo);
-        mHoldersForComponents.put(componentInfo.getComponent(), holder);
+        mHoldersForComponents.put(((ComponentRenderInfo) componentInfo).getComponent(), holder);
 
         return holder;
       }
@@ -105,9 +105,9 @@ public class RecyclerBinderTest {
 
   @Test
   public void testComponentTreeHolderCreation() {
-    final List<RenderInfo> components = new ArrayList<>();
+    final List<ComponentRenderInfo> components = new ArrayList<>();
     for (int i = 0; i < 100; i++) {
-      components.add(RenderInfo.create().component(mock(Component.class)).build());
+      components.add(ComponentRenderInfo.create().component(mock(Component.class)).build());
       mRecyclerBinder.insertItemAt(0, components.get(i));
     }
 
@@ -118,7 +118,7 @@ public class RecyclerBinderTest {
 
   @Test
   public void testOnMeasureAfterAddingItems() {
-    final List<RenderInfo> components = new ArrayList<>();
+    final List<ComponentRenderInfo> components = new ArrayList<>();
     for (int i = 0; i < 100; i++) {
       components.add(create().component(mock(Component.class)).build());
       mRecyclerBinder.insertItemAt(i, components.get(i));
@@ -163,7 +163,7 @@ public class RecyclerBinderTest {
 
   @Test
   public void onBoundsDefined() {
-    final List<RenderInfo> components = prepareLoadedBinder();
+    final List<ComponentRenderInfo> components = prepareLoadedBinder();
     for (int i = 0; i < components.size(); i++) {
       final TestComponentTreeHolder holder =
           mHoldersForComponents.get(components.get(i).getComponent());
@@ -183,7 +183,7 @@ public class RecyclerBinderTest {
 
   @Test
   public void onBoundsDefinedWithDifferentSize() {
-    final List<RenderInfo> components = prepareLoadedBinder();
+    final List<ComponentRenderInfo> components = prepareLoadedBinder();
     for (int i = 0; i < components.size(); i++) {
       final TestComponentTreeHolder holder =
           mHoldersForComponents.get(components.get(i).getComponent());
@@ -279,7 +279,7 @@ public class RecyclerBinderTest {
 
   @Test
   public void onRemeasureWithDifferentSize() {
-    final List<RenderInfo> components = prepareLoadedBinder();
+    final List<ComponentRenderInfo> components = prepareLoadedBinder();
     for (int i = 0; i < components.size(); i++) {
       final TestComponentTreeHolder holder =
           mHoldersForComponents.get(components.get(i).getComponent());
@@ -313,7 +313,7 @@ public class RecyclerBinderTest {
 
   @Test
   public void testComponentWithDifferentSpanSize() {
-    final List<RenderInfo> components = new ArrayList<>();
+    final List<ComponentRenderInfo> components = new ArrayList<>();
     for (int i = 0; i < 100; i++) {
       components.add(create()
           .component(mock(Component.class))
@@ -375,9 +375,9 @@ public class RecyclerBinderTest {
 
     Assert.assertEquals(200, size.width);
 
-    final List<RenderInfo> components = new ArrayList<>();
+    final List<ComponentRenderInfo> components = new ArrayList<>();
     for (int i = 0; i < 100; i++) {
-      components.add(RenderInfo.create().component(mock(Component.class)).build());
+      components.add(ComponentRenderInfo.create().component(mock(Component.class)).build());
       mRecyclerBinder.insertItemAt(i, components.get(i));
     }
 
@@ -425,9 +425,9 @@ public class RecyclerBinderTest {
 
       Assert.assertEquals(0, size.width);
 
-      final List<RenderInfo> components = new ArrayList<>();
+      final List<ComponentRenderInfo> components = new ArrayList<>();
       for (int i = 0; i < 100; i++) {
-        components.add(RenderInfo.create().component(mock(Component.class)).build());
+        components.add(ComponentRenderInfo.create().component(mock(Component.class)).build());
         mRecyclerBinder.insertItemAt(i, components.get(i));
       }
 
@@ -447,9 +447,9 @@ public class RecyclerBinderTest {
 
       Assert.assertEquals(200, size.width);
 
-      final List<RenderInfo> components = new ArrayList<>();
+      final List<ComponentRenderInfo> components = new ArrayList<>();
       for (int i = 0; i < 100; i++) {
-        components.add(RenderInfo.create().component(mock(Component.class)).build());
+        components.add(ComponentRenderInfo.create().component(mock(Component.class)).build());
         mRecyclerBinder.insertItemAt(i, components.get(i));
       }
 
@@ -459,7 +459,7 @@ public class RecyclerBinderTest {
 
   @Test
   public void testRangeBiggerThanContent() {
-    final List<RenderInfo> components = new ArrayList<>();
+    final List<ComponentRenderInfo> components = new ArrayList<>();
     for (int i = 0; i < 2; i++) {
       components.add(create().component(mock(Component.class)).build());
       mRecyclerBinder.insertItemAt(i, components.get(i));
@@ -494,7 +494,7 @@ public class RecyclerBinderTest {
 
   @Test
   public void testMoveRange() {
-    final List<RenderInfo> components = prepareLoadedBinder();
+    final List<ComponentRenderInfo> components = prepareLoadedBinder();
     final int newRangeStart = 40;
     final int newRangeEnd = 42;
     final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
@@ -524,7 +524,7 @@ public class RecyclerBinderTest {
 
   @Test
   public void testRealRangeOverridesEstimatedRange() {
-    final List<RenderInfo> components = prepareLoadedBinder();
+    final List<ComponentRenderInfo> components = prepareLoadedBinder();
     final int newRangeStart = 40;
     final int newRangeEnd = 50;
     int rangeSize = newRangeEnd - newRangeStart;
@@ -550,7 +550,7 @@ public class RecyclerBinderTest {
 
   @Test
   public void testStickyComponentsStayValidOutsideRange() {
-    final List<RenderInfo> components = prepareLoadedBinder();
+    final List<ComponentRenderInfo> components = prepareLoadedBinder();
     makeIndexSticky(components, 5);
     makeIndexSticky(components, 40);
     makeIndexSticky(components, 80);
@@ -592,7 +592,7 @@ public class RecyclerBinderTest {
 
   @Test
   public void testMoveRangeToEnd() {
-    final List<RenderInfo> components = prepareLoadedBinder();
+    final List<ComponentRenderInfo> components = prepareLoadedBinder();
     final int newRangeStart = 99;
     final int newRangeEnd = 99;
     final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
@@ -623,7 +623,7 @@ public class RecyclerBinderTest {
 
   @Test
   public void testMoveItemOutsideFromRange() {
-    final List<RenderInfo> components = prepareLoadedBinder();
+    final List<ComponentRenderInfo> components = prepareLoadedBinder();
     mRecyclerBinder.moveItem(0, 99);
 
     final TestComponentTreeHolder movedHolder =
@@ -644,7 +644,7 @@ public class RecyclerBinderTest {
 
   @Test
   public void testMoveItemInsideRange() {
-    final List<RenderInfo> components = prepareLoadedBinder();
+    final List<ComponentRenderInfo> components = prepareLoadedBinder();
     mRecyclerBinder.moveItem(99, 4);
 
     TestComponentTreeHolder movedHolder =
@@ -665,7 +665,7 @@ public class RecyclerBinderTest {
 
   @Test
   public void testMoveItemInsideVisibleRange() {
-    final List<RenderInfo> components = prepareLoadedBinder();
+    final List<ComponentRenderInfo> components = prepareLoadedBinder();
     mRecyclerBinder.moveItem(99, 2);
 
     final TestComponentTreeHolder movedHolder =
@@ -688,7 +688,7 @@ public class RecyclerBinderTest {
 
   @Test
   public void testMoveItemOutsideRange() {
-    final List<RenderInfo> components = prepareLoadedBinder();
+    final List<ComponentRenderInfo> components = prepareLoadedBinder();
     mRecyclerBinder.moveItem(2, 99);
 
     final TestComponentTreeHolder movedHolder =
@@ -710,7 +710,7 @@ public class RecyclerBinderTest {
 
   @Test
   public void testMoveWithinRange() {
-    final List<RenderInfo> components = prepareLoadedBinder();
+    final List<ComponentRenderInfo> components = prepareLoadedBinder();
 
     final TestComponentTreeHolder movedHolderOne =
         mHoldersForComponents.get(components.get(0).getComponent());
@@ -740,8 +740,8 @@ public class RecyclerBinderTest {
 
   @Test
   public void testInsertInVisibleRange() {
-    final List<RenderInfo> components = prepareLoadedBinder();
-    final RenderInfo newRenderInfo =
+    final List<ComponentRenderInfo> components = prepareLoadedBinder();
+    final ComponentRenderInfo newRenderInfo =
         create().component(mock(Component.class)).build();
 
     mRecyclerBinder.insertItemAt(1, newRenderInfo);
@@ -765,8 +765,8 @@ public class RecyclerBinderTest {
 
   @Test
   public void testInsertInRange() {
-    final List<RenderInfo> components = prepareLoadedBinder();
-    final RenderInfo newRenderInfo =
+    final List<ComponentRenderInfo> components = prepareLoadedBinder();
+    final ComponentRenderInfo newRenderInfo =
         create().component(mock(Component.class)).build();
 
     mRecyclerBinder.insertItemAt(RANGE_SIZE + 1, newRenderInfo);
@@ -790,12 +790,12 @@ public class RecyclerBinderTest {
 
   @Test
   public void testInsertRange() {
-    final List<RenderInfo> components = prepareLoadedBinder();
+    final List<ComponentRenderInfo> components = prepareLoadedBinder();
     final List<RenderInfo> newComponents = new ArrayList<>();
 
     for (int i = 0; i < 3; i++) {
       newComponents.add(
-          RenderInfo.create().component(mock(Component.class)).build());
+          ComponentRenderInfo.create().component(mock(Component.class)).build());
     }
 
     mRecyclerBinder.insertRangeAt(0, newComponents);
@@ -803,7 +803,7 @@ public class RecyclerBinderTest {
     // The new elements were scheduled for layout.
     for (int i = 0; i < 3; i++) {
       final TestComponentTreeHolder holder =
-          mHoldersForComponents.get(newComponents.get(i).getComponent());
+          mHoldersForComponents.get(((ComponentRenderInfo) newComponents.get(i)).getComponent());
       assertThat(holder.isTreeValid()).isTrue();
       assertThat(holder.mLayoutSyncCalled).isFalse();
       assertThat(holder.mLayoutAsyncCalled).isTrue();
@@ -826,7 +826,7 @@ public class RecyclerBinderTest {
   @Test
   public void testInsertOusideRange() {
     prepareLoadedBinder();
-    final RenderInfo newRenderInfo =
+    final ComponentRenderInfo newRenderInfo =
         create().component(mock(Component.class)).build();
     final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
 
@@ -843,7 +843,7 @@ public class RecyclerBinderTest {
 
   @Test
   public void testRemoveItem() {
-    final List<RenderInfo> components = prepareLoadedBinder();
+    final List<ComponentRenderInfo> components = prepareLoadedBinder();
     final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
 
     mRecyclerBinder.removeItemAt(rangeTotal + 1);
@@ -855,7 +855,7 @@ public class RecyclerBinderTest {
 
   @Test
   public void testRemoveFromRange() {
-    final List<RenderInfo> components = prepareLoadedBinder();
+    final List<ComponentRenderInfo> components = prepareLoadedBinder();
     final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
 
     mRecyclerBinder.removeItemAt(rangeTotal);
@@ -874,7 +874,7 @@ public class RecyclerBinderTest {
 
   @Test
   public void testRemoveRange() {
-    final List<RenderInfo> components = prepareLoadedBinder();
+    final List<ComponentRenderInfo> components = prepareLoadedBinder();
     final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
 
     mRecyclerBinder.removeRangeAt(0, RANGE_SIZE);
@@ -899,7 +899,7 @@ public class RecyclerBinderTest {
 
   @Test
   public void testUpdate() {
-    final List<RenderInfo> components = prepareLoadedBinder();
+    final List<ComponentRenderInfo> components = prepareLoadedBinder();
 
     final TestComponentTreeHolder holder =
         mHoldersForComponents.get(components.get(0).getComponent());
@@ -907,7 +907,7 @@ public class RecyclerBinderTest {
     holder.mTreeValid = false;
     assertThat(holder.isTreeValid()).isFalse();
 
-    final RenderInfo newRenderInfo =
+    final ComponentRenderInfo newRenderInfo =
         create().component(mock(Component.class)).build();
     mRecyclerBinder.updateItemAt(0, newRenderInfo);
 
@@ -917,7 +917,7 @@ public class RecyclerBinderTest {
 
   @Test
   public void testUpdateRange() {
-    final List<RenderInfo> components = prepareLoadedBinder();
+    final List<ComponentRenderInfo> components = prepareLoadedBinder();
 
     for (int i = 0; i < RANGE_SIZE; i++) {
       final TestComponentTreeHolder holder =
@@ -930,7 +930,7 @@ public class RecyclerBinderTest {
     final List<RenderInfo> newInfos = new ArrayList<>();
     for (int i = 0; i < RANGE_SIZE; i++) {
       newInfos.add(
-          RenderInfo.create().component(mock(Component.class)).build());
+          ComponentRenderInfo.create().component(mock(Component.class)).build());
     }
     mRecyclerBinder.updateRangeAt(0, newInfos);
 
@@ -952,10 +952,10 @@ public class RecyclerBinderTest {
     }
   }
 
-  private List<RenderInfo> prepareLoadedBinder() {
-    final List<RenderInfo> components = new ArrayList<>();
+  private List<ComponentRenderInfo> prepareLoadedBinder() {
+    final List<ComponentRenderInfo> components = new ArrayList<>();
     for (int i = 0; i < 100; i++) {
-      components.add(RenderInfo.create().component(mock(Component.class)).build());
+      components.add(ComponentRenderInfo.create().component(mock(Component.class)).build());
       mRecyclerBinder.insertItemAt(i, components.get(i));
     }
 
@@ -972,10 +972,10 @@ public class RecyclerBinderTest {
     return components;
   }
 
-  private void makeIndexSticky(List<RenderInfo> components, int i) {
+  private void makeIndexSticky(List<ComponentRenderInfo> components, int i) {
     components.set(
         i,
-        RenderInfo.create().component(mock(Component.class)).isSticky(true).build());
+        ComponentRenderInfo.create().component(mock(Component.class)).isSticky(true).build());
     mRecyclerBinder.removeItemAt(i);
     mRecyclerBinder.insertItemAt(i, components.get(i));
   }

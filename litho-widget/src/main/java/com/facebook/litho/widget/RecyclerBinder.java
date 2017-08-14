@@ -29,6 +29,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.widget.ComponentRenderInfo;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LayoutHandler;
@@ -320,7 +321,7 @@ public class RecyclerBinder
    */
   @UiThread
   public final void insertItemAt(int position, Component component) {
-    insertItemAt(position, RenderInfo.create().component(component).build());
+    insertItemAt(position, ComponentRenderInfo.create().component(component).build());
   }
 
   /**
@@ -438,7 +439,7 @@ public class RecyclerBinder
    */
   @UiThread
   public final void updateItemAt(int position, Component component) {
-    updateItemAt(position, RenderInfo.create().component(component).build());
+    updateItemAt(position, ComponentRenderInfo.create().component(component).build());
   }
 
   /**

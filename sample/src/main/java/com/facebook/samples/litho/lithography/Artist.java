@@ -11,7 +11,7 @@ package com.facebook.samples.litho.lithography;
 import android.support.v7.widget.OrientationHelper;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.widget.RenderInfo;
+import com.facebook.litho.widget.ComponentRenderInfo;
 import com.facebook.litho.widget.LinearLayoutInfo;
 import com.facebook.litho.widget.RecyclerBinder;
 
@@ -36,7 +36,7 @@ public class Artist implements Datum {
         .build(c);
 
     for (String image : images) {
-      RenderInfo.Builder imageRenderInfoBuilder = RenderInfo.create();
+      ComponentRenderInfo.Builder imageRenderInfoBuilder = ComponentRenderInfo.create();
       imageRenderInfoBuilder.component(
           SingleImageComponent.create(c)
               .image(image)

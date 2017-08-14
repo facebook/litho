@@ -9,58 +9,29 @@
 
 package com.facebook.litho.widget;
 
-import android.support.v4.util.Pools;
-import android.support.v4.util.Pools.Pool;
 import android.support.v4.util.SimpleArrayMap;
-import com.facebook.litho.Component;
 import javax.annotation.Nullable;
 
 /**
- * Keeps the {@link Component} and its information that will allow the framework
- * to understand how to render it.
+ * Keeps the list item information that will allow the framework to understand how to render it.
  *
- * SpanSize will be defaulted to 1. It is the information that is required to calculate
- * how much of the SpanCount the component should occupy in a Grid layout.
+ * <p>SpanSize will be defaulted to 1. It is the information that is required to calculate how much
+ * of the SpanCount the component should occupy in a Grid layout.
  *
- * IsSticky will be defaulted to false. It determines if the component should be
- * a sticky header or not
+ * <p>IsSticky will be defaulted to false. It determines if the component should be a sticky header
+ * or not
  */
-public class RenderInfo {
+public abstract class RenderInfo {
 
   public static final String CLIP_CHILDREN = "clip_children";
 
-  private static final Pool<Builder> sBuilderPool = new Pools.SynchronizedPool<>(2);
   private static final String IS_STICKY = "is_sticky";
   private static final String SPAN_SIZE = "span_size";
 
-  private final @Nullable Component mComponent;
   private final @Nullable SimpleArrayMap<String, Object> mCustomAttributes;
 
-  public static Builder create() {
-    Builder builder = sBuilderPool.acquire();
-    if (builder == null) {
-      builder = new Builder();
-    }
-
-    return builder;
-  }
-
-  public static RenderInfo createEmpty() {
-    return new RenderInfo();
-  }
-
-  private RenderInfo(Builder builder) {
-    mComponent = builder.mComponent;
+  RenderInfo(Builder builder) {
     mCustomAttributes = builder.mCustomAttributes;
-  }
-
-  private RenderInfo() {
-    mComponent = null;
-    mCustomAttributes = null;
-  }
-
-  public @Nullable Component getComponent() {
-    return mComponent;
   }
 
   public boolean isSticky() {
@@ -83,48 +54,29 @@ public class RenderInfo {
     return mCustomAttributes == null ? null : mCustomAttributes.get(key);
   }
 
-  public static class Builder {
+  public abstract static class Builder<T> {
 
-    private @Nullable Component mComponent;
     private @Nullable SimpleArrayMap<String, Object> mCustomAttributes;
 
-    private Builder() {
-      mComponent = null;
-    }
-
-    public Builder component(Component component) {
-      mComponent = component;
-      return this;
-    }
-
-    public Builder isSticky(boolean isSticky) {
+    public T isSticky(boolean isSticky) {
       return customAttribute(IS_STICKY, isSticky);
     }
 
-    public Builder spanSize(int spanSize) {
+    public T spanSize(int spanSize) {
       return customAttribute(SPAN_SIZE, spanSize);
     }
 
-    public Builder customAttribute(String key, Object value) {
+    public T customAttribute(String key, Object value) {
       if (mCustomAttributes == null) {
         mCustomAttributes = new SimpleArrayMap<>();
       }
       mCustomAttributes.put(key, value);
 
-      return this;
+      return (T) this;
     }
 
-    public RenderInfo build() {
-      RenderInfo renderInfo =  new RenderInfo(this);
-      release();
-
-      return renderInfo;
-    }
-
-    private void release() {
-      mComponent = null;
+    void release() {
       mCustomAttributes = null;
-      sBuilderPool.release(this);
     }
   }
 }

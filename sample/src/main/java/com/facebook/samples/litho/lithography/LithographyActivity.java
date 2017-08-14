@@ -17,8 +17,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.OrientationHelper;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.widget.RenderInfo;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.widget.ComponentRenderInfo;
 import com.facebook.litho.widget.LinearLayoutInfo;
 import com.facebook.litho.widget.RecyclerBinder;
 
@@ -123,7 +123,7 @@ public class LithographyActivity extends AppCompatActivity {
         .build(c);
 
     for (Datum datum : DATA) {
-      RenderInfo.Builder renderInfoBuilder = RenderInfo.create();
+      ComponentRenderInfo.Builder renderInfoBuilder = ComponentRenderInfo.create();
       renderInfoBuilder
           .component(datum.createComponent(c))
           .isSticky(datum instanceof Decade);

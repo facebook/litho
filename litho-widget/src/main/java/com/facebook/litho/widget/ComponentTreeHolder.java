@@ -22,8 +22,8 @@ import javax.annotation.concurrent.ThreadSafe;
 /**
  * A class used to store the data backing a {@link RecyclerBinder}. For each item the
  * ComponentTreeHolder keeps the {@link RenderInfo} which contains the original {@link Component}
- * and either the {@link ComponentTree} or the {@link StateHandler} depending upon whether
- * the item is within the current working range or not.
+ * and either the {@link ComponentTree} or the {@link StateHandler} depending upon whether the item
+ * is within the current working range or not.
  */
 @ThreadSafe
 public class ComponentTreeHolder {
@@ -32,10 +32,13 @@ public class ComponentTreeHolder {
 
   @GuardedBy("this")
   private ComponentTree mComponentTree;
+
   @GuardedBy("this")
   private StateHandler mStateHandler;
+
   @GuardedBy("this")
   private RenderInfo mRenderInfo;
+
   private boolean mIsTreeValid;
   private LayoutHandler mLayoutHandler;
   private boolean mCanPrefetchDisplayLists;
@@ -71,47 +74,47 @@ public class ComponentTreeHolder {
   }
 
   public void computeLayoutSync(
-      ComponentContext context,
-      int widthSpec,
-      int heightSpec,
-      Size size) {
+      ComponentContext context, int widthSpec, int heightSpec, Size size) {
+
     final ComponentTree componentTree;
     final Component component;
+    final ComponentRenderInfo componentRenderInfo;
 
     synchronized (this) {
       ensureComponentTree(context);
 
+      componentRenderInfo = (ComponentRenderInfo) mRenderInfo;
       componentTree = mComponentTree;
-      component = mRenderInfo.getComponent();
+      component = componentRenderInfo.getComponent();
     }
 
     componentTree.setRootAndSizeSpec(component, widthSpec, heightSpec, size);
 
     synchronized (this) {
-      if (componentTree == mComponentTree && component == mRenderInfo.getComponent()) {
+      if (componentTree == mComponentTree && component == componentRenderInfo.getComponent()) {
         mIsTreeValid = true;
       }
     }
   }
 
-  public void computeLayoutAsync(
-      ComponentContext context,
-      int widthSpec,
-      int heightSpec) {
+  public void computeLayoutAsync(ComponentContext context, int widthSpec, int heightSpec) {
+
     final ComponentTree componentTree;
     final Component component;
+    final ComponentRenderInfo componentRenderInfo;
 
     synchronized (this) {
       ensureComponentTree(context);
 
+      componentRenderInfo = (ComponentRenderInfo) mRenderInfo;
       componentTree = mComponentTree;
-      component = mRenderInfo.getComponent();
+      component = componentRenderInfo.getComponent();
     }
 
     componentTree.setRootAndSizeSpecAsync(component, widthSpec, heightSpec);
 
     synchronized (this) {
-      if (mComponentTree == componentTree && component == mRenderInfo.getComponent()) {
+      if (mComponentTree == componentTree && component == componentRenderInfo.getComponent()) {
         mIsTreeValid = true;
       }
     }
@@ -147,17 +150,17 @@ public class ComponentTreeHolder {
   @GuardedBy("this")
   private void ensureComponentTree(ComponentContext context) {
     if (mComponentTree == null) {
-      final Object clipChildrenAttr =
-          mRenderInfo.getCustomAttribute(RenderInfo.CLIP_CHILDREN);
+      final Object clipChildrenAttr = mRenderInfo.getCustomAttribute(RenderInfo.CLIP_CHILDREN);
       final boolean clipChildren = clipChildrenAttr == null ? true : (boolean) clipChildrenAttr;
 
-      mComponentTree = ComponentTree.create(context, mRenderInfo.getComponent())
-          .layoutThreadHandler(mLayoutHandler)
-          .stateHandler(mStateHandler)
-          .canPrefetchDisplayLists(mCanPrefetchDisplayLists)
-          .canCacheDrawingDisplayLists(mCanCacheDrawingDisplayLists)
-          .shouldClipChildren(clipChildren)
-          .build();
+      mComponentTree =
+          ComponentTree.create(context, ((ComponentRenderInfo) mRenderInfo).getComponent())
+              .layoutThreadHandler(mLayoutHandler)
+              .stateHandler(mStateHandler)
+              .canPrefetchDisplayLists(mCanPrefetchDisplayLists)
+              .canCacheDrawingDisplayLists(mCanCacheDrawingDisplayLists)
+              .shouldClipChildren(clipChildren)
+              .build();
     }
   }
 
