@@ -53,7 +53,7 @@ remote_file(
     url = "mvn:com.facebook.litho:litho-widget:aar:{{site.litho-version}}",
 )
 
-litho_android_library(
+android_library(
     ...
     # Your target here
     ...
@@ -63,6 +63,9 @@ litho_android_library(
     ],
     annotation_processors = [
         "com.facebook.litho.specmodels.processor.ComponentsProcessor",
+    ],
+    provided_deps = [
+        "litho-annotation",
     ],
     deps = [
         ":litho",
