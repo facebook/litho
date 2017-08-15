@@ -36,10 +36,10 @@ public class DiffValidation {
 
   static List<SpecModelValidationError> validate(SpecModel specModel) {
     final List<SpecModelValidationError> validationErrors = new ArrayList<>();
-    final ImmutableList<DiffModel> diffModels = specModel.getDiffs();
+    final ImmutableList<RenderDataDiffModel> diffModels = specModel.getRenderDataDiffs();
 
     for (int i = 0, size = diffModels.size(); i < size; i++) {
-      final DiffModel diffModel  = diffModels.get(i);
+      final RenderDataDiffModel diffModel = diffModels.get(i);
 
       final ParameterizedTypeName typeName =
           (diffModel.getType() instanceof ParameterizedTypeName) ?

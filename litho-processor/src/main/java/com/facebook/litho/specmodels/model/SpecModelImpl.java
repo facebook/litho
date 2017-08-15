@@ -9,20 +9,17 @@
 
 package com.facebook.litho.specmodels.model;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
 import com.facebook.litho.specmodels.internal.ImmutableList;
-
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Simple implementation of {@link SpecModel}.
@@ -47,7 +44,7 @@ public final class SpecModelImpl implements SpecModel {
   private final ImmutableList<TreePropModel> mTreeProps;
   private final ImmutableList<EventDeclarationModel> mEventDeclarations;
   private final ImmutableList<BuilderMethodModel> mImplicitBuilderMethods;
-  private final ImmutableList<DiffModel> mDiffs;
+  private final ImmutableList<RenderDataDiffModel> mDiffs;
   private final String mClassJavadoc;
   private final ImmutableList<PropJavadocModel> mPropJavadocs;
   private final boolean mIsPublic;
@@ -172,7 +169,7 @@ public final class SpecModelImpl implements SpecModel {
   }
 
   @Override
-  public ImmutableList<DiffModel> getDiffs() {
+  public ImmutableList<RenderDataDiffModel> getRenderDataDiffs() {
     return mDiffs;
   }
 
@@ -337,13 +334,13 @@ public final class SpecModelImpl implements SpecModel {
     return ImmutableList.copyOf(new ArrayList<>(stateValues));
   }
 
-  private static ImmutableList<DiffModel> getDiffs(
+  private static ImmutableList<RenderDataDiffModel> getDiffs(
       ImmutableList<DelegateMethodModel> delegateMethods) {
-    final Set<DiffModel> diffs = new LinkedHashSet<>();
+    final Set<RenderDataDiffModel> diffs = new LinkedHashSet<>();
     for (DelegateMethodModel delegateMethod : delegateMethods) {
       for (MethodParamModel param : delegateMethod.methodParams) {
-        if (param instanceof DiffModel) {
-          diffs.add((DiffModel) param);
+        if (param instanceof RenderDataDiffModel) {
+          diffs.add((RenderDataDiffModel) param);
         }
       }
     }

@@ -32,7 +32,7 @@ public class DiffValidationTest {
   private SpecModel mSpecModel;
   private StateParamModel mStateModel;
   private PropModel mPropModel;
-  private DiffModel mDiffModel;
+  private RenderDataDiffModel mDiffModel;
   private Object mDiffRepresentedObject;
 
   @Before
@@ -40,12 +40,12 @@ public class DiffValidationTest {
     mSpecModel = mock(SpecModel.class);
     mStateModel = mock(StateParamModel.class);
     mPropModel = mock(PropModel.class);
-    mDiffModel = mock(DiffModel.class);
+    mDiffModel = mock(RenderDataDiffModel.class);
     mDiffRepresentedObject = new Object();
 
     when(mSpecModel.getProps()).thenReturn(ImmutableList.<PropModel>of(mPropModel));
     when(mSpecModel.getStateValues()).thenReturn(ImmutableList.of(mStateModel));
-    when(mSpecModel.getDiffs()).thenReturn(ImmutableList.of(mDiffModel));
+    when(mSpecModel.getRenderDataDiffs()).thenReturn(ImmutableList.of(mDiffModel));
 
     when(mStateModel.getName()).thenReturn("stateName");
     when(mStateModel.getType()).thenReturn(TypeName.INT);

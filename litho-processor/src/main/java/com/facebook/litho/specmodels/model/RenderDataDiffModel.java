@@ -21,14 +21,12 @@ import javax.annotation.concurrent.Immutable;
  * method in a Diff object.
  */
 @Immutable
-public class DiffModel implements MethodParamModel {
+public class RenderDataDiffModel implements MethodParamModel {
 
   private final MethodParamModel mParamModel;
-  private final boolean mNeedsRenderDataInfra;
 
-  DiffModel(MethodParamModel paramModel, boolean needsRenderDataInfra) {
+  RenderDataDiffModel(MethodParamModel paramModel) {
     mParamModel = paramModel;
-    mNeedsRenderDataInfra = needsRenderDataInfra;
   }
 
   @Override
@@ -39,10 +37,6 @@ public class DiffModel implements MethodParamModel {
   @Override
   public String getName() {
     return mParamModel.getName();
-  }
-
-  public boolean needsRenderDataInfra() {
-    return mNeedsRenderDataInfra;
   }
 
   @Override
@@ -62,8 +56,8 @@ public class DiffModel implements MethodParamModel {
 
   @Override
   public boolean equals(Object o) {
-    if (o instanceof DiffModel) {
-      final DiffModel p = (DiffModel) o;
+    if (o instanceof RenderDataDiffModel) {
+      final RenderDataDiffModel p = (RenderDataDiffModel) o;
       return mParamModel.equals(p.mParamModel);
     }
 

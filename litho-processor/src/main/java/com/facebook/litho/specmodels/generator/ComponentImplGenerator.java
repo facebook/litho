@@ -20,11 +20,11 @@ import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.ClassNames;
-import com.facebook.litho.specmodels.model.DiffModel;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.InterStageInputParamModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.PropModel;
+import com.facebook.litho.specmodels.model.RenderDataDiffModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.facebook.litho.specmodels.model.StateParamModel;
@@ -73,7 +73,7 @@ public class ComponentImplGenerator {
     }
 
     final boolean hasState = !specModel.getStateValues().isEmpty();
-    final boolean needsRenderDataInfra = SpecModelUtils.hasDiffThatNeedsRenderDataInfra(specModel);
+    final boolean needsRenderDataInfra = !specModel.getRenderDataDiffs().isEmpty();
 
     final ClassName stateContainerImplClass =
         ClassName.bestGuess(getStateContainerImplClassName(specModel));
@@ -152,12 +152,9 @@ public class ComponentImplGenerator {
     final MethodSpec.Builder recordBuilder = MethodSpec.methodBuilder("record")
         .addParameter(ClassName.bestGuess(specModel.getComponentName() + "Impl"), recordParamName);
 
-    for (DiffModel diff : specModel.getDiffs()) {
-      if (!diff.needsRenderDataInfra()) {
-        continue;
-      }
-
-      final MethodParamModel modelToDiff = SpecModelUtils.getReferencedParamModelForDiff(specModel, diff);
+    for (RenderDataDiffModel diff : specModel.getRenderDataDiffs()) {
+      final MethodParamModel modelToDiff =
+          SpecModelUtils.getReferencedParamModelForDiff(specModel, diff);
 
       if (modelToDiff == null) {
         throw new RuntimeException(

@@ -18,8 +18,8 @@ import static com.facebook.litho.specmodels.model.ClassNames.STATE_VALUE;
 
 import com.facebook.litho.specmodels.model.DelegateMethodDescription;
 import com.facebook.litho.specmodels.model.DelegateMethodModel;
-import com.facebook.litho.specmodels.model.DiffModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
+import com.facebook.litho.specmodels.model.RenderDataDiffModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.squareup.javapoet.AnnotationSpec;
@@ -154,8 +154,7 @@ public class DelegateMethodGenerator {
             IMPL_VARIABLE_NAME,
             getImplAccessor(specModel, methodParamModel),
             methodParamModel.getName());
-      } else if (methodParamModel instanceof DiffModel
-          && ((DiffModel) methodParamModel).needsRenderDataInfra()) {
+      } else if (methodParamModel instanceof RenderDataDiffModel) {
         final String diffName = "_" + methodParamModel.getName() + "Diff";
         CodeBlock block =
             CodeBlock.builder()

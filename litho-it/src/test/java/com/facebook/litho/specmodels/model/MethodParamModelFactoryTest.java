@@ -140,8 +140,7 @@ public class MethodParamModelFactoryTest {
             ImmutableList.<Class<? extends Annotation>>of(),
             null);
 
-    assertThat(methodParamModel).isInstanceOf(DiffModel.class);
-    assertThat(((DiffModel) methodParamModel).needsRenderDataInfra()).isTrue();
+    assertThat(methodParamModel).isInstanceOf(RenderDataDiffModel.class);
   }
 
   @Test
@@ -179,7 +178,7 @@ public class MethodParamModelFactoryTest {
             ImmutableList.<Class<? extends Annotation>>of(ShouldUpdate.class),
             null);
 
-    assertThat(methodParamModel).isNotInstanceOf(DiffModel.class);
+    assertThat(methodParamModel).isNotInstanceOf(RenderDataDiffModel.class);
   }
 
   @Test

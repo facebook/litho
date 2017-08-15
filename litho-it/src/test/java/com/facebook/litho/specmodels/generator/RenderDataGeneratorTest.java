@@ -14,7 +14,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.facebook.litho.specmodels.internal.ImmutableList;
-import com.facebook.litho.specmodels.model.DiffModel;
+import com.facebook.litho.specmodels.model.RenderDataDiffModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.google.testing.compile.CompilationRule;
 import org.junit.Before;
@@ -28,27 +28,23 @@ public class RenderDataGeneratorTest {
 
   private SpecModel mSpecModelWithDiff;
   private SpecModel mSpecModelWithoutDiff;
-  private DiffModel mDiffModelNeedsRenderData;
-  private DiffModel mDiffModelDoesNotNeedRenderData;
+  private RenderDataDiffModel mRenderDataDiffModel;
 
   @Before
   public void setUp() {
     mSpecModelWithDiff = mock(SpecModel.class);
     mSpecModelWithoutDiff = mock(SpecModel.class);
-    mDiffModelNeedsRenderData = mock(DiffModel.class);
-    mDiffModelDoesNotNeedRenderData = mock(DiffModel.class);
+    mRenderDataDiffModel = mock(RenderDataDiffModel.class);
 
-    when(mSpecModelWithDiff.getDiffs()).thenReturn(ImmutableList.of(mDiffModelNeedsRenderData));
+    when(mSpecModelWithDiff.getRenderDataDiffs())
+        .thenReturn(ImmutableList.of(mRenderDataDiffModel));
     when(mSpecModelWithDiff.getComponentName()).thenReturn("WithDiffSpec");
 
-    when(mSpecModelWithoutDiff.getDiffs()).thenReturn(ImmutableList.<DiffModel>of());
+    when(mSpecModelWithoutDiff.getRenderDataDiffs())
+        .thenReturn(ImmutableList.<RenderDataDiffModel>of());
     when(mSpecModelWithoutDiff.getComponentName()).thenReturn("WithoutDiffSpec");
 
-    when(mDiffModelNeedsRenderData.getName()).thenReturn("diffParam1");
-    when(mDiffModelNeedsRenderData.needsRenderDataInfra()).thenReturn(true);
-
-    when(mDiffModelDoesNotNeedRenderData.getName()).thenReturn("diffParam2");
-    when(mDiffModelDoesNotNeedRenderData.needsRenderDataInfra()).thenReturn(false);
+    when(mRenderDataDiffModel.getName()).thenReturn("diffParam1");
   }
 
   @Test
@@ -60,16 +56,6 @@ public class RenderDataGeneratorTest {
 
   @Test
   public void testDoNotGenerateWithoutDiff() {
-    TypeSpecDataHolder dataHolder = RenderDataGenerator.generate(mSpecModelWithoutDiff);
-
-    assertThat(dataHolder.getMethodSpecs()).isEmpty();
-  }
-
-  @Test
-  public void testDoNotGenerateWithDiffThatDoesntNeedIt() {
-    when(mSpecModelWithoutDiff.getDiffs())
-        .thenReturn(ImmutableList.of(mDiffModelDoesNotNeedRenderData));
-
     TypeSpecDataHolder dataHolder = RenderDataGenerator.generate(mSpecModelWithoutDiff);
 
     assertThat(dataHolder.getMethodSpecs()).isEmpty();

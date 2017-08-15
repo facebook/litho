@@ -14,7 +14,6 @@ import static com.facebook.litho.specmodels.generator.GeneratorConstants.PREVIOU
 
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.SpecModel;
-import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
@@ -30,7 +29,7 @@ public final class RenderDataGenerator {
   private RenderDataGenerator() {}
 
   public static TypeSpecDataHolder generate(SpecModel specModel) {
-    if (!SpecModelUtils.hasDiffThatNeedsRenderDataInfra(specModel)) {
+    if (specModel.getRenderDataDiffs().isEmpty()) {
       return TypeSpecDataHolder.newBuilder().build();
     }
 

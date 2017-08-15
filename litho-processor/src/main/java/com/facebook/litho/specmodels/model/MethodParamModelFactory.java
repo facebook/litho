@@ -41,7 +41,7 @@ public final class MethodParamModelFactory {
     // We check whether we're calling ShouldUpdate here since it uses a different infrastructure to
     // track previous props/state :(
     if (shouldCreateDiffModel(method, typeName, delegateMethodAnnotationsThatSkipDiffModels)) {
-      return new DiffModel(simpleMethodParamModel, true);
+      return new RenderDataDiffModel(simpleMethodParamModel);
     }
 
     for (Annotation annotation : annotations) {

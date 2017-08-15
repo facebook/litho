@@ -9,14 +9,12 @@
 
 package com.facebook.litho.specmodels.model;
 
-import java.util.List;
-
 import com.facebook.litho.specmodels.internal.ImmutableList;
-
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
+import java.util.List;
 
 /**
  * A model that represents a ComponentSpec.
@@ -99,7 +97,7 @@ public interface SpecModel {
   ImmutableList<BuilderMethodModel> getExtraBuilderMethods();
 
   /** @return the set of diff params used within lifecycle methods in the spec. */
-  ImmutableList<DiffModel> getDiffs();
+  ImmutableList<RenderDataDiffModel> getRenderDataDiffs();
 
   /**
    * @return the javadoc for this spec.

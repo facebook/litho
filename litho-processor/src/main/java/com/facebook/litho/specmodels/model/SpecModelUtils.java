@@ -118,12 +118,9 @@ public class SpecModelUtils {
             .equals(stateValue.getType().box());
   }
 
-  /**
-   * @return the model for state/prop that this Diff is refering to.
-   */
+  /** @return the model for state/prop that this Diff is refering to. */
   public static MethodParamModel getReferencedParamModelForDiff(
-      SpecModel specModel,
-      DiffModel diffModel) {
+      SpecModel specModel, RenderDataDiffModel diffModel) {
     if (MethodParamModelUtils.isAnnotatedWith(diffModel, Prop.class)) {
       return SpecModelUtils.getPropWithName(specModel, diffModel.getName());
     } else if (MethodParamModelUtils.isAnnotatedWith(diffModel, State.class)) {
@@ -143,15 +140,6 @@ public class SpecModelUtils {
       }
     }
 
-    return false;
-  }
-
-  public static boolean hasDiffThatNeedsRenderDataInfra(SpecModel specModel) {
-    for (DiffModel diff : specModel.getDiffs()) {
-      if (diff.needsRenderDataInfra()) {
-        return true;
-      }
-    }
     return false;
   }
 }

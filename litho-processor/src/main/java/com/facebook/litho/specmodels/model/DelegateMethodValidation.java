@@ -328,7 +328,7 @@ public class DelegateMethodValidation {
       case STATE_VALUE:
         return SpecModelUtils.isStateValue(specModel, methodParamModel);
       case DIFF:
-        return methodParamModel instanceof DiffModel;
+        return methodParamModel instanceof RenderDataDiffModel;
     }
 
     return false;

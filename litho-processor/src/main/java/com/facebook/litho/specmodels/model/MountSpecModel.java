@@ -163,8 +163,8 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
-  public ImmutableList<DiffModel> getDiffs() {
-    return mSpecModel.getDiffs();
+  public ImmutableList<RenderDataDiffModel> getRenderDataDiffs() {
+    return mSpecModel.getRenderDataDiffs();
   }
 
   @Override
