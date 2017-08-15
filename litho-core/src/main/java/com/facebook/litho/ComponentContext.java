@@ -254,7 +254,7 @@ public class ComponentContext extends ContextWrapper {
   InternalNode newLayoutBuilder(
       @AttrRes int defStyleAttr,
       @StyleRes int defStyleRes) {
-    final InternalNode node = ComponentsPools.acquireInternalNode(this, getResources());
+    final InternalNode node = ComponentsPools.acquireInternalNode(this);
     applyStyle(node, defStyleAttr, defStyleRes);
     return node;
   }

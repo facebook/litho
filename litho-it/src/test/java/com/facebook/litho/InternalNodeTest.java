@@ -60,9 +60,8 @@ public class InternalNodeTest {
 
   @Before
   public void setup() {
-    mNode = ComponentsPools.acquireInternalNode(
-        new ComponentContext(RuntimeEnvironment.application),
-        RuntimeEnvironment.application.getResources());
+    mNode =
+        ComponentsPools.acquireInternalNode(new ComponentContext(RuntimeEnvironment.application));
   }
 
   @Test
@@ -260,14 +259,8 @@ public class InternalNodeTest {
 
   @Test
   public void setNestedTreeDoesntTransferLayoutDirectionIfExplicitlySetOnNestedNode() {
-    InternalNode holderNode =
-        acquireInternalNode(
-            new ComponentContext(application),
-            application.getResources());
-    InternalNode nestedTree =
-        acquireInternalNode(
-            new ComponentContext(application),
-            application.getResources());
+    InternalNode holderNode = acquireInternalNode(new ComponentContext(application));
+    InternalNode nestedTree = acquireInternalNode(new ComponentContext(application));
 
     nestedTree.layoutDirection(RTL);
     holderNode.calculateLayout();
@@ -280,14 +273,8 @@ public class InternalNodeTest {
 
   @Test
   public void testCopyIntoTrasferLayoutDirectionIfNotSetOnTheHolderOrOnTheNestedTree() {
-    InternalNode holderNode =
-        acquireInternalNode(
-            new ComponentContext(application),
-            application.getResources());
-    InternalNode nestedTree =
-        acquireInternalNode(
-            new ComponentContext(application),
-            application.getResources());
+    InternalNode holderNode = acquireInternalNode(new ComponentContext(application));
+    InternalNode nestedTree = acquireInternalNode(new ComponentContext(application));
 
     holderNode.calculateLayout();
     holderNode.copyInto(nestedTree);
@@ -298,14 +285,8 @@ public class InternalNodeTest {
 
   @Test
   public void testCopyIntoNestedTreeTransferLayoutDirectionIfExplicitlySetOnHolderNode() {
-    InternalNode holderNode =
-        acquireInternalNode(
-            new ComponentContext(application),
-            application.getResources());
-    InternalNode nestedTree =
-        acquireInternalNode(
-            new ComponentContext(application),
-            application.getResources());
+    InternalNode holderNode = acquireInternalNode(new ComponentContext(application));
+    InternalNode nestedTree = acquireInternalNode(new ComponentContext(application));
 
     holderNode.layoutDirection(RTL);
     holderNode.calculateLayout();

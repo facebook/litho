@@ -16,7 +16,6 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.content.res.Resources;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
@@ -188,15 +187,13 @@ public class ComponentsPools {
     return node;
   }
 
-  static synchronized InternalNode acquireInternalNode(
-      ComponentContext componentContext,
-      Resources resources) {
+  static synchronized InternalNode acquireInternalNode(ComponentContext componentContext) {
     InternalNode node = ComponentsConfiguration.usePooling ? sInternalNodePool.acquire() : null;
     if (node == null) {
       node = new InternalNode();
     }
 
-    node.init(acquireYogaNode(componentContext), componentContext, resources);
+    node.init(acquireYogaNode(componentContext), componentContext);
     return node;
   }
 

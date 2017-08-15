@@ -31,9 +31,7 @@ public class InternalNodeResolvedPaddingTest {
   @Before
   public void setup() {
     mInternalNode =
-        ComponentsPools.acquireInternalNode(
-            new ComponentContext(RuntimeEnvironment.application),
-            RuntimeEnvironment.application.getResources());
+        ComponentsPools.acquireInternalNode(new ComponentContext(RuntimeEnvironment.application));
   }
 
   private static void setDirection(InternalNode node, YogaDirection direction) {

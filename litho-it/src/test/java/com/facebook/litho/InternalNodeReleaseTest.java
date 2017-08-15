@@ -24,9 +24,8 @@ public class InternalNodeReleaseTest {
 
   @Before
   public void setup() {
-    mInternalNode = ComponentsPools.acquireInternalNode(
-        new ComponentContext(RuntimeEnvironment.application),
-        RuntimeEnvironment.application.getResources());
+    mInternalNode =
+        ComponentsPools.acquireInternalNode(new ComponentContext(RuntimeEnvironment.application));
   }
 
   private static void assertDefaultValues(InternalNode node) {
@@ -82,9 +81,7 @@ public class InternalNodeReleaseTest {
   public void testAttachedNode() {
     assertDefaultValues(mInternalNode);
     InternalNode parent =
-        ComponentsPools.acquireInternalNode(
-            new ComponentContext(RuntimeEnvironment.application),
-            RuntimeEnvironment.application.getResources());
+        ComponentsPools.acquireInternalNode(new ComponentContext(RuntimeEnvironment.application));
     parent.addChildAt(mInternalNode, 0);
     mInternalNode.release();
   }
@@ -93,9 +90,7 @@ public class InternalNodeReleaseTest {
   public void testNodeWithChildren() {
     assertDefaultValues(mInternalNode);
     mInternalNode.addChildAt(
-        ComponentsPools.acquireInternalNode(
-            new ComponentContext(RuntimeEnvironment.application),
-            RuntimeEnvironment.application.getResources()),
+        ComponentsPools.acquireInternalNode(new ComponentContext(RuntimeEnvironment.application)),
         0);
     mInternalNode.release();
   }

@@ -22,7 +22,6 @@ import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
-import android.content.res.Resources;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.yoga.YogaMeasureFunction;
@@ -79,8 +78,7 @@ public class ComponentLifecycleTest {
     when(mNode.getDiffNode()).thenReturn(mDiffNode);
     when(mDiffNode.getLastMeasuredWidth()).thenReturn(-1f);
     when(mDiffNode.getLastMeasuredHeight()).thenReturn(-1f);
-    when(ComponentsPools.acquireInternalNode(any(ComponentContext.class), any(Resources.class)))
-        .thenReturn(mNode);
+    when(ComponentsPools.acquireInternalNode(any(ComponentContext.class))).thenReturn(mNode);
     mInput = mock(Component.class);
 
     mockStatic(LayoutState.class);
@@ -246,7 +244,7 @@ public class ComponentLifecycleTest {
 
     PowerMockito.verifyStatic();
     // Calling here to verify static call.
-    ComponentsPools.acquireInternalNode(mContext, mContext.getResources());
+    ComponentsPools.acquireInternalNode(mContext);
     verify(componentLifecycle, never()).onCreateLayout(
         any(ComponentContext.class),
         any(Component.class));

@@ -40,7 +40,7 @@ import com.facebook.yoga.YogaWrap;
 class NoOpInternalNode extends InternalNode {
 
   @Override
-  void init(YogaNode cssNode, ComponentContext componentContext, Resources resources) {}
+  void init(YogaNode cssNode, ComponentContext componentContext) {}
 
   @Override
   void appendComponent(Component component) {

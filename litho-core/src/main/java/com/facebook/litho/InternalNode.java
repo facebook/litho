@@ -186,13 +186,13 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private TreeProps mPendingTreeProps;
   private int mGeneration;
 
-  void init(YogaNode yogaNode, ComponentContext componentContext, Resources resources) {
+  void init(YogaNode yogaNode, ComponentContext componentContext) {
     mGeneration++;
     yogaNode.setData(this);
     mYogaNode = yogaNode;
 
     mComponentContext = componentContext;
-    mResources = resources;
+    mResources = componentContext.getResources();
     mResourceResolver.init(
         mComponentContext,
         componentContext.getResourceCache());
