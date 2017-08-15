@@ -1182,6 +1182,10 @@ public class ComponentTree {
     LayoutState mainThreadLayoutState;
     LayoutState backgroundLayoutState;
     synchronized (this) {
+      mLayoutThreadHandler.removeCallbacks(mCalculateLayoutRunnable);
+      mLayoutThreadHandler.removeCallbacks(mUpdateStateSyncRunnable);
+      mLayoutThreadHandler.removeCallbacks(mPreAllocateMountContentRunnable);
+
       mReleased = true;
       if (mLithoView != null) {
         mLithoView.setComponentTree(null);
@@ -1196,7 +1200,7 @@ public class ComponentTree {
 
       // TODO t15532529
       mStateHandler = null;
-
+      
       if (mPreviousRenderState != null && !mPreviousRenderStateSetFromBuilder) {
         ComponentsPools.release(mPreviousRenderState);
       }
