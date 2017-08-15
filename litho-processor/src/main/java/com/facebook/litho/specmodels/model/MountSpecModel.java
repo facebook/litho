@@ -18,6 +18,7 @@ import com.facebook.litho.specmodels.generator.MountSpecGenerator;
 import com.facebook.litho.specmodels.generator.PreambleGenerator;
 import com.facebook.litho.specmodels.generator.PureRenderGenerator;
 import com.facebook.litho.specmodels.generator.RenderDataGenerator;
+import com.facebook.litho.specmodels.generator.ShouldUpdateGenerator;
 import com.facebook.litho.specmodels.generator.StateGenerator;
 import com.facebook.litho.specmodels.generator.TreePropGenerator;
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
@@ -261,6 +262,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
         .addTypeSpecDataHolder(MountSpecGenerator.generateShouldUseDisplayList(this))
         .addTypeSpecDataHolder(MountSpecGenerator.generateIsMountSizeDependent(this))
         .addTypeSpecDataHolder(PureRenderGenerator.generate(this))
+        .addTypeSpecDataHolder(ShouldUpdateGenerator.generate(this))
         .addTypeSpecDataHolder(EventGenerator.generate(this))
         .addTypeSpecDataHolder(StateGenerator.generate(this))
         .addTypeSpecDataHolder(RenderDataGenerator.generate(this))

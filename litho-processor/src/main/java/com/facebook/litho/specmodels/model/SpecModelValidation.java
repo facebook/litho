@@ -29,6 +29,7 @@ public class SpecModelValidation {
     validationErrors.addAll(EventValidation.validate(specModel));
     validationErrors.addAll(TreePropValidation.validate(specModel));
     validationErrors.addAll(DiffValidation.validate(specModel));
+    validationErrors.addAll(ShouldUpdateValidation.validate(specModel));
     return validationErrors;
   }
 
