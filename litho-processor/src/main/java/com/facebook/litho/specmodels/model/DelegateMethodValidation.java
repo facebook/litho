@@ -108,13 +108,7 @@ public class DelegateMethodValidation {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
 
     for (DelegateMethodModel delegateMethod : specModel.getDelegateMethods()) {
-      if (!specModel.hasInjectedDependencies() &&
-          !delegateMethod.modifiers.contains(Modifier.STATIC)) {
-        validationErrors.add(
-            new SpecModelValidationError(
-                delegateMethod.representedObject,
-                "Methods in a spec that doesn't have dependency injection must be static."));
-      }
+      validationErrors.addAll(validateStatic(specModel, delegateMethod));
     }
 
     for (Map.Entry<Class<? extends Annotation>, DelegateMethodDescription> entry :
@@ -127,94 +121,141 @@ public class DelegateMethodValidation {
       if (delegateMethod == null) {
         continue;
       }
-
       final ImmutableList<TypeName> definedParameterTypes =
           delegateMethodDescription.definedParameterTypes;
-      if (delegateMethod.methodParams.size() < definedParameterTypes.size()) {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0, size = definedParameterTypes.size(); i < size; i++) {
-          stringBuilder.append(definedParameterTypes.get(i));
-          if (i < size - 1) {
-            stringBuilder.append(", ");
-          }
-        }
-        validationErrors.add(
-            new SpecModelValidationError(
-                delegateMethod.representedObject,
-                "Methods annotated with " + delegateMethodAnnotation + " must have at least " +
-                    definedParameterTypes.size() + " parameters, and they should be of type " +
-                    stringBuilder.toString() + "."));
-      }
 
-      for (int i = 0, size = delegateMethod.methodParams.size(); i < size; i++) {
+      validationErrors.addAll(
+          validateDefinedParameterTypes(
+              delegateMethod, delegateMethodAnnotation, definedParameterTypes));
+
+      for (int i = definedParameterTypes.size(), size = delegateMethod.methodParams.size();
+          i < size;
+          i++) {
         final MethodParamModel delegateMethodParam = delegateMethod.methodParams.get(i);
+        if (delegateMethodParam instanceof InterStageInputParamModel) {
+          final Annotation annotation =
+              getInterStageInputAnnotation(
+                  delegateMethodParam, delegateMethodDescription.interStageInputAnnotations);
 
-        if (i < definedParameterTypes.size()) {
-          if (!definedParameterTypes.get(i).equals(ClassNames.OBJECT) &&
-              !delegateMethodParam.getType().equals(definedParameterTypes.get(i))) {
+          if (annotation == null) {
             validationErrors.add(
                 new SpecModelValidationError(
                     delegateMethodParam.getRepresentedObject(),
-                    "Parameter in position " + i + " of a method annotated with " +
-                        delegateMethodAnnotation + " should be of type " +
-                        definedParameterTypes.get(i) + "."));
-          }
-        } else {
-          if (delegateMethodParam instanceof InterStageInputParamModel) {
-            final Annotation annotation =
-                getInterStageInputAnnotation(
-                    delegateMethodParam,
-                    delegateMethodDescription.interStageInputAnnotations);
+                    "Inter-stage input annotation is not valid for this method, please use one "
+                        + "of the following: "
+                        + delegateMethodDescription.interStageInputAnnotations));
+          } else {
+            final Class<? extends Annotation> interStageOutputMethodAnnotation =
+                DelegateMethodDescriptions.INTER_STAGE_INPUTS_MAP.get(annotation.annotationType());
 
-            if (annotation == null) {
+            final DelegateMethodModel interStageOutputMethod =
+                SpecModelUtils.getMethodModelWithAnnotation(
+                    specModel, interStageOutputMethodAnnotation);
+
+            if (interStageOutputMethod == null) {
               validationErrors.add(
                   new SpecModelValidationError(
                       delegateMethodParam.getRepresentedObject(),
-                      "Inter-stage input annotation is not valid for this method, please use one " +
-                          "of the following: " +
-                          delegateMethodDescription.interStageInputAnnotations));
-            } else {
-              final Class<? extends Annotation> interStageOutputMethodAnnotation =
-                  DelegateMethodDescriptions.INTER_STAGE_INPUTS_MAP.get(
-                      annotation.annotationType());
-
-              final DelegateMethodModel interStageOutputMethod =
-                  SpecModelUtils.getMethodModelWithAnnotation(
-                      specModel,
-                      interStageOutputMethodAnnotation);
-
-              if (interStageOutputMethod == null) {
-                validationErrors.add(
-                    new SpecModelValidationError(
-                        delegateMethodParam.getRepresentedObject(),
-                        "To use " + annotation.annotationType() + " on param " +
-                            delegateMethodParam.getName() + " you must have a method annotated " +
-                            "with " + interStageOutputMethodAnnotation + " that has a param " +
-                            "Output<" + delegateMethodParam.getType().box() + "> " +
-                            delegateMethodParam.getName()));
-              } else if (
-                  !hasMatchingInterStageOutput(interStageOutputMethod, delegateMethodParam)) {
-                validationErrors.add(
-                    new SpecModelValidationError(
-                        delegateMethodParam.getRepresentedObject(),
-                        "To use " + annotation.annotationType() + " on param " +
-                            delegateMethodParam.getName() + " your method annotated " +
-                            "with " + interStageOutputMethodAnnotation + " must have a param " +
-                            "Output<" + delegateMethodParam.getType().box() + "> " +
-                            delegateMethodParam.getName()));
-              }
+                      "To use "
+                          + annotation.annotationType()
+                          + " on param "
+                          + delegateMethodParam.getName()
+                          + " you must have a method annotated "
+                          + "with "
+                          + interStageOutputMethodAnnotation
+                          + " that has a param "
+                          + "Output<"
+                          + delegateMethodParam.getType().box()
+                          + "> "
+                          + delegateMethodParam.getName()));
+            } else if (!hasMatchingInterStageOutput(interStageOutputMethod, delegateMethodParam)) {
+              validationErrors.add(
+                  new SpecModelValidationError(
+                      delegateMethodParam.getRepresentedObject(),
+                      "To use "
+                          + annotation.annotationType()
+                          + " on param "
+                          + delegateMethodParam.getName()
+                          + " your method annotated "
+                          + "with "
+                          + interStageOutputMethodAnnotation
+                          + " must have a param "
+                          + "Output<"
+                          + delegateMethodParam.getType().box()
+                          + "> "
+                          + delegateMethodParam.getName()));
             }
-          } else if (!isOptionalParamValid(
-              specModel,
-              delegateMethodDescription.optionalParameterTypes,
-              delegateMethodParam)) {
-            validationErrors.add(
-                new SpecModelValidationError(
-                    delegateMethodParam.getRepresentedObject(),
-                    "Not a valid parameter, should be one of the following: " +
-                        getStringRepresentationOfParamTypes(
-                            delegateMethodDescription.optionalParameterTypes)));
           }
+        } else if (!isOptionalParamValid(
+            specModel, delegateMethodDescription.optionalParameterTypes, delegateMethodParam)) {
+          validationErrors.add(
+              new SpecModelValidationError(
+                  delegateMethodParam.getRepresentedObject(),
+                  "Not a valid parameter, should be one of the following: "
+                      + getStringRepresentationOfParamTypes(
+                          delegateMethodDescription.optionalParameterTypes)));
+        }
+      }
+    }
+
+    return validationErrors;
+  }
+
+  public static List<SpecModelValidationError> validateStatic(
+      SpecModel specModel, DelegateMethodModel delegateMethod) {
+    List<SpecModelValidationError> validationErrors = new ArrayList<>();
+    if (!specModel.hasInjectedDependencies()
+        && !delegateMethod.modifiers.contains(Modifier.STATIC)) {
+      validationErrors.add(
+          new SpecModelValidationError(
+              delegateMethod.representedObject,
+              "Methods in a spec that doesn't have dependency injection must be static."));
+    }
+    return validationErrors;
+  }
+
+  public static List<SpecModelValidationError> validateDefinedParameterTypes(
+      DelegateMethodModel delegateMethod,
+      Class<? extends Annotation> delegateMethodAnnotation,
+      ImmutableList<TypeName> definedParameterTypes) {
+    List<SpecModelValidationError> validationErrors = new ArrayList<>();
+
+    if (delegateMethod.methodParams.size() < definedParameterTypes.size()) {
+      StringBuilder stringBuilder = new StringBuilder();
+      for (int i = 0, size = definedParameterTypes.size(); i < size; i++) {
+        stringBuilder.append(definedParameterTypes.get(i));
+        if (i < size - 1) {
+          stringBuilder.append(", ");
+        }
+      }
+      validationErrors.add(
+          new SpecModelValidationError(
+              delegateMethod.representedObject,
+              "Methods annotated with "
+                  + delegateMethodAnnotation
+                  + " must have at least "
+                  + definedParameterTypes.size()
+                  + " parameters, and they should be of type "
+                  + stringBuilder.toString()
+                  + "."));
+    }
+
+    for (int i = 0, size = delegateMethod.methodParams.size(); i < size; i++) {
+      final MethodParamModel delegateMethodParam = delegateMethod.methodParams.get(i);
+
+      if (i < definedParameterTypes.size()) {
+        if (!definedParameterTypes.get(i).equals(ClassNames.OBJECT)
+            && !delegateMethodParam.getType().equals(definedParameterTypes.get(i))) {
+          validationErrors.add(
+              new SpecModelValidationError(
+                  delegateMethodParam.getRepresentedObject(),
+                  "Parameter in position "
+                      + i
+                      + " of a method annotated with "
+                      + delegateMethodAnnotation
+                      + " should be of type "
+                      + definedParameterTypes.get(i)
+                      + "."));
         }
       }
     }
