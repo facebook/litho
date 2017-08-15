@@ -72,7 +72,7 @@ public class UpDownBlocksComponentSpec {
   @OnUpdateState
   static void updateState(
       StateValue<Boolean> top) {
-    top.set(top.get() == true ? false : true);
+    top.set(!top.get());
   }
 
   @OnCreateTransition
