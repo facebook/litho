@@ -1179,6 +1179,10 @@ public class ComponentTree {
    * release yourself.
    */
   public void release() {
+    if (mIsMounting) {
+      throw new IllegalStateException("Releasing a ComponentTree that is currently being mounted");
+    }
+
     LayoutState mainThreadLayoutState;
     LayoutState backgroundLayoutState;
     synchronized (this) {
