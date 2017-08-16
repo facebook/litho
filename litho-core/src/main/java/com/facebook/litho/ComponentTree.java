@@ -61,6 +61,7 @@ import javax.annotation.concurrent.GuardedBy;
 @ThreadSafe
 public class ComponentTree {
 
+  public static final int INVALID_ID = -1;
   private static final String TAG = ComponentTree.class.getSimpleName();
   private static final int SIZE_UNINITIALIZED = -1;
   // MainThread Looper messages:

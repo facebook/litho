@@ -107,7 +107,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   private TransitionManager mTransitionManager;
   private int mPreviousTopsIndex;
   private int mPreviousBottomsIndex;
-  private int mLastMountedComponentTreeId;
+  private int mLastMountedComponentTreeId = ComponentTree.INVALID_ID;
   private final HashMap<String, MountItem> mDisappearingMountItems = new HashMap<>();
   private final HashSet<String> mAnimatingTransitionKeys = new HashSet<>();
   private LayoutState mLastMountedLayoutState;
