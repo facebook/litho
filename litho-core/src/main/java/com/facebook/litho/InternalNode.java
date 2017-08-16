@@ -74,65 +74,36 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   // paddingStart/paddingEnd due to a bug in some Android devices.
   private static final boolean SUPPORTS_RTL = (SDK_INT >= JELLY_BEAN_MR1);
 
-  // When this flag is set, layoutDirection style was explicitly set on this node.
+  // Flags used to indicate that a certain attribute was explicitly set on the node.
   private static final long PFLAG_LAYOUT_DIRECTION_IS_SET = 1L << 0;
-  // When this flag is set, alignSelf was explicitly set on this node.
   private static final long PFLAG_ALIGN_SELF_IS_SET = 1L << 1;
-  // When this flag is set, position type was explicitly set on this node.
   private static final long PFLAG_POSITION_TYPE_IS_SET = 1L << 2;
-  // When this flag is set, flex was explicitly set on this node.
   private static final long PFLAG_FLEX_IS_SET = 1L << 3;
-  // When this flag is set, flex grow was explicitly set on this node.
   private static final long PFLAG_FLEX_GROW_IS_SET = 1L << 4;
-  // When this flag is set, flex shrink was explicitly set on this node.
   private static final long PFLAG_FLEX_SHRINK_IS_SET = 1L << 5;
-  // When this flag is set, flex basis was explicitly set on this node.
   private static final long PFLAG_FLEX_BASIS_IS_SET = 1L << 6;
-  // When this flag is set, importantForAccessibility was explicitly set on this node.
   private static final long PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET = 1L << 7;
-  // When this flag is set, duplicateParentState was explicitly set on this node.
   private static final long PFLAG_DUPLICATE_PARENT_STATE_IS_SET = 1L << 8;
-  // When this flag is set, margin was explicitly set on this node.
   private static final long PFLAG_MARGIN_IS_SET = 1L << 9;
-  // When this flag is set, padding was explicitly set on this node.
   private static final long PFLAG_PADDING_IS_SET = 1L << 10;
-  // When this flag is set, position was explicitly set on this node.
   private static final long PFLAG_POSITION_IS_SET = 1L << 11;
-  // When this flag is set, width was explicitly set on this node.
   private static final long PFLAG_WIDTH_IS_SET = 1L << 12;
-  // When this flag is set, minWidth was explicitly set on this node.
   private static final long PFLAG_MIN_WIDTH_IS_SET = 1L << 13;
-  // When this flag is set, maxWidth was explicitly set on this node.
   private static final long PFLAG_MAX_WIDTH_IS_SET = 1L << 14;
-  // When this flag is set, height was explicitly set on this node.
   private static final long PFLAG_HEIGHT_IS_SET = 1L << 15;
-  // When this flag is set, minHeight was explicitly set on this node.
   private static final long PFLAG_MIN_HEIGHT_IS_SET = 1L << 16;
-  // When this flag is set, maxHeight was explicitly set on this node.
   private static final long PFLAG_MAX_HEIGHT_IS_SET = 1L << 17;
-  // When this flag is set, background was explicitly set on this node.
   private static final long PFLAG_BACKGROUND_IS_SET = 1L << 18;
-  // When this flag is set, foreground was explicitly set on this node.
   private static final long PFLAG_FOREGROUND_IS_SET = 1L << 19;
-  // When this flag is set, visibleHandler was explicitly set on this node.
   private static final long PFLAG_VISIBLE_HANDLER_IS_SET = 1L << 20;
-  // When this flag is set, focusedHandler was explicitly set on this node.
   private static final long PFLAG_FOCUSED_HANDLER_IS_SET = 1L << 21;
-  // When this flag is set, fullImpressionHandler was explicitly set on this node.
   private static final long PFLAG_FULL_IMPRESSION_HANDLER_IS_SET = 1L << 22;
-  // When this flag is set, invisibleHandler was explicitly set on this node.
   private static final long PFLAG_INVISIBLE_HANDLER_IS_SET = 1L << 23;
-  // When this flag is set, unfocusedHandler was explicitly set on this node.
   private static final long PFLAG_UNFOCUSED_HANDLER_IS_SET = 1L << 24;
-  // When this flag is set, touch expansion was explicitly set on this node.
   private static final long PFLAG_TOUCH_EXPANSION_IS_SET = 1L << 25;
-  // When this flag is set, border width was explicitly set on this node.
   private static final long PFLAG_BORDER_WIDTH_IS_SET = 1L << 26;
-  // When this flag is set, aspectRatio was explicitly set on this node.
   private static final long PFLAG_ASPECT_RATIO_IS_SET = 1L << 27;
-  // When this flag is set, transitionKey was explicitly set on this node.
   private static final long PFLAG_TRANSITION_KEY_IS_SET = 1L << 28;
-  // When this flag is set, border color was explicitly set on this node.
   private static final long PFLAG_BORDER_COLOR_IS_SET = 1L << 29;
 
   private final ResourceResolver mResourceResolver = new ResourceResolver();
@@ -141,7 +112,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private ComponentContext mComponentContext;
   private Resources mResources;
   @ThreadConfined(ThreadConfined.ANY)
-  private List<Component> mComponents = new ArrayList(1);
+  private final List<Component> mComponents = new ArrayList<>(1);
   private int mImportantForAccessibility = ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
   private boolean mDuplicateParentState;
   private boolean mIsNestedTreeHolder;
@@ -1997,7 +1968,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   private boolean isPaddingPercent(YogaEdge edge) {
-    return (mIsPaddingPercent == null) ? false : mIsPaddingPercent[edge.intValue()];
+    return mIsPaddingPercent != null && mIsPaddingPercent[edge.intValue()];
   }
 
   /**
