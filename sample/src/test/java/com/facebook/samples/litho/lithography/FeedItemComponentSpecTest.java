@@ -9,6 +9,9 @@
 package com.facebook.samples.litho.lithography;
 
 import static com.facebook.litho.testing.SubComponent.legacySubComponent;
+import static com.facebook.litho.testing.assertj.ComponentConditions.textEquals;
+import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
+import static com.facebook.litho.testing.assertj.LithoViewSubComponentDeepExtractor.deepSubComponentWith;
 import static com.facebook.litho.testing.assertj.SubComponentExtractor.subComponentWith;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assume.assumeThat;
@@ -16,10 +19,11 @@ import static org.junit.Assume.assumeThat;
 import android.support.v7.widget.OrientationHelper;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.LithoView;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.testing.ComponentTestHelper;
 import com.facebook.litho.testing.ComponentsRule;
 import com.facebook.litho.testing.SubComponent;
-import com.facebook.litho.testing.assertj.ComponentAssert;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.LinearLayoutInfo;
 import com.facebook.litho.widget.RecyclerBinder;
@@ -57,14 +61,22 @@ public class FeedItemComponentSpecTest {
   public void testRecursiveSubComponentExists() {
     final ComponentContext c = mComponentsRule.getContext();
 
-    ComponentAssert.assertThat(c, mComponent).extractingSubComponents(c).hasSize(2);
+    assertThat(c, mComponent).extractingSubComponents(c).hasSize(2);
+  }
+
+  @Test
+  public void testLithoViewSubComponentMatching() {
+    final ComponentContext c = mComponentsRule.getContext();
+    final LithoView lithoView = ComponentTestHelper.mountComponent(c, mComponent);
+
+    assertThat(lithoView).has(deepSubComponentWith(textEquals("Sindre Sorhus")));
   }
 
   @Test
   public void testSubComponentLegacyBridge() {
     final ComponentContext c = mComponentsRule.getContext();
 
-    ComponentAssert.assertThat(c, mComponent)
+    assertThat(c, mComponent)
         .has(
             subComponentWith(
                 c,
