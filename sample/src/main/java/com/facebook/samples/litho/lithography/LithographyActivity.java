@@ -10,7 +10,6 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-
 package com.facebook.samples.litho.lithography;
 
 import android.os.Bundle;
