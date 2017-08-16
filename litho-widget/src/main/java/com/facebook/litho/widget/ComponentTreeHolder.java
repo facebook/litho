@@ -78,20 +78,18 @@ public class ComponentTreeHolder {
 
     final ComponentTree componentTree;
     final Component component;
-    final ComponentRenderInfo componentRenderInfo;
 
     synchronized (this) {
       ensureComponentTree(context);
 
-      componentRenderInfo = (ComponentRenderInfo) mRenderInfo;
       componentTree = mComponentTree;
-      component = componentRenderInfo.getComponent();
+      component = mRenderInfo.getComponent();
     }
 
     componentTree.setRootAndSizeSpec(component, widthSpec, heightSpec, size);
 
     synchronized (this) {
-      if (componentTree == mComponentTree && component == componentRenderInfo.getComponent()) {
+      if (componentTree == mComponentTree && component == mRenderInfo.getComponent()) {
         mIsTreeValid = true;
       }
     }
@@ -101,20 +99,18 @@ public class ComponentTreeHolder {
 
     final ComponentTree componentTree;
     final Component component;
-    final ComponentRenderInfo componentRenderInfo;
 
     synchronized (this) {
       ensureComponentTree(context);
 
-      componentRenderInfo = (ComponentRenderInfo) mRenderInfo;
       componentTree = mComponentTree;
-      component = componentRenderInfo.getComponent();
+      component = mRenderInfo.getComponent();
     }
 
     componentTree.setRootAndSizeSpecAsync(component, widthSpec, heightSpec);
 
     synchronized (this) {
-      if (mComponentTree == componentTree && component == componentRenderInfo.getComponent()) {
+      if (mComponentTree == componentTree && component == mRenderInfo.getComponent()) {
         mIsTreeValid = true;
       }
     }
@@ -154,7 +150,7 @@ public class ComponentTreeHolder {
       final boolean clipChildren = clipChildrenAttr == null ? true : (boolean) clipChildrenAttr;
 
       mComponentTree =
-          ComponentTree.create(context, ((ComponentRenderInfo) mRenderInfo).getComponent())
+          ComponentTree.create(context, mRenderInfo.getComponent())
               .layoutThreadHandler(mLayoutHandler)
               .stateHandler(mStateHandler)
               .canPrefetchDisplayLists(mCanPrefetchDisplayLists)

@@ -37,8 +37,19 @@ public class ComponentRenderInfo extends RenderInfo {
     return new ComponentRenderInfo(new Builder());
   }
 
+  @Override
   public Component getComponent() {
     return mComponent;
+  }
+
+  @Override
+  public boolean hasComponent() {
+    return true;
+  }
+
+  @Override
+  public String getName() {
+    return mComponent.getSimpleName();
   }
 
   public static class Builder extends RenderInfo.Builder<Builder> {

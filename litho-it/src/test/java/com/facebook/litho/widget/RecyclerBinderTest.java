@@ -64,19 +64,19 @@ public class RecyclerBinderTest {
     mComponentContext = new ComponentContext(RuntimeEnvironment.application);
 
     final RecyclerBinder.ComponentTreeHolderFactory componentTreeHolderFactory =
-            new RecyclerBinder.ComponentTreeHolderFactory() {
-      @Override
-      public ComponentTreeHolder create(
+        new RecyclerBinder.ComponentTreeHolderFactory() {
+          @Override
+          public ComponentTreeHolder create(
               RenderInfo componentInfo,
               LayoutHandler layoutHandler,
               boolean canPrefetchDisplayLists,
               boolean canCacheDrawingDisplayLists) {
-        final TestComponentTreeHolder holder = new TestComponentTreeHolder(componentInfo);
-        mHoldersForComponents.put(((ComponentRenderInfo) componentInfo).getComponent(), holder);
+            final TestComponentTreeHolder holder = new TestComponentTreeHolder(componentInfo);
+            mHoldersForComponents.put(componentInfo.getComponent(), holder);
 
-        return holder;
-      }
-    };
+            return holder;
+          }
+        };
 
     mLayoutInfo = mock(LayoutInfo.class);
     setupBaseLayoutInfoMock();

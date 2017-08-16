@@ -10,6 +10,7 @@
 package com.facebook.litho.widget;
 
 import android.support.v4.util.SimpleArrayMap;
+import com.facebook.litho.Component;
 import javax.annotation.Nullable;
 
 /**
@@ -53,6 +54,27 @@ public abstract class RenderInfo {
   public @Nullable Object getCustomAttribute(String key) {
     return mCustomAttributes == null ? null : mCustomAttributes.get(key);
   }
+
+  /**
+   * @return Valid {@link Component} if {@link RenderInfo} was created through {@link
+   *     ComponentRenderInfo#create()}, otherwise it will throw {@link
+   *     UnsupportedOperationException}. If this method is accessed from {@link RenderInfo} type,
+   *     {@link #hasComponent()} should be queried first before accessing.
+   */
+  public Component getComponent() {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * @return true, if {@link RenderInfo} was created through {@link ComponentRenderInfo#create()},
+   *     or false otherwise. This should be queried before accessing {@link #getComponent() } from
+   *     {@link RenderInfo} type.
+   */
+  public boolean hasComponent() {
+    return false;
+  }
+
+  public abstract String getName();
 
   public abstract static class Builder<T> {
 
