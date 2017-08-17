@@ -1118,6 +1118,127 @@ public class RecyclerBinderTest {
     }
   }
 
+  @Test
+  public void testAllComponentsRangeInitialized() {
+    prepareLoadedBinder();
+    assertThat(mRecyclerBinder.getRangeCalculationResult()).isNotNull();
+  }
+
+  @Test
+  public void testMixedContentFirstItemIsViewRangeInitialized() {
+    prepareMixedLoadedBinder(
+        3,
+        new HashSet<>(Arrays.asList(0)),
+        new ViewCreatorProvider() {
+          @Override
+          public ViewCreator get() {
+            return VIEW_CREATOR_1;
+          }
+        });
+    assertThat(mRecyclerBinder.getRangeCalculationResult()).isNotNull();
+  }
+
+  @Test
+  public void testAllViewsInsertItemRangeInitialized() {
+    prepareMixedLoadedBinder(
+        3,
+        new HashSet<>(Arrays.asList(0, 1, 2)),
+        new ViewCreatorProvider() {
+          @Override
+          public ViewCreator get() {
+            return VIEW_CREATOR_1;
+          }
+        });
+    assertThat(mRecyclerBinder.getRangeCalculationResult()).isNull();
+
+    mRecyclerBinder.insertItemAt(
+        1, ComponentRenderInfo.create().component(mock(Component.class)).build());
+    assertThat(mRecyclerBinder.getRangeCalculationResult()).isNotNull();
+  }
+
+  @Test
+  public void testAllViewsUpdateItemRangeInitialized() {
+    prepareMixedLoadedBinder(
+        3,
+        new HashSet<>(Arrays.asList(0, 1, 2)),
+        new ViewCreatorProvider() {
+          @Override
+          public ViewCreator get() {
+            return VIEW_CREATOR_1;
+          }
+        });
+    assertThat(mRecyclerBinder.getRangeCalculationResult()).isNull();
+
+    mRecyclerBinder.updateItemAt(
+        1, ComponentRenderInfo.create().component(mock(Component.class)).build());
+    assertThat(mRecyclerBinder.getRangeCalculationResult()).isNotNull();
+  }
+
+  @Test
+  public void testAllViewsInsertMultiItemRangeNotInitialized() {
+    prepareMixedLoadedBinder(
+        3,
+        new HashSet<>(Arrays.asList(0, 1, 2)),
+        new ViewCreatorProvider() {
+          @Override
+          public ViewCreator get() {
+            return VIEW_CREATOR_1;
+          }
+        });
+    assertThat(mRecyclerBinder.getRangeCalculationResult()).isNull();
+
+    ArrayList<RenderInfo> renderInfos = new ArrayList<>();
+    renderInfos.add(ComponentRenderInfo.create().component(mock(Component.class)).build());
+    renderInfos.add(ComponentRenderInfo.create().component(mock(Component.class)).build());
+    mRecyclerBinder.insertRangeAt(0, renderInfos);
+    assertThat(mRecyclerBinder.getRangeCalculationResult()).isNotNull();
+  }
+
+  @Test
+  public void testAllViewsUpdateMultiItemRangeNotInitialized() {
+    prepareMixedLoadedBinder(
+        3,
+        new HashSet<>(Arrays.asList(0, 1, 2)),
+        new ViewCreatorProvider() {
+          @Override
+          public ViewCreator get() {
+            return VIEW_CREATOR_1;
+          }
+        });
+    assertThat(mRecyclerBinder.getRangeCalculationResult()).isNull();
+
+    ArrayList<RenderInfo> renderInfos = new ArrayList<>();
+    renderInfos.add(ComponentRenderInfo.create().component(mock(Component.class)).build());
+    renderInfos.add(ComponentRenderInfo.create().component(mock(Component.class)).build());
+    mRecyclerBinder.updateRangeAt(0, renderInfos);
+    assertThat(mRecyclerBinder.getRangeCalculationResult()).isNotNull();
+  }
+
+  @Test
+  public void testAllViewsInsertComponentMeasureAfterRangeInitialized() {
+    for (int i = 0; i < 3; i++) {
+      mRecyclerBinder.insertItemAt(
+          i,
+          ViewRenderInfo.create()
+              .viewBinder(new SimpleViewBinder())
+              .viewCreator(VIEW_CREATOR_1)
+              .build());
+    }
+
+    assertThat(mRecyclerBinder.getRangeCalculationResult()).isNull();
+
+    mRecyclerBinder.insertItemAt(
+        1, ComponentRenderInfo.create().component(mock(Component.class)).build());
+    assertThat(mRecyclerBinder.getRangeCalculationResult()).isNull();
+
+    Size size = new Size();
+    int widthSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
+    int heightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
+
+    mRecyclerBinder.measure(size, widthSpec, heightSpec, null);
+    assertThat(mRecyclerBinder.getRangeCalculationResult()).isNotNull();
+  }
+
   private List<RenderInfo> prepareMixedLoadedBinder(
       int adapterSize, Set<Integer> viewItems, ViewCreatorProvider viewCreatorProvider) {
     final List<RenderInfo> renderInfos = new ArrayList<>();

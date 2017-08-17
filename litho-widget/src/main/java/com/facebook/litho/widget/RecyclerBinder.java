@@ -102,7 +102,7 @@ public class RecyclerBinder
   private int mCurrentFirstVisiblePosition = RecyclerView.NO_POSITION;
   private int mCurrentLastVisiblePosition = RecyclerView.NO_POSITION;
   private int mCurrentOffset;
-  private RangeCalculationResult mRange;
+  private @Nullable RangeCalculationResult mRange;
   private StickyHeaderController mStickyHeaderController;
   private final boolean mCanPrefetchDisplayLists;
   private final boolean mCanCacheDrawingDisplayLists;
@@ -364,7 +364,7 @@ public class RecyclerBinder
       childrenWidthSpec = getActualChildrenWidthSpec(holder);
       childrenHeightSpec = getActualChildrenHeightSpec(holder);
 
-      if (mIsMeasured.get()) {
+      if (mIsMeasured.get() && holder.getRenderInfo().rendersComponent()) {
         if (mRange == null && !mRequiresRemeasure.get()) {
           initRange(
               mMeasuredSize.width,
@@ -435,11 +435,11 @@ public class RecyclerBinder
           updateViewCreatorMappingsOnItemInsert(renderInfo);
         }
 
-        if (mRange == null && mIsMeasured.get()) {
+        if (mRange == null && mIsMeasured.get() && holder.getRenderInfo().rendersComponent()) {
           initRange(
               mMeasuredSize.width,
               mMeasuredSize.height,
-              position,
+              position + i,
               getActualChildrenWidthSpec(holder),
               getActualChildrenHeightSpec(holder),
               mLayoutInfo.getScrollDirection());
@@ -483,6 +483,18 @@ public class RecyclerBinder
       holder.setRenderInfo(renderInfo);
       if (renderInfo.rendersView()) {
         updateViewCreatorMappingsOnItemInsert(renderInfo);
+      }
+
+      if (mRange == null && mIsMeasured.get() && renderInfo.rendersComponent()) {
+        // Range might not have been initialized if all previous items were views and we update
+        // one of them to be a component.
+        initRange(
+            mMeasuredSize.width,
+            mMeasuredSize.height,
+            position,
+            getActualChildrenWidthSpec(holder),
+            getActualChildrenHeightSpec(holder),
+            mLayoutInfo.getScrollDirection());
       }
 
       childrenWidthSpec = getActualChildrenWidthSpec(holder);
@@ -558,6 +570,18 @@ public class RecyclerBinder
         holder.setRenderInfo(newRenderInfo);
         if (newRenderInfo.rendersView()) {
           updateViewCreatorMappingsOnItemInsert(newRenderInfo);
+        }
+
+        if (mRange == null && mIsMeasured.get() && newRenderInfo.rendersComponent()) {
+          // Range might not have been initialized if all previous items were views and we update
+          // one of them to be a component.
+          initRange(
+              mMeasuredSize.width,
+              mMeasuredSize.height,
+              position + i,
+              getActualChildrenWidthSpec(holder),
+              getActualChildrenHeightSpec(holder),
+              mLayoutInfo.getScrollDirection());
         }
       }
     }
@@ -752,16 +776,19 @@ public class RecyclerBinder
 
     // We now need to compute the size of the non scrolling side. We try to do this by using the
     // calculated range (if we have one) or computing one.
-    if (mRange == null
-        && !mComponentTreeHolders.isEmpty()
-        && mCurrentFirstVisiblePosition < mComponentTreeHolders.size()) {
-      final int rangeStart = Math.max(mCurrentFirstVisiblePosition, 0);
+    final boolean shouldInitRange =
+        mRange == null
+            && !mComponentTreeHolders.isEmpty()
+            && mCurrentFirstVisiblePosition < mComponentTreeHolders.size();
+
+    final int positionToComputeLayout = findFirstComponentPosition();
+    if (shouldInitRange && positionToComputeLayout >= 0) {
       initRange(
           SizeSpec.getSize(widthSpec),
           SizeSpec.getSize(heightSpec),
-          rangeStart,
-          getActualChildrenWidthSpec(mComponentTreeHolders.get(rangeStart)),
-          getActualChildrenHeightSpec(mComponentTreeHolders.get(rangeStart)),
+          positionToComputeLayout,
+          getActualChildrenWidthSpec(mComponentTreeHolders.get(positionToComputeLayout)),
+          getActualChildrenHeightSpec(mComponentTreeHolders.get(positionToComputeLayout)),
           scrollDirection);
     }
 
@@ -829,6 +856,16 @@ public class RecyclerBinder
     }
   }
 
+  private int findFirstComponentPosition() {
+    for (int i = 0, size = mComponentTreeHolders.size(); i < size; i++) {
+      if (mComponentTreeHolders.get(i).getRenderInfo().rendersComponent()) {
+        return i;
+      }
+    }
+
+    return -1;
+  }
+
   /**
    * Gets the number of items in this binder.
    */
@@ -849,18 +886,16 @@ public class RecyclerBinder
   private void initRange(
       int width,
       int height,
-      int rangeStart,
+      int positionToComputeLayout,
       int childrenWidthSpec,
       int childrenHeightSpec,
       int scrollDirection) {
-    int nextIndexToPrepare = rangeStart;
-
-    if (nextIndexToPrepare >= mComponentTreeHolders.size()) {
+    if (positionToComputeLayout >= mComponentTreeHolders.size()) {
       return;
     }
 
     final Size size = new Size();
-    final ComponentTreeHolder holder = mComponentTreeHolders.get(nextIndexToPrepare);
+    final ComponentTreeHolder holder = mComponentTreeHolders.get(positionToComputeLayout);
     holder.computeLayoutSync(mComponentContext, childrenWidthSpec, childrenHeightSpec, size);
 
     final int rangeSize = Math.max(
@@ -1153,6 +1188,12 @@ public class RecyclerBinder
         holder.acquireStateHandlerAndReleaseTree();
       }
     }
+  }
+
+  @VisibleForTesting
+  @Nullable
+  RangeCalculationResult getRangeCalculationResult() {
+    return mRange;
   }
 
   @GuardedBy("this")
