@@ -104,9 +104,12 @@ parseMvnArtifact = M.parse (mvnParser <* M.eof) "<input>" >>> first (T.pack . M.
     emptyLineParser :: forall a. MT.Parser (Maybe a)
     emptyLineParser = M.some M.spaceChar >> M.optional M.newline *> pure Nothing
 
+    commentParser :: forall a. MT.Parser (Maybe a)
+    commentParser = M.char '#' >> M.manyTill M.anyChar M.newline *> pure Nothing
+
     mvnParser :: MT.Parser MvnArtifact
     mvnParser = do
-      pomItems <- M.many $ ((Just <$> pomParser) <* M.eol) <|> emptyLineParser
+      pomItems <- M.many $ (commentParser <|> (Just <$> pomParser) <* M.eol) <|> emptyLineParser
       case reducePomTokens (catMaybes pomItems) of
         Just a -> return a
         Nothing -> M.unexpected (M.Label $ fromList "Missing POM identifiers.")
