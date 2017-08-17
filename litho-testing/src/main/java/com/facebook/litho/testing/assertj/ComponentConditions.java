@@ -9,14 +9,14 @@
 
 package com.facebook.litho.testing.assertj;
 
+import static org.hamcrest.core.Is.is;
+
 import com.facebook.litho.testing.InspectableComponent;
 import org.assertj.core.api.Condition;
+import org.assertj.core.description.TextDescription;
 import org.hamcrest.Matcher;
 
-/**
- * Provides various helpers to match against {@link
- * com.facebook.litho.testing.InspectableComponent}s.
- */
+/** Provides various helpers to match against {@link InspectableComponent}s. */
 // TODO(T21048805): Provide examples in the javadoc.
 public final class ComponentConditions {
   private ComponentConditions() {}
@@ -26,22 +26,12 @@ public final class ComponentConditions {
    * the provided string.
    */
   public static Condition<InspectableComponent> textEquals(final CharSequence text) {
-    return new Condition<InspectableComponent>() {
-      @Override
-      public boolean matches(InspectableComponent value) {
-        return text.equals(value.getTextContent());
-      }
-    };
+    return text(is(text.toString()));
   }
 
   /** @see #textEquals(CharSequence) */
   public static Condition<InspectableComponent> textEquals(final String text) {
-    return new Condition<InspectableComponent>() {
-      @Override
-      public boolean matches(InspectableComponent value) {
-        return text.equals(value.getTextContent());
-      }
-    };
+    return text(is(text));
   }
 
   /**
@@ -52,9 +42,10 @@ public final class ComponentConditions {
    * that more powerful matchers can be applied like sub-string matching.
    */
   public static Condition<InspectableComponent> text(final Condition<String> condition) {
-    return new Condition<InspectableComponent>() {
+    return new Condition<InspectableComponent>(new TextDescription("text = <%s>", condition)) {
       @Override
       public boolean matches(InspectableComponent value) {
+        as("expected = <%s>, actual text = <%s>", condition, value.getTextContent());
         return condition.matches(value.getTextContent());
       }
     };

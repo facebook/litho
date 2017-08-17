@@ -42,6 +42,7 @@ public class SubComponentExtractor implements Extractor<Component<?>, List<Inspe
     return new Condition<Component>() {
       @Override
       public boolean matches(Component value) {
+        as("sub component <%s> with <%s>", value, inner);
         for (InspectableComponent component : subComponents(c).extract(value)) {
           if (inner.matches(component)) {
             return true;
