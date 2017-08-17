@@ -11,9 +11,11 @@
  */
 package com.facebook.samples.litho.lithography;
 
+import static com.facebook.litho.testing.assertj.ComponentConditions.text;
 import static com.facebook.litho.testing.assertj.ComponentConditions.textEquals;
 import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
 import static com.facebook.litho.testing.assertj.SubComponentExtractor.subComponentWith;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assume.assumeThat;
 
@@ -74,7 +76,8 @@ public class DecadeSeparatorSpecTest {
     final ComponentContext c = mComponentsRule.getContext();
     assertThat(c, mComponent)
         .has(subComponentWith(c, textEquals("2010")))
-        // Silly thing to test for, but left here to demonstrate the API.
+        // Silly things to test for, but left here to demonstrate the API.
+        .has(subComponentWith(c, text(containsString("10"))))
         .doesNotHave(subComponentWith(c, textEquals("2011")));
   }
 }
