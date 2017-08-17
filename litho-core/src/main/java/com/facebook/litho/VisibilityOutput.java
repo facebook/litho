@@ -120,6 +120,7 @@ class VisibilityOutput {
     mComponent = null;
     mVisibleEventHandler = null;
     mFocusedEventHandler = null;
+    mUnfocusedEventHandler = null;
     mFullImpressionEventHandler = null;
     mInvisibleEventHandler = null;
 

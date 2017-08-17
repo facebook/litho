@@ -74,15 +74,27 @@ public class VisibilityOutputTest {
   public void testHandlersSet() {
     EventHandler visibleHandler = new EventHandler(null, 1);
     EventHandler invisibleHandler = new EventHandler(null, 2);
+    EventHandler focusedHandler = new EventHandler(null, 3);
+    EventHandler unfocusedHandler = new EventHandler(null, 4);
+    EventHandler fullImpressionHandler = new EventHandler(null, 5);
 
     mVisibilityOutput.setVisibleEventHandler(visibleHandler);
     mVisibilityOutput.setInvisibleEventHandler(invisibleHandler);
+    mVisibilityOutput.setFocusedEventHandler(focusedHandler);
+    mVisibilityOutput.setUnfocusedEventHandler(unfocusedHandler);
+    mVisibilityOutput.setFullImpressionEventHandler(fullImpressionHandler);
     assertThat(visibleHandler).isSameAs(mVisibilityOutput.getVisibleEventHandler());
     assertThat(invisibleHandler).isSameAs(mVisibilityOutput.getInvisibleEventHandler());
+    assertThat(focusedHandler).isSameAs(mVisibilityOutput.getFocusedEventHandler());
+    assertThat(unfocusedHandler).isSameAs(mVisibilityOutput.getUnfocusedEventHandler());
+    assertThat(fullImpressionHandler).isSameAs(mVisibilityOutput.getFullImpressionEventHandler());
 
     mVisibilityOutput.release();
     assertThat(mVisibilityOutput.getVisibleEventHandler()).isNull();
     assertThat(mVisibilityOutput.getInvisibleEventHandler()).isNull();
+    assertThat(mVisibilityOutput.getFocusedEventHandler()).isNull();
+    assertThat(mVisibilityOutput.getUnfocusedEventHandler()).isNull();
+    assertThat(mVisibilityOutput.getFullImpressionEventHandler()).isNull();
   }
 
   @Test
