@@ -33,6 +33,7 @@ public class ComponentRenderInfo extends RenderInfo {
     mComponent = builder.component;
   }
 
+  /** Create empty {@link ComponentRenderInfo} for testing purposes. */
   public static RenderInfo createEmpty() {
     return new ComponentRenderInfo(new Builder());
   }
@@ -43,7 +44,7 @@ public class ComponentRenderInfo extends RenderInfo {
   }
 
   @Override
-  public boolean hasComponent() {
+  public boolean rendersComponent() {
     return true;
   }
 
@@ -55,12 +56,16 @@ public class ComponentRenderInfo extends RenderInfo {
   public static class Builder extends RenderInfo.Builder<Builder> {
     private Component component;
 
+    /** Specify {@link Component} that will be rendered as an item of the list. */
     public Builder component(Component component) {
       this.component = component;
       return this;
     }
 
     public ComponentRenderInfo build() {
+      if (component == null) {
+        throw new IllegalStateException("Component must be provided.");
+      }
       final ComponentRenderInfo renderInfo = new ComponentRenderInfo(this);
       release();
 

@@ -80,6 +80,11 @@ public class ComponentTreeHolder {
     final Component component;
 
     synchronized (this) {
+      if (mRenderInfo.rendersView()) {
+        // Nothing to do for views.
+        return;
+      }
+
       ensureComponentTree(context);
 
       componentTree = mComponentTree;
@@ -101,6 +106,11 @@ public class ComponentTreeHolder {
     final Component component;
 
     synchronized (this) {
+      if (mRenderInfo.rendersView()) {
+        // Nothing to do for views.
+        return;
+      }
+
       ensureComponentTree(context);
 
       componentTree = mComponentTree;

@@ -22,10 +22,12 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.OnScrollListener;
+import android.view.View;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
@@ -34,10 +36,15 @@ import com.facebook.litho.LayoutHandler;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.viewcompat.SimpleViewBinder;
+import com.facebook.litho.viewcompat.ViewCreator;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,6 +61,35 @@ public class RecyclerBinderTest {
 
   private static final float RANGE_RATIO = 2.0f;
   private static final int RANGE_SIZE = 3;
+
+  private static final ViewCreator VIEW_CREATOR_1 =
+      new ViewCreator() {
+        @Override
+        public View createView(Context c) {
+          return mock(View.class);
+        }
+      };
+
+  private static final ViewCreator VIEW_CREATOR_2 =
+      new ViewCreator() {
+        @Override
+        public View createView(Context c) {
+          return mock(View.class);
+        }
+      };
+
+  private static final ViewCreator VIEW_CREATOR_3 =
+      new ViewCreator() {
+        @Override
+        public View createView(Context c) {
+          return mock(View.class);
+        }
+      };
+
+  private interface ViewCreatorProvider {
+    ViewCreator get();
+  }
+
   private final Map<Component, TestComponentTreeHolder> mHoldersForComponents = new HashMap<>();
   private RecyclerBinder mRecyclerBinder;
   private LayoutInfo mLayoutInfo;
@@ -67,12 +103,14 @@ public class RecyclerBinderTest {
         new RecyclerBinder.ComponentTreeHolderFactory() {
           @Override
           public ComponentTreeHolder create(
-              RenderInfo componentInfo,
+              RenderInfo renderInfo,
               LayoutHandler layoutHandler,
               boolean canPrefetchDisplayLists,
               boolean canCacheDrawingDisplayLists) {
-            final TestComponentTreeHolder holder = new TestComponentTreeHolder(componentInfo);
-            mHoldersForComponents.put(componentInfo.getComponent(), holder);
+            final TestComponentTreeHolder holder = new TestComponentTreeHolder(renderInfo);
+            if (renderInfo.rendersComponent()) {
+              mHoldersForComponents.put(renderInfo.getComponent(), holder);
+            }
 
             return holder;
           }
@@ -943,6 +981,134 @@ public class RecyclerBinderTest {
   }
 
   @Test
+  public void testInsertMixedContentWithSingleViewCreator() {
+    List<Integer> viewItems = Arrays.asList(3, 6, 7, 11);
+    prepareMixedLoadedBinder(
+        30,
+        new HashSet<>(viewItems),
+        new ViewCreatorProvider() {
+          @Override
+          public ViewCreator get() {
+            return VIEW_CREATOR_1;
+          }
+        });
+
+    assertThat(mRecyclerBinder.mViewTypeToViewCreator.size()).isEqualTo(1);
+    assertThat(mRecyclerBinder.mViewCreatorToUsageCount.size()).isEqualTo(1);
+
+    ViewCreator obtainedViewCreator = mRecyclerBinder.mViewCreatorToUsageCount.keyAt(0);
+    assertThat(obtainedViewCreator).isEqualTo(VIEW_CREATOR_1);
+    assertThat(mRecyclerBinder.mViewTypeToViewCreator.indexOfValue(obtainedViewCreator))
+        .isGreaterThanOrEqualTo(0);
+
+    final int usageCount = mRecyclerBinder.mViewCreatorToUsageCount.get(obtainedViewCreator);
+    assertThat(usageCount).isEqualTo(viewItems.size());
+  }
+
+  @Test
+  public void testInsertMixedContentWithMultiViewCreator() {
+    final List<Integer> viewItems = Arrays.asList(3, 6, 7, 11);
+    prepareMixedLoadedBinder(
+        30,
+        new HashSet<>(viewItems),
+        new ViewCreatorProvider() {
+          @Override
+          public ViewCreator get() {
+            // Different ViewCreator instances for each view item.
+            return new ViewCreator() {
+              @Override
+              public View createView(Context c) {
+                return mock(View.class);
+              }
+            };
+          }
+        });
+
+    assertThat(mRecyclerBinder.mViewTypeToViewCreator.size()).isEqualTo(4);
+    assertThat(mRecyclerBinder.mViewCreatorToUsageCount.size()).isEqualTo(4);
+
+    for (int i = 0, size = mRecyclerBinder.mViewCreatorToUsageCount.size(); i < size; i++) {
+      final ViewCreator obtainedViewCreator = mRecyclerBinder.mViewCreatorToUsageCount.keyAt(i);
+      final int usageCount = mRecyclerBinder.mViewCreatorToUsageCount.get(obtainedViewCreator);
+      assertThat(usageCount).isEqualTo(1);
+      assertThat(mRecyclerBinder.mViewTypeToViewCreator.indexOfValue(obtainedViewCreator))
+          .isGreaterThanOrEqualTo(0);
+    }
+  }
+
+  @Test
+  public void testInsertMixedContentFollowedByDelete() {
+    mRecyclerBinder.insertItemAt(
+        0, ComponentRenderInfo.create().component(mock(Component.class)).build());
+
+    mRecyclerBinder.insertItemAt(
+        1,
+        ViewRenderInfo.create()
+            .viewBinder(new SimpleViewBinder())
+            .viewCreator(VIEW_CREATOR_1)
+            .build());
+
+    assertThat(mRecyclerBinder.mViewCreatorToUsageCount.size()).isEqualTo(1);
+    assertThat(mRecyclerBinder.mViewTypeToViewCreator.size()).isEqualTo(1);
+
+    mRecyclerBinder.insertItemAt(
+        2,
+        ViewRenderInfo.create()
+            .viewBinder(new SimpleViewBinder())
+            .viewCreator(VIEW_CREATOR_2)
+            .build());
+
+    assertThat(mRecyclerBinder.mViewCreatorToUsageCount.size()).isEqualTo(2);
+    assertThat(mRecyclerBinder.mViewTypeToViewCreator.size()).isEqualTo(2);
+
+    mRecyclerBinder.removeItemAt(1);
+    mRecyclerBinder.removeItemAt(1);
+
+    assertThat(mRecyclerBinder.mViewCreatorToUsageCount.size()).isEqualTo(0);
+    assertThat(mRecyclerBinder.mViewTypeToViewCreator.size()).isEqualTo(0);
+  }
+
+  @Test
+  public void testInsertMixedContentFollowedByUpdate() {
+    mRecyclerBinder.insertItemAt(
+        0, ComponentRenderInfo.create().component(mock(Component.class)).build());
+    mRecyclerBinder.insertItemAt(
+        1,
+        ViewRenderInfo.create()
+            .viewBinder(new SimpleViewBinder())
+            .viewCreator(VIEW_CREATOR_1)
+            .build());
+    mRecyclerBinder.insertItemAt(
+        2,
+        ViewRenderInfo.create()
+            .viewBinder(new SimpleViewBinder())
+            .viewCreator(VIEW_CREATOR_2)
+            .build());
+
+    assertThat(mRecyclerBinder.mViewCreatorToUsageCount.size()).isEqualTo(2);
+    assertThat(mRecyclerBinder.mViewTypeToViewCreator.size()).isEqualTo(2);
+
+    mRecyclerBinder.updateItemAt(
+        1,
+        ViewRenderInfo.create()
+            .viewBinder(new SimpleViewBinder())
+            .viewCreator(VIEW_CREATOR_2)
+            .build());
+
+    assertThat(mRecyclerBinder.mViewCreatorToUsageCount.size()).isEqualTo(1);
+    assertThat(mRecyclerBinder.mViewTypeToViewCreator.size()).isEqualTo(1);
+
+    mRecyclerBinder.updateItemAt(
+        2,
+        ViewRenderInfo.create()
+            .viewCreator(VIEW_CREATOR_3)
+            .viewBinder(new SimpleViewBinder())
+            .build());
+    assertThat(mRecyclerBinder.mViewCreatorToUsageCount.size()).isEqualTo(2);
+    assertThat(mRecyclerBinder.mViewTypeToViewCreator.size()).isEqualTo(2);
+  }
+
+  @Test
   public void testGetItemCount() {
     for (int i = 0; i < 100; i++) {
       assertThat(mRecyclerBinder.getItemCount()).isEqualTo(i);
@@ -950,6 +1116,34 @@ public class RecyclerBinderTest {
           i,
           create().component(mock(Component.class)).build());
     }
+  }
+
+  private List<RenderInfo> prepareMixedLoadedBinder(
+      int adapterSize, Set<Integer> viewItems, ViewCreatorProvider viewCreatorProvider) {
+    final List<RenderInfo> renderInfos = new ArrayList<>();
+
+    for (int i = 0; i < adapterSize; i++) {
+      final RenderInfo renderInfo;
+      if (viewItems.contains(i)) {
+        renderInfo =
+            ViewRenderInfo.create()
+                .viewBinder(new SimpleViewBinder())
+                .viewCreator(viewCreatorProvider.get())
+                .build();
+      } else {
+        renderInfo = ComponentRenderInfo.create().component(mock(Component.class)).build();
+      }
+      renderInfos.add(renderInfo);
+      mRecyclerBinder.insertItemAt(i, renderInfos.get(i));
+    }
+
+    Size size = new Size();
+    int widthSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
+    int heightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
+
+    mRecyclerBinder.measure(size, widthSpec, heightSpec, null);
+
+    return renderInfos;
   }
 
   private List<ComponentRenderInfo> prepareLoadedBinder() {
