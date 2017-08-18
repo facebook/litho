@@ -91,9 +91,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   // refresh the content of the HostComponent. Always set from the main thread.
   private boolean mIsDirty;
 
-  // True if mount is taking place while the view has transient state.
-  private boolean mHasTransientState;
-
   // Holds the list of known component hosts during a mount pass.
   private final LongSparseArray<ComponentHost> mHostsByMarker = new LongSparseArray<>();
 
@@ -154,22 +151,14 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   /**
-   * Called when the {@link LithoView} has transient state. If this is the case then we don't want
-   * to process visibility outputs - we'll update them once the {@link LithoView} is no longer has
-   * transient state.
-   */
-  void setHasTransientState(boolean hasTransientState) {
-    mHasTransientState = hasTransientState;
-  }
-
-  /**
    * Mount the layoutState on the pre-set HostView.
    *
    * @param layoutState
    * @param localVisibleRect If this variable is null, then mount everything, since incremental
    *     mount is not enabled. Otherwise mount only what the rect (in local coordinates) contains
+   * @param processVisibilityOutputs whether to process visibility outputs as part of the mount
    */
-  void mount(LayoutState layoutState, Rect localVisibleRect) {
+  void mount(LayoutState layoutState, Rect localVisibleRect, boolean processVisibilityOutputs) {
     assertMainThread();
 
     if (layoutState == null) {
@@ -206,8 +195,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     final boolean isIncrementalMountEnabled = localVisibleRect != null;
 
-    if (!isIncrementalMountEnabled ||
-        !performIncrementalMount(layoutState, localVisibleRect)) {
+    if (!isIncrementalMountEnabled
+        || !performIncrementalMount(layoutState, localVisibleRect, processVisibilityOutputs)) {
       final MountItem rootMountItem = mIndexToItemMap.get(ROOT_HOST_ID);
 
       for (int i = 0, size = layoutState.getMountableOutputCount(); i < size; i++) {
@@ -249,7 +238,11 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
           }
 
           if (isIncrementalMountEnabled && canMountIncrementally(component)) {
-            mountItemIncrementally(currentMountItem, layoutOutput.getBounds(), localVisibleRect);
+            mountItemIncrementally(
+                currentMountItem,
+                layoutOutput.getBounds(),
+                localVisibleRect,
+                processVisibilityOutputs);
           }
         }
 
@@ -274,7 +267,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     mLastMountedComponentTreeId = componentTreeId;
     mLastMountedLayoutState = layoutState.acquireRef();
 
-    processVisibilityOutputs(layoutState, localVisibleRect);
+    if (processVisibilityOutputs) {
+      processVisibilityOutputs(layoutState, localVisibleRect);
+    }
 
     processTestOutputs(layoutState);
 
@@ -294,7 +289,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private void processVisibilityOutputs(LayoutState layoutState, Rect localVisibleRect) {
-    if (localVisibleRect == null || mHasTransientState) {
+    if (localVisibleRect == null) {
       return;
     }
 
@@ -1716,9 +1711,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private static void mountItemIncrementally(
-      MountItem item,
-      Rect itemBounds,
-      Rect localVisibleRect) {
+      MountItem item, Rect itemBounds, Rect localVisibleRect, boolean processVisibilityOutputs) {
     final Component<?> component = item.getComponent();
 
     if (!isMountViewSpec(component)) {
@@ -1735,17 +1728,18 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         itemBounds.width() - Math.max(0, itemBounds.right - localVisibleRect.right),
         itemBounds.height() - Math.max(0, itemBounds.bottom - localVisibleRect.bottom));
 
-    mountViewIncrementally(view, rect);
+    mountViewIncrementally(view, rect, processVisibilityOutputs);
 
     ComponentsPools.release(rect);
   }
 
-  private static void mountViewIncrementally(View view, Rect localVisibleRect) {
+  private static void mountViewIncrementally(
+      View view, Rect localVisibleRect, boolean processVisibilityOutputs) {
     assertMainThread();
 
     if (view instanceof LithoView) {
       final LithoView lithoView = (LithoView) view;
-      lithoView.performIncrementalMount(localVisibleRect);
+      lithoView.performIncrementalMount(localVisibleRect, processVisibilityOutputs);
     } else if (view instanceof ViewGroup) {
       final ViewGroup viewGroup = (ViewGroup) view;
 
@@ -1764,7 +1758,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
               childView.getWidth() - Math.max(0, childView.getRight() - localVisibleRect.right),
               childView.getHeight() - Math.max(0, childView.getBottom() - localVisibleRect.bottom));
 
-          mountViewIncrementally(childView, rect);
+          mountViewIncrementally(childView, rect, processVisibilityOutputs);
 
           ComponentsPools.release(rect);
         }
@@ -2307,11 +2301,12 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   /**
-   * @return true if this method did all the work that was necessary and there is no other
-   * content that needs mounting/unmounting in this mount step. If false then a full mount step
-   * should take place.
+   * @return true if this method did all the work that was necessary and there is no other content
+   *     that needs mounting/unmounting in this mount step. If false then a full mount step should
+   *     take place.
    */
-  private boolean performIncrementalMount(LayoutState layoutState, Rect localVisibleRect) {
+  private boolean performIncrementalMount(
+      LayoutState layoutState, Rect localVisibleRect, boolean processVisibilityOutputs) {
     if (mPreviousLocalVisibleRect.isEmpty()) {
       return false;
     }
@@ -2392,7 +2387,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       mountItemIncrementally(
           mountItem,
           layoutState.getMountableOutputAt(layoutOutputPosition).getBounds(),
-          localVisibleRect);
+          localVisibleRect,
+          processVisibilityOutputs);
     }
 
     return true;

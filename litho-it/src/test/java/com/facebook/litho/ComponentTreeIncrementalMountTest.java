@@ -11,6 +11,7 @@ package com.facebook.litho;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -55,13 +56,15 @@ public class ComponentTreeIncrementalMountTest {
     // Can't use verify as the rect is reset when it is released back to the pool, which occurs
     // before we can check it.
     doAnswer(
-        new Answer() {
-          @Override
-          public Void answer(InvocationOnMock invocation) throws Throwable {
-            mMountedRect.set((Rect) invocation.getArguments()[1]);
-            return null;
-          }
-        }).when(mLithoView).mount(any(LayoutState.class), any(Rect.class));
+            new Answer() {
+              @Override
+              public Void answer(InvocationOnMock invocation) throws Throwable {
+                mMountedRect.set((Rect) invocation.getArguments()[1]);
+                return null;
+              }
+            })
+        .when(mLithoView)
+        .mount(any(LayoutState.class), any(Rect.class), eq(true));
   }
 
   @Test
@@ -94,7 +97,7 @@ public class ComponentTreeIncrementalMountTest {
     setupIncrementalMountTest(new Rect(10, 10, 20, 20), new Rect(20, 10, 30, 30));
 
     mComponentTree.incrementalMountComponent();
-    verify(mLithoView, never()).mount(any(LayoutState.class), any(Rect.class));
+    verify(mLithoView, never()).mount(any(LayoutState.class), any(Rect.class), eq(true));
   }
 
   @Test
@@ -170,8 +173,8 @@ public class ComponentTreeIncrementalMountTest {
   }
 
   /**
-   * Required in order to ensure that {@link LithoView#mount(LayoutState, Rect)} is
-   * mocked correctly (it needs protected access to be mocked).
+   * Required in order to ensure that {@link LithoView#mount(LayoutState, Rect, boolean)} is mocked
+   * correctly (it needs protected access to be mocked).
    */
   public static class TestLithoView extends LithoView {
 
@@ -180,9 +183,8 @@ public class ComponentTreeIncrementalMountTest {
     }
 
     protected void mount(
-        LayoutState layoutState,
-        Rect currentVisibleArea) {
-      super.mount(layoutState, currentVisibleArea);
+        LayoutState layoutState, Rect currentVisibleArea, boolean processVisibilityOutputs) {
+      super.mount(layoutState, currentVisibleArea, processVisibilityOutputs);
     }
   }
 }

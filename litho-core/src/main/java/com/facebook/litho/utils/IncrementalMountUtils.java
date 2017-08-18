@@ -105,7 +105,7 @@ public class IncrementalMountUtils {
       return;
     }
 
-    lithoView.performIncrementalMount(rect);
+    lithoView.performIncrementalMount(rect, true);
 
     release(rect);
   }

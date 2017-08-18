@@ -249,7 +249,7 @@ public final class ComponentTestHelper {
     // Unmounting the component by running incremental mount to a Rect that we certain won't
     // contain the component.
     Rect rect = new Rect(99999, 99999, 999999, 999999);
-    lithoView.performIncrementalMount(rect);
+    lithoView.performIncrementalMount(rect, true);
   }
 
   /**

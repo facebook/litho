@@ -403,7 +403,7 @@ public class ComponentTree {
       if (mIncrementalMountEnabled) {
         incrementalMountComponent();
       } else {
-        mountComponent(null);
+        mountComponent(null, true);
       }
 
       return true;
@@ -425,7 +425,7 @@ public class ComponentTree {
     final Rect currentVisibleArea = ComponentsPools.acquireRect();
 
     if (getVisibleRect(currentVisibleArea)) {
-      mountComponent(currentVisibleArea);
+      mountComponent(currentVisibleArea, true);
     }
     // if false: no-op, doesn't have visible area, is not ready or not attached
     ComponentsPools.release(currentVisibleArea);
@@ -461,7 +461,7 @@ public class ComponentTree {
         location[1] + view.getHeight());
   }
 
-  void mountComponent(Rect currentVisibleArea) {
+  void mountComponent(Rect currentVisibleArea, boolean processVisibilityOutputs) {
     assertMainThread();
 
     final boolean isDirtyMount = mLithoView.isMountStateDirty();
@@ -473,7 +473,7 @@ public class ComponentTree {
     }
 
     // currentVisibleArea null or empty => mount all
-    mLithoView.mount(mMainThreadLayoutState, currentVisibleArea);
+    mLithoView.mount(mMainThreadLayoutState, currentVisibleArea, processVisibilityOutputs);
 
     if (isDirtyMount) {
       recordRenderData(mMainThreadLayoutState);

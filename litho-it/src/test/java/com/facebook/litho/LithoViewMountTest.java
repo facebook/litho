@@ -179,7 +179,7 @@ public class LithoViewMountTest {
             },
             true);
 
-    lithoView.performIncrementalMount(new Rect(0, -10, 10, -5));
+    lithoView.performIncrementalMount(new Rect(0, -10, 10, -5), true);
     assertThat(child1.isMounted()).isFalse();
     assertThat(child2.isMounted()).isFalse();
 

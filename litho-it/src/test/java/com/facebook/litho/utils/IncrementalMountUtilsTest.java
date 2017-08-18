@@ -11,6 +11,7 @@ package com.facebook.litho.utils;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -57,13 +58,15 @@ public class IncrementalMountUtilsTest {
     // Can't use verify as the rect is reset when it is released back to the pool, which occurs
     // before we can check it.
     doAnswer(
-        new Answer() {
-          @Override
-          public Void answer(InvocationOnMock invocation) throws Throwable {
-            mMountedRect.set((Rect) invocation.getArguments()[0]);
-            return null;
-          }
-        }).when(mLithoView).performIncrementalMount(any(Rect.class));
+            new Answer() {
+              @Override
+              public Void answer(InvocationOnMock invocation) throws Throwable {
+                mMountedRect.set((Rect) invocation.getArguments()[0]);
+                return null;
+              }
+            })
+        .when(mLithoView)
+        .performIncrementalMount(any(Rect.class), eq(true));
   }
 
   @Test
@@ -92,7 +95,7 @@ public class IncrementalMountUtilsTest {
 
     IncrementalMountUtils.performIncrementalMount(mViewGroup);
 
-    verify(mLithoView, never()).performIncrementalMount(any(Rect.class));
+    verify(mLithoView, never()).performIncrementalMount(any(Rect.class), eq(true));
   }
 
   @Test
@@ -112,7 +115,7 @@ public class IncrementalMountUtilsTest {
 
     IncrementalMountUtils.performIncrementalMount(mViewGroup);
 
-    verify(mLithoView, never()).performIncrementalMount(any(Rect.class));
+    verify(mLithoView, never()).performIncrementalMount(any(Rect.class), eq(true));
   }
 
   @Test
@@ -170,7 +173,7 @@ public class IncrementalMountUtilsTest {
 
     IncrementalMountUtils.performIncrementalMount(mViewGroup);
 
-    verify(mLithoView, never()).performIncrementalMount(any(Rect.class));
+    verify(mLithoView, never()).performIncrementalMount(any(Rect.class), eq(true));
   }
 
   @Test
@@ -185,7 +188,7 @@ public class IncrementalMountUtilsTest {
 
     IncrementalMountUtils.performIncrementalMount(mViewGroup);
 
-    verify(mLithoView, never()).performIncrementalMount(any(Rect.class));
+    verify(mLithoView, never()).performIncrementalMount(any(Rect.class), eq(true));
   }
 
   @Test
@@ -236,7 +239,7 @@ public class IncrementalMountUtilsTest {
 
     IncrementalMountUtils.performIncrementalMount(mViewGroup);
 
-    verify(mLithoView, never()).performIncrementalMount(any(Rect.class));
+    verify(mLithoView, never()).performIncrementalMount(any(Rect.class), eq(true));
   }
 
   private static void setupViewBounds(View view, int l, int t, int r, int b) {

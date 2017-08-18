@@ -387,19 +387,15 @@ public class LithoView extends ComponentHost {
   public void setHasTransientState(boolean hasTransientState) {
     if (hasTransientState) {
       if (mTransientStateCount == 0 && isIncrementalMountEnabled()) {
-        mMountState.setHasTransientState(true);
-
         final Rect rect = ComponentsPools.acquireRect();
         rect.set(0, 0, getWidth(), getHeight());
-        performIncrementalMount(rect);
+        performIncrementalMount(rect, false);
         ComponentsPools.release(rect);
       }
       mTransientStateCount++;
     } else {
       mTransientStateCount--;
       if (mTransientStateCount == 0 && isIncrementalMountEnabled()) {
-        mMountState.setHasTransientState(false);
-
         // We mounted everything when the transient state was set on this view. We need to do this
         // partly to unmount content that is not visible but mostly to get the correct visibility
         // events to be fired.
@@ -479,7 +475,7 @@ public class LithoView extends ComponentHost {
       return;
     }
 
-    performIncrementalMount(rect);
+    performIncrementalMount(rect, true);
 
     ComponentsPools.release(rect);
   }
@@ -503,13 +499,13 @@ public class LithoView extends ComponentHost {
     return false;
   }
 
-  public void performIncrementalMount(Rect visibleRect) {
+  public void performIncrementalMount(Rect visibleRect, boolean processVisibilityOutputs) {
     if (mComponentTree == null || !checkMainThreadLayoutStateForIncrementalMount()) {
       return;
     }
 
     if (mComponentTree.isIncrementalMountEnabled()) {
-      mComponentTree.mountComponent(visibleRect);
+      mComponentTree.mountComponent(visibleRect, processVisibilityOutputs);
     } else {
       throw new IllegalStateException("To perform incremental mounting, you need first to enable" +
           " it when creating the ComponentTree.");
@@ -542,7 +538,7 @@ public class LithoView extends ComponentHost {
     }
   }
 
-  void mount(LayoutState layoutState, Rect currentVisibleArea) {
+  void mount(LayoutState layoutState, Rect currentVisibleArea, boolean processVisibilityOutputs) {
     boolean rectNeedsRelease = false;
     if (mTransientStateCount > 0 && isIncrementalMountEnabled()) {
       // If transient state is set but the MountState is dirty we want to re-mount everything.
@@ -563,7 +559,7 @@ public class LithoView extends ComponentHost {
       mPreviousMountBounds.set(currentVisibleArea);
     }
 
-    mMountState.mount(layoutState, currentVisibleArea);
+    mMountState.mount(layoutState, currentVisibleArea, processVisibilityOutputs);
 
     if (rectNeedsRelease) {
       ComponentsPools.release(currentVisibleArea);
