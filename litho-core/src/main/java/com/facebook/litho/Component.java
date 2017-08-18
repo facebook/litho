@@ -110,17 +110,30 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
     }
 
     public final ComponentLayout buildWithLayout() {
-      return this.withLayout().build();
+      return this.withLayout(false).build();
     }
 
     public final ComponentLayout.Builder withLayout() {
+      return this.withLayout(ComponentsConfiguration.storeLayoutAttributesInSeparateObject);
+    }
+
+    private ComponentLayout.Builder withLayout(boolean useSeparateInternalNode) {
       // calling build() which will release this builder setting these members to null/0.
       // We must capture their value before that happens.
       final ComponentContext context = mContext;
       final int defStyleAttr = mDefStyleAttr;
       final int defStyleRes = mDefStyleRes;
 
-      return Layout.create(context, build(), defStyleAttr, defStyleRes);
+      InternalNode internalNode =
+          (InternalNode) Layout.create(context, build(), defStyleAttr, defStyleRes);
+
+      if (useSeparateInternalNode) {
+        LayoutAttributes layoutAttributes = new LayoutAttributes();
+        layoutAttributes.init(context, internalNode);
+        return layoutAttributes;
+      } else {
+        return internalNode;
+      }
     }
 
     @ReturnsOwnership public abstract Component<L> build();

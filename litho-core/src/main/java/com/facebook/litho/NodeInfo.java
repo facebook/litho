@@ -413,6 +413,72 @@ class NodeInfo {
     }
   }
 
+  void copyInto(ComponentLayout.Builder layout) {
+    if ((mPrivateFlags & PFLAG_CLICK_HANDLER_IS_SET) != 0) {
+      layout.clickHandler(mClickHandler);
+    }
+    if ((mPrivateFlags & PFLAG_LONG_CLICK_HANDLER_IS_SET) != 0) {
+      layout.longClickHandler(mLongClickHandler);
+    }
+    if ((mPrivateFlags & PFLAG_FOCUS_CHANGE_HANDLER_IS_SET) != 0) {
+      layout.focusChangeHandler(mFocusChangeHandler);
+    }
+    if ((mPrivateFlags & PFLAG_TOUCH_HANDLER_IS_SET) != 0) {
+      layout.touchHandler(mTouchHandler);
+    }
+    if ((mPrivateFlags & PFLAG_INTERCEPT_TOUCH_HANDLER_IS_SET) != 0) {
+      layout.interceptTouchHandler(mInterceptTouchHandler);
+    }
+    if ((mPrivateFlags & PFLAG_DISPATCH_POPULATE_ACCESSIBILITY_EVENT_HANDLER_IS_SET) != 0) {
+      layout.dispatchPopulateAccessibilityEventHandler(mDispatchPopulateAccessibilityEventHandler);
+    }
+    if ((mPrivateFlags & PFLAG_ON_INITIALIZE_ACCESSIBILITY_EVENT_HANDLER_IS_SET) != 0) {
+      layout.onInitializeAccessibilityEventHandler(mOnInitializeAccessibilityEventHandler);
+    }
+    if ((mPrivateFlags & PFLAG_ON_INITIALIZE_ACCESSIBILITY_NODE_INFO_HANDLER_IS_SET) != 0) {
+      layout.onInitializeAccessibilityNodeInfoHandler(mOnInitializeAccessibilityNodeInfoHandler);
+    }
+    if ((mPrivateFlags & PFLAG_ON_POPULATE_ACCESSIBILITY_EVENT_HANDLER_IS_SET) != 0) {
+      layout.onPopulateAccessibilityEventHandler(mOnPopulateAccessibilityEventHandler);
+    }
+    if ((mPrivateFlags & PFLAG_ON_REQUEST_SEND_ACCESSIBILITY_EVENT_HANDLER_IS_SET) != 0) {
+      layout.onRequestSendAccessibilityEventHandler(mOnRequestSendAccessibilityEventHandler);
+    }
+    if ((mPrivateFlags & PFLAG_PERFORM_ACCESSIBILITY_ACTION_HANDLER_IS_SET) != 0) {
+      layout.performAccessibilityActionHandler(mPerformAccessibilityActionHandler);
+    }
+    if ((mPrivateFlags & PFLAG_SEND_ACCESSIBILITY_EVENT_HANDLER_IS_SET) != 0) {
+      layout.sendAccessibilityEventHandler(mSendAccessibilityEventHandler);
+    }
+    if ((mPrivateFlags & PFLAG_SEND_ACCESSIBILITY_EVENT_UNCHECKED_HANDLER_IS_SET) != 0) {
+      layout.sendAccessibilityEventUncheckedHandler(mSendAccessibilityEventUncheckedHandler);
+    }
+    if ((mPrivateFlags & PFLAG_CONTENT_DESCRIPTION_IS_SET) != 0) {
+      layout.contentDescription(mContentDescription);
+    }
+    if ((mPrivateFlags & PFLAG_SHADOW_ELEVATION_IS_SET) != 0) {
+      layout.shadowElevationPx(mShadowElevation);
+    }
+    if ((mPrivateFlags & PFLAG_OUTINE_PROVIDER_IS_SET) != 0) {
+      layout.outlineProvider(mOutlineProvider);
+    }
+    if ((mPrivateFlags & PFLAG_CLIP_TO_OUTLINE_IS_SET) != 0) {
+      layout.clipToOutline(mClipToOutline);
+    }
+    if (mViewTag != null) {
+      layout.viewTag(mViewTag);
+    }
+    if (mViewTags != null) {
+      layout.viewTags(mViewTags);
+    }
+    if (getFocusState() != FOCUS_UNSET) {
+      layout.focusable(getFocusState() == FOCUS_SET_TRUE);
+    }
+    if (getEnabledState() != ENABLED_UNSET) {
+      layout.enabled(getEnabledState() == ENABLED_SET_TRUE);
+    }
+  }
+
   static NodeInfo acquire() {
     final NodeInfo nodeInfo = ComponentsPools.acquireNodeInfo();
 

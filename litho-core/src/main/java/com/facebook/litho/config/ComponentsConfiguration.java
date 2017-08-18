@@ -80,4 +80,11 @@ public class ComponentsConfiguration {
    * Force all section component state updates to be async
    */
   public static boolean sectionComponentsAsyncStateUpdates = false;
+
+  /**
+   * Whether layout attributes should be stored in a separate object before copying them onto the
+   * {@link com.facebook.litho.InternalNode}. This is to give us an idea of whether moving layout
+   * attributes onto the {@link com.facebook.litho.Component} itself is performant.
+   */
+  public static boolean storeLayoutAttributesInSeparateObject = false;
 }
