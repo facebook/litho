@@ -45,9 +45,10 @@
   - id: inc-mount-architecture
   - id: view-flattening
   - id: recycling
-- title: Best Practices
+- title: Additional Resources
   items:
   - id: best-practices
+  - id: faq
 - title: Tools
   items:
   - id: debugging
