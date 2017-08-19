@@ -39,6 +39,7 @@ public class LithoView extends ComponentHost {
   private boolean mForceLayout;
   private boolean mSuppressMeasureComponentTree;
   private boolean mIsMeasuring = false;
+  private String mComponentKey = null;
 
   private final AccessibilityManager mAccessibilityManager;
 
@@ -303,6 +304,7 @@ public class LithoView extends ComponentHost {
     assertMainThread();
     assertNotInMeasure();
 
+    mComponentKey = componentTree.getRoot().getKey();
     mTemporaryDetachedComponent = null;
     if (mComponentTree == componentTree) {
       if (mIsAttached) {
