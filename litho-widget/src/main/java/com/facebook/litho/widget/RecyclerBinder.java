@@ -480,7 +480,14 @@ public class RecyclerBinder
       if (previousRenderInfo.rendersView()) {
         updateViewCreatorMappingsOnItemRemove(previousRenderInfo);
       }
-      holder.setRenderInfo(renderInfo);
+      final ComponentTreeHolder newHolder = mComponentTreeHolderFactory.create(
+              renderInfo,
+              mLayoutHandlerFactory != null ?
+                      mLayoutHandlerFactory.createLayoutCalculationHandler(renderInfo) :
+                      null,
+              mCanPrefetchDisplayLists,
+              mCanCacheDrawingDisplayLists);
+      mComponentTreeHolders.set(position, newHolder);
       if (renderInfo.rendersView()) {
         updateViewCreatorMappingsOnItemInsert(renderInfo);
       }
