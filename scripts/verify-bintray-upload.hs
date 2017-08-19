@@ -144,6 +144,14 @@ isSubDir prefix' path =
     Just dir -> length (splitDirectories dir) > 1
     Nothing -> False
 
+foldResult :: FoldM IO (Maybe (MvnArtifact, Bool)) Bool
+foldResult = FoldM step (pure True) pure
+    where
+        step _ (Just (mvnArtifact, False)) =
+          printf ("Failed to download artifact "%w%".\n") mvnArtifact >> return False
+        step prev _ =
+          return prev
+
 main :: IO ()
 main = do
   version <- options "Bintray Upload Verifier" parser
@@ -155,31 +163,34 @@ main = do
     Just _ -> return ()
     Nothing -> die "This tool requires `mvn` (Apache Maven) to be on your $PATH."
 
-  let prog = do
-      mavenTmp <- mkFakeMavenSettings
+  let parseProg = do
       gradleProperties :: FilePath <- realpath =<< find (suffix "/gradle.properties") rootDir
       guard $ isSubDir rootDir gradleProperties
       contents <- liftIO $ readTextFile gradleProperties
       case parseMvnArtifact contents of
         Left err' -> do
           printf ("Skipping unsupported file '"%fp%"' because of error "%s%".\n") gradleProperties err'
-          return (gradleProperties, True)
+          return Nothing
         Right mvnArtifact -> do
           printf ("Downloading Maven artifact for "%w%" ...\n") mvnArtifact
-          let (cmd, args) = buildMvnGetCommand mvnArtifact version mavenTmp
-          printf ("Executing "%s%" "%w%" ...\n") cmd args
-          ret <- proc cmd args empty
-          case ret of
-            ExitSuccess ->
-              return (gradleProperties, True)
-            ExitFailure code -> do
-              printf ("Download of Maven artifact "%w%" failed with status code "%d%". Looks like something went screwy.\n") mvnArtifact code
-              return (gradleProperties, False)
+          return $ Just mvnArtifact
 
-  fold prog (Fold.all $ (== True) . snd) >>= \case
-    True -> do
-      echo "All artifacts seem to have been uploaded. Sweet!"
-      exit ExitSuccess
-    False -> do
-      err "ERROR: Some artifacts are missing from Bintray!"
-      exit $ ExitFailure 1
+  let runProg mvnArtifact = do
+      mavenTmp <- mkFakeMavenSettings
+      let (cmd, args) = buildMvnGetCommand mvnArtifact version mavenTmp
+      ret <- proc cmd args empty
+      case ret of
+        ExitSuccess ->
+          return (mvnArtifact, True)
+        ExitFailure code -> do
+          return (mvnArtifact, False)
+
+  artifacts :: [MvnArtifact] <- catMaybes <$> fold parseProg Fold.list
+  foldIO (parallel (flip fold Fold.head . runProg <$> artifacts)) foldResult >>= \case
+     True -> do
+       echo "All artifacts seem to have been uploaded. Sweet!"
+       exit ExitSuccess
+     False -> do
+       err "ERROR: Some artifacts are missing from Bintray!"
+       exit $ ExitFailure 1
+
