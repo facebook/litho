@@ -436,18 +436,40 @@ public class ComponentTree {
 
     getLocationAndBoundsOnScreen(mLithoView, sCurrentLocation, visibleBounds);
 
-    final ViewParent viewParent = mLithoView.getParent();
-    if (viewParent instanceof View) {
+    final LithoView topLithoView = getTopLithoViewInHierarchy();
+    View view = mLithoView;
+    while (view != topLithoView.getParent()) {
+      final ViewParent viewParent = view.getParent();
+      if (!(viewParent instanceof View)) {
+        break;
+      }
+
       View parent = (View) viewParent;
       getLocationAndBoundsOnScreen(parent, sParentLocation, sParentBounds);
       if (!visibleBounds.setIntersect(visibleBounds, sParentBounds)) {
         return false;
       }
+
+      view = (View) view.getParent();
     }
 
     visibleBounds.offset(-sCurrentLocation[0], -sCurrentLocation[1]);
 
     return true;
+  }
+
+  private LithoView getTopLithoViewInHierarchy() {
+    LithoView topLithoView = mLithoView;
+    ViewParent viewParent = mLithoView.getParent();
+    while (viewParent != null) {
+      if (viewParent instanceof LithoView) {
+        topLithoView = (LithoView) viewParent;
+      }
+
+      viewParent = viewParent.getParent();
+    }
+
+    return topLithoView;
   }
 
   private static void getLocationAndBoundsOnScreen(View view, int[] location, Rect bounds) {
