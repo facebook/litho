@@ -22,9 +22,11 @@ import static com.facebook.yoga.YogaEdge.ALL;
 import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.powermock.reflect.Whitebox.getInternalState;
 import static org.robolectric.RuntimeEnvironment.application;
 
+import android.graphics.Color;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaAlign;
@@ -343,6 +345,24 @@ public class InternalNodeTest {
     assertTrue(
         "The error message contains the attributes set",
         error.contains("alignSelf, flex"));
+  }
+
+  @Test
+  public void testLayoutAttributes() {
+    LayoutAttributes layoutAttributes = new LayoutAttributes();
+    mNode.setLayoutAttributes(layoutAttributes);
+
+    mNode.borderColor(Color.RED);
+    EventHandler<ClickEvent> clickHandler = mock(EventHandler.class);
+    mNode.clickHandler(clickHandler);
+
+    assertThat(mNode.getBorderColor()).isEqualTo(Color.TRANSPARENT);
+    assertThat(mNode.getClickHandler()).isNull();
+
+    mNode.build();
+
+    assertThat(mNode.getBorderColor()).isEqualTo(Color.RED);
+    assertThat(mNode.getClickHandler()).isSameAs(clickHandler);
   }
 
   private static boolean isFlagSet(InternalNode internalNode, String flagName) {
