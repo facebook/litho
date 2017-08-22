@@ -32,114 +32,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * instances are immutable after creation.
  */
 public abstract class Component<L extends ComponentLifecycle> implements HasEventDispatcher {
-
-  /**
-   * @param <L> the {@link ComponentLifecycle} of the {@link Component} that this builder will
-   * build.
-   * @param <T> the type of this builder. Required to ensure methods defined here in the abstract
-   * class correctly return the type of the concrete subclass.
-   */
-  public abstract static class Builder<L extends ComponentLifecycle, T extends Builder<L, T>>
-      extends ResourceResolver {
-    private ComponentContext mContext;
-    @AttrRes
-    private int mDefStyleAttr;
-    @StyleRes
-    private int mDefStyleRes;
-    private Component mComponent;
-
-    protected void init(
-        ComponentContext c,
-        @AttrRes int defStyleAttr,
-        @StyleRes int defStyleRes,
-        Component<L> component) {
-      super.init(c, c.getResourceCache());
-
-      mComponent = component;
-      mContext = c;
-      mDefStyleAttr = defStyleAttr;
-      mDefStyleRes = defStyleRes;
-
-      if (defStyleAttr != 0 || defStyleRes != 0) {
-        component.mLifecycle.loadStyle(c, defStyleAttr, defStyleRes, component);
-      }
-    }
-
-    public abstract T getThis();
-
-    /**
-     * Set a key on the component that is local to its parent.
-     */
-    public T key(String key) {
-      mComponent.setKey(key);
-      return getThis();
-    }
-
-    @Override
-    protected void release() {
-      super.release();
-
-      mContext = null;
-      mDefStyleAttr = 0;
-      mDefStyleRes = 0;
-      mComponent = null;
-    }
-
-    /**
-     * Checks that all the required props are supplied, and if not throws a useful exception
-     *
-     * @param requiredPropsCount expected number of props
-     * @param required the bit set that identifies which props have been supplied
-     * @param requiredPropsNames the names of all props used for a useful error message
-     */
-    protected static void checkArgs(
-        int requiredPropsCount,
-        BitSet required,
-        String[] requiredPropsNames) {
-      if (required != null && required.nextClearBit(0) < requiredPropsCount) {
-        List<String> missingProps = new ArrayList<>();
-        for (int i = 0; i < requiredPropsCount; i++) {
-          if (!required.get(i)) {
-            missingProps.add(requiredPropsNames[i]);
-          }
-        }
-        throw new IllegalStateException(
-            "The following props are not marked as optional and were not supplied: " +
-                Arrays.toString(missingProps.toArray()));
-      }
-    }
-
-    public final ComponentLayout buildWithLayout() {
-      return this.withLayout(false).build();
-    }
-
-    public final ComponentLayout.Builder withLayout() {
-      return this.withLayout(ComponentsConfiguration.storeLayoutAttributesInSeparateObject);
-    }
-
-    private ComponentLayout.Builder withLayout(boolean useSeparateInternalNode) {
-      // calling build() which will release this builder setting these members to null/0.
-      // We must capture their value before that happens.
-      final ComponentContext context = mContext;
-      final Component<?> component = mComponent;
-      final int defStyleAttr = mDefStyleAttr;
-      final int defStyleRes = mDefStyleRes;
-
-      InternalNode internalNode =
-          (InternalNode) Layout.create(context, build(), defStyleAttr, defStyleRes);
-
-      if (useSeparateInternalNode) {
-        component.mLayoutAttributes = new LayoutAttributes();
-        component.mLayoutAttributes.init(context, internalNode);
-        return component.mLayoutAttributes;
-      } else {
-        return internalNode;
-      }
-    }
-
-    @ReturnsOwnership public abstract Component<L> build();
-  }
-
   private static final AtomicInteger sIdGenerator = new AtomicInteger(0);
   private int mId = sIdGenerator.getAndIncrement();
   private String mGlobalKey;
@@ -386,5 +278,107 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
   @Override
   public EventDispatcher getEventDispatcher() {
     return mLifecycle;
+  }
+
+  /**
+   * @param <L> the {@link ComponentLifecycle} of the {@link Component} that this builder will
+   *     build.
+   * @param <T> the type of this builder. Required to ensure methods defined here in the abstract
+   *     class correctly return the type of the concrete subclass.
+   */
+  public abstract static class Builder<L extends ComponentLifecycle, T extends Builder<L, T>>
+      extends ResourceResolver {
+    private ComponentContext mContext;
+    @AttrRes private int mDefStyleAttr;
+    @StyleRes private int mDefStyleRes;
+    private Component mComponent;
+
+    protected void init(
+        ComponentContext c,
+        @AttrRes int defStyleAttr,
+        @StyleRes int defStyleRes,
+        Component<L> component) {
+      super.init(c, c.getResourceCache());
+
+      mComponent = component;
+      mContext = c;
+      mDefStyleAttr = defStyleAttr;
+      mDefStyleRes = defStyleRes;
+
+      if (defStyleAttr != 0 || defStyleRes != 0) {
+        component.mLifecycle.loadStyle(c, defStyleAttr, defStyleRes, component);
+      }
+    }
+
+    public abstract T getThis();
+
+    /** Set a key on the component that is local to its parent. */
+    public T key(String key) {
+      mComponent.setKey(key);
+      return getThis();
+    }
+
+    @Override
+    protected void release() {
+      super.release();
+
+      mContext = null;
+      mDefStyleAttr = 0;
+      mDefStyleRes = 0;
+      mComponent = null;
+    }
+
+    /**
+     * Checks that all the required props are supplied, and if not throws a useful exception
+     *
+     * @param requiredPropsCount expected number of props
+     * @param required the bit set that identifies which props have been supplied
+     * @param requiredPropsNames the names of all props used for a useful error message
+     */
+    protected static void checkArgs(
+        int requiredPropsCount, BitSet required, String[] requiredPropsNames) {
+      if (required != null && required.nextClearBit(0) < requiredPropsCount) {
+        List<String> missingProps = new ArrayList<>();
+        for (int i = 0; i < requiredPropsCount; i++) {
+          if (!required.get(i)) {
+            missingProps.add(requiredPropsNames[i]);
+          }
+        }
+        throw new IllegalStateException(
+            "The following props are not marked as optional and were not supplied: "
+                + Arrays.toString(missingProps.toArray()));
+      }
+    }
+
+    public final ComponentLayout buildWithLayout() {
+      return this.withLayout(false).build();
+    }
+
+    public final ComponentLayout.Builder withLayout() {
+      return this.withLayout(ComponentsConfiguration.storeLayoutAttributesInSeparateObject);
+    }
+
+    private ComponentLayout.Builder withLayout(boolean useSeparateInternalNode) {
+      // calling build() which will release this builder setting these members to null/0.
+      // We must capture their value before that happens.
+      final ComponentContext context = mContext;
+      final Component<?> component = mComponent;
+      final int defStyleAttr = mDefStyleAttr;
+      final int defStyleRes = mDefStyleRes;
+
+      InternalNode internalNode =
+          (InternalNode) Layout.create(context, build(), defStyleAttr, defStyleRes);
+
+      if (useSeparateInternalNode) {
+        component.mLayoutAttributes = new LayoutAttributes();
+        component.mLayoutAttributes.init(context, internalNode);
+        return component.mLayoutAttributes;
+      } else {
+        return internalNode;
+      }
+    }
+
+    @ReturnsOwnership
+    public abstract Component<L> build();
   }
 }
