@@ -152,14 +152,14 @@ private static void addContent(RecyclerBinder recyclerBinder, ComponentContext c
     for (int i = 0; i < 32; i++) {
       recyclerBinder.insertItemAt(
           i,
-          ComponentInfo.create()
+          ComponentRenderInfo.create()
               .component(ListItem.create(context).build())
               .build());
     }
 }    
 ```
 
-In the code, a [ComponentInfo](/javadoc/com/facebook/litho/ComponentInfo) is created that describes the components to be rendered by a `Recycler`. In this example, a `ListItem` is the component to be rendered.
+In the code, a [ComponentRenderInfo](/javadoc/com/facebook/litho/widget/ComponentRenderInfo.html) is created that describes the components to be rendered by a `Recycler`. In this example, a `ListItem` is the component to be rendered.
 
 Finally, make a call to `addContent` in your activity's `onCreate` method, after the `component` definition:
 
@@ -211,14 +211,14 @@ private void addContent(
     RecyclerBinder recyclerBinder, 
     ComponentContext context) {
   for (int i = 0; i < 32; i++) {
-    ComponentInfo.Builder componentInfoBuilder = ComponentInfo.create();
-    componentInfoBuilder.component(
+    ComponentRenderInfo.Builder componentRenderInfoBuilder = ComponentRenderInfo.create();
+    componentRenderInfoBuilder.component(
         ListItem.create(context)
             .color(i % 2 == 0 ? Color.WHITE : Color.LTGRAY)
             .title("Hello, world!")
             .subtitle("Litho tutorial")
             .build());
-    recyclerBinder.insertItemAt(i, componentInfoBuilder.build());
+    recyclerBinder.insertItemAt(i, componentRenderInfoBuilder.build());
   }
 }
 ```
