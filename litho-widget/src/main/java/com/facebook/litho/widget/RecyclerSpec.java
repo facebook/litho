@@ -16,6 +16,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ItemAnimator;
 import android.support.v7.widget.RecyclerView.OnScrollListener;
+import android.support.v7.widget.SnapHelper;
 import android.view.View;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
@@ -130,7 +131,8 @@ class RecyclerSpec {
       @Prop(optional = true) boolean horizontalFadingEdgeEnabled,
       @Prop(optional = true) boolean verticalFadingEdgeEnabled,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int fadingEdgeLength,
-      @Prop(optional = true) @IdRes int recyclerViewId) {
+      @Prop(optional = true) @IdRes int recyclerViewId,
+      @Prop(optional = true) SnapHelper snapHelper) {
     final RecyclerView recyclerView = recyclerViewWrapper.getRecyclerView();
 
     if (recyclerView == null) {
@@ -157,6 +159,10 @@ class RecyclerSpec {
       recyclerView.addItemDecoration(itemDecoration);
     }
 
+    if (snapHelper != null) {
+      snapHelper.attachToRecyclerView(recyclerView);
+    }
+    
     binder.mount(recyclerView);
   }
 
@@ -245,7 +251,8 @@ class RecyclerSpec {
       ComponentContext context,
       RecyclerViewWrapper recyclerViewWrapper,
       @Prop Binder<RecyclerView> binder,
-      @Prop(optional = true) RecyclerView.ItemDecoration itemDecoration) {
+      @Prop(optional = true) RecyclerView.ItemDecoration itemDecoration,
+      @Prop(optional = true) SnapHelper snapHelper) {
     final RecyclerView recyclerView = recyclerViewWrapper.getRecyclerView();
 
     if (recyclerView == null) {
@@ -258,6 +265,10 @@ class RecyclerSpec {
 
     if (itemDecoration != null) {
       recyclerView.removeItemDecoration(itemDecoration);
+    }
+
+    if (snapHelper != null) {
+      snapHelper.attachToRecyclerView(null);
     }
 
     binder.unmount(recyclerView);
