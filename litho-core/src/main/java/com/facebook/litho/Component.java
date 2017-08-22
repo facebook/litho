@@ -121,6 +121,7 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
       // calling build() which will release this builder setting these members to null/0.
       // We must capture their value before that happens.
       final ComponentContext context = mContext;
+      final Component<?> component = mComponent;
       final int defStyleAttr = mDefStyleAttr;
       final int defStyleRes = mDefStyleRes;
 
@@ -128,9 +129,9 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
           (InternalNode) Layout.create(context, build(), defStyleAttr, defStyleRes);
 
       if (useSeparateInternalNode) {
-        LayoutAttributes layoutAttributes = new LayoutAttributes();
-        layoutAttributes.init(context, internalNode);
-        return layoutAttributes;
+        component.mLayoutAttributes = new LayoutAttributes();
+        component.mLayoutAttributes.init(context, internalNode);
+        return component.mLayoutAttributes;
       } else {
         return internalNode;
       }
@@ -153,6 +154,9 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
   // If we have a cachedLayout, onPrepare and onMeasure would have been called on it already.
   @ThreadConfined(ThreadConfined.ANY)
   private InternalNode mLastMeasuredLayout;
+
+  // This is just being used for an experiment right now. Do not use for anything else.
+  private LayoutAttributes mLayoutAttributes;
 
   public abstract String getSimpleName();
 
