@@ -12,6 +12,7 @@
 
 package com.facebook.samples.litho.lithography;
 
+import android.support.v7.widget.PagerSnapHelper;
 import com.facebook.litho.Column;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
@@ -39,6 +40,7 @@ public class FeedItemComponentSpec {
                         .withLayout() :
                     Recycler.create(c)
                         .binder(binder)
+                        .snapHelper(new PagerSnapHelper())
                         .withLayout()
                         .aspectRatio(2))
                 .child(

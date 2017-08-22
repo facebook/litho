@@ -162,7 +162,7 @@ class RecyclerSpec {
     if (snapHelper != null) {
       snapHelper.attachToRecyclerView(recyclerView);
     }
-    
+
     binder.mount(recyclerView);
   }
 
