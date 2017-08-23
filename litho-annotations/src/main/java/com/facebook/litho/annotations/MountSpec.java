@@ -52,6 +52,13 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MountSpec {
+  /**
+   * Class name of the generated component. When not provided defaults to name of the annotated
+   * class sans the "Spec" suffix. E.g. "MyComponentSpec" to "MyComponent".
+   *
+   * In order to avoid confusion, this should only be used if you have a very good reason for it.
+   * For instance to avoid naming collisions.
+   */
   String value() default "";
 
   /**
