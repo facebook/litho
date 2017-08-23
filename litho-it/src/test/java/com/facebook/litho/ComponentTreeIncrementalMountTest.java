@@ -22,7 +22,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Before;
@@ -131,32 +130,6 @@ public class ComponentTreeIncrementalMountTest {
 
     mComponentTree.incrementalMountComponent();
     assertThat(mMountedRect).isEqualTo(new Rect(0, 0, 10, 5));
-  }
-
-  @Test
-  public void testIncrementalMountBoundsWithMultipleParents() {
-    setupIncrementalMountTest(new Rect(10, 10, 20, 20), new Rect(10, 5, 20, 15));
-    ViewParent viewParent = mLithoView.getParent();
-    LithoView lithoViewParent = mock(LithoView.class);
-    when(viewParent.getParent()).thenReturn(lithoViewParent);
-
-    doAnswer(
-            new Answer<Void>() {
-              @Override
-              public Void answer(InvocationOnMock invocation) throws Throwable {
-                int[] location = (int[]) invocation.getArguments()[0];
-                location[0] = 5;
-                location[1] = 10;
-                return null;
-              }
-            })
-        .when(lithoViewParent)
-        .getLocationOnScreen(any(int[].class));
-    when(lithoViewParent.getWidth()).thenReturn(10);
-    when(lithoViewParent.getHeight()).thenReturn(10);
-
-    mComponentTree.incrementalMountComponent();
-    assertThat(mMountedRect).isEqualTo(new Rect(0, 0, 5, 5));
   }
 
   private void setupIncrementalMountTest(
