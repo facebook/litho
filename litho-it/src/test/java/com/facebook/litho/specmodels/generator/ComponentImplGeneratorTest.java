@@ -13,6 +13,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.facebook.litho.Component;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
@@ -54,15 +55,16 @@ public class ComponentImplGeneratorTest {
         @Prop boolean arg0,
         @State int arg1,
         @Param Object arg2,
-        @TreeProp long arg3) {
-    }
+        @TreeProp long arg3,
+        @Prop Component arg4) {}
 
     @OnEvent(Object.class)
     public void testEventMethod(
         @Prop boolean arg0,
         @State int arg1,
         @Param Object arg2,
-        @TreeProp long arg3) {}
+        @TreeProp long arg3,
+        @Prop Component arg4) {}
 
     @OnUpdateState
     public void testUpdateStateMethod() {}
@@ -107,7 +109,7 @@ public class ComponentImplGeneratorTest {
   @Test
   public void testGenerateProps() {
     TypeSpecDataHolder dataHolder = ComponentImplGenerator.generateProps(mSpecModelDI);
-    assertThat(dataHolder.getFieldSpecs()).hasSize(1);
+    assertThat(dataHolder.getFieldSpecs()).hasSize(2);
     assertThat(dataHolder.getFieldSpecs().get(0).toString())
         .isEqualTo(
             "@com.facebook.litho.annotations.Prop(\n" +
@@ -115,6 +117,13 @@ public class ComponentImplGeneratorTest {
             "    optional = false\n" +
             ")\n" +
             "boolean arg0 = TestSpec.arg0;\n");
+    assertThat(dataHolder.getFieldSpecs().get(1).toString())
+        .isEqualTo(
+            "@com.facebook.litho.annotations.Prop(\n"
+                + "    resType = com.facebook.litho.annotations.ResType.NONE,\n"
+                + "    optional = false\n"
+                + ")\n"
+                + "com.facebook.litho.Component arg4;\n");
   }
 
   @Test
@@ -161,29 +170,32 @@ public class ComponentImplGeneratorTest {
   public void testGenerateIsEquivalentMethod() {
     assertThat(ComponentImplGenerator.generateIsEquivalentMethod(mSpecModelDI, true).toString())
         .isEqualTo(
-            "@java.lang.Override\n" +
-            "public boolean isEquivalentTo(com.facebook.litho.Component<?> other) {\n" +
-            "  if (this == other) {\n" +
-            "    return true;\n" +
-            "  }\n" +
-            "  if (other == null || getClass() != other.getClass()) {\n" +
-            "    return false;\n" +
-            "  }\n" +
-            "  TestImpl testImpl = (TestImpl) other;\n" +
-            "  if (this.getId() == testImpl.getId()) {\n" +
-            "    return true;\n" +
-            "  }\n" +
-            "  if (arg0 != testImpl.arg0) {\n" +
-            "    return false;\n" +
-            "  }\n" +
-            "  if (mStateContainerImpl.arg1 != testImpl.mStateContainerImpl.arg1) {\n" +
-            "    return false;\n" +
-            "  }\n" +
-            "  if (arg3 != testImpl.arg3) {\n" +
-            "    return false;\n" +
-            "  }\n" +
-            "  return true;\n" +
-            "}\n");
+            "@java.lang.Override\n"
+                + "public boolean isEquivalentTo(com.facebook.litho.Component<?> other) {\n"
+                + "  if (this == other) {\n"
+                + "    return true;\n"
+                + "  }\n"
+                + "  if (other == null || getClass() != other.getClass()) {\n"
+                + "    return false;\n"
+                + "  }\n"
+                + "  TestImpl testImpl = (TestImpl) other;\n"
+                + "  if (this.getId() == testImpl.getId()) {\n"
+                + "    return true;\n"
+                + "  }\n"
+                + "  if (arg0 != testImpl.arg0) {\n"
+                + "    return false;\n"
+                + "  }\n"
+                + "  if (arg4 != null ? !arg4.isEquivalentTo(testImpl.arg4) : testImpl.arg4 != null) {\n"
+                + "    return false;\n"
+                + "  }\n"
+                + "  if (mStateContainerImpl.arg1 != testImpl.mStateContainerImpl.arg1) {\n"
+                + "    return false;\n"
+                + "  }\n"
+                + "  if (arg3 != testImpl.arg3) {\n"
+                + "    return false;\n"
+                + "  }\n"
+                + "  return true;\n"
+                + "}\n");
   }
 
   @Test

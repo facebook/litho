@@ -140,7 +140,9 @@ public final class SimpleMount extends ComponentLifecycle {
       if (Double.compare(ratio, simpleMountImpl.ratio) != 0) {
         return false;
       }
-      if (content != null ? !content.equals(simpleMountImpl.content) : simpleMountImpl.content != null) {
+      if (content != null
+          ? !content.isEquivalentTo(simpleMountImpl.content)
+          : simpleMountImpl.content != null) {
         return false;
       }
       return true;

@@ -63,8 +63,7 @@ public class ComponentImplGenerator {
             .addModifiers(Modifier.PRIVATE)
             .superclass(
                 ParameterizedTypeName.get(
-                    ClassNames.COMPONENT,
-                    specModel.getComponentTypeName()))
+                    specModel.getComponentClass(), specModel.getComponentTypeName()))
             .addSuperinterface(Cloneable.class);
 
     if (!specModel.hasInjectedDependencies()) {
@@ -312,22 +311,23 @@ public class ComponentImplGenerator {
     final String implClassName = getImplClassName(specModel);
     final String implInstanceName = getImplInstanceName(specModel);
 
-    MethodSpec.Builder isEquivalentBuilder = MethodSpec.methodBuilder("isEquivalentTo")
-        .addAnnotation(Override.class)
-        .addModifiers(Modifier.PUBLIC)
-        .returns(TypeName.BOOLEAN)
-        .addParameter(
-            ParameterizedTypeName.get(
-                ClassNames.COMPONENT,
-                WildcardTypeName.subtypeOf(TypeName.OBJECT)),
-            "other")
-        .beginControlFlow("if (this == other)")
-        .addStatement("return true")
-        .endControlFlow()
-        .beginControlFlow("if (other == null || getClass() != other.getClass())")
-        .addStatement("return false")
-        .endControlFlow()
-        .addStatement(implClassName + " " + implInstanceName + " = (" + implClassName + ") other");
+    MethodSpec.Builder isEquivalentBuilder =
+        MethodSpec.methodBuilder("isEquivalentTo")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(TypeName.BOOLEAN)
+            .addParameter(
+                ParameterizedTypeName.get(
+                    specModel.getComponentClass(), WildcardTypeName.subtypeOf(TypeName.OBJECT)),
+                "other")
+            .beginControlFlow("if (this == other)")
+            .addStatement("return true")
+            .endControlFlow()
+            .beginControlFlow("if (other == null || getClass() != other.getClass())")
+            .addStatement("return false")
+            .endControlFlow()
+            .addStatement(
+                implClassName + " " + implInstanceName + " = (" + implClassName + ") other");
 
     if (shouldCheckId) {
       isEquivalentBuilder
@@ -585,11 +585,14 @@ public class ComponentImplGenerator {
           .addStatement("return false")
           .endControlFlow();
     } else {
+      final String equalMethodName = shouldUseIsEquivalentTo(field) ? "isEquivalentTo" : "equals";
+
       codeBlock
           .beginControlFlow(
-              "if ($L != null ? !$L.equals($L.$L) : $L.$L != null)",
+              "if ($L != null ? !$L.$L($L.$L) : $L.$L != null)",
               implAccessor,
               implAccessor,
+              equalMethodName,
               implInstanceName,
               implAccessor,
               implInstanceName,
@@ -599,6 +602,10 @@ public class ComponentImplGenerator {
     }
 
     return codeBlock.build();
+  }
+
+  private static boolean shouldUseIsEquivalentTo(MethodParamModel field) {
+    return field.getType().equals(ClassNames.COMPONENT);
   }
 
   static String getImplAccessor(SpecModel specModel, MethodParamModel methodParamModel) {

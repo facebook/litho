@@ -19,6 +19,7 @@ java_test(
     source = "8",
     target = "8",
     deps = [
+        COMPONENTS_JAVA_TARGET,
         COMPONENTS_ANNOTATIONS_TARGET,
         COMPONENTS_ASSERTJ_TARGET,
         COMPONENTS_COMPILE_TESTING_TARGET,
