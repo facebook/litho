@@ -36,3 +36,23 @@ Click on the inspect link for the application you would like to inspect (we are 
 When inspecting a Litho component you are also given the ability to edit the contents of your UI directly from the inspector! This enables quick design iterations by tweaking margins, padding, and many other properties, without needed to re-compile or re-start the application. You can also use this to quickly test that your UI handles different lengths of text properly.
 
 ![Stetho edit](/static/images/stetho-edit.png)
+
+
+## Annotation Processor
+
+Debugging the annotation processor stage is a bit tricky as you are essentially debugging the Java Compiler (`javac`).
+Gradle, however, allows you to attach a debugger during the compilation stage by setting the property `org.gradle.debug` to true.
+To start Gradle with that flag, figure out a target that invokes the annotation processor and start it like this:
+
+```
+./gradlew --no-daemon -Dorg.gradle.debug=true :litho-widget:compileDebugJavaWithJavac
+```
+
+In this case we are compiling the `litho-widget` package.
+
+This will pause the execution during the "Starting Daemon" phase until you connect your debugger. This can be done by
+running a standard "Remote" target in IntelliJ which will look like this:
+
+![IntelliJ Remote Target](/static/images/remote-debugger.png)
+
+Now set a breakpoint at the right point, run your remote target and debug away!
