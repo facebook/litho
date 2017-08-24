@@ -73,14 +73,6 @@ public class ComponentsConfiguration {
    */
   public static boolean deepUnmountEnabled = true;
 
-  /** Force all section component prop updates to be async */
-  public static boolean sectionComponentsAsyncPropUpdates = false;
-
-  /**
-   * Force all section component state updates to be async
-   */
-  public static boolean sectionComponentsAsyncStateUpdates = false;
-
   /**
    * Whether layout attributes should be stored in a separate object before copying them onto the
    * {@link com.facebook.litho.InternalNode}. This is to give us an idea of whether moving layout
