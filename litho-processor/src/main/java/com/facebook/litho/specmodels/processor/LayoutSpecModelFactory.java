@@ -22,14 +22,15 @@ import com.facebook.litho.specmodels.model.LayoutSpecModel;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.Nullable;
+import javax.annotation.processing.RoundEnvironment;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 
-/**
- * Factory for creating {@link LayoutSpecModel}s.
- */
-public class LayoutSpecModelFactory {
+/** Factory for creating {@link LayoutSpecModel}s. */
+public class LayoutSpecModelFactory implements SpecModelFactory {
   private static final List<Class<? extends Annotation>> INTER_STAGE_INPUT_ANNOTATIONS =
       new ArrayList<>();
   private static final List<Class<? extends Annotation>> DELEGATE_METHOD_ANNOTATIONS =
@@ -41,34 +42,41 @@ public class LayoutSpecModelFactory {
     DELEGATE_METHOD_ANNOTATIONS.add(ShouldUpdate.class);
   }
 
+  private final List<Class<? extends Annotation>> mLayoutSpecDelegateMethodAnnotations;
+  private final LayoutSpecGenerator mLayoutSpecGenerator;
+
+  public LayoutSpecModelFactory() {
+    this(DELEGATE_METHOD_ANNOTATIONS, new DefaultLayoutSpecGenerator());
+  }
+
+  public LayoutSpecModelFactory(
+      List<Class<? extends Annotation>> layoutSpecDelegateMethodAnnotations,
+      LayoutSpecGenerator layoutSpecGenerator) {
+
+    mLayoutSpecDelegateMethodAnnotations = layoutSpecDelegateMethodAnnotations;
+    mLayoutSpecGenerator = layoutSpecGenerator;
+  }
+
+  @Override
+  public Set<Element> extract(RoundEnvironment roundEnvironment) {
+    return (Set<Element>) roundEnvironment.getElementsAnnotatedWith(LayoutSpec.class);
+  }
+
   /**
-   * Create a {@link LayoutSpecModel} from the given {@link TypeElement} and an optional
-   * {@link DependencyInjectionHelper}.
+   * Create a {@link LayoutSpecModel} from the given {@link TypeElement} and an optional {@link
+   * DependencyInjectionHelper}.
    */
-  public static LayoutSpecModel create(
+  @Override
+  public LayoutSpecModel create(
       Elements elements,
       TypeElement element,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper) {
-    return create(
-        elements,
-        element,
-        dependencyInjectionHelper,
-        DELEGATE_METHOD_ANNOTATIONS,
-        new DefaultLayoutSpecGenerator());
-  }
-
-  public static LayoutSpecModel create(
-      Elements elements,
-      TypeElement element,
-      @Nullable DependencyInjectionHelper dependencyInjectionHelper,
-      List<Class<? extends Annotation>> delegateMethodAnnotations,
-      LayoutSpecGenerator layoutSpecGenerator) {
     return new LayoutSpecModel(
         element.getQualifiedName().toString(),
         element.getAnnotation(LayoutSpec.class).value(),
         DelegateMethodExtractor.getDelegateMethods(
             element,
-            delegateMethodAnnotations,
+            mLayoutSpecDelegateMethodAnnotations,
             INTER_STAGE_INPUT_ANNOTATIONS,
             ImmutableList.<Class<? extends Annotation>>of(ShouldUpdate.class)),
         EventMethodExtractor.getOnEventMethods(elements, element, INTER_STAGE_INPUT_ANNOTATIONS),
@@ -83,6 +91,6 @@ public class LayoutSpecModelFactory {
         dependencyInjectionHelper,
         element.getAnnotation(LayoutSpec.class).isPureRender(),
         element,
-        layoutSpecGenerator);
+        mLayoutSpecGenerator);
   }
 }

@@ -35,6 +35,8 @@ import org.junit.Test;
 public class StateGeneratorTest {
   @Rule public CompilationRule mCompilationRule = new CompilationRule();
 
+  private final LayoutSpecModelFactory mLayoutSpecModelFactory = new LayoutSpecModelFactory();
+
   @LayoutSpec
   private static class TestWithStateSpec<T extends CharSequence> {
     @OnCreateLayout
@@ -72,10 +74,11 @@ public class StateGeneratorTest {
     Elements elements = mCompilationRule.getElements();
     TypeElement typeElementWithState =
         elements.getTypeElement(TestWithStateSpec.class.getCanonicalName());
-    mSpecModelWithState = LayoutSpecModelFactory.create(elements, typeElementWithState, null);
+    mSpecModelWithState = mLayoutSpecModelFactory.create(elements, typeElementWithState, null);
     TypeElement typeElementWithoutState =
         elements.getTypeElement(TestWithoutStateSpec.class.getCanonicalName());
-    mSpecModelWithoutState = LayoutSpecModelFactory.create(elements, typeElementWithoutState, null);
+    mSpecModelWithoutState =
+        mLayoutSpecModelFactory.create(elements, typeElementWithoutState, null);
   }
 
   @Test

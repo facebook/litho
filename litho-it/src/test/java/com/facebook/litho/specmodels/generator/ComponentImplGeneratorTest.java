@@ -43,6 +43,8 @@ import org.junit.Test;
 public class ComponentImplGeneratorTest {
   @Rule public CompilationRule mCompilationRule = new CompilationRule();
 
+  private final LayoutSpecModelFactory mLayoutSpecModelFactory = new LayoutSpecModelFactory();
+
   @LayoutSpec
   static class TestSpec {
     @PropDefault protected static boolean arg0 = true;
@@ -72,7 +74,7 @@ public class ComponentImplGeneratorTest {
   public void setUp() {
     Elements elements = mCompilationRule.getElements();
     TypeElement typeElement = elements.getTypeElement(TestSpec.class.getCanonicalName());
-    mSpecModelDI = LayoutSpecModelFactory.create(elements, typeElement, null);
+    mSpecModelDI = mLayoutSpecModelFactory.create(elements, typeElement, null);
   }
 
   @Test

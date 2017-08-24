@@ -9,7 +9,6 @@
 
 package com.facebook.litho.specmodels.processor;
 
-import static com.facebook.litho.specmodels.processor.LayoutSpecModelFactory.create;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -34,6 +33,7 @@ public class LayoutSpecModelFactoryTest {
   TypeElement mTypeElement = mock(TypeElement.class);
   DependencyInjectionHelper mDependencyInjectionHelper =
       mock(DependencyInjectionHelper.class);
+  LayoutSpecModelFactory mFactory = new LayoutSpecModelFactory();
   LayoutSpec mLayoutSpec = mock(LayoutSpec.class);
 
   @Before
@@ -46,7 +46,7 @@ public class LayoutSpecModelFactoryTest {
   @Test
   public void testCreate() {
     LayoutSpecModel layoutSpecModel =
-        create(mElements, mTypeElement, mDependencyInjectionHelper);
+        mFactory.create(mElements, mTypeElement, mDependencyInjectionHelper);
 
     assertThat(layoutSpecModel.getSpecName()).isEqualTo("TestSpec");
     assertThat(layoutSpecModel.getComponentName()).isEqualTo("Test");
@@ -67,7 +67,7 @@ public class LayoutSpecModelFactoryTest {
   public void testCreateWithSpecifiedName() {
     when(mLayoutSpec.value()).thenReturn("TestComponentName");
     LayoutSpecModel layoutSpecModel =
-        LayoutSpecModelFactory.create(mElements, mTypeElement, mDependencyInjectionHelper);
+        mFactory.create(mElements, mTypeElement, mDependencyInjectionHelper);
 
     assertThat(layoutSpecModel.getSpecName()).isEqualTo("TestSpec");
     assertThat(layoutSpecModel.getComponentName()).isEqualTo("TestComponentName");

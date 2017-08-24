@@ -29,7 +29,9 @@ import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.Nullable;
+import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -39,10 +41,8 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 
-/**
- * Factory for creating {@link MountSpecModel}s.
- */
-public class MountSpecModelFactory {
+/** Factory for creating {@link MountSpecModel}s. */
+public class MountSpecModelFactory implements SpecModelFactory {
   private static final List<Class<? extends Annotation>> INTER_STAGE_INPUT_ANNOTATIONS =
       new ArrayList<>();
   private static final List<Class<? extends Annotation>> DELEGATE_METHOD_ANNOTATIONS =
@@ -59,11 +59,17 @@ public class MountSpecModelFactory {
     DELEGATE_METHOD_ANNOTATIONS.add(ShouldUpdate.class);
   }
 
+  @Override
+  public Set<Element> extract(RoundEnvironment roundEnvironment) {
+    return (Set<Element>) roundEnvironment.getElementsAnnotatedWith(MountSpec.class);
+  }
+
   /**
-   * Create a {@link MountSpecModel} from the given {@link TypeElement} and an optional
-   * {@link DependencyInjectionHelper}.
+   * Create a {@link MountSpecModel} from the given {@link TypeElement} and an optional {@link
+   * DependencyInjectionHelper}.
    */
-  public static MountSpecModel create(
+  @Override
+  public MountSpecModel create(
       Elements elements,
       TypeElement element,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper) {

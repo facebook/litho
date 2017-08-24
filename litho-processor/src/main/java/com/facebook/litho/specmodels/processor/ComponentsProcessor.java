@@ -9,8 +9,12 @@
 
 package com.facebook.litho.specmodels.processor;
 
+import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
-import com.facebook.litho.specmodels.model.SpecModel;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.TypeElement;
@@ -18,16 +22,18 @@ import javax.lang.model.element.TypeElement;
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class ComponentsProcessor extends AbstractComponentsProcessor {
 
-  @Override
-  protected DependencyInjectionHelper getDependencyInjectionGenerator(TypeElement typeElement) {
-    return null;
+  public ComponentsProcessor() {
+    super(ImmutableList.of(new LayoutSpecModelFactory(), new MountSpecModelFactory()));
   }
 
   @Override
-  protected SpecModel getLayoutSpecModel(TypeElement typeElement) {
-    return LayoutSpecModelFactory.create(
-        processingEnv.getElementUtils(),
-        typeElement,
-        getDependencyInjectionGenerator(typeElement));
+  public Set<String> getSupportedAnnotationTypes() {
+    return new LinkedHashSet<>(
+        Arrays.asList(ClassNames.LAYOUT_SPEC.toString(), ClassNames.MOUNT_SPEC.toString()));
+  }
+
+  @Override
+  protected DependencyInjectionHelper getDependencyInjectionGenerator(TypeElement typeElement) {
+    return null;
   }
 }

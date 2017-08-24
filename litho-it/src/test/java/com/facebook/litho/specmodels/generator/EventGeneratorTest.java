@@ -43,6 +43,8 @@ import org.junit.Test;
 public class EventGeneratorTest {
   @Rule public CompilationRule mCompilationRule = new CompilationRule();
 
+  private final LayoutSpecModelFactory mLayoutSpecModelFactory = new LayoutSpecModelFactory();
+
   @LayoutSpec
   static class TestSpec<T extends CharSequence> {
     @PropDefault protected static boolean arg0 = true;
@@ -68,7 +70,7 @@ public class EventGeneratorTest {
   public void setUp() {
     Elements elements = mCompilationRule.getElements();
     TypeElement typeElement = elements.getTypeElement(TestSpec.class.getCanonicalName());
-    mSpecModel = LayoutSpecModelFactory.create(elements, typeElement, null);
+    mSpecModel = mLayoutSpecModelFactory.create(elements, typeElement, null);
     EventDeclarationModel eventDeclarationModel = new EventDeclarationModel(
         ClassName.OBJECT,
         ClassName.OBJECT,

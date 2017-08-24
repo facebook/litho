@@ -40,6 +40,8 @@ public class MountSpecModelFactoryTest {
   private final DependencyInjectionHelper mDependencyInjectionHelper =
       mock(DependencyInjectionHelper.class);
 
+  private final MountSpecModelFactory mFactory = new MountSpecModelFactory();
+
   static class TestTreeProp {
 
     private final long mValue;
@@ -108,7 +110,7 @@ public class MountSpecModelFactoryTest {
         elements.getTypeElement(MountSpecModelFactoryTest.TestMountSpec.class.getCanonicalName());
 
     MountSpecModel mountSpecModel =
-        MountSpecModelFactory.create(elements, typeElement, mDependencyInjectionHelper);
+        mFactory.create(elements, typeElement, mDependencyInjectionHelper);
 
     assertThat(mountSpecModel.getSpecName()).isEqualTo("TestMountSpec");
     assertThat(mountSpecModel.getComponentName()).isEqualTo("TestMountComponentName");

@@ -11,15 +11,11 @@ package com.facebook.litho.specmodels.processor;
 
 import static com.facebook.litho.specmodels.processor.ProcessorUtils.validate;
 
-import com.facebook.litho.annotations.LayoutSpec;
-import com.facebook.litho.annotations.MountSpec;
-import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.squareup.javapoet.JavaFile;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
@@ -32,65 +28,54 @@ import javax.tools.Diagnostic;
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public abstract class AbstractComponentsProcessor extends AbstractProcessor {
 
+  private final List<SpecModelFactory> mSpecModelFactories;
+
+  protected AbstractComponentsProcessor(
+      List<SpecModelFactory> specModelFactories) {
+    mSpecModelFactories = specModelFactories;
+  }
+
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
     if (roundEnv.processingOver()) {
       return false;
     }
 
-    Set<Element> layoutSpecElements =
-        (Set<Element>) roundEnv.getElementsAnnotatedWith(LayoutSpec.class);
-    Set<Element> mountSpecElements =
-        (Set<Element>) roundEnv.getElementsAnnotatedWith(MountSpec.class);
+    for (SpecModelFactory specModelFactory : mSpecModelFactories) {
+      final Set<Element> elements = specModelFactory.extract(roundEnv);
 
-    Set<Element> allSpecElements = new LinkedHashSet<>();
-    allSpecElements.addAll(layoutSpecElements);
-    allSpecElements.addAll(mountSpecElements);
-
-    for (Element element : allSpecElements) {
-      try {
-        SpecModel specModel = null;
-        final TypeElement typeElement = (TypeElement) element;
-        if (element.getAnnotation(LayoutSpec.class) != null) {
-          specModel = getLayoutSpecModel(typeElement);
-        } else if (element.getAnnotation(MountSpec.class) != null) {
-          specModel =
-              MountSpecModelFactory.create(
+      for (Element element : elements) {
+        try {
+          final DependencyInjectionHelper dependencyInjectionHelper =
+              getDependencyInjectionGenerator((TypeElement) element);
+          final SpecModel specModel =
+              specModelFactory.create(
                   processingEnv.getElementUtils(),
                   (TypeElement) element,
-                  getDependencyInjectionGenerator((TypeElement) element));
-        }
+                  dependencyInjectionHelper);
 
-        if (specModel != null) {
           validate(specModel);
           generate(specModel);
+        } catch (PrintableException e) {
+          e.print(processingEnv.getMessager());
+        } catch (Exception e) {
+          processingEnv
+              .getMessager()
+              .printMessage(
+                  Diagnostic.Kind.ERROR,
+                  "Unexpected error thrown when generating this component spec. "
+                      + "Please report stack trace to the components team.",
+                  element);
+          e.printStackTrace();
         }
-      } catch (PrintableException e) {
-        e.print(processingEnv.getMessager());
-      } catch (Exception e) {
-        processingEnv.getMessager().printMessage(
-            Diagnostic.Kind.ERROR,
-            "Unexpected error thrown when generating this component spec. " +
-                "Please report stack trace to the components team.",
-            element);
-        e.printStackTrace();
       }
     }
 
     return false;
   }
 
-  @Override
-  public Set<String> getSupportedAnnotationTypes() {
-    return new LinkedHashSet<>(Arrays.asList(
-        ClassNames.LAYOUT_SPEC.toString(),
-        ClassNames.MOUNT_SPEC.toString()));
-  }
-
   protected abstract DependencyInjectionHelper getDependencyInjectionGenerator(
       TypeElement typeElement);
-
-  protected abstract SpecModel getLayoutSpecModel(TypeElement typeElement);
 
   protected void generate(SpecModel specModel) throws IOException {
     JavaFile.builder(
