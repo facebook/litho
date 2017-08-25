@@ -11,6 +11,7 @@ package com.facebook.litho.testing.assertj;
 
 import static org.hamcrest.core.Is.is;
 
+import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.testing.InspectableComponent;
 import org.assertj.core.api.Condition;
 import org.assertj.core.description.TextDescription;
@@ -20,6 +21,18 @@ import org.hamcrest.Matcher;
 // TODO(T21048805): Provide examples in the javadoc.
 public final class ComponentConditions {
   private ComponentConditions() {}
+
+  /** Matcher that succeeds if a {@link InspectableComponent} type exactly matches provided one */
+  public static Condition<InspectableComponent> typeIs(
+      final Class<? extends ComponentLifecycle> clazz) {
+    return new Condition<InspectableComponent>() {
+      @Override
+      public boolean matches(InspectableComponent value) {
+        final Class component = value.getComponentClass();
+        return component != null && component.equals(clazz);
+      }
+    };
+  }
 
   /**
    * Matcher that succeeds if a {@link InspectableComponent} has a text content that exactly matches
