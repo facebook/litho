@@ -9,30 +9,31 @@
  * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.facebook.samples.litho.examples;
+package com.facebook.samples.lithocodelab.examples.modules;
 
-import com.facebook.litho.ClickEvent;
+import com.facebook.litho.Column;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
-import com.facebook.litho.EventHandler;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.widget.Text;
 
 @LayoutSpec
-public class ExamplesRowComponentSpec {
-
+public class LearningPropsComponentSpec {
     @OnCreateLayout
     static ComponentLayout onCreateLayout(
             ComponentContext c,
-            @Prop String text,
-            @Prop EventHandler<ClickEvent> clickEventHandler) {
-        return Text.create(c)
-                .text(text)
-                .textSizeSp(25)
-                .withLayout()
-                .clickHandler(clickEventHandler)
+            @Prop String text1,
+            @Prop String text2) {
+        return Column.create(c)
+                .child(Text.create(c)
+                        .text(text1)
+                        .textSizeDip(50))
+                .child(Text.create(c)
+                        .text(text2)
+                        .textColorRes(android.R.color.holo_green_dark)
+                        .textSizeSp(30))
                 .build();
     }
 }

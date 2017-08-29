@@ -9,10 +9,20 @@
  * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.facebook.samples.litho.examples.modules;
+package com.facebook.samples.lithocodelab.examples.modules;
+
+import static android.widget.Toast.LENGTH_SHORT;
+import static com.facebook.yoga.YogaAlign.CENTER;
+import static com.facebook.yoga.YogaAlign.FLEX_END;
+import static com.facebook.yoga.YogaAlign.STRETCH;
+import static com.facebook.yoga.YogaEdge.BOTTOM;
+import static com.facebook.yoga.YogaEdge.END;
+import static com.facebook.yoga.YogaEdge.RIGHT;
+import static com.facebook.yoga.YogaEdge.START;
+import static com.facebook.yoga.YogaEdge.TOP;
+import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 
 import android.widget.Toast;
-
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
 import com.facebook.litho.ComponentContext;
@@ -25,18 +35,7 @@ import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.widget.Image;
 import com.facebook.litho.widget.Text;
-import com.facebook.samples.litho.R;
-
-import static android.widget.Toast.LENGTH_SHORT;
-import static com.facebook.yoga.YogaAlign.CENTER;
-import static com.facebook.yoga.YogaAlign.FLEX_END;
-import static com.facebook.yoga.YogaAlign.STRETCH;
-import static com.facebook.yoga.YogaEdge.BOTTOM;
-import static com.facebook.yoga.YogaEdge.END;
-import static com.facebook.yoga.YogaEdge.RIGHT;
-import static com.facebook.yoga.YogaEdge.START;
-import static com.facebook.yoga.YogaEdge.TOP;
-import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
+import com.facebook.samples.lithocodelab.R;
 
 @LayoutSpec
 public class LearningClickEventsComponentSpec {

@@ -7,7 +7,7 @@
 include_defs("//COMPONENTS_DEFS")
 
 android_library(
-    name = "litho",
+    name = "lithocodelab",
     srcs = glob(["**/*.java"]),
     annotation_processor_deps = [
         COMPONENTS_PROCESSOR_LIB_TARGET,

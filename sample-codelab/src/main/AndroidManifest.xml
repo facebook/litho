@@ -13,7 +13,7 @@
   -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.facebook.samples.litho" >
+    package="com.facebook.samples.lithocodelab" >
 
     <uses-sdk
         android:minSdkVersion="15"
@@ -21,28 +21,23 @@
         />
 
     <application
-        android:name="com.facebook.samples.litho.LithoLabApplication"
+        android:name="com.facebook.samples.lithocodelab.LithoLabApplication"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.DarkActionBar" >
-        <activity
-            android:label="LithoLab: Begin"
-            android:name="com.facebook.samples.litho.LithoLabActivity" >
+        android:theme="@style/AppTheme" >
+        <activity android:label="LithoLab: Begin" android:name="com.facebook.samples.lithocodelab.LithoLabActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:label="LithoLab: End"
-            android:name="com.facebook.samples.litho.end.LithoLabApproximateEndActivity" >
+        <activity android:label="LithoLab: End" android:name="com.facebook.samples.lithocodelab.end.LithoLabApproximateEndActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:label="LithoLab: Examples"
-            android:name="com.facebook.samples.litho.examples.ExamplesLithoLabActivity" >
+        <activity android:label="LithoLab: Examples" android:name="com.facebook.samples.lithocodelab.examples.ExamplesLithoLabActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

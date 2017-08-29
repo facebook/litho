@@ -9,7 +9,7 @@
  * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.facebook.samples.litho.examples.modules;
+package com.facebook.samples.lithocodelab.examples.modules;
 
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;

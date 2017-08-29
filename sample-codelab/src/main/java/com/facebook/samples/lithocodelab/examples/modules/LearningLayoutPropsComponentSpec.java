@@ -9,17 +9,7 @@
  * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.facebook.samples.litho.examples.modules;
-
-import com.facebook.litho.Column;
-import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
-import com.facebook.litho.Row;
-import com.facebook.litho.annotations.LayoutSpec;
-import com.facebook.litho.annotations.OnCreateLayout;
-import com.facebook.litho.widget.Image;
-import com.facebook.litho.widget.Text;
-import com.facebook.samples.litho.R;
+package com.facebook.samples.lithocodelab.examples.modules;
 
 import static com.facebook.yoga.YogaAlign.CENTER;
 import static com.facebook.yoga.YogaAlign.FLEX_END;
@@ -30,6 +20,16 @@ import static com.facebook.yoga.YogaEdge.RIGHT;
 import static com.facebook.yoga.YogaEdge.START;
 import static com.facebook.yoga.YogaEdge.TOP;
 import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
+
+import com.facebook.litho.Column;
+import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentLayout;
+import com.facebook.litho.Row;
+import com.facebook.litho.annotations.LayoutSpec;
+import com.facebook.litho.annotations.OnCreateLayout;
+import com.facebook.litho.widget.Image;
+import com.facebook.litho.widget.Text;
+import com.facebook.samples.lithocodelab.R;
 
 @LayoutSpec
 public class LearningLayoutPropsComponentSpec {

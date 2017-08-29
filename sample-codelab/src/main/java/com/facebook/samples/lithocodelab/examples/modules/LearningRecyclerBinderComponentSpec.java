@@ -9,27 +9,37 @@
  * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.facebook.samples.litho.end;
+package com.facebook.samples.lithocodelab.examples.modules;
 
-import com.facebook.litho.Column;
+import android.support.v7.widget.OrientationHelper;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
+import com.facebook.litho.widget.LinearLayoutInfo;
+import com.facebook.litho.widget.Recycler;
+import com.facebook.litho.widget.RecyclerBinder;
 
 @LayoutSpec
-public class LithoLabEndComponentSpec {
+public class LearningRecyclerBinderComponentSpec {
     @OnCreateLayout
     static ComponentLayout onCreateLayout(
             ComponentContext c) {
-        return Column.create(c)
-                .backgroundRes(android.R.color.darker_gray)
-                .child(LithoLabStoryCardComponent.create(c)
-                        .title("Title")
-                        .subtitle("Subtitle")
-                        .content("This is some test content. It should fill at least one line. " +
-                                "This is a story card. You can interact with the menu button " +
-                                "and save button."))
-                .build();
+        final RecyclerBinder recyclerBinder = new RecyclerBinder.Builder()
+                .layoutInfo(new LinearLayoutInfo(c, OrientationHelper.VERTICAL, false))
+                .build(c);
+
+        for (int i = 0; i < 32; i++) {
+            recyclerBinder.insertItemAt(
+                    i,
+                    LearningPropsComponent.create(c)
+                            .text1("Item: " + i)
+                            .text2("Item: " + i)
+                            .build());
+        }
+
+        return Recycler.create(c)
+                .binder(recyclerBinder)
+                .buildWithLayout();
     }
 }

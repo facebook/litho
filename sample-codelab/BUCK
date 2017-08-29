@@ -18,7 +18,7 @@ android_binary(
 
 android_resource(
     name = "res",
-    package = "com.facebook.samples.litho",
+    package = "com.facebook.samples.lithocodelab",
     res = "src/main/res",
     visibility = [
         "PUBLIC",

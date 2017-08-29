@@ -9,16 +9,14 @@
  * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.facebook.samples.litho;
+package com.facebook.samples.lithocodelab.end;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-
+import android.support.v7.app.AppCompatActivity;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
-import com.facebook.litho.widget.Text;
 
-public class LithoLabActivity extends AppCompatActivity {
+public class LithoLabApproximateEndActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,10 +26,7 @@ public class LithoLabActivity extends AppCompatActivity {
 
         final LithoView lithoView = LithoView.create(
                 this /* context */,
-                Text.create(c)
-                        .text("Hello, World!")
-                        .textSizeDip(50)
-                        .build());
+                LithoLabEndComponent.create(c).build());
 
         setContentView(lithoView);
     }

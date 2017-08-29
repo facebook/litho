@@ -9,11 +9,21 @@
  * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.facebook.samples.litho.end;
+package com.facebook.samples.lithocodelab.end;
+
+import static android.graphics.Typeface.DEFAULT_BOLD;
+import static android.graphics.Typeface.SERIF;
+import static android.widget.Toast.LENGTH_SHORT;
+import static com.facebook.yoga.YogaAlign.STRETCH;
+import static com.facebook.yoga.YogaEdge.BOTTOM;
+import static com.facebook.yoga.YogaEdge.END;
+import static com.facebook.yoga.YogaEdge.HORIZONTAL;
+import static com.facebook.yoga.YogaEdge.START;
+import static com.facebook.yoga.YogaEdge.TOP;
+import static com.facebook.yoga.YogaJustify.CENTER;
 
 import android.graphics.Color;
 import android.widget.Toast;
-
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
 import com.facebook.litho.ComponentContext;
@@ -30,20 +40,9 @@ import com.facebook.litho.annotations.State;
 import com.facebook.litho.widget.Image;
 import com.facebook.litho.widget.SolidColor;
 import com.facebook.litho.widget.Text;
+import com.facebook.samples.lithocodelab.R;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaEdge;
-import com.facebook.samples.litho.R;
-
-import static android.graphics.Typeface.DEFAULT_BOLD;
-import static android.graphics.Typeface.SERIF;
-import static android.widget.Toast.LENGTH_SHORT;
-import static com.facebook.yoga.YogaAlign.STRETCH;
-import static com.facebook.yoga.YogaEdge.BOTTOM;
-import static com.facebook.yoga.YogaEdge.END;
-import static com.facebook.yoga.YogaEdge.HORIZONTAL;
-import static com.facebook.yoga.YogaEdge.START;
-import static com.facebook.yoga.YogaEdge.TOP;
-import static com.facebook.yoga.YogaJustify.CENTER;
 
 @LayoutSpec
 public class LithoLabStoryCardComponentSpec {

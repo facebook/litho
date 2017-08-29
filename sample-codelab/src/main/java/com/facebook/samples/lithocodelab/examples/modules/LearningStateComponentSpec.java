@@ -9,7 +9,11 @@
  * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.facebook.samples.litho.examples.modules;
+package com.facebook.samples.lithocodelab.examples.modules;
+
+import static com.facebook.yoga.YogaAlign.STRETCH;
+import static com.facebook.yoga.YogaEdge.BOTTOM;
+import static com.facebook.yoga.YogaEdge.TOP;
 
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.ComponentContext;
@@ -22,10 +26,6 @@ import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.widget.Text;
-
-import static com.facebook.yoga.YogaAlign.STRETCH;
-import static com.facebook.yoga.YogaEdge.BOTTOM;
-import static com.facebook.yoga.YogaEdge.TOP;
 
 @LayoutSpec
 public class LearningStateComponentSpec {

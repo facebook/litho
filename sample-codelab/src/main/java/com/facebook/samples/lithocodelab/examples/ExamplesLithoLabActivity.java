@@ -9,11 +9,10 @@
  * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.facebook.samples.litho.examples;
+package com.facebook.samples.lithocodelab.examples;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;

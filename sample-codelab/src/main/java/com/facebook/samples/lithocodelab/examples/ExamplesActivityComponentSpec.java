@@ -9,11 +9,10 @@
  * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.facebook.samples.litho.examples;
+package com.facebook.samples.lithocodelab.examples;
 
 
 import android.support.v7.widget.OrientationHelper;
-
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
@@ -25,21 +24,21 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.widget.LinearLayoutInfo;
 import com.facebook.litho.widget.Recycler;
 import com.facebook.litho.widget.RecyclerBinder;
-import com.facebook.samples.litho.examples.modules.LearningClickEventsComponent;
-import com.facebook.samples.litho.examples.modules.LearningClickEventsComponentSpec;
-import com.facebook.samples.litho.examples.modules.LearningContainersComponent;
-import com.facebook.samples.litho.examples.modules.LearningContainersComponentSpec;
-import com.facebook.samples.litho.examples.modules.LearningLayoutPropsComponent;
-import com.facebook.samples.litho.examples.modules.LearningLayoutPropsComponentSpec;
-import com.facebook.samples.litho.examples.modules.LearningLayoutSpecsComponent;
-import com.facebook.samples.litho.examples.modules.LearningLayoutSpecsComponentSpec;
-import com.facebook.samples.litho.examples.modules.LearningPropsComponent;
-import com.facebook.samples.litho.examples.modules.LearningPropsComponentSpec;
-import com.facebook.samples.litho.examples.modules.LearningRecyclerBinderComponent;
-import com.facebook.samples.litho.examples.modules.LearningRecyclerBinderComponentSpec;
-import com.facebook.samples.litho.examples.modules.LearningStateComponent;
-import com.facebook.samples.litho.examples.modules.LearningTextWidgetComponent;
-import com.facebook.samples.litho.examples.modules.LearningTextWidgetComponentSpec;
+import com.facebook.samples.lithocodelab.examples.modules.LearningClickEventsComponent;
+import com.facebook.samples.lithocodelab.examples.modules.LearningClickEventsComponentSpec;
+import com.facebook.samples.lithocodelab.examples.modules.LearningContainersComponent;
+import com.facebook.samples.lithocodelab.examples.modules.LearningContainersComponentSpec;
+import com.facebook.samples.lithocodelab.examples.modules.LearningLayoutPropsComponent;
+import com.facebook.samples.lithocodelab.examples.modules.LearningLayoutPropsComponentSpec;
+import com.facebook.samples.lithocodelab.examples.modules.LearningLayoutSpecsComponent;
+import com.facebook.samples.lithocodelab.examples.modules.LearningLayoutSpecsComponentSpec;
+import com.facebook.samples.lithocodelab.examples.modules.LearningPropsComponent;
+import com.facebook.samples.lithocodelab.examples.modules.LearningPropsComponentSpec;
+import com.facebook.samples.lithocodelab.examples.modules.LearningRecyclerBinderComponent;
+import com.facebook.samples.lithocodelab.examples.modules.LearningRecyclerBinderComponentSpec;
+import com.facebook.samples.lithocodelab.examples.modules.LearningStateComponent;
+import com.facebook.samples.lithocodelab.examples.modules.LearningTextWidgetComponent;
+import com.facebook.samples.lithocodelab.examples.modules.LearningTextWidgetComponentSpec;
 
 /**
  * Intended order of learning:
