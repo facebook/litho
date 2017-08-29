@@ -10,6 +10,7 @@
 package com.facebook.litho.testing.viewtree;
 
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -17,6 +18,7 @@ import com.facebook.litho.ComponentHost;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
+import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -52,18 +54,32 @@ final class ViewExtractors {
     }
   };
 
-  public static final Function<View, String> GET_DRAWABLE_FUNCTION = new Function<View, String>() {
-    @Override
-    public String apply(@Nullable View input) {
-      if (!(input instanceof ImageView)) {
-        return "No drawable found";
-      }
-      return String.format(
-          "Found drawable: \"%s\", view is %s",
-          getDrawableString((ImageView) input),
-          getVisibilityString(input.getVisibility()));
-    }
-  };
+  public static final Function<View, String> GET_DRAWABLE_FUNCTION =
+      new Function<View, String>() {
+        @Override
+        public String apply(@Nullable View input) {
+          if (input instanceof ImageView) {
+            return String.format(
+                "Found drawable: \"%s\", view is %s",
+                String.valueOf(((ImageView) input).getDrawable()),
+                getVisibilityString(input.getVisibility()));
+          } else if (input instanceof ComponentHost) {
+            ComponentHost host = (ComponentHost) input;
+            List<String> drawables = new ArrayList<>();
+            for (Drawable d : host.getDrawables()) {
+              drawables.add(String.valueOf(d));
+            }
+            for (Drawable d : host.getImageContent().getImageItems()) {
+              drawables.add(String.valueOf(d));
+            }
+            return String.format(
+                "Found drawables: \"%s\", view is %s",
+                TextUtils.join("\", \"", drawables), getVisibilityString(input.getVisibility()));
+          } else {
+            return "No drawable found";
+          }
+        }
+      };
 
   public static Function<View, String> GET_CONTENT_DESCRIPTION_FUNCTION
       = new Function<View, String>() {
@@ -119,11 +135,6 @@ final class ViewExtractors {
           getVisibilityString(input.getVisibility()));
     }
   };
-
-  private static String getDrawableString(ImageView input) {
-    Drawable drawable = input.getDrawable();
-    return String.valueOf(drawable);
-  }
 
   private static String getVisibilityString(int visibility) {
     return visibility == View.VISIBLE ? "visible" : "not visible";
