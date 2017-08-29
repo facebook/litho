@@ -6,7 +6,7 @@ permalink: /docs/recycler-component
 ---
 
 [RecyclerView](https://developer.android.com/reference/android/support/v7/widget/RecyclerView.html) is one of the fundamental building blocks for any Android application that contain a scrolling list of items. The
-[Recycler](/javadoc/com/facebook/litho/widget/Recycler) component exposes very similar functionalities while taking advantage of features such as background layout and incremental mount.
+[Recycler](/javadoc/com/facebook/litho/widget/Recycler.html) component exposes very similar functionalities while taking advantage of features such as background layout and incremental mount.
 
 ### Create a Recycler component
 
