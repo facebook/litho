@@ -26,8 +26,10 @@ dependencies:
 
 test:
   override:
-    # Build the sample first
+    # Build the samples first
     - buck build sample
+    - buck build sample-barebones
+    - buck build sample-codelab
     # Run the tests with Buck
     - buck test litho-it/src/test/... --config build.threads=1
     - buck test litho-it-powermock/src/test/... --config build.threads=1
