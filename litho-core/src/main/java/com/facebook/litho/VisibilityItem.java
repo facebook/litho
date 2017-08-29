@@ -13,8 +13,8 @@ import android.graphics.Rect;
 
 /**
  * Holds information about a VisibilityOutput (that is, about a component for which a visibility
- * event handler has been set). This class is justified by the fact that VisibilityOuput should
- * be immutable.
+ * event handler has been set). This class is justified by the fact that VisibilityOutput should be
+ * immutable.
  */
 class VisibilityItem {
 
@@ -26,7 +26,6 @@ class VisibilityItem {
 
   private String mGlobalKey;
   private int mFlags;
-  private boolean mFocusedFlag;
   // The invisible event and unfocused event handlers are required to make it possible to dispatch
   // the corresponding event when unbind is called or when the MountState is reset.
   private EventHandler<InvisibleEvent> mInvisibleHandler;
@@ -75,11 +74,15 @@ class VisibilityItem {
   }
 
   boolean isInFocusedRange() {
-    return mFocusedFlag;
+    return (mFlags & FLAG_FOCUSED_RANGE) != 0;
   }
 
-  void setFocusedRange(boolean flag) {
-    mFocusedFlag = flag;
+  void setFocusedRange(boolean isFocused) {
+    if (isFocused) {
+      mFlags |= FLAG_FOCUSED_RANGE;
+    } else {
+      mFlags &= ~FLAG_FOCUSED_RANGE;
+    }
   }
 
   /**

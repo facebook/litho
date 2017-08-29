@@ -337,9 +337,11 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
             EventDispatcherUtils.dispatchOnInvisible(visibilityItem.getInvisibleHandler());
           }
 
-          if (visibilityItem.isInFocusedRange() && visibilityItem.getUnfocusedHandler() != null) {
+          if (visibilityItem.isInFocusedRange()) {
             visibilityItem.setFocusedRange(false);
-            EventDispatcherUtils.dispatchOnUnfocused(visibilityItem.getUnfocusedHandler());
+            if (visibilityItem.getUnfocusedHandler() != null) {
+              EventDispatcherUtils.dispatchOnUnfocused(visibilityItem.getUnfocusedHandler());
+            }
           }
 
           mVisibilityIdToItemMap.remove(visibilityOutputId);
@@ -481,9 +483,11 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         EventDispatcherUtils.dispatchOnInvisible(invisibleHandler);
       }
 
-      if (unfocusedHandler != null && visibilityItem.isInFocusedRange()) {
+      if (visibilityItem.isInFocusedRange()) {
         visibilityItem.setFocusedRange(false);
-        EventDispatcherUtils.dispatchOnUnfocused(unfocusedHandler);
+        if (unfocusedHandler != null) {
+          EventDispatcherUtils.dispatchOnUnfocused(unfocusedHandler);
+        }
       }
 
       mVisibilityIdToItemMap.removeAt(i);
