@@ -41,14 +41,6 @@ dependencies {
 
     // Android Support Library
     implementation deps.supportCoreUi
-
-    // Testing
-    testImplementation project(':litho-testing')
-    testImplementation deps.robolectric
-    testImplementation deps.soloader
-    testImplementation deps.powermockMockito
-    testImplementation deps.powermockJunit
-    testImplementation deps.powermockXstream
 }
 
 apply from: rootProject.file('gradle/release.gradle')
