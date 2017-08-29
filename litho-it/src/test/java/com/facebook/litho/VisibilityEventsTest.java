@@ -410,6 +410,10 @@ public class VisibilityEventsTest {
     final TestComponent<TestViewComponent> component1 = create(mContext).key("component1").build();
     final EventHandler<VisibleEvent> visibleEventHandler1 = new EventHandler<>(component1, 1);
     final EventHandler<InvisibleEvent> invisibleEventHandler1 = new EventHandler<>(component1, 2);
+    final EventHandler<FocusedVisibleEvent> focusedEventHandler1 =
+        new EventHandler<>(component1, 3);
+    final EventHandler<UnfocusedVisibleEvent> unfocusedEventHandler1 =
+        new EventHandler<>(component1, 4);
 
     final LithoView lithoView =
         mountComponent(
@@ -422,6 +426,8 @@ public class VisibilityEventsTest {
                         Layout.create(c, component1)
                             .visibleHandler(visibleEventHandler1)
                             .invisibleHandler(invisibleEventHandler1)
+                            .focusedHandler(focusedEventHandler1)
+                            .unfocusedHandler(unfocusedEventHandler1)
                             .widthPx(10)
                             .heightPx(10))
                     .build();
@@ -431,6 +437,8 @@ public class VisibilityEventsTest {
 
     assertThat(component1.getLifecycle().getDispatchedEventHandlers())
         .contains(visibleEventHandler1);
+    assertThat(component1.getLifecycle().getDispatchedEventHandlers())
+        .doesNotContain(focusedEventHandler1);
 
     final TestComponent<TestViewComponent> component2 = create(mContext).key("component2").build();
     final EventHandler<VisibleEvent> visibleEventHandler2 = new EventHandler<>(component2, 3);
@@ -456,6 +464,8 @@ public class VisibilityEventsTest {
 
     assertThat(component1.getLifecycle().getDispatchedEventHandlers())
         .contains(invisibleEventHandler1);
+    assertThat(component1.getLifecycle().getDispatchedEventHandlers())
+        .doesNotContain(unfocusedEventHandler1);
     assertThat(component2.getLifecycle().getDispatchedEventHandlers())
         .contains(visibleEventHandler2);
   }

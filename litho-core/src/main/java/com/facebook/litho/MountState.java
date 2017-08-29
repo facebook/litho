@@ -337,7 +337,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
             EventDispatcherUtils.dispatchOnInvisible(visibilityItem.getInvisibleHandler());
           }
 
-          if (visibilityItem.getUnfocusedHandler() != null) {
+          if (visibilityItem.isInFocusedRange() && visibilityItem.getUnfocusedHandler() != null) {
             visibilityItem.setFocusedRange(false);
             EventDispatcherUtils.dispatchOnUnfocused(visibilityItem.getUnfocusedHandler());
           }
