@@ -470,7 +470,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode flexBasisAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-    return flexBasisPx(mResourceResolver.resolveDimenOffsetAttr(resId, defaultResId));
+    return flexBasisPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
   }
 
   @Override
@@ -480,7 +480,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode flexBasisRes(@DimenRes int resId) {
-    return flexBasisPx(mResourceResolver.resolveDimenOffsetRes(resId));
+    return flexBasisPx(mResourceResolver.resolveDimenSizeRes(resId));
   }
 
   @Override
@@ -553,7 +553,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       YogaEdge edge,
       @AttrRes int resId,
       @DimenRes int defaultResId) {
-    return marginPx(edge, mResourceResolver.resolveDimenOffsetAttr(resId, defaultResId));
+    return marginPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
   }
 
   @Override
@@ -565,7 +565,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode marginRes(YogaEdge edge, @DimenRes int resId) {
-    return marginPx(edge, mResourceResolver.resolveDimenOffsetRes(resId));
+    return marginPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
   }
 
   @Override
@@ -622,7 +622,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       YogaEdge edge,
       @AttrRes int resId,
       @DimenRes int defaultResId) {
-    return paddingPx(edge, mResourceResolver.resolveDimenOffsetAttr(resId, defaultResId));
+    return paddingPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
   }
 
   @Override
@@ -634,7 +634,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode paddingRes(YogaEdge edge, @DimenRes int resId) {
-    return paddingPx(edge, mResourceResolver.resolveDimenOffsetRes(resId));
+    return paddingPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
   }
 
   @Override
@@ -668,7 +668,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       YogaEdge edge,
       @AttrRes int resId,
       @DimenRes int defaultResId) {
-    return borderWidthPx(edge, mResourceResolver.resolveDimenOffsetAttr(resId, defaultResId));
+    return borderWidthPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
   }
 
   @Override
@@ -680,7 +680,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode borderWidthRes(YogaEdge edge, @DimenRes int resId) {
-    return borderWidthPx(edge, mResourceResolver.resolveDimenOffsetRes(resId));
+    return borderWidthPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
   }
 
   @Override
@@ -731,7 +731,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       YogaEdge edge,
       @AttrRes int resId,
       @DimenRes int defaultResId) {
-    return positionPx(edge, mResourceResolver.resolveDimenOffsetAttr(resId, defaultResId));
+    return positionPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
   }
 
   @Override
@@ -741,7 +741,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode positionRes(YogaEdge edge, @DimenRes int resId) {
-    return positionPx(edge, mResourceResolver.resolveDimenOffsetRes(resId));
+    return positionPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
   }
 
   @Override
@@ -1115,7 +1115,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       @DimenRes int defaultResId) {
     return touchExpansionPx(
         edge,
-        mResourceResolver.resolveDimenOffsetAttr(resId, defaultResId));
+        mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
   }
 
   @Override
@@ -1127,7 +1127,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode touchExpansionRes(YogaEdge edge, @DimenRes int resId) {
-    return touchExpansionPx(edge, mResourceResolver.resolveDimenOffsetRes(resId));
+    return touchExpansionPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
   }
 
   @Override

@@ -205,7 +205,7 @@ class LayoutAttributes implements ComponentLayout.Builder {
 
   @Override
   public LayoutAttributes flexBasisAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-    return flexBasisPx(mResourceResolver.resolveDimenOffsetAttr(resId, defaultResId));
+    return flexBasisPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
   }
 
   @Override
@@ -215,7 +215,7 @@ class LayoutAttributes implements ComponentLayout.Builder {
 
   @Override
   public LayoutAttributes flexBasisRes(@DimenRes int resId) {
-    return flexBasisPx(mResourceResolver.resolveDimenOffsetRes(resId));
+    return flexBasisPx(mResourceResolver.resolveDimenSizeRes(resId));
   }
 
   @Override
@@ -271,7 +271,7 @@ class LayoutAttributes implements ComponentLayout.Builder {
   @Override
   public LayoutAttributes marginAttr(
       YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
-    return marginPx(edge, mResourceResolver.resolveDimenOffsetAttr(resId, defaultResId));
+    return marginPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
   }
 
   @Override
@@ -281,7 +281,7 @@ class LayoutAttributes implements ComponentLayout.Builder {
 
   @Override
   public LayoutAttributes marginRes(YogaEdge edge, @DimenRes int resId) {
-    return marginPx(edge, mResourceResolver.resolveDimenOffsetRes(resId));
+    return marginPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
   }
 
   @Override
@@ -312,7 +312,7 @@ class LayoutAttributes implements ComponentLayout.Builder {
   @Override
   public LayoutAttributes paddingAttr(
       YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
-    return paddingPx(edge, mResourceResolver.resolveDimenOffsetAttr(resId, defaultResId));
+    return paddingPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
   }
 
   @Override
@@ -322,7 +322,7 @@ class LayoutAttributes implements ComponentLayout.Builder {
 
   @Override
   public LayoutAttributes paddingRes(YogaEdge edge, @DimenRes int resId) {
-    return paddingPx(edge, mResourceResolver.resolveDimenOffsetRes(resId));
+    return paddingPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
   }
 
   @Override
@@ -343,7 +343,7 @@ class LayoutAttributes implements ComponentLayout.Builder {
   @Override
   public LayoutAttributes borderWidthAttr(
       YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
-    return borderWidthPx(edge, mResourceResolver.resolveDimenOffsetAttr(resId, defaultResId));
+    return borderWidthPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
   }
 
   @Override
@@ -353,7 +353,7 @@ class LayoutAttributes implements ComponentLayout.Builder {
 
   @Override
   public LayoutAttributes borderWidthRes(YogaEdge edge, @DimenRes int resId) {
-    return borderWidthPx(edge, mResourceResolver.resolveDimenOffsetRes(resId));
+    return borderWidthPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
   }
 
   @Override
@@ -391,7 +391,7 @@ class LayoutAttributes implements ComponentLayout.Builder {
   @Override
   public LayoutAttributes positionAttr(
       YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
-    return positionPx(edge, mResourceResolver.resolveDimenOffsetAttr(resId, defaultResId));
+    return positionPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
   }
 
   @Override
@@ -401,7 +401,7 @@ class LayoutAttributes implements ComponentLayout.Builder {
 
   @Override
   public LayoutAttributes positionRes(YogaEdge edge, @DimenRes int resId) {
-    return positionPx(edge, mResourceResolver.resolveDimenOffsetRes(resId));
+    return positionPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
   }
 
   @Override
@@ -634,7 +634,7 @@ class LayoutAttributes implements ComponentLayout.Builder {
   @Override
   public LayoutAttributes touchExpansionAttr(
       YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
-    return touchExpansionPx(edge, mResourceResolver.resolveDimenOffsetAttr(resId, defaultResId));
+    return touchExpansionPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
   }
 
   @Override
@@ -644,7 +644,7 @@ class LayoutAttributes implements ComponentLayout.Builder {
 
   @Override
   public LayoutAttributes touchExpansionRes(YogaEdge edge, @DimenRes int resId) {
-    return touchExpansionPx(edge, mResourceResolver.resolveDimenOffsetRes(resId));
+    return touchExpansionPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
   }
 
   @Override

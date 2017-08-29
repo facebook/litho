@@ -19,6 +19,7 @@
 -->
 
     <dimen name="test_dimen">10dp</dimen>
+    <dimen name="test_dimen_float">12.6dp</dimen>
     <dimen name="test_large_dimen">20dp</dimen>
     <dimen name="default_dimen">10dp</dimen>
 </resources>
