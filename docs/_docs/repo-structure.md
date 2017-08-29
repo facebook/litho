@@ -22,6 +22,13 @@ A number of external libraries can be found in this sub-folder.  Roughly, they c
 
 The source for the finished product of the [barebones tutorial](/docs/tutorial) is found here.  If you change the tutorial, you must update the code here.
 
+### `/sample-codelab/`
+
+The source for the codelab tutorial is found here. The codelab has 3 parts:
+* `/examples/`: This has an Activity with a step-by-step introduction to the features of Litho. Each element points to a ComponentSpec which builds on the last and uses new features.
+* `/ (root)`: This is a "Hello world" Activity, rendered using Components. This can be used in presentations or labs to learn Litho.
+* `/end/`: This is an approximate end state for the lab built from the root.
+
 ### `/sample/`
 
 Under this directory is found code for the Litho sample app.  This includes the playground, which you should use for all testing/bug reporting.

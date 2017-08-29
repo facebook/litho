@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ This file provided by Facebook is for non-commercial testing and evaluation
+  ~ purposes only.  Facebook reserves all rights not expressly granted.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+  ~ FACEBOOK BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+  ~ ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+  ~ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+  -->
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.facebook.samples.litho" >
+
+    <application
+        android:name="com.facebook.samples.litho.LithoLabApplication"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.AppCompat.Light.DarkActionBar" >
+        <activity
+            android:label="LithoLab: Begin"
+            android:name="com.facebook.samples.litho.LithoLabActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:label="LithoLab: End"
+            android:name="com.facebook.samples.litho.end.LithoLabApproximateEndActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:label="LithoLab: Examples"
+            android:name="com.facebook.samples.litho.examples.ExamplesLithoLabActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
