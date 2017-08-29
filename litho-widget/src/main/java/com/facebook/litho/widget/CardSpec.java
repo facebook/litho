@@ -38,7 +38,7 @@ import com.facebook.litho.annotations.ResType;
  * @prop shadowStartColor Start color for shadow drawn underneath the card.
  * @prop shadowEndColor End color for shadow drawn underneath the card.
  * @prop cornerRadius Corner radius for the card.
- * @prop elevation Evelation of the card.
+ * @prop elevation Elevation of the card.
  */
 @LayoutSpec (isPureRender = true)
 class CardSpec {
