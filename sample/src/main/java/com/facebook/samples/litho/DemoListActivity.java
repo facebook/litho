@@ -20,6 +20,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.widget.LinearLayoutInfo;
 import com.facebook.litho.widget.RecyclerBinder;
+import com.facebook.samples.litho.bordereffects.BorderEffectsActivity;
 import com.facebook.samples.litho.lithography.LithographyActivity;
 import com.facebook.samples.litho.playground.PlaygroundActivity;
 import com.facebook.samples.litho.transitionsdemo.TransitionsDemoActivity;
@@ -50,6 +51,11 @@ public class DemoListActivity extends AppCompatActivity {
         recyclerBinder,
         "Transitions Demo",
         new Intent(this, TransitionsDemoActivity.class));
+    addDemo(
+        componentContext,
+        recyclerBinder,
+        "Border effects",
+        new Intent(this, BorderEffectsActivity.class));
 
     setContentView(
         LithoView.create(

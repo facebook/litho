@@ -43,6 +43,7 @@
     <activity android:name=".lithography.LithographyActivity" />
     <activity android:name=".playground.PlaygroundActivity" />
     <activity android:name=".transitionsdemo.TransitionsDemoActivity" />
+    <activity android:name=".bordereffects.BorderEffectsActivity" />
   </application>
 
 
