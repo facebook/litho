@@ -15,10 +15,13 @@ import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeVariableName;
+import com.sun.tools.javac.code.Symbol;
+import com.sun.tools.javac.util.Name;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nullable;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ExecutableElement;
@@ -37,14 +40,24 @@ public class MethodExtractorUtils {
       List<Class<? extends Annotation>> permittedAnnotations,
       List<Class<? extends Annotation>> permittedInterStageInputAnnotations,
       List<Class<? extends Annotation>> delegateMethodAnnotationsThatSkipDiffModels) {
-    final List<MethodParamModel> methodParams = new ArrayList<>();
-    for (VariableElement param : method.getParameters()) {
+
+    final List<MethodParamModel> methodParamModels = new ArrayList<>();
+    final List<Name> savedParameterNames = getSavedParameterNames(method);
+    final List<? extends VariableElement> params = method.getParameters();
+
+    for (int i = 0, size = params.size(); i < size; i++) {
+      final VariableElement param = params.get(i);
+      final String paramName =
+          savedParameterNames == null
+              ? param.getSimpleName().toString()
+              : savedParameterNames.get(i).toString();
+
       try {
-        methodParams.add(
+        methodParamModels.add(
             MethodParamModelFactory.create(
                 method,
                 TypeName.get(param.asType()),
-                param.getSimpleName().toString(),
+                paramName,
                 getLibraryAnnotations(param, permittedAnnotations),
                 getExternalAnnotations(param),
                 permittedInterStageInputAnnotations,
@@ -57,7 +70,21 @@ public class MethodExtractorUtils {
       }
     }
 
-    return methodParams;
+    return methodParamModels;
+  }
+
+  /**
+   * Attempt to recover saved parameter names for a method. This will likely only work for code
+   * compiled with javac >= 8, but it's often the only chance to get named parameters as opposed to
+   * 'arg0', 'arg1', ...
+   */
+  @Nullable
+  private static List<Name> getSavedParameterNames(ExecutableElement method) {
+    if (method instanceof Symbol.MethodSymbol) {
+      final Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) method;
+      return methodSymbol.savedParameterNames;
+    }
+    return null;
   }
 
   private static List<Annotation> getLibraryAnnotations(

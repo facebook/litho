@@ -19,10 +19,11 @@ java_test(
     source = "8",
     target = "8",
     deps = [
-        COMPONENTS_JAVA_TARGET,
         COMPONENTS_ANNOTATIONS_TARGET,
         COMPONENTS_ASSERTJ_TARGET,
         COMPONENTS_COMPILE_TESTING_TARGET,
+        COMPONENTS_JAVAC_TOOLS_TARGET,
+        COMPONENTS_JAVA_TARGET,
         COMPONENTS_MOCKITO_TARGET,
         COMPONENTS_PROCESSOR_LIB_TARGET,
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels"),

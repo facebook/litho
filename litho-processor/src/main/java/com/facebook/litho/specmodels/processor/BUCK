@@ -39,6 +39,7 @@ java_library(
     provided_deps = [
         COMPONENTS_JSR_TARGET,
         COMPONENTS_JAVAPOET_TARGET,
+        COMPONENTS_JAVAC_TOOLS_TARGET,
     ],
     source = "8",
     target = "8",

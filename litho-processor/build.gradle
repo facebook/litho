@@ -7,6 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+import javax.tools.ToolProvider
+
 apply plugin: 'java'
 apply plugin: 'maven-publish'
 
@@ -15,6 +17,7 @@ targetCompatibility = JavaVersion.VERSION_1_8
 
 dependencies {
     implementation project(':litho-annotations')
+    compileOnly files(((URLClassLoader) ToolProvider.getSystemToolClassLoader()).getURLs())
     compileOnly deps.jsr305
 
     // Processor

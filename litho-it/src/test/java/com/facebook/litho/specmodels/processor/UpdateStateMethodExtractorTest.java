@@ -80,15 +80,16 @@ public class UpdateStateMethodExtractorTest {
 
     assertThat(updateStateMethod.methodParams).hasSize(3);
 
-    assertThat(updateStateMethod.methodParams.get(0).getName()).isEqualTo("arg0");
+    assertThat(updateStateMethod.methodParams.get(0).getName()).isEqualTo("testProp");
     assertThat(updateStateMethod.methodParams.get(0).getType()).isEqualTo(TypeName.BOOLEAN);
     assertThat(updateStateMethod.methodParams.get(0).getAnnotations()).hasSize(1);
 
-    assertThat(updateStateMethod.methodParams.get(1).getName()).isEqualTo("arg1");
+    assertThat(updateStateMethod.methodParams.get(1).getName()).isEqualTo("testState");
     assertThat(updateStateMethod.methodParams.get(1).getType()).isEqualTo(TypeName.INT);
     assertThat(updateStateMethod.methodParams.get(1).getAnnotations()).hasSize(1);
 
-    assertThat(updateStateMethod.methodParams.get(2).getName()).isEqualTo("arg2");
+    assertThat(updateStateMethod.methodParams.get(2).getName())
+        .isEqualTo("testPermittedAnnotation");
     assertThat(updateStateMethod.methodParams.get(2).getType())
         .isEqualTo(ClassName.bestGuess("java.lang.Object"));
     assertThat(updateStateMethod.methodParams.get(2).getAnnotations()).hasSize(1);
