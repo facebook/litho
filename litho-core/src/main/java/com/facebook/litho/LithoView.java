@@ -550,6 +550,7 @@ public class LithoView extends ComponentHost {
         currentVisibleArea = ComponentsPools.acquireRect();
         currentVisibleArea.set(0, 0, getWidth(), getHeight());
         rectNeedsRelease = true;
+        processVisibilityOutputs = false;
       }
     }
 

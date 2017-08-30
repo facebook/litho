@@ -499,6 +499,11 @@ public class VisibilityEventsTest {
     assertThat(content.getLifecycle().getDispatchedEventHandlers())
         .doesNotContain(visibleEventHandler);
 
+    lithoView.setMountStateDirty();
+    lithoView.performIncrementalMount(new Rect(0, -10, 10, -5), true);
+    assertThat(content.getLifecycle().getDispatchedEventHandlers())
+        .doesNotContain(visibleEventHandler);
+
     lithoView.setHasTransientState(false);
     assertThat(content.getLifecycle().getDispatchedEventHandlers()).contains(visibleEventHandler);
   }
