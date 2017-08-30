@@ -12,7 +12,6 @@
 
 package com.facebook.samples.litho.bordereffects;
 
-import android.graphics.Color;
 import com.facebook.litho.Border;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
@@ -33,10 +32,10 @@ public class AlternateColorWidthBorderSpec {
                 .text("This component has each border specified to a different color + width"))
         .border(
             Border.create(c)
-                .color(YogaEdge.LEFT, Color.RED)
-                .color(YogaEdge.TOP, Color.YELLOW)
-                .color(YogaEdge.RIGHT, Color.GREEN)
-                .color(YogaEdge.BOTTOM, Color.BLUE)
+                .color(YogaEdge.LEFT, NiceColor.RED)
+                .color(YogaEdge.TOP, NiceColor.YELLOW)
+                .color(YogaEdge.RIGHT, NiceColor.GREEN)
+                .color(YogaEdge.BOTTOM, NiceColor.BLUE)
                 .widthDip(YogaEdge.LEFT, 2)
                 .widthDip(YogaEdge.TOP, 4)
                 .widthDip(YogaEdge.RIGHT, 8)

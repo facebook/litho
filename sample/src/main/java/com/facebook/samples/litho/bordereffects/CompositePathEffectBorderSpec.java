@@ -22,21 +22,23 @@ import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaEdge;
 
 @LayoutSpec
-public class AlternateColorBorderSpec {
+public class CompositePathEffectBorderSpec {
   @OnCreateLayout
   static ComponentLayout onCreateLayout(ComponentContext c) {
     return Row.create(c)
         .child(
             Text.create(c)
                 .textSizeSp(20)
-                .text("This component has all borders specified to the same width, but not colors"))
+                .text("This component has a composite path effect of discrete + corner"))
         .border(
             Border.create(c)
+                .widthDip(YogaEdge.ALL, 20)
                 .color(YogaEdge.LEFT, NiceColor.RED)
-                .color(YogaEdge.TOP, NiceColor.YELLOW)
+                .color(YogaEdge.TOP, NiceColor.ORANGE)
                 .color(YogaEdge.RIGHT, NiceColor.GREEN)
                 .color(YogaEdge.BOTTOM, NiceColor.BLUE)
-                .widthDip(YogaEdge.ALL, 5)
+                .dashEffect(new float[] {10f, 5f}, 0f)
+                .cornerEffect(20f)
                 .build())
         .build();
   }

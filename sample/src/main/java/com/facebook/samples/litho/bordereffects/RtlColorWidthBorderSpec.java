@@ -12,7 +12,6 @@
 
 package com.facebook.samples.litho.bordereffects;
 
-import android.graphics.Color;
 import com.facebook.litho.Border;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
@@ -32,10 +31,10 @@ public class RtlColorWidthBorderSpec {
         .child(Text.create(c).textSizeSp(20).text("This component is RTL"))
         .border(
             Border.create(c)
-                .color(YogaEdge.START, Color.RED)
-                .color(YogaEdge.TOP, Color.YELLOW)
-                .color(YogaEdge.END, Color.GREEN)
-                .color(YogaEdge.BOTTOM, Color.BLUE)
+                .color(YogaEdge.START, NiceColor.RED)
+                .color(YogaEdge.TOP, NiceColor.YELLOW)
+                .color(YogaEdge.END, NiceColor.GREEN)
+                .color(YogaEdge.BOTTOM, NiceColor.BLUE)
                 .widthDip(YogaEdge.START, 2)
                 .widthDip(YogaEdge.TOP, 4)
                 .widthDip(YogaEdge.END, 8)

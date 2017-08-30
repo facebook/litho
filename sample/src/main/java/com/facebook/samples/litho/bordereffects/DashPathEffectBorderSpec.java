@@ -22,21 +22,16 @@ import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaEdge;
 
 @LayoutSpec
-public class AlternateColorBorderSpec {
+public class DashPathEffectBorderSpec {
   @OnCreateLayout
   static ComponentLayout onCreateLayout(ComponentContext c) {
     return Row.create(c)
-        .child(
-            Text.create(c)
-                .textSizeSp(20)
-                .text("This component has all borders specified to the same width, but not colors"))
+        .child(Text.create(c).textSizeSp(20).text("This component has a dash path effect applied"))
         .border(
             Border.create(c)
-                .color(YogaEdge.LEFT, NiceColor.RED)
-                .color(YogaEdge.TOP, NiceColor.YELLOW)
-                .color(YogaEdge.RIGHT, NiceColor.GREEN)
-                .color(YogaEdge.BOTTOM, NiceColor.BLUE)
+                .color(YogaEdge.ALL, NiceColor.BLUE)
                 .widthDip(YogaEdge.ALL, 5)
+                .dashEffect(new float[] {10f, 5f}, 0f)
                 .build())
         .build();
   }

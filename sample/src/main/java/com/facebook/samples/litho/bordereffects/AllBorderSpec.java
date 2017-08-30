@@ -12,7 +12,6 @@
 
 package com.facebook.samples.litho.bordereffects;
 
-import android.graphics.Color;
 import com.facebook.litho.Border;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
@@ -31,7 +30,8 @@ public class AllBorderSpec {
             Text.create(c)
                 .textSizeSp(20)
                 .text("This component has all borders specified to the same color + width"))
-        .border(Border.create(c).color(YogaEdge.ALL, Color.CYAN).widthDip(YogaEdge.ALL, 5).build())
+        .border(
+            Border.create(c).color(YogaEdge.ALL, NiceColor.BLUE).widthDip(YogaEdge.ALL, 5).build())
         .build();
   }
 }

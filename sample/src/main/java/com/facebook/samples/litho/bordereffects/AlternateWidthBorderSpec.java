@@ -12,7 +12,6 @@
 
 package com.facebook.samples.litho.bordereffects;
 
-import android.graphics.Color;
 import com.facebook.litho.Border;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
@@ -33,7 +32,7 @@ public class AlternateWidthBorderSpec {
                 .text("This component has all borders specified to the same color, but not width"))
         .border(
             Border.create(c)
-                .color(YogaEdge.ALL, Color.MAGENTA)
+                .color(YogaEdge.ALL, NiceColor.MAGENTA)
                 .widthDip(YogaEdge.LEFT, 2)
                 .widthDip(YogaEdge.TOP, 4)
                 .widthDip(YogaEdge.RIGHT, 8)

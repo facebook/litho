@@ -43,6 +43,11 @@ public class BorderEffectsActivity extends AppCompatActivity {
     recyclerBinder.insertItemAt(i++, AlternateWidthBorder.create(c).build());
     recyclerBinder.insertItemAt(i++, AlternateColorWidthBorder.create(c).build());
     recyclerBinder.insertItemAt(i++, RtlColorWidthBorder.create(c).build());
+    recyclerBinder.insertItemAt(i++, DashPathEffectBorder.create(c).build());
+    recyclerBinder.insertItemAt(i++, VerticalDashPathEffectBorder.create(c).build());
+    recyclerBinder.insertItemAt(i++, AlternateColorPathEffectBorder.create(c).build());
+    recyclerBinder.insertItemAt(i++, AlternateColorCornerPathEffectBorder.create(c).build());
+    recyclerBinder.insertItemAt(i++, CompositePathEffectBorder.create(c).build());
 
     return recyclerBinder;
   }
