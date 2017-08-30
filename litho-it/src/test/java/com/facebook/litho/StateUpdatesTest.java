@@ -172,7 +172,9 @@ public class StateUpdatesTest {
   @Test(expected = RuntimeException.class)
   public void testCrashOnSameComponentKey() {
     final Component child1 = new TestComponent(mLifecycle);
+    child1.setKey("key");
     final Component child2 = new TestComponent(mLifecycle);
+    child2.setKey("key");
     final Component component = new InlineLayoutSpec() {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
@@ -193,43 +195,21 @@ public class StateUpdatesTest {
   }
 
   @Test(expected = RuntimeException.class)
-  public void testCrashOnSameComponentKeyStateless() {
+  public void testCrashOnSameComponentKeyNestedContainers() {
     final Component child1 = new TestComponent(mLifecycle);
+    child1.setKey("key");
     final Component child2 = new TestComponent(mLifecycle);
+    child2.setKey("key");
     final Component component =
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).child(child1).child(child1).build();
+            return Column.create(c)
+                .child(Column.create(c).child(child1))
+                .child(Column.create(c).child(child2))
+                .build();
           }
         };
-    final ComponentTree componentTree =
-        ComponentTree.create(mContext, component)
-            .incrementalMount(false)
-            .layoutDiffing(false)
-            .build();
-    final LithoView lithoView = new LithoView(mContext);
-    lithoView.setComponentTree(componentTree);
-    lithoView.onAttachedToWindow();
-    ComponentTestHelper.measureAndLayout(lithoView);
-  }
-
-  @Test(expected = RuntimeException.class)
-  public void testCrashOnSameComponentKeyNestedContainers() {
-    final Component child1 = new TestComponent(mLifecycle);
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c)
-            .child(
-                Column.create(c)
-                    .child(child1))
-            .child(
-                Column.create(c)
-                    .child(child1))
-            .build();
-      }
-    };
     final ComponentTree componentTree = ComponentTree.create(mContext, component)
         .incrementalMount(false)
         .layoutDiffing(false)

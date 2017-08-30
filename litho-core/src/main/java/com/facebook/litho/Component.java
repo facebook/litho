@@ -21,7 +21,9 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -36,6 +38,7 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
   private int mId = sIdGenerator.getAndIncrement();
   private String mGlobalKey;
   private String mKey;
+  private boolean mHasManualKey;
 
   private final L mLifecycle;
   @ThreadConfined(ThreadConfined.ANY)
@@ -49,6 +52,12 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
 
   // This is just being used for an experiment right now. Do not use for anything else.
   private LayoutAttributes mLayoutAttributes;
+
+  /**
+   * Holds onto how many direct component children of each type this Component has. Used for
+   * automatically generating unique global keys for all sibling components of the same type.
+   */
+  private Map<String, Integer> mChildCounters = new HashMap<>();
 
   public abstract String getSimpleName();
 
@@ -122,12 +131,61 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
    * @param key key
    */
   void setKey(String key) {
+    mHasManualKey = true;
     mKey = key;
+  }
+
+  /**
+   * Generate a global key for the given component that is unique among all of this component's
+   * children of the same type. If a manual key has been set on the child component using the .key()
+   * method, return the manual key.
+   *
+   * @param component the child component for which we're finding a unique global key
+   * @param key the key of the child component as determined by its lifecycle id or manual setting
+   * @return a unique global key for this component relative to its siblings.
+   */
+  private String generateUniqueGlobalKeyForChild(Component component, String key) {
+
+    final String childKey = getGlobalKey() + key;
+    final KeyHandler keyHandler = mScopedContext.getKeyHandler();
+
+    /** Null check is for testing only, the keyHandler should never be null here otherwise. */
+    if (component.mHasManualKey || keyHandler == null) {
+      return childKey;
+    }
+
+    /** If the key is already unique, return it. */
+    if (!keyHandler.hasKey(childKey)) {
+      return childKey;
+    }
+
+    final String childType = component.getSimpleName();
+
+    /**
+     * If the key is a duplicate, we start appending an index based on the child component's type
+     * that would uniquely identify it.
+     */
+    int childIndex = mChildCounters.containsKey(childType) ? mChildCounters.get(childType) : 0;
+
+    /**
+     * Specs that implement {@link com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec} will
+     * call onCreateLayout more than once, so we might record a key in the key handler that doesn't
+     * end up being used in the valid layout output. We'll need to try increasing the index until we
+     * hit a unique key.
+     */
+    String uniqueKey = childKey + childIndex;
+    while (keyHandler.hasKey(uniqueKey)) {
+      uniqueKey = childKey + (childIndex++);
+    }
+
+    mChildCounters.put(childType, childIndex + 1);
+
+    return uniqueKey;
   }
 
   Component<L> makeCopyWithNullContext() {
     try {
-      Component<L> component = (Component<L>) super.clone();
+      final Component<L> component = (Component<L>) super.clone();
       component.mScopedContext = null;
       return component;
     } catch (CloneNotSupportedException e) {
@@ -137,8 +195,10 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
 
   public Component<L> makeShallowCopy() {
     try {
-      Component<L> component = (Component<L>) super.clone();
+      final Component<L> component = (Component<L>) super.clone();
       component.mIsLayoutStarted = false;
+      component.mChildCounters = new HashMap<>();
+      component.mHasManualKey = false;
 
       return component;
     } catch (CloneNotSupportedException e) {
@@ -258,7 +318,9 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
   void applyStateUpdates(ComponentContext c) {
     final Component<?> parentScope = c.getComponentScope();
     final String key = getKey();
-    setGlobalKey(parentScope == null ? key : parentScope.getGlobalKey() + key);
+
+    setGlobalKey(
+        parentScope == null ? key : parentScope.generateUniqueGlobalKeyForChild(this, key));
 
     setScopedContext(ComponentContext.withComponentScope(c, this));
 

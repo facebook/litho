@@ -39,11 +39,20 @@ public class KeyHandler {
   }
 
   public void registerKey(Component component) {
+    /**
+     * We still need to check whether the component's global key is unique, in case a duplicate key
+     * has been manually set on sibling components.
+     */
     checkIsDuplicateKey(component);
     mKnownGlobalKeys.add(component.getGlobalKey());
   }
 
-  void checkIsDuplicateKey(Component component) {
+  /** Returns true if this KeyHandler has already recorded a component with the given key. */
+  public boolean hasKey(String key) {
+    return mKnownGlobalKeys.contains(key);
+  }
+
+  private void checkIsDuplicateKey(Component component) {
     if (mKnownGlobalKeys.contains(component.getGlobalKey())) {
       final String message =
           "Found another " + component.getSimpleName() + " Component with the same key.";
@@ -53,11 +62,11 @@ public class KeyHandler {
         throw new RuntimeException(message + "\n" + errorMessage);
       }
 
-      /*if (mLogger != null) {
+      if (mLogger != null) {
         final LogEvent event = mLogger.newEvent(EVENT_ERROR);
         event.addParam(PARAM_MESSAGE, message + "\n" + errorMessage);
         mLogger.log(event);
-      }*/
+      }
     }
   }
 

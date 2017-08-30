@@ -51,105 +51,99 @@ public class ComponentGlobalKeyTest {
 
   @Test
   public void testComponentKey() {
-    Component component = TestDrawableComponent
-        .create(mContext)
-        .build();
+    Component component = TestDrawableComponent.create(mContext).build();
     Assert.assertEquals(component.getKey(), component.getLifecycle().getTypeId() + "");
     Assert.assertNull(component.getGlobalKey());
   }
 
   @Test
   public void testComponentManualKey() {
-    Component component = TestDrawableComponent
-        .create(mContext)
-        .key("someKey")
-        .build();
+    Component component = TestDrawableComponent.create(mContext).key("someKey").build();
     Assert.assertEquals(component.getKey(), "someKey");
     Assert.assertNull(component.getGlobalKey());
   }
 
   @Test
-  public void testComponentGlobalKey() {
-    Component component = TestDrawableComponent
-        .create(mContext)
-        .build();
-    System.out.println(component.getLifecycle().getTypeId());
-    ComponentTree componentTree = ComponentTree.create(mContext, component)
-        .incrementalMount(false)
-        .layoutDiffing(false)
-        .build();
-    LithoView lithoView = getLithoView(componentTree);
+  public void testRootComponentGlobalKey() {
+    final Component component = TestDrawableComponent.create(mContext).build();
+    final ComponentTree componentTree =
+        ComponentTree.create(mContext, component)
+            .incrementalMount(false)
+            .layoutDiffing(false)
+            .build();
+    final LithoView lithoView = getLithoView(componentTree);
 
     Assert.assertEquals(
-        lithoView.getMountItemAt(0).getComponent().getGlobalKey(),
-        component.getKey());
+        lithoView.getMountItemAt(0).getComponent().getGlobalKey(), component.getKey());
   }
 
   @Test
-  public void testComponentGlobalKeyManualKey() {
-    Component component = TestDrawableComponent
-        .create(mContext)
-        .key("someKey")
-        .build();
-    ComponentTree componentTree = ComponentTree.create(mContext, component)
-        .incrementalMount(false)
-        .layoutDiffing(false)
-        .build();
-    LithoView lithoView = getLithoView(componentTree);
+  public void testRootComponentGlobalKeyManualKey() {
+    final Component component = TestDrawableComponent.create(mContext).key("someKey").build();
+    final ComponentTree componentTree =
+        ComponentTree.create(mContext, component)
+            .incrementalMount(false)
+            .layoutDiffing(false)
+            .build();
+    final LithoView lithoView = getLithoView(componentTree);
 
-    Assert.assertEquals(
-        lithoView.getMountItemAt(0).getComponent().getGlobalKey(),
-        "someKey");
+    Assert.assertEquals(lithoView.getMountItemAt(0).getComponent().getGlobalKey(), "someKey");
   }
 
   @Test
   public void testMultipleChildrenComponentKey() {
-    Component component = getMultipleChildrenComponent();
+    final Component component = getMultipleChildrenComponent();
 
     int layoutSpecId = component.getLifecycle().getTypeId();
     int nestedLayoutSpecId = layoutSpecId - 1;
 
-    ComponentTree componentTree = ComponentTree.create(mContext, component)
-        .incrementalMount(false)
-        .layoutDiffing(false)
-        .build();
-    LithoView lithoView = getLithoView(componentTree);
+    final ComponentTree componentTree =
+        ComponentTree.create(mContext, component)
+            .incrementalMount(false)
+            .layoutDiffing(false)
+            .build();
+    final LithoView lithoView = getLithoView(componentTree);
 
     // Text
     Assert.assertEquals(layoutSpecId + "[Text2]", getComponentAt(lithoView, 0).getGlobalKey());
     // TestViewComponent in child layout
-    Assert.assertEquals(layoutSpecId + "" + nestedLayoutSpecId + "[TestViewComponent1]", getComponentAt(lithoView, 1).getGlobalKey());
+    Assert.assertEquals(
+        layoutSpecId + "" + nestedLayoutSpecId + "[TestViewComponent1]",
+        getComponentAt(lithoView, 1).getGlobalKey());
     //background in child
     Assert.assertNull(getComponentAt(lithoView, 2).getGlobalKey());
     // CardClip in child
-    Assert.assertEquals(layoutSpecId + "" + nestedLayoutSpecId + "[CardClip1]", getComponentAt(lithoView, 3).getGlobalKey());
+    Assert.assertEquals(
+        layoutSpecId + "" + nestedLayoutSpecId + "[CardClip1]",
+        getComponentAt(lithoView, 3).getGlobalKey());
     // Text in child
-    Assert.assertEquals(layoutSpecId + "" + nestedLayoutSpecId + "[Text1]", getComponentAt(lithoView, 4).getGlobalKey());
+    Assert.assertEquals(
+        layoutSpecId + "" + nestedLayoutSpecId + "[Text1]",
+        getComponentAt(lithoView, 4).getGlobalKey());
     // background
     Assert.assertNull(getComponentAt(lithoView, 5).getGlobalKey());
     // CardClip
     Assert.assertEquals(layoutSpecId + "[CardClip2]", getComponentAt(lithoView, 6).getGlobalKey());
     // TestViewComponent
-    Assert.assertEquals(layoutSpecId + "[TestViewComponent2]", getComponentAt(lithoView, 7).getGlobalKey());
+    Assert.assertEquals(
+        layoutSpecId + "[TestViewComponent2]", getComponentAt(lithoView, 7).getGlobalKey());
   }
 
-  //@Test
+  @Test
   public void testSiblingsUniqueKeyRequirement() {
-    Component component =
+    final Component component =
         new InlineLayoutSpec() {
-
           @Override
           @OnCreateLayout
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-
             return Column.create(c)
-                .child(Text.create(c).text(""))
-                .child(Text.create(c).text(""))
+                .child(Text.create(c).text("").key("sameKey"))
+                .child(Text.create(c).text("").key("sameKey"))
                 .build();
           }
         };
 
-    ComponentTree componentTree =
+    final ComponentTree componentTree =
         ComponentTree.create(mContext, component)
             .incrementalMount(false)
             .layoutDiffing(false)
@@ -166,6 +160,86 @@ public class ComponentGlobalKeyTest {
     event.addParam(PARAM_MESSAGE, expectedError);
 
     verify(mComponentsLogger).log(eq(event));
+  }
+
+  @Test
+  public void testAutogenSiblingsUniqueKeys() {
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          @OnCreateLayout
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Column.create(c)
+                .child(Text.create(mContext).text(""))
+                .child(Text.create(mContext).text(""))
+                .build();
+          }
+        };
+
+    final int layoutSpecId = component.getLifecycle().getTypeId();
+    final Component text = Text.create(mContext).text("").build();
+    final int textSpecId = text.getLifecycle().getTypeId();
+
+    final ComponentTree componentTree =
+        ComponentTree.create(mContext, component)
+            .incrementalMount(false)
+            .layoutDiffing(false)
+            .build();
+    final LithoView lithoView = getLithoView(componentTree);
+
+    Assert.assertEquals(
+        layoutSpecId + "" + textSpecId, getComponentAt(lithoView, 0).getGlobalKey());
+    Assert.assertEquals(
+        layoutSpecId + "" + textSpecId + "0", getComponentAt(lithoView, 1).getGlobalKey());
+  }
+
+  @Test
+  public void testAutogenSiblingsUniqueKeysNested() {
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          @OnCreateLayout
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Column.create(c)
+                .child(Text.create(mContext).text(""))
+                .child(Text.create(mContext).text(""))
+                .build();
+          }
+        };
+
+    final Component root =
+        new InlineLayoutSpec() {
+          @Override
+          @OnCreateLayout
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Column.create(c)
+                .child(component)
+                .child(Text.create(mContext).text(""))
+                .child(Text.create(mContext).text(""))
+                .build();
+          }
+        };
+
+    final int layoutSpecId = root.getLifecycle().getTypeId();
+    final int nestedLayoutSpecId = component.getLifecycle().getTypeId();
+    final Component text = Text.create(mContext).text("").build();
+    ;
+    final int textSpecId = text.getLifecycle().getTypeId();
+
+    final ComponentTree componentTree =
+        ComponentTree.create(mContext, root).incrementalMount(false).layoutDiffing(false).build();
+    LithoView lithoView = getLithoView(componentTree);
+
+    Assert.assertEquals(
+        layoutSpecId + "" + nestedLayoutSpecId + "" + textSpecId,
+        getComponentAt(lithoView, 0).getGlobalKey());
+    Assert.assertEquals(
+        layoutSpecId + "" + nestedLayoutSpecId + "" + textSpecId + "0",
+        getComponentAt(lithoView, 1).getGlobalKey());
+    Assert.assertEquals(
+        layoutSpecId + "" + textSpecId, getComponentAt(lithoView, 2).getGlobalKey());
+    Assert.assertEquals(
+        layoutSpecId + "" + textSpecId + "0", getComponentAt(lithoView, 3).getGlobalKey());
   }
 
   private static Component getComponentAt(LithoView lithoView, int index) {
