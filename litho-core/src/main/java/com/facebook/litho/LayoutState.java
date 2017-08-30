@@ -814,6 +814,7 @@ class LayoutState {
     final YogaEdge rightEdge = isRtl ? YogaEdge.LEFT : YogaEdge.RIGHT;
 
     return BorderColorDrawableReference.create(node.getContext())
+        .pathEffect(node.getBorderPathEffect())
         .borderLeftColor(Border.getEdgeColor(borderColors, leftEdge))
         .borderTopColor(Border.getEdgeColor(borderColors, YogaEdge.TOP))
         .borderRightColor(Border.getEdgeColor(borderColors, rightEdge))

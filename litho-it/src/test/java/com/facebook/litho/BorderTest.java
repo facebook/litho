@@ -12,6 +12,12 @@ package com.facebook.litho;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.robolectric.RuntimeEnvironment.application;
 
+import android.graphics.ComposePathEffect;
+import android.graphics.CornerPathEffect;
+import android.graphics.DashPathEffect;
+import android.graphics.DiscretePathEffect;
+import android.graphics.Path;
+import android.graphics.PathDashPathEffect;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.yoga.YogaEdge;
 import org.junit.Test;
@@ -159,5 +165,52 @@ public class BorderTest {
     assertThat(border.mEdgeWidths[Border.EDGE_TOP]).isEqualTo(2);
     assertThat(border.mEdgeWidths[Border.EDGE_RIGHT]).isEqualTo(3);
     assertThat(border.mEdgeWidths[Border.EDGE_BOTTOM]).isEqualTo(4);
+  }
+
+  @Test
+  public void testEffectSetting() {
+    final ComponentContext c = new ComponentContext(application);
+    Border border = Border.create(c).dashEffect(new float[] {1f, 1f}, 0f).build();
+    assertThat(border.mPathEffect).isInstanceOf(DashPathEffect.class);
+
+    border = Border.create(c).discreteEffect(1f, 0f).build();
+    assertThat(border.mPathEffect).isInstanceOf(DiscretePathEffect.class);
+
+    border = Border.create(c).cornerEffect(1f).build();
+    assertThat(border.mPathEffect).isInstanceOf(CornerPathEffect.class);
+
+    border =
+        Border.create(c)
+            .pathDashEffect(new Path(), 0f, 0f, PathDashPathEffect.Style.ROTATE)
+            .build();
+    assertThat(border.mPathEffect).isInstanceOf(PathDashPathEffect.class);
+
+    border = Border.create(c).cornerEffect(1f).dashEffect(new float[] {1f, 2f}, 1f).build();
+    assertThat(border.mPathEffect).isInstanceOf(ComposePathEffect.class);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testTooManyEffectsThrows() {
+    final ComponentContext c = new ComponentContext(application);
+    Border.create(c)
+        .cornerEffect(1f)
+        .dashEffect(new float[] {1f, 2f}, 1f)
+        .discreteEffect(1f, 2f)
+        .build();
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testDifferentWidthWithEffectThrows() {
+    final ComponentContext c = new ComponentContext(application);
+    Border.create(c).widthPx(YogaEdge.ALL, 10).widthPx(YogaEdge.LEFT, 5).cornerEffect(1f).build();
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void testUsingDeprecatedMethodsThrows() {
+    final InternalNode node =
+        ComponentsPools.acquireInternalNode(new ComponentContext(application));
+    final ComponentContext c = new ComponentContext(application);
+    node.border(Border.create(c).dashEffect(new float[] {1f, 1f}, 0f).build())
+        .borderWidthPx(YogaEdge.LEFT, 1);
   }
 }

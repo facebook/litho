@@ -11,6 +11,13 @@ package com.facebook.litho;
 
 import static android.support.annotation.Dimension.DP;
 
+import android.graphics.ComposePathEffect;
+import android.graphics.CornerPathEffect;
+import android.graphics.DashPathEffect;
+import android.graphics.DiscretePathEffect;
+import android.graphics.Path;
+import android.graphics.PathDashPathEffect;
+import android.graphics.PathEffect;
 import android.support.annotation.AttrRes;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
@@ -32,6 +39,8 @@ public class Border {
 
   final int[] mEdgeWidths = new int[EDGE_COUNT];
   final int[] mEdgeColors = new int[EDGE_COUNT];
+
+  PathEffect mPathEffect;
 
   public static Builder create(ComponentContext context) {
     return new Builder(context);
@@ -75,6 +84,23 @@ public class Border {
     throw new IllegalArgumentException("Given unknown edge index: " + i);
   }
 
+  /**
+   * @param values values pertaining to {@link YogaEdge}s
+   * @return whether the values are equal for each edge
+   */
+  static boolean equalValues(int[] values) {
+    if (values.length != EDGE_COUNT) {
+      throw new IllegalArgumentException("Given wrongly sized array");
+    }
+    int lastValue = values[0];
+    for (int i = 1, length = values.length; i < length; ++i) {
+      if (lastValue != values[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   private static void setEdgeValue(int[] edges, YogaEdge edge, int value) {
     switch (edge) {
       case ALL:
@@ -113,8 +139,11 @@ public class Border {
   }
 
   public static class Builder {
+    private static final int MAX_PATH_EFFECTS = 2;
     private final Border mBorder;
     private @Nullable ResourceResolver mResourceResolver;
+    private PathEffect[] mPathEffects = new PathEffect[MAX_PATH_EFFECTS];
+    private int mNumPathEffects;
 
     Builder(ComponentContext context) {
       mResourceResolver = new ResourceResolver();
@@ -159,16 +188,101 @@ public class Border {
       return color(edge, mResourceResolver.resolveColorRes(colorRes));
     }
 
+    /**
+     * Applies a dash effect to the border
+     *
+     * <p>Specifying two effects will compose them where the first specified effect acts as the
+     * outer effect and the second acts as the inner path effect, e.g. outer(inner(path))
+     *
+     * @param intervals Must be even-sized >= 2. Even indices specify "on" intervals and odd indices
+     *     specify "off" intervals
+     * @param phase Offset into the given intervals
+     */
+    public Builder dashEffect(float[] intervals, float phase) {
+      checkNotBuilt();
+      checkEffectCount();
+      mPathEffects[mNumPathEffects++] = new DashPathEffect(intervals, phase);
+      return this;
+    }
+
+    /**
+     * Applies a corner effect to the border
+     *
+     * <p>Specifying two effects will compose them where the first specified effect acts as the
+     * outer effect and the second acts as the inner path effect, e.g. outer(inner(path))
+     *
+     * @param radius The amount to round sharp angles when drawing the border
+     */
+    public Builder cornerEffect(float radius) {
+      checkNotBuilt();
+      checkEffectCount();
+      mPathEffects[mNumPathEffects++] = new CornerPathEffect(radius);
+      return this;
+    }
+
+    /**
+     * Applies a discrete effect to the border
+     *
+     * <p>Specifying two effects will compose them where the first specified effect acts as the
+     * outer effect and the second acts as the inner path effect, e.g. outer(inner(path))
+     *
+     * @param segmentLength Length of line segments
+     * @param deviation Maximum amount of deviation. Utilized value is random in the range
+     *     [-deviation, deviation]
+     */
+    public Builder discreteEffect(float segmentLength, float deviation) {
+      checkNotBuilt();
+      checkEffectCount();
+      mPathEffects[mNumPathEffects++] = new DiscretePathEffect(segmentLength, deviation);
+      return this;
+    }
+
+    /**
+     * Applies a path dash effect to the border
+     *
+     * <p>Specifying two effects will compose them where the first specified effect acts as the
+     * outer effect and the second acts as the inner path effect, e.g. outer(inner(path))
+     *
+     * @param shape The path to stamp along
+     * @param advance The spacing between each stamp
+     * @param phase Amount to offset before the first stamp
+     * @param style How to transform the shape at each position
+     */
+    public Builder pathDashEffect(
+        Path shape, float advance, float phase, PathDashPathEffect.Style style) {
+      checkNotBuilt();
+      checkEffectCount();
+      mPathEffects[mNumPathEffects++] = new PathDashPathEffect(shape, advance, phase, style);
+      return this;
+    }
+
     public Border build() {
       checkNotBuilt();
       mResourceResolver.release();
       mResourceResolver = null;
+
+      if (mNumPathEffects == MAX_PATH_EFFECTS) {
+        mBorder.mPathEffect = new ComposePathEffect(mPathEffects[0], mPathEffects[1]);
+      } else if (mNumPathEffects > 0) {
+        mBorder.mPathEffect = mPathEffects[0];
+      }
+
+      if (mBorder.mPathEffect != null && !Border.equalValues(mBorder.mEdgeWidths)) {
+        throw new IllegalArgumentException(
+            "Borders do not currently support different widths with a path effect");
+      }
       return mBorder;
     }
 
     private void checkNotBuilt() {
       if (mResourceResolver == null) {
         throw new IllegalStateException("This builder has already been disposed / built!");
+      }
+    }
+
+    private void checkEffectCount() {
+      if (mNumPathEffects >= MAX_PATH_EFFECTS) {
+        throw new IllegalArgumentException("You cannot specify more than 2 effects to compose");
       }
     }
   }

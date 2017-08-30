@@ -28,6 +28,7 @@ import static com.facebook.yoga.YogaEdge.VERTICAL;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.graphics.PathEffect;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -125,6 +126,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private Reference<? extends Drawable> mBackground;
   private Drawable mForeground;
   private final int[] mBorderColors = new int[Border.EDGE_COUNT];
+  private @Nullable PathEffect mBorderPathEffect;
 
   @Nullable private LayoutAttributes mLayoutAttributes;
   private NodeInfo mNodeInfo;
@@ -659,6 +661,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       setBorderWidth(Border.edgeFromIndex(i), border.mEdgeWidths[i], false);
     }
     System.arraycopy(border.mEdgeColors, 0, mBorderColors, 0, mBorderColors.length);
+    mBorderPathEffect = border.mPathEffect;
     return this;
   }
 
@@ -1900,6 +1903,11 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   int[] getBorderColors() {
     return mBorderColors;
+  }
+
+  @Nullable
+  PathEffect getBorderPathEffect() {
+    return mBorderPathEffect;
   }
 
   boolean shouldDrawBorders() {

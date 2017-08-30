@@ -9,6 +9,7 @@
 
 package com.facebook.litho.reference;
 
+import android.graphics.PathEffect;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Px;
@@ -16,6 +17,7 @@ import android.support.v4.util.Pools;
 import com.facebook.litho.BorderColorDrawable;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentsPools;
+import javax.annotation.Nullable;
 
 /** A Reference for {@link com.facebook.litho.BorderColorDrawable}. */
 public class BorderColorDrawableReference extends ReferenceLifecycle<Drawable> {
@@ -62,6 +64,7 @@ public class BorderColorDrawableReference extends ReferenceLifecycle<Drawable> {
     BorderColorDrawableReference.State state = (BorderColorDrawableReference.State) reference;
 
     drawable.init(
+        state.mPathEffect,
         state.mBorderLeftWidth,
         state.mBorderTopWidth,
         state.mBorderRightWidth,
@@ -84,6 +87,7 @@ public class BorderColorDrawableReference extends ReferenceLifecycle<Drawable> {
 
   private static class State extends Reference<Drawable> {
 
+    @Nullable PathEffect mPathEffect;
     @ColorInt int mBorderLeftColor;
     @ColorInt int mBorderTopColor;
     @ColorInt int mBorderRightColor;
@@ -112,6 +116,7 @@ public class BorderColorDrawableReference extends ReferenceLifecycle<Drawable> {
       result = 31 * result + mBorderTopWidth;
       result = 31 * result + mBorderRightWidth;
       result = 31 * result + mBorderBottomWidth;
+      result = 31 * result + (mPathEffect != null ? mPathEffect.hashCode() : 0);
       return result;
     }
 
@@ -134,7 +139,9 @@ public class BorderColorDrawableReference extends ReferenceLifecycle<Drawable> {
           && mBorderLeftWidth == state.mBorderLeftWidth
           && mBorderTopWidth == state.mBorderTopWidth
           && mBorderRightWidth == state.mBorderRightWidth
-          && mBorderBottomWidth == state.mBorderBottomWidth;
+          && mBorderBottomWidth == state.mBorderBottomWidth
+          && (mPathEffect == state.mPathEffect
+              || (mPathEffect != null && mPathEffect.equals(state.mPathEffect)));
     }
   }
 
@@ -153,6 +160,11 @@ public class BorderColorDrawableReference extends ReferenceLifecycle<Drawable> {
 
       mState = null;
       sBuilderPool.release(this);
+    }
+
+    public BorderColorDrawableReference.PropsBuilder pathEffect(@Nullable PathEffect pathEffect) {
+      mState.mPathEffect = pathEffect;
+      return this;
     }
 
     public BorderColorDrawableReference.PropsBuilder borderLeftColor(@ColorInt int color) {
