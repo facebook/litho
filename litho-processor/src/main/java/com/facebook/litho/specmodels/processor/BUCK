@@ -40,6 +40,8 @@ java_library(
         COMPONENTS_JSR_TARGET,
         COMPONENTS_JAVAPOET_TARGET,
     ],
+    source = "8",
+    target = "8",
     visibility = [
         "PUBLIC",
     ],
