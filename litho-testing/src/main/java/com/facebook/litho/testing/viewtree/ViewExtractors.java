@@ -81,24 +81,23 @@ final class ViewExtractors {
         }
       };
 
-  public static Function<View, String> GET_CONTENT_DESCRIPTION_FUNCTION
-      = new Function<View, String>() {
-    @Override
-    public String apply(@Nullable View input) {
-      if (input == null) {
-        return "Provided view was null";
-      }
-      if (input.getContentDescription() == null) {
-        return String.format(
-            "No content description found, view is %s",
-            getVisibilityString(input.getVisibility()));
-      }
-      return String.format(
-          "Found content description: \"%s\", view is %s",
-          input.getContentDescription(),
-          getVisibilityString(input.getVisibility()));
-    }
-  };
+  public static final Function<View, String> GET_CONTENT_DESCRIPTION_FUNCTION =
+      new Function<View, String>() {
+        @Override
+        public String apply(@Nullable View input) {
+          if (input == null) {
+            return "Provided view was null";
+          }
+          if (input.getContentDescription() == null) {
+            return String.format(
+                "No content description found, view is %s",
+                getVisibilityString(input.getVisibility()));
+          }
+          return String.format(
+              "Found content description: \"%s\", view is %s",
+              input.getContentDescription(), getVisibilityString(input.getVisibility()));
+        }
+      };
 
   /**
    * Generates a function that extracts information about view tags from the given view.
@@ -124,17 +123,16 @@ final class ViewExtractors {
   }
 
   /** A function that inputs a view and outputs the view's id and visibility. */
-  public static Function<View, String> GET_VIEW_ID_FUNCTION = new Function<View, String>() {
-    @Override
-    public String apply(View input) {
-      int id = input.getId();
-      return String.format(
-          "View with id \"%s=%d\" is %s.",
-          ViewTreeUtil.getResourceName(id),
-          id,
-          getVisibilityString(input.getVisibility()));
-    }
-  };
+  public static final Function<View, String> GET_VIEW_ID_FUNCTION =
+      new Function<View, String>() {
+        @Override
+        public String apply(View input) {
+          int id = input.getId();
+          return String.format(
+              "View with id \"%s=%d\" is %s.",
+              ViewTreeUtil.getResourceName(id), id, getVisibilityString(input.getVisibility()));
+        }
+      };
 
   private static String getVisibilityString(int visibility) {
     return visibility == View.VISIBLE ? "visible" : "not visible";
