@@ -979,9 +979,11 @@ class LayoutAttributes implements ComponentLayout.Builder {
 
   @Override
   public ComponentLayout build() {
-    copyInto(mNodeToCopyInto);
+    final ComponentLayout.Builder nodeToCopyInto = mNodeToCopyInto;
+    mNodeToCopyInto = null;
+    copyInto(nodeToCopyInto);
 
-    return mNodeToCopyInto.build();
+    return nodeToCopyInto.build();
   }
 
   private NodeInfo getOrCreateNodeInfo() {
