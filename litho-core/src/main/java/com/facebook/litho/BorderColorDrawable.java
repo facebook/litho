@@ -16,6 +16,7 @@ import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.ColorInt;
 
 /**
  * Drawable that draws border lines with given color and given border widths.
@@ -24,74 +25,89 @@ public class BorderColorDrawable extends Drawable {
 
   private static final RectF mBorderBounds = new RectF();
   private final Paint mPaint = new Paint();
-  private float mLeftBorderWidth;
-  private float mTopBorderWidth;
-  private float mRightBorderWidth;
-  private float mBottomBorderWidth;
+  private float mBorderLeftWidth;
+  private float mBorderTopWidth;
+  private float mBorderRightWidth;
+  private float mBorderBottomWidth;
+  private @ColorInt int mBorderLeftColor;
+  private @ColorInt int mBorderTopColor;
+  private @ColorInt int mBorderRightColor;
+  private @ColorInt int mBorderBottomColor;
 
   BorderColorDrawable() {
   }
 
   public void init(
-      int color,
       float leftBorderWidth,
       float topBorderWidth,
       float rightBorderWidth,
-      float bottomBorderWidth) {
-    mPaint.setColor(color);
-    mLeftBorderWidth = leftBorderWidth;
-    mTopBorderWidth = topBorderWidth;
-    mRightBorderWidth = rightBorderWidth;
-    mBottomBorderWidth = bottomBorderWidth;
+      float bottomBorderWidth,
+      @ColorInt int leftBorderColor,
+      @ColorInt int topBorderColor,
+      @ColorInt int rightBorderColor,
+      @ColorInt int bottomBorderColor) {
+    mBorderLeftWidth = leftBorderWidth;
+    mBorderTopWidth = topBorderWidth;
+    mBorderRightWidth = rightBorderWidth;
+    mBorderBottomWidth = bottomBorderWidth;
+
+    mBorderLeftColor = leftBorderColor;
+    mBorderTopColor = topBorderColor;
+    mBorderRightColor = rightBorderColor;
+    mBorderBottomColor = bottomBorderColor;
   }
 
   @Override
   public void draw(Canvas canvas) {
-    if (mLeftBorderWidth == 0 &&
-        mTopBorderWidth == 0 &&
-        mRightBorderWidth == 0 &&
-        mBottomBorderWidth == 0) {
+    if (mBorderLeftWidth == 0
+        && mBorderTopWidth == 0
+        && mBorderRightWidth == 0
+        && mBorderBottomWidth == 0) {
       return;
     }
 
     final Rect bounds = getBounds();
 
     // Draw left border.
-    if (mLeftBorderWidth > 0) {
+    if (mBorderLeftWidth > 0) {
       drawBorder(
           canvas,
+          mBorderLeftColor,
           bounds.left,
           bounds.top,
-          Math.min(bounds.left + mLeftBorderWidth, bounds.right),
+          Math.min(bounds.left + mBorderLeftWidth, bounds.right),
           bounds.bottom);
     }
 
     // Draw top border.
-    if (mTopBorderWidth > 0) {
+    if (mBorderTopWidth > 0) {
       drawBorder(
           canvas,
+          mBorderTopColor,
           bounds.left,
           bounds.top,
           bounds.right,
-          Math.min(bounds.top + mTopBorderWidth, bounds.bottom));
+          Math.min(bounds.top + mBorderTopWidth, bounds.bottom));
     }
 
     // Draw right border.
-    if (mRightBorderWidth > 0) {
+    if (mBorderRightWidth > 0) {
       drawBorder(
           canvas,
-          Math.max(bounds.right - mRightBorderWidth, bounds.left),
+          mBorderRightColor,
+          Math.max(bounds.right - mBorderRightWidth, bounds.left),
           bounds.top,
           bounds.right,
           bounds.bottom);
     }
 
     // Draw bottom border.
-    if (mBottomBorderWidth > 0) {
+    if (mBorderBottomWidth > 0) {
       drawBorder(
           canvas,
+          mBorderBottomColor,
           bounds.left,
-          Math.max(bounds.bottom - mBottomBorderWidth, bounds.top),
+          Math.max(bounds.bottom - mBorderBottomWidth, bounds.top),
           bounds.right,
           bounds.bottom);
     }
@@ -99,12 +115,12 @@ public class BorderColorDrawable extends Drawable {
 
   @Override
   public void setAlpha(int alpha) {
-    // no-op
+    mPaint.setAlpha(alpha);
   }
 
   @Override
   public void setColorFilter(ColorFilter colorFilter) {
-    // no-op
+    mPaint.setColorFilter(colorFilter);
   }
 
   @Override
@@ -112,7 +128,9 @@ public class BorderColorDrawable extends Drawable {
     return PixelFormat.OPAQUE;
   }
 
-  private void drawBorder(Canvas canvas, float left, float top, float right, float bottom) {
+  private void drawBorder(
+      Canvas canvas, @ColorInt int color, float left, float top, float right, float bottom) {
+    mPaint.setColor(color);
     mBorderBounds.set(left, top, right, bottom);
     canvas.drawRect(mBorderBounds, mPaint);
   }

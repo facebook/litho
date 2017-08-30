@@ -106,17 +106,26 @@ public interface ComponentLayout {
     @ReturnsOwnership Builder paddingDip(YogaEdge edge, @Dimension(unit = DP) int padding);
     @ReturnsOwnership Builder paddingPercent(YogaEdge edge, float percent);
 
-    @ReturnsOwnership Builder borderWidthPx(YogaEdge edge, @Px int borderWidth);
-    @ReturnsOwnership Builder borderWidthAttr(
-        YogaEdge edge,
-        @AttrRes int resId,
-        @DimenRes int defaultResId);
-    @ReturnsOwnership Builder borderWidthAttr(
-        YogaEdge edge,
-        @AttrRes int resId);
-    @ReturnsOwnership Builder borderWidthRes(YogaEdge edge, @DimenRes int resId);
-    @ReturnsOwnership Builder borderWidthDip(YogaEdge edge, @Dimension(unit = DP) int borderWidth);
-    @ReturnsOwnership Builder borderColor(@ColorInt int borderColor);
+    @ReturnsOwnership
+    Builder border(Border border);
+    /** @deprecated Please use {@link #border(Border)} instead */
+    @ReturnsOwnership
+    Builder borderWidthPx(YogaEdge edge, @Px int borderWidth);
+    /** @deprecated Please use {@link #border(Border)} instead */
+    @ReturnsOwnership
+    Builder borderWidthAttr(YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId);
+    /** @deprecated Please use {@link #border(Border)} instead */
+    @ReturnsOwnership
+    Builder borderWidthAttr(YogaEdge edge, @AttrRes int resId);
+    /** @deprecated Please use {@link #border(Border)} instead */
+    @ReturnsOwnership
+    Builder borderWidthRes(YogaEdge edge, @DimenRes int resId);
+    /** @deprecated Please use {@link #border(Border)} instead */
+    @ReturnsOwnership
+    Builder borderWidthDip(YogaEdge edge, @Dimension(unit = DP) int borderWidth);
+    /** @deprecated Please use {@link #border(Border)} instead */
+    @ReturnsOwnership
+    Builder borderColor(@ColorInt int borderColor);
 
     @ReturnsOwnership Builder positionPx(YogaEdge edge, @Px int value);
     @ReturnsOwnership Builder positionAttr(

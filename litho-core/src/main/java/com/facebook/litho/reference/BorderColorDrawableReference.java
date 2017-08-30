@@ -10,19 +10,18 @@
 package com.facebook.litho.reference;
 
 import android.graphics.drawable.Drawable;
+import android.support.annotation.ColorInt;
 import android.support.annotation.Px;
 import android.support.v4.util.Pools;
 import com.facebook.litho.BorderColorDrawable;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentsPools;
 
-/**
- * A Reference for {@link com.facebook.litho.BorderColorDrawable}.
- */
+/** A Reference for {@link com.facebook.litho.BorderColorDrawable}. */
 public class BorderColorDrawableReference extends ReferenceLifecycle<Drawable> {
 
   private static final Pools.SynchronizedPool<BorderColorDrawableReference.PropsBuilder>
-      sBuilderPool = new Pools.SynchronizedPool<BorderColorDrawableReference.PropsBuilder>(2);
+      sBuilderPool = new Pools.SynchronizedPool<>(2);
 
   private static BorderColorDrawableReference sInstance;
 
@@ -63,11 +62,14 @@ public class BorderColorDrawableReference extends ReferenceLifecycle<Drawable> {
     BorderColorDrawableReference.State state = (BorderColorDrawableReference.State) reference;
 
     drawable.init(
-        state.mColor,
-        state.mBorderLeft,
-        state.mBorderTop,
-        state.mBorderRight,
-        state.mBorderBottom);
+        state.mBorderLeftWidth,
+        state.mBorderTopWidth,
+        state.mBorderRightWidth,
+        state.mBorderBottomWidth,
+        state.mBorderLeftColor,
+        state.mBorderTopColor,
+        state.mBorderRightColor,
+        state.mBorderBottomColor);
 
     return drawable;
   }
@@ -82,11 +84,14 @@ public class BorderColorDrawableReference extends ReferenceLifecycle<Drawable> {
 
   private static class State extends Reference<Drawable> {
 
-    int mColor;
-    int mBorderLeft;
-    int mBorderTop;
-    int mBorderRight;
-    int mBorderBottom;
+    @ColorInt int mBorderLeftColor;
+    @ColorInt int mBorderTopColor;
+    @ColorInt int mBorderRightColor;
+    @ColorInt int mBorderBottomColor;
+    int mBorderLeftWidth;
+    int mBorderTopWidth;
+    int mBorderRightWidth;
+    int mBorderBottomWidth;
 
     @Override
     public String getSimpleName() {
@@ -99,11 +104,14 @@ public class BorderColorDrawableReference extends ReferenceLifecycle<Drawable> {
 
     @Override
     public int hashCode() {
-      int result = mColor;
-      result = 31 * result + mBorderLeft;
-      result = 31 * result + mBorderTop;
-      result = 31 * result + mBorderRight;
-      result = 31 * result + mBorderBottom;
+      int result = mBorderLeftColor;
+      result = 31 * result + mBorderTopColor;
+      result = 31 * result + mBorderRightColor;
+      result = 31 * result + mBorderBottomColor;
+      result = 31 * result + mBorderLeftWidth;
+      result = 31 * result + mBorderTopWidth;
+      result = 31 * result + mBorderRightWidth;
+      result = 31 * result + mBorderBottomWidth;
       return result;
     }
 
@@ -119,27 +127,24 @@ public class BorderColorDrawableReference extends ReferenceLifecycle<Drawable> {
 
       BorderColorDrawableReference.State state = (BorderColorDrawableReference.State) o;
 
-      if (mColor != state.mColor
-          || mBorderLeft != state.mBorderLeft
-          || mBorderTop != state.mBorderTop
-          || mBorderRight != state.mBorderRight
-          || mBorderBottom != state.mBorderBottom) {
-        return false;
-      }
-
-      return true;
+      return mBorderLeftColor == state.mBorderLeftColor
+          && mBorderTopColor == state.mBorderTopColor
+          && mBorderRightColor == state.mBorderRightColor
+          && mBorderBottomColor == state.mBorderBottomColor
+          && mBorderLeftWidth == state.mBorderLeftWidth
+          && mBorderTopWidth == state.mBorderTopWidth
+          && mBorderRightWidth == state.mBorderRightWidth
+          && mBorderBottomWidth == state.mBorderBottomWidth;
     }
   }
 
   public static class PropsBuilder extends Reference.Builder<Drawable> {
 
     private BorderColorDrawableReference.State mState;
-    private ComponentContext mContext;
 
     protected void init(ComponentContext context, BorderColorDrawableReference.State state) {
       super.init(context, state);
       mState = state;
-      mContext = context;
     }
 
     @Override
@@ -147,41 +152,53 @@ public class BorderColorDrawableReference extends ReferenceLifecycle<Drawable> {
       super.release();
 
       mState = null;
-      mContext = null;
       sBuilderPool.release(this);
     }
 
-    public BorderColorDrawableReference.PropsBuilder color(int color) {
-      mState.mColor = color;
+    public BorderColorDrawableReference.PropsBuilder borderLeftColor(@ColorInt int color) {
+      mState.mBorderLeftColor = color;
       return this;
     }
 
-    public BorderColorDrawableReference.PropsBuilder borderLeft(@Px int borderLeft) {
-      mState.mBorderLeft = borderLeft;
+    public BorderColorDrawableReference.PropsBuilder borderTopColor(@ColorInt int color) {
+      mState.mBorderTopColor = color;
       return this;
     }
 
-    public BorderColorDrawableReference.PropsBuilder borderTop(@Px int borderTop) {
-      mState.mBorderTop = borderTop;
+    public BorderColorDrawableReference.PropsBuilder borderRightColor(@ColorInt int color) {
+      mState.mBorderRightColor = color;
       return this;
     }
 
-    public BorderColorDrawableReference.PropsBuilder borderRight(@Px int borderRight) {
-      mState.mBorderRight = borderRight;
+    public BorderColorDrawableReference.PropsBuilder borderBottomColor(@ColorInt int color) {
+      mState.mBorderBottomColor = color;
       return this;
     }
 
-    public BorderColorDrawableReference.PropsBuilder borderBottom(@Px int borderBottom) {
-      mState.mBorderBottom = borderBottom;
+    public BorderColorDrawableReference.PropsBuilder borderLeftWidth(@Px int borderLeft) {
+      mState.mBorderLeftWidth = borderLeft;
+      return this;
+    }
+
+    public BorderColorDrawableReference.PropsBuilder borderTopWidth(@Px int borderTop) {
+      mState.mBorderTopWidth = borderTop;
+      return this;
+    }
+
+    public BorderColorDrawableReference.PropsBuilder borderRightWidth(@Px int borderRight) {
+      mState.mBorderRightWidth = borderRight;
+      return this;
+    }
+
+    public BorderColorDrawableReference.PropsBuilder borderBottomWidth(@Px int borderBottom) {
+      mState.mBorderBottomWidth = borderBottom;
       return this;
     }
 
     @Override
     public Reference<Drawable> build() {
       BorderColorDrawableReference.State state = mState;
-
       release();
-
       return state;
     }
   }

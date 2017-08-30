@@ -65,6 +65,7 @@ import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
+import com.facebook.yoga.YogaNode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -806,13 +807,30 @@ class LayoutState {
       throw new RuntimeException("This node does not support drawing border color");
     }
 
+    final YogaNode yogaNode = node.mYogaNode;
+    final boolean isRtl = resolveLayoutDirection(yogaNode) == YogaDirection.RTL;
+    final int[] borderColors = node.getBorderColors();
+    final YogaEdge leftEdge = isRtl ? YogaEdge.RIGHT : YogaEdge.LEFT;
+    final YogaEdge rightEdge = isRtl ? YogaEdge.LEFT : YogaEdge.RIGHT;
+
     return BorderColorDrawableReference.create(node.getContext())
-                .color(node.getBorderColor())
-                .borderLeft(FastMath.round(node.mYogaNode.getLayoutBorder(YogaEdge.LEFT)))
-                .borderTop(FastMath.round(node.mYogaNode.getLayoutBorder(YogaEdge.TOP)))
-                .borderRight(FastMath.round(node.mYogaNode.getLayoutBorder(YogaEdge.RIGHT)))
-                .borderBottom(FastMath.round(node.mYogaNode.getLayoutBorder(YogaEdge.BOTTOM)))
-                .build();
+        .borderLeftColor(Border.getEdgeColor(borderColors, leftEdge))
+        .borderTopColor(Border.getEdgeColor(borderColors, YogaEdge.TOP))
+        .borderRightColor(Border.getEdgeColor(borderColors, rightEdge))
+        .borderBottomColor(Border.getEdgeColor(borderColors, YogaEdge.BOTTOM))
+        .borderLeftWidth(FastMath.round(yogaNode.getLayoutBorder(leftEdge)))
+        .borderTopWidth(FastMath.round(yogaNode.getLayoutBorder(YogaEdge.TOP)))
+        .borderRightWidth(FastMath.round(yogaNode.getLayoutBorder(rightEdge)))
+        .borderBottomWidth(FastMath.round(yogaNode.getLayoutBorder(YogaEdge.BOTTOM)))
+        .build();
+  }
+
+  /** Continually walks the node hierarchy until a node returns a non inherited layout direction */
+  private static YogaDirection resolveLayoutDirection(YogaNode node) {
+    while (node != null && node.getLayoutDirection() == YogaDirection.INHERIT) {
+      node = node.getParent();
+    }
+    return node == null ? YogaDirection.INHERIT : node.getLayoutDirection();
   }
 
   private static void addLayoutOutputIdToPositionsMap(

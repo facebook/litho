@@ -356,12 +356,12 @@ public class InternalNodeTest {
     EventHandler<ClickEvent> clickHandler = mock(EventHandler.class);
     mNode.clickHandler(clickHandler);
 
-    assertThat(mNode.getBorderColor()).isEqualTo(Color.TRANSPARENT);
+    assertThat(mNode.getBorderColors()[0]).isEqualTo(Color.TRANSPARENT);
     assertThat(mNode.getClickHandler()).isNull();
 
     mNode.build();
 
-    assertThat(mNode.getBorderColor()).isEqualTo(Color.RED);
+    assertThat(mNode.getBorderColors()[0]).isEqualTo(Color.RED);
     assertThat(mNode.getClickHandler()).isSameAs(clickHandler);
   }
 

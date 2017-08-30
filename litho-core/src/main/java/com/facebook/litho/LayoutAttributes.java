@@ -85,6 +85,7 @@ class LayoutAttributes implements ComponentLayout.Builder {
   private static final long PFLAG_HEIGHT_PERCENT_IS_SET = 1L << 42;
   private static final long PFLAG_MIN_HEIGHT_PERCENT_IS_SET = 1L << 43;
   private static final long PFLAG_MAX_HEIGHT_PERCENT_IS_SET = 1L << 44;
+  private static final long PFLAG_BORDER_IS_SET = 1L << 45;
 
   private final ResourceResolver mResourceResolver = new ResourceResolver();
 
@@ -137,6 +138,7 @@ class LayoutAttributes implements ComponentLayout.Builder {
   private Reference<? extends Drawable> mBackground;
   private Drawable mForeground;
   private String mTransitionKey;
+  private Border mBorder;
 
   private ComponentLayout.Builder mNodeToCopyInto;
 
@@ -328,6 +330,13 @@ class LayoutAttributes implements ComponentLayout.Builder {
   @Override
   public LayoutAttributes paddingDip(YogaEdge edge, @Dimension(unit = DP) int padding) {
     return paddingPx(edge, mResourceResolver.dipsToPixels(padding));
+  }
+
+  @Override
+  public LayoutAttributes border(Border border) {
+    mPrivateFlags |= PFLAG_BORDER_IS_SET;
+    mBorder = border;
+    return this;
   }
 
   @Override
@@ -1140,6 +1149,9 @@ class LayoutAttributes implements ComponentLayout.Builder {
       for (int i = 0; i < mTouchExpansions.mNumEntries; i++) {
         node.touchExpansionPx(mTouchExpansions.mEdges[i], mTouchExpansions.mValues[i]);
       }
+    }
+    if ((mPrivateFlags & PFLAG_BORDER_IS_SET) != 0L) {
+      node.border(mBorder);
     }
   }
 

@@ -59,6 +59,7 @@ import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaWrap;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -105,6 +106,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private static final long PFLAG_ASPECT_RATIO_IS_SET = 1L << 27;
   private static final long PFLAG_TRANSITION_KEY_IS_SET = 1L << 28;
   private static final long PFLAG_BORDER_COLOR_IS_SET = 1L << 29;
+  private static final long PFLAG_BORDER_IS_SET = 1L << 30;
 
   private final ResourceResolver mResourceResolver = new ResourceResolver();
 
@@ -122,7 +124,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   private Reference<? extends Drawable> mBackground;
   private Drawable mForeground;
-  private int mBorderColor = Color.TRANSPARENT;
+  private final int[] mBorderColors = new int[Border.EDGE_COUNT];
 
   @Nullable private LayoutAttributes mLayoutAttributes;
   private NodeInfo mNodeInfo;
@@ -643,10 +645,41 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
-  public InternalNode borderWidthPx(YogaEdge edge, @Px int borderWidth) {
-    mPrivateFlags |= PFLAG_BORDER_WIDTH_IS_SET;
+  public InternalNode border(Border border) {
+    if ((mPrivateFlags & PFLAG_BORDER_WIDTH_IS_SET) != 0L
+        || (mPrivateFlags & PFLAG_BORDER_COLOR_IS_SET) != 0L) {
+      throw new IllegalStateException(
+          "Border properties should be set by providing a Border object via .border(). Using "
+              + "individual methods, such as borderWidth() variations, borderColor(), etc should "
+              + "not be mixed with using .border().");
+    }
 
+    mPrivateFlags |= PFLAG_BORDER_IS_SET;
+    for (int i = 0, length = border.mEdgeWidths.length; i < length; ++i) {
+      setBorderWidth(Border.edgeFromIndex(i), border.mEdgeWidths[i], false);
+    }
+    System.arraycopy(border.mEdgeColors, 0, mBorderColors, 0, mBorderColors.length);
+    return this;
+  }
+
+  @Override
+  public InternalNode borderWidthPx(YogaEdge edge, @Px int borderWidth) {
+    if ((mPrivateFlags & PFLAG_BORDER_IS_SET) != 0L) {
+      throw new IllegalStateException(
+          "Border properties should be set by providing a Border object via .border(). Using "
+              + "individual methods, such as borderWidth() variations should not be mixed with "
+              + "using .border().");
+    }
+
+    setBorderWidth(edge, borderWidth, true);
+    return this;
+  }
+
+  private void setBorderWidth(YogaEdge edge, @Px int borderWidth, boolean setWidthFlag) {
     if (mIsNestedTreeHolder) {
+      if (setWidthFlag) {
+        mPrivateFlags |= PFLAG_BORDER_WIDTH_IS_SET;
+      }
       if (mNestedTreeBorderWidth == null) {
         mNestedTreeBorderWidth = ComponentsPools.acquireEdges();
       }
@@ -655,12 +688,13 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     } else {
       if (mLayoutAttributes != null) {
         mLayoutAttributes.borderWidthPx(edge, borderWidth);
-        return this;
+        return;
+      }
+      if (setWidthFlag) {
+        mPrivateFlags |= PFLAG_BORDER_WIDTH_IS_SET;
       }
       mYogaNode.setBorder(edge, borderWidth);
     }
-
-    return this;
   }
 
   @Override
@@ -691,14 +725,21 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
-  public Builder borderColor(@ColorInt int borderColor) {
+  public InternalNode borderColor(@ColorInt int borderColor) {
+    if ((mPrivateFlags & PFLAG_BORDER_IS_SET) != 0L) {
+      throw new IllegalStateException(
+          "Border properties should be set by providing a Border object via .border(). Using "
+              + "individual methods, such as borderColor() should not be mixed with using .border().");
+    }
+
     if (mLayoutAttributes != null) {
       mLayoutAttributes.borderColor(borderColor);
       return this;
     }
 
     mPrivateFlags |= PFLAG_BORDER_COLOR_IS_SET;
-    mBorderColor = borderColor;
+    Arrays.fill(mBorderColors, borderColor);
+
     return this;
   }
 
@@ -1857,12 +1898,19 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return mComponents.size() == 0 ? null : mComponents.get(0);
   }
 
-  int getBorderColor() {
-    return mBorderColor;
+  int[] getBorderColors() {
+    return mBorderColors;
   }
 
   boolean shouldDrawBorders() {
-    return mBorderColor != Color.TRANSPARENT
+    boolean hasColor = false;
+    for (int color : mBorderColors) {
+      if (color != Color.TRANSPARENT) {
+        hasColor = true;
+        break;
+      }
+    }
+    return hasColor
         && (mYogaNode.getLayoutBorder(LEFT) != 0
             || mYogaNode.getLayoutBorder(TOP) != 0
             || mYogaNode.getLayoutBorder(RIGHT) != 0
@@ -2036,7 +2084,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       }
     }
 
-    if ((mPrivateFlags & PFLAG_BORDER_WIDTH_IS_SET) != 0L) {
+    if ((mPrivateFlags & PFLAG_BORDER_IS_SET) != 0L
+        || (mPrivateFlags & PFLAG_BORDER_WIDTH_IS_SET) != 0L) {
       if (mNestedTreeBorderWidth == null) {
         throw new IllegalStateException("copyInto() must be used when resolving a nestedTree. " +
             "If border width was set on the holder node, we must have a mNestedTreeBorderWidth " +
@@ -2059,8 +2108,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     if ((mPrivateFlags & PFLAG_TRANSITION_KEY_IS_SET) != 0L) {
       node.mTransitionKey = mTransitionKey;
     }
-    if ((mPrivateFlags & PFLAG_BORDER_COLOR_IS_SET) != 0L) {
-      node.mBorderColor = mBorderColor;
+    if ((mPrivateFlags & PFLAG_BORDER_IS_SET) != 0L
+        || (mPrivateFlags & PFLAG_BORDER_COLOR_IS_SET) != 0L) {
+      System.arraycopy(mBorderColors, 0, node.mBorderColors, 0, mBorderColors.length);
     }
     if (mVisibleHeightRatio != 0) {
       node.mVisibleHeightRatio = mVisibleHeightRatio;
@@ -2247,7 +2297,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     mInvisibleHandler = null;
     mPrivateFlags = 0L;
     mTransitionKey = null;
-    mBorderColor = Color.TRANSPARENT;
+    Arrays.fill(mBorderColors, Color.TRANSPARENT);
     mIsPaddingPercent = null;
 
     if (mTouchExpansion != null) {
