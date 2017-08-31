@@ -25,8 +25,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.view.ViewGroup;
-import android.widget.ScrollView;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Before;
@@ -140,18 +138,6 @@ public class ComponentTreeIncrementalMountTest {
 
     mComponentTree.incrementalMountComponent();
     assertThat(mMountedRect).isEqualTo(new Rect(0, 0, 10, 5));
-  }
-
-  @Test
-  public void verifyNoScrollViewInHierarchy() {
-    assumeThat(ComponentsConfiguration.IS_INTERNAL_BUILD, is(true));
-
-    mExpectedException.expect(RuntimeException.class);
-    mExpectedException.expectMessage(containsString("Incremental mounting inside ScrollView is not supported"));
-
-    when(mLithoView.getParent()).thenReturn(mock(ScrollView.class));
-
-    mComponentTree.incrementalMountComponent();
   }
 
   private void setupIncrementalMountTest(

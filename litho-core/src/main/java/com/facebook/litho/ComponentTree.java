@@ -35,11 +35,9 @@ import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewParent;
-import android.widget.ScrollView;
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
-import com.facebook.litho.config.ComponentsConfiguration;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
@@ -420,16 +418,6 @@ public class ComponentTree {
     if (!mIncrementalMountEnabled) {
       throw new IllegalStateException("Calling incrementalMountComponent() but incremental mount" +
           " is not enabled");
-    }
-
-    if (ComponentsConfiguration.IS_INTERNAL_BUILD) {
-      ViewParent parent = mLithoView.getParent();
-      while (parent != null) {
-        if (parent instanceof ScrollView) {
-          throw new RuntimeException("Incremental mounting inside ScrollView is not supported");
-        }
-        parent = parent.getParent();
-      }
     }
 
     // Per ComponentTree visible area. Because LithoViews can be nested and mounted
