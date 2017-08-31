@@ -10,6 +10,9 @@
 package com.facebook.litho;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assume.assumeThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -23,10 +26,13 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.view.ViewGroup;
 import android.widget.ScrollView;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -39,6 +45,9 @@ public class ComponentTreeIncrementalMountTest {
   private ComponentTree mComponentTree;
 
   private final Rect mMountedRect = new Rect();
+
+  @Rule
+  public ExpectedException mExpectedException = ExpectedException.none();
 
   @Before
   public void setup() {
@@ -133,8 +142,13 @@ public class ComponentTreeIncrementalMountTest {
     assertThat(mMountedRect).isEqualTo(new Rect(0, 0, 10, 5));
   }
 
-  @Test(expected = RuntimeException.class)
+  @Test
   public void verifyNoScrollViewInHierarchy() {
+    assumeThat(ComponentsConfiguration.IS_INTERNAL_BUILD, is(true));
+
+    mExpectedException.expect(RuntimeException.class);
+    mExpectedException.expectMessage(containsString("Incremental mounting inside ScrollView is not supported"));
+
     when(mLithoView.getParent()).thenReturn(mock(ScrollView.class));
 
     mComponentTree.incrementalMountComponent();
