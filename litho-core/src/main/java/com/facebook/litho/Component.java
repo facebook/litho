@@ -313,6 +313,28 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
   }
 
   /**
+   * @return whether the given component will not render because it returns null from its
+   * implementation of onCreateLayout, based on its current props and state.
+   */
+  public static boolean willRenderToNull(ComponentLayout componentLayout) {
+    if (ComponentContext.NULL_LAYOUT.equals(componentLayout)) {
+      return true;
+    }
+
+    if (componentLayout instanceof InternalNode &&
+        ((InternalNode) componentLayout).isNestedTreeHolder()) {
+      // Components using @OnCreateLayoutWithSizeSpec are lazily resolved after the rest of the tree
+      // has been measured (so that we have the proper measurements to pass in). This means we can't
+      // eagerly check the result of OnCreateLayoutWithSizeSpec.
+      throw new IllegalArgumentException(
+          "Cannot check willRenderToNull on a component that uses @OnCreateLayoutWithSizeSpec! " +
+              "Try wrapping this component in one that uses @OnCreateLayout if possible.");
+    }
+
+    return false;
+  }
+
+  /**
    * Prepares a component for calling any pending state updates on it by setting a global key,
    * setting the TreeProps which the component requires from its parent,
    * setting a scoped component context and applies the pending state updates.
