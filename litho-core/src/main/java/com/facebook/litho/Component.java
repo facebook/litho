@@ -59,6 +59,9 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
    */
   private Map<String, Integer> mChildCounters = new HashMap<>();
 
+  /**
+   * Mostly used by logging to provide more readable messages.
+   */
   public abstract String getSimpleName();
 
   /**
