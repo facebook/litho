@@ -131,8 +131,7 @@ class RecyclerSpec {
       @Prop(optional = true) boolean horizontalFadingEdgeEnabled,
       @Prop(optional = true) boolean verticalFadingEdgeEnabled,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int fadingEdgeLength,
-      @Prop(optional = true) @IdRes int recyclerViewId,
-      @Prop(optional = true) SnapHelper snapHelper) {
+      @Prop(optional = true) @IdRes int recyclerViewId) {
     final RecyclerView recyclerView = recyclerViewWrapper.getRecyclerView();
 
     if (recyclerView == null) {
@@ -159,10 +158,6 @@ class RecyclerSpec {
       recyclerView.addItemDecoration(itemDecoration);
     }
 
-    if (snapHelper != null) {
-      snapHelper.attachToRecyclerView(recyclerView);
-    }
-
     binder.mount(recyclerView);
   }
 
@@ -174,6 +169,7 @@ class RecyclerSpec {
       @Prop Binder<RecyclerView> binder,
       @Prop(optional = true) final RecyclerEventsController recyclerEventsController,
       @Prop(optional = true, varArg = "onScrollListener") List<OnScrollListener> onScrollListeners,
+      @Prop(optional = true) SnapHelper snapHelper,
       @FromPrepare OnRefreshListener onRefreshListener,
       Output<ItemAnimator> oldAnimator) {
 
@@ -201,6 +197,10 @@ class RecyclerSpec {
       }
     }
 
+    if (snapHelper != null) {
+      snapHelper.attachToRecyclerView(recyclerView);
+    }
+
     binder.bind(recyclerView);
 
     if (recyclerEventsController != null) {
@@ -220,6 +220,7 @@ class RecyclerSpec {
       @Prop Binder<RecyclerView> binder,
       @Prop(optional =  true) RecyclerEventsController recyclerEventsController,
       @Prop(optional = true, varArg = "onScrollListener") List<OnScrollListener> onScrollListeners,
+      @Prop(optional = true) SnapHelper snapHelper,
       @FromBind ItemAnimator oldAnimator) {
     final RecyclerView recyclerView = recyclerViewWrapper.getRecyclerView();
 
@@ -243,6 +244,10 @@ class RecyclerSpec {
       }
     }
 
+    if (snapHelper != null) {
+      snapHelper.attachToRecyclerView(null);
+    }
+
     recyclerViewWrapper.setOnRefreshListener(null);
   }
 
@@ -251,8 +256,7 @@ class RecyclerSpec {
       ComponentContext context,
       RecyclerViewWrapper recyclerViewWrapper,
       @Prop Binder<RecyclerView> binder,
-      @Prop(optional = true) RecyclerView.ItemDecoration itemDecoration,
-      @Prop(optional = true) SnapHelper snapHelper) {
+      @Prop(optional = true) RecyclerView.ItemDecoration itemDecoration) {
     final RecyclerView recyclerView = recyclerViewWrapper.getRecyclerView();
 
     if (recyclerView == null) {
@@ -265,10 +269,6 @@ class RecyclerSpec {
 
     if (itemDecoration != null) {
       recyclerView.removeItemDecoration(itemDecoration);
-    }
-
-    if (snapHelper != null) {
-      snapHelper.attachToRecyclerView(null);
     }
 
     binder.unmount(recyclerView);
