@@ -50,6 +50,20 @@ public class RenderInfoViewCreatorController {
     renderInfo.setViewType(viewType);
   }
 
+
+  @UiThread
+  private void updateViewType(RenderInfo renderInfo) {
+    final ViewCreator viewCreator = renderInfo.getViewCreator();
+    if (!mViewCreatorToUsageCount.containsKey(viewCreator)) {
+      throw new IllegalStateException(
+          "Trying to update viewType of RenderInfo whose ViewCreator isn't being tracked.");
+    }
+
+    final int viewType =
+        mViewTypeToViewCreator.keyAt(mViewTypeToViewCreator.indexOfValue(viewCreator));
+    renderInfo.setViewType(viewType);
+  }
+
   @UiThread
   public void maybeUpdateViewCreatorMappingsOnItemRemove(RenderInfo renderInfo) {
     if (!renderInfo.rendersView()) {
@@ -76,8 +90,21 @@ public class RenderInfoViewCreatorController {
 
   public void maybeUpdateViewCreatorMappingsOnItemUpdate(
       RenderInfo previousRenderInfo, RenderInfo newRenderInfo) {
-    maybeUpdateViewCreatorMappingsOnItemRemove(previousRenderInfo);
-    maybeUpdateViewCreatorMappingsOnItemInsert(newRenderInfo);
+
+    // If the old and new RenderInfo items have the same ViewCreator, there is no need to update
+    // ViewCreator related mappings, as otherwise it might remove and insert the same item which
+    // will change its viewType, creating unnecessary remove/add animations instead of update one.
+    final boolean skipUpdatingViewCreatorMappings =
+        previousRenderInfo.rendersView()
+            && newRenderInfo.rendersView()
+            && previousRenderInfo.getViewCreator() == newRenderInfo.getViewCreator();
+
+    if (skipUpdatingViewCreatorMappings) {
+      updateViewType(newRenderInfo);
+    } else {
+      maybeUpdateViewCreatorMappingsOnItemRemove(previousRenderInfo);
+      maybeUpdateViewCreatorMappingsOnItemInsert(newRenderInfo);
+    }
   }
 
   public ViewCreator getViewCreator(int viewType) {
