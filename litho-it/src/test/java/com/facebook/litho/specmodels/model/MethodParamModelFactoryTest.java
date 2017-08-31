@@ -202,4 +202,18 @@ public class MethodParamModelFactoryTest {
     assertThat(prop.isOptional()).isTrue();
     assertThat(prop.getVarArgsSingleName()).isEqualTo("varArgString");
   }
+
+  @Test
+  public void testCreateSimpleMethodParamModelWithSpecificType() {
+    Object representedObject = new Object();
+    SimpleMethodParamModel param =
+        MethodParamModelFactory.createSimpleMethodParamModel(
+            TypeName.CHAR, "customParamModel", representedObject);
+
+    assertThat(param.getType()).isEqualTo(TypeName.CHAR);
+    assertThat(param.getName()).isEqualTo("customParamModel");
+    assertThat(param.getRepresentedObject()).isEqualTo(representedObject);
+    assertThat(param.getAnnotations()).isEmpty();
+    assertThat(param.getExternalAnnotations()).isEmpty();
+  }
 }

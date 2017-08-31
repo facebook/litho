@@ -13,6 +13,7 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
+import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
@@ -82,6 +83,16 @@ public final class MethodParamModelFactory {
 
     return (typeName instanceof ParameterizedTypeName
         && ((ParameterizedTypeName) typeName).rawType.equals(ClassNames.DIFF));
+  }
+
+  public static SimpleMethodParamModel createSimpleMethodParamModel(
+      TypeName type, String name, Object representedObject) {
+    return new SimpleMethodParamModel(
+        type,
+        name,
+        ImmutableList.<Annotation>of(),
+        ImmutableList.<AnnotationSpec>of(),
+        representedObject);
   }
 
   public static PropModel createPropModel(
