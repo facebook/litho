@@ -39,27 +39,27 @@ public class ViewRenderInfo extends RenderInfo {
   }
 
   @Override
-  boolean rendersView() {
+  public boolean rendersView() {
     return true;
   }
 
   @Override
-  ViewBinder getViewBinder() {
+  public ViewBinder getViewBinder() {
     return mViewBinder;
   }
 
   @Override
-  ViewCreator getViewCreator() {
+  public ViewCreator getViewCreator() {
     return mViewCreator;
   }
 
   @Override
-  void setViewType(int viewType) {
+  public void setViewType(int viewType) {
     mViewType = viewType;
   }
 
   @Override
-  int getViewType() {
+  public int getViewType() {
     return mViewType;
   }
 

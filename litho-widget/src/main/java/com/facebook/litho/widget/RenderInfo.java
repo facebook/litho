@@ -82,7 +82,7 @@ public abstract class RenderInfo {
    *     {@link #getViewBinder()}, {@link #getViewCreator()}, {@link #getViewType()} and {@link
    *     #setViewType(int)} from {@link RenderInfo} type.
    */
-  boolean rendersView() {
+  public boolean rendersView() {
     return false;
   }
 
@@ -92,7 +92,7 @@ public abstract class RenderInfo {
    *     If this method is accessed from {@link RenderInfo} type, {@link #rendersView()} should be
    *     queried first before accessing.
    */
-  ViewBinder getViewBinder() {
+  public ViewBinder getViewBinder() {
     throw new UnsupportedOperationException();
   }
 
@@ -102,7 +102,7 @@ public abstract class RenderInfo {
    *     If this method is accessed from {@link RenderInfo} type, {@link #rendersView()} should be
    *     queried first before accessing.
    */
-  ViewCreator getViewCreator() {
+  public ViewCreator getViewCreator() {
     throw new UnsupportedOperationException();
   }
 
@@ -112,7 +112,7 @@ public abstract class RenderInfo {
    *     If this method is accessed from {@link RenderInfo} type, {@link #rendersView()} should be
    *     queried first before accessing.
    */
-  int getViewType() {
+  public int getViewType() {
     throw new UnsupportedOperationException();
   }
 
@@ -120,7 +120,7 @@ public abstract class RenderInfo {
    * Set viewType of current {@link RenderInfo} if it was created through {@link
    * ViewRenderInfo#create()}, or otherwise it will throw {@link UnsupportedOperationException}.
    */
-  void setViewType(int viewType) {
+  public void setViewType(int viewType) {
     throw new UnsupportedOperationException();
   }
 
