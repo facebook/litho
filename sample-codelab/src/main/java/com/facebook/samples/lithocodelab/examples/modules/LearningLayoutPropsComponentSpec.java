@@ -31,6 +31,10 @@ import com.facebook.litho.widget.Image;
 import com.facebook.litho.widget.Text;
 import com.facebook.samples.lithocodelab.R;
 
+/**
+* Learn the basic {@literal @}Props available on ComponentLayouts. Control the size, padding, margins,
+ * backgrounds, and alignment of Components.
+ */
 @LayoutSpec
 public class LearningLayoutPropsComponentSpec {
     @OnCreateLayout

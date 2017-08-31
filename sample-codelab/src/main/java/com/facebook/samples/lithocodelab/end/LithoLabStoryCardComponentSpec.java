@@ -44,6 +44,14 @@ import com.facebook.samples.lithocodelab.R;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaEdge;
 
+/**
+ * Renders a "story card" with a grey box representing an image for the author, a title, subtitle,
+ * and message text props. This also has a togglable "saved" state and a menu button which just
+ * Toasts to indicate that the menu button was pressed.
+ *
+ * <p>This does most of the interesting stuff for the approximate end state for the lab activity.
+ * The lab will almost entirely be spent reproducing this.
+ */
 @LayoutSpec
 public class LithoLabStoryCardComponentSpec {
 

@@ -17,6 +17,7 @@ import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.widget.Text;
 
+/** A simple, "Hello, world" Component for learning the basics of LayoutSpecs. */
 @LayoutSpec
 public class LearningLayoutSpecsComponentSpec {
 

@@ -18,7 +18,9 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 
 /**
- * Simple wrapper around {@link ExamplesActivityComponentSpec}
+ * Renders {@link ExamplesActivityComponentSpec} initially, and then handles all navigation to
+ * example module Components and back button presses. This was hackily thrown together since it's
+ * just for demo purposes.
  */
 public class ExamplesLithoLabActivity extends AppCompatActivity {
 

@@ -16,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 
+/** This is a simple wrapper around {@link LithoLabEndComponentSpec}. */
 public class LithoLabApproximateEndActivity extends AppCompatActivity {
 
     @Override

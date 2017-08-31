@@ -20,6 +20,7 @@ import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.widget.Text;
 
+/** Simple row that displays a single line of text and responds to click events. */
 @LayoutSpec
 public class ExamplesRowComponentSpec {
 

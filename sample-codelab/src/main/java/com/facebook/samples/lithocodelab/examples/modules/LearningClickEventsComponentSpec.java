@@ -37,6 +37,9 @@ import com.facebook.litho.widget.Image;
 import com.facebook.litho.widget.Text;
 import com.facebook.samples.lithocodelab.R;
 
+/**
+ * Learn how to handle clicks in Components. Turns out, they're just like @Props on ComponentLayouts
+ */
 @LayoutSpec
 public class LearningClickEventsComponentSpec {
     @OnCreateLayout

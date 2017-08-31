@@ -20,6 +20,10 @@ import com.facebook.litho.widget.LinearLayoutInfo;
 import com.facebook.litho.widget.Recycler;
 import com.facebook.litho.widget.RecyclerBinder;
 
+/**
+ * Learn how to render a list of Components without having to go through Views and other Android
+ * primitives.
+ */
 @LayoutSpec
 public class LearningRecyclerBinderComponentSpec {
     @OnCreateLayout

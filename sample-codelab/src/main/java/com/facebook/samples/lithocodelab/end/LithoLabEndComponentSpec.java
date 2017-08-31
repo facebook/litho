@@ -17,6 +17,10 @@ import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 
+/**
+ * Renders the approximate end state for the lab activity. This wraps the {@link
+ * LithoLabStoryCardComponent}, provides its props, and also fills the rest of the screen with gray.
+ */
 @LayoutSpec
 public class LithoLabEndComponentSpec {
     @OnCreateLayout

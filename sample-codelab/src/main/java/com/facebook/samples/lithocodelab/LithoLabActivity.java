@@ -17,6 +17,12 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.widget.Text;
 
+/**
+ * *************** START THE LAB HERE ***************
+ *
+ * <p>This is a simple "Hello, world." activity that renders using Litho. The goal of the lab is to
+ * build this into something that resembles {@link LithoLabApproximateEndActivity}
+ */
 public class LithoLabActivity extends AppCompatActivity {
 
     @Override

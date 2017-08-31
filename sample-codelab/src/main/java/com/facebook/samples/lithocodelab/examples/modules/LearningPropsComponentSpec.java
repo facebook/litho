@@ -19,6 +19,10 @@ import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.widget.Text;
 
+/**
+* Introduction to basic {@literal @}Props usage. Make your own Component with {@literal @}Props and see what is generated.
+ * and how to interact with it.
+ */
 @LayoutSpec
 public class LearningPropsComponentSpec {
     @OnCreateLayout

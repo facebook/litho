@@ -18,6 +18,10 @@ import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.widget.Text;
 
+/**
+ * An introduction to Containers like Column and Row! Learn how they work, since they're a <em>little
+ * bit</em> special.
+ */
 @LayoutSpec
 public class LearningContainersComponentSpec {
 
