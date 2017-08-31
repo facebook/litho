@@ -228,6 +228,11 @@ public final class SpecModelImpl implements SpecModel {
     throw new RuntimeException("Don't delegate to this method!");
   }
 
+  @Override
+  public boolean hasDeepCopy() {
+    throw new RuntimeException("Don't delegate to this method!");
+  }
+
   @Nullable
   @Override
   public DependencyInjectionHelper getDependencyInjectionHelper() {

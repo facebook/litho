@@ -155,6 +155,11 @@ public interface SpecModel {
   boolean shouldCheckIdInIsEquivalentToMethod();
 
   /**
+   * @return whether or not to deep copy this component.
+   */
+  boolean hasDeepCopy();
+
+  /**
    * @return null if this spec does not use dependency injection, otherwise return the generator
    * that should be used to generate the correct methods for dependency injection to work for
    * this component.

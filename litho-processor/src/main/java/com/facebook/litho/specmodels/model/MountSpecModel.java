@@ -218,6 +218,11 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
+  public boolean hasDeepCopy() {
+    return false;
+  }
+
+  @Override
   public boolean shouldCheckIdInIsEquivalentToMethod() {
     return true;
   }

@@ -200,6 +200,11 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
+  public boolean hasDeepCopy() {
+    return false;
+  }
+
+  @Override
   public DependencyInjectionHelper getDependencyInjectionHelper() {
     return mSpecModel.getDependencyInjectionHelper();
   }

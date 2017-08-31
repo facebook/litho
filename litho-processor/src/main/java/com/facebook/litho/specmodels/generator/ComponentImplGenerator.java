@@ -101,8 +101,7 @@ public class ComponentImplGenerator {
     generateCopyInterStageImpl(specModel).addToTypeSpec(implClassBuilder);
 
     generateOnUpdateStateMethods(specModel).addToTypeSpec(implClassBuilder);
-    generateMakeShallowCopy(specModel, /* hasDeepCopy */ false, hasState)
-        .addToTypeSpec(implClassBuilder);
+    generateMakeShallowCopy(specModel, hasState).addToTypeSpec(implClassBuilder);
 
     final TypeSpecDataHolder.Builder builder = TypeSpecDataHolder.newBuilder();
     if (hasState) {
@@ -425,10 +424,7 @@ public class ComponentImplGenerator {
     return typeSpecDataHolder.build();
   }
 
-  static TypeSpecDataHolder generateMakeShallowCopy(
-      SpecModel specModel,
-      boolean hasDeepCopy,
-      boolean hasState) {
+  static TypeSpecDataHolder generateMakeShallowCopy(SpecModel specModel, boolean hasState) {
     TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
 
     final List<MethodParamModel> componentsInImpl = findComponentsInImpl(specModel);
@@ -436,6 +432,7 @@ public class ComponentImplGenerator {
         specModel.getInterStageInputs();
     final ImmutableList<UpdateStateMethodModel> updateStateMethodModels =
         specModel.getUpdateStateMethods();
+    final boolean hasDeepCopy = specModel.hasDeepCopy();
 
     if (componentsInImpl.isEmpty() &&
         interStageComponentVariables.isEmpty() &&
@@ -464,11 +461,10 @@ public class ComponentImplGenerator {
 
     for (MethodParamModel componentParam : componentsInImpl) {
       builder.addStatement(
-          "component.$L = component.$L != null ? component.$L.makeShallowCopy($L) : null",
+          "component.$L = component.$L != null ? component.$L.makeShallowCopy() : null",
           componentParam.getName(),
           componentParam.getName(),
-          componentParam.getName(),
-          deepCopy);
+          componentParam.getName());
     }
 
     if (hasDeepCopy) {
