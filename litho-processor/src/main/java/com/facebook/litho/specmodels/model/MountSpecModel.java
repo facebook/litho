@@ -217,6 +217,11 @@ public class MountSpecModel implements SpecModel, HasPureRender {
     return mSpecModel.hasInjectedDependencies();
   }
 
+  @Override
+  public boolean shouldCheckIdInIsEquivalentToMethod() {
+    return true;
+  }
+
   public DependencyInjectionHelper getDependencyInjectionHelper() {
     return mSpecModel.getDependencyInjectionHelper();
   }

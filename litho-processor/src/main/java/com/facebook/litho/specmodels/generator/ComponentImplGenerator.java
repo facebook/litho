@@ -96,7 +96,7 @@ public class ComponentImplGenerator {
 
     implClassBuilder.addMethod(generateImplConstructor(stateContainerImplClass, hasState));
     implClassBuilder.addMethod(generateGetSimpleName(specModel));
-    implClassBuilder.addMethod(generateIsEquivalentMethod(specModel, true));
+    implClassBuilder.addMethod(generateIsEquivalentMethod(specModel));
 
     generateCopyInterStageImpl(specModel).addToTypeSpec(implClassBuilder);
 
@@ -307,7 +307,7 @@ public class ComponentImplGenerator {
         .build();
   }
 
-  static MethodSpec generateIsEquivalentMethod(SpecModel specModel, boolean shouldCheckId) {
+  static MethodSpec generateIsEquivalentMethod(SpecModel specModel) {
     final String implClassName = getImplClassName(specModel);
     final String implInstanceName = getImplInstanceName(specModel);
 
@@ -329,7 +329,7 @@ public class ComponentImplGenerator {
             .addStatement(
                 implClassName + " " + implInstanceName + " = (" + implClassName + ") other");
 
-    if (shouldCheckId) {
+    if (specModel.shouldCheckIdInIsEquivalentToMethod()) {
       isEquivalentBuilder
           .beginControlFlow("if (this.getId() == " + implInstanceName + ".getId())")
           .addStatement("return true")

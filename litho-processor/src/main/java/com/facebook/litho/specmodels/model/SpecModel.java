@@ -150,6 +150,11 @@ public interface SpecModel {
   boolean hasInjectedDependencies();
 
   /**
+   * @return whether or not to check component id in isEquivalentTo() method.
+   */
+  boolean shouldCheckIdInIsEquivalentToMethod();
+
+  /**
    * @return null if this spec does not use dependency injection, otherwise return the generator
    * that should be used to generate the correct methods for dependency injection to work for
    * this component.

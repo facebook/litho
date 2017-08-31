@@ -223,6 +223,11 @@ public final class SpecModelImpl implements SpecModel {
     return mHasInjectedDependencies;
   }
 
+  @Override
+  public boolean shouldCheckIdInIsEquivalentToMethod() {
+    throw new RuntimeException("Don't delegate to this method!");
+  }
+
   @Nullable
   @Override
   public DependencyInjectionHelper getDependencyInjectionHelper() {
