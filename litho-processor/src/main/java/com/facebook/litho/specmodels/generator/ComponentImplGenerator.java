@@ -585,7 +585,8 @@ public class ComponentImplGenerator {
           .addStatement("return false")
           .endControlFlow();
     } else {
-      final String equalMethodName = shouldUseIsEquivalentTo(field) ? "isEquivalentTo" : "equals";
+      final String equalMethodName =
+          shouldUseIsEquivalentTo(specModel, field) ? "isEquivalentTo" : "equals";
 
       codeBlock
           .beginControlFlow(
@@ -604,8 +605,9 @@ public class ComponentImplGenerator {
     return codeBlock.build();
   }
 
-  private static boolean shouldUseIsEquivalentTo(MethodParamModel field) {
-    return field.getType().equals(ClassNames.COMPONENT);
+  private static boolean shouldUseIsEquivalentTo(SpecModel specModel, MethodParamModel field) {
+    return (field.getType().equals(ClassNames.COMPONENT)
+        || field.getType().equals(specModel.getComponentClass()));
   }
 
   static String getImplAccessor(SpecModel specModel, MethodParamModel methodParamModel) {
