@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import javax.annotation.Nullable;
 import javax.lang.model.element.Modifier;
 
 /**
@@ -56,7 +57,9 @@ public class ComponentImplGenerator {
   private ComponentImplGenerator() {
   }
 
-  public static TypeSpecDataHolder generate(SpecModel specModel) {
+  public static TypeSpecDataHolder generate(
+      SpecModel specModel,
+      @Nullable MethodParamModel optionalImplField) {
     final String implClassName = getImplClassName(specModel);
     final TypeSpec.Builder implClassBuilder =
         TypeSpec.classBuilder(implClassName)
@@ -92,6 +95,7 @@ public class ComponentImplGenerator {
     generateProps(specModel).addToTypeSpec(implClassBuilder);
     generateTreeProps(specModel).addToTypeSpec(implClassBuilder);
     generateInterStageInputs(specModel).addToTypeSpec(implClassBuilder);
+    generateOptionalField(optionalImplField).addToTypeSpec(implClassBuilder);
     generateEventHandlers(specModel).addToTypeSpec(implClassBuilder);
 
     implClassBuilder.addMethod(generateImplConstructor(stateContainerImplClass, hasState));
@@ -112,6 +116,17 @@ public class ComponentImplGenerator {
     }
     builder.addType(implClassBuilder.build());
     return builder.build();
+  }
+
+  private static TypeSpecDataHolder generateOptionalField(MethodParamModel optionalField) {
+    final TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
+    if (optionalField == null) {
+      return typeSpecDataHolder.build();
+    }
+
+    typeSpecDataHolder.addField(
+        FieldSpec.builder(optionalField.getType(), optionalField.getName()).build());
+    return typeSpecDataHolder.build();
   }
 
   static TypeSpec generateStateContainerImpl(SpecModel specModel) {

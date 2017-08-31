@@ -261,7 +261,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
     TypeSpecDataHolder.newBuilder()
         .addTypeSpecDataHolder(JavadocGenerator.generate(this))
         .addTypeSpecDataHolder(PreambleGenerator.generate(this))
-        .addTypeSpecDataHolder(ComponentImplGenerator.generate(this))
+        .addTypeSpecDataHolder(ComponentImplGenerator.generate(this, null))
         .addTypeSpecDataHolder(TreePropGenerator.generate(this))
         .addTypeSpecDataHolder(
             DelegateMethodGenerator.generateDelegates(
