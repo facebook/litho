@@ -13,20 +13,19 @@ import static android.support.v7.widget.OrientationHelper.HORIZONTAL;
 import static android.support.v7.widget.OrientationHelper.VERTICAL;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static com.facebook.litho.MeasureComparisonUtils.isMeasureSpecCompatible;
+import static com.facebook.litho.widget.RenderInfoViewCreatorController.COMPONENT_VIEW_TYPE;
 
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.UiThread;
 import android.support.annotation.VisibleForTesting;
-import android.support.v4.util.SimpleArrayMap;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.LayoutManager;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import com.facebook.litho.Component;
@@ -88,13 +87,6 @@ public class RecyclerBinder
     }
   };
 
-  @VisibleForTesting final SparseArray<ViewCreator> mViewTypeToViewCreator = new SparseArray<>();
-
-  // Data structure that is used to quickly query ViewCreator key membership and track its usage
-  // count so that we can remove it, when usage becomes 0.
-  @VisibleForTesting
-  final SimpleArrayMap<ViewCreator, Integer> mViewCreatorToUsageCount = new SimpleArrayMap<>();
-
   private int mLastWidthSpec = UNINITIALIZED;
   private int mLastHeightSpec = UNINITIALIZED;
   private Size mMeasuredSize;
@@ -107,7 +99,6 @@ public class RecyclerBinder
   private final boolean mCanPrefetchDisplayLists;
   private final boolean mCanCacheDrawingDisplayLists;
   private EventHandler<ReMeasureEvent> mReMeasureEventEventHandler;
-  private int mViewTypeCounter = 0;
 
   private final ViewportManager mViewportManager;
   private final ViewportChanged mViewportChangedListener = new ViewportChanged() {
@@ -120,6 +111,10 @@ public class RecyclerBinder
       onNewVisibleRange(firstVisibleIndex, lastVisibleIndex);
     }
   };
+
+  @VisibleForTesting
+  final RenderInfoViewCreatorController mRenderInfoViewCreatorController =
+      new RenderInfoViewCreatorController();
 
   interface ComponentTreeHolderFactory {
     ComponentTreeHolder create(
@@ -357,9 +352,7 @@ public class RecyclerBinder
     synchronized (this) {
       mComponentTreeHolders.add(position, holder);
 
-      if (renderInfo.rendersView()) {
-        updateViewCreatorMappingsOnItemInsert(renderInfo);
-      }
+      mRenderInfoViewCreatorController.maybeUpdateViewCreatorMappingsOnItemInsert(renderInfo);
 
       childrenWidthSpec = getActualChildrenWidthSpec(holder);
       childrenHeightSpec = getActualChildrenHeightSpec(holder);
@@ -431,9 +424,7 @@ public class RecyclerBinder
             mCanCacheDrawingDisplayLists);
 
         mComponentTreeHolders.add(position + i, holder);
-        if (renderInfo.rendersView()) {
-          updateViewCreatorMappingsOnItemInsert(renderInfo);
-        }
+        mRenderInfoViewCreatorController.maybeUpdateViewCreatorMappingsOnItemInsert(renderInfo);
 
         if (mRange == null && mIsMeasured.get() && holder.getRenderInfo().rendersComponent()) {
           initRange(
@@ -477,13 +468,9 @@ public class RecyclerBinder
           position < mCurrentFirstVisiblePosition + mRange.estimatedViewportCount;
 
       final RenderInfo previousRenderInfo = holder.getRenderInfo();
-      if (previousRenderInfo.rendersView()) {
-        updateViewCreatorMappingsOnItemRemove(previousRenderInfo);
-      }
+      mRenderInfoViewCreatorController.maybeUpdateViewCreatorMappingsOnItemUpdate(
+          previousRenderInfo, renderInfo);
       holder.setRenderInfo(renderInfo);
-      if (renderInfo.rendersView()) {
-        updateViewCreatorMappingsOnItemInsert(renderInfo);
-      }
 
       if (mRange == null && mIsMeasured.get() && renderInfo.rendersComponent()) {
         // Range might not have been initialized if all previous items were views and we update
@@ -511,43 +498,6 @@ public class RecyclerBinder
     computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
   }
 
-  @UiThread
-  private void updateViewCreatorMappingsOnItemInsert(RenderInfo renderInfo) {
-    final ViewCreator viewCreator = renderInfo.getViewCreator();
-    final int viewType;
-    if (mViewCreatorToUsageCount.containsKey(viewCreator)) {
-      final int currentUsageCount = mViewCreatorToUsageCount.get(viewCreator);
-      mViewCreatorToUsageCount.put(viewCreator, currentUsageCount + 1);
-      viewType = mViewTypeToViewCreator.keyAt(mViewTypeToViewCreator.indexOfValue(viewCreator));
-    } else {
-      mViewCreatorToUsageCount.put(viewCreator, 1);
-      viewType = mViewTypeCounter++;
-      mViewTypeToViewCreator.put(viewType, viewCreator);
-    }
-
-    renderInfo.setViewType(viewType);
-  }
-
-  @UiThread
-  private void updateViewCreatorMappingsOnItemRemove(RenderInfo renderInfo) {
-    final ViewCreator viewCreator = renderInfo.getViewCreator();
-    if (!mViewCreatorToUsageCount.containsKey(viewCreator)) {
-      throw new IllegalStateException("Trying to remove ViewCreator that isn't being tracked.");
-    }
-
-    int usageCount = mViewCreatorToUsageCount.get(viewCreator);
-    usageCount--;
-    if (usageCount == 0) {
-      mViewCreatorToUsageCount.remove(viewCreator);
-      final int index = mViewTypeToViewCreator.indexOfValue(viewCreator);
-      mViewTypeToViewCreator.removeAt(index);
-    } else if (usageCount < 0) {
-      throw new IllegalStateException("Usage count of ViewCreator cannot be negative.");
-    } else {
-      mViewCreatorToUsageCount.put(viewCreator, usageCount);
-    }
-  }
-
   /**
    * Updates the range of items starting at position. The {@link RecyclerView} gets notified
    * immediately about the item being updated.
@@ -562,15 +512,12 @@ public class RecyclerBinder
         final ComponentTreeHolder holder = mComponentTreeHolders.get(position + i);
 
         final RenderInfo previousRenderInfo = holder.getRenderInfo();
-        if (previousRenderInfo.rendersView()) {
-          updateViewCreatorMappingsOnItemRemove(previousRenderInfo);
-        }
-
         final RenderInfo newRenderInfo = renderInfos.get(i);
+
+        mRenderInfoViewCreatorController.maybeUpdateViewCreatorMappingsOnItemUpdate(
+            previousRenderInfo, newRenderInfo);
+
         holder.setRenderInfo(newRenderInfo);
-        if (newRenderInfo.rendersView()) {
-          updateViewCreatorMappingsOnItemInsert(newRenderInfo);
-        }
 
         if (mRange == null && mIsMeasured.get() && newRenderInfo.rendersComponent()) {
           // Range might not have been initialized if all previous items were views and we update
@@ -638,9 +585,8 @@ public class RecyclerBinder
     final ComponentTreeHolder holder;
     synchronized (this) {
       holder = mComponentTreeHolders.remove(position);
-      if (holder.getRenderInfo().rendersView()) {
-        updateViewCreatorMappingsOnItemRemove(holder.getRenderInfo());
-      }
+      mRenderInfoViewCreatorController.maybeUpdateViewCreatorMappingsOnItemRemove(
+          holder.getRenderInfo());
     }
     mInternalAdapter.notifyItemRemoved(position);
 
@@ -657,9 +603,8 @@ public class RecyclerBinder
     synchronized (this) {
       for (int i = 0; i < count; i++) {
         final ComponentTreeHolder holder = mComponentTreeHolders.remove(position);
-        if (holder.getRenderInfo().rendersView()) {
-          updateViewCreatorMappingsOnItemRemove(holder.getRenderInfo());
-        }
+        mRenderInfoViewCreatorController.maybeUpdateViewCreatorMappingsOnItemRemove(
+            holder.getRenderInfo());
         holder.release();
       }
     }
@@ -1252,9 +1197,9 @@ public class RecyclerBinder
 
     @Override
     public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-      final int index = mViewTypeToViewCreator.indexOfKey(viewType);
-      if (index >= 0) {
-        final ViewCreator viewCreator = mViewTypeToViewCreator.get(viewType);
+      final ViewCreator viewCreator = mRenderInfoViewCreatorController.getViewCreator(viewType);
+
+      if (viewCreator != null) {
         return new BaseViewHolder(viewCreator.createView(mComponentContext), false);
       } else {
         final LithoView lithoView =
@@ -1293,7 +1238,7 @@ public class RecyclerBinder
       final RenderInfo renderInfo = mComponentTreeHolders.get(position).getRenderInfo();
       if (renderInfo.rendersComponent()) {
         // Special value for LithoViews
-        return Integer.MAX_VALUE;
+        return COMPONENT_VIEW_TYPE;
       } else {
         return renderInfo.getViewType();
       }
