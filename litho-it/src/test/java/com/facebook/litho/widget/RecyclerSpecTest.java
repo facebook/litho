@@ -19,6 +19,8 @@ import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ItemAnimator;
 import android.support.v7.widget.RecyclerView.OnScrollListener;
+import android.support.v7.widget.SnapHelper;
+
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.Output;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
@@ -59,6 +61,8 @@ public class RecyclerSpecTest {
 
     Output<ItemAnimator> oldAnimator = mock(Output.class);
 
+    SnapHelper snapHelper = mock(SnapHelper.class);
+
     final int size = 3;
     List<RecyclerView.OnScrollListener> scrollListeners = createListOfScrollListeners(size);
 
@@ -69,6 +73,7 @@ public class RecyclerSpecTest {
         binder,
         null,
         scrollListeners,
+        snapHelper,
         onRefreshListener,
         oldAnimator);
 
@@ -89,6 +94,8 @@ public class RecyclerSpecTest {
 
     Binder<RecyclerView> binder = mock(Binder.class);
 
+    SnapHelper snapHelper = mock(SnapHelper.class);
+
     final int size = 3;
     List<RecyclerView.OnScrollListener> scrollListeners = createListOfScrollListeners(size);
 
@@ -98,6 +105,7 @@ public class RecyclerSpecTest {
         binder,
         null,
         scrollListeners,
+        snapHelper,
         mAnimator);
 
     verify(mRecyclerView).setItemAnimator(mAnimator);
