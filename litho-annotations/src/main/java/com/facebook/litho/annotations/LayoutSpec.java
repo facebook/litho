@@ -9,6 +9,7 @@
 
 package com.facebook.litho.annotations;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -22,12 +23,11 @@ import java.lang.annotation.RetentionPolicy;
  * <p>If you wish to create a component that mounts its own content, then use {@link MountSpec}
  * instead.
  * <p>For example:
- * <code>
- *
- * {@literal @}LayoutSpec
+ * <pre>
+ * <code>{@literal @}LayoutSpec
  * public class MyComponentSpec {
  *
- *   {@literal @}OnCreateLayout
+ *  {@literal @}OnCreateLayout
  *   ComponentLayout onCreateLayout(LayoutContext c, @Prop MyProp prop) {
  *       return Row.create(c)
  *           .alignItems(FLEX_START)
@@ -37,7 +37,9 @@ import java.lang.annotation.RetentionPolicy;
  *   }
  * }
  * </code>
+ * </pre>
  */
+@Documented
 @Retention(RetentionPolicy.RUNTIME)
 public @interface LayoutSpec {
   /**

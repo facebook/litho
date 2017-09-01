@@ -9,6 +9,7 @@
 
 package com.facebook.litho.annotations;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -30,27 +31,29 @@ import java.lang.annotation.RetentionPolicy;
  * <p>If you wish to create a component that is a composition of other components, then use
  * {@link LayoutSpec} instead.
  * <p>For example:
+ * <pre>
  * <code>
- *
  * {@literal @}MountSpec
  * public class MyComponentSpec {
  *
- *   {@literal @}OnCreateMountContent
+ *  {@literal @}OnCreateMountContent
  *   MyDrawable onCreateMountContent(ComponentContext c) {
  *     return new MyDrawable(c);
  *   }
  *
- *   {@literal @}OnMount
+ *  {@literal @}OnMount
  *   void onMount(
  *       ComponentContext context,
  *       MyDrawable myDrawable,
- *       {@literal @}Prop MyProp prop) {
+ *      {@literal @}Prop MyProp prop) {
  *     myDrawable.setMyProp(prop);
  *   }
  * }
  * </code>
+ * </pre>
  */
 @Retention(RetentionPolicy.RUNTIME)
+@Documented
 public @interface MountSpec {
   /**
    * Class name of the generated component. When not provided defaults to name of the annotated
