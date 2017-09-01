@@ -16,6 +16,7 @@
   - id: props
   - id: state
   - id: layout
+  - id: border
   - id: recycler-component
   - id: glossary
 - title: Handling Events
