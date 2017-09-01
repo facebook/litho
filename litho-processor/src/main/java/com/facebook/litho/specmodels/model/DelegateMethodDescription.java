@@ -47,6 +47,7 @@ public final class DelegateMethodDescription {
   public final TypeName returnType;
   public final String name;
   public final ImmutableList<TypeName> definedParameterTypes;
+  public final ImmutableList<MethodParamModel> optionalParameters;
   public final ImmutableList<OptionalParameterType> optionalParameterTypes;
   public final ImmutableList<Class<? extends Annotation>> interStageInputAnnotations;
   public final ImmutableList<MethodSpec> extraMethods;
@@ -58,6 +59,7 @@ public final class DelegateMethodDescription {
     returnType = builder.returnType;
     name = builder.name;
     definedParameterTypes = builder.definedParameterTypes;
+    optionalParameters = builder.optionalParameters;
     optionalParameterTypes = builder.optionalParameterTypes;
     interStageInputAnnotations = builder.interStageInputAnnotations;
     extraMethods = builder.extraMethods;
@@ -68,6 +70,20 @@ public final class DelegateMethodDescription {
     return new Builder();
   }
 
+  public static Builder fromDelegateMethodDescription(DelegateMethodDescription methodDescription) {
+    return new Builder()
+        .annotations(methodDescription.annotations)
+        .accessType(methodDescription.accessType)
+        .returnType(methodDescription.returnType)
+        .name(methodDescription.name)
+        .definedParameterTypes(methodDescription.definedParameterTypes)
+        .optionalParameters(methodDescription.optionalParameters)
+        .optionalParameterTypes(methodDescription.optionalParameterTypes)
+        .interStageInputAnnotations(methodDescription.interStageInputAnnotations)
+        .extraMethods(methodDescription.extraMethods)
+        .exceptions(methodDescription.exceptions);
+  }
+
   public static class Builder {
     private ImmutableList<AnnotationSpec> annotations;
     private Modifier accessType;
@@ -75,6 +91,7 @@ public final class DelegateMethodDescription {
     private String name;
     private ImmutableList<TypeName> definedParameterTypes;
     private ImmutableList<OptionalParameterType> optionalParameterTypes;
+    private ImmutableList<MethodParamModel> optionalParameters;
     private ImmutableList<Class<? extends Annotation>> interStageInputAnnotations;
     private ImmutableList<MethodSpec> extraMethods;
     private ImmutableList<TypeName> exceptions;
@@ -104,6 +121,14 @@ public final class DelegateMethodDescription {
 
     public Builder definedParameterTypes(ImmutableList<TypeName> parameterTypes) {
       this.definedParameterTypes = parameterTypes;
+      return this;
+    }
+
+    /**
+     * Optional parameters are named parameters from the component impl that aren't props or state.
+     */
+    public Builder optionalParameters(ImmutableList<MethodParamModel> optionalParameters) {
+      this.optionalParameters = optionalParameters;
       return this;
     }
 
@@ -164,6 +189,10 @@ public final class DelegateMethodDescription {
 
       if (definedParameterTypes == null) {
         definedParameterTypes = ImmutableList.of();
+      }
+
+      if (optionalParameters == null) {
+        optionalParameters = ImmutableList.of();
       }
 
       if (interStageInputAnnotations == null) {

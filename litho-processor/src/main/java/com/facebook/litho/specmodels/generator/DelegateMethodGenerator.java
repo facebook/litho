@@ -20,6 +20,7 @@ import com.facebook.litho.specmodels.model.DelegateMethodDescription;
 import com.facebook.litho.specmodels.model.DelegateMethodModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.RenderDataDiffModel;
+import com.facebook.litho.specmodels.model.SimpleMethodParamModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.squareup.javapoet.AnnotationSpec;
@@ -87,7 +88,10 @@ public class DelegateMethodGenerator {
           delegateMethod.methodParams.get(i).getName());
     }
 
-    if (!methodDescription.optionalParameterTypes.isEmpty()) {
+    final boolean shouldIncludeImpl =
+        !methodDescription.optionalParameters.isEmpty()
+            || !methodDescription.optionalParameterTypes.isEmpty();
+    if (shouldIncludeImpl) {
       methodSpec.addParameter(specModel.getComponentClass(), ABSTRACT_IMPL_PARAM_NAME);
     }
 
@@ -95,7 +99,7 @@ public class DelegateMethodGenerator {
       methodSpec.addException(exception);
     }
 
-    if (!methodDescription.optionalParameterTypes.isEmpty()) {
+    if (shouldIncludeImpl) {
       final String implName = specModel.getComponentName() + "Impl";
       methodSpec.addStatement(
           implName + " " + IMPL_VARIABLE_NAME + " = (" + implName + ") " +
@@ -121,9 +125,21 @@ public class DelegateMethodGenerator {
     delegation.indent();
     for (int i = 0, size = delegateMethod.methodParams.size(); i < size; i++) {
       final MethodParamModel methodParamModel = delegateMethod.methodParams.get(i);
-
-      if (i < methodDescription.definedParameterTypes.size()) {
+      final int definedParameterTypesSize = methodDescription.definedParameterTypes.size();
+      if (i < definedParameterTypesSize) {
         delegation.add("($T) $L", methodParamModel.getType(), methodParamModel.getName());
+      } else if (i < definedParameterTypesSize + methodDescription.optionalParameters.size()
+          && shouldIncludeOptionalParameter(
+              methodParamModel,
+              methodDescription.optionalParameters.get(i - definedParameterTypesSize))) {
+        final MethodParamModel extraDefinedParam =
+            methodDescription.optionalParameters.get(i - definedParameterTypesSize);
+
+        delegation.add(
+            "($T) $L.$L",
+            extraDefinedParam.getType(),
+            IMPL_VARIABLE_NAME,
+            extraDefinedParam.getName());
       } else if (isOutputType(methodParamModel.getType())) {
         acquireOutputs.add(
             "$T $L = acquireOutput();\n", methodParamModel.getType(), methodParamModel.getName());
@@ -199,6 +215,18 @@ public class DelegateMethodGenerator {
     }
 
     return methodSpec.build();
+  }
+
+  /**
+   * We consider an optional parameter as something that comes immediately after defined parameters
+   * and is not a special litho parameter (like a prop, state, etc...). This method verifies that
+   * optional parameters are the right type and have no additional annotations.
+   */
+  private static boolean shouldIncludeOptionalParameter(
+      MethodParamModel methodParamModel, MethodParamModel extraOptionalParameter) {
+    return methodParamModel instanceof SimpleMethodParamModel
+        && methodParamModel.getType().equals(extraOptionalParameter.getType())
+        && methodParamModel.getAnnotations().isEmpty();
   }
 
   private static boolean isOutputType(TypeName type) {
