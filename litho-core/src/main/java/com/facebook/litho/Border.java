@@ -151,38 +151,91 @@ public class Border {
       mBorder = new Border();
     }
 
+    /**
+     * Specifies a width for a specific edge
+     *
+     * <p>Note: Having a border effect with varying widths per edge is currently not supported
+     *
+     * @param edge The {@link YogaEdge} that will have its width modified
+     * @param width The desired width in raw pixels
+     */
     public Builder widthPx(YogaEdge edge, @Px int width) {
       checkNotBuilt();
       mBorder.setEdgeWidth(edge, width);
       return this;
     }
 
+    /**
+     * Specifies a width for a specific edge
+     *
+     * <p>Note: Having a border effect with varying widths per edge is currently not supported
+     *
+     * @param edge The {@link YogaEdge} that will have its width modified
+     * @param width The desired width in density independent pixels
+     */
     public Builder widthDip(YogaEdge edge, @Dimension(unit = DP) int width) {
       checkNotBuilt();
       return widthPx(edge, mResourceResolver.dipsToPixels(width));
     }
 
-    public Builder widthRes(YogaEdge edge, @DimenRes int borderWidthRes) {
+    /**
+     * Specifies a width for a specific edge
+     *
+     * <p>Note: Having a border effect with varying widths per edge is currently not supported
+     *
+     * @param edge The {@link YogaEdge} that will have its width modified
+     * @param widthRes The desired width resource to resolve
+     */
+    public Builder widthRes(YogaEdge edge, @DimenRes int widthRes) {
       checkNotBuilt();
-      return widthPx(edge, mResourceResolver.resolveDimenOffsetRes(borderWidthRes));
+      return widthPx(edge, mResourceResolver.resolveDimenOffsetRes(widthRes));
     }
 
-    public Builder widthAttr(YogaEdge edge, @AttrRes int resId) {
+    /**
+     * Specifies a width for a specific edge
+     *
+     * <p>Note: Having a border effect with varying widths per edge is currently not supported
+     *
+     * @param edge The {@link YogaEdge} that will have its width modified
+     * @param attrId The attribute to resolve a width value from
+     */
+    public Builder widthAttr(YogaEdge edge, @AttrRes int attrId) {
       checkNotBuilt();
-      return widthAttr(edge, resId, 0);
+      return widthAttr(edge, attrId, 0);
     }
 
-    public Builder widthAttr(YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
+    /**
+     * Specifies a width for a specific edge
+     *
+     * <p>Note: Having a border effect with varying widths per edge is currently not supported
+     *
+     * @param edge The {@link YogaEdge} that will have its width modified
+     * @param attrId The attribute to resolve a width value from
+     * @param defaultResId Default resource value to utilize if the attribute is not set
+     */
+    public Builder widthAttr(YogaEdge edge, @AttrRes int attrId, @DimenRes int defaultResId) {
       checkNotBuilt();
-      return widthPx(edge, mResourceResolver.resolveDimenOffsetAttr(resId, defaultResId));
+      return widthPx(edge, mResourceResolver.resolveDimenOffsetAttr(attrId, defaultResId));
     }
 
+    /**
+     * Specifies a color for a specific edge
+     *
+     * @param edge The {@link YogaEdge} that will have its color modified
+     * @param color The raw color value to use
+     */
     public Builder color(YogaEdge edge, @ColorInt int color) {
       checkNotBuilt();
       mBorder.setEdgeColor(edge, color);
       return this;
     }
 
+    /**
+     * Specifies a color for a specific edge
+     *
+     * @param edge The {@link YogaEdge} that will have its color modified
+     * @param colorRes The color resource to use
+     */
     public Builder colorRes(YogaEdge edge, @ColorRes int colorRes) {
       checkNotBuilt();
       return color(edge, mResourceResolver.resolveColorRes(colorRes));
