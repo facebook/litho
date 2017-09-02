@@ -13,7 +13,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Classes with this annotation will generate the {@link com.facebook.litho.list.ChangeSet}
+ * Classes with this annotation will generate the {@link com.facebook.litho.sections.ChangeSet}
  * a list should display.
  *
  * <p>For example:

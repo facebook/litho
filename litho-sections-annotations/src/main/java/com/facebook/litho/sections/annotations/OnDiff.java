@@ -14,7 +14,7 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * A class annotated with {@link DiffSectionSpec} requires a method with this annotation. This
- * method is responsible for generating a {@link com.facebook.litho.list.ChangeSet}.
+ * method is responsible for generating a {@link com.facebook.litho.sections.ChangeSet}.
  *
  * {@code
  *

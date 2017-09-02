@@ -17,7 +17,7 @@ import java.lang.annotation.RetentionPolicy;
  * disappear from the tree. This is where the Service created in the {@link OnCreateService}
  * should be disposed.
  *
- * The method will take as parameters only the {@link com.facebook.litho.list.SectionContext}
+ * The method will take as parameters only the {@link com.facebook.litho.sections.SectionContext}
  * and the Service created in {@link OnCreateService}.
  *
  * <p>For example:

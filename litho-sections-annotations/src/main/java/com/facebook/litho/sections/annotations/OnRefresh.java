@@ -11,7 +11,7 @@ package com.facebook.litho.sections.annotations;
 
 /**
  * The method annotated with this annotation will be called when the Ui rendering the
- * {@link com.facebook.litho.list.Section} requests a refresh of the content.
+ * {@link com.facebook.litho.sections.Section} requests a refresh of the content.
  *
  * <p>For example:
  * <pre>

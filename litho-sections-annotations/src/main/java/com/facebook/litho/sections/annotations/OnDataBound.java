@@ -14,8 +14,8 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * The method annotated with this annotation will be called when the data corresponding to this
- * Section props is now visible to the {@link com.facebook.litho.list.SectionTree.Target} of the
- * {@link com.facebook.litho.list.SectionTree}.
+ * Section props is now visible to the {@link com.facebook.litho.sections.SectionTree.Target} of the
+ * {@link com.facebook.litho.sections.SectionTree}.
  * In the classic case where the Ui for the Section is represented by a RecyclerView, this means
  * that by the time OnDataBound is called the RecyclerView has visibility over the data contained
  * in this section.

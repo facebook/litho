@@ -11,7 +11,7 @@ package com.facebook.litho.sections.annotations;
 
 /**
  * The method annotated with this annotation will be called when the Ui rendering the
- * {@link com.facebook.litho.list.Section} scrolled to a new position.
+ * {@link com.facebook.litho.sections.Section} scrolled to a new position.
  *
  * <p>For example:
  * <pre>
