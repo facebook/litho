@@ -221,7 +221,7 @@ class LayoutAttributes implements ComponentLayout.Builder {
   }
 
   @Override
-  public LayoutAttributes flexBasisDip(@Dimension(unit = DP) int flexBasis) {
+  public LayoutAttributes flexBasisDip(@Dimension(unit = DP) float flexBasis) {
     return flexBasisPx(mResourceResolver.dipsToPixels(flexBasis));
   }
 
@@ -287,7 +287,7 @@ class LayoutAttributes implements ComponentLayout.Builder {
   }
 
   @Override
-  public LayoutAttributes marginDip(YogaEdge edge, @Dimension(unit = DP) int margin) {
+  public LayoutAttributes marginDip(YogaEdge edge, @Dimension(unit = DP) float margin) {
     return marginPx(edge, mResourceResolver.dipsToPixels(margin));
   }
 
@@ -328,7 +328,7 @@ class LayoutAttributes implements ComponentLayout.Builder {
   }
 
   @Override
-  public LayoutAttributes paddingDip(YogaEdge edge, @Dimension(unit = DP) int padding) {
+  public LayoutAttributes paddingDip(YogaEdge edge, @Dimension(unit = DP) float padding) {
     return paddingPx(edge, mResourceResolver.dipsToPixels(padding));
   }
 
@@ -366,7 +366,7 @@ class LayoutAttributes implements ComponentLayout.Builder {
   }
 
   @Override
-  public LayoutAttributes borderWidthDip(YogaEdge edge, @Dimension(unit = DP) int borderWidth) {
+  public LayoutAttributes borderWidthDip(YogaEdge edge, @Dimension(unit = DP) float borderWidth) {
     return borderWidthPx(edge, mResourceResolver.dipsToPixels(borderWidth));
   }
 
@@ -414,7 +414,7 @@ class LayoutAttributes implements ComponentLayout.Builder {
   }
 
   @Override
-  public LayoutAttributes positionDip(YogaEdge edge, @Dimension(unit = DP) int position) {
+  public LayoutAttributes positionDip(YogaEdge edge, @Dimension(unit = DP) float position) {
     return positionPx(edge, mResourceResolver.dipsToPixels(position));
   }
 
@@ -448,7 +448,7 @@ class LayoutAttributes implements ComponentLayout.Builder {
   }
 
   @Override
-  public LayoutAttributes widthDip(@Dimension(unit = DP) int width) {
+  public LayoutAttributes widthDip(@Dimension(unit = DP) float width) {
     return widthPx(mResourceResolver.dipsToPixels(width));
   }
 
@@ -482,7 +482,7 @@ class LayoutAttributes implements ComponentLayout.Builder {
   }
 
   @Override
-  public LayoutAttributes minWidthDip(@Dimension(unit = DP) int minWidth) {
+  public LayoutAttributes minWidthDip(@Dimension(unit = DP) float minWidth) {
     return minWidthPx(mResourceResolver.dipsToPixels(minWidth));
   }
 
@@ -516,7 +516,7 @@ class LayoutAttributes implements ComponentLayout.Builder {
   }
 
   @Override
-  public LayoutAttributes maxWidthDip(@Dimension(unit = DP) int maxWidth) {
+  public LayoutAttributes maxWidthDip(@Dimension(unit = DP) float maxWidth) {
     return maxWidthPx(mResourceResolver.dipsToPixels(maxWidth));
   }
 
@@ -550,7 +550,7 @@ class LayoutAttributes implements ComponentLayout.Builder {
   }
 
   @Override
-  public LayoutAttributes heightDip(@Dimension(unit = DP) int height) {
+  public LayoutAttributes heightDip(@Dimension(unit = DP) float height) {
     return heightPx(mResourceResolver.dipsToPixels(height));
   }
 
@@ -584,7 +584,7 @@ class LayoutAttributes implements ComponentLayout.Builder {
   }
 
   @Override
-  public LayoutAttributes minHeightDip(@Dimension(unit = DP) int minHeight) {
+  public LayoutAttributes minHeightDip(@Dimension(unit = DP) float minHeight) {
     return minHeightPx(mResourceResolver.dipsToPixels(minHeight));
   }
 
@@ -618,7 +618,7 @@ class LayoutAttributes implements ComponentLayout.Builder {
   }
 
   @Override
-  public LayoutAttributes maxHeightDip(@Dimension(unit = DP) int maxHeight) {
+  public LayoutAttributes maxHeightDip(@Dimension(unit = DP) float maxHeight) {
     return maxHeightPx(mResourceResolver.dipsToPixels(maxHeight));
   }
 
@@ -658,7 +658,7 @@ class LayoutAttributes implements ComponentLayout.Builder {
 
   @Override
   public LayoutAttributes touchExpansionDip(
-      YogaEdge edge, @Dimension(unit = DP) int touchExpansion) {
+      YogaEdge edge, @Dimension(unit = DP) float touchExpansion) {
     return touchExpansionPx(edge, mResourceResolver.dipsToPixels(touchExpansion));
   }
 
@@ -883,7 +883,7 @@ class LayoutAttributes implements ComponentLayout.Builder {
   }
 
   @Override
-  public LayoutAttributes shadowElevationDip(@Dimension(unit = DP) int shadowElevation) {
+  public LayoutAttributes shadowElevationDip(@Dimension(unit = DP) float shadowElevation) {
     return shadowElevationPx(mResourceResolver.dipsToPixels(shadowElevation));
   }
 

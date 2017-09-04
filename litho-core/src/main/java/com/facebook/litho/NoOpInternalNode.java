@@ -198,7 +198,7 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
-  public InternalNode flexBasisDip(@Dimension(unit = DP) int flexBasis) {
+  public InternalNode flexBasisDip(@Dimension(unit = DP) float flexBasis) {
     return this;
   }
 
@@ -241,7 +241,7 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
-  public InternalNode marginDip(YogaEdge edge, @Dimension(unit = DP) int margin) {
+  public InternalNode marginDip(YogaEdge edge, @Dimension(unit = DP) float margin) {
     return this;
   }
 
@@ -279,7 +279,7 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
-  public InternalNode paddingDip(YogaEdge edge, @Dimension(unit = DP) int padding) {
+  public InternalNode paddingDip(YogaEdge edge, @Dimension(unit = DP) float padding) {
     return this;
   }
 
@@ -314,7 +314,7 @@ class NoOpInternalNode extends InternalNode {
   @Override
   public InternalNode borderWidthDip(
       YogaEdge edge,
-      @Dimension(unit = DP) int borderWidth) {
+      @Dimension(unit = DP) float borderWidth) {
     return this;
   }
 
@@ -339,7 +339,7 @@ class NoOpInternalNode extends InternalNode {
   @Override
   public InternalNode positionDip(
       YogaEdge edge,
-      @Dimension(unit = DP) int position) {
+      @Dimension(unit = DP) float position) {
     return this;
   }
 
@@ -369,7 +369,7 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
-  public InternalNode widthDip(@Dimension(unit = DP) int width) {
+  public InternalNode widthDip(@Dimension(unit = DP) float width) {
     return this;
   }
 
@@ -399,7 +399,7 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
-  public InternalNode minWidthDip(@Dimension(unit = DP) int minWidth) {
+  public InternalNode minWidthDip(@Dimension(unit = DP) float minWidth) {
     return this;
   }
 
@@ -429,7 +429,7 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
-  public InternalNode maxWidthDip(@Dimension(unit = DP) int maxWidth) {
+  public InternalNode maxWidthDip(@Dimension(unit = DP) float maxWidth) {
     return this;
   }
 
@@ -459,7 +459,7 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
-  public InternalNode heightDip(@Dimension(unit = DP) int height) {
+  public InternalNode heightDip(@Dimension(unit = DP) float height) {
     return this;
   }
 
@@ -489,7 +489,7 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
-  public InternalNode minHeightDip(@Dimension(unit = DP) int minHeight) {
+  public InternalNode minHeightDip(@Dimension(unit = DP) float minHeight) {
     return this;
   }
 
@@ -519,7 +519,7 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
-  public InternalNode maxHeightDip(@Dimension(unit = DP) int maxHeight) {
+  public InternalNode maxHeightDip(@Dimension(unit = DP) float maxHeight) {
     return this;
   }
 

@@ -74,7 +74,7 @@ public interface ComponentLayout {
     @ReturnsOwnership Builder flexBasisAttr(@AttrRes int resId, @DimenRes int defaultResId);
     @ReturnsOwnership Builder flexBasisAttr(@AttrRes int resId);
     @ReturnsOwnership Builder flexBasisRes(@DimenRes int resId);
-    @ReturnsOwnership Builder flexBasisDip(@Dimension(unit = DP) int flexBasis);
+    @ReturnsOwnership Builder flexBasisDip(@Dimension(unit = DP) float flexBasis);
     @ReturnsOwnership Builder flexBasisPercent(float percent);
 
     @ReturnsOwnership Builder importantForAccessibility(
@@ -90,7 +90,7 @@ public interface ComponentLayout {
         YogaEdge edge,
         @AttrRes int resId);
     @ReturnsOwnership Builder marginRes(YogaEdge edge, @DimenRes int resId);
-    @ReturnsOwnership Builder marginDip(YogaEdge edge, @Dimension(unit = DP) int margin);
+    @ReturnsOwnership Builder marginDip(YogaEdge edge, @Dimension(unit = DP) float margin);
     @ReturnsOwnership Builder marginPercent(YogaEdge edge, float percent);
     @ReturnsOwnership Builder marginAuto(YogaEdge edge);
 
@@ -103,7 +103,7 @@ public interface ComponentLayout {
         YogaEdge edge,
         @AttrRes int resId);
     @ReturnsOwnership Builder paddingRes(YogaEdge edge, @DimenRes int resId);
-    @ReturnsOwnership Builder paddingDip(YogaEdge edge, @Dimension(unit = DP) int padding);
+    @ReturnsOwnership Builder paddingDip(YogaEdge edge, @Dimension(unit = DP) float padding);
     @ReturnsOwnership Builder paddingPercent(YogaEdge edge, float percent);
 
     @ReturnsOwnership
@@ -122,7 +122,7 @@ public interface ComponentLayout {
     Builder borderWidthRes(YogaEdge edge, @DimenRes int resId);
     /** @deprecated Please use {@link #border(Border)} instead */
     @ReturnsOwnership
-    Builder borderWidthDip(YogaEdge edge, @Dimension(unit = DP) int borderWidth);
+    Builder borderWidthDip(YogaEdge edge, @Dimension(unit = DP) float borderWidth);
     /** @deprecated Please use {@link #border(Border)} instead */
     @ReturnsOwnership
     Builder borderColor(@ColorInt int borderColor);
@@ -134,49 +134,49 @@ public interface ComponentLayout {
         @DimenRes int defaultResId);
     @ReturnsOwnership Builder positionAttr(YogaEdge edge, @AttrRes int resId);
     @ReturnsOwnership Builder positionRes(YogaEdge edge, @DimenRes int resId);
-    @ReturnsOwnership Builder positionDip(YogaEdge edge, @Dimension(unit = DP) int value);
+    @ReturnsOwnership Builder positionDip(YogaEdge edge, @Dimension(unit = DP) float value);
     @ReturnsOwnership Builder positionPercent(YogaEdge edge, float percent);
 
     @ReturnsOwnership Builder widthPx(@Px int width);
     @ReturnsOwnership Builder widthAttr(@AttrRes int resId, @DimenRes int defaultResId);
     @ReturnsOwnership Builder widthAttr(@AttrRes int resId);
     @ReturnsOwnership Builder widthRes(@DimenRes int resId);
-    @ReturnsOwnership Builder widthDip(@Dimension(unit = DP) int width);
+    @ReturnsOwnership Builder widthDip(@Dimension(unit = DP) float width);
     @ReturnsOwnership Builder widthPercent(float percent);
 
     @ReturnsOwnership Builder minWidthPx(@Px int minWidth);
     @ReturnsOwnership Builder minWidthAttr(@AttrRes int resId, @DimenRes int defaultResId);
     @ReturnsOwnership Builder minWidthAttr(@AttrRes int resId);
     @ReturnsOwnership Builder minWidthRes(@DimenRes int resId);
-    @ReturnsOwnership Builder minWidthDip(@Dimension(unit = DP) int minWidth);
+    @ReturnsOwnership Builder minWidthDip(@Dimension(unit = DP) float minWidth);
     @ReturnsOwnership Builder minWidthPercent(float percent);
 
     @ReturnsOwnership Builder maxWidthPx(@Px int maxWidth);
     @ReturnsOwnership Builder maxWidthAttr(@AttrRes int resId, @DimenRes int defaultResId);
     @ReturnsOwnership Builder maxWidthAttr(@AttrRes int resId);
     @ReturnsOwnership Builder maxWidthRes(@DimenRes int resId);
-    @ReturnsOwnership Builder maxWidthDip(@Dimension(unit = DP) int maxWidth);
+    @ReturnsOwnership Builder maxWidthDip(@Dimension(unit = DP) float maxWidth);
     @ReturnsOwnership Builder maxWidthPercent(float percent);
 
     @ReturnsOwnership Builder heightPx(@Px int height);
     @ReturnsOwnership Builder heightAttr(@AttrRes int resId, @DimenRes int defaultResId);
     @ReturnsOwnership Builder heightAttr(@AttrRes int resId);
     @ReturnsOwnership Builder heightRes(@DimenRes int resId);
-    @ReturnsOwnership Builder heightDip(@Dimension(unit = DP) int height);
+    @ReturnsOwnership Builder heightDip(@Dimension(unit = DP) float height);
     @ReturnsOwnership Builder heightPercent(float percent);
 
     @ReturnsOwnership Builder minHeightPx(@Px int minHeight);
     @ReturnsOwnership Builder minHeightAttr(@AttrRes int resId, @DimenRes int defaultResId);
     @ReturnsOwnership Builder minHeightAttr(@AttrRes int resId);
     @ReturnsOwnership Builder minHeightRes(@DimenRes int resId);
-    @ReturnsOwnership Builder minHeightDip(@Dimension(unit = DP) int minHeight);
+    @ReturnsOwnership Builder minHeightDip(@Dimension(unit = DP) float minHeight);
     @ReturnsOwnership Builder minHeightPercent(float percent);
 
     @ReturnsOwnership Builder maxHeightPx(@Px int maxHeight);
     @ReturnsOwnership Builder maxHeightAttr(@AttrRes int resId, @DimenRes int defaultResId);
     @ReturnsOwnership Builder maxHeightAttr(@AttrRes int resId);
     @ReturnsOwnership Builder maxHeightRes(@DimenRes int resId);
-    @ReturnsOwnership Builder maxHeightDip(@Dimension(unit = DP) int maxHeight);
+    @ReturnsOwnership Builder maxHeightDip(@Dimension(unit = DP) float maxHeight);
     @ReturnsOwnership Builder maxHeightPercent(float percent);
 
     @ReturnsOwnership Builder aspectRatio(float aspectRatio);
@@ -188,7 +188,7 @@ public interface ComponentLayout {
         @DimenRes int defaultResId);
     @ReturnsOwnership Builder touchExpansionAttr(YogaEdge edge, @AttrRes int resId);
     @ReturnsOwnership Builder touchExpansionRes(YogaEdge edge, @DimenRes int resId);
-    @ReturnsOwnership Builder touchExpansionDip(YogaEdge edge, @Dimension(unit = DP) int value);
+    @ReturnsOwnership Builder touchExpansionDip(YogaEdge edge, @Dimension(unit = DP) float value);
 
     /**
      * @deprecated just use {@link #background(Drawable)} instead.
@@ -244,7 +244,7 @@ public interface ComponentLayout {
     @ReturnsOwnership Builder shadowElevationAttr(@AttrRes int resId, @DimenRes int defaultResId);
     @ReturnsOwnership Builder shadowElevationAttr(@AttrRes int resId);
     @ReturnsOwnership Builder shadowElevationRes(@DimenRes int resId);
-    @ReturnsOwnership Builder shadowElevationDip(@Dimension(unit = DP) int shadowElevation);
+    @ReturnsOwnership Builder shadowElevationDip(@Dimension(unit = DP) float shadowElevation);
     @ReturnsOwnership Builder outlineProvider(ViewOutlineProvider outlineProvider);
     @ReturnsOwnership Builder clipToOutline(boolean clipToOutline);
     @ReturnsOwnership Builder transitionKey(String key);
@@ -287,7 +287,7 @@ public interface ComponentLayout {
         @DimenRes int defaultResId);
     @ReturnsOwnership ContainerBuilder flexBasisAttr(@AttrRes int resId);
     @ReturnsOwnership ContainerBuilder flexBasisRes(@DimenRes int resId);
-    @ReturnsOwnership ContainerBuilder flexBasisDip(@Dimension(unit = DP) int flexBasis);
+    @ReturnsOwnership ContainerBuilder flexBasisDip(@Dimension(unit = DP) float flexBasis);
     @ReturnsOwnership ContainerBuilder flexBasisPercent(float percent);
 
     @ReturnsOwnership ContainerBuilder importantForAccessibility(
@@ -305,7 +305,7 @@ public interface ComponentLayout {
         YogaEdge edge,
         @AttrRes int resId);
     @ReturnsOwnership ContainerBuilder marginRes(YogaEdge edge, @DimenRes int resId);
-    @ReturnsOwnership ContainerBuilder marginDip(YogaEdge edge, @Dimension(unit = DP) int margin);
+    @ReturnsOwnership ContainerBuilder marginDip(YogaEdge edge, @Dimension(unit = DP) float margin);
     @ReturnsOwnership ContainerBuilder marginPercent(YogaEdge edge, float percent);
     @ReturnsOwnership ContainerBuilder marginAuto(YogaEdge edge);
 
@@ -318,7 +318,7 @@ public interface ComponentLayout {
         YogaEdge edge,
         @AttrRes int resId);
     @ReturnsOwnership ContainerBuilder paddingRes(YogaEdge edge, @DimenRes int resId);
-    @ReturnsOwnership ContainerBuilder paddingDip(YogaEdge edge, @Dimension(unit = DP) int padding);
+    @ReturnsOwnership ContainerBuilder paddingDip(YogaEdge edge, @Dimension(unit = DP) float padding);
     @ReturnsOwnership ContainerBuilder paddingPercent(YogaEdge edge, float percent);
 
     @ReturnsOwnership ContainerBuilder positionPx(YogaEdge edge, @Px int position);
@@ -330,35 +330,35 @@ public interface ComponentLayout {
     @ReturnsOwnership ContainerBuilder positionRes(YogaEdge edge, @DimenRes int resId);
     @ReturnsOwnership ContainerBuilder positionDip(
         YogaEdge edge,
-        @Dimension(unit = DP) int position);
+        @Dimension(unit = DP) float position);
     @ReturnsOwnership ContainerBuilder positionPercent(YogaEdge edge, float percent);
 
     @ReturnsOwnership ContainerBuilder widthPx(@Px int width);
     @ReturnsOwnership ContainerBuilder widthAttr(@AttrRes int resId, @DimenRes int defaultResId);
     @ReturnsOwnership ContainerBuilder widthAttr(@AttrRes int resId);
     @ReturnsOwnership ContainerBuilder widthRes(@DimenRes int resId);
-    @ReturnsOwnership ContainerBuilder widthDip(@Dimension(unit = DP) int width);
+    @ReturnsOwnership ContainerBuilder widthDip(@Dimension(unit = DP) float width);
     @ReturnsOwnership ContainerBuilder widthPercent(float percent);
 
     @ReturnsOwnership ContainerBuilder minWidthPx(@Px int minWidth);
     @ReturnsOwnership ContainerBuilder minWidthAttr(@AttrRes int resId, @DimenRes int defaultResId);
     @ReturnsOwnership ContainerBuilder minWidthAttr(@AttrRes int resId);
     @ReturnsOwnership ContainerBuilder minWidthRes(@DimenRes int resId);
-    @ReturnsOwnership ContainerBuilder minWidthDip(@Dimension(unit = DP) int minWidth);
+    @ReturnsOwnership ContainerBuilder minWidthDip(@Dimension(unit = DP) float minWidth);
     @ReturnsOwnership ContainerBuilder minWidthPercent(float percent);
 
     @ReturnsOwnership ContainerBuilder maxWidthPx(@Px int maxWidth);
     @ReturnsOwnership ContainerBuilder maxWidthAttr(@AttrRes int resId, @DimenRes int defaultResId);
     @ReturnsOwnership ContainerBuilder maxWidthAttr(@AttrRes int resId);
     @ReturnsOwnership ContainerBuilder maxWidthRes(@DimenRes int resId);
-    @ReturnsOwnership ContainerBuilder maxWidthDip(@Dimension(unit = DP) int maxWidth);
+    @ReturnsOwnership ContainerBuilder maxWidthDip(@Dimension(unit = DP) float maxWidth);
     @ReturnsOwnership ContainerBuilder maxWidthPercent(float percent);
 
     @ReturnsOwnership ContainerBuilder heightPx(@Px int height);
     @ReturnsOwnership ContainerBuilder heightAttr(@AttrRes int resId, @DimenRes int defaultResId);
     @ReturnsOwnership ContainerBuilder heightAttr(@AttrRes int resId);
     @ReturnsOwnership ContainerBuilder heightRes(@DimenRes int resId);
-    @ReturnsOwnership ContainerBuilder heightDip(@Dimension(unit = DP) int height);
+    @ReturnsOwnership ContainerBuilder heightDip(@Dimension(unit = DP) float height);
     @ReturnsOwnership ContainerBuilder heightPercent(float percent);
 
     @ReturnsOwnership ContainerBuilder minHeightPx(@Px int minHeight);
@@ -367,7 +367,7 @@ public interface ComponentLayout {
         @DimenRes int defaultResId);
     @ReturnsOwnership ContainerBuilder minHeightAttr(@AttrRes int resId);
     @ReturnsOwnership ContainerBuilder minHeightRes(@DimenRes int resId);
-    @ReturnsOwnership ContainerBuilder minHeightDip(@Dimension(unit = DP) int minHeight);
+    @ReturnsOwnership ContainerBuilder minHeightDip(@Dimension(unit = DP) float minHeight);
     @ReturnsOwnership ContainerBuilder minHeightPercent(float percent);
 
     @ReturnsOwnership ContainerBuilder maxHeightPx(@Px int maxHeight);
@@ -376,7 +376,7 @@ public interface ComponentLayout {
         @DimenRes int defaultResId);
     @ReturnsOwnership ContainerBuilder maxHeightAttr(@AttrRes int resId);
     @ReturnsOwnership ContainerBuilder maxHeightRes(@DimenRes int resId);
-    @ReturnsOwnership ContainerBuilder maxHeightDip(@Dimension(unit = DP) int maxHeight);
+    @ReturnsOwnership ContainerBuilder maxHeightDip(@Dimension(unit = DP) float maxHeight);
     @ReturnsOwnership ContainerBuilder maxHeightPercent(float percent);
 
     @ReturnsOwnership ContainerBuilder aspectRatio(float aspectRatio);
@@ -390,7 +390,7 @@ public interface ComponentLayout {
     @ReturnsOwnership ContainerBuilder touchExpansionRes(YogaEdge edge, @DimenRes int resId);
     @ReturnsOwnership ContainerBuilder touchExpansionDip(
         YogaEdge edge,
-        @Dimension(unit = DP) int value);
+        @Dimension(unit = DP) float value);
 
     @ReturnsOwnership ContainerBuilder wrap(YogaWrap wrap);
     @ReturnsOwnership ContainerBuilder justifyContent(YogaJustify justifyContent);
@@ -464,7 +464,7 @@ public interface ComponentLayout {
     @ReturnsOwnership ContainerBuilder shadowElevationAttr(@AttrRes int resId);
     @ReturnsOwnership ContainerBuilder shadowElevationRes(@DimenRes int resId);
     @ReturnsOwnership ContainerBuilder shadowElevationDip(
-        @Dimension(unit = DP) int shadowElevation);
+        @Dimension(unit = DP) float shadowElevation);
     @ReturnsOwnership ContainerBuilder outlineProvider(ViewOutlineProvider outlineProvider);
     @ReturnsOwnership ContainerBuilder clipToOutline(boolean clipToOutline);
     @ReturnsOwnership ContainerBuilder transitionKey(String key);

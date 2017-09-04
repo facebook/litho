@@ -488,7 +488,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
-  public InternalNode flexBasisDip(@Dimension(unit = DP) int flexBasis) {
+  public InternalNode flexBasisDip(@Dimension(unit = DP) float flexBasis) {
     return flexBasisPx(mResourceResolver.dipsToPixels(flexBasis));
   }
 
@@ -573,7 +573,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
-  public InternalNode marginDip(YogaEdge edge, @Dimension(unit = DP) int margin) {
+  public InternalNode marginDip(YogaEdge edge, @Dimension(unit = DP) float margin) {
     return marginPx(edge, mResourceResolver.dipsToPixels(margin));
   }
 
@@ -642,7 +642,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
-  public InternalNode paddingDip(YogaEdge edge, @Dimension(unit = DP) int padding) {
+  public InternalNode paddingDip(YogaEdge edge, @Dimension(unit = DP) float padding) {
     return paddingPx(edge, mResourceResolver.dipsToPixels(padding));
   }
 
@@ -723,7 +723,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Override
   public InternalNode borderWidthDip(
       YogaEdge edge,
-      @Dimension(unit = DP) int borderWidth) {
+      @Dimension(unit = DP) float borderWidth) {
     return borderWidthPx(edge, mResourceResolver.dipsToPixels(borderWidth));
   }
 
@@ -791,7 +791,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Override
   public InternalNode positionDip(
       YogaEdge edge,
-      @Dimension(unit = DP) int position) {
+      @Dimension(unit = DP) float position) {
     return positionPx(edge, mResourceResolver.dipsToPixels(position));
   }
 
@@ -841,7 +841,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
-  public InternalNode widthDip(@Dimension(unit = DP) int width) {
+  public InternalNode widthDip(@Dimension(unit = DP) float width) {
     return widthPx(mResourceResolver.dipsToPixels(width));
   }
 
@@ -885,7 +885,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
-  public InternalNode minWidthDip(@Dimension(unit = DP) int minWidth) {
+  public InternalNode minWidthDip(@Dimension(unit = DP) float minWidth) {
     return minWidthPx(mResourceResolver.dipsToPixels(minWidth));
   }
 
@@ -929,7 +929,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
-  public InternalNode maxWidthDip(@Dimension(unit = DP) int maxWidth) {
+  public InternalNode maxWidthDip(@Dimension(unit = DP) float maxWidth) {
     return maxWidthPx(mResourceResolver.dipsToPixels(maxWidth));
   }
 
@@ -979,7 +979,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
-  public InternalNode heightDip(@Dimension(unit = DP) int height) {
+  public InternalNode heightDip(@Dimension(unit = DP) float height) {
     return heightPx(mResourceResolver.dipsToPixels(height));
   }
 
@@ -1023,7 +1023,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
-  public InternalNode minHeightDip(@Dimension(unit = DP) int minHeight) {
+  public InternalNode minHeightDip(@Dimension(unit = DP) float minHeight) {
     return minHeightPx(mResourceResolver.dipsToPixels(minHeight));
   }
 
@@ -1067,7 +1067,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
-  public InternalNode maxHeightDip(@Dimension(unit = DP) int maxHeight) {
+  public InternalNode maxHeightDip(@Dimension(unit = DP) float maxHeight) {
     return maxHeightPx(mResourceResolver.dipsToPixels(maxHeight));
   }
 
@@ -1177,7 +1177,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   @Override
   public InternalNode touchExpansionDip(
       YogaEdge edge,
-      @Dimension(unit = DP) int touchExpansion) {
+      @Dimension(unit = DP) float touchExpansion) {
     return touchExpansionPx(edge, mResourceResolver.dipsToPixels(touchExpansion));
   }
 
@@ -1573,7 +1573,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
-  public ContainerBuilder shadowElevationDip(@Dimension(unit = DP) int shadowElevation) {
+  public ContainerBuilder shadowElevationDip(@Dimension(unit = DP) float shadowElevation) {
     return shadowElevationPx(mResourceResolver.dipsToPixels(shadowElevation));
   }
 
