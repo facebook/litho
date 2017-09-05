@@ -316,7 +316,7 @@ public final class DebugComponent {
 
     for (int i = 0, size = lithoView.getMountState().getItemCount(); i < size; i++) {
       final MountItem mountItem = lithoView.getMountState().getItemAt(i);
-      final Component<?> mountItemComponent = mountItem.getComponent();
+      final Component<?> mountItemComponent = mountItem == null ? null : mountItem.getComponent();
       if (mountItemComponent != null && mountItemComponent.isEquivalentTo(component)) {
         return mountItem.getHost();
       }
