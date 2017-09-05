@@ -11,6 +11,7 @@ package com.facebook.litho.specmodels.model;
 
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
+import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
 import com.facebook.litho.specmodels.internal.ImmutableList;
@@ -46,7 +47,7 @@ public final class MethodParamModelFactory {
     }
 
     for (Annotation annotation : annotations) {
-      if (annotation instanceof Prop) {
+      if (annotation instanceof Prop && method.getAnnotation(ShouldUpdate.class) == null) {
         return new PropModel(
             simpleMethodParamModel,
             ((Prop) annotation).optional(),

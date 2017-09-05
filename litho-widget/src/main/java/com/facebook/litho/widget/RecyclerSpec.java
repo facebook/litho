@@ -276,15 +276,15 @@ class RecyclerSpec {
 
   @ShouldUpdate(onMount = true)
   protected static boolean shouldUpdate(
-      Diff<Binder<RecyclerView>> binder,
-      Diff<Boolean> hasFixedSize,
-      Diff<Boolean> clipToPadding,
-      Diff<Boolean> clipChildren,
-      Diff<Integer> scrollBarStyle,
-      Diff<RecyclerView.ItemDecoration> itemDecoration,
-      Diff<Boolean> horizontalFadingEdgeEnabled,
-      Diff<Boolean> verticalFadingEdgeEnabled,
-      Diff<Integer> fadingEdgeLength) {
+      @Prop Diff<Binder<RecyclerView>> binder,
+      @Prop(optional = true) Diff<Boolean> hasFixedSize,
+      @Prop(optional = true) Diff<Boolean> clipToPadding,
+      @Prop(optional = true) Diff<Boolean> clipChildren,
+      @Prop(optional = true) Diff<Integer> scrollBarStyle,
+      @Prop(optional = true) Diff<RecyclerView.ItemDecoration> itemDecoration,
+      @Prop(optional = true) Diff<Boolean> horizontalFadingEdgeEnabled,
+      @Prop(optional = true) Diff<Boolean> verticalFadingEdgeEnabled,
+      @Prop(optional = true, resType = ResType.DIMEN_SIZE) Diff<Integer> fadingEdgeLength) {
     if (binder.getPrevious() != binder.getNext()) {
       return true;
     }

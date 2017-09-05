@@ -173,8 +173,8 @@ class ImageSpec {
 
   @ShouldUpdate(onMount = true)
   static boolean shouldUpdate(
-      Diff<ScaleType> scaleType,
-      Diff<Drawable> drawable) {
+      @Prop(optional = true) Diff<ScaleType> scaleType,
+      @Prop(resType = ResType.DRAWABLE) Diff<Drawable> drawable) {
     return (scaleType.getNext() != scaleType.getPrevious()) ||
         drawable.getNext() != drawable.getPrevious();
   }
