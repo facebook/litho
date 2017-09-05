@@ -58,6 +58,7 @@ final RecyclerBinder recyclerBinder = new RecyclerBinder.Builder()
 The most commonly used are:
 
 ``` java
+recyclerBinder.appendItem(component)
 recyclerBinder.insertItemAt(position, component);
 recyclerBinder.updateItemAt(position, component);
 recyclerBinder.removeItemAt(position);
