@@ -158,6 +158,20 @@ public class RecyclerBinderTest {
   }
 
   @Test
+  public void testAppendItems() {
+    final List<ComponentRenderInfo> components = new ArrayList<>();
+    for (int i = 0; i < 100; i++) {
+      components.add(create().component(mock(Component.class)).build());
+      mRecyclerBinder.appendItem(components.get(i));
+    }
+
+    for (int i = 0; i < 100; i++) {
+      assertThat(mHoldersForComponents.get(components.get(i).getComponent())).isNotNull();
+      Assert.assertEquals(components.get(i), mRecyclerBinder.getRenderInfoAt(i));
+    }
+  }
+
+  @Test
   public void testOnMeasureAfterAddingItems() {
     final List<ComponentRenderInfo> components = new ArrayList<>();
     for (int i = 0; i < 100; i++) {

@@ -37,17 +37,16 @@ public class BorderEffectsActivity extends AppCompatActivity {
             .layoutInfo(new LinearLayoutInfo(c, OrientationHelper.VERTICAL, false))
             .build(c);
 
-    int i = 0;
-    recyclerBinder.insertItemAt(i++, AllBorder.create(c).build());
-    recyclerBinder.insertItemAt(i++, AlternateColorBorder.create(c).build());
-    recyclerBinder.insertItemAt(i++, AlternateWidthBorder.create(c).build());
-    recyclerBinder.insertItemAt(i++, AlternateColorWidthBorder.create(c).build());
-    recyclerBinder.insertItemAt(i++, RtlColorWidthBorder.create(c).build());
-    recyclerBinder.insertItemAt(i++, DashPathEffectBorder.create(c).build());
-    recyclerBinder.insertItemAt(i++, VerticalDashPathEffectBorder.create(c).build());
-    recyclerBinder.insertItemAt(i++, AlternateColorPathEffectBorder.create(c).build());
-    recyclerBinder.insertItemAt(i++, AlternateColorCornerPathEffectBorder.create(c).build());
-    recyclerBinder.insertItemAt(i++, CompositePathEffectBorder.create(c).build());
+    recyclerBinder.appendItem(AllBorder.create(c).build());
+    recyclerBinder.appendItem(AlternateColorBorder.create(c).build());
+    recyclerBinder.appendItem(AlternateWidthBorder.create(c).build());
+    recyclerBinder.appendItem(AlternateColorWidthBorder.create(c).build());
+    recyclerBinder.appendItem(RtlColorWidthBorder.create(c).build());
+    recyclerBinder.appendItem(DashPathEffectBorder.create(c).build());
+    recyclerBinder.appendItem(VerticalDashPathEffectBorder.create(c).build());
+    recyclerBinder.appendItem(AlternateColorPathEffectBorder.create(c).build());
+    recyclerBinder.appendItem(AlternateColorCornerPathEffectBorder.create(c).build());
+    recyclerBinder.appendItem(CompositePathEffectBorder.create(c).build());
 
     return recyclerBinder;
   }
