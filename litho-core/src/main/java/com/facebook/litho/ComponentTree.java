@@ -32,6 +32,7 @@ import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
+import android.support.v4.util.ArrayMap;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewParent;
@@ -178,6 +179,8 @@ public class ComponentTree {
   @PendingLayoutCalculation
   @GuardedBy("this")
   private int mScheduleLayoutAfterMeasure;
+
+  private @Nullable Map<String, EventTrigger> mEventTriggers;
 
   public static Builder create(ComponentContext context, Component.Builder<?, ?> root) {
     return create(context, root.build());
@@ -847,6 +850,36 @@ public class ComponentTree {
         SIZE_UNINITIALIZED,
         isAsync,
         null /*output */);
+  }
+
+  /**
+   * Keep a referenece to {@link EventTrigger} to allow a retrieval of the same reference with a
+   * key.
+   */
+  synchronized void recordEventTrigger(String triggerKey, EventTrigger eventTrigger) {
+    if (mEventTriggers == null) {
+      mEventTriggers = new ArrayMap<>();
+    }
+
+    mEventTriggers.put(triggerKey, eventTrigger);
+  }
+
+  /** Remove a referenece of {@link EventTrigger} with the key it was registered with. */
+  synchronized void releaseEventTrigger(String triggerKey) {
+    if (mEventTriggers == null) {
+      return;
+    }
+
+    mEventTriggers.remove(triggerKey);
+  }
+
+  @Nullable
+  synchronized EventTrigger getEventTrigger(String triggerKey) {
+    if (mEventTriggers == null || !mEventTriggers.containsKey(triggerKey)) {
+      return null;
+    }
+
+    return mEventTriggers.get(triggerKey);
   }
 
   /**

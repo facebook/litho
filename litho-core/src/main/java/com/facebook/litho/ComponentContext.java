@@ -251,6 +251,35 @@ public class ComponentContext extends ContextWrapper {
     return new EventHandler<E>(mComponentScope, name, id, params);
   }
 
+  /** @return New instance of {@link EventTrigger} that is owned by the current mComponentScope */
+  <E> EventTrigger<E> newEventTrigger() {
+    return new EventTrigger<>(mComponentScope);
+  }
+
+  /**
+   * Keep a referenece to {@link EventTrigger} in {@link ComponentTree} to allow a retrieval of the
+   * same reference with a key.
+   */
+  public void registerTrigger(EventTrigger trigger, String key) {
+    if (mComponentTree == null) {
+      return;
+    }
+
+    mComponentTree.recordEventTrigger(key, trigger);
+  }
+
+  /**
+   * Remove a referenece of {@link EventTrigger} in {@link ComponentTree} with the key it was
+   * registered with.
+   */
+  public void unregisterTrigger(String key) {
+    if (mComponentTree == null) {
+      return;
+    }
+
+    mComponentTree.releaseEventTrigger(key);
+  }
+
   InternalNode newLayoutBuilder(
       @AttrRes int defStyleAttr,
       @StyleRes int defStyleRes) {

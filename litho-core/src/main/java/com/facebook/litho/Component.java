@@ -33,7 +33,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * returns a builder that allows you to set values for individual props. {@link Component}
  * instances are immutable after creation.
  */
-public abstract class Component<L extends ComponentLifecycle> implements HasEventDispatcher {
+public abstract class Component<L extends ComponentLifecycle>
+    implements HasEventDispatcher, HasEventTrigger {
   private static final AtomicInteger sIdGenerator = new AtomicInteger(0);
   private int mId = sIdGenerator.getAndIncrement();
   private String mGlobalKey;
@@ -357,9 +358,21 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
       keyHandler.registerKey(this);
     }
 
+    registerEventTrigger(getGlobalKey());
+
     if (getLifecycle().hasState()) {
       c.getStateHandler().applyStateUpdatesForComponent(this);
     }
+  }
+
+  private void registerEventTrigger(String globalKey) {
+    ComponentContext context = getScopedContext();
+    if (!getLifecycle().canAcceptTrigger()) {
+      context.unregisterTrigger(globalKey);
+      return;
+    }
+
+    context.registerTrigger(context.newEventTrigger(), globalKey);
   }
 
   @Override
@@ -367,6 +380,11 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
     return mLifecycle;
   }
 
+  @Override
+  public EventTriggerTarget getEventTriggerTarget() {
+    return mLifecycle;
+  }
+  
   /**
    * @param <L> the {@link ComponentLifecycle} of the {@link Component} that this builder will
    *     build.
@@ -375,6 +393,7 @@ public abstract class Component<L extends ComponentLifecycle> implements HasEven
    */
   public abstract static class Builder<L extends ComponentLifecycle, T extends Builder<L, T>>
       extends ResourceResolver {
+
     private ComponentContext mContext;
     @AttrRes private int mDefStyleAttr;
     @StyleRes private int mDefStyleRes;

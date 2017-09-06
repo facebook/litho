@@ -13,6 +13,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.AttrRes;
+import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
 import android.support.v4.util.Pools;
 import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
@@ -36,7 +37,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * annotation processor at build-time based on your spec class and you won't have to deal with
  * it directly when implementing new component types.
  */
-public abstract class ComponentLifecycle implements EventDispatcher {
+public abstract class ComponentLifecycle implements EventDispatcher, EventTriggerTarget {
   private static final AtomicInteger sComponentTypeId = new AtomicInteger();
   private static final int DEFAULT_MAX_PREALLOCATION = 15;
 
@@ -542,6 +543,13 @@ public abstract class ComponentLifecycle implements EventDispatcher {
     return null;
   }
 
+  @Override
+  @Nullable
+  public Object acceptTriggerEvent(EventTrigger eventTrigger, Object eventState, Object[] params) {
+    // Do nothing by default
+    return null;
+  }
+
   @ThreadSafe(enableChecks = false)
   void preAllocateMountContent(ComponentContext context) {
     if (mPreallocationDone) {
@@ -580,6 +588,11 @@ public abstract class ComponentLifecycle implements EventDispatcher {
    * @return true if Mount uses @FromMeasure or @FromOnBoundsDefined parameters.
    */
   protected boolean isMountSizeDependent() {
+    return false;
+  }
+
+  /** @return true if ComponentSpec defines {@link com.facebook.litho.annotations.OnTrigger} * */
+  protected boolean canAcceptTrigger() {
     return false;
   }
 
@@ -636,6 +649,28 @@ public abstract class ComponentLifecycle implements EventDispatcher {
       int id,
       Object[] params) {
     return new EventHandler<E>(c, name, id, params);
+  }
+
+  protected static <E> EventTrigger<E> newEventTrigger(ComponentContext c) {
+    return c.newEventTrigger();
+  }
+
+  @Nullable
+  protected static EventTrigger getEventTrigger(ComponentContext c, int methodId, String key) {
+    if (c.getComponentScope() == null) {
+      return null;
+    }
+
+    EventTrigger trigger =
+        c.getComponentTree().getEventTrigger(c.getComponentScope().getGlobalKey() + key);
+
+    if (trigger == null) {
+      return null;
+    }
+
+    trigger.mId = methodId;
+
+    return trigger;
   }
 
   protected boolean needsPreviousRenderData() {

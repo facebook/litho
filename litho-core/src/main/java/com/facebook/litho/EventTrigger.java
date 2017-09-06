@@ -16,12 +16,11 @@ package com.facebook.litho;
  */
 public class EventTrigger<E> {
 
-  public final String mParentKey;
-  public HasEventTrigger mTriggerTarget;
+  public final HasEventTrigger mTriggerTarget;
   public int mId;
 
-  public EventTrigger(String parentGlobalKey) {
-    mParentKey = parentGlobalKey;
+  public EventTrigger(HasEventTrigger triggerTarget) {
+    mTriggerTarget = triggerTarget;
   }
 
   public Object dispatchOnTrigger(E event, Object[] params) {
