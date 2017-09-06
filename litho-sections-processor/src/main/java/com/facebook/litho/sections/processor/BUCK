@@ -1,0 +1,37 @@
+#
+# Copyright (c) 2017-present, Facebook, Inc.
+# All rights reserved.
+#
+# This source code is licensed under the BSD-style license found in the
+# LICENSE file in the root directory of this source tree. An additional grant
+# of patent rights can be found in the PATENTS file in the same directory.
+
+include_defs("//COMPONENTS_DEFS")
+
+java_annotation_processor(
+    name = "processor",
+    processor_class = "com.facebook.litho.sections.processor.ListComponentProcessor",
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        ":processor-lib",
+    ],
+)
+
+java_library(
+    name = "processor-lib",
+    srcs = glob([
+        "*.java",
+        "**/*.java",
+    ]),
+    source = "8",
+    target = "8",
+    visibility = COMPONENTS_VISIBILITY,
+    deps = [
+        COMPONENTS_SECTIONS_ANNOTATIONS_TARGET,
+        make_dep_path("litho-annotations/src/main/java/com/facebook/litho/annotations:annotations"),
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels"),
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/processor:processor-lib"),
+    ],
+)

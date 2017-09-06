@@ -24,6 +24,7 @@ COMPONENTS_COMPONENTS_FRESCO_TARGET        = make_dep_path('litho-fresco/src/mai
 COMPONENTS_TESTING_TARGET                  = make_dep_path('litho-testing/src/main/java/com/facebook/litho/testing:testing')
 COMPONENTS_TEST_RES                        = make_dep_path('litho-it/src/main:res')
 COMPONENTS_SECTIONS_ANNOTATIONS_TARGET     = make_dep_path('litho-sections-annotations/src/main/java/com/facebook/litho/sections/annotations:annotations')
+COMPONENTS_SECTIONS_PROCESSOR_TARGET       = make_dep_path('litho-sections-processor/src/main/java/com/facebook/litho/sections/processor:processor')
 
 # Test source
 COMPONENTS_TEST_TARGET                     = make_dep_path('litho-it/src/test/java/com/facebook/litho:components')
