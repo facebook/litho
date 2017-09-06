@@ -1187,6 +1187,8 @@ public class ComponentTree {
     LayoutState mainThreadLayoutState;
     LayoutState backgroundLayoutState;
     synchronized (this) {
+      sMainThreadHandler.removeMessages(MESSAGE_WHAT_BACKGROUND_LAYOUT_STATE_UPDATED, this);
+
       mLayoutThreadHandler.removeCallbacks(mCalculateLayoutRunnable);
       mLayoutThreadHandler.removeCallbacks(mUpdateStateSyncRunnable);
       mLayoutThreadHandler.removeCallbacks(mPreAllocateMountContentRunnable);
