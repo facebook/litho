@@ -32,13 +32,11 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 
-@SupportedSourceVersion(SourceVersion.RELEASE_7)
 /**
- * Processor used to generate {@link SectionLifecycle}
- * and {@link Section} classes for a
- * {@link GroupSectionSpec} or a
- * {@link DiffSectionSpec}
+ * Processor used to generate {@link SectionLifecycle} and {@link Section} classes for a {@link
+ * GroupSectionSpec} or a {@link DiffSectionSpec}
  */
+@SupportedSourceVersion(SourceVersion.RELEASE_7)
 public abstract class AbstractListComponentsProcessor extends AbstractProcessor {
 
   @Override
