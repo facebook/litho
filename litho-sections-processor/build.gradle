@@ -1,0 +1,28 @@
+/*
+ * Copyright (c) 2017-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
+apply plugin: 'java'
+apply plugin: 'maven-publish'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+dependencies {
+    implementation project(':litho-annotations')
+    implementation project(':litho-sections-annotations')
+    implementation project(':litho-processor')
+
+    compileOnly deps.jsr305
+
+    // Processor
+    implementation deps.javapoet
+}
+
+// FIXME: Re-enable once errors are fixed.
+tasks.withType(Javadoc).all { enabled = false }
