@@ -15,6 +15,7 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * A model that represents a ComponentSpec.
@@ -165,6 +166,7 @@ public interface SpecModel {
    * that should be used to generate the correct methods for dependency injection to work for
    * this component.
    */
+  @Nullable
   DependencyInjectionHelper getDependencyInjectionHelper();
 
   /**
