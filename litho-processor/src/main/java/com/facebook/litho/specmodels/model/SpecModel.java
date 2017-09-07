@@ -53,9 +53,10 @@ public interface SpecModel {
    */
   ImmutableList<EventMethodModel> getEventMethods();
 
-  /**
-   * @return the list of methods defined in the spec for updating state.
-   */
+  /** @return the list of trigger methods defined by the spec. */
+  ImmutableList<EventMethodModel> getTriggerMethods();
+
+  /** @return the list of methods defined in the spec for updating state. */
   ImmutableList<UpdateStateMethodModel> getUpdateStateMethods();
 
   /**

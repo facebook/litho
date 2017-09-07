@@ -21,6 +21,7 @@ import com.facebook.litho.annotations.State;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
+import com.facebook.litho.specmodels.model.EventMethodModel;
 import com.facebook.litho.specmodels.model.InterStageInputParamModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.PropModel;
@@ -97,6 +98,7 @@ public class ComponentImplGenerator {
     generateInterStageInputs(specModel).addToTypeSpec(implClassBuilder);
     generateOptionalField(optionalImplField).addToTypeSpec(implClassBuilder);
     generateEventHandlers(specModel).addToTypeSpec(implClassBuilder);
+    generateEventTriggers(specModel).addToTypeSpec(implClassBuilder);
 
     implClassBuilder.addMethod(generateImplConstructor(stateContainerImplClass, hasState));
     implClassBuilder.addMethod(generateGetSimpleName(specModel));
@@ -298,6 +300,27 @@ public class ComponentImplGenerator {
     return eventHandlerName.substring(0, 1).toLowerCase(Locale.ROOT) +
         eventHandlerName.substring(1) +
         "Handler";
+  }
+
+  static TypeSpecDataHolder generateEventTriggers(SpecModel specModel) {
+    final TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
+
+    for (EventMethodModel eventMethodModel : specModel.getTriggerMethods()) {
+      typeSpecDataHolder.addField(
+          FieldSpec.builder(
+                  ClassNames.EVENT_TRIGGER, getEventTriggerInstanceName(eventMethodModel.name))
+              .build());
+    }
+
+    return typeSpecDataHolder.build();
+  }
+
+  static String getEventTriggerInstanceName(CharSequence eventTriggerClassName) {
+    final String eventTriggerName = eventTriggerClassName.toString();
+
+    return eventTriggerName.substring(0, 1).toLowerCase(Locale.ROOT)
+        + eventTriggerName.substring(1)
+        + "Trigger";
   }
 
   static MethodSpec generateImplConstructor(TypeName stateContainerImplClass, boolean hasState) {

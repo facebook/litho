@@ -49,6 +49,7 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
       String componentClassName,
       ImmutableList<DelegateMethodModel> delegateMethods,
       ImmutableList<EventMethodModel> eventMethods,
+      ImmutableList<EventMethodModel> triggerMethods,
       ImmutableList<UpdateStateMethodModel> updateStateMethods,
       ImmutableList<TypeVariableName> typeVariables,
       ImmutableList<PropDefaultModel> propDefaults,
@@ -68,6 +69,7 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
             .updateStateMethods(updateStateMethods)
             .typeVariables(typeVariables)
             .eventMethods(eventMethods)
+            .triggerMethods(triggerMethods)
             .propDefaults(propDefaults)
             .eventDeclarations(eventDeclarations)
             .extraBuilderMethods(builderMethodModels)
@@ -108,6 +110,11 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
   @Override
   public ImmutableList<EventMethodModel> getEventMethods() {
     return mSpecModel.getEventMethods();
+  }
+
+  @Override
+  public ImmutableList<EventMethodModel> getTriggerMethods() {
+    return mSpecModel.getTriggerMethods();
   }
 
   @Override

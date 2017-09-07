@@ -80,6 +80,8 @@ public class LayoutSpecModelFactory implements SpecModelFactory {
             INTER_STAGE_INPUT_ANNOTATIONS,
             ImmutableList.<Class<? extends Annotation>>of(ShouldUpdate.class)),
         EventMethodExtractor.getOnEventMethods(elements, element, INTER_STAGE_INPUT_ANNOTATIONS),
+        TriggerMethodExtractor.getOnTriggerMethods(
+            elements, element, INTER_STAGE_INPUT_ANNOTATIONS),
         UpdateStateMethodExtractor.getOnUpdateStateMethods(element, INTER_STAGE_INPUT_ANNOTATIONS),
         ImmutableList.copyOf(TypeVariablesExtractor.getTypeVariables(element)),
         ImmutableList.copyOf(PropDefaultsExtractor.getPropDefaults(element)),

@@ -35,6 +35,7 @@ public final class SpecModelImpl implements SpecModel {
   private final ClassName mComponentClass;
   private final ImmutableList<DelegateMethodModel> mDelegateMethods;
   private final ImmutableList<EventMethodModel> mEventMethods;
+  private final ImmutableList<EventMethodModel> mTriggerMethods;
   private final ImmutableList<UpdateStateMethodModel> mUpdateStateMethods;
   private final ImmutableList<PropModel> mProps;
   private final ImmutableList<PropDefaultModel> mPropDefaults;
@@ -58,6 +59,7 @@ public final class SpecModelImpl implements SpecModel {
       ClassName componentClass,
       ImmutableList<DelegateMethodModel> delegateMethods,
       ImmutableList<EventMethodModel> eventMethods,
+      ImmutableList<EventMethodModel> triggerMethods,
       ImmutableList<UpdateStateMethodModel> updateStateMethods,
       ImmutableList<TypeVariableName> typeVariables,
       ImmutableList<PropDefaultModel> propDefaults,
@@ -75,6 +77,7 @@ public final class SpecModelImpl implements SpecModel {
     mComponentTypeName = getComponentTypeName(componentClassName, qualifiedSpecClassName);
     mDelegateMethods = delegateMethods;
     mEventMethods = eventMethods;
+    mTriggerMethods = triggerMethods;
     mUpdateStateMethods = updateStateMethods;
     mProps = getProps(delegateMethods, eventMethods, updateStateMethods);
     mPropDefaults = propDefaults;
@@ -121,6 +124,11 @@ public final class SpecModelImpl implements SpecModel {
   @Override
   public ImmutableList<EventMethodModel> getEventMethods() {
     return mEventMethods;
+  }
+
+  @Override
+  public ImmutableList<EventMethodModel> getTriggerMethods() {
+    return mTriggerMethods;
   }
 
   @Override
@@ -432,6 +440,7 @@ public final class SpecModelImpl implements SpecModel {
     private ClassName mComponentClass;
     private ImmutableList<DelegateMethodModel> mDelegateMethodModels;
     private ImmutableList<EventMethodModel> mEventMethodModels;
+    private ImmutableList<EventMethodModel> mTriggerMethodModels;
     private ImmutableList<UpdateStateMethodModel> mUpdateStateMethodModels;
     private ImmutableList<TypeVariableName> mTypeVariableNames;
     private ImmutableList<PropDefaultModel> mPropDefaultModels;
@@ -472,6 +481,11 @@ public final class SpecModelImpl implements SpecModel {
 
     public Builder eventMethods(ImmutableList<EventMethodModel> eventMethodModels) {
       mEventMethodModels = eventMethodModels;
+      return this;
+    }
+
+    public Builder triggerMethods(ImmutableList<EventMethodModel> triggerMethodModels) {
+      mTriggerMethodModels = triggerMethodModels;
       return this;
     }
 
@@ -537,6 +551,7 @@ public final class SpecModelImpl implements SpecModel {
           mComponentClass,
           mDelegateMethodModels,
           mEventMethodModels,
+          mTriggerMethodModels,
           mUpdateStateMethodModels,
           mTypeVariableNames,
           mPropDefaultModels,

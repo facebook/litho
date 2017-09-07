@@ -32,6 +32,7 @@ import com.facebook.litho.specmodels.processor.EventDeclarationsExtractor;
 import com.facebook.litho.specmodels.processor.EventMethodExtractor;
 import com.facebook.litho.specmodels.processor.JavadocExtractor;
 import com.facebook.litho.specmodels.processor.PropDefaultsExtractor;
+import com.facebook.litho.specmodels.processor.TriggerMethodExtractor;
 import com.facebook.litho.specmodels.processor.TypeVariablesExtractor;
 import com.facebook.litho.specmodels.processor.UpdateStateMethodExtractor;
 import com.squareup.javapoet.ParameterizedTypeName;
@@ -82,6 +83,8 @@ public class DiffSectionSpecModelFactory {
             INTER_STAGE_INPUT_ANNOTATIONS,
             ImmutableList.<Class<? extends Annotation>>of(ShouldUpdate.class, OnDiff.class)),
         EventMethodExtractor.getOnEventMethods(elements, element, INTER_STAGE_INPUT_ANNOTATIONS),
+        TriggerMethodExtractor.getOnTriggerMethods(
+            elements, element, INTER_STAGE_INPUT_ANNOTATIONS),
         UpdateStateMethodExtractor.getOnUpdateStateMethods(element, INTER_STAGE_INPUT_ANNOTATIONS),
         ImmutableList.copyOf(TypeVariablesExtractor.getTypeVariables(element)),
         ImmutableList.copyOf(PropDefaultsExtractor.getPropDefaults(element)),

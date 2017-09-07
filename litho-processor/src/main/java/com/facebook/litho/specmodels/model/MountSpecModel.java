@@ -21,6 +21,7 @@ import com.facebook.litho.specmodels.generator.RenderDataGenerator;
 import com.facebook.litho.specmodels.generator.ShouldUpdateGenerator;
 import com.facebook.litho.specmodels.generator.StateGenerator;
 import com.facebook.litho.specmodels.generator.TreePropGenerator;
+import com.facebook.litho.specmodels.generator.TriggerGenerator;
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.squareup.javapoet.ClassName;
@@ -47,6 +48,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
       String componentClassName,
       ImmutableList<DelegateMethodModel> delegateMethods,
       ImmutableList<EventMethodModel> eventMethods,
+      ImmutableList<EventMethodModel> triggerMethods,
       ImmutableList<UpdateStateMethodModel> updateStateMethods,
       ImmutableList<TypeVariableName> typeVariables,
       ImmutableList<PropDefaultModel> propDefaults,
@@ -69,6 +71,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
             .componentClass(ClassNames.COMPONENT)
             .delegateMethods(delegateMethods)
             .eventMethods(eventMethods)
+            .triggerMethods(triggerMethods)
             .updateStateMethods(updateStateMethods)
             .typeVariables(typeVariables)
             .propDefaults(propDefaults)
@@ -115,6 +118,11 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   @Override
   public ImmutableList<EventMethodModel> getEventMethods() {
     return mSpecModel.getEventMethods();
+  }
+
+  @Override
+  public ImmutableList<EventMethodModel> getTriggerMethods() {
+    return mSpecModel.getTriggerMethods();
   }
 
   @Override
@@ -274,6 +282,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
         .addTypeSpecDataHolder(PureRenderGenerator.generate(this))
         .addTypeSpecDataHolder(ShouldUpdateGenerator.generate(this))
         .addTypeSpecDataHolder(EventGenerator.generate(this))
+        .addTypeSpecDataHolder(TriggerGenerator.generate(this))
         .addTypeSpecDataHolder(StateGenerator.generate(this))
         .addTypeSpecDataHolder(RenderDataGenerator.generate(this))
         .addTypeSpecDataHolder(BuilderGenerator.generate(this))

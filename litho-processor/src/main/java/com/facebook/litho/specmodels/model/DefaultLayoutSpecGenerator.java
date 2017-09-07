@@ -20,6 +20,7 @@ import com.facebook.litho.specmodels.generator.RenderDataGenerator;
 import com.facebook.litho.specmodels.generator.ShouldUpdateGenerator;
 import com.facebook.litho.specmodels.generator.StateGenerator;
 import com.facebook.litho.specmodels.generator.TreePropGenerator;
+import com.facebook.litho.specmodels.generator.TriggerGenerator;
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.squareup.javapoet.TypeSpec;
 import javax.lang.model.element.Modifier;
@@ -54,6 +55,7 @@ public class DefaultLayoutSpecGenerator implements LayoutSpecGenerator {
         .addTypeSpecDataHolder(PureRenderGenerator.generate(layoutSpecModel))
         .addTypeSpecDataHolder(ShouldUpdateGenerator.generate(layoutSpecModel))
         .addTypeSpecDataHolder(EventGenerator.generate(layoutSpecModel))
+        .addTypeSpecDataHolder(TriggerGenerator.generate(layoutSpecModel))
         .addTypeSpecDataHolder(StateGenerator.generate(layoutSpecModel))
         .addTypeSpecDataHolder(RenderDataGenerator.generate(layoutSpecModel))
         .addTypeSpecDataHolder(BuilderGenerator.generate(layoutSpecModel))
