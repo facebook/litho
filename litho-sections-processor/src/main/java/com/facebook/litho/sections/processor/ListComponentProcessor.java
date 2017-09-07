@@ -31,8 +31,9 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
 /**
- * Processor used to generate {@link SectionLifecycle} and {@link Section} classes for a {@link
- * GroupSectionSpec} or a {@link DiffSectionSpec}
+ * Processor used to generate <code>com.facebook.litho.sections.SectionLifecycle</code> and
+ * <code>com.facebook.litho.sections.Section</code> classes for a {@link GroupSectionSpec}
+ * or a {@link DiffSectionSpec}.
  */
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class ListComponentProcessor extends AbstractListComponentsProcessor {

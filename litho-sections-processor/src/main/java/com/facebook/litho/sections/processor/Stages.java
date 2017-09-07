@@ -641,11 +641,11 @@ public class Stages {
 
   /**
    * Generate a method implementation that delegates to another method that takes annotated props.
+   * May propagate {@link java.io.IOException}s thrown by the write methods.
    *
    * @param from description of method signature to be generated
    * @param to method to which to delegate
    * @param propsClass Component / Delegate. The base class of the inner implementation object
-   * @throws java.io.IOException If one of the writer methods throw
    */
   public void generateDelegate(
       MethodDescription from,
@@ -661,11 +661,11 @@ public class Stages {
 
   /**
    * Generate a method implementation that delegates to another method that takes annotated props.
+   * May propagate {@link java.io.IOException}s thrown by the write methods.
    *
    * @param from description of method signature to be generated
    * @param to method to which to delegate
    * @param propsClass Component / Delegate. The base class of the inner implementation object
-   * @throws java.io.IOException If one of the writer methods throw
    */
   public void generateDelegate(
       MethodDescription from,

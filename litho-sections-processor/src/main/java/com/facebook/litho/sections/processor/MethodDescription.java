@@ -15,9 +15,9 @@ import javax.lang.model.element.Modifier;
 /**
  * Describes a method signature.
  *
- * We use method descriptions to refer to abstract methods defined in {@link ComponentLifecycle},
- * so that we can define implementations that delegate to client-declared methods with annotated
- * props.
+ * We use method descriptions to refer to abstract methods defined in
+ * <code>ComponentLifecycle</code>, so that we can define implementations
+ * that delegate to client-declared methods with annotated props.
  */
 public class MethodDescription {
   public Class[] annotations;

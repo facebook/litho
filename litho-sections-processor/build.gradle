@@ -23,6 +23,3 @@ dependencies {
     // Processor
     implementation deps.javapoet
 }
-
-// FIXME: Re-enable once errors are fixed.
-tasks.withType(Javadoc).all { enabled = false }

@@ -23,7 +23,7 @@ import javax.lang.model.element.Modifier;
 
 /**
  * Provides a Builder for generating an implementation of
- * {@link com.facebook.litho.ComponentLifecycle.StateUpdate}
+ * <code>com.facebook.litho.ComponentLifecycle.StateUpdate</code>.
  */
 public class StateUpdateImplClassBuilder {
 
