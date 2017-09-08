@@ -11,7 +11,6 @@ package com.facebook.litho.specmodels.model;
 
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
-import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
 import com.facebook.litho.specmodels.internal.ImmutableList;
@@ -36,27 +35,47 @@ public final class MethodParamModelFactory {
       List<Class<? extends Annotation>> permittedInterStateInputAnnotations,
       List<Class<? extends Annotation>> delegateMethodAnnotationsThatSkipDiffModels,
       Object representedObject) {
-    final SimpleMethodParamModel simpleMethodParamModel =
-        new SimpleMethodParamModel(type, name, annotations, externalAnnotations, representedObject);
-    final TypeName typeName = simpleMethodParamModel.getType();
-
     // We check whether we're calling ShouldUpdate here since it uses a different infrastructure to
     // track previous props/state :(
-    if (shouldCreateDiffModel(method, typeName, delegateMethodAnnotationsThatSkipDiffModels)) {
-      return new RenderDataDiffModel(simpleMethodParamModel);
+    if (shouldCreateDiffModel(method, type, delegateMethodAnnotationsThatSkipDiffModels)) {
+      return new RenderDataDiffModel(
+          new SimpleMethodParamModel(
+              type, name, annotations, externalAnnotations, representedObject));
     }
 
+    final SimpleMethodParamModel simpleMethodParamModel =
+        new SimpleMethodParamModel(
+            extractDiffTypeIfNecessary(type),
+            name,
+            annotations,
+            externalAnnotations,
+            representedObject);
+
     for (Annotation annotation : annotations) {
-      if (annotation instanceof Prop && method.getAnnotation(ShouldUpdate.class) == null) {
-        return new PropModel(
-            simpleMethodParamModel,
-            ((Prop) annotation).optional(),
-            ((Prop) annotation).resType(),
-            ((Prop) annotation).varArg());
+      if (annotation instanceof Prop) {
+        final PropModel propModel =
+            new PropModel(
+                simpleMethodParamModel,
+                ((Prop) annotation).optional(),
+                ((Prop) annotation).resType(),
+                ((Prop) annotation).varArg());
+
+        if (isDiffType(type)) {
+          return new DiffPropModel(propModel);
+        } else {
+          return propModel;
+        }
       }
 
       if (annotation instanceof State) {
-        return new StateParamModel(simpleMethodParamModel, ((State) annotation).canUpdateLazily());
+        StateParamModel stateParamModel =
+            new StateParamModel(simpleMethodParamModel, ((State) annotation).canUpdateLazily());
+
+        if (isDiffType(type)) {
+          return new DiffStateParamModel(stateParamModel);
+        } else {
+          return stateParamModel;
+        }
       }
 
       if (annotation instanceof TreeProp) {
@@ -82,8 +101,26 @@ public final class MethodParamModelFactory {
       }
     }
 
+    return isDiffType(typeName);
+  }
+
+  private static boolean isDiffType(TypeName typeName) {
     return (typeName instanceof ParameterizedTypeName
         && ((ParameterizedTypeName) typeName).rawType.equals(ClassNames.DIFF));
+  }
+
+
+  private static TypeName extractDiffTypeIfNecessary(TypeName typeName) {
+    if (!isDiffType(typeName)) {
+      return typeName;
+    }
+
+    TypeName diffType = ((ParameterizedTypeName) typeName).typeArguments.get(0);
+    if (diffType.isBoxedPrimitive()) {
+      return diffType.unbox();
+    }
+
+    return diffType;
   }
 
   public static SimpleMethodParamModel createSimpleMethodParamModel(
