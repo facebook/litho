@@ -151,22 +151,4 @@ public abstract class ListSpecHelper<S extends SpecModel & HasService> extends S
           SectionClassNames.SECTION);
     }
   }
-
-  /**
-   * Generate a createInitialState that delegates to the method in the Spec annotated with
-   * {@link OnCreateInitialState} annotation.
-   */
-  public void generateCreateInitialState() {
-    final ExecutableElement onCreateInitialState = Utils.getAnnotatedMethod(
-        mStages.getSourceElement(),
-        OnCreateInitialState.class);
-    if (onCreateInitialState == null) {
-      return;
-    }
-
-    mStages.generateCreateInitialState(
-        onCreateInitialState,
-        SectionClassNames.SECTION_CONTEXT,
-        SectionClassNames.SECTION);
-  }
 }

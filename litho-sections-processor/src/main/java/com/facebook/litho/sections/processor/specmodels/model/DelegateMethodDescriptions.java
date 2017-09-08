@@ -16,9 +16,11 @@ import static com.facebook.litho.specmodels.model.DelegateMethodDescription.Opti
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF_STATE;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.PROP;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.STATE;
+import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.STATE_VALUE;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.TREE_PROP;
 
 import com.facebook.litho.annotations.ShouldUpdate;
+import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.sections.annotations.OnBindService;
 import com.facebook.litho.sections.annotations.OnCreateChildren;
 import com.facebook.litho.sections.annotations.OnCreateService;
@@ -54,6 +56,16 @@ public class DelegateMethodDescriptions {
           .name("createChildren")
           .definedParameterTypes(ImmutableList.<TypeName>of(SectionClassNames.SECTION_CONTEXT))
           .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE))
+          .build();
+
+  private static final DelegateMethodDescription ON_CREATE_INITIAL_STATE =
+      DelegateMethodDescription.newBuilder()
+          .annotations(ImmutableList.of(AnnotationSpec.builder(Override.class).build()))
+          .accessType(Modifier.PROTECTED)
+          .returnType(TypeName.VOID)
+          .name("createInitialState")
+          .definedParameterTypes(ImmutableList.<TypeName>of(SectionClassNames.SECTION_CONTEXT))
+          .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE_VALUE))
           .build();
 
   private static final DelegateMethodDescription ON_REFRESH =
@@ -194,6 +206,7 @@ public class DelegateMethodDescriptions {
     Map<Class<? extends Annotation>, DelegateMethodDescription> groupSectionSpecDelegateMethodsMap =
         getTreeMap();
     groupSectionSpecDelegateMethodsMap.put(OnCreateChildren.class, ON_CREATE_CHILDREN);
+    groupSectionSpecDelegateMethodsMap.put(OnCreateInitialState.class, ON_CREATE_INITIAL_STATE);
     groupSectionSpecDelegateMethodsMap.put(OnDestroyService.class, ON_DESTROY_SERVICE);
     groupSectionSpecDelegateMethodsMap.put(ShouldUpdate.class, SHOULD_UPDATE);
 
@@ -203,6 +216,7 @@ public class DelegateMethodDescriptions {
     Map<Class<? extends Annotation>, DelegateMethodDescription> diffSectionSpecDelegateMethodsMap =
         getTreeMap();
 
+    diffSectionSpecDelegateMethodsMap.put(OnCreateInitialState.class, ON_CREATE_INITIAL_STATE);
     diffSectionSpecDelegateMethodsMap.put(OnDiff.class, ON_DIFF);
     diffSectionSpecDelegateMethodsMap.put(OnDestroyService.class, ON_DESTROY_SERVICE);
     diffSectionSpecDelegateMethodsMap.put(ShouldUpdate.class, SHOULD_UPDATE);

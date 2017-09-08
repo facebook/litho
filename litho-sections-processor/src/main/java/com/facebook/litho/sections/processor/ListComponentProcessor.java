@@ -72,8 +72,6 @@ public class ListComponentProcessor extends AbstractListComponentsProcessor {
         SectionClassNames.SECTION,
         SectionClassNames.STATE_CONTAINER_SECTION);
 
-    listSpecHelper.generateCreateInitialState();
-
     BuilderGenerator.generate(listSpecHelper.getSpecModel())
         .addToTypeSpec(listSpecHelper.getTypeSpec());
 
