@@ -16,6 +16,9 @@ litho_android_library(
     visibility = [
         "PUBLIC",
     ],
+    tests = [
+        make_dep_path("litho-it/src/test/java/com/facebook/litho/testing/viewtree:viewtree"),
+    ],
     deps = [
         COMPONENTS_ANDROIDSUPPORT_TARGET,
         COMPONENTS_JAVA_TARGET,
