@@ -74,4 +74,10 @@ public class DiffStateParamModel implements MethodParamModel {
   public int hashCode() {
     return mUnderlyingStateParamModel.hashCode();
   }
+
+  public boolean isSameUnderlyingStateValueModel(StateParamModel stateParamModel) {
+    return stateParamModel.getName().equals(getName()) &&
+        stateParamModel.getType().box().equals(mUnderlyingStateParamModel.getType().box()) &&
+        stateParamModel.canUpdateLazily() == canUpdateLazily();
+  }
 }

@@ -36,6 +36,8 @@ public class SpecModelImplTest {
   PropModel mPropModel1 = mock(PropModel.class);
   PropModel mPropModel2 = mock(PropModel.class);
   PropModel mPropModel3 = mock(PropModel.class);
+  PropModel mUnderlyingPropModel1 = mock(PropModel.class);
+  PropModel mUnderlyingPropModel2 = mock(PropModel.class);
   SimpleMethodParamModel mMethodParamModel = mock(SimpleMethodParamModel.class);
   TreePropModel mTreePropModel = mock(TreePropModel.class);
 
@@ -53,11 +55,24 @@ public class SpecModelImplTest {
     when(mPropModel1.getName()).thenReturn("propModel1");
     when(mPropModel2.getName()).thenReturn("propModel2");
     when(mPropModel3.getName()).thenReturn("propModel3");
+    when(mPropModel1.getType()).thenReturn(TypeName.BOOLEAN);
+    when(mPropModel2.getType()).thenReturn(TypeName.INT.box());
+    when(mPropModel3.getType()).thenReturn(TypeName.LONG);
+    when(mPropModel1.getVarArgsSingleName()).thenReturn("");
+    when(mPropModel2.getVarArgsSingleName()).thenReturn("");
+    when(mPropModel3.getVarArgsSingleName()).thenReturn("");
+
+    when(mUnderlyingPropModel1.getName()).thenReturn("propModel1");
+    when(mUnderlyingPropModel1.getType()).thenReturn(TypeName.BOOLEAN.box());
+    when(mUnderlyingPropModel1.getVarArgsSingleName()).thenReturn("");
+    when(mUnderlyingPropModel2.getName()).thenReturn("differentName");
 
     List<MethodParamModel> params1 = new ArrayList<>();
     params1.add(mPropModel1);
     params1.add(mPropModel2);
     params1.add(mTreePropModel);
+    params1.add(new DiffPropModel(mUnderlyingPropModel1));
+    params1.add(new DiffPropModel(mUnderlyingPropModel2));
 
     List<MethodParamModel> params2 = new ArrayList<>();
     params2.add(mPropModel3);
@@ -103,8 +118,9 @@ public class SpecModelImplTest {
     assertThat(specModel.getDelegateMethods()).hasSize(2);
     assertThat(specModel.getDelegateMethods()).contains(mMethodModel1, mMethodModel2);
 
-    assertThat(specModel.getProps()).hasSize(3);
-    assertThat(specModel.getProps()).contains(mPropModel1, mPropModel2, mPropModel3);
+    assertThat(specModel.getProps()).hasSize(4);
+    assertThat(specModel.getProps())
+        .contains(mPropModel1, mPropModel2, mPropModel3, mUnderlyingPropModel2);
 
     assertThat(specModel.getPropDefaults()).hasSize(1);
     assertThat(specModel.getPropDefaults()).contains(mPropDefaultModel1);

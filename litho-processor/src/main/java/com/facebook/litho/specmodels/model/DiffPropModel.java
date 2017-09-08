@@ -88,4 +88,12 @@ public class DiffPropModel implements MethodParamModel {
   public int hashCode() {
     return mUnderlyingPropModel.hashCode();
   }
+
+  public boolean isSameUnderlyingPropModel(PropModel propModel) {
+    return propModel.getName().equals(getName()) &&
+        propModel.getType().box().equals(mUnderlyingPropModel.getType().box()) &&
+        propModel.isOptional() == isOptional() &&
+        propModel.getResType() == getResType() &&
+        propModel.getVarArgsSingleName().equals(getVarArgsSingleName());
+  }
 }

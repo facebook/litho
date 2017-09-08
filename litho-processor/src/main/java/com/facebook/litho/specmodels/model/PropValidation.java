@@ -159,7 +159,7 @@ public class PropValidation {
                 propDefault.mRepresentedObject,
                 "PropDefault " + propDefault.mName + " of type " + propDefault.mType +
                     " does not correspond to any defined prop"));
-      } else if (!(propDefault.mType).equals(prop.getType())) {
+      } else if (!(propDefault.mType.box()).equals(prop.getType().box())) {
         validationErrors.add(
             new SpecModelValidationError(
                 propDefault.mRepresentedObject,

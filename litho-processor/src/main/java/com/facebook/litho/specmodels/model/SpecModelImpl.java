@@ -317,7 +317,29 @@ public final class SpecModelImpl implements SpecModel {
       }
     }
 
+    // Once we have all the props, look at the DiffPropModels. This preserves the correct
+    // generics from the defined props.
+    for (DelegateMethodModel delegateMethod : delegateMethods) {
+      for (MethodParamModel param : delegateMethod.methodParams) {
+        if (param instanceof DiffPropModel &&
+            !hasSameUnderlyingPropModel(props, (DiffPropModel) param)) {
+          props.add(((DiffPropModel) param).getUnderlyingPropModel());
+        }
+      }
+    }
+
     return ImmutableList.copyOf(new ArrayList<>(props));
+  }
+
+  private static boolean hasSameUnderlyingPropModel(
+      Set<PropModel> props, DiffPropModel diffPropModel) {
+    for (PropModel existingPropModel : props) {
+      if (diffPropModel.isSameUnderlyingPropModel(existingPropModel)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   private static ImmutableList<StateParamModel> getStateValues(
@@ -349,7 +371,28 @@ public final class SpecModelImpl implements SpecModel {
       }
     }
 
+    for (DelegateMethodModel delegateMethod : delegateMethods) {
+      for (MethodParamModel param : delegateMethod.methodParams) {
+        if (param instanceof DiffStateParamModel &&
+            !hasSameUnderlyingStateParamModel(stateValues, (DiffStateParamModel) param)) {
+          stateValues.add(((DiffStateParamModel) param).getUnderlyingStateParamModel());
+        }
+      }
+    }
+
     return ImmutableList.copyOf(new ArrayList<>(stateValues));
+  }
+
+
+  private static boolean hasSameUnderlyingStateParamModel(
+      Set<StateParamModel> props, DiffStateParamModel diffStateParamModel) {
+    for (StateParamModel existingStateParamModel : props) {
+      if (diffStateParamModel.isSameUnderlyingStateValueModel(existingStateParamModel)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   private static ImmutableList<RenderDataDiffModel> getDiffs(

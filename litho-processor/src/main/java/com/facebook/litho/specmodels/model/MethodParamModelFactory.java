@@ -115,12 +115,7 @@ public final class MethodParamModelFactory {
       return typeName;
     }
 
-    TypeName diffType = ((ParameterizedTypeName) typeName).typeArguments.get(0);
-    if (diffType.isBoxedPrimitive()) {
-      return diffType.unbox();
-    }
-
-    return diffType;
+    return ((ParameterizedTypeName) typeName).typeArguments.get(0);
   }
 
   public static SimpleMethodParamModel createSimpleMethodParamModel(
@@ -131,33 +126,5 @@ public final class MethodParamModelFactory {
         ImmutableList.<Annotation>of(),
         ImmutableList.<AnnotationSpec>of(),
         representedObject);
-  }
-
-  public static PropModel createPropModel(
-      MethodParamModel methodParamModel,
-      TypeName type,
-      boolean isOptional,
-      ResType resType,
-      String varArg) {
-    SimpleMethodParamModel simpleModel =
-        new SimpleMethodParamModel(
-            type,
-            methodParamModel.getName(),
-            methodParamModel.getAnnotations(),
-            methodParamModel.getExternalAnnotations(),
-            methodParamModel.getRepresentedObject());
-    return new PropModel(simpleModel, isOptional, resType, varArg);
-  }
-
-  public static StateParamModel createStateModel(
-      MethodParamModel methodParamModel, TypeName type, boolean canUpdateLazily) {
-    SimpleMethodParamModel simpleModel =
-        new SimpleMethodParamModel(
-            type,
-            methodParamModel.getName(),
-            methodParamModel.getAnnotations(),
-            methodParamModel.getExternalAnnotations(),
-            methodParamModel.getRepresentedObject());
-    return new StateParamModel(simpleModel, canUpdateLazily);
   }
 }

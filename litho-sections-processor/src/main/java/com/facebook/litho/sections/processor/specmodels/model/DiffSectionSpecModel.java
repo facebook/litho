@@ -9,9 +9,6 @@
 
 package com.facebook.litho.sections.processor.specmodels.model;
 
-import com.facebook.litho.annotations.Prop;
-import com.facebook.litho.annotations.State;
-import com.facebook.litho.sections.annotations.OnDiff;
 import com.facebook.litho.sections.processor.SectionClassNames;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
@@ -21,29 +18,21 @@ import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethodModel;
 import com.facebook.litho.specmodels.model.InterStageInputParamModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
-import com.facebook.litho.specmodels.model.MethodParamModelFactory;
-import com.facebook.litho.specmodels.model.MethodParamModelUtils;
 import com.facebook.litho.specmodels.model.PropDefaultModel;
 import com.facebook.litho.specmodels.model.PropJavadocModel;
 import com.facebook.litho.specmodels.model.PropModel;
 import com.facebook.litho.specmodels.model.RenderDataDiffModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelImpl;
-import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.facebook.litho.specmodels.model.SpecModelValidationError;
 import com.facebook.litho.specmodels.model.StateParamModel;
 import com.facebook.litho.specmodels.model.TreePropModel;
 import com.facebook.litho.specmodels.model.UpdateStateMethodModel;
 import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import javax.annotation.Nullable;
 
 /**
@@ -135,40 +124,7 @@ public class DiffSectionSpecModel implements SpecModel, HasService {
 
   @Override
   public ImmutableList<PropModel> getProps() {
-    final DelegateMethodModel delegate =
-        SpecModelUtils.getMethodModelWithAnnotation(mSpecModel, OnDiff.class);
-
-    final Map<String, PropModel> propMap =
-        new TreeMap<>(
-            new Comparator<String>() {
-              @Override
-              public int compare(String lhs, String rhs) {
-                return lhs.compareTo(rhs);
-              }
-            });
-
-    for (MethodParamModel methodParamModel : delegate.methodParams) {
-      Prop propAnnotation =
-          (Prop) MethodParamModelUtils.getAnnotation(methodParamModel, Prop.class);
-      if (propAnnotation != null && MethodParamModelUtils.isDiffType(methodParamModel)) {
-        final PropModel prop =
-            MethodParamModelFactory.createPropModel(
-                methodParamModel,
-                ((ParameterizedTypeName) methodParamModel.getType()).typeArguments.get(0),
-                propAnnotation.optional(),
-                propAnnotation.resType(),
-                propAnnotation.varArg());
-        propMap.put(prop.getName(), prop);
-      }
-    }
-
-    for (PropModel otherProp : mSpecModel.getProps()) {
-      if (!propMap.containsKey(otherProp.getName())) {
-        propMap.put(otherProp.getName(), otherProp);
-      }
-    }
-
-    return ImmutableList.copyOf(new ArrayList<>(propMap.values()));
+    return mSpecModel.getProps();
   }
 
   @Override
@@ -183,38 +139,7 @@ public class DiffSectionSpecModel implements SpecModel, HasService {
 
   @Override
   public ImmutableList<StateParamModel> getStateValues() {
-    final DelegateMethodModel delegate =
-        SpecModelUtils.getMethodModelWithAnnotation(mSpecModel, OnDiff.class);
-
-    final Map<String, StateParamModel> stateMap =
-        new TreeMap<>(
-            new Comparator<String>() {
-              @Override
-              public int compare(String lhs, String rhs) {
-                return lhs.compareTo(rhs);
-              }
-            });
-
-    for (MethodParamModel methodParamModel : delegate.methodParams) {
-      State stateAnnotation =
-          (State) MethodParamModelUtils.getAnnotation(methodParamModel, State.class);
-      if (stateAnnotation != null && MethodParamModelUtils.isDiffType(methodParamModel)) {
-        final StateParamModel state =
-            MethodParamModelFactory.createStateModel(
-                methodParamModel,
-                ((ParameterizedTypeName) methodParamModel.getType()).typeArguments.get(0),
-                stateAnnotation.canUpdateLazily());
-        stateMap.put(state.getName(), state);
-      }
-    }
-
-    for (StateParamModel otherStateValues : mSpecModel.getStateValues()) {
-      if (!stateMap.containsKey(otherStateValues.getName())) {
-        stateMap.put(otherStateValues.getName(), otherStateValues);
-      }
-    }
-
-    return ImmutableList.copyOf(new ArrayList<>(stateMap.values()));
+    return mSpecModel.getStateValues();
   }
 
   @Override

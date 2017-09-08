@@ -182,28 +182,6 @@ public class MethodParamModelFactoryTest {
   }
 
   @Test
-  public void testCreatePropModelWithSpecificType() {
-    MethodParamModel methodParamModel =
-        MethodParamModelFactory.create(
-            mock(ExecutableElement.class),
-            TypeName.BOOLEAN,
-            "testParam",
-            new ArrayList<Annotation>(),
-            new ArrayList<AnnotationSpec>(),
-            ImmutableList.<Class<? extends Annotation>>of(),
-            ImmutableList.<Class<? extends Annotation>>of(),
-            null);
-
-    PropModel prop =
-        MethodParamModelFactory.createPropModel(
-            methodParamModel, TypeName.CHAR, true, ResType.NONE, "varArgString");
-
-    assertThat(prop.getType()).isEqualTo(TypeName.CHAR);
-    assertThat(prop.isOptional()).isTrue();
-    assertThat(prop.getVarArgsSingleName()).isEqualTo("varArgString");
-  }
-
-  @Test
   public void testCreateSimpleMethodParamModelWithSpecificType() {
     Object representedObject = new Object();
     SimpleMethodParamModel param =
