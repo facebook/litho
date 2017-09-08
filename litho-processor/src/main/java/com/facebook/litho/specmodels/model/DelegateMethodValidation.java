@@ -17,8 +17,6 @@ import com.facebook.litho.annotations.OnMount;
 import com.facebook.litho.annotations.OnUnbind;
 import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Param;
-import com.facebook.litho.annotations.Prop;
-import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType;
@@ -311,11 +309,15 @@ public class DelegateMethodValidation {
       MethodParamModel methodParamModel) {
     switch (optionalParameterType) {
       case PROP:
-        return MethodParamModelUtils.isAnnotatedWith(methodParamModel, Prop.class);
+        return methodParamModel instanceof PropModel;
+      case DIFF_PROP:
+        return methodParamModel instanceof DiffPropModel;
       case TREE_PROP:
         return MethodParamModelUtils.isAnnotatedWith(methodParamModel, TreeProp.class);
       case STATE:
-        return MethodParamModelUtils.isAnnotatedWith(methodParamModel, State.class);
+        return methodParamModel instanceof StateParamModel;
+      case DIFF_STATE:
+        return methodParamModel instanceof DiffStateParamModel;
       case PARAM:
         return MethodParamModelUtils.isAnnotatedWith(methodParamModel, Param.class);
       case INTER_STAGE_OUTPUT:
@@ -351,10 +353,14 @@ public class DelegateMethodValidation {
     switch (optionalParameterType) {
       case PROP:
         return "@Prop T somePropName";
+      case DIFF_PROP:
+        return "@Prop Diff<T> somePropName";
       case TREE_PROP:
         return "@TreeProp T someTreePropName";
       case STATE:
         return "@State T someStateName";
+      case DIFF_STATE:
+        return "@State Diff<T> someStateName";
       case PARAM:
         return "@Param T someParamName";
       case INTER_STAGE_OUTPUT:

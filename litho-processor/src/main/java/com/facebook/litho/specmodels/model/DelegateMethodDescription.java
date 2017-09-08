@@ -32,8 +32,10 @@ public final class DelegateMethodDescription {
    */
   public enum OptionalParameterType {
     PROP,
+    DIFF_PROP,
     TREE_PROP,
     STATE,
+    DIFF_STATE,
     PARAM,
     INTER_STAGE_OUTPUT,
     PROP_OUTPUT,
