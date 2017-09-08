@@ -69,8 +69,10 @@ import com.facebook.yoga.YogaNode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -114,6 +116,8 @@ class LayoutState {
               : isHostSpec(lhs.getComponent()) ? 1 : -1;
         }
       };
+
+  private final Map<String, Rect> mComponentKeyToBounds = new HashMap<>();
 
   @ThreadConfined(ThreadConfined.UI)
   private final Rect mDisplayListCreateRect = new Rect();
@@ -739,6 +743,19 @@ class LayoutState {
       layoutState.mTestOutputs.add(testOutput);
     }
 
+    if (component != null) {
+      final Rect rect = ComponentsPools.acquireRect();
+      if (layoutOutput != null) {
+        rect.set(layoutOutput.getBounds());
+      } else {
+        rect.left = layoutState.mCurrentX + node.getX();
+        rect.top = layoutState.mCurrentY + node.getY();
+        rect.right = rect.left + node.getWidth();
+        rect.bottom = rect.top + node.getHeight();
+      }
+      layoutState.mComponentKeyToBounds.put(component.getGlobalKey(), rect);
+    }
+
     // All children for the given host have been added, restore the previous
     // host, level, and duplicate parent state value in the recursive queue.
     if (layoutState.mCurrentHostMarker != currentHostMarker) {
@@ -747,6 +764,10 @@ class LayoutState {
       layoutState.mCurrentLevel--;
     }
     layoutState.mShouldDuplicateParentState = shouldDuplicateParentState;
+  }
+
+  Map<String, Rect> getComponentKeyToBounds() {
+    return mComponentKeyToBounds;
   }
 
   private static void calculateAndSetHostOutputIdAndUpdateState(
@@ -1738,6 +1759,11 @@ class LayoutState {
       mMountableOutputBottoms.clear();
       mOutputsIdToPositionMap.clear();
       mDisplayListsToPrefetch.clear();
+
+      for (Rect rect : mComponentKeyToBounds.values()) {
+        ComponentsPools.release(rect);
+      }
+      mComponentKeyToBounds.clear();
 
       for (int i = 0, size = mVisibilityOutputs.size(); i < size; i++) {
         ComponentsPools.release(mVisibilityOutputs.get(i));

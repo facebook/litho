@@ -805,8 +805,8 @@ public class ComponentTree {
 
   void updateStateAsync(String componentKey, StateUpdate stateUpdate) {
     if (!mIsAsyncUpdateStateEnabled) {
-        throw new RuntimeException("Triggering async state updates on this component tree is " +
-            "disabled, use sync state updates.");
+      throw new RuntimeException("Triggering async state updates on this component tree is " +
+          "disabled, use sync state updates.");
     }
 
     synchronized (this) {
@@ -992,6 +992,35 @@ public class ComponentTree {
     return previousRenderState;
   }
 
+  void showTooltip(
+      LithoTooltip tooltip,
+      String anchorGlobalKey,
+      TooltipPosition tooltipPosition,
+      int xOffset,
+      int yOffset) {
+    assertMainThread();
+
+    final Map<String, Rect> componentKeysToBounds;
+    synchronized (this) {
+      componentKeysToBounds =
+          mMainThreadLayoutState.getComponentKeyToBounds();
+    }
+
+    if (!componentKeysToBounds.containsKey(anchorGlobalKey)) {
+      throw new IllegalArgumentException(
+          "Cannot find a component with key " + anchorGlobalKey + " to use as anchor.");
+    }
+
+    final Rect anchorBounds = componentKeysToBounds.get(anchorGlobalKey);
+    LithoTooltipController.showOnAnchor(
+        tooltip,
+        anchorBounds,
+        mLithoView,
+        tooltipPosition,
+        xOffset,
+        yOffset);
+  }
+
   private void setRootAndSizeSpecInternal(
       Component<?> root,
       int widthSpec,
@@ -1025,20 +1054,20 @@ public class ComponentTree {
           mBackgroundLayoutState != null ? mBackgroundLayoutState : mMainThreadLayoutState;
       final boolean allSpecsWereInitialized =
           widthSpecInitialized &&
-          heightSpecInitialized &&
-          mWidthSpec != SIZE_UNINITIALIZED &&
-          mHeightSpec != SIZE_UNINITIALIZED;
+              heightSpecInitialized &&
+              mWidthSpec != SIZE_UNINITIALIZED &&
+              mHeightSpec != SIZE_UNINITIALIZED;
       final boolean sizeSpecsAreCompatible =
           sizeSpecDidntChange ||
-          (allSpecsWereInitialized &&
-          mostRecentLayoutState != null &&
-          LayoutState.hasCompatibleSizeSpec(
-              mWidthSpec,
-              mHeightSpec,
-              widthSpec,
-              heightSpec,
-              mostRecentLayoutState.getWidth(),
-              mostRecentLayoutState.getHeight()));
+              (allSpecsWereInitialized &&
+                  mostRecentLayoutState != null &&
+                  LayoutState.hasCompatibleSizeSpec(
+                      mWidthSpec,
+                      mHeightSpec,
+                      widthSpec,
+                      heightSpec,
+                      mostRecentLayoutState.getWidth(),
+                      mostRecentLayoutState.getHeight()));
       final boolean rootDidntChange = !rootInitialized || root.getId() == mRoot.getId();
 
       if (rootDidntChange && sizeSpecsAreCompatible) {
@@ -1240,7 +1269,7 @@ public class ComponentTree {
 
       // TODO t15532529
       mStateHandler = null;
-      
+
       if (mPreviousRenderState != null && !mPreviousRenderStateSetFromBuilder) {
         ComponentsPools.release(mPreviousRenderState);
       }
