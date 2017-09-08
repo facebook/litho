@@ -28,10 +28,13 @@ dependencies {
     compileOnly project(':litho-sections-annotations')
     implementation project(':litho-core')
     implementation project(':litho-widget')
+    annotationProcessor project(':litho-sections-processor')
 
     // compileOnly dependencies
     compileOnly deps.jsr305
 
     // Android Support Library
+    compileOnly deps.supportAnnotations
+    implementation deps.supportRecyclerView
     implementation deps.supportCoreUi
 }
