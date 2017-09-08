@@ -27,11 +27,8 @@ public class PropModel implements MethodParamModel {
   private final ResType mResType;
   private final String mVarArgSingleArgName;
 
-  PropModel(
-      MethodParamModel paramModel,
-      boolean isOptional,
-      ResType resType,
-      String varArg) {
+  public PropModel(
+      MethodParamModel paramModel, boolean isOptional, ResType resType, String varArg) {
     mParamModel = paramModel;
     mIsOptional = isOptional;
     mResType = resType;
