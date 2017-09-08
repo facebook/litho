@@ -74,6 +74,23 @@ public class SubComponent {
         thatComponent.isEquivalentTo(thisComponent);
   }
 
+  /**
+   * Use an old-style {@link SubComponent} in an assertj Condition.
+   *
+   * For instance:
+   * <pre><code>
+   *   assertThat(c, mComponent)
+   *    .has(
+   *        subComponentWith(
+   *            c,
+   *            legacySubComponent(
+   *                SubComponent.of(
+   *                    FooterComponent.create(c).text("Rockstar Developer").build()))));
+   * </code></pre>
+   *
+   * @param subComponent The constructed {@link SubComponent#of(Component)}.
+   * @return A condition to be used with {@link org.assertj.core.api.Assertions#assertThat}
+   */
   public static Condition<InspectableComponent> legacySubComponent(
       final SubComponent subComponent) {
     return new Condition<InspectableComponent>() {
