@@ -344,24 +344,8 @@ class LayoutState {
         node.getFullImpressionHandler();
     final EventHandler<InvisibleEvent> invisibleHandler = node.getInvisibleHandler();
     final VisibilityOutput visibilityOutput = ComponentsPools.acquireVisibilityOutput();
-    final Component<?> handlerComponent;
 
-    // Get the component from the handler that is not null. If more than one is not null, then
-    // getting the component from any of them works.
-    if (visibleHandler != null) {
-      handlerComponent = (Component<?>) visibleHandler.mHasEventDispatcher;
-    } else if (focusedHandler != null) {
-      handlerComponent = (Component<?>) focusedHandler.mHasEventDispatcher;
-    } else if (unfocusedHandler != null) {
-      handlerComponent = (Component<?>) unfocusedHandler.mHasEventDispatcher;
-    } else if (fullImpressionHandler != null) {
-      handlerComponent = (Component<?>) fullImpressionHandler.mHasEventDispatcher;
-    } else {
-      handlerComponent = (Component<?>) invisibleHandler.mHasEventDispatcher;
-    }
-
-    visibilityOutput.setComponent(handlerComponent);
-
+    visibilityOutput.setComponent(node.getRootComponent());
     visibilityOutput.setBounds(l, t, r, b);
     visibilityOutput.setVisibleHeightRatio(node.getVisibleHeightRatio());
     visibilityOutput.setVisibleWidthRatio(node.getVisibleWidthRatio());
