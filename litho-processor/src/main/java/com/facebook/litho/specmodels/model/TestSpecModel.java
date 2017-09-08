@@ -14,7 +14,6 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
-import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -208,8 +207,7 @@ public class TestSpecModel implements SpecModel, HasPureRender {
 
   @Override
   public List<SpecModelValidationError> validate() {
-    // TODO(T20862132): Add model validation for test specs
-    return Collections.emptyList();
+    return SpecModelValidation.validateTestSpecModel(this);
   }
 
   @Override

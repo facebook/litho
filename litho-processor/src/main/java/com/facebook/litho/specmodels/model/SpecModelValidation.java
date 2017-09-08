@@ -19,9 +19,11 @@ public class SpecModelValidation {
 
   public static List<SpecModelValidationError> validateSpecModel(
       SpecModel specModel, List<String> reservedPropNames) {
-    List<SpecModelValidationError> validationErrors = new ArrayList<>();
-    if (specModel.hasInjectedDependencies()) {
-      validationErrors.addAll(specModel.getDependencyInjectionHelper().validate(specModel));
+    final List<SpecModelValidationError> validationErrors = new ArrayList<>();
+    final DependencyInjectionHelper dependencyInjectionHelper =
+        specModel.getDependencyInjectionHelper();
+    if (specModel.hasInjectedDependencies() && dependencyInjectionHelper != null) {
+      validationErrors.addAll(dependencyInjectionHelper.validate(specModel));
     }
     validationErrors.addAll(validateName(specModel));
     validationErrors.addAll(PropValidation.validate(specModel, reservedPropNames));
@@ -47,6 +49,12 @@ public class SpecModelValidation {
     validationErrors.addAll(DelegateMethodValidation.validateMountSpecModel(specModel));
     validationErrors.addAll(validateGetMountType(specModel));
     validationErrors.addAll(validateShouldUseDisplayLists(specModel));
+    return validationErrors;
+  }
+
+  public static List<SpecModelValidationError> validateTestSpecModel(TestSpecModel specModel) {
+    List<SpecModelValidationError> validationErrors = new ArrayList<>();
+    validationErrors.addAll(validateSpecModel(specModel, PropValidation.RESERVED_PROP_NAMES));
     return validationErrors;
   }
 
