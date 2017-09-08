@@ -20,7 +20,6 @@ import com.facebook.litho.specmodels.generator.ComponentImplGenerator;
 import com.facebook.litho.specmodels.generator.DelegateMethodGenerator;
 import com.facebook.litho.specmodels.generator.EventGenerator;
 import com.facebook.litho.specmodels.generator.PreambleGenerator;
-import com.facebook.litho.specmodels.generator.ShouldUpdateGenerator;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.SpecModel;
 import javax.annotation.Nullable;
@@ -73,7 +72,6 @@ public class ListComponentProcessor extends AbstractListComponentsProcessor {
         SectionClassNames.SECTION,
         SectionClassNames.STATE_CONTAINER_SECTION);
 
-    ShouldUpdateGenerator.generate(specModel).addToTypeSpec(listSpecHelper.getTypeSpec());
     listSpecHelper.generateCreateInitialState();
 
     BuilderGenerator.generate(listSpecHelper.getSpecModel())

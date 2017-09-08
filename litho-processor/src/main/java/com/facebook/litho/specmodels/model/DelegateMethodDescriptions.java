@@ -10,6 +10,8 @@
 package com.facebook.litho.specmodels.model;
 
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF;
+import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF_PROP;
+import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF_STATE;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.INTER_STAGE_OUTPUT;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.PROP;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.PROP_OUTPUT;
@@ -40,6 +42,7 @@ import com.facebook.litho.annotations.OnPopulateExtraAccessibilityNode;
 import com.facebook.litho.annotations.OnPrepare;
 import com.facebook.litho.annotations.OnUnbind;
 import com.facebook.litho.annotations.OnUnmount;
+import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.MethodSpec;
@@ -260,6 +263,16 @@ public final class DelegateMethodDescriptions {
               FromBoundsDefined.class))
           .build();
 
+  public static final DelegateMethodDescription SHOULD_UPDATE =
+      DelegateMethodDescription.newBuilder()
+          .annotations(ImmutableList.of(AnnotationSpec.builder(Override.class).build()))
+          .accessType(Modifier.PROTECTED)
+          .returnType(TypeName.BOOLEAN)
+          .name("shouldUpdate")
+          .definedParameterTypes(ImmutableList.of())
+          .optionalParameterTypes(ImmutableList.of(DIFF_PROP, DIFF_STATE))
+          .build();
+
   public static final DelegateMethodDescription ON_POPULATE_ACCESSIBILITY_NODE =
       DelegateMethodDescription.newBuilder()
           .annotations(ImmutableList.of(AnnotationSpec.builder(Override.class).build()))
@@ -369,6 +382,8 @@ public final class DelegateMethodDescriptions {
     layoutSpecDelegateMethodsMap.put(OnCreateInitialState.class, ON_CREATE_INITIAL_STATE);
     layoutSpecDelegateMethodsMap.put(
         OnCreateTransition.class, ON_CREATE_TRANSITION);
+    layoutSpecDelegateMethodsMap.put(ShouldUpdate.class, SHOULD_UPDATE);
+
     LAYOUT_SPEC_DELEGATE_METHODS_MAP = Collections.unmodifiableMap(layoutSpecDelegateMethodsMap);
 
     Map<Class<? extends Annotation>, DelegateMethodDescription> mountSpecDelegateMethodsMap =
@@ -390,6 +405,7 @@ public final class DelegateMethodDescriptions {
     mountSpecDelegateMethodsMap.put(OnBind.class, ON_BIND);
     mountSpecDelegateMethodsMap.put(OnUnbind.class, ON_UNBIND);
     mountSpecDelegateMethodsMap.put(OnUnmount.class, ON_UNMOUNT);
+    mountSpecDelegateMethodsMap.put(ShouldUpdate.class, SHOULD_UPDATE);
     mountSpecDelegateMethodsMap.put(
         OnPopulateAccessibilityNode.class, ON_POPULATE_ACCESSIBILITY_NODE);
     mountSpecDelegateMethodsMap.put(

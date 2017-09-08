@@ -12,6 +12,7 @@ package com.facebook.litho.specmodels.generator;
 import com.facebook.litho.annotations.FromBoundsDefined;
 import com.facebook.litho.annotations.FromMeasure;
 import com.facebook.litho.annotations.OnMount;
+import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DelegateMethodModel;
 import com.facebook.litho.specmodels.model.InterStageInputParamModel;
@@ -20,6 +21,8 @@ import com.facebook.litho.specmodels.model.MountSpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
+import java.lang.annotation.Annotation;
+import javax.annotation.Nullable;
 import javax.lang.model.element.Modifier;
 
 /**
@@ -112,5 +115,36 @@ public class MountSpecGenerator {
     }
 
     return dataHolder.build();
+  }
+
+  public static TypeSpecDataHolder generateCallsShouldUpdateOnMount(MountSpecModel specModel) {
+    final TypeSpecDataHolder.Builder dataHolder = TypeSpecDataHolder.newBuilder();
+
+    final ShouldUpdate shouldUpdateAnnotation = getShouldUpdateAnnotation(specModel);
+
+    if (shouldUpdateAnnotation != null && shouldUpdateAnnotation.onMount()) {
+      dataHolder.addMethod(
+          MethodSpec.methodBuilder("callsShouldUpdateOnMount")
+              .addAnnotation(Override.class)
+              .addModifiers(Modifier.PUBLIC)
+              .returns(TypeName.BOOLEAN)
+              .addStatement("return true")
+              .build());
+    }
+
+    return dataHolder.build();
+  }
+
+  @Nullable
+  private static ShouldUpdate getShouldUpdateAnnotation(MountSpecModel specModel) {
+    for (DelegateMethodModel delegateMethodModel : specModel.getDelegateMethods()) {
+      for (Annotation annotation : delegateMethodModel.annotations) {
+        if (annotation.annotationType().equals(ShouldUpdate.class)) {
+          return (ShouldUpdate) annotation;
+        }
+      }
+    }
+
+    return null;
   }
 }

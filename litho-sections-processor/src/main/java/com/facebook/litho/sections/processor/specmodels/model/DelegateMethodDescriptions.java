@@ -18,6 +18,7 @@ import static com.facebook.litho.specmodels.model.DelegateMethodDescription.Opti
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.STATE;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.TREE_PROP;
 
+import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.sections.annotations.OnBindService;
 import com.facebook.litho.sections.annotations.OnCreateChildren;
 import com.facebook.litho.sections.annotations.OnCreateService;
@@ -160,6 +161,16 @@ public class DelegateMethodDescriptions {
                       .build()))
           .build();
 
+  private static final DelegateMethodDescription SHOULD_UPDATE =
+      DelegateMethodDescription.newBuilder()
+          .annotations(ImmutableList.of(AnnotationSpec.builder(Override.class).build()))
+          .accessType(Modifier.PROTECTED)
+          .returnType(TypeName.BOOLEAN)
+          .name("shouldUpdate")
+          .definedParameterTypes(ImmutableList.of())
+          .optionalParameterTypes(ImmutableList.of(DIFF_PROP, DIFF_STATE))
+          .build();
+
   static final Map<Class<? extends Annotation>, DelegateMethodDescription>
       SERVICE_AWARE_DELEGATE_METHODS_MAP;
   static final Map<Class<? extends Annotation>, DelegateMethodDescription>
@@ -184,6 +195,7 @@ public class DelegateMethodDescriptions {
         getTreeMap();
     groupSectionSpecDelegateMethodsMap.put(OnCreateChildren.class, ON_CREATE_CHILDREN);
     groupSectionSpecDelegateMethodsMap.put(OnDestroyService.class, ON_DESTROY_SERVICE);
+    groupSectionSpecDelegateMethodsMap.put(ShouldUpdate.class, SHOULD_UPDATE);
 
     GROUP_SECTION_SPEC_DELEGATE_METHODS_MAP =
         Collections.unmodifiableMap(groupSectionSpecDelegateMethodsMap);
@@ -193,6 +205,7 @@ public class DelegateMethodDescriptions {
 
     diffSectionSpecDelegateMethodsMap.put(OnDiff.class, ON_DIFF);
     diffSectionSpecDelegateMethodsMap.put(OnDestroyService.class, ON_DESTROY_SERVICE);
+    diffSectionSpecDelegateMethodsMap.put(ShouldUpdate.class, SHOULD_UPDATE);
 
     DIFF_SECTION_SPEC_DELEGATE_METHODS_MAP =
         Collections.unmodifiableMap(diffSectionSpecDelegateMethodsMap);

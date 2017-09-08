@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2017-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
 package com.facebook.litho.processor.integration.resources;
 
 import android.graphics.drawable.Drawable;
@@ -226,6 +234,20 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
   }
 
   @Override
+  protected boolean shouldUpdate(Component _prevAbstractImpl, Component _nextAbstractImpl) {
+    TestMountImpl _prevImpl = (TestMountImpl) _prevAbstractImpl;
+    TestMountImpl _nextImpl = (TestMountImpl) _nextAbstractImpl;
+    Diff<Integer> prop1 =
+        (Diff)
+            acquireDiff(
+                _prevImpl == null ? null : _prevImpl.prop1,
+                _nextImpl == null ? null : _nextImpl.prop1);
+    boolean _result = (boolean) TestMountSpec.shouldUpdate(prop1);
+    releaseDiff(prop1);
+    return _result;
+  }
+
+  @Override
   public ComponentLifecycle.MountType getMountType() {
     return ComponentLifecycle.MountType.DRAWABLE;
   }
@@ -251,23 +273,13 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
   }
 
   @Override
-  public boolean isPureRender() {
-    return true;
-  }
-
-  @Override
   public boolean callsShouldUpdateOnMount() {
     return true;
   }
 
   @Override
-  public boolean shouldUpdate(Component previous, Component next) {
-    TestMountImpl previousImpl = (TestMountImpl) previous;
-    TestMountImpl nextImpl = (TestMountImpl) next;
-    Diff<Integer> prop1 = acquireDiff(previousImpl.prop1, nextImpl.prop1);
-    boolean shouldUpdate = TestMountSpec.shouldUpdate(prop1);
-    releaseDiff(prop1);
-    return shouldUpdate;
+  public boolean isPureRender() {
+    return true;
   }
 
   public static EventHandler getTestEventHandler(ComponentContext context) {
