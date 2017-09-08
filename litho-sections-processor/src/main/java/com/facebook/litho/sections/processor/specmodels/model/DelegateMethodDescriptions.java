@@ -12,6 +12,8 @@ package com.facebook.litho.sections.processor.specmodels.model;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.ABSTRACT_IMPL_PARAM_NAME;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.IMPL_CLASS_NAME_SUFFIX;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.IMPL_VARIABLE_NAME;
+import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF_PROP;
+import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF_STATE;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.PROP;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.STATE;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.TREE_PROP;
@@ -21,6 +23,7 @@ import com.facebook.litho.sections.annotations.OnCreateChildren;
 import com.facebook.litho.sections.annotations.OnCreateService;
 import com.facebook.litho.sections.annotations.OnDataBound;
 import com.facebook.litho.sections.annotations.OnDestroyService;
+import com.facebook.litho.sections.annotations.OnDiff;
 import com.facebook.litho.sections.annotations.OnRefresh;
 import com.facebook.litho.sections.annotations.OnUnbindService;
 import com.facebook.litho.sections.annotations.OnViewportChanged;
@@ -137,6 +140,26 @@ public class DelegateMethodDescriptions {
                       .build()))
           .build();
 
+  private static final DelegateMethodDescription ON_DIFF =
+      DelegateMethodDescription.newBuilder()
+          .annotations(ImmutableList.of(AnnotationSpec.builder(Override.class).build()))
+          .accessType(Modifier.PROTECTED)
+          .returnType(TypeName.VOID)
+          .name("generateChangeSet")
+          .definedParameterTypes(
+              ImmutableList.<TypeName>of(
+                  SectionClassNames.SECTION_CONTEXT, SectionClassNames.CHANGESET))
+          .optionalParameterTypes(ImmutableList.of(DIFF_PROP, DIFF_STATE))
+          .extraMethods(
+              ImmutableList.of(
+                  MethodSpec.methodBuilder("isDiffSectionSpec")
+                      .addAnnotation(Override.class)
+                      .addModifiers(Modifier.PROTECTED)
+                      .returns(TypeName.BOOLEAN)
+                      .addStatement("return true")
+                      .build()))
+          .build();
+
   static final Map<Class<? extends Annotation>, DelegateMethodDescription>
       SERVICE_AWARE_DELEGATE_METHODS_MAP;
   static final Map<Class<? extends Annotation>, DelegateMethodDescription>
@@ -168,6 +191,7 @@ public class DelegateMethodDescriptions {
     Map<Class<? extends Annotation>, DelegateMethodDescription> diffSectionSpecDelegateMethodsMap =
         getTreeMap();
 
+    diffSectionSpecDelegateMethodsMap.put(OnDiff.class, ON_DIFF);
     diffSectionSpecDelegateMethodsMap.put(OnDestroyService.class, ON_DESTROY_SERVICE);
 
     DIFF_SECTION_SPEC_DELEGATE_METHODS_MAP =

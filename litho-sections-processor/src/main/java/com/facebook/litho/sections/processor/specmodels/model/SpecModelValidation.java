@@ -31,7 +31,6 @@ public class SpecModelValidation {
   public static List<SpecModelValidationError> validateDiffSectionSpecModel(
       DiffSectionSpecModel specModel) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
-    validationErrors.addAll(OnDiffValidation.validate(specModel));
     if (validationErrors.isEmpty()) {
       validationErrors.addAll(validateSpecModel(specModel, SECTIONS_RESERVED_PROP_NAMES));
     }

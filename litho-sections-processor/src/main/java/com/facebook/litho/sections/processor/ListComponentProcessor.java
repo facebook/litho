@@ -11,7 +11,6 @@ package com.facebook.litho.sections.processor;
 
 import com.facebook.litho.sections.annotations.DiffSectionSpec;
 import com.facebook.litho.sections.annotations.GroupSectionSpec;
-import com.facebook.litho.sections.processor.specmodels.generator.OnDiffGenerator;
 import com.facebook.litho.sections.processor.specmodels.model.DelegateMethodDescriptions;
 import com.facebook.litho.sections.processor.specmodels.model.DiffSectionSpecModel;
 import com.facebook.litho.sections.processor.specmodels.model.GroupSectionSpecModel;
@@ -55,8 +54,6 @@ public class ListComponentProcessor extends AbstractListComponentsProcessor {
     generateCommonListComponent(diffSectionSpecHelper);
     DelegateMethodGenerator.generateDelegates(
             specModel, DelegateMethodDescriptions.getDiffSectionSpecDelegatesMap(specModel))
-        .addToTypeSpec(diffSectionSpecHelper.getTypeSpec());
-    OnDiffGenerator.generate(diffSectionSpecHelper.getSpecModel())
         .addToTypeSpec(diffSectionSpecHelper.getTypeSpec());
   }
 
