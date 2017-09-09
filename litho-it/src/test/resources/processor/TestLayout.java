@@ -97,7 +97,9 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
     TestLayoutImpl _impl = (TestLayoutImpl) _abstractImpl;
     StateValue<S> state2 = new StateValue<>();
     TestLayoutSpec.createInitialState((ComponentContext) c, (int) _impl.prop1, state2);
-    _impl.mStateContainerImpl.state2 = state2.get();
+    if (state2.get() != null) {
+      _impl.mStateContainerImpl.state2 = state2.get();
+    }
   }
 
   @Override

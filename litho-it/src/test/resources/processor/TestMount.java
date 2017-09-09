@@ -108,7 +108,9 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
         (ComponentContext) c,
         (int) _impl.prop1,
         state2);
-    _impl.mStateContainerImpl.state2 = state2.get();
+    if (state2.get() != null) {
+      _impl.mStateContainerImpl.state2 = state2.get();
+    }
   }
 
   @Override

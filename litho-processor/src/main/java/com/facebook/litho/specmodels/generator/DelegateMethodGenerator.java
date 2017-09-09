@@ -196,13 +196,23 @@ public class DelegateMethodGenerator {
             "$T $L = new StateValue<>();\n",
             methodParamModel.getType(),
             methodParamModel.getName());
+
         delegation.add("$L", methodParamModel.getName());
+
+        if (delegateMethod.name.toString().equals("createInitialState")) {
+          releaseStatements.beginControlFlow("if ($L.get() != null)", methodParamModel.getName());
+        }
 
         releaseStatements.addStatement(
             "$L.$L = $L.get()",
             IMPL_VARIABLE_NAME,
             getImplAccessor(specModel, methodParamModel),
             methodParamModel.getName());
+
+        if (delegateMethod.name.toString().equals("createInitialState")) {
+          releaseStatements.endControlFlow();
+        }
+        
       } else if (methodParamModel instanceof RenderDataDiffModel) {
         final String diffName = "_" + methodParamModel.getName() + "Diff";
         CodeBlock block =
