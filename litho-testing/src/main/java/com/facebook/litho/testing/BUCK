@@ -13,11 +13,12 @@ litho_android_library(
     provided_deps = [
         COMPONENTS_ROBOLECTRIC_TARGET,
     ],
-    visibility = [
-        "PUBLIC",
-    ],
     tests = [
         make_dep_path("litho-it/src/test/java/com/facebook/litho/testing/viewtree:viewtree"),
+        make_dep_path("litho-it-powermock/src/test/java/com/facebook/litho/testing/viewtree:viewtree"),
+    ],
+    visibility = [
+        "PUBLIC",
     ],
     deps = [
         COMPONENTS_ANDROIDSUPPORT_TARGET,
