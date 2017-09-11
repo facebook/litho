@@ -638,9 +638,9 @@ public class ComponentHost extends ViewGroup {
     }
 
     if (mInLayout) {
-      addViewInLayout(view, -1, view.getLayoutParams(), true);
+      super.addViewInLayout(view, -1, view.getLayoutParams(), true);
     } else {
-      addView(view, -1, view.getLayoutParams());
+      super.addView(view, -1, view.getLayoutParams());
     }
   }
 
@@ -660,9 +660,9 @@ public class ComponentHost extends ViewGroup {
 
       mScrapHosts.add(componentHost);
     } else if (mInLayout) {
-      removeViewInLayout(view);
+      super.removeViewInLayout(view);
     } else {
-      removeView(view);
+      super.removeView(view);
     }
   }
 
@@ -885,6 +885,163 @@ public class ComponentHost extends ViewGroup {
     // delegate that we receive here. Instead, we'll set this to true at the point that we set that
     // delegate explicitly.
     mIsComponentAccessibilityDelegateSet = false;
+  }
+
+  /**
+   * Litho handles adding/removing views automatically using mount/unmount calls. Manually adding/
+   * removing views will mess up Litho's bookkeeping of added views and cause weird crashes down the
+   * line.
+   */
+  @Deprecated
+  @Override
+  public void addView(View child) {
+    throw new UnsupportedOperationException(
+        "Adding Views manually within LithoViews is not supported");
+  }
+
+  /**
+   * Litho handles adding/removing views automatically using mount/unmount calls. Manually adding/
+   * removing views will mess up Litho's bookkeeping of added views and cause weird crashes down the
+   * line.
+   */
+  @Deprecated
+  @Override
+  public void addView(View child, int index) {
+    throw new UnsupportedOperationException(
+        "Adding Views manually within LithoViews is not supported");
+  }
+
+  /**
+   * Litho handles adding/removing views automatically using mount/unmount calls. Manually adding/
+   * removing views will mess up Litho's bookkeeping of added views and cause weird crashes down the
+   * line.
+   */
+  @Deprecated
+  @Override
+  public void addView(View child, int index, LayoutParams params) {
+    throw new UnsupportedOperationException(
+        "Adding Views manually within LithoViews is not supported");
+  }
+
+  /**
+   * Litho handles adding/removing views automatically using mount/unmount calls. Manually adding/
+   * removing views will mess up Litho's bookkeeping of added views and cause weird crashes down the
+   * line.
+   */
+  @Deprecated
+  @Override
+  protected boolean addViewInLayout(
+      View child, int index, LayoutParams params, boolean preventRequestLayout) {
+    throw new UnsupportedOperationException(
+        "Adding Views manually within LithoViews is not supported");
+  }
+
+  /**
+   * Litho handles adding/removing views automatically using mount/unmount calls. Manually adding/
+   * removing views will mess up Litho's bookkeeping of added views and cause weird crashes down the
+   * line.
+   */
+  @Deprecated
+  @Override
+  protected void attachViewToParent(View child, int index, LayoutParams params) {
+    throw new UnsupportedOperationException(
+        "Adding Views manually within LithoViews is not supported");
+  }
+
+  /**
+   * Litho handles adding/removing views automatically using mount/unmount calls. Manually adding/
+   * removing views will mess up Litho's bookkeeping of added views and cause weird crashes down the
+   * line.
+   */
+  @Deprecated
+  @Override
+  public void removeView(View view) {
+    throw new UnsupportedOperationException(
+        "Removing Views manually within LithoViews is not supported");
+  }
+
+  /**
+   * Litho handles adding/removing views automatically using mount/unmount calls. Manually adding/
+   * removing views will mess up Litho's bookkeeping of added views and cause weird crashes down the
+   * line.
+   */
+  @Deprecated
+  @Override
+  public void removeViewInLayout(View view) {
+    throw new UnsupportedOperationException(
+        "Removing Views manually within LithoViews is not supported");
+  }
+
+  /**
+   * Litho handles adding/removing views automatically using mount/unmount calls. Manually adding/
+   * removing views will mess up Litho's bookkeeping of added views and cause weird crashes down the
+   * line.
+   */
+  @Deprecated
+  @Override
+  public void removeViewsInLayout(int start, int count) {
+    throw new UnsupportedOperationException(
+        "Removing Views manually within LithoViews is not supported");
+  }
+
+  /**
+   * Litho handles adding/removing views automatically using mount/unmount calls. Manually adding/
+   * removing views will mess up Litho's bookkeeping of added views and cause weird crashes down the
+   * line.
+   */
+  @Deprecated
+  @Override
+  public void removeViewAt(int index) {
+    throw new UnsupportedOperationException(
+        "Removing Views manually within LithoViews is not supported");
+  }
+
+  /**
+   * Litho handles adding/removing views automatically using mount/unmount calls. Manually adding/
+   * removing views will mess up Litho's bookkeeping of added views and cause weird crashes down the
+   * line.
+   */
+  @Deprecated
+  @Override
+  public void removeViews(int start, int count) {
+    throw new UnsupportedOperationException(
+        "Removing Views manually within LithoViews is not supported");
+  }
+
+  /**
+   * Litho handles adding/removing views automatically using mount/unmount calls. Manually adding/
+   * removing views will mess up Litho's bookkeeping of added views and cause weird crashes down the
+   * line.
+   */
+  @Deprecated
+  @Override
+  public void removeAllViewsInLayout() {
+    throw new UnsupportedOperationException(
+        "Removing Views manually within LithoViews is not supported");
+  }
+
+  /**
+   * Litho handles adding/removing views automatically using mount/unmount calls. Manually adding/
+   * removing views will mess up Litho's bookkeeping of added views and cause weird crashes down the
+   * line.
+   */
+  @Deprecated
+  @Override
+  protected void removeDetachedView(View child, boolean animate) {
+    throw new UnsupportedOperationException(
+        "Removing Views manually within LithoViews is not supported");
+  }
+
+  /**
+   * Manually adds a View as a child of this ComponentHost for the purposes of testing. **This
+   * should only be used for tests as this is not safe and will likely cause weird crashes if used
+   * in a production environment**.
+   */
+  @VisibleForTesting
+  public void addViewForTest(View view) {
+    final LayoutParams params =
+        view.getLayoutParams() == null ? generateDefaultLayoutParams() : view.getLayoutParams();
+    super.addView(view, -1, params);
   }
 
   private void updateChildDrawingOrderIfNeeded() {

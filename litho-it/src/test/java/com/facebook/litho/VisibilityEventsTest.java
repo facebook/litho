@@ -16,6 +16,7 @@ import static com.facebook.litho.testing.TestViewComponent.create;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.graphics.Rect;
+import android.widget.FrameLayout;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
@@ -33,14 +34,14 @@ public class VisibilityEventsTest {
 
   private ComponentContext mContext;
   private LithoView mLithoView;
-  private ComponentHost mParent;
+  private FrameLayout mParent;
 
   @Before
   public void setup() {
     mContext = new ComponentContext(RuntimeEnvironment.application);
 
     mLithoView = new LithoView(mContext);
-    mParent = new ComponentHost(mContext);
+    mParent = new FrameLayout(mContext);
     mParent.setLeft(0);
     mParent.setTop(0);
     mParent.setRight(10);

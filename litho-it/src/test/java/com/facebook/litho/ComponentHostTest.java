@@ -863,8 +863,8 @@ public class ComponentHostTest {
     }
 
     @Override
-    public void addView(View child, int index, LayoutParams params) {
-      super.addView(child, index, params);
+    public void onViewAdded(View child) {
+      super.onViewAdded(child);
 
       trackInvalidation(
           child.getLeft(),
@@ -874,8 +874,8 @@ public class ComponentHostTest {
     }
 
     @Override
-    public void removeView(View child) {
-      super.removeView(child);
+    public void onViewRemoved(View child) {
+      super.onViewRemoved(child);
 
       trackInvalidation(
           child.getLeft(),
