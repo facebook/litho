@@ -296,12 +296,15 @@ public final class MatcherGenerator {
         .build();
   }
 
-  private static String getPropMatcherName(final PropModel prop) {
+  static String getPropMatcherName(final PropModel prop) {
     final String name = prop.getName();
 
-    final char fst = Character.toUpperCase(name.charAt(0));
+    final int fst = Character.toUpperCase(name.codePointAt(0));
 
-    return "m" + fst + name.substring(1) + "Matcher";
+    return "m"
+        + String.copyValueOf(Character.toChars(fst))
+        + name.substring(name.offsetByCodePoints(0, 1))
+        + "Matcher";
   }
 
   private static MethodSpec varArgBuilder(

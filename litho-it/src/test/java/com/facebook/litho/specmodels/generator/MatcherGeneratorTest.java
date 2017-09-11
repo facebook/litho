@@ -105,4 +105,24 @@ public class MatcherGeneratorTest {
                 "prop2Dip",
                 "build"));
   }
+
+  @Test
+  public void testPropMatcherNameGenerator() {
+    assertThat(MatcherGenerator.getPropMatcherName(makePropModel("myProp")))
+        .isEqualTo("mMyPropMatcher");
+    assertThat(MatcherGenerator.getPropMatcherName(makePropModel("\u2020Prop")))
+        .isEqualTo("m\u2020PropMatcher");
+    // Small letter o with stroke to capital O with stroke.
+    assertThat(MatcherGenerator.getPropMatcherName(makePropModel("\u00F8de")))
+        .isEqualTo("m\u00D8deMatcher");
+    // Phabricator doesn't want poo in the source. :(
+    assertThat(MatcherGenerator.getPropMatcherName(makePropModel("\uD83D\uDCA9")))
+        .isEqualTo("m\uD83D\uDCA9Matcher");
+  }
+
+  public static PropModel makePropModel(String name) {
+    final MockMethodParamModel paramModel = MockMethodParamModel.newBuilder().name(name).build();
+    return new PropModel(paramModel, false, ResType.INT, "");
+  }
+
 }
