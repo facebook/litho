@@ -9,6 +9,7 @@
 
 package com.facebook.litho.specmodels.model;
 
+import static com.facebook.litho.specmodels.model.DelegateMethodDescriptions.LAYOUT_SPEC_DELEGATE_METHODS_MAP;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -27,7 +28,9 @@ import com.facebook.litho.testing.specmodels.TestMethodParamModel;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.lang.model.element.Modifier;
 import org.junit.Before;
 import org.junit.Test;
@@ -233,9 +236,9 @@ public class DelegateMethodValidationTest {
         DelegateMethodValidation.validateLayoutSpecModel(mLayoutSpecModel);
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mMethodParamObject2);
-    assertThat(validationErrors.get(0).message).isEqualTo(
-        "Not a valid parameter, should be one of the following: @Prop T somePropName. " +
-            "@TreeProp T someTreePropName. @State T someStateName. ");
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "Not a valid parameter, should be one of the following: @Prop T somePropName. @TreeProp T someTreePropName. @State T someStateName. ");
   }
 
   @Test
@@ -510,5 +513,54 @@ public class DelegateMethodValidationTest {
         "To use interface com.facebook.litho.annotations.FromPrepare on param interStageInput " +
             "your method annotated with interface com.facebook.litho.annotations.OnPrepare must " +
             "have a param Output<java.lang.Integer> interStageInput");
+  }
+
+  @Test
+  public void testDelegateMethodWithOptionalParameters() throws Exception {
+    Map<Class<? extends Annotation>, DelegateMethodDescription> map = new HashMap<>();
+    map.put(
+        OnCreateLayout.class,
+        DelegateMethodDescription.fromDelegateMethodDescription(
+                LAYOUT_SPEC_DELEGATE_METHODS_MAP.get(OnCreateLayout.class))
+            .optionalParameters(
+                ImmutableList.<MethodParamModel>of(
+                    MethodParamModelFactory.createSimpleMethodParamModel(
+                        TypeName.INT.box(), "matched", new Object()),
+                    MethodParamModelFactory.createSimpleMethodParamModel(
+                        TypeName.CHAR, "unmatched", new Object())))
+            .build());
+
+    when(mLayoutSpecModel.getDelegateMethods())
+        .thenReturn(
+            ImmutableList.of(
+                new DelegateMethodModel(
+                    ImmutableList.<Annotation>of(
+                        new Annotation() {
+                          @Override
+                          public Class<? extends Annotation> annotationType() {
+                            return OnCreateLayout.class;
+                          }
+                        }),
+                    ImmutableList.of(Modifier.STATIC),
+                    "name",
+                    ClassNames.COMPONENT_LAYOUT,
+                    ImmutableList.of(
+                        TestMethodParamModel.newBuilder()
+                            .type(ClassNames.COMPONENT_CONTEXT)
+                            .representedObject(mMethodParamObject1)
+                            .build(),
+                        MethodParamModelFactory.createSimpleMethodParamModel(
+                            TypeName.INT.box(), "matched", mMethodParamObject2),
+                        MethodParamModelFactory.createSimpleMethodParamModel(
+                            TypeName.OBJECT, "unmatched", mMethodParamObject3)),
+                    mDelegateMethodObject1)));
+
+    List<SpecModelValidationError> validationErrors =
+        DelegateMethodValidation.validateMethods(mLayoutSpecModel, map);
+    assertThat(validationErrors).hasSize(1);
+    assertThat(validationErrors.get(0).element).isEqualTo(mMethodParamObject3);
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "Not a valid parameter, should be one of the following: @Prop T somePropName. @TreeProp T someTreePropName. @State T someStateName. Or one of the following, where no annotations should be added to the parameter: java.lang.Integer matched. char unmatched. ");
   }
 }

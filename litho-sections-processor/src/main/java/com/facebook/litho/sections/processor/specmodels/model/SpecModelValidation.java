@@ -11,6 +11,7 @@ package com.facebook.litho.sections.processor.specmodels.model;
 
 import static com.facebook.litho.specmodels.model.SpecModelValidation.validateSpecModel;
 
+import com.facebook.litho.specmodels.model.DelegateMethodValidation;
 import com.facebook.litho.specmodels.model.SpecModelValidationError;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,15 +26,19 @@ public class SpecModelValidation {
       GroupSectionSpecModel specModel) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
     validationErrors.addAll(validateSpecModel(specModel, SECTIONS_RESERVED_PROP_NAMES));
+    validationErrors.addAll(
+        DelegateMethodValidation.validateMethods(
+            specModel, DelegateMethodDescriptions.getGroupSectionSpecDelegatesMap(specModel)));
     return validationErrors;
   }
 
   public static List<SpecModelValidationError> validateDiffSectionSpecModel(
       DiffSectionSpecModel specModel) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
-    if (validationErrors.isEmpty()) {
-      validationErrors.addAll(validateSpecModel(specModel, SECTIONS_RESERVED_PROP_NAMES));
-    }
+    validationErrors.addAll(validateSpecModel(specModel, SECTIONS_RESERVED_PROP_NAMES));
+    validationErrors.addAll(
+        DelegateMethodValidation.validateMethods(
+            specModel, DelegateMethodDescriptions.getDiffSectionSpecDelegatesMap(specModel)));
     return validationErrors;
   }
 }

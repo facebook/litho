@@ -100,7 +100,7 @@ public class DelegateMethodValidation {
     return validationErrors;
   }
 
-  static List<SpecModelValidationError> validateMethods(
+  public static List<SpecModelValidationError> validateMethods(
       SpecModel specModel,
       Map<Class<? extends Annotation>, DelegateMethodDescription> delegateMethodDescriptions) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
@@ -116,6 +116,7 @@ public class DelegateMethodValidation {
 
       final DelegateMethodModel delegateMethod =
           SpecModelUtils.getMethodModelWithAnnotation(specModel, delegateMethodAnnotation);
+
       if (delegateMethod == null) {
         continue;
       }
@@ -130,6 +131,13 @@ public class DelegateMethodValidation {
           i < size;
           i++) {
         final MethodParamModel delegateMethodParam = delegateMethod.methodParams.get(i);
+        if (isOptionalParameter(delegateMethodParam, delegateMethodDescription.optionalParameters)
+            && i
+                < definedParameterTypes.size()
+                    + delegateMethodDescription.optionalParameters.size()) {
+          continue;
+        }
+
         if (delegateMethodParam instanceof InterStageInputParamModel) {
           final Annotation annotation =
               getInterStageInputAnnotation(
@@ -189,9 +197,7 @@ public class DelegateMethodValidation {
           validationErrors.add(
               new SpecModelValidationError(
                   delegateMethodParam.getRepresentedObject(),
-                  "Not a valid parameter, should be one of the following: "
-                      + getStringRepresentationOfParamTypes(
-                          delegateMethodDescription.optionalParameterTypes)));
+                  getOptionalParamsError(delegateMethodDescription)));
         }
       }
     }
@@ -259,6 +265,23 @@ public class DelegateMethodValidation {
     }
 
     return validationErrors;
+  }
+
+  /**
+   * We consider an optional parameter as something that comes immediately after defined parameters
+   * and is not a special litho parameter (like a prop, state, etc...).
+   */
+  private static boolean isOptionalParameter(
+      MethodParamModel methodParamModel, ImmutableList<MethodParamModel> extraOptionalParameters) {
+    for (MethodParamModel extraOptionalParameter : extraOptionalParameters) {
+      if (methodParamModel instanceof SimpleMethodParamModel
+          && methodParamModel.getType().equals(extraOptionalParameter.getType())
+          && methodParamModel.getAnnotations().isEmpty()) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   @Nullable
@@ -336,12 +359,46 @@ public class DelegateMethodValidation {
     return false;
   }
 
+  private static String getOptionalParamsError(
+      DelegateMethodDescription delegateMethodDescription) {
+    StringBuilder stringBuilder = new StringBuilder();
+    stringBuilder
+        .append("Not a valid parameter, should be one of the following: ")
+        .append(
+            getStringRepresentationOfParamTypes(delegateMethodDescription.optionalParameterTypes));
+
+    if (!delegateMethodDescription.optionalParameters.isEmpty()) {
+      stringBuilder
+          .append(
+              "Or one of the following, where no annotations should be added to the parameter: ")
+          .append(
+              getStringRepresentationOfOptionalParams(
+                  delegateMethodDescription.optionalParameters));
+    }
+
+    return stringBuilder.toString();
+  }
+
   private static String getStringRepresentationOfParamTypes(
       ImmutableList<OptionalParameterType> optionalParameterTypes) {
     final StringBuilder stringBuilder = new StringBuilder();
     for (OptionalParameterType parameterType : optionalParameterTypes) {
       stringBuilder
           .append(getStringRepresentationOfParamType(parameterType))
+          .append(". ");
+    }
+
+    return stringBuilder.toString();
+  }
+
+  private static String getStringRepresentationOfOptionalParams(
+      ImmutableList<MethodParamModel> optionalParameters) {
+    final StringBuilder stringBuilder = new StringBuilder();
+    for (MethodParamModel optionalParameter : optionalParameters) {
+      stringBuilder
+          .append(optionalParameter.getType())
+          .append(" ")
+          .append(optionalParameter.getName())
           .append(". ");
     }
 
