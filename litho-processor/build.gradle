@@ -16,9 +16,12 @@ sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 dependencies {
+    // We *generate* code based on these annotations, so we cannot just depend on them
+    // as compileOnly.
     implementation project(':litho-annotations')
+    implementation deps.jsr305
+
     compileOnly files(((URLClassLoader) ToolProvider.getSystemToolClassLoader()).getURLs())
-    compileOnly deps.jsr305
 
     // Processor
     implementation deps.javapoet

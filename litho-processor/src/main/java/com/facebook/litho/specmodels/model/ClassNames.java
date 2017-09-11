@@ -45,10 +45,13 @@ public interface ClassNames {
 
   ClassName LAYOUT_SPEC = ClassName.bestGuess("com.facebook.litho.annotations.LayoutSpec");
   ClassName MOUNT_SPEC = ClassName.bestGuess("com.facebook.litho.annotations.MountSpec");
+  ClassName TEST_SPEC = ClassName.bestGuess("com.facebook.litho.annotations.TestSpec");
 
   ClassName OUTPUT = ClassName.bestGuess("com.facebook.litho.Output");
   ClassName DIFF = ClassName.bestGuess("com.facebook.litho.Diff");
   ClassName SIZE = ClassName.bestGuess("com.facebook.litho.Size");
+
+  ClassName RESOURCE_RESOLVER = ClassName.bestGuess("com.facebook.litho.ResourceResolver");
 
   ClassName TRANSITION = ClassName.bestGuess("com.facebook.litho.Transition");
 
@@ -100,4 +103,8 @@ public interface ClassNames {
   ClassName EVENT_TRIGGER_TARGET = ClassName.bestGuess("com.facebook.litho.EventTriggerTarget");
   ClassName HAS_EVENT_TRIGGER_CLASSNAME = ClassName.bestGuess("com.facebook.litho.HasEventTrigger");
   ClassName EVENT_TRIGGER = ClassName.bestGuess("com.facebook.litho.EventTrigger");
+  ClassName COMPONENT_MATCHER =
+      ClassName.bestGuess("com.facebook.litho.testing.assertj.ComponentMatcher");
+  ClassName INSPECTABLE_COMPONENT =
+      ClassName.bestGuess("com.facebook.litho.testing.InspectableComponent");
 }

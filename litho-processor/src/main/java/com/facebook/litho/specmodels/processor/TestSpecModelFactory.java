@@ -11,11 +11,11 @@ package com.facebook.litho.specmodels.processor;
 
 import com.facebook.litho.annotations.TestSpec;
 import com.facebook.litho.specmodels.model.ClassNames;
+import com.facebook.litho.specmodels.model.DefaultTestSpecGenerator;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.TestSpecGenerator;
 import com.facebook.litho.specmodels.model.TestSpecModel;
-import com.squareup.javapoet.TypeSpec;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -30,7 +30,7 @@ class TestSpecModelFactory implements SpecModelFactory {
   private final TestSpecGenerator mTestSpecGenerator;
 
   public TestSpecModelFactory() {
-    this(new PlaceholderTestSpecGenerator());
+    this(new DefaultTestSpecGenerator());
   }
 
   public TestSpecModelFactory(TestSpecGenerator testSpecGenerator) {
@@ -102,19 +102,5 @@ class TestSpecModelFactory implements SpecModelFactory {
       }
     }
     return null;
-  }
-
-  /**
-   * This is a placeholder generator that is used to generate an empty class in lieu of a real code
-   * generator.
-   *
-   * <p>This will be replaced in a future diff.
-   */
-  @Deprecated
-  private static class PlaceholderTestSpecGenerator implements TestSpecGenerator {
-    @Override
-    public TypeSpec generate(SpecModel testSpecModel) {
-      return TypeSpec.classBuilder(testSpecModel.getComponentName()).build();
-    }
   }
 }
