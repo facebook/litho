@@ -22,6 +22,7 @@ COMPONENTS_WIDGET_ACCESSIBILITIES_TARGET   = make_dep_path('litho-widget/src/mai
 COMPONENTS_WIDGET_TARGET                   = make_dep_path('litho-widget/src/main/java/com/facebook/litho/widget:widget')
 COMPONENTS_COMPONENTS_FRESCO_TARGET        = make_dep_path('litho-fresco/src/main/java/com/facebook/litho/fresco:fresco')
 COMPONENTS_TESTING_TARGET                  = make_dep_path('litho-testing/src/main/java/com/facebook/litho/testing:testing')
+COMPONENTS_TESTING_ASSERTJ_TARGET          = make_dep_path('litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj')
 COMPONENTS_TEST_RES                        = make_dep_path('litho-it/src/main:res')
 COMPONENTS_SECTIONS_TARGET                 = make_dep_path('litho-sections-core/src/main/java/com/facebook/litho/sections:sections')
 COMPONENTS_SECTIONS_ANNOTATIONS_TARGET     = make_dep_path('litho-sections-annotations/src/main/java/com/facebook/litho/sections/annotations:annotations')

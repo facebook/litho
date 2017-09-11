@@ -25,7 +25,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 
-class TestSpecModelFactory implements SpecModelFactory {
+public class TestSpecModelFactory implements SpecModelFactory {
 
   private final TestSpecGenerator mTestSpecGenerator;
 

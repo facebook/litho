@@ -206,7 +206,7 @@ public final class MatcherGenerator {
         }
         break;
       case DRAWABLE_REFERENCE:
-        // TODO!
+        // TODO(T15854501): Implement drawable reference comparison for this and other generators.
         break;
     }
 
@@ -566,7 +566,7 @@ public final class MatcherGenerator {
 
     final CodeBlock codeBlock =
         CodeBlock.builder()
-            .add("// TODO: This needs to be assigned to a matcher.\n")
+            .add("// TODO(T15854501): This needs to be assigned to a matcher.\n")
             .add("$L value = ", prop.getType())
             .addStatement(statement, formatObjects)
             .build();
@@ -603,7 +603,7 @@ public final class MatcherGenerator {
 
     final CodeBlock placeHolderCodeBlock =
         CodeBlock.builder()
-            .add("// XXX: Actual matching is not implemented yet.\n")
+            .add("// TODO(T15854501): Implement matching.\n")
             .addStatement("return false")
             .build();
 

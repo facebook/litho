@@ -9,22 +9,20 @@
 
 package com.facebook.litho.processor.integration;
 
-import javax.tools.JavaFileObject;
-import javax.tools.StandardLocation;
-
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
-
 import com.facebook.litho.specmodels.processor.ComponentsProcessor;
-
+import com.facebook.litho.specmodels.processor.ComponentsTestingProcessor;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Resources;
 import com.google.common.truth.Truth;
 import com.google.testing.compile.JavaFileObjects;
 import com.google.testing.compile.JavaSourceSubjectFactory;
 import com.google.testing.compile.JavaSourcesSubjectFactory;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import javax.tools.JavaFileObject;
+import javax.tools.StandardLocation;
 import org.junit.Test;
 
 public class ProcessorIntegrationTest {
@@ -248,6 +246,69 @@ public class ProcessorIntegrationTest {
             StandardLocation.CLASS_OUTPUT,
             RES_PACKAGE,
             "TestMountSpec.class")
+        .and()
+        .generatesSources(expectedOutput);
+  }
+
+  @Test
+  public void compilesSimpleTestSampleSpec() {
+    final JavaFileObject testSpecObject =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "SimpleTestSampleSpec.java"));
+    final JavaFileObject layoutSpecObject =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "SimpleLayoutSpec.java"));
+
+    final JavaFileObject expectedOutput =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "SimpleTestSample.java"));
+
+    Truth.assertAbout(JavaSourcesSubjectFactory.javaSources())
+        .that(ImmutableList.of(testSpecObject, layoutSpecObject))
+        .processedWith(new ComponentsTestingProcessor())
+        .compilesWithoutError()
+        .and()
+        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleTestSample.class")
+        .and()
+        .generatesFileNamed(
+            StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleTestSample$Matcher.class")
+        .and()
+        .generatesFileNamed(
+            StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleTestSample$Matcher$1.class")
+        .and()
+        .generatesFileNamed(
+            StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleTestSampleSpec.class")
+        .and()
+        .generatesSources(expectedOutput);
+  }
+
+  @Test
+  public void compilesBasicTestSampleSpec() {
+    final JavaFileObject testSpecObject =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "BasicTestSampleSpec.java"));
+    final JavaFileObject layoutSpecObject =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "BasicLayoutSpec.java"));
+
+    final JavaFileObject expectedOutput =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "BasicTestSample.java"));
+
+    Truth.assertAbout(JavaSourcesSubjectFactory.javaSources())
+        .that(ImmutableList.of(testSpecObject, layoutSpecObject))
+        .processedWith(new ComponentsTestingProcessor())
+        .compilesWithoutError()
+        .and()
+        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "BasicTestSample.class")
+        .and()
+        .generatesFileNamed(
+            StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "BasicTestSample$Matcher.class")
+        .and()
+        .generatesFileNamed(
+            StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "BasicTestSample$Matcher$1.class")
+        .and()
+        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "BasicTestSampleSpec.class")
         .and()
         .generatesSources(expectedOutput);
   }

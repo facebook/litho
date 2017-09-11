@@ -8,3 +8,4 @@
 #
 
 com.facebook.litho.specmodels.processor.ComponentsProcessor
+com.facebook.litho.specmodels.processor.ComponentsTestingProcessor
