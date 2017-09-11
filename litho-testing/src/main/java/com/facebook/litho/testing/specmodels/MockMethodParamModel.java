@@ -14,8 +14,10 @@ import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.concurrent.Immutable;
+import org.assertj.core.util.Lists;
 
 /** A simple implementation of {@link MockMethodParamModel} for use in tests. */
 @Immutable
@@ -72,7 +74,7 @@ public class MockMethodParamModel implements MethodParamModel {
 
     private TypeName mType;
     private String mName;
-    private List<Annotation> mAnnotations = ImmutableList.of();
+    private List<Class<? extends Annotation>> mAnnotations = ImmutableList.of();
     private List<AnnotationSpec> mExternalAnnotations = ImmutableList.of();
     private Object mRepresentedObject;
 
@@ -86,8 +88,18 @@ public class MockMethodParamModel implements MethodParamModel {
       return this;
     }
 
-    public Builder annotations(List<Annotation> annotations) {
+    public Builder annotations(List<Class<? extends Annotation>> annotations) {
       mAnnotations = annotations;
+      return this;
+    }
+
+    public Builder annotations(Class<? extends Annotation>... annotations) {
+      mAnnotations = Lists.newArrayList(annotations);
+      return this;
+    }
+
+    public Builder externalAnnotations(AnnotationSpec... externalAnnotations) {
+      mExternalAnnotations = Lists.newArrayList(externalAnnotations);
       return this;
     }
 
@@ -102,8 +114,18 @@ public class MockMethodParamModel implements MethodParamModel {
     }
 
     public MockMethodParamModel build() {
+      final List<Annotation> annotations = new ArrayList<>(mAnnotations.size());
+      for (final Class<? extends Annotation> annotation : mAnnotations) {
+        annotations.add(
+            new Annotation() {
+              @Override
+              public Class<? extends Annotation> annotationType() {
+                return annotation;
+              }
+            });
+      }
       return new MockMethodParamModel(
-          mType, mName, mAnnotations, mExternalAnnotations, mRepresentedObject);
+          mType, mName, annotations, mExternalAnnotations, mRepresentedObject);
     }
   }
 }

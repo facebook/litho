@@ -11,7 +11,7 @@ package com.facebook.litho.specmodels.model;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-import com.facebook.litho.testing.specmodels.TestMethodParamModel;
+import com.facebook.litho.testing.specmodels.MockMethodParamModel;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
@@ -27,7 +27,7 @@ public class MethodParamModelUtilsTest {
   @Test
   public void testIsAnnotatedWith() {
     MethodParamModel methodParam =
-        TestMethodParamModel.newBuilder().annotation(Override.class).build();
+        MockMethodParamModel.newBuilder().annotations(Override.class).build();
     assertThat(MethodParamModelUtils.isAnnotatedWith(methodParam, Override.class)).isTrue();
     assertThat(
         MethodParamModelUtils.isAnnotatedWith(methodParam, SuppressWarnings.class)).isFalse();
@@ -36,7 +36,7 @@ public class MethodParamModelUtilsTest {
   @Test
   public void testGetAnnotation() {
     MethodParamModel methodParam =
-        TestMethodParamModel.newBuilder().annotation(Override.class).build();
+        MockMethodParamModel.newBuilder().annotations(Override.class).build();
     Annotation overrideAnnotation = methodParam.getAnnotations().get(0);
     assertThat(MethodParamModelUtils.getAnnotation(methodParam, Override.class))
         .isEqualTo(overrideAnnotation);

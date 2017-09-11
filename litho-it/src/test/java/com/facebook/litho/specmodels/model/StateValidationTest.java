@@ -15,7 +15,7 @@ import static org.mockito.Mockito.when;
 
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.specmodels.internal.ImmutableList;
-import com.facebook.litho.testing.specmodels.TestMethodParamModel;
+import com.facebook.litho.testing.specmodels.MockMethodParamModel;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
@@ -89,15 +89,15 @@ public class StateValidationTest {
   @Test
   public void testOnUpdateStateParamSameNameAsPropAndState() {
     MethodParamModel methodParamModel1 =
-        TestMethodParamModel.newBuilder()
+        MockMethodParamModel.newBuilder()
             .name("propName")
-            .annotation(Param.class)
+            .annotations(ImmutableList.of(Param.class))
             .representedObject(mRepresentedObject1)
             .build();
     MethodParamModel methodParamModel2 =
-        TestMethodParamModel.newBuilder()
+        MockMethodParamModel.newBuilder()
             .name("stateName")
-            .annotation(Param.class)
+            .annotations(ImmutableList.of(Param.class))
             .representedObject(mRepresentedObject2)
             .build();
 
@@ -129,33 +129,33 @@ public class StateValidationTest {
   @Test
   public void testOnUpdateStateStateParamsNotValid() {
     MethodParamModel methodParamModel1 =
-        TestMethodParamModel.newBuilder()
+        MockMethodParamModel.newBuilder()
             .type(TypeName.INT)
             .name("name1")
             .representedObject(mRepresentedObject1)
             .build();
     MethodParamModel methodParamModel2 =
-        TestMethodParamModel.newBuilder()
-            .type(ParameterizedTypeName.get(
-                ClassName.bestGuess("com.facebook.litho.Output"),
-                TypeVariableName.get("T")))
+        MockMethodParamModel.newBuilder()
+            .type(
+                ParameterizedTypeName.get(
+                    ClassName.bestGuess("com.facebook.litho.Output"), TypeVariableName.get("T")))
             .name("name2")
             .representedObject(mRepresentedObject2)
             .build();
     MethodParamModel methodParamModel3 =
-        TestMethodParamModel.newBuilder()
-            .type(ParameterizedTypeName.get(
-                ClassNames.STATE_VALUE,
-                TypeVariableName.get("S"),
-                TypeVariableName.get("T")))
+        MockMethodParamModel.newBuilder()
+            .type(
+                ParameterizedTypeName.get(
+                    ClassNames.STATE_VALUE, TypeVariableName.get("S"), TypeVariableName.get("T")))
             .name("name3")
             .representedObject(mRepresentedObject3)
             .build();
     MethodParamModel methodParamModel4 =
-        TestMethodParamModel.newBuilder()
-            .type(ParameterizedTypeName.get(
-                ClassNames.STATE_VALUE,
-                WildcardTypeName.subtypeOf(ClassName.bestGuess("java.lang.Object"))))
+        MockMethodParamModel.newBuilder()
+            .type(
+                ParameterizedTypeName.get(
+                    ClassNames.STATE_VALUE,
+                    WildcardTypeName.subtypeOf(ClassName.bestGuess("java.lang.Object"))))
             .name("name4")
             .representedObject(mRepresentedObject4)
             .build();
@@ -197,10 +197,10 @@ public class StateValidationTest {
   @Test
   public void testOnUpdateStateStateParamsNotDefinedElsewhere() {
     MethodParamModel methodParamModel4 =
-        TestMethodParamModel.newBuilder()
-            .type(ParameterizedTypeName.get(
-                ClassNames.STATE_VALUE,
-                ClassName.bestGuess("java.lang.Object")))
+        MockMethodParamModel.newBuilder()
+            .type(
+                ParameterizedTypeName.get(
+                    ClassNames.STATE_VALUE, ClassName.bestGuess("java.lang.Object")))
             .name("name")
             .representedObject(mRepresentedObject1)
             .build();

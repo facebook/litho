@@ -24,7 +24,7 @@ import com.facebook.litho.annotations.OnMount;
 import com.facebook.litho.annotations.OnPrepare;
 import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.specmodels.internal.ImmutableList;
-import com.facebook.litho.testing.specmodels.TestMethodParamModel;
+import com.facebook.litho.testing.specmodels.MockMethodParamModel;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
@@ -56,23 +56,25 @@ public class DelegateMethodValidationTest {
     when(mLayoutSpecModel.getRepresentedObject()).thenReturn(mModelRepresentedObject);
     when(mMountSpecModel.getRepresentedObject()).thenReturn(mMountSpecObject);
 
-    mOnCreateMountContent = new DelegateMethodModel(
-        ImmutableList.<Annotation>of(new Annotation() {
-          @Override
-          public Class<? extends Annotation> annotationType() {
-            return OnCreateMountContent.class;
-          }
-        }),
-        ImmutableList.of(Modifier.STATIC),
-        "onCreateMountContent",
-        ClassName.bestGuess("java.lang.MadeUpClass"),
-        ImmutableList.<MethodParamModel>of(
-            TestMethodParamModel.newBuilder()
-                .name("c")
-                .type(ClassNames.COMPONENT_CONTEXT)
-                .representedObject(new Object())
-                .build()),
-        mOnCreateMountContentObject);
+    mOnCreateMountContent =
+        new DelegateMethodModel(
+            ImmutableList.<Annotation>of(
+                new Annotation() {
+                  @Override
+                  public Class<? extends Annotation> annotationType() {
+                    return OnCreateMountContent.class;
+                  }
+                }),
+            ImmutableList.of(Modifier.STATIC),
+            "onCreateMountContent",
+            ClassName.bestGuess("java.lang.MadeUpClass"),
+            ImmutableList.<MethodParamModel>of(
+                MockMethodParamModel.newBuilder()
+                    .name("c")
+                    .type(ClassNames.COMPONENT_CONTEXT)
+                    .representedObject(new Object())
+                    .build()),
+            mOnCreateMountContentObject);
   }
 
   @Test
@@ -91,52 +93,55 @@ public class DelegateMethodValidationTest {
 
   @Test
   public void testOnCreateLayoutAndOnCreateLayoutWithSizeSpec() {
-    when(mLayoutSpecModel.getDelegateMethods()).thenReturn(
-        ImmutableList.of(
-            new DelegateMethodModel(
-                ImmutableList.<Annotation>of(new Annotation() {
-                  @Override
-                  public Class<? extends Annotation> annotationType() {
-                    return OnCreateLayout.class;
-                  }
-                }),
-                ImmutableList.of(Modifier.STATIC),
-                "name",
-                ClassNames.COMPONENT_LAYOUT,
-                ImmutableList.<MethodParamModel>of(
-                    TestMethodParamModel.newBuilder()
-                        .name("c")
-                        .type(ClassNames.COMPONENT_CONTEXT)
-                        .representedObject(new Object())
-                        .build()),
-                new Object()),
-            new DelegateMethodModel(
-                ImmutableList.<Annotation>of(new Annotation() {
-                  @Override
-                  public Class<? extends Annotation> annotationType() {
-                    return OnCreateLayoutWithSizeSpec.class;
-                  }
-                }),
-                ImmutableList.of(Modifier.STATIC),
-                "name",
-                ClassNames.COMPONENT_LAYOUT,
-                ImmutableList.<MethodParamModel>of(
-                    TestMethodParamModel.newBuilder()
-                        .name("c")
-                        .type(ClassNames.COMPONENT_CONTEXT)
-                        .representedObject(new Object())
-                        .build(),
-                    TestMethodParamModel.newBuilder()
-                        .name("widthSpec")
-                        .type(TypeName.INT)
-                        .representedObject(new Object())
-                        .build(),
-                    TestMethodParamModel.newBuilder()
-                        .name("heightSpec")
-                        .type(TypeName.INT)
-                        .representedObject(new Object())
-                        .build()),
-                new Object())));
+    when(mLayoutSpecModel.getDelegateMethods())
+        .thenReturn(
+            ImmutableList.of(
+                new DelegateMethodModel(
+                    ImmutableList.<Annotation>of(
+                        new Annotation() {
+                          @Override
+                          public Class<? extends Annotation> annotationType() {
+                            return OnCreateLayout.class;
+                          }
+                        }),
+                    ImmutableList.of(Modifier.STATIC),
+                    "name",
+                    ClassNames.COMPONENT_LAYOUT,
+                    ImmutableList.<MethodParamModel>of(
+                        MockMethodParamModel.newBuilder()
+                            .name("c")
+                            .type(ClassNames.COMPONENT_CONTEXT)
+                            .representedObject(new Object())
+                            .build()),
+                    new Object()),
+                new DelegateMethodModel(
+                    ImmutableList.<Annotation>of(
+                        new Annotation() {
+                          @Override
+                          public Class<? extends Annotation> annotationType() {
+                            return OnCreateLayoutWithSizeSpec.class;
+                          }
+                        }),
+                    ImmutableList.of(Modifier.STATIC),
+                    "name",
+                    ClassNames.COMPONENT_LAYOUT,
+                    ImmutableList.<MethodParamModel>of(
+                        MockMethodParamModel.newBuilder()
+                            .name("c")
+                            .type(ClassNames.COMPONENT_CONTEXT)
+                            .representedObject(new Object())
+                            .build(),
+                        MockMethodParamModel.newBuilder()
+                            .name("widthSpec")
+                            .type(TypeName.INT)
+                            .representedObject(new Object())
+                            .build(),
+                        MockMethodParamModel.newBuilder()
+                            .name("heightSpec")
+                            .type(TypeName.INT)
+                            .representedObject(new Object())
+                            .build()),
+                    new Object())));
 
     List<SpecModelValidationError> validationErrors =
         DelegateMethodValidation.validateLayoutSpecModel(mLayoutSpecModel);
@@ -178,24 +183,26 @@ public class DelegateMethodValidationTest {
 
   @Test
   public void testDelegateMethodDoesNotDefinedParamsOfCorrectType() {
-    when(mLayoutSpecModel.getDelegateMethods()).thenReturn(
-        ImmutableList.<DelegateMethodModel>of(
-            new DelegateMethodModel(
-                ImmutableList.<Annotation>of(new Annotation() {
-                  @Override
-                  public Class<? extends Annotation> annotationType() {
-                    return OnCreateLayout.class;
-                  }
-                }),
-                ImmutableList.of(Modifier.STATIC),
-                "name",
-                ClassNames.COMPONENT_LAYOUT,
-                ImmutableList.<MethodParamModel>of(
-                    TestMethodParamModel.newBuilder()
-                        .type(TypeName.BOOLEAN)
-                        .representedObject(mMethodParamObject1)
-                        .build()),
-                mDelegateMethodObject1)));
+    when(mLayoutSpecModel.getDelegateMethods())
+        .thenReturn(
+            ImmutableList.<DelegateMethodModel>of(
+                new DelegateMethodModel(
+                    ImmutableList.<Annotation>of(
+                        new Annotation() {
+                          @Override
+                          public Class<? extends Annotation> annotationType() {
+                            return OnCreateLayout.class;
+                          }
+                        }),
+                    ImmutableList.of(Modifier.STATIC),
+                    "name",
+                    ClassNames.COMPONENT_LAYOUT,
+                    ImmutableList.<MethodParamModel>of(
+                        MockMethodParamModel.newBuilder()
+                            .type(TypeName.BOOLEAN)
+                            .representedObject(mMethodParamObject1)
+                            .build()),
+                    mDelegateMethodObject1)));
 
     List<SpecModelValidationError> validationErrors =
         DelegateMethodValidation.validateLayoutSpecModel(mLayoutSpecModel);
@@ -209,28 +216,30 @@ public class DelegateMethodValidationTest {
 
   @Test
   public void testDelegateMethodHasIncorrectOptionalParams() {
-    when(mLayoutSpecModel.getDelegateMethods()).thenReturn(
-        ImmutableList.<DelegateMethodModel>of(
-            new DelegateMethodModel(
-                ImmutableList.<Annotation>of(new Annotation() {
-                  @Override
-                  public Class<? extends Annotation> annotationType() {
-                    return OnCreateLayout.class;
-                  }
-                }),
-                ImmutableList.of(Modifier.STATIC),
-                "name",
-                ClassNames.COMPONENT_LAYOUT,
-                ImmutableList.<MethodParamModel>of(
-                    TestMethodParamModel.newBuilder()
-                        .type(ClassNames.COMPONENT_CONTEXT)
-                        .representedObject(mMethodParamObject1)
-                        .build(),
-                    TestMethodParamModel.newBuilder()
-                        .type(TypeName.INT)
-                        .representedObject(mMethodParamObject2)
-                        .build()),
-                mDelegateMethodObject1)));
+    when(mLayoutSpecModel.getDelegateMethods())
+        .thenReturn(
+            ImmutableList.<DelegateMethodModel>of(
+                new DelegateMethodModel(
+                    ImmutableList.<Annotation>of(
+                        new Annotation() {
+                          @Override
+                          public Class<? extends Annotation> annotationType() {
+                            return OnCreateLayout.class;
+                          }
+                        }),
+                    ImmutableList.of(Modifier.STATIC),
+                    "name",
+                    ClassNames.COMPONENT_LAYOUT,
+                    ImmutableList.<MethodParamModel>of(
+                        MockMethodParamModel.newBuilder()
+                            .type(ClassNames.COMPONENT_CONTEXT)
+                            .representedObject(mMethodParamObject1)
+                            .build(),
+                        MockMethodParamModel.newBuilder()
+                            .type(TypeName.INT)
+                            .representedObject(mMethodParamObject2)
+                            .build()),
+                    mDelegateMethodObject1)));
 
     List<SpecModelValidationError> validationErrors =
         DelegateMethodValidation.validateLayoutSpecModel(mLayoutSpecModel);
@@ -243,24 +252,26 @@ public class DelegateMethodValidationTest {
 
   @Test
   public void testDelegateMethodIsNotStatic() {
-    when(mLayoutSpecModel.getDelegateMethods()).thenReturn(
-        ImmutableList.of(
-            new DelegateMethodModel(
-                ImmutableList.<Annotation>of(new Annotation() {
-                  @Override
-                  public Class<? extends Annotation> annotationType() {
-                    return OnCreateLayout.class;
-                  }
-                }),
-                ImmutableList.<Modifier>of(),
-                "name",
-                ClassNames.COMPONENT_LAYOUT,
-                ImmutableList.<MethodParamModel>of(
-                    TestMethodParamModel.newBuilder()
-                        .type(ClassNames.COMPONENT_CONTEXT)
-                        .representedObject(mMethodParamObject1)
-                        .build()),
-                mDelegateMethodObject1)));
+    when(mLayoutSpecModel.getDelegateMethods())
+        .thenReturn(
+            ImmutableList.of(
+                new DelegateMethodModel(
+                    ImmutableList.<Annotation>of(
+                        new Annotation() {
+                          @Override
+                          public Class<? extends Annotation> annotationType() {
+                            return OnCreateLayout.class;
+                          }
+                        }),
+                    ImmutableList.<Modifier>of(),
+                    "name",
+                    ClassNames.COMPONENT_LAYOUT,
+                    ImmutableList.<MethodParamModel>of(
+                        MockMethodParamModel.newBuilder()
+                            .type(ClassNames.COMPONENT_CONTEXT)
+                            .representedObject(mMethodParamObject1)
+                            .build()),
+                    mDelegateMethodObject1)));
 
     List<SpecModelValidationError> validationErrors =
         DelegateMethodValidation.validateLayoutSpecModel(mLayoutSpecModel);
@@ -284,49 +295,52 @@ public class DelegateMethodValidationTest {
 
   @Test
   public void testSecondParameter() {
-    when(mMountSpecModel.getDelegateMethods()).thenReturn(
-        ImmutableList.of(
-            mOnCreateMountContent,
-            new DelegateMethodModel(
-                ImmutableList.<Annotation>of(new Annotation() {
-                  @Override
-                  public Class<? extends Annotation> annotationType() {
-                    return OnMount.class;
-                  }
-                }),
-                ImmutableList.of(Modifier.STATIC),
-                "onMount",
-                TypeName.VOID,
-                ImmutableList.<MethodParamModel>of(
-                    TestMethodParamModel.newBuilder()
-                        .type(ClassNames.COMPONENT_CONTEXT)
-                        .representedObject(mMethodParamObject1)
-                        .build(),
-                    TestMethodParamModel.newBuilder()
-                        .type(ClassNames.OBJECT)
-                        .representedObject(mMethodParamObject2)
-                        .build()),
-                mDelegateMethodObject1),
-            new DelegateMethodModel(
-                ImmutableList.<Annotation>of(new Annotation() {
-                  @Override
-                  public Class<? extends Annotation> annotationType() {
-                    return OnBind.class;
-                  }
-                }),
-                ImmutableList.of(Modifier.STATIC),
-                "onBind",
-                TypeName.VOID,
-                ImmutableList.<MethodParamModel>of(
-                    TestMethodParamModel.newBuilder()
-                        .type(ClassNames.COMPONENT_CONTEXT)
-                        .representedObject(mMethodParamObject1)
-                        .build(),
-                    TestMethodParamModel.newBuilder()
-                        .type(ClassNames.OBJECT)
-                        .representedObject(mMethodParamObject2)
-                        .build()),
-                mDelegateMethodObject2)));
+    when(mMountSpecModel.getDelegateMethods())
+        .thenReturn(
+            ImmutableList.of(
+                mOnCreateMountContent,
+                new DelegateMethodModel(
+                    ImmutableList.<Annotation>of(
+                        new Annotation() {
+                          @Override
+                          public Class<? extends Annotation> annotationType() {
+                            return OnMount.class;
+                          }
+                        }),
+                    ImmutableList.of(Modifier.STATIC),
+                    "onMount",
+                    TypeName.VOID,
+                    ImmutableList.<MethodParamModel>of(
+                        MockMethodParamModel.newBuilder()
+                            .type(ClassNames.COMPONENT_CONTEXT)
+                            .representedObject(mMethodParamObject1)
+                            .build(),
+                        MockMethodParamModel.newBuilder()
+                            .type(ClassNames.OBJECT)
+                            .representedObject(mMethodParamObject2)
+                            .build()),
+                    mDelegateMethodObject1),
+                new DelegateMethodModel(
+                    ImmutableList.<Annotation>of(
+                        new Annotation() {
+                          @Override
+                          public Class<? extends Annotation> annotationType() {
+                            return OnBind.class;
+                          }
+                        }),
+                    ImmutableList.of(Modifier.STATIC),
+                    "onBind",
+                    TypeName.VOID,
+                    ImmutableList.<MethodParamModel>of(
+                        MockMethodParamModel.newBuilder()
+                            .type(ClassNames.COMPONENT_CONTEXT)
+                            .representedObject(mMethodParamObject1)
+                            .build(),
+                        MockMethodParamModel.newBuilder()
+                            .type(ClassNames.OBJECT)
+                            .representedObject(mMethodParamObject2)
+                            .build()),
+                    mDelegateMethodObject2)));
 
     List<SpecModelValidationError> validationErrors =
         DelegateMethodValidation.validateMountSpecModel(mMountSpecModel);
@@ -356,30 +370,32 @@ public class DelegateMethodValidationTest {
           }
         }));
     when(interStageInputParamModel.getRepresentedObject()).thenReturn(mMethodParamObject3);
-    when(mMountSpecModel.getDelegateMethods()).thenReturn(
-        ImmutableList.of(
-            mOnCreateMountContent,
-            new DelegateMethodModel(
-                ImmutableList.<Annotation>of(new Annotation() {
-                  @Override
-                  public Class<? extends Annotation> annotationType() {
-                    return OnUnmount.class;
-                  }
-                }),
-                ImmutableList.of(Modifier.STATIC),
-                "onUnmount",
-                TypeName.VOID,
-                ImmutableList.<MethodParamModel>of(
-                    TestMethodParamModel.newBuilder()
-                        .type(ClassNames.COMPONENT_CONTEXT)
-                        .representedObject(mMethodParamObject1)
-                        .build(),
-                    TestMethodParamModel.newBuilder()
-                        .type(ClassName.bestGuess("java.lang.MadeUpClass"))
-                        .representedObject(mMethodParamObject2)
-                        .build(),
-                    interStageInputParamModel),
-                mDelegateMethodObject1)));
+    when(mMountSpecModel.getDelegateMethods())
+        .thenReturn(
+            ImmutableList.of(
+                mOnCreateMountContent,
+                new DelegateMethodModel(
+                    ImmutableList.<Annotation>of(
+                        new Annotation() {
+                          @Override
+                          public Class<? extends Annotation> annotationType() {
+                            return OnUnmount.class;
+                          }
+                        }),
+                    ImmutableList.of(Modifier.STATIC),
+                    "onUnmount",
+                    TypeName.VOID,
+                    ImmutableList.<MethodParamModel>of(
+                        MockMethodParamModel.newBuilder()
+                            .type(ClassNames.COMPONENT_CONTEXT)
+                            .representedObject(mMethodParamObject1)
+                            .build(),
+                        MockMethodParamModel.newBuilder()
+                            .type(ClassName.bestGuess("java.lang.MadeUpClass"))
+                            .representedObject(mMethodParamObject2)
+                            .build(),
+                        interStageInputParamModel),
+                    mDelegateMethodObject1)));
 
     List<SpecModelValidationError> validationErrors =
         DelegateMethodValidation.validateMountSpecModel(mMountSpecModel);
@@ -406,30 +422,32 @@ public class DelegateMethodValidationTest {
     when(interStageInputParamModel.getName()).thenReturn("interStageInput");
     when(interStageInputParamModel.getType()).thenReturn(TypeName.INT);
     when(interStageInputParamModel.getRepresentedObject()).thenReturn(mMethodParamObject3);
-    when(mMountSpecModel.getDelegateMethods()).thenReturn(
-        ImmutableList.of(
-            mOnCreateMountContent,
-            new DelegateMethodModel(
-                ImmutableList.<Annotation>of(new Annotation() {
-                  @Override
-                  public Class<? extends Annotation> annotationType() {
-                    return OnMount.class;
-                  }
-                }),
-                ImmutableList.of(Modifier.STATIC),
-                "onMount",
-                TypeName.VOID,
-                ImmutableList.<MethodParamModel>of(
-                    TestMethodParamModel.newBuilder()
-                        .type(ClassNames.COMPONENT_CONTEXT)
-                        .representedObject(mMethodParamObject1)
-                        .build(),
-                    TestMethodParamModel.newBuilder()
-                        .type(ClassName.bestGuess("java.lang.MadeUpClass"))
-                        .representedObject(mMethodParamObject2)
-                        .build(),
-                    interStageInputParamModel),
-                mDelegateMethodObject1)));
+    when(mMountSpecModel.getDelegateMethods())
+        .thenReturn(
+            ImmutableList.of(
+                mOnCreateMountContent,
+                new DelegateMethodModel(
+                    ImmutableList.<Annotation>of(
+                        new Annotation() {
+                          @Override
+                          public Class<? extends Annotation> annotationType() {
+                            return OnMount.class;
+                          }
+                        }),
+                    ImmutableList.of(Modifier.STATIC),
+                    "onMount",
+                    TypeName.VOID,
+                    ImmutableList.<MethodParamModel>of(
+                        MockMethodParamModel.newBuilder()
+                            .type(ClassNames.COMPONENT_CONTEXT)
+                            .representedObject(mMethodParamObject1)
+                            .build(),
+                        MockMethodParamModel.newBuilder()
+                            .type(ClassName.bestGuess("java.lang.MadeUpClass"))
+                            .representedObject(mMethodParamObject2)
+                            .build(),
+                        interStageInputParamModel),
+                    mDelegateMethodObject1)));
 
     List<SpecModelValidationError> validationErrors =
         DelegateMethodValidation.validateMountSpecModel(mMountSpecModel);
@@ -458,49 +476,52 @@ public class DelegateMethodValidationTest {
     when(interStageInputParamModel.getName()).thenReturn("interStageInput");
     when(interStageInputParamModel.getType()).thenReturn(TypeName.INT);
     when(interStageInputParamModel.getRepresentedObject()).thenReturn(mMethodParamObject3);
-    when(mMountSpecModel.getDelegateMethods()).thenReturn(
-        ImmutableList.of(
-            mOnCreateMountContent,
-            new DelegateMethodModel(
-                ImmutableList.<Annotation>of(new Annotation() {
-                  @Override
-                  public Class<? extends Annotation> annotationType() {
-                    return OnMount.class;
-                  }
-                }),
-                ImmutableList.of(Modifier.STATIC),
-                "onMount",
-                TypeName.VOID,
-                ImmutableList.<MethodParamModel>of(
-                    TestMethodParamModel.newBuilder()
-                        .name("c")
-                        .type(ClassNames.COMPONENT_CONTEXT)
-                        .representedObject(mMethodParamObject1)
-                        .build(),
-                    TestMethodParamModel.newBuilder()
-                        .name("param")
-                        .type(ClassName.bestGuess("java.lang.MadeUpClass"))
-                        .representedObject(mMethodParamObject2)
-                        .build(),
-                    interStageInputParamModel),
-                mDelegateMethodObject1),
-            new DelegateMethodModel(
-                ImmutableList.<Annotation>of(new Annotation() {
-                  @Override
-                  public Class<? extends Annotation> annotationType() {
-                    return OnPrepare.class;
-                  }
-                }),
-                ImmutableList.of(Modifier.STATIC),
-                "onPrepare",
-                TypeName.VOID,
-                ImmutableList.<MethodParamModel>of(
-                    TestMethodParamModel.newBuilder()
-                        .name("c")
-                        .type(ClassNames.COMPONENT_CONTEXT)
-                        .representedObject(mMethodParamObject1)
-                        .build()),
-                mDelegateMethodObject2)));
+    when(mMountSpecModel.getDelegateMethods())
+        .thenReturn(
+            ImmutableList.of(
+                mOnCreateMountContent,
+                new DelegateMethodModel(
+                    ImmutableList.<Annotation>of(
+                        new Annotation() {
+                          @Override
+                          public Class<? extends Annotation> annotationType() {
+                            return OnMount.class;
+                          }
+                        }),
+                    ImmutableList.of(Modifier.STATIC),
+                    "onMount",
+                    TypeName.VOID,
+                    ImmutableList.<MethodParamModel>of(
+                        MockMethodParamModel.newBuilder()
+                            .name("c")
+                            .type(ClassNames.COMPONENT_CONTEXT)
+                            .representedObject(mMethodParamObject1)
+                            .build(),
+                        MockMethodParamModel.newBuilder()
+                            .name("param")
+                            .type(ClassName.bestGuess("java.lang.MadeUpClass"))
+                            .representedObject(mMethodParamObject2)
+                            .build(),
+                        interStageInputParamModel),
+                    mDelegateMethodObject1),
+                new DelegateMethodModel(
+                    ImmutableList.<Annotation>of(
+                        new Annotation() {
+                          @Override
+                          public Class<? extends Annotation> annotationType() {
+                            return OnPrepare.class;
+                          }
+                        }),
+                    ImmutableList.of(Modifier.STATIC),
+                    "onPrepare",
+                    TypeName.VOID,
+                    ImmutableList.<MethodParamModel>of(
+                        MockMethodParamModel.newBuilder()
+                            .name("c")
+                            .type(ClassNames.COMPONENT_CONTEXT)
+                            .representedObject(mMethodParamObject1)
+                            .build()),
+                    mDelegateMethodObject2)));
 
     List<SpecModelValidationError> validationErrors =
         DelegateMethodValidation.validateMountSpecModel(mMountSpecModel);
@@ -545,7 +566,7 @@ public class DelegateMethodValidationTest {
                     "name",
                     ClassNames.COMPONENT_LAYOUT,
                     ImmutableList.of(
-                        TestMethodParamModel.newBuilder()
+                        MockMethodParamModel.newBuilder()
                             .type(ClassNames.COMPONENT_CONTEXT)
                             .representedObject(mMethodParamObject1)
                             .build(),

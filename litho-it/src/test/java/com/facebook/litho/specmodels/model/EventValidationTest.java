@@ -15,7 +15,7 @@ import static org.mockito.Mockito.when;
 
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.specmodels.internal.ImmutableList;
-import com.facebook.litho.testing.specmodels.TestMethodParamModel;
+import com.facebook.litho.testing.specmodels.MockMethodParamModel;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.TypeName;
@@ -126,9 +126,8 @@ public class EventValidationTest {
 
   @Test
   public void testEventMethodsWithSameName() {
-    MethodParamModel methodParam = TestMethodParamModel.newBuilder()
-        .type(ClassNames.COMPONENT_CONTEXT)
-        .build();
+    MethodParamModel methodParam =
+        MockMethodParamModel.newBuilder().type(ClassNames.COMPONENT_CONTEXT).build();
     EventMethodModel eventMethod1 = new EventMethodModel(
         new EventDeclarationModel(
             ClassName.OBJECT,
@@ -166,9 +165,8 @@ public class EventValidationTest {
 
   @Test
   public void testEventMethodsWithWrongReturnType() {
-    MethodParamModel methodParam = TestMethodParamModel.newBuilder()
-        .type(ClassNames.COMPONENT_CONTEXT)
-        .build();
+    MethodParamModel methodParam =
+        MockMethodParamModel.newBuilder().type(ClassNames.COMPONENT_CONTEXT).build();
     EventMethodModel eventMethod = new EventMethodModel(
         new EventDeclarationModel(
             ClassName.OBJECT,
@@ -195,7 +193,7 @@ public class EventValidationTest {
   @Test
   public void testEventMethodsWithPrimitiveReturnType() {
     MethodParamModel methodParam =
-        TestMethodParamModel.newBuilder().type(ClassNames.COMPONENT_CONTEXT).build();
+        MockMethodParamModel.newBuilder().type(ClassNames.COMPONENT_CONTEXT).build();
     EventMethodModel eventMethod =
         new EventMethodModel(
             new EventDeclarationModel(
@@ -218,9 +216,7 @@ public class EventValidationTest {
 
   @Test
   public void testEventMethodsWithWrongFirstParam() {
-    MethodParamModel methodParam = TestMethodParamModel.newBuilder()
-        .type(TypeName.BOOLEAN)
-        .build();
+    MethodParamModel methodParam = MockMethodParamModel.newBuilder().type(TypeName.BOOLEAN).build();
     EventMethodModel eventMethod = new EventMethodModel(
         new EventDeclarationModel(
             ClassName.OBJECT,
@@ -247,22 +243,22 @@ public class EventValidationTest {
 
   @Test
   public void testEventMethodsWithFromEventParamThatDoesNotExist() {
-    MethodParamModel methodParam0 = TestMethodParamModel.newBuilder()
-        .type(ClassNames.COMPONENT_CONTEXT)
-        .name("c")
-        .build();
-    MethodParamModel methodParam1 = TestMethodParamModel.newBuilder()
-        .annotation(FromEvent.class)
-        .type(TypeName.BOOLEAN)
-        .name("booleanParam")
-        .representedObject(mRepresentedObject3)
-        .build();
-    MethodParamModel methodParam2 = TestMethodParamModel.newBuilder()
-        .annotation(FromEvent.class)
-        .type(TypeName.BOOLEAN)
-        .name("booleanParam2")
-        .representedObject(mRepresentedObject4)
-        .build();
+    MethodParamModel methodParam0 =
+        MockMethodParamModel.newBuilder().type(ClassNames.COMPONENT_CONTEXT).name("c").build();
+    MethodParamModel methodParam1 =
+        MockMethodParamModel.newBuilder()
+            .annotations(FromEvent.class)
+            .type(TypeName.BOOLEAN)
+            .name("booleanParam")
+            .representedObject(mRepresentedObject3)
+            .build();
+    MethodParamModel methodParam2 =
+        MockMethodParamModel.newBuilder()
+            .annotations(FromEvent.class)
+            .type(TypeName.BOOLEAN)
+            .name("booleanParam2")
+            .representedObject(mRepresentedObject4)
+            .build();
     EventMethodModel eventMethod = new EventMethodModel(
         new EventDeclarationModel(
             ClassName.OBJECT,
@@ -291,9 +287,8 @@ public class EventValidationTest {
 
   @Test
   public void testEventMethodNotStatic() {
-    MethodParamModel methodParam = TestMethodParamModel.newBuilder()
-        .type(ClassNames.COMPONENT_CONTEXT)
-        .build();
+    MethodParamModel methodParam =
+        MockMethodParamModel.newBuilder().type(ClassNames.COMPONENT_CONTEXT).build();
     EventMethodModel eventMethod = new EventMethodModel(
         new EventDeclarationModel(
             ClassName.OBJECT,

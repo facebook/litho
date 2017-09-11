@@ -15,7 +15,7 @@ import static org.mockito.Mockito.when;
 
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.specmodels.internal.ImmutableList;
-import com.facebook.litho.testing.specmodels.TestMethodParamModel;
+import com.facebook.litho.testing.specmodels.MockMethodParamModel;
 import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.List;
@@ -41,28 +41,30 @@ public class TreePropValidationTest {
 
   @Test
   public void testOnCreateTreePropMethod() {
-    when(mSpecModel.getDelegateMethods()).thenReturn(
-        ImmutableList.<DelegateMethodModel>of(
-            new DelegateMethodModel(
-                ImmutableList.<Annotation>of(new OnCreateTreeProp() {
-                  @Override
-                  public Class<? extends Annotation> annotationType() {
-                    return OnCreateTreeProp.class;
-                  }
-                }),
-                ImmutableList.<Modifier>of(),
-                "",
-                TypeName.VOID,
-                ImmutableList.<MethodParamModel>of(
-                    TestMethodParamModel.newBuilder()
-                        .type(TypeName.INT)
-                        .representedObject(mMethodParamObject1)
-                        .build(),
-                    TestMethodParamModel.newBuilder()
-                        .type(ClassNames.COMPONENT_CONTEXT)
-                        .representedObject(mMethodParamObject2)
-                        .build()),
-                mDelegateMethodObject)));
+    when(mSpecModel.getDelegateMethods())
+        .thenReturn(
+            ImmutableList.<DelegateMethodModel>of(
+                new DelegateMethodModel(
+                    ImmutableList.<Annotation>of(
+                        new OnCreateTreeProp() {
+                          @Override
+                          public Class<? extends Annotation> annotationType() {
+                            return OnCreateTreeProp.class;
+                          }
+                        }),
+                    ImmutableList.<Modifier>of(),
+                    "",
+                    TypeName.VOID,
+                    ImmutableList.<MethodParamModel>of(
+                        MockMethodParamModel.newBuilder()
+                            .type(TypeName.INT)
+                            .representedObject(mMethodParamObject1)
+                            .build(),
+                        MockMethodParamModel.newBuilder()
+                            .type(ClassNames.COMPONENT_CONTEXT)
+                            .representedObject(mMethodParamObject2)
+                            .build()),
+                    mDelegateMethodObject)));
 
     List<SpecModelValidationError> validationErrors = TreePropValidation.validate(mSpecModel);
     assertThat(validationErrors).hasSize(2);
