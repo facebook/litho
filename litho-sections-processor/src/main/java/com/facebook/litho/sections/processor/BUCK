@@ -30,8 +30,9 @@ java_library(
     visibility = COMPONENTS_VISIBILITY,
     deps = [
         COMPONENTS_SECTIONS_ANNOTATIONS_TARGET,
-        make_dep_path("litho-annotations/src/main/java/com/facebook/litho/annotations:annotations"),
+        COMPONENTS_ANNOTATIONS_TARGET,
+        COMPONENTS_PROCESSOR_LIB_TARGET,
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels"),
-        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/processor:processor-lib"),
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
     ],
 )

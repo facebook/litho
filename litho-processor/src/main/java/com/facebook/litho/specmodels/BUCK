@@ -26,7 +26,10 @@ java_library(
     name = "specmodels-bare",
     srcs = glob(
         ["**/*.java"],
-        excludes = glob(["processor/*.java"]),
+        excludes = glob([
+            "processor/*.java",
+            "internal/*.java",
+        ]),
     ),
     exported_deps = [
         COMPONENTS_ANNOTATIONS_TARGET,
@@ -39,5 +42,8 @@ java_library(
     target = "8",
     visibility = [
         "PUBLIC",
+    ],
+    deps = [
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
     ],
 )

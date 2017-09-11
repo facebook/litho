@@ -7,8 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.litho.specmodels.internal;
+package com.facebook.litho.testing.specmodels;
 
+import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.TypeName;

@@ -24,5 +24,6 @@ java_test(
         COMPONENTS_MOCKITO_TARGET,
         COMPONENTS_PROCESSOR_LIB_TARGET,
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels"),
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
     ],
 )

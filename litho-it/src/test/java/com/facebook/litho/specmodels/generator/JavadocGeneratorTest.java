@@ -13,12 +13,12 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.specmodels.internal.ImmutableList;
-import com.facebook.litho.specmodels.internal.MockMethodParamModel;
-import com.facebook.litho.specmodels.internal.MockSpecModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.PropJavadocModel;
 import com.facebook.litho.specmodels.model.PropModel;
 import com.facebook.litho.specmodels.model.SpecModel;
+import com.facebook.litho.testing.specmodels.MockMethodParamModel;
+import com.facebook.litho.testing.specmodels.MockSpecModel;
 import com.squareup.javapoet.TypeName;
 import org.junit.Test;
 
