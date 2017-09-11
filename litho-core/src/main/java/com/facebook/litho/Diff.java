@@ -42,4 +42,9 @@ public class Diff<T> {
     mPrevious = null;
     mNext = null;
   }
+
+  @Override
+  public String toString() {
+    return "Diff{" + "mPrevious=" + mPrevious + ", mNext=" + mNext + '}';
+  }
 }
