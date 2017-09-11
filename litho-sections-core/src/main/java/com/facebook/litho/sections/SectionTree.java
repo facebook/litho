@@ -104,7 +104,7 @@ public class SectionTree {
   }
 
   private static final int MESSAGE_WHAT_BACKGROUND_CHANGESET_STATE_UPDATED = 1;
-  private static final Handler sMainThreadHandler = new ListComponentMainThreadHandler();
+  private static final Handler sMainThreadHandler = new SectionsComponentMainThreadHandler();
 
   @GuardedBy("ComponentTree.class")
   private static volatile Looper sDefaultChangeSetThreadLooper;
@@ -1106,9 +1106,9 @@ public class SectionTree {
     //TODO use pools t11953296
   }
 
-  private static class ListComponentMainThreadHandler extends Handler {
+  private static class SectionsComponentMainThreadHandler extends Handler {
 
-    private ListComponentMainThreadHandler() {
+    private SectionsComponentMainThreadHandler() {
       super(Looper.getMainLooper());
     }
 

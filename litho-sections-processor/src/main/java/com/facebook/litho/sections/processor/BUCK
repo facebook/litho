@@ -10,7 +10,7 @@ include_defs("//COMPONENTS_DEFS")
 
 java_annotation_processor(
     name = "processor",
-    processor_class = "com.facebook.litho.sections.processor.ListComponentProcessor",
+    processor_class = "com.facebook.litho.sections.processor.SectionsComponentProcessor",
     visibility = [
         "PUBLIC",
     ],

@@ -37,7 +37,7 @@ import javax.tools.Diagnostic;
  * {@link GroupSectionSpec} or a {@link DiffSectionSpec}
  */
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
-public abstract class AbstractListComponentsProcessor extends AbstractProcessor {
+public abstract class AbstractSectionsComponentProcessor extends AbstractProcessor {
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {

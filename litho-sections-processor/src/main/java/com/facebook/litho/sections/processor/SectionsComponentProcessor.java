@@ -34,7 +34,7 @@ import javax.lang.model.element.TypeElement;
  * or a {@link DiffSectionSpec}.
  */
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
-public class ListComponentProcessor extends AbstractListComponentsProcessor {
+public class SectionsComponentProcessor extends AbstractSectionsComponentProcessor {
 
   @Override
   protected void generate(GroupSectionSpecHelper groupSectionSpecHelper) {
