@@ -13,15 +13,16 @@ package com.facebook.samples.lithocodelab;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import com.facebook.litho.ComponentContext;
-import com.facebook.litho.LithoView;
-import com.facebook.litho.widget.Text;
+import android.view.LayoutInflater;
 
 /**
  * *************** START THE LAB HERE ***************
  *
- * <p>This is a simple "Hello, world." activity that renders using Litho. The goal of the lab is to
- * build this into something that resembles {@link LithoLabApproximateEndActivity}
+ * <p>This is a simple "Hello, world." activity that renders using Views. The goal of the lab is to
+ * build this into something that resembles {@link LithoLabApproximateEndActivity} using Litho.
+ *
+ * <p>Build a header. Then leverage {@link StoryCardComponent} to render the rest of the story card.
+ * Then add some statefulness and click handling to the save button in the story card.
  */
 public class LithoLabActivity extends AppCompatActivity {
 
@@ -29,15 +30,6 @@ public class LithoLabActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final ComponentContext c = new ComponentContext(this);
-
-        final LithoView lithoView = LithoView.create(
-                this /* context */,
-                Text.create(c)
-                        .text("Hello, World!")
-                        .textSizeDip(50)
-                        .build());
-
-        setContentView(lithoView);
+    setContentView(LayoutInflater.from(this).inflate(R.layout.hello_world, null));
     }
 }

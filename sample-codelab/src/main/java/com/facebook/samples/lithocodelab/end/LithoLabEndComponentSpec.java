@@ -19,21 +19,22 @@ import com.facebook.litho.annotations.OnCreateLayout;
 
 /**
  * Renders the approximate end state for the lab activity. This wraps the {@link
- * LithoLabStoryCardComponent}, provides its props, and also fills the rest of the screen with gray.
+ * StoryCardComponent}, provides its props, and also fills the rest of the screen with gray.
  */
 @LayoutSpec
 public class LithoLabEndComponentSpec {
     @OnCreateLayout
     static ComponentLayout onCreateLayout(
             ComponentContext c) {
-        return Column.create(c)
-                .backgroundRes(android.R.color.darker_gray)
-                .child(LithoLabStoryCardComponent.create(c)
-                        .title("Title")
-                        .subtitle("Subtitle")
-                        .content("This is some test content. It should fill at least one line. " +
-                                "This is a story card. You can interact with the menu button " +
-                                "and save button."))
-                .build();
+    return Column.create(c)
+        .backgroundRes(android.R.color.darker_gray)
+        .child(
+            StoryCardComponent.create(c)
+                .header(StoryHeaderComponent.create(c).title("Title").subtitle("Subtitle"))
+                .content(
+                    "This is some test content. It should fill at least one line. "
+                        + "This is a story card. You can interact with the menu button "
+                        + "and save button."))
+        .build();
     }
 }
