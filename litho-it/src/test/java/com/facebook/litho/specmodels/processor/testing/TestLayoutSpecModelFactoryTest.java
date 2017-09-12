@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.litho.specmodels.processor;
+package com.facebook.litho.specmodels.processor.testing;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.data.Index.atIndex;
@@ -23,7 +23,7 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.TestSpec;
 import com.facebook.litho.specmodels.model.PropModel;
 import com.facebook.litho.specmodels.model.SpecModel;
-import com.facebook.litho.specmodels.model.TestSpecGenerator;
+import com.facebook.litho.specmodels.model.testing.TestSpecGenerator;
 import com.google.testing.compile.CompilationRule;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
@@ -64,10 +64,10 @@ public class TestLayoutSpecModelFactoryTest {
     assertThat(layoutSpecModel.getComponentName()).isEqualTo("TestMyLayout");
     assertThat(layoutSpecModel.getSpecTypeName().toString())
         .isEqualTo(
-            "com.facebook.litho.specmodels.processor.TestLayoutSpecModelFactoryTest.TestMyLayoutSpec");
+            "com.facebook.litho.specmodels.processor.testing.TestLayoutSpecModelFactoryTest.TestMyLayoutSpec");
     assertThat(layoutSpecModel.getComponentTypeName().toString())
         .isEqualTo(
-            "com.facebook.litho.specmodels.processor.TestLayoutSpecModelFactoryTest.TestMyLayout");
+            "com.facebook.litho.specmodels.processor.testing.TestLayoutSpecModelFactoryTest.TestMyLayout");
 
     assertThat(layoutSpecModel.getDelegateMethods().stream().map(m -> m.name.toString()).toArray())
         .hasSize(1)

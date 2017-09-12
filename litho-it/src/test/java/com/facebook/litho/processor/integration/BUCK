@@ -24,6 +24,7 @@ java_test(
         COMPONENTS_JUNIT_TARGET,
         COMPONENTS_PROCESSOR_LIB_TARGET,
         COMPONENTS_ROBOLECTRIC_TARGET,
+        COMPONENTS_PROCESSOR_LIB_TARGET,
         make_dep_path("litho-it/src/test/resources:resources"),
     ],
 )

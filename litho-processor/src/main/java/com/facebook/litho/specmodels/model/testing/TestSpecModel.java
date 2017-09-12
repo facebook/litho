@@ -7,9 +7,28 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.litho.specmodels.model;
+package com.facebook.litho.specmodels.model.testing;
 
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.model.BuilderMethodModel;
+import com.facebook.litho.specmodels.model.ClassNames;
+import com.facebook.litho.specmodels.model.DelegateMethodModel;
+import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
+import com.facebook.litho.specmodels.model.EventDeclarationModel;
+import com.facebook.litho.specmodels.model.EventMethodModel;
+import com.facebook.litho.specmodels.model.HasPureRender;
+import com.facebook.litho.specmodels.model.InterStageInputParamModel;
+import com.facebook.litho.specmodels.model.PropDefaultModel;
+import com.facebook.litho.specmodels.model.PropJavadocModel;
+import com.facebook.litho.specmodels.model.PropModel;
+import com.facebook.litho.specmodels.model.RenderDataDiffModel;
+import com.facebook.litho.specmodels.model.SpecModel;
+import com.facebook.litho.specmodels.model.SpecModelImpl;
+import com.facebook.litho.specmodels.model.SpecModelValidation;
+import com.facebook.litho.specmodels.model.SpecModelValidationError;
+import com.facebook.litho.specmodels.model.StateParamModel;
+import com.facebook.litho.specmodels.model.TreePropModel;
+import com.facebook.litho.specmodels.model.UpdateStateMethodModel;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;

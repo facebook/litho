@@ -9,7 +9,7 @@ include_defs("//COMPONENTS_DEFS")
 
 java_test(
     name = "processor",
-    srcs = glob(["*Test.java"]),
+    srcs = glob(["**/*Test.java"]),
     provided_deps = [
         COMPONENTS_ROBOLECTRIC_TARGET,
     ],

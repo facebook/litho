@@ -10,7 +10,7 @@
 package com.facebook.litho.processor.integration;
 
 import com.facebook.litho.specmodels.processor.ComponentsProcessor;
-import com.facebook.litho.specmodels.processor.ComponentsTestingProcessor;
+import com.facebook.litho.specmodels.processor.testing.ComponentsTestingProcessor;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Resources;
 import com.google.common.truth.Truth;

@@ -7,8 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.litho.specmodels.model;
+package com.facebook.litho.specmodels.model.testing;
 
+import com.facebook.litho.specmodels.model.SpecModel;
 import com.squareup.javapoet.TypeSpec;
 
 /** Generates the test matchers for a {@link TestSpecModel}. */

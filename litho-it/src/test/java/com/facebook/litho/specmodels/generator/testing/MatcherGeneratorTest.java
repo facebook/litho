@@ -7,11 +7,12 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.litho.specmodels.generator;
+package com.facebook.litho.specmodels.generator.testing;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.annotations.ResType;
+import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.PropModel;
 import com.facebook.litho.specmodels.model.SpecModel;

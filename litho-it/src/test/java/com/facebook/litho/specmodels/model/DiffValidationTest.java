@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+
 package com.facebook.litho.specmodels.model;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;

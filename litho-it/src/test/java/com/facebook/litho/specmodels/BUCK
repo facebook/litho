@@ -11,7 +11,7 @@ java_test(
     name = "specmodels",
     srcs = glob(
         ["**/*Test.java"],
-        excludes = glob(["processor/*.java"]),
+        excludes = glob(["processor/**/*.java"]),
     ),
     provided_deps = [
         COMPONENTS_ROBOLECTRIC_TARGET,

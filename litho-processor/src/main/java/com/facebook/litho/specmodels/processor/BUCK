@@ -35,7 +35,7 @@ java_library(
 
 java_library(
     name = "processor-lib-bare",
-    srcs = glob(["*.java"]),
+    srcs = glob(["**/*.java"]),
     provided_deps = [
         COMPONENTS_JSR_TARGET,
         COMPONENTS_JAVAPOET_TARGET,

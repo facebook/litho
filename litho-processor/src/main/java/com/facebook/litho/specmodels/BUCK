@@ -27,7 +27,7 @@ java_library(
     srcs = glob(
         ["**/*.java"],
         excludes = glob([
-            "processor/*.java",
+            "processor/**/*.java",
             "internal/*.java",
         ]),
     ),

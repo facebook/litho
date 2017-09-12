@@ -7,15 +7,20 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.litho.specmodels.processor;
+package com.facebook.litho.specmodels.processor.testing;
 
 import com.facebook.litho.annotations.TestSpec;
 import com.facebook.litho.specmodels.model.ClassNames;
-import com.facebook.litho.specmodels.model.DefaultTestSpecGenerator;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.SpecModel;
-import com.facebook.litho.specmodels.model.TestSpecGenerator;
-import com.facebook.litho.specmodels.model.TestSpecModel;
+import com.facebook.litho.specmodels.model.testing.DefaultTestSpecGenerator;
+import com.facebook.litho.specmodels.model.testing.TestSpecGenerator;
+import com.facebook.litho.specmodels.model.testing.TestSpecModel;
+import com.facebook.litho.specmodels.processor.JavadocExtractor;
+import com.facebook.litho.specmodels.processor.LayoutSpecModelFactory;
+import com.facebook.litho.specmodels.processor.MountSpecModelFactory;
+import com.facebook.litho.specmodels.processor.SpecModelFactory;
+import com.facebook.litho.specmodels.processor.TestTargetExtractor;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;

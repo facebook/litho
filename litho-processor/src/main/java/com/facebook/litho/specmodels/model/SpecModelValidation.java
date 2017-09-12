@@ -9,6 +9,7 @@
 
 package com.facebook.litho.specmodels.model;
 
+import com.facebook.litho.specmodels.model.testing.TestSpecModel;
 import java.util.ArrayList;
 import java.util.List;
 
