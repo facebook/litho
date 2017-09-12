@@ -22,19 +22,17 @@ import java.lang.annotation.RetentionPolicy;
  *
  * <p>For example:
  * <pre>
- * {@code
+ * {@literal @}GroupSectionSpec
+ *  public class MySectionSpec {
  *
- * @GroupSectionSpec
- * public class MySectionSpec {
- *
- *   @OnCreateChildren
- *   protected Children onCreateChildren(
- *     SectionContext c,
- *     @Prop MyProp prop) {
- *       return Children.create()
- *          .child(SomeSection.create(c))
- *          .build();
- *   }
+ *   {@literal @}OnCreateChildren
+ *    protected Children onCreateChildren(
+ *      SectionContext c,
+ *     {@literal @}Prop MyProp prop) {
+ *        return Children.create()
+ *           .child(SomeSection.create(c))
+ *           .build();
+ *    }
  * }
  * </pre>
  */

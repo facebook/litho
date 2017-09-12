@@ -17,14 +17,12 @@ import java.lang.annotation.RetentionPolicy;
  * disappear from the tree. This is where the Service created in the {@link OnCreateService}
  * should be disposed.
  *
- * The method will take as parameters only the {@link com.facebook.litho.sections.SectionContext}
+ * The method will take as parameters only the <code>SectionContext</code>
  * and the Service created in {@link OnCreateService}.
  *
  * <p>For example:
  * <pre>
- * {@code
- *
- *   @OnDestroyServices
+ *  {@literal @}OnDestroyServices
  *   protected void onDestroyService(
  *     SectionContext c,
  *     SomeService someService) {
@@ -34,10 +32,12 @@ import java.lang.annotation.RetentionPolicy;
  * }
  * </pre>
  *
- * DEPRECATED:
+ * <strong>DEPRECATED:</strong>
  * Do not use rely on this method to clean up your object. If you need to use an object
  * that requires explicit clean up, consider creating it on the Activity/Fragment level,
  * and clean it up when your context is finished.
+ *
+ * @deprecated
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Deprecated

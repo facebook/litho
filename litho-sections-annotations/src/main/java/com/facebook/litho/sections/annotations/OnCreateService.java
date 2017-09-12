@@ -17,7 +17,7 @@ import java.lang.annotation.RetentionPolicy;
  * the first time and should create the Service it wishes to use.
  *
  *
- * The method will take as parameters any needed {@link com.facebook.litho.annotations.Prop}
+ * The method will take as parameters any needed <code>{@literal @}Prop</code>
  * and will have as return type the Service it will create.
  *
  * It will be possible to access the service from other callbacks using:
@@ -25,12 +25,10 @@ import java.lang.annotation.RetentionPolicy;
  *
  * <p>For example:
  * <pre>
- * {@code
- *
- *   @OnCreateService
+ *  {@literal @}OnCreateService
  *   protected SomeService onCreateService(
  *       SectionContext c,
- *       @Prop SomeProp prop) {
+ *      {@literal @}Prop SomeProp prop) {
  *     return new SomeService(c, prop);
  *   }
  * }

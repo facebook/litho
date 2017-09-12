@@ -14,34 +14,31 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * The method annotated with this annotation will be called when the data corresponding to this
- * Section props is now visible to the {@link com.facebook.litho.sections.SectionTree.Target} of the
- * {@link com.facebook.litho.sections.SectionTree}.
+ * Section props is now visible to the <code>SectionTree.Target</code> of the
+ * <code>SectionTree</code>.
  * In the classic case where the Ui for the Section is represented by a RecyclerView, this means
  * that by the time OnDataBound is called the RecyclerView has visibility over the data contained
  * in this section.
  *
  * <p>For example:
  * <pre>
- * {@code
+ *  {@literal @GroupSectionSpec}
+ *   public class MyGroupSectionSpec {
  *
- * @GroupSectionSpec
- * public class MyGroupSectionSpec {
- *
- *   @OnDataBound
- *   protected void onDataBound(
- *     SectionContext c,
- *     Service service, // If any
- *     @Prop List<? extends Edge> edges,
- *     @Prop RecyclerCollectionEventsController recyclerController,
- *     @State(canUpdateLazily = true) boolean didScrollOnce) {
- *       if (!didScrollOnce) {
- *         recyclerController.requestScrollToPosition(10, true);
- *         MyGroupSectionSpec.lazyUpdateDidScrollOnce(c, true);
- *       }
- *       if (shouldTakeAction(edges)) {
- *         service.doSomething();
- *       }
- *   }
+ *    {@literal OnDataBound}
+ *     protected void onDataBound(
+ *       SectionContext c,
+ *       Service service, // If any
+ *      {@literal @}Prop {@code List<? extends Edge>} edges,
+ *      {@literal @}Prop RecyclerCollectionEventsController recyclerController,
+ *      {@literal @}State(canUpdateLazily = true) boolean didScrollOnce) {
+ *         if (!didScrollOnce) {
+ *           recyclerController.requestScrollToPosition(10, true);
+ *           MyGroupSectionSpec.lazyUpdateDidScrollOnce(c, true);
+ *         } if (shouldTakeAction(edges)) {
+ *           service.doSomething();
+ *         }
+ *     }
  * }
  * </pre>
  *

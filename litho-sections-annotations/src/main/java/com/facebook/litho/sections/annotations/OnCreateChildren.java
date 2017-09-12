@@ -18,21 +18,20 @@ import java.lang.annotation.RetentionPolicy;
  *
  * The method onCreateChildren is responsible for generating the children of a
  * {@link GroupSectionSpec}. Both {@link GroupSectionSpec} and {@link DiffSectionSpec} are valid
- * children. OnCreateChildren has access to both  * {@link com.facebook.litho.annotations.Prop}
- * and/or {@link com.facebook.litho.annotations.State}
+ * children. OnCreateChildren has access to both <code>{@literal @}Prop</code>
+ * and/or <code>{@literal @}State</code> annotations.
  *
- * @code
- *
- * @OnCreateChildren
- * static Children onCreateChildren(
- *     final SectionContext c,
- *     @State boolean isLoading,
- *     @Prop int prop) {
- *   return Children.create()
- *      .child(SingleComponentSection.create(c).component(SomeComponent.create(c).build())
- *      .build();
- * }
- *
+ * <pre>
+ * {@literal @}OnCreateChildren
+ *  static Children onCreateChildren(
+ *      final SectionContext c,
+ *     {@literal @}State boolean isLoading,
+ *     {@literal @}Prop int prop) {
+ *    return Children.create()
+ *       .child(SingleComponentSection.create(c).component(SomeComponent.create(c).build())
+ *       .build();
+ *  }
+ * </pre>
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface OnCreateChildren {

@@ -13,5 +13,3 @@ apply plugin: 'maven-publish'
 targetCompatibility = rootProject.targetCompatibilityVersion
 sourceCompatibility = rootProject.sourceCompatibilityVersion
 
-// FIXME: Disable javadoc generation for this package until dependent modules are published.
-tasks.withType(Javadoc).all { enabled = false }

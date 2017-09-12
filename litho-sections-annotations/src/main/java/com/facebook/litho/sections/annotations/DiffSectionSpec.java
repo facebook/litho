@@ -13,27 +13,26 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Classes with this annotation will generate the {@link com.facebook.litho.sections.ChangeSet}
+ * Classes with this annotation will generate the <code>ChangeSet</code>
  * a list should display.
  *
  * <p>For example:
  * <pre>
- * {@code
  *
- * @DiffSectionSpec
- * public class MyDiffSectionSpec {
+ * {@literal @}DiffSectionSpec
+ *  public class MyDiffSectionSpec {
  *
- *   @OnDiff
- *   protected void onDiff(
- *     SectionContext c,
- *     ChangeSet changeSet,
- *     Diff<MyProp> prop) {
+ *   {@literal }OnDiff
+ *    protected void onDiff(
+ *      SectionContext c,
+ *      ChangeSet changeSet,
+ *      {@code Diff<MyProp>} prop) {
  *
- *     if(prop.getPrevious() == null) {
- *       changeSet.add(Change.insert(...));
- *     } else {
- *       changeSet.add(Change.update(...));
- *     }
+ *      if(prop.getPrevious() == null) {
+ *        changeSet.add(Change.insert(...));
+ *      } else {
+ *        changeSet.add(Change.update(...));
+ *      }
  *   }
  * }
  * </pre>

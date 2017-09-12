@@ -21,20 +21,18 @@ import java.lang.annotation.RetentionPolicy;
  *
  * <p>For example:
  * <pre>
- * {@code
  *
- * @DiffSectionSpec
- * public class MyChangeSetSpec {
+ * {@literal @}DiffSectionSpec
+ *  public class MyChangeSetSpec {
  *
- *   @OnBindServices
- *   protected void onBindService(
- *     SectionContext c,
- *     SomeService someService,
- *     @Prop SomeProp prop) {
- *     myService.startDoingSomething(prop);
- *     myService.registerListener(...);
- *   }
- * }
+ *   {@literal @}OnBindServices
+ *    protected void onBindService(
+ *      SectionContext c,
+ *      SomeService someService,
+ *     {@literal @}Prop SomeProp prop) {
+ *      myService.startDoingSomething(prop);
+ *      myService.registerListener(...);
+ *    }
  * }
  * </pre>
  */

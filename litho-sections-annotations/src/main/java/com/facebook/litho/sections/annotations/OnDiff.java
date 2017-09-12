@@ -14,23 +14,21 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * A class annotated with {@link DiffSectionSpec} requires a method with this annotation. This
- * method is responsible for generating a {@link com.facebook.litho.sections.ChangeSet}.
+ * method is responsible for generating a <code>ChangeSet</code>.
  *
- * {@code
- *
- *  @OnDiff
+ * <pre>
+ * {@literal @}OnDiff
  *  public static void onCreateChangeSet(
  *      SectionContext context,
  *      ChangeSet changeSet,
- *      @Prop Diff<Component> component) {
+ *     {@literal @}Prop{@code Diff<Component>} component) {
  *    if (component.getNext() == null) {
  *      changeSet.delete(0);
  *    } else if (component.getPrevious() == null) {
  *      changeSet.insert(0, component.getNext());
  *    }
  *  }
- *
- * }
+ * </pre>
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface OnDiff {
