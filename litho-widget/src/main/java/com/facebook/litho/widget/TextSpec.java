@@ -761,14 +761,8 @@ class TextSpec {
 
     if (text instanceof Spanned) {
       Spanned spanned = (Spanned) text;
-      clickableSpans.set(spanned.getSpans(
-          0,
-          text.length() - 1,
-          ClickableSpan.class));
-      imageSpans.set(spanned.getSpans(
-          0,
-          text.length() - 1,
-          ImageSpan.class));
+      clickableSpans.set(spanned.getSpans(0, text.length(), ClickableSpan.class));
+      imageSpans.set(spanned.getSpans(0, text.length(), ImageSpan.class));
     }
   }
 
