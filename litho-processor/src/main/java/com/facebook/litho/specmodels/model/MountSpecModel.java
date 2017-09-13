@@ -230,6 +230,11 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
+  public boolean shouldGenerateHasState() {
+    return true;
+  }
+
+  @Override
   public boolean shouldCheckIdInIsEquivalentToMethod() {
     return true;
   }

@@ -214,6 +214,11 @@ public class TestSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
+  public boolean shouldGenerateHasState() {
+    return mSpecModel.shouldGenerateHasState();
+  }
+
+  @Override
   @Nullable
   public DependencyInjectionHelper getDependencyInjectionHelper() {
     return null;

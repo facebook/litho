@@ -228,6 +228,11 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
   }
 
   @Override
+  public boolean shouldGenerateHasState() {
+    return false;
+  }
+
+  @Override
   public DependencyInjectionHelper getDependencyInjectionHelper() {
     return mSpecModel.getDependencyInjectionHelper();
   }

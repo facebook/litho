@@ -285,6 +285,11 @@ public class MockSpecModel implements SpecModel {
     return mHasDeepCopy;
   }
 
+  @Override
+  public boolean shouldGenerateHasState() {
+    return true;
+  }
+
   @Nullable
   @Override
   public DependencyInjectionHelper getDependencyInjectionHelper() {

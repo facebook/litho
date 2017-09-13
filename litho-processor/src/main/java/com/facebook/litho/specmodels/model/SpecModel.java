@@ -161,10 +161,13 @@ public interface SpecModel {
    */
   boolean hasDeepCopy();
 
+  /** @return whether or not to generate a hasState method. */
+  boolean shouldGenerateHasState();
+
   /**
    * @return null if this spec does not use dependency injection, otherwise return the generator
-   * that should be used to generate the correct methods for dependency injection to work for
-   * this component.
+   *     that should be used to generate the correct methods for dependency injection to work for
+   *     this component.
    */
   @Nullable
   DependencyInjectionHelper getDependencyInjectionHelper();

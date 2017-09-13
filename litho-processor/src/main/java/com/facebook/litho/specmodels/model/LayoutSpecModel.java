@@ -212,6 +212,11 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
+  public boolean shouldGenerateHasState() {
+    return true;
+  }
+
+  @Override
   public DependencyInjectionHelper getDependencyInjectionHelper() {
     return mSpecModel.getDependencyInjectionHelper();
   }

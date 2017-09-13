@@ -57,7 +57,7 @@ public class StateGenerator {
   static TypeSpecDataHolder generateHasState(SpecModel specModel) {
     final TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
 
-    if (!specModel.getStateValues().isEmpty()) {
+    if (specModel.shouldGenerateHasState() && !specModel.getStateValues().isEmpty()) {
       typeSpecDataHolder.addMethod(
           MethodSpec.methodBuilder("hasState")
               .addAnnotation(Override.class)
