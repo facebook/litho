@@ -103,7 +103,7 @@ public final class SimpleMount extends ComponentLifecycle {
     return builder;
   }
 
-  private static class SimpleMountImpl extends Component<SimpleMount> implements Cloneable {
+  static class SimpleMountImpl extends Component<SimpleMount> implements Cloneable {
     @Prop(
         resType = ResType.NONE,
         optional = false

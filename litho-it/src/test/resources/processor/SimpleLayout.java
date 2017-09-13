@@ -50,7 +50,7 @@ public final class SimpleLayout extends ComponentLifecycle {
     return builder;
   }
 
-  private static class SimpleLayoutImpl extends Component<SimpleLayout> implements Cloneable {
+  static class SimpleLayoutImpl extends Component<SimpleLayout> implements Cloneable {
     private SimpleLayoutImpl() {
       super(get());
     }

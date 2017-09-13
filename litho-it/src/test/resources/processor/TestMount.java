@@ -416,7 +416,7 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
     S state2;
   }
 
-  private static class TestMountImpl<S extends View> extends Component<TestMount> implements Cloneable {
+  static class TestMountImpl<S extends View> extends Component<TestMount> implements Cloneable {
     TestMountStateContainerImpl mStateContainerImpl;
 
     @Prop(

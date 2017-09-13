@@ -321,7 +321,7 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
     }
   }
 
-  private static class TestLayoutImpl<S extends View> extends Component<TestLayout> implements Cloneable {
+  static class TestLayoutImpl<S extends View> extends Component<TestLayout> implements Cloneable {
     TestLayoutStateContainerImpl mStateContainerImpl;
 
     TestLayoutRenderData mPreviousRenderData;

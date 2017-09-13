@@ -64,7 +64,6 @@ public class ComponentImplGenerator {
     final String implClassName = getImplClassName(specModel);
     final TypeSpec.Builder implClassBuilder =
         TypeSpec.classBuilder(implClassName)
-            .addModifiers(Modifier.PRIVATE)
             .superclass(
                 ParameterizedTypeName.get(
                     specModel.getComponentClass(), specModel.getComponentTypeName()))
