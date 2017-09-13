@@ -21,6 +21,7 @@ import com.facebook.litho.specmodels.generator.DelegateMethodGenerator;
 import com.facebook.litho.specmodels.generator.EventGenerator;
 import com.facebook.litho.specmodels.generator.PreambleGenerator;
 import com.facebook.litho.specmodels.generator.StateGenerator;
+import com.facebook.litho.specmodels.generator.TreePropGenerator;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.SpecModel;
 import javax.annotation.Nullable;
@@ -45,7 +46,7 @@ public class SectionsComponentProcessor extends AbstractSectionsComponentProcess
         specModel,
         DelegateMethodDescriptions.getGroupSectionSpecDelegatesMap(specModel))
         .addToTypeSpec(groupSectionSpecHelper.getTypeSpec());
-    groupSectionSpecHelper.generateTreePropsMethods();
+    TreePropGenerator.generate(specModel).addToTypeSpec(groupSectionSpecHelper.getTypeSpec());
   }
 
   @Override
