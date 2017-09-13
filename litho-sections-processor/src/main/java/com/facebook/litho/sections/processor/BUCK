@@ -25,6 +25,9 @@ java_library(
         "*.java",
         "**/*.java",
     ]),
+    exported_deps = [
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/processor:processor-lib"),
+    ],
     source = "8",
     target = "8",
     visibility = COMPONENTS_VISIBILITY,

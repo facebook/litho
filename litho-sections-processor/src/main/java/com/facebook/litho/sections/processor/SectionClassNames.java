@@ -35,4 +35,9 @@ public class SectionClassNames {
       ClassName.bestGuess("com.facebook.litho.sections.LoadingEvent");
   public static final ClassName CHILDREN =
       ClassName.bestGuess("com.facebook.litho.sections.Children");
+
+  public static final ClassName GROUP_SECTION_SPEC =
+      ClassName.bestGuess("com.facebook.litho.sections.annotations.GroupSectionSpec");
+  public static final ClassName DIFF_SECTION_SPEC =
+      ClassName.bestGuess("com.facebook.litho.sections.annotations.DiffSectionSpec");
 }
