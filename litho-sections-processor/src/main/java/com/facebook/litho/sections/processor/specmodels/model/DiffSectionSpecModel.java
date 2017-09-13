@@ -10,6 +10,13 @@
 package com.facebook.litho.sections.processor.specmodels.model;
 
 import com.facebook.litho.sections.processor.SectionClassNames;
+import com.facebook.litho.specmodels.generator.BuilderGenerator;
+import com.facebook.litho.specmodels.generator.ComponentImplGenerator;
+import com.facebook.litho.specmodels.generator.DelegateMethodGenerator;
+import com.facebook.litho.specmodels.generator.EventGenerator;
+import com.facebook.litho.specmodels.generator.PreambleGenerator;
+import com.facebook.litho.specmodels.generator.StateGenerator;
+import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
 import com.facebook.litho.specmodels.model.DelegateMethodModel;
@@ -34,6 +41,7 @@ import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 import java.util.List;
 import javax.annotation.Nullable;
+import javax.lang.model.element.Modifier;
 
 /**
  * Model that is an abstract representation of a {@link
@@ -249,7 +257,34 @@ public class DiffSectionSpecModel implements SpecModel, HasService {
 
   @Override
   public TypeSpec generate() {
-    return null;
+    final TypeSpec.Builder typeSpec =
+        TypeSpec.classBuilder(getComponentName())
+            .superclass(SectionClassNames.SECTION_LIFECYCLE)
+            .addTypeVariables(getTypeVariables());
+
+    if (isPublic()) {
+      typeSpec.addModifiers(Modifier.PUBLIC);
+    }
+
+    if (hasInjectedDependencies()) {
+      getDependencyInjectionHelper().generate(this).addToTypeSpec(typeSpec);
+    } else {
+      typeSpec.addModifiers(Modifier.FINAL);
+    }
+
+    TypeSpecDataHolder.newBuilder()
+        .addTypeSpecDataHolder(PreambleGenerator.generate(this))
+        .addTypeSpecDataHolder(ComponentImplGenerator.generate(this, getServiceParam()))
+        .addTypeSpecDataHolder(BuilderGenerator.generate(this))
+        .addTypeSpecDataHolder(StateGenerator.generate(this))
+        .addTypeSpecDataHolder(EventGenerator.generate(this))
+        .addTypeSpecDataHolder(
+            DelegateMethodGenerator.generateDelegates(
+                this, DelegateMethodDescriptions.getDiffSectionSpecDelegatesMap(this)))
+        .build()
+        .addToTypeSpec(typeSpec);
+
+    return typeSpec.build();
   }
 
   @Override
