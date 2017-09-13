@@ -42,13 +42,13 @@ public class SectionsComponentProcessor extends AbstractSectionsComponentProcess
   @Override
   protected void generate(GroupSectionSpecHelper groupSectionSpecHelper) {
     final GroupSectionSpecModel specModel = groupSectionSpecHelper.getSpecModel();
-    generateCommonListComponent(
-        groupSectionSpecHelper.getSpecModel(), groupSectionSpecHelper.getTypeSpec());
+    final TypeSpec.Builder typeSpec = groupSectionSpecHelper.getTypeSpec();
+
+    generateCommonListComponent(specModel, typeSpec);
     DelegateMethodGenerator.generateDelegates(
-        specModel,
-        DelegateMethodDescriptions.getGroupSectionSpecDelegatesMap(specModel))
-        .addToTypeSpec(groupSectionSpecHelper.getTypeSpec());
-    TreePropGenerator.generate(specModel).addToTypeSpec(groupSectionSpecHelper.getTypeSpec());
+            specModel, DelegateMethodDescriptions.getGroupSectionSpecDelegatesMap(specModel))
+        .addToTypeSpec(typeSpec);
+    TreePropGenerator.generate(specModel).addToTypeSpec(typeSpec);
   }
 
   @Override
