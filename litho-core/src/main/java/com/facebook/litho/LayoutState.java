@@ -707,7 +707,9 @@ class LayoutState {
     if (node.hasVisibilityHandlers()) {
       final VisibilityOutput visibilityOutput = createVisibilityOutput(node, layoutState);
       final long previousId =
-          shouldUseCachedOutputs ? currentDiffNode.getVisibilityOutput().getId() : -1;
+          shouldUseCachedOutputs && currentDiffNode.getVisibilityOutput() != null
+              ? currentDiffNode.getVisibilityOutput().getId()
+              : -1;
 
       layoutState.mLayoutStateOutputIdCalculator.calculateAndSetVisibilityOutputId(
           visibilityOutput,
