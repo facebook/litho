@@ -67,14 +67,13 @@ public class SectionsComponentProcessor extends AbstractSectionsComponentProcess
 
     ComponentImplGenerator.generate(specModel, specModel.getServiceParam())
         .addToTypeSpec(listSpecHelper.getTypeSpec());
+    BuilderGenerator.generate(listSpecHelper.getSpecModel())
+        .addToTypeSpec(listSpecHelper.getTypeSpec());
+
     stages.generateTransferState(
         SectionClassNames.SECTION_CONTEXT,
         SectionClassNames.SECTION,
         SectionClassNames.STATE_CONTAINER_SECTION);
-
-    BuilderGenerator.generate(listSpecHelper.getSpecModel())
-        .addToTypeSpec(listSpecHelper.getTypeSpec());
-
     stages.generateOnStateUpdateMethods(
         SectionClassNames.SECTION_CONTEXT,
         SectionClassNames.SECTION,
