@@ -20,6 +20,7 @@ import com.facebook.litho.specmodels.generator.ComponentImplGenerator;
 import com.facebook.litho.specmodels.generator.DelegateMethodGenerator;
 import com.facebook.litho.specmodels.generator.EventGenerator;
 import com.facebook.litho.specmodels.generator.PreambleGenerator;
+import com.facebook.litho.specmodels.generator.StateGenerator;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.SpecModel;
 import javax.annotation.Nullable;
@@ -67,25 +68,8 @@ public class SectionsComponentProcessor extends AbstractSectionsComponentProcess
 
     ComponentImplGenerator.generate(specModel, specModel.getServiceParam())
         .addToTypeSpec(listSpecHelper.getTypeSpec());
-    BuilderGenerator.generate(listSpecHelper.getSpecModel())
-        .addToTypeSpec(listSpecHelper.getTypeSpec());
-
-    stages.generateTransferState(
-        SectionClassNames.SECTION_CONTEXT,
-        SectionClassNames.SECTION,
-        SectionClassNames.STATE_CONTAINER_SECTION);
-    stages.generateOnStateUpdateMethods(
-        SectionClassNames.SECTION_CONTEXT,
-        SectionClassNames.SECTION,
-        SectionClassNames.STATE_CONTAINER_SECTION,
-        SectionClassNames.SECTION_STATE_UPDATE,
-        Stages.StaticFlag.STATIC);
-    stages.generateLazyStateUpdateMethods(
-        SectionClassNames.SECTION_CONTEXT,
-        SectionClassNames.SECTION,
-        SectionClassNames.STATE_CONTAINER_SECTION,
-        SectionClassNames.SECTION_STATE_UPDATE);
-
+    BuilderGenerator.generate(specModel).addToTypeSpec(listSpecHelper.getTypeSpec());
+    StateGenerator.generate(specModel).addToTypeSpec(listSpecHelper.getTypeSpec());
     EventGenerator.generate(specModel).addToTypeSpec(listSpecHelper.getTypeSpec());
   }
 
