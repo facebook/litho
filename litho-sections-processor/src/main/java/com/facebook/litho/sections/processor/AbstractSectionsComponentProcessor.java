@@ -49,10 +49,11 @@ public abstract class AbstractSectionsComponentProcessor extends AbstractProcess
       try {
         Closeable closeable = null;
         if (element.getAnnotation(GroupSectionSpec.class) != null) {
-          final GroupSectionSpecModel groupSectionSpecModel = GroupSectionSpecModelFactory.create(
-              processingEnv.getElementUtils(),
-              (TypeElement) element,
-              getDependencyInjectionGenerator((TypeElement) element));
+          final GroupSectionSpecModel groupSectionSpecModel =
+              GroupSectionSpecModelFactory.createModel(
+                  processingEnv.getElementUtils(),
+                  (TypeElement) element,
+                  getDependencyInjectionGenerator((TypeElement) element));
           validate(groupSectionSpecModel);
           final GroupSectionSpecHelper groupSectionSpecHelper = new GroupSectionSpecHelper(
               processingEnv,
@@ -62,10 +63,11 @@ public abstract class AbstractSectionsComponentProcessor extends AbstractProcess
           closeable = groupSectionSpecHelper;
           generate(groupSectionSpecHelper);
         } else if (element.getAnnotation(DiffSectionSpec.class) != null) {
-          final DiffSectionSpecModel diffSectionSpecModel = DiffSectionSpecModelFactory.create(
-              processingEnv.getElementUtils(),
-              (TypeElement) element,
-              getDependencyInjectionGenerator((TypeElement) element));
+          final DiffSectionSpecModel diffSectionSpecModel =
+              DiffSectionSpecModelFactory.createModel(
+                  processingEnv.getElementUtils(),
+                  (TypeElement) element,
+                  getDependencyInjectionGenerator((TypeElement) element));
           validate(diffSectionSpecModel);
           final DiffSectionSpecHelper diffSectionSpecHelper = new DiffSectionSpecHelper(
               processingEnv,
