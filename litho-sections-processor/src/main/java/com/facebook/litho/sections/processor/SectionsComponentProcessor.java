@@ -24,6 +24,7 @@ import com.facebook.litho.specmodels.generator.StateGenerator;
 import com.facebook.litho.specmodels.generator.TreePropGenerator;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.SpecModel;
+import com.squareup.javapoet.TypeSpec;
 import javax.annotation.Nullable;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
@@ -41,7 +42,8 @@ public class SectionsComponentProcessor extends AbstractSectionsComponentProcess
   @Override
   protected void generate(GroupSectionSpecHelper groupSectionSpecHelper) {
     final GroupSectionSpecModel specModel = groupSectionSpecHelper.getSpecModel();
-    generateCommonListComponent(groupSectionSpecHelper);
+    generateCommonListComponent(
+        groupSectionSpecHelper.getSpecModel(), groupSectionSpecHelper.getTypeSpec());
     DelegateMethodGenerator.generateDelegates(
         specModel,
         DelegateMethodDescriptions.getGroupSectionSpecDelegatesMap(specModel))
@@ -52,26 +54,28 @@ public class SectionsComponentProcessor extends AbstractSectionsComponentProcess
   @Override
   protected void generate(DiffSectionSpecHelper diffSectionSpecHelper) {
     final DiffSectionSpecModel specModel = diffSectionSpecHelper.getSpecModel();
-    generateCommonListComponent(diffSectionSpecHelper);
+    final TypeSpec.Builder typeSpec = diffSectionSpecHelper.getTypeSpec();
+
+    generateCommonListComponent(specModel, typeSpec);
     DelegateMethodGenerator.generateDelegates(
             specModel, DelegateMethodDescriptions.getDiffSectionSpecDelegatesMap(specModel))
         .addToTypeSpec(diffSectionSpecHelper.getTypeSpec());
   }
 
   private <S extends SpecModel & HasService> void generateCommonListComponent(
-      ListSpecHelper<S> listSpecHelper) {
-    S specModel = listSpecHelper.getSpecModel();
-    listSpecHelper.getTypeSpec().addModifiers(Modifier.FINAL);
-    final Stages stages = listSpecHelper.getStages();
+      S specModel, TypeSpec.Builder typeSpec) {
 
-    stages.generateSourceDelegate(true);
-    PreambleGenerator.generate(specModel).addToTypeSpec(listSpecHelper.getTypeSpec());
+    if (specModel.hasInjectedDependencies()) {
+      specModel.getDependencyInjectionHelper().generate(specModel).addToTypeSpec(typeSpec);
+    } else {
+      typeSpec.addModifiers(Modifier.FINAL);
+    }
 
-    ComponentImplGenerator.generate(specModel, specModel.getServiceParam())
-        .addToTypeSpec(listSpecHelper.getTypeSpec());
-    BuilderGenerator.generate(specModel).addToTypeSpec(listSpecHelper.getTypeSpec());
-    StateGenerator.generate(specModel).addToTypeSpec(listSpecHelper.getTypeSpec());
-    EventGenerator.generate(specModel).addToTypeSpec(listSpecHelper.getTypeSpec());
+    PreambleGenerator.generate(specModel).addToTypeSpec(typeSpec);
+    ComponentImplGenerator.generate(specModel, specModel.getServiceParam()).addToTypeSpec(typeSpec);
+    BuilderGenerator.generate(specModel).addToTypeSpec(typeSpec);
+    StateGenerator.generate(specModel).addToTypeSpec(typeSpec);
+    EventGenerator.generate(specModel).addToTypeSpec(typeSpec);
   }
 
   @Override
