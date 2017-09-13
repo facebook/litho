@@ -387,10 +387,6 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
         state1.set(lazyUpdateValue);
         newComponentStateUpdate.mStateContainerImpl.state1 = state1.get();
       }
-
-      public boolean isLazyStateUpdate() {
-        return true;
-      }
     };
     c.updateStateLazy(_stateUpdate);
   }
@@ -574,10 +570,6 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
       state1.set(stateContainerImpl.state1);
       TestMountSpec.updateCurrentState(state1,mSomeParam);
       newComponentStateUpdate.mStateContainerImpl.state1 = state1.get();
-    }
-
-    public boolean isLazyStateUpdate() {
-      return false;
     }
   }
 

@@ -176,10 +176,6 @@ public class StateGeneratorTest {
             "    TestWithStateImpl newComponentStateUpdate = (TestWithStateImpl) newComponent;\n" +
             "    TestWithStateSpec.updateCurrentState();\n" +
             "  }\n" +
-            "\n" +
-            "  public boolean isLazyStateUpdate() {\n" +
-            "    return false;\n" +
-            "  }\n" +
             "}\n");
   }
 
@@ -205,10 +201,6 @@ public class StateGeneratorTest {
             "      com.facebook.litho.StateValue<java.lang.Boolean> arg4 = new com.facebook.litho.StateValue<java.lang.Boolean>();\n" +
             "      arg4.set(lazyUpdateValue);\n" +
             "      newComponentStateUpdate.mStateContainerImpl.arg4 = arg4.get();\n" +
-            "    }\n" +
-            "\n" +
-            "    public boolean isLazyStateUpdate() {\n" +
-            "      return true;\n" +
             "    }\n" +
             "  };\n" +
             "  c.updateStateLazy(_stateUpdate);\n" +
