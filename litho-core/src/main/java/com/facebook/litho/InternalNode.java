@@ -657,11 +657,15 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     }
 
     mPrivateFlags |= PFLAG_BORDER_IS_SET;
-    for (int i = 0, length = border.mEdgeWidths.length; i < length; ++i) {
-      setBorderWidth(Border.edgeFromIndex(i), border.mEdgeWidths[i], false);
+    if (mIsNestedTreeHolder || mLayoutAttributes == null) {
+      for (int i = 0, length = border.mEdgeWidths.length; i < length; ++i) {
+        setBorderWidth(Border.edgeFromIndex(i), border.mEdgeWidths[i], false);
+      }
+      System.arraycopy(border.mEdgeColors, 0, mBorderColors, 0, mBorderColors.length);
+      mBorderPathEffect = border.mPathEffect;
+    } else {
+      mLayoutAttributes.border(border);
     }
-    System.arraycopy(border.mEdgeColors, 0, mBorderColors, 0, mBorderColors.length);
-    mBorderPathEffect = border.mPathEffect;
     return this;
   }
 
