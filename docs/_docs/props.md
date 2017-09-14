@@ -167,7 +167,18 @@ MyComponent.create(c)
    .name("Three")
 ```
 
-Note that, when using `varArg`, `resType`s are not supported.
+If you specific `resType`:
+
+```java
+MyComponent.create(c)
+   .namePx(1f)
+   .nameRes(resId)
+   .nameAttr(attrResId)
+   .nameDip(1f)
+   .nameSp(1f)
+```
+
+
 
 ## Immutability
 The props of a Component are read-only. The Component's parent passes down values for the props when it creates the Component and they cannot change throughout the lifecycle of the Component. If the props values must be updated, the parent has to create a new Component and pass down new values for the props.

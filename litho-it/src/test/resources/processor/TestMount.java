@@ -634,25 +634,29 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
     }
 
     public Builder prop7Res(@StringRes int resId) {
-      this.mTestMountImpl.prop7 = resolveStringRes(resId);
+      final CharSequence res = resolveStringRes(resId);
+      this.mTestMountImpl.prop7 = res;
       mRequired.set(5);
       return this;
     }
 
     public Builder prop7Res(@StringRes int resId, Object... formatArgs) {
-      this.mTestMountImpl.prop7 = resolveStringRes(resId, formatArgs);
+      final CharSequence res = resolveStringRes(resId, formatArgs);
+      this.mTestMountImpl.prop7 = res;
       mRequired.set(5);
       return this;
     }
 
     public Builder prop7Attr(@AttrRes int attrResId, @StringRes int defResId) {
-      this.mTestMountImpl.prop7 = resolveStringAttr(attrResId, defResId);
+      final CharSequence res = resolveStringAttr(attrResId, defResId);
+      this.mTestMountImpl.prop7 = res;
       mRequired.set(5);
       return this;
     }
 
     public Builder prop7Attr(@AttrRes int attrResId) {
-      this.mTestMountImpl.prop7 = resolveStringAttr(attrResId, 0);
+      final CharSequence res = resolveStringAttr(attrResId, 0);
+      this.mTestMountImpl.prop7 = res;
       mRequired.set(5);
       return this;
     }
