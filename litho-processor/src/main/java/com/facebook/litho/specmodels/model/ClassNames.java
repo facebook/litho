@@ -103,8 +103,11 @@ public interface ClassNames {
   ClassName EVENT_TRIGGER_TARGET = ClassName.bestGuess("com.facebook.litho.EventTriggerTarget");
   ClassName HAS_EVENT_TRIGGER_CLASSNAME = ClassName.bestGuess("com.facebook.litho.HasEventTrigger");
   ClassName EVENT_TRIGGER = ClassName.bestGuess("com.facebook.litho.EventTrigger");
+
   ClassName COMPONENT_MATCHER =
       ClassName.bestGuess("com.facebook.litho.testing.assertj.ComponentMatcher");
   ClassName INSPECTABLE_COMPONENT =
       ClassName.bestGuess("com.facebook.litho.testing.InspectableComponent");
+  ClassName HAMCREST_MATCHER = ClassName.bestGuess("org.hamcrest.Matcher");
+  ClassName HAMCREST_CORE_IS = ClassName.bestGuess("org.hamcrest.core.Is");
 }

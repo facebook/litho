@@ -78,7 +78,7 @@ public class TestSpecModelFactory implements SpecModelFactory {
         enclosedSpecModel.getExtraBuilderMethods(),
         JavadocExtractor.getClassJavadoc(elements, element),
         enclosedSpecModel.getPropJavadocs(),
-        valueElement,
+        enclosedSpecModel,
         mTestSpecGenerator);
   }
 

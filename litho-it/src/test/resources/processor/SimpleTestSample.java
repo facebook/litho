@@ -6,6 +6,7 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+
 package com.facebook.litho.processor.integration.resources;
 
 import com.facebook.litho.ComponentContext;
@@ -27,8 +28,17 @@ public final class SimpleTestSample implements SimpleTestSampleSpec {
       return new ComponentMatcher() {
         @Override
         public boolean matches(InspectableComponent value) {
-          // TODO(T15854501): Implement matching.
-          return false;
+          if (!value
+              .getComponentClass()
+              .isAssignableFrom(
+                  com.facebook.litho.processor.integration.resources.SimpleLayout.class)) {
+            return false;
+          }
+          final com.facebook.litho.processor.integration.resources.SimpleLayout.SimpleLayoutImpl
+              impl =
+                  (com.facebook.litho.processor.integration.resources.SimpleLayout.SimpleLayoutImpl)
+                      value.getComponent();
+          return true;
         }
       };
     }

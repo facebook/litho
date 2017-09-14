@@ -9,6 +9,8 @@
 
 package com.facebook.litho.specmodels.generator.testing;
 
+import static com.facebook.litho.specmodels.generator.ComponentImplGenerator.getImplClassName;
+
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.PropDefaultModel;
@@ -292,7 +294,9 @@ public final class MatcherGenerator {
   }
 
   private static FieldSpec matcherFieldBuilder(final PropModel prop) {
-    return FieldSpec.builder(prop.getType(), getPropMatcherName(prop))
+    return FieldSpec.builder(
+            ParameterizedTypeName.get(ClassNames.HAMCREST_MATCHER, prop.getType().box()),
+            getPropMatcherName(prop))
         .addAnnotation(Nullable.class)
         .build();
   }
@@ -565,11 +569,15 @@ public final class MatcherGenerator {
       return getMethodSpecBuilder(prop, requiredIndex, name, parameters, codeBlockBuilder.build());
     }
 
+    final String propMatcherName = getPropMatcherName(prop);
+    final CodeBlock formattedStatement = CodeBlock.of(statement, formatObjects);
     final CodeBlock codeBlock =
         CodeBlock.builder()
-            .add("// TODO(T15854501): This needs to be assigned to a matcher.\n")
-            .add("$L value = ", prop.getType())
-            .addStatement(statement, formatObjects)
+            .addStatement(
+                "this.$N = $L.is($L)",
+                propMatcherName,
+                ClassNames.HAMCREST_CORE_IS,
+                formattedStatement)
             .build();
 
     return getMethodSpecBuilder(prop, requiredIndex, name, parameters, codeBlock);
@@ -596,17 +604,48 @@ public final class MatcherGenerator {
     return builder;
   }
 
+  private static CodeBlock generateMatchMethodBody(final SpecModel specModel) {
+    final CodeBlock.Builder builder = CodeBlock.builder();
+
+    // TODO(21831949): Create typed field for this.
+    final SpecModel enclosedSpecModel = (SpecModel) specModel.getRepresentedObject();
+    builder
+        .beginControlFlow(
+            "if (!value.getComponentClass().isAssignableFrom($L.class))",
+            enclosedSpecModel.getComponentTypeName())
+        .addStatement("return false")
+        .endControlFlow();
+
+    builder.addStatement(
+        "final $1L impl = ($1L) value.getComponent()", getEnclosedImplClassName(enclosedSpecModel));
+
+    for (PropModel prop : specModel.getProps()) {
+      final String matcherName = getPropMatcherName(prop);
+
+      builder
+          .beginControlFlow(
+              "if ($1N != null && !$1N.matches(impl.$2L))", matcherName, prop.getName())
+          .addStatement("return false")
+          .endControlFlow();
+    }
+
+    builder.addStatement("return true");
+
+    return builder.build();
+  }
+
+  public static ClassName getEnclosedImplClassName(final SpecModel enclosedSpecModel) {
+    final String componentTypeName = enclosedSpecModel.getComponentTypeName().toString();
+    return ClassName.bestGuess(componentTypeName + '.' + getImplClassName(enclosedSpecModel));
+  }
+
   private static MethodSpec generateBuildMethod(final SpecModel specModel) {
     final MethodSpec.Builder buildMethodBuilder =
         MethodSpec.methodBuilder("build")
             .addModifiers(Modifier.PUBLIC)
             .returns(ClassNames.COMPONENT_MATCHER);
 
-    final CodeBlock placeHolderCodeBlock =
-        CodeBlock.builder()
-            .add("// TODO(T15854501): Implement matching.\n")
-            .addStatement("return false")
-            .build();
+    final CodeBlock placeHolderCodeBlock = generateMatchMethodBody(specModel);
 
     final TypeSpec matcherInnerClass =
         TypeSpec.anonymousClassBuilder("")

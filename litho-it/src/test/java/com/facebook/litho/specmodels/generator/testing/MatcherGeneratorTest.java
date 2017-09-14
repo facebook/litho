@@ -30,11 +30,18 @@ import org.junit.Test;
 public class MatcherGeneratorTest {
   public static class DummyContext {}
 
+  private final SpecModel sEnclosedSpec =
+      MockSpecModel.newBuilder()
+          .componentName("MyEnclosedComponentSpec")
+          .componentTypeName(ClassName.bestGuess("com.facebook.litho.MyEnclosedComponentSpec"))
+          .build();
+
   @Test
   public void testEmptyGenerate() {
     final SpecModel specModel =
         MockSpecModel.newBuilder()
             .contextClass(ClassName.bestGuess(DummyContext.class.getName()))
+            .representedObject(sEnclosedSpec)
             .build();
 
     final TypeSpecDataHolder holder = MatcherGenerator.generate(specModel);
@@ -59,6 +66,7 @@ public class MatcherGeneratorTest {
     final SpecModel specModel =
         MockSpecModel.newBuilder()
             .contextClass(ClassName.bestGuess(DummyContext.class.getName()))
+            .representedObject(sEnclosedSpec)
             .props(
                 ImmutableList.of(
                     new PropModel(

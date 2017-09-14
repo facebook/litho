@@ -258,14 +258,13 @@ public class ProcessorIntegrationTest {
     final JavaFileObject layoutSpecObject =
         JavaFileObjects.forResource(
             Resources.getResource(getClass(), RES_PREFIX + "SimpleLayoutSpec.java"));
-
     final JavaFileObject expectedOutput =
         JavaFileObjects.forResource(
             Resources.getResource(getClass(), RES_PREFIX + "SimpleTestSample.java"));
 
     Truth.assertAbout(JavaSourcesSubjectFactory.javaSources())
         .that(ImmutableList.of(testSpecObject, layoutSpecObject))
-        .processedWith(new ComponentsTestingProcessor())
+        .processedWith(new ComponentsTestingProcessor(), new ComponentsProcessor())
         .compilesWithoutError()
         .and()
         .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleTestSample.class")
@@ -297,7 +296,7 @@ public class ProcessorIntegrationTest {
 
     Truth.assertAbout(JavaSourcesSubjectFactory.javaSources())
         .that(ImmutableList.of(testSpecObject, layoutSpecObject))
-        .processedWith(new ComponentsTestingProcessor())
+        .processedWith(new ComponentsTestingProcessor(), new ComponentsProcessor())
         .compilesWithoutError()
         .and()
         .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "BasicTestSample.class")
