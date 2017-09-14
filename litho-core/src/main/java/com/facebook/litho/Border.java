@@ -108,11 +108,11 @@ public class Border {
           edges[i] = value;
         }
         break;
-      case HORIZONTAL:
+      case VERTICAL:
         edges[EDGE_TOP] = value;
         edges[EDGE_BOTTOM] = value;
         break;
-      case VERTICAL:
+      case HORIZONTAL:
         edges[EDGE_LEFT] = value;
         edges[EDGE_RIGHT] = value;
         break;

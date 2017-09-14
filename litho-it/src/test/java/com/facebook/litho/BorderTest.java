@@ -59,10 +59,10 @@ public class BorderTest {
             .color(YogaEdge.ALL, 0xFFFF0000)
             .color(YogaEdge.HORIZONTAL, 0xFF00FF00)
             .build();
-    assertThat(border.mEdgeColors[Border.EDGE_LEFT]).isEqualTo(0xFFFF0000);
-    assertThat(border.mEdgeColors[Border.EDGE_TOP]).isEqualTo(0xFF00FF00);
-    assertThat(border.mEdgeColors[Border.EDGE_RIGHT]).isEqualTo(0xFFFF0000);
-    assertThat(border.mEdgeColors[Border.EDGE_BOTTOM]).isEqualTo(0xFF00FF00);
+    assertThat(border.mEdgeColors[Border.EDGE_LEFT]).isEqualTo(0xFF00FF00);
+    assertThat(border.mEdgeColors[Border.EDGE_TOP]).isEqualTo(0xFFFF0000);
+    assertThat(border.mEdgeColors[Border.EDGE_RIGHT]).isEqualTo(0xFF00FF00);
+    assertThat(border.mEdgeColors[Border.EDGE_BOTTOM]).isEqualTo(0xFFFF0000);
   }
 
   @Test
@@ -73,10 +73,10 @@ public class BorderTest {
             .color(YogaEdge.ALL, 0xFFFF0000)
             .color(YogaEdge.VERTICAL, 0xFF00FF00)
             .build();
-    assertThat(border.mEdgeColors[Border.EDGE_LEFT]).isEqualTo(0xFF00FF00);
-    assertThat(border.mEdgeColors[Border.EDGE_TOP]).isEqualTo(0xFFFF0000);
-    assertThat(border.mEdgeColors[Border.EDGE_RIGHT]).isEqualTo(0xFF00FF00);
-    assertThat(border.mEdgeColors[Border.EDGE_BOTTOM]).isEqualTo(0xFFFF0000);
+    assertThat(border.mEdgeColors[Border.EDGE_LEFT]).isEqualTo(0xFFFF0000);
+    assertThat(border.mEdgeColors[Border.EDGE_TOP]).isEqualTo(0xFF00FF00);
+    assertThat(border.mEdgeColors[Border.EDGE_RIGHT]).isEqualTo(0xFFFF0000);
+    assertThat(border.mEdgeColors[Border.EDGE_BOTTOM]).isEqualTo(0xFF00FF00);
   }
 
   @Test
@@ -126,20 +126,20 @@ public class BorderTest {
     final ComponentContext c = new ComponentContext(application);
     Border border =
         Border.create(c).widthPx(YogaEdge.ALL, 1).widthPx(YogaEdge.HORIZONTAL, 5).build();
-    assertThat(border.mEdgeWidths[Border.EDGE_LEFT]).isEqualTo(1);
-    assertThat(border.mEdgeWidths[Border.EDGE_TOP]).isEqualTo(5);
-    assertThat(border.mEdgeWidths[Border.EDGE_RIGHT]).isEqualTo(1);
-    assertThat(border.mEdgeWidths[Border.EDGE_BOTTOM]).isEqualTo(5);
+    assertThat(border.mEdgeWidths[Border.EDGE_LEFT]).isEqualTo(5);
+    assertThat(border.mEdgeWidths[Border.EDGE_TOP]).isEqualTo(1);
+    assertThat(border.mEdgeWidths[Border.EDGE_RIGHT]).isEqualTo(5);
+    assertThat(border.mEdgeWidths[Border.EDGE_BOTTOM]).isEqualTo(1);
   }
 
   @Test
   public void testVerticalWidthSetting() {
     final ComponentContext c = new ComponentContext(application);
     Border border = Border.create(c).widthPx(YogaEdge.ALL, 1).widthPx(YogaEdge.VERTICAL, 5).build();
-    assertThat(border.mEdgeWidths[Border.EDGE_LEFT]).isEqualTo(5);
-    assertThat(border.mEdgeWidths[Border.EDGE_TOP]).isEqualTo(1);
-    assertThat(border.mEdgeWidths[Border.EDGE_RIGHT]).isEqualTo(5);
-    assertThat(border.mEdgeWidths[Border.EDGE_BOTTOM]).isEqualTo(1);
+    assertThat(border.mEdgeWidths[Border.EDGE_LEFT]).isEqualTo(1);
+    assertThat(border.mEdgeWidths[Border.EDGE_TOP]).isEqualTo(5);
+    assertThat(border.mEdgeWidths[Border.EDGE_RIGHT]).isEqualTo(1);
+    assertThat(border.mEdgeWidths[Border.EDGE_BOTTOM]).isEqualTo(5);
   }
 
   @Test
