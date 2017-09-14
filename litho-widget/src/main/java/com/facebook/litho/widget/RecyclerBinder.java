@@ -11,6 +11,7 @@ package com.facebook.litho.widget;
 
 import static android.support.v7.widget.OrientationHelper.HORIZONTAL;
 import static android.support.v7.widget.OrientationHelper.VERTICAL;
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static com.facebook.litho.MeasureComparisonUtils.isMeasureSpecCompatible;
 import static com.facebook.litho.widget.RenderInfoViewCreatorController.COMPONENT_VIEW_TYPE;
@@ -1200,16 +1201,6 @@ public class RecyclerBinder
     public BaseViewHolder(View view, boolean isLithoViewType) {
       super(view);
       this.isLithoViewType = isLithoViewType;
-
-      switch (mLayoutInfo.getScrollDirection()) {
-        case OrientationHelper.VERTICAL:
-          view.setLayoutParams(
-              new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, WRAP_CONTENT));
-          break;
-        default:
-          view.setLayoutParams(
-              new RecyclerView.LayoutParams(WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
-      }
     }
   }
 
@@ -1245,6 +1236,37 @@ public class RecyclerBinder
         if (!componentTreeHolder.isTreeValid()) {
           componentTreeHolder.computeLayoutSync(
               mComponentContext, childrenWidthSpec, childrenHeightSpec, null);
+        }
+
+        int width, height;
+        switch (mLayoutInfo.getScrollDirection()) {
+          case OrientationHelper.VERTICAL:
+            if (SizeSpec.getMode(childrenWidthSpec) == SizeSpec.EXACTLY) {
+              width = SizeSpec.getSize(childrenWidthSpec);
+            } else {
+              width = ViewGroup.LayoutParams.MATCH_PARENT;
+            }
+            if (SizeSpec.getMode(childrenHeightSpec) == SizeSpec.EXACTLY) {
+              height = SizeSpec.getSize(childrenHeightSpec);
+            } else {
+              height = WRAP_CONTENT;
+            }
+
+            lithoView.setLayoutParams(new RecyclerView.LayoutParams(width, height));
+            break;
+          default:
+            if (SizeSpec.getMode(childrenWidthSpec) == SizeSpec.EXACTLY) {
+              width = SizeSpec.getSize(childrenWidthSpec);
+            } else {
+              width = ViewGroup.LayoutParams.WRAP_CONTENT;
+            }
+            if (SizeSpec.getMode(childrenHeightSpec) == SizeSpec.EXACTLY) {
+              height = SizeSpec.getSize(childrenHeightSpec);
+            } else {
+              height = MATCH_PARENT;
+            }
+
+            lithoView.setLayoutParams(new RecyclerView.LayoutParams(width, height));
         }
 
         lithoView.setComponentTree(componentTreeHolder.getComponentTree());
