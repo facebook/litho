@@ -233,18 +233,6 @@ public class BuilderGeneratorTest {
             "    mRequired.clear();\n" +
             "  }\n" +
             "\n" +
-            "  public Builder size(java.lang.Float size) {\n" +
-            "    if (size == null) {\n" +
-            "      return this;\n" +
-            "    }\n" +
-            "    if (this.mTestResTypeWithVarArgsImpl.sizes == null) {\n" +
-            "      this.mTestResTypeWithVarArgsImpl.sizes = new java.util.ArrayList<java.lang.Float>();\n" +
-            "    }\n" +
-            "    this.mTestResTypeWithVarArgsImpl.sizes.add(size);\n" +
-            "    mRequired.set(0);\n" +
-            "    return this;\n" +
-            "  }\n" +
-            "\n" +
             "  public Builder sizePx(@android.support.annotation.Px float size) {\n" +
             "    if (this.mTestResTypeWithVarArgsImpl.sizes == null) {\n" +
             "      this.mTestResTypeWithVarArgsImpl.sizes = new java.util.ArrayList<java.lang.Float>();\n" +
