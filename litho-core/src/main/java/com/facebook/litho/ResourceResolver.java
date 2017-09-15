@@ -23,7 +23,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
 public class ResourceResolver {
-  private ComponentContext mContext;
   private Resources mResources;
   private Resources.Theme mTheme;
   private ResourceCache mResourceCache;
@@ -33,7 +32,6 @@ public class ResourceResolver {
   private final int[] mAttrs = new int[1];
 
   public final void init(ComponentContext context, ResourceCache resourceCache) {
-    mContext = context;
     mResources = context.getResources();
     mTheme = context.getTheme();
     mResourceCache = resourceCache;
@@ -224,7 +222,7 @@ public class ResourceResolver {
 
   public final String[] resolveStringArrayAttr(@AttrRes int attrResId, @ArrayRes int defResId) {
     mAttrs[0] = attrResId;
-    TypedArray a = mContext.getTheme().obtainStyledAttributes(mAttrs);
+    TypedArray a = mTheme.obtainStyledAttributes(mAttrs);
 
     try {
       return resolveStringArrayRes(a.getResourceId(0, defResId));
@@ -246,7 +244,7 @@ public class ResourceResolver {
 
   public final int[] resolveIntArrayAttr(@AttrRes int attrResId, @ArrayRes int defResId) {
     mAttrs[0] = attrResId;
-    TypedArray a = mContext.getTheme().obtainStyledAttributes(mAttrs);
+    TypedArray a = mTheme.obtainStyledAttributes(mAttrs);
 
     try {
       return resolveIntArrayRes(a.getResourceId(0, defResId));
@@ -344,7 +342,6 @@ public class ResourceResolver {
   }
 
   void internalRelease() {
-    mContext = null;
     mResources = null;
     mTheme = null;
     mResourceCache = null;

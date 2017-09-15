@@ -11,7 +11,6 @@ package com.facebook.litho;
 
 import static android.support.annotation.Dimension.DP;
 
-import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.AttrRes;
@@ -90,7 +89,6 @@ class LayoutAttributes implements ComponentLayout.Builder {
   private final ResourceResolver mResourceResolver = new ResourceResolver();
 
   private ComponentContext mComponentContext;
-  private Resources mResources;
   private long mPrivateFlags;
 
   private NodeInfo mNodeInfo;
@@ -145,7 +143,6 @@ class LayoutAttributes implements ComponentLayout.Builder {
   void init(ComponentContext componentContext, ComponentLayout.Builder layoutToCopyInto) {
     mComponentContext = componentContext;
     mNodeToCopyInto = layoutToCopyInto;
-    mResources = componentContext.getResources();
     mResourceResolver.init(mComponentContext, componentContext.getResourceCache());
   }
 
@@ -726,7 +723,7 @@ class LayoutAttributes implements ComponentLayout.Builder {
       return foreground(null);
     }
 
-    return foreground(mResources.getDrawable(resId));
+    return foreground(mComponentContext.getResources().getDrawable(resId));
   }
 
   @Override
@@ -841,12 +838,12 @@ class LayoutAttributes implements ComponentLayout.Builder {
 
   @Override
   public LayoutAttributes contentDescription(@StringRes int stringId) {
-    return contentDescription(mResources.getString(stringId));
+    return contentDescription(mComponentContext.getResources().getString(stringId));
   }
 
   @Override
   public LayoutAttributes contentDescription(@StringRes int stringId, Object... formatArgs) {
-    return contentDescription(mResources.getString(stringId, formatArgs));
+    return contentDescription(mComponentContext.getResources().getString(stringId, formatArgs));
   }
 
   @Override
