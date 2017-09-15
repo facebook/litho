@@ -1287,6 +1287,12 @@ public class RecyclerBinder
     }
 
     @Override
+    public void onViewAttachedToWindow(BaseViewHolder holder) {
+      final int position = holder.getLayoutPosition();
+      mViewportManager.onViewportchangedAfterViewAdded(position);
+    }
+
+    @Override
     public void onViewDetachedFromWindow(BaseViewHolder holder) {
       // LayoutPosition of the detached ViewHolder is always 1 position less than
       // the actual on screen.

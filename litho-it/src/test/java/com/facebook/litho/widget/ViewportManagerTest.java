@@ -111,6 +111,22 @@ public class ViewportManagerTest {
   }
 
   @Test
+  public void testOnViewportChangedFromAddWithScrolling() {
+    ViewportManager viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_DRAGGING, -1, 0);
+    viewportManager.onViewportchangedAfterViewAdded(1);
+
+    verifyZeroInteractions(mMainThreadHandler);
+  }
+
+  @Test
+  public void testOnViewportChangedFromAddWithoutScrolling() {
+    ViewportManager viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_IDLE, 0, 1);
+    viewportManager.onViewportchangedAfterViewAdded(0);
+
+    verify(mMainThreadHandler).post(any(Runnable.class));
+  }
+
+  @Test
   public void testTotalItemChangedWhileVisiblePositionsRemainTheSame() {
     setTotalItemInMockedLayoutManager(13);
     ViewportManager viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_IDLE, 5, 10);

@@ -112,6 +112,25 @@ final class ViewportManager {
     }
   }
 
+  @UiThread
+  void onViewportchangedAfterViewAdded(int addedPosition) {
+    if (isScrolling()) {
+      // If the RecyclerView is scrolling we do not have to handle viewport changed notification
+      return;
+    }
+
+    final boolean isRangeNotInitialised =
+        mCurrentFirstVisiblePosition <= 0 && mCurrentLastVisiblePosition <= 0;
+
+    final boolean isPositionAddedWithinRange =
+        mCurrentFirstVisiblePosition <= addedPosition
+            && addedPosition <= mCurrentLastVisiblePosition;
+
+    if (isRangeNotInitialised || isPositionAddedWithinRange) {
+      putViewportChangedRunnableToEndOfUIThreadQueue();
+    }
+  }
+
   /**
    * Handles a change in viewport when a View is removed from the RecyclerView.
    * This method does nothing if the removal is due to a scrolling event
