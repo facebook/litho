@@ -167,15 +167,15 @@ MyComponent.create(c)
    .name("Three")
 ```
 
-If you specific `resType`:
+You can also combine `varArg` with `resType` props:
 
 ```java
 MyComponent.create(c)
-   .namePx(1f)
-   .nameRes(resId)
-   .nameAttr(attrResId)
-   .nameDip(1f)
-   .nameSp(1f)
+   .textSizePx(1f)
+   .textSizeRes(resId)
+   .textSizeAttr(attrResId)
+   .textSizeDip(1f)
+   .textSizeSp(1f)
 ```
 
 
