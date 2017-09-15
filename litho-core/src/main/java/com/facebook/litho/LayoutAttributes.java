@@ -38,106 +38,60 @@ import java.util.List;
 @ThreadConfined(ThreadConfined.ANY)
 class LayoutAttributes implements ComponentLayout.Builder {
 
-  // Flags used to indicate that a certain attribute was explicitly set on the node.
-  private static final long PFLAG_LAYOUT_DIRECTION_IS_SET = 1L << 0;
-  private static final long PFLAG_ALIGN_SELF_IS_SET = 1L << 1;
-  private static final long PFLAG_POSITION_TYPE_IS_SET = 1L << 2;
-  private static final long PFLAG_FLEX_IS_SET = 1L << 3;
-  private static final long PFLAG_FLEX_GROW_IS_SET = 1L << 4;
-  private static final long PFLAG_FLEX_SHRINK_IS_SET = 1L << 5;
-  private static final long PFLAG_FLEX_BASIS_IS_SET = 1L << 6;
-  private static final long PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET = 1L << 7;
-  private static final long PFLAG_DUPLICATE_PARENT_STATE_IS_SET = 1L << 8;
-  private static final long PFLAG_MARGIN_IS_SET = 1L << 9;
-  private static final long PFLAG_PADDING_IS_SET = 1L << 10;
-  private static final long PFLAG_POSITION_IS_SET = 1L << 11;
-  private static final long PFLAG_POSITION_PERCENT_IS_SET = 1L << 12;
-  private static final long PFLAG_WIDTH_IS_SET = 1L << 13;
-  private static final long PFLAG_MIN_WIDTH_IS_SET = 1L << 14;
-  private static final long PFLAG_MAX_WIDTH_IS_SET = 1L << 15;
-  private static final long PFLAG_HEIGHT_IS_SET = 1L << 16;
-  private static final long PFLAG_MIN_HEIGHT_IS_SET = 1L << 17;
-  private static final long PFLAG_MAX_HEIGHT_IS_SET = 1L << 18;
-  private static final long PFLAG_BACKGROUND_IS_SET = 1L << 19;
-  private static final long PFLAG_FOREGROUND_IS_SET = 1L << 20;
-  private static final long PFLAG_VISIBLE_HANDLER_IS_SET = 1L << 21;
-  private static final long PFLAG_FOCUSED_HANDLER_IS_SET = 1L << 22;
-  private static final long PFLAG_FULL_IMPRESSION_HANDLER_IS_SET = 1L << 23;
-  private static final long PFLAG_INVISIBLE_HANDLER_IS_SET = 1L << 24;
-  private static final long PFLAG_UNFOCUSED_HANDLER_IS_SET = 1L << 25;
-  private static final long PFLAG_TOUCH_EXPANSION_IS_SET = 1L << 26;
-  private static final long PFLAG_BORDER_WIDTH_IS_SET = 1L << 27;
-  private static final long PFLAG_ASPECT_RATIO_IS_SET = 1L << 28;
-  private static final long PFLAG_TRANSITION_KEY_IS_SET = 1L << 29;
-  private static final long PFLAG_BORDER_COLOR_IS_SET = 1L << 30;
-  private static final long PFLAG_WRAP_IN_VIEW_IS_SET = 1L << 31;
-  private static final long PFLAG_VISIBLE_HEIGHT_RATIO_IS_SET = 1L << 32;
-  private static final long PFLAG_VISIBLE_WIDTH_RATIO_IS_SET = 1L << 33;
-  private static final long PFLAG_TEST_KEY_IS_SET = 1L << 34;
-  private static final long PFLAG_FLEX_BASIS_PERCENT_IS_SET = 1L << 35;
-  private static final long PFLAG_MARGIN_PERCENT_IS_SET = 1L << 36;
-  private static final long PFLAG_MARGIN_AUTO_IS_SET = 1L << 37;
-  private static final long PFLAG_PADDING_PERCENT_IS_SET = 1L << 38;
-  private static final long PFLAG_WIDTH_PERCENT_IS_SET = 1L << 39;
-  private static final long PFLAG_MIN_WIDTH_PERCENT_IS_SET = 1L << 40;
-  private static final long PFLAG_MAX_WIDTH_PERCENT_IS_SET = 1L << 41;
-  private static final long PFLAG_HEIGHT_PERCENT_IS_SET = 1L << 42;
-  private static final long PFLAG_MIN_HEIGHT_PERCENT_IS_SET = 1L << 43;
-  private static final long PFLAG_MAX_HEIGHT_PERCENT_IS_SET = 1L << 44;
-  private static final long PFLAG_BORDER_IS_SET = 1L << 45;
+  // Indices for entries into the SparseArray.
+  private static final int LAYOUT_DIRECTION = 0;
+  private static final int ALIGN_SELF = 1;
+  private static final int POSITION_TYPE = 2;
+  private static final int FLEX = 3;
+  private static final int FLEX_GROW = 4;
+  private static final int FLEX_SHRINK = 5;
+  private static final int FLEX_BASIS = 6;
+  private static final int IMPORTANT_FOR_ACCESSIBILITY = 7;
+  private static final int DUPLICATE_PARENT_STATE = 8;
+  private static final int MARGIN = 9;
+  private static final int PADDING = 10;
+  private static final int POSITION = 11;
+  private static final int POSITION_PERCENT = 12;
+  private static final int WIDTH = 13;
+  private static final int MIN_WIDTH = 14;
+  private static final int MAX_WIDTH = 15;
+  private static final int HEIGHT = 16;
+  private static final int MIN_HEIGHT = 17;
+  private static final int MAX_HEIGHT = 18;
+  private static final int BACKGROUND = 19;
+  private static final int FOREGROUND = 20;
+  private static final int VISIBLE_HANDLER = 21;
+  private static final int FOCUSED_HANDLER = 22;
+  private static final int FULL_IMPRESSION_HANDLER = 23;
+  private static final int INVISIBLE_HANDLER = 24;
+  private static final int UNFOCUSED_HANDLER = 25;
+  private static final int TOUCH_EXPANSION = 26;
+  private static final int BORDER_WIDTH = 27;
+  private static final int ASPECT_RATIO = 28;
+  private static final int TRANSITION_KEY = 29;
+  private static final int BORDER_COLOR = 30;
+  private static final int WRAP_IN_VIEW = 31;
+  private static final int VISIBLE_HEIGHT_RATIO = 32;
+  private static final int VISIBLE_WIDTH_RATIO = 33;
+  private static final int TEST_KEY = 34;
+  private static final int FLEX_BASIS_PERCENT = 35;
+  private static final int MARGIN_PERCENT = 36;
+  private static final int MARGIN_AUTO = 37;
+  private static final int PADDING_PERCENT = 38;
+  private static final int WIDTH_PERCENT = 39;
+  private static final int MIN_WIDTH_PERCENT = 40;
+  private static final int MAX_WIDTH_PERCENT = 41;
+  private static final int HEIGHT_PERCENT = 42;
+  private static final int MIN_HEIGHT_PERCENT = 43;
+  private static final int MAX_HEIGHT_PERCENT = 44;
+  private static final int BORDER = 45;
+
+  private final SparseArray<Object> mSparseArray = new SparseArray<>();
 
   private final ResourceResolver mResourceResolver = new ResourceResolver();
 
   private ComponentContext mComponentContext;
-  private long mPrivateFlags;
-
   private NodeInfo mNodeInfo;
-  private float mVisibleHeightRatio;
-  private float mVisibleWidthRatio;
-  private EventHandler<VisibleEvent> mVisibleHandler;
-  private EventHandler<FocusedVisibleEvent> mFocusedHandler;
-  private EventHandler<UnfocusedVisibleEvent> mUnfocusedHandler;
-  private EventHandler<FullImpressionVisibleEvent> mFullImpressionHandler;
-  private EventHandler<InvisibleEvent> mInvisibleHandler;
-  private String mTestKey;
-  private YogaDirection mLayoutDirection;
-  private YogaAlign mAlignSelf;
-  private YogaPositionType mPositionType;
-  private float mFlex;
-  private float mFlexGrow;
-  private float mFlexShrink;
-  @Px private int mFlexBasisPx;
-  private float mFlexBasisPercent;
-  private int mImportantForAccessibility;
-  private boolean mDuplicateParentState;
-  private YogaEdgesWithInts mMargins;
-  private YogaEdgesWithFloats mMarginPercents;
-  private List<YogaEdge> mMarginAutos;
-  private YogaEdgesWithInts mPaddings;
-  private YogaEdgesWithFloats mPaddingPercents;
-  private int mBorderColor;
-  private YogaEdgesWithInts mBorderWidths;
-  private YogaEdgesWithInts mPositions;
-  private YogaEdgesWithFloats mPositionPercents;
-  private YogaEdgesWithInts mTouchExpansions;
-  @Px private int mWidthPx;
-  private float mWidthPercent;
-  @Px private int mMinWidthPx;
-  private float mMinWidthPercent;
-  @Px private int mMaxWidthPx;
-  private float mMaxWidthPercent;
-  @Px private int mHeightPx;
-  private float mHeightPercent;
-  @Px private int mMinHeightPx;
-  private float mMinHeightPercent;
-  @Px private int mMaxHeightPx;
-  private float mMaxHeightPercent;
-  private float mAspectRatio;
-  private Reference<? extends Drawable> mBackground;
-  private Drawable mForeground;
-  private String mTransitionKey;
-  private Border mBorder;
-
   private ComponentLayout.Builder mNodeToCopyInto;
 
   void init(ComponentContext componentContext, ComponentLayout.Builder layoutToCopyInto) {
@@ -148,57 +102,49 @@ class LayoutAttributes implements ComponentLayout.Builder {
 
   @Override
   public LayoutAttributes layoutDirection(YogaDirection direction) {
-    mPrivateFlags |= PFLAG_LAYOUT_DIRECTION_IS_SET;
-    mLayoutDirection = direction;
+    mSparseArray.put(LAYOUT_DIRECTION, direction);
     return this;
   }
 
   @Override
   public LayoutAttributes alignSelf(YogaAlign alignSelf) {
-    mPrivateFlags |= PFLAG_ALIGN_SELF_IS_SET;
-    mAlignSelf = alignSelf;
+    mSparseArray.put(ALIGN_SELF, alignSelf);
     return this;
   }
 
   @Override
   public LayoutAttributes positionType(YogaPositionType positionType) {
-    mPrivateFlags |= PFLAG_POSITION_TYPE_IS_SET;
-    mPositionType = positionType;
+    mSparseArray.put(POSITION_TYPE, positionType);
     return this;
   }
 
   @Override
   public LayoutAttributes flex(float flex) {
-    mPrivateFlags |= PFLAG_FLEX_IS_SET;
-    mFlex = flex;
+    mSparseArray.put(FLEX, flex);
     return this;
   }
 
   @Override
   public LayoutAttributes flexGrow(float flexGrow) {
-    mPrivateFlags |= PFLAG_FLEX_GROW_IS_SET;
-    mFlexGrow = flexGrow;
+    mSparseArray.put(FLEX_GROW, flexGrow);
     return this;
   }
 
   @Override
   public LayoutAttributes flexShrink(float flexShrink) {
-    mPrivateFlags |= PFLAG_FLEX_SHRINK_IS_SET;
-    mFlexShrink = flexShrink;
+    mSparseArray.put(FLEX_SHRINK, flexShrink);
     return this;
   }
 
   @Override
   public LayoutAttributes flexBasisPx(@Px int flexBasis) {
-    mPrivateFlags |= PFLAG_FLEX_BASIS_IS_SET;
-    mFlexBasisPx = flexBasis;
+    mSparseArray.put(FLEX_BASIS, flexBasis);
     return this;
   }
 
   @Override
   public LayoutAttributes flexBasisPercent(float percent) {
-    mPrivateFlags |= PFLAG_FLEX_BASIS_PERCENT_IS_SET;
-    mFlexBasisPercent = percent;
+    mSparseArray.put(FLEX_BASIS_PERCENT, percent);
     return this;
   }
 
@@ -224,46 +170,52 @@ class LayoutAttributes implements ComponentLayout.Builder {
 
   @Override
   public LayoutAttributes importantForAccessibility(int importantForAccessibility) {
-    mPrivateFlags |= PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET;
-    mImportantForAccessibility = importantForAccessibility;
+    mSparseArray.put(IMPORTANT_FOR_ACCESSIBILITY, importantForAccessibility);
     return this;
   }
 
   @Override
   public LayoutAttributes duplicateParentState(boolean duplicateParentState) {
-    mPrivateFlags |= PFLAG_DUPLICATE_PARENT_STATE_IS_SET;
-    mDuplicateParentState = duplicateParentState;
+    mSparseArray.put(DUPLICATE_PARENT_STATE, duplicateParentState);
     return this;
   }
 
   @Override
   public LayoutAttributes marginPx(YogaEdge edge, @Px int margin) {
-    mPrivateFlags |= PFLAG_MARGIN_IS_SET;
+    YogaEdgesWithInts margins = (YogaEdgesWithInts) mSparseArray.get(MARGIN);
 
-    if (mMargins == null) {
-      mMargins = new YogaEdgesWithInts();
+    if (margins == null) {
+      margins = new YogaEdgesWithInts();
+      mSparseArray.put(MARGIN, margins);
     }
-    mMargins.add(edge, margin);
+
+    margins.add(edge, margin);
     return this;
   }
 
   @Override
   public LayoutAttributes marginPercent(YogaEdge edge, float percent) {
-    mPrivateFlags |= PFLAG_MARGIN_PERCENT_IS_SET;
-    if (mMarginPercents == null) {
-      mMarginPercents = new YogaEdgesWithFloats();
+    YogaEdgesWithFloats marginPercents = (YogaEdgesWithFloats) mSparseArray.get(MARGIN_PERCENT);
+
+    if (marginPercents == null) {
+      marginPercents = new YogaEdgesWithFloats();
+      mSparseArray.put(MARGIN_PERCENT, marginPercents);
     }
-    mMarginPercents.add(edge, percent);
+
+    marginPercents.add(edge, percent);
     return this;
   }
 
   @Override
   public LayoutAttributes marginAuto(YogaEdge edge) {
-    mPrivateFlags |= PFLAG_MARGIN_AUTO_IS_SET;
-    if (mMarginAutos == null) {
-      mMarginAutos = new ArrayList<>(2);
+    List<YogaEdge> marginAutos = (List<YogaEdge>) mSparseArray.get(MARGIN_AUTO);
+
+    if (marginAutos == null) {
+      marginAutos = new ArrayList<>(2);
+      mSparseArray.put(MARGIN_AUTO, marginAutos);
     }
-    mMarginAutos.add(edge);
+
+    marginAutos.add(edge);
     return this;
   }
 
@@ -290,21 +242,27 @@ class LayoutAttributes implements ComponentLayout.Builder {
 
   @Override
   public LayoutAttributes paddingPx(YogaEdge edge, @Px int padding) {
-    mPrivateFlags |= PFLAG_PADDING_IS_SET;
-    if (mPaddings == null) {
-      mPaddings = new YogaEdgesWithInts();
+    YogaEdgesWithInts paddings = (YogaEdgesWithInts) mSparseArray.get(PADDING);
+
+    if (paddings == null) {
+      paddings = new YogaEdgesWithInts();
+      mSparseArray.put(PADDING, paddings);
     }
-    mPaddings.add(edge, padding);
+
+    paddings.add(edge, padding);
     return this;
   }
 
   @Override
   public LayoutAttributes paddingPercent(YogaEdge edge, float percent) {
-    mPrivateFlags |= PFLAG_PADDING_PERCENT_IS_SET;
-    if (mPaddingPercents == null) {
-      mPaddingPercents = new YogaEdgesWithFloats();
+    YogaEdgesWithFloats paddingPercents = (YogaEdgesWithFloats) mSparseArray.get(PADDING_PERCENT);
+
+    if (paddingPercents == null) {
+      paddingPercents = new YogaEdgesWithFloats();
+      mSparseArray.put(PADDING_PERCENT, paddingPercents);
     }
-    mPaddingPercents.add(edge, percent);
+
+    paddingPercents.add(edge, percent);
     return this;
   }
 
@@ -331,18 +289,20 @@ class LayoutAttributes implements ComponentLayout.Builder {
 
   @Override
   public LayoutAttributes border(Border border) {
-    mPrivateFlags |= PFLAG_BORDER_IS_SET;
-    mBorder = border;
+    mSparseArray.put(BORDER, border);
     return this;
   }
 
   @Override
   public LayoutAttributes borderWidthPx(YogaEdge edge, @Px int borderWidth) {
-    mPrivateFlags |= PFLAG_BORDER_WIDTH_IS_SET;
-    if (mBorderWidths == null) {
-      mBorderWidths = new YogaEdgesWithInts();
+    YogaEdgesWithInts borderWidths = (YogaEdgesWithInts) mSparseArray.get(BORDER_WIDTH);
+
+    if (borderWidths == null) {
+      borderWidths = new YogaEdgesWithInts();
+      mSparseArray.put(BORDER_WIDTH, borderWidths);
     }
-    mBorderWidths.add(edge, borderWidth);
+
+    borderWidths.add(edge, borderWidth);
     return this;
   }
 
@@ -369,28 +329,33 @@ class LayoutAttributes implements ComponentLayout.Builder {
 
   @Override
   public LayoutAttributes borderColor(@ColorInt int borderColor) {
-    mPrivateFlags |= PFLAG_BORDER_COLOR_IS_SET;
-    mBorderColor = borderColor;
+    mSparseArray.put(BORDER_COLOR, borderColor);
     return this;
   }
 
   @Override
   public LayoutAttributes positionPx(YogaEdge edge, @Px int position) {
-    mPrivateFlags |= PFLAG_POSITION_IS_SET;
-    if (mPositions == null) {
-      mPositions = new YogaEdgesWithInts();
+    YogaEdgesWithInts positions = (YogaEdgesWithInts) mSparseArray.get(POSITION);
+
+    if (positions == null) {
+      positions = new YogaEdgesWithInts();
+      mSparseArray.put(POSITION, positions);
     }
-    mPositions.add(edge, position);
+
+    positions.add(edge, position);
     return this;
   }
 
   @Override
   public LayoutAttributes positionPercent(YogaEdge edge, float percent) {
-    mPrivateFlags |= PFLAG_POSITION_PERCENT_IS_SET;
-    if (mPositionPercents == null) {
-      mPositionPercents = new YogaEdgesWithFloats();
+    YogaEdgesWithFloats positionPercents = (YogaEdgesWithFloats) mSparseArray.get(POSITION_PERCENT);
+
+    if (positionPercents == null) {
+      positionPercents = new YogaEdgesWithFloats();
+      mSparseArray.put(POSITION_PERCENT, positionPercents);
     }
-    mPositionPercents.add(edge, percent);
+
+    positionPercents.add(edge, percent);
     return this;
   }
 
@@ -417,15 +382,13 @@ class LayoutAttributes implements ComponentLayout.Builder {
 
   @Override
   public LayoutAttributes widthPx(@Px int width) {
-    mPrivateFlags |= PFLAG_WIDTH_IS_SET;
-    mWidthPx = width;
+    mSparseArray.put(WIDTH, width);
     return this;
   }
 
   @Override
   public LayoutAttributes widthPercent(float percent) {
-    mPrivateFlags |= PFLAG_WIDTH_PERCENT_IS_SET;
-    mWidthPercent = percent;
+    mSparseArray.put(WIDTH_PERCENT, percent);
     return this;
   }
 
@@ -451,15 +414,13 @@ class LayoutAttributes implements ComponentLayout.Builder {
 
   @Override
   public LayoutAttributes minWidthPx(@Px int minWidth) {
-    mPrivateFlags |= PFLAG_MIN_WIDTH_IS_SET;
-    mMinWidthPx = minWidth;
+    mSparseArray.put(MIN_WIDTH, minWidth);
     return this;
   }
 
   @Override
   public LayoutAttributes minWidthPercent(float percent) {
-    mPrivateFlags |= PFLAG_MIN_WIDTH_PERCENT_IS_SET;
-    mMinWidthPercent = percent;
+    mSparseArray.put(MIN_WIDTH_PERCENT, percent);
     return this;
   }
 
@@ -485,15 +446,13 @@ class LayoutAttributes implements ComponentLayout.Builder {
 
   @Override
   public LayoutAttributes maxWidthPx(@Px int maxWidth) {
-    mPrivateFlags |= PFLAG_MAX_WIDTH_IS_SET;
-    mMaxWidthPx = maxWidth;
+    mSparseArray.put(MAX_WIDTH, maxWidth);
     return this;
   }
 
   @Override
   public LayoutAttributes maxWidthPercent(float percent) {
-    mPrivateFlags |= PFLAG_MAX_WIDTH_PERCENT_IS_SET;
-    mMaxWidthPercent = percent;
+    mSparseArray.put(MAX_WIDTH_PERCENT, percent);
     return this;
   }
 
@@ -519,15 +478,13 @@ class LayoutAttributes implements ComponentLayout.Builder {
 
   @Override
   public LayoutAttributes heightPx(@Px int height) {
-    mPrivateFlags |= PFLAG_HEIGHT_IS_SET;
-    mHeightPx = height;
+    mSparseArray.put(HEIGHT, height);
     return this;
   }
 
   @Override
   public LayoutAttributes heightPercent(float percent) {
-    mPrivateFlags |= PFLAG_HEIGHT_PERCENT_IS_SET;
-    mHeightPercent = percent;
+    mSparseArray.put(HEIGHT_PERCENT, percent);
     return this;
   }
 
@@ -553,15 +510,13 @@ class LayoutAttributes implements ComponentLayout.Builder {
 
   @Override
   public LayoutAttributes minHeightPx(@Px int minHeight) {
-    mPrivateFlags |= PFLAG_MIN_HEIGHT_IS_SET;
-    mMinHeightPx = minHeight;
+    mSparseArray.put(MIN_HEIGHT, minHeight);
     return this;
   }
 
   @Override
   public LayoutAttributes minHeightPercent(float percent) {
-    mPrivateFlags |= PFLAG_MIN_HEIGHT_PERCENT_IS_SET;
-    mMinHeightPercent = percent;
+    mSparseArray.put(MIN_HEIGHT_PERCENT, percent);
     return this;
   }
 
@@ -587,15 +542,13 @@ class LayoutAttributes implements ComponentLayout.Builder {
 
   @Override
   public LayoutAttributes maxHeightPx(@Px int maxHeight) {
-    mPrivateFlags |= PFLAG_MAX_HEIGHT_IS_SET;
-    mMaxHeightPx = maxHeight;
+    mSparseArray.put(MAX_HEIGHT, maxHeight);
     return this;
   }
 
   @Override
   public LayoutAttributes maxHeightPercent(float percent) {
-    mPrivateFlags |= PFLAG_MAX_HEIGHT_PERCENT_IS_SET;
-    mMaxHeightPercent = percent;
+    mSparseArray.put(MAX_HEIGHT_PERCENT, percent);
     return this;
   }
 
@@ -621,19 +574,20 @@ class LayoutAttributes implements ComponentLayout.Builder {
 
   @Override
   public LayoutAttributes aspectRatio(float aspectRatio) {
-    mPrivateFlags |= PFLAG_ASPECT_RATIO_IS_SET;
-    mAspectRatio = aspectRatio;
+    mSparseArray.put(ASPECT_RATIO, aspectRatio);
     return this;
   }
 
   @Override
   public LayoutAttributes touchExpansionPx(YogaEdge edge, @Px int touchExpansion) {
-    mPrivateFlags |= PFLAG_TOUCH_EXPANSION_IS_SET;
-    if (mTouchExpansions == null) {
-      mTouchExpansions = new YogaEdgesWithInts();
-    }
-    mTouchExpansions.add(edge, touchExpansion);
+    YogaEdgesWithInts touchExpansions = (YogaEdgesWithInts) mSparseArray.get(TOUCH_EXPANSION);
 
+    if (touchExpansions == null) {
+      touchExpansions = new YogaEdgesWithInts();
+      mSparseArray.put(TOUCH_EXPANSION, touchExpansions);
+    }
+
+    touchExpansions.add(edge, touchExpansion);
     return this;
   }
 
@@ -661,8 +615,7 @@ class LayoutAttributes implements ComponentLayout.Builder {
 
   @Override
   public LayoutAttributes background(Reference<? extends Drawable> background) {
-    mPrivateFlags |= PFLAG_BACKGROUND_IS_SET;
-    mBackground = background;
+    mSparseArray.put(BACKGROUND, background);
     return this;
   }
 
@@ -702,8 +655,7 @@ class LayoutAttributes implements ComponentLayout.Builder {
 
   @Override
   public LayoutAttributes foreground(Drawable foreground) {
-    mPrivateFlags |= PFLAG_FOREGROUND_IS_SET;
-    mForeground = foreground;
+    mSparseArray.put(FOREGROUND, foreground);
     return this;
   }
 
@@ -733,7 +685,7 @@ class LayoutAttributes implements ComponentLayout.Builder {
 
   @Override
   public LayoutAttributes wrapInView() {
-    mPrivateFlags |= PFLAG_WRAP_IN_VIEW_IS_SET;
+    mSparseArray.put(WRAP_IN_VIEW, true);
     return this;
   }
 
@@ -782,51 +734,44 @@ class LayoutAttributes implements ComponentLayout.Builder {
 
   @Override
   public LayoutAttributes visibleHeightRatio(float visibleHeightRatio) {
-    mPrivateFlags |= PFLAG_VISIBLE_HEIGHT_RATIO_IS_SET;
-    mVisibleHeightRatio = visibleHeightRatio;
+    mSparseArray.put(VISIBLE_HEIGHT_RATIO, visibleHeightRatio);
     return this;
   }
 
   @Override
   public LayoutAttributes visibleWidthRatio(float visibleWidthRatio) {
-    mPrivateFlags |= PFLAG_VISIBLE_WIDTH_RATIO_IS_SET;
-    mVisibleWidthRatio = visibleWidthRatio;
+    mSparseArray.put(VISIBLE_WIDTH_RATIO, visibleWidthRatio);
     return this;
   }
 
   @Override
   public LayoutAttributes visibleHandler(EventHandler<VisibleEvent> visibleHandler) {
-    mPrivateFlags |= PFLAG_VISIBLE_HANDLER_IS_SET;
-    mVisibleHandler = visibleHandler;
+    mSparseArray.put(VISIBLE_HANDLER, visibleHandler);
     return this;
   }
 
   @Override
   public LayoutAttributes focusedHandler(EventHandler<FocusedVisibleEvent> focusedHandler) {
-    mPrivateFlags |= PFLAG_FOCUSED_HANDLER_IS_SET;
-    mFocusedHandler = focusedHandler;
+    mSparseArray.put(FOCUSED_HANDLER, focusedHandler);
     return this;
   }
 
   @Override
   public LayoutAttributes unfocusedHandler(EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
-    mPrivateFlags |= PFLAG_UNFOCUSED_HANDLER_IS_SET;
-    mUnfocusedHandler = unfocusedHandler;
+    mSparseArray.put(UNFOCUSED_HANDLER, unfocusedHandler);
     return this;
   }
 
   @Override
   public LayoutAttributes fullImpressionHandler(
       EventHandler<FullImpressionVisibleEvent> fullImpressionHandler) {
-    mPrivateFlags |= PFLAG_FULL_IMPRESSION_HANDLER_IS_SET;
-    mFullImpressionHandler = fullImpressionHandler;
+    mSparseArray.put(FULL_IMPRESSION_HANDLER, fullImpressionHandler);
     return this;
   }
 
   @Override
   public LayoutAttributes invisibleHandler(EventHandler<InvisibleEvent> invisibleHandler) {
-    mPrivateFlags |= PFLAG_INVISIBLE_HANDLER_IS_SET;
-    mInvisibleHandler = invisibleHandler;
+    mSparseArray.put(INVISIBLE_HANDLER, invisibleHandler);
     return this;
   }
 
@@ -898,8 +843,7 @@ class LayoutAttributes implements ComponentLayout.Builder {
 
   @Override
   public LayoutAttributes testKey(String testKey) {
-    mPrivateFlags |= PFLAG_TEST_KEY_IS_SET;
-    mTestKey = testKey;
+    mSparseArray.put(TEST_KEY, testKey);
     return this;
   }
 
@@ -969,8 +913,7 @@ class LayoutAttributes implements ComponentLayout.Builder {
 
   @Override
   public LayoutAttributes transitionKey(String key) {
-    mPrivateFlags |= PFLAG_TRANSITION_KEY_IS_SET;
-    mTransitionKey = key;
+    mSparseArray.put(TRANSITION_KEY, key);
     return this;
   }
 
@@ -996,165 +939,226 @@ class LayoutAttributes implements ComponentLayout.Builder {
       mNodeInfo.copyInto(node);
     }
 
-    if ((mPrivateFlags & PFLAG_LAYOUT_DIRECTION_IS_SET) != 0L) {
-      node.layoutDirection(mLayoutDirection);
-    }
-    if ((mPrivateFlags & PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET) != 0L) {
-      node.importantForAccessibility(mImportantForAccessibility);
-    }
-    if ((mPrivateFlags & PFLAG_DUPLICATE_PARENT_STATE_IS_SET) != 0L) {
-      node.duplicateParentState(mDuplicateParentState);
-    }
-    if ((mPrivateFlags & PFLAG_BACKGROUND_IS_SET) != 0L) {
-      node.background(mBackground);
-    }
-    if ((mPrivateFlags & PFLAG_FOREGROUND_IS_SET) != 0L) {
-      node.foreground(mForeground);
-    }
-    if ((mPrivateFlags & PFLAG_WRAP_IN_VIEW_IS_SET) != 0L) {
-      node.wrapInView();
-    }
-    if ((mPrivateFlags & PFLAG_VISIBLE_HANDLER_IS_SET) != 0L) {
-      node.visibleHandler(mVisibleHandler);
-    }
-    if ((mPrivateFlags & PFLAG_FOCUSED_HANDLER_IS_SET) != 0L) {
-      node.focusedHandler(mFocusedHandler);
-    }
-    if ((mPrivateFlags & PFLAG_FULL_IMPRESSION_HANDLER_IS_SET) != 0L) {
-      node.fullImpressionHandler(mFullImpressionHandler);
-    }
-    if ((mPrivateFlags & PFLAG_INVISIBLE_HANDLER_IS_SET) != 0L) {
-      node.invisibleHandler(mInvisibleHandler);
-    }
-    if ((mPrivateFlags & PFLAG_UNFOCUSED_HANDLER_IS_SET) != 0L) {
-      node.unfocusedHandler(mUnfocusedHandler);
-    }
-    if ((mPrivateFlags & PFLAG_TEST_KEY_IS_SET) != 0L) {
-      node.testKey(mTestKey);
-    }
-    if ((mPrivateFlags & PFLAG_TRANSITION_KEY_IS_SET) != 0L) {
-      node.transitionKey(mTransitionKey);
-    }
-    if ((mPrivateFlags & PFLAG_BORDER_COLOR_IS_SET) != 0L) {
-      node.borderColor(mBorderColor);
-    }
-    if ((mPrivateFlags & PFLAG_BORDER_WIDTH_IS_SET) != 0L) {
-      for (int i = 0; i < mBorderWidths.mNumEntries; i++) {
-        node.borderWidthPx(mBorderWidths.mEdges[i], mBorderWidths.mValues[i]);
+    for (int i = 0, size = mSparseArray.size(); i < size; i++) {
+      int key = mSparseArray.keyAt(i);
+
+      switch (key) {
+        case LAYOUT_DIRECTION:
+          node.layoutDirection((YogaDirection) mSparseArray.get(key));
+          break;
+
+        case IMPORTANT_FOR_ACCESSIBILITY:
+          node.importantForAccessibility((Integer) mSparseArray.get(key));
+          break;
+
+        case DUPLICATE_PARENT_STATE:
+          node.duplicateParentState((Boolean) mSparseArray.get(key));
+          break;
+
+        case BACKGROUND:
+          node.background((Reference<? extends Drawable>) mSparseArray.get(key));
+          break;
+
+        case FOREGROUND:
+          node.foreground((Drawable) mSparseArray.get(key));
+          break;
+
+        case WRAP_IN_VIEW:
+          node.wrapInView();
+          break;
+
+        case VISIBLE_HANDLER:
+          node.visibleHandler((EventHandler<VisibleEvent>) mSparseArray.get(key));
+          break;
+
+        case FOCUSED_HANDLER:
+          node.focusedHandler((EventHandler<FocusedVisibleEvent>) mSparseArray.get(key));
+          break;
+
+        case FULL_IMPRESSION_HANDLER:
+          node.fullImpressionHandler(
+              (EventHandler<FullImpressionVisibleEvent>) mSparseArray.get(key));
+          break;
+
+        case INVISIBLE_HANDLER:
+          node.invisibleHandler((EventHandler<InvisibleEvent>) mSparseArray.get(key));
+          break;
+
+        case UNFOCUSED_HANDLER:
+          node.unfocusedHandler((EventHandler<UnfocusedVisibleEvent>) mSparseArray.get(key));
+          break;
+
+        case TEST_KEY:
+          node.testKey((String) mSparseArray.get(key));
+          break;
+
+        case TRANSITION_KEY:
+          node.transitionKey((String) mSparseArray.get(key));
+          break;
+
+        case VISIBLE_HEIGHT_RATIO:
+          node.visibleHeightRatio((Float) mSparseArray.get(key));
+          break;
+
+        case VISIBLE_WIDTH_RATIO:
+          node.visibleWidthRatio((Float) mSparseArray.get(key));
+          break;
+
+        case ALIGN_SELF:
+          node.alignSelf((YogaAlign) mSparseArray.get(key));
+          break;
+
+        case POSITION_TYPE:
+          node.positionType((YogaPositionType) mSparseArray.get(key));
+          break;
+
+        case FLEX:
+          node.flex((Float) mSparseArray.get(key));
+          break;
+
+        case FLEX_GROW:
+          node.flexGrow((Float) mSparseArray.get(key));
+          break;
+
+        case FLEX_SHRINK:
+          node.flexShrink((Float) mSparseArray.get(key));
+          break;
+
+        case FLEX_BASIS:
+          node.flexBasisPx((Integer) mSparseArray.get(key));
+          break;
+
+        case FLEX_BASIS_PERCENT:
+          node.flexBasisPercent((Float) mSparseArray.get(key));
+          break;
+
+        case WIDTH:
+          node.widthPx((Integer) mSparseArray.get(key));
+          break;
+
+        case WIDTH_PERCENT:
+          node.widthPercent((Float) mSparseArray.get(key));
+          break;
+
+        case MIN_WIDTH:
+          node.minWidthPx((Integer) mSparseArray.get(key));
+          break;
+
+        case MIN_WIDTH_PERCENT:
+          node.minWidthPercent((Float) mSparseArray.get(key));
+          break;
+
+        case MAX_WIDTH:
+          node.maxWidthPx((Integer) mSparseArray.get(key));
+          break;
+
+        case MAX_WIDTH_PERCENT:
+          node.maxWidthPercent((Float) mSparseArray.get(key));
+          break;
+
+        case HEIGHT:
+          node.heightPx((Integer) mSparseArray.get(key));
+          break;
+
+        case HEIGHT_PERCENT:
+          node.heightPercent((Float) mSparseArray.get(key));
+          break;
+
+        case MIN_HEIGHT:
+          node.minHeightPx((Integer) mSparseArray.get(key));
+          break;
+
+        case MIN_HEIGHT_PERCENT:
+          node.minHeightPercent((Float) mSparseArray.get(key));
+          break;
+
+        case MAX_HEIGHT:
+          node.maxHeightPx((Integer) mSparseArray.get(key));
+          break;
+
+        case MAX_HEIGHT_PERCENT:
+          node.maxHeightPercent((Float) mSparseArray.get(key));
+          break;
+
+        case ASPECT_RATIO:
+          node.aspectRatio((Float) mSparseArray.get(key));
+          break;
+
+        case BORDER:
+          node.border((Border) mSparseArray.get(key));
+          break;
+
+        case BORDER_COLOR:
+          node.borderColor((Integer) mSparseArray.get(key));
+          break;
+
+        case BORDER_WIDTH:
+          YogaEdgesWithInts borderWidths = (YogaEdgesWithInts) mSparseArray.get(key);
+          for (int j = 0; j < borderWidths.mNumEntries; j++) {
+            node.borderWidthPx(borderWidths.mEdges[j], borderWidths.mValues[j]);
+          }
+          break;
+
+        case POSITION:
+          YogaEdgesWithInts positions = (YogaEdgesWithInts) mSparseArray.get(key);
+          for (int j = 0; j < positions.mNumEntries; j++) {
+            node.positionPx(positions.mEdges[j], positions.mValues[j]);
+          }
+          break;
+
+        case POSITION_PERCENT:
+          YogaEdgesWithFloats positionPercents = (YogaEdgesWithFloats) mSparseArray.get(key);
+          for (int j = 0; j < positionPercents.mNumEntries; j++) {
+            node.positionPercent(positionPercents.mEdges[j], positionPercents.mValues[j]);
+          }
+          break;
+
+        case MARGIN:
+          YogaEdgesWithInts margins = (YogaEdgesWithInts) mSparseArray.get(key);
+          for (int j = 0; j < margins.mNumEntries; j++) {
+            node.marginPx(margins.mEdges[j], margins.mValues[j]);
+          }
+          break;
+
+        case MARGIN_PERCENT:
+          YogaEdgesWithFloats marginPercents = (YogaEdgesWithFloats) mSparseArray.get(key);
+          for (int j = 0; j < marginPercents.mNumEntries; j++) {
+            node.marginPercent(marginPercents.mEdges[j], marginPercents.mValues[j]);
+          }
+          break;
+
+        case MARGIN_AUTO:
+          List<YogaEdge> marginAutos = (List<YogaEdge>) mSparseArray.get(key);
+          for (YogaEdge edge : marginAutos) {
+            node.marginAuto(edge);
+          }
+          break;
+
+        case PADDING:
+          YogaEdgesWithInts paddings = (YogaEdgesWithInts) mSparseArray.get(key);
+          for (int j = 0; j < paddings.mNumEntries; j++) {
+            node.paddingPx(paddings.mEdges[j], paddings.mValues[j]);
+          }
+          break;
+
+        case PADDING_PERCENT:
+          YogaEdgesWithFloats paddingPercents = (YogaEdgesWithFloats) mSparseArray.get(key);
+          for (int j = 0; j < paddingPercents.mNumEntries; j++) {
+            node.paddingPercent(paddingPercents.mEdges[j], paddingPercents.mValues[j]);
+          }
+          break;
+
+        case TOUCH_EXPANSION:
+          YogaEdgesWithInts mTouchExpansions = (YogaEdgesWithInts) mSparseArray.get(key);
+          for (int j = 0; j < mTouchExpansions.mNumEntries; j++) {
+            node.touchExpansionPx(mTouchExpansions.mEdges[j], mTouchExpansions.mValues[j]);
+          }
+          break;
       }
-    }
-    if ((mPrivateFlags & PFLAG_VISIBLE_HEIGHT_RATIO_IS_SET) != 0L) {
-      node.visibleHeightRatio(mVisibleHeightRatio);
-    }
-    if ((mPrivateFlags & PFLAG_VISIBLE_WIDTH_RATIO_IS_SET) != 0L) {
-      node.visibleWidthRatio(mVisibleWidthRatio);
-    }
-    if ((mPrivateFlags & PFLAG_ALIGN_SELF_IS_SET) != 0L) {
-      node.alignSelf(mAlignSelf);
-    }
-    if ((mPrivateFlags & PFLAG_POSITION_TYPE_IS_SET) != 0L) {
-      node.positionType(mPositionType);
-    }
-    if ((mPrivateFlags & PFLAG_POSITION_IS_SET) != 0L) {
-      for (int i = 0; i < mPositions.mNumEntries; i++) {
-        node.positionPx(mPositions.mEdges[i], mPositions.mValues[i]);
-      }
-    }
-    if ((mPrivateFlags & PFLAG_POSITION_PERCENT_IS_SET) != 0L) {
-      for (int i = 0; i < mPositionPercents.mNumEntries; i++) {
-        node.positionPercent(mPositionPercents.mEdges[i], mPositionPercents.mValues[i]);
-      }
-    }
-    if ((mPrivateFlags & PFLAG_FLEX_IS_SET) != 0L) {
-      node.flex(mFlex);
-    }
-    if ((mPrivateFlags & PFLAG_FLEX_GROW_IS_SET) != 0L) {
-      node.flexGrow(mFlexGrow);
-    }
-    if ((mPrivateFlags & PFLAG_FLEX_SHRINK_IS_SET) != 0L) {
-      node.flexShrink(mFlexShrink);
-    }
-    if ((mPrivateFlags & PFLAG_FLEX_BASIS_IS_SET) != 0L) {
-      node.flexBasisPx(mFlexBasisPx);
-    }
-    if ((mPrivateFlags & PFLAG_FLEX_BASIS_PERCENT_IS_SET) != 0L) {
-      node.flexBasisPercent(mFlexBasisPercent);
-    }
-    if ((mPrivateFlags & PFLAG_WIDTH_IS_SET) != 0L) {
-      node.widthPx(mWidthPx);
-    }
-    if ((mPrivateFlags & PFLAG_WIDTH_PERCENT_IS_SET) != 0L) {
-      node.widthPercent(mWidthPercent);
-    }
-    if ((mPrivateFlags & PFLAG_MIN_WIDTH_IS_SET) != 0L) {
-      node.minWidthPx(mMinWidthPx);
-    }
-    if ((mPrivateFlags & PFLAG_MIN_WIDTH_PERCENT_IS_SET) != 0L) {
-      node.minWidthPercent(mMinWidthPercent);
-    }
-    if ((mPrivateFlags & PFLAG_MAX_WIDTH_IS_SET) != 0L) {
-      node.maxWidthPx(mMaxWidthPx);
-    }
-    if ((mPrivateFlags & PFLAG_MAX_WIDTH_PERCENT_IS_SET) != 0L) {
-      node.maxWidthPercent(mMaxWidthPercent);
-    }
-    if ((mPrivateFlags & PFLAG_HEIGHT_IS_SET) != 0L) {
-      node.heightPx(mHeightPx);
-    }
-    if ((mPrivateFlags & PFLAG_HEIGHT_PERCENT_IS_SET) != 0L) {
-      node.heightPercent(mHeightPercent);
-    }
-    if ((mPrivateFlags & PFLAG_MIN_HEIGHT_IS_SET) != 0L) {
-      node.minHeightPx(mMinHeightPx);
-    }
-    if ((mPrivateFlags & PFLAG_MIN_HEIGHT_PERCENT_IS_SET) != 0L) {
-      node.minHeightPercent(mMinHeightPercent);
-    }
-    if ((mPrivateFlags & PFLAG_MAX_HEIGHT_IS_SET) != 0L) {
-      node.maxHeightPx(mMaxHeightPx);
-    }
-    if ((mPrivateFlags & PFLAG_MAX_HEIGHT_PERCENT_IS_SET) != 0L) {
-      node.maxHeightPercent(mMaxHeightPercent);
-    }
-    if ((mPrivateFlags & PFLAG_ASPECT_RATIO_IS_SET) != 0L) {
-      node.aspectRatio(mAspectRatio);
-    }
-    if ((mPrivateFlags & PFLAG_MARGIN_IS_SET) != 0L) {
-      for (int i = 0; i < mMargins.mNumEntries; i++) {
-        node.marginPx(mMargins.mEdges[i], mMargins.mValues[i]);
-      }
-    }
-    if ((mPrivateFlags & PFLAG_MARGIN_PERCENT_IS_SET) != 0L) {
-      for (int i = 0; i < mMarginPercents.mNumEntries; i++) {
-        node.marginPercent(mMarginPercents.mEdges[i], mMarginPercents.mValues[i]);
-      }
-    }
-    if ((mPrivateFlags & PFLAG_MARGIN_AUTO_IS_SET) != 0L) {
-      for (YogaEdge edge : mMarginAutos) {
-        node.marginAuto(edge);
-      }
-    }
-    if ((mPrivateFlags & PFLAG_PADDING_IS_SET) != 0L) {
-      for (int i = 0; i < mPaddings.mNumEntries; i++) {
-        node.paddingPx(mPaddings.mEdges[i], mPaddings.mValues[i]);
-      }
-    }
-    if ((mPrivateFlags & PFLAG_PADDING_PERCENT_IS_SET) != 0L) {
-      for (int i = 0; i < mPaddingPercents.mNumEntries; i++) {
-        node.paddingPercent(mPaddingPercents.mEdges[i], mPaddingPercents.mValues[i]);
-      }
-    }
-    if ((mPrivateFlags & PFLAG_TOUCH_EXPANSION_IS_SET) != 0L) {
-      for (int i = 0; i < mTouchExpansions.mNumEntries; i++) {
-        node.touchExpansionPx(mTouchExpansions.mEdges[i], mTouchExpansions.mValues[i]);
-      }
-    }
-    if ((mPrivateFlags & PFLAG_BORDER_IS_SET) != 0L) {
-      node.border(mBorder);
     }
   }
 
-  private class YogaEdgesWithInts {
+  private static class YogaEdgesWithInts {
     private YogaEdge[] mEdges = new YogaEdge[8];
     private int[] mValues = new int[8];
     private int mNumEntries;
@@ -1166,7 +1170,7 @@ class LayoutAttributes implements ComponentLayout.Builder {
     }
   }
 
-  private class YogaEdgesWithFloats {
+  private static class YogaEdgesWithFloats {
     private YogaEdge[] mEdges = new YogaEdge[8];
     private float[] mValues = new float[8];
     private int mNumEntries;
