@@ -237,8 +237,9 @@ public class PropValidation {
       validationErrors.add(
           new SpecModelValidationError(
               prop.getRepresentedObject(),
-              "A prop declared with resType " + prop.getResType() + " must be one of the " +
-                  "following types: " + Arrays.toString(validResTypes.toArray()) + "."));
+              (prop.hasVarArgs() ? "A variable argument" : "A prop") + " declared with resType "
+                  + prop.getResType() + " must be one of the following types: "
+                  + Arrays.toString(validResTypes.toArray()) + "."));
     }
 
     return validationErrors;

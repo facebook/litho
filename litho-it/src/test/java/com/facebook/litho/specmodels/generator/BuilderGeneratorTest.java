@@ -66,11 +66,11 @@ public class BuilderGeneratorTest {
   @LayoutSpec
   static class TestResTypeWithVarArgsSpec {
     @OnCreateLayout
-    public void test(@Prop(varArg = "test", resType = ResType.DIMEN_TEXT) List<Float> arg0) {}
+    public void resTypeWithVarArgs(@Prop(varArg = "size", resType = ResType.DIMEN_TEXT) List<Float> sizes) {}
   }
 
   private SpecModel mSpecModel;
-  private SpecModel mSpecModel1;
+  private SpecModel mResTypeVarArgsSpecModel;
 
   @Before
   public void setUp() {
@@ -78,8 +78,8 @@ public class BuilderGeneratorTest {
     TypeElement typeElement = elements.getTypeElement(TestSpec.class.getCanonicalName());
     mSpecModel = mLayoutSpecModelFactory.create(elements, typeElement, null);
 
-    TypeElement typeElement1 = elements.getTypeElement(TestResTypeWithVarArgsSpec.class.getCanonicalName());
-    mSpecModel1 = mLayoutSpecModelFactory.create(elements, typeElement1, null);
+    TypeElement resWithVarArgsElement = elements.getTypeElement(TestResTypeWithVarArgsSpec.class.getCanonicalName());
+    mResTypeVarArgsSpecModel = mLayoutSpecModelFactory.create(elements, resWithVarArgsElement, null);
   }
 
   @Test
@@ -199,12 +199,12 @@ public class BuilderGeneratorTest {
 
   @Test
   public void testResTypeWithVarArgs() {
-    TypeSpecDataHolder dataHolder = BuilderGenerator.generate(mSpecModel1);
+    TypeSpecDataHolder dataHolder = BuilderGenerator.generate(mResTypeVarArgsSpecModel);
     assertThat(dataHolder.getTypeSpecs()).hasSize(1);
     assertThat(dataHolder.getTypeSpecs().get(0).toString())
         .isEqualTo(
             "public static class Builder extends com.facebook.litho.Component.Builder<com.facebook.litho.specmodels.generator.BuilderGeneratorTest.TestResTypeWithVarArgs, Builder> {\n" +
-            "  private static final java.lang.String[] REQUIRED_PROPS_NAMES = new String[] {\"arg0\"};\n" +
+            "  private static final java.lang.String[] REQUIRED_PROPS_NAMES = new String[] {\"sizes\"};\n" +
             "\n" +
             "  private static final int REQUIRED_PROPS_COUNT = 1;\n" +
             "\n" +
@@ -222,165 +222,165 @@ public class BuilderGeneratorTest {
             "    mRequired.clear();\n" +
             "  }\n" +
             "\n" +
-            "  public Builder test(java.lang.Float test) {\n" +
-            "    if (test == null) {\n" +
+            "  public Builder size(java.lang.Float size) {\n" +
+            "    if (size == null) {\n" +
             "      return this;\n" +
             "    }\n" +
-            "    if (this.mTestResTypeWithVarArgsImpl.arg0 == null) {\n" +
-            "      this.mTestResTypeWithVarArgsImpl.arg0 = new java.util.ArrayList<java.lang.Float>();\n" +
+            "    if (this.mTestResTypeWithVarArgsImpl.sizes == null) {\n" +
+            "      this.mTestResTypeWithVarArgsImpl.sizes = new java.util.ArrayList<java.lang.Float>();\n" +
             "    }\n" +
-            "    this.mTestResTypeWithVarArgsImpl.arg0.add(test);\n" +
+            "    this.mTestResTypeWithVarArgsImpl.sizes.add(size);\n" +
             "    mRequired.set(0);\n" +
             "    return this;\n" +
             "  }\n" +
             "\n" +
-            "  public Builder testPx(@android.support.annotation.Px float test) {\n" +
-            "    if (this.mTestResTypeWithVarArgsImpl.arg0 == null) {\n" +
-            "      this.mTestResTypeWithVarArgsImpl.arg0 = new java.util.ArrayList<java.lang.Float>();\n" +
+            "  public Builder sizePx(@android.support.annotation.Px float size) {\n" +
+            "    if (this.mTestResTypeWithVarArgsImpl.sizes == null) {\n" +
+            "      this.mTestResTypeWithVarArgsImpl.sizes = new java.util.ArrayList<java.lang.Float>();\n" +
             "    }\n" +
-            "    final float res = test;\n" +
-            "    this.mTestResTypeWithVarArgsImpl.arg0.add(res);\n" +
+            "    final float res = size;\n" +
+            "    this.mTestResTypeWithVarArgsImpl.sizes.add(res);\n" +
             "    mRequired.set(0);\n" +
             "    return this;\n" +
             "  }\n" +
             "\n" +
-            "  public Builder arg0Px(java.util.List<java.lang.Float> arg0) {\n" +
-            "    if (arg0 == null) {\n" +
+            "  public Builder sizesPx(java.util.List<java.lang.Float> sizes) {\n" +
+            "    if (sizes == null) {\n" +
             "      return this;\n" +
             "    }\n" +
-            "    if (this.mTestResTypeWithVarArgsImpl.arg0 == null) {\n" +
-            "      this.mTestResTypeWithVarArgsImpl.arg0 = new java.util.ArrayList<java.lang.Float>();\n" +
+            "    if (this.mTestResTypeWithVarArgsImpl.sizes == null) {\n" +
+            "      this.mTestResTypeWithVarArgsImpl.sizes = new java.util.ArrayList<java.lang.Float>();\n" +
             "    }\n" +
-            "    for (int i = 0; i < arg0.size(); i++) {\n" +
-            "      final float res = arg0.get(i);\n" +
-            "      this.mTestResTypeWithVarArgsImpl.arg0.add(res);\n" +
+            "    for (int i = 0; i < sizes.size(); i++) {\n" +
+            "      final float res = sizes.get(i);\n" +
+            "      this.mTestResTypeWithVarArgsImpl.sizes.add(res);\n" +
             "    }\n" +
             "    mRequired.set(0);\n" +
             "    return this;\n" +
             "  }\n" +
             "\n" +
-            "  public Builder testRes(@android.support.annotation.DimenRes int resId) {\n" +
-            "    if (this.mTestResTypeWithVarArgsImpl.arg0 == null) {\n" +
-            "      this.mTestResTypeWithVarArgsImpl.arg0 = new java.util.ArrayList<java.lang.Float>();\n" +
+            "  public Builder sizeRes(@android.support.annotation.DimenRes int resId) {\n" +
+            "    if (this.mTestResTypeWithVarArgsImpl.sizes == null) {\n" +
+            "      this.mTestResTypeWithVarArgsImpl.sizes = new java.util.ArrayList<java.lang.Float>();\n" +
             "    }\n" +
             "    final float res = resolveDimenSizeRes(resId);\n" +
-            "    this.mTestResTypeWithVarArgsImpl.arg0.add(res);\n" +
+            "    this.mTestResTypeWithVarArgsImpl.sizes.add(res);\n" +
             "    mRequired.set(0);\n" +
             "    return this;\n" +
             "  }\n" +
             "\n" +
-            "  public Builder arg0Res(java.util.List<java.lang.Integer> resIds) {\n" +
+            "  public Builder sizesRes(java.util.List<java.lang.Integer> resIds) {\n" +
             "    if (resIds == null) {\n" +
             "      return this;\n" +
             "    }\n" +
-            "    if (this.mTestResTypeWithVarArgsImpl.arg0 == null) {\n" +
-            "      this.mTestResTypeWithVarArgsImpl.arg0 = new java.util.ArrayList<java.lang.Float>();\n" +
+            "    if (this.mTestResTypeWithVarArgsImpl.sizes == null) {\n" +
+            "      this.mTestResTypeWithVarArgsImpl.sizes = new java.util.ArrayList<java.lang.Float>();\n" +
             "    }\n" +
             "    for (int i = 0; i < resIds.size(); i++) {\n" +
             "      final float res = resolveDimenSizeRes(resIds.get(i));\n" +
-            "      this.mTestResTypeWithVarArgsImpl.arg0.add(res);\n" +
+            "      this.mTestResTypeWithVarArgsImpl.sizes.add(res);\n" +
             "    }\n" +
             "    mRequired.set(0);\n" +
             "    return this;\n" +
             "  }\n" +
             "\n" +
-            "  public Builder testAttr(@android.support.annotation.AttrRes int attrResId,\n" +
+            "  public Builder sizeAttr(@android.support.annotation.AttrRes int attrResId,\n" +
             "      @android.support.annotation.DimenRes int defResId) {\n" +
-            "    if (this.mTestResTypeWithVarArgsImpl.arg0 == null) {\n" +
-            "      this.mTestResTypeWithVarArgsImpl.arg0 = new java.util.ArrayList<java.lang.Float>();\n" +
+            "    if (this.mTestResTypeWithVarArgsImpl.sizes == null) {\n" +
+            "      this.mTestResTypeWithVarArgsImpl.sizes = new java.util.ArrayList<java.lang.Float>();\n" +
             "    }\n" +
             "    final float res = resolveDimenSizeAttr(attrResId, defResId);\n" +
-            "    this.mTestResTypeWithVarArgsImpl.arg0.add(res);\n" +
+            "    this.mTestResTypeWithVarArgsImpl.sizes.add(res);\n" +
             "    mRequired.set(0);\n" +
             "    return this;\n" +
             "  }\n" +
             "\n" +
-            "  public Builder testAttr(@android.support.annotation.AttrRes int attrResId) {\n" +
-            "    if (this.mTestResTypeWithVarArgsImpl.arg0 == null) {\n" +
-            "      this.mTestResTypeWithVarArgsImpl.arg0 = new java.util.ArrayList<java.lang.Float>();\n" +
+            "  public Builder sizeAttr(@android.support.annotation.AttrRes int attrResId) {\n" +
+            "    if (this.mTestResTypeWithVarArgsImpl.sizes == null) {\n" +
+            "      this.mTestResTypeWithVarArgsImpl.sizes = new java.util.ArrayList<java.lang.Float>();\n" +
             "    }\n" +
             "    final float res = resolveDimenSizeAttr(attrResId, 0);\n" +
-            "    this.mTestResTypeWithVarArgsImpl.arg0.add(res);\n" +
+            "    this.mTestResTypeWithVarArgsImpl.sizes.add(res);\n" +
             "    mRequired.set(0);\n" +
             "    return this;\n" +
             "  }\n" +
             "\n" +
-            "  public Builder arg0Attr(java.util.List<java.lang.Integer> attrResIds,\n" +
+            "  public Builder sizesAttr(java.util.List<java.lang.Integer> attrResIds,\n" +
             "      @android.support.annotation.DimenRes int defResId) {\n" +
             "    if (attrResIds == null) {\n" +
             "      return this;\n" +
             "    }\n" +
-            "    if (this.mTestResTypeWithVarArgsImpl.arg0 == null) {\n" +
-            "      this.mTestResTypeWithVarArgsImpl.arg0 = new java.util.ArrayList<java.lang.Float>();\n" +
+            "    if (this.mTestResTypeWithVarArgsImpl.sizes == null) {\n" +
+            "      this.mTestResTypeWithVarArgsImpl.sizes = new java.util.ArrayList<java.lang.Float>();\n" +
             "    }\n" +
             "    for (int i = 0; i < attrResIds.size(); i++) {\n" +
             "      final float res = resolveDimenSizeAttr(attrResIds.get(i), defResId);\n" +
-            "      this.mTestResTypeWithVarArgsImpl.arg0.add(res);\n" +
+            "      this.mTestResTypeWithVarArgsImpl.sizes.add(res);\n" +
             "    }\n" +
             "    mRequired.set(0);\n" +
             "    return this;\n" +
             "  }\n" +
             "\n" +
-            "  public Builder arg0Attr(java.util.List<java.lang.Integer> attrResIds) {\n" +
+            "  public Builder sizesAttr(java.util.List<java.lang.Integer> attrResIds) {\n" +
             "    if (attrResIds == null) {\n" +
             "      return this;\n" +
             "    }\n" +
-            "    if (this.mTestResTypeWithVarArgsImpl.arg0 == null) {\n" +
-            "      this.mTestResTypeWithVarArgsImpl.arg0 = new java.util.ArrayList<java.lang.Float>();\n" +
+            "    if (this.mTestResTypeWithVarArgsImpl.sizes == null) {\n" +
+            "      this.mTestResTypeWithVarArgsImpl.sizes = new java.util.ArrayList<java.lang.Float>();\n" +
             "    }\n" +
             "    for (int i = 0; i < attrResIds.size(); i++) {\n" +
             "      final float res = resolveDimenSizeAttr(attrResIds.get(i), 0);\n" +
-            "      this.mTestResTypeWithVarArgsImpl.arg0.add(res);\n" +
+            "      this.mTestResTypeWithVarArgsImpl.sizes.add(res);\n" +
             "    }\n" +
             "    mRequired.set(0);\n" +
             "    return this;\n" +
             "  }\n" +
             "\n" +
-            "  public Builder testDip(@android.support.annotation.Dimension(unit = android.support.annotation.Dimension.DP) float dip) {\n" +
-            "    if (this.mTestResTypeWithVarArgsImpl.arg0 == null) {\n" +
-            "      this.mTestResTypeWithVarArgsImpl.arg0 = new java.util.ArrayList<java.lang.Float>();\n" +
+            "  public Builder sizeDip(@android.support.annotation.Dimension(unit = android.support.annotation.Dimension.DP) float dip) {\n" +
+            "    if (this.mTestResTypeWithVarArgsImpl.sizes == null) {\n" +
+            "      this.mTestResTypeWithVarArgsImpl.sizes = new java.util.ArrayList<java.lang.Float>();\n" +
             "    }\n" +
             "    final float res = dipsToPixels(dip);\n" +
-            "    this.mTestResTypeWithVarArgsImpl.arg0.add(res);\n" +
+            "    this.mTestResTypeWithVarArgsImpl.sizes.add(res);\n" +
             "    mRequired.set(0);\n" +
             "    return this;\n" +
             "  }\n" +
             "\n" +
-            "  public Builder arg0Dip(java.util.List<java.lang.Float> dips) {\n" +
+            "  public Builder sizesDip(java.util.List<java.lang.Float> dips) {\n" +
             "    if (dips == null) {\n" +
             "      return this;\n" +
             "    }\n" +
-            "    if (this.mTestResTypeWithVarArgsImpl.arg0 == null) {\n" +
-            "      this.mTestResTypeWithVarArgsImpl.arg0 = new java.util.ArrayList<java.lang.Float>();\n" +
+            "    if (this.mTestResTypeWithVarArgsImpl.sizes == null) {\n" +
+            "      this.mTestResTypeWithVarArgsImpl.sizes = new java.util.ArrayList<java.lang.Float>();\n" +
             "    }\n" +
             "    for (int i = 0; i < dips.size(); i++) {\n" +
             "      final float res = dipsToPixels(dips.get(i));\n" +
-            "      this.mTestResTypeWithVarArgsImpl.arg0.add(res);\n" +
+            "      this.mTestResTypeWithVarArgsImpl.sizes.add(res);\n" +
             "    }\n" +
             "    mRequired.set(0);\n" +
             "    return this;\n" +
             "  }\n" +
             "\n" +
-            "  public Builder testSp(@android.support.annotation.Dimension(unit = android.support.annotation.Dimension.SP) float sip) {\n" +
-            "    if (this.mTestResTypeWithVarArgsImpl.arg0 == null) {\n" +
-            "      this.mTestResTypeWithVarArgsImpl.arg0 = new java.util.ArrayList<java.lang.Float>();\n" +
+            "  public Builder sizeSp(@android.support.annotation.Dimension(unit = android.support.annotation.Dimension.SP) float sip) {\n" +
+            "    if (this.mTestResTypeWithVarArgsImpl.sizes == null) {\n" +
+            "      this.mTestResTypeWithVarArgsImpl.sizes = new java.util.ArrayList<java.lang.Float>();\n" +
             "    }\n" +
             "    final float res = sipsToPixels(sip);\n" +
-            "    this.mTestResTypeWithVarArgsImpl.arg0.add(res);\n" +
+            "    this.mTestResTypeWithVarArgsImpl.sizes.add(res);\n" +
             "    mRequired.set(0);\n" +
             "    return this;\n" +
             "  }\n" +
             "\n" +
-            "  public Builder arg0Sp(java.util.List<java.lang.Float> sips) {\n" +
+            "  public Builder sizesSp(java.util.List<java.lang.Float> sips) {\n" +
             "    if (sips == null) {\n" +
             "      return this;\n" +
             "    }\n" +
-            "    if (this.mTestResTypeWithVarArgsImpl.arg0 == null) {\n" +
-            "      this.mTestResTypeWithVarArgsImpl.arg0 = new java.util.ArrayList<java.lang.Float>();\n" +
+            "    if (this.mTestResTypeWithVarArgsImpl.sizes == null) {\n" +
+            "      this.mTestResTypeWithVarArgsImpl.sizes = new java.util.ArrayList<java.lang.Float>();\n" +
             "    }\n" +
             "    for (int i = 0; i < sips.size(); i++) {\n" +
             "      final float res = sipsToPixels(sips.get(i));\n" +
-            "      this.mTestResTypeWithVarArgsImpl.arg0.add(res);\n" +
+            "      this.mTestResTypeWithVarArgsImpl.sizes.add(res);\n" +
             "    }\n" +
             "    mRequired.set(0);\n" +
             "    return this;\n" +

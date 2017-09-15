@@ -219,7 +219,7 @@ public class PropValidationTest {
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message).isEqualTo(
-        "A prop declared with resType BOOL must be one of the following types: " +
+        "A variable argument declared with resType BOOL must be one of the following types: " +
             "[java.util.List<java.lang.Boolean>].");
   }
 
