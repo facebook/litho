@@ -60,6 +60,10 @@ import org.robolectric.RuntimeEnvironment;
 @RunWith(ComponentsTestRunner.class)
 public class TreeDiffingTest {
 
+  private static Drawable sRedDrawable;
+  private static Drawable sBlackDrawable;
+  private static Drawable sTransparentDrawable;
+
   private int mUnspecifiedSpec;
 
   private ComponentContext mContext;
@@ -68,6 +72,10 @@ public class TreeDiffingTest {
   public void setup() throws Exception {
     mContext = new ComponentContext(RuntimeEnvironment.application);
     mUnspecifiedSpec = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
+
+    sRedDrawable = new ColorDrawable(RED);
+    sBlackDrawable = new ColorDrawable(BLACK);
+    sTransparentDrawable = new ColorDrawable(TRANSPARENT);
   }
 
   @Test
@@ -241,29 +249,8 @@ public class TreeDiffingTest {
 
   @Test
   public void testCachedMeasures() {
-    final Component component1 = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c)
-                .child(TestDrawableComponent.create(c))
-                .child(
-                        Column.create(c)
-                                .child(TestDrawableComponent.create(c)))
-                .build();
-      }
-    };
-
-    final Component component2 = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c)
-                .child(TestDrawableComponent.create(c))
-                .child(
-                        Column.create(c)
-                                .child(TestDrawableComponent.create(c)))
-                .build();
-      }
-    };
+    final Component component1 = new TestLayoutSpec(false);
+    final Component component2 = new TestLayoutSpec(false);
 
     LayoutState prevLayoutState = LayoutState.calculate(
             mContext,
@@ -289,30 +276,8 @@ public class TreeDiffingTest {
 
   @Test
   public void testPartiallyCachedMeasures() {
-    final Component component1 = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c)
-                .child(TestDrawableComponent.create(c))
-                .child(
-                        Column.create(c)
-                                .child(TestDrawableComponent.create(c)))
-                .build();
-      }
-    };
-
-    final Component component2 = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c)
-                .child(TestDrawableComponent.create(c))
-                .child(
-                        Column.create(c)
-                                .child(TestDrawableComponent.create(c)))
-                .child(TestDrawableComponent.create(c))
-                .build();
-      }
-    };
+    final Component component1 = new TestLayoutSpec(false);
+    final Component component2 = new TestLayoutSpec(true);
 
     LayoutState prevLayoutState = LayoutState.calculate(
             mContext,
@@ -571,51 +536,9 @@ public class TreeDiffingTest {
 
   @Test
   public void testLayoutOutputUpdateStateWithBackground() {
-    final Drawable redDrawable = new ColorDrawable(RED);
-    final Drawable blackDrawable = new ColorDrawable(BLACK);
-    final Drawable transparentDrawable = new ColorDrawable(TRANSPARENT);
-
-    final Component component1 = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return create(c)
-            .background(redDrawable)
-            .foreground(transparentDrawable)
-            .child(TestDrawableComponent.create(c))
-            .child(
-                create(c)
-                    .child(TestDrawableComponent.create(c)))
-            .build();
-      }
-    };
-
-    final Component component2 = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return create(c)
-            .background(redDrawable)
-            .foreground(transparentDrawable)
-            .child(TestDrawableComponent.create(c))
-            .child(
-                create(c)
-                    .child(TestDrawableComponent.create(c)))
-            .build();
-      }
-    };
-
-    final Component component3 = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return create(c)
-            .background(blackDrawable)
-            .foreground(transparentDrawable)
-            .child(TestDrawableComponent.create(c))
-            .child(
-                create(c)
-                    .child(TestDrawableComponent.create(c)))
-            .build();
-      }
-    };
+    final Component component1 = new TestLayoutSpecBgState(false);
+    final Component component2 = new TestLayoutSpecBgState(false);
+    final Component component3 = new TestLayoutSpecBgState(true);
 
     ComponentTree componentTree = ComponentTree.create(mContext, component1)
         .incrementalMount(false)
@@ -663,57 +586,9 @@ public class TreeDiffingTest {
   // This test covers the same case with the foreground since the code path is the same!
   @Test
   public void testLayoutOutputUpdateStateWithBackgroundInWithLayout() {
-    final Drawable redDrawable = new ColorDrawable(RED);
-    final Drawable blackDrawable = new ColorDrawable(BLACK);
-
-    final Component component1 = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return create(c)
-            .background(redDrawable)
-            .foregroundRes(btn_default)
-            .child(
-                TestDrawableComponent.create(c)
-                    .withLayout()
-                    .background(blackDrawable))
-            .child(
-                create(c)
-                    .child(TestDrawableComponent.create(c)))
-            .build();
-      }
-    };
-
-    final Component component2 = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return create(c)
-            .background(redDrawable)
-            .foregroundRes(btn_default)
-            .child(TestDrawableComponent.create(c)
-                .withLayout()
-                .background(blackDrawable))
-            .child(
-                create(c)
-                    .child(TestDrawableComponent.create(c)))
-            .build();
-      }
-    };
-
-    final Component component3 = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return create(c)
-            .background(redDrawable)
-            .foregroundRes(btn_default)
-            .child(TestDrawableComponent.create(c)
-                .withLayout()
-                .background(redDrawable))
-            .child(
-                create(c)
-                    .child(TestDrawableComponent.create(c)))
-            .build();
-      }
-    };
+    final Component component1 = new TestLayoutSpecInnerState(false);
+    final Component component2 = new TestLayoutSpecInnerState(false);
+    final Component component3 = new TestLayoutSpecInnerState(true);
 
     ComponentTree componentTree = ComponentTree.create(mContext, component1)
         .incrementalMount(false)
@@ -755,38 +630,8 @@ public class TreeDiffingTest {
 
   @Test
   public void testLayoutOutputUpdateStateIdClash() {
-    final Component component1 = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return create(c)
-            .child(
-                create(c)
-                    .wrapInView()
-                    .child(TestDrawableComponent.create(c)))
-            .child(
-                create(c)
-                    .wrapInView()
-                    .child(TestDrawableComponent.create(c)))
-            .build();
-      }
-    };
-
-    final Component component2 = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return create(c)
-            .child(
-                create(c)
-                    .wrapInView()
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestDrawableComponent.create(c)))
-            .child(
-                create(c)
-                    .wrapInView()
-                    .child(TestDrawableComponent.create(c)))
-            .build();
-      }
-    };
+    final Component component1 = new TestLayoutWithStateIdClash(false);
+    final Component component2 = new TestLayoutWithStateIdClash(true);
 
     ComponentTree componentTree = ComponentTree.create(mContext, component1)
         .incrementalMount(false)
@@ -827,15 +672,7 @@ public class TreeDiffingTest {
         .color(BLACK)
         .build();
 
-    final Component layoutComponent = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return create(c)
-            .alignItems(FLEX_START)
-            .child(Layout.create(c, component).heightPx(50))
-            .build();
-      }
-    };
+    final Component layoutComponent = new TestSimpleContainerLayout2(component);
 
     LayoutState firstLayoutState = calculate(
         mContext,
@@ -855,15 +692,7 @@ public class TreeDiffingTest {
         .color(BLACK)
         .build();
 
-    final Component secondLayoutComponent = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return create(c)
-            .alignItems(FLEX_START)
-            .child(Layout.create(c, secondComponent).heightPx(50))
-            .build();
-      }
-    };
+    final Component secondLayoutComponent = new TestSimpleContainerLayout2(secondComponent);
 
     calculate(
         mContext,
@@ -886,14 +715,7 @@ public class TreeDiffingTest {
         .color(BLACK)
         .build();
 
-    final Component layoutComponent = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return create(c)
-            .child(component)
-            .build();
-      }
-    };
+    final Component layoutComponent = new TestSimpleContainerLayout(component, 0);
 
     LayoutState firstLayoutState = calculate(
         mContext,
@@ -913,14 +735,7 @@ public class TreeDiffingTest {
         .color(BLACK)
         .build();
 
-    final Component secondLayoutComponent = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return create(c)
-            .child(secondComponent)
-            .build();
-      }
-    };
+    final Component secondLayoutComponent = new TestSimpleContainerLayout(secondComponent, 0);
 
     calculate(
         mContext,
@@ -939,33 +754,8 @@ public class TreeDiffingTest {
 
   @Test
   public void testCachedMeasuresForNestedTreeComponentDelegateWithUndefinedSize() {
-    final Component component1 = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return create(c)
-            .paddingPx(ALL, 2)
-            .child(
-                TestSizeDependentComponent.create(c)
-                    .setDelegate(true)
-                    .withLayout()
-                    .marginPx(ALL, 11))
-            .build();
-      }
-    };
-
-    final Component component2 = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return create(c)
-            .paddingPx(ALL, 2)
-            .child(
-                TestSizeDependentComponent.create(c)
-                    .setDelegate(true)
-                    .withLayout()
-                    .marginPx(ALL, 11))
-            .build();
-      }
-    };
+    final Component component1 = new TestNestedTreeDelegateWithUndefinedSizeLayout();
+    final Component component2 = new TestNestedTreeDelegateWithUndefinedSizeLayout();
 
     LayoutState prevLayoutState = calculate(
         mContext,
@@ -1002,39 +792,8 @@ public class TreeDiffingTest {
 
   @Test
   public void testCachedMeasuresForNestedTreeComponentWithUndefinedSize() {
-    final Component component1 = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return create(c)
-            .paddingPx(ALL, 2)
-            .child(
-                TestDrawableComponent.create(c, false, true, true, false, false))
-            .child(
-                TestSizeDependentComponent.create(c)
-                    .setDelegate(false)
-                    .withLayout()
-                    .flexShrink(0)
-                    .marginPx(ALL, 11))
-            .build();
-      }
-    };
-
-    final Component component2 = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return create(c)
-            .paddingPx(ALL, 2)
-            .child(
-                TestDrawableComponent.create(c, false, true, true, false, false))
-            .child(
-                TestSizeDependentComponent.create(c)
-                    .setDelegate(false)
-                    .withLayout()
-                    .flexShrink(0)
-                    .marginPx(ALL, 11))
-            .build();
-      }
-    };
+    final Component component1 = new TestUndefinedSizeLayout();
+    final Component component2 = new TestUndefinedSizeLayout();
 
     LayoutState prevLayoutState = calculate(
         mContext,
@@ -1102,15 +861,9 @@ public class TreeDiffingTest {
         sizeOutput1);
 
     // Now embed the measured component in another container and calculate a layout.
-    final Component rootContainer1 = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return create(c)
-            .paddingPx(HORIZONTAL, horizontalPadding)
-            .child(sizeDependentComponentSpy1)
-            .build();
-      }
-    };
+    final Component rootContainer1 =
+        new TestSimpleContainerLayout(sizeDependentComponentSpy1, horizontalPadding);
+
 
     final Component<?> sizeDependentComponentSpy2 = spy(
         TestSizeDependentComponent.create(c)
@@ -1125,15 +878,8 @@ public class TreeDiffingTest {
         sizeOutput2);
 
     // Now embed the measured component in another container and calculate a layout.
-    final Component rootContainer2 = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return create(c)
-            .paddingPx(HORIZONTAL, horizontalPadding)
-            .child(sizeDependentComponentSpy2)
-            .build();
-      }
-    };
+    final Component rootContainer2 =
+        new TestSimpleContainerLayout(sizeDependentComponentSpy2, horizontalPadding);
 
     // Reset the release/clear counts before issuing calculate().
     reset(sizeDependentComponentSpy1);
@@ -1200,5 +946,145 @@ public class TreeDiffingTest {
     assertThat(diffHeight != -1).isTrue();
     assertThat(diffWidth != -1).isTrue();
     assertThat(node.areCachedMeasuresValid()).isTrue();
+  }
+
+  private static class TestLayoutSpec extends InlineLayoutSpec {
+    private final boolean mAddThirdChild;
+
+    TestLayoutSpec(boolean addThirdChild) {
+      super();
+      this.mAddThirdChild = addThirdChild;
+    }
+
+    @Override
+    protected ComponentLayout onCreateLayout(ComponentContext c) {
+      return Column.create(c)
+          .child(TestDrawableComponent.create(c))
+          .child(Column.create(c).child(TestDrawableComponent.create(c)))
+          .child(mAddThirdChild ? TestDrawableComponent.create(c) : null)
+          .build();
+    }
+  }
+
+  private static class TestSimpleContainerLayout extends InlineLayoutSpec {
+    private final Component mComponent;
+    private final int mHorizontalPadding;
+
+    TestSimpleContainerLayout(Component component, int horizontalPadding) {
+      super();
+      mComponent = component;
+      mHorizontalPadding = horizontalPadding;
+    }
+
+    @Override
+    protected ComponentLayout onCreateLayout(ComponentContext c) {
+      return create(c).paddingPx(HORIZONTAL, mHorizontalPadding).child(mComponent).build();
+    }
+  }
+
+  private static class TestSimpleContainerLayout2 extends InlineLayoutSpec {
+    private final Component mComponent;
+
+    TestSimpleContainerLayout2(Component component) {
+      super();
+      mComponent = component;
+    }
+
+    @Override
+    protected ComponentLayout onCreateLayout(ComponentContext c) {
+      return create(c)
+          .alignItems(FLEX_START)
+          .child(Layout.create(c, mComponent).heightPx(50))
+          .build();
+    }
+  }
+
+  private static class TestLayoutSpecInnerState extends InlineLayoutSpec {
+    private final boolean mChangeChildDrawable;
+
+    TestLayoutSpecInnerState(boolean changeChildDrawable) {
+      super();
+      mChangeChildDrawable = changeChildDrawable;
+    }
+
+    @Override
+    protected ComponentLayout onCreateLayout(ComponentContext c) {
+      return create(c)
+          .background(sRedDrawable)
+          .foregroundRes(btn_default)
+          .child(
+              TestDrawableComponent.create(c)
+                  .withLayout()
+                  .background(mChangeChildDrawable ? sRedDrawable : sBlackDrawable))
+          .child(create(c).child(TestDrawableComponent.create(c)))
+          .build();
+    }
+  }
+
+  private static class TestLayoutSpecBgState extends InlineLayoutSpec {
+    private final boolean mChangeBg;
+
+    TestLayoutSpecBgState(boolean changeBg) {
+      super();
+      mChangeBg = changeBg;
+    }
+
+    @Override
+    protected ComponentLayout onCreateLayout(ComponentContext c) {
+      return create(c)
+          .background(mChangeBg ? sBlackDrawable : sRedDrawable)
+          .foreground(sTransparentDrawable)
+          .child(TestDrawableComponent.create(c))
+          .child(create(c).child(TestDrawableComponent.create(c)))
+          .build();
+    }
+  }
+
+  private static class TestUndefinedSizeLayout extends InlineLayoutSpec {
+    @Override
+    protected ComponentLayout onCreateLayout(ComponentContext c) {
+      return create(c)
+          .paddingPx(ALL, 2)
+          .child(TestDrawableComponent.create(c, false, true, true, false, false))
+          .child(
+              TestSizeDependentComponent.create(c)
+                  .setDelegate(false)
+                  .withLayout()
+                  .flexShrink(0)
+                  .marginPx(ALL, 11))
+          .build();
+    }
+  }
+
+  private static class TestNestedTreeDelegateWithUndefinedSizeLayout extends InlineLayoutSpec {
+    @Override
+    protected ComponentLayout onCreateLayout(ComponentContext c) {
+      return create(c)
+          .paddingPx(ALL, 2)
+          .child(
+              TestSizeDependentComponent.create(c).setDelegate(true).withLayout().marginPx(ALL, 11))
+          .build();
+    }
+  }
+
+  private static class TestLayoutWithStateIdClash extends InlineLayoutSpec {
+    private final boolean mAddChild;
+
+    TestLayoutWithStateIdClash(boolean addChild) {
+      super();
+      mAddChild = addChild;
+    }
+
+    @Override
+    protected ComponentLayout onCreateLayout(ComponentContext c) {
+      return create(c)
+          .child(
+              create(c)
+                  .wrapInView()
+                  .child(TestDrawableComponent.create(c))
+                  .child(mAddChild ? TestDrawableComponent.create(c) : null))
+          .child(create(c).wrapInView().child(TestDrawableComponent.create(c)))
+          .build();
+    }
   }
 }
