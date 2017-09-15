@@ -20,20 +20,20 @@ public class ComponentsConfiguration {
   public static YogaLogger YOGA_LOGGER;
 
   /**
-   * Indicates whether this is an internal build.
-   * Note that the implementation of {@link BuildConfig} that this class is compiled against may not
-   * be the one that is included in the APK. See: <a
+   * Indicates whether this is an internal build. Note that the implementation of {@link
+   * BuildConfig} that this class is compiled against may not be the one that is included in the
+   * APK. See: <a
    * href="http://facebook.github.io/buck/rule/android_build_config.html">android_build_config</a>.
    */
   public static final boolean IS_INTERNAL_BUILD = BuildConfig.IS_INTERNAL_BUILD;
 
   /**
    * Option to enabled debug mode. This will save extra data asscociated with each node and allow
-   * more info about the hierarchy to be retrieved. Used to enable stetho integration.
-   * It is highly discouraged to enable this in production builds. Due to how the Litho releases
-   * are distributed in open source IS_INTERNAL_BUILD will always be false. It is therefore required
-   * to override this value using your own application build configs. Recommended place for this is
-   * in a Application subclass onCreate() method.
+   * more info about the hierarchy to be retrieved. Used to enable stetho integration. It is highly
+   * discouraged to enable this in production builds. Due to how the Litho releases are distributed
+   * in open source IS_INTERNAL_BUILD will always be false. It is therefore required to override
+   * this value using your own application build configs. Recommended place for this is in a
+   * Application subclass onCreate() method.
    */
   public static boolean isDebugModeEnabled = IS_INTERNAL_BUILD;
 
@@ -54,8 +54,8 @@ public class ComponentsConfiguration {
   public static boolean isEndToEndTestRun = System.getProperty("IS_TESTING") != null;
 
   /**
-   * Use the new bootstrap ranges code instead of initializing all the items when the binder view
-   * is measured (t12986103).
+   * Use the new bootstrap ranges code instead of initializing all the items when the binder view is
+   * measured (t12986103).
    */
   public static boolean bootstrapBinderItems = false;
 
@@ -79,4 +79,11 @@ public class ComponentsConfiguration {
    * attributes onto the {@link com.facebook.litho.Component} itself is performant.
    */
   public static boolean storeLayoutAttributesInSeparateObject = false;
+
+  /**
+   * Whether to use optimized layout attributes, which is a version of layout attributes that has
+   * the most common attributes hard-coded. Only use if storeLayoutAttributesInSeparateObject
+   * returns true.
+   */
+  public static boolean useOptimizedLayoutAttributes = false;
 }

@@ -52,7 +52,7 @@ public abstract class Component<L extends ComponentLifecycle>
   private InternalNode mLastMeasuredLayout;
 
   // This is just being used for an experiment right now. Do not use for anything else.
-  private LayoutAttributes mLayoutAttributes;
+  private ComponentLayout.Builder mLayoutAttributes;
 
   /**
    * Holds onto how many direct component children of each type this Component has. Used for
@@ -476,8 +476,16 @@ public abstract class Component<L extends ComponentLifecycle>
           (InternalNode) Layout.create(context, build(), defStyleAttr, defStyleRes);
 
       if (useSeparateInternalNode) {
-        component.mLayoutAttributes = new LayoutAttributes();
-        component.mLayoutAttributes.init(context, internalNode);
+        if (ComponentsConfiguration.useOptimizedLayoutAttributes) {
+          OptimizedLayoutAttributes optimizedLayoutAttributes = new OptimizedLayoutAttributes();
+          optimizedLayoutAttributes.init(context, internalNode);
+          component.mLayoutAttributes = optimizedLayoutAttributes;
+        } else {
+          LayoutAttributes layoutAttributes = new LayoutAttributes();
+          layoutAttributes.init(context, internalNode);
+          component.mLayoutAttributes = layoutAttributes;
+        }
+
         return component.mLayoutAttributes;
       } else {
         return internalNode;
