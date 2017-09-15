@@ -379,33 +379,34 @@ public class BuilderGenerator {
             attrBuilders(specModel, prop, requiredIndex, ClassNames.COLOR_RES, "resolveColor"));
         break;
       case DIMEN_SIZE:
+        final String sizeResolverName = !prop.hasVarArgs() && prop.getType().equals(ClassName.FLOAT.box())
+            ? "(float) resolveDimenSize" : "resolveDimenSize";
         dataHolder.addTypeSpecDataHolder(pxBuilders(specModel, prop, requiredIndex));
         dataHolder.addTypeSpecDataHolder(
-            resBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, "resolveDimenSize"));
+            resBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, sizeResolverName));
         dataHolder.addTypeSpecDataHolder(
-            attrBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, "resolveDimenSize"));
+            attrBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, sizeResolverName));
         dataHolder.addTypeSpecDataHolder(dipBuilders(specModel, prop, requiredIndex));
         break;
       case DIMEN_TEXT:
+        final String textResolverName = !prop.hasVarArgs() && prop.getType().equals(ClassName.FLOAT.box())
+            ? "(float) resolveDimenSize" : "resolveDimenSize";
         dataHolder.addTypeSpecDataHolder(pxBuilders(specModel, prop, requiredIndex));
         dataHolder.addTypeSpecDataHolder(
-            resBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, "resolveDimenSize"));
+            resBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES,textResolverName));
         dataHolder.addTypeSpecDataHolder(
-            attrBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, "resolveDimenSize"));
+            attrBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, textResolverName));
         dataHolder.addTypeSpecDataHolder(dipBuilders(specModel, prop, requiredIndex));
         dataHolder.addTypeSpecDataHolder(sipBuilders(specModel, prop, requiredIndex));
         break;
       case DIMEN_OFFSET:
+        final String offsetResolverName = !prop.hasVarArgs() && prop.getType().equals(ClassName.FLOAT.box())
+            ? "(float) resolveDimenSize" : "resolveDimenSize";
         dataHolder.addTypeSpecDataHolder(pxBuilders(specModel, prop, requiredIndex));
         dataHolder.addTypeSpecDataHolder(
-            resBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, "resolveDimenOffset"));
+            resBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, offsetResolverName));
         dataHolder.addTypeSpecDataHolder(
-            attrBuilders(
-                specModel,
-                prop,
-                requiredIndex,
-                ClassNames.DIMEN_RES,
-                "resolveDimenOffset"));
+            attrBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, offsetResolverName));
         dataHolder.addTypeSpecDataHolder(dipBuilders(specModel, prop, requiredIndex));
         break;
       case FLOAT:
@@ -768,6 +769,8 @@ public class BuilderGenerator {
     final TypeSpecDataHolder.Builder dataHolder = TypeSpecDataHolder.newBuilder();
     final boolean hasVarArgs = prop.hasVarArgs();
     final String name = hasVarArgs ? prop.getVarArgsSingleName() : prop.getName();
+    final String statement = !prop.hasVarArgs() && prop.getType().equals(ClassName.FLOAT.box())
+        ? "(float) dipsToPixels(dip)" : "dipsToPixels(dip)";
 
     AnnotationSpec dipAnnotation = AnnotationSpec.builder(ClassNames.DIMENSION)
         .addMember("unit", "$T.DP", ClassNames.DIMENSION)
@@ -779,7 +782,7 @@ public class BuilderGenerator {
         requiredIndex,
         name + "Dip",
         Arrays.asList(parameter(prop, TypeName.FLOAT, "dip", dipAnnotation)),
-        "dipsToPixels(dip)").build());
+        statement).build());
 
     if (hasVarArgs) {
       dataHolder.addMethod(resTypeListBuilder(
@@ -804,6 +807,8 @@ public class BuilderGenerator {
     final TypeSpecDataHolder.Builder dataHolder = TypeSpecDataHolder.newBuilder();
     final boolean hasVarArgs = prop.hasVarArgs();
     final String name = hasVarArgs ? prop.getVarArgsSingleName() : prop.getName();
+    final String statement = !prop.hasVarArgs() && prop.getType().equals(ClassName.FLOAT.box())
+        ? "(float) sipsToPixels(sip)" : "sipsToPixels(sip)";
 
     AnnotationSpec spAnnotation = AnnotationSpec.builder(ClassNames.DIMENSION)
         .addMember("unit", "$T.SP", ClassNames.DIMENSION)
@@ -815,7 +820,7 @@ public class BuilderGenerator {
         requiredIndex,
         name + "Sp",
         Arrays.asList(parameter(prop, TypeName.FLOAT, "sip", spAnnotation)),
-        "sipsToPixels(sip)").build());
+        statement).build());
 
     if (hasVarArgs) {
       dataHolder.addMethod(resTypeListBuilder(
@@ -951,11 +956,9 @@ public class BuilderGenerator {
       return getMethodSpecBuilder(prop, requiredIndex, name, parameters, codeBlockBuilder.build());
     }
 
-    final TypeName typeName = prop.getType();
     CodeBlock codeBlock = CodeBlock.builder()
-        .add("final $T res = ", typeName.isBoxedPrimitive() ? typeName.unbox() : typeName)
+        .add("this.$L.$L = ", getImplMemberInstanceName(specModel), prop.getName())
         .addStatement(statement, formatObjects)
-        .addStatement("this.$L.$L = res", getImplMemberInstanceName(specModel), prop.getName())
         .build();
 
     return getMethodSpecBuilder(prop, requiredIndex, name, parameters, codeBlock);
