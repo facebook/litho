@@ -1159,26 +1159,60 @@ class LayoutAttributes implements ComponentLayout.Builder {
   }
 
   private static class YogaEdgesWithInts {
-    private YogaEdge[] mEdges = new YogaEdge[8];
-    private int[] mValues = new int[8];
+    private YogaEdge[] mEdges = new YogaEdge[2];
+    private int[] mValues = new int[2];
     private int mNumEntries;
+    private int mSize = 2;
 
     private void add(YogaEdge yogaEdge, int value) {
+      if (mNumEntries == mSize) {
+        increaseSize();
+      }
+
       mEdges[mNumEntries] = yogaEdge;
       mValues[mNumEntries] = value;
       mNumEntries++;
     }
+
+    private void increaseSize() {
+      YogaEdge[] oldEdges = mEdges;
+      int[] oldValues = mValues;
+
+      mSize *= 2;
+      mEdges = new YogaEdge[mSize];
+      mValues = new int[mSize];
+
+      System.arraycopy(oldEdges, 0, mEdges, 0, mNumEntries);
+      System.arraycopy(oldValues, 0, mValues, 0, mNumEntries);
+    }
   }
 
   private static class YogaEdgesWithFloats {
-    private YogaEdge[] mEdges = new YogaEdge[8];
-    private float[] mValues = new float[8];
+    private YogaEdge[] mEdges = new YogaEdge[2];
+    private float[] mValues = new float[2];
     private int mNumEntries;
+    private int mSize = 2;
 
     private void add(YogaEdge yogaEdge, float value) {
+      if (mNumEntries == mSize) {
+        increaseSize();
+      }
+
       mEdges[mNumEntries] = yogaEdge;
       mValues[mNumEntries] = value;
       mNumEntries++;
+    }
+
+    private void increaseSize() {
+      YogaEdge[] oldEdges = mEdges;
+      float[] oldValues = mValues;
+
+      mSize *= 2;
+      mEdges = new YogaEdge[mSize];
+      mValues = new float[mSize];
+
+      System.arraycopy(oldEdges, 0, mEdges, 0, mNumEntries);
+      System.arraycopy(oldValues, 0, mValues, 0, mNumEntries);
     }
   }
 }
