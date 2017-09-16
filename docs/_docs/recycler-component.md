@@ -67,12 +67,12 @@ recyclerBinder.moveItem(fromPosition, toPosition);
 
 `RecyclerBinder`'s API works directly with components. Since a component is only a collection of **props**, we can build any component ahead of time and leave the layout management to the `RecyclerBinder`.
 
-`RecyclerBinder` also supports receiving extra information about the way a component should be laid out. These extra information can be passed in through a `ComponentInfo`. Here's what the code looks like:
+`RecyclerBinder` also supports receiving extra information about the way a component should be laid out. These extra information can be passed in through a `ComponentRenderInfo`. Here's what the code looks like:
 
 ``` java
 recyclerBinder.insertItemAt(
   position,
-  ComponentInfo.create()
+  ComponentRenderInfo.create()
       .component(component)
       .isSticky(true)
       .build());
@@ -88,8 +88,8 @@ Here's an example of how `DiffUtil` can be used with Litho:
 ``` java
 
   private final ComponentRenderer<Data> mComponentRenderer = new ComponentRenderer<> {
-    ComponentInfo render(Data data, int idx) {
-      return ComponentInfo.create()
+    ComponentRenderInfo render(Data data, int idx) {
+      return ComponentRenderInfo.create()
           .component(
           	DataComponent.create(mComponentContext)
           	    .data(data))
