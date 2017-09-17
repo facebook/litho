@@ -22,8 +22,10 @@ public interface LoadEventsHandler {
 
   /**
    * Invoked every time the {@link Section} starts loading new elements.
+   *
+   * @param empty true on load starts
    */
-  void onLoadStarted();
+  void onLoadStarted(boolean empty);
 
   /**
    * Invoked every time the {@link Section} succeeds in loading new elements.

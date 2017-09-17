@@ -19,8 +19,7 @@ public class BaseLoadEventsHandler implements LoadEventsHandler {
   }
 
   @Override
-  public void onLoadStarted() {
-  }
+  public void onLoadStarted(boolean empty) {}
 
   @Override
   public void onLoadSucceded(boolean empty) {

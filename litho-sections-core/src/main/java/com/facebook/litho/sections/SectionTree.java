@@ -829,7 +829,7 @@ public class SectionTree {
           mLoadEventsHandler.onInitialLoad();
           break;
         case LOADING:
-          mLoadEventsHandler.onLoadStarted();
+          mLoadEventsHandler.onLoadStarted(isEmpty);
           break;
         case SUCCEEDED:
           mLoadEventsHandler.onLoadSucceded(isEmpty);
