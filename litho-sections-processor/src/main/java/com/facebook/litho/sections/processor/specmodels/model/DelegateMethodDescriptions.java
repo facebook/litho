@@ -30,7 +30,6 @@ import com.facebook.litho.sections.annotations.OnDiff;
 import com.facebook.litho.sections.annotations.OnRefresh;
 import com.facebook.litho.sections.annotations.OnUnbindService;
 import com.facebook.litho.sections.annotations.OnViewportChanged;
-import com.facebook.litho.sections.processor.SectionClassNames;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.DelegateMethodDescription;
 import com.facebook.litho.specmodels.model.MethodParamModel;

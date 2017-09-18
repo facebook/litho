@@ -9,7 +9,6 @@
 
 package com.facebook.litho.sections.processor.specmodels.model;
 
-import com.facebook.litho.sections.processor.SectionClassNames;
 import com.facebook.litho.specmodels.generator.BuilderGenerator;
 import com.facebook.litho.specmodels.generator.ComponentImplGenerator;
 import com.facebook.litho.specmodels.generator.DelegateMethodGenerator;
