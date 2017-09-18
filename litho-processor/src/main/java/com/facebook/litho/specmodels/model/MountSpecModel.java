@@ -10,6 +10,7 @@
 package com.facebook.litho.specmodels.model;
 
 import com.facebook.litho.specmodels.generator.BuilderGenerator;
+import com.facebook.litho.specmodels.generator.ClassAnnotationsGenerator;
 import com.facebook.litho.specmodels.generator.ComponentImplGenerator;
 import com.facebook.litho.specmodels.generator.DelegateMethodGenerator;
 import com.facebook.litho.specmodels.generator.EventGenerator;
@@ -23,6 +24,7 @@ import com.facebook.litho.specmodels.generator.TreePropGenerator;
 import com.facebook.litho.specmodels.generator.TriggerGenerator;
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
@@ -31,8 +33,7 @@ import java.util.List;
 import javax.lang.model.element.Modifier;
 
 /**
- * Model that is an abstract representation of a
- * {@link com.facebook.litho.annotations.MountSpec}.
+ * Model that is an abstract representation of a {@link com.facebook.litho.annotations.MountSpec}.
  */
 public class MountSpecModel implements SpecModel, HasPureRender {
   private final SpecModelImpl mSpecModel;
@@ -54,6 +55,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
       ImmutableList<EventDeclarationModel> eventDeclarations,
       ImmutableList<BuilderMethodModel> builderMethodModels,
       String classJavadoc,
+      ImmutableList<AnnotationSpec> classAnnotations,
       ImmutableList<PropJavadocModel> propJavadocs,
       boolean isPublic,
       DependencyInjectionHelper dependencyInjectionHelper,
@@ -76,6 +78,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
             .propDefaults(propDefaults)
             .eventDeclarations(eventDeclarations)
             .extraBuilderMethods(builderMethodModels)
+            .classAnnotations(classAnnotations)
             .classJavadoc(classJavadoc)
             .propJavadocs(propJavadocs)
             .isPublic(isPublic)
@@ -172,6 +175,11 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   @Override
   public ImmutableList<RenderDataDiffModel> getRenderDataDiffs() {
     return mSpecModel.getRenderDataDiffs();
+  }
+
+  @Override
+  public ImmutableList<AnnotationSpec> getClassAnnotations() {
+    return mSpecModel.getClassAnnotations();
   }
 
   @Override
@@ -272,6 +280,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
 
     TypeSpecDataHolder.newBuilder()
         .addTypeSpecDataHolder(JavadocGenerator.generate(this))
+        .addTypeSpecDataHolder(ClassAnnotationsGenerator.generate(this))
         .addTypeSpecDataHolder(PreambleGenerator.generate(this))
         .addTypeSpecDataHolder(ComponentImplGenerator.generate(this, null))
         .addTypeSpecDataHolder(TreePropGenerator.generate(this))

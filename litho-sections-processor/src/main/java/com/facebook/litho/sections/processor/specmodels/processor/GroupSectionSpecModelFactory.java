@@ -28,6 +28,7 @@ import com.facebook.litho.specmodels.model.BuilderMethodModel;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.SpecModel;
+import com.facebook.litho.specmodels.processor.AnnotationExtractor;
 import com.facebook.litho.specmodels.processor.DelegateMethodExtractor;
 import com.facebook.litho.specmodels.processor.EventDeclarationsExtractor;
 import com.facebook.litho.specmodels.processor.EventMethodExtractor;
@@ -107,6 +108,7 @@ public class GroupSectionSpecModelFactory implements SpecModelFactory {
         ImmutableList.copyOf(TypeVariablesExtractor.getTypeVariables(element)),
         ImmutableList.copyOf(PropDefaultsExtractor.getPropDefaults(element)),
         EventDeclarationsExtractor.getEventDeclarations(elements, element, GroupSectionSpec.class),
+        AnnotationExtractor.extractValidAnnotations(element),
         ImmutableList.of(BuilderMethodModel.KEY_BUILDER_METHOD, LOADING_EVENT_BUILDER_METHOD),
         JavadocExtractor.getClassJavadoc(elements, element),
         JavadocExtractor.getPropJavadocs(elements, element),

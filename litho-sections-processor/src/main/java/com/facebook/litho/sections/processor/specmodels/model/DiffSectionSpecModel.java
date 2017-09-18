@@ -35,6 +35,7 @@ import com.facebook.litho.specmodels.model.SpecModelValidationError;
 import com.facebook.litho.specmodels.model.StateParamModel;
 import com.facebook.litho.specmodels.model.TreePropModel;
 import com.facebook.litho.specmodels.model.UpdateStateMethodModel;
+import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
@@ -57,6 +58,7 @@ public class DiffSectionSpecModel implements SpecModel, HasService {
       String componentClassName,
       ImmutableList<DelegateMethodModel> delegateMethods,
       ImmutableList<EventMethodModel> eventMethods,
+      ImmutableList<AnnotationSpec> classAnnotations,
       ImmutableList<EventMethodModel> triggerMethods,
       ImmutableList<UpdateStateMethodModel> updateStateMethods,
       ImmutableList<TypeVariableName> typeVariables,
@@ -77,6 +79,7 @@ public class DiffSectionSpecModel implements SpecModel, HasService {
             .updateStateMethods(updateStateMethods)
             .typeVariables(typeVariables)
             .eventMethods(eventMethods)
+            .classAnnotations(classAnnotations)
             .triggerMethods(triggerMethods)
             .propDefaults(propDefaults)
             .eventDeclarations(eventDeclarations)
@@ -173,6 +176,11 @@ public class DiffSectionSpecModel implements SpecModel, HasService {
   @Override
   public ImmutableList<RenderDataDiffModel> getRenderDataDiffs() {
     return mSpecModel.getRenderDataDiffs();
+  }
+
+  @Override
+  public ImmutableList<AnnotationSpec> getClassAnnotations() {
+    return mSpecModel.getClassAnnotations();
   }
 
   @Override

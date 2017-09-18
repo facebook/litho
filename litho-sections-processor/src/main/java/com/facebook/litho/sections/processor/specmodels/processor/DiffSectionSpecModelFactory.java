@@ -28,6 +28,7 @@ import com.facebook.litho.specmodels.model.BuilderMethodModel;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.SpecModel;
+import com.facebook.litho.specmodels.processor.AnnotationExtractor;
 import com.facebook.litho.specmodels.processor.DelegateMethodExtractor;
 import com.facebook.litho.specmodels.processor.EventDeclarationsExtractor;
 import com.facebook.litho.specmodels.processor.EventMethodExtractor;
@@ -101,6 +102,7 @@ public class DiffSectionSpecModelFactory implements SpecModelFactory {
             INTER_STAGE_INPUT_ANNOTATIONS,
             ImmutableList.<Class<? extends Annotation>>of(ShouldUpdate.class, OnDiff.class)),
         EventMethodExtractor.getOnEventMethods(elements, element, INTER_STAGE_INPUT_ANNOTATIONS),
+        AnnotationExtractor.extractValidAnnotations(element),
         TriggerMethodExtractor.getOnTriggerMethods(
             elements, element, INTER_STAGE_INPUT_ANNOTATIONS),
         UpdateStateMethodExtractor.getOnUpdateStateMethods(element, INTER_STAGE_INPUT_ANNOTATIONS),

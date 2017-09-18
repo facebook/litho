@@ -10,6 +10,7 @@
 package com.facebook.litho.specmodels.model;
 
 import com.facebook.litho.specmodels.generator.BuilderGenerator;
+import com.facebook.litho.specmodels.generator.ClassAnnotationsGenerator;
 import com.facebook.litho.specmodels.generator.ComponentImplGenerator;
 import com.facebook.litho.specmodels.generator.DelegateMethodGenerator;
 import com.facebook.litho.specmodels.generator.EventGenerator;
@@ -38,13 +39,17 @@ public class DefaultLayoutSpecGenerator implements LayoutSpecGenerator {
     }
 
     if (layoutSpecModel.hasInjectedDependencies()) {
-      layoutSpecModel.getDependencyInjectionHelper().generate(layoutSpecModel).addToTypeSpec(typeSpec);
+      layoutSpecModel
+          .getDependencyInjectionHelper()
+          .generate(layoutSpecModel)
+          .addToTypeSpec(typeSpec);
     } else {
       typeSpec.addModifiers(Modifier.FINAL);
     }
 
     TypeSpecDataHolder.newBuilder()
         .addTypeSpecDataHolder(JavadocGenerator.generate(layoutSpecModel))
+        .addTypeSpecDataHolder(ClassAnnotationsGenerator.generate(layoutSpecModel))
         .addTypeSpecDataHolder(PreambleGenerator.generate(layoutSpecModel))
         .addTypeSpecDataHolder(ComponentImplGenerator.generate(layoutSpecModel, null))
         .addTypeSpecDataHolder(TreePropGenerator.generate(layoutSpecModel))

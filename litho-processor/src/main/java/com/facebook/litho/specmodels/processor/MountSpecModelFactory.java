@@ -30,6 +30,15 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import com.facebook.litho.specmodels.model.ClassNames;
+import com.facebook.litho.specmodels.model.DelegateMethodDescriptions;
+import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
+import com.facebook.litho.specmodels.model.MountSpecModel;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.TypeName;
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.Nullable;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
@@ -47,6 +56,7 @@ public class MountSpecModelFactory implements SpecModelFactory {
       new ArrayList<>();
   private static final List<Class<? extends Annotation>> DELEGATE_METHOD_ANNOTATIONS =
       new ArrayList<>();
+
   static {
     INTER_STAGE_INPUT_ANNOTATIONS.add(FromPrepare.class);
     INTER_STAGE_INPUT_ANNOTATIONS.add(FromMeasureBaseline.class);
@@ -90,6 +100,7 @@ public class MountSpecModelFactory implements SpecModelFactory {
         EventDeclarationsExtractor.getEventDeclarations(elements, element, MountSpec.class),
         ImmutableList.<BuilderMethodModel>of(),
         JavadocExtractor.getClassJavadoc(elements, element),
+        AnnotationExtractor.extractValidAnnotations(element),
         JavadocExtractor.getPropJavadocs(elements, element),
         element.getAnnotation(MountSpec.class).isPublic(),
         dependencyInjectionHelper,

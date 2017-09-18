@@ -10,10 +10,11 @@
 package com.facebook.litho.processor.integration.resources;
 
 import static com.facebook.litho.annotations.ResType.STRING;
-
+import android.annotation.TargetApi;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.view.View;
 import com.facebook.litho.ClickEvent;
@@ -50,6 +51,8 @@ import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
 
+
+@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 @MountSpec(events = TestEvent.class, shouldUseDisplayList = true, isPureRender = true, canMountIncrementally = true)
 public class TestMountSpec<S extends View> {
   @PropDefault protected static final boolean prop2 = true;

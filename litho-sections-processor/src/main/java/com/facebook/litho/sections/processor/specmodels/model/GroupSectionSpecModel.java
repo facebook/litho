@@ -36,11 +36,14 @@ import com.facebook.litho.specmodels.model.SpecModelValidationError;
 import com.facebook.litho.specmodels.model.StateParamModel;
 import com.facebook.litho.specmodels.model.TreePropModel;
 import com.facebook.litho.specmodels.model.UpdateStateMethodModel;
+import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
+
 import java.util.List;
+
 import javax.annotation.Nullable;
 import javax.lang.model.element.Modifier;
 
@@ -63,6 +66,7 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
       ImmutableList<TypeVariableName> typeVariables,
       ImmutableList<PropDefaultModel> propDefaults,
       ImmutableList<EventDeclarationModel> eventDeclarations,
+      ImmutableList<AnnotationSpec> classAnnotations,
       ImmutableList<BuilderMethodModel> builderMethodModels,
       String classJavadoc,
       ImmutableList<PropJavadocModel> propJavadocs,
@@ -81,6 +85,7 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
             .triggerMethods(triggerMethods)
             .propDefaults(propDefaults)
             .eventDeclarations(eventDeclarations)
+            .classAnnotations(classAnnotations)
             .extraBuilderMethods(builderMethodModels)
             .classJavadoc(classJavadoc)
             .propJavadocs(propJavadocs)
@@ -174,6 +179,11 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
   @Override
   public ImmutableList<RenderDataDiffModel> getRenderDataDiffs() {
     return mSpecModel.getRenderDataDiffs();
+  }
+
+  @Override
+  public ImmutableList<AnnotationSpec> getClassAnnotations() {
+    return mSpecModel.getClassAnnotations();
   }
 
   @Override

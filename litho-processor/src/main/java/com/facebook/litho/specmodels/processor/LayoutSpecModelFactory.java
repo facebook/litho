@@ -26,6 +26,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
+import javax.annotation.Nullable;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 
@@ -35,6 +36,7 @@ public class LayoutSpecModelFactory implements SpecModelFactory {
       new ArrayList<>();
   private static final List<Class<? extends Annotation>> DELEGATE_METHOD_ANNOTATIONS =
       new ArrayList<>();
+
   static {
     DELEGATE_METHOD_ANNOTATIONS.addAll(
         DelegateMethodDescriptions.LAYOUT_SPEC_DELEGATE_METHODS_MAP.keySet());
@@ -87,6 +89,7 @@ public class LayoutSpecModelFactory implements SpecModelFactory {
         ImmutableList.copyOf(PropDefaultsExtractor.getPropDefaults(element)),
         EventDeclarationsExtractor.getEventDeclarations(elements, element, LayoutSpec.class),
         ImmutableList.<BuilderMethodModel>of(),
+        AnnotationExtractor.extractValidAnnotations(element),
         JavadocExtractor.getClassJavadoc(elements, element),
         JavadocExtractor.getPropJavadocs(elements, element),
         element.getAnnotation(LayoutSpec.class).isPublic(),

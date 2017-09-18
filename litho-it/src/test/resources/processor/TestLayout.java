@@ -9,6 +9,7 @@
 
 package com.facebook.litho.processor.integration.resources;
 
+import android.annotation.TargetApi;
 import android.support.v4.util.Pools;
 import android.view.View;
 import com.facebook.litho.ClickEvent;
@@ -38,6 +39,7 @@ import java.util.BitSet;
  * @prop-required prop4 char[]
  * @prop-required prop5 char
  */
+@TargetApi(17)
 public final class TestLayout<S extends View> extends ComponentLifecycle {
   private static TestLayout sInstance = null;
 

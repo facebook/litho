@@ -25,6 +25,7 @@ import com.facebook.litho.specmodels.model.SpecModelValidationError;
 import com.facebook.litho.specmodels.model.StateParamModel;
 import com.facebook.litho.specmodels.model.TreePropModel;
 import com.facebook.litho.specmodels.model.UpdateStateMethodModel;
+import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
@@ -70,6 +71,7 @@ public class MockSpecModel implements SpecModel {
   private final String mScopeMethodName;
   private final boolean mIsStylingSupported;
   private final List<SpecModelValidationError> mSpecModelValidationErrors;
+  private final ImmutableList<AnnotationSpec> mClassAnnotations;
 
   private MockSpecModel(
       String specName,
@@ -104,7 +106,7 @@ public class MockSpecModel implements SpecModel {
       TypeName updateStateInterface,
       String scopeMethodName,
       boolean isStylingSupported,
-      List<SpecModelValidationError> specModelValidationErrors) {
+      List<SpecModelValidationError> specModelValidationErrors, ImmutableList<AnnotationSpec> classAnnotations) {
     mSpecName = specName;
     mSpecTypeName = specTypeName;
     mComponentName = componentName;
@@ -138,6 +140,7 @@ public class MockSpecModel implements SpecModel {
     mScopeMethodName = scopeMethodName;
     mIsStylingSupported = isStylingSupported;
     mSpecModelValidationErrors = specModelValidationErrors;
+    mClassAnnotations = classAnnotations;
   }
 
   @Override
@@ -223,6 +226,11 @@ public class MockSpecModel implements SpecModel {
   @Override
   public ImmutableList<RenderDataDiffModel> getRenderDataDiffs() {
     return mDiffs;
+  }
+
+  @Override
+  public ImmutableList<AnnotationSpec> getClassAnnotations() {
+    return mClassAnnotations;
   }
 
   @Override
@@ -349,6 +357,7 @@ public class MockSpecModel implements SpecModel {
     private String mScopeMethodName;
     private boolean mIsStylingSupported;
     private List<SpecModelValidationError> mSpecModelValidationErrors = ImmutableList.of();
+    private ImmutableList<AnnotationSpec> mClassAnnotations;
 
     public Builder specName(String specName) {
       mSpecName = specName;
@@ -518,6 +527,12 @@ public class MockSpecModel implements SpecModel {
       return this;
     }
 
+    public Builder classAnnotations(
+        ImmutableList<AnnotationSpec> classAnnotations) {
+      mClassAnnotations = classAnnotations;
+      return this;
+    }
+
     public MockSpecModel build() {
       return new MockSpecModel(
           mSpecName,
@@ -552,7 +567,8 @@ public class MockSpecModel implements SpecModel {
           mUpdateStateInterface,
           mScopeMethodName,
           mIsStylingSupported,
-          mSpecModelValidationErrors);
+          mSpecModelValidationErrors,
+          mClassAnnotations);
     }
 
     @Override
@@ -592,7 +608,8 @@ public class MockSpecModel implements SpecModel {
           && Objects.equals(mStateContainerClass, builder.mStateContainerClass)
           && Objects.equals(mUpdateStateInterface, builder.mUpdateStateInterface)
           && Objects.equals(mScopeMethodName, builder.mScopeMethodName)
-          && Objects.equals(mSpecModelValidationErrors, builder.mSpecModelValidationErrors);
+          && Objects.equals(mSpecModelValidationErrors, builder.mSpecModelValidationErrors)
+          && Objects.equals(mClassAnnotations, builder.mClassAnnotations);
     }
 
     @Override
@@ -630,7 +647,8 @@ public class MockSpecModel implements SpecModel {
           mUpdateStateInterface,
           mScopeMethodName,
           mIsStylingSupported,
-          mSpecModelValidationErrors);
+          mSpecModelValidationErrors,
+          mClassAnnotations);
     }
   }
 }

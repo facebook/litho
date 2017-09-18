@@ -16,6 +16,7 @@ import com.facebook.litho.sections.processor.specmodels.model.DiffSectionSpecMod
 import com.facebook.litho.sections.processor.specmodels.model.GroupSectionSpecModel;
 import com.facebook.litho.sections.processor.specmodels.model.HasService;
 import com.facebook.litho.specmodels.generator.BuilderGenerator;
+import com.facebook.litho.specmodels.generator.ClassAnnotationsGenerator;
 import com.facebook.litho.specmodels.generator.ComponentImplGenerator;
 import com.facebook.litho.specmodels.generator.DelegateMethodGenerator;
 import com.facebook.litho.specmodels.generator.EventGenerator;
@@ -72,6 +73,7 @@ public class SectionsComponentProcessor extends AbstractSectionsComponentProcess
     }
 
     PreambleGenerator.generate(specModel).addToTypeSpec(typeSpec);
+    ClassAnnotationsGenerator.generate(specModel).addToTypeSpec(typeSpec);
     ComponentImplGenerator.generate(specModel, specModel.getServiceParam()).addToTypeSpec(typeSpec);
     BuilderGenerator.generate(specModel).addToTypeSpec(typeSpec);
     StateGenerator.generate(specModel).addToTypeSpec(typeSpec);
