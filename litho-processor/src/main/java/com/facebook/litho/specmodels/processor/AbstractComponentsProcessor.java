@@ -11,7 +11,7 @@ package com.facebook.litho.specmodels.processor;
 
 import static com.facebook.litho.specmodels.processor.ProcessorUtils.validate;
 
-import com.facebook.litho.specmodels.DependencyInjectionHelperFactory;
+import com.facebook.litho.specmodels.model.DependencyInjectionHelperFactory;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.squareup.javapoet.JavaFile;
 import java.io.IOException;

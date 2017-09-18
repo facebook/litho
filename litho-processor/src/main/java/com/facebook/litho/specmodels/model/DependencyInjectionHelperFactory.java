@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.litho.specmodels;
+package com.facebook.litho.specmodels.model;
 
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import javax.annotation.Nullable;
