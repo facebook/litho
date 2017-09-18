@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.litho.sections.processor.specmodels.processor;
+package com.facebook.litho.sections.specmodels.processor;
 
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateTreeProp;
@@ -21,8 +21,8 @@ import com.facebook.litho.sections.annotations.OnDiff;
 import com.facebook.litho.sections.annotations.OnRefresh;
 import com.facebook.litho.sections.annotations.OnUnbindService;
 import com.facebook.litho.sections.annotations.OnViewportChanged;
-import com.facebook.litho.sections.processor.specmodels.model.DiffSectionSpecModel;
-import com.facebook.litho.sections.processor.specmodels.model.SectionClassNames;
+import com.facebook.litho.sections.specmodels.model.DiffSectionSpecModel;
+import com.facebook.litho.sections.specmodels.model.SectionClassNames;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
 import com.facebook.litho.specmodels.model.ClassNames;

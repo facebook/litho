@@ -16,7 +16,7 @@ java_library(
     source = "8",
     target = "8",
     visibility = [
-        make_dep_path("litho-sections-processor/src/main/java/com/facebook/litho/sections/processor/specmodels/processor:processor-lib"),
+        make_dep_path("litho-sections-processor/src/main/java/com/facebook/litho/sections/specmodels/processor:processor-lib"),
     ],
     deps = [
         COMPONENTS_SECTIONS_ANNOTATIONS_TARGET,
@@ -26,4 +26,3 @@ java_library(
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
     ],
 )
-

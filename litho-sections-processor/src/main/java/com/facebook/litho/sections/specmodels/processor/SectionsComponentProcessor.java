@@ -7,9 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.litho.sections.processor.specmodels.processor;
+package com.facebook.litho.sections.specmodels.processor;
 
-import com.facebook.litho.sections.processor.specmodels.model.SectionClassNames;
+import com.facebook.litho.sections.specmodels.model.SectionClassNames;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.processor.AbstractComponentsProcessor;
 import com.facebook.litho.specmodels.processor.SpecModelFactory;

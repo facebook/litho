@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.litho.sections.processor.specmodels.model;
+package com.facebook.litho.sections.specmodels.model;
 
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.ABSTRACT_IMPL_PARAM_NAME;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.IMPL_CLASS_NAME_SUFFIX;
@@ -19,8 +19,8 @@ import static com.facebook.litho.specmodels.model.DelegateMethodDescription.Opti
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.STATE_VALUE;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.TREE_PROP;
 
-import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.annotations.OnCreateInitialState;
+import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.sections.annotations.OnBindService;
 import com.facebook.litho.sections.annotations.OnCreateChildren;
 import com.facebook.litho.sections.annotations.OnCreateService;

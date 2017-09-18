@@ -5,7 +5,7 @@
  * directory of this source tree. An additional grant of patent rights can be found in the PATENTS
  * file in the same directory.
  */
-package com.facebook.litho.sections.processor.specmodels.model;
+package com.facebook.litho.sections.specmodels.model;
 
 import com.squareup.javapoet.ClassName;
 

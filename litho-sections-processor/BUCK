@@ -13,6 +13,6 @@ java_binary(
         "PUBLIC",
     ],
     deps = [
-        make_dep_path("litho-sections-processor/src/main/java/com/facebook/litho/sections/processor/specmodels/processor:processor-lib"),
+        make_dep_path("litho-sections-processor/src/main/java/com/facebook/litho/sections/specmodels/processor:processor-lib"),
     ],
 )
