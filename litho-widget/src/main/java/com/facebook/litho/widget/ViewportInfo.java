@@ -50,5 +50,8 @@ public interface ViewportInfo {
         int lastVisibleIndex,
         int firstFullyVisibleIndex,
         int lastFullyVisibleIndex);
+
+    @Deprecated
+    void lastItemAttached();
   }
 }

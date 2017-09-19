@@ -111,6 +111,11 @@ public class RecyclerBinder
         int lastFullyVisibleIndex) {
       onNewVisibleRange(firstVisibleIndex, lastVisibleIndex);
     }
+
+    @Override
+    public void lastItemAttached() {
+      // no-opt
+    }
   };
 
   @VisibleForTesting

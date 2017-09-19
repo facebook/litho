@@ -18,6 +18,7 @@ import com.facebook.litho.sections.annotations.OnCreateChildren;
 import com.facebook.litho.sections.annotations.OnCreateService;
 import com.facebook.litho.sections.annotations.OnDataBound;
 import com.facebook.litho.sections.annotations.OnDestroyService;
+import com.facebook.litho.sections.annotations.OnLastItemAttached;
 import com.facebook.litho.sections.annotations.OnRefresh;
 import com.facebook.litho.sections.annotations.OnUnbindService;
 import com.facebook.litho.sections.annotations.OnViewportChanged;
@@ -73,6 +74,7 @@ public class GroupSectionSpecModelFactory implements SpecModelFactory {
     DELEGATE_METHOD_ANNOTATIONS.add(OnDataBound.class);
     DELEGATE_METHOD_ANNOTATIONS.add(OnRefresh.class);
     DELEGATE_METHOD_ANNOTATIONS.add(OnViewportChanged.class);
+    DELEGATE_METHOD_ANNOTATIONS.add(OnLastItemAttached.class);
     DELEGATE_METHOD_ANNOTATIONS.add(OnCreateTreeProp.class);
   }
 

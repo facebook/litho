@@ -11,6 +11,7 @@ package com.facebook.litho.widget;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
@@ -123,7 +124,7 @@ public class ViewportManagerTest {
     ViewportManager viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_IDLE, 0, 1);
     viewportManager.onViewportchangedAfterViewAdded(0);
 
-    verify(mMainThreadHandler).post(any(Runnable.class));
+    verify(mMainThreadHandler, times(2)).post(any(Runnable.class));
   }
 
   @Test

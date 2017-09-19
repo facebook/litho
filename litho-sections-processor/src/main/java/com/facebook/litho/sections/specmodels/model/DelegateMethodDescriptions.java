@@ -27,6 +27,7 @@ import com.facebook.litho.sections.annotations.OnCreateService;
 import com.facebook.litho.sections.annotations.OnDataBound;
 import com.facebook.litho.sections.annotations.OnDestroyService;
 import com.facebook.litho.sections.annotations.OnDiff;
+import com.facebook.litho.sections.annotations.OnLastItemAttached;
 import com.facebook.litho.sections.annotations.OnRefresh;
 import com.facebook.litho.sections.annotations.OnUnbindService;
 import com.facebook.litho.sections.annotations.OnViewportChanged;
@@ -101,6 +102,16 @@ public class DelegateMethodDescriptions {
                   TypeName.INT,
                   TypeName.INT,
                   TypeName.INT))
+          .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE))
+          .build();
+
+  private static final DelegateMethodDescription ON_LAST_ITEM_ATTACHED =
+      DelegateMethodDescription.newBuilder()
+          .annotations(ImmutableList.of(AnnotationSpec.builder(Override.class).build()))
+          .accessType(Modifier.PROTECTED)
+          .returnType(TypeName.VOID)
+          .name("onLastItemAttached")
+          .definedParameterTypes(ImmutableList.<TypeName>of(SectionClassNames.SECTION_CONTEXT))
           .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE))
           .build();
 
@@ -195,6 +206,7 @@ public class DelegateMethodDescriptions {
     serviceAwareDelegateMethodsMap.put(OnRefresh.class, ON_REFRESH);
     serviceAwareDelegateMethodsMap.put(OnDataBound.class, ON_DATA_BOUND);
     serviceAwareDelegateMethodsMap.put(OnViewportChanged.class, ON_VIEWPORT_CHANGED);
+    serviceAwareDelegateMethodsMap.put(OnLastItemAttached.class, ON_LAST_ITEM_ATTACHED);
     serviceAwareDelegateMethodsMap.put(OnCreateService.class, ON_CREATE_SERVICE);
     serviceAwareDelegateMethodsMap.put(OnBindService.class, ON_BIND_SERVICE);
     serviceAwareDelegateMethodsMap.put(OnUnbindService.class, ON_UNBIND_SERVICE);
