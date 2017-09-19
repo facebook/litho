@@ -13,6 +13,7 @@ import com.facebook.litho.specmodels.generator.BuilderGenerator;
 import com.facebook.litho.specmodels.generator.ComponentImplGenerator;
 import com.facebook.litho.specmodels.generator.DelegateMethodGenerator;
 import com.facebook.litho.specmodels.generator.EventGenerator;
+import com.facebook.litho.specmodels.generator.JavadocGenerator;
 import com.facebook.litho.specmodels.generator.PreambleGenerator;
 import com.facebook.litho.specmodels.generator.StateGenerator;
 import com.facebook.litho.specmodels.generator.TreePropGenerator;
@@ -40,9 +41,7 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
-
 import java.util.List;
-
 import javax.annotation.Nullable;
 import javax.lang.model.element.Modifier;
 
@@ -283,6 +282,7 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
     }
 
     TypeSpecDataHolder.newBuilder()
+        .addTypeSpecDataHolder(JavadocGenerator.generate(this))
         .addTypeSpecDataHolder(PreambleGenerator.generate(this))
         .addTypeSpecDataHolder(ComponentImplGenerator.generate(this, getServiceParam()))
         .addTypeSpecDataHolder(BuilderGenerator.generate(this))
