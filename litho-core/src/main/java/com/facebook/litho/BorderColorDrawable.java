@@ -194,19 +194,6 @@ public class BorderColorDrawable extends Drawable {
           true);
     }
 
-    // Draw top border.
-    if (mBorderTopWidth > 0 && mBorderTopColor != QUICK_REJECT_COLOR) {
-      drawBorder(
-          canvas,
-          mBorderTopColor,
-          mBorderTopWidth,
-          bounds.left,
-          bounds.top,
-          bounds.right,
-          Math.min(bounds.top + mBorderTopWidth, bounds.bottom),
-          false);
-    }
-
     // Draw right border.
     if (mBorderRightWidth > 0 && mBorderRightColor != QUICK_REJECT_COLOR) {
       drawBorder(
@@ -218,6 +205,19 @@ public class BorderColorDrawable extends Drawable {
           bounds.right,
           bounds.bottom,
           true);
+    }
+
+    // Draw top border.
+    if (mBorderTopWidth > 0 && mBorderTopColor != QUICK_REJECT_COLOR) {
+      drawBorder(
+          canvas,
+          mBorderTopColor,
+          mBorderTopWidth,
+          bounds.left,
+          bounds.top,
+          bounds.right,
+          Math.min(bounds.top + mBorderTopWidth, bounds.bottom),
+          false);
     }
 
     // Draw bottom border.
