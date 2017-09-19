@@ -127,6 +127,28 @@ def fb_instrumentation_test(*args, **kwargs):
     # Not supported in OSS at the moment.
     pass
 
-# Within the OSS export, these are just aliases.
-litho_android_library = android_library
+def litho_android_library(name, srcs=None, test_spec_srcs=None, *args, **kwargs):
+  test_spec_srcs = test_spec_srcs or []
+  srcs = srcs or []
+
+  # This has no meaning in OSS.
+  kwargs.pop('fblite', None)
+  android_library(name, srcs=srcs, *args, **kwargs)
+
+  if len(test_spec_srcs) >= 1:
+    # Create a separate target to compile with javac 8 and the `-parameters`
+    # option enabled, so we can retrieve the method parameters later.
+    # This is a work-around in lieu of a disk serialization step in the
+    # processor.
+    # TODO(T21953762)
+    extra_args = kwargs.pop('extra_arguments', [])
+    android_library(
+        name + '_testspecs',
+        srcs=test_spec_srcs,
+        target='8',
+        source='8',
+        extra_arguments=extra_args + ['-parameters'],
+        *args,
+        **kwargs)
+
 components_robolectric_powermock_test = components_robolectric_test
