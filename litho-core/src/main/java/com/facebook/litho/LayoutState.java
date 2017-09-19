@@ -729,6 +729,16 @@ class LayoutState {
       layoutState.mTestOutputs.add(testOutput);
     }
 
+    // 9. Update the event handlers that have been created in the old ComponentTree with the new
+    // component dispatched, otherwise Section children might not be accessing the correct props
+    // and state on the event handlers. The null checkers cover tests, the scope and tree
+    // should not be null at this point of the layout calculation.
+    if (component != null
+        && component.getScopedContext() != null
+        && component.getScopedContext().getComponentTree() != null) {
+      component.getScopedContext().getComponentTree().bindEventHandler(component);
+    }
+
     if (component != null) {
       final Rect rect = ComponentsPools.acquireRect();
       if (layoutOutput != null) {

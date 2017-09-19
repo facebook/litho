@@ -42,6 +42,8 @@ import com.facebook.infer.annotation.ThreadSafe;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -181,6 +183,9 @@ public class ComponentTree {
   private int mScheduleLayoutAfterMeasure;
 
   private @Nullable Map<String, EventTrigger> mEventTriggers;
+
+  @GuardedBy("this")
+  public Map<String, List<EventHandler>> mEventHandlers = new HashMap<>();
 
   public static Builder create(ComponentContext context, Component.Builder<?, ?> root) {
     return create(context, root.build());
@@ -850,6 +855,34 @@ public class ComponentTree {
         SIZE_UNINITIALIZED,
         isAsync,
         null /*output */);
+  }
+
+  synchronized void bindEventHandler(Component component) {
+    final String key = component.getGlobalKey();
+
+    if (!mEventHandlers.containsKey(key)) {
+      return;
+    }
+
+    for (EventHandler eventHandler : mEventHandlers.get(key)) {
+      eventHandler.mHasEventDispatcher = component;
+
+      // Params should only be null for tests
+      if (eventHandler.params != null) {
+        eventHandler.params[0] = component.getScopedContext();
+      }
+    }
+  }
+
+  synchronized void recordEventHandler(Component component, EventHandler eventHandler) {
+    final String key = component.getGlobalKey();
+
+    if (!mEventHandlers.containsKey(key)) {
+      List<EventHandler> list = new ArrayList<>();
+      mEventHandlers.put(key, list);
+    }
+
+    mEventHandlers.get(key).add(eventHandler);
   }
 
   /**
