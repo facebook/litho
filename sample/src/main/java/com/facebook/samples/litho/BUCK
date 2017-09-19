@@ -6,7 +6,7 @@
 
 include_defs("//COMPONENTS_DEFS")
 
-android_library(
+litho_android_library(
     name = "litho",
     srcs = glob(["**/*.java"]),
     annotation_processor_deps = [
@@ -14,6 +14,10 @@ android_library(
     ],
     annotation_processors = [
         "com.facebook.litho.specmodels.processor.ComponentsProcessor",
+    ],
+    fblite = False,
+    test_spec_srcs = [
+        "lithography/FooterComponentSpec.java",
     ],
     visibility = [
         "PUBLIC",

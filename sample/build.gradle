@@ -70,6 +70,8 @@ dependencies {
 
     // Unit test only
     testImplementation project(':litho-testing')
+    testImplementation project(':litho-annotations')
+    testAnnotationProcessor project(':litho-processor')
     testImplementation deps.junit
     testImplementation deps.robolectric
     testImplementation deps.assertjCore

@@ -14,6 +14,7 @@ components_robolectric_test(
     source = "8",
     target = "8",
     deps = [
+        ":testspecs",
         make_dep_path("sample/src/main/java/com/facebook/samples/litho:litho"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj"),
@@ -24,5 +25,28 @@ components_robolectric_test(
         COMPONENTS_ASSERTJ_TARGET,
         COMPONENTS_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
         COMPONENTS_WIDGET_TARGET,
+        COMPONENTS_MOCKITO_TARGET,
+    ],
+)
+
+android_library(
+    name = "testspecs",
+    srcs = glob(["**/Test*ComponentSpec.java"]),
+    annotation_processor_deps = [
+        COMPONENTS_PROCESSOR_LIB_TARGET,
+    ],
+    annotation_processors = [
+        "com.facebook.litho.specmodels.processor.testing.ComponentsTestingProcessor",
+    ],
+    deps = [
+        make_dep_path("sample/src/main/java/com/facebook/samples/litho:litho_testspecs"),
+        COMPONENTS_JAVA_TARGET,
+        COMPONENTS_ANNOTATIONS_TARGET,
+        COMPONENTS_ANDROIDSUPPORT_TARGET,
+        COMPONENTS_TESTING_TARGET,
+        COMPONENTS_TESTING_ASSERTJ_TARGET,
+        COMPONENTS_JSR_TARGET,
+        COMPONENTS_HAMCREST_CORE_TARGET,
+        COMPONENTS_HAMCREST_LIBRARY_TARGET,
     ],
 )
