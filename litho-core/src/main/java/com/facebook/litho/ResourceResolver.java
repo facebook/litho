@@ -67,7 +67,8 @@ public class ResourceResolver {
     return resId != 0 ? mResources.getString(resId, formatArgs) : null;
   }
 
-  private final String[] resolveStringArrayRes(@ArrayRes int resId) {
+  @Nullable
+  protected final String[] resolveStringArrayRes(@ArrayRes int resId) {
     if (resId != 0) {
       String[] cached = mResourceCache.get(resId);
       if (cached != null) {
@@ -99,6 +100,7 @@ public class ResourceResolver {
     return 0;
   }
 
+  @Nullable
   private final int[] resolveIntArrayRes(@ArrayRes int resId) {
     if (resId != 0) {
       int[] cached = mResourceCache.get(resId);
@@ -113,6 +115,17 @@ public class ResourceResolver {
     }
 
     return null;
+  }
+
+  @Nullable
+  protected final Integer[] resolveIntegerArrayRes(@ArrayRes int resId) {
+    int[] resIds = resolveIntArrayRes(resId);
+    if (resIds == null) return null;
+    Integer[] result = new Integer[resIds.length];
+    for (int i = 0; i < resIds.length; i++) {
+      result[i] = resIds[i];
+    }
+    return result;
   }
 
   protected final boolean resolveBoolRes(@BoolRes int resId) {
@@ -220,6 +233,7 @@ public class ResourceResolver {
     }
   }
 
+  @Nullable
   public final String[] resolveStringArrayAttr(@AttrRes int attrResId, @ArrayRes int defResId) {
     mAttrs[0] = attrResId;
     TypedArray a = mTheme.obtainStyledAttributes(mAttrs);
@@ -242,6 +256,7 @@ public class ResourceResolver {
     }
   }
 
+  @Nullable
   public final int[] resolveIntArrayAttr(@AttrRes int attrResId, @ArrayRes int defResId) {
     mAttrs[0] = attrResId;
     TypedArray a = mTheme.obtainStyledAttributes(mAttrs);
@@ -251,6 +266,18 @@ public class ResourceResolver {
     } finally {
       a.recycle();
     }
+  }
+
+  @Nullable
+  protected final Integer[] resolveIntegerArrayAttr(
+      @AttrRes int attrResId, @ArrayRes int defResId) {
+    int[] resIds = resolveIntArrayAttr(attrResId, defResId);
+    if (resIds == null) return null;
+    Integer[] result = new Integer[resIds.length];
+    for (int i = 0; i < resIds.length; i++) {
+      result[i] = resIds[i];
+    }
+    return result;
   }
 
   protected final boolean resolveBoolAttr(@AttrRes int attrResId, @BoolRes int defResId) {
