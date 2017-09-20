@@ -8,6 +8,7 @@ permalink: /docs/props
 Litho uses a unidirectional data flow with immutable inputs. Following the name established by [React](https://facebook.github.io/react/), the inputs that a `Component` takes are known as *props*.
 
 ## Defining and using Props
+
 The props for a given `Component` are the union of all arguments annotated with `@Prop` in your spec methods. You can access the value of the props in all the methods that declare it as an `@Prop` parameter.
 
 The same prop can be defined and accessed in multiple lifecycle methods. The annotation processor will ensure you're using consistent prop types and consistent annotation parameters across all the spec methods.
@@ -140,6 +141,7 @@ MyComponent.create(c)
 Other supported resource types are `ResType.STRING_ARRAY`, `ResType.INT`, `ResType.INT_ARRAY`, `ResType.BOOL`, `ResType.COLOR`, `ResType.DIMEN_OFFSET`, `ResType.FLOAT`, and `ResType.DRAWABLE`.
 
 ## Variable Arguments
+
 Sometimes, you want to support having a list of items. This can unfortunately
 be a bit painful since it requires the developer to make a list, add all the
 items to it, and pass those items to the component create. The `varArg`
@@ -167,19 +169,34 @@ MyComponent.create(c)
    .name("Three")
 ```
 
-You can also combine `varArg` with `resType` props:
+As of version 0.6.2, this also works for props with a `resType`. For instance, given a
+Component like this:
 
 ```java
-MyComponent.create(c)
-   .textSizePx(1f)
-   .textSizeRes(resId)
-   .textSizeAttr(attrResId)
-   .textSizeDip(1f)
-   .textSizeSp(1f)
+@LayoutSpec
+public class MyComponent2Spec {
+
+   @OnCreateLayout
+   static ComponentLayout onCreateLayout(
+      LayoutContext context,
+      @Prop(varArg = "sizes", resType = ResType.DIMEN_TEXT) List<Float> sizes) {
+      ...
+   }
+}
 ```
 
+You can add multiple sizes through calls to the builder:
 
+```java
+MyComponent2.create(c)
+   .sizesPx(1f)
+   .sizesRes(resId)
+   .sizesAttr(attrResId)
+   .sizesDip(1f)
+   .sizesSp(1f)
+```
 
 ## Immutability
+
 The props of a Component are read-only. The Component's parent passes down values for the props when it creates the Component and they cannot change throughout the lifecycle of the Component. If the props values must be updated, the parent has to create a new Component and pass down new values for the props.
 The props objects should be made immutable. Due to [background layout](/docs/asynchronous-layout), props may be accessed on multiple threads. Props immutability ensures that no thread safety issues enter into your component hierarchy.
