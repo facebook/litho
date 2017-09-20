@@ -313,21 +313,14 @@ public class BuilderGenerator {
       PropModel prop,
       int requiredIndex) {
     final TypeSpecDataHolder.Builder dataHolder = TypeSpecDataHolder.newBuilder();
-    if (prop.hasVarArgs()) {
-      dataHolder.addMethod(varArgBuilder(specModel, prop, requiredIndex));
-      ParameterizedTypeName type = (ParameterizedTypeName) prop.getType();
-      if (getRawType(type.typeArguments.get(0)).equals(ClassNames.COMPONENT)) {
-        dataHolder.addMethod(varArgBuilderBuilder(prop, requiredIndex));
-      }
-      // fall through to generate builder method for List<T>
-    }
+    final boolean hasVarArgs = prop.hasVarArgs();
 
     switch (prop.getResType()) {
       case STRING:
-        dataHolder.addMethod(regularBuilder(specModel, prop, requiredIndex));
-        dataHolder.addMethod(
-            resBuilder(specModel, prop, requiredIndex, ClassNames.STRING_RES, "resolveString"));
-        dataHolder.addMethod(resWithVarargsBuilder(
+        dataHolder.addTypeSpecDataHolder(regularBuilders(specModel, prop, requiredIndex));
+        dataHolder.addTypeSpecDataHolder(
+            resBuilders(specModel, prop, requiredIndex, ClassNames.STRING_RES, "resolveString"));
+        dataHolder.addTypeSpecDataHolder(resWithVarargsBuilders(
             specModel,
             prop,
             requiredIndex,
@@ -339,83 +332,86 @@ public class BuilderGenerator {
             attrBuilders(specModel, prop, requiredIndex, ClassNames.STRING_RES, "resolveString"));
         break;
       case STRING_ARRAY:
-        dataHolder.addMethod(regularBuilder(specModel, prop, requiredIndex));
-        dataHolder.addMethod(
-            resBuilder(specModel, prop, requiredIndex, ClassNames.ARRAY_RES, "resolveStringArray"));
+        dataHolder.addTypeSpecDataHolder(regularBuilders(specModel, prop, requiredIndex));
+        dataHolder.addTypeSpecDataHolder(
+            resBuilders(specModel, prop, requiredIndex, ClassNames.ARRAY_RES, "resolveStringArray"));
         dataHolder.addTypeSpecDataHolder(
             attrBuilders(
                 specModel, prop, requiredIndex, ClassNames.ARRAY_RES, "resolveStringArray"));
         break;
       case INT:
-        dataHolder.addMethod(regularBuilder(specModel, prop, requiredIndex));
-        dataHolder.addMethod(
-            resBuilder(specModel, prop, requiredIndex, ClassNames.INT_RES, "resolveInt"));
+        dataHolder.addTypeSpecDataHolder(regularBuilders(specModel, prop, requiredIndex));
+        dataHolder.addTypeSpecDataHolder(
+            resBuilders(specModel, prop, requiredIndex, ClassNames.INT_RES, "resolveInt"));
         dataHolder.addTypeSpecDataHolder(
             attrBuilders(specModel, prop, requiredIndex, ClassNames.INT_RES, "resolveInt"));
         break;
       case INT_ARRAY:
-        dataHolder.addMethod(regularBuilder(specModel, prop, requiredIndex));
-        dataHolder.addMethod(
-            resBuilder(specModel, prop, requiredIndex, ClassNames.ARRAY_RES, "resolveIntArray"));
+        dataHolder.addTypeSpecDataHolder(regularBuilders(specModel, prop, requiredIndex));
         dataHolder.addTypeSpecDataHolder(
-            attrBuilders(specModel, prop, requiredIndex, ClassNames.ARRAY_RES, "resolveIntArray"));
+            resBuilders(specModel, prop, requiredIndex, ClassNames.ARRAY_RES,
+                hasVarArgs ? "resolveIntegerArray" : "resolveIntArray"));
+        dataHolder.addTypeSpecDataHolder(
+            attrBuilders(specModel, prop, requiredIndex, ClassNames.ARRAY_RES,
+                hasVarArgs ? "resolveIntegerArray" : "resolveIntArray"));
         break;
       case BOOL:
-        dataHolder.addMethod(regularBuilder(specModel, prop, requiredIndex));
-        dataHolder.addMethod(
-            resBuilder(specModel, prop, requiredIndex, ClassNames.BOOL_RES, "resolveBool"));
+        dataHolder.addTypeSpecDataHolder(regularBuilders(specModel, prop, requiredIndex));
+        dataHolder.addTypeSpecDataHolder(
+            resBuilders(specModel, prop, requiredIndex, ClassNames.BOOL_RES, "resolveBool"));
         dataHolder.addTypeSpecDataHolder(
             attrBuilders(specModel, prop, requiredIndex, ClassNames.BOOL_RES, "resolveBool"));
         break;
       case COLOR:
-        dataHolder.addMethod(
-            regularBuilder(specModel, prop, requiredIndex, annotation(ClassNames.COLOR_INT)));
-        dataHolder.addMethod(
-            resBuilder(specModel, prop, requiredIndex, ClassNames.COLOR_RES, "resolveColor"));
+        dataHolder.addTypeSpecDataHolder(
+            regularBuilders(specModel, prop, requiredIndex, annotation(ClassNames.COLOR_INT)));
+        dataHolder.addTypeSpecDataHolder(
+            resBuilders(specModel, prop, requiredIndex, ClassNames.COLOR_RES, "resolveColor"));
         dataHolder.addTypeSpecDataHolder(
             attrBuilders(specModel, prop, requiredIndex, ClassNames.COLOR_RES, "resolveColor"));
         break;
       case DIMEN_SIZE:
-        dataHolder.addMethod(pxBuilder(specModel, prop, requiredIndex));
-        dataHolder.addMethod(
-            resBuilder(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, "resolveDimenSize"));
+        final String sizeResolverName = !prop.hasVarArgs() && prop.getType().equals(ClassName.FLOAT.box())
+            ? "(float) resolveDimenSize" : "resolveDimenSize";
+        dataHolder.addTypeSpecDataHolder(pxBuilders(specModel, prop, requiredIndex));
         dataHolder.addTypeSpecDataHolder(
-            attrBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, "resolveDimenSize"));
-        dataHolder.addMethod(dipBuilder(specModel, prop, requiredIndex));
+            resBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, sizeResolverName));
+        dataHolder.addTypeSpecDataHolder(
+            attrBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, sizeResolverName));
+        dataHolder.addTypeSpecDataHolder(dipBuilders(specModel, prop, requiredIndex));
         break;
       case DIMEN_TEXT:
-        dataHolder.addMethod(pxBuilder(specModel, prop, requiredIndex));
-        dataHolder.addMethod(
-            resBuilder(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, "resolveDimenSize"));
+        final String textResolverName = !prop.hasVarArgs() && prop.getType().equals(ClassName.FLOAT.box())
+            ? "(float) resolveDimenSize" : "resolveDimenSize";
+        dataHolder.addTypeSpecDataHolder(pxBuilders(specModel, prop, requiredIndex));
         dataHolder.addTypeSpecDataHolder(
-            attrBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, "resolveDimenSize"));
-        dataHolder.addMethod(dipBuilder(specModel, prop, requiredIndex));
-        dataHolder.addMethod(sipBuilder(specModel, prop, requiredIndex));
+            resBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES,textResolverName));
+        dataHolder.addTypeSpecDataHolder(
+            attrBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, textResolverName));
+        dataHolder.addTypeSpecDataHolder(dipBuilders(specModel, prop, requiredIndex));
+        dataHolder.addTypeSpecDataHolder(sipBuilders(specModel, prop, requiredIndex));
         break;
       case DIMEN_OFFSET:
-        dataHolder.addMethod(pxBuilder(specModel, prop, requiredIndex));
-        dataHolder.addMethod(
-            resBuilder(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, "resolveDimenOffset"));
+        final String offsetResolverName = !prop.hasVarArgs() && prop.getType().equals(ClassName.FLOAT.box())
+            ? "(float) resolveDimenSize" : "resolveDimenSize";
+        dataHolder.addTypeSpecDataHolder(pxBuilders(specModel, prop, requiredIndex));
         dataHolder.addTypeSpecDataHolder(
-            attrBuilders(
-                specModel,
-                prop,
-                requiredIndex,
-                ClassNames.DIMEN_RES,
-                "resolveDimenOffset"));
-        dataHolder.addMethod(dipBuilder(specModel, prop, requiredIndex));
+            resBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, offsetResolverName));
+        dataHolder.addTypeSpecDataHolder(
+            attrBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, offsetResolverName));
+        dataHolder.addTypeSpecDataHolder(dipBuilders(specModel, prop, requiredIndex));
         break;
       case FLOAT:
-        dataHolder.addMethod(regularBuilder(specModel, prop, requiredIndex));
-        dataHolder.addMethod(
-            resBuilder(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, "resolveFloat"));
+        dataHolder.addTypeSpecDataHolder(regularBuilders(specModel, prop, requiredIndex));
+        dataHolder.addTypeSpecDataHolder(
+            resBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, "resolveFloat"));
         dataHolder.addTypeSpecDataHolder(
             attrBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, "resolveFloat"));
         break;
       case DRAWABLE:
-        dataHolder.addMethod(regularBuilder(specModel, prop, requiredIndex));
-        dataHolder.addMethod(
-            resBuilder(
+        dataHolder.addTypeSpecDataHolder(regularBuilders(specModel, prop, requiredIndex));
+        dataHolder.addTypeSpecDataHolder(
+            resBuilders(
                 specModel,
                 prop,
                 requiredIndex,
@@ -430,6 +426,15 @@ public class BuilderGenerator {
                 "resolveDrawable"));
         break;
       case NONE:
+        if (hasVarArgs) {
+          dataHolder.addMethod(varArgBuilder(specModel, prop, requiredIndex));
+          ParameterizedTypeName type = (ParameterizedTypeName) prop.getType();
+          if (getRawType(type.typeArguments.get(0)).equals(ClassNames.COMPONENT)) {
+            dataHolder.addMethod(varArgBuilderBuilder(prop, requiredIndex));
+          }
+          // fall through to generate builder method for List<T>
+        }
+
         if (prop.getType().equals(specModel.getComponentClass())) {
           dataHolder.addMethod(componentBuilder(specModel, prop, requiredIndex));
         } else {
@@ -491,7 +496,7 @@ public class BuilderGenerator {
       SpecModel specModel,
       PropModel prop,
       int requiredIndex) {
-    return builder(
+    return getMethodSpecBuilder(
         specModel,
         prop,
         requiredIndex,
@@ -499,7 +504,7 @@ public class BuilderGenerator {
         Arrays.asList(parameter(prop, prop.getType(), prop.getName())),
         "$L == null ? null : $L.makeShallowCopy()",
         prop.getName(),
-        prop.getName());
+        prop.getName()).build();
   }
 
   private static MethodSpec regularBuilder(
@@ -507,13 +512,14 @@ public class BuilderGenerator {
       PropModel prop,
       int requiredIndex,
       AnnotationSpec... extraAnnotations) {
-    return builder(
+    return getMethodSpecBuilder(
         specModel,
         prop,
         requiredIndex,
         prop.getName(),
         Arrays.asList(parameter(prop, prop.getType(), prop.getName(), extraAnnotations)),
-        prop.getName());
+        prop.getName())
+        .build();
   }
 
   private static MethodSpec varArgBuilder(
@@ -574,23 +580,56 @@ public class BuilderGenerator {
         codeBlock).build();
   }
 
-  private static MethodSpec resBuilder(
+  private static TypeSpecDataHolder regularBuilders(
+      SpecModel specModel,
+      PropModel prop,
+      int requiredIndex,
+      AnnotationSpec... extraAnnotations) {
+    final TypeSpecDataHolder.Builder dataHolder = TypeSpecDataHolder.newBuilder();
+    dataHolder.addMethod(regularBuilder(specModel, prop, requiredIndex, extraAnnotations));
+    if (prop.hasVarArgs()) {
+      dataHolder.addMethod(varArgBuilder(specModel, prop, requiredIndex));
+    }
+    return dataHolder.build();
+  }
+
+  private static TypeSpecDataHolder resBuilders(
       SpecModel specModel,
       PropModel prop,
       int requiredIndex,
       ClassName annotationClassName,
       String resolver) {
-    return builder(
+    final TypeSpecDataHolder.Builder dataHolder = TypeSpecDataHolder.newBuilder();
+    final boolean hasVarArgs = prop.hasVarArgs();
+    final String name = hasVarArgs ? prop.getVarArgsSingleName() : prop.getName();
+
+    dataHolder.addMethod(resTypeRegularBuilder(
         specModel,
         prop,
         requiredIndex,
-        prop.getName() + "Res",
+        name + "Res",
         Arrays.asList(parameter(prop, TypeName.INT, "resId", annotation(annotationClassName))),
         "$L(resId)",
-        resolver + "Res");
+        resolver + "Res").build());
+
+    if (hasVarArgs) {
+      dataHolder.addMethod(resTypeListBuilder(
+          specModel,
+          prop,
+          requiredIndex,
+          prop.getName() + "Res",
+          Arrays.asList(
+              parameter(
+                  prop,
+                  ParameterizedTypeName.get(ClassNames.LIST, TypeName.INT.box()),
+                  "resIds")),
+          "$L(resIds.get(i))",
+          resolver + "Res").build());
+    }
+    return dataHolder.build();
   }
 
-  private static MethodSpec resWithVarargsBuilder(
+  private static TypeSpecDataHolder resWithVarargsBuilders(
       SpecModel specModel,
       PropModel prop,
       int requiredIndex,
@@ -598,18 +637,43 @@ public class BuilderGenerator {
       String resolver,
       TypeName varargsType,
       String varargsName) {
-    return getMethodSpecBuilder(
+    final TypeSpecDataHolder.Builder dataHolder = TypeSpecDataHolder.newBuilder();
+    final boolean hasVarArgs = prop.hasVarArgs();
+    final String name = hasVarArgs ? prop.getVarArgsSingleName() : prop.getName();
+
+    dataHolder.addMethod(resTypeRegularBuilder(
         specModel,
         prop,
         requiredIndex,
-        prop.getName() + "Res",
+        name + "Res",
         Arrays.asList(
             parameter(prop, TypeName.INT, "resId", annotation(annotationClassName)),
             ParameterSpec.builder(ArrayTypeName.of(varargsType), varargsName).build()),
         "$L(resId, " + varargsName + ")",
         resolver + "Res")
         .varargs(true)
-        .build();
+        .build());
+
+    if (hasVarArgs) {
+      dataHolder.addMethod(resTypeListBuilder(
+          specModel,
+          prop,
+          requiredIndex,
+          prop.getName() + "Res",
+          Arrays.asList(
+              parameter(
+                  prop,
+                  ParameterizedTypeName.get(ClassNames.LIST, TypeName.INT.box()),
+                  "resIds",
+                  annotation(annotationClassName)),
+              ParameterSpec.builder(ArrayTypeName.of(varargsType), varargsName).build()),
+          "$L(resIds.get(i), " + varargsName + ")",
+          resolver + "Res")
+          .varargs(true)
+          .build());
+    }
+
+    return dataHolder.build();
   }
 
   private static TypeSpecDataHolder attrBuilders(
@@ -619,75 +683,172 @@ public class BuilderGenerator {
       ClassName annotationClassName,
       String resolver) {
     final TypeSpecDataHolder.Builder dataHolder = TypeSpecDataHolder.newBuilder();
+    final boolean hasVarArgs = prop.hasVarArgs();
+    final String name = hasVarArgs ? prop.getVarArgsSingleName() : prop.getName();
 
-    dataHolder.addMethod(builder(
+    dataHolder.addMethod(resTypeRegularBuilder(
         specModel,
         prop,
         requiredIndex,
-        prop.getName() + "Attr",
+        name + "Attr",
         Arrays.asList(
             parameter(prop, TypeName.INT, "attrResId", annotation(ClassNames.ATTR_RES)),
             parameter(prop, TypeName.INT, "defResId", annotation(annotationClassName))),
         "$L(attrResId, defResId)",
-        resolver + "Attr"));
+        resolver + "Attr").build());
 
-    dataHolder.addMethod(builder(
+    dataHolder.addMethod(resTypeRegularBuilder(
         specModel,
         prop,
         requiredIndex,
-        prop.getName() + "Attr",
+        name + "Attr",
         Arrays.asList(parameter(prop, TypeName.INT, "attrResId", annotation(ClassNames.ATTR_RES))),
         "$L(attrResId, 0)",
-        resolver + "Attr"));
+        resolver + "Attr").build());
+
+    if (hasVarArgs) {
+      dataHolder.addMethod(resTypeListBuilder(
+          specModel,
+          prop,
+          requiredIndex,
+          prop.getName() + "Attr",
+          Arrays.asList(
+              parameter(
+                  prop,
+                  ParameterizedTypeName.get(ClassNames.LIST, TypeName.INT.box()),
+                  "attrResIds"),
+              parameter(prop, TypeName.INT, "defResId", annotation(annotationClassName))),
+          "$L(attrResIds.get(i), defResId)",
+          resolver + "Attr").build());
+
+      dataHolder.addMethod(resTypeListBuilder(
+          specModel,
+          prop,
+          requiredIndex,
+          prop.getName() + "Attr",
+          Arrays.asList(
+              parameter(
+                  prop,
+                  ParameterizedTypeName.get(ClassNames.LIST, TypeName.INT.box()),
+                  "attrResIds")),
+          "$L(attrResIds.get(i), 0)",
+          resolver + "Attr").build());
+    }
 
     return dataHolder.build();
   }
 
-  private static MethodSpec pxBuilder(
+  private static TypeSpecDataHolder pxBuilders(
       SpecModel specModel,
       PropModel prop,
       int requiredIndex) {
-    return builder(
+    final TypeSpecDataHolder.Builder dataHolder = TypeSpecDataHolder.newBuilder();
+    final boolean hasVarArgs = prop.hasVarArgs();
+    final String name = hasVarArgs ? prop.getVarArgsSingleName() : prop.getName();
+
+    dataHolder.addMethod(resTypeRegularBuilder(
         specModel,
         prop,
         requiredIndex,
-        prop.getName() + "Px",
-        Arrays.asList(parameter(prop, prop.getType(), prop.getName(), annotation(ClassNames.PX))),
-        prop.getName());
+        name + "Px",
+        Arrays.asList(parameter(
+            prop,
+            hasVarArgs ?
+                ((ParameterizedTypeName) prop.getType()).typeArguments.get(0).unbox() :
+                prop.getType().unbox(),
+            name,
+            annotation(ClassNames.PX))),
+        name).build());
+
+    if (hasVarArgs) {
+      dataHolder.addMethod(resTypeListBuilder(
+          specModel,
+          prop,
+          requiredIndex,
+          prop.getName() + "Px",
+          Arrays.asList(parameter(
+              prop,
+              prop.getType(),
+              prop.getName())),
+          prop.getName() + ".get(i)").build());
+    }
+
+    return dataHolder.build();
   }
 
-  private static MethodSpec dipBuilder(
+  private static TypeSpecDataHolder dipBuilders(
       SpecModel specModel,
       PropModel prop,
       int requiredIndex) {
+    final TypeSpecDataHolder.Builder dataHolder = TypeSpecDataHolder.newBuilder();
+    final boolean hasVarArgs = prop.hasVarArgs();
+    final String name = hasVarArgs ? prop.getVarArgsSingleName() : prop.getName();
+    final String statement = !prop.hasVarArgs() && prop.getType().equals(ClassName.FLOAT.box())
+        ? "(float) dipsToPixels(dip)" : "dipsToPixels(dip)";
+
     AnnotationSpec dipAnnotation = AnnotationSpec.builder(ClassNames.DIMENSION)
         .addMember("unit", "$T.DP", ClassNames.DIMENSION)
         .build();
 
-    return builder(
+    dataHolder.addMethod(resTypeRegularBuilder(
         specModel,
         prop,
         requiredIndex,
-        prop.getName() + "Dip",
-        Arrays.asList(parameter(prop, TypeName.FLOAT, "dips", dipAnnotation)),
-        "dipsToPixels(dips)");
+        name + "Dip",
+        Arrays.asList(parameter(prop, TypeName.FLOAT, "dip", dipAnnotation)),
+        statement).build());
+
+    if (hasVarArgs) {
+      dataHolder.addMethod(resTypeListBuilder(
+          specModel,
+          prop,
+          requiredIndex,
+          prop.getName() + "Dip",
+          Arrays.asList(parameter(
+              prop,
+              ParameterizedTypeName.get(ClassNames.LIST, TypeName.FLOAT.box()),
+              "dips")),
+          "dipsToPixels(dips.get(i))").build());
+    }
+
+    return dataHolder.build();
   }
 
-  private static MethodSpec sipBuilder(
+  private static TypeSpecDataHolder sipBuilders(
       SpecModel specModel,
       PropModel prop,
       int requiredIndex) {
+    final TypeSpecDataHolder.Builder dataHolder = TypeSpecDataHolder.newBuilder();
+    final boolean hasVarArgs = prop.hasVarArgs();
+    final String name = hasVarArgs ? prop.getVarArgsSingleName() : prop.getName();
+    final String statement = !prop.hasVarArgs() && prop.getType().equals(ClassName.FLOAT.box())
+        ? "(float) sipsToPixels(sip)" : "sipsToPixels(sip)";
+
     AnnotationSpec spAnnotation = AnnotationSpec.builder(ClassNames.DIMENSION)
         .addMember("unit", "$T.SP", ClassNames.DIMENSION)
         .build();
 
-    return builder(
+    dataHolder.addMethod(resTypeRegularBuilder(
         specModel,
         prop,
         requiredIndex,
-        prop.getName() + "Sp",
-        Arrays.asList(parameter(prop, TypeName.FLOAT, "sips", spAnnotation)),
-        "sipsToPixels(sips)");
+        name + "Sp",
+        Arrays.asList(parameter(prop, TypeName.FLOAT, "sip", spAnnotation)),
+        statement).build());
+
+    if (hasVarArgs) {
+      dataHolder.addMethod(resTypeListBuilder(
+          specModel,
+          prop,
+          requiredIndex,
+          prop.getName() + "Sp",
+          Arrays.asList(parameter(
+              prop,
+              ParameterizedTypeName.get(ClassNames.LIST, TypeName.FLOAT.box()),
+              "sips")),
+          "sipsToPixels(sips.get(i))").build());
+    }
+    return dataHolder.build();
   }
 
   private static MethodSpec builderBuilder(
@@ -695,7 +856,7 @@ public class BuilderGenerator {
       PropModel prop,
       int requiredIndex,
       ClassName builderClass) {
-    return builder(
+    return getMethodSpecBuilder(
         specModel,
         prop,
         requiredIndex,
@@ -705,7 +866,7 @@ public class BuilderGenerator {
             ParameterizedTypeName.get(builderClass, getBuilderGenericTypes(prop, builderClass)),
             prop.getName() + "Builder")),
         "$L.build()",
-        prop.getName() + "Builder");
+        prop.getName() + "Builder").build();
   }
 
   private static TypeName[] getBuilderGenericTypes(PropModel prop, ClassName builderClass) {
@@ -746,7 +907,7 @@ public class BuilderGenerator {
     return AnnotationSpec.builder(className).build();
   }
 
-  private static MethodSpec builder(
+  private static MethodSpec.Builder resTypeListBuilder(
       SpecModel specModel,
       PropModel prop,
       int requiredIndex,
@@ -754,14 +915,70 @@ public class BuilderGenerator {
       List<ParameterSpec> parameters,
       String statement,
       Object... formatObjects) {
-    return getMethodSpecBuilder(
+    final String propName = prop.getName();
+    final String parameterName = parameters.get(0).name;
+    final String implMemberInstanceName = getImplMemberInstanceName(specModel);
+    final ParameterizedTypeName varArgType = (ParameterizedTypeName) prop.getType();
+    final TypeName resType = varArgType.typeArguments.get(0);
+    final ParameterizedTypeName listType = ParameterizedTypeName.get(
+        ClassName.get(ArrayList.class), resType);
+
+    CodeBlock codeBlock = CodeBlock.builder()
+        .beginControlFlow("if ($L == null)", parameterName)
+        .addStatement("return this")
+        .endControlFlow()
+        .beginControlFlow("if (this.$L.$L == null)", implMemberInstanceName, propName)
+        .addStatement("this.$L.$L = new $T()", implMemberInstanceName, propName, listType)
+        .endControlFlow()
+        .beginControlFlow("for (int i = 0; i < $L.size(); i++)", parameterName)
+        .add("final $T res = ", resType.isBoxedPrimitive() ? resType.unbox() : resType)
+        .addStatement(statement, formatObjects)
+        .addStatement("this.$L.$L.add(res)", implMemberInstanceName, propName)
+        .endControlFlow()
+        .build();
+
+    return getMethodSpecBuilder(prop, requiredIndex, name, parameters, codeBlock);
+  }
+
+  private static MethodSpec.Builder resTypeRegularBuilder(
+      SpecModel specModel,
+      PropModel prop,
+      int requiredIndex,
+      String name,
+      List<ParameterSpec> parameters,
+      String statement,
+      Object... formatObjects) {
+
+    if (prop.hasVarArgs()) {
+      final String propName = prop.getName();
+      final String implMemberInstanceName = getImplMemberInstanceName(specModel);
+      final ParameterizedTypeName varArgType = (ParameterizedTypeName) prop.getType();
+      final TypeName singleParameterType = varArgType.typeArguments.get(0);
+      final ParameterizedTypeName listType = ParameterizedTypeName.get(
+          ClassName.get(ArrayList.class), singleParameterType);
+
+      CodeBlock.Builder codeBlockBuilder = CodeBlock.builder()
+              .beginControlFlow(
+                  "if (this.$L.$L == null)", implMemberInstanceName, propName)
+              .addStatement("this.$L.$L = new $T()", implMemberInstanceName, propName, listType)
+              .endControlFlow()
+              .add("final $T res = ", singleParameterType.isBoxedPrimitive() ?
+                  singleParameterType.unbox() : singleParameterType)
+              .addStatement(statement, formatObjects)
+              .addStatement("this.$L.$L.add(res)", implMemberInstanceName, propName);
+
+      return getMethodSpecBuilder(prop, requiredIndex, name, parameters, codeBlockBuilder.build());
+    }
+
+    return getNoVarArgsMethodSpecBuilder(
         specModel,
         prop,
         requiredIndex,
         name,
         parameters,
         statement,
-        formatObjects).build();
+        formatObjects
+    );
   }
 
   private static MethodSpec.Builder getMethodSpecBuilder(
@@ -795,6 +1012,26 @@ public class BuilderGenerator {
 
       return getMethodSpecBuilder(prop, requiredIndex, name, parameters, codeBlockBuilder.build());
     }
+
+    return getNoVarArgsMethodSpecBuilder(
+        specModel,
+        prop,
+        requiredIndex,
+        name,
+        parameters,
+        statement,
+        formatObjects
+    );
+  }
+
+  private static MethodSpec.Builder getNoVarArgsMethodSpecBuilder(
+      SpecModel specModel,
+      PropModel prop,
+      int requiredIndex,
+      String name,
+      List<ParameterSpec> parameters,
+      String statement,
+      Object... formatObjects) {
 
     CodeBlock codeBlock = CodeBlock.builder()
         .add("this.$L.$L = ", getImplMemberInstanceName(specModel), prop.getName())
@@ -861,7 +1098,7 @@ public class BuilderGenerator {
             "return super.$L($L)", builderMethodModel.paramName, builderMethodModel.paramName)
         .returns(BUILDER_CLASS_NAME)
         .build();
-    }
+  }
 
   private static MethodSpec generateBuildMethod(SpecModel specModel, int numRequiredProps) {
     final MethodSpec.Builder buildMethodBuilder = MethodSpec.methodBuilder("build")

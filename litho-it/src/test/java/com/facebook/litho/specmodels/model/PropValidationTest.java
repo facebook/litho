@@ -210,6 +210,20 @@ public class PropValidationTest {
   }
 
   @Test
+  public void testIncorrectTypeForResTypeWithVarArg() {
+    when(mPropModel1.getResType()).thenReturn(ResType.BOOL);
+    when(mPropModel1.hasVarArgs()).thenReturn(true);
+    when(mPropModel1.getType()).thenReturn(ParameterizedTypeName.get(ClassNames.LIST, TypeName.INT.box()));
+
+    List<SpecModelValidationError> validationErrors = PropValidation.validate(mSpecModel, PropValidation.RESERVED_PROP_NAMES);
+    assertThat(validationErrors).hasSize(1);
+    assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
+    assertThat(validationErrors.get(0).message).isEqualTo(
+        "A variable argument declared with resType BOOL must be one of the following types: " +
+            "[java.util.List<java.lang.Boolean>].");
+  }
+
+  @Test
   public void testResTypeDimenMustNotHavePxOrDimensionAnnotations() {
     when(mPropModel1.getResType()).thenReturn(ResType.DIMEN_OFFSET);
     when(mPropModel1.getType()).thenReturn(TypeName.INT);

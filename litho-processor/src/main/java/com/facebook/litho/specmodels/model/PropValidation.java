@@ -122,13 +122,6 @@ public class PropValidation {
                     + "generated code."));
       }
 
-      if (prop.hasVarArgs() && prop.getResType() != ResType.NONE) {
-        validationErrors.add(
-            new SpecModelValidationError(
-                prop.getRepresentedObject(),
-                prop.getName() + " is a variable argument, and thus should not set a resType."));
-      }
-
       if (prop.hasVarArgs()) {
         TypeName typeName = prop.getType();
         if (typeName instanceof ParameterizedTypeName) {
@@ -179,41 +172,64 @@ public class PropValidation {
       return validationErrors;
     }
 
+    final boolean hasVarArgs = prop.hasVarArgs();
     final List<TypeName> validResTypes = new ArrayList<>();
     switch (resType) {
       case STRING:
-        validResTypes.add(TypeName.get(String.class));
-        validResTypes.add(TypeName.get(CharSequence.class));
+        validResTypes.add(hasVarArgs ?
+            ParameterizedTypeName.get(List.class, String.class) : TypeName.get(String.class));
+        validResTypes.add(hasVarArgs ?
+            ParameterizedTypeName.get(List.class, CharSequence.class) : TypeName.get(CharSequence.class));
         break;
       case STRING_ARRAY:
-        validResTypes.add(TypeName.get(String[].class));
+        validResTypes.add(hasVarArgs ?
+            ParameterizedTypeName.get(List.class, String[].class) : TypeName.get(String[].class));
         break;
       case INT:
       case COLOR:
-        validResTypes.add(TypeName.get(int.class));
-        validResTypes.add(TypeName.get(Integer.class));
+        if (hasVarArgs) {
+          validResTypes.add(ParameterizedTypeName.get(List.class, Integer.class));
+        } else {
+          validResTypes.add(TypeName.get(int.class));
+          validResTypes.add(TypeName.get(Integer.class));
+        }
         break;
       case INT_ARRAY:
-        validResTypes.add(TypeName.get(int[].class));
+        validResTypes.add(hasVarArgs ?
+            ParameterizedTypeName.get(List.class, Integer[].class) : TypeName.get(int[].class));
         break;
       case BOOL:
-        validResTypes.add(TypeName.get(boolean.class));
-        validResTypes.add(TypeName.get(Boolean.class));
+        if (hasVarArgs) {
+          validResTypes.add(ParameterizedTypeName.get(List.class, Boolean.class));
+        } else {
+          validResTypes.add(TypeName.get(boolean.class));
+          validResTypes.add(TypeName.get(Boolean.class));
+        }
         break;
       case DIMEN_SIZE:
       case DIMEN_TEXT:
       case DIMEN_OFFSET:
-        validResTypes.add(TypeName.get(int.class));
-        validResTypes.add(TypeName.get(Integer.class));
-        validResTypes.add(TypeName.get(float.class));
-        validResTypes.add(TypeName.get(Float.class));
+        if (hasVarArgs) {
+          validResTypes.add(ParameterizedTypeName.get(List.class, Integer.class));
+          validResTypes.add(ParameterizedTypeName.get(List.class, Float.class));
+        } else {
+          validResTypes.add(TypeName.get(int.class));
+          validResTypes.add(TypeName.get(Integer.class));
+          validResTypes.add(TypeName.get(float.class));
+          validResTypes.add(TypeName.get(Float.class));
+        }
         break;
       case FLOAT:
-        validResTypes.add(TypeName.get(float.class));
-        validResTypes.add(TypeName.get(Float.class));
+        if (hasVarArgs) {
+          validResTypes.add(ParameterizedTypeName.get(List.class, Float.class));
+        } else {
+          validResTypes.add(TypeName.get(float.class));
+          validResTypes.add(TypeName.get(Float.class));
+        }
         break;
       case DRAWABLE:
-        validResTypes.add(ClassNames.DRAWABLE);
+        validResTypes.add(hasVarArgs ?
+            ParameterizedTypeName.get(ClassNames.LIST, ClassNames.DRAWABLE) : ClassNames.DRAWABLE);
         break;
     }
 
@@ -221,8 +237,9 @@ public class PropValidation {
       validationErrors.add(
           new SpecModelValidationError(
               prop.getRepresentedObject(),
-              "A prop declared with resType " + prop.getResType() + " must be one of the " +
-                  "following types: " + Arrays.toString(validResTypes.toArray()) + "."));
+              (prop.hasVarArgs() ? "A variable argument" : "A prop") + " declared with resType "
+                  + prop.getResType() + " must be one of the following types: "
+                  + Arrays.toString(validResTypes.toArray()) + "."));
     }
 
     return validationErrors;
