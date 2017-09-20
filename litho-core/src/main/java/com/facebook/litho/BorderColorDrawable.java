@@ -105,6 +105,9 @@ public class BorderColorDrawable extends Drawable {
   private void drawMultiColoredBorders(Canvas canvas) {
     float inset = mBorderLeftWidth / 2f;
     mDrawBounds.set(getBounds());
+    final int translateSaveCount = canvas.save();
+    canvas.translate(mDrawBounds.left, mDrawBounds.top);
+    mDrawBounds.offsetTo(0.0f, 0.0f);
     mPaint.setStrokeWidth(mBorderLeftWidth);
 
     int height = Math.round(mDrawBounds.height());
@@ -176,6 +179,8 @@ public class BorderColorDrawable extends Drawable {
       canvas.drawRect(mDrawBounds, mPaint);
       canvas.restoreToCount(saveCount);
     }
+
+    canvas.restoreToCount(translateSaveCount);
   }
 
   /** Worst case, we have different widths _and_ colors specified */
