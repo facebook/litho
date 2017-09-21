@@ -849,12 +849,17 @@ public class RecyclerBinder
     return mInternalAdapter.getItemCount();
   }
 
+  @UiThread
   @GuardedBy("this")
   private void invalidateLayoutData() {
     mRange = null;
     for (int i = 0, size = mComponentTreeHolders.size(); i < size; i++) {
       mComponentTreeHolders.get(i).invalidateTree();
     }
+
+    // We need to call this as we want to make sure everything is re-bound since we need new sizes
+    // on all rows.
+    mInternalAdapter.notifyDataSetChanged();
   }
 
   @GuardedBy("this")
