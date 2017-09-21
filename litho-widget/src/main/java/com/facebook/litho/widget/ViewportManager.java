@@ -86,10 +86,7 @@ final class ViewportManager {
     final int lastFullyVisibleItemPosition = mLayoutInfo.findLastFullyVisibleItemPosition();
     final int totalItemCount = mLayoutInfo.getItemCount();
 
-    if (firstVisiblePosition < 0
-        || lastVisiblePosition < 0
-        || firstFullyVisibleItemPosition < 0
-        || lastFullyVisibleItemPosition < 0) {
+    if (firstVisiblePosition < 0 || lastVisiblePosition < 0) {
       return;
     }
 

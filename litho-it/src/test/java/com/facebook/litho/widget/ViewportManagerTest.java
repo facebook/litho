@@ -54,6 +54,20 @@ public class ViewportManagerTest {
   }
 
   @Test
+  public void testOnViewportChangedWhileScrollingWithNoItemsFullyVisible() {
+    ViewportManager viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_DRAGGING, 0, 0);
+
+    // The second and third items are visible partially but neither is fully visible
+    setVisibleItemPositionInMockedLayoutManager(1, 2);
+    setFullyVisibleItemPositionInMockedLayoutManager(-1, -1);
+    setTotalItemInMockedLayoutManager(20);
+
+    viewportManager.onViewportChanged();
+
+    verify(mViewportChangedListener).viewportChanged(1, 2, -1, -1);
+  }
+
+  @Test
   public void testOnViewportChangedWithoutScrolling() {
     ViewportManager viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_IDLE, 5, 20);
 
@@ -139,6 +153,21 @@ public class ViewportManagerTest {
     viewportManager.onViewportChanged();
 
     verify(mViewportChangedListener).viewportChanged(5, 10, 7, 9);
+  }
+
+  @Test
+  public void testTotalItemChangedWhileNoItemsFullyVisible() {
+    setTotalItemInMockedLayoutManager(13);
+    ViewportManager viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_IDLE, 5, 6);
+
+    // The seventh and eighth items are visible partially but neither is fully visible
+    setVisibleItemPositionInMockedLayoutManager(6, 7);
+    setFullyVisibleItemPositionInMockedLayoutManager(-1, -1);
+    setTotalItemInMockedLayoutManager(12);
+
+    viewportManager.onViewportChanged();
+
+    verify(mViewportChangedListener).viewportChanged(6, 7, -1, -1);
   }
 
   private void setVisibleItemPositionInMockedLayoutManager(
