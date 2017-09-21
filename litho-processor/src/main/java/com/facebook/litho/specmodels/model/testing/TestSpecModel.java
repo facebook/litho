@@ -24,7 +24,6 @@ import com.facebook.litho.specmodels.model.PropModel;
 import com.facebook.litho.specmodels.model.RenderDataDiffModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelImpl;
-import com.facebook.litho.specmodels.model.SpecModelValidation;
 import com.facebook.litho.specmodels.model.SpecModelValidationError;
 import com.facebook.litho.specmodels.model.StateParamModel;
 import com.facebook.litho.specmodels.model.TreePropModel;
@@ -237,7 +236,7 @@ public class TestSpecModel implements SpecModel, HasPureRender {
 
   @Override
   public List<SpecModelValidationError> validate() {
-    return SpecModelValidation.validateTestSpecModel(this);
+    return TestSpecModelValidation.validateTestSpecModel(this);
   }
 
   @Override

@@ -24,7 +24,7 @@ public class PropValidation {
   // Using these names in props might cause conflicts with the method names in the
   // component's generated layout builder class so we trigger a more user-friendly
   // error if the component tries to use them.
-  static final List<String> RESERVED_PROP_NAMES =
+  public static final List<String> RESERVED_PROP_NAMES =
       Arrays.asList(
           "withLayout",
           "key",
