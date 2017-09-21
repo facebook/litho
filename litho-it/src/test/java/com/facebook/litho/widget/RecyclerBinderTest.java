@@ -490,6 +490,28 @@ public class RecyclerBinderTest {
       verify(recyclerView, times(100)).postOnAnimation(any(Runnable.class));
     }
 
+  @Test
+  public void testRequestRemeasureInsertRange() {
+    final Size size = new Size();
+    final int widthSpec = SizeSpec.makeSizeSpec(200, SizeSpec.AT_MOST);
+    final int heightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
+    final RecyclerView recyclerView = mock(RecyclerView.class);
+
+    mRecyclerBinder.mount(recyclerView);
+    mRecyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
+
+    Assert.assertEquals(0, size.width);
+
+    final List<RenderInfo> components = new ArrayList<>();
+    for (int i = 0; i < 100; i++) {
+      components.add(ComponentRenderInfo.create().component(mock(Component.class)).build());
+    }
+    mRecyclerBinder.insertRangeAt(0, components);
+
+    verify(recyclerView, times(100)).removeCallbacks(any(Runnable.class));
+    verify(recyclerView, times(100)).postOnAnimation(any(Runnable.class));
+  }
+
     @Test
     public void testDoesntRequestRemeasure() {
       final Size size = new Size();

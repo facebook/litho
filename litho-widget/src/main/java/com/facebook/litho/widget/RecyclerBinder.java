@@ -452,14 +452,18 @@ public class RecyclerBinder
         mComponentTreeHolders.add(position + i, holder);
         mRenderInfoViewCreatorController.maybeUpdateViewCreatorMappingsOnItemInsert(renderInfo);
 
-        if (mRange == null && mIsMeasured.get() && holder.getRenderInfo().rendersComponent()) {
-          initRange(
-              mMeasuredSize.width,
-              mMeasuredSize.height,
-              position + i,
-              getActualChildrenWidthSpec(holder),
-              getActualChildrenHeightSpec(holder),
-              mLayoutInfo.getScrollDirection());
+        if (mIsMeasured.get() && holder.getRenderInfo().rendersComponent()) {
+          if (mRange == null && !mRequiresRemeasure.get()) {
+            initRange(
+                mMeasuredSize.width,
+                mMeasuredSize.height,
+                position + i,
+                getActualChildrenWidthSpec(holder),
+                getActualChildrenHeightSpec(holder),
+                mLayoutInfo.getScrollDirection());
+          } else if (mRequiresRemeasure.get()) {
+            requestUpdate();
+          }
         }
       }
     }
