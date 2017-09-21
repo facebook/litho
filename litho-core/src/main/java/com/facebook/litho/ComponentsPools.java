@@ -525,7 +525,6 @@ public class ComponentsPools {
     if (!ComponentsConfiguration.usePooling) {
       return;
     }
-    node.release();
     sInternalNodePool.release(node);
   }
 
