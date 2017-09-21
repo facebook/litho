@@ -168,7 +168,28 @@ public class ComponentsPools {
     return state;
   }
 
-  static synchronized YogaNode acquireYogaNode(ComponentContext c) {
+  static synchronized YogaNode acquireYogaNode(ComponentContext c, YogaConfig yogaConfig) {
+    YogaNode node = ComponentsConfiguration.usePooling ? sYogaNodePool.acquire() : null;
+    if (node == null) {
+      node = new YogaNode(yogaConfig);
+    }
+
+    return node;
+  }
+
+  static synchronized InternalNode acquireInternalNode(
+      ComponentContext componentContext,
+      YogaConfig yogaConfig) {
+    InternalNode node = ComponentsConfiguration.usePooling ? sInternalNodePool.acquire() : null;
+    if (node == null) {
+      node = new InternalNode();
+    }
+
+    node.init(acquireYogaNode(componentContext, yogaConfig), componentContext);
+    return node;
+  }
+
+  static synchronized InternalNode acquireInternalNode(ComponentContext componentContext) {
     if (sYogaConfig == null) {
       sYogaConfig = new YogaConfig();
       sYogaConfig.setUseWebDefaults(true);
@@ -179,22 +200,7 @@ public class ComponentsPools {
       sYogaConfig.setLogger(ComponentsConfiguration.YOGA_LOGGER);
     }
 
-    YogaNode node = ComponentsConfiguration.usePooling ? sYogaNodePool.acquire() : null;
-    if (node == null) {
-      node = new YogaNode(sYogaConfig);
-    }
-
-    return node;
-  }
-
-  static synchronized InternalNode acquireInternalNode(ComponentContext componentContext) {
-    InternalNode node = ComponentsConfiguration.usePooling ? sInternalNodePool.acquire() : null;
-    if (node == null) {
-      node = new InternalNode();
-    }
-
-    node.init(acquireYogaNode(componentContext), componentContext);
-    return node;
+    return acquireInternalNode(componentContext, sYogaConfig);
   }
 
   static synchronized NodeInfo acquireNodeInfo() {
