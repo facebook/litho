@@ -21,14 +21,16 @@
             {% include nav/collection_nav_group.html %}
           {% else %}
           {% for group in include.navdata %}
-            {% assign grouptitle = group.title %}
-            {% for item in group.items %}
-              {% if item.id == page.docid %}
-              {% assign currentselected = item.id %}
-              {% assign currentgroup = group %}
-              {% endif %}
-            {% endfor %}
-            {% include nav/collection_nav_group.html %}
+            {% unless group.internal %}
+              {% assign grouptitle = group.title %}
+              {% for item in group.items %}
+                {% if item.id == page.docid %}
+                {% assign currentselected = item.id %}
+                {% assign currentgroup = group %}
+                {% endif %}
+              {% endfor %}
+              {% include nav/collection_nav_group.html %}
+            {% endunless %}
           {% endfor %}
           {% endif %}
         </div>

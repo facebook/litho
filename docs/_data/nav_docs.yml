@@ -59,3 +59,7 @@
   - id: contributing
   - id: community-showcase
   - id: repo-structure
+- title: Sections
+  internal: true
+  items:
+  - id: sections-intro
