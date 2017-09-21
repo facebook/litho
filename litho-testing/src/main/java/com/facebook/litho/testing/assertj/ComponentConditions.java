@@ -25,7 +25,8 @@ public final class ComponentConditions {
   /** Matcher that succeeds if a {@link InspectableComponent} type exactly matches provided one */
   public static Condition<InspectableComponent> typeIs(
       final Class<? extends ComponentLifecycle> clazz) {
-    return new Condition<InspectableComponent>() {
+    return new Condition<InspectableComponent>(
+        new TextDescription("Component with type <%s>", clazz)) {
       @Override
       public boolean matches(InspectableComponent value) {
         final Class component = value.getComponentClass();

@@ -17,6 +17,7 @@ import com.facebook.litho.testing.InspectableComponent;
 import java.util.List;
 import org.assertj.core.api.Condition;
 import org.assertj.core.api.iterable.Extractor;
+import org.assertj.core.description.TextDescription;
 
 /**
  * Recursively extracts sub components from a Component, wrapping them in an {@link
@@ -54,10 +55,17 @@ public final class SubComponentDeepExtractor
     return new SubComponentDeepExtractor(c);
   }
 
+  /**
+   * Verify that a component tree contains a component that matches the provided condition at any
+   * level in its tree.
+   *
+   * @param c The ComponentContext used to create the tree.
+   * @param inner The condition that at least one sub component needs to match.
+   */
   public static Condition<? super Component> deepSubComponentWith(
       final ComponentContext c, final Condition<InspectableComponent> inner) {
     // TODO(T20862132): Provide better error messages.
-    return new Condition<Component>() {
+    return new Condition<Component>(new TextDescription("Deep subcomponent with %s", inner)) {
       @Override
       public boolean matches(Component value) {
         for (InspectableComponent component : subComponentsDeeply(c).extract(value)) {
