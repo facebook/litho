@@ -12,11 +12,14 @@ package com.facebook.litho.testing.assertj;
 
 import static com.facebook.litho.testing.assertj.ComponentConditions.typeIs;
 import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assume.assumeThat;
 
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.ComponentsRule;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
@@ -35,6 +38,11 @@ public class SubComponentDeepExtractorTest {
 
   @Before
   public void setUp() {
+    assumeThat(
+        "These tests can only be run in debug mode.",
+        ComponentsConfiguration.IS_INTERNAL_BUILD,
+        is(true));
+
     mComponent =
         new InlineLayoutSpec() {
           @Override
