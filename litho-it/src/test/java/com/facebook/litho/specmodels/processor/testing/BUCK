@@ -8,7 +8,7 @@
 include_defs("//COMPONENTS_DEFS")
 
 java_test(
-    name = "processor",
+    name = "testing",
     srcs = glob(["*Test.java"]),
     provided_deps = [
         COMPONENTS_ROBOLECTRIC_TARGET,
@@ -24,6 +24,7 @@ java_test(
         COMPONENTS_MOCKITO_TARGET,
         COMPONENTS_PROCESSOR_LIB_TARGET,
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels"),
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/model/testing:testing"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
     ],
 )

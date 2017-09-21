@@ -29,6 +29,7 @@ java_library(
         excludes = glob([
             "processor/**/*.java",
             "internal/*.java",
+            "*/testing/*.java",
         ]),
     ),
     exported_deps = [

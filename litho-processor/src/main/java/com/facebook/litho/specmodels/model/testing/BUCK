@@ -1,0 +1,24 @@
+# Copyright (c) 2017-present, Facebook, Inc.
+# All rights reserved.
+#
+# This source code is licensed under the BSD-style license found in the
+# LICENSE file in the root directory of this source tree. An additional grant
+# of patent rights can be found in the PATENTS file in the same directory.
+
+include_defs("//COMPONENTS_DEFS")
+
+java_library(
+    name = "testing",
+    srcs = glob(["*.java"]),
+    tests = [
+        make_dep_path("litho-it/src/test/java/com/facebook/litho/specmodels:specmodels"),
+    ],
+    visibility = COMPONENTS_VISIBILITY,
+    deps = [
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels-bare"),
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/generator/testing:testing"),
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
+        COMPONENTS_JAVAPOET_TARGET,
+        COMPONENTS_JSR_TARGET,
+    ],
+)
