@@ -64,18 +64,43 @@ public interface ComponentLayout {
   YogaDirection getResolvedLayoutDirection();
 
   interface Builder {
-    @ReturnsOwnership Builder layoutDirection(YogaDirection direction);
-    @ReturnsOwnership Builder alignSelf(YogaAlign alignSelf);
-    @ReturnsOwnership Builder positionType(YogaPositionType positionType);
-    @ReturnsOwnership Builder flex(float flex);
-    @ReturnsOwnership Builder flexGrow(float flexGrow);
-    @ReturnsOwnership Builder flexShrink(float flexShrink);
-    @ReturnsOwnership Builder flexBasisPx(@Px int flexBasis);
-    @ReturnsOwnership Builder flexBasisAttr(@AttrRes int resId, @DimenRes int defaultResId);
-    @ReturnsOwnership Builder flexBasisAttr(@AttrRes int resId);
-    @ReturnsOwnership Builder flexBasisRes(@DimenRes int resId);
-    @ReturnsOwnership Builder flexBasisDip(@Dimension(unit = DP) float flexBasis);
-    @ReturnsOwnership Builder flexBasisPercent(float percent);
+
+    /** @see ContainerBuilder#layoutDirection */
+    @ReturnsOwnership
+    Builder layoutDirection(YogaDirection direction);
+    /** @see ContainerBuilder#alignSelf */
+    @ReturnsOwnership
+    Builder alignSelf(YogaAlign alignSelf);
+    /** @see ContainerBuilder#positionType */
+    @ReturnsOwnership
+    Builder positionType(YogaPositionType positionType);
+    /** @see ContainerBuilder#flex */
+    @ReturnsOwnership
+    Builder flex(float flex);
+    /** @see ContainerBuilder#flexGrow */
+    @ReturnsOwnership
+    Builder flexGrow(float flexGrow);
+    /** @see ContainerBuilder#flexShrink */
+    @ReturnsOwnership
+    Builder flexShrink(float flexShrink);
+    /** @see ContainerBuilder#flexBasisPx */
+    @ReturnsOwnership
+    Builder flexBasisPx(@Px int flexBasis);
+    /** @see ContainerBuilder#flexBasisPx */
+    @ReturnsOwnership
+    Builder flexBasisAttr(@AttrRes int resId, @DimenRes int defaultResId);
+    /** @see ContainerBuilder#flexBasisPx */
+    @ReturnsOwnership
+    Builder flexBasisAttr(@AttrRes int resId);
+    /** @see ContainerBuilder#flexBasisPx */
+    @ReturnsOwnership
+    Builder flexBasisRes(@DimenRes int resId);
+    /** @see ContainerBuilder#flexBasisPx */
+    @ReturnsOwnership
+    Builder flexBasisDip(@Dimension(unit = DP) float flexBasis);
+    /** @see ContainerBuilder#flexBasisPx */
+    @ReturnsOwnership
+    Builder flexBasisPercent(float percent);
 
     @ReturnsOwnership Builder importantForAccessibility(
         @ImportantForAccessibility int importantForAccessibility);
@@ -127,15 +152,24 @@ public interface ComponentLayout {
     @ReturnsOwnership
     Builder borderColor(@ColorInt int borderColor);
 
-    @ReturnsOwnership Builder positionPx(YogaEdge edge, @Px int value);
-    @ReturnsOwnership Builder positionAttr(
-        YogaEdge edge,
-        @AttrRes int resId,
-        @DimenRes int defaultResId);
-    @ReturnsOwnership Builder positionAttr(YogaEdge edge, @AttrRes int resId);
-    @ReturnsOwnership Builder positionRes(YogaEdge edge, @DimenRes int resId);
-    @ReturnsOwnership Builder positionDip(YogaEdge edge, @Dimension(unit = DP) float value);
-    @ReturnsOwnership Builder positionPercent(YogaEdge edge, float percent);
+    /** @see ContainerBuilder#positionPx */
+    @ReturnsOwnership
+    Builder positionPx(YogaEdge edge, @Px int value);
+    /** @see ContainerBuilder#positionPx */
+    @ReturnsOwnership
+    Builder positionAttr(YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId);
+    /** @see ContainerBuilder#positionPx */
+    @ReturnsOwnership
+    Builder positionAttr(YogaEdge edge, @AttrRes int resId);
+    /** @see ContainerBuilder#positionPx */
+    @ReturnsOwnership
+    Builder positionRes(YogaEdge edge, @DimenRes int resId);
+    /** @see ContainerBuilder#positionPx */
+    @ReturnsOwnership
+    Builder positionDip(YogaEdge edge, @Dimension(unit = DP) float value);
+    /** @see ContainerBuilder#positionPx */
+    @ReturnsOwnership
+    Builder positionPercent(YogaEdge edge, float percent);
 
     @ReturnsOwnership Builder widthPx(@Px int width);
     @ReturnsOwnership Builder widthAttr(@AttrRes int resId, @DimenRes int defaultResId);
@@ -274,21 +308,108 @@ public interface ComponentLayout {
     ComponentLayout build();
   }
 
+  /**
+   * For more information and complete docs on flexbox layouting, see the Yoga docs:
+   * https://facebook.github.io/yoga/docs
+   */
   interface ContainerBuilder extends Builder {
-    @ReturnsOwnership ContainerBuilder layoutDirection(YogaDirection direction);
-    @ReturnsOwnership ContainerBuilder alignSelf(YogaAlign alignSelf);
-    @ReturnsOwnership ContainerBuilder positionType(YogaPositionType positionType);
-    @ReturnsOwnership ContainerBuilder flex(float flex);
-    @ReturnsOwnership ContainerBuilder flexGrow(float flexGrow);
-    @ReturnsOwnership ContainerBuilder flexShrink(float flexShrink);
-    @ReturnsOwnership ContainerBuilder flexBasisPx(@Px int flexBasis);
-    @ReturnsOwnership ContainerBuilder flexBasisAttr(
-        @AttrRes int resId,
-        @DimenRes int defaultResId);
-    @ReturnsOwnership ContainerBuilder flexBasisAttr(@AttrRes int resId);
-    @ReturnsOwnership ContainerBuilder flexBasisRes(@DimenRes int resId);
-    @ReturnsOwnership ContainerBuilder flexBasisDip(@Dimension(unit = DP) float flexBasis);
-    @ReturnsOwnership ContainerBuilder flexBasisPercent(float percent);
+
+    /**
+     * The RTL/LTR direction of components and text. Determines whether {@link YogaEdge#START} and
+     * {@link YogaEdge#END} will resolve to the left or right side, among other things. INHERIT
+     * indicates this setting will be inherited from this component's parent.
+     *
+     * <p>Default: {@link YogaDirection#INHERIT}
+     */
+    @ReturnsOwnership
+    ContainerBuilder layoutDirection(YogaDirection direction);
+
+    /**
+     * Controls how a child aligns in the cross direction, overriding the alignItems of the parent.
+     * See https://facebook.github.io/yoga/docs/alignment/ for more information.
+     *
+     * <p>Default: {@link YogaAlign#AUTO}
+     */
+    @ReturnsOwnership
+    ContainerBuilder alignSelf(YogaAlign alignSelf);
+
+    /**
+     * Controls how this component will be positioned within its parent. See
+     * https://facebook.github.io/yoga/docs/absolute-position/ for more details.
+     *
+     * <p>Default: {@link YogaPositionType#RELATIVE}
+     */
+    @ReturnsOwnership
+    ContainerBuilder positionType(YogaPositionType positionType);
+
+    /**
+     * Sets flexGrow, flexShrink, and flexBasis at the same time.
+     *
+     * <p>When flex is a positive number, it makes the component flexible and it will be sized
+     * proportional to its flex value. So a component with flex set to 2 will take twice the space
+     * as a component with flex set to 1.
+     *
+     * <p>When flex is 0, the component is sized according to width and height and it is inflexible.
+     *
+     * <p>When flex is -1, the component is normally sized according width and height. However, if
+     * there's not enough space, the component will shrink to its minWidth and minHeight.
+     *
+     * <p>See https://facebook.github.io/yoga/docs/flex/ for more information.
+     *
+     * <p>Default: 0
+     */
+    @ReturnsOwnership
+    ContainerBuilder flex(float flex);
+
+    /**
+     * If the sum of childrens' main axis dimensions is less than the minimum size, how much should
+     * this component grow? This value represents the "flex grow factor" and determines how much
+     * this component should grow along the main axis in relation to any other flexible children.
+     * See https://facebook.github.io/yoga/docs/flex/ for more information.
+     *
+     * <p>Default: 0
+     */
+    @ReturnsOwnership
+    ContainerBuilder flexGrow(float flexGrow);
+
+    /**
+     * The FlexShrink property describes how to shrink children along the main axis in the case that
+     * the total size of the children overflow the size of the container on the main axis. See
+     * https://facebook.github.io/yoga/docs/flex/ for more information.
+     *
+     * <p>Default: 0
+     */
+    @ReturnsOwnership
+    ContainerBuilder flexShrink(float flexShrink);
+
+    /**
+     * The FlexBasis property is an axis-independent way of providing the default size of an item on
+     * the main axis. Setting the FlexBasis of a child is similar to setting the Width of that child
+     * if its parent is a container with FlexDirection = row or setting the Height of a child if its
+     * parent is a container with FlexDirection = column. The FlexBasis of an item is the default
+     * size of that item, the size of the item before any FlexGrow and FlexShrink calculations are
+     * performed. See https://facebook.github.io/yoga/docs/flex/ for more information.
+     *
+     * <p>Default: 0
+     */
+    @ReturnsOwnership
+    ContainerBuilder flexBasisPx(@Px int flexBasis);
+
+    /** @see #flexBasisPx */
+    @ReturnsOwnership
+    ContainerBuilder flexBasisAttr(@AttrRes int resId, @DimenRes int defaultResId);
+    /** @see #flexBasisPx */
+    @ReturnsOwnership
+    ContainerBuilder flexBasisAttr(@AttrRes int resId);
+    /** @see #flexBasisPx */
+    @ReturnsOwnership
+    ContainerBuilder flexBasisRes(@DimenRes int resId);
+    /** @see #flexBasisPx */
+    @ReturnsOwnership
+    ContainerBuilder flexBasisDip(@Dimension(unit = DP) float flexBasis);
+    /** @see #flexBasisPx */
+    @ReturnsOwnership
+    ContainerBuilder flexBasisPercent(float percent);
 
     @ReturnsOwnership ContainerBuilder importantForAccessibility(
         @ImportantForAccessibility int importantForAccessibility
@@ -321,17 +442,28 @@ public interface ComponentLayout {
     @ReturnsOwnership ContainerBuilder paddingDip(YogaEdge edge, @Dimension(unit = DP) float padding);
     @ReturnsOwnership ContainerBuilder paddingPercent(YogaEdge edge, float percent);
 
-    @ReturnsOwnership ContainerBuilder positionPx(YogaEdge edge, @Px int position);
-    @ReturnsOwnership ContainerBuilder positionAttr(
-        YogaEdge edge,
-        @AttrRes int resId,
-        @DimenRes int defaultResId);
-    @ReturnsOwnership ContainerBuilder positionAttr(YogaEdge edge, @AttrRes int resId);
-    @ReturnsOwnership ContainerBuilder positionRes(YogaEdge edge, @DimenRes int resId);
-    @ReturnsOwnership ContainerBuilder positionDip(
-        YogaEdge edge,
-        @Dimension(unit = DP) float position);
-    @ReturnsOwnership ContainerBuilder positionPercent(YogaEdge edge, float percent);
+    /**
+     * When used in combination with {@link #positionType} of {@link YogaPositionType#ABSOLUTE},
+     * allows the component to specify how it should be positioned within its parent. See
+     * https://facebook.github.io/yoga/docs/absolute-position/ for more information.
+     */
+    @ReturnsOwnership
+    ContainerBuilder positionPx(YogaEdge edge, @Px int position);
+    /** @see #positionPx */
+    @ReturnsOwnership
+    ContainerBuilder positionAttr(YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId);
+    /** @see #positionPx */
+    @ReturnsOwnership
+    ContainerBuilder positionAttr(YogaEdge edge, @AttrRes int resId);
+    /** @see #positionPx */
+    @ReturnsOwnership
+    ContainerBuilder positionRes(YogaEdge edge, @DimenRes int resId);
+    /** @see #positionPx */
+    @ReturnsOwnership
+    ContainerBuilder positionDip(YogaEdge edge, @Dimension(unit = DP) float position);
+    /** @see #positionPx */
+    @ReturnsOwnership
+    ContainerBuilder positionPercent(YogaEdge edge, float percent);
 
     @ReturnsOwnership ContainerBuilder widthPx(@Px int width);
     @ReturnsOwnership ContainerBuilder widthAttr(@AttrRes int resId, @DimenRes int defaultResId);
@@ -392,10 +524,54 @@ public interface ComponentLayout {
         YogaEdge edge,
         @Dimension(unit = DP) float value);
 
-    @ReturnsOwnership ContainerBuilder wrap(YogaWrap wrap);
-    @ReturnsOwnership ContainerBuilder justifyContent(YogaJustify justifyContent);
-    @ReturnsOwnership ContainerBuilder alignItems(YogaAlign alignItems);
-    @ReturnsOwnership ContainerBuilder alignContent(YogaAlign alignContent);
+    /**
+     * The FlexWrap property is set on containers and controls what happens when children overflow
+     * the size of the container along the main axis. If a container specifies {@link YogaWrap#WRAP}
+     * then its children will wrap to the next line instead of overflowing.
+     *
+     * <p>The next line will have the same FlexDirection as the first line and will appear next to
+     * the first line along the cross axis - below it if using FlexDirection = Column and to the
+     * right if using FlexDirection = Row. See https://facebook.github.io/yoga/docs/flex-wrap/ for
+     * more information.
+     *
+     * <p>Default: {@link YogaWrap#NO_WRAP}
+     */
+    @ReturnsOwnership
+    ContainerBuilder wrap(YogaWrap wrap);
+
+    /**
+     * The JustifyContent property describes how to align children within the main axis of a
+     * container. For example, you can use this property to center a child horizontally within a
+     * container with FlexDirection = Row or vertically within one with FlexDirection = Column. See
+     * https://facebook.github.io/yoga/docs/justify-content/ for more information.
+     *
+     * <p>Default: {@link YogaJustify#FLEX_START}
+     */
+    @ReturnsOwnership
+    ContainerBuilder justifyContent(YogaJustify justifyContent);
+
+    /**
+     * The AlignItems property describes how to align children along the cross axis of their
+     * container. AlignItems is very similar to JustifyContent but instead of applying to the main
+     * axis, it applies to the cross axis. See https://facebook.github.io/yoga/docs/alignment/ for
+     * more information.
+     *
+     * <p>Default: {@link YogaAlign#STRETCH}
+     */
+    @ReturnsOwnership
+    ContainerBuilder alignItems(YogaAlign alignItems);
+
+    /**
+     * The AlignSelf property has the same options and effect as AlignItems but instead of affecting
+     * the children within a container, you can apply this property to a single child to change its
+     * alignment within its parent. See https://facebook.github.io/yoga/docs/alignment/ for more
+     * information.
+     *
+     * <p>Default: {@link YogaAlign#AUTO}
+     */
+    @ReturnsOwnership
+    ContainerBuilder alignContent(YogaAlign alignContent);
+
     @ReturnsOwnership ContainerBuilder child(ComponentLayout child);
     @ReturnsOwnership ContainerBuilder child(ComponentLayout.Builder childBuilder);
     @ReturnsOwnership ContainerBuilder child(Component<?> component);
