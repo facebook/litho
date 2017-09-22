@@ -27,6 +27,7 @@ COMPONENTS_TEST_RES                        = make_dep_path('litho-it/src/main:re
 COMPONENTS_SECTIONS_TARGET                 = make_dep_path('litho-sections-core/src/main/java/com/facebook/litho/sections:sections')
 COMPONENTS_SECTIONS_ANNOTATIONS_TARGET     = make_dep_path('litho-sections-annotations/src/main/java/com/facebook/litho/sections/annotations:annotations')
 COMPONENTS_SECTIONS_PROCESSOR_TARGET       = make_dep_path('litho-sections-processor/src/main/java/com/facebook/litho/sections/specmodels/processor:processor')
+COMPONENTS_SECTIONS_CONFIG_TARGET          = make_dep_path('litho-sections-core/src/main/java/com/facebook/litho/sections/config:config')
 
 # Test source
 COMPONENTS_TEST_TARGET                     = make_dep_path('litho-it/src/test/java/com/facebook/litho:components')
