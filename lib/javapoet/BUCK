@@ -15,6 +15,6 @@ prebuilt_jar(
 
 remote_file(
     name = "javapoet.jar",
-    sha1 = "e858dc62ef484048540d27d36f3ec2177a3fa9b1",
-    url = "mvn:com.squareup:javapoet:jar:1.8.0",
+    sha1 = "00ecc5cf9c221d55481163e773b24336db149e51",
+    url = "mvn:com.squareup:javapoet:jar:1.9.0",
 )
