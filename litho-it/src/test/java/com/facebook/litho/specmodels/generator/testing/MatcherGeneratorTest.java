@@ -103,10 +103,12 @@ public class MatcherGeneratorTest {
             ImmutableList.of(
                 "<init>",
                 "prop1",
+                "prop1",
                 "prop1Res",
                 "prop1Res",
                 "prop1Attr",
                 "prop1Attr",
+                "prop2",
                 "prop2Px",
                 "prop2Res",
                 "prop2Attr",

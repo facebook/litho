@@ -12,6 +12,7 @@ package com.facebook.litho.specmodels.generator.testing;
 import static com.facebook.litho.specmodels.generator.ComponentImplGenerator.getImplClassName;
 
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
+import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.PropDefaultModel;
 import com.facebook.litho.specmodels.model.PropModel;
@@ -96,6 +97,7 @@ public final class MatcherGenerator {
       final SpecModel specModel, final PropModel prop, final int requiredIndex) {
     final TypeSpecDataHolder.Builder dataHolder = TypeSpecDataHolder.newBuilder();
     dataHolder.addField(matcherFieldBuilder(prop));
+    dataHolder.addMethod(matcherFieldSetterBuilder(specModel, prop, requiredIndex));
 
     if (prop.hasVarArgs()) {
       dataHolder.addMethod(varArgBuilder(specModel, prop, requiredIndex));
@@ -265,6 +267,20 @@ public final class MatcherGenerator {
     return type instanceof ParameterizedTypeName ? ((ParameterizedTypeName) type).rawType : type;
   }
 
+  private static MethodSpec matcherFieldSetterBuilder(
+      SpecModel specModel, PropModel prop, int requiredIndex) {
+    final String propMatcherName = getPropMatcherName(prop);
+    final String propName = prop.getName();
+
+    return getMethodSpecBuilder(
+            prop,
+            requiredIndex,
+            propName,
+            ImmutableList.of(ParameterSpec.builder(getPropMatcherType(prop), "matcher").build()),
+            CodeBlock.builder().addStatement("$L = matcher", propMatcherName).build())
+        .build();
+  }
+
   private static MethodSpec componentBuilder(
       final SpecModel specModel, final PropModel prop, final int requiredIndex) {
     return builder(
@@ -294,11 +310,13 @@ public final class MatcherGenerator {
   }
 
   private static FieldSpec matcherFieldBuilder(final PropModel prop) {
-    return FieldSpec.builder(
-            ParameterizedTypeName.get(ClassNames.HAMCREST_MATCHER, prop.getType().box()),
-            getPropMatcherName(prop))
+    return FieldSpec.builder(getPropMatcherType(prop), getPropMatcherName(prop))
         .addAnnotation(Nullable.class)
         .build();
+  }
+
+  private static ParameterizedTypeName getPropMatcherType(PropModel prop) {
+    return ParameterizedTypeName.get(ClassNames.HAMCREST_MATCHER, prop.getType().box());
   }
 
   static String getPropMatcherName(final PropModel prop) {

@@ -35,8 +35,18 @@ public final class BasicTestSample implements BasicTestSampleSpec {
       super.init(c, c.getResourceCache());
     }
 
+    public Matcher myStringProp(org.hamcrest.Matcher<String> matcher) {
+      mMyStringPropMatcher = matcher;
+      return this;
+    }
+
     public Matcher myStringProp(String myStringProp) {
       this.mMyStringPropMatcher = org.hamcrest.core.Is.is(myStringProp);
+      return this;
+    }
+
+    public Matcher myRequiredColorProp(org.hamcrest.Matcher<Integer> matcher) {
+      mMyRequiredColorPropMatcher = matcher;
       return this;
     }
 

@@ -13,6 +13,7 @@ package com.facebook.samples.litho.lithography;
 
 import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
 import static com.facebook.litho.testing.assertj.SubComponentExtractor.subComponentWith;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assume.assumeThat;
 import static org.mockito.Mockito.mock;
@@ -61,6 +62,19 @@ public class FeedItemComponentSpecSubComponentTest {
     // This will match if the component has exactly the specified text as property.
     assertThat(c, component)
         .has(subComponentWith(c, TestFooterComponent.matcher(c).text("Raw Text").build()));
+  }
+
+  @Test
+  public void testSubComponentWithMatcher() {
+    final ComponentContext c = mComponentsRule.getContext();
+    final Component<FeedItemComponent> component =
+        makeComponent("Long Text That We Don't Want To Match In Its Entirety");
+
+    // We can pass in any of the default hamcrest matchers here.
+    assertThat(c, component)
+        .has(
+            subComponentWith(
+                c, TestFooterComponent.matcher(c).text(containsString("Want To Match")).build()));
   }
 
   @Test
