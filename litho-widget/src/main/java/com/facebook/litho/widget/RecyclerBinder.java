@@ -87,6 +87,12 @@ public class RecyclerBinder
       }
     }
   };
+  private final Runnable mNotifyDatasetChangedRunnable = new Runnable() {
+    @Override
+    public void run() {
+      mInternalAdapter.notifyDataSetChanged();
+    }
+  };
 
   private int mLastWidthSpec = UNINITIALIZED;
   private int mLastHeightSpec = UNINITIALIZED;
@@ -855,6 +861,11 @@ public class RecyclerBinder
     for (int i = 0, size = mComponentTreeHolders.size(); i < size; i++) {
       mComponentTreeHolders.get(i).invalidateTree();
     }
+
+    // We need to call this as we want to make sure everything is re-bound since we need new sizes
+    // on all rows.
+    mMainThreadHandler.removeCallbacks(mNotifyDatasetChangedRunnable);
+    mMainThreadHandler.post(mNotifyDatasetChangedRunnable);
   }
 
   @GuardedBy("this")
