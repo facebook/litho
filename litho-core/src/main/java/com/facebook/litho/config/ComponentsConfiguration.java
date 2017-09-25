@@ -86,4 +86,10 @@ public class ComponentsConfiguration {
    * returns true.
    */
   public static boolean useOptimizedLayoutAttributes = false;
+
+  /**
+   * Whether incremental mount should use the local visible bounds of the {@link
+   * com.facebook.litho.LithoView}.
+   */
+  public static boolean incrementalMountUsesLocalVisibleBounds = false;
 }

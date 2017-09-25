@@ -39,6 +39,7 @@ import android.view.ViewParent;
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
+import com.facebook.litho.config.ComponentsConfiguration;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
@@ -96,6 +97,7 @@ public class ComponentTree {
   private static final int[] sCurrentLocation = new int[2];
   private static final int[] sParentLocation = new int[2];
   private static final Rect sParentBounds = new Rect();
+  private final IncrementalMountHelper mIncrementalMountHelper;
 
   private final Runnable mCalculateLayoutRunnable = new Runnable() {
     @Override
@@ -227,6 +229,8 @@ public class ComponentTree {
     } else {
       mId = generateComponentTreeId();
     }
+
+    mIncrementalMountHelper = new IncrementalMountHelper(this);
   }
 
   @ThreadConfined(ThreadConfined.UI)
@@ -350,6 +354,8 @@ public class ComponentTree {
       throw new IllegalStateException("Trying to attach a ComponentTree without a set View");
     }
 
+    mIncrementalMountHelper.onAttach(mLithoView);
+
     LayoutState toRelease;
     int componentRootId;
     synchronized (this) {
@@ -442,6 +448,10 @@ public class ComponentTree {
   private boolean getVisibleRect(Rect visibleBounds) {
     assertMainThread();
 
+    if (ComponentsConfiguration.incrementalMountUsesLocalVisibleBounds) {
+      return mLithoView.getLocalVisibleRect(visibleBounds);
+    }
+
     getLocationAndBoundsOnScreen(mLithoView, sCurrentLocation, visibleBounds);
 
     final ViewParent viewParent = mLithoView.getParent();
@@ -518,6 +528,8 @@ public class ComponentTree {
 
   void detach() {
     assertMainThread();
+
+    mIncrementalMountHelper.onDetach();
 
     synchronized (this) {
       mIsAttached = false;
