@@ -1,0 +1,354 @@
+/*
+ * Copyright (c) 2017-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
+package com.facebook.litho.sections;
+
+import static junit.framework.Assert.assertEquals;
+import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
+import com.facebook.litho.sections.SectionTree.Target;
+import com.facebook.litho.sections.logger.SectionComponentLogger;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.widget.ComponentRenderInfo;
+import com.facebook.litho.widget.RenderInfo;
+import java.util.ArrayList;
+import java.util.List;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.MockitoAnnotations;
+
+/** Tests {@link BatchedTarget} */
+@RunWith(ComponentsTestRunner.class)
+public class BatchedTargetTest {
+
+  private Target mMockTarget;
+  private SectionComponentLogger mMockSectionComponentLogger;
+  private BatchedTarget mTarget;
+  private @Captor ArgumentCaptor<List<RenderInfo>> mListCaptor;
+
+  @Before
+  public void setUp() throws Exception {
+    MockitoAnnotations.initMocks(this);
+    mMockTarget = mock(Target.class);
+    mMockSectionComponentLogger = mock(SectionComponentLogger.class);
+    mTarget = new BatchedTarget(mMockTarget, mMockSectionComponentLogger, "");
+  }
+
+  @Test
+  public void testConsolidateSequentialInserts() throws Exception {
+    Change[] ops =
+        new Change[] {
+          Change.insert(0, ComponentRenderInfo.createEmpty()),
+          Change.insert(1, ComponentRenderInfo.createEmpty()),
+          Change.insert(2, ComponentRenderInfo.createEmpty()),
+        };
+
+    executeOperations(ops);
+
+    verify(mMockTarget).insertRange(eq(0), eq(3), mListCaptor.capture());
+    assertEquals(ops[0].getRenderInfo(), mListCaptor.getValue().get(0));
+    assertEquals(ops[1].getRenderInfo(), mListCaptor.getValue().get(1));
+    assertEquals(ops[2].getRenderInfo(), mListCaptor.getValue().get(2));
+  }
+
+  @Test
+  public void testOnlyConsolidateInsertsIfSequentialIndexes() throws Exception {
+    Change[] ops =
+        new Change[] {
+          Change.insert(0, ComponentRenderInfo.createEmpty()),
+          Change.insert(1, ComponentRenderInfo.createEmpty()),
+          Change.insert(20, ComponentRenderInfo.createEmpty()),
+        };
+
+    executeOperations(ops);
+
+    verify(mMockTarget).insertRange(eq(0), eq(2), mListCaptor.capture());
+    assertEquals(ops[0].getRenderInfo(), mListCaptor.getValue().get(0));
+    assertEquals(ops[1].getRenderInfo(), mListCaptor.getValue().get(1));
+
+    verify(mMockTarget).insert(20, ops[2].getRenderInfo());
+  }
+
+  @Test
+  public void testDoNotConsolidateInsertsIfNotIncreasingSequentialIndexes() throws Exception {
+    Change[] ops = new Change[] {
+        Change.insert(10, ComponentRenderInfo.createEmpty()),
+        Change.insert(9, ComponentRenderInfo.createEmpty()),
+        Change.insert(20, ComponentRenderInfo.createEmpty()),
+    };
+
+    executeOperations(ops);
+
+    verify(mMockTarget).insert(10, ops[0].getRenderInfo());
+    verify(mMockTarget).insert(9, ops[1].getRenderInfo());
+    verify(mMockTarget).insert(20, ops[2].getRenderInfo());
+  }
+
+  @Test
+  public void testDuplicateIndexInserts() throws Exception {
+    Change[] ops = new Change[] {
+        Change.insert(0, ComponentRenderInfo.createEmpty()),
+        Change.insert(1, ComponentRenderInfo.createEmpty()),
+        Change.insert(1, ComponentRenderInfo.createEmpty()),
+        Change.insert(20, ComponentRenderInfo.createEmpty()),
+    };
+
+    executeOperations(ops);
+
+    verify(mMockTarget).insertRange(eq(0), eq(2), mListCaptor.capture());
+    assertEquals(ops[0].getRenderInfo(), mListCaptor.getValue().get(0));
+    assertEquals(ops[1].getRenderInfo(), mListCaptor.getValue().get(1));
+    verify(mMockTarget).insert(1, ops[2].getRenderInfo());
+    verify(mMockTarget).insert(20, ops[3].getRenderInfo());
+  }
+
+  @Test
+  public void testConsolidateSequentialDeletes() throws Exception {
+    Change[] ops = new Change[] {
+        Change.remove(1),
+        Change.remove(1),
+        Change.remove(1),
+    };
+
+    executeOperations(ops);
+
+    verify(mMockTarget).deleteRange(1,3);
+  }
+
+  @Test
+  public void testDoNotConsolidateDeletesIfSequentialIncreasingIndexes() throws Exception {
+    Change[] ops = new Change[] {
+        Change.remove(2),
+        Change.remove(1),
+        Change.remove(20),
+        Change.remove(21),
+    };
+
+    executeOperations(ops);
+
+    verify(mMockTarget).deleteRange(1, 2);
+    verify(mMockTarget).delete(20);
+    verify(mMockTarget).delete(21);
+  }
+
+  @Test
+  public void testConsolidateSequentialUpdates() throws Exception {
+    Change[] ops = new Change[] {
+        Change.update(2, ComponentRenderInfo.createEmpty()),
+        Change.update(1, ComponentRenderInfo.createEmpty()),
+        Change.update(20, ComponentRenderInfo.createEmpty()),
+        Change.update(21, ComponentRenderInfo.createEmpty()),
+    };
+
+    executeOperations(ops);
+
+    verify(mMockTarget).updateRange(eq(1), eq(2), mListCaptor.capture());
+    assertEquals(ops[1].getRenderInfo(), mListCaptor.getValue().get(0));
+    assertEquals(ops[0].getRenderInfo(), mListCaptor.getValue().get(1));
+
+    verify(mMockTarget).updateRange(eq(20), eq(2), mListCaptor.capture());
+    assertEquals(ops[2].getRenderInfo(), mListCaptor.getValue().get(0));
+    assertEquals(ops[3].getRenderInfo(), mListCaptor.getValue().get(1));
+  }
+
+  @Test
+  public void testOnlyConsolidateUpdatesIfSequentialIndexes() throws Exception {
+    Change[] ops = new Change[] {
+        Change.update(2, ComponentRenderInfo.createEmpty()),
+        Change.update(12, ComponentRenderInfo.createEmpty()),
+    };
+
+    executeOperations(ops);
+
+    verify(mMockTarget).update(2, ops[0].getRenderInfo());
+    verify(mMockTarget).update(12, ops[1].getRenderInfo());
+  }
+
+  @Test
+  public void testDuplicateSequentialUpdatesUseLastComponentInfo() throws Exception {
+    Change[] ops = new Change[] {
+        Change.update(99, ComponentRenderInfo.createEmpty()),
+        Change.update(100, ComponentRenderInfo.createEmpty()),
+        Change.update(101, ComponentRenderInfo.createEmpty()),
+        Change.update(99, ComponentRenderInfo.createEmpty()),
+    };
+
+    executeOperations(ops);
+
+    verify(mMockTarget).updateRange(eq(99), eq(3), mListCaptor.capture());
+    assertEquals(ops[3].getRenderInfo(), mListCaptor.getValue().get(0));
+    assertEquals(ops[1].getRenderInfo(), mListCaptor.getValue().get(1));
+    assertEquals(ops[2].getRenderInfo(), mListCaptor.getValue().get(2));
+  }
+
+  @Test
+  public void testInsertRangeConsolidatesFirst() throws Exception {
+    Change[] ops = new Change[] {
+        Change.insert(99, ComponentRenderInfo.createEmpty()),
+        Change.insert(100, ComponentRenderInfo.createEmpty()),
+        Change.insert(101, ComponentRenderInfo.createEmpty()),
+        Change.insertRange(102, 20, dummyComponentInfos(20)),
+    };
+
+    executeOperations(ops);
+
+    verify(mMockTarget).insertRange(eq(99), eq(3), anyListOf(RenderInfo.class));
+    verify(mMockTarget).insertRange(eq(102), eq(20), anyListOf(RenderInfo.class));
+  }
+
+  @Test
+  public void testUpdateRangeConsolidatesFirst() throws Exception {
+    Change[] ops = new Change[] {
+        Change.update(99, ComponentRenderInfo.createEmpty()),
+        Change.update(100, ComponentRenderInfo.createEmpty()),
+        Change.update(101, ComponentRenderInfo.createEmpty()),
+        Change.updateRange(102, 20, dummyComponentInfos(20)),
+    };
+
+    executeOperations(ops);
+
+    verify(mMockTarget).updateRange(eq(99), eq(3), anyListOf(RenderInfo.class));
+    verify(mMockTarget).updateRange(eq(102), eq(20), anyListOf(RenderInfo.class));
+  }
+
+  @Test
+  public void testDeleteRangeConsolidatesFirst() throws Exception {
+    Change[] ops = new Change[] {
+        Change.remove(99),
+        Change.remove(99),
+        Change.remove(99),
+        Change.removeRange(102, 20),
+    };
+
+    executeOperations(ops);
+
+    verify(mMockTarget).deleteRange(eq(99), eq(3));
+    verify(mMockTarget).deleteRange(eq(102), eq(20));
+  }
+
+  @Test
+  public void testConsolidateDifferentTypes() throws Exception {
+    Change[] ops = new Change[] {
+        Change.remove(2),
+        Change.remove(1),
+        Change.update(99, ComponentRenderInfo.createEmpty()),
+        Change.update(100, ComponentRenderInfo.createEmpty()),
+        Change.insert(0, ComponentRenderInfo.createEmpty()),
+        Change.insert(1, ComponentRenderInfo.createEmpty()),
+        Change.update(101, ComponentRenderInfo.createEmpty()),
+        Change.update(99, ComponentRenderInfo.createEmpty()),
+        Change.move(14, 55),
+    };
+
+    executeOperations(ops);
+
+    verify(mMockTarget).deleteRange(1, 2);
+    verify(mMockTarget).updateRange(eq(99), eq(2), anyListOf(RenderInfo.class));
+    verify(mMockTarget).insertRange(eq(0), eq(2), anyListOf(RenderInfo.class));
+    verify(mMockTarget).update(101, ops[6].getRenderInfo());
+    verify(mMockTarget).update(99, ops[7].getRenderInfo());
+    verify(mMockTarget).move(14,55);
+  }
+
+  @Test
+  public void testLoggerDelete() throws Exception {
+    Change[] ops = new Change[] {
+        Change.insert(0, ComponentRenderInfo.createEmpty()),
+        Change.remove(0),
+    };
+
+    executeOperations(ops);
+    verify(mMockSectionComponentLogger)
+        .logInsert("", 0, ops[0].getRenderInfo(), Thread.currentThread().getName());
+    verify(mMockSectionComponentLogger).logDelete("", 0, Thread.currentThread().getName());
+  }
+
+  @Test
+  public void testLoggerDifferentTypes() throws Exception {
+    Change[] ops = new Change[] {
+        Change.insert(0, ComponentRenderInfo.createEmpty()),
+        Change.insertRange(1, 3, dummyComponentInfos(3)),
+        Change.update(3, ComponentRenderInfo.createEmpty()),
+        Change.updateRange(2, 2, dummyComponentInfos(2)),
+        Change.insertRange(4, 2, dummyComponentInfos(2)),
+        Change.insert(6, ComponentRenderInfo.createEmpty()),
+        Change.remove(5),
+        Change.move(2, 3),
+    };
+
+    executeOperations(ops);
+
+    verify(mMockSectionComponentLogger)
+        .logInsert("", 0, ops[0].getRenderInfo(), Thread.currentThread().getName());
+    verify(mMockSectionComponentLogger)
+        .logInsert("", 1, ops[1].getRenderInfos().get(0), Thread.currentThread().getName());
+    verify(mMockSectionComponentLogger)
+        .logInsert("", 2, ops[1].getRenderInfos().get(1), Thread.currentThread().getName());
+    verify(mMockSectionComponentLogger)
+        .logInsert("", 3, ops[1].getRenderInfos().get(2), Thread.currentThread().getName());
+    verify(mMockSectionComponentLogger)
+        .logUpdate("", 3, ops[2].getRenderInfo(), Thread.currentThread().getName());
+    verify(mMockSectionComponentLogger)
+        .logUpdate("", 2, ops[3].getRenderInfos().get(0), Thread.currentThread().getName());
+    verify(mMockSectionComponentLogger)
+        .logUpdate("", 3, ops[3].getRenderInfos().get(1), Thread.currentThread().getName());
+    verify(mMockSectionComponentLogger)
+        .logInsert("", 4, ops[4].getRenderInfos().get(0), Thread.currentThread().getName());
+    verify(mMockSectionComponentLogger)
+        .logInsert("", 5, ops[4].getRenderInfos().get(1), Thread.currentThread().getName());
+    verify(mMockSectionComponentLogger)
+        .logInsert("", 6, ops[5].getRenderInfo(), Thread.currentThread().getName());
+    verify(mMockSectionComponentLogger).logDelete("", 5, Thread.currentThread().getName());
+    verify(mMockSectionComponentLogger).logMove("", 2, 3, Thread.currentThread().getName());
+  }
+
+  private List<RenderInfo> dummyComponentInfos(int count) {
+    ArrayList<RenderInfo> renderInfos = new ArrayList<>(count);
+    for (int i = 0; i < count; i++) {
+      renderInfos.add(ComponentRenderInfo.createEmpty());
+    }
+    return renderInfos;
+  }
+
+  private void executeOperations(Change[] ops) {
+    for (int i = 0; i < ops.length; i++) {
+      Change change = ops[i];
+      switch (change.getType()) {
+        case Change.INSERT:
+          mTarget.insert(change.getIndex(), change.getRenderInfo());
+          break;
+        case Change.INSERT_RANGE:
+          mTarget.insertRange(change.getIndex(), change.getCount(), change.getRenderInfos());
+          break;
+        case Change.DELETE:
+          mTarget.delete(change.getIndex());
+          break;
+        case Change.DELETE_RANGE:
+          mTarget.deleteRange(change.getIndex(), change.getCount());
+          break;
+        case Change.UPDATE:
+          mTarget.update(change.getIndex(), change.getRenderInfo());
+          break;
+        case Change.UPDATE_RANGE:
+          mTarget.updateRange(change.getIndex(), change.getCount(), change.getRenderInfos());
+          break;
+        case Change.MOVE:
+          mTarget.move(change.getIndex(), change.getToIndex());
+          break;
+      }
+    }
+    mTarget.dispatchLastEvent();
+  }
+}
