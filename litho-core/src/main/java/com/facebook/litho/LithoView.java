@@ -22,6 +22,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityManager;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
 import java.lang.ref.WeakReference;
 import java.util.Deque;
@@ -463,13 +464,19 @@ public class LithoView extends ComponentHost {
     }
 
     final Rect rect = ComponentsPools.acquireRect();
-    rect.set(
-        Math.max(0, -left),
-        Math.max(0, -top),
-        Math.min(right, parentWidth) - left,
-        Math.min(bottom, parentHeight) - top);
+    final boolean isEmpty;
+    if (ComponentsConfiguration.lithoViewIncrementalMountUsesLocalVisibleBounds) {
+      isEmpty = !getLocalVisibleRect(rect);
+    } else {
+      rect.set(
+          Math.max(0, -left),
+          Math.max(0, -top),
+          Math.min(right, parentWidth) - left,
+          Math.min(bottom, parentHeight) - top);
+      isEmpty = rect.isEmpty();
+    }
 
-    if (rect.isEmpty()) {
+    if (isEmpty) {
       // View is not visible at all, nothing to do.
       ComponentsPools.release(rect);
       return;

@@ -92,4 +92,10 @@ public class ComponentsConfiguration {
    * com.facebook.litho.LithoView}.
    */
   public static boolean incrementalMountUsesLocalVisibleBounds = false;
+
+  /**
+   * Whether incremental mount that begins in {@link com.facebook.litho.LithoView} should use the
+   * local visible bounds of the view.
+   */
+  public static boolean lithoViewIncrementalMountUsesLocalVisibleBounds = false;
 }
