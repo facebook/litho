@@ -17,4 +17,7 @@ import android.graphics.Rect;
 public interface AnimatableItem {
 
   Rect getBounds();
+  float getScale();
+
+  boolean isScaleSet();
 }

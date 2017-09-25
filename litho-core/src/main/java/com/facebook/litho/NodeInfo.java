@@ -79,6 +79,7 @@ class NodeInfo {
   private static final int PFLAG_FOCUS_CHANGE_HANDLER_IS_SET = 1 << 17;
   // When this flag is set, interceptTouchHandler was explicitly set on this node.
   private static final int PFLAG_INTERCEPT_TOUCH_HANDLER_IS_SET = 1 << 18;
+  private static final int PFLAG_SCALE_IS_SET = 1 << 19;
 
   private final AtomicInteger mReferenceCount = new AtomicInteger(0);
 
@@ -88,6 +89,7 @@ class NodeInfo {
   private float mShadowElevation;
   private ViewOutlineProvider mOutlineProvider;
   private boolean mClipToOutline;
+  private float mScale = 1;
   private EventHandler<ClickEvent> mClickHandler;
   private EventHandler<FocusChangedEvent> mFocusChangeHandler;
   private EventHandler<LongClickEvent> mLongClickHandler;
@@ -346,6 +348,19 @@ class NodeInfo {
     return mEnabledState;
   }
 
+  float getScale() {
+    return mScale;
+  }
+
+  void setScale(float scale) {
+    mScale = scale;
+    mPrivateFlags |= PFLAG_SCALE_IS_SET;
+  }
+
+  boolean isScaleSet() {
+    return (mPrivateFlags & PFLAG_SCALE_IS_SET) != 0;
+  }
+
   void updateWith(NodeInfo newInfo) {
     if ((newInfo.mPrivateFlags & PFLAG_CLICK_HANDLER_IS_SET) != 0) {
       mClickHandler = newInfo.mClickHandler;
@@ -410,6 +425,9 @@ class NodeInfo {
     }
     if (newInfo.getEnabledState() != ENABLED_UNSET) {
       mEnabledState = newInfo.getEnabledState();
+    }
+    if ((newInfo.mPrivateFlags & PFLAG_SCALE_IS_SET) != 0) {
+      mScale = newInfo.mScale;
     }
   }
 
@@ -477,6 +495,9 @@ class NodeInfo {
     if (getEnabledState() != ENABLED_UNSET) {
       layout.enabled(getEnabledState() == ENABLED_SET_TRUE);
     }
+    if ((mPrivateFlags & PFLAG_SCALE_IS_SET) != 0) {
+      layout.scale(mScale);
+    }
   }
 
   static NodeInfo acquire() {
@@ -528,6 +549,7 @@ class NodeInfo {
     mShadowElevation = 0;
     mOutlineProvider = null;
     mClipToOutline = false;
+    mScale = 1;
 
     ComponentsPools.release(this);
   }

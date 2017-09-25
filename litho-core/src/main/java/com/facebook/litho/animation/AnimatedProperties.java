@@ -236,7 +236,7 @@ public final class AnimatedProperties {
 
     @Override
     public float get(AnimatableItem animatableItem) {
-      return 1;
+      return animatableItem.isScaleSet() ? animatableItem.getScale() : 1;
     }
 
     @Override
@@ -248,9 +248,7 @@ public final class AnimatedProperties {
 
     @Override
     public void reset(Object mountContent) {
-      final View asView = assertIsView(mountContent, this);
-      asView.setScaleX(1);
-      asView.setScaleY(1);
+      // This gets reset in MountState.
     }
   }
 

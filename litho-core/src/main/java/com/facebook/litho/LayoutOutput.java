@@ -42,7 +42,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   @Retention(RetentionPolicy.SOURCE)
   public @interface UpdateState {}
 
-  private NodeInfo mNodeInfo;
+  private @Nullable NodeInfo mNodeInfo;
   private ViewNodeInfo mViewNodeInfo;
   private long mId;
   private Component<?> mComponent;
@@ -81,6 +81,16 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   @Override
   public Rect getBounds() {
     return mBounds;
+  }
+
+  @Override
+  public float getScale() {
+    return mNodeInfo != null ? mNodeInfo.getScale() : 1;
+  }
+
+  @Override
+  public boolean isScaleSet() {
+    return mNodeInfo != null && mNodeInfo.isScaleSet();
   }
 
   void setBounds(int l, int t, int r, int b) {

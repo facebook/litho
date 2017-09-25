@@ -1152,6 +1152,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
       setFocusable(view, nodeInfo.getFocusState());
       setEnabled(view, nodeInfo.getEnabledState());
+      setScale(view, nodeInfo);
     }
 
     setImportantForAccessibility(view, item.getImportantForAccessibility());
@@ -1209,6 +1210,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       unsetShadowElevation(view, nodeInfo.getShadowElevation());
       unsetOutlineProvider(view, nodeInfo.getOutlineProvider());
       unsetClipToOutline(view, nodeInfo.getClipToOutline());
+      unsetScale(view);
 
       if (!TextUtils.isEmpty(nodeInfo.getContentDescription())) {
         unsetContentDescription(view);
@@ -1598,6 +1600,23 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
   private static void unsetEnabled(View view, MountItem mountItem) {
     view.setEnabled(MountItem.isViewEnabled(mountItem.getFlags()));
+  }
+
+  private static void setScale(View view, NodeInfo nodeInfo) {
+    if (nodeInfo.isScaleSet()) {
+      final float scale = nodeInfo.getScale();
+      view.setScaleX(scale);
+      view.setScaleY(scale);
+    }
+  }
+
+  private static void unsetScale(View view) {
+    if (view.getScaleX() != 1) {
+      view.setScaleX(1);
+    }
+    if (view.getScaleY() != 1) {
+      view.setScaleY(1);
+    }
   }
 
   private static void setViewPadding(View view, ViewNodeInfo viewNodeInfo) {

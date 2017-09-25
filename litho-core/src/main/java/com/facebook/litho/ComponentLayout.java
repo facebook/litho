@@ -304,6 +304,10 @@ public interface ComponentLayout {
     @ReturnsOwnership Builder sendAccessibilityEventUncheckedHandler(
         EventHandler<SendAccessibilityEventUncheckedEvent> sendAccessibilityEventUncheckedHandler);
 
+    /** @see ContainerBuilder#scale */
+    @ReturnsOwnership
+    Builder scale(float scale);
+
     @ReturnsOwnership
     ComponentLayout build();
   }
@@ -665,5 +669,13 @@ public interface ComponentLayout {
     @ReturnsOwnership ContainerBuilder sendAccessibilityEventUncheckedHandler(
         EventHandler<SendAccessibilityEventUncheckedEvent> sendAccessibilityEventUncheckedHandler);
     @ReturnsOwnership ContainerBuilder testKey(String testKey);
+
+    /**
+     * Sets the scale (scaleX and scaleY) on this component. This is mostly relevant for animations
+     * and being able to animate size changes. Otherwise for non-animation usecases, you should use
+     * the standard layout properties to control the size of your component.
+     */
+    @ReturnsOwnership
+    ContainerBuilder scale(float scale);
   }
 }
