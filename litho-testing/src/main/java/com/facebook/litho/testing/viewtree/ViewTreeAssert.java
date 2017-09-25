@@ -444,12 +444,9 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
   }
 
   public <V extends View> ViewTreeAssert doesNotHaveVisible(
-      final Class<V> clazz,
-      final Predicate<V> predicate) {
-    final Predicate<View> conjunction = Predicates.and(
-        Predicates.instanceOf(clazz),
-        ViewPredicates.isVisible(),
-        (Predicate<View>) predicate);
+      final Class<V> clazz, final Predicate<Object> predicate) {
+    final Predicate<View> conjunction =
+        Predicates.and(Predicates.instanceOf(clazz), ViewPredicates.isVisible(), predicate);
 
     final ImmutableList<View> path = actual.findChild(
         conjunction,
