@@ -10,11 +10,14 @@
 package com.facebook.litho.sections;
 
 import static junit.framework.Assert.assertEquals;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assume.assumeThat;
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.SectionTree.Target;
 import com.facebook.litho.sections.logger.SectionComponentLogger;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
@@ -264,6 +267,9 @@ public class BatchedTargetTest {
 
   @Test
   public void testLoggerDelete() throws Exception {
+    assumeThat("Logging is only available in debug mode.",
+        ComponentsConfiguration.IS_INTERNAL_BUILD, is(true));
+
     Change[] ops = new Change[] {
         Change.insert(0, ComponentRenderInfo.createEmpty()),
         Change.remove(0),
@@ -277,6 +283,9 @@ public class BatchedTargetTest {
 
   @Test
   public void testLoggerDifferentTypes() throws Exception {
+    assumeThat("Logging is only available in debug mode.",
+        ComponentsConfiguration.IS_INTERNAL_BUILD, is(true));
+
     Change[] ops = new Change[] {
         Change.insert(0, ComponentRenderInfo.createEmpty()),
         Change.insertRange(1, 3, dummyComponentInfos(3)),
