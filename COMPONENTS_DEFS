@@ -78,6 +78,7 @@ COMPONENTS_HAMCREST_CORE_TARGET               = make_dep_path('lib/hamcrest:hamc
 # Annotation processors
 COMPONENTS_PROCESSOR_TARGET = make_dep_path('litho-processor/src/main/java/com/facebook/litho/specmodels/processor:processor')
 COMPONENTS_PROCESSOR_LIB_TARGET = make_dep_path('litho-processor/src/main/java/com/facebook/litho/specmodels/processor:processor-lib')
+COMPONENTS_SECTIONS_PROCESSOR_LIB_TARGET = make_dep_path('litho-sections-processor/src/main/java/com/facebook/litho/sections/specmodels/processor:processor-lib')
 
 # Sample app
 COMPONENTS_SAMPLE_JAVA = make_dep_path('sample/src/main/java/com/facebook/samples/litho:litho')
