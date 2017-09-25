@@ -1628,6 +1628,19 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
+  public ContainerBuilder alpha(float alpha) {
+    wrapInView();
+
+    if (mLayoutAttributes != null) {
+      mLayoutAttributes.alpha(alpha);
+      return this;
+    }
+
+    getOrCreateNodeInfo().setAlpha(alpha);
+    return this;
+  }
+
+  @Override
   public InternalNode dispatchPopulateAccessibilityEventHandler(
       EventHandler<DispatchPopulateAccessibilityEventEvent>
           dispatchPopulateAccessibilityEventHandler) {

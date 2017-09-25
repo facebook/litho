@@ -954,6 +954,12 @@ class OptimizedLayoutAttributes implements ComponentLayout.Builder {
   }
 
   @Override
+  public ComponentLayout.Builder alpha(float alpha) {
+    getOrCreateNodeInfo().setAlpha(alpha);
+    return this;
+  }
+
+  @Override
   public OptimizedLayoutAttributes transitionKey(String key) {
     getOrCreateSparseArray().put(TRANSITION_KEY, key);
     return this;

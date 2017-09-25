@@ -89,8 +89,18 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   }
 
   @Override
+  public float getAlpha() {
+    return mNodeInfo != null ? mNodeInfo.getAlpha() : 1;
+  }
+
+  @Override
   public boolean isScaleSet() {
     return mNodeInfo != null && mNodeInfo.isScaleSet();
+  }
+
+  @Override
+  public boolean isAlphaSet() {
+    return mNodeInfo != null && mNodeInfo.isAlphaSet();
   }
 
   void setBounds(int l, int t, int r, int b) {

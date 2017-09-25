@@ -80,6 +80,7 @@ class NodeInfo {
   // When this flag is set, interceptTouchHandler was explicitly set on this node.
   private static final int PFLAG_INTERCEPT_TOUCH_HANDLER_IS_SET = 1 << 18;
   private static final int PFLAG_SCALE_IS_SET = 1 << 19;
+  private static final int PFLAG_ALPHA_IS_SET = 1 << 20;
 
   private final AtomicInteger mReferenceCount = new AtomicInteger(0);
 
@@ -90,6 +91,7 @@ class NodeInfo {
   private ViewOutlineProvider mOutlineProvider;
   private boolean mClipToOutline;
   private float mScale = 1;
+  private float mAlpha = 1;
   private EventHandler<ClickEvent> mClickHandler;
   private EventHandler<FocusChangedEvent> mFocusChangeHandler;
   private EventHandler<LongClickEvent> mLongClickHandler;
@@ -361,6 +363,19 @@ class NodeInfo {
     return (mPrivateFlags & PFLAG_SCALE_IS_SET) != 0;
   }
 
+  float getAlpha() {
+    return mAlpha;
+  }
+
+  void setAlpha(float alpha) {
+    mAlpha = alpha;
+    mPrivateFlags |= PFLAG_ALPHA_IS_SET;
+  }
+
+  boolean isAlphaSet() {
+    return (mPrivateFlags & PFLAG_ALPHA_IS_SET) != 0;
+  }
+
   void updateWith(NodeInfo newInfo) {
     if ((newInfo.mPrivateFlags & PFLAG_CLICK_HANDLER_IS_SET) != 0) {
       mClickHandler = newInfo.mClickHandler;
@@ -428,6 +443,9 @@ class NodeInfo {
     }
     if ((newInfo.mPrivateFlags & PFLAG_SCALE_IS_SET) != 0) {
       mScale = newInfo.mScale;
+    }
+    if ((newInfo.mPrivateFlags & PFLAG_ALPHA_IS_SET) != 0) {
+      mAlpha = newInfo.mAlpha;
     }
   }
 
@@ -498,6 +516,9 @@ class NodeInfo {
     if ((mPrivateFlags & PFLAG_SCALE_IS_SET) != 0) {
       layout.scale(mScale);
     }
+    if ((mPrivateFlags & PFLAG_ALPHA_IS_SET) != 0) {
+      layout.alpha(mAlpha);
+    }
   }
 
   static NodeInfo acquire() {
@@ -550,6 +571,7 @@ class NodeInfo {
     mOutlineProvider = null;
     mClipToOutline = false;
     mScale = 1;
+    mAlpha = 1;
 
     ComponentsPools.release(this);
   }

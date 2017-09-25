@@ -18,6 +18,8 @@ public interface AnimatableItem {
 
   Rect getBounds();
   float getScale();
+  float getAlpha();
 
   boolean isScaleSet();
+  boolean isAlphaSet();
 }

@@ -308,6 +308,10 @@ public interface ComponentLayout {
     @ReturnsOwnership
     Builder scale(float scale);
 
+    /** @see ContainerBuilder#alpha */
+    @ReturnsOwnership
+    Builder alpha(float alpha);
+
     @ReturnsOwnership
     ComponentLayout build();
   }
@@ -677,5 +681,9 @@ public interface ComponentLayout {
      */
     @ReturnsOwnership
     ContainerBuilder scale(float scale);
+
+    /** Sets the alpha (opacity) of this component. */
+    @ReturnsOwnership
+    ContainerBuilder alpha(float alpha);
   }
 }

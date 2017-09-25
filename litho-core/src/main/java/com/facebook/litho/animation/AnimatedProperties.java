@@ -203,7 +203,7 @@ public final class AnimatedProperties {
 
     @Override
     public float get(AnimatableItem animatableItem) {
-      return 1;
+      return animatableItem.isAlphaSet() ? animatableItem.getAlpha() : 1;
     }
 
     @Override
@@ -213,7 +213,7 @@ public final class AnimatedProperties {
 
     @Override
     public void reset(Object mountContent) {
-      assertIsView(mountContent, this).setAlpha(1);
+      // This gets reset in MountState.
     }
   }
 

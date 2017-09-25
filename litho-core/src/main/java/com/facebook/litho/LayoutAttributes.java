@@ -918,6 +918,12 @@ class LayoutAttributes implements ComponentLayout.Builder {
   }
 
   @Override
+  public ComponentLayout.Builder alpha(float alpha) {
+    getOrCreateNodeInfo().setAlpha(alpha);
+    return this;
+  }
+
+  @Override
   public LayoutAttributes transitionKey(String key) {
     mSparseArray.put(TRANSITION_KEY, key);
     return this;
