@@ -30,9 +30,14 @@ android {
 }
 
 dependencies {
+    compileOnly project(':litho-annotations')
+    compileOnly project(':litho-sections-annotations')
     implementation project(':litho-core')
+    implementation project(':litho-widget')
+    implementation project(':litho-sections-core')
     implementation project(':litho-processor')
     annotationProcessor project(':litho-processor')
+    annotationProcessor project(':litho-sections-processor')
 
     implementation deps.javapoet
     implementation deps.assertjCore

@@ -8,7 +8,7 @@
 
 include_defs("//COMPONENTS_DEFS")
 
-android_library(
+litho_android_library(
     name = "config",
     srcs = glob(["*.java"]),
     visibility = COMPONENTS_VISIBILITY,

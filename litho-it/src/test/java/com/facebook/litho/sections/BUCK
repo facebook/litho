@@ -27,9 +27,11 @@ components_robolectric_test(
         COMPONENTS_SECTIONS_TARGET,
         COMPONENTS_BUILD_CONFIG_TARGET,
         COMPONENTS_MOCKITO_TARGET,
+        COMPONENTS_POWERMOCK_REFLECT_TARGET,
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner"),
         make_dep_path("litho-sections-core/src/main/java/com/facebook/litho/sections/logger:logger"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/viewtree:viewtree"),
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/sections:sections"),
         ":testutils",
     ],
 )
