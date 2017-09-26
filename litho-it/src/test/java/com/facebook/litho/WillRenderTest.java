@@ -23,7 +23,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 @RunWith(ComponentsTestRunner.class)
-public class WillRenderToNullTest {
+public class WillRenderTest {
 
   private static final InlineLayoutSpec NULL_SPEC =
       new InlineLayoutSpec() {
@@ -59,23 +59,23 @@ public class WillRenderToNullTest {
   @Rule public ExpectedException mExpectedException = ExpectedException.none();
 
   @Test
-  public void testWillRenderToNullForComponentThatReturnsNull() {
+  public void testWillRenderForComponentThatReturnsNull() {
     ComponentContext c = new ComponentContext(application);
-    assertThat(create(c, NULL_SPEC).build()).willRenderToNull();
+    assertThat(create(c, NULL_SPEC).build()).wontRender();
   }
 
   @Test
-  public void testWillRenderToNullForComponentThatReturnsNonNull() {
+  public void testWillRenderForComponentThatReturnsNonNull() {
     ComponentContext c = new ComponentContext(application);
-    assertThat(create(c, NONNULL_SPEC).build()).willNotRenderToNull();
+    assertThat(create(c, NONNULL_SPEC).build()).willRender();
   }
 
   @Test
-  public void testWillRenderToNullForComponentWithSizeSpecThrowsException() {
+  public void testWillRenderForComponentWithSizeSpecThrowsException() {
     mExpectedException.expect(IllegalArgumentException.class);
     mExpectedException.expectMessage("@OnCreateLayoutWithSizeSpec");
 
     ComponentContext c = new ComponentContext(application);
-    Component.willRenderToNull(create(c, LAYOUT_WITH_SIZE_SPEC).build());
+    Component.willRender(create(c, LAYOUT_WITH_SIZE_SPEC).build());
   }
 }

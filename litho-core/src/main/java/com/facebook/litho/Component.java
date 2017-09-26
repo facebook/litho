@@ -314,12 +314,13 @@ public abstract class Component<L extends ComponentLifecycle>
   }
 
   /**
-   * @return whether the given component will not render because it returns null from its
-   * implementation of onCreateLayout, based on its current props and state.
+   * @return whether the given component will render because it returns non-null from its
+   *     implementation of onCreateLayout, based on its current props and state. Returns true if the
+   *     component returns non-null, otherwise false.
    */
-  public static boolean willRenderToNull(ComponentLayout componentLayout) {
+  public static boolean willRender(ComponentLayout componentLayout) {
     if (ComponentContext.NULL_LAYOUT.equals(componentLayout)) {
-      return true;
+      return false;
     }
 
     if (componentLayout instanceof InternalNode &&
@@ -328,11 +329,11 @@ public abstract class Component<L extends ComponentLifecycle>
       // has been measured (so that we have the proper measurements to pass in). This means we can't
       // eagerly check the result of OnCreateLayoutWithSizeSpec.
       throw new IllegalArgumentException(
-          "Cannot check willRenderToNull on a component that uses @OnCreateLayoutWithSizeSpec! " +
-              "Try wrapping this component in one that uses @OnCreateLayout if possible.");
+          "Cannot check willRender on a component that uses @OnCreateLayoutWithSizeSpec! "
+              + "Try wrapping this component in one that uses @OnCreateLayout if possible.");
     }
 
-    return false;
+    return true;
   }
 
   /**

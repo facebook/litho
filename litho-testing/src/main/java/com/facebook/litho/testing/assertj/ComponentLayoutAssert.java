@@ -37,24 +37,24 @@ public final class ComponentLayoutAssert
    * Assert that a given {@link ComponentLayout} renders to null, i.e. its <code>onCreateLayout
    * </code> method returns a {@link ComponentContext#NULL_LAYOUT}.
    */
-  public ComponentLayoutAssert willRenderToNull() {
-    Java6Assertions.assertThat(Component.willRenderToNull(actual))
+  public ComponentLayoutAssert wontRender() {
+    Java6Assertions.assertThat(Component.willRender(actual))
         .overridingErrorMessage("Expected Component to render to null, but it did not.")
-        .isTrue();
-
-    return this;
-  }
-
-  public ComponentLayoutAssert wontRenderToNull() {
-    Java6Assertions.assertThat(Component.willRenderToNull(actual))
-        .overridingErrorMessage("Expected Component to not render to null, but it did.")
         .isFalse();
 
     return this;
   }
 
-  /** @see #wontRenderToNull() */
-  public ComponentLayoutAssert willNotRenderToNull() {
-    return wontRenderToNull();
+  public ComponentLayoutAssert willRender() {
+    Java6Assertions.assertThat(Component.willRender(actual))
+        .overridingErrorMessage("Expected Component to not render to null, but it did.")
+        .isTrue();
+
+    return this;
+  }
+
+  /** @see #wontRender() */
+  public ComponentLayoutAssert willNotRender() {
+    return wontRender();
   }
 }
