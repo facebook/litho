@@ -19,6 +19,7 @@
         android:minSdkVersion="15"
         android:targetSdkVersion="19"
         />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name="com.facebook.samples.lithocodelab.LithoLabApplication"

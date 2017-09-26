@@ -12,6 +12,8 @@
 package com.facebook.samples.lithocodelab;
 
 import android.app.Application;
+
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.soloader.SoLoader;
 
 public class LithoLabApplication extends Application {
@@ -20,5 +22,6 @@ public class LithoLabApplication extends Application {
         super.onCreate();
 
         SoLoader.init(this, false);
+        Fresco.initialize(this);
     }
 }
