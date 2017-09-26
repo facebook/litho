@@ -1211,8 +1211,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       unsetShadowElevation(view, nodeInfo.getShadowElevation());
       unsetOutlineProvider(view, nodeInfo.getOutlineProvider());
       unsetClipToOutline(view, nodeInfo.getClipToOutline());
-      unsetScale(view);
-      unsetAlpha(view);
 
       if (!TextUtils.isEmpty(nodeInfo.getContentDescription())) {
         unsetContentDescription(view);
@@ -1224,6 +1222,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     unsetFocusable(view, item);
     unsetEnabled(view, item);
+    unsetScale(view);
+    unsetAlpha(view);
 
     if (item.getImportantForAccessibility() != IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
       unsetImportantForAccessibility(view);
