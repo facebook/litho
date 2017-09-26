@@ -11,6 +11,7 @@ package com.facebook.litho.testing.assertj;
 
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.LithoView;
 import org.assertj.core.api.Java6Assertions;
@@ -31,5 +32,9 @@ public class LithoAssertions extends Java6Assertions {
 
   public static LithoViewAssert assertThat(LithoView lithoView) {
     return LithoViewAssert.assertThat(lithoView);
+  }
+
+  public static ComponentLayoutAssert assertThat(ComponentLayout componentLayout) {
+    return ComponentLayoutAssert.assertThat(componentLayout);
   }
 }

@@ -10,7 +10,7 @@
 package com.facebook.litho;
 
 import static com.facebook.litho.Layout.create;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
 import static org.robolectric.RuntimeEnvironment.application;
 
 import android.view.View;
@@ -61,13 +61,13 @@ public class WillRenderToNullTest {
   @Test
   public void testWillRenderToNullForComponentThatReturnsNull() {
     ComponentContext c = new ComponentContext(application);
-    assertThat(Component.willRenderToNull(create(c, NULL_SPEC).build())).isTrue();
+    assertThat(create(c, NULL_SPEC).build()).willRenderToNull();
   }
 
   @Test
   public void testWillRenderToNullForComponentThatReturnsNonNull() {
     ComponentContext c = new ComponentContext(application);
-    assertThat(Component.willRenderToNull(create(c, NONNULL_SPEC).build())).isFalse();
+    assertThat(create(c, NONNULL_SPEC).build()).willNotRenderToNull();
   }
 
   @Test
