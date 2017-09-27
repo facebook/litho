@@ -133,24 +133,6 @@ public interface ComponentLayout {
 
     @ReturnsOwnership
     Builder border(Border border);
-    /** @deprecated Please use {@link #border(Border)} instead */
-    @ReturnsOwnership
-    Builder borderWidthPx(YogaEdge edge, @Px int borderWidth);
-    /** @deprecated Please use {@link #border(Border)} instead */
-    @ReturnsOwnership
-    Builder borderWidthAttr(YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId);
-    /** @deprecated Please use {@link #border(Border)} instead */
-    @ReturnsOwnership
-    Builder borderWidthAttr(YogaEdge edge, @AttrRes int resId);
-    /** @deprecated Please use {@link #border(Border)} instead */
-    @ReturnsOwnership
-    Builder borderWidthRes(YogaEdge edge, @DimenRes int resId);
-    /** @deprecated Please use {@link #border(Border)} instead */
-    @ReturnsOwnership
-    Builder borderWidthDip(YogaEdge edge, @Dimension(unit = DP) float borderWidth);
-    /** @deprecated Please use {@link #border(Border)} instead */
-    @ReturnsOwnership
-    Builder borderColor(@ColorInt int borderColor);
 
     /** @see ContainerBuilder#positionPx */
     @ReturnsOwnership

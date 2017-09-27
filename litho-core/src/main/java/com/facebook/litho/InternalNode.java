@@ -103,11 +103,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private static final long PFLAG_INVISIBLE_HANDLER_IS_SET = 1L << 23;
   private static final long PFLAG_UNFOCUSED_HANDLER_IS_SET = 1L << 24;
   private static final long PFLAG_TOUCH_EXPANSION_IS_SET = 1L << 25;
-  private static final long PFLAG_BORDER_WIDTH_IS_SET = 1L << 26;
-  private static final long PFLAG_ASPECT_RATIO_IS_SET = 1L << 27;
-  private static final long PFLAG_TRANSITION_KEY_IS_SET = 1L << 28;
-  private static final long PFLAG_BORDER_COLOR_IS_SET = 1L << 29;
-  private static final long PFLAG_BORDER_IS_SET = 1L << 30;
+  private static final long PFLAG_ASPECT_RATIO_IS_SET = 1L << 26;
+  private static final long PFLAG_TRANSITION_KEY_IS_SET = 1L << 27;
+  private static final long PFLAG_BORDER_IS_SET = 1L << 28;
 
   private final ResourceResolver mResourceResolver = new ResourceResolver();
 
@@ -648,18 +646,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   @Override
   public InternalNode border(Border border) {
-    if ((mPrivateFlags & PFLAG_BORDER_WIDTH_IS_SET) != 0L
-        || (mPrivateFlags & PFLAG_BORDER_COLOR_IS_SET) != 0L) {
-      throw new IllegalStateException(
-          "Border properties should be set by providing a Border object via .border(). Using "
-              + "individual methods, such as borderWidth() variations, borderColor(), etc should "
-              + "not be mixed with using .border().");
-    }
-
     mPrivateFlags |= PFLAG_BORDER_IS_SET;
     if (mIsNestedTreeHolder || mLayoutAttributes == null) {
       for (int i = 0, length = border.mEdgeWidths.length; i < length; ++i) {
-        setBorderWidth(Border.edgeFromIndex(i), border.mEdgeWidths[i], false);
+        setBorderWidth(Border.edgeFromIndex(i), border.mEdgeWidths[i]);
       }
       System.arraycopy(border.mEdgeColors, 0, mBorderColors, 0, mBorderColors.length);
       mBorderPathEffect = border.mPathEffect;
@@ -669,85 +659,16 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return this;
   }
 
-  @Override
-  public InternalNode borderWidthPx(YogaEdge edge, @Px int borderWidth) {
-    if ((mPrivateFlags & PFLAG_BORDER_IS_SET) != 0L) {
-      throw new IllegalStateException(
-          "Border properties should be set by providing a Border object via .border(). Using "
-              + "individual methods, such as borderWidth() variations should not be mixed with "
-              + "using .border().");
-    }
-
-    setBorderWidth(edge, borderWidth, true);
-    return this;
-  }
-
-  private void setBorderWidth(YogaEdge edge, @Px int borderWidth, boolean setWidthFlag) {
+  void setBorderWidth(YogaEdge edge, @Px int borderWidth) {
     if (mIsNestedTreeHolder) {
-      if (setWidthFlag) {
-        mPrivateFlags |= PFLAG_BORDER_WIDTH_IS_SET;
-      }
       if (mNestedTreeBorderWidth == null) {
         mNestedTreeBorderWidth = ComponentsPools.acquireEdges();
       }
 
       mNestedTreeBorderWidth.set(edge, borderWidth);
     } else {
-      if (mLayoutAttributes != null) {
-        mLayoutAttributes.borderWidthPx(edge, borderWidth);
-        return;
-      }
-      if (setWidthFlag) {
-        mPrivateFlags |= PFLAG_BORDER_WIDTH_IS_SET;
-      }
       mYogaNode.setBorder(edge, borderWidth);
     }
-  }
-
-  @Override
-  public InternalNode borderWidthAttr(
-      YogaEdge edge,
-      @AttrRes int resId,
-      @DimenRes int defaultResId) {
-    return borderWidthPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
-  }
-
-  @Override
-  public InternalNode borderWidthAttr(
-      YogaEdge edge,
-      @AttrRes int resId) {
-    return borderWidthAttr(edge, resId, 0);
-  }
-
-  @Override
-  public InternalNode borderWidthRes(YogaEdge edge, @DimenRes int resId) {
-    return borderWidthPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
-  }
-
-  @Override
-  public InternalNode borderWidthDip(
-      YogaEdge edge,
-      @Dimension(unit = DP) float borderWidth) {
-    return borderWidthPx(edge, mResourceResolver.dipsToPixels(borderWidth));
-  }
-
-  @Override
-  public InternalNode borderColor(@ColorInt int borderColor) {
-    if ((mPrivateFlags & PFLAG_BORDER_IS_SET) != 0L) {
-      throw new IllegalStateException(
-          "Border properties should be set by providing a Border object via .border(). Using "
-              + "individual methods, such as borderColor() should not be mixed with using .border().");
-    }
-
-    if (mLayoutAttributes != null) {
-      mLayoutAttributes.borderColor(borderColor);
-      return this;
-    }
-
-    mPrivateFlags |= PFLAG_BORDER_COLOR_IS_SET;
-    Arrays.fill(mBorderColors, borderColor);
-
-    return this;
   }
 
   @Override
@@ -2122,8 +2043,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       }
     }
 
-    if ((mPrivateFlags & PFLAG_BORDER_IS_SET) != 0L
-        || (mPrivateFlags & PFLAG_BORDER_WIDTH_IS_SET) != 0L) {
+    if ((mPrivateFlags & PFLAG_BORDER_IS_SET) != 0L) {
       if (mNestedTreeBorderWidth == null) {
         throw new IllegalStateException("copyInto() must be used when resolving a nestedTree. " +
             "If border width was set on the holder node, we must have a mNestedTreeBorderWidth " +
@@ -2132,7 +2052,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
       final YogaNode yogaNode = node.mYogaNode;
 
-      node.mPrivateFlags |= PFLAG_BORDER_WIDTH_IS_SET;
+      node.mPrivateFlags |= PFLAG_BORDER_IS_SET;
       yogaNode.setBorder(LEFT, mNestedTreeBorderWidth.getRaw(YogaEdge.LEFT));
       yogaNode.setBorder(TOP, mNestedTreeBorderWidth.getRaw(YogaEdge.TOP));
       yogaNode.setBorder(RIGHT, mNestedTreeBorderWidth.getRaw(YogaEdge.RIGHT));
@@ -2142,13 +2062,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       yogaNode.setBorder(START, mNestedTreeBorderWidth.getRaw(YogaEdge.START));
       yogaNode.setBorder(END, mNestedTreeBorderWidth.getRaw(YogaEdge.END));
       yogaNode.setBorder(ALL, mNestedTreeBorderWidth.getRaw(YogaEdge.ALL));
+      System.arraycopy(mBorderColors, 0, node.mBorderColors, 0, mBorderColors.length);
     }
     if ((mPrivateFlags & PFLAG_TRANSITION_KEY_IS_SET) != 0L) {
       node.mTransitionKey = mTransitionKey;
-    }
-    if ((mPrivateFlags & PFLAG_BORDER_IS_SET) != 0L
-        || (mPrivateFlags & PFLAG_BORDER_COLOR_IS_SET) != 0L) {
-      System.arraycopy(mBorderColors, 0, node.mBorderColors, 0, mBorderColors.length);
     }
     if (mVisibleHeightRatio != 0) {
       node.mVisibleHeightRatio = mVisibleHeightRatio;

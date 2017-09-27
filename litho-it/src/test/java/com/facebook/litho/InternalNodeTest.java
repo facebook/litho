@@ -155,22 +155,6 @@ public class InternalNodeTest {
   }
 
   @Test
-  public void testBorderWidthFlag() {
-    mNode.borderWidthPx(ALL, 3);
-    assertThat(isFlagSet(mNode, "PFLAG_BORDER_WIDTH_IS_SET")).isTrue();
-    clearFlag(mNode, "PFLAG_BORDER_WIDTH_IS_SET");
-    assertEmptyFlags(mNode);
-  }
-
-  @Test
-  public void testBorderColorFlag() {
-    mNode.borderColor(GREEN);
-    assertThat(isFlagSet(mNode, "PFLAG_BORDER_COLOR_IS_SET")).isTrue();
-    clearFlag(mNode, "PFLAG_BORDER_COLOR_IS_SET");
-    assertEmptyFlags(mNode);
-  }
-
-  @Test
   public void testPositionFlag() {
     mNode.positionPx(ALL, 3);
     assertThat(isFlagSet(mNode, "PFLAG_POSITION_IS_SET")).isTrue();
@@ -352,16 +336,13 @@ public class InternalNodeTest {
     LayoutAttributes layoutAttributes = new LayoutAttributes();
     mNode.setLayoutAttributes(layoutAttributes);
 
-    mNode.borderColor(Color.RED);
     EventHandler<ClickEvent> clickHandler = mock(EventHandler.class);
     mNode.clickHandler(clickHandler);
 
-    assertThat(mNode.getBorderColors()[0]).isEqualTo(Color.TRANSPARENT);
     assertThat(mNode.getClickHandler()).isNull();
 
     mNode.build();
 
-    assertThat(mNode.getBorderColors()[0]).isEqualTo(Color.RED);
     assertThat(mNode.getClickHandler()).isSameAs(clickHandler);
   }
 

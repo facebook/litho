@@ -10,6 +10,7 @@
 package com.facebook.litho;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -36,13 +37,15 @@ public class OptimizedLayoutAttributesTest {
 
   private InternalNode mNode;
   private OptimizedLayoutAttributes mOptimizedLayoutAttributes;
+  private ComponentContext mComponentContext;
 
   @Before
   public void setup() {
     mNode = mock(InternalNode.class);
     when(mNode.build()).thenReturn(mNode);
     mOptimizedLayoutAttributes = new OptimizedLayoutAttributes();
-    mOptimizedLayoutAttributes.init(new ComponentContext(RuntimeEnvironment.application), mNode);
+    mComponentContext = new ComponentContext(RuntimeEnvironment.application);
+    mOptimizedLayoutAttributes.init(mComponentContext, mNode);
   }
 
   @Test
@@ -78,10 +81,7 @@ public class OptimizedLayoutAttributesTest {
     mOptimizedLayoutAttributes.paddingPercent(YogaEdge.RIGHT, 6);
     mOptimizedLayoutAttributes.paddingPercent(YogaEdge.ALL, 5);
 
-    mOptimizedLayoutAttributes.borderWidthPx(YogaEdge.ALL, 10);
-    mOptimizedLayoutAttributes.borderWidthPx(YogaEdge.RIGHT, 20);
-    mOptimizedLayoutAttributes.borderWidthPx(YogaEdge.HORIZONTAL, 30);
-    mOptimizedLayoutAttributes.borderColor(Color.RED);
+    mOptimizedLayoutAttributes.border(Border.create(mComponentContext).build());
 
     mOptimizedLayoutAttributes.positionPx(YogaEdge.ALL, 11);
     mOptimizedLayoutAttributes.positionPx(YogaEdge.RIGHT, 12);
@@ -222,10 +222,7 @@ public class OptimizedLayoutAttributesTest {
     verify(mNode).paddingPercent(YogaEdge.RIGHT, 6);
     verify(mNode).paddingPercent(YogaEdge.ALL, 5);
 
-    verify(mNode).borderWidthPx(YogaEdge.ALL, 10);
-    verify(mNode).borderWidthPx(YogaEdge.RIGHT, 20);
-    verify(mNode).borderWidthPx(YogaEdge.HORIZONTAL, 30);
-    verify(mNode).borderColor(Color.RED);
+    verify(mNode).border(any(Border.class));
 
     verify(mNode).positionPx(YogaEdge.ALL, 11);
     verify(mNode).positionPx(YogaEdge.RIGHT, 12);

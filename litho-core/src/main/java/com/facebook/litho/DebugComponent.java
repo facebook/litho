@@ -629,7 +629,7 @@ public final class DebugComponent {
   }
 
   public void setBorderWidth(YogaEdge edge, float value) {
-    mNode.get().borderWidthPx(edge, (int) value);
+    mNode.get().setBorderWidth(edge, (int) value);
   }
 
   public void setContentDescription(CharSequence contentDescription) {

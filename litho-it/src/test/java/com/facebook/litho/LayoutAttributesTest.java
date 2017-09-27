@@ -78,11 +78,6 @@ public class LayoutAttributesTest {
     mLayoutAttributes.paddingPercent(YogaEdge.RIGHT, 6);
     mLayoutAttributes.paddingPercent(YogaEdge.ALL, 5);
 
-    mLayoutAttributes.borderWidthPx(YogaEdge.ALL, 10);
-    mLayoutAttributes.borderWidthPx(YogaEdge.RIGHT, 20);
-    mLayoutAttributes.borderWidthPx(YogaEdge.HORIZONTAL, 30);
-    mLayoutAttributes.borderColor(Color.RED);
-
     mLayoutAttributes.positionPx(YogaEdge.ALL, 11);
     mLayoutAttributes.positionPx(YogaEdge.RIGHT, 12);
     mLayoutAttributes.positionPx(YogaEdge.LEFT, 13);
@@ -219,11 +214,6 @@ public class LayoutAttributesTest {
     verify(mNode).paddingPercent(YogaEdge.VERTICAL, 7);
     verify(mNode).paddingPercent(YogaEdge.RIGHT, 6);
     verify(mNode).paddingPercent(YogaEdge.ALL, 5);
-
-    verify(mNode).borderWidthPx(YogaEdge.ALL, 10);
-    verify(mNode).borderWidthPx(YogaEdge.RIGHT, 20);
-    verify(mNode).borderWidthPx(YogaEdge.HORIZONTAL, 30);
-    verify(mNode).borderColor(Color.RED);
 
     verify(mNode).positionPx(YogaEdge.ALL, 11);
     verify(mNode).positionPx(YogaEdge.RIGHT, 12);

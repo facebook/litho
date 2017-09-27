@@ -66,10 +66,8 @@ class LayoutAttributes implements ComponentLayout.Builder {
   private static final int INVISIBLE_HANDLER = 24;
   private static final int UNFOCUSED_HANDLER = 25;
   private static final int TOUCH_EXPANSION = 26;
-  private static final int BORDER_WIDTH = 27;
   private static final int ASPECT_RATIO = 28;
   private static final int TRANSITION_KEY = 29;
-  private static final int BORDER_COLOR = 30;
   private static final int WRAP_IN_VIEW = 31;
   private static final int VISIBLE_HEIGHT_RATIO = 32;
   private static final int VISIBLE_WIDTH_RATIO = 33;
@@ -290,46 +288,6 @@ class LayoutAttributes implements ComponentLayout.Builder {
   @Override
   public LayoutAttributes border(Border border) {
     mSparseArray.put(BORDER, border);
-    return this;
-  }
-
-  @Override
-  public LayoutAttributes borderWidthPx(YogaEdge edge, @Px int borderWidth) {
-    YogaEdgesWithInts borderWidths = (YogaEdgesWithInts) mSparseArray.get(BORDER_WIDTH);
-
-    if (borderWidths == null) {
-      borderWidths = new YogaEdgesWithInts();
-      mSparseArray.put(BORDER_WIDTH, borderWidths);
-    }
-
-    borderWidths.add(edge, borderWidth);
-    return this;
-  }
-
-  @Override
-  public LayoutAttributes borderWidthAttr(
-      YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
-    return borderWidthPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
-  }
-
-  @Override
-  public LayoutAttributes borderWidthAttr(YogaEdge edge, @AttrRes int resId) {
-    return borderWidthAttr(edge, resId, 0);
-  }
-
-  @Override
-  public LayoutAttributes borderWidthRes(YogaEdge edge, @DimenRes int resId) {
-    return borderWidthPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
-  }
-
-  @Override
-  public LayoutAttributes borderWidthDip(YogaEdge edge, @Dimension(unit = DP) float borderWidth) {
-    return borderWidthPx(edge, mResourceResolver.dipsToPixels(borderWidth));
-  }
-
-  @Override
-  public LayoutAttributes borderColor(@ColorInt int borderColor) {
-    mSparseArray.put(BORDER_COLOR, borderColor);
     return this;
   }
 
@@ -1098,17 +1056,6 @@ class LayoutAttributes implements ComponentLayout.Builder {
 
         case BORDER:
           node.border((Border) mSparseArray.get(key));
-          break;
-
-        case BORDER_COLOR:
-          node.borderColor((Integer) mSparseArray.get(key));
-          break;
-
-        case BORDER_WIDTH:
-          YogaEdgesWithInts borderWidths = (YogaEdgesWithInts) mSparseArray.get(key);
-          for (int j = 0; j < borderWidths.mNumEntries; j++) {
-            node.borderWidthPx(borderWidths.mEdges[j], borderWidths.mValues[j]);
-          }
           break;
 
         case POSITION:

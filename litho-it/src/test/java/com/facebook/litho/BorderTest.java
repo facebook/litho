@@ -204,13 +204,4 @@ public class BorderTest {
     final ComponentContext c = new ComponentContext(application);
     Border.create(c).widthPx(YogaEdge.ALL, 10).widthPx(YogaEdge.LEFT, 5).cornerEffect(1f).build();
   }
-
-  @Test(expected = IllegalStateException.class)
-  public void testUsingDeprecatedMethodsThrows() {
-    final InternalNode node =
-        ComponentsPools.acquireInternalNode(new ComponentContext(application));
-    final ComponentContext c = new ComponentContext(application);
-    node.border(Border.create(c).dashEffect(new float[] {1f, 1f}, 0f).build())
-        .borderWidthPx(YogaEdge.LEFT, 1);
-  }
 }

@@ -2481,15 +2481,16 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputsForComponentWithBorderColorNoBorderWidth() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .child(TestDrawableComponent.create(c))
-            .borderColor(GREEN)
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .child(TestDrawableComponent.create(c))
+                .border(Border.create(c).color(ALL, GREEN).build())
+                .build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -2505,15 +2506,16 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputsForComponentWithBorderWidthNoBorderColor() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .child(TestDrawableComponent.create(c))
-            .borderWidthPx(ALL, 10)
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .child(TestDrawableComponent.create(c))
+                .border(Border.create(c).widthPx(ALL, 10).build())
+                .build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -2529,16 +2531,16 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputsForComponentWithBorderWidthAllAndBorderColor() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .child(TestDrawableComponent.create(c))
-            .borderWidthPx(ALL, 10)
-            .borderColor(GREEN)
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .child(TestDrawableComponent.create(c))
+                .border(Border.create(c).widthPx(ALL, 10).color(ALL, GREEN).build())
+                .build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -2555,16 +2557,16 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputsForComponentWithBorderWidthTopAndBorderColor() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .child(TestDrawableComponent.create(c))
-            .borderWidthPx(TOP, 10)
-            .borderColor(GREEN)
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .child(TestDrawableComponent.create(c))
+                .border(Border.create(c).widthPx(TOP, 10).color(TOP, GREEN).build())
+                .build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
