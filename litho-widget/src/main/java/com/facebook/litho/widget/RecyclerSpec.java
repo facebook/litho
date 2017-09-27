@@ -220,7 +220,6 @@ class RecyclerSpec {
       @Prop Binder<RecyclerView> binder,
       @Prop(optional =  true) RecyclerEventsController recyclerEventsController,
       @Prop(optional = true, varArg = "onScrollListener") List<OnScrollListener> onScrollListeners,
-      @Prop(optional = true) SnapHelper snapHelper,
       @FromBind ItemAnimator oldAnimator) {
     final RecyclerView recyclerView = recyclerViewWrapper.getRecyclerView();
 
@@ -244,10 +243,6 @@ class RecyclerSpec {
       }
     }
 
-    if (snapHelper != null) {
-      snapHelper.attachToRecyclerView(null);
-    }
-
     recyclerViewWrapper.setOnRefreshListener(null);
   }
 
@@ -256,7 +251,8 @@ class RecyclerSpec {
       ComponentContext context,
       RecyclerViewWrapper recyclerViewWrapper,
       @Prop Binder<RecyclerView> binder,
-      @Prop(optional = true) RecyclerView.ItemDecoration itemDecoration) {
+      @Prop(optional = true) RecyclerView.ItemDecoration itemDecoration,
+      @Prop(optional = true) SnapHelper snapHelper) {
     final RecyclerView recyclerView = recyclerViewWrapper.getRecyclerView();
 
     if (recyclerView == null) {
@@ -272,6 +268,10 @@ class RecyclerSpec {
     }
 
     binder.unmount(recyclerView);
+
+    if (snapHelper != null) {
+      snapHelper.attachToRecyclerView(null);
+    }
   }
 
   @ShouldUpdate(onMount = true)

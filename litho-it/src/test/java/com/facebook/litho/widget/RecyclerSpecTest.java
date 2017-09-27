@@ -105,7 +105,6 @@ public class RecyclerSpecTest {
         binder,
         null,
         scrollListeners,
-        snapHelper,
         mAnimator);
 
     verify(mRecyclerView).setItemAnimator(mAnimator);
