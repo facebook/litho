@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.testing.litho.sections;
+package com.facebook.litho.testing.sections;
 
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.annotations.FromEvent;

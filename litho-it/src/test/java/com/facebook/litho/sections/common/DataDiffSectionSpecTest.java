@@ -13,10 +13,10 @@ import static junit.framework.Assert.assertEquals;
 
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.SectionTree;
+import com.facebook.litho.testing.sections.TestGroupSection;
+import com.facebook.litho.testing.sections.TestTarget;
+import com.facebook.litho.testing.sections.TestTarget.Operation;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-import com.facebook.testing.litho.sections.TestGroupSection;
-import com.facebook.testing.litho.sections.TestTarget;
-import com.facebook.testing.litho.sections.TestTarget.Operation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
