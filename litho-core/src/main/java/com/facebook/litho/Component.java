@@ -319,7 +319,7 @@ public abstract class Component<L extends ComponentLifecycle>
    *     component returns non-null, otherwise false.
    */
   public static boolean willRender(ComponentLayout componentLayout) {
-    if (ComponentContext.NULL_LAYOUT.equals(componentLayout)) {
+    if (componentLayout == null || ComponentContext.NULL_LAYOUT.equals(componentLayout)) {
       return false;
     }
 
