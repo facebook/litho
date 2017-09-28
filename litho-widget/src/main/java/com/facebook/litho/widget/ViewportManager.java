@@ -52,14 +52,6 @@ final class ViewportManager {
     }
   };
 
-  private final Runnable mLastItemAttachedRunnable =
-      new Runnable() {
-        @Override
-        public void run() {
-          notifyLastItemAttached();
-        }
-      };
-
   ViewportManager(
       int currentFirstVisiblePosition,
       int currentLastVisiblePosition,
@@ -124,22 +116,6 @@ final class ViewportManager {
   }
 
   @UiThread
-  void notifyLastItemAttached() {
-    if (mViewportChangedListeners == null || mViewportChangedListeners.isEmpty()) {
-      return;
-    }
-
-    final int lastVisiblePosition = mLayoutInfo.findLastVisibleItemPosition();
-    if (mTotalItemCount < 1 || lastVisiblePosition != mTotalItemCount - 1) {
-      return;
-    }
-
-    for (ViewportChanged viewportChangedListener : mViewportChangedListeners) {
-      viewportChangedListener.lastItemAttached();
-    }
-  }
-
-  @UiThread
   void onViewportchangedAfterViewAdded(int addedPosition) {
     if (isScrolling()) {
       // If the RecyclerView is scrolling we do not have to handle viewport changed notification
@@ -156,8 +132,6 @@ final class ViewportManager {
     if (isRangeNotInitialised || isPositionAddedWithinRange) {
       putViewportChangedRunnableToEndOfUIThreadQueue();
     }
-
-    putLastItemAttachedRunnableToEndOfUIThreadQueue();
   }
 
   /**
@@ -273,11 +247,6 @@ final class ViewportManager {
   private void putViewportChangedRunnableToEndOfUIThreadQueue() {
     mMainThreadHandler.removeCallbacks(mViewportChangedRunnable);
     mMainThreadHandler.post(mViewportChangedRunnable);
-  }
-
-  private void putLastItemAttachedRunnableToEndOfUIThreadQueue() {
-    mMainThreadHandler.removeCallbacks(mLastItemAttachedRunnable);
-    mMainThreadHandler.post(mLastItemAttachedRunnable);
   }
 
   @UiThread

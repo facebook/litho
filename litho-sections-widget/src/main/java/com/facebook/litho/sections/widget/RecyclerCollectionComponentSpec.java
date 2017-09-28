@@ -291,12 +291,8 @@ public class RecyclerCollectionComponentSpec {
                 lastFullyVisibleIndex,
                 dataInRangeIsChanged);
           }
-
-          @Override
-          public void lastItemAttached() {
-            sectionTreeInstance.lastItemAttached();
-          }
         };
+
     targetBinder.setViewportChangedListener(viewPortChanged);
 
     isEmpty.set(true);

@@ -106,11 +106,6 @@ public abstract class SectionLifecycle implements EventDispatcher {
 
   }
 
-  @Deprecated
-  protected void onLastItemAttached(SectionContext sectionContext, Section section) {
-    // Do nothing by default
-  }
-
   protected void refresh(
       SectionContext sectionContext,
       Section section) {

@@ -119,11 +119,6 @@ public class RecyclerBinder
             boolean dataInRangeIsChanged) {
           onNewVisibleRange(firstVisibleIndex, lastVisibleIndex);
         }
-
-        @Override
-        public void lastItemAttached() {
-          // no-opt
-        }
       };
 
   @VisibleForTesting

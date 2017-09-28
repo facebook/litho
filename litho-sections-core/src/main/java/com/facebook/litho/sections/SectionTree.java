@@ -405,30 +405,6 @@ public class SectionTree {
     mSectionPositionInfo.put(root.getGlobalKey(), Pair.create(prevChildrenCount, root.getCount()));
   }
 
-  public void lastItemAttached() {
-    final Section currentSection;
-    synchronized (this) {
-      currentSection = mCurrentSection;
-    }
-
-    if (currentSection != null) {
-      lastItemAttachedRecursive(currentSection);
-    }
-  }
-
-  private void lastItemAttachedRecursive(Section section) {
-    section.getLifecycle().onLastItemAttached(section.getScopedContext(), section);
-
-    if (section.isDiffSectionSpec()) {
-      return;
-    }
-
-    final List<Section> children = section.getChildren();
-    for (int i = 0, size = children.size(); i < size; i++) {
-      lastItemAttachedRecursive(children.get(i));
-    }
-  }
-
   public void viewPortChanged(
       int firstVisibleIndex,
       int lastVisibleIndex,
