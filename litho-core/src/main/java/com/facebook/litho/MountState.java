@@ -2303,10 +2303,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       final Component component = mountItem.getComponent();
       final Object content = mountItem.getContent();
 
-      component.getLifecycle().bind(
-          mContext,
-          content,
-          component);
+      component.getLifecycle().bind(getContextForComponent(component), content, component);
       mountItem.setIsBound(true);
 
       if (content instanceof View &&
