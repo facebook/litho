@@ -13,6 +13,7 @@ import static com.facebook.litho.sections.SectionLifecycle.StateUpdate;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.TreeProps;
@@ -32,7 +33,9 @@ public class SectionContext extends ComponentContext {
     super(context.getBaseContext());
   }
 
-  static SectionContext withSectionTree(SectionContext context, SectionTree listComponentTree) {
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  public static SectionContext withSectionTree(
+      SectionContext context, SectionTree listComponentTree) {
     SectionContext sectionContext = new SectionContext(context);
     sectionContext.mSectionTree = new WeakReference<>(listComponentTree);
     sectionContext.mTreeLoadingEventHandler = new SectionTreeLoadingEventHandler(listComponentTree);
@@ -40,7 +43,8 @@ public class SectionContext extends ComponentContext {
     return sectionContext;
   }
 
-  static SectionContext withScope(SectionContext context, Section scope) {
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  public static SectionContext withScope(SectionContext context, Section scope) {
     SectionContext sectionContext = new SectionContext(context);
     sectionContext.mSectionTree = context.mSectionTree;
     sectionContext.mTreeLoadingEventHandler = context.mTreeLoadingEventHandler;

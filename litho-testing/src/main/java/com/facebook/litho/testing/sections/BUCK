@@ -7,7 +7,7 @@
 
 include_defs("//COMPONENTS_DEFS")
 
-litho_android_library(
+android_library(
     name = "sections",
     srcs = glob(["*.java"]),
     plugins = [
@@ -15,11 +15,13 @@ litho_android_library(
     ],
     visibility = ["PUBLIC"],
     deps = [
+        COMPONENTS_ANDROIDSUPPORT_TARGET,
         COMPONENTS_JAVA_TARGET,
+        COMPONENTS_JSR_TARGET,
+        COMPONENTS_MOCKITO_TARGET,
+        COMPONENTS_SECTIONS_ANNOTATIONS_TARGET,
         COMPONENTS_SECTIONS_TARGET,
         COMPONENTS_WIDGET_TARGET,
-        COMPONENTS_SECTIONS_ANNOTATIONS_TARGET,
-        COMPONENTS_ANDROIDSUPPORT_TARGET,
         make_dep_path("litho-sections-core/src/main/java/com/facebook/litho/sections/common:common"),
     ],
 )

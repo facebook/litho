@@ -9,6 +9,7 @@
 
 package com.facebook.litho.sections;
 
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.Pair;
 import com.facebook.litho.EventDispatcher;
 import com.facebook.litho.EventHandler;
@@ -142,10 +143,9 @@ public abstract class Section<L extends SectionLifecycle> implements Cloneable, 
     return mGlobalKey;
   }
 
-  /**
-   * Set a unique key for this {@link Section} within its tree.
-   */
-  void setGlobalKey(String key) {
+  /** Set a unique key for this {@link Section} within its tree. */
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  public void setGlobalKey(String key) {
     mGlobalKey = key;
   }
 

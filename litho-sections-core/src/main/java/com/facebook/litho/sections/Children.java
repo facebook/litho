@@ -11,15 +11,16 @@ package com.facebook.litho.sections;
 
 import static android.support.v4.util.Pools.SynchronizedPool;
 
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.Pools.Pool;
 import com.facebook.litho.sections.annotations.GroupSectionSpec;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Utility class that represents the children of a {@link GroupSectionSpec}.
- * This is used to mimic component's usage of the {@link Container} class in
- * {@link com.facebook.litho.annotations.LayoutSpec}'s API
+ * Utility class that represents the children of a {@link GroupSectionSpec}. This is used to mimic
+ * component's usage of the Container class in {@link com.facebook.litho.annotations.LayoutSpec}'s
+ * API
  */
 public class Children {
 
@@ -41,7 +42,8 @@ public class Children {
     return builder;
   }
 
-  List<Section> getChildren() {
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  public List<Section> getChildren() {
     return mSections;
   }
 

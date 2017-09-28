@@ -11,6 +11,7 @@ package com.facebook.litho.sections;
 
 import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import com.facebook.litho.Component;
 import com.facebook.litho.sections.annotations.DiffSectionSpec;
 import com.facebook.litho.widget.ComponentRenderInfo;
@@ -23,15 +24,14 @@ import java.util.List;
 /**
  * A Change represent a single operation in a Components {@link ChangeSet}. A Change can be one of
  * Insert, Update or Delete. When creating a Change an index at which the Change will be applied has
- * to be specified. The index is local in the
- * {@link DiffSectionSpec} coordinates. So to insert a new
- * item represented by a given Component in any give ChangeSetSpec at the top, a change would have
- * to be created with
- * <code>
+ * to be specified. The index is local in the {@link DiffSectionSpec} coordinates. So to insert a
+ * new item represented by a given Component in any give ChangeSetSpec at the top, a change would
+ * have to be created with <code>
  * Change.insert(0, component);
  * </code>
  */
-final class Change {
+@VisibleForTesting
+public final class Change {
 
   static final int INSERT = 1;        // INSERT(index, component)
   static final int INSERT_RANGE = -1; // INSERT_RANGE(index, count, [components])
