@@ -14,11 +14,11 @@ import static com.facebook.litho.annotations.ResType.DRAWABLE;
 import android.graphics.ColorFilter;
 import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
+import android.view.View;
 import com.facebook.drawee.drawable.ScalingUtils;
-import com.facebook.drawee.generic.GenericDraweeHierarchy;
-import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
 import com.facebook.drawee.generic.RoundingParams;
 import com.facebook.drawee.interfaces.DraweeController;
+import com.facebook.drawee.view.GenericDraweeView;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Size;
@@ -27,14 +27,12 @@ import com.facebook.litho.annotations.OnBind;
 import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnMeasure;
 import com.facebook.litho.annotations.OnMount;
-import com.facebook.litho.annotations.OnUnbind;
-import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 
 @MountSpec
-class FrescoImageSpec {
+class FrescoImageViewSpec {
 
   @PropDefault protected static final float aspectRatio = FrescoUtils.aspectRatio;
 
@@ -75,17 +73,19 @@ class FrescoImageSpec {
   }
 
   @OnCreateMountContent
-  protected static DraweeDrawable<GenericDraweeHierarchy> onCreateMountContent(
-      ComponentContext c) {
-    GenericDraweeHierarchy draweeHierarchy =
-        GenericDraweeHierarchyBuilder.newInstance(c.getResources()).build();
-    return new DraweeDrawable<>(c, draweeHierarchy);
+  protected static GenericDraweeView onCreateMountContent(ComponentContext c) {
+//    GenericDraweeHierarchy draweeHierarchy =
+//        GenericDraweeHierarchyBuilder.newInstance(c.getResources()).build();
+    GenericDraweeView view = new GenericDraweeView(c.getBaseContext());
+    view.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+//    view.setHierarchy(draweeHierarchy);
+    return view;
   }
 
   @OnMount
   protected static void onMount(
       ComponentContext c,
-      DraweeDrawable<GenericDraweeHierarchy> draweeDrawable,
+      GenericDraweeView view,
       @Prop(optional = true) ScalingUtils.ScaleType actualImageScaleType,
       @Prop(optional = true) int fadeDuration,
       @Prop(optional = true, resType = DRAWABLE) Drawable failureImage,
@@ -99,8 +99,9 @@ class FrescoImageSpec {
       @Prop(optional = true) ScalingUtils.ScaleType retryImageScaleType,
       @Prop(optional = true) RoundingParams roundingParams,
       @Prop(optional = true) ColorFilter colorFilter) {
+
     FrescoUtils.onMount(
-        draweeDrawable.getDraweeHierarchy(),
+        view.getHierarchy(),
         actualImageScaleType,
         fadeDuration,
         failureImage,
@@ -114,37 +115,13 @@ class FrescoImageSpec {
         retryImageScaleType,
         roundingParams,
         colorFilter);
-    draweeDrawable.mount();
   }
 
   @OnBind
   protected static void onBind(
       ComponentContext c,
-      DraweeDrawable<GenericDraweeHierarchy> mountedDrawable,
+      GenericDraweeView view,
       @Prop DraweeController controller) {
-    mountedDrawable.setController(controller);
-
-    if (controller != null) {
-      controller.onViewportVisibilityHint(true);
-    }
-  }
-
-  @OnUnbind
-  protected static void onUnbind(
-      ComponentContext c,
-      DraweeDrawable<GenericDraweeHierarchy> mountedDrawable,
-      @Prop DraweeController controller) {
-    mountedDrawable.setController(null);
-
-    if (controller != null) {
-      controller.onViewportVisibilityHint(false);
-    }
-  }
-
-  @OnUnmount
-  protected static void onUnmount(
-      ComponentContext c,
-      DraweeDrawable<GenericDraweeHierarchy> mountedDrawable) {
-    mountedDrawable.unmount();
+    view.setController(controller);
   }
 }
