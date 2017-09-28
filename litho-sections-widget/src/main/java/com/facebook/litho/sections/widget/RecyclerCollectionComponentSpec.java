@@ -275,25 +275,28 @@ public class RecyclerCollectionComponentSpec {
             .build();
     sectionTree.set(sectionTreeInstance);
 
-    final ViewportInfo.ViewportChanged viewPortChanged = new ViewportInfo.ViewportChanged() {
-      @Override
-      public void viewportChanged(
-          int firstVisibleIndex,
-          int lastVisibleIndex,
-          int firstFullyVisibleIndex,
-          int lastFullyVisibleIndex) {
-        sectionTreeInstance.viewPortChanged(
-            firstVisibleIndex,
-            lastVisibleIndex,
-            firstFullyVisibleIndex,
-            lastFullyVisibleIndex);
-      }
+    final ViewportInfo.ViewportChanged viewPortChanged =
+        new ViewportInfo.ViewportChanged() {
+          @Override
+          public void viewportChanged(
+              int firstVisibleIndex,
+              int lastVisibleIndex,
+              int firstFullyVisibleIndex,
+              int lastFullyVisibleIndex,
+              boolean dataInRangeIsChanged) {
+            sectionTreeInstance.viewPortChanged(
+                firstVisibleIndex,
+                lastVisibleIndex,
+                firstFullyVisibleIndex,
+                lastFullyVisibleIndex,
+                dataInRangeIsChanged);
+          }
 
-      @Override
-      public void lastItemAttached() {
-        sectionTreeInstance.lastItemAttached();
-      }
-    };
+          @Override
+          public void lastItemAttached() {
+            sectionTreeInstance.lastItemAttached();
+          }
+        };
     targetBinder.setViewportChangedListener(viewPortChanged);
 
     isEmpty.set(true);

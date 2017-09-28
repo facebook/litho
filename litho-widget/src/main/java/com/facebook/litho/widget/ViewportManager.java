@@ -116,7 +116,8 @@ final class ViewportManager {
           firstVisiblePosition,
           lastVisiblePosition,
           firstFullyVisibleItemPosition,
-          lastFullyVisibleItemPosition);
+          lastFullyVisibleItemPosition,
+          mIsDataChangedVisible);
     }
 
     resetDataChangedIsVisible();

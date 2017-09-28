@@ -108,21 +108,23 @@ public class RecyclerBinder
   private EventHandler<ReMeasureEvent> mReMeasureEventEventHandler;
 
   private final ViewportManager mViewportManager;
-  private final ViewportChanged mViewportChangedListener = new ViewportChanged() {
-    @Override
-    public void viewportChanged(
-        int firstVisibleIndex,
-        int lastVisibleIndex,
-        int firstFullyVisibleIndex,
-        int lastFullyVisibleIndex) {
-      onNewVisibleRange(firstVisibleIndex, lastVisibleIndex);
-    }
+  private final ViewportChanged mViewportChangedListener =
+      new ViewportChanged() {
+        @Override
+        public void viewportChanged(
+            int firstVisibleIndex,
+            int lastVisibleIndex,
+            int firstFullyVisibleIndex,
+            int lastFullyVisibleIndex,
+            boolean dataInRangeIsChanged) {
+          onNewVisibleRange(firstVisibleIndex, lastVisibleIndex);
+        }
 
-    @Override
-    public void lastItemAttached() {
-      // no-opt
-    }
-  };
+        @Override
+        public void lastItemAttached() {
+          // no-opt
+        }
+      };
 
   @VisibleForTesting
   final RenderInfoViewCreatorController mRenderInfoViewCreatorController =
@@ -419,6 +421,10 @@ public class RecyclerBinder
     mInternalAdapter.notifyItemInserted(position);
 
     computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+
+    mViewportManager.setDataChangedIsVisible(
+        mViewportManager.isInsertInVisibleRange(
+            position, 1, mRange != null ? mRange.estimatedViewportCount : -1));
   }
 
   private void requestUpdate() {
@@ -476,6 +482,10 @@ public class RecyclerBinder
     mInternalAdapter.notifyItemRangeInserted(position, renderInfos.size());
 
     computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+
+    mViewportManager.setDataChangedIsVisible(
+        mViewportManager.isInsertInVisibleRange(
+            position, renderInfos.size(), mRange != null ? mRange.estimatedViewportCount : -1));
   }
 
   /**
@@ -532,6 +542,8 @@ public class RecyclerBinder
     mInternalAdapter.notifyItemChanged(position);
 
     computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+
+    mViewportManager.setDataChangedIsVisible(mViewportManager.isUpdateInVisibleRange(position, 1));
   }
 
   /**
@@ -571,6 +583,9 @@ public class RecyclerBinder
     mInternalAdapter.notifyItemRangeChanged(position, renderInfos.size());
 
     computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+
+    mViewportManager.setDataChangedIsVisible(
+        mViewportManager.isUpdateInVisibleRange(position, renderInfos.size()));
   }
 
   /**
@@ -584,10 +599,10 @@ public class RecyclerBinder
     final ComponentTreeHolder holder;
     final boolean isNewPositionInRange, isNewPositionInVisibleRange;
     final int childrenWidthSpec, childrenHeightSpec;
+    final int mRangeSize = mRange != null ? mRange.estimatedViewportCount : -1;
     synchronized (this) {
       holder = mComponentTreeHolders.remove(fromPosition);
       mComponentTreeHolders.add(toPosition, holder);
-      final int mRangeSize = mRange != null ? mRange.estimatedViewportCount : -1;
 
       isNewPositionInRange = mRangeSize > 0 &&
           toPosition >= mCurrentFirstVisiblePosition - (mRangeSize * mRangeRatio) &&
@@ -610,6 +625,9 @@ public class RecyclerBinder
     mInternalAdapter.notifyItemMoved(fromPosition, toPosition);
 
     computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+
+    mViewportManager.setDataChangedIsVisible(
+        mViewportManager.isMoveInVisibleRange(fromPosition, toPosition, mRangeSize));
   }
 
   /**
@@ -628,6 +646,8 @@ public class RecyclerBinder
 
     holder.release();
     computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+
+    mViewportManager.setDataChangedIsVisible(mViewportManager.isRemoveInVisibleRange(position, 1));
   }
 
   /**
@@ -647,6 +667,9 @@ public class RecyclerBinder
     mInternalAdapter.notifyItemRangeRemoved(position, count);
 
     computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+
+    mViewportManager.setDataChangedIsVisible(
+        mViewportManager.isRemoveInVisibleRange(position, count));
   }
 
   /**

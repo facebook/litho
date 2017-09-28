@@ -49,9 +49,10 @@ public class ViewportManagerTest {
     setFullyVisibleItemPositionInMockedLayoutManager(1, 4);
     setTotalItemInMockedLayoutManager(20);
 
+    viewportManager.setDataChangedIsVisible(false);
     viewportManager.onViewportChanged();
 
-    verify(mViewportChangedListener).viewportChanged(0, 5, 1, 4);
+    verify(mViewportChangedListener).viewportChanged(0, 5, 1, 4, false);
   }
 
   @Test
@@ -63,9 +64,10 @@ public class ViewportManagerTest {
     setFullyVisibleItemPositionInMockedLayoutManager(-1, -1);
     setTotalItemInMockedLayoutManager(20);
 
+    viewportManager.setDataChangedIsVisible(true);
     viewportManager.onViewportChanged();
 
-    verify(mViewportChangedListener).viewportChanged(1, 2, -1, -1);
+    verify(mViewportChangedListener).viewportChanged(1, 2, -1, -1, true);
   }
 
   @Test
@@ -76,9 +78,10 @@ public class ViewportManagerTest {
     setFullyVisibleItemPositionInMockedLayoutManager(7, 18);
     setTotalItemInMockedLayoutManager(20);
 
+    viewportManager.setDataChangedIsVisible(true);
     viewportManager.onViewportChanged();
 
-    verify(mViewportChangedListener).viewportChanged(5, 20, 7, 18);
+    verify(mViewportChangedListener).viewportChanged(5, 20, 7, 18, true);
   }
 
   @Test
@@ -105,9 +108,10 @@ public class ViewportManagerTest {
     setFullyVisibleItemPositionInMockedLayoutManager(7, 9);
     setTotalItemInMockedLayoutManager(12);
 
+    viewportManager.setDataChangedIsVisible(false);
     viewportManager.onViewportChanged();
 
-    verify(mViewportChangedListener).viewportChanged(5, 10, 7, 9);
+    verify(mViewportChangedListener).viewportChanged(5, 10, 7, 9, false);
   }
 
   @Test
@@ -151,9 +155,10 @@ public class ViewportManagerTest {
     setFullyVisibleItemPositionInMockedLayoutManager(7, 9);
     setTotalItemInMockedLayoutManager(12);
 
+    viewportManager.setDataChangedIsVisible(true);
     viewportManager.onViewportChanged();
 
-    verify(mViewportChangedListener).viewportChanged(5, 10, 7, 9);
+    verify(mViewportChangedListener).viewportChanged(5, 10, 7, 9, true);
   }
 
   @Test
@@ -166,9 +171,10 @@ public class ViewportManagerTest {
     setFullyVisibleItemPositionInMockedLayoutManager(-1, -1);
     setTotalItemInMockedLayoutManager(12);
 
+    viewportManager.setDataChangedIsVisible(false);
     viewportManager.onViewportChanged();
 
-    verify(mViewportChangedListener).viewportChanged(6, 7, -1, -1);
+    verify(mViewportChangedListener).viewportChanged(6, 7, -1, -1, false);
   }
 
   @Test

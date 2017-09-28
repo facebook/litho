@@ -433,6 +433,27 @@ public class SectionTree {
       int firstVisibleIndex,
       int lastVisibleIndex,
       int firstFullyVisibleIndex,
+      int lastFullyVisibleIndex,
+      boolean dataInRangeIsChanged) {
+    final Section currentSection;
+    synchronized (this) {
+      currentSection = mCurrentSection;
+    }
+    if (currentSection != null) {
+      viewPortChangedRecursive(
+          currentSection,
+          firstVisibleIndex,
+          lastVisibleIndex,
+          firstFullyVisibleIndex,
+          lastFullyVisibleIndex,
+          dataInRangeIsChanged);
+    }
+  }
+
+  public void viewPortChanged(
+      int firstVisibleIndex,
+      int lastVisibleIndex,
+      int firstFullyVisibleIndex,
       int lastFullyVisibleIndex) {
     final Section currentSection;
     synchronized (this) {
@@ -444,7 +465,8 @@ public class SectionTree {
           firstVisibleIndex,
           lastVisibleIndex,
           firstFullyVisibleIndex,
-          lastFullyVisibleIndex);
+          lastFullyVisibleIndex,
+          false);
     }
   }
 
@@ -453,7 +475,8 @@ public class SectionTree {
       int firstVisibleIndex,
       int lastVisibleIndex,
       int firstFullyVisibleIndex,
-      int lastFullyVisibleIndex) {
+      int lastFullyVisibleIndex,
+      boolean dataInRangeIsChanged) {
     Range currentRange = mLastRanges.get(section.getGlobalKey());
     final int totalItemsCount = section.getCount();
 
@@ -465,7 +488,10 @@ public class SectionTree {
         currentRange.firstFullyVisibleIndex == firstFullyVisibleIndex &&
         currentRange.lastFullyVisibleIndex == lastFullyVisibleIndex &&
         currentRange.totalItemsCount == totalItemsCount) {
-      return;
+
+      if (!dataInRangeIsChanged) {
+        return;
+      }
     }
 
     currentRange.lastVisibleIndex = lastVisibleIndex;
@@ -520,7 +546,8 @@ public class SectionTree {
           childFirstVisibleIndex,
           childLastVisibleIndex,
           childFullyFirstVisibleIndex,
-          childFullyLastVisibleIndex);
+          childFullyLastVisibleIndex,
+          dataInRangeIsChanged);
     }
   }
 
