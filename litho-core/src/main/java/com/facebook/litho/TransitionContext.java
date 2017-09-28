@@ -27,16 +27,8 @@ class TransitionContext {
     }
   }
 
-  Transition getRootTransition() {
-    if (mTransitions.isEmpty()) {
-      return null;
-    }
-
-    if (mTransitions.size() == 1) {
-      return mTransitions.get(0);
-    }
-
-    return new ParallelTransitionSet(mTransitions);
+  ArrayList<Transition> getTransitions() {
+    return mTransitions;
   }
 
   void reset() {

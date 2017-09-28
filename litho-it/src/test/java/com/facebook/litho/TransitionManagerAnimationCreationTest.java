@@ -75,7 +75,7 @@ public class TransitionManagerAnimationCreationTest {
                 .animator(mTestVerificationAnimator)),
         createMockLayoutOutput("test", 10, 10));
 
-    mTransitionManager.setupTransitions(current, next);
+    mTransitionManager.setupTransitions(current, next, null);
 
     assertThat(mCreatedAnimations).containsExactlyInAnyOrder(
         createPropertyAnimation("test", AnimatedProperties.X, 10));
@@ -93,7 +93,7 @@ public class TransitionManagerAnimationCreationTest {
                 .animator(mTestVerificationAnimator)),
         createMockLayoutOutput("test", 10, 10));
 
-    mTransitionManager.setupTransitions(current, next);
+    mTransitionManager.setupTransitions(current, next, null);
 
     assertThat(mCreatedAnimations).containsExactlyInAnyOrder(
         createPropertyAnimation("test", AnimatedProperties.X, 10),
@@ -112,7 +112,7 @@ public class TransitionManagerAnimationCreationTest {
                 .animator(mTestVerificationAnimator)),
         createMockLayoutOutput("test", 10, 0));
 
-    mTransitionManager.setupTransitions(current, next);
+    mTransitionManager.setupTransitions(current, next, null);
 
     assertThat(mCreatedAnimations).containsExactlyInAnyOrder(
         createPropertyAnimation("test", AnimatedProperties.X, 10));
@@ -132,7 +132,7 @@ public class TransitionManagerAnimationCreationTest {
         createMockLayoutOutput("test1", 10, 10),
         createMockLayoutOutput("test2", -10, -10));
 
-    mTransitionManager.setupTransitions(current, next);
+    mTransitionManager.setupTransitions(current, next, null);
 
     assertThat(mCreatedAnimations).containsExactlyInAnyOrder(
         createPropertyAnimation("test1", AnimatedProperties.X, 10),
@@ -153,7 +153,7 @@ public class TransitionManagerAnimationCreationTest {
         createMockLayoutOutput("test1", 10, 10),
         createMockLayoutOutput("test2", -10, -10));
 
-    mTransitionManager.setupTransitions(current, next);
+    mTransitionManager.setupTransitions(current, next, null);
 
     assertThat(mCreatedAnimations).containsExactlyInAnyOrder(
         createPropertyAnimation("test1", AnimatedProperties.X, 10),
@@ -176,7 +176,7 @@ public class TransitionManagerAnimationCreationTest {
         createMockLayoutOutput("test1", 10, 10),
         createMockLayoutOutput("test2", -10, -10));
 
-    mTransitionManager.setupTransitions(current, next);
+    mTransitionManager.setupTransitions(current, next, null);
 
     assertThat(mCreatedAnimations).containsExactlyInAnyOrder(
         createPropertyAnimation("test1", AnimatedProperties.X, 10),
@@ -197,7 +197,7 @@ public class TransitionManagerAnimationCreationTest {
                 .animator(mTestVerificationAnimator)),
         createMockLayoutOutput("test", 10, 0));
 
-    mTransitionManager.setupTransitions(current, next);
+    mTransitionManager.setupTransitions(current, next, null);
 
     assertThat(mCreatedAnimations).containsExactlyInAnyOrder(
         createPropertyAnimation("test", AnimatedProperties.X, 10));
@@ -218,10 +218,69 @@ public class TransitionManagerAnimationCreationTest {
             createMockLayoutOutput("test", 10, 0),
             createMockLayoutOutput("appearing", 20, 0));
 
-    mTransitionManager.setupTransitions(null, next);
+    mTransitionManager.setupTransitions(null, next, null);
 
     assertThat(mCreatedAnimations)
         .containsExactlyInAnyOrder(createPropertyAnimation("appearing", AnimatedProperties.X, 20));
+  }
+
+  @Test
+  public void testWithMountTimeAnimations() {
+    final LayoutState current =
+        createMockLayoutState(
+            Transition.parallel(),
+            createMockLayoutOutput("test", 0, 0),
+            createMockLayoutOutput("test2", 0, 0));
+    final LayoutState next =
+        createMockLayoutState(
+            Transition.parallel(
+                Transition.create("test", "keydoesntexist")
+                    .animate(Transition.allProperties())
+                    .animator(mTestVerificationAnimator)),
+            createMockLayoutOutput("test", 10, 0),
+            createMockLayoutOutput("test2", 20, 0));
+    final ArrayList<Transition> mountTimeTransitions = new ArrayList<>();
+    mountTimeTransitions.add(
+        Transition.create("test2")
+            .animate(AnimatedProperties.X)
+            .appearFrom(0)
+            .animator(mTestVerificationAnimator));
+
+    mTransitionManager.setupTransitions(current, next, mountTimeTransitions);
+
+    assertThat(mCreatedAnimations)
+        .containsExactlyInAnyOrder(
+            createPropertyAnimation("test", AnimatedProperties.X, 10),
+            createPropertyAnimation("test2", AnimatedProperties.X, 20));
+  }
+
+  @Test
+  public void testWithOnlyMountTimeAnimations() {
+    final LayoutState current =
+        createMockLayoutState(
+            Transition.parallel(),
+            createMockLayoutOutput("test", 0, 0),
+            createMockLayoutOutput("test2", 0, 0));
+    final LayoutState next =
+        createMockLayoutState(
+            null, createMockLayoutOutput("test", 10, 0), createMockLayoutOutput("test2", 20, 0));
+    final ArrayList<Transition> mountTimeTransitions = new ArrayList<>();
+    mountTimeTransitions.add(
+        Transition.create("test2")
+            .animate(AnimatedProperties.X)
+            .appearFrom(0)
+            .animator(mTestVerificationAnimator));
+    mountTimeTransitions.add(
+        Transition.create("test", "keydoesntexist")
+            .animate(Transition.allProperties())
+            .animator(mTestVerificationAnimator));
+
+    mTransitionManager.setupTransitions(current, next, mountTimeTransitions);
+
+    assertThat(mCreatedAnimations)
+        .containsExactlyInAnyOrder(
+            createPropertyAnimation("test", AnimatedProperties.X, 10),
+            createPropertyAnimation("test2", AnimatedProperties.X, 20));
   }
 
   private PropertyAnimation createPropertyAnimation(
@@ -244,7 +303,8 @@ public class TransitionManagerAnimationCreationTest {
     }
 
     final TransitionContext transitionContext = mock(TransitionContext.class);
-    when(transitionContext.getRootTransition()).thenReturn(transitions);
+    when(transitionContext.getTransitions())
+        .thenReturn(transitions != null ? transitions.getChildren() : null);
 
     final LayoutState layoutState = mock(LayoutState.class);
     when(layoutState.getTransitionContext()).thenReturn(transitionContext);

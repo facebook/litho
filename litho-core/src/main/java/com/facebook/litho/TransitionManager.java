@@ -202,11 +202,15 @@ public class TransitionManager {
    * Creates (but doesn't start) the animations for the next transition based on the current and
    * next layout states.
    *
-   * After this is called, MountState can use {@link #isKeyAnimating} and {@link #isKeyDisappearing}
-   * to check whether certain mount content will animate, commit the layout changes, and then call
-   * {@link #runTransitions} to restore the initial states and run the animations.
+   * <p>After this is called, MountState can use {@link #isKeyAnimating} and {@link
+   * #isKeyDisappearing} to check whether certain mount content will animate, commit the layout
+   * changes, and then call {@link #runTransitions} to restore the initial states and run the
+   * animations.
    */
-  void setupTransitions(LayoutState currentLayoutState, LayoutState nextLayoutState) {
+  void setupTransitions(
+      LayoutState currentLayoutState,
+      LayoutState nextLayoutState,
+      ArrayList<Transition> mountTimeTransitions) {
     for (int i = 0, size = mAnimationStates.size(); i < size; i++) {
       mAnimationStates.valueAt(i).seenInLastTransition = false;
     }
@@ -247,7 +251,7 @@ public class TransitionManager {
       }
     }
 
-    createTransitionAnimations(nextLayoutState.getTransitionContext().getRootTransition());
+    createTransitionAnimations(getRootTransition(nextLayoutState, mountTimeTransitions));
 
     // If we recorded any mount content diffs that didn't result in an animation being created for
     // that transition key, clean them up now.
@@ -393,6 +397,40 @@ public class TransitionManager {
         propertyState.lastMountedValue = property.get(animationState.nextLayoutOutput);
       }
     }
+  }
+
+  private Transition getRootTransition(
+      LayoutState nextLayoutState, ArrayList<Transition> mountTimeTransitions) {
+    final ArrayList<Transition> layoutStateTransitions =
+        nextLayoutState.getTransitionContext() != null
+            ? nextLayoutState.getTransitionContext().getTransitions()
+            : null;
+    if (mountTimeTransitions == null || mountTimeTransitions.isEmpty()) {
+      return getRootTransitionFromList(layoutStateTransitions);
+    }
+
+    if (layoutStateTransitions == null || layoutStateTransitions.isEmpty()) {
+      return getRootTransitionFromList(mountTimeTransitions);
+    }
+
+    final ArrayList<Transition> mergedList =
+        new ArrayList<>(layoutStateTransitions.size() + mountTimeTransitions.size());
+    mergedList.addAll(layoutStateTransitions);
+    mergedList.addAll(mountTimeTransitions);
+
+    return new ParallelTransitionSet(mergedList);
+  }
+
+  private Transition getRootTransitionFromList(ArrayList<Transition> transitions) {
+    if (transitions == null || transitions.isEmpty()) {
+      throw new RuntimeException("Expected list of transitions to be non-empty");
+    }
+
+    if (transitions.size() == 1) {
+      return transitions.get(0);
+    }
+
+    return new ParallelTransitionSet(transitions);
   }
 
   private void createTransitionAnimations(Transition rootTransition) {

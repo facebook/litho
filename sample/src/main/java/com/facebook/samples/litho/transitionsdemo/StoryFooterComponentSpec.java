@@ -17,6 +17,7 @@ import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
+import com.facebook.litho.Diff;
 import com.facebook.litho.Row;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.Transition;
@@ -152,7 +153,11 @@ public class StoryFooterComponentSpec {
   }
 
   @OnCreateTransition
-  static Transition onCreateTransition(ComponentContext c) {
+  static Transition onCreateTransition(ComponentContext c, @State Diff<Boolean> commentText) {
+    if (commentText.getPrevious() == null) {
+      return null;
+    }
+
     return Transition.parallel(
         Transition.create("comment_editText")
             .animate(AnimatedProperties.ALPHA)

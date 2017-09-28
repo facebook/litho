@@ -110,6 +110,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   private LayoutState mLastMountedLayoutState;
   private int[] mAnimationLockedIndices;
   private boolean mIsFirstMountOfComponentTree = false;
+  private @Nullable ArrayList<Transition> mMountTimeTransitions;
 
   private final MountItem mRootHostMountItem;
 
@@ -269,10 +270,11 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       }
     }
 
-    if (shouldAnimateTransitions(layoutState)) {
+    if (shouldAnimateTransitions(layoutState) && hasTransitionsToAnimate(layoutState)) {
       mTransitionManager.runTransitions();
     }
 
+    mMountTimeTransitions = null;
     mIsDirty = false;
     mIsFirstMountOfComponentTree = false;
     if (localVisibleRect != null) {
@@ -845,7 +847,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
    * Determine whether to apply disappear animation to the given {@link MountItem}
    */
   private boolean isItemDisappearing(LayoutState layoutState, int index) {
-    if (!shouldAnimateTransitions(layoutState)) {
+    if (!shouldAnimateTransitions(layoutState) || !hasTransitionsToAnimate(layoutState)) {
       return false;
     }
 
@@ -2050,7 +2052,10 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
 
     if (shouldAnimateTransitions(layoutState)) {
-      createNewTransitions(layoutState);
+      mMountTimeTransitions = collectMountTimeTransitions(layoutState);
+      if (hasTransitionsToAnimate(layoutState)) {
+        createNewTransitions(layoutState);
+      }
     }
 
     mAnimationLockedIndices = null;
@@ -2087,9 +2092,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   private void createNewTransitions(LayoutState newLayoutState) {
     prepareTransitionManager(newLayoutState);
 
-    collectPendingAnimations(newLayoutState);
-
-    mTransitionManager.setupTransitions(mLastMountedLayoutState, newLayoutState);
+    mTransitionManager.setupTransitions(
+        mLastMountedLayoutState, newLayoutState, mMountTimeTransitions);
 
     SimpleArrayMap<String, LayoutOutput> nextTransitionKeys =
         newLayoutState.getTransitionKeyMapping();
@@ -2188,11 +2192,23 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
   }
 
+  /**
+   * @return whether we should animate transitions if we have any when mounting the new LayoutState.
+   */
   private boolean shouldAnimateTransitions(LayoutState newLayoutState) {
     return mIsDirty
-        && newLayoutState.hasTransitionContext()
         && (mLastMountedComponentTreeId == newLayoutState.getComponentTreeId()
             || mIsFirstMountOfComponentTree);
+  }
+
+  /**
+   * @return whether we have any transitions to animate for the current mount of the given
+   *     LayoutState
+   */
+  private boolean hasTransitionsToAnimate(LayoutState newLayoutState) {
+    final boolean hasMountTimeTransitions =
+        mMountTimeTransitions != null && !mMountTimeTransitions.isEmpty();
+    return hasMountTimeTransitions || newLayoutState.hasTransitionContext();
   }
 
   private static String getTransitionKey(MountItem mountItem) {
@@ -2476,23 +2492,30 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     mTransitionManager.setMountContent(transitionKey, mountContent);
   }
 
-  private static void collectPendingAnimations(LayoutState layoutState) {
+  private static @Nullable ArrayList<Transition> collectMountTimeTransitions(
+      LayoutState layoutState) {
     final List<Component> componentsNeedingPreviousRenderData =
         layoutState.getComponentsNeedingPreviousRenderData();
 
     if (componentsNeedingPreviousRenderData == null) {
-      return;
+      return null;
     }
 
+    ArrayList<Transition> result = null;
     for (int i = 0, size = componentsNeedingPreviousRenderData.size(); i < size; i++) {
       final Component component = componentsNeedingPreviousRenderData.get(i);
       final Transition transition =
           component.getLifecycle().onCreateTransition(component.getScopedContext(), component);
 
       if (transition != null) {
-        layoutState.getTransitionContext().addTransition(transition);
+        if (result == null) {
+          result = new ArrayList<>();
+        }
+        result.add(transition);
       }
     }
+
+    return result;
   }
 
   /**
