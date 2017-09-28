@@ -9,6 +9,7 @@
 
 package com.facebook.litho.widget;
 
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -168,6 +169,87 @@ public class ViewportManagerTest {
     viewportManager.onViewportChanged();
 
     verify(mViewportChangedListener).viewportChanged(6, 7, -1, -1);
+  }
+
+  @Test
+  public void testInsertInVisibleRange() {
+    ViewportManager viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_IDLE, 1, 6);
+    boolean isInRange = viewportManager.isInsertInVisibleRange(7, 2, 7);
+    assertThat(isInRange).isTrue();
+  }
+
+  @Test
+  public void testInsertNotInVisibleRange() {
+    ViewportManager viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_IDLE, 1, 6);
+    boolean isInRange = viewportManager.isInsertInVisibleRange(7, 2, 6);
+    assertThat(isInRange).isFalse();
+  }
+
+  @Test
+  public void testUpdateInVisibleRange() {
+    ViewportManager viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_IDLE, 1, 6);
+    boolean isInRange = viewportManager.isUpdateInVisibleRange(5, 2);
+    assertThat(isInRange).isTrue();
+  }
+
+  @Test
+  public void testUpdateNotInVisibleRange() {
+    ViewportManager viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_IDLE, 1, 6);
+    boolean isInRange = viewportManager.isUpdateInVisibleRange(7, 2);
+    assertThat(isInRange).isFalse();
+  }
+
+  @Test
+  public void testMoveInVisibleRange() {
+    ViewportManager viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_IDLE, 1, 6);
+    boolean isInRange = viewportManager.isMoveInVisibleRange(8, 5, 6);
+    assertThat(isInRange).isTrue();
+
+    viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_IDLE, 1, 6);
+    isInRange = viewportManager.isMoveInVisibleRange(5, 8, 6);
+    assertThat(isInRange).isTrue();
+  }
+
+  @Test
+  public void testMoveNotInVisibleRange() {
+    ViewportManager viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_IDLE, 1, 6);
+    boolean isInRange = viewportManager.isMoveInVisibleRange(7, 9, 6);
+    assertThat(isInRange).isFalse();
+  }
+
+  @Test
+  public void testRemoveInVisibleRange() {
+    ViewportManager viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_IDLE, 1, 6);
+    boolean isInRange = viewportManager.isRemoveInVisibleRange(6, 2);
+    assertThat(isInRange).isTrue();
+
+    getViewportManager(RecyclerView.SCROLL_STATE_IDLE, 3, 6);
+    isInRange = viewportManager.isRemoveInVisibleRange(2, 2);
+    assertThat(isInRange).isTrue();
+  }
+
+  @Test
+  public void testRemoveNotInVisibleRange() {
+    ViewportManager viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_IDLE, 3, 6);
+    boolean isInRange = viewportManager.isRemoveInVisibleRange(2, 1);
+    assertThat(isInRange).isFalse();
+  }
+
+  @Test
+  public void testChangeSetIsVisibleForInitialisation() {
+    ViewportManager viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_IDLE, -1, 2);
+
+    assertThat(viewportManager.isInsertInVisibleRange(6, 2, -1)).isTrue();
+    assertThat(viewportManager.isUpdateInVisibleRange(6, 2)).isTrue();
+    assertThat(viewportManager.isMoveInVisibleRange(6, 2, 10)).isTrue();
+    assertThat(viewportManager.isRemoveInVisibleRange(6, 2)).isTrue();
+
+    viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_IDLE, 1, -1);
+
+    assertThat(viewportManager.isInsertInVisibleRange(6, 2, 10)).isTrue();
+    assertThat(viewportManager.isUpdateInVisibleRange(6, 2)).isTrue();
+    assertThat(viewportManager.isMoveInVisibleRange(6, 2, -1)).isTrue();
+    assertThat(viewportManager.isRemoveInVisibleRange(6, 2)).isTrue();
   }
 
   private void setVisibleItemPositionInMockedLayoutManager(
