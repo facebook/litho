@@ -10,9 +10,6 @@
 package com.facebook.litho;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assume.assumeThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -59,6 +56,7 @@ public class ComponentTreeIncrementalMountTest {
         .build();
 
     mLithoView = mock(TestLithoView.class);
+    when(mLithoView.getMountState()).thenReturn(mock(MountState.class));
     Whitebox.setInternalState(mComponentTree, "mLithoView", mLithoView);
 
     // Can't use verify as the rect is reset when it is released back to the pool, which occurs

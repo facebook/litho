@@ -52,6 +52,7 @@ public class ComponentTreeIncrementalMountLocalVisibleBoundsTest {
             .build();
 
     mLithoView = mock(TestLithoView.class);
+    when(mLithoView.getMountState()).thenReturn(mock(MountState.class));
     Whitebox.setInternalState(mComponentTree, "mLithoView", mLithoView);
 
     // Can't use verify as the rect is reset when it is released back to the pool, which occurs

@@ -203,6 +203,27 @@ public class TransitionManagerAnimationCreationTest {
         createPropertyAnimation("test", AnimatedProperties.X, 10));
   }
 
+  @Test
+  public void testNoPreviousLayoutState() {
+    final LayoutState next =
+        createMockLayoutState(
+            Transition.parallel(
+                Transition.create("test", "keydoesntexist")
+                    .animate(Transition.allProperties())
+                    .animator(mTestVerificationAnimator),
+                Transition.create("appearing")
+                    .animate(AnimatedProperties.X)
+                    .appearFrom(0)
+                    .animator(mTestVerificationAnimator)),
+            createMockLayoutOutput("test", 10, 0),
+            createMockLayoutOutput("appearing", 20, 0));
+
+    mTransitionManager.setupTransitions(null, next);
+
+    assertThat(mCreatedAnimations)
+        .containsExactlyInAnyOrder(createPropertyAnimation("appearing", AnimatedProperties.X, 20));
+  }
+
   private PropertyAnimation createPropertyAnimation(
       String key,
       AnimatedProperty property,

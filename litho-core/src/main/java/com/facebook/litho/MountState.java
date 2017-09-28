@@ -109,6 +109,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   private final HashSet<String> mAnimatingTransitionKeys = new HashSet<>();
   private LayoutState mLastMountedLayoutState;
   private int[] mAnimationLockedIndices;
+  private boolean mIsFirstMountOfComponentTree = false;
 
   private final MountItem mRootHostMountItem;
 
@@ -148,6 +149,20 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     assertMainThread();
 
     return mIsDirty;
+  }
+
+  /**
+   * Sets whether the next mount will be the first mount of this ComponentTree. This is used to
+   * determine whether to run animations or not (we want animations to run on the first mount of
+   * this ComponentTree, but not other times the mounted ComponentTree id changes). Ideally, we want
+   * animations to only occur when the ComponentTree is updated on screen or is first inserted into
+   * a list onscreen, but that requires more integration with the list controller, e.g. sections,
+   * than we currently have.
+   */
+  void setIsFirstMountOfComponentTree() {
+    assertMainThread();
+
+    mIsFirstMountOfComponentTree = true;
   }
 
   /**
@@ -259,6 +274,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
 
     mIsDirty = false;
+    mIsFirstMountOfComponentTree = false;
     if (localVisibleRect != null) {
       mPreviousLocalVisibleRect.set(localVisibleRect);
     }
@@ -2018,12 +2034,15 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       throw new RuntimeException("Should only process transitions on dirty mounts");
     }
 
-    // If this is a totally new component tree, then we shouldn't do any transition animations for
-    // changed mount content
+    // If this is a new component tree but isn't the first time it's been mounted, then we shouldn't
+    // do any transition animations for changed mount content as it's just being remounted on a
+    // new LithoView.
     final int componentTreeId = layoutState.getComponentTreeId();
     if (mLastMountedComponentTreeId != componentTreeId) {
       resetAnimationState();
-      return;
+      if (!mIsFirstMountOfComponentTree) {
+        return;
+      }
     }
 
     if (!mDisappearingMountItems.isEmpty()) {
@@ -2170,9 +2189,10 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private boolean shouldAnimateTransitions(LayoutState newLayoutState) {
-    return mIsDirty &&
-        newLayoutState.hasTransitionContext() &&
-        mLastMountedComponentTreeId == newLayoutState.getComponentTreeId();
+    return mIsDirty
+        && newLayoutState.hasTransitionContext()
+        && (mLastMountedComponentTreeId == newLayoutState.getComponentTreeId()
+            || mIsFirstMountOfComponentTree);
   }
 
   private static String getTransitionKey(MountItem mountItem) {
@@ -2429,7 +2449,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private void prepareTransitionManager(LayoutState layoutState) {
-    if (layoutState.hasTransitionContext() && mTransitionManager == null) {
+    if (mTransitionManager == null) {
       mTransitionManager = new TransitionManager(this);
     }
   }

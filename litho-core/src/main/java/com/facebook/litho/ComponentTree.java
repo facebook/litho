@@ -143,6 +143,8 @@ public class ComponentTree {
   @GuardedBy("this")
   private boolean mHasViewMeasureSpec;
 
+  private boolean mHasMounted = false;
+
   // TODO(6606683): Enable recycling of mComponent.
   // We will need to ensure there are no background threads referencing mComponent. We'll need
   // to keep a reference count or something. :-/
@@ -488,6 +490,11 @@ public class ComponentTree {
 
     if (isDirtyMount) {
       applyPreviousRenderData(mMainThreadLayoutState);
+    }
+
+    if (!mHasMounted) {
+      mLithoView.getMountState().setIsFirstMountOfComponentTree();
+      mHasMounted = true;
     }
 
     // currentVisibleArea null or empty => mount all

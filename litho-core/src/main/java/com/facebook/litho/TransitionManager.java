@@ -211,34 +211,40 @@ public class TransitionManager {
       mAnimationStates.valueAt(i).seenInLastTransition = false;
     }
 
-    final SimpleArrayMap<String, LayoutOutput> currentTransitionKeys =
-        currentLayoutState.getTransitionKeyMapping();
     final SimpleArrayMap<String, LayoutOutput> nextTransitionKeys =
         nextLayoutState.getTransitionKeyMapping();
-    final boolean[] seenIndicesInNewLayout = new boolean[currentTransitionKeys.size()];
-    for (int i = 0, size = nextTransitionKeys.size(); i < size; i++) {
-      final String transitionKey = nextTransitionKeys.keyAt(i);
-      final LayoutOutput nextLayoutOutput = nextTransitionKeys.valueAt(i);
+    if (currentLayoutState == null) {
+      for (int i = 0, size = nextTransitionKeys.size(); i < size; i++) {
+        final String transitionKey = nextTransitionKeys.keyAt(i);
+        final LayoutOutput nextLayoutOutput = nextTransitionKeys.valueAt(i);
+        recordLayoutOutputDiff(transitionKey, null, nextLayoutOutput);
+      }
+    } else {
+      final SimpleArrayMap<String, LayoutOutput> currentTransitionKeys =
+          currentLayoutState.getTransitionKeyMapping();
+      final boolean[] seenIndicesInNewLayout = new boolean[currentTransitionKeys.size()];
+      for (int i = 0, size = nextTransitionKeys.size(); i < size; i++) {
+        final String transitionKey = nextTransitionKeys.keyAt(i);
+        final LayoutOutput nextLayoutOutput = nextTransitionKeys.valueAt(i);
 
-      final int currentIndex = currentTransitionKeys.indexOfKey(transitionKey);
+        final int currentIndex = currentTransitionKeys.indexOfKey(transitionKey);
 
-      LayoutOutput currentLayoutOutput = null;
-      if (currentIndex >= 0) {
-        currentLayoutOutput = currentTransitionKeys.valueAt(currentIndex);
-        seenIndicesInNewLayout[currentIndex] = true;
+        LayoutOutput currentLayoutOutput = null;
+        if (currentIndex >= 0) {
+          currentLayoutOutput = currentTransitionKeys.valueAt(currentIndex);
+          seenIndicesInNewLayout[currentIndex] = true;
+        }
+
+        recordLayoutOutputDiff(transitionKey, currentLayoutOutput, nextLayoutOutput);
       }
 
-      recordLayoutOutputDiff(transitionKey, currentLayoutOutput, nextLayoutOutput);
-    }
-
-    for (int i = 0, size = currentTransitionKeys.size(); i < size; i++) {
-      if (seenIndicesInNewLayout[i]) {
-        continue;
+      for (int i = 0, size = currentTransitionKeys.size(); i < size; i++) {
+        if (seenIndicesInNewLayout[i]) {
+          continue;
+        }
+        recordLayoutOutputDiff(
+            currentTransitionKeys.keyAt(i), currentTransitionKeys.valueAt(i), null);
       }
-      recordLayoutOutputDiff(
-          currentTransitionKeys.keyAt(i),
-          currentTransitionKeys.valueAt(i),
-          null);
     }
 
     createTransitionAnimations(nextLayoutState.getTransitionContext().getRootTransition());
