@@ -32,36 +32,39 @@ import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
+import com.facebook.litho.utils.MeasureUtils;
 
 @MountSpec
 class FrescoImageSpec {
 
-  @PropDefault protected static final float aspectRatio = FrescoUtils.aspectRatio;
+  private static final ScalingUtils.ScaleType DEFAULT_ACTUAL_IMAGE_SCALE_TYPE =
+      GenericDraweeHierarchyBuilder.DEFAULT_ACTUAL_IMAGE_SCALE_TYPE;
+  private static final int DEFAULT_FADE_DURATION =
+      GenericDraweeHierarchyBuilder.DEFAULT_FADE_DURATION;
+  private static final ScalingUtils.ScaleType DEFAULT_SCALE_TYPE =
+      GenericDraweeHierarchyBuilder.DEFAULT_SCALE_TYPE;
+
+  @PropDefault protected static final float aspectRatio = 1f;
 
   @PropDefault
   protected static final ScalingUtils.ScaleType actualImageScaleType =
-      FrescoUtils.actualImageScaleType;
+      DEFAULT_ACTUAL_IMAGE_SCALE_TYPE;
 
-  @PropDefault protected static final int fadeDuration = FrescoUtils.fadeDuration;
-
-  @PropDefault
-  protected static final ScalingUtils.ScaleType failureImageScaleType =
-      FrescoUtils.failureImageScaleType;
+  @PropDefault protected static final int fadeDuration = DEFAULT_FADE_DURATION;
 
   @PropDefault
-  protected static final PointF placeholderImageFocusPoint = FrescoUtils.placeholderImageFocusPoint;
+  protected static final ScalingUtils.ScaleType failureImageScaleType = DEFAULT_SCALE_TYPE;
+
+  @PropDefault protected static final PointF placeholderImageFocusPoint = new PointF(0.5f, 0.5f);
 
   @PropDefault
-  protected static final ScalingUtils.ScaleType placeholderImageScaleType =
-      FrescoUtils.placeholderImageScaleType;
+  protected static final ScalingUtils.ScaleType placeholderImageScaleType = DEFAULT_SCALE_TYPE;
 
   @PropDefault
-  protected static final ScalingUtils.ScaleType progressBarImageScaleType =
-      FrescoUtils.progressBarImageScaleType;
+  protected static final ScalingUtils.ScaleType progressBarImageScaleType = DEFAULT_SCALE_TYPE;
 
   @PropDefault
-  protected static final ScalingUtils.ScaleType retryImageScaleType =
-      FrescoUtils.retryImageScaleType;
+  protected static final ScalingUtils.ScaleType retryImageScaleType = DEFAULT_SCALE_TYPE;
 
   @OnMeasure
   protected static void onMeasure(
@@ -71,7 +74,7 @@ class FrescoImageSpec {
       int heightSpec,
       Size size,
       @Prop(optional = true, resType = ResType.FLOAT) float aspectRatio) {
-    FrescoUtils.onMeasure(widthSpec, heightSpec, size, aspectRatio);
+    MeasureUtils.measureWithAspectRatio(widthSpec, heightSpec, aspectRatio, size);
   }
 
   @OnCreateMountContent
@@ -99,21 +102,43 @@ class FrescoImageSpec {
       @Prop(optional = true) ScalingUtils.ScaleType retryImageScaleType,
       @Prop(optional = true) RoundingParams roundingParams,
       @Prop(optional = true) ColorFilter colorFilter) {
-    FrescoUtils.onMount(
-        draweeDrawable.getDraweeHierarchy(),
-        actualImageScaleType,
-        fadeDuration,
-        failureImage,
-        failureImageScaleType,
-        placeholderImage,
-        placeholderImageFocusPoint,
-        placeholderImageScaleType,
-        progressBarImage,
-        progressBarImageScaleType,
-        retryImage,
-        retryImageScaleType,
-        roundingParams,
-        colorFilter);
+
+    GenericDraweeHierarchy draweeHierarchy = draweeDrawable.getDraweeHierarchy();
+
+    if (placeholderImage == null) {
+      draweeHierarchy.setPlaceholderImage(null);
+    } else {
+      draweeHierarchy.setPlaceholderImage(placeholderImage, placeholderImageScaleType);
+    }
+
+    if (placeholderImageScaleType == ScalingUtils.ScaleType.FOCUS_CROP) {
+      draweeHierarchy.setPlaceholderImageFocusPoint(placeholderImageFocusPoint);
+    }
+
+    draweeHierarchy.setActualImageScaleType(actualImageScaleType);
+    draweeHierarchy.setFadeDuration(fadeDuration);
+
+    if (failureImage == null) {
+      draweeHierarchy.setFailureImage(null);
+    } else {
+      draweeHierarchy.setFailureImage(failureImage, failureImageScaleType);
+    }
+
+    if (progressBarImage == null) {
+      draweeHierarchy.setProgressBarImage(null);
+    } else {
+      draweeHierarchy.setProgressBarImage(progressBarImage, progressBarImageScaleType);
+    }
+
+    if (retryImage == null) {
+      draweeHierarchy.setRetryImage(null);
+    } else {
+      draweeHierarchy.setRetryImage(retryImage, retryImageScaleType);
+    }
+
+    draweeHierarchy.setRoundingParams(roundingParams);
+    draweeHierarchy.setActualImageColorFilter(colorFilter);
+
     draweeDrawable.mount();
   }
 
