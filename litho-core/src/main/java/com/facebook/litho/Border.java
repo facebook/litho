@@ -23,9 +23,9 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DimenRes;
 import android.support.annotation.Dimension;
+import android.support.annotation.Nullable;
 import android.support.annotation.Px;
 import com.facebook.yoga.YogaEdge;
-import javax.annotation.Nullable;
 
 /**
  * Represents a collection of attributes that describe how a border should be applied to a layout
@@ -188,7 +188,7 @@ public class Border {
      */
     public Builder widthRes(YogaEdge edge, @DimenRes int widthRes) {
       checkNotBuilt();
-      return widthPx(edge, mResourceResolver.resolveDimenOffsetRes(widthRes));
+      return widthPx(edge, mResourceResolver.resolveDimenSizeRes(widthRes));
     }
 
     /**
@@ -215,7 +215,7 @@ public class Border {
      */
     public Builder widthAttr(YogaEdge edge, @AttrRes int attrId, @DimenRes int defaultResId) {
       checkNotBuilt();
-      return widthPx(edge, mResourceResolver.resolveDimenOffsetAttr(attrId, defaultResId));
+      return widthPx(edge, mResourceResolver.resolveDimenSizeAttr(attrId, defaultResId));
     }
 
     /**
