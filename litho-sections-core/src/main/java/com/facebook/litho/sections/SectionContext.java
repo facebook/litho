@@ -21,7 +21,7 @@ import java.lang.ref.WeakReference;
 
 public class SectionContext extends ComponentContext {
 
-  private WeakReference<SectionTree> mSectionTree;
+  private SectionTree mSectionTree;
   private WeakReference<Section> mScope;
   private EventHandler<LoadingEvent> mTreeLoadingEventHandler;
 
@@ -37,7 +37,7 @@ public class SectionContext extends ComponentContext {
   public static SectionContext withSectionTree(
       SectionContext context, SectionTree listComponentTree) {
     SectionContext sectionContext = new SectionContext(context);
-    sectionContext.mSectionTree = new WeakReference<>(listComponentTree);
+    sectionContext.mSectionTree = listComponentTree;
     sectionContext.mTreeLoadingEventHandler = new SectionTreeLoadingEventHandler(listComponentTree);
 
     return sectionContext;
@@ -59,7 +59,7 @@ public class SectionContext extends ComponentContext {
    */
   public void updateState(StateUpdate stateUpdate) {
     final Section section = mScope.get();
-    final SectionTree sectionTree = mSectionTree.get();
+    final SectionTree sectionTree = mSectionTree;
     if (sectionTree == null || section == null) {
       return;
     }
@@ -68,7 +68,7 @@ public class SectionContext extends ComponentContext {
   }
 
   public void updateStateLazy(StateUpdate stateUpdate) {
-    final SectionTree sectionTree = mSectionTree.get();
+    final SectionTree sectionTree = mSectionTree;
     final Section section = mScope.get();
 
     sectionTree.updateStateLazy(section.getGlobalKey(), stateUpdate);
@@ -80,7 +80,7 @@ public class SectionContext extends ComponentContext {
    */
   public void updateStateAsync(StateUpdate stateUpdate) {
     final Section section = mScope.get();
-    final SectionTree sectionTree = mSectionTree.get();
+    final SectionTree sectionTree = mSectionTree;
     if (sectionTree == null || section == null) {
       return;
     }
@@ -104,7 +104,7 @@ public class SectionContext extends ComponentContext {
   }
 
   @Nullable SectionTree getSectionTree() {
-    return mSectionTree.get();
+    return mSectionTree;
   }
 
   EventHandler<LoadingEvent> getTreeLoadingEventHandler() {
