@@ -35,15 +35,26 @@ android {
 }
 
 dependencies {
-    api project(':litho-core')
+    // For main targets
+    implementation project(':litho-core')
+    implementation project(':litho-widget')
+    implementation project(':litho-sections-core')
+    implementation deps.supportAppCompat
+
+    compileOnly project(':litho-annotations')
+    compileOnly project(':litho-sections-annotations')
+    annotationProcessor project(':litho-sections-processor')
+
+    // Test project dependencies
     testCompileOnly project(':litho-annotations')
+    testCompileOnly project(':litho-sections-annotations')
     testImplementation project(':litho-testing')
     testImplementation project(':litho-widget')
     testImplementation project(':litho-processor')
     testImplementation project(':litho-sections-core')
     testImplementation project(':litho-sections-processor')
 
-    // Testing
+    // Testing deps
     testCompileOnly deps.jsr305
     testImplementation deps.assertjCore
     testImplementation deps.compileTesting

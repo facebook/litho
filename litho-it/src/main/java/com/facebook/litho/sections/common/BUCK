@@ -7,7 +7,7 @@
 
 include_defs("//COMPONENTS_DEFS")
 
-components_robolectric_test(
+android_library(
     name = "common",
     srcs = glob(["*.java"]),
     plugins = [
@@ -15,22 +15,15 @@ components_robolectric_test(
     ],
     source = "8",
     target = "8",
+    visibility = [
+        make_dep_path("litho-it/src/test/..."),
+    ],
     deps = [
-        COMPONENTS_ASSERTJ_TARGET,
-        COMPONENTS_JUNIT_TARGET,
-        COMPONENTS_ROBOLECTRIC_TARGET,
         COMPONENTS_JAVA_TARGET,
         COMPONENTS_WIDGET_TARGET,
-        COMPONENTS_BUILD_CONFIG_TARGET,
         COMPONENTS_SECTIONS_TARGET,
         COMPONENTS_SECTIONS_ANNOTATIONS_TARGET,
         COMPONENTS_ANDROIDSUPPORT_TARGET,
-        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
-        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner"),
-        make_dep_path("litho-it/src/main/java/com/facebook/litho/sections/common:common"),
-        make_dep_path("litho-sections-core/src/main/java/com/facebook/litho/sections/logger:logger"),
         make_dep_path("litho-sections-core/src/main/java/com/facebook/litho/sections/common:common"),
-        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/viewtree:viewtree"),
-        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/sections:sections"),
     ],
 )
