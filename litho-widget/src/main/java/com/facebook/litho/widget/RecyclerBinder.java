@@ -961,7 +961,7 @@ public class RecyclerBinder
     view.setAdapter(mInternalAdapter);
     view.addOnScrollListener(mRangeScrollListener);
     view.addOnScrollListener(mViewportManager.getScrollListener());
-
+    
     mLayoutInfo.setRenderInfoCollection(this);
 
     mViewportManager.addViewportChangedListener(mViewportChangedListener);

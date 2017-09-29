@@ -16,8 +16,6 @@ import static com.facebook.litho.sections.LoadingEvent.LoadingState.LOADING;
 import static com.facebook.litho.sections.LoadingEvent.LoadingState.SUCCEEDED;
 import static com.facebook.yoga.YogaAlign.FLEX_START;
 import static com.facebook.yoga.YogaEdge.ALL;
-import static com.facebook.yoga.YogaEdge.HORIZONTAL;
-import static com.facebook.yoga.YogaEdge.VERTICAL;
 import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 
 import android.support.annotation.IdRes;
@@ -173,6 +171,8 @@ public class RecyclerCollectionComponentSpec {
     final Recycler.Builder recycler =
         Recycler.create(c)
             .clipToPadding(clipToPadding)
+            .horizontalPadding(horizontalPadding)
+            .verticalPadding(verticalPadding)
             .clipChildren(clipChildren)
             .nestedScrollingEnabled(nestedScrollingEnabled)
             .scrollBarStyle(scrollBarStyle)
@@ -199,8 +199,6 @@ public class RecyclerCollectionComponentSpec {
     ComponentLayout.Builder recyclerLayoutBuilder = recyclerBuilder
         .withLayout()
         .flexShrink(0)
-        .paddingPx(HORIZONTAL, horizontalPadding)
-        .paddingPx(VERTICAL, verticalPadding)
         .touchHandler(recyclerTouchEventHandler);
 
     if (!canMeasureRecycler) {
