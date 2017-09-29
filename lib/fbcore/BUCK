@@ -13,6 +13,6 @@ android_prebuilt_aar(
 
 remote_file(
     name = "fbcore-aar",
-    sha1 = "d9ea35752271fcc7674f4e1dd399600dfeca075b",
-    url = "mvn:com.facebook.fresco:fbcore:aar:1.1.0",
+    sha1 = "8b8deec16a978e97aacad85012797661efe69a61",
+    url = "mvn:com.facebook.fresco:fbcore:aar:1.5.0",
 )
