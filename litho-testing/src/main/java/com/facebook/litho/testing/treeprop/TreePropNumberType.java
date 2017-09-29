@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.testing.litho.treeprop;
+package com.facebook.litho.testing.treeprop;
 
 public class TreePropNumberType {
 

@@ -10,9 +10,18 @@ include_defs("//COMPONENTS_DEFS")
 litho_android_library(
     name = "treeprop",
     srcs = glob(["*.java"]),
+    plugins = [
+        COMPONENTS_PROCESSOR_TARGET,
+        COMPONENTS_SECTIONS_PROCESSOR_TARGET,
+    ],
     visibility = [
         "PUBLIC",
     ],
     deps = [
+        COMPONENTS_JAVA_TARGET,
+        COMPONENTS_SECTIONS_TARGET,
+        COMPONENTS_SECTIONS_ANNOTATIONS_TARGET,
+        COMPONENTS_ANDROIDSUPPORT_TARGET,
+        COMPONENTS_YOGA_TARGET,
     ],
 )
