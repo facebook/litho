@@ -19,6 +19,17 @@ remote_file(
 )
 
 android_prebuilt_aar(
+    name = "android-support-test-runner-aar",
+    aar = ":android-support-test-runner.aar",
+)
+
+remote_file(
+    name = "android-support-test-runner.aar",
+    sha1 = "73f9e89fcb4c1a43a0894e294f6efa3df7b72a2c",
+    url = "mvn:com.android.support.test:runner:aar:0.5",
+)
+
+android_prebuilt_aar(
     name = "android-support-compat-aar",
     aar = ":android-support-compat.aar",
 )
@@ -112,6 +123,7 @@ litho_android_library(
     name = "android-support-testing",
     exported_deps = [
         ":android-support-test-rules-aar",
+        ":android-support-test-runner-aar",
     ],
     visibility = COMPONENTS_VISIBILITY,
 )
