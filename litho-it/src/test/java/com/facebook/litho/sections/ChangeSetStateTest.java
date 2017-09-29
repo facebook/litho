@@ -9,8 +9,8 @@
 
 package com.facebook.litho.sections;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import static com.facebook.litho.sections.Change.MOVE;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import com.facebook.litho.sections.logger.SectionComponentLogger;
@@ -85,18 +85,18 @@ public class ChangeSetStateTest {
 
     final ChangeSet changeSet = changeSetState.getChangeSet();
 
-    assertEquals(changeSet.getChangeCount(), 9);
-    assertEquals(changeSet.getCount(), 9);
-    assertEquals(leaf1.getCount(), 3);
-    assertEquals(leaf2.getCount(), 2);
-    assertEquals(node.getCount(), 5);
-    assertEquals(leaf3.getCount(), 2);
-    assertEquals(leaf4.getCount(), 2);
-    assertEquals(node1.getCount(), 4);
-    assertEquals(root.getCount(), 9);
+    assertThat(changeSet.getChangeCount()).isEqualTo(9);
+    assertThat(changeSet.getCount()).isEqualTo(9);
+    assertThat(leaf1.getCount()).isEqualTo(3);
+    assertThat(leaf2.getCount()).isEqualTo(2);
+    assertThat(node.getCount()).isEqualTo(5);
+    assertThat(leaf3.getCount()).isEqualTo(2);
+    assertThat(leaf4.getCount()).isEqualTo(2);
+    assertThat(node1.getCount()).isEqualTo(4);
+    assertThat(root.getCount()).isEqualTo(9);
 
     for (int i = 0, size = changeSet.getChangeCount(); i< size; i++) {
-      assertEquals(i, changeSet.getChangeAt(i).getIndex());
+      assertThat(i).isEqualTo(changeSet.getChangeAt(i).getIndex());
     }
   }
 
@@ -129,11 +129,11 @@ public class ChangeSetStateTest {
 
     final ChangeSet changeSet = changeSetState.getChangeSet();
 
-    assertEquals(changeSet.getChangeCount(), 5);
-    assertEquals(changeSet.getCount(), 5);
-    assertEquals(leaf1.getCount(), 3);
-    assertEquals(leaf2.getCount(), 2);
-    assertEquals(root.getCount(), 5);
+    assertThat(changeSet.getChangeCount()).isEqualTo(5);
+    assertThat(changeSet.getCount()).isEqualTo(5);
+    assertThat(leaf1.getCount()).isEqualTo(3);
+    assertThat(leaf2.getCount()).isEqualTo(2);
+    assertThat(root.getCount()).isEqualTo(5);
 
     final ChangeSetState secondChangeSetState =
         ChangeSetState.generateChangeSet(
@@ -147,11 +147,11 @@ public class ChangeSetStateTest {
 
     final ChangeSet secondChangeSet = secondChangeSetState.getChangeSet();
 
-    assertEquals(secondChangeSet.getChangeCount(), 0);
-    assertEquals(secondChangeSet.getCount(), 5);
-    assertEquals(leaf1.getCount(), 3);
-    assertEquals(leaf2.getCount(), 2);
-    assertEquals(root.getCount(), 5);
+    assertThat(secondChangeSet.getChangeCount()).isEqualTo(0);
+    assertThat(secondChangeSet.getCount()).isEqualTo(5);
+    assertThat(leaf1.getCount()).isEqualTo(3);
+    assertThat(leaf2.getCount()).isEqualTo(2);
+    assertThat(root.getCount()).isEqualTo(5);
   }
 
   @Test
@@ -198,11 +198,11 @@ public class ChangeSetStateTest {
 
     final ChangeSet secondChangeSet = secondChangeSetState.getChangeSet();
 
-    assertEquals(secondChangeSet.getChangeCount(), 2);
-    assertEquals(secondChangeSet.getCount(), 5);
-    assertEquals(leaf1.getCount(), 3);
-    assertEquals(leaf2.getCount(), 2);
-    assertEquals(newRoot.getCount(), 5);
+    assertThat(secondChangeSet.getChangeCount()).isEqualTo(2);
+    assertThat(secondChangeSet.getCount()).isEqualTo(5);
+    assertThat(leaf1.getCount()).isEqualTo(3);
+    assertThat(leaf2.getCount()).isEqualTo(2);
+    assertThat(newRoot.getCount()).isEqualTo(5);
   }
 
   @Test
@@ -245,10 +245,10 @@ public class ChangeSetStateTest {
 
     final ChangeSet secondChangeSet = secondChangeSetState.getChangeSet();
 
-    assertEquals(secondChangeSet.getChangeCount(), 2);
-    assertEquals(newleaf1.getCount(), 2);
-    assertEquals(newRoot.getCount(), 2);
-    assertEquals(secondChangeSet.getCount(), 2);
+    assertThat(secondChangeSet.getChangeCount()).isEqualTo(2);
+    assertThat(newleaf1.getCount()).isEqualTo(2);
+    assertThat(newRoot.getCount()).isEqualTo(2);
+    assertThat(secondChangeSet.getCount()).isEqualTo(2);
   }
 
   @Test
@@ -293,12 +293,12 @@ public class ChangeSetStateTest {
 
     final ChangeSet secondChangeSet = secondChangeSetState.getChangeSet();
 
-    assertEquals(secondChangeSet.getChangeCount(), 2);
-    assertEquals(secondChangeSet.getCount(), 3);
-    assertEquals(leaf1.getCount(), 3);
-    assertEquals(newRoot.getCount(), 3);
-    assertEquals(secondChangeSetState.getRemovedComponents().size(), 1);
-    assertEquals(secondChangeSetState.getRemovedComponents().get(0), leaf2);
+    assertThat(secondChangeSet.getChangeCount()).isEqualTo(2);
+    assertThat(secondChangeSet.getCount()).isEqualTo(3);
+    assertThat(leaf1.getCount()).isEqualTo(3);
+    assertThat(newRoot.getCount()).isEqualTo(3);
+    assertThat(secondChangeSetState.getRemovedComponents().size()).isEqualTo(1);
+    assertThat(secondChangeSetState.getRemovedComponents().get(0)).isEqualTo(leaf2);
   }
 
   @Test
@@ -346,37 +346,30 @@ public class ChangeSetStateTest {
 
     final ChangeSet secondChangeSet = secondChangeSetState.getChangeSet();
 
-    assertEquals(
-        numChildren3 + numChildren2 + numChildren1,
-        secondChangeSet.getChangeCount());
-    assertEquals(totalNumChildren, secondChangeSet.getCount());
-    assertEquals(totalNumChildren, newRoot.getCount());
+    assertThat(numChildren3 + numChildren2 + numChildren1)
+        .isEqualTo(secondChangeSet.getChangeCount());
+    assertThat(totalNumChildren).isEqualTo(secondChangeSet.getCount());
+    assertThat(totalNumChildren).isEqualTo(newRoot.getCount());
 
     int changeIndex = 0;
 
     for (int i = 0; i < numChildren3; i++) {
-      assertEquals(
-          numChildren1 + numChildren2,
-          secondChangeSet.getChangeAt(changeIndex).getIndex());
-      assertEquals(
-          totalNumChildren - 1,
-          secondChangeSet.getChangeAt(changeIndex++).getToIndex());
+      assertThat(numChildren1 + numChildren2)
+          .isEqualTo(secondChangeSet.getChangeAt(changeIndex).getIndex());
+      assertThat(totalNumChildren - 1)
+          .isEqualTo(secondChangeSet.getChangeAt(changeIndex++).getToIndex());
     }
 
     for (int i = 0; i < numChildren2; i++) {
-      assertEquals(numChildren1, secondChangeSet.getChangeAt(changeIndex).getIndex());
-      assertEquals(
-          totalNumChildren - 1,
-          secondChangeSet.getChangeAt(changeIndex++).getToIndex());
+      assertThat(numChildren1).isEqualTo(secondChangeSet.getChangeAt(changeIndex).getIndex());
+      assertThat(totalNumChildren - 1)
+          .isEqualTo(secondChangeSet.getChangeAt(changeIndex++).getToIndex());
     }
 
     for (int i = 0; i < numChildren1; i++) {
-      assertEquals(
-          0,
-          secondChangeSet.getChangeAt(changeIndex).getIndex());
-      assertEquals(
-          totalNumChildren - 1,
-          secondChangeSet.getChangeAt(changeIndex++).getToIndex());
+      assertThat(0).isEqualTo(secondChangeSet.getChangeAt(changeIndex).getIndex());
+      assertThat(totalNumChildren - 1)
+          .isEqualTo(secondChangeSet.getChangeAt(changeIndex++).getToIndex());
     }
   }
 
@@ -429,14 +422,14 @@ public class ChangeSetStateTest {
 
     final ChangeSet secondChangeSet = secondChangeSetState.getChangeSet();
 
-    assertEquals(4, secondChangeSet.getChangeCount());
-    assertEquals(5, secondChangeSet.getCount());
-    assertEquals(5, newRoot.getCount());
+    assertThat(4).isEqualTo(secondChangeSet.getChangeCount());
+    assertThat(5).isEqualTo(secondChangeSet.getCount());
+    assertThat(5).isEqualTo(newRoot.getCount());
 
     final Change move = secondChangeSet.getChangeAt(0);
-    assertEquals(Change.MOVE, move.getType());
-    assertEquals(0, move.getIndex());
-    assertEquals(3, move.getToIndex());
+    assertThat(MOVE).isEqualTo(move.getType());
+    assertThat(0).isEqualTo(move.getIndex());
+    assertThat(3).isEqualTo(move.getToIndex());
   }
 
   @Test
@@ -486,7 +479,7 @@ public class ChangeSetStateTest {
     final ChangeSet secondChangeSet = secondChangeSetState.getChangeSet();
 
     for (int i = 0; i < secondChangeSet.getChangeCount(); i++) {
-      assertTrue(secondChangeSet.getChangeAt(i).getType() != Change.MOVE);
+      assertThat(secondChangeSet.getChangeAt(i).getType() != MOVE).isTrue();
     }
   }
 
@@ -535,28 +528,23 @@ public class ChangeSetStateTest {
 
     final ChangeSet secondChangeSet = secondChangeSetState.getChangeSet();
 
-    assertEquals(numChildren1 + numChildren3, secondChangeSet.getChangeCount());
-    assertEquals(totalNumChildren, secondChangeSet.getCount());
-    assertEquals(totalNumChildren, newRoot.getCount());
+    assertThat(numChildren1 + numChildren3).isEqualTo(secondChangeSet.getChangeCount());
+    assertThat(totalNumChildren).isEqualTo(secondChangeSet.getCount());
+    assertThat(totalNumChildren).isEqualTo(newRoot.getCount());
 
     int changeIndex = 0;
 
     for (int i = 0; i < numChildren1; i++) {
-      assertEquals(
-          0,
-          secondChangeSet.getChangeAt(changeIndex).getIndex());
-      assertEquals(
-          numChildren1 + numChildren2 - 1,
-          secondChangeSet.getChangeAt(changeIndex++).getToIndex());
+      assertThat(0).isEqualTo(secondChangeSet.getChangeAt(changeIndex).getIndex());
+      assertThat(numChildren1 + numChildren2 - 1)
+          .isEqualTo(secondChangeSet.getChangeAt(changeIndex++).getToIndex());
     }
 
     for (int i = 0; i < numChildren3; i++) {
-      assertEquals(
-          numChildren1 + numChildren2,
-          secondChangeSet.getChangeAt(changeIndex).getIndex());
-      assertEquals(
-          totalNumChildren - 1,
-          secondChangeSet.getChangeAt(changeIndex++).getToIndex());
+      assertThat(numChildren1 + numChildren2)
+          .isEqualTo(secondChangeSet.getChangeAt(changeIndex).getIndex());
+      assertThat(totalNumChildren - 1)
+          .isEqualTo(secondChangeSet.getChangeAt(changeIndex++).getToIndex());
     }
   }
 
@@ -602,20 +590,19 @@ public class ChangeSetStateTest {
 
     final ChangeSet secondChangeSet = secondChangeSetState.getChangeSet();
 
-    assertEquals(numChildren1 + numChildren3, secondChangeSet.getChangeCount());
-    assertEquals(totalNumChildren - numChildren3, secondChangeSet.getCount());
-    assertEquals(1, secondChangeSetState.getRemovedComponents().size());
-    assertEquals(leaf3, secondChangeSetState.getRemovedComponents().get(0));
+    assertThat(numChildren1 + numChildren3).isEqualTo(secondChangeSet.getChangeCount());
+    assertThat(totalNumChildren - numChildren3).isEqualTo(secondChangeSet.getCount());
+    assertThat(1).isEqualTo(secondChangeSetState.getRemovedComponents().size());
+    assertThat(leaf3).isEqualTo(secondChangeSetState.getRemovedComponents().get(0));
 
-    assertEquals(totalNumChildren - numChildren3, newRoot.getCount());
+    assertThat(totalNumChildren - numChildren3).isEqualTo(newRoot.getCount());
 
     int changeIndex = 0;
 
     for (int i = 0; i < numChildren1; i++) {
-      assertEquals(0, secondChangeSet.getChangeAt(changeIndex).getIndex());
-      assertEquals(
-          numChildren1 + numChildren2 - 1,
-          secondChangeSet.getChangeAt(changeIndex++).getToIndex());
+      assertThat(0).isEqualTo(secondChangeSet.getChangeAt(changeIndex).getIndex());
+      assertThat(numChildren1 + numChildren2 - 1)
+          .isEqualTo(secondChangeSet.getChangeAt(changeIndex++).getToIndex());
     }
   }
 
@@ -661,16 +648,15 @@ public class ChangeSetStateTest {
 
     final ChangeSet secondChangeSet = secondChangeSetState.getChangeSet();
 
-    assertEquals(numChildren1 + numChildren3, secondChangeSet.getChangeCount());
-    assertEquals(totalNumChildren, secondChangeSet.getCount());
+    assertThat(numChildren1 + numChildren3).isEqualTo(secondChangeSet.getChangeCount());
+    assertThat(totalNumChildren).isEqualTo(secondChangeSet.getCount());
 
     int changeIndex = 0;
 
     for (int i = 0; i < numChildren1; i++) {
-      assertEquals(0, secondChangeSet.getChangeAt(changeIndex).getIndex());
-      assertEquals(
-          numChildren1 + numChildren2 - 1,
-          secondChangeSet.getChangeAt(changeIndex++).getToIndex());
+      assertThat(0).isEqualTo(secondChangeSet.getChangeAt(changeIndex).getIndex());
+      assertThat(numChildren1 + numChildren2 - 1)
+          .isEqualTo(secondChangeSet.getChangeAt(changeIndex++).getToIndex());
     }
   }
 
@@ -717,22 +703,20 @@ public class ChangeSetStateTest {
 
     final ChangeSet secondChangeSet = secondChangeSetState.getChangeSet();
 
-    assertEquals(
-        numChildren1 + numChildren3 + numChildren4,
-        secondChangeSet.getChangeCount());
-    assertEquals(numChildren1 + numChildren2 + numChildren4, secondChangeSet.getCount());
+    assertThat(numChildren1 + numChildren3 + numChildren4)
+        .isEqualTo(secondChangeSet.getChangeCount());
+    assertThat(numChildren1 + numChildren2 + numChildren4).isEqualTo(secondChangeSet.getCount());
 
     int changeIndex = 0;
 
     for (int i = 0; i < numChildren1; i++) {
-      assertEquals(0, secondChangeSet.getChangeAt(changeIndex).getIndex());
-      assertEquals(
-          numChildren1 + numChildren2 - 1,
-          secondChangeSet.getChangeAt(changeIndex++).getToIndex());
+      assertThat(0).isEqualTo(secondChangeSet.getChangeAt(changeIndex).getIndex());
+      assertThat(numChildren1 + numChildren2 - 1)
+          .isEqualTo(secondChangeSet.getChangeAt(changeIndex++).getToIndex());
     }
 
-    assertEquals(1, secondChangeSetState.getRemovedComponents().size());
-    assertEquals(leaf3, secondChangeSetState.getRemovedComponents().get(0));
+    assertThat(1).isEqualTo(secondChangeSetState.getRemovedComponents().size());
+    assertThat(leaf3).isEqualTo(secondChangeSetState.getRemovedComponents().get(0));
   }
 
   private static Section createChangeSetComponent(String key, int numChildren) {

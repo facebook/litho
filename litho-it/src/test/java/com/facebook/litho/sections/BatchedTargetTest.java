@@ -9,7 +9,7 @@
 
 package com.facebook.litho.sections;
 
-import static junit.framework.Assert.assertEquals;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assume.assumeThat;
 import static org.mockito.Matchers.anyListOf;
@@ -61,9 +61,9 @@ public class BatchedTargetTest {
     executeOperations(ops);
 
     verify(mMockTarget).insertRange(eq(0), eq(3), mListCaptor.capture());
-    assertEquals(ops[0].getRenderInfo(), mListCaptor.getValue().get(0));
-    assertEquals(ops[1].getRenderInfo(), mListCaptor.getValue().get(1));
-    assertEquals(ops[2].getRenderInfo(), mListCaptor.getValue().get(2));
+    assertThat(ops[0].getRenderInfo()).isEqualTo(mListCaptor.getValue().get(0));
+    assertThat(ops[1].getRenderInfo()).isEqualTo(mListCaptor.getValue().get(1));
+    assertThat(ops[2].getRenderInfo()).isEqualTo(mListCaptor.getValue().get(2));
   }
 
   @Test
@@ -78,8 +78,8 @@ public class BatchedTargetTest {
     executeOperations(ops);
 
     verify(mMockTarget).insertRange(eq(0), eq(2), mListCaptor.capture());
-    assertEquals(ops[0].getRenderInfo(), mListCaptor.getValue().get(0));
-    assertEquals(ops[1].getRenderInfo(), mListCaptor.getValue().get(1));
+    assertThat(ops[0].getRenderInfo()).isEqualTo(mListCaptor.getValue().get(0));
+    assertThat(ops[1].getRenderInfo()).isEqualTo(mListCaptor.getValue().get(1));
 
     verify(mMockTarget).insert(20, ops[2].getRenderInfo());
   }
@@ -111,8 +111,8 @@ public class BatchedTargetTest {
     executeOperations(ops);
 
     verify(mMockTarget).insertRange(eq(0), eq(2), mListCaptor.capture());
-    assertEquals(ops[0].getRenderInfo(), mListCaptor.getValue().get(0));
-    assertEquals(ops[1].getRenderInfo(), mListCaptor.getValue().get(1));
+    assertThat(ops[0].getRenderInfo()).isEqualTo(mListCaptor.getValue().get(0));
+    assertThat(ops[1].getRenderInfo()).isEqualTo(mListCaptor.getValue().get(1));
     verify(mMockTarget).insert(1, ops[2].getRenderInfo());
     verify(mMockTarget).insert(20, ops[3].getRenderInfo());
   }
@@ -158,12 +158,12 @@ public class BatchedTargetTest {
     executeOperations(ops);
 
     verify(mMockTarget).updateRange(eq(1), eq(2), mListCaptor.capture());
-    assertEquals(ops[1].getRenderInfo(), mListCaptor.getValue().get(0));
-    assertEquals(ops[0].getRenderInfo(), mListCaptor.getValue().get(1));
+    assertThat(ops[1].getRenderInfo()).isEqualTo(mListCaptor.getValue().get(0));
+    assertThat(ops[0].getRenderInfo()).isEqualTo(mListCaptor.getValue().get(1));
 
     verify(mMockTarget).updateRange(eq(20), eq(2), mListCaptor.capture());
-    assertEquals(ops[2].getRenderInfo(), mListCaptor.getValue().get(0));
-    assertEquals(ops[3].getRenderInfo(), mListCaptor.getValue().get(1));
+    assertThat(ops[2].getRenderInfo()).isEqualTo(mListCaptor.getValue().get(0));
+    assertThat(ops[3].getRenderInfo()).isEqualTo(mListCaptor.getValue().get(1));
   }
 
   @Test
@@ -191,9 +191,9 @@ public class BatchedTargetTest {
     executeOperations(ops);
 
     verify(mMockTarget).updateRange(eq(99), eq(3), mListCaptor.capture());
-    assertEquals(ops[3].getRenderInfo(), mListCaptor.getValue().get(0));
-    assertEquals(ops[1].getRenderInfo(), mListCaptor.getValue().get(1));
-    assertEquals(ops[2].getRenderInfo(), mListCaptor.getValue().get(2));
+    assertThat(ops[3].getRenderInfo()).isEqualTo(mListCaptor.getValue().get(0));
+    assertThat(ops[1].getRenderInfo()).isEqualTo(mListCaptor.getValue().get(1));
+    assertThat(ops[2].getRenderInfo()).isEqualTo(mListCaptor.getValue().get(2));
   }
 
   @Test

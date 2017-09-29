@@ -167,7 +167,7 @@ public class RecyclerBinderTest {
 
     for (int i = 0; i < 100; i++) {
       assertThat(mHoldersForComponents.get(components.get(i).getComponent())).isNotNull();
-      Assert.assertEquals(components.get(i), mRecyclerBinder.getRenderInfoAt(i));
+      assertThat(components.get(i)).isEqualTo(mRecyclerBinder.getRenderInfoAt(i));
     }
   }
 
@@ -213,7 +213,7 @@ public class RecyclerBinderTest {
       assertThat(componentTreeHolder.mLayoutSyncCalled).isFalse();
     }
 
-    Assert.assertEquals(100, size.width);
+    assertThat(100).isEqualTo(size.width);
   }
 
   @Test
@@ -404,7 +404,7 @@ public class RecyclerBinderTest {
 
     assertThat(componentTreeHolder.isTreeValid()).isTrue();
     assertThat(componentTreeHolder.mLayoutSyncCalled).isTrue();
-    Assert.assertEquals(200, size.width);
+    assertThat(200).isEqualTo(size.width);
 
     final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
 
@@ -415,8 +415,8 @@ public class RecyclerBinderTest {
       assertThat(componentTreeHolder.mLayoutAsyncCalled).isTrue();
 
       final int expectedWidth = i % 3 == 0 ? 200 : 100;
-      Assert.assertEquals(expectedWidth, componentTreeHolder.mChildWidth);
-      Assert.assertEquals(100, componentTreeHolder.mChildHeight);
+      assertThat(expectedWidth).isEqualTo(componentTreeHolder.mChildWidth);
+      assertThat(100).isEqualTo(componentTreeHolder.mChildHeight);
     }
   }
 
@@ -428,7 +428,7 @@ public class RecyclerBinderTest {
 
     mRecyclerBinder.measure(size, widthSpec, heightSpec, null);
 
-    Assert.assertEquals(200, size.width);
+    assertThat(200).isEqualTo(size.width);
 
     final List<ComponentRenderInfo> components = new ArrayList<>();
     for (int i = 0; i < 100; i++) {
@@ -478,7 +478,7 @@ public class RecyclerBinderTest {
       mRecyclerBinder.mount(recyclerView);
       mRecyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
 
-      Assert.assertEquals(0, size.width);
+    assertThat(0).isEqualTo(size.width);
 
       final List<ComponentRenderInfo> components = new ArrayList<>();
       for (int i = 0; i < 100; i++) {
@@ -500,7 +500,7 @@ public class RecyclerBinderTest {
     mRecyclerBinder.mount(recyclerView);
     mRecyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
 
-    Assert.assertEquals(0, size.width);
+    assertThat(0).isEqualTo(size.width);
 
     final List<RenderInfo> components = new ArrayList<>();
     for (int i = 0; i < 100; i++) {
@@ -522,7 +522,7 @@ public class RecyclerBinderTest {
       mRecyclerBinder.mount(recyclerView);
       mRecyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
 
-      Assert.assertEquals(200, size.width);
+    assertThat(200).isEqualTo(size.width);
 
       final List<ComponentRenderInfo> components = new ArrayList<>();
       for (int i = 0; i < 100; i++) {
@@ -566,7 +566,7 @@ public class RecyclerBinderTest {
       assertThat(componentTreeHolder.mLayoutSyncCalled).isFalse();
     }
 
-    Assert.assertEquals(100, size.width);
+    assertThat(100).isEqualTo(size.width);
   }
 
   @Test

@@ -9,9 +9,8 @@
 
 package com.facebook.litho.sections;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
+import static com.facebook.litho.testing.sections.TestSectionCreator.TestSection;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import android.os.Looper;
@@ -58,7 +57,7 @@ public class SectionTreeTest {
         .build();
 
     tree.setRoot(section);
-    assertTrue(changeSetHandler.wereChangesHandled());
+    assertThat(changeSetHandler.wereChangesHandled()).isTrue();
   }
 
   @Test
@@ -75,12 +74,12 @@ public class SectionTreeTest {
         .build();
 
     tree.setRoot(section);
-    assertTrue(changeSetHandler.wereChangesHandled());
+    assertThat(changeSetHandler.wereChangesHandled()).isTrue();
 
     changeSetHandler.clear();
 
     tree.setRoot(section.makeShallowCopy(false));
-    assertFalse(changeSetHandler.wereChangesHandled());
+    assertThat(changeSetHandler.wereChangesHandled()).isFalse();
   }
 
   @Test
@@ -96,14 +95,14 @@ public class SectionTreeTest {
     changeSetHandler.clear();
     tree.setRoot(section);
 
-    assertFalse(changeSetHandler.wereChangesHandled());
+    assertThat(changeSetHandler.wereChangesHandled()).isFalse();
 
     final Section secondSection = TestSectionCreator.createChangeSetComponent(
         "leaf1",
         Change.update(0, makeComponentInfo()));
     tree.setRoot(secondSection);
 
-    assertTrue(changeSetHandler.wereChangesHandled());
+    assertThat(changeSetHandler.wereChangesHandled()).isTrue();
   }
 
   @Test(expected = IllegalStateException.class)
@@ -167,8 +166,8 @@ public class SectionTreeTest {
 
     tree.setRoot(root);
 
-    assertTrue(changeSetHandler.wereChangesHandled());
-    assertEquals(changeSetHandler.getNumChanges(), 9);
+    assertThat(changeSetHandler.wereChangesHandled()).isTrue();
+    assertThat(changeSetHandler.getNumChanges()).isEqualTo(9);
   }
 
   @Test
@@ -201,12 +200,12 @@ public class SectionTreeTest {
 
     tree.refresh();
 
-    assertTrue(((TestSectionCreator.TestSection) leaf1).refreshCalled);
-    assertTrue(((TestSectionCreator.TestSection) leaf2).refreshCalled);
-    assertTrue(((TestSectionCreator.TestSection) node).refreshCalled);
-    assertTrue(((TestSectionCreator.TestSection) leaf3).refreshCalled);
-    assertTrue(((TestSectionCreator.TestSection) leaf4).refreshCalled);
-    assertTrue(((TestSectionCreator.TestSection) node1).refreshCalled);
+    assertThat(((TestSection) leaf1).refreshCalled).isTrue();
+    assertThat(((TestSection) leaf2).refreshCalled).isTrue();
+    assertThat(((TestSection) node).refreshCalled).isTrue();
+    assertThat(((TestSection) leaf3).refreshCalled).isTrue();
+    assertThat(((TestSection) leaf4).refreshCalled).isTrue();
+    assertThat(((TestSection) node1).refreshCalled).isTrue();
   }
 
   @Test
@@ -257,35 +256,35 @@ public class SectionTreeTest {
     tree.setRoot(root);
 
     tree.viewPortChanged(3,9, 3, 9);
-    assertEquals(((TestSectionCreator.TestSection) leaf1).firstVisibleIndex, -1);
-    assertEquals(((TestSectionCreator.TestSection) leaf1).lastVisibleIndex, -1);
-    assertEquals(((TestSectionCreator.TestSection) leaf1).firstFullyVisibleIndex, -1);
-    assertEquals(((TestSectionCreator.TestSection) leaf1).lastFullyVisibleIndex, -1);
+    assertThat(((TestSection) leaf1).firstVisibleIndex).isEqualTo(-1);
+    assertThat(((TestSection) leaf1).lastVisibleIndex).isEqualTo(-1);
+    assertThat(((TestSection) leaf1).firstFullyVisibleIndex).isEqualTo(-1);
+    assertThat(((TestSection) leaf1).lastFullyVisibleIndex).isEqualTo(-1);
 
-    assertEquals(((TestSectionCreator.TestSection) leaf2).firstVisibleIndex, 0);
-    assertEquals(((TestSectionCreator.TestSection) leaf2).lastVisibleIndex, 1);
-    assertEquals(((TestSectionCreator.TestSection) leaf2).firstFullyVisibleIndex, 0);
-    assertEquals(((TestSectionCreator.TestSection) leaf2).lastFullyVisibleIndex, 1);
+    assertThat(((TestSection) leaf2).firstVisibleIndex).isEqualTo(0);
+    assertThat(((TestSection) leaf2).lastVisibleIndex).isEqualTo(1);
+    assertThat(((TestSection) leaf2).firstFullyVisibleIndex).isEqualTo(0);
+    assertThat(((TestSection) leaf2).lastFullyVisibleIndex).isEqualTo(1);
 
-    assertEquals(((TestSectionCreator.TestSection) leaf3).firstVisibleIndex, 0);
-    assertEquals(((TestSectionCreator.TestSection) leaf3).lastVisibleIndex, 0);
-    assertEquals(((TestSectionCreator.TestSection) leaf3).firstFullyVisibleIndex, 0);
-    assertEquals(((TestSectionCreator.TestSection) leaf3).lastFullyVisibleIndex, 0);
+    assertThat(((TestSection) leaf3).firstVisibleIndex).isEqualTo(0);
+    assertThat(((TestSection) leaf3).lastVisibleIndex).isEqualTo(0);
+    assertThat(((TestSection) leaf3).firstFullyVisibleIndex).isEqualTo(0);
+    assertThat(((TestSection) leaf3).lastFullyVisibleIndex).isEqualTo(0);
 
-    assertEquals(((TestSectionCreator.TestSection) leaf4).firstVisibleIndex, 0);
-    assertEquals(((TestSectionCreator.TestSection) leaf4).lastVisibleIndex, 3);
-    assertEquals(((TestSectionCreator.TestSection) leaf4).firstFullyVisibleIndex, 0);
-    assertEquals(((TestSectionCreator.TestSection) leaf4).lastFullyVisibleIndex, 3);
+    assertThat(((TestSection) leaf4).firstVisibleIndex).isEqualTo(0);
+    assertThat(((TestSection) leaf4).lastVisibleIndex).isEqualTo(3);
+    assertThat(((TestSection) leaf4).firstFullyVisibleIndex).isEqualTo(0);
+    assertThat(((TestSection) leaf4).lastFullyVisibleIndex).isEqualTo(3);
 
-    assertEquals(((TestSectionCreator.TestSection) node).firstVisibleIndex, 3);
-    assertEquals(((TestSectionCreator.TestSection) node).lastVisibleIndex, 4);
-    assertEquals(((TestSectionCreator.TestSection) node).firstFullyVisibleIndex, 3);
-    assertEquals(((TestSectionCreator.TestSection) node).lastFullyVisibleIndex, 4);
+    assertThat(((TestSection) node).firstVisibleIndex).isEqualTo(3);
+    assertThat(((TestSection) node).lastVisibleIndex).isEqualTo(4);
+    assertThat(((TestSection) node).firstFullyVisibleIndex).isEqualTo(3);
+    assertThat(((TestSection) node).lastFullyVisibleIndex).isEqualTo(4);
 
-    assertEquals(((TestSectionCreator.TestSection) node1).firstVisibleIndex, 0);
-    assertEquals(((TestSectionCreator.TestSection) node1).lastVisibleIndex, 4);
-    assertEquals(((TestSectionCreator.TestSection) node1).firstFullyVisibleIndex, 0);
-    assertEquals(((TestSectionCreator.TestSection) node1).lastFullyVisibleIndex, 4);
+    assertThat(((TestSection) node1).firstVisibleIndex).isEqualTo(0);
+    assertThat(((TestSection) node1).lastVisibleIndex).isEqualTo(4);
+    assertThat(((TestSection) node1).firstFullyVisibleIndex).isEqualTo(0);
+    assertThat(((TestSection) node1).lastFullyVisibleIndex).isEqualTo(4);
 
     ((TestSectionCreator.TestSection) leaf1).firstVisibleIndex = 0;
     ((TestSectionCreator.TestSection) leaf1).lastVisibleIndex = 0;
@@ -294,17 +293,17 @@ public class SectionTreeTest {
 
     tree.viewPortChanged(3,9, 3, 9);
 
-    assertEquals(((TestSectionCreator.TestSection) leaf1).firstVisibleIndex, 0);
-    assertEquals(((TestSectionCreator.TestSection) leaf1).lastVisibleIndex, 0);
-    assertEquals(((TestSectionCreator.TestSection) leaf1).firstFullyVisibleIndex, 0);
-    assertEquals(((TestSectionCreator.TestSection) leaf1).lastFullyVisibleIndex, 0);
+    assertThat(((TestSection) leaf1).firstVisibleIndex).isEqualTo(0);
+    assertThat(((TestSection) leaf1).lastVisibleIndex).isEqualTo(0);
+    assertThat(((TestSection) leaf1).firstFullyVisibleIndex).isEqualTo(0);
+    assertThat(((TestSection) leaf1).lastFullyVisibleIndex).isEqualTo(0);
 
     tree.viewPortChanged(6, 9, 7, 9);
 
-    assertEquals(((TestSectionCreator.TestSection) leaf4).firstVisibleIndex, 0);
-    assertEquals(((TestSectionCreator.TestSection) leaf4).lastVisibleIndex, 3);
-    assertEquals(((TestSectionCreator.TestSection) leaf4).firstFullyVisibleIndex, 1);
-    assertEquals(((TestSectionCreator.TestSection) leaf4).lastFullyVisibleIndex, 3);
+    assertThat(((TestSection) leaf4).firstVisibleIndex).isEqualTo(0);
+    assertThat(((TestSection) leaf4).lastVisibleIndex).isEqualTo(3);
+    assertThat(((TestSection) leaf4).firstFullyVisibleIndex).isEqualTo(1);
+    assertThat(((TestSection) leaf4).lastFullyVisibleIndex).isEqualTo(3);
   }
 
   @Test
@@ -319,14 +318,14 @@ public class SectionTreeTest {
         .build();
 
     tree.setRoot(section);
-    assertTrue(changeSetHandler.wereChangesHandled());
+    assertThat(changeSetHandler.wereChangesHandled()).isTrue();
 
     final StateUpdate stateUpdate = new StateUpdate();
     changeSetHandler.clear();
     tree.updateState("key", stateUpdate);
 
-    assertTrue(stateUpdate.mUpdateStateCalled);
-    assertFalse(changeSetHandler.wereChangesHandled());
+    assertThat(stateUpdate.mUpdateStateCalled).isTrue();
+    assertThat(changeSetHandler.wereChangesHandled()).isFalse();
   }
 
   @Test
@@ -341,19 +340,19 @@ public class SectionTreeTest {
         .build();
 
     tree.setRoot(section);
-    assertTrue(changeSetHandler.wereChangesHandled());
+    assertThat(changeSetHandler.wereChangesHandled()).isTrue();
 
     final StateUpdate lazyStateUpdate = new StateUpdate();
     changeSetHandler.clear();
     tree.updateStateLazy("key", lazyStateUpdate);
 
-    assertFalse(lazyStateUpdate.mUpdateStateCalled);
+    assertThat(lazyStateUpdate.mUpdateStateCalled).isFalse();
 
     final StateUpdate stateUpdate = new StateUpdate();
     tree.updateState("key", stateUpdate);
 
-    assertTrue(lazyStateUpdate.mUpdateStateCalled);
-    assertTrue(stateUpdate.mUpdateStateCalled);
+    assertThat(lazyStateUpdate.mUpdateStateCalled).isTrue();
+    assertThat(stateUpdate.mUpdateStateCalled).isTrue();
   }
 
   @Test
@@ -368,14 +367,14 @@ public class SectionTreeTest {
         .build();
 
     tree.setRoot(section);
-    assertTrue(changeSetHandler.wereChangesHandled());
+    assertThat(changeSetHandler.wereChangesHandled()).isTrue();
 
     final StateUpdate stateUpdate = new StateUpdate();
     changeSetHandler.clear();
     tree.release();
     tree.updateState("key", stateUpdate);
 
-    assertFalse(stateUpdate.mUpdateStateCalled);
+    assertThat(stateUpdate.mUpdateStateCalled).isFalse();
   }
 
   private static class StateUpdate implements SectionLifecycle.StateUpdate {
@@ -400,7 +399,7 @@ public class SectionTreeTest {
 
     tree.setRootAsync(section);
     mChangeSetThreadShadowLooper.runOneTask();
-    assertTrue(changeSetHandler.wereChangesHandled());
+    assertThat(changeSetHandler.wereChangesHandled()).isTrue();
   }
 
   @Test
@@ -415,15 +414,15 @@ public class SectionTreeTest {
         .build();
 
     tree.setRoot(section);
-    assertTrue(changeSetHandler.wereChangesHandled());
+    assertThat(changeSetHandler.wereChangesHandled()).isTrue();
 
     final StateUpdate stateUpdate = new StateUpdate();
     changeSetHandler.clear();
     tree.updateStateAsync("key", stateUpdate);
     mChangeSetThreadShadowLooper.runOneTask();
 
-    assertTrue(stateUpdate.mUpdateStateCalled);
-    assertFalse(changeSetHandler.wereChangesHandled());
+    assertThat(stateUpdate.mUpdateStateCalled).isTrue();
+    assertThat(changeSetHandler.wereChangesHandled()).isFalse();
   }
 
   @Test(expected = IllegalStateException.class)
@@ -484,22 +483,22 @@ public class SectionTreeTest {
     tree.setRoot(root);
 
     tree.requestFocus(node1, 0);
-    assertEquals(0, changeSetHandler.getFocusedTo());
+    assertThat(0).isEqualTo(changeSetHandler.getFocusedTo());
 
     tree.requestFocus(leaf2, 0);
-    assertEquals(3, changeSetHandler.getFocusedTo());
+    assertThat(3).isEqualTo(changeSetHandler.getFocusedTo());
 
     tree.requestFocus(leaf2, 1);
-    assertEquals(4, changeSetHandler.getFocusedTo());
+    assertThat(4).isEqualTo(changeSetHandler.getFocusedTo());
 
     tree.requestFocus(node2, 0);
-    assertEquals(5, changeSetHandler.getFocusedTo());
+    assertThat(5).isEqualTo(changeSetHandler.getFocusedTo());
 
     tree.requestFocus(leaf4, 0);
-    assertEquals(6, changeSetHandler.getFocusedTo());
+    assertThat(6).isEqualTo(changeSetHandler.getFocusedTo());
 
     tree.requestFocus(leaf4, 2);
-    assertEquals(8, changeSetHandler.getFocusedTo());
+    assertThat(8).isEqualTo(changeSetHandler.getFocusedTo());
   }
 
   @Test(expected = IllegalStateException.class)
@@ -560,28 +559,28 @@ public class SectionTreeTest {
     tree.setRoot(root);
 
     tree.requestFocusWithOffset(node1, 0, 100);
-    assertEquals(0, changeSetHandler.getFocusedTo());
-    assertEquals(100, changeSetHandler.getFocusedToOffset());
+    assertThat(0).isEqualTo(changeSetHandler.getFocusedTo());
+    assertThat(100).isEqualTo(changeSetHandler.getFocusedToOffset());
 
     tree.requestFocusWithOffset(leaf2, 0, 200);
-    assertEquals(3, changeSetHandler.getFocusedTo());
-    assertEquals(200, changeSetHandler.getFocusedToOffset());
+    assertThat(3).isEqualTo(changeSetHandler.getFocusedTo());
+    assertThat(200).isEqualTo(changeSetHandler.getFocusedToOffset());
 
     tree.requestFocusWithOffset(leaf2, 1, 300);
-    assertEquals(4, changeSetHandler.getFocusedTo());
-    assertEquals(300, changeSetHandler.getFocusedToOffset());
+    assertThat(4).isEqualTo(changeSetHandler.getFocusedTo());
+    assertThat(300).isEqualTo(changeSetHandler.getFocusedToOffset());
 
     tree.requestFocusWithOffset(node2, 0, 400);
-    assertEquals(5, changeSetHandler.getFocusedTo());
-    assertEquals(400, changeSetHandler.getFocusedToOffset());
+    assertThat(5).isEqualTo(changeSetHandler.getFocusedTo());
+    assertThat(400).isEqualTo(changeSetHandler.getFocusedToOffset());
 
     tree.requestFocusWithOffset(leaf4, 0, 500);
-    assertEquals(6, changeSetHandler.getFocusedTo());
-    assertEquals(500, changeSetHandler.getFocusedToOffset());
+    assertThat(6).isEqualTo(changeSetHandler.getFocusedTo());
+    assertThat(500).isEqualTo(changeSetHandler.getFocusedToOffset());
 
     tree.requestFocusWithOffset(leaf4, 2, 600);
-    assertEquals(8, changeSetHandler.getFocusedTo());
-    assertEquals(600, changeSetHandler.getFocusedToOffset());
+    assertThat(8).isEqualTo(changeSetHandler.getFocusedTo());
+    assertThat(600).isEqualTo(changeSetHandler.getFocusedToOffset());
   }
 
   @Test
@@ -622,13 +621,13 @@ public class SectionTreeTest {
     tree.setRoot(root);
 
     tree.requestFocusStart("rootnode1leaf1");
-    assertEquals(0, changeSetHandler.getFocusedTo());
+    assertThat(0).isEqualTo(changeSetHandler.getFocusedTo());
 
     tree.requestFocusStart("rootnode1leaf2");
-    assertEquals(3, changeSetHandler.getFocusedTo());
+    assertThat(3).isEqualTo(changeSetHandler.getFocusedTo());
 
     tree.requestFocusStart("rootnode2leaf4");
-    assertEquals(6, changeSetHandler.getFocusedTo());
+    assertThat(6).isEqualTo(changeSetHandler.getFocusedTo());
   }
 
   @Test
@@ -669,16 +668,16 @@ public class SectionTreeTest {
     tree.setRoot(root);
 
     tree.requestFocusEnd("rootnode2");
-    assertEquals(9, changeSetHandler.getFocusedTo());
+    assertThat(9).isEqualTo(changeSetHandler.getFocusedTo());
 
     tree.requestFocusEnd("rootnode1leaf2");
-    assertEquals(4, changeSetHandler.getFocusedTo());
+    assertThat(4).isEqualTo(changeSetHandler.getFocusedTo());
 
     tree.requestFocusEnd("rootnode2leaf3");
-    assertEquals(5, changeSetHandler.getFocusedTo());
+    assertThat(5).isEqualTo(changeSetHandler.getFocusedTo());
 
     tree.requestFocusEnd("rootnode2leaf4");
-    assertEquals(9, changeSetHandler.getFocusedTo());
+    assertThat(9).isEqualTo(changeSetHandler.getFocusedTo());
   }
 
   private static RenderInfo makeComponentInfo() {

@@ -9,7 +9,9 @@
 
 package com.facebook.litho.sections;
 
-import static junit.framework.Assert.assertEquals;
+import static com.facebook.litho.sections.Change.MOVE;
+import static com.facebook.litho.sections.ChangeSet.acquireChangeSet;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.ComponentRenderInfo;
@@ -28,20 +30,20 @@ public class ChangeSetTest {
     final ChangeSet changeSet = ChangeSet.acquireChangeSet();
 
     changeSet.addChange(Change.insert(0, ComponentRenderInfo.createEmpty()));
-    assertEquals(changeSet.getCount(), 1);
+    assertThat(changeSet.getCount()).isEqualTo(1);
 
     changeSet.addChange(Change.remove(0));
-    assertEquals(changeSet.getCount(), 0);
+    assertThat(changeSet.getCount()).isEqualTo(0);
 
     changeSet.addChange(Change.insert(0, ComponentRenderInfo.createEmpty()));
-    assertEquals(changeSet.getCount(), 1);
+    assertThat(changeSet.getCount()).isEqualTo(1);
     changeSet.addChange(Change.update(0, ComponentRenderInfo.createEmpty()));
-    assertEquals(changeSet.getCount(), 1);
+    assertThat(changeSet.getCount()).isEqualTo(1);
 
     changeSet.addChange(Change.insert(0, ComponentRenderInfo.createEmpty()));
-    assertEquals(changeSet.getCount(), 2);
+    assertThat(changeSet.getCount()).isEqualTo(2);
     changeSet.addChange(Change.move(0, 1));
-    assertEquals(changeSet.getCount(), 2);
+    assertThat(changeSet.getCount()).isEqualTo(2);
   }
 
   @Test
@@ -49,23 +51,23 @@ public class ChangeSetTest {
     final ChangeSet changeSet = ChangeSet.acquireChangeSet();
 
     changeSet.addChange(Change.insertRange(0, 10, dummyComponentInfos(10)));
-    assertEquals(changeSet.getCount(), 10);
+    assertThat(changeSet.getCount()).isEqualTo(10);
 
     changeSet.addChange(Change.removeRange(4, 4));
-    assertEquals(changeSet.getCount(), 6);
+    assertThat(changeSet.getCount()).isEqualTo(6);
 
     changeSet.addChange(Change.removeRange(0, 6));
-    assertEquals(changeSet.getCount(), 0);
+    assertThat(changeSet.getCount()).isEqualTo(0);
 
     changeSet.addChange(Change.insertRange(0, 8, dummyComponentInfos(8)));
     changeSet.addChange(Change.insertRange(0, 3, dummyComponentInfos(3)));
-    assertEquals(changeSet.getCount(), 11);
+    assertThat(changeSet.getCount()).isEqualTo(11);
 
     changeSet.addChange(Change.updateRange(7, 3, dummyComponentInfos(3)));
-    assertEquals(changeSet.getCount(), 11);
+    assertThat(changeSet.getCount()).isEqualTo(11);
 
     changeSet.move(9,1);
-    assertEquals(changeSet.getCount(), 11);
+    assertThat(changeSet.getCount()).isEqualTo(11);
   }
 
   private List<RenderInfo> dummyComponentInfos(int count) {
@@ -78,8 +80,8 @@ public class ChangeSetTest {
 
   @Test
   public void testInitialCount() {
-    assertEquals(ChangeSet.acquireChangeSet(10).getCount(), 10);
-    assertEquals(ChangeSet.acquireChangeSet().getCount(), 0);
+    assertThat(acquireChangeSet(10).getCount()).isEqualTo(10);
+    assertThat(acquireChangeSet().getCount()).isEqualTo(0);
   }
 
   @Test
@@ -97,27 +99,27 @@ public class ChangeSetTest {
 
     final ChangeSet mergedChangeSet = ChangeSet.merge(changeSet, secondChangeSet);
 
-    assertEquals(changeSet.getCount(), 3);
-    assertEquals(secondChangeSet.getCount(), 3);
+    assertThat(changeSet.getCount()).isEqualTo(3);
+    assertThat(secondChangeSet.getCount()).isEqualTo(3);
 
     for (int i = 0; i < 3; i++) {
-      assertEquals(changeSet.getChangeAt(i).getIndex(), i);
+      assertThat(changeSet.getChangeAt(i).getIndex()).isEqualTo(i);
     }
 
     for (int i = 0; i < 3; i++) {
-      assertEquals(secondChangeSet.getChangeAt(i).getIndex(), i);
+      assertThat(secondChangeSet.getChangeAt(i).getIndex()).isEqualTo(i);
     }
 
-    assertEquals(mergedChangeSet.getCount(), 6);
-    assertEquals(mergedChangeSet.getChangeCount(), 7);
+    assertThat(mergedChangeSet.getCount()).isEqualTo(6);
+    assertThat(mergedChangeSet.getChangeCount()).isEqualTo(7);
 
     for (int i = 0; i < 6; i++) {
-      assertEquals(mergedChangeSet.getChangeAt(i).getIndex(), i);
+      assertThat(mergedChangeSet.getChangeAt(i).getIndex()).isEqualTo(i);
     }
 
-    assertEquals(mergedChangeSet.getChangeAt(6).getType(), Change.MOVE);
-    assertEquals(mergedChangeSet.getChangeAt(6).getIndex(), 3);
-    assertEquals(mergedChangeSet.getChangeAt(6).getToIndex(), 4);
+    assertThat(mergedChangeSet.getChangeAt(6).getType()).isEqualTo(MOVE);
+    assertThat(mergedChangeSet.getChangeAt(6).getIndex()).isEqualTo(3);
+    assertThat(mergedChangeSet.getChangeAt(6).getToIndex()).isEqualTo(4);
   }
 
   @Test
@@ -128,7 +130,7 @@ public class ChangeSetTest {
     changeSet.addChange(Change.insert(2, ComponentRenderInfo.createEmpty()));
 
     changeSet.release();
-    assertEquals(changeSet.getCount(), 0);
-    assertEquals(changeSet.getChangeCount(), 0);
+    assertThat(changeSet.getCount()).isEqualTo(0);
+    assertThat(changeSet.getChangeCount()).isEqualTo(0);
   }
 }

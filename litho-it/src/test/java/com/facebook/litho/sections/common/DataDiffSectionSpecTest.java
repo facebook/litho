@@ -9,7 +9,11 @@
 
 package com.facebook.litho.sections.common;
 
+import static com.facebook.litho.testing.sections.TestTarget.DELETE;
+import static com.facebook.litho.testing.sections.TestTarget.INSERT;
+import static com.facebook.litho.testing.sections.TestTarget.MOVE;
 import static junit.framework.Assert.assertEquals;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.SectionTree;
@@ -51,7 +55,7 @@ public class DataDiffSectionSpecTest {
     mSectionTree.setRoot(TestGroupSection.create(mSectionContext).data(data).build());
     final List<Operation> executedOperations = mTestTarget.getOperations();
 
-    assertEquals(executedOperations.size(), 1);
+    assertThat(executedOperations.size()).isEqualTo(1);
     assertRangeOperation(executedOperations.get(0), TestTarget.INSERT_RANGE, 0, 100);
   }
 
@@ -65,7 +69,7 @@ public class DataDiffSectionSpecTest {
     mSectionTree.setRoot(TestGroupSection.create(mSectionContext).data(data).build());
     List<Operation> executedOperations = mTestTarget.getOperations();
 
-    assertEquals(executedOperations.size(),1);
+    assertThat(executedOperations.size()).isEqualTo(1);
     assertRangeOperation(executedOperations.get(0), TestTarget.INSERT_RANGE, 0, 100);
 
     mTestTarget.clear();
@@ -78,7 +82,7 @@ public class DataDiffSectionSpecTest {
     mSectionTree.setRoot(TestGroupSection.create(mSectionContext).data(data).build());
     executedOperations = mTestTarget.getOperations();
 
-    assertEquals(executedOperations.size(),1);
+    assertThat(executedOperations.size()).isEqualTo(1);
     assertRangeOperation(executedOperations.get(0), TestTarget.INSERT_RANGE, 100, 100);
   }
 
@@ -92,7 +96,7 @@ public class DataDiffSectionSpecTest {
     mSectionTree.setRoot(TestGroupSection.create(mSectionContext).data(data).build());
     List<Operation> executedOperations = mTestTarget.getOperations();
 
-    assertEquals(executedOperations.size(),1);
+    assertThat(executedOperations.size()).isEqualTo(1);
     assertRangeOperation(executedOperations.get(0), TestTarget.INSERT_RANGE, 0, 100);
 
     mTestTarget.clear();
@@ -109,15 +113,15 @@ public class DataDiffSectionSpecTest {
     mSectionTree.setRoot(TestGroupSection.create(mSectionContext).data(data).build());
     executedOperations = mTestTarget.getOperations();
 
-    assertEquals(executedOperations.size(), 3);
-    assertEquals(executedOperations.get(0).mOp, TestTarget.INSERT);
-    assertEquals(executedOperations.get(0).mIndex, 10);
+    assertThat(executedOperations.size()).isEqualTo(3);
+    assertThat(executedOperations.get(0).mOp).isEqualTo(INSERT);
+    assertThat(executedOperations.get(0).mIndex).isEqualTo(10);
 
-    assertEquals(executedOperations.get(1).mOp, TestTarget.INSERT);
-    assertEquals(executedOperations.get(1).mIndex, 8);
+    assertThat(executedOperations.get(1).mOp).isEqualTo(INSERT);
+    assertThat(executedOperations.get(1).mIndex).isEqualTo(8);
 
-    assertEquals(executedOperations.get(2).mOp, TestTarget.INSERT);
-    assertEquals(executedOperations.get(2).mIndex, 6);
+    assertThat(executedOperations.get(2).mOp).isEqualTo(INSERT);
+    assertThat(executedOperations.get(2).mIndex).isEqualTo(6);
   }
 
   @Test
@@ -130,7 +134,7 @@ public class DataDiffSectionSpecTest {
     mSectionTree.setRoot(TestGroupSection.create(mSectionContext).data(data).build());
     List<Operation> executedOperations = mTestTarget.getOperations();
 
-    assertEquals(executedOperations.size(),1);
+    assertThat(executedOperations.size()).isEqualTo(1);
     assertRangeOperation(executedOperations.get(0), TestTarget.INSERT_RANGE, 0, 3);
 
     mTestTarget.clear();
@@ -143,15 +147,15 @@ public class DataDiffSectionSpecTest {
     mSectionTree.setRoot(TestGroupSection.create(mSectionContext).data(data).build());
     executedOperations = mTestTarget.getOperations();
 
-    assertEquals(executedOperations.size(), 2);
+    assertThat(executedOperations.size()).isEqualTo(2);
 
-    assertEquals(executedOperations.get(0).mOp, TestTarget.MOVE);
-    assertEquals(executedOperations.get(0).mIndex, 1);
-    assertEquals(executedOperations.get(0).mToIndex, 0);
+    assertThat(executedOperations.get(0).mOp).isEqualTo(MOVE);
+    assertThat(executedOperations.get(0).mIndex).isEqualTo(1);
+    assertThat(executedOperations.get(0).mToIndex).isEqualTo(0);
 
-    assertEquals(executedOperations.get(1).mOp, TestTarget.MOVE);
-    assertEquals(executedOperations.get(1).mIndex, 2);
-    assertEquals(executedOperations.get(1).mToIndex, 0);
+    assertThat(executedOperations.get(1).mOp).isEqualTo(MOVE);
+    assertThat(executedOperations.get(1).mIndex).isEqualTo(2);
+    assertThat(executedOperations.get(1).mToIndex).isEqualTo(0);
   }
 
   @Test
@@ -164,7 +168,7 @@ public class DataDiffSectionSpecTest {
     mSectionTree.setRoot(TestGroupSection.create(mSectionContext).data(data).build());
     List<Operation> executedOperations = mTestTarget.getOperations();
 
-    assertEquals(executedOperations.size(),1);
+    assertThat(executedOperations.size()).isEqualTo(1);
     assertRangeOperation(executedOperations.get(0), TestTarget.INSERT_RANGE, 0, 100);
 
     mTestTarget.clear();
@@ -181,7 +185,7 @@ public class DataDiffSectionSpecTest {
     mSectionTree.setRoot(TestGroupSection.create(mSectionContext).data(data).build());
     executedOperations = mTestTarget.getOperations();
 
-    assertEquals(1, executedOperations.size());
+    assertThat(1).isEqualTo(executedOperations.size());
     assertRangeOperation(executedOperations.get(0), TestTarget.DELETE_RANGE, 50, 40);
   }
 
@@ -195,7 +199,7 @@ public class DataDiffSectionSpecTest {
     mSectionTree.setRoot(TestGroupSection.create(mSectionContext).data(data).build());
     List<Operation> executedOperations = mTestTarget.getOperations();
 
-    assertEquals(executedOperations.size(),1);
+    assertThat(executedOperations.size()).isEqualTo(1);
     assertRangeOperation(executedOperations.get(0), TestTarget.INSERT_RANGE, 0, 100);
 
     mTestTarget.clear();
@@ -210,11 +214,11 @@ public class DataDiffSectionSpecTest {
     mSectionTree.setRoot(TestGroupSection.create(mSectionContext).data(data).build());
     executedOperations = mTestTarget.getOperations();
 
-    assertEquals(2, executedOperations.size());
-    assertEquals(executedOperations.get(0).mOp, TestTarget.DELETE);
-    assertEquals(executedOperations.get(0).mIndex, 92);
-    assertEquals(executedOperations.get(1).mOp, TestTarget.DELETE);
-    assertEquals(executedOperations.get(1).mIndex, 9);
+    assertThat(2).isEqualTo(executedOperations.size());
+    assertThat(executedOperations.get(0).mOp).isEqualTo(DELETE);
+    assertThat(executedOperations.get(0).mIndex).isEqualTo(92);
+    assertThat(executedOperations.get(1).mOp).isEqualTo(DELETE);
+    assertThat(executedOperations.get(1).mIndex).isEqualTo(9);
   }
 
   @Test
@@ -230,7 +234,7 @@ public class DataDiffSectionSpecTest {
             .build());
     List<Operation> executedOperations = mTestTarget.getOperations();
 
-    assertEquals(executedOperations.size(),1);
+    assertThat(executedOperations.size()).isEqualTo(1);
     assertRangeOperation(executedOperations.get(0), TestTarget.INSERT_RANGE, 0, 100);
 
     mTestTarget.clear();
@@ -258,7 +262,7 @@ public class DataDiffSectionSpecTest {
         .build());
     executedOperations = mTestTarget.getOperations();
 
-    assertEquals(executedOperations.size(),1);
+    assertThat(executedOperations.size()).isEqualTo(1);
     assertRangeOperation(executedOperations.get(0), TestTarget.UPDATE_RANGE, 0, 100);
   }
 
@@ -277,7 +281,7 @@ public class DataDiffSectionSpecTest {
             .build());
     List<Operation> executedOperations = mTestTarget.getOperations();
 
-    assertEquals(executedOperations.size(),1);
+    assertThat(executedOperations.size()).isEqualTo(1);
     assertRangeOperation(executedOperations.get(0), TestTarget.INSERT_RANGE, 0, 40);
 
     mTestTarget.clear();
@@ -328,7 +332,7 @@ public class DataDiffSectionSpecTest {
             .build());
     List<Operation> executedOperations = mTestTarget.getOperations();
 
-    assertEquals(executedOperations.size(),1);
+    assertThat(executedOperations.size()).isEqualTo(1);
     assertRangeOperation(executedOperations.get(0), TestTarget.INSERT_RANGE, 0, 40);
 
     mTestTarget.clear();
@@ -403,8 +407,8 @@ public class DataDiffSectionSpecTest {
       }
     }
 
-    assertEquals(totalInserted, expectedInserted);
-    assertEquals(totalUpdated, expectedUpdated);
-    assertEquals(totalRemoved, expectedRemoved);
+    assertThat(totalInserted).isEqualTo(expectedInserted);
+    assertThat(totalUpdated).isEqualTo(expectedUpdated);
+    assertThat(totalRemoved).isEqualTo(expectedRemoved);
   }
 }

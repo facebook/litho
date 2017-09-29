@@ -9,8 +9,6 @@
 
 package com.facebook.litho.widget;
 
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -111,8 +109,8 @@ public class TextSpecTest {
     MotionEvent motionEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0);
     boolean handled = textDrawable.onTouchEvent(motionEvent, lithoView);
     // We don't consume touch events from TextTouchOffsetChange event
-    assertFalse(handled);
-    assertTrue(eventFired[0]);
+    assertThat(handled).isFalse();
+    assertThat(eventFired[0]).isTrue();
   }
 
   @Test
@@ -140,13 +138,13 @@ public class TextSpecTest {
 
     MotionEvent actionUp = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0, 0, 0);
     boolean handledActionUp = textDrawable.onTouchEvent(actionUp, lithoView);
-    assertFalse(handledActionUp);
-    assertFalse(eventFired[0]);
+    assertThat(handledActionUp).isFalse();
+    assertThat(eventFired[0]).isFalse();
 
     MotionEvent actionDown = MotionEvent.obtain(0, 0, MotionEvent.ACTION_MOVE, 0, 0, 0);
     boolean handledActionMove = textDrawable.onTouchEvent(actionDown, lithoView);
-    assertFalse(handledActionMove);
-    assertFalse(eventFired[0]);
+    assertThat(handledActionMove).isFalse();
+    assertThat(eventFired[0]).isFalse();
   }
 
   @Test
