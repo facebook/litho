@@ -211,6 +211,7 @@ public class ComponentTree {
     mCanPrefetchDisplayLists = builder.canPrefetchDisplayLists;
     mCanCacheDrawingDisplayLists = builder.canCacheDrawingDisplayLists;
     mShouldClipChildren = builder.shouldClipChildren;
+    mHasMounted = builder.hasMounted;
 
     if (mLayoutThreadHandler == null) {
       mLayoutThreadHandler = new DefaultLayoutHandler(getDefaultLayoutThreadLooper());
@@ -1503,6 +1504,7 @@ public class ComponentTree {
     private boolean canPrefetchDisplayLists = false;
     private boolean canCacheDrawingDisplayLists = false;
     private boolean shouldClipChildren = true;
+    private boolean hasMounted = false;
 
     protected Builder() {
     }
@@ -1531,6 +1533,7 @@ public class ComponentTree {
       canPrefetchDisplayLists = false;
       canCacheDrawingDisplayLists = false;
       shouldClipChildren = true;
+      hasMounted = false;
     }
 
     /**
@@ -1663,8 +1666,15 @@ public class ComponentTree {
     }
 
     /**
-     * Builds a {@link ComponentTree} using the parameters specified in this builder.
+     * Sets whether the 'hasMounted' flag should be set on this ComponentTree (for use with appear
+     * animations).
      */
+    public Builder hasMounted(boolean hasMounted) {
+      this.hasMounted = hasMounted;
+      return this;
+    }
+
+    /** Builds a {@link ComponentTree} using the parameters specified in this builder. */
     public ComponentTree build() {
       ComponentTree componentTree = new ComponentTree(this);
 
