@@ -119,6 +119,7 @@ public class ComponentsRule implements TestRule {
         android.R.attr.maxWidth,
         android.R.attr.inputType,
         android.R.attr.fontFamily,
+        android.R.attr.imeOptions,
       },
       /* srcPos */ 0,
       R.styleable.Text,

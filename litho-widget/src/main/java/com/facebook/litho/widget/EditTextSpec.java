@@ -79,6 +79,10 @@ import com.facebook.litho.utils.MeasureUtils;
  * @prop selection Moves the cursor to the selection index.
  * @prop inputType Type of data being placed in a text field,
  * used to help an input method decide how to let the user enter text.
+ * @prop rawInputType Type of data being placed in a text field,
+ * used to help an input method decide how to let the user enter text. This prop
+ * will override inputType if both are provided.
+ * @prop imeOptions Type of data in the text field, reported to an IME when it has focus.
  */
 @MountSpec(isPureRender = true, events = {TextChangedEvent.class})
 class EditTextSpec {
@@ -115,6 +119,8 @@ class EditTextSpec {
   @PropDefault protected static final int selection = -1;
   @PropDefault protected static final int inputType =
       EditorInfo.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE;
+  @PropDefault protected static final int rawInputType = EditorInfo.TYPE_NULL;
+  @PropDefault protected static final int imeOptions = EditorInfo.IME_NULL;
 
   @OnLoadStyle
   static void onLoadStyle(
@@ -136,7 +142,8 @@ class EditTextSpec {
       Output<Float> shadowDy,
       Output<Integer> shadowColor,
       Output<Integer> gravity,
-      Output<Integer> inputType) {
+      Output<Integer> inputType,
+      Output<Integer> imeOptions) {
 
     final TypedArray a = c.obtainStyledAttributes(R.styleable.Text, 0);
 
@@ -183,6 +190,8 @@ class EditTextSpec {
         gravity.set(a.getInteger(attr, 0));
       } else if (attr == R.styleable.Text_android_inputType) {
         inputType.set(a.getInteger(attr, 0));
+      } else if (attr == R.styleable.Text_android_imeOptions) {
+        imeOptions.set(a.getInteger(attr, 0));
       }
     }
 
@@ -222,7 +231,9 @@ class EditTextSpec {
       @Prop(optional = true) int gravity,
       @Prop(optional = true) boolean editable,
       @Prop(optional = true) int selection,
-      @Prop(optional = true) int inputType) {
+      @Prop(optional = true) int inputType,
+      @Prop(optional = true) int rawInputType,
+      @Prop(optional = true) int imeOptions) {
 
     // TODO(11759579) - don't allocate a new EditText in every measure.
     final EditText editText = new EditText(c);
@@ -255,7 +266,9 @@ class EditTextSpec {
         gravity,
         editable,
         selection,
-        inputType);
+        inputType,
+        rawInputType,
+        imeOptions);
 
     editText.measure(
         MeasureUtils.getViewMeasureSpec(widthSpec),
@@ -301,7 +314,9 @@ class EditTextSpec {
       @Prop(optional = true) int gravity,
       @Prop(optional = true) boolean editable,
       @Prop(optional = true) int selection,
-      @Prop(optional = true) int inputType) {
+      @Prop(optional = true) int inputType,
+      @Prop(optional = true) int rawInputType,
+      @Prop(optional = true) int imeOptions) {
 
     initEditText(
         editText,
@@ -331,7 +346,9 @@ class EditTextSpec {
         gravity,
         editable,
         selection,
-        inputType);
+        inputType,
+        rawInputType,
+        imeOptions);
   }
 
   @OnBind
@@ -385,7 +402,9 @@ class EditTextSpec {
       int gravity,
       boolean editable,
       int selection,
-      int inputType) {
+      int inputType,
+      int rawInputType,
+      int imeOptions) {
 
     editText.setSingleLine(isSingleLine);
     // We only want to change the input type if it actually needs changing, and we need to take
@@ -396,8 +415,10 @@ class EditTextSpec {
       inputType |= EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE;
     }
 
-    // Needs to be set before min/max lines.
-    if (inputType != editText.getInputType()) {
+    if (rawInputType != EditorInfo.TYPE_NULL) {
+      editText.setRawInputType(rawInputType);
+    } else if (inputType != editText.getInputType()) {
+      // Needs to be set before min/max lines.
       editText.setInputType(inputType);
     }
 
@@ -423,6 +444,7 @@ class EditTextSpec {
     editText.setTypeface(typeface, textStyle);
     editText.setGravity(gravity);
 
+    editText.setImeOptions(imeOptions);
     editText.setFocusable(editable);
     editText.setFocusableInTouchMode(editable);
     editText.setClickable(editable);
