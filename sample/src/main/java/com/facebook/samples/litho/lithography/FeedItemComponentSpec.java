@@ -36,7 +36,7 @@ public class FeedItemComponentSpec {
                 .child(artist.images.length == 1 ?
                     SingleImageComponent.create(c)
                         .image(artist.images[0])
-                        .aspectRatio(2)
+                        .imageAspectRatio(2)
                         .withLayout() :
                     Recycler.create(c)
                         .binder(binder)

@@ -89,8 +89,8 @@ import com.facebook.yoga.YogaDirection;
  * @prop maxLines Maximum number of lines to show.
  * @prop minEms Makes the text to be mim ems wide.
  * @prop maxEms Makes the text to be max ems wide.
- * @prop minWidth Makes the text to be min pixels wide.
- * @prop maxWidth Makes the text to be max pixels wide.
+ * @prop minTextWidth Makes the text to be min pixels wide.
+ * @prop maxTextWidth Makes the text to be max pixels wide.
  * @prop shadowRadius Blur radius of the shadow.
  * @prop shadowDx Horizontal offset of the shadow.
  * @prop shadowDy Vertical offset of the shadow.
@@ -138,8 +138,8 @@ class TextSpec {
   @PropDefault protected static final int maxLines = Integer.MAX_VALUE;
   @PropDefault protected static final int minEms = DEFAULT_EMS;
   @PropDefault protected static final int maxEms = DEFAULT_EMS;
-  @PropDefault protected static final int minWidth = DEFAULT_MIN_WIDTH;
-  @PropDefault protected static final int maxWidth = DEFAULT_MAX_WIDTH;
+  @PropDefault protected static final int minTextWidth = DEFAULT_MIN_WIDTH;
+  @PropDefault protected static final int maxTextWidth = DEFAULT_MAX_WIDTH;
   @PropDefault protected static final int shadowColor = Color.GRAY;
   @PropDefault protected static final int textColor = DEFAULT_COLOR;
   @PropDefault protected static final int linkColor = DEFAULT_COLOR;
@@ -174,8 +174,8 @@ class TextSpec {
       Output<Integer> maxLines,
       Output<Integer> minEms,
       Output<Integer> maxEms,
-      Output<Integer> minWidth,
-      Output<Integer> maxWidth,
+      Output<Integer> minTextWidth,
+      Output<Integer> maxTextWidth,
       Output<Boolean> isSingleLine,
       Output<CharSequence> text,
       Output<ColorStateList> textColorStateList,
@@ -214,8 +214,8 @@ class TextSpec {
           maxLines,
           minEms,
           maxEms,
-          minWidth,
-          maxWidth,
+          minTextWidth,
+          maxTextWidth,
           isSingleLine,
           text,
           textColorStateList,
@@ -246,8 +246,8 @@ class TextSpec {
         maxLines,
         minEms,
         maxEms,
-        minWidth,
-        maxWidth,
+        minTextWidth,
+        maxTextWidth,
         isSingleLine,
         text,
         textColorStateList,
@@ -275,8 +275,8 @@ class TextSpec {
       Output<Integer> maxLines,
       Output<Integer> minEms,
       Output<Integer> maxEms,
-      Output<Integer> minWidth,
-      Output<Integer> maxWidth,
+      Output<Integer> minTextWidth,
+      Output<Integer> maxTextWidth,
       Output<Boolean> isSingleLine,
       Output<CharSequence> text,
       Output<ColorStateList> textColorStateList,
@@ -347,9 +347,9 @@ class TextSpec {
       } else if (attr == R.styleable.Text_android_maxEms) {
         maxEms.set(a.getInteger(attr, DEFAULT_EMS));
       } else if (attr == R.styleable.Text_android_minWidth) {
-        minWidth.set(a.getDimensionPixelSize(attr, DEFAULT_MIN_WIDTH));
+        minTextWidth.set(a.getDimensionPixelSize(attr, DEFAULT_MIN_WIDTH));
       } else if (attr == R.styleable.Text_android_maxWidth) {
-        maxWidth.set(a.getDimensionPixelSize(attr, DEFAULT_MAX_WIDTH));
+        maxTextWidth.set(a.getDimensionPixelSize(attr, DEFAULT_MAX_WIDTH));
       } else if (attr == R.styleable.Text_android_fontFamily) {
         fontFamily = a.getString(attr);
       }
@@ -378,8 +378,8 @@ class TextSpec {
       @Prop(optional = true, resType = ResType.INT) int maxLines,
       @Prop(optional = true, resType = ResType.INT) int minEms,
       @Prop(optional = true, resType = ResType.INT) int maxEms,
-      @Prop(optional = true, resType = ResType.DIMEN_SIZE) int minWidth,
-      @Prop(optional = true, resType = ResType.DIMEN_SIZE) int maxWidth,
+      @Prop(optional = true, resType = ResType.DIMEN_SIZE) int minTextWidth,
+      @Prop(optional = true, resType = ResType.DIMEN_SIZE) int maxTextWidth,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float shadowRadius,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float shadowDx,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float shadowDy,
@@ -407,33 +407,34 @@ class TextSpec {
       return;
     }
 
-    Layout newLayout = createTextLayout(
-        widthSpec,
-        ellipsize,
-        shouldIncludeFontPadding,
-        maxLines,
-        shadowRadius,
-        shadowDx,
-        shadowDy,
-        shadowColor,
-        isSingleLine,
-        text,
-        textColor,
-        textColorStateList,
-        linkColor,
-        textSize,
-        extraSpacing,
-        spacingMultiplier,
-        textStyle,
-        typeface,
-        textAlignment,
-        glyphWarming,
-        layout.getResolvedLayoutDirection(),
-        minEms,
-        maxEms,
-        minWidth,
-        maxWidth,
-        textDirection);
+    Layout newLayout =
+        createTextLayout(
+            widthSpec,
+            ellipsize,
+            shouldIncludeFontPadding,
+            maxLines,
+            shadowRadius,
+            shadowDx,
+            shadowDy,
+            shadowColor,
+            isSingleLine,
+            text,
+            textColor,
+            textColorStateList,
+            linkColor,
+            textSize,
+            extraSpacing,
+            spacingMultiplier,
+            textStyle,
+            typeface,
+            textAlignment,
+            glyphWarming,
+            layout.getResolvedLayoutDirection(),
+            minEms,
+            maxEms,
+            minTextWidth,
+            maxTextWidth,
+            textDirection);
 
     measureLayout.set(newLayout);
 
@@ -493,8 +494,8 @@ class TextSpec {
       YogaDirection layoutDirection,
       int minEms,
       int maxEms,
-      int minWidth,
-      int maxWidth,
+      int minTextWidth,
+      int maxTextWidth,
       TextDirectionHeuristicCompat textDirection) {
     Layout newLayout;
 
@@ -533,13 +534,13 @@ class TextSpec {
     if (minEms != DEFAULT_EMS) {
       layoutBuilder.setMinEms(minEms);
     } else {
-      layoutBuilder.setMinWidth(minWidth);
+      layoutBuilder.setMinWidth(minTextWidth);
     }
 
     if (maxEms != DEFAULT_EMS) {
       layoutBuilder.setMaxEms(maxEms);
     } else {
-      layoutBuilder.setMaxWidth(maxWidth);
+      layoutBuilder.setMaxWidth(maxTextWidth);
     }
 
     if (textColor != 0) {
@@ -665,8 +666,8 @@ class TextSpec {
       @Prop(optional = true, resType = ResType.INT) int maxLines,
       @Prop(optional = true, resType = ResType.INT) int minEms,
       @Prop(optional = true, resType = ResType.INT) int maxEms,
-      @Prop(optional = true, resType = ResType.DIMEN_SIZE) int minWidth,
-      @Prop(optional = true, resType = ResType.DIMEN_SIZE) int maxWidth,
+      @Prop(optional = true, resType = ResType.DIMEN_SIZE) int minTextWidth,
+      @Prop(optional = true, resType = ResType.DIMEN_SIZE) int maxTextWidth,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float shadowRadius,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float shadowDx,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float shadowDy,
@@ -738,8 +739,8 @@ class TextSpec {
               layout.getResolvedLayoutDirection(),
               minEms,
               maxEms,
-              minWidth,
-              maxWidth,
+              minTextWidth,
+              maxTextWidth,
               textDirection));
     }
 

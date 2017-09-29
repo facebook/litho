@@ -28,6 +28,11 @@ public class PropValidation {
       Arrays.asList(
           "withLayout",
           "key",
+          "background",
+          "backgroundAttr",
+          "backgroundRes",
+          "backgroundColor",
+          "aspectRatio",
           "clickHandler",
           "focusChangeHandler",
           "longClickHandler",

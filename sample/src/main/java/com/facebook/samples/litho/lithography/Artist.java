@@ -42,10 +42,7 @@ public class Artist implements Datum {
     for (String image : images) {
       ComponentRenderInfo.Builder imageRenderInfoBuilder = ComponentRenderInfo.create();
       imageRenderInfoBuilder.component(
-          SingleImageComponent.create(c)
-              .image(image)
-              .aspectRatio(2f)
-              .build());
+          SingleImageComponent.create(c).image(image).imageAspectRatio(2f).build());
       imageRecyclerBinder.insertItemAt(
           imageRecyclerBinder.getItemCount(),
           imageRenderInfoBuilder.build());

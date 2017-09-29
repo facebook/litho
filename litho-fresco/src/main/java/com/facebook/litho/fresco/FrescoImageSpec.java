@@ -44,7 +44,7 @@ class FrescoImageSpec {
   private static final ScalingUtils.ScaleType DEFAULT_SCALE_TYPE =
       GenericDraweeHierarchyBuilder.DEFAULT_SCALE_TYPE;
 
-  @PropDefault protected static final float aspectRatio = 1f;
+  @PropDefault protected static final float imageAspectRatio = 1f;
 
   @PropDefault
   protected static final ScalingUtils.ScaleType actualImageScaleType =
@@ -73,8 +73,8 @@ class FrescoImageSpec {
       int widthSpec,
       int heightSpec,
       Size size,
-      @Prop(optional = true, resType = ResType.FLOAT) float aspectRatio) {
-    MeasureUtils.measureWithAspectRatio(widthSpec, heightSpec, aspectRatio, size);
+      @Prop(optional = true, resType = ResType.FLOAT) float imageAspectRatio) {
+    MeasureUtils.measureWithAspectRatio(widthSpec, heightSpec, imageAspectRatio, size);
   }
 
   @OnCreateMountContent

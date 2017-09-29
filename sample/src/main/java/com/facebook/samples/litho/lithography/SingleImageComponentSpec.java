@@ -24,20 +24,17 @@ import com.facebook.litho.fresco.FrescoImage;
 
 @LayoutSpec
 public class SingleImageComponentSpec {
-  @PropDefault
-  protected static final float aspectRatio = 1f;
+  @PropDefault protected static final float imageAspectRatio = 1f;
 
   @OnCreateLayout
   static ComponentLayout onCreateLayout(
-      ComponentContext c,
-      @Prop String image,
-      @Prop(optional = true) float aspectRatio) {
+      ComponentContext c, @Prop String image, @Prop(optional = true) float imageAspectRatio) {
     final DraweeController controller = Fresco.newDraweeControllerBuilder()
         .setUri(image)
         .build();
     return FrescoImage.create(c)
         .controller(controller)
-        .aspectRatio(aspectRatio)
+        .imageAspectRatio(imageAspectRatio)
         .buildWithLayout();
   }
 }
