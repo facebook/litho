@@ -882,8 +882,12 @@ public class RecyclerBinder
 
     // We need to call this as we want to make sure everything is re-bound since we need new sizes
     // on all rows.
-    mMainThreadHandler.removeCallbacks(mNotifyDatasetChangedRunnable);
-    mMainThreadHandler.post(mNotifyDatasetChangedRunnable);
+    if (Looper.myLooper() == Looper.getMainLooper()) {
+      mInternalAdapter.notifyDataSetChanged();
+    } else {
+      mMainThreadHandler.removeCallbacks(mNotifyDatasetChangedRunnable);
+      mMainThreadHandler.post(mNotifyDatasetChangedRunnable);
+    }
   }
 
   @GuardedBy("this")
