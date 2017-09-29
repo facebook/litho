@@ -35,8 +35,8 @@ include ':sample-barebones'
 include ':sample-codelab'
 include ':yoga'
 include ':yogajni'
-include ':libfb'
+include ':fbjni'
 
 project(':yoga').projectDir = file('lib/yoga')
 project(':yogajni').projectDir = file('lib/yogajni')
-project(':libfb').projectDir = file('lib/fb')
+project(':fbjni').projectDir = file('lib/fbjni')

@@ -7,15 +7,16 @@
 
 include_defs("//COMPONENTS_DEFS")
 
-litho_android_library(
-    name = "yoga",
-    srcs = glob(["src/main/java/**/*.java"]),
-    visibility = COMPONENTS_VISIBILITY,
+java_library(
+    name = "jni",
+    srcs = glob(["**/*.java"]),
+    proguard_config = "fbjni.pro",
+    visibility = [
+       "PUBLIC",
+    ],
     deps = [
         COMPONENTS_PROGUARDANNOTATIONS_TARGET,
         COMPONENTS_SOLOADER_TARGET,
-        COMPONENTS_INFERANNOTATIONS_TARGET,
         COMPONENTS_JSR_TARGET,
-        COMPONENTS_FBJNI_JAVA_TARGET,
     ],
 )

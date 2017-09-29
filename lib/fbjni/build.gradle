@@ -18,10 +18,11 @@ android {
             }
         }
     }
+}
 
-    externalNativeBuild {
-        cmake {
-            path 'src/main/cpp/CMakeLists.txt'
-        }
-    }
+dependencies {
+    // compileOnly dependencies
+    compileOnly deps.jsr305
+    compileOnly deps.inferAnnotations
+    compileOnly project(':litho-annotations')
 }
