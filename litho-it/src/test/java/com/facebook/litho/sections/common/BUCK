@@ -29,7 +29,7 @@ components_robolectric_test(
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner"),
         make_dep_path("litho-it/src/main/java/com/facebook/litho/sections/common:common"),
         make_dep_path("litho-sections-core/src/main/java/com/facebook/litho/sections/logger:logger"),
-        make_dep_path("litho-sections-core/src/main/java/com/facebook/litho/sections/common:common"),
+        COMPONENTS_SECTIONS_COMMON_TARGET,
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/viewtree:viewtree"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/sections:sections"),
     ],
