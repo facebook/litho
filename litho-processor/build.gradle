@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-import javax.tools.ToolProvider
+import org.gradle.internal.jvm.Jvm
 
 apply plugin: 'java'
 apply plugin: 'maven-publish'
@@ -21,7 +21,7 @@ dependencies {
     implementation project(':litho-annotations')
     implementation deps.jsr305
 
-    compileOnly files(((URLClassLoader) ToolProvider.getSystemToolClassLoader()).getURLs())
+    compileOnly files(Jvm.current().getToolsJar())
 
     // Processor
     implementation deps.javapoet

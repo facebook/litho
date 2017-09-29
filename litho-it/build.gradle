@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2017-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
+import org.gradle.internal.jvm.Jvm
+
 apply plugin: 'com.android.library'
 
 android {
@@ -68,32 +79,8 @@ dependencies {
     testImplementation deps.supportRecyclerView
     testImplementation deps.powermockReflect
     testImplementation deps.khronos
-    testImplementation files(getRuntimeJar())
-    testImplementation files(org.gradle.internal.jvm.Jvm.current().getToolsJar())
+    testImplementation files(Jvm.current().getToolsJar())
 }
-
-static def getRuntimeJar() {
-    try {
-        final File javaBase = new File(System.getProperty("java.home")).getCanonicalFile();
-        File runtimeJar = new File(javaBase, "lib/rt.jar");
-        if (runtimeJar.exists()) {
-            return runtimeJar;
-        }
-        runtimeJar = new File(javaBase, "jre/lib/rt.jar");
-        return runtimeJar.exists() ? runtimeJar : null;
-    } catch (IOException e) {
-        throw new RuntimeException(e);
-    }
-}
-
-/*
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- */
 
 // Source - https://github.com/nenick/AndroidStudioAndRobolectric/blob/master/app/build.workaround-missing-resource.gradle
 // Workaround for missing test resources when running unit tests within android studio.
