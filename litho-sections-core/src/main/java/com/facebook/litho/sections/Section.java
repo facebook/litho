@@ -136,10 +136,9 @@ public abstract class Section<L extends SectionLifecycle> implements Cloneable, 
     return mLifecycle.isDiffSectionSpec();
   }
 
-  /**
-   * @return a unique key for this {@link Section} within its tree.
-   */
-  String getGlobalKey() {
+  /** @return a unique key for this {@link Section} within its tree. */
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  public String getGlobalKey() {
     return mGlobalKey;
   }
 
@@ -162,30 +161,32 @@ public abstract class Section<L extends SectionLifecycle> implements Cloneable, 
    * Sets the key for this Component. This is only used for testing as the key will be set from the
    * {@link Builder}
    */
-  void setKey(String key) {
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  public void setKey(String key) {
     mKey = key;
   }
 
   /**
-   * @return te total number of {@link com.facebook.litho.Component} that the subtree of
-   * {@link Section}s having its root in this {@link Section} generated.
+   * @return te total number of {@link com.facebook.litho.Component} that the subtree of {@link
+   *     Section}s having its root in this {@link Section} generated.
    */
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   int getCount() {
     return mCount;
   }
 
   /**
-   * Sets te total number of {@link com.facebook.litho.Component} that the subtree of
-   * {@link Section}s having its root in this {@link Section} generated.
+   * Sets te total number of {@link com.facebook.litho.Component} that the subtree of {@link
+   * Section}s having its root in this {@link Section} generated.
    */
-  void setCount(int count) {
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  public void setCount(int count) {
     mCount = count;
   }
 
-  /**
-   * @return the direct children of this {@link Section}.
-   */
-  List<Section> getChildren() {
+  /** @return the direct children of this {@link Section}. */
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  public List<Section> getChildren() {
     return mChildren;
   }
 
@@ -277,7 +278,8 @@ public abstract class Section<L extends SectionLifecycle> implements Cloneable, 
     mScopedContext = scopedContext;
   }
 
-  void setChildren(Children children) {
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  public void setChildren(Children children) {
     mChildren = children == null ? new ArrayList<Section>() : children.getChildren();
   }
 

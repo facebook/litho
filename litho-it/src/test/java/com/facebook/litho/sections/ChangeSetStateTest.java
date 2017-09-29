@@ -14,6 +14,7 @@ import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import com.facebook.litho.sections.logger.SectionComponentLogger;
+import com.facebook.litho.testing.sections.TestSectionCreator;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.ComponentRenderInfo;
 import org.junit.Before;

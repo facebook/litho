@@ -17,6 +17,7 @@ import static org.mockito.Mockito.mock;
 import android.os.Looper;
 import com.facebook.litho.Component;
 import com.facebook.litho.sections.SectionLifecycle.StateContainer;
+import com.facebook.litho.testing.sections.TestSectionCreator;
 import com.facebook.litho.testing.sections.TestTarget;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.ComponentRenderInfo;
@@ -200,12 +201,12 @@ public class SectionTreeTest {
 
     tree.refresh();
 
-    assertTrue(((TestSectionCreator.TestSection) leaf1).mRefreshCalled);
-    assertTrue(((TestSectionCreator.TestSection) leaf2).mRefreshCalled);
-    assertTrue(((TestSectionCreator.TestSection) node).mRefreshCalled);
-    assertTrue(((TestSectionCreator.TestSection) leaf3).mRefreshCalled);
-    assertTrue(((TestSectionCreator.TestSection) leaf4).mRefreshCalled);
-    assertTrue(((TestSectionCreator.TestSection) node1).mRefreshCalled);
+    assertTrue(((TestSectionCreator.TestSection) leaf1).refreshCalled);
+    assertTrue(((TestSectionCreator.TestSection) leaf2).refreshCalled);
+    assertTrue(((TestSectionCreator.TestSection) node).refreshCalled);
+    assertTrue(((TestSectionCreator.TestSection) leaf3).refreshCalled);
+    assertTrue(((TestSectionCreator.TestSection) leaf4).refreshCalled);
+    assertTrue(((TestSectionCreator.TestSection) node1).refreshCalled);
   }
 
   @Test
@@ -256,54 +257,54 @@ public class SectionTreeTest {
     tree.setRoot(root);
 
     tree.viewPortChanged(3,9, 3, 9);
-    assertEquals(((TestSectionCreator.TestSection) leaf1).mFirstVisibleIndex, -1);
-    assertEquals(((TestSectionCreator.TestSection) leaf1).mLastVisibleIndex, -1);
-    assertEquals(((TestSectionCreator.TestSection) leaf1).mFirstFullyVisibleIndex, -1);
-    assertEquals(((TestSectionCreator.TestSection) leaf1).mLastFullyVisibleIndex, -1);
+    assertEquals(((TestSectionCreator.TestSection) leaf1).firstVisibleIndex, -1);
+    assertEquals(((TestSectionCreator.TestSection) leaf1).lastVisibleIndex, -1);
+    assertEquals(((TestSectionCreator.TestSection) leaf1).firstFullyVisibleIndex, -1);
+    assertEquals(((TestSectionCreator.TestSection) leaf1).lastFullyVisibleIndex, -1);
 
-    assertEquals(((TestSectionCreator.TestSection) leaf2).mFirstVisibleIndex, 0);
-    assertEquals(((TestSectionCreator.TestSection) leaf2).mLastVisibleIndex, 1);
-    assertEquals(((TestSectionCreator.TestSection) leaf2).mFirstFullyVisibleIndex, 0);
-    assertEquals(((TestSectionCreator.TestSection) leaf2).mLastFullyVisibleIndex, 1);
+    assertEquals(((TestSectionCreator.TestSection) leaf2).firstVisibleIndex, 0);
+    assertEquals(((TestSectionCreator.TestSection) leaf2).lastVisibleIndex, 1);
+    assertEquals(((TestSectionCreator.TestSection) leaf2).firstFullyVisibleIndex, 0);
+    assertEquals(((TestSectionCreator.TestSection) leaf2).lastFullyVisibleIndex, 1);
 
-    assertEquals(((TestSectionCreator.TestSection) leaf3).mFirstVisibleIndex, 0);
-    assertEquals(((TestSectionCreator.TestSection) leaf3).mLastVisibleIndex, 0);
-    assertEquals(((TestSectionCreator.TestSection) leaf3).mFirstFullyVisibleIndex, 0);
-    assertEquals(((TestSectionCreator.TestSection) leaf3).mLastFullyVisibleIndex, 0);
+    assertEquals(((TestSectionCreator.TestSection) leaf3).firstVisibleIndex, 0);
+    assertEquals(((TestSectionCreator.TestSection) leaf3).lastVisibleIndex, 0);
+    assertEquals(((TestSectionCreator.TestSection) leaf3).firstFullyVisibleIndex, 0);
+    assertEquals(((TestSectionCreator.TestSection) leaf3).lastFullyVisibleIndex, 0);
 
-    assertEquals(((TestSectionCreator.TestSection) leaf4).mFirstVisibleIndex, 0);
-    assertEquals(((TestSectionCreator.TestSection) leaf4).mLastVisibleIndex, 3);
-    assertEquals(((TestSectionCreator.TestSection) leaf4).mFirstFullyVisibleIndex, 0);
-    assertEquals(((TestSectionCreator.TestSection) leaf4).mLastFullyVisibleIndex, 3);
+    assertEquals(((TestSectionCreator.TestSection) leaf4).firstVisibleIndex, 0);
+    assertEquals(((TestSectionCreator.TestSection) leaf4).lastVisibleIndex, 3);
+    assertEquals(((TestSectionCreator.TestSection) leaf4).firstFullyVisibleIndex, 0);
+    assertEquals(((TestSectionCreator.TestSection) leaf4).lastFullyVisibleIndex, 3);
 
-    assertEquals(((TestSectionCreator.TestSection) node).mFirstVisibleIndex, 3);
-    assertEquals(((TestSectionCreator.TestSection) node).mLastVisibleIndex, 4);
-    assertEquals(((TestSectionCreator.TestSection) node).mFirstFullyVisibleIndex, 3);
-    assertEquals(((TestSectionCreator.TestSection) node).mLastFullyVisibleIndex, 4);
+    assertEquals(((TestSectionCreator.TestSection) node).firstVisibleIndex, 3);
+    assertEquals(((TestSectionCreator.TestSection) node).lastVisibleIndex, 4);
+    assertEquals(((TestSectionCreator.TestSection) node).firstFullyVisibleIndex, 3);
+    assertEquals(((TestSectionCreator.TestSection) node).lastFullyVisibleIndex, 4);
 
-    assertEquals(((TestSectionCreator.TestSection) node1).mFirstVisibleIndex, 0);
-    assertEquals(((TestSectionCreator.TestSection) node1).mLastVisibleIndex, 4);
-    assertEquals(((TestSectionCreator.TestSection) node1).mFirstFullyVisibleIndex, 0);
-    assertEquals(((TestSectionCreator.TestSection) node1).mLastFullyVisibleIndex, 4);
+    assertEquals(((TestSectionCreator.TestSection) node1).firstVisibleIndex, 0);
+    assertEquals(((TestSectionCreator.TestSection) node1).lastVisibleIndex, 4);
+    assertEquals(((TestSectionCreator.TestSection) node1).firstFullyVisibleIndex, 0);
+    assertEquals(((TestSectionCreator.TestSection) node1).lastFullyVisibleIndex, 4);
 
-    ((TestSectionCreator.TestSection) leaf1).mFirstVisibleIndex = 0;
-    ((TestSectionCreator.TestSection) leaf1).mLastVisibleIndex = 0;
-    ((TestSectionCreator.TestSection) leaf1).mFirstFullyVisibleIndex = 0;
-    ((TestSectionCreator.TestSection) leaf1).mLastFullyVisibleIndex = 0;
+    ((TestSectionCreator.TestSection) leaf1).firstVisibleIndex = 0;
+    ((TestSectionCreator.TestSection) leaf1).lastVisibleIndex = 0;
+    ((TestSectionCreator.TestSection) leaf1).firstFullyVisibleIndex = 0;
+    ((TestSectionCreator.TestSection) leaf1).lastFullyVisibleIndex = 0;
 
     tree.viewPortChanged(3,9, 3, 9);
 
-    assertEquals(((TestSectionCreator.TestSection) leaf1).mFirstVisibleIndex, 0);
-    assertEquals(((TestSectionCreator.TestSection) leaf1).mLastVisibleIndex, 0);
-    assertEquals(((TestSectionCreator.TestSection) leaf1).mFirstFullyVisibleIndex, 0);
-    assertEquals(((TestSectionCreator.TestSection) leaf1).mLastFullyVisibleIndex, 0);
+    assertEquals(((TestSectionCreator.TestSection) leaf1).firstVisibleIndex, 0);
+    assertEquals(((TestSectionCreator.TestSection) leaf1).lastVisibleIndex, 0);
+    assertEquals(((TestSectionCreator.TestSection) leaf1).firstFullyVisibleIndex, 0);
+    assertEquals(((TestSectionCreator.TestSection) leaf1).lastFullyVisibleIndex, 0);
 
     tree.viewPortChanged(6, 9, 7, 9);
 
-    assertEquals(((TestSectionCreator.TestSection) leaf4).mFirstVisibleIndex, 0);
-    assertEquals(((TestSectionCreator.TestSection) leaf4).mLastVisibleIndex, 3);
-    assertEquals(((TestSectionCreator.TestSection) leaf4).mFirstFullyVisibleIndex, 1);
-    assertEquals(((TestSectionCreator.TestSection) leaf4).mLastFullyVisibleIndex, 3);
+    assertEquals(((TestSectionCreator.TestSection) leaf4).firstVisibleIndex, 0);
+    assertEquals(((TestSectionCreator.TestSection) leaf4).lastVisibleIndex, 3);
+    assertEquals(((TestSectionCreator.TestSection) leaf4).firstFullyVisibleIndex, 1);
+    assertEquals(((TestSectionCreator.TestSection) leaf4).lastFullyVisibleIndex, 3);
   }
 
   @Test

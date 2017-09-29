@@ -17,6 +17,7 @@ import static com.facebook.litho.sections.Change.MOVE;
 import static com.facebook.litho.sections.Change.UPDATE;
 import static com.facebook.litho.sections.Change.UPDATE_RANGE;
 
+import android.support.annotation.VisibleForTesting;
 import com.facebook.litho.sections.SectionTree.Target;
 import com.facebook.litho.sections.annotations.DiffSectionSpec;
 import com.facebook.litho.sections.annotations.OnDiff;
@@ -57,12 +58,11 @@ public final class ChangeSet {
   }
 
   /**
-   * Add a new Change to this ChangeSet. This is what a
-   * {@link DiffSectionSpec} would call in its
-   * {@link OnDiff} method to append a
-   * {@link Change}.
+   * Add a new Change to this ChangeSet. This is what a {@link DiffSectionSpec} would call in its
+   * {@link OnDiff} method to append a {@link Change}.
    */
-  void addChange(Change change) {
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  public void addChange(Change change) {
     int changeDelta = 0;
     switch (change.getType()) {
       case INSERT:

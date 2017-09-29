@@ -32,19 +32,5 @@ components_robolectric_test(
         make_dep_path("litho-sections-core/src/main/java/com/facebook/litho/sections/logger:logger"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/viewtree:viewtree"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/sections:sections"),
-        ":testutils",
-    ],
-)
-
-android_library(
-    name = "testutils",
-    srcs = [
-        "TestSectionCreator.java",
-    ],
-    deps = [
-        COMPONENTS_JAVA_TARGET,
-        COMPONENTS_SECTIONS_TARGET,
-        COMPONENTS_MOCKITO_TARGET,
-        COMPONENTS_JSR_TARGET,
     ],
 )

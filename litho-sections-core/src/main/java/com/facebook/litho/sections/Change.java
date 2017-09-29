@@ -30,7 +30,7 @@ import java.util.List;
  * Change.insert(0, component);
  * </code>
  */
-@VisibleForTesting
+@VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
 public final class Change {
 
   static final int INSERT = 1;        // INSERT(index, component)
