@@ -69,8 +69,10 @@ class RecyclerSpec {
   @PropDefault static final int refreshProgressBarColor = Color.BLACK;
   @PropDefault static final boolean clipToPadding = true;
   @PropDefault static final boolean clipChildren = true;
-  @PropDefault static final int horizontalPadding = 0;
-  @PropDefault static final int verticalPadding = 0;
+  @PropDefault static final int leftPadding = 0;
+  @PropDefault static final int rightPadding = 0;
+  @PropDefault static final int topPadding = 0;
+  @PropDefault static final int bottomPadding = 0;
 
   @OnMeasure
   static void onMeasure(
@@ -125,8 +127,10 @@ class RecyclerSpec {
       @Prop Binder<RecyclerView> binder,
       @Prop(optional = true) boolean hasFixedSize,
       @Prop(optional = true) boolean clipToPadding,
-      @Prop(optional = true) int horizontalPadding,
-      @Prop(optional = true) int verticalPadding,
+      @Prop(optional = true) int leftPadding,
+      @Prop(optional = true) int rightPadding,
+      @Prop(optional = true) int topPadding,
+      @Prop(optional = true) int bottomPadding,
       @Prop(optional = true) boolean clipChildren,
       @Prop(optional = true) boolean nestedScrollingEnabled,
       @Prop(optional = true) int scrollBarStyle,
@@ -147,7 +151,7 @@ class RecyclerSpec {
     recyclerView.setHasFixedSize(hasFixedSize);
     recyclerView.setClipToPadding(clipToPadding);
     recyclerViewWrapper.setClipToPadding(clipToPadding);
-    recyclerView.setPadding(horizontalPadding, verticalPadding, horizontalPadding, verticalPadding);
+    recyclerView.setPadding(leftPadding, topPadding, rightPadding, bottomPadding);
     recyclerView.setClipChildren(clipChildren);
     recyclerViewWrapper.setClipChildren(clipChildren);
     recyclerView.setNestedScrollingEnabled(nestedScrollingEnabled);
@@ -284,8 +288,10 @@ class RecyclerSpec {
       @Prop Diff<Binder<RecyclerView>> binder,
       @Prop(optional = true) Diff<Boolean> hasFixedSize,
       @Prop(optional = true) Diff<Boolean> clipToPadding,
-      @Prop(optional = true) Diff<Integer> horizontalPadding,
-      @Prop(optional = true) Diff<Integer> verticalPadding,
+      @Prop(optional = true) Diff<Integer> leftPadding,
+      @Prop(optional = true) Diff<Integer> rightPadding,
+      @Prop(optional = true) Diff<Integer> topPadding,
+      @Prop(optional = true) Diff<Integer> bottomPadding,
       @Prop(optional = true) Diff<Boolean> clipChildren,
       @Prop(optional = true) Diff<Integer> scrollBarStyle,
       @Prop(optional = true) Diff<RecyclerView.ItemDecoration> itemDecoration,
@@ -304,11 +310,19 @@ class RecyclerSpec {
       return true;
     }
 
-    if (!horizontalPadding.getPrevious().equals(horizontalPadding.getNext())) {
+    if (!leftPadding.getPrevious().equals(leftPadding.getNext())) {
       return true;
     }
 
-    if (!verticalPadding.getPrevious().equals(verticalPadding.getNext())) {
+    if (!rightPadding.getPrevious().equals(rightPadding.getNext())) {
+      return true;
+    }
+
+    if (!topPadding.getPrevious().equals(topPadding.getNext())) {
+      return true;
+    }
+
+    if (!bottomPadding.getPrevious().equals(bottomPadding.getNext())) {
       return true;
     }
 
