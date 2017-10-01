@@ -124,6 +124,8 @@ public class ComponentTree {
   private final boolean mCanCacheDrawingDisplayLists;
   private final boolean mShouldClipChildren;
 
+  @Nullable private final LayoutHandler mPreAllocateMountContentHandler;
+
   // These variables are only accessed from the main thread.
   @ThreadConfined(ThreadConfined.UI)
   private boolean mIsMounting;
@@ -206,6 +208,7 @@ public class ComponentTree {
     mIncrementalMountEnabled = builder.incrementalMountEnabled;
     mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
     mLayoutThreadHandler = builder.layoutThreadHandler;
+    mPreAllocateMountContentHandler = builder.preAllocateMountContentHandler;
     mLayoutLock = builder.layoutLock;
     mIsAsyncUpdateStateEnabled = builder.asyncStateUpdates;
     mCanPrefetchDisplayLists = builder.canPrefetchDisplayLists;
@@ -720,26 +723,18 @@ public class ComponentTree {
   }
 
   /**
-   * Schedule to asynchronizely pre-allocate the mount content of all MountSpec in this tree.
-   * Must be called after layout is created, or after async layout is scheduled.
+   * Pre-allocate the mount content of all MountSpec in this tree. Must be called after layout is
+   * created.
    */
   @ThreadSafe(enableChecks = false)
-  public void preAllocateMountContentAsync() {
-    mLayoutThreadHandler.removeCallbacks(mPreAllocateMountContentRunnable);
-    mLayoutThreadHandler.post(mPreAllocateMountContentRunnable);
-  }
-
-  /**
-   * Pre-allocate the mount content of all MountSpec in this tree.
-   * Must be called after layout is created.
-   */
-  @ThreadSafe(enableChecks = false)
-  public void preAllocateMountContent() {
+  private void preAllocateMountContent() {
     final LayoutState toPrePopulate;
 
     // Cancel any scheduled preallocate requests we might have in the background queue
     // since we are starting the preallocation.
-    mLayoutThreadHandler.removeCallbacks(mPreAllocateMountContentRunnable);
+    if (mPreAllocateMountContentHandler != null) {
+      mPreAllocateMountContentHandler.removeCallbacks(mPreAllocateMountContentRunnable);
+    }
 
     synchronized (this) {
       if (mMainThreadLayoutState != null) {
@@ -1265,6 +1260,11 @@ public class ComponentTree {
       postBackgroundLayoutStateUpdated();
     }
 
+    if (mPreAllocateMountContentHandler != null) {
+      mPreAllocateMountContentHandler.removeCallbacks(mPreAllocateMountContentRunnable);
+      mPreAllocateMountContentHandler.post(mPreAllocateMountContentRunnable);
+    }
+
     if (logger != null) {
       logger.log(layoutEvent);
     }
@@ -1306,7 +1306,10 @@ public class ComponentTree {
 
       mLayoutThreadHandler.removeCallbacks(mCalculateLayoutRunnable);
       mLayoutThreadHandler.removeCallbacks(mUpdateStateSyncRunnable);
-      mLayoutThreadHandler.removeCallbacks(mPreAllocateMountContentRunnable);
+
+      if (mPreAllocateMountContentHandler != null) {
+        mPreAllocateMountContentHandler.removeCallbacks(mPreAllocateMountContentRunnable);
+      }
 
       mReleased = true;
       if (mLithoView != null) {
@@ -1496,6 +1499,7 @@ public class ComponentTree {
     private boolean incrementalMountEnabled = true;
     private boolean isLayoutDiffingEnabled = true;
     private LayoutHandler layoutThreadHandler;
+    private LayoutHandler preAllocateMountContentHandler;
     private Object layoutLock;
     private StateHandler stateHandler;
     private RenderState previousRenderState;
@@ -1574,11 +1578,16 @@ public class ComponentTree {
       return this;
     }
 
+    /** Specify the handler for to preAllocateMountContent */
+    public Builder preAllocateMountContentHandler(LayoutHandler handler) {
+      preAllocateMountContentHandler = handler;
+      return this;
+    }
+
     /**
-     * Specify the looper to use for running layouts on. Note that in rare cases
-     * layout must run on the UI thread. For example, if you rotate the screen,
-     * we must measure on the UI thread. If you don't specify a Looper here, the
-     * Components default Looper will be used.
+     * Specify the looper to use for running layouts on. Note that in rare cases layout must run on
+     * the UI thread. For example, if you rotate the screen, we must measure on the UI thread. If
+     * you don't specify a Looper here, the Components default Looper will be used.
      */
     public Builder layoutThreadHandler(LayoutHandler handler) {
       layoutThreadHandler = handler;
