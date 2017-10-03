@@ -109,9 +109,9 @@ public class ComponentTreeIncrementalMountLocalVisibleBoundsTest {
 
     mComponentTree.attach();
 
-    ArgumentCaptor<ViewPager.OnPageChangeListener> argumentCaptor =
+    ArgumentCaptor<ViewPager.OnPageChangeListener> listenerArgumentCaptor =
         ArgumentCaptor.forClass(ViewPager.OnPageChangeListener.class);
-    verify(viewPager).addOnPageChangeListener(argumentCaptor.capture());
+    verify(viewPager).addOnPageChangeListener(listenerArgumentCaptor.capture());
 
     doAnswer(
             new Answer<Boolean>() {
@@ -125,11 +125,16 @@ public class ComponentTreeIncrementalMountLocalVisibleBoundsTest {
         .when(mLithoView)
         .getLocalVisibleRect(any(Rect.class));
 
-    argumentCaptor.getValue().onPageScrolled(10, 10, 10);
+    listenerArgumentCaptor.getValue().onPageScrolled(10, 10, 10);
     assertThat(mMountedRect).isEqualTo(new Rect(10, 5, 20, 15));
 
     mComponentTree.detach();
-    verify(viewPager).removeOnPageChangeListener(argumentCaptor.getValue());
+
+    ArgumentCaptor<Runnable> runnableArgumentCaptor = ArgumentCaptor.forClass(Runnable.class);
+    verify(viewPager).postOnAnimation(runnableArgumentCaptor.capture());
+
+    runnableArgumentCaptor.getValue().run();
+    verify(viewPager).removeOnPageChangeListener(listenerArgumentCaptor.getValue());
   }
 
   /**

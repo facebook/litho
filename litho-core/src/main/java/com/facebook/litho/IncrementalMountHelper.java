@@ -9,6 +9,7 @@
 
 package com.facebook.litho;
 
+import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.view.ViewParent;
 import com.facebook.litho.config.ComponentsConfiguration;
@@ -81,7 +82,14 @@ class IncrementalMountHelper {
     private void release() {
       final ViewPager viewPager = mViewPager.get();
       if (viewPager != null) {
-        viewPager.removeOnPageChangeListener(this);
+        ViewCompat.postOnAnimation(
+            viewPager,
+            new Runnable() {
+              @Override
+              public void run() {
+                viewPager.removeOnPageChangeListener(ViewPagerListener.this);
+              }
+            });
       }
     }
   }
