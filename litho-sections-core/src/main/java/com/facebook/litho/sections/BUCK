@@ -11,6 +11,9 @@ include_defs("//COMPONENTS_DEFS")
 litho_android_library(
     name = "sections",
     srcs = glob(["*.java"]),
+    exported_deps = [
+        COMPONENTS_SECTIONS_ANNOTATIONS_TARGET,
+    ],
     visibility = COMPONENTS_VISIBILITY,
     deps = [
         COMPONENTS_JAVA_TARGET,
@@ -18,7 +21,6 @@ litho_android_library(
         COMPONENTS_JSR_TARGET,
         COMPONENTS_ANDROIDSUPPORT_TARGET,
         COMPONENTS_WIDGET_TARGET,
-        COMPONENTS_SECTIONS_ANNOTATIONS_TARGET,
         make_dep_path("litho-sections-core/src/main/java/com/facebook/litho/sections/config:config"),
         make_dep_path("litho-sections-core/src/main/java/com/facebook/litho/sections/logger:logger"),
     ],

@@ -23,6 +23,18 @@ litho_android_library(
     ],
 )
 
+litho_android_library(
+    name = "sections",
+    exported_deps = [
+        ":components",
+        COMPONENTS_SECTIONS_TARGET,
+        COMPONENTS_SECTIONS_ANNOTATIONS_TARGET,
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+)
+
 android_aar(
     name = "release-litho-core",
     include_build_config_class = True,
