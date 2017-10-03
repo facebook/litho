@@ -1253,7 +1253,15 @@ public class RecyclerBinder
       final ViewCreator viewCreator = mRenderInfoViewCreatorController.getViewCreator(viewType);
 
       if (viewCreator != null) {
-        return new BaseViewHolder(viewCreator.createView(mComponentContext), false);
+        final View view = viewCreator.createView(mComponentContext);
+        final RecyclerView.LayoutParams layoutParams;
+        if (mLayoutInfo.getScrollDirection() == OrientationHelper.VERTICAL) {
+          layoutParams = new RecyclerView.LayoutParams(MATCH_PARENT, WRAP_CONTENT);
+        } else {
+          layoutParams = new RecyclerView.LayoutParams(WRAP_CONTENT, MATCH_PARENT);
+        }
+        view.setLayoutParams(layoutParams);
+        return new BaseViewHolder(view, false);
       } else {
         final LithoView lithoView =
             mLithoViewFactory == null
@@ -1280,37 +1288,28 @@ public class RecyclerBinder
               mComponentContext, childrenWidthSpec, childrenHeightSpec, null);
         }
 
-        int width, height;
-        switch (mLayoutInfo.getScrollDirection()) {
-          case OrientationHelper.VERTICAL:
-            if (SizeSpec.getMode(childrenWidthSpec) == SizeSpec.EXACTLY) {
-              width = SizeSpec.getSize(childrenWidthSpec);
-            } else {
-              width = ViewGroup.LayoutParams.MATCH_PARENT;
-            }
-            if (SizeSpec.getMode(childrenHeightSpec) == SizeSpec.EXACTLY) {
-              height = SizeSpec.getSize(childrenHeightSpec);
-            } else {
-              height = WRAP_CONTENT;
-            }
+        final boolean isOrientationVertical =
+            mLayoutInfo.getScrollDirection() == OrientationHelper.VERTICAL;
 
-            lithoView.setLayoutParams(new RecyclerView.LayoutParams(width, height));
-            break;
-          default:
-            if (SizeSpec.getMode(childrenWidthSpec) == SizeSpec.EXACTLY) {
-              width = SizeSpec.getSize(childrenWidthSpec);
-            } else {
-              width = ViewGroup.LayoutParams.WRAP_CONTENT;
-            }
-            if (SizeSpec.getMode(childrenHeightSpec) == SizeSpec.EXACTLY) {
-              height = SizeSpec.getSize(childrenHeightSpec);
-            } else {
-              height = MATCH_PARENT;
-            }
-
-            lithoView.setLayoutParams(new RecyclerView.LayoutParams(width, height));
+        final int width;
+        final int height;
+        if (SizeSpec.getMode(childrenWidthSpec) == SizeSpec.EXACTLY) {
+          width = SizeSpec.getSize(childrenWidthSpec);
+        } else if (isOrientationVertical) {
+          width = MATCH_PARENT;
+        } else {
+          width = WRAP_CONTENT;
         }
 
+        if (SizeSpec.getMode(childrenHeightSpec) == SizeSpec.EXACTLY) {
+          height = SizeSpec.getSize(childrenHeightSpec);
+        } else if (isOrientationVertical) {
+          height = WRAP_CONTENT;
+        } else {
+          height = MATCH_PARENT;
+        }
+
+        lithoView.setLayoutParams(new RecyclerView.LayoutParams(width, height));
         lithoView.setComponentTree(componentTreeHolder.getComponentTree());
       } else {
         renderInfo.getViewBinder().bind(holder.itemView);
