@@ -22,6 +22,6 @@ prebuilt_jar(
 
 remote_file(
     name = "truth.jar",
-    sha1 = "9d591b5a66eda81f0b88cf1c748ab8853d99b18b",
-    url = "mvn:com.google.truth:truth:jar:0.30",
+    sha1 = "7485219d2c1d341097a19382c02bde07e69ff5d2",
+    url = "mvn:com.google.truth:truth:jar:0.36",
 )

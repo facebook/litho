@@ -71,7 +71,7 @@ ext.deps = [
         powermockXstream   : 'org.powermock:powermock-classloading-xstream:1.5.6',
         mockitoCore        : 'org.mockito:mockito-core:1.9.5',
         assertjCore        : 'org.assertj:assertj-core:2.8.0',
-        compileTesting     : 'com.google.testing.compile:compile-testing:0.10',
+        compileTesting     : 'com.google.testing.compile:compile-testing:0.12',
         // Processor
         javapoet           : 'com.squareup:javapoet:1.9.0',
         // Misc
