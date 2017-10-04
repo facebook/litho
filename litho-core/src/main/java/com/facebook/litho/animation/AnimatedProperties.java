@@ -213,7 +213,8 @@ public final class AnimatedProperties {
 
     @Override
     public void reset(Object mountContent) {
-      // This gets reset in MountState.
+      // TODO(t22367997): Reset alpha based on final LayoutOutput instead of always resetting to 1
+      assertIsView(mountContent, this).setAlpha(1);
     }
   }
 

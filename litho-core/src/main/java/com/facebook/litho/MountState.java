@@ -1233,6 +1233,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       if (!TextUtils.isEmpty(nodeInfo.getContentDescription())) {
         unsetContentDescription(view);
       }
+
+      unsetAlpha(view, nodeInfo);
     }
 
     view.setClickable(MountItem.isViewClickable(item.getFlags()));
@@ -1241,7 +1243,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     unsetFocusable(view, item);
     unsetEnabled(view, item);
     unsetScale(view);
-    unsetAlpha(view);
 
     if (item.getImportantForAccessibility() != IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
       unsetImportantForAccessibility(view);
@@ -1651,9 +1652,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
   }
 
-  private static void unsetAlpha(View view) {
+  private static void unsetAlpha(View view, NodeInfo nodeInfo) {
     if (Build.VERSION.SDK_INT >= 11) {
-      if (view.getAlpha() != 1) {
+      if (nodeInfo.isAlphaSet() && view.getAlpha() != 1) {
         view.setAlpha(1);
       }
     }
