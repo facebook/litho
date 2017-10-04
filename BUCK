@@ -19,7 +19,7 @@ litho_android_library(
         "PUBLIC",
     ],
     deps = [
-        ":build_config",
+        COMPONENTS_BUILD_CONFIG_TARGET,
     ],
 )
 
