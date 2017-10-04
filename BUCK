@@ -35,21 +35,6 @@ litho_android_library(
     ],
 )
 
-android_aar(
-    name = "release-litho-core",
-    include_build_config_class = True,
-    manifest_skeleton = "litho-core/src/main/AndroidManifest.xml",
-    visibility = [
-        "PUBLIC",
-    ],
-    deps = [
-        COMPONENTS_JAVA_TARGET,
-        COMPONENTS_CONFIG_TARGET,
-        ":build_config",
-        ":res",
-    ],
-)
-
 android_resource(
     name = "res",
     package = "com.facebook.litho",
