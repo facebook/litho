@@ -64,6 +64,7 @@ dependencies {
     testImplementation project(':litho-processor')
     testImplementation project(':litho-sections-core')
     testImplementation project(':litho-sections-processor')
+    testImplementation project(':litho-sections-widget')
 
     // Testing deps
     testCompileOnly deps.jsr305

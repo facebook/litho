@@ -8,11 +8,8 @@
 include_defs("//COMPONENTS_DEFS")
 
 components_robolectric_test(
-    name = "common",
+    name = "widget",
     srcs = glob(["*.java"]),
-    plugins = [
-        COMPONENTS_SECTIONS_PROCESSOR_TARGET,
-    ],
     source = "8",
     target = "8",
     deps = [
@@ -23,14 +20,14 @@ components_robolectric_test(
         COMPONENTS_WIDGET_TARGET,
         COMPONENTS_BUILD_CONFIG_TARGET,
         COMPONENTS_SECTIONS_TARGET,
-        COMPONENTS_SECTIONS_ANNOTATIONS_TARGET,
         COMPONENTS_ANDROIDSUPPORT_TARGET,
-        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
-        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner"),
+        COMPONENTS_POWERMOCK_REFLECT_TARGET,
         make_dep_path("litho-sections-widget/src/main/java/com/facebook/litho/sections/widget:widget"),
-        make_dep_path("litho-it/src/main/java/com/facebook/litho/sections/common:common"),
-        make_dep_path("litho-sections-core/src/main/java/com/facebook/litho/sections/logger:logger"),
-        COMPONENTS_SECTIONS_COMMON_TARGET,
+        make_dep_path("litho-sections-core/src/main/java/com/facebook/litho/sections/common:common"),
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner"),
+        COMPONENTS_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing:testing"),
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/util:util"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/viewtree:viewtree"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/sections:sections"),
     ],
