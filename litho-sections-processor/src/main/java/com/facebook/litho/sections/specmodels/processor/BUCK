@@ -31,7 +31,7 @@ java_library(
     ],
     source = "8",
     target = "8",
-    visibility = COMPONENTS_VISIBILITY,
+    visibility = ["PUBLIC"],
     deps = [
         COMPONENTS_SECTIONS_ANNOTATIONS_TARGET,
         COMPONENTS_ANNOTATIONS_TARGET,
