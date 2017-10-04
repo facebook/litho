@@ -11,7 +11,7 @@ include_defs("//COMPONENTS_DEFS")
 litho_android_library(
     name = "config",
     srcs = glob(["*.java"]),
-    visibility = COMPONENTS_VISIBILITY,
+    visibility = ["PUBLIC"],
     deps = [
         COMPONENTS_JSR_TARGET,
         make_dep_path("litho-sections-core/src/main/java/com/facebook/litho/sections/logger:logger"),
