@@ -24,6 +24,18 @@
   - id: events-overview
   - id: events-touch-handling
   - id: visibility-handling
+- title: Sections
+  internal: true
+  items:
+  - id: sections-intro
+  - id: sections-tutorial
+  - id: group-sections
+  - id: diff-sections
+  - id: sections-building-blocks
+  - id: sections-events
+  - id: sections-view-support
+  - id: services
+  - id: sections-architecture
 - title: Compatibility
   items:
   - id: styles
@@ -59,7 +71,3 @@
   - id: contributing
   - id: community-showcase
   - id: repo-structure
-- title: Sections
-  internal: true
-  items:
-  - id: sections-intro
