@@ -27,6 +27,10 @@ public class ComponentsConfiguration {
    */
   public static final boolean IS_INTERNAL_BUILD = BuildConfig.IS_INTERNAL_BUILD;
 
+  /** Indicates that the incremental mount helper is required for this build. */
+  public static final boolean USE_INCREMENTAL_MOUNT_HELPER =
+      BuildConfig.USE_INCREMENTAL_MOUNT_HELPER;
+
   /**
    * Option to enabled debug mode. This will save extra data asscociated with each node and allow
    * more info about the hierarchy to be retrieved. Used to enable stetho integration. It is highly

@@ -66,6 +66,7 @@ android_build_config(
     package = "com.facebook.litho",
     values = [
         "boolean IS_INTERNAL_BUILD = true",
+        "boolean USE_INCREMENTAL_MOUNT_HELPER = true",
     ],
     visibility = COMPONENTS_VISIBILITY,
 )

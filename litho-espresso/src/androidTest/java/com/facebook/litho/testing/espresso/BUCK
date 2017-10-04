@@ -46,5 +46,6 @@ android_build_config(
     package = "com.facebook.litho",
     values = [
         "boolean IS_INTERNAL_BUILD = false",
+        "boolean USE_INCREMENTAL_MOUNT_HELPER = true",
     ],
 )

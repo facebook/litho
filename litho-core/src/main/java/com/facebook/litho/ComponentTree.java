@@ -97,7 +97,7 @@ public class ComponentTree {
   private static final int[] sCurrentLocation = new int[2];
   private static final int[] sParentLocation = new int[2];
   private static final Rect sParentBounds = new Rect();
-  private final IncrementalMountHelper mIncrementalMountHelper;
+  @Nullable private final IncrementalMountHelper mIncrementalMountHelper;
 
   private final Runnable mCalculateLayoutRunnable = new Runnable() {
     @Override
@@ -236,7 +236,10 @@ public class ComponentTree {
       mId = generateComponentTreeId();
     }
 
-    mIncrementalMountHelper = new IncrementalMountHelper(this);
+    mIncrementalMountHelper =
+        ComponentsConfiguration.USE_INCREMENTAL_MOUNT_HELPER
+            ? new IncrementalMountHelper(this)
+            : null;
   }
 
   @ThreadConfined(ThreadConfined.UI)
@@ -360,7 +363,9 @@ public class ComponentTree {
       throw new IllegalStateException("Trying to attach a ComponentTree without a set View");
     }
 
-    mIncrementalMountHelper.onAttach(mLithoView);
+    if (mIncrementalMountHelper != null) {
+      mIncrementalMountHelper.onAttach(mLithoView);
+    }
 
     LayoutState toRelease;
     int componentRootId;
@@ -540,7 +545,9 @@ public class ComponentTree {
   void detach() {
     assertMainThread();
 
-    mIncrementalMountHelper.onDetach();
+    if (mIncrementalMountHelper != null) {
+      mIncrementalMountHelper.onDetach();
+    }
 
     synchronized (this) {
       mIsAttached = false;
