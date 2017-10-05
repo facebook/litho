@@ -40,6 +40,9 @@ public class LithoView extends ComponentHost {
   private boolean mForceLayout;
   private boolean mSuppressMeasureComponentTree;
   private boolean mIsMeasuring = false;
+  private boolean mHasNewComponentTree = false;
+  private int mAnimatedHeight = -1;
+  private boolean mIsExpectingBoundsAnimation = false;
 
   private final AccessibilityManager mAccessibilityManager;
 
@@ -193,8 +196,58 @@ public class LithoView extends ComponentHost {
     mSuppressMeasureComponentTree = suppress;
   }
 
+  /**
+   * Sets the height that the LithoView should take on the next measure pass and then requests a
+   * layout. This should be called from animation-driving code on each frame to animate the size of
+   * the LithoView.
+   *
+   * <p>NB: This method should only be called if the LithoView is expecting a bounds animation
+   * ({@link #isExpectingBoundsAnimation()}.
+   */
+  public void setAnimatedHeight(int height) {
+    assertExpectingBoundsAnimation();
+    mAnimatedHeight = height;
+    requestLayout();
+  }
+
+  /**
+   * @return whether the LithoView is in a state where it's expecting its height to be animated to
+   *     the height of its current LayoutState. This means the LithoView has seen a bounds change in
+   *     onMeasure, but kept its current bounds.
+   */
+  public boolean isExpectingBoundsAnimation() {
+    return mIsExpectingBoundsAnimation;
+  }
+
+  /** Should be called when the animation system finishes animating the bounds of this LithoView. */
+  public void endBoundsAnimation() {
+    mIsExpectingBoundsAnimation = false;
+  }
+
+  private void assertExpectingBoundsAnimation() {
+    if (!mIsExpectingBoundsAnimation) {
+      throw new IllegalStateException(
+          "Cannot call this method when not expecting to animate bounds!");
+    }
+  }
+
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    // mAnimatedHeight >= 0 if something is driving a height animation.
+    if (mAnimatedHeight != -1) {
+      final int nextHeight = mAnimatedHeight;
+      mAnimatedHeight = -1;
+
+      // If the mount state is dirty, we want to ignore the current animation and calculate the
+      // new LayoutState as normal below. That LayoutState has the opportunity to define its own
+      // transition to a new height from the current height of the LithoView, or if not we will
+      // jump straight to that height.
+      if (!isMountStateDirty()) {
+        setMeasuredDimension(getWidth(), nextHeight);
+        return;
+      }
+    }
+
     int width = MeasureSpec.getSize(widthMeasureSpec);
     int height = MeasureSpec.getSize(heightMeasureSpec);
 
@@ -214,8 +267,21 @@ public class LithoView extends ComponentHost {
       height = sLayoutSize[1];
     }
 
-    setMeasuredDimension(width, height);
+    // If we're mounting a new ComponentTree, it probably has a different height but we don't want
+    // to animate it.
+    mIsExpectingBoundsAnimation =
+        height != getHeight()
+            && !mHasNewComponentTree
+            && mComponentTree != null
+            && mComponentTree.hasLithoViewBoundsAnimation();
 
+    if (mIsExpectingBoundsAnimation) {
+      setMeasuredDimension(getWidth(), getHeight());
+    } else {
+      setMeasuredDimension(width, height);
+    }
+
+    mHasNewComponentTree = false;
     mIsMeasuring = false;
   }
 
@@ -312,6 +378,7 @@ public class LithoView extends ComponentHost {
       return;
     }
 
+    mHasNewComponentTree = true;
     setMountStateDirty();
 
     if (mComponentTree != null) {

@@ -181,7 +181,11 @@ public final class AnimatedProperties {
 
     @Override
     public void set(Object mountContent, float value) {
-      throw new UnsupportedOperationException("Setting height in animations is not supported yet.");
+      if (!(mountContent instanceof LithoView)) {
+        throw new UnsupportedOperationException(
+            "Setting height in animations is not supported yet.");
+      }
+      ((LithoView) mountContent).setAnimatedHeight((int) value);
     }
 
     @Override

@@ -43,11 +43,13 @@ public class TransitionManagerAnimationCreationTest {
 
   @Before
   public void setup() {
-    mTransitionManager = new TransitionManager(new TransitionManager.OnAnimationCompleteListener() {
-      @Override
-      public void onAnimationComplete(String transitionKey) {
-      }
-    });
+    mTransitionManager =
+        new TransitionManager(
+            new TransitionManager.OnAnimationCompleteListener() {
+              @Override
+              public void onAnimationComplete(String transitionKey) {}
+            },
+            mock(MountState.class));
     mTestVerificationAnimator = new Transition.TransitionAnimator() {
       @Override
       public TransitionAnimationBinding createAnimation(PropertyAnimation propertyAnimation) {

@@ -2472,9 +2472,13 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     return true;
   }
 
+  LithoView getLithoView() {
+    return mLithoView;
+  }
+
   private void prepareTransitionManager(LayoutState layoutState) {
     if (mTransitionManager == null) {
-      mTransitionManager = new TransitionManager(this);
+      mTransitionManager = new TransitionManager(this, this);
     }
   }
 

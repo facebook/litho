@@ -1690,6 +1690,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return mTransitionKey;
   }
 
+  boolean hasTransitionKey() {
+    return !TextUtils.isEmpty(mTransitionKey);
+  }
+
   /**
    * A unique identifier which may be set for retrieving a component and its bounds when testing.
    */

@@ -490,6 +490,13 @@ public class ComponentTree {
         location[1] + view.getHeight());
   }
 
+  /** @see LayoutState#hasLithoViewBoundsAnimation() */
+  @ThreadConfined(ThreadConfined.UI)
+  boolean hasLithoViewBoundsAnimation() {
+    assertMainThread();
+    return mMainThreadLayoutState != null && mMainThreadLayoutState.hasLithoViewBoundsAnimation();
+  }
+
   void mountComponent(Rect currentVisibleArea, boolean processVisibilityOutputs) {
     assertMainThread();
 

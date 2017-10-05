@@ -192,10 +192,13 @@ public class TransitionManager {
   private final RootAnimationListener mRootAnimationListener = new RootAnimationListener();
   private final TransitionsResolver mResolver = new TransitionsResolver();
   private final OnAnimationCompleteListener mOnAnimationCompleteListener;
+  private final MountState mMountState;
   private AnimationBinding mRootAnimationToRun;
 
-  public TransitionManager(OnAnimationCompleteListener onAnimationCompleteListener) {
+  public TransitionManager(
+      OnAnimationCompleteListener onAnimationCompleteListener, MountState mountState) {
     mOnAnimationCompleteListener = onAnimationCompleteListener;
+    mMountState = mountState;
   }
 
   /**
@@ -547,10 +550,8 @@ public class TransitionManager {
     }
   }
 
-  private AnimationBinding maybeCreateAnimation(
-      TransitionUnit transition,
-      String key,
-      AnimatedProperty property) {
+  private @Nullable AnimationBinding maybeCreateAnimation(
+      TransitionUnit transition, String key, AnimatedProperty property) {
     final AnimationState animationState = mAnimationStates.get(key);
 
     if (AnimationsDebug.ENABLED) {
@@ -589,6 +590,18 @@ public class TransitionManager {
         startValue = property.get(animationState.currentLayoutOutput);
       } else {
         startValue = transition.getAppearFrom().resolve(mResolver, propertyHandle);
+      }
+    }
+
+    final LayoutOutput layoutOutput =
+        animationState.nextLayoutOutput != null
+            ? animationState.nextLayoutOutput
+            : animationState.currentLayoutOutput;
+    final boolean isRoot = (layoutOutput.getId() == 0);
+    if (isRoot && property == AnimatedProperties.HEIGHT) {
+      // We're trying to animate the LithoView itself -- if it's not expecting it, abort
+      if (!mMountState.getLithoView().isExpectingBoundsAnimation()) {
+        return null;
       }
     }
 
@@ -909,6 +922,9 @@ public class TransitionManager {
         if (didFinish) {
           if (AnimationsDebug.ENABLED) {
             Log.d(AnimationsDebug.TAG, "Finished all animations for key " + key);
+          }
+          if (animationState.mountContent instanceof LithoView) {
+            ((LithoView) animationState.mountContent).endBoundsAnimation();
           }
           recursivelySetChildClipping(animationState.mountContent, true);
           if (mOnAnimationCompleteListener != null) {

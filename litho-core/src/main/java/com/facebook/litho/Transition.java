@@ -228,6 +228,37 @@ public abstract class Transition {
           new PropertyAnimation(propertyHandle, targetValue);
       return mTransitionAnimator.createAnimation(propertyAnimation);
     }
+
+    boolean targetsKey(String key) {
+      switch (mAnimationTarget.componentTarget.componentTargetType) {
+        case ALL:
+          return true;
+        case SET:
+          return arrayContains(
+              (String[]) mAnimationTarget.componentTarget.componentTargetExtraData, key);
+        case SINGLE:
+          return key.equals(mAnimationTarget.componentTarget.componentTargetExtraData);
+        default:
+          throw new RuntimeException(
+              "Didn't handle type: " + mAnimationTarget.componentTarget.componentTargetType);
+      }
+    }
+
+    boolean targetsProperty(AnimatedProperty property) {
+      switch (mAnimationTarget.propertyTarget.propertyTargetType) {
+        case ALL:
+          return true;
+        case SET:
+          return arrayContains(
+              (AnimatedProperty[]) mAnimationTarget.propertyTarget.propertyTargetExtraData,
+              property);
+        case SINGLE:
+          return property.equals(mAnimationTarget.propertyTarget.propertyTargetExtraData);
+        default:
+          throw new RuntimeException(
+              "Didn't handle type: " + mAnimationTarget.propertyTarget.propertyTargetExtraData);
+      }
+    }
   }
 
   public static class TransitionUnitsBuilder extends Transition {
@@ -367,6 +398,16 @@ public abstract class Transition {
       mAppearFrom = null;
       mDisappearTo = null;
     }
+  }
+
+  private static <T> boolean arrayContains(T[] array, T value) {
+    for (int i = 0, size = array.length; i < size; i++) {
+      if (array[i] == value) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   /**

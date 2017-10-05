@@ -36,6 +36,7 @@ import static com.facebook.litho.NodeInfo.ENABLED_SET_FALSE;
 import static com.facebook.litho.NodeInfo.ENABLED_UNSET;
 import static com.facebook.litho.NodeInfo.FOCUS_SET_TRUE;
 import static com.facebook.litho.SizeSpec.EXACTLY;
+import static com.facebook.litho.TransitionUtils.hasBoundsAnimation;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -178,6 +179,7 @@ class LayoutState {
   private boolean mClipChildren = true;
   private ArrayList<Component> mComponentsNeedingPreviousRenderData;
   private SimpleArrayMap<String, LayoutOutput> mTransitionKeyMapping;
+  private boolean mHasLithoViewBoundsAnimation = false;
 
   LayoutState() {
     mLayoutStateOutputIdCalculator = new LayoutStateOutputIdCalculator();
@@ -650,6 +652,11 @@ class LayoutState {
 
           if (transition != null) {
             layoutState.getOrCreateTransitionContext().addTransition(transition);
+            if (!layoutState.mHasLithoViewBoundsAnimation
+                && layoutState.mLayoutRoot.hasTransitionKey()) {
+              layoutState.mHasLithoViewBoundsAnimation =
+                  hasBoundsAnimation(layoutState.mLayoutRoot.getTransitionKey(), transition);
+            }
           }
         } else {
           if (layoutState.mComponentsNeedingPreviousRenderData == null) {
@@ -1803,6 +1810,7 @@ class LayoutState {
       }
 
       mTransitionKeyMapping = null;
+      mHasLithoViewBoundsAnimation = false;
 
       ComponentsPools.release(this);
     }
@@ -1952,8 +1960,14 @@ class LayoutState {
   }
 
   /**
-   * @return whether there are any items in the queue for Display Lists prefetching.
+   * @return whether the main thread layout state defines a transition that animates the bounds of
+   *     the root component (and thus the LithoView).
    */
+  boolean hasLithoViewBoundsAnimation() {
+    return mHasLithoViewBoundsAnimation;
+  }
+
+  /** @return whether there are any items in the queue for Display Lists prefetching. */
   boolean hasItemsForDLPrefetch() {
     return !mDisplayListsToPrefetch.isEmpty();
   }
