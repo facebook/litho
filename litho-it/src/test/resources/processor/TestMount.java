@@ -393,11 +393,11 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
     c.updateStateLazy(_stateUpdate);
   }
 
-  public static Builder create(ComponentContext context) {
+  public static <S extends View> Builder<S> create(ComponentContext context) {
     return create(context, 0, 0);
   }
 
-  public static Builder create(ComponentContext context, int defStyleAttr, int defStyleRes) {
+  public static <S extends View> Builder<S> create(ComponentContext context, int defStyleAttr, int defStyleRes) {
     Builder builder = sBuilderPool.acquire();
     if (builder == null) {
       builder = new Builder();
@@ -594,84 +594,84 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
       mRequired.clear();
     }
 
-    public Builder prop1(int prop1) {
+    public Builder<S> prop1(int prop1) {
       this.mTestMountImpl.prop1 = prop1;
       mRequired.set(0);
       return this;
     }
 
-    public Builder prop6(long prop6) {
+    public Builder<S> prop6(long prop6) {
       this.mTestMountImpl.prop6 = prop6;
       mRequired.set(1);
       return this;
     }
 
-    public Builder prop3(Object prop3) {
+    public Builder<S> prop3(Object prop3) {
       this.mTestMountImpl.prop3 = prop3;
       mRequired.set(2);
       return this;
     }
 
-    public Builder prop4(char[] prop4) {
+    public Builder<S> prop4(char[] prop4) {
       this.mTestMountImpl.prop4 = prop4;
       mRequired.set(3);
       return this;
     }
 
-    public Builder prop2(boolean prop2) {
+    public Builder<S> prop2(boolean prop2) {
       this.mTestMountImpl.prop2 = prop2;
       return this;
     }
 
-    public Builder prop8(long prop8) {
+    public Builder<S> prop8(long prop8) {
       this.mTestMountImpl.prop8 = prop8;
       mRequired.set(4);
       return this;
     }
 
-    public Builder prop7(CharSequence prop7) {
+    public Builder<S> prop7(CharSequence prop7) {
       this.mTestMountImpl.prop7 = prop7;
       mRequired.set(5);
       return this;
     }
 
-    public Builder prop7Res(@StringRes int resId) {
+    public Builder<S> prop7Res(@StringRes int resId) {
       this.mTestMountImpl.prop7 = resolveStringRes(resId);
       mRequired.set(5);
       return this;
     }
 
-    public Builder prop7Res(@StringRes int resId, Object... formatArgs) {
+    public Builder<S> prop7Res(@StringRes int resId, Object... formatArgs) {
       this.mTestMountImpl.prop7 = resolveStringRes(resId, formatArgs);
       mRequired.set(5);
       return this;
     }
 
-    public Builder prop7Attr(@AttrRes int attrResId, @StringRes int defResId) {
+    public Builder<S> prop7Attr(@AttrRes int attrResId, @StringRes int defResId) {
       this.mTestMountImpl.prop7 = resolveStringAttr(attrResId, defResId);
       mRequired.set(5);
       return this;
     }
 
-    public Builder prop7Attr(@AttrRes int attrResId) {
+    public Builder<S> prop7Attr(@AttrRes int attrResId) {
       this.mTestMountImpl.prop7 = resolveStringAttr(attrResId, 0);
       mRequired.set(5);
       return this;
     }
 
-    public Builder prop5(char prop5) {
+    public Builder<S> prop5(char prop5) {
       this.mTestMountImpl.prop5 = prop5;
       mRequired.set(6);
       return this;
     }
 
-    public Builder testEventHandler(EventHandler testEventHandler) {
+    public Builder<S> testEventHandler(EventHandler testEventHandler) {
       this.mTestMountImpl.testEventHandler = testEventHandler;
       return this;
     }
 
     @Override
-    public Builder getThis() {
+    public Builder<S> getThis() {
       return this;
     }
 

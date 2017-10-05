@@ -53,7 +53,7 @@ public final class FullDiffSection<T> extends SectionLifecycle {
     return sInstance;
   }
 
-  public static Builder create(SectionContext context) {
+  public static <T> Builder<T> create(SectionContext context) {
     Builder builder = sBuilderPool.acquire();
     if (builder == null) {
       builder = new Builder();
@@ -386,52 +386,52 @@ public final class FullDiffSection<T> extends SectionLifecycle {
       mRequired.clear();
     }
 
-    public Builder prop1(Integer prop1) {
+    public Builder<T> prop1(Integer prop1) {
       this.mFullDiffSectionImpl.prop1 = prop1;
       mRequired.set(0);
       return this;
     }
 
-    public Builder prop2(String prop2) {
+    public Builder<T> prop2(String prop2) {
       this.mFullDiffSectionImpl.prop2 = prop2;
       return this;
     }
 
-    public Builder data(List<T> data) {
+    public Builder<T> data(List<T> data) {
       this.mFullDiffSectionImpl.data = data;
       mRequired.set(1);
       return this;
     }
 
-    public Builder prop3(Component prop3) {
+    public Builder<T> prop3(Component prop3) {
       this.mFullDiffSectionImpl.prop3 = prop3;
       mRequired.set(2);
       return this;
     }
 
-    public Builder prop3(Component.Builder<? extends ComponentLifecycle, ?> prop3Builder) {
+    public Builder<T> prop3(Component.Builder<? extends ComponentLifecycle, ?> prop3Builder) {
       this.mFullDiffSectionImpl.prop3 = prop3Builder.build();
       mRequired.set(2);
       return this;
     }
 
-    public Builder testEventHandler(EventHandler testEventHandler) {
+    public Builder<T> testEventHandler(EventHandler testEventHandler) {
       this.mFullDiffSectionImpl.testEventHandler = testEventHandler;
       return this;
     }
 
     @Override
-    public Builder key(String key) {
+    public Builder<T> key(String key) {
       return super.key(key);
     }
 
     @Override
-    public Builder loadingEventHandler(EventHandler<LoadingEvent> loadingEventHandler) {
+    public Builder<T> loadingEventHandler(EventHandler<LoadingEvent> loadingEventHandler) {
       return super.loadingEventHandler(loadingEventHandler);
     }
 
     @Override
-    public Builder getThis() {
+    public Builder<T> getThis() {
       return this;
     }
 

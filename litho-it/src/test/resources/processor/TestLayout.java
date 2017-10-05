@@ -281,11 +281,11 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
     _impl.mPreviousRenderData.copy(infoImpl);
   }
 
-  public static Builder create(ComponentContext context) {
+  public static <S extends View> Builder<S> create(ComponentContext context) {
     return create(context, 0, 0);
   }
 
-  public static Builder create(ComponentContext context, int defStyleAttr, int defStyleRes) {
+  public static <S extends View> Builder<S> create(ComponentContext context, int defStyleAttr, int defStyleRes) {
     Builder builder = sBuilderPool.acquire();
     if (builder == null) {
       builder = new Builder();
@@ -473,48 +473,48 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
       mRequired.clear();
     }
 
-    public Builder prop1(int prop1) {
+    public Builder<S> prop1(int prop1) {
       this.mTestLayoutImpl.prop1 = prop1;
       mRequired.set(0);
       return this;
     }
 
-    public Builder prop6(long prop6) {
+    public Builder<S> prop6(long prop6) {
       this.mTestLayoutImpl.prop6 = prop6;
       mRequired.set(1);
       return this;
     }
 
-    public Builder prop2(boolean prop2) {
+    public Builder<S> prop2(boolean prop2) {
       this.mTestLayoutImpl.prop2 = prop2;
       return this;
     }
 
-    public Builder prop3(Object prop3) {
+    public Builder<S> prop3(Object prop3) {
       this.mTestLayoutImpl.prop3 = prop3;
       mRequired.set(2);
       return this;
     }
 
-    public Builder prop4(char[] prop4) {
+    public Builder<S> prop4(char[] prop4) {
       this.mTestLayoutImpl.prop4 = prop4;
       mRequired.set(3);
       return this;
     }
 
-    public Builder prop5(char prop5) {
+    public Builder<S> prop5(char prop5) {
       this.mTestLayoutImpl.prop5 = prop5;
       mRequired.set(4);
       return this;
     }
 
-    public Builder testEventHandler(EventHandler testEventHandler) {
+    public Builder<S> testEventHandler(EventHandler testEventHandler) {
       this.mTestLayoutImpl.testEventHandler = testEventHandler;
       return this;
     }
 
     @Override
-    public Builder getThis() {
+    public Builder<S> getThis() {
       return this;
     }
 

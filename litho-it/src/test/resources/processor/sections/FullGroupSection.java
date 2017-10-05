@@ -57,7 +57,7 @@ final class FullGroupSection<T> extends SectionLifecycle {
     return sInstance;
   }
 
-  public static Builder create(SectionContext context) {
+  public static <T> Builder<T> create(SectionContext context) {
     Builder builder = sBuilderPool.acquire();
     if (builder == null) {
       builder = new Builder();
@@ -440,76 +440,76 @@ final class FullGroupSection<T> extends SectionLifecycle {
       mRequired.clear();
     }
 
-    public Builder prop1(int prop1) {
+    public Builder<T> prop1(int prop1) {
       this.mFullGroupSectionImpl.prop1 = prop1;
       mRequired.set(0);
       return this;
     }
 
-    public Builder prop2(String prop2) {
+    public Builder<T> prop2(String prop2) {
       this.mFullGroupSectionImpl.prop2 = prop2;
       return this;
     }
 
-    public Builder prop3(Component prop3) {
+    public Builder<T> prop3(Component prop3) {
       this.mFullGroupSectionImpl.prop3 = prop3;
       mRequired.set(1);
       return this;
     }
 
-    public Builder prop3(Component.Builder<? extends ComponentLifecycle, ?> prop3Builder) {
+    public Builder<T> prop3(Component.Builder<? extends ComponentLifecycle, ?> prop3Builder) {
       this.mFullGroupSectionImpl.prop3 = prop3Builder.build();
       mRequired.set(1);
       return this;
     }
 
-    public Builder prop4(String prop4) {
+    public Builder<T> prop4(String prop4) {
       this.mFullGroupSectionImpl.prop4 = prop4;
       mRequired.set(2);
       return this;
     }
 
-    public Builder prop4Res(@StringRes int resId) {
+    public Builder<T> prop4Res(@StringRes int resId) {
       this.mFullGroupSectionImpl.prop4 = resolveStringRes(resId);
       mRequired.set(2);
       return this;
     }
 
-    public Builder prop4Res(@StringRes int resId, Object... formatArgs) {
+    public Builder<T> prop4Res(@StringRes int resId, Object... formatArgs) {
       this.mFullGroupSectionImpl.prop4 = resolveStringRes(resId, formatArgs);
       mRequired.set(2);
       return this;
     }
 
-    public Builder prop4Attr(@AttrRes int attrResId, @StringRes int defResId) {
+    public Builder<T> prop4Attr(@AttrRes int attrResId, @StringRes int defResId) {
       this.mFullGroupSectionImpl.prop4 = resolveStringAttr(attrResId, defResId);
       mRequired.set(2);
       return this;
     }
 
-    public Builder prop4Attr(@AttrRes int attrResId) {
+    public Builder<T> prop4Attr(@AttrRes int attrResId) {
       this.mFullGroupSectionImpl.prop4 = resolveStringAttr(attrResId, 0);
       mRequired.set(2);
       return this;
     }
 
-    public Builder testEventHandler(EventHandler testEventHandler) {
+    public Builder<T> testEventHandler(EventHandler testEventHandler) {
       this.mFullGroupSectionImpl.testEventHandler = testEventHandler;
       return this;
     }
 
     @Override
-    public Builder key(String key) {
+    public Builder<T> key(String key) {
       return super.key(key);
     }
 
     @Override
-    public Builder loadingEventHandler(EventHandler<LoadingEvent> loadingEventHandler) {
+    public Builder<T> loadingEventHandler(EventHandler<LoadingEvent> loadingEventHandler) {
       return super.loadingEventHandler(loadingEventHandler);
     }
 
     @Override
-    public Builder getThis() {
+    public Builder<T> getThis() {
       return this;
     }
 

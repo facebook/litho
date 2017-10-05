@@ -76,7 +76,7 @@ public class HideableDataDiffSectionSpec<T> {
       @Prop(optional = true) EventHandler<OnCheckIsSameItemEvent> onSameItemEventHandler,
       @Prop(optional = true) EventHandler<OnCheckIsSameContentEvent> onSameContentEventHandler) {
     return Children.create()
-        .child(DataDiffSection.create(c)
+        .child(DataDiffSection.<T>create(c)
             .data(removeBlacklistedItems(
                 c,
                 data,

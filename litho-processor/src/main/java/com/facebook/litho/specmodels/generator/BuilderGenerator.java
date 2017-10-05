@@ -62,19 +62,24 @@ public class BuilderGenerator {
     final ParameterizedTypeName synchronizedPoolClass =
         ParameterizedTypeName.get(ClassNames.SYNCHRONIZED_POOL, BUILDER_CLASS_NAME);
 
-    final FieldSpec.Builder poolField = FieldSpec.builder(synchronizedPoolClass, BUILDER_POOL_FIELD)
-        .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
-        .initializer("new $T(2)", synchronizedPoolClass);
+    final FieldSpec.Builder poolField =
+        FieldSpec.builder(synchronizedPoolClass, BUILDER_POOL_FIELD)
+            .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
+            .initializer("new $T(2)", synchronizedPoolClass);
 
     final MethodSpec.Builder factoryMethod = MethodSpec.methodBuilder("create")
         .addModifiers(Modifier.PUBLIC)
         .addModifiers(!specModel.hasInjectedDependencies() ? Modifier.STATIC : Modifier.FINAL)
-        .returns(BUILDER_CLASS_NAME)
+        .returns(getBuilderType(specModel))
         .addParameter(specModel.getContextClass(), "context")
         .addStatement("$T builder = $L.acquire()", BUILDER_CLASS_NAME, BUILDER_POOL_FIELD)
         .beginControlFlow("if (builder == null)")
         .addStatement("builder = new $T()", BUILDER_CLASS_NAME)
         .endControlFlow();
+
+    if (!specModel.hasInjectedDependencies() && !specModel.getTypeVariables().isEmpty()) {
+      factoryMethod.addTypeVariables(specModel.getTypeVariables());
+    }
 
     if (specModel.isStylingSupported()) {
       dataHolder.addMethod(generateDelegatingCreateBuilderMethod(specModel));
@@ -104,20 +109,26 @@ public class BuilderGenerator {
   }
 
   private static MethodSpec generateDelegatingCreateBuilderMethod(SpecModel specModel) {
-    return MethodSpec.methodBuilder("create")
-        .addModifiers(Modifier.PUBLIC)
-        .returns(BUILDER_CLASS_NAME)
-        .addParameter(specModel.getContextClass(), "context")
-        .addStatement("return create(context, 0, 0)")
-        .addModifiers(!specModel.hasInjectedDependencies() ? Modifier.STATIC : Modifier.FINAL)
-        .build();
+    final MethodSpec.Builder methodBuilder =
+        MethodSpec.methodBuilder("create")
+            .addModifiers(Modifier.PUBLIC)
+            .returns(getBuilderType(specModel))
+            .addParameter(specModel.getContextClass(), "context")
+            .addStatement("return create(context, 0, 0)")
+            .addModifiers(!specModel.hasInjectedDependencies() ? Modifier.STATIC : Modifier.FINAL);
+
+    if (!specModel.hasInjectedDependencies() && !specModel.getTypeVariables().isEmpty()) {
+      methodBuilder.addTypeVariables(specModel.getTypeVariables());
+    }
+
+    return methodBuilder.build();
   }
 
   static TypeSpecDataHolder generateBuilder(SpecModel specModel) {
     final String implClassName = ComponentImplGenerator.getImplClassName(specModel);
     final String implParamName = ComponentImplGenerator.getImplInstanceName(specModel);
     final String implMemberInstanceName = getImplMemberInstanceName(specModel);
-    final ClassName implClass = ClassName.bestGuess(implClassName);
+    final ClassName implClass = getImplClass(specModel);
     final MethodSpec.Builder initMethodSpec = MethodSpec.methodBuilder("init")
         .addModifiers(Modifier.PRIVATE)
         .addParameter(specModel.getContextClass(), CONTEXT_PARAM_NAME);
@@ -152,42 +163,26 @@ public class BuilderGenerator {
       initMethodSpec.addStatement("initPropDefaults()");
     }
 
-    // If there are no type variables, then this class can always be static.
-    // If the component implementation class is static, and there are type variables, then this
-    // class can be static but must shadow the type variables from the class.
-    // If the component implementation class is not static, and there are type variables, then this
-    // class is not static and we get the type variables from the class.
-    final boolean isBuilderStatic = specModel.getTypeVariables().isEmpty() ||
-        !specModel.hasInjectedDependencies();
-    final boolean builderHasTypeVariables =
-        isBuilderStatic && !specModel.getTypeVariables().isEmpty();
-    TypeName builderType =
-        !builderHasTypeVariables ?
-            BUILDER_CLASS_NAME :
-            ParameterizedTypeName.get(
-                BUILDER_CLASS_NAME,
-                specModel.getTypeVariables().toArray(
-                    new TypeName[specModel.getTypeVariables().size()]));
+    final boolean builderHasTypeVariables = !specModel.getTypeVariables().isEmpty();
 
-    final TypeSpec.Builder propsBuilderClassBuilder = TypeSpec.classBuilder(BUILDER)
-        .addModifiers(Modifier.PUBLIC)
-        .superclass(
-            ParameterizedTypeName.get(
-                ClassName.get(
-                    specModel.getComponentClass().packageName(),
-                    specModel.getComponentClass().simpleName(),
-                    BUILDER),
-                specModel.getComponentTypeName(),
-                builderType))
-        .addField(implClass, implMemberInstanceName)
-        .addField(specModel.getContextClass(), CONTEXT_MEMBER_NAME);
+    TypeName builderType = getBuilderType(specModel);
 
-    if (isBuilderStatic) {
-      propsBuilderClassBuilder.addModifiers(Modifier.STATIC);
+    final TypeSpec.Builder propsBuilderClassBuilder =
+        TypeSpec.classBuilder(BUILDER)
+            .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+            .superclass(
+                ParameterizedTypeName.get(
+                    ClassName.get(
+                        specModel.getComponentClass().packageName(),
+                        specModel.getComponentClass().simpleName(),
+                        BUILDER),
+                    specModel.getComponentTypeName(),
+                    builderType))
+            .addField(implClass, implMemberInstanceName)
+            .addField(specModel.getContextClass(), CONTEXT_MEMBER_NAME);
 
-      if (builderHasTypeVariables) {
-        propsBuilderClassBuilder.addTypeVariables(specModel.getTypeVariables());
-      }
+    if (builderHasTypeVariables) {
+      propsBuilderClassBuilder.addTypeVariables(specModel.getTypeVariables());
     }
 
     final List<String> requiredPropNames = new ArrayList<>();
@@ -276,23 +271,39 @@ public class BuilderGenerator {
     }
 
     for (BuilderMethodModel builderMethodModel : specModel.getExtraBuilderMethods()) {
-      propsBuilderClassBuilder.addMethod(generateExtraBuilderMethod(builderMethodModel));
+      propsBuilderClassBuilder.addMethod(generateExtraBuilderMethod(specModel, builderMethodModel));
     }
 
     propsBuilderClassBuilder
-        .addMethod(generateGetThisMethod())
+        .addMethod(generateGetThisMethod(specModel))
         .addMethod(generateBuildMethod(specModel, numRequiredProps))
         .addMethod(generateReleaseMethod(specModel));
 
     return TypeSpecDataHolder.newBuilder().addType(propsBuilderClassBuilder.build()).build();
   }
 
-  static String getFactoryMethodName() {
-    return "new" + BUILDER;
-  }
-
   private static String getImplMemberInstanceName(SpecModel specModel) {
     return "m" + ComponentImplGenerator.getImplClassName(specModel);
+  }
+
+  // Returns either Builder or a Builder<Generic.. >
+  private static TypeName getBuilderType(SpecModel specModel) {
+    return (specModel.getTypeVariables().isEmpty())
+        ? BUILDER_CLASS_NAME
+        : ParameterizedTypeName.get(
+            BUILDER_CLASS_NAME,
+            specModel.getTypeVariables().toArray(
+                new TypeName[specModel.getTypeVariables().size()]));
+  }
+
+  // Whether the Impl class is static or not, it returns directly that one or SuperClass.ImplClass
+  private static ClassName getImplClass(SpecModel specModel) {
+    final String implClassName = ComponentImplGenerator.getImplClassName(specModel);
+    // If there's DI, the Impl class is not static.
+
+    return (specModel.hasInjectedDependencies())
+        ? ClassName.bestGuess(specModel.getComponentName()).nestedClass(implClassName)
+        : ClassName.bestGuess(implClassName);
   }
 
   private static String commaSeparateAndQuoteStrings(List<String> strings) {
@@ -438,7 +449,7 @@ public class BuilderGenerator {
           dataHolder.addMethod(varArgBuilder(specModel, prop, requiredIndex));
           ParameterizedTypeName type = (ParameterizedTypeName) prop.getType();
           if (getRawType(type.typeArguments.get(0)).equals(ClassNames.COMPONENT)) {
-            dataHolder.addMethod(varArgBuilderBuilder(prop, requiredIndex));
+            dataHolder.addMethod(varArgBuilderBuilder(specModel, prop, requiredIndex));
           }
           // fall through to generate builder method for List<T>
         }
@@ -561,6 +572,7 @@ public class BuilderGenerator {
         .build();
 
     return getMethodSpecBuilder(
+        specModel,
         prop,
         requiredIndex,
         varArgName,
@@ -570,6 +582,7 @@ public class BuilderGenerator {
   }
 
   private static MethodSpec varArgBuilderBuilder(
+      SpecModel specModel,
       PropModel prop,
       int requiredIndex) {
     String varArgName = prop.getVarArgsSingleName();
@@ -582,6 +595,7 @@ public class BuilderGenerator {
         ClassNames.COMPONENT_BUILDER,
         getBuilderGenericTypes(internalType, ClassNames.COMPONENT_BUILDER));
     return getMethodSpecBuilder(
+        specModel,
         prop,
         requiredIndex,
         varArgName,
@@ -973,7 +987,7 @@ public class BuilderGenerator {
             .endControlFlow()
             .build();
 
-    return getMethodSpecBuilder(prop, requiredIndex, name, parameters, codeBlock);
+    return getMethodSpecBuilder(specModel, prop, requiredIndex, name, parameters, codeBlock);
   }
 
   private static MethodSpec.Builder resTypeRegularBuilder(
@@ -1006,7 +1020,7 @@ public class BuilderGenerator {
               .addStatement(statement, formatObjects)
               .addStatement("this.$L.$L.add(res)", implMemberInstanceName, propName);
 
-      return getMethodSpecBuilder(prop, requiredIndex, name, parameters, codeBlockBuilder.build());
+      return getMethodSpecBuilder(specModel, prop, requiredIndex, name, parameters, codeBlockBuilder.build());
     }
 
     return getNoVarArgsMethodSpecBuilder(
@@ -1042,7 +1056,7 @@ public class BuilderGenerator {
               .addStatement("this.$L.$L.addAll($L)", implMemberInstanceName, propName, propName)
               .endControlFlow();
 
-      return getMethodSpecBuilder(prop, requiredIndex, name, parameters, codeBlockBuilder.build());
+      return getMethodSpecBuilder(specModel, prop, requiredIndex, name, parameters, codeBlockBuilder.build());
     }
 
     return getNoVarArgsMethodSpecBuilder(
@@ -1063,10 +1077,11 @@ public class BuilderGenerator {
         .addStatement(statement, formatObjects)
         .build();
 
-    return getMethodSpecBuilder(prop, requiredIndex, name, parameters, codeBlock);
+    return getMethodSpecBuilder(specModel, prop, requiredIndex, name, parameters, codeBlock);
   }
 
   private static MethodSpec.Builder getMethodSpecBuilder(
+      SpecModel specModel,
       PropModel prop,
       int requiredIndex,
       String name,
@@ -1075,7 +1090,7 @@ public class BuilderGenerator {
     final MethodSpec.Builder builder =
         MethodSpec.methodBuilder(name)
             .addModifiers(Modifier.PUBLIC)
-            .returns(BUILDER_CLASS_NAME)
+            .returns(getBuilderType(specModel))
             .addCode(codeBlock);
 
     for (ParameterSpec param : parameters) {
@@ -1098,30 +1113,32 @@ public class BuilderGenerator {
         ComponentImplGenerator.getEventHandlerInstanceName(eventDeclaration.name);
     return MethodSpec.methodBuilder(eventHandlerName)
         .addModifiers(Modifier.PUBLIC)
-        .returns(BUILDER_CLASS_NAME)
+        .returns(getBuilderType(specModel))
         .addParameter(ClassNames.EVENT_HANDLER, eventHandlerName)
         .addStatement("this.$L.$L = $L", getImplMemberInstanceName(specModel), eventHandlerName, eventHandlerName)
         .addStatement("return this")
         .build();
   }
 
-  private static MethodSpec generateGetThisMethod() {
+  private static MethodSpec generateGetThisMethod(SpecModel specModel) {
     return MethodSpec.methodBuilder("getThis")
         .addAnnotation(Override.class)
         .addModifiers(Modifier.PUBLIC)
         .addStatement("return this")
-        .returns(BUILDER_CLASS_NAME)
+        .returns(getBuilderType(specModel))
         .build();
   }
 
-  private static MethodSpec generateExtraBuilderMethod(BuilderMethodModel builderMethodModel) {
+  private static MethodSpec generateExtraBuilderMethod(
+      SpecModel specModel,
+      BuilderMethodModel builderMethodModel) {
     return MethodSpec.methodBuilder(builderMethodModel.paramName)
         .addAnnotation(Override.class)
         .addModifiers(Modifier.PUBLIC)
         .addParameter(builderMethodModel.paramType, builderMethodModel.paramName)
         .addStatement(
             "return super.$L($L)", builderMethodModel.paramName, builderMethodModel.paramName)
-        .returns(BUILDER_CLASS_NAME)
+        .returns(getBuilderType(specModel))
         .build();
   }
 
@@ -1145,7 +1162,7 @@ public class BuilderGenerator {
     return buildMethodBuilder
         .addStatement(
             "$L $L = $L",
-            ComponentImplGenerator.getImplClassName(specModel),
+            getImplClass(specModel),
             ComponentImplGenerator.getImplInstanceName(specModel),
             getImplMemberInstanceName(specModel))
         .addStatement("release()")
