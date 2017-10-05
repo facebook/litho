@@ -23,3 +23,5 @@ dependencies {
     // Processor
     implementation deps.javapoet
 }
+
+apply from: rootProject.file('gradle/release.gradle')
