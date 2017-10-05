@@ -102,4 +102,10 @@ public class ComponentsConfiguration {
    * local visible bounds of the view.
    */
   public static boolean lithoViewIncrementalMountUsesLocalVisibleBounds = false;
+
+  /**
+   * Whether to keep a reference to the InternalNode tree in LayoutState instead of immediately
+   * releasing it.
+   */
+  public static boolean persistInternalNodeTree = false;
 }

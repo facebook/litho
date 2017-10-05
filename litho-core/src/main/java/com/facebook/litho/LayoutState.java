@@ -1075,7 +1075,9 @@ class LayoutState {
     }
     ComponentsSystrace.endSection();
 
-    if (!ComponentsConfiguration.isDebugModeEnabled && layoutState.mLayoutRoot != null) {
+    if (!ComponentsConfiguration.isDebugModeEnabled
+        && !ComponentsConfiguration.persistInternalNodeTree
+        && layoutState.mLayoutRoot != null) {
       releaseNodeTree(layoutState.mLayoutRoot, false /* isNestedTree */);
       layoutState.mLayoutRoot = null;
     }
@@ -1788,8 +1790,9 @@ class LayoutState {
         mTransitionContext = null;
       }
 
-      // This should only ever be true in non-release builds as we need this for Stetho integration.
-      // In release builds the node tree is released in calculateLayout().
+      // This should only ever be true in non-release builds as we need this for Stetho integration
+      // (or for as long as the ComponentsConfiguration.persistInternalNodeTree experiment runs).
+      // Otherwise, in release builds the node tree is released in calculateLayout().
       if (mLayoutRoot != null) {
         releaseNodeTree(mLayoutRoot, false /* isNestedTree */);
         mLayoutRoot = null;
