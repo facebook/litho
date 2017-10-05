@@ -169,8 +169,8 @@ public class StateUpdatesTest {
     ComponentTestHelper.measureAndLayout(lithoView);
   }
 
-  @Test(expected = RuntimeException.class)
-  public void testCrashOnSameComponentKey() {
+  @Test
+  public void testNoCrashOnSameComponentKey() {
     final Component child1 = new TestComponent(mLifecycle);
     child1.setKey("key");
     final Component child2 = new TestComponent(mLifecycle);
@@ -194,8 +194,8 @@ public class StateUpdatesTest {
     ComponentTestHelper.measureAndLayout(lithoView);
   }
 
-  @Test(expected = RuntimeException.class)
-  public void testCrashOnSameComponentKeyNestedContainers() {
+  @Test
+  public void testNoCrashOnSameComponentKeyNestedContainers() {
     final Component child1 = new TestComponent(mLifecycle);
     child1.setKey("key");
     final Component child2 = new TestComponent(mLifecycle);

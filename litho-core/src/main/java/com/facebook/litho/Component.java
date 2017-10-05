@@ -9,6 +9,9 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.FrameworkLogEvents.EVENT_WARNING;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_MESSAGE;
+
 import android.support.annotation.AttrRes;
 import android.support.annotation.StyleRes;
 import android.support.annotation.VisibleForTesting;
@@ -154,13 +157,30 @@ public abstract class Component<L extends ComponentLifecycle>
     final KeyHandler keyHandler = mScopedContext.getKeyHandler();
 
     /** Null check is for testing only, the keyHandler should never be null here otherwise. */
-    if (component.mHasManualKey || keyHandler == null) {
+    if (keyHandler == null) {
       return childKey;
     }
 
     /** If the key is already unique, return it. */
     if (!keyHandler.hasKey(childKey)) {
       return childKey;
+    }
+
+    /** The component has a manual key set on it but that key is a duplicate * */
+    if (component.mHasManualKey) {
+      final ComponentsLogger logger = mScopedContext.getLogger();
+      if (logger != null) {
+        final LogEvent event = logger.newEvent(EVENT_WARNING);
+        event.addParam(
+            PARAM_MESSAGE,
+            "The manual key "
+                + childKey
+                + " you are setting on this "
+                + component.getSimpleName()
+                + " is a duplicate and will be changed into a unique one. "
+                + "This will result in unexpected behavior if you don't change it.");
+        logger.log(event);
+      }
     }
 
     final String childType = component.getSimpleName();

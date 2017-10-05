@@ -9,7 +9,7 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.FrameworkLogEvents.EVENT_ERROR;
+import static com.facebook.litho.FrameworkLogEvents.EVENT_WARNING;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_MESSAGE;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -150,12 +150,14 @@ public class ComponentGlobalKeyTest {
             .build();
     getLithoView(componentTree);
 
-    final LogEvent event = mComponentsLogger.newEvent(EVENT_ERROR);
+    final LogEvent event = mComponentsLogger.newEvent(EVENT_WARNING);
 
     final String expectedError =
-        "Found another Text Component with the same key.\n"
-            + "Please look at the following spec hierarchy and make sure all sibling children components of the same type have unique keys:\n"
-            + "\tInlineLayoutSpec.java\n";
+        "The manual key "
+            + component.getLifecycle().getTypeId()
+            + "sameKey you are setting on "
+            + "this Text is a duplicate and will be changed into a unique one. This will "
+            + "result in unexpected behavior if you don't change it.";
 
     event.addParam(PARAM_MESSAGE, expectedError);
 
