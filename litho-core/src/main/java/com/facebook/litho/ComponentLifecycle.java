@@ -556,23 +556,18 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       return;
     }
 
-    synchronized (mPreallocationLock) {
-      if (mPreallocationDone) {
-        return;
-      }
-      mPreallocationDone = true;
-    }
-
-    final int poolSize = poolSize();
-
-    int insertedCount = 0;
-    while (insertedCount < poolSize &&
-        ComponentsPools.canAddMountContentToPool(context, this)) {
+    if (ComponentsPools.canAddMountContentToPool(context, this)) {
       ComponentsPools.release(
           context,
           this,
           createMountContent(context));
-      insertedCount++;
+    } else {
+      synchronized (mPreallocationLock) {
+        if (mPreallocationDone) {
+          return;
+        }
+        mPreallocationDone = true;
+      }
     }
   }
 
