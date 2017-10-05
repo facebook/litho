@@ -26,6 +26,7 @@ public interface FrameworkLogEvents {
   int EVENT_STETHO_UPDATE_COMPONENT = 9;
   int EVENT_STETHO_INSPECT_COMPONENT = 10;
   int EVENT_ERROR = 11;
+  int EVENT_WARNING = 12;
 
   String PARAM_COMPONENT = "component";
   String PARAM_LOG_TAG = "log_tag";
