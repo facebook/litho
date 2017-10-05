@@ -9,8 +9,11 @@
 
 package com.facebook.litho.animation;
 
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import com.facebook.litho.AnimatableItem;
+import com.facebook.litho.BoundsHelper;
+import com.facebook.litho.ComponentHost;
 import com.facebook.litho.LithoView;
 
 /**
@@ -181,18 +184,32 @@ public final class AnimatedProperties {
 
     @Override
     public void set(Object mountContent, float value) {
-      if (!(mountContent instanceof LithoView)) {
+      if (mountContent instanceof ComponentHost) {
+        final ComponentHost view = (ComponentHost) mountContent;
+        if (view instanceof LithoView) {
+          ((LithoView) view).setAnimatedHeight((int) value);
+        } else {
+          final int top = view.getTop();
+          BoundsHelper.applyBoundsToView(
+              view, view.getLeft(), top, view.getRight(), (int) (top + value), false);
+        }
+
+        final Drawable animatingMountItem = view.getLinkedDrawableForAnimation();
+        if (animatingMountItem != null) {
+          BoundsHelper.applySizeToDrawableForAnimation(
+              animatingMountItem, view.getWidth(), (int) (value));
+        }
+      } else {
         throw new UnsupportedOperationException(
-            "Setting height in animations is not supported yet.");
+            "Setting height on unsupported mount content: " + mountContent);
       }
-      ((LithoView) mountContent).setAnimatedHeight((int) value);
     }
 
     @Override
     public void reset(Object mountContent) {
       // No-op: height/width are always properly set at mount time so we don't need to reset it.
     }
-  };
+  }
 
   private static class AlphaAnimatedProperty implements AnimatedProperty {
     @Override

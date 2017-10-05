@@ -31,6 +31,7 @@ class MountItem {
   static final int FLAG_VIEW_LONG_CLICKABLE = 1 << 3;
   static final int FLAG_VIEW_FOCUSABLE = 1 << 4;
   static final int FLAG_VIEW_ENABLED = 1 << 5;
+  static final int FLAG_IS_TRANSITION_KEY_SET = 1 << 6;
 
   private NodeInfo mNodeInfo;
   private ViewNodeInfo mViewNodeInfo;

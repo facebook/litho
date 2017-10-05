@@ -18,6 +18,7 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.util.SparseArrayCompat;
@@ -1042,6 +1043,24 @@ public class ComponentHost extends ViewGroup {
     final LayoutParams params =
         view.getLayoutParams() == null ? generateDefaultLayoutParams() : view.getLayoutParams();
     super.addView(view, -1, params);
+  }
+
+  /**
+   * Returns the Drawable associated with this ComponentHost for animations, for example the
+   * background Drawable, or the drawable that otherwise has a transitionKey on it that has caused
+   * it to be hosted in this ComponentHost.
+   *
+   * <p>The core purpose of exposing this drawable is so that when animating the bounds of this
+   * ComponentHost, we also properly animate the bounds of this main Drawable at the same time.
+   */
+  public @Nullable Drawable getLinkedDrawableForAnimation() {
+    for (int i = 0, size = mDrawableMountItems.size(); i < size; i++) {
+      final MountItem mountItem = mDrawableMountItems.valueAt(i);
+      if ((mountItem.getFlags() & MountItem.FLAG_IS_TRANSITION_KEY_SET) != 0) {
+        return (Drawable) mountItem.getContent();
+      }
+    }
+    return null;
   }
 
   private void updateChildDrawingOrderIfNeeded() {

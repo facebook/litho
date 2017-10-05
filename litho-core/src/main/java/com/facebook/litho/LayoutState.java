@@ -31,6 +31,7 @@ import static com.facebook.litho.FrameworkLogEvents.PARAM_LOG_TAG;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_TREE_DIFF_ENABLED;
 import static com.facebook.litho.MountItem.FLAG_DISABLE_TOUCHABLE;
 import static com.facebook.litho.MountItem.FLAG_DUPLICATE_PARENT_STATE;
+import static com.facebook.litho.MountItem.FLAG_IS_TRANSITION_KEY_SET;
 import static com.facebook.litho.MountState.ROOT_HOST_ID;
 import static com.facebook.litho.NodeInfo.ENABLED_SET_FALSE;
 import static com.facebook.litho.NodeInfo.ENABLED_UNSET;
@@ -165,6 +166,7 @@ class LayoutState {
   private int mCurrentHostOutputPosition = -1;
 
   private boolean mShouldDuplicateParentState = true;
+  private boolean mIsTransitionKeySet = false;
   private @NodeInfo.EnabledState int mParentEnabledState = ENABLED_UNSET;
 
   private boolean mShouldGenerateDiffTree = false;
@@ -214,17 +216,20 @@ class LayoutState {
         node,
         true /* useNodePadding */,
         node.getImportantForAccessibility(),
-        layoutState.mShouldDuplicateParentState);
+        layoutState.mShouldDuplicateParentState,
+        layoutState.mIsTransitionKeySet);
   }
 
   private static LayoutOutput createHostLayoutOutput(LayoutState layoutState, InternalNode node) {
-    final LayoutOutput hostOutput = createLayoutOutput(
-        HostComponent.create(),
-        layoutState,
-        node,
-        false /* useNodePadding */,
-        node.getImportantForAccessibility(),
-        node.isDuplicateParentStateEnabled());
+    final LayoutOutput hostOutput =
+        createLayoutOutput(
+            HostComponent.create(),
+            layoutState,
+            node,
+            false /* useNodePadding */,
+            node.getImportantForAccessibility(),
+            node.isDuplicateParentStateEnabled(),
+            layoutState.mIsTransitionKeySet);
 
     hostOutput.getViewNodeInfo().setTransitionKey(node.getTransitionKey());
 
@@ -241,7 +246,8 @@ class LayoutState {
         node,
         false /* useNodePadding */,
         IMPORTANT_FOR_ACCESSIBILITY_NO,
-        layoutState.mShouldDuplicateParentState);
+        layoutState.mShouldDuplicateParentState,
+        layoutState.mIsTransitionKeySet);
   }
 
   private static LayoutOutput createLayoutOutput(
@@ -250,7 +256,8 @@ class LayoutState {
       InternalNode node,
       boolean useNodePadding,
       int importantForAccessibility,
-      boolean duplicateParentState) {
+      boolean duplicateParentState,
+      boolean isTransitionKeySet) {
     final boolean isMountViewSpec = isMountViewSpec(component);
 
     final LayoutOutput layoutOutput = ComponentsPools.acquireLayoutOutput();
@@ -312,6 +319,10 @@ class LayoutState {
 
     if (duplicateParentState) {
       flags |= FLAG_DUPLICATE_PARENT_STATE;
+    }
+
+    if (isTransitionKeySet) {
+      flags |= FLAG_IS_TRANSITION_KEY_SET;
     }
 
     layoutOutput.setFlags(flags);
@@ -525,8 +536,10 @@ class LayoutState {
     final DiffNode currentDiffNode = node.getDiffNode();
     final boolean shouldUseCachedOutputs =
         isMountSpec(component) && currentDiffNode != null;
-
     final boolean isCachedOutputUpdated = shouldUseCachedOutputs && node.areCachedMeasuresValid();
+    final boolean isTransitionKeySet = layoutState.mIsTransitionKeySet;
+
+    layoutState.mIsTransitionKeySet = false;
 
     final DiffNode diffNode;
     if (shouldGenerateDiffTree) {
@@ -552,6 +565,8 @@ class LayoutState {
 
     // 1. Insert a host LayoutOutput if we have some interactive content to be attached to.
     if (needsHostView) {
+      layoutState.mIsTransitionKeySet = !TextUtils.isEmpty(node.getTransitionKey());
+
       hostLayoutPosition = addHostLayoutOutput(node, layoutState, diffNode);
 
       layoutState.mCurrentLevel++;
@@ -767,6 +782,7 @@ class LayoutState {
       layoutState.mCurrentLevel--;
     }
     layoutState.mShouldDuplicateParentState = shouldDuplicateParentState;
+    layoutState.mIsTransitionKeySet = isTransitionKeySet;
   }
 
   Map<String, Rect> getComponentKeyToBounds() {
@@ -1754,6 +1770,7 @@ class LayoutState {
       mComponentTreeId = -1;
 
       mShouldDuplicateParentState = true;
+      mIsTransitionKeySet = false;
       mClipChildren = true;
 
       for (int i = 0, size = mMountableOutputs.size(); i < size; i++) {

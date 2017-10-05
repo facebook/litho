@@ -10,7 +10,6 @@
 package com.facebook.litho;
 
 import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
-import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static com.facebook.litho.Component.isHostSpec;
 import static com.facebook.litho.Component.isMountViewSpec;
 import static com.facebook.litho.ComponentHostUtils.maybeInvalidateAccessibilityState;
@@ -40,7 +39,6 @@ import android.support.v4.view.ViewCompat;
 import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.View;
-import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -1101,23 +1099,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     assertMainThread();
 
     if (content instanceof View) {
-      View view = (View) content;
-      int width = right - left;
-      int height = bottom - top;
-
-      if (force || view.getMeasuredHeight() != height || view.getMeasuredWidth() != width) {
-        view.measure(
-            makeMeasureSpec(right - left, MeasureSpec.EXACTLY),
-            makeMeasureSpec(bottom - top, MeasureSpec.EXACTLY));
-      }
-
-      if (force ||
-          view.getLeft() != left ||
-          view.getTop() != top ||
-          view.getRight() != right ||
-          view.getBottom() != bottom) {
-        view.layout(left, top, right, bottom);
-      }
+      BoundsHelper.applyBoundsToView((View) content, left, top, right, bottom, force);
     } else if (content instanceof Drawable) {
       ((Drawable) content).setBounds(left, top, right, bottom);
     } else {
