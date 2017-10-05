@@ -664,6 +664,12 @@ public class ComponentTree {
           mStateHandler.commit(layoutStateStateHandler);
         }
 
+
+        for (Component layoutComponent : localLayoutState.getComponents()) {
+          bindEventHandler(layoutComponent);
+        }
+        localLayoutState.clearComponents();
+
         mMainThreadLayoutState = localLayoutState;
         localLayoutState = null;
       }
@@ -1254,6 +1260,11 @@ public class ComponentTree {
               mStateHandler.commit(layoutStateStateHandler);
             }
           }
+
+          for (Component component : localLayoutState.getComponents()) {
+            bindEventHandler(component);
+          }
+          localLayoutState.clearComponents();
         }
 
         // Set the new layout state, and remember the old layout state so we
