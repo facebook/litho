@@ -26,13 +26,16 @@ android {
 
     buildTypes {
         def internalBuildField = 'IS_INTERNAL_BUILD'
+        def useIncrementalMountHelper = 'USE_INCREMENTAL_MOUNT_HELPER'
 
         debug {
-            buildConfigField 'boolean', internalBuildField, 'true';
+            buildConfigField 'boolean', internalBuildField, 'true'
+            buildConfigField 'boolean', useIncrementalMountHelper, 'true'
         }
 
         release {
             buildConfigField 'boolean', internalBuildField, 'false';
+            buildConfigField 'boolean', useIncrementalMountHelper, 'true'
         }
     }
 
