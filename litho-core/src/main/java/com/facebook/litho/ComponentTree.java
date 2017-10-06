@@ -445,6 +445,10 @@ public class ComponentTree {
           " is not enabled");
     }
 
+    if (mLithoView.doesOwnIncrementalMount()) {
+      return;
+    }
+
     // Per ComponentTree visible area. Because LithoViews can be nested and mounted
     // not in "depth order", this variable cannot be static.
     final Rect currentVisibleArea = ComponentsPools.acquireRect();
@@ -553,7 +557,7 @@ public class ComponentTree {
     assertMainThread();
 
     if (mIncrementalMountHelper != null) {
-      mIncrementalMountHelper.onDetach();
+      mIncrementalMountHelper.onDetach(mLithoView);
     }
 
     synchronized (this) {

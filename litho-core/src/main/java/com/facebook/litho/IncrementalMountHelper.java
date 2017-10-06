@@ -48,18 +48,23 @@ class IncrementalMountHelper {
           mViewPagerListeners.add(viewPagerListener);
         }
 
+        if (viewParent instanceof LithoView && ((LithoView) viewParent).doesOwnIncrementalMount()) {
+          lithoView.setDoesOwnIncrementalMount(true);
+        }
+
         viewParent = viewParent.getParent();
       }
     }
   }
 
-  void onDetach() {
+  void onDetach(LithoView lithoView) {
     for (int i = 0, size = mViewPagerListeners.size(); i < size; i++) {
       ViewPagerListener viewPagerListener = mViewPagerListeners.get(i);
       viewPagerListener.release();
     }
 
     mViewPagerListeners.clear();
+    lithoView.setDoesOwnIncrementalMount(false);
   }
 
   private static class ViewPagerListener extends ViewPager.SimpleOnPageChangeListener {
