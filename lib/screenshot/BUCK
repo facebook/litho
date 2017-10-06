@@ -15,6 +15,6 @@ prebuilt_jar(
 
 remote_file(
     name = "screenshot.jar",
-    sha1 = "7386c717f246d7e22401f6817ea77eb1c705d5e8",
-    url = "mvn:com.facebook.testing.screenshot:core:jar:0.4.2",
+    sha1 = "29b280a11297c351e343237c56e905bdfef5d2fa",
+    url = "mvn:com.facebook.testing.screenshot:core:jar:0.4.4",
 )
