@@ -39,19 +39,19 @@ import java.util.List;
 class OptimizedLayoutAttributes implements ComponentLayout.Builder {
 
   // Flags used to indicate that a certain attribute was explicitly set on the node.
-  private static final long PFLAG_POSITION_TYPE_IS_SET = 1L << 1;
-  private static final long PFLAG_POSITION_IS_SET = 1L << 2;
-  private static final long PFLAG_FLEX_SHRINK_IS_SET = 1L << 3;
-  private static final long PFLAG_WIDTH_IS_SET = 1L << 4;
-  private static final long PFLAG_HEIGHT_IS_SET = 1L << 5;
-  private static final long PFLAG_BACKGROUND_IS_SET = 1L << 6;
-  private static final long PFLAG_TEST_KEY_IS_SET = 1L << 7;
+  private static final byte PFLAG_POSITION_TYPE_IS_SET = 1 << 1;
+  private static final byte PFLAG_POSITION_IS_SET = 1 << 2;
+  private static final byte PFLAG_WIDTH_IS_SET = 1 << 3;
+  private static final byte PFLAG_HEIGHT_IS_SET = 1 << 4;
+  private static final byte PFLAG_BACKGROUND_IS_SET = 1 << 5;
+  private static final byte PFLAG_TEST_KEY_IS_SET = 1 << 6;
 
   // Indices for entries into the SparseArray.
   private static final int LAYOUT_DIRECTION = 0;
   private static final int ALIGN_SELF = 1;
   private static final int FLEX = 3;
   private static final int FLEX_GROW = 4;
+  private static final int FLEX_SHRINK = 5;
   private static final int FLEX_BASIS = 6;
   private static final int IMPORTANT_FOR_ACCESSIBILITY = 7;
   private static final int DUPLICATE_PARENT_STATE = 8;
@@ -90,14 +90,13 @@ class OptimizedLayoutAttributes implements ComponentLayout.Builder {
 
   private final ResourceResolver mResourceResolver = new ResourceResolver();
 
-  private long mPrivateFlags;
+  private byte mPrivateFlags;
   private NodeInfo mNodeInfo;
   private ComponentContext mComponentContext;
   private ComponentLayout.Builder mNodeToCopyInto;
 
   private YogaPositionType mPositionType;
   private YogaEdgesWithInts mPositions;
-  private float mFlexShrink;
   private int mWidthPx;
   private int mHeightPx;
   private Reference<? extends Drawable> mBackground;
@@ -132,13 +131,6 @@ class OptimizedLayoutAttributes implements ComponentLayout.Builder {
     }
 
     mPositions.add(edge, position);
-    return this;
-  }
-
-  @Override
-  public OptimizedLayoutAttributes flexShrink(float flexShrink) {
-    mPrivateFlags |= PFLAG_FLEX_SHRINK_IS_SET;
-    mFlexShrink = flexShrink;
     return this;
   }
 
@@ -191,6 +183,12 @@ class OptimizedLayoutAttributes implements ComponentLayout.Builder {
   @Override
   public OptimizedLayoutAttributes flexGrow(float flexGrow) {
     getOrCreateSparseArray().put(FLEX_GROW, flexGrow);
+    return this;
+  }
+
+  @Override
+  public OptimizedLayoutAttributes flexShrink(float flexShrink) {
+    getOrCreateSparseArray().put(FLEX_SHRINK, flexShrink);
     return this;
   }
 
@@ -958,9 +956,6 @@ class OptimizedLayoutAttributes implements ComponentLayout.Builder {
         node.positionPx(mPositions.mEdges[i], mPositions.mValues[i]);
       }
     }
-    if ((mPrivateFlags & PFLAG_FLEX_SHRINK_IS_SET) != 0L) {
-      node.flexShrink(mFlexShrink);
-    }
     if ((mPrivateFlags & PFLAG_WIDTH_IS_SET) != 0L) {
       node.widthPx(mWidthPx);
     }
@@ -1041,6 +1036,10 @@ class OptimizedLayoutAttributes implements ComponentLayout.Builder {
 
         case FLEX_GROW:
           node.flexGrow((Float) getOrCreateSparseArray().get(key));
+          break;
+
+        case FLEX_SHRINK:
+          node.flexShrink((Float) mSparseArray.get(key));
           break;
 
         case FLEX_BASIS:
