@@ -1567,6 +1567,7 @@ public class ComponentTree {
       canCacheDrawingDisplayLists = false;
       shouldClipChildren = true;
       hasMounted = false;
+      preAllocateMountContentHandler = null;
     }
 
     /**
