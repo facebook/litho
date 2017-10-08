@@ -37,23 +37,22 @@ class IncrementalMountHelper {
 
     // ViewPager does not give its child views any callbacks when it moves content onto the screen,
     // so we need to attach a listener to give us the information that we require.
-    if (ComponentsConfiguration.incrementalMountUsesLocalVisibleBounds) {
-      ViewParent viewParent = lithoView.getParent();
-      while (viewParent != null) {
-        if (viewParent instanceof ViewPager) {
-          ViewPager viewPager = (ViewPager) viewParent;
-          IncrementalMountHelper.ViewPagerListener viewPagerListener =
-              new ViewPagerListener(mComponentTree, viewPager);
-          viewPager.addOnPageChangeListener(viewPagerListener);
-          mViewPagerListeners.add(viewPagerListener);
-        }
-
-        if (viewParent instanceof LithoView && ((LithoView) viewParent).doesOwnIncrementalMount()) {
-          lithoView.setDoesOwnIncrementalMount(true);
-        }
-
-        viewParent = viewParent.getParent();
+    ViewParent viewParent = lithoView.getParent();
+    while (viewParent != null) {
+      if (ComponentsConfiguration.incrementalMountUsesLocalVisibleBounds
+          && viewParent instanceof ViewPager) {
+        ViewPager viewPager = (ViewPager) viewParent;
+        IncrementalMountHelper.ViewPagerListener viewPagerListener =
+            new ViewPagerListener(mComponentTree, viewPager);
+        viewPager.addOnPageChangeListener(viewPagerListener);
+        mViewPagerListeners.add(viewPagerListener);
       }
+
+      if (viewParent instanceof LithoView && ((LithoView) viewParent).doesOwnIncrementalMount()) {
+        lithoView.setDoesOwnIncrementalMount(true);
+      }
+
+      viewParent = viewParent.getParent();
     }
   }
 
@@ -64,7 +63,6 @@ class IncrementalMountHelper {
     }
 
     mViewPagerListeners.clear();
-    lithoView.setDoesOwnIncrementalMount(false);
   }
 
   private static class ViewPagerListener extends ViewPager.SimpleOnPageChangeListener {
