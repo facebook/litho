@@ -20,20 +20,18 @@ import com.facebook.litho.annotations.Event;
  * events, and false otherwise. An example of the correct usage is:
  *
  * <pre>
- * {@code
+ * {@literal @}OnEvent(TouchEvent.class)
+ *  static boolean onTouch(
+ *     {@literal @}FromEvent View view,
+ *     {@literal @}FromEvent MotionEvent motionEvent,
+ *     {@literal @}Param Param someParam
+ *     {@literal @}Prop Prop someProp) {
+ *    if (shouldHandleEvent(someParam, someProp)) {
+ *      handleEvent(view, motionEvent);
+ *      return true;
+ *    }
  *
- * @OnEvent(TouchEvent.class)
- * static boolean onTouch(
- *     @FromEvent View view,
- *     @FromEvent MotionEvent motionEvent,
- *     @Param Param someParam
- *     @Prop Prop someProp) {
- *   if (shouldHandleEvent(someParam, someProp)) {
- *     handleEvent(view, motionEvent);
- *     return true;
- *   }
- *
- *   return false;
+ *    return false;
  * }
  * </pre>
  */

@@ -20,8 +20,9 @@ public class ComponentsConfiguration {
   public static YogaLogger YOGA_LOGGER;
 
   /**
-   * Indicates whether this is an internal build. Note that the implementation of {@link
-   * BuildConfig} that this class is compiled against may not be the one that is included in the
+   * Indicates whether this is an internal build. Note that the implementation
+   * of <code>BuildConfig</code> that this class is compiled against may not be
+   * the one that is included in the
    * APK. See: <a
    * href="http://facebook.github.io/buck/rule/android_build_config.html">android_build_config</a>.
    */
