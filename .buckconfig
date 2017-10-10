@@ -5,7 +5,7 @@
 [ndk]
   ndk_version = 15.2.4203891
   compiler = clang
-  app_platform = android-21
+  app_platform = android-25
   cpu_abis = arm64, armv7, x86, x86_64
 
 [android]
