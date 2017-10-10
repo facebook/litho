@@ -31,10 +31,10 @@ function installAndroidSDK {
   fi
 
   export ANDROID_NDK_REPOSITORY=$HOME/android-ndk
-  if [[ ! -d "$ANDROID_NDK_REPOSITORY/android-ndk-r13b" ]]; then
+  if [[ ! -d "$ANDROID_NDK_REPOSITORY/android-ndk-r15c" ]]; then
     TMP=/tmp/ndk$$.zip
     mkdir -p "$ANDROID_NDK_REPOSITORY"
-    download 'https://dl.google.com/android/repository/android-ndk-r13b-linux-x86_64.zip' $TMP
+    download 'https://dl.google.com/android/repository/android-ndk-r15c-linux-x86_64.zip' $TMP
     unzip -qod "$ANDROID_NDK_REPOSITORY" "$TMP"
     rm $TMP
   fi
