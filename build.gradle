@@ -8,6 +8,7 @@ buildscript {
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:${GRADLE_BINTRAY_PLUGIN_VERSION}"
         classpath "com.github.dcendents:android-maven-gradle-plugin:${ANDROID_MAVEN_GRADLE_PLUGIN_VERSION}"
         classpath "com.github.ben-manes:gradle-versions-plugin:${GRADLE_VERSIONS_PLUGIN_VERSION}"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${KOTLIN_VERSION}"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -75,6 +76,8 @@ ext.deps = [
         javapoet           : 'com.squareup:javapoet:1.9.0',
         // Misc
         khronos            : 'org.khronos:opengl-api:gl1.1-android-2.1_r1',
+        // Kotlin
+        kotlinStandardLib  : "org.jetbrains.kotlin:kotlin-stdlib-jre7:${KOTLIN_VERSION}"
 ]
 
 // This should hopefully only serve as a temporary measure until
