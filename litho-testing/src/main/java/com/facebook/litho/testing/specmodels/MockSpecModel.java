@@ -20,6 +20,7 @@ import com.facebook.litho.specmodels.model.PropDefaultModel;
 import com.facebook.litho.specmodels.model.PropJavadocModel;
 import com.facebook.litho.specmodels.model.PropModel;
 import com.facebook.litho.specmodels.model.RenderDataDiffModel;
+import com.facebook.litho.specmodels.model.SpecElementType;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelValidationError;
 import com.facebook.litho.specmodels.model.StateParamModel;
@@ -72,6 +73,7 @@ public class MockSpecModel implements SpecModel {
   private final boolean mIsStylingSupported;
   private final List<SpecModelValidationError> mSpecModelValidationErrors;
   private final ImmutableList<AnnotationSpec> mClassAnnotations;
+  private final SpecElementType mSpecElementType;
 
   private MockSpecModel(
       String specName,
@@ -106,7 +108,9 @@ public class MockSpecModel implements SpecModel {
       TypeName updateStateInterface,
       String scopeMethodName,
       boolean isStylingSupported,
-      List<SpecModelValidationError> specModelValidationErrors, ImmutableList<AnnotationSpec> classAnnotations) {
+      List<SpecModelValidationError> specModelValidationErrors,
+      ImmutableList<AnnotationSpec> classAnnotations,
+      SpecElementType specElementType) {
     mSpecName = specName;
     mSpecTypeName = specTypeName;
     mComponentName = componentName;
@@ -141,6 +145,7 @@ public class MockSpecModel implements SpecModel {
     mIsStylingSupported = isStylingSupported;
     mSpecModelValidationErrors = specModelValidationErrors;
     mClassAnnotations = classAnnotations;
+    mSpecElementType = specElementType;
   }
 
   @Override
@@ -305,6 +310,11 @@ public class MockSpecModel implements SpecModel {
   }
 
   @Override
+  public SpecElementType getSpecElementType() {
+    return mSpecElementType;
+  }
+
+  @Override
   public Object getRepresentedObject() {
     return mRepresentedObject;
   }
@@ -358,6 +368,7 @@ public class MockSpecModel implements SpecModel {
     private boolean mIsStylingSupported;
     private List<SpecModelValidationError> mSpecModelValidationErrors = ImmutableList.of();
     private ImmutableList<AnnotationSpec> mClassAnnotations;
+    private SpecElementType mSpecElementType;
 
     public Builder specName(String specName) {
       mSpecName = specName;
@@ -533,6 +544,11 @@ public class MockSpecModel implements SpecModel {
       return this;
     }
 
+    public Builder specElementType(SpecElementType specElementType) {
+      mSpecElementType = specElementType;
+      return this;
+    }
+
     public MockSpecModel build() {
       return new MockSpecModel(
           mSpecName,
@@ -568,7 +584,8 @@ public class MockSpecModel implements SpecModel {
           mScopeMethodName,
           mIsStylingSupported,
           mSpecModelValidationErrors,
-          mClassAnnotations);
+          mClassAnnotations,
+          mSpecElementType);
     }
 
     @Override
@@ -609,7 +626,8 @@ public class MockSpecModel implements SpecModel {
           && Objects.equals(mUpdateStateInterface, builder.mUpdateStateInterface)
           && Objects.equals(mScopeMethodName, builder.mScopeMethodName)
           && Objects.equals(mSpecModelValidationErrors, builder.mSpecModelValidationErrors)
-          && Objects.equals(mClassAnnotations, builder.mClassAnnotations);
+          && Objects.equals(mClassAnnotations, builder.mClassAnnotations)
+          && Objects.equals(mSpecElementType, builder.mSpecElementType);
     }
 
     @Override
@@ -648,7 +666,8 @@ public class MockSpecModel implements SpecModel {
           mScopeMethodName,
           mIsStylingSupported,
           mSpecModelValidationErrors,
-          mClassAnnotations);
+          mClassAnnotations,
+          mSpecElementType);
     }
   }
 }

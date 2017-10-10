@@ -26,7 +26,6 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
-import javax.annotation.Nullable;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 
@@ -95,6 +94,7 @@ public class LayoutSpecModelFactory implements SpecModelFactory {
         element.getAnnotation(LayoutSpec.class).isPublic(),
         dependencyInjectionHelper,
         element.getAnnotation(LayoutSpec.class).isPureRender(),
+        SpecElementTypeDeterminator.determine(element),
         element,
         mLayoutSpecGenerator);
   }

@@ -29,6 +29,7 @@ import com.facebook.litho.specmodels.model.PropDefaultModel;
 import com.facebook.litho.specmodels.model.PropJavadocModel;
 import com.facebook.litho.specmodels.model.PropModel;
 import com.facebook.litho.specmodels.model.RenderDataDiffModel;
+import com.facebook.litho.specmodels.model.SpecElementType;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelImpl;
 import com.facebook.litho.specmodels.model.SpecModelValidationError;
@@ -68,6 +69,7 @@ public class DiffSectionSpecModel implements SpecModel, HasService {
       String classJavadoc,
       ImmutableList<PropJavadocModel> propJavadocs,
       boolean isPublic,
+      SpecElementType specElementType,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       Object representedObject) {
     mSpecModel =
@@ -88,6 +90,7 @@ public class DiffSectionSpecModel implements SpecModel, HasService {
             .propJavadocs(propJavadocs)
             .isPublic(isPublic)
             .dependencyInjectionGenerator(dependencyInjectionHelper)
+            .specElementType(specElementType)
             .representedObject(representedObject)
             .build();
     mServiceParam = SectionSpecModelUtils.createServiceParam(mSpecModel);
@@ -251,6 +254,11 @@ public class DiffSectionSpecModel implements SpecModel, HasService {
   @Override
   public DependencyInjectionHelper getDependencyInjectionHelper() {
     return mSpecModel.getDependencyInjectionHelper();
+  }
+
+  @Override
+  public SpecElementType getSpecElementType() {
+    return mSpecModel.getSpecElementType();
   }
 
   @Override

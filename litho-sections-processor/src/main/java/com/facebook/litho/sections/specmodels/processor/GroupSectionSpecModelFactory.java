@@ -34,6 +34,7 @@ import com.facebook.litho.specmodels.processor.EventDeclarationsExtractor;
 import com.facebook.litho.specmodels.processor.EventMethodExtractor;
 import com.facebook.litho.specmodels.processor.JavadocExtractor;
 import com.facebook.litho.specmodels.processor.PropDefaultsExtractor;
+import com.facebook.litho.specmodels.processor.SpecElementTypeDeterminator;
 import com.facebook.litho.specmodels.processor.SpecModelFactory;
 import com.facebook.litho.specmodels.processor.TriggerMethodExtractor;
 import com.facebook.litho.specmodels.processor.TypeVariablesExtractor;
@@ -113,6 +114,7 @@ public class GroupSectionSpecModelFactory implements SpecModelFactory {
         JavadocExtractor.getClassJavadoc(elements, element),
         JavadocExtractor.getPropJavadocs(elements, element),
         element.getAnnotation(GroupSectionSpec.class).isPublic(),
+        SpecElementTypeDeterminator.determine(element),
         dependencyInjectionHelper,
         element);
   }

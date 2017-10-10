@@ -42,6 +42,7 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
       boolean isPublic,
       DependencyInjectionHelper dependencyInjectionHelper,
       boolean isPureRender,
+      SpecElementType specElementType,
       Object representedObject,
       LayoutSpecGenerator layoutSpecGenerator) {
     mSpecModel =
@@ -62,6 +63,7 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
             .propJavadocs(propJavadocs)
             .isPublic(isPublic)
             .dependencyInjectionGenerator(dependencyInjectionHelper)
+            .specElementType(specElementType)
             .representedObject(representedObject)
             .build();
     mIsPureRender = isPureRender;
@@ -226,6 +228,11 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
   @Override
   public DependencyInjectionHelper getDependencyInjectionHelper() {
     return mSpecModel.getDependencyInjectionHelper();
+  }
+
+  @Override
+  public SpecElementType getSpecElementType() {
+    return mSpecModel.getSpecElementType();
   }
 
   @Override

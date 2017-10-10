@@ -64,6 +64,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
       boolean shouldUseDisplayList,
       int poolSize,
       TypeName mountType,
+      SpecElementType specElementType,
       Object representedObject) {
     mSpecModel =
         SpecModelImpl.newBuilder()
@@ -83,6 +84,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
             .propJavadocs(propJavadocs)
             .isPublic(isPublic)
             .dependencyInjectionGenerator(dependencyInjectionHelper)
+            .specElementType(specElementType)
             .representedObject(representedObject)
             .build();
     mIsPureRender = isPureRender;
@@ -249,6 +251,11 @@ public class MountSpecModel implements SpecModel, HasPureRender {
 
   public DependencyInjectionHelper getDependencyInjectionHelper() {
     return mSpecModel.getDependencyInjectionHelper();
+  }
+
+  @Override
+  public SpecElementType getSpecElementType() {
+    return mSpecModel.getSpecElementType();
   }
 
   @Override

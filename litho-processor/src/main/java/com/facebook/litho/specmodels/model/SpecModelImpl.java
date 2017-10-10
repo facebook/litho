@@ -32,6 +32,7 @@ public final class SpecModelImpl implements SpecModel {
   private final String mComponentName;
   private final TypeName mComponentTypeName;
   private final ClassName mComponentClass;
+  private final SpecElementType mSpecElementType;
   private final ImmutableList<DelegateMethodModel> mDelegateMethods;
   private final ImmutableList<EventMethodModel> mEventMethods;
   private final ImmutableList<EventMethodModel> mTriggerMethods;
@@ -70,6 +71,7 @@ public final class SpecModelImpl implements SpecModel {
       ImmutableList<PropJavadocModel> propJavadocs,
       boolean isPublic,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper,
+      SpecElementType specElementType,
       Object representedObject) {
     mSpecName = getSpecName(qualifiedSpecClassName);
     mSpecTypeName = ClassName.bestGuess(qualifiedSpecClassName);
@@ -95,6 +97,7 @@ public final class SpecModelImpl implements SpecModel {
     mIsPublic = isPublic;
     mHasInjectedDependencies = dependencyInjectionHelper != null;
     mDependencyInjectionHelper = dependencyInjectionHelper;
+    mSpecElementType = specElementType;
     mRepresentedObject = representedObject;
   }
 
@@ -257,6 +260,11 @@ public final class SpecModelImpl implements SpecModel {
   @Override
   public DependencyInjectionHelper getDependencyInjectionHelper() {
     return mDependencyInjectionHelper;
+  }
+
+  @Override
+  public SpecElementType getSpecElementType() {
+    return mSpecElementType;
   }
 
   @Override
@@ -505,6 +513,7 @@ public final class SpecModelImpl implements SpecModel {
     private boolean mIsPublic;
     @Nullable private DependencyInjectionHelper mDependencyInjectionHelper;
     private Object mRepresentedObject;
+    private SpecElementType mSpecElementType;
 
     private Builder() {}
 
@@ -599,6 +608,11 @@ public final class SpecModelImpl implements SpecModel {
       return this;
     }
 
+    public Builder specElementType(SpecElementType specElementType) {
+      mSpecElementType = specElementType;
+      return this;
+    }
+
     public SpecModelImpl build() {
       validate();
       initFieldsIfNecessary();
@@ -620,6 +634,7 @@ public final class SpecModelImpl implements SpecModel {
           mPropJavadocs,
           mIsPublic,
           mDependencyInjectionHelper,
+          mSpecElementType,
           mRepresentedObject);
     }
 

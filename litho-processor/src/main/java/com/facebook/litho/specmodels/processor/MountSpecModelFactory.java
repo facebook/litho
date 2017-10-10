@@ -30,15 +30,6 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import com.facebook.litho.specmodels.model.ClassNames;
-import com.facebook.litho.specmodels.model.DelegateMethodDescriptions;
-import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
-import com.facebook.litho.specmodels.model.MountSpecModel;
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.TypeName;
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.List;
 import javax.annotation.Nullable;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
@@ -109,6 +100,7 @@ public class MountSpecModelFactory implements SpecModelFactory {
         element.getAnnotation(MountSpec.class).shouldUseDisplayList(),
         element.getAnnotation(MountSpec.class).poolSize(),
         getMountType(element),
+        SpecElementTypeDeterminator.determine(element),
         element);
   }
 

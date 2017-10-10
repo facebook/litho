@@ -136,6 +136,9 @@ public interface SpecModel {
   @Nullable
   DependencyInjectionHelper getDependencyInjectionHelper();
 
+  /** @return The source type this spec is generated from, e.g. class or singleton. */
+  SpecElementType getSpecElementType();
+
   /** @return the element that this model represents. */
   Object getRepresentedObject();
 
