@@ -26,6 +26,10 @@ import javax.annotation.Nullable;
 public class SpecModelUtils {
 
   public static String getSpecAccessor(SpecModel specModel) {
+    if (specModel.getSpecElementType() == SpecElementType.KOTLIN_SINGLETON) {
+      return specModel.getSpecName() + ".INSTANCE";
+    }
+
     if (specModel.hasInjectedDependencies()) {
       return DELEGATE_FIELD_NAME;
     }

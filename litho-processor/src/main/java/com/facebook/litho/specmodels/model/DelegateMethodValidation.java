@@ -209,6 +209,7 @@ public class DelegateMethodValidation {
       SpecModel specModel, DelegateMethodModel delegateMethod) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
     if (!specModel.hasInjectedDependencies()
+        && specModel.getSpecElementType() == SpecElementType.JAVA_CLASS
         && !delegateMethod.modifiers.contains(Modifier.STATIC)) {
       validationErrors.add(
           new SpecModelValidationError(

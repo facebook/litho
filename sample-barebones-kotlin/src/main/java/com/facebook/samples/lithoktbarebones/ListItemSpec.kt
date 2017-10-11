@@ -23,27 +23,24 @@ import com.facebook.litho.annotations.Prop
 import com.facebook.litho.widget.Text
 
 @LayoutSpec
-class ListItemSpec {
-  companion object {
-    @JvmStatic
-    @OnCreateLayout
-    internal fun onCreateLayout(
-        c: ComponentContext,
-        @Prop color: Int,
-        @Prop title: String,
-        @Prop subtitle: String): ComponentLayout {
-      return Column.create(c)
-          .paddingDip(ALL, 16f)
-          .backgroundColor(color)
-          .child(
-              Text.create(c)
-                  .text(title)
-                  .textSizeSp(40f))
-          .child(
-              Text.create(c)
-                  .text(subtitle)
-                  .textSizeSp(20f))
-          .build()
-    }
+object ListItemSpec {
+  @OnCreateLayout
+  internal fun onCreateLayout(
+      c: ComponentContext,
+      @Prop color: Int,
+      @Prop title: String,
+      @Prop subtitle: String): ComponentLayout {
+    return Column.create(c)
+        .paddingDip(ALL, 16f)
+        .backgroundColor(color)
+        .child(
+            Text.create(c)
+                .text(title)
+                .textSizeSp(40f))
+        .child(
+            Text.create(c)
+                .text(subtitle)
+                .textSizeSp(20f))
+        .build()
   }
 }

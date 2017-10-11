@@ -218,6 +218,7 @@ public class DelegateMethodValidationTest {
 
   @Test
   public void testDelegateMethodIsNotStatic() {
+    when(mLayoutSpecModel.getSpecElementType()).thenReturn(SpecElementType.JAVA_CLASS);
     when(mLayoutSpecModel.getDelegateMethods())
         .thenReturn(
             ImmutableList.of(
@@ -239,6 +240,29 @@ public class DelegateMethodValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(mDelegateMethodObject1);
     assertThat(validationErrors.get(0).message).isEqualTo(
         "Methods in a spec that doesn't have dependency injection must be static.");
+  }
+
+  @Test
+  public void testDelegateMethodIsNotStaticWithKotlinSingleton() {
+    when(mLayoutSpecModel.getSpecElementType()).thenReturn(SpecElementType.KOTLIN_SINGLETON);
+    when(mLayoutSpecModel.getDelegateMethods())
+        .thenReturn(
+            ImmutableList.of(
+                new DelegateMethodModel(
+                    ImmutableList.of((Annotation) () -> OnCreateLayout.class),
+                    ImmutableList.of(),
+                    "name",
+                    ClassNames.COMPONENT_LAYOUT,
+                    ImmutableList.of(
+                        MockMethodParamModel.newBuilder()
+                            .type(ClassNames.COMPONENT_CONTEXT)
+                            .representedObject(mMethodParamObject1)
+                            .build()),
+                    mDelegateMethodObject1)));
+
+    final List<SpecModelValidationError> validationErrors =
+        DelegateMethodValidation.validateLayoutSpecModel(mLayoutSpecModel);
+    assertThat(validationErrors).isEmpty();
   }
 
   @Test
