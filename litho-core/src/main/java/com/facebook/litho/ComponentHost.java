@@ -1266,9 +1266,14 @@ public class ComponentHost extends ViewGroup {
           return;
         }
 
-        ComponentsSystrace.beginSection(getTraceName(mountItem));
+        final boolean isTracing = ComponentsSystrace.isTracing();
+        if (isTracing) {
+          ComponentsSystrace.beginSection(getTraceName(mountItem));
+        }
         ((Drawable) content).draw(mCanvas);
-        ComponentsSystrace.endSection();
+        if (isTracing) {
+          ComponentsSystrace.endSection();
+        }
       }
 
       mDrawIndex = mItemsToDraw;

@@ -208,6 +208,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     mMountStats.reset();
 
     final boolean isIncrementalMountEnabled = localVisibleRect != null;
+    final boolean isTracing = ComponentsSystrace.isTracing();
 
     if (!isIncrementalMountEnabled
         || !performIncrementalMount(layoutState, localVisibleRect, processVisibilityOutputs)) {
@@ -216,9 +217,11 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       for (int i = 0, size = layoutState.getMountableOutputCount(); i < size; i++) {
         final LayoutOutput layoutOutput = layoutState.getMountableOutputAt(i);
         final Component component = layoutOutput.getComponent();
-        ComponentsSystrace.beginSection(component.getSimpleName());
-        final MountItem currentMountItem = getItemAt(i);
+        if (isTracing) {
+          ComponentsSystrace.beginSection(component.getSimpleName());
+        }
 
+        final MountItem currentMountItem = getItemAt(i);
         final boolean isMounted = currentMountItem != null;
         final boolean isMountable =
             !isIncrementalMountEnabled ||
@@ -260,7 +263,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
           }
         }
 
-        ComponentsSystrace.endSection();
+        if (isTracing) {
+          ComponentsSystrace.endSection();
+        }
       }
 
       if (isIncrementalMountEnabled) {

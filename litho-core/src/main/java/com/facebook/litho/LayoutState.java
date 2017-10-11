@@ -1092,7 +1092,11 @@ class LayoutState {
 
     layoutState.mLayoutRoot = root;
 
-    ComponentsSystrace.beginSection("collectResults:" + component.getSimpleName());
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection("collectResults:" + component.getSimpleName());
+    }
+
     LogEvent collectResultsEvent = null;
     if (logger != null) {
       collectResultsEvent = logger.newPerformanceEvent(EVENT_COLLECT_RESULTS);
@@ -1107,7 +1111,10 @@ class LayoutState {
     if (logger != null) {
       logger.log(collectResultsEvent);
     }
-    ComponentsSystrace.endSection();
+
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+    }
 
     if (!ComponentsConfiguration.isDebugModeEnabled
         && !ComponentsConfiguration.persistInternalNodeTree
@@ -1132,28 +1139,41 @@ class LayoutState {
 
   @ThreadSafe(enableChecks = false)
   void preAllocateMountContent() {
-    ComponentsSystrace.beginSection(
-      "preAllocateMountContent:" + mComponent.getSimpleName());
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection("preAllocateMountContent:" + mComponent.getSimpleName());
+    }
 
     if (mMountableOutputs != null && !mMountableOutputs.isEmpty()) {
       for (int i = 0, size = mMountableOutputs.size(); i < size; i++) {
         final Component component = mMountableOutputs.get(i).getComponent();
 
         if (Component.isMountViewSpec(component)) {
-          ComponentsSystrace.beginSection(
-              "preAllocateMountContent:" + component.getSimpleName());
+          if (isTracing) {
+            ComponentsSystrace.beginSection("preAllocateMountContent:" + component.getSimpleName());
+          }
+
           component.getLifecycle().preAllocateMountContent(mContext);
-          ComponentsSystrace.endSection();
+
+          if (isTracing) {
+            ComponentsSystrace.endSection();
+          }
         }
       }
     }
 
-    ComponentsSystrace.endSection();
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+    }
   }
 
   private static void collectDisplayLists(LayoutState layoutState) {
-    ComponentsSystrace.beginSection(
-        "collectDisplayLists:" + layoutState.mComponent.getSimpleName());
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection(
+          "collectDisplayLists:" + layoutState.mComponent.getSimpleName());
+    }
+
     final Rect rect = layoutState.mDisplayListCreateRect;
 
     for (int i = 0, count = layoutState.getMountableOutputCount(); i < count; i++) {
@@ -1162,8 +1182,9 @@ class LayoutState {
         layoutState.createDisplayList(output);
       }
     }
-
-    ComponentsSystrace.endSection();
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+    }
   }
 
   private static boolean shouldCreateDisplayList(LayoutOutput output, Rect rect) {
@@ -1223,7 +1244,11 @@ class LayoutState {
     }
 
     final Component component = output.getComponent();
-    ComponentsSystrace.beginSection("createDisplayList: "+component.getSimpleName());
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection("createDisplayList: " + component.getSimpleName());
+    }
+
     final ComponentLifecycle lifecycle = component.getLifecycle();
     final DisplayList displayList = DisplayList.createDisplayList(
         lifecycle.getClass().getSimpleName());
@@ -1284,7 +1309,10 @@ class LayoutState {
     lifecycle.unbind(context, drawable, component);
     lifecycle.unmount(context, drawable, component);
     ComponentsPools.release(context, lifecycle, drawable);
-    ComponentsSystrace.endSection();
+
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+    }
   }
 
   private static void queueDisplayListsForPrefetch(LayoutState layoutState) {
@@ -1361,7 +1389,11 @@ class LayoutState {
       DiffNode previousDiffTreeRoot) {
     final ComponentContext context = root.getContext();
     final Component component = root.getRootComponent();
-    ComponentsSystrace.beginSection("measureTree:" + component.getSimpleName());
+    final boolean isTracing = ComponentsSystrace.isTracing();
+
+    if (isTracing) {
+      ComponentsSystrace.beginSection("measureTree:" + component.getSimpleName());
+    }
 
     if (YogaConstants.isUndefined(root.getStyleWidth())) {
       root.setStyleWidthFromSpec(widthSpec);
@@ -1395,7 +1427,10 @@ class LayoutState {
     if (logger != null) {
       logger.log(layoutEvent);
     }
-    ComponentsSystrace.endSection(/* measureTree */);
+
+    if (isTracing) {
+      ComponentsSystrace.endSection(/* measureTree */ );
+    }
   }
 
   /**

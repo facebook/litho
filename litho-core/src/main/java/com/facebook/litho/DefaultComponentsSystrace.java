@@ -14,10 +14,11 @@ import android.os.Trace;
 import com.facebook.litho.config.ComponentsConfiguration;
 
 public class DefaultComponentsSystrace implements ComponentsSystrace.Systrace {
+
   @Override
   public void beginSection(String name) {
-    if (ComponentsConfiguration.IS_INTERNAL_BUILD &&
-        Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2) {
+    if (ComponentsConfiguration.IS_INTERNAL_BUILD
+        && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
       Trace.beginSection(name);
     }
   }
@@ -28,5 +29,11 @@ public class DefaultComponentsSystrace implements ComponentsSystrace.Systrace {
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
       Trace.endSection();
     }
+  }
+
+  @Override
+  public boolean isTracing() {
+    return ComponentsConfiguration.IS_INTERNAL_BUILD
+        && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2;
   }
 }

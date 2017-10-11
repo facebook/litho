@@ -109,4 +109,10 @@ public class ComponentsConfiguration {
    * releasing it.
    */
   public static boolean persistInternalNodeTree = false;
+
+  /**
+   * Temporary configuration to determine the effects of gating ComponentsSystrace code with calls
+   * to isTracing.
+   */
+  public static boolean isAlwaysTracingBacktestEnabled = true;
 }

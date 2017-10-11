@@ -69,100 +69,103 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     }
   };
 
-  private static final YogaMeasureFunction sMeasureFunction = new YogaMeasureFunction() {
+  private static final YogaMeasureFunction sMeasureFunction =
+      new YogaMeasureFunction() {
 
-    private final Pools.SynchronizedPool<Size> mSizePool =
-        new Pools.SynchronizedPool<>(2);
+        private final Pools.SynchronizedPool<Size> mSizePool = new Pools.SynchronizedPool<>(2);
 
-    private Size acquireSize(int initialValue) {
-      Size size = mSizePool.acquire();
-      if (size == null) {
-        size = new Size();
-      }
-
-      size.width = initialValue;
-      size.height = initialValue;
-      return size;
-    }
-
-    private void releaseSize(Size size) {
-      mSizePool.release(size);
-    }
-
-    @Override
-    @SuppressLint("WrongCall")
-    @SuppressWarnings("unchecked")
-    public long measure(
-        YogaNode cssNode,
-        float width,
-        YogaMeasureMode widthMode,
-        float height,
-        YogaMeasureMode heightMode) {
-      final InternalNode node = (InternalNode) cssNode.getData();
-      final DiffNode diffNode = node.areCachedMeasuresValid() ? node.getDiffNode() : null;
-      final Component<?> component = node.getRootComponent();
-      final int widthSpec;
-      final int heightSpec;
-
-      ComponentsSystrace.beginSection("measure:" + component.getSimpleName());
-      widthSpec = SizeSpec.makeSizeSpecFromCssSpec(width, widthMode);
-      heightSpec = SizeSpec.makeSizeSpecFromCssSpec(height, heightMode);
-
-      node.setLastWidthSpec(widthSpec);
-      node.setLastHeightSpec(heightSpec);
-
-      int outputWidth = 0;
-      int outputHeight = 0;
-
-      if (Component.isNestedTree(component) || node.hasNestedTree()) {
-        final InternalNode nestedTree = LayoutState.resolveNestedTree(node, widthSpec, heightSpec);
-
-        outputWidth = nestedTree.getWidth();
-        outputHeight = nestedTree.getHeight();
-      } else if (diffNode != null
-          && diffNode.getLastWidthSpec() == widthSpec
-          && diffNode.getLastHeightSpec() == heightSpec) {
-        outputWidth = (int) diffNode.getLastMeasuredWidth();
-        outputHeight = (int) diffNode.getLastMeasuredHeight();
-      } else {
-        final Size size = acquireSize(Integer.MIN_VALUE /* initialValue */);
-
-        try {
-          component.getLifecycle().onMeasure(
-              node.getContext(),
-              node,
-              widthSpec,
-              heightSpec,
-              size,
-              component);
-
-          if (size.width < 0 || size.height < 0) {
-            throw new IllegalStateException(
-                "MeasureOutput not set, ComponentLifecycle is: " + component.getLifecycle());
+        private Size acquireSize(int initialValue) {
+          Size size = mSizePool.acquire();
+          if (size == null) {
+            size = new Size();
           }
 
-          outputWidth = size.width;
-          outputHeight = size.height;
-
-          if (node.getDiffNode() != null) {
-            node.getDiffNode().setLastWidthSpec(widthSpec);
-            node.getDiffNode().setLastHeightSpec(heightSpec);
-            node.getDiffNode().setLastMeasuredWidth(outputWidth);
-            node.getDiffNode().setLastMeasuredHeight(outputHeight);
-          }
-        } finally {
-          releaseSize(size);
+          size.width = initialValue;
+          size.height = initialValue;
+          return size;
         }
-      }
 
-      node.setLastMeasuredWidth(outputWidth);
-      node.setLastMeasuredHeight(outputHeight);
+        private void releaseSize(Size size) {
+          mSizePool.release(size);
+        }
 
-      ComponentsSystrace.endSection();
+        @Override
+        @SuppressLint("WrongCall")
+        @SuppressWarnings("unchecked")
+        public long measure(
+            YogaNode cssNode,
+            float width,
+            YogaMeasureMode widthMode,
+            float height,
+            YogaMeasureMode heightMode) {
+          final InternalNode node = (InternalNode) cssNode.getData();
+          final DiffNode diffNode = node.areCachedMeasuresValid() ? node.getDiffNode() : null;
+          final Component<?> component = node.getRootComponent();
+          final int widthSpec;
+          final int heightSpec;
+          final boolean isTracing = ComponentsSystrace.isTracing();
 
-      return YogaMeasureOutput.make(outputWidth, outputHeight);
-    }
-  };
+          if (isTracing) {
+            ComponentsSystrace.beginSection("measure:" + component.getSimpleName());
+          }
+
+          widthSpec = SizeSpec.makeSizeSpecFromCssSpec(width, widthMode);
+          heightSpec = SizeSpec.makeSizeSpecFromCssSpec(height, heightMode);
+
+          node.setLastWidthSpec(widthSpec);
+          node.setLastHeightSpec(heightSpec);
+
+          int outputWidth = 0;
+          int outputHeight = 0;
+
+          if (Component.isNestedTree(component) || node.hasNestedTree()) {
+            final InternalNode nestedTree =
+                LayoutState.resolveNestedTree(node, widthSpec, heightSpec);
+
+            outputWidth = nestedTree.getWidth();
+            outputHeight = nestedTree.getHeight();
+          } else if (diffNode != null
+              && diffNode.getLastWidthSpec() == widthSpec
+              && diffNode.getLastHeightSpec() == heightSpec) {
+            outputWidth = (int) diffNode.getLastMeasuredWidth();
+            outputHeight = (int) diffNode.getLastMeasuredHeight();
+          } else {
+            final Size size = acquireSize(Integer.MIN_VALUE /* initialValue */);
+
+            try {
+              component
+                  .getLifecycle()
+                  .onMeasure(node.getContext(), node, widthSpec, heightSpec, size, component);
+
+              if (size.width < 0 || size.height < 0) {
+                throw new IllegalStateException(
+                    "MeasureOutput not set, ComponentLifecycle is: " + component.getLifecycle());
+              }
+
+              outputWidth = size.width;
+              outputHeight = size.height;
+
+              if (node.getDiffNode() != null) {
+                node.getDiffNode().setLastWidthSpec(widthSpec);
+                node.getDiffNode().setLastHeightSpec(heightSpec);
+                node.getDiffNode().setLastMeasuredWidth(outputWidth);
+                node.getDiffNode().setLastMeasuredHeight(outputHeight);
+              }
+            } finally {
+              releaseSize(size);
+            }
+          }
+
+          node.setLastMeasuredWidth(outputWidth);
+          node.setLastMeasuredHeight(outputHeight);
+
+          if (isTracing) {
+            ComponentsSystrace.endSection();
+          }
+
+          return YogaMeasureOutput.make(outputWidth, outputHeight);
+        }
+      };
 
   private final int mTypeId;
 

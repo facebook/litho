@@ -9,6 +9,8 @@
 
 package com.facebook.litho;
 
+import com.facebook.litho.config.ComponentsConfiguration;
+
 /**
  * This is intended as a hook into {@code android.os.Trace}, but allows you to provide your own
  * functionality.  Use it as
@@ -30,6 +32,7 @@ public class ComponentsSystrace {
   public interface Systrace {
     void beginSection(String name);
     void endSection();
+    boolean isTracing();
   }
 
   private ComponentsSystrace() {
@@ -45,6 +48,13 @@ public class ComponentsSystrace {
 
   public static void endSection() {
     getInstance().endSection();
+  }
+
+  public static boolean isTracing() {
+    if (ComponentsConfiguration.isAlwaysTracingBacktestEnabled) {
+      return true;
+    }
+    return getInstance().isTracing();
   }
 
   private static Systrace getInstance() {
