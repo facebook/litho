@@ -22,6 +22,11 @@ A number of external libraries can be found in this sub-folder.  Roughly, they c
 
 The source for the finished product of the [barebones tutorial](/docs/tutorial) is found here.  If you change the tutorial, you must update the code here.
 
+### `/sample-barebones-kotlin/`
+
+This folder contains - you guess it! - a Kotlin version of the previous
+barebones sample to demonstrate how to use Litho and Kotlin together.
+
 ### `/sample-codelab/`
 
 The source for the codelab tutorial is found here. The codelab has 3 parts:
