@@ -36,6 +36,19 @@ class TransitionUtils {
           && (transitionUnit.targetsProperty(AnimatedProperties.HEIGHT));
     }
 
+    if (transition instanceof Transition.TransitionUnitsBuilder) {
+      final Transition.TransitionUnitsBuilder builder =
+          (Transition.TransitionUnitsBuilder) transition;
+      ArrayList<Transition.TransitionUnit> units = builder.getTransitionUnits();
+      for (int i = 0, size = units.size(); i < size; i++) {
+        if (hasBoundsAnimation(transitionKey, units.get(i))) {
+          return true;
+        }
+      }
+
+      return false;
+    }
+
     throw new RuntimeException("Unhandled transition type: " + transition);
   }
 }
