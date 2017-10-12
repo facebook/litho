@@ -46,5 +46,5 @@ function installAndroidSDK {
   echo > $ANDROID_HOME/licenses/android-sdk-license
   echo -n 8933bad161af4178b1185d1a37fbf41ea5269c55 > $ANDROID_HOME/licenses/android-sdk-license
 
-  installsdk 'build-tools;25.0.3' 'build-tools;26.0.2' 'platforms;android-23' 'platforms;android-25' 'ndk-bundle' 'extras;android;m2repository'
+  installsdk 'build-tools;25.0.3' 'build-tools;26.0.2' 'platforms;android-25' 'platforms;android-26' 'ndk-bundle' 'extras;android;m2repository'
 }
