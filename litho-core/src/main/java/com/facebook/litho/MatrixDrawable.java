@@ -50,12 +50,14 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
     }
 
     if (mDrawable != null) {
+      setDrawableVisibilitySafe(false, false);
       mDrawable.setCallback(null);
     }
 
     mDrawable = drawable;
 
     if (mDrawable != null) {
+      setDrawableVisibilitySafe(isVisible(), false);
       mDrawable.setCallback(this);
     }
 
@@ -123,6 +125,7 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
 
   public void unmount() {
     if (mDrawable != null) {
+      setDrawableVisibilitySafe(false, false);
       mDrawable.setCallback(null);
     }
 
@@ -134,6 +137,17 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
 
   public T getMountedDrawable() {
     return mDrawable;
+  }
+
+  private void setDrawableVisibilitySafe(boolean visible, boolean restart) {
+    if (mDrawable != null && mDrawable.isVisible() != visible) {
+      try {
+        mDrawable.setVisible(visible, restart);
+      } catch (NullPointerException e) {
+        // Swallow. LayerDrawable on KitKat sometimes causes this, if some of its children are null.
+        // This should not cause any rendering bugs, since visibility is anyway a "hint".
+      }
+    }
   }
 
   @Override
@@ -238,8 +252,9 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
 
   @Override
   public boolean setVisible(boolean visible, boolean restart) {
-    return super.setVisible(visible, restart) ||
-        (mDrawable != null && mDrawable.setVisible(visible, restart));
+    final boolean changed = super.setVisible(visible, restart);
+    setDrawableVisibilitySafe(visible, restart);
+    return changed;
   }
 
   @Override
