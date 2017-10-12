@@ -242,6 +242,15 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       return ComponentContext.NULL_LAYOUT;
     }
 
+    final ComponentLayoutAttributes layoutAttributes = component.getLayoutAttributes();
+    // If this is a layout spec with size spec, and we're not deferring the nested tree resolution,
+    // then we already added the attributes earlier on (when we did defer resolution), and
+    // therefore we shouldn't add them again here.
+    if (layoutAttributes != null
+        && (deferNestedTreeResolution || !Component.isLayoutSpecWithSizeSpec(component))) {
+      layoutAttributes.copyInto(node);
+    }
+
     // Set component on the root node of the generated tree so that the mount calls use
     // those (see Controller.mountNodeTree()). Handle the case where the component simply
     // delegates its layout creation to another component i.e. the root node belongs to

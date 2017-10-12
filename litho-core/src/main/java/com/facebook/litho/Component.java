@@ -9,18 +9,35 @@
 
 package com.facebook.litho;
 
+import static android.support.annotation.Dimension.DP;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_WARNING;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_MESSAGE;
 
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.AttrRes;
+import android.support.annotation.ColorInt;
+import android.support.annotation.DimenRes;
+import android.support.annotation.Dimension;
+import android.support.annotation.DrawableRes;
+import android.support.annotation.Px;
+import android.support.annotation.StringRes;
 import android.support.annotation.StyleRes;
 import android.support.annotation.VisibleForTesting;
+import android.util.SparseArray;
+import android.view.ViewOutlineProvider;
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.ComponentLifecycle.MountType;
 import com.facebook.litho.ComponentLifecycle.StateContainer;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.reference.DrawableReference;
+import com.facebook.litho.reference.Reference;
+import com.facebook.yoga.YogaAlign;
+import com.facebook.yoga.YogaDirection;
+import com.facebook.yoga.YogaEdge;
+import com.facebook.yoga.YogaPositionType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
@@ -28,6 +45,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.annotation.Nullable;
 
 /**
  * Represents a unique instance of a component that is driven by its matching
@@ -55,7 +73,10 @@ public abstract class Component<L extends ComponentLifecycle>
   private InternalNode mLastMeasuredLayout;
 
   // This is just being used for an experiment right now. Do not use for anything else.
-  private ComponentLayout.Builder mLayoutAttributes;
+  private ComponentLayout.Builder mLayoutAttributesForWithLayout;
+
+  // Layout attributes that are set directly on the component itself.
+  @Nullable private ComponentLayoutAttributes mComponentLayoutAttributes;
 
   /**
    * Holds onto how many direct component children of each type this Component has. Used for
@@ -396,6 +417,18 @@ public abstract class Component<L extends ComponentLifecycle>
     context.registerTrigger(context.newEventTrigger(), globalKey);
   }
 
+  ComponentLayoutAttributes getLayoutAttributes() {
+    return mComponentLayoutAttributes;
+  }
+
+  private ComponentLayoutAttributes getOrCreateLayoutAttributes() {
+    if (mComponentLayoutAttributes == null) {
+      mComponentLayoutAttributes = new ComponentLayoutAttributes();
+    }
+
+    return mComponentLayoutAttributes;
+  }
+
   @Override
   public EventDispatcher getEventDispatcher() {
     return mLifecycle;
@@ -481,6 +514,11 @@ public abstract class Component<L extends ComponentLifecycle>
       return this.withLayout(false).build();
     }
 
+    /**
+     * @deprecated You no longer need to use this method in order to add layout attributes, you can
+     *     just add them directly to the component.
+     */
+    @Deprecated
     public final ComponentLayout.Builder withLayout() {
       return this.withLayout(ComponentsConfiguration.storeLayoutAttributesInSeparateObject);
     }
@@ -500,14 +538,14 @@ public abstract class Component<L extends ComponentLifecycle>
         if (ComponentsConfiguration.useOptimizedLayoutAttributes) {
           OptimizedLayoutAttributes optimizedLayoutAttributes = new OptimizedLayoutAttributes();
           optimizedLayoutAttributes.init(context, internalNode);
-          component.mLayoutAttributes = optimizedLayoutAttributes;
+          component.mLayoutAttributesForWithLayout = optimizedLayoutAttributes;
         } else {
           LayoutAttributes layoutAttributes = new LayoutAttributes();
           layoutAttributes.init(context, internalNode);
-          component.mLayoutAttributes = layoutAttributes;
+          component.mLayoutAttributesForWithLayout = layoutAttributes;
         }
 
-        return component.mLayoutAttributes;
+        return component.mLayoutAttributesForWithLayout;
       } else {
         return internalNode;
       }
@@ -515,5 +553,614 @@ public abstract class Component<L extends ComponentLifecycle>
 
     @ReturnsOwnership
     public abstract Component<L> build();
+
+    public T layoutDirection(YogaDirection layoutDirection) {
+      mComponent.getOrCreateLayoutAttributes().layoutDirection(layoutDirection);
+      return getThis();
+    }
+
+    public T alignSelf(YogaAlign alignSelf) {
+      mComponent.getOrCreateLayoutAttributes().alignSelf(alignSelf);
+      return getThis();
+    }
+
+    public T positionType(YogaPositionType positionType) {
+      mComponent.getOrCreateLayoutAttributes().positionType(positionType);
+      return getThis();
+    }
+
+    public T flex(float flex) {
+      mComponent.getOrCreateLayoutAttributes().flex(flex);
+      return getThis();
+    }
+
+    public T flexGrow(float flexGrow) {
+      mComponent.getOrCreateLayoutAttributes().flexGrow(flexGrow);
+      return getThis();
+    }
+
+    public T flexShrink(float flexShrink) {
+      mComponent.getOrCreateLayoutAttributes().flexShrink(flexShrink);
+      return getThis();
+    }
+
+    public T flexBasisPx(@Px int flexBasis) {
+      mComponent.getOrCreateLayoutAttributes().flexBasisPx(flexBasis);
+      return getThis();
+    }
+
+    public T flexBasisPercent(float percent) {
+      mComponent.getOrCreateLayoutAttributes().flexBasisPercent(percent);
+      return getThis();
+    }
+
+    public T flexBasisAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+      return flexBasisPx(resolveDimenSizeAttr(resId, defaultResId));
+    }
+
+    public T flexBasisAttr(@AttrRes int resId) {
+      return flexBasisAttr(resId, 0);
+    }
+
+    public T flexBasisRes(@DimenRes int resId) {
+      return flexBasisPx(resolveDimenSizeRes(resId));
+    }
+
+    public T flexBasisDip(@Dimension(unit = DP) float flexBasis) {
+      return flexBasisPx(dipsToPixels(flexBasis));
+    }
+
+    public T importantForAccessibility(int importantForAccessibility) {
+      mComponent.getOrCreateLayoutAttributes().importantForAccessibility(importantForAccessibility);
+      return getThis();
+    }
+
+    public T duplicateParentState(boolean duplicateParentState) {
+      mComponent.getOrCreateLayoutAttributes().duplicateParentState(duplicateParentState);
+      return getThis();
+    }
+
+    public T marginPx(YogaEdge edge, @Px int margin) {
+      mComponent.getOrCreateLayoutAttributes().marginPx(edge, margin);
+      return getThis();
+    }
+
+    public T marginPercent(YogaEdge edge, float percent) {
+      mComponent.getOrCreateLayoutAttributes().marginPercent(edge, percent);
+      return getThis();
+    }
+
+    public T marginAuto(YogaEdge edge) {
+      mComponent.getOrCreateLayoutAttributes().marginAuto(edge);
+      return getThis();
+    }
+
+    public T marginAttr(YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
+      return marginPx(edge, resolveDimenSizeAttr(resId, defaultResId));
+    }
+
+    public T marginAttr(YogaEdge edge, @AttrRes int resId) {
+      return marginAttr(edge, resId, 0);
+    }
+
+    public T marginRes(YogaEdge edge, @DimenRes int resId) {
+      return marginPx(edge, resolveDimenSizeRes(resId));
+    }
+
+    public T marginDip(YogaEdge edge, @Dimension(unit = DP) float margin) {
+      return marginPx(edge, dipsToPixels(margin));
+    }
+
+    public T paddingPx(YogaEdge edge, @Px int padding) {
+      mComponent.getOrCreateLayoutAttributes().paddingPx(edge, padding);
+      return getThis();
+    }
+
+    public T paddingPercent(YogaEdge edge, float percent) {
+      mComponent.getOrCreateLayoutAttributes().paddingPercent(edge, percent);
+      return getThis();
+    }
+
+    public T paddingAttr(YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
+      return paddingPx(edge, resolveDimenSizeAttr(resId, defaultResId));
+    }
+
+    public T paddingAttr(YogaEdge edge, @AttrRes int resId) {
+      return paddingAttr(edge, resId, 0);
+    }
+
+    public T paddingRes(YogaEdge edge, @DimenRes int resId) {
+      return paddingPx(edge, resolveDimenSizeRes(resId));
+    }
+
+    public T paddingDip(YogaEdge edge, @Dimension(unit = DP) float padding) {
+      return paddingPx(edge, dipsToPixels(padding));
+    }
+
+    public T border(Border border) {
+      mComponent.getOrCreateLayoutAttributes().border(border);
+      return getThis();
+    }
+
+    public T positionPx(YogaEdge edge, @Px int position) {
+      mComponent.getOrCreateLayoutAttributes().positionPx(edge, position);
+      return getThis();
+    }
+
+    public T positionPercent(YogaEdge edge, float percent) {
+      mComponent.getOrCreateLayoutAttributes().positionPercent(edge, percent);
+      return getThis();
+    }
+
+    public T positionAttr(YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
+      return positionPx(edge, resolveDimenSizeAttr(resId, defaultResId));
+    }
+
+    public T positionAttr(YogaEdge edge, @AttrRes int resId) {
+      return positionAttr(edge, resId, 0);
+    }
+
+    public T positionRes(YogaEdge edge, @DimenRes int resId) {
+      return positionPx(edge, resolveDimenSizeRes(resId));
+    }
+
+    public T positionDip(YogaEdge edge, @Dimension(unit = DP) float position) {
+      return positionPx(edge, dipsToPixels(position));
+    }
+
+    public T widthPx(@Px int width) {
+      mComponent.getOrCreateLayoutAttributes().widthPx(width);
+      return getThis();
+    }
+
+    public T widthPercent(float percent) {
+      mComponent.getOrCreateLayoutAttributes().widthPercent(percent);
+      return getThis();
+    }
+
+    public T widthRes(@DimenRes int resId) {
+      return widthPx(resolveDimenSizeRes(resId));
+    }
+
+    public T widthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+      return widthPx(resolveDimenSizeAttr(resId, defaultResId));
+    }
+
+    public T widthAttr(@AttrRes int resId) {
+      return widthAttr(resId, 0);
+    }
+
+    public T widthDip(@Dimension(unit = DP) float width) {
+      return widthPx(dipsToPixels(width));
+    }
+
+    public T minWidthPx(@Px int minWidth) {
+      mComponent.getOrCreateLayoutAttributes().minWidthPx(minWidth);
+      return getThis();
+    }
+
+    public T minWidthPercent(float percent) {
+      mComponent.getOrCreateLayoutAttributes().minWidthPercent(percent);
+      return getThis();
+    }
+
+    public T minWidthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+      return minWidthPx(resolveDimenSizeAttr(resId, defaultResId));
+    }
+
+    public T minWidthAttr(@AttrRes int resId) {
+      return minWidthAttr(resId, 0);
+    }
+
+    public T minWidthRes(@DimenRes int resId) {
+      return minWidthPx(resolveDimenSizeRes(resId));
+    }
+
+    public T minWidthDip(@Dimension(unit = DP) float minWidth) {
+      return minWidthPx(dipsToPixels(minWidth));
+    }
+
+    public T maxWidthPx(@Px int maxWidth) {
+      mComponent.getOrCreateLayoutAttributes().maxWidthPx(maxWidth);
+      return getThis();
+    }
+
+    public T maxWidthPercent(float percent) {
+      mComponent.getOrCreateLayoutAttributes().maxWidthPercent(percent);
+      return getThis();
+    }
+
+    public T maxWidthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+      return maxWidthPx(resolveDimenSizeAttr(resId, defaultResId));
+    }
+
+    public T maxWidthAttr(@AttrRes int resId) {
+      return maxWidthAttr(resId, 0);
+    }
+
+    public T maxWidthRes(@DimenRes int resId) {
+      return maxWidthPx(resolveDimenSizeRes(resId));
+    }
+
+    public T maxWidthDip(@Dimension(unit = DP) float maxWidth) {
+      return maxWidthPx(dipsToPixels(maxWidth));
+    }
+
+    public T heightPx(@Px int height) {
+      mComponent.getOrCreateLayoutAttributes().heightPx(height);
+      return getThis();
+    }
+
+    public T heightPercent(float percent) {
+      mComponent.getOrCreateLayoutAttributes().heightPercent(percent);
+      return getThis();
+    }
+
+    public T heightRes(@DimenRes int resId) {
+      return heightPx(resolveDimenSizeRes(resId));
+    }
+
+    public T heightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+      return heightPx(resolveDimenSizeAttr(resId, defaultResId));
+    }
+
+    public T heightAttr(@AttrRes int resId) {
+      return heightAttr(resId, 0);
+    }
+
+    public T heightDip(@Dimension(unit = DP) float height) {
+      return heightPx(dipsToPixels(height));
+    }
+
+    public T minHeightPx(@Px int minHeight) {
+      mComponent.getOrCreateLayoutAttributes().minHeightPx(minHeight);
+      return getThis();
+    }
+
+    public T minHeightPercent(float percent) {
+      mComponent.getOrCreateLayoutAttributes().minHeightPercent(percent);
+      return getThis();
+    }
+
+    public T minHeightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+      return minHeightPx(resolveDimenSizeAttr(resId, defaultResId));
+    }
+
+    public T minHeightAttr(@AttrRes int resId) {
+      return minHeightAttr(resId, 0);
+    }
+
+    public T minHeightRes(@DimenRes int resId) {
+      return minHeightPx(resolveDimenSizeRes(resId));
+    }
+
+    public T minHeightDip(@Dimension(unit = DP) float minHeight) {
+      return minHeightPx(dipsToPixels(minHeight));
+    }
+
+    public T maxHeightPx(@Px int maxHeight) {
+      mComponent.getOrCreateLayoutAttributes().maxHeightPx(maxHeight);
+      return getThis();
+    }
+
+    public T maxHeightPercent(float percent) {
+      mComponent.getOrCreateLayoutAttributes().maxHeightPercent(percent);
+      return getThis();
+    }
+
+    public T maxHeightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+      return maxHeightPx(resolveDimenSizeAttr(resId, defaultResId));
+    }
+
+    public T maxHeightAttr(@AttrRes int resId) {
+      return maxHeightAttr(resId, 0);
+    }
+
+    public T maxHeightRes(@DimenRes int resId) {
+      return maxHeightPx(resolveDimenSizeRes(resId));
+    }
+
+    public T maxHeightDip(@Dimension(unit = DP) float maxHeight) {
+      return maxHeightPx(dipsToPixels(maxHeight));
+    }
+
+    public T aspectRatio(float aspectRatio) {
+      mComponent.getOrCreateLayoutAttributes().aspectRatio(aspectRatio);
+      return getThis();
+    }
+
+    public T touchExpansionPx(YogaEdge edge, @Px int touchExpansion) {
+      mComponent.getOrCreateLayoutAttributes().touchExpansionPx(edge, touchExpansion);
+      return getThis();
+    }
+
+    public T touchExpansionAttr(YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
+      return touchExpansionPx(edge, resolveDimenSizeAttr(resId, defaultResId));
+    }
+
+    public T touchExpansionAttr(YogaEdge edge, @AttrRes int resId) {
+      return touchExpansionAttr(edge, resId, 0);
+    }
+
+    public T touchExpansionRes(YogaEdge edge, @DimenRes int resId) {
+      return touchExpansionPx(edge, resolveDimenSizeRes(resId));
+    }
+
+    public T touchExpansionDip(YogaEdge edge, @Dimension(unit = DP) float touchExpansion) {
+      return touchExpansionPx(edge, dipsToPixels(touchExpansion));
+    }
+
+    public T background(Reference<? extends Drawable> background) {
+      mComponent.getOrCreateLayoutAttributes().background(background);
+      return getThis();
+    }
+
+    public T background(Reference.Builder<? extends Drawable> builder) {
+      return background(builder.build());
+    }
+
+    public T background(Drawable background) {
+      return background(DrawableReference.create().drawable(background));
+    }
+
+    public T backgroundAttr(@AttrRes int resId, @DrawableRes int defaultResId) {
+      return backgroundRes(resolveResIdAttr(resId, defaultResId));
+    }
+
+    public T backgroundAttr(@AttrRes int resId) {
+      return backgroundAttr(resId, 0);
+    }
+
+    public T backgroundRes(@DrawableRes int resId) {
+      if (resId == 0) {
+        return background((Reference<? extends Drawable>) null);
+      }
+
+      return background(mContext.getResources().getDrawable(resId));
+    }
+
+    public T backgroundColor(@ColorInt int backgroundColor) {
+      return background(new ColorDrawable(backgroundColor));
+    }
+
+    public T foreground(Drawable foreground) {
+      mComponent.getOrCreateLayoutAttributes().foreground(foreground);
+      return getThis();
+    }
+
+    public T foregroundAttr(@AttrRes int resId, @DrawableRes int defaultResId) {
+      return foregroundRes(resolveResIdAttr(resId, defaultResId));
+    }
+
+    public T foregroundAttr(@AttrRes int resId) {
+      return foregroundAttr(resId, 0);
+    }
+
+    public T foregroundRes(@DrawableRes int resId) {
+      if (resId == 0) {
+        return foreground(null);
+      }
+
+      return foreground(mContext.getResources().getDrawable(resId));
+    }
+
+    public T foregroundColor(@ColorInt int foregroundColor) {
+      return foreground(new ColorDrawable(foregroundColor));
+    }
+
+    public T wrapInView() {
+      mComponent.getOrCreateLayoutAttributes().wrapInView();
+      return getThis();
+    }
+
+    public T clickHandler(EventHandler<ClickEvent> clickHandler) {
+      mComponent.getOrCreateLayoutAttributes().clickHandler(clickHandler);
+      return getThis();
+    }
+
+    public T longClickHandler(EventHandler<LongClickEvent> longClickHandler) {
+      mComponent.getOrCreateLayoutAttributes().longClickHandler(longClickHandler);
+      return getThis();
+    }
+
+    public T focusChangeHandler(EventHandler<FocusChangedEvent> focusChangeHandler) {
+      mComponent.getOrCreateLayoutAttributes().focusChangeHandler(focusChangeHandler);
+      return getThis();
+    }
+
+    public T touchHandler(EventHandler<TouchEvent> touchHandler) {
+      mComponent.getOrCreateLayoutAttributes().touchHandler(touchHandler);
+      return getThis();
+    }
+
+    public T interceptTouchHandler(EventHandler<InterceptTouchEvent> interceptTouchHandler) {
+      mComponent.getOrCreateLayoutAttributes().interceptTouchHandler(interceptTouchHandler);
+      return getThis();
+    }
+
+    public T focusable(boolean isFocusable) {
+      mComponent.getOrCreateLayoutAttributes().focusable(isFocusable);
+      return getThis();
+    }
+
+    public T enabled(boolean isEnabled) {
+      mComponent.getOrCreateLayoutAttributes().enabled(isEnabled);
+      return getThis();
+    }
+
+    public T visibleHeightRatio(float visibleHeightRatio) {
+      mComponent.getOrCreateLayoutAttributes().visibleHeightRatio(visibleHeightRatio);
+      return getThis();
+    }
+
+    public T visibleWidthRatio(float visibleWidthRatio) {
+      mComponent.getOrCreateLayoutAttributes().visibleWidthRatio(visibleWidthRatio);
+      return getThis();
+    }
+
+    public T visibleHandler(EventHandler<VisibleEvent> visibleHandler) {
+      mComponent.getOrCreateLayoutAttributes().visibleHandler(visibleHandler);
+      return getThis();
+    }
+
+    public T focusedHandler(EventHandler<FocusedVisibleEvent> focusedHandler) {
+      mComponent.getOrCreateLayoutAttributes().focusedHandler(focusedHandler);
+      return getThis();
+    }
+
+    public T unfocusedHandler(EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
+      mComponent.getOrCreateLayoutAttributes().unfocusedHandler(unfocusedHandler);
+      return getThis();
+    }
+
+    public T fullImpressionHandler(EventHandler<FullImpressionVisibleEvent> fullImpressionHandler) {
+      mComponent.getOrCreateLayoutAttributes().fullImpressionHandler(fullImpressionHandler);
+      return getThis();
+    }
+
+    public T invisibleHandler(EventHandler<InvisibleEvent> invisibleHandler) {
+      mComponent.getOrCreateLayoutAttributes().invisibleHandler(invisibleHandler);
+      return getThis();
+    }
+
+    public T contentDescription(CharSequence contentDescription) {
+      mComponent.getOrCreateLayoutAttributes().contentDescription(contentDescription);
+      return getThis();
+    }
+
+    public T contentDescription(@StringRes int stringId) {
+      return contentDescription(mContext.getResources().getString(stringId));
+    }
+
+    public T contentDescription(@StringRes int stringId, Object... formatArgs) {
+      return contentDescription(mContext.getResources().getString(stringId, formatArgs));
+    }
+
+    public T viewTag(Object viewTag) {
+      mComponent.getOrCreateLayoutAttributes().viewTag(viewTag);
+      return getThis();
+    }
+
+    public T viewTags(SparseArray<Object> viewTags) {
+      mComponent.getOrCreateLayoutAttributes().viewTags(viewTags);
+      return getThis();
+    }
+
+    public T shadowElevationPx(float shadowElevation) {
+      mComponent.getOrCreateLayoutAttributes().shadowElevationPx(shadowElevation);
+      return getThis();
+    }
+
+    public T shadowElevationAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+      return shadowElevationPx(resolveDimenSizeAttr(resId, defaultResId));
+    }
+
+    public T shadowElevationAttr(@AttrRes int resId) {
+      return shadowElevationAttr(resId, 0);
+    }
+
+    public T shadowElevationRes(@DimenRes int resId) {
+      return shadowElevationPx(resolveDimenSizeRes(resId));
+    }
+
+    public T shadowElevationDip(@Dimension(unit = DP) float shadowElevation) {
+      return shadowElevationPx(dipsToPixels(shadowElevation));
+    }
+
+    public T outlineProvider(ViewOutlineProvider outlineProvider) {
+      mComponent.getOrCreateLayoutAttributes().outlineProvider(outlineProvider);
+      return getThis();
+    }
+
+    public T clipToOutline(boolean clipToOutline) {
+      mComponent.getOrCreateLayoutAttributes().clipToOutline(clipToOutline);
+      return getThis();
+    }
+
+    public T testKey(String testKey) {
+      mComponent.getOrCreateLayoutAttributes().testKey(testKey);
+      return getThis();
+    }
+
+    public T dispatchPopulateAccessibilityEventHandler(
+        EventHandler<DispatchPopulateAccessibilityEventEvent>
+            dispatchPopulateAccessibilityEventHandler) {
+      mComponent
+          .getOrCreateLayoutAttributes()
+          .dispatchPopulateAccessibilityEventHandler(dispatchPopulateAccessibilityEventHandler);
+      return getThis();
+    }
+
+    public T onInitializeAccessibilityEventHandler(
+        EventHandler<OnInitializeAccessibilityEventEvent> onInitializeAccessibilityEventHandler) {
+      mComponent
+          .getOrCreateLayoutAttributes()
+          .onInitializeAccessibilityEventHandler(onInitializeAccessibilityEventHandler);
+      return getThis();
+    }
+
+    public T onInitializeAccessibilityNodeInfoHandler(
+        EventHandler<OnInitializeAccessibilityNodeInfoEvent>
+            onInitializeAccessibilityNodeInfoHandler) {
+      mComponent
+          .getOrCreateLayoutAttributes()
+          .onInitializeAccessibilityNodeInfoHandler(onInitializeAccessibilityNodeInfoHandler);
+      return getThis();
+    }
+
+    public T onPopulateAccessibilityEventHandler(
+        EventHandler<OnPopulateAccessibilityEventEvent> onPopulateAccessibilityEventHandler) {
+      mComponent
+          .getOrCreateLayoutAttributes()
+          .onPopulateAccessibilityEventHandler(onPopulateAccessibilityEventHandler);
+      return getThis();
+    }
+
+    public T onRequestSendAccessibilityEventHandler(
+        EventHandler<OnRequestSendAccessibilityEventEvent> onRequestSendAccessibilityEventHandler) {
+      mComponent
+          .getOrCreateLayoutAttributes()
+          .onRequestSendAccessibilityEventHandler(onRequestSendAccessibilityEventHandler);
+      return getThis();
+    }
+
+    public T performAccessibilityActionHandler(
+        EventHandler<PerformAccessibilityActionEvent> performAccessibilityActionHandler) {
+      mComponent
+          .getOrCreateLayoutAttributes()
+          .performAccessibilityActionHandler(performAccessibilityActionHandler);
+      return getThis();
+    }
+
+    public T sendAccessibilityEventHandler(
+        EventHandler<SendAccessibilityEventEvent> sendAccessibilityEventHandler) {
+      mComponent
+          .getOrCreateLayoutAttributes()
+          .sendAccessibilityEventHandler(sendAccessibilityEventHandler);
+      return getThis();
+    }
+
+    public T sendAccessibilityEventUncheckedHandler(
+        EventHandler<SendAccessibilityEventUncheckedEvent> sendAccessibilityEventUncheckedHandler) {
+      mComponent
+          .getOrCreateLayoutAttributes()
+          .sendAccessibilityEventUncheckedHandler(sendAccessibilityEventUncheckedHandler);
+      return getThis();
+    }
+
+    public T transitionKey(String key) {
+      mComponent.getOrCreateLayoutAttributes().transitionKey(key);
+      return getThis();
+    }
+
+    public T alpha(float alpha) {
+      mComponent.getOrCreateLayoutAttributes().alpha(alpha);
+      return getThis();
+    }
+
+    public T scale(float scale) {
+      mComponent.getOrCreateLayoutAttributes().scale(scale);
+      return getThis();
+    }
   }
 }

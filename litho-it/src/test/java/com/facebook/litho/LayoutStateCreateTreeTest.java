@@ -11,10 +11,25 @@ package com.facebook.litho;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.util.SparseArray;
+import com.facebook.litho.annotations.ImportantForAccessibility;
+import com.facebook.litho.reference.DrawableReference;
+import com.facebook.litho.reference.Reference;
+import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
+import com.facebook.litho.testing.TestSizeDependentComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
+import com.facebook.yoga.YogaAlign;
+import com.facebook.yoga.YogaDirection;
+import com.facebook.yoga.YogaEdge;
+import com.facebook.yoga.YogaPositionType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -79,7 +94,75 @@ public class LayoutStateCreateTreeTest {
                     Column.create(c)
                         .child(
                             TestDrawableComponent.create(c)
-                                .withLayout()
+                                .clickHandler(clickHandler1)
+                                .longClickHandler(longClickHandler1)
+                                .touchHandler(touchHandler1)
+                                .interceptTouchHandler(interceptTouchHandler1)
+                                .focusChangeHandler(focusChangedHandler1)
+                                .withLayout())
+                        .clickHandler(clickHandler2)
+                        .longClickHandler(longClickHandler2)
+                        .touchHandler(touchHandler2)
+                        .interceptTouchHandler(interceptTouchHandler2)
+                        .focusChangeHandler(focusChangedHandler2))
+                .clickHandler(clickHandler3)
+                .longClickHandler(longClickHandler3)
+                .touchHandler(touchHandler3)
+                .interceptTouchHandler(interceptTouchHandler3)
+                .focusChangeHandler(focusChangedHandler3)
+                .build();
+          }
+        };
+
+    InternalNode node = LayoutState.createTree(component, mComponentContext);
+    assertThat(node.getNodeInfo().getClickHandler()).isEqualTo(clickHandler3);
+    assertThat(node.getNodeInfo().getLongClickHandler()).isEqualTo(longClickHandler3);
+    assertThat(node.getNodeInfo().getTouchHandler()).isEqualTo(touchHandler3);
+    assertThat(node.getNodeInfo().getInterceptTouchHandler()).isEqualTo(interceptTouchHandler3);
+    assertThat(node.getNodeInfo().getFocusChangeHandler()).isEqualTo(focusChangedHandler3);
+
+    node = node.getChildAt(0);
+    assertThat(node.getNodeInfo().getClickHandler()).isEqualTo(clickHandler2);
+    assertThat(node.getNodeInfo().getLongClickHandler()).isEqualTo(longClickHandler2);
+    assertThat(node.getNodeInfo().getTouchHandler()).isEqualTo(touchHandler2);
+    assertThat(node.getNodeInfo().getInterceptTouchHandler()).isEqualTo(interceptTouchHandler2);
+    assertThat(node.getNodeInfo().getFocusChangeHandler()).isEqualTo(focusChangedHandler2);
+
+    node = node.getChildAt(0);
+    assertThat(node.getNodeInfo().getClickHandler()).isEqualTo(clickHandler1);
+    assertThat(node.getNodeInfo().getLongClickHandler()).isEqualTo(longClickHandler1);
+    assertThat(node.getNodeInfo().getTouchHandler()).isEqualTo(touchHandler1);
+    assertThat(node.getNodeInfo().getInterceptTouchHandler()).isEqualTo(interceptTouchHandler1);
+    assertThat(node.getNodeInfo().getFocusChangeHandler()).isEqualTo(focusChangedHandler1);
+  }
+
+  @Test
+  public void testHandlersAreAppliedToCorrectInternalNodesForSizeDependentComponent() {
+    final EventHandler<ClickEvent> clickHandler1 = mock(EventHandler.class);
+    final EventHandler<ClickEvent> clickHandler2 = mock(EventHandler.class);
+    final EventHandler<ClickEvent> clickHandler3 = mock(EventHandler.class);
+    final EventHandler<LongClickEvent> longClickHandler1 = mock(EventHandler.class);
+    final EventHandler<LongClickEvent> longClickHandler2 = mock(EventHandler.class);
+    final EventHandler<LongClickEvent> longClickHandler3 = mock(EventHandler.class);
+    final EventHandler<TouchEvent> touchHandler1 = mock(EventHandler.class);
+    final EventHandler<TouchEvent> touchHandler2 = mock(EventHandler.class);
+    final EventHandler<TouchEvent> touchHandler3 = mock(EventHandler.class);
+    final EventHandler<InterceptTouchEvent> interceptTouchHandler1 = mock(EventHandler.class);
+    final EventHandler<InterceptTouchEvent> interceptTouchHandler2 = mock(EventHandler.class);
+    final EventHandler<InterceptTouchEvent> interceptTouchHandler3 = mock(EventHandler.class);
+    final EventHandler<FocusChangedEvent> focusChangedHandler1 = mock(EventHandler.class);
+    final EventHandler<FocusChangedEvent> focusChangedHandler2 = mock(EventHandler.class);
+    final EventHandler<FocusChangedEvent> focusChangedHandler3 = mock(EventHandler.class);
+
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(final ComponentContext c) {
+            return Column.create(c)
+                .child(
+                    Column.create(c)
+                        .child(
+                            TestSizeDependentComponent.create(c)
                                 .clickHandler(clickHandler1)
                                 .longClickHandler(longClickHandler1)
                                 .touchHandler(touchHandler1)
@@ -121,6 +204,7 @@ public class LayoutStateCreateTreeTest {
     assertThat(node.getNodeInfo().getFocusChangeHandler()).isEqualTo(focusChangedHandler1);
   }
 
+
   @Test
   public void testOverridingHandlers() {
     final EventHandler<ClickEvent> clickHandler1 = mock(EventHandler.class);
@@ -144,13 +228,12 @@ public class LayoutStateCreateTreeTest {
                       @Override
                       protected ComponentLayout onCreateLayout(ComponentContext c) {
                         return TestDrawableComponent.create(c)
-                            .withLayout()
                             .clickHandler(clickHandler1)
                             .longClickHandler(longClickHandler1)
                             .touchHandler(touchHandler1)
                             .interceptTouchHandler(interceptTouchHandler1)
                             .focusChangeHandler(focusChangedHandler1)
-                            .build();
+                            .buildWithLayout();
                       }
                     })
                 .clickHandler(clickHandler2)
@@ -170,5 +253,327 @@ public class LayoutStateCreateTreeTest {
     assertThat(node.getNodeInfo().getTouchHandler()).isEqualTo(touchHandler2);
     assertThat(node.getNodeInfo().getInterceptTouchHandler()).isEqualTo(interceptTouchHandler2);
     assertThat(node.getNodeInfo().getFocusChangeHandler()).isEqualTo(focusChangedHandler2);
+  }
+
+  @Test
+  public void testOverridingHandlersForSizeDependentComponent() {
+    final EventHandler<ClickEvent> clickHandler1 = mock(EventHandler.class);
+    final EventHandler<ClickEvent> clickHandler2 = mock(EventHandler.class);
+    final EventHandler<LongClickEvent> longClickHandler1 = mock(EventHandler.class);
+    final EventHandler<LongClickEvent> longClickHandler2 = mock(EventHandler.class);
+    final EventHandler<TouchEvent> touchHandler1 = mock(EventHandler.class);
+    final EventHandler<TouchEvent> touchHandler2 = mock(EventHandler.class);
+    final EventHandler<InterceptTouchEvent> interceptTouchHandler1 = mock(EventHandler.class);
+    final EventHandler<InterceptTouchEvent> interceptTouchHandler2 = mock(EventHandler.class);
+    final EventHandler<FocusChangedEvent> focusChangedHandler1 = mock(EventHandler.class);
+    final EventHandler<FocusChangedEvent> focusChangedHandler2 = mock(EventHandler.class);
+
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(final ComponentContext c) {
+            return Layout.create(
+                    c,
+                    new InlineLayoutSpec() {
+                      @Override
+                      protected ComponentLayout onCreateLayout(ComponentContext c) {
+                        return TestSizeDependentComponent.create(c)
+                            .clickHandler(clickHandler1)
+                            .longClickHandler(longClickHandler1)
+                            .touchHandler(touchHandler1)
+                            .interceptTouchHandler(interceptTouchHandler1)
+                            .focusChangeHandler(focusChangedHandler1)
+                            .buildWithLayout();
+                      }
+                    })
+                .clickHandler(clickHandler2)
+                .longClickHandler(longClickHandler2)
+                .touchHandler(touchHandler2)
+                .interceptTouchHandler(interceptTouchHandler2)
+                .focusChangeHandler(focusChangedHandler2)
+                .build();
+          }
+        };
+
+    InternalNode node = LayoutState.createTree(component, mComponentContext);
+    assertThat(node.getChildCount()).isEqualTo(0);
+    assertThat(node.getRootComponent().getLifecycle())
+        .isInstanceOf(TestSizeDependentComponent.class);
+    assertThat(node.getNodeInfo().getClickHandler()).isEqualTo(clickHandler2);
+    assertThat(node.getNodeInfo().getLongClickHandler()).isEqualTo(longClickHandler2);
+    assertThat(node.getNodeInfo().getTouchHandler()).isEqualTo(touchHandler2);
+    assertThat(node.getNodeInfo().getInterceptTouchHandler()).isEqualTo(interceptTouchHandler2);
+    assertThat(node.getNodeInfo().getFocusChangeHandler()).isEqualTo(focusChangedHandler2);
+  }
+
+  @Test
+  public void testAddingAllAttributes() {
+    final Reference<Drawable> drawableReference = DrawableReference.create().build();
+    final Drawable foreground = new ColorDrawable(Color.BLACK);
+    final EventHandler<ClickEvent> clickHandler = mock(EventHandler.class);
+    final EventHandler<LongClickEvent> longClickHandler = mock(EventHandler.class);
+    final EventHandler<TouchEvent> touchHandler = mock(EventHandler.class);
+    final EventHandler<InterceptTouchEvent> interceptTouchHandler = mock(EventHandler.class);
+    final EventHandler<FocusChangedEvent> focusChangedHandler = mock(EventHandler.class);
+    final EventHandler<VisibleEvent> visibleHandler = mock(EventHandler.class);
+    final EventHandler<FocusedVisibleEvent> focusedHandler = mock(EventHandler.class);
+    final EventHandler<UnfocusedVisibleEvent> unfocusedHandler = mock(EventHandler.class);
+    final EventHandler<FullImpressionVisibleEvent> fullImpressionHandler = mock(EventHandler.class);
+    final EventHandler<InvisibleEvent> invisibleHandler = mock(EventHandler.class);
+    final Object viewTag = new Object();
+    final SparseArray<Object> viewTags = new SparseArray<>();
+    final EventHandler<DispatchPopulateAccessibilityEventEvent>
+        dispatchPopulateAccessibilityEventHandler = mock(EventHandler.class);
+    final EventHandler<OnInitializeAccessibilityEventEvent> onInitializeAccessibilityEventHandler =
+        mock(EventHandler.class);
+    final EventHandler<OnInitializeAccessibilityNodeInfoEvent>
+        onInitializeAccessibilityNodeInfoHandler = mock(EventHandler.class);
+    final EventHandler<OnPopulateAccessibilityEventEvent> onPopulateAccessibilityEventHandler =
+        mock(EventHandler.class);
+    final EventHandler<OnRequestSendAccessibilityEventEvent>
+        onRequestSendAccessibilityEventHandler = mock(EventHandler.class);
+    final EventHandler<PerformAccessibilityActionEvent> performAccessibilityActionHandler =
+        mock(EventHandler.class);
+    final EventHandler<SendAccessibilityEventEvent> sendAccessibilityEventHandler =
+        mock(EventHandler.class);
+    final EventHandler<SendAccessibilityEventUncheckedEvent>
+        sendAccessibilityEventUncheckedHandler = mock(EventHandler.class);
+
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return TestDrawableComponentWithMockInternalNode.create(c)
+                .layoutDirection(YogaDirection.INHERIT)
+                .alignSelf(YogaAlign.AUTO)
+                .positionType(YogaPositionType.ABSOLUTE)
+                .flex(2)
+                .flexGrow(3)
+                .flexShrink(4)
+                .flexBasisPx(5)
+                .flexBasisPercent(6)
+                .importantForAccessibility(
+                    ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_AUTO)
+                .duplicateParentState(false)
+                .marginPx(YogaEdge.ALL, 5)
+                .marginPx(YogaEdge.RIGHT, 6)
+                .marginPx(YogaEdge.LEFT, 4)
+                .marginPercent(YogaEdge.ALL, 10)
+                .marginPercent(YogaEdge.VERTICAL, 12)
+                .marginPercent(YogaEdge.RIGHT, 5)
+                .marginAuto(YogaEdge.LEFT)
+                .marginAuto(YogaEdge.TOP)
+                .marginAuto(YogaEdge.RIGHT)
+                .marginAuto(YogaEdge.BOTTOM)
+                .paddingPx(YogaEdge.ALL, 1)
+                .paddingPx(YogaEdge.RIGHT, 2)
+                .paddingPx(YogaEdge.LEFT, 3)
+                .paddingPercent(YogaEdge.VERTICAL, 7)
+                .paddingPercent(YogaEdge.RIGHT, 6)
+                .paddingPercent(YogaEdge.ALL, 5)
+                .positionPx(YogaEdge.ALL, 11)
+                .positionPx(YogaEdge.RIGHT, 12)
+                .positionPx(YogaEdge.LEFT, 13)
+                .positionPercent(YogaEdge.VERTICAL, 17)
+                .positionPercent(YogaEdge.RIGHT, 16)
+                .positionPercent(YogaEdge.ALL, 15)
+                .widthPx(5)
+                .widthPercent(50)
+                .minWidthPx(15)
+                .minWidthPercent(100)
+                .maxWidthPx(25)
+                .maxWidthPercent(26)
+                .heightPx(30)
+                .heightPercent(31)
+                .minHeightPx(32)
+                .minHeightPercent(33)
+                .maxHeightPx(34)
+                .maxHeightPercent(35)
+                .aspectRatio(20)
+                .touchExpansionPx(YogaEdge.RIGHT, 22)
+                .touchExpansionPx(YogaEdge.LEFT, 23)
+                .touchExpansionPx(YogaEdge.ALL, 21)
+                .background(drawableReference)
+                .foreground(foreground)
+                .wrapInView()
+                .clickHandler(clickHandler)
+                .focusChangeHandler(focusChangedHandler)
+                .longClickHandler(longClickHandler)
+                .touchHandler(touchHandler)
+                .interceptTouchHandler(interceptTouchHandler)
+                .focusable(true)
+                .enabled(false)
+                .visibleHeightRatio(55)
+                .visibleWidthRatio(56)
+                .visibleHandler(visibleHandler)
+                .focusedHandler(focusedHandler)
+                .unfocusedHandler(unfocusedHandler)
+                .fullImpressionHandler(fullImpressionHandler)
+                .invisibleHandler(invisibleHandler)
+                .contentDescription("test")
+                .viewTag(viewTag)
+                .viewTags(viewTags)
+                .shadowElevationPx(60)
+                .clipToOutline(false)
+                .transitionKey("transitionKey")
+                .testKey("testKey")
+                .dispatchPopulateAccessibilityEventHandler(
+                    dispatchPopulateAccessibilityEventHandler)
+                .onInitializeAccessibilityEventHandler(onInitializeAccessibilityEventHandler)
+                .onInitializeAccessibilityNodeInfoHandler(onInitializeAccessibilityNodeInfoHandler)
+                .onPopulateAccessibilityEventHandler(onPopulateAccessibilityEventHandler)
+                .onRequestSendAccessibilityEventHandler(onRequestSendAccessibilityEventHandler)
+                .performAccessibilityActionHandler(performAccessibilityActionHandler)
+                .sendAccessibilityEventHandler(sendAccessibilityEventHandler)
+                .sendAccessibilityEventUncheckedHandler(sendAccessibilityEventUncheckedHandler)
+                .buildWithLayout();
+          }
+        };
+
+    InternalNode node = LayoutState.createTree(component, mComponentContext);
+
+    verify(node).layoutDirection(YogaDirection.INHERIT);
+    verify(node).alignSelf(YogaAlign.AUTO);
+    verify(node).positionType(YogaPositionType.ABSOLUTE);
+    verify(node).flex(2);
+    verify(node).flexGrow(3);
+    verify(node).flexShrink(4);
+    verify(node).flexBasisPx(5);
+    verify(node).flexBasisPercent(6);
+
+    verify(node)
+        .importantForAccessibility(ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+    verify(node).duplicateParentState(false);
+
+    verify(node).marginPx(YogaEdge.ALL, 5);
+    verify(node).marginPx(YogaEdge.RIGHT, 6);
+    verify(node).marginPx(YogaEdge.LEFT, 4);
+    verify(node).marginPercent(YogaEdge.ALL, 10);
+    verify(node).marginPercent(YogaEdge.VERTICAL, 12);
+    verify(node).marginPercent(YogaEdge.RIGHT, 5);
+    verify(node).marginAuto(YogaEdge.LEFT);
+    verify(node).marginAuto(YogaEdge.TOP);
+    verify(node).marginAuto(YogaEdge.RIGHT);
+    verify(node).marginAuto(YogaEdge.BOTTOM);
+
+    verify(node).paddingPx(YogaEdge.ALL, 1);
+    verify(node).paddingPx(YogaEdge.RIGHT, 2);
+    verify(node).paddingPx(YogaEdge.LEFT, 3);
+    verify(node).paddingPercent(YogaEdge.VERTICAL, 7);
+    verify(node).paddingPercent(YogaEdge.RIGHT, 6);
+    verify(node).paddingPercent(YogaEdge.ALL, 5);
+
+    verify(node).positionPx(YogaEdge.ALL, 11);
+    verify(node).positionPx(YogaEdge.RIGHT, 12);
+    verify(node).positionPx(YogaEdge.LEFT, 13);
+    verify(node).positionPercent(YogaEdge.VERTICAL, 17);
+    verify(node).positionPercent(YogaEdge.RIGHT, 16);
+    verify(node).positionPercent(YogaEdge.ALL, 15);
+
+    verify(node).widthPx(5);
+    verify(node).widthPercent(50);
+    verify(node).minWidthPx(15);
+    verify(node).minWidthPercent(100);
+    verify(node).maxWidthPx(25);
+    verify(node).maxWidthPercent(26);
+
+    verify(node).heightPx(30);
+    verify(node).heightPercent(31);
+    verify(node).minHeightPx(32);
+    verify(node).minHeightPercent(33);
+    verify(node).maxHeightPx(34);
+    verify(node).maxHeightPercent(35);
+
+    verify(node).aspectRatio(20);
+
+    verify(node).touchExpansionPx(YogaEdge.RIGHT, 22);
+    verify(node).touchExpansionPx(YogaEdge.LEFT, 23);
+    verify(node).touchExpansionPx(YogaEdge.ALL, 21);
+
+    verify(node).background(drawableReference);
+    verify(node).foreground(foreground);
+
+    verify(node).wrapInView();
+
+    verify(node).clickHandler(clickHandler);
+    verify(node).focusChangeHandler(focusChangedHandler);
+    verify(node).longClickHandler(longClickHandler);
+    verify(node).touchHandler(touchHandler);
+    verify(node).interceptTouchHandler(interceptTouchHandler);
+
+    verify(node).focusable(true);
+    verify(node).enabled(false);
+    verify(node).visibleHeightRatio(55);
+    verify(node).visibleWidthRatio(56);
+
+    verify(node).visibleHandler(visibleHandler);
+    verify(node).focusedHandler(focusedHandler);
+    verify(node).unfocusedHandler(unfocusedHandler);
+    verify(node).fullImpressionHandler(fullImpressionHandler);
+    verify(node).invisibleHandler(invisibleHandler);
+
+    verify(node).contentDescription("test");
+
+    verify(node).viewTag(viewTag);
+    verify(node).viewTags(viewTags);
+
+    verify(node).shadowElevationPx(60);
+
+    verify(node).clipToOutline(false);
+    verify(node).transitionKey("transitionKey");
+    verify(node).testKey("testKey");
+
+    verify(node)
+        .dispatchPopulateAccessibilityEventHandler(dispatchPopulateAccessibilityEventHandler);
+    verify(node).onInitializeAccessibilityEventHandler(onInitializeAccessibilityEventHandler);
+    verify(node).onInitializeAccessibilityNodeInfoHandler(onInitializeAccessibilityNodeInfoHandler);
+    verify(node).onPopulateAccessibilityEventHandler(onPopulateAccessibilityEventHandler);
+    verify(node).onRequestSendAccessibilityEventHandler(onRequestSendAccessibilityEventHandler);
+    verify(node).performAccessibilityActionHandler(performAccessibilityActionHandler);
+    verify(node).sendAccessibilityEventHandler(sendAccessibilityEventHandler);
+    verify(node).sendAccessibilityEventUncheckedHandler(sendAccessibilityEventUncheckedHandler);
+  }
+
+  private static class TestDrawableComponentWithMockInternalNode
+      extends TestComponent.TestComponentLifecycle {
+
+    protected ComponentLayout onCreateLayout(ComponentContext c, Component<?> component) {
+      InternalNode internalNode = mock(InternalNode.class);
+      when(internalNode.build()).thenReturn(internalNode);
+      return internalNode;
+    }
+
+    public static TestDrawableComponentWithMockInternalNode.Builder create(ComponentContext c) {
+      Builder builder = new Builder();
+      builder.mState =
+          new Component<TestDrawableComponentWithMockInternalNode>(
+              new TestDrawableComponentWithMockInternalNode()) {
+            @Override
+            public String getSimpleName() {
+              return "TestDrawableComponentWithMockInternalNode";
+            }
+          };
+      builder.init(c, 0, 0, builder.mState);
+
+      return builder;
+    }
+
+    public static class Builder
+        extends com.facebook.litho.Component.Builder<
+            TestDrawableComponentWithMockInternalNode,
+            TestDrawableComponentWithMockInternalNode.Builder> {
+
+      private Component<TestDrawableComponentWithMockInternalNode> mState;
+
+      @Override
+      public Builder getThis() {
+        return this;
+      }
+
+      @Override
+      public Component<TestDrawableComponentWithMockInternalNode> build() {
+        return mState;
+      }
+    }
   }
 }
