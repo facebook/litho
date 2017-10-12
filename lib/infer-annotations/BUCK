@@ -15,6 +15,6 @@ prebuilt_jar(
 
 remote_file(
     name = "infer-annotations.jar",
-    sha1 = "f5b068e931f37c23464f681b7628687ea4cea7a4",
-    url = "mvn:com.facebook.infer.annotation:infer-annotation:jar:0.11.0",
+    sha1 = "f514ff4ca022a579d9cf7524846988b646ae4491",
+    url = "mvn:com.facebook.infer.annotation:infer-annotation:jar:0.11.2",
 )
