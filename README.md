@@ -68,9 +68,7 @@ Please also read our [Coding Style](http://fblitho.com/docs/best-practices#codin
 
 - Post on [StackOverflow](https://stackoverflow.com/questions/tagged/litho)
   using the `#litho` tag.
-- Chat with us on [Gitter](https://gitter.im/facebook/litho) or in `#lithowtf`
-  on the
-  [Android Study Group Slack](https://github.com/AndroidStudyGroup/Code-Of-Conduct#member-nomination).
+- Chat with us on [Gitter](https://gitter.im/facebook/litho)
 - Please open GitHub issues only if you suspect a bug in the framework or have a
   feature request and not for general questions.
 
