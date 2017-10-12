@@ -72,9 +72,6 @@ public abstract class Component<L extends ComponentLifecycle>
   @ThreadConfined(ThreadConfined.ANY)
   private InternalNode mLastMeasuredLayout;
 
-  // This is just being used for an experiment right now. Do not use for anything else.
-  private ComponentLayout.Builder mLayoutAttributesForWithLayout;
-
   // Layout attributes that are set directly on the component itself.
   @Nullable private ComponentLayoutAttributes mComponentLayoutAttributes;
 
@@ -511,7 +508,7 @@ public abstract class Component<L extends ComponentLifecycle>
     }
 
     public final ComponentLayout buildWithLayout() {
-      return this.withLayout(false).build();
+      return this.withLayout().build();
     }
 
     /**
@@ -520,35 +517,13 @@ public abstract class Component<L extends ComponentLifecycle>
      */
     @Deprecated
     public final ComponentLayout.Builder withLayout() {
-      return this.withLayout(ComponentsConfiguration.storeLayoutAttributesInSeparateObject);
-    }
-
-    private ComponentLayout.Builder withLayout(boolean useSeparateInternalNode) {
       // calling build() which will release this builder setting these members to null/0.
       // We must capture their value before that happens.
       final ComponentContext context = mContext;
-      final Component<?> component = mComponent;
       final int defStyleAttr = mDefStyleAttr;
       final int defStyleRes = mDefStyleRes;
 
-      InternalNode internalNode =
-          (InternalNode) Layout.create(context, build(), defStyleAttr, defStyleRes);
-
-      if (useSeparateInternalNode) {
-        if (ComponentsConfiguration.useOptimizedLayoutAttributes) {
-          OptimizedLayoutAttributes optimizedLayoutAttributes = new OptimizedLayoutAttributes();
-          optimizedLayoutAttributes.init(context, internalNode);
-          component.mLayoutAttributesForWithLayout = optimizedLayoutAttributes;
-        } else {
-          LayoutAttributes layoutAttributes = new LayoutAttributes();
-          layoutAttributes.init(context, internalNode);
-          component.mLayoutAttributesForWithLayout = layoutAttributes;
-        }
-
-        return component.mLayoutAttributesForWithLayout;
-      } else {
-        return internalNode;
-      }
+      return Layout.create(context, build(), defStyleAttr, defStyleRes);
     }
 
     @ReturnsOwnership

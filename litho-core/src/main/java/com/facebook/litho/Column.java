@@ -11,7 +11,6 @@ package com.facebook.litho;
 
 import android.support.annotation.AttrRes;
 import android.support.annotation.StyleRes;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.yoga.YogaFlexDirection;
 
 public final class Column {
@@ -22,15 +21,7 @@ public final class Column {
       ComponentContext c,
       @AttrRes int defStyleAttr,
       @StyleRes int defStyleRes) {
-    InternalNode column =
-        c.newLayoutBuilder(defStyleAttr, defStyleRes).flexDirection(YogaFlexDirection.COLUMN);
-    if (ComponentsConfiguration.storeLayoutAttributesInSeparateObject) {
-      LayoutAttributes layoutAttributes = new LayoutAttributes();
-      layoutAttributes.init(c, null);
-      column.setLayoutAttributes(layoutAttributes);
-    }
-
-    return column;
+    return c.newLayoutBuilder(defStyleAttr, defStyleRes).flexDirection(YogaFlexDirection.COLUMN);
   }
 
   public static ComponentLayout.ContainerBuilder create(ComponentContext c) {

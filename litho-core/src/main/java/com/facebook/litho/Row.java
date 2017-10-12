@@ -11,7 +11,6 @@ package com.facebook.litho;
 
 import android.support.annotation.AttrRes;
 import android.support.annotation.StyleRes;
-import com.facebook.litho.config.ComponentsConfiguration;
 
 public final class Row {
   private Row() {
@@ -21,14 +20,7 @@ public final class Row {
       ComponentContext c,
       @AttrRes int defStyleAttr,
       @StyleRes int defStyleRes) {
-    InternalNode row = c.newLayoutBuilder(defStyleAttr, defStyleRes);
-    if (ComponentsConfiguration.storeLayoutAttributesInSeparateObject) {
-      LayoutAttributes layoutAttributes = new LayoutAttributes();
-      layoutAttributes.init(c, null);
-      row.setLayoutAttributes(layoutAttributes);
-    }
-
-    return row;
+    return c.newLayoutBuilder(defStyleAttr, defStyleRes);
   }
 
   public static ComponentLayout.ContainerBuilder create(ComponentContext c) {

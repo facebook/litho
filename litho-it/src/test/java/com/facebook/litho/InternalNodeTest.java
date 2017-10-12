@@ -331,21 +331,6 @@ public class InternalNodeTest {
         error.contains("alignSelf, flex"));
   }
 
-  @Test
-  public void testLayoutAttributes() {
-    LayoutAttributes layoutAttributes = new LayoutAttributes();
-    mNode.setLayoutAttributes(layoutAttributes);
-
-    EventHandler<ClickEvent> clickHandler = mock(EventHandler.class);
-    mNode.clickHandler(clickHandler);
-
-    assertThat(mNode.getClickHandler()).isNull();
-
-    mNode.build();
-
-    assertThat(mNode.getClickHandler()).isSameAs(clickHandler);
-  }
-
   private static boolean isFlagSet(InternalNode internalNode, String flagName) {
     long flagPosition = Whitebox.getInternalState(InternalNode.class, flagName);
     long flags = Whitebox.getInternalState(internalNode, "mPrivateFlags");
