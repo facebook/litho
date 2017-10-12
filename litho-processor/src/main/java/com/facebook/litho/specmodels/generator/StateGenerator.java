@@ -142,15 +142,14 @@ public class StateGenerator {
                 .endControlFlow()
                 .build());
     final CodeBlock.Builder codeBlockBuilder = CodeBlock.builder();
-    codeBlockBuilder.add(specModel.getComponentName() +
-        "." +
-        getStateUpdateClassName(updateStateMethod) +
-        " _stateUpdate = ((" +
-        specModel.getComponentName() +"."+
-        specModel.getComponentName() +
-        "Impl) _component).create" +
-        getStateUpdateClassName(updateStateMethod) +
-        "(");
+    final String componentName = specModel.getComponentName();
+    codeBlockBuilder.add(
+        "$N.$N _stateUpdate = (($N.$N) _component).$N(",
+        componentName,
+        getStateUpdateClassName(updateStateMethod),
+        componentName,
+        componentName + "Impl",
+        "create" + getStateUpdateClassName(updateStateMethod));
 
     boolean isFirstParam = true;
     for (MethodParamModel methodParam : updateStateMethod.methodParams) {
@@ -247,9 +246,10 @@ public class StateGenerator {
 
     // Call the spec's update method.
     updateStateMethodBuilder.addStatement(
-        SpecModelUtils.getSpecAccessor(specModel) + "." +
-            updateStateMethod.name + "(" +
-            getParamsForSpecUpdateMethodCall(updateStateMethod) + ")");
+        "$N.$N($L)",
+        SpecModelUtils.getSpecAccessor(specModel),
+        updateStateMethod.name,
+        getParamsForSpecUpdateMethodCall(updateStateMethod));
 
     // Set the new value of the state.
     for (MethodParamModel methodParamModel : updateStateMethod.methodParams) {

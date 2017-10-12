@@ -444,7 +444,7 @@ public class ComponentImplGenerator {
       }
 
       final CodeBlock.Builder constructor = CodeBlock.builder();
-      constructor.add("return new " + stateUpdateClassName + "(");
+      constructor.add("return new $N(", stateUpdateClassName);
 
       for (int i = 0, size = params.size(); i < size; i++) {
         constructor.add(params.get(i).getName());
