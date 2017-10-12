@@ -43,7 +43,7 @@ Under this directory is found code for the Litho sample app.  This includes the 
 Litho is split into several sub-project so end users can pick and choose the
 parts of the framework they want to use. The available projects are as follows:
 
- * `litho-annotation` is a pure Java library containing the annotations necessary to use the processor with.
+ * `litho-annotations` is a pure Java library containing the annotations necessary to use the processor with.
  * `litho-core` contains the core framework code.
  * `litho-fresco` contains components for the use with the Fresco image library.
  * `litho-it` contains integration tests for the framework. It is necessary to have a separate project for this as it to avoid circular dependencies.
@@ -53,6 +53,13 @@ parts of the framework they want to use. The available projects are as follows:
  * `litho-stubs` contains stubbed out Android framework classes that are needed for some display list magic in `litho-core`.
  * `litho-testing` contains utilities to test Litho components.
  * `litho-widget` contains several mount specs for commonly used Android widgets.
+ * `litho-sections-core` contains the Java code for the Sections framework,
+    including the `com.facebook.litho.sections.common` namespace.
+ * `litho-sections-annotations` has annotations for use with the Sections
+    processor.
+ * `litho-sections-processor` is a pure Java library containing the annotation necessary to use processor for Sections with.
+ * `litho-sections-widget` contains Sections-specific widgets like the
+   `RecyclerCollectionComponentSpec`.
 
 ### `/COMPONENTS_DEFS` and `/BUCK`
 
