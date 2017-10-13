@@ -23,7 +23,6 @@ The layout system will automatically follow the layout direction defined by Andr
 ```java
 Image.create(c)
     .srcRes(R.drawable.my_image)
-    .withLayout()
     .positionType(ABSOLUTE)
     .positionDip(START, 10)
     .build();

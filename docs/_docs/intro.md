@@ -28,7 +28,6 @@ class HelloComponentSpec {
         .text("Hello, " + name)
         .textSizeRes(R.dimen.my_text_size)
         .textColor(Color.BLACK)
-        .withLayout()
         .paddingDip(ALL, 10)
         .build();
   }

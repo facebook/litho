@@ -25,14 +25,12 @@ public class MyComponentSpec {
           .child(
               SolidColor.create(c)
                   .colorRes(color)
-                  .withLayout()
                   .widthDip(40)
                   .heightDip(40))
           .child(
               Text.create(c)
                   .text(title)
                   .textSizeRes(R.dimen.my_text_size)
-                  .withLayout()
                   .flexGrow(1f))
           .build();
   }
@@ -50,7 +48,6 @@ The first child is a [SolidColor](/javadoc/com/facebook/litho/widget/SolidColor)
 ```java
 SolidColor.create(c)
     .colorRes(color)
-    .withLayout()
     .width(40)
     .height(40)
 ```
@@ -61,7 +58,6 @@ The second child is a [Text](/javadoc/com/facebook/litho/widget/Text) component 
 Text.create(c)
     .text(title)
     .textSizeRes(R.dimen.my_text_size)
-    .withLayout()
     .grow(1f)
 ```
 You can check the full [Yoga](https://facebook.github.io/yoga/docs/learn-more/) documentation to see all the layout features that the framework exposes.

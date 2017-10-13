@@ -56,7 +56,6 @@ clickable component like this present in the selected activity:
 ```java
 CustomButton.create(c)
     .text("My Button")
-    .withLayout()
     .clickHandler(/* ... */)
     .build();
 ```
@@ -80,7 +79,6 @@ through the use of `LithoActivityTestRule`:
 ```java
 CustomButton.create(c)
     .text("My Button")
-    .withLayout()
     .testKey("my-button")
     .clickHandler(/* ... */)
     .build();

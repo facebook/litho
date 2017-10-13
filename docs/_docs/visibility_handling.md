@@ -33,7 +33,6 @@ class MyLayoutSpec {
         .alignItems(YogaAlign.STRETCH)
         .child(Text.create(c)
             .text("This is MY layout spec")
-            .withLayout()
             .visibleHandler(MyLayout.onTitleVisible(c))
             .invisibleHandler(MyLayout.onTitleInvisible(c))
             .focusedHandler(MyLayout.onComponentFocused(c, "someStringParam"))

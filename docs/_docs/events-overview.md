@@ -97,7 +97,6 @@ class FacePileComponentSpec {
       builder.child(
           FrescoImage.create(c)
               .uri(face)
-              .withLayout()
               .clickHandler(FacePileComponent.onFaceClicked(c, face));
     }
     

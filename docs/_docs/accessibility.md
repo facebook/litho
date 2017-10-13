@@ -14,7 +14,6 @@ Setting a content description on any component is as simple as:
 ```java
 Image.create(c)
     .imageRes(R.drawable.some_image)
-    .withLayout()
     .contentDescription("This is an image")
     .build())
 ```
@@ -92,7 +91,6 @@ static void onInitializeAccessibilityNodeInfoEvent(
 ```java
 Text.create(c)
     .text(title)
-    .withLayout()
     .onInitializeAccessiblityNodeInfoHandler(MyComponent.onInitializeAccessibilityNodeInfoEvent(c))
 ```  
 

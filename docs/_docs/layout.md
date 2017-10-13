@@ -32,12 +32,10 @@ Row.create(c)
     .child(
         SolidColor.create(c)
             .color(RED)
-            .withLayout()
             .flexGrow(1))
     .child(
         SolidColor.create(c)
             .color(BLUE)
-            .withLayout()
             .flexGrow(1))
     .build();
 ```
@@ -49,13 +47,11 @@ Column.create(c)
     .child(
         Image.create(c)
             .srcRes(R.drawable.some_big_image)
-            .withLayout()
             .widthDip(100)
             .heightDip(100))
     .child(
         Text.create(c)
             .text("Overlaid text")
-            .withLayout()
             .positionType(ABSOLUTE))
     .build();
 ```

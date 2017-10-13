@@ -22,7 +22,6 @@ class MyComponentSpec {
 	    
 	  return Text.create(c)
 	      .text(title)
-	      .withLayout()
 	      .clickHandler(MyComponent.onClick(c))
 	      .build();
     }
@@ -51,7 +50,6 @@ You can expand the interactive bounds of a component by using the touch expansio
 ```java
 Text.create(c)
     .text(title)
-    .withLayout()
     .clickHandler(MyComponent.onClick(c))
     .touchExpansionDip(ALL, 10);
 ```
