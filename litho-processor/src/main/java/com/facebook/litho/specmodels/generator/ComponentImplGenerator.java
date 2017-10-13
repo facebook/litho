@@ -230,7 +230,7 @@ public class ComponentImplGenerator {
         .addModifiers(Modifier.PROTECTED)
         .addAnnotation(Override.class)
         .returns(stateContainerClassName)
-        .addStatement("return " + GeneratorConstants.STATE_CONTAINER_FIELD_NAME)
+        .addStatement("return $N", GeneratorConstants.STATE_CONTAINER_FIELD_NAME)
         .build();
   }
 
@@ -339,7 +339,7 @@ public class ComponentImplGenerator {
         .addModifiers(Modifier.PUBLIC)
         .addAnnotation(Override.class)
         .returns(ClassNames.STRING)
-        .addStatement("return \"" + specModel.getComponentName() + "\"")
+        .addStatement("return \"$N\"", specModel.getComponentName())
         .build();
   }
 
@@ -363,11 +363,11 @@ public class ComponentImplGenerator {
             .addStatement("return false")
             .endControlFlow()
             .addStatement(
-                implClassName + " " + implInstanceName + " = (" + implClassName + ") other");
+                "$N $N = ($N) other", implClassName, implInstanceName, implClassName);
 
     if (specModel.shouldCheckIdInIsEquivalentToMethod()) {
       isEquivalentBuilder
-          .beginControlFlow("if (this.getId() == " + implInstanceName + ".getId())")
+          .beginControlFlow("if (this.getId() == $N.getId())", implInstanceName)
           .addStatement("return true")
           .endControlFlow();
     }
@@ -408,15 +408,17 @@ public class ComponentImplGenerator {
                   specModel.getComponentTypeName()),
               "impl")
           .addStatement(
-              "$L " + implInstanceName + " = ($L) impl",
+              "$N $N = ($N) impl",
               implClassName,
+              implInstanceName,
               implClassName);
 
       for (InterStageInputParamModel interStageInput : interStageInputs) {
         copyInterStageComponentBuilder
             .addStatement(
-                "$L = " + implInstanceName + ".$L",
+                "$N = $N.$N",
                 interStageInput.getName(),
+                implInstanceName,
                 interStageInput.getName());
       }
 
@@ -515,7 +517,8 @@ public class ComponentImplGenerator {
     final String stateContainerImplClassName = getStateContainerImplClassName(specModel);
     if (stateContainerImplClassName != null && hasState) {
       builder.addStatement(
-          "component." + GeneratorConstants.STATE_CONTAINER_FIELD_NAME + " = new $T()",
+          "component.$N = new $T()",
+          GeneratorConstants.STATE_CONTAINER_FIELD_NAME,
           ClassName.bestGuess(stateContainerImplClassName));
     }
 

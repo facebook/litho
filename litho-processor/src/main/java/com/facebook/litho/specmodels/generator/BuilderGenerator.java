@@ -675,8 +675,8 @@ public class BuilderGenerator {
                 Arrays.asList(
                     parameter(prop, TypeName.INT, "resId", annotation(annotationClassName)),
                     ParameterSpec.builder(ArrayTypeName.of(varargsType), varargsName).build()),
-                "$L(resId, " + varargsName + ")",
-                resolver + "Res")
+                "$L(resId, $N)",
+                resolver + "Res", varargsName)
             .varargs(true)
             .build());
 
@@ -694,8 +694,8 @@ public class BuilderGenerator {
                           "resIds",
                           annotation(annotationClassName)),
                       ParameterSpec.builder(ArrayTypeName.of(varargsType), varargsName).build()),
-                  "$L(resIds.get(i), " + varargsName + ")",
-                  resolver + "Res")
+                  "$L(resIds.get(i), $N)",
+                  resolver + "Res", varargsName)
               .varargs(true)
               .build());
     }
