@@ -14,9 +14,7 @@ import com.facebook.litho.widget.RenderInfo;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A test target that keeps trace of operations and changes.
- */
+/** A test target that keeps track of operations and changes. */
 public class TestTarget implements SectionTree.Target {
   public static final int INSERT = 0;
   public static final int UPDATE = 1;

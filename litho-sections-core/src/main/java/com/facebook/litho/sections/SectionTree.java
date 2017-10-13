@@ -669,7 +669,7 @@ public class SectionTree {
     }
 
     if (mCurrentSection == null && mNextSection == null) {
-      throw new IllegalStateException("State set with no attached ListComponent");
+      throw new IllegalStateException("State set with no attached Section");
     }
 
     List<StateUpdate> currentPendingUpdatesForKey = mPendingStateUpdates.get(key);
