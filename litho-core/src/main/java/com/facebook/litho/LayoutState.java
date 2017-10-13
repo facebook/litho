@@ -1999,7 +1999,14 @@ class LayoutState {
         continue;
       }
 
-      mTransitionKeyMapping.put(transitionKey, newOutput);
+      if (mTransitionKeyMapping.put(transitionKey, newOutput) != null) {
+        throw new RuntimeException(
+            "The transitionKey '"
+                + transitionKey
+                + "' was defined multiple times in the same layout. transitionKeys must be unique "
+                + "identifiers per layout. If this is a reusable component that can appear in the "
+                + "same layout multiple times, consider passing unique transitionKeys from above.");
+      }
     }
 
     return mTransitionKeyMapping;
