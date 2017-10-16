@@ -2,7 +2,16 @@
 
 ## Adding Litho to your Project
 
-You can include Litho to your Android project via Gradle by adding the following to your `build.gradle` file:
+We publish the LItho artifacts to Bintray's JCenter. To include Litho to your
+Android project, make sure you include the reference to the repository in your `build.gradle` file:
+
+```groovy
+repositories {
+  jcenter()
+}
+```
+
+Then add the dependencies like this:
 
 ```groovy
 dependencies {
