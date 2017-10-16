@@ -377,6 +377,7 @@ public class ComponentsPools {
     if (item == null) {
       item = new TestItem();
     }
+    item.setAcquired();
 
     return item;
   }

@@ -24,6 +24,8 @@ public class TestItem {
   private final Rect mBounds = new Rect();
   private ComponentHost mHost;
   private Object mContent;
+  /** Unique key to identify if this test-item was reused */
+  private AcquireKey mAcquireKey;
 
   @DoNotStrip
   @VisibleForTesting
@@ -86,9 +88,23 @@ public class TestItem {
     return mContent;
   }
 
+  @DoNotStrip
+  public AcquireKey getAcquireKey() {
+    return mAcquireKey;
+  }
+
+  @DoNotStrip
+  void setAcquired() {
+    mAcquireKey = new AcquireKey();
+  }
+
   void release() {
     mTestKey = null;
     mBounds.setEmpty();
     mHost = null;
+    mAcquireKey = null;
   }
+
+  @DoNotStrip
+  public static final class AcquireKey {}
 }
