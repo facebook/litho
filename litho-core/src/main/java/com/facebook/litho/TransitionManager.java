@@ -601,6 +601,9 @@ public class TransitionManager {
     if (isRoot && property == AnimatedProperties.HEIGHT) {
       // We're trying to animate the LithoView itself -- if it's not expecting it, abort
       if (!mMountState.getLithoView().isExpectingBoundsAnimation()) {
+        if (AnimationsDebug.ENABLED) {
+          Log.d(AnimationsDebug.TAG, " - was not expecting bounds change animation");
+        }
         return null;
       }
     }
