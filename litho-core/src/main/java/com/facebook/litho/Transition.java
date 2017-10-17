@@ -8,6 +8,7 @@
  */
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.animation.AnimatedProperty;
 import com.facebook.litho.animation.AnimationBinding;
 import com.facebook.litho.animation.DimensionValue;
@@ -164,9 +165,8 @@ public abstract class Transition {
     return new TransitionUnitsBuilder(target.componentTargetType, target.componentTargetExtraData);
   }
 
-  /**
-   * Creates a set of {@link Transition}s that will run in parallel.
-   */
+  /** Creates a set of {@link Transition}s that will run in parallel. */
+  @ThreadSafe(enableChecks = false)
   public static <T extends Transition> TransitionSet parallel(T... transitions) {
     return new ParallelTransitionSet(transitions);
   }
