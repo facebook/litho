@@ -33,7 +33,6 @@ import com.facebook.litho.sections.annotations.OnBindService;
 import com.facebook.litho.sections.annotations.OnCreateChildren;
 import com.facebook.litho.sections.annotations.OnCreateService;
 import com.facebook.litho.sections.annotations.OnDataBound;
-import com.facebook.litho.sections.annotations.OnDestroyService;
 import com.facebook.litho.sections.annotations.OnRefresh;
 import com.facebook.litho.sections.annotations.OnUnbindService;
 import com.facebook.litho.sections.annotations.OnViewportChanged;
@@ -90,13 +89,6 @@ public class FullGroupSectionSpec<T> {
       String service,
       @Prop int prop1,
       @State(canUpdateLazily = true) Object state2) {
-
-  }
-
-  @OnDestroyService
-  static void destroyService(
-      SectionContext c,
-      String service) {
 
   }
 

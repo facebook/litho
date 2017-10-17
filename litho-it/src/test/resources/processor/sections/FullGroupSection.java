@@ -238,16 +238,6 @@ final class FullGroupSection<T> extends SectionLifecycle {
   }
 
   @Override
-  protected void destroyService(SectionContext c, Object service) {
-    FullGroupSectionSpec.destroyService((SectionContext) c, (String) service);
-  }
-
-  @Override
-  protected boolean hasDestroyService() {
-    return true;
-  }
-
-  @Override
   protected void refresh(SectionContext c, Section _abstractImpl) {
     FullGroupSectionImpl _impl = (FullGroupSectionImpl) _abstractImpl;
     FullGroupSectionSpec.onRefresh(

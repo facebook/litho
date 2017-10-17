@@ -224,18 +224,6 @@ public final class FullDiffSection<T> extends SectionLifecycle {
   }
 
   @Override
-  protected void destroyService(SectionContext c, Object service) {
-    FullDiffSectionSpec.destroyService(
-        (SectionContext) c,
-        (String) service);
-  }
-
-  @Override
-  protected boolean hasDestroyService() {
-    return true;
-  }
-
-  @Override
   protected void refresh(SectionContext c, Section _abstractImpl) {
     FullDiffSectionImpl _impl = (FullDiffSectionImpl) _abstractImpl;
     FullDiffSectionSpec.onRefresh(

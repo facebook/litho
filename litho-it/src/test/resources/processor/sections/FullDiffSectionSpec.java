@@ -28,7 +28,6 @@ import com.facebook.litho.sections.annotations.DiffSectionSpec;
 import com.facebook.litho.sections.annotations.OnBindService;
 import com.facebook.litho.sections.annotations.OnCreateService;
 import com.facebook.litho.sections.annotations.OnDataBound;
-import com.facebook.litho.sections.annotations.OnDestroyService;
 import com.facebook.litho.sections.annotations.OnDiff;
 import com.facebook.litho.sections.annotations.OnRefresh;
 import com.facebook.litho.sections.annotations.OnUnbindService;
@@ -71,13 +70,6 @@ public class FullDiffSectionSpec<T> {
 
   @OnUnbindService
   static void unbindService(
-      SectionContext c,
-      String service) {
-
-  }
-
-  @OnDestroyService
-  static void destroyService(
       SectionContext c,
       String service) {
 

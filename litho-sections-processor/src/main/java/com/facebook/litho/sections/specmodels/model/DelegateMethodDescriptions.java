@@ -25,7 +25,6 @@ import com.facebook.litho.sections.annotations.OnBindService;
 import com.facebook.litho.sections.annotations.OnCreateChildren;
 import com.facebook.litho.sections.annotations.OnCreateService;
 import com.facebook.litho.sections.annotations.OnDataBound;
-import com.facebook.litho.sections.annotations.OnDestroyService;
 import com.facebook.litho.sections.annotations.OnDiff;
 import com.facebook.litho.sections.annotations.OnRefresh;
 import com.facebook.litho.sections.annotations.OnUnbindService;
@@ -133,25 +132,6 @@ public class DelegateMethodDescriptions {
           .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE))
           .build();
 
-  private static final DelegateMethodDescription ON_DESTROY_SERVICE =
-      DelegateMethodDescription.newBuilder()
-          .annotations(ImmutableList.of(AnnotationSpec.builder(Override.class).build()))
-          .accessType(Modifier.PROTECTED)
-          .returnType(TypeName.VOID)
-          .name("destroyService")
-          .definedParameterTypes(
-              ImmutableList.<TypeName>of(SectionClassNames.SECTION_CONTEXT, TypeName.OBJECT))
-          .optionalParameterTypes(ImmutableList.of())
-          .extraMethods(
-              ImmutableList.of(
-                  MethodSpec.methodBuilder("hasDestroyService")
-                      .addAnnotation(Override.class)
-                      .addModifiers(Modifier.PROTECTED)
-                      .returns(TypeName.BOOLEAN)
-                      .addStatement("return true")
-                      .build()))
-          .build();
-
   private static final DelegateMethodDescription ON_DIFF =
       DelegateMethodDescription.newBuilder()
           .annotations(ImmutableList.of(AnnotationSpec.builder(Override.class).build()))
@@ -206,7 +186,6 @@ public class DelegateMethodDescriptions {
         getTreeMap();
     groupSectionSpecDelegateMethodsMap.put(OnCreateChildren.class, ON_CREATE_CHILDREN);
     groupSectionSpecDelegateMethodsMap.put(OnCreateInitialState.class, ON_CREATE_INITIAL_STATE);
-    groupSectionSpecDelegateMethodsMap.put(OnDestroyService.class, ON_DESTROY_SERVICE);
     groupSectionSpecDelegateMethodsMap.put(ShouldUpdate.class, SHOULD_UPDATE);
 
     GROUP_SECTION_SPEC_DELEGATE_METHODS_MAP =
@@ -217,7 +196,6 @@ public class DelegateMethodDescriptions {
 
     diffSectionSpecDelegateMethodsMap.put(OnCreateInitialState.class, ON_CREATE_INITIAL_STATE);
     diffSectionSpecDelegateMethodsMap.put(OnDiff.class, ON_DIFF);
-    diffSectionSpecDelegateMethodsMap.put(OnDestroyService.class, ON_DESTROY_SERVICE);
     diffSectionSpecDelegateMethodsMap.put(ShouldUpdate.class, SHOULD_UPDATE);
 
     DIFF_SECTION_SPEC_DELEGATE_METHODS_MAP =

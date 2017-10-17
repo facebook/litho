@@ -69,27 +69,6 @@ public abstract class SectionLifecycle implements EventDispatcher {
 
   }
 
-  /**
-   * True if {@link com.facebook.litho.sections.annotations.OnDestroyService} is declared in the
-   * Section Spec.
-   *
-   * If this is true, the service creatted from createService() will be registered/unregistered
-   * in the {@link ServiceRegistry}
-   * @return
-   */
-  protected boolean hasDestroyService() {
-    return false;
-  }
-
-  /**
-   * Do not use rely on this method to clean up your object. If you need to use an object
-   * that requires explicit clean up, consider creating it on the Activity/Fragment level,
-   * and clean it up when your context is finished.
-   */
-  @Deprecated
-  protected void destroyService(SectionContext c, Object service) {
-  }
-
   public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
     // Do nothing by default.
     return null;

@@ -113,7 +113,6 @@ public class SectionTree {
   private final BatchedTarget mTarget;
   private final boolean mAsyncStateUpdates;
   private final boolean mAsyncPropUpdates;
-  private final boolean mNoSerivceRegistration;
   private final String mSectionTreeTag;
   private final Map<String, Range> mLastRanges = new HashMap<>();
   // Holds a Pair where the first item is a section's global starting index
@@ -223,7 +222,6 @@ public class SectionTree {
         new Handler(getDefaultChangeSetThreadLooper());
     mCalculateChangeSetRunnable = new CalculateChangeSetRunnable(changeSetThreadHandler);
     mCalculateChangeSetOnMainThreadRunnable = new CalculateChangeSetRunnable(sMainThreadHandler);
-    mNoSerivceRegistration = SectionComponentsConfiguration.noServiceRegistration;
   }
 
   /**
@@ -761,7 +759,6 @@ public class SectionTree {
           }
 
           bindNewComponent(newRoot);
-          ServiceRegistry.cleanUnusedServices();
         }
       }
 
@@ -869,10 +866,6 @@ public class SectionTree {
     section.getLifecycle().bindService(section.getScopedContext(), section);
     bindEventHandlers(section);
 
-    if (!mNoSerivceRegistration) {
-      ServiceRegistry.registerService(section);
-    }
-
     if (!section.isDiffSectionSpec()) {
       final List<Section> children = section.getChildren();
       for (int i = 0, size = children.size(); i < size; i++) {
@@ -883,10 +876,6 @@ public class SectionTree {
 
   private void unbindOldComponent(Section<?> section) {
     section.getLifecycle().unbindService(section.getScopedContext(), section);
-
-    if (!mNoSerivceRegistration) {
-      ServiceRegistry.unregisterService(section);
-    }
 
     if (!section.isDiffSectionSpec()) {
       final List<Section> children = section.getChildren();
