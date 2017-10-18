@@ -754,12 +754,6 @@ public class ComponentTree {
   private void preAllocateMountContent() {
     final LayoutState toPrePopulate;
 
-    // Cancel any scheduled preallocate requests we might have in the background queue
-    // since we are starting the preallocation.
-    if (mPreAllocateMountContentHandler != null) {
-      mPreAllocateMountContentHandler.removeCallbacks(mPreAllocateMountContentRunnable);
-    }
-
     synchronized (this) {
       if (mMainThreadLayoutState != null) {
         toPrePopulate = mMainThreadLayoutState;
