@@ -32,8 +32,7 @@ public class ExamplesRowComponentSpec {
         return Text.create(c)
                 .text(text)
                 .textSizeSp(25)
-                .withLayout()
                 .clickHandler(clickEventHandler)
-                .build();
+                .buildWithLayout();
     }
 }

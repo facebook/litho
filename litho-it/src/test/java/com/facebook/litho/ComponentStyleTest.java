@@ -82,9 +82,8 @@ public class ComponentStyleTest {
     InternalNode node = (InternalNode)
         Text.create(mContext, 0, PaddingStyle)
             .text("text")
-            .withLayout()
             .paddingPx(ALL, mDimen * 2)
-            .build();
+            .buildWithLayout();
     node.calculateLayout();
     assertThat(node.getPaddingLeft()).isEqualTo(2 * mDimen);
   }
@@ -125,9 +124,8 @@ public class ComponentStyleTest {
     InternalNode node = (InternalNode)
         Text.create(mContext, testAttrLargePadding, 0)
             .text("text")
-            .withLayout()
             .paddingPx(ALL, mDimen * 2)
-            .build();
+            .buildWithLayout();
     node.calculateLayout();
     assertThat(node.getPaddingLeft()).isEqualTo(2 * mDimen);
   }

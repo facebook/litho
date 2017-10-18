@@ -44,10 +44,9 @@ public class MountStateBoundsTest {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
             return create(c)
-                .withLayout()
                 .widthPx(10)
                 .heightPx(10)
-                .build();
+                .buildWithLayout();
           }
         });
 
@@ -62,10 +61,9 @@ public class MountStateBoundsTest {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
             return TestViewComponent.create(c)
-                .withLayout()
                 .widthPx(10)
                 .heightPx(10)
-                .build();
+                .buildWithLayout();
           }
         });
 

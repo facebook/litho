@@ -43,10 +43,9 @@ public class LithoViewTestHelperTest {
       @Override
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return TestDrawableComponent.create(c)
-            .withLayout()
             .widthPx(100)
             .heightPx(100)
-            .build();
+            .buildWithLayout();
       }
     };
 

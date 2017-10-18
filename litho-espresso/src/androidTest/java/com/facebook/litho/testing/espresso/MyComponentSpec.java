@@ -25,10 +25,9 @@ public class MyComponentSpec {
       @Prop(optional=true) Object customViewTag) {
     return Text.create(c)
           .text(text)
-          .withLayout()
           .contentDescription("foobar2")
           .viewTag(customViewTag)
           .testKey("my_test_key")
-          .build();
+          .buildWithLayout();
   }
 }

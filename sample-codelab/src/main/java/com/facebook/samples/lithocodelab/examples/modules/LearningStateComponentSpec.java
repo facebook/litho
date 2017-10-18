@@ -44,13 +44,12 @@ public class LearningStateComponentSpec {
         return Text.create(c)
                 .text("Clicked " + count + " times.")
                 .textSizeDip(50)
-                .withLayout()
                 .clickHandler(LearningStateComponent.onClick(c))
                 .backgroundRes(android.R.color.holo_blue_light)
                 .alignSelf(STRETCH)
                 .paddingDip(BOTTOM, 20)
                 .paddingDip(TOP, 40)
-                .build();
+                .buildWithLayout();
     }
 
     @OnUpdateState

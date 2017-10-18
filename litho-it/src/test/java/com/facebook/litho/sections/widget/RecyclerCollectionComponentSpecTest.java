@@ -61,10 +61,9 @@ public class RecyclerCollectionComponentSpecTest {
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Text.create(c)
             .text("loading")
-            .withLayout()
             .heightPx(100)
             .widthPx(100)
-            .build();
+            .buildWithLayout();
       }
     };
 
@@ -73,10 +72,9 @@ public class RecyclerCollectionComponentSpecTest {
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Text.create(c)
             .text("empty")
-            .withLayout()
             .heightPx(100)
             .widthPx(100)
-            .build();
+            .buildWithLayout();
       }
     };
     mErrorComponent = new InlineLayoutSpec() {
@@ -84,10 +82,9 @@ public class RecyclerCollectionComponentSpecTest {
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Text.create(c)
             .text("error")
-            .withLayout()
             .heightPx(100)
             .widthPx(100)
-            .build();
+            .buildWithLayout();
       }
     };
     mContentComponent = new InlineLayoutSpec() {
@@ -95,10 +92,9 @@ public class RecyclerCollectionComponentSpecTest {
       protected ComponentLayout onCreateLayout(ComponentContext c) {
         return Text.create(c)
             .text("content")
-            .withLayout()
             .heightPx(100)
             .widthPx(100)
-            .build();
+            .buildWithLayout();
       }
     };
 

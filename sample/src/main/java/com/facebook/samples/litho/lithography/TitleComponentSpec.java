@@ -35,12 +35,11 @@ public class TitleComponentSpec {
         .text(title)
         .textStyle(BOLD)
         .textSizeDip(24)
-        .withLayout()
         .backgroundColor(0xDDFFFFFF)
         .positionType(YogaPositionType.ABSOLUTE)
         .positionDip(YogaEdge.BOTTOM, 4)
         .positionDip(YogaEdge.LEFT, 4)
         .paddingDip(YogaEdge.HORIZONTAL, 6)
-        .build();
+        .buildWithLayout();
   }
 }

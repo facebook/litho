@@ -31,8 +31,7 @@ public class DemoListComponentSpec {
       @Prop RecyclerBinder recyclerBinder) {
     return Recycler.create(c)
         .binder(recyclerBinder)
-        .withLayout()
         .testKey(MAIN_SCREEN)
-        .build();
+        .buildWithLayout();
   }
 }
