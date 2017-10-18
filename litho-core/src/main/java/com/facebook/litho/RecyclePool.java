@@ -10,12 +10,13 @@
 package com.facebook.litho;
 
 import android.support.v4.util.Pools;
+import com.facebook.infer.annotation.ThreadSafe;
 
 /**
- * Used to recycle objects in Litho. Can be configured to be either syncronized or not.
- * A {@link RecyclePool} will keep track of its own size so that it can be queried to debug
- * pool sizes.
+ * Used to recycle objects in Litho. Can be configured to be either syncronized or not. A {@link
+ * RecyclePool} will keep track of its own size so that it can be queried to debug pool sizes.
  */
+@ThreadSafe(enableChecks = false)
 public class RecyclePool<T> {
   private final String mName;
   private final int mMaxSize;
