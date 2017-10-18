@@ -17,6 +17,7 @@ import com.facebook.litho.animation.PropertyAnimation;
 import com.facebook.litho.animation.PropertyHandle;
 import com.facebook.litho.animation.RuntimeValue;
 import com.facebook.litho.animation.SpringTransition;
+import com.facebook.litho.animation.TimingTransition;
 import com.facebook.litho.animation.TransitionAnimationBinding;
 import java.util.ArrayList;
 
@@ -183,6 +184,13 @@ public abstract class Transition {
    */
   public static <T extends Transition> TransitionSet sequence(T... transitions) {
     return new SequenceTransitionSet(transitions);
+  }
+
+  /**
+   * Creates a {@link TimingTransition} with the given duration.
+   */
+  public static TransitionAnimator timing(final int durationMs) {
+    return new TimingTransitionAnimator(durationMs);
   }
 
   public static class TransitionUnit extends Transition {
@@ -420,4 +428,22 @@ public abstract class Transition {
       return new SpringTransition(propertyAnimation);
     }
   }
+
+  /**
+   * Creates timing-driven animations with the given duration.
+   */
+  public static class TimingTransitionAnimator implements Transition.TransitionAnimator {
+
+    final int mDurationMs;
+
+    public TimingTransitionAnimator(int durationMs) {
+      mDurationMs = durationMs;
+    }
+
+    @Override
+    public TransitionAnimationBinding createAnimation(PropertyAnimation propertyAnimation) {
+      return new TimingTransition(mDurationMs, propertyAnimation);
+    }
+  }
+
 }
