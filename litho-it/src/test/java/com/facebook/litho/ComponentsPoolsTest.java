@@ -10,12 +10,14 @@
 package com.facebook.litho;
 
 import static com.facebook.litho.ComponentsPools.acquireMountContent;
+import static com.facebook.litho.ComponentsPools.canAddMountContentToPool;
 import static com.facebook.litho.ComponentsPools.release;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.content.ContextWrapper;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.view.View;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,12 +26,18 @@ import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class ComponentsPoolsTest {
-  private final ComponentLifecycle mLifecycle = new ComponentLifecycle() {
-    @Override
-    int getTypeId() {
-      return 1;
-    }
-  };
+  private final ComponentLifecycle mLifecycle =
+      new ComponentLifecycle() {
+        @Override
+        int getTypeId() {
+          return 1;
+        }
+
+        @Override
+        public View onCreateMountContent(ComponentContext context) {
+          return new View(context);
+        }
+      };
 
   private ComponentContext mContext1;
   private ComponentContext mContext2;
@@ -69,5 +77,26 @@ public class ComponentsPoolsTest {
     release(mContext1, mLifecycle, mMountContent);
 
     assertThat(acquireMountContent(mContext3, mLifecycle.getTypeId())).isNull();
+  }
+
+  @Test
+  public void testCanAddMountContentToPool() {
+    // Necessary because this is the only way to allocate a Pool for the first time
+    ComponentsPools.acquireMountContent(mContext1, mLifecycle.getTypeId());
+
+    assertThat(canAddMountContentToPool(RuntimeEnvironment.application, mLifecycle)).isTrue();
+    assertThat(canAddMountContentToPool(mContext1, mLifecycle)).isTrue();
+    assertThat(canAddMountContentToPool(mContext2, mLifecycle)).isTrue();
+    assertThat(canAddMountContentToPool(mContext3, mLifecycle)).isTrue();
+
+    for (int i = 0; i < mLifecycle.poolSize(); i++) {
+      mLifecycle.preAllocateMountContent(mContext1);
+    }
+
+    assertThat(canAddMountContentToPool(RuntimeEnvironment.application, mLifecycle)).isFalse();
+    assertThat(canAddMountContentToPool(mContext1, mLifecycle)).isFalse();
+    assertThat(canAddMountContentToPool(mContext2, mLifecycle)).isFalse();
+    // This has a different underlying Context, so it should not be preallocated for this Context
+    assertThat(canAddMountContentToPool(mContext3, mLifecycle)).isTrue();
   }
 }

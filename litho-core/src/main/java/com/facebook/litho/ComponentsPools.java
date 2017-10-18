@@ -668,13 +668,20 @@ public class ComponentsPools {
 
   @ThreadSafe(enableChecks = false)
   static boolean canAddMountContentToPool(Context context, ComponentLifecycle lifecycle) {
+    if (context instanceof ComponentContext) {
+      context = ((ComponentContext) context).getBaseContext();
+
+      if (context instanceof ComponentContext) {
+        throw new IllegalStateException("Double wrapped ComponentContext.");
+      }
+    }
+
     synchronized (mountContentLock) {
       if (lifecycle.poolSize() == 0) {
         return false;
       }
 
-      final SparseArray<RecyclePool> poolsArray =
-          sMountContentPoolsByContext.get(context);
+      final SparseArray<RecyclePool> poolsArray = sMountContentPoolsByContext.get(context);
 
       if (poolsArray == null) {
         return true;
