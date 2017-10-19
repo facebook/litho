@@ -33,6 +33,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
 
 /**
@@ -161,10 +162,10 @@ public class SectionTree {
   }
 
   @GuardedBy("this")
-  private Section<?> mCurrentSection;
+  private @Nullable Section<?> mCurrentSection;
 
   @GuardedBy("this")
-  private Section<?> mNextSection;
+  private @Nullable Section<?> mNextSection;
 
   @GuardedBy("this")
   private Map<String, List<StateUpdate>> mPendingStateUpdates;
@@ -1132,14 +1133,41 @@ public class SectionTree {
     public void handleMessage(Message msg) {
       switch (msg.what) {
         case MESSAGE_WHAT_BACKGROUND_CHANGESET_STATE_UPDATED:
-          SectionTree tree = (SectionTree) msg.obj;
-          tree.postChangesetsToHandler();
+          final SectionTree tree = (SectionTree) msg.obj;
+          try {
+            tree.postChangesetsToHandler();
+          } catch (IndexOutOfBoundsException e) {
+            throw new IndexOutOfBoundsException(getDebugInfo(tree) + e.getMessage());
+          }
           break;
 
         default:
           throw new IllegalArgumentException();
       }
     }
+  }
+
+  private static String getDebugInfo(SectionTree tree) {
+    final StringBuilder sb = new StringBuilder();
+    sb.append("tag: ");
+    sb.append(tree.mSectionTreeTag);
+
+    sb.append(", currentSection.size: ");
+    sb.append(tree.mCurrentSection != null ? tree.mCurrentSection.getCount() : null);
+
+    sb.append(", nextSection.size: ");
+    sb.append(tree.mNextSection != null ? tree.mNextSection.getCount() : null);
+
+    sb.append(", pendingChangeSets.size: ");
+    sb.append(tree.mPendingChangeSets.size());
+
+    sb.append(", pendingStateUpdates.size: ");
+    sb.append(tree.mPendingStateUpdates.size());
+
+    sb.append(", hasNonLazyUpdate: ");
+    sb.append(tree.mHasNonLazyUpdate);
+    sb.append("\n");
+    return sb.toString();
   }
 
   /**
