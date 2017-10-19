@@ -14,7 +14,6 @@ package com.facebook.litho;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.support.annotation.Px;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.ViewOutlineProvider;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -688,7 +687,6 @@ class ComponentLayoutAttributes {
     }
 
     void copyInto(ComponentLayout.Builder node) {
-      Log.e("BOOM", "mPrivateFlags is: " + Long.toHexString(mPrivateFlags));
       if ((mPrivateFlags & PFLAG_LAYOUT_DIRECTION_IS_SET) != 0L) {
         node.layoutDirection(mLayoutDirection);
       }
