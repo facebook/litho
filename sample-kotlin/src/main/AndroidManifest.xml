@@ -22,18 +22,18 @@
   ~ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   -->
 
-<manifest package="com.fblitho.droidcon17demo"
+<manifest package="com.fblitho.lithoktsample"
           xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-sdk android:targetSdkVersion="23"/>
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
-        android:name="com.fblitho.droidcon17demo.LithoApplication"
+        android:name="com.fblitho.lithoktsample.LithoApplication"
         android:allowBackup="true"
         android:label="Litho Kotlin Sample"
         android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
-        <activity android:name=".MainActivity">
+        <activity android:name="com.fblitho.lithoktsample.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
