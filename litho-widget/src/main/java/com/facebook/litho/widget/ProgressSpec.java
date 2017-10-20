@@ -14,6 +14,7 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.widget.ProgressBar;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
@@ -133,7 +134,7 @@ class ProgressSpec {
 
       if (attr == R.styleable.Progress_android_indeterminateDrawable) {
         indeterminateDrawable =
-            c.getResources().getDrawable(styledAttributes.getResourceId(attr, 0));
+            ContextCompat.getDrawable(c, styledAttributes.getResourceId(attr, 0));
       }
     }
 
