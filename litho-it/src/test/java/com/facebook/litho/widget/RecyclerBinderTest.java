@@ -93,7 +93,9 @@ public class RecyclerBinderTest {
 
   private final Map<Component, TestComponentTreeHolder> mHoldersForComponents = new HashMap<>();
   private RecyclerBinder mRecyclerBinder;
+  private RecyclerBinder mCircularRecyclerBinder;
   private LayoutInfo mLayoutInfo;
+  private LayoutInfo mCircularLayoutInfo;
   private ComponentContext mComponentContext;
 
   @Before
@@ -118,7 +120,10 @@ public class RecyclerBinderTest {
         };
 
     mLayoutInfo = mock(LayoutInfo.class);
-    setupBaseLayoutInfoMock();
+    mCircularLayoutInfo = mock(LayoutInfo.class);
+
+    setupBaseLayoutInfoMock(mLayoutInfo, OrientationHelper.VERTICAL);
+    setupBaseLayoutInfoMock(mCircularLayoutInfo, OrientationHelper.HORIZONTAL);
 
     mRecyclerBinder = new RecyclerBinder.Builder()
         .rangeRatio(RANGE_RATIO)
@@ -127,20 +132,28 @@ public class RecyclerBinderTest {
         .build(mComponentContext);
 
     mRenderInfoViewCreatorController = mRecyclerBinder.mRenderInfoViewCreatorController;
+
+    mCircularRecyclerBinder =
+        new RecyclerBinder.Builder()
+            .rangeRatio(RANGE_RATIO)
+            .layoutInfo(mCircularLayoutInfo)
+            .componentTreeHolderFactory(componentTreeHolderFactory)
+            .isCircular(true)
+            .build(mComponentContext);
   }
 
-  private void setupBaseLayoutInfoMock() {
-    when(mLayoutInfo.getScrollDirection()).thenReturn(OrientationHelper.VERTICAL);
+  private void setupBaseLayoutInfoMock(LayoutInfo layoutInfo, int orientation) {
+    when(layoutInfo.getScrollDirection()).thenReturn(orientation);
 
-    when(mLayoutInfo.getLayoutManager())
-        .thenReturn(new LinearLayoutManager(mComponentContext));
+    when(layoutInfo.getLayoutManager())
+        .thenReturn(new LinearLayoutManager(mComponentContext, orientation, false));
 
-    when(mLayoutInfo.approximateRangeSize(anyInt(), anyInt(), anyInt(), anyInt()))
+    when(layoutInfo.approximateRangeSize(anyInt(), anyInt(), anyInt(), anyInt()))
         .thenReturn(RANGE_SIZE);
 
-    when(mLayoutInfo.getChildHeightSpec(anyInt(), any(RenderInfo.class)))
+    when(layoutInfo.getChildHeightSpec(anyInt(), any(RenderInfo.class)))
         .thenReturn(SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
-    when(mLayoutInfo.getChildWidthSpec(anyInt(), any(RenderInfo.class)))
+    when(layoutInfo.getChildWidthSpec(anyInt(), any(RenderInfo.class)))
         .thenReturn(SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
   }
 
@@ -1316,14 +1329,76 @@ public class RecyclerBinderTest {
     return renderInfos;
   }
 
-  private List<ComponentRenderInfo> prepareLoadedBinder() {
-    final List<ComponentRenderInfo> components = new ArrayList<>();
-    for (int i = 0; i < 100; i++) {
-      components.add(ComponentRenderInfo.create().component(mock(Component.class)).build());
-      mRecyclerBinder.insertItemAt(i, components.get(i));
+  @Test
+  public void testCircularRecyclerItemCount() {
+    List<RenderInfo> renderInfos = new ArrayList<>();
+    for (int i = 0; i < 10; i++) {
+      renderInfos.add(ComponentRenderInfo.create().component(mock(Component.class)).build());
     }
 
-    for (int i = 0; i < 100; i++) {
+    mCircularRecyclerBinder.insertRangeAt(0, renderInfos);
+
+    Assert.assertEquals(Integer.MAX_VALUE, mCircularRecyclerBinder.getItemCount());
+  }
+
+  @Test
+  public void testCircularRecyclerItemCountWithOneItem() {
+    mCircularRecyclerBinder.insertItemAt(
+        0, ComponentRenderInfo.create().component(mock(Component.class)).build());
+
+    Assert.assertEquals(Integer.MAX_VALUE, mCircularRecyclerBinder.getItemCount());
+  }
+
+  @Test
+  public void testCircularRecyclerItemFirstVisible() {
+    RecyclerView recyclerView = mock(RecyclerView.class);
+    when(mCircularLayoutInfo.getLayoutManager()).thenReturn(mock(RecyclerView.LayoutManager.class));
+
+    mCircularRecyclerBinder.mount(recyclerView);
+
+    verify(recyclerView).scrollToPosition(Integer.MAX_VALUE / 2);
+  }
+
+  @Test
+  public void testCircularRecyclerInitRange() {
+    final List<ComponentRenderInfo> components = prepareLoadedBinder(mCircularRecyclerBinder, 10);
+    TestComponentTreeHolder holder = mHoldersForComponents.get(components.get(0).getComponent());
+    assertThat(holder.isTreeValid()).isTrue();
+    assertThat(holder.mLayoutSyncCalled).isTrue();
+  }
+
+  @Test
+  public void testCircularRecyclerMeasure() {
+    final List<ComponentRenderInfo> components = prepareLoadedBinder(mCircularRecyclerBinder, 10);
+
+    int widthSpec = makeSizeSpec(100, EXACTLY);
+    int heightSpec = makeSizeSpec(200, EXACTLY);
+
+    mRecyclerBinder.measure(new Size(), widthSpec, heightSpec, null);
+
+    TestComponentTreeHolder holder = mHoldersForComponents.get(components.get(0).getComponent());
+    assertThat(holder.isTreeValid()).isTrue();
+    assertThat(holder.mLayoutSyncCalled).isTrue();
+
+    for (int i = 1; i < 10; i++) {
+      holder = mHoldersForComponents.get(components.get(i).getComponent());
+      assertThat(holder.isTreeValid()).isTrue();
+      assertThat(holder.mLayoutAsyncCalled).isTrue();
+    }
+  }
+
+  private List<ComponentRenderInfo> prepareLoadedBinder() {
+    return prepareLoadedBinder(mRecyclerBinder, 100);
+  }
+
+  private List<ComponentRenderInfo> prepareLoadedBinder(RecyclerBinder binder, int count) {
+    final List<ComponentRenderInfo> components = new ArrayList<>();
+    for (int i = 0; i < count; i++) {
+      components.add(ComponentRenderInfo.create().component(mock(Component.class)).build());
+    }
+    binder.insertRangeAt(0, (List) components);
+
+    for (int i = 0; i < count; i++) {
       Assert.assertNotNull(mHoldersForComponents.get(components.get(i).getComponent()));
     }
 
@@ -1331,7 +1406,7 @@ public class RecyclerBinderTest {
     int widthSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
     int heightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
 
-    mRecyclerBinder.measure(size, widthSpec, heightSpec, null);
+    binder.measure(size, widthSpec, heightSpec, null);
 
     return components;
   }

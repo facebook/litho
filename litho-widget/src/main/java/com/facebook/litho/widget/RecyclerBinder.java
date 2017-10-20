@@ -94,6 +94,7 @@ public class RecyclerBinder
     }
   };
 
+  private final boolean mIsCircular;
   private int mLastWidthSpec = UNINITIALIZED;
   private int mLastHeightSpec = UNINITIALIZED;
   private Size mMeasuredSize;
@@ -160,6 +161,7 @@ public class RecyclerBinder
         DEFAULT_COMPONENT_TREE_HOLDER_FACTORY;
     private ComponentContext componentContext;
     private LithoViewFactory lithoViewFactory;
+    private boolean isCircular;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -211,9 +213,18 @@ public class RecyclerBinder
     }
 
     /**
-     *
+     * Whether the underlying RecyclerBinder will have a circular behaviour. Defaults to false.
+     * Note: circular lists DO NOT support any operation that changes the size of items like insert,
+     * remove, insert range, remove range
+     */
+    public Builder isCircular(boolean isCircular) {
+      this.isCircular = isCircular;
+      return this;
+    }
+
+    /**
      * @param componentTreeHolderFactory Factory to acquire a new ComponentTreeHolder. Defaults to
-     * {@link #DEFAULT_COMPONENT_TREE_HOLDER_FACTORY}.
+     *     {@link #DEFAULT_COMPONENT_TREE_HOLDER_FACTORY}.
      */
     public Builder componentTreeHolderFactory(
         ComponentTreeHolderFactory componentTreeHolderFactory) {
@@ -248,6 +259,8 @@ public class RecyclerBinder
     mLithoViewFactory = builder.lithoViewFactory;
     mCanPrefetchDisplayLists = builder.canPrefetchDisplayLists;
     mCanCacheDrawingDisplayLists = builder.canCacheDrawingDisplayLists;
+
+    mIsCircular = builder.isCircular;
 
     mViewportManager = new ViewportManager(
         mCurrentFirstVisiblePosition,
@@ -361,13 +374,14 @@ public class RecyclerBinder
   /**
    * Inserts a new item at position. The {@link RecyclerView} gets notified immediately about the
    * new item being inserted. If the item's position falls within the currently visible range, the
-   * layout is immediately computed on the] UiThread.
-   * The RenderInfo contains the component that will be inserted in the Binder and extra info
-   * like isSticky or spanCount.
+   * layout is immediately computed on the] UiThread. The RenderInfo contains the component that
+   * will be inserted in the Binder and extra info like isSticky or spanCount.
    */
   @UiThread
   public final void insertItemAt(int position, RenderInfo renderInfo) {
     ThreadUtils.assertMainThread();
+
+    assertNoInsertRemoveOperationIfCircular();
 
     final ComponentTreeHolder holder = mComponentTreeHolderFactory.create(
         renderInfo,
@@ -443,6 +457,8 @@ public class RecyclerBinder
   @UiThread
   public final void insertRangeAt(int position, List<RenderInfo> renderInfos) {
     ThreadUtils.assertMainThread();
+
+    assertNoInsertRemoveOperationIfCircular();
 
     for (int i = 0, size = renderInfos.size(); i < size; i++) {
 
@@ -631,6 +647,9 @@ public class RecyclerBinder
   @UiThread
   public final void removeItemAt(int position) {
     ThreadUtils.assertMainThread();
+
+    assertNoInsertRemoveOperationIfCircular();
+
     final ComponentTreeHolder holder;
     synchronized (this) {
       holder = mComponentTreeHolders.remove(position);
@@ -651,6 +670,9 @@ public class RecyclerBinder
   @UiThread
   public final void removeRangeAt(int position, int count) {
     ThreadUtils.assertMainThread();
+
+    assertNoInsertRemoveOperationIfCircular();
+
     synchronized (this) {
       for (int i = 0; i < count; i++) {
         final ComponentTreeHolder holder = mComponentTreeHolders.remove(position);
@@ -873,6 +895,18 @@ public class RecyclerBinder
     return mInternalAdapter.getItemCount();
   }
 
+  /**
+   * Any operations that leads to resizing of items size is not supported in case of circular
+   * recycler because indexes universe gets messed.
+   */
+  private void assertNoInsertRemoveOperationIfCircular() {
+    if (mIsCircular && !mComponentTreeHolders.isEmpty()) {
+      // Initialization of a list happens using insertRangeAt() or insertAt() operations,
+      // so skip this check when mComponentTreeHolders was not populated yet
+      throw new UnsupportedOperationException("Circular lists do not support insert operation");
+    }
+  }
+
   @GuardedBy("this")
   private void invalidateLayoutData() {
     mRange = null;
@@ -978,12 +1012,22 @@ public class RecyclerBinder
       } else {
         view.scrollToPosition(mCurrentFirstVisiblePosition);
       }
+    } else if (mIsCircular) {
+      // Initialize circular RecyclerView position
+      final int jumpToMiddle = Integer.MAX_VALUE / 2;
+      final int offsetFirstItem =
+          mComponentTreeHolders.isEmpty() ? 0 : jumpToMiddle % mComponentTreeHolders.size();
+      view.scrollToPosition(jumpToMiddle - offsetFirstItem);
     }
 
     enableStickyHeader(mMountedView);
   }
 
   private void enableStickyHeader(RecyclerView recyclerView) {
+    if (mIsCircular) {
+      Log.w(TAG, "Sticky header is not supported for circular RecyclerViews");
+      return;
+    }
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
       // Sticky header needs view translation APIs which are not available in Gingerbread and below.
       Log.w(TAG, "Sticky header is supported only on ICS (API14) and above");
@@ -1166,6 +1210,11 @@ public class RecyclerBinder
       treeHoldersSize = mComponentTreeHolders.size();
     }
 
+    computeRangeLayout(treeHoldersSize, rangeStart, rangeEnd, mIsCircular);
+  }
+
+  private void computeRangeLayout(
+      int treeHoldersSize, int rangeStart, int rangeEnd, boolean ignoreRange) {
     // TODO 16212153 optimize computeRange loop.
     for (int i = 0; i < treeHoldersSize; i++) {
       final ComponentTreeHolder holder;
@@ -1188,12 +1237,18 @@ public class RecyclerBinder
         childrenHeightSpec = getActualChildrenHeightSpec(holder);
       }
 
-      if (i >= rangeStart && i <= rangeEnd) {
+      if (ignoreRange) {
         if (!holder.isTreeValid()) {
           holder.computeLayoutAsync(mComponentContext, childrenWidthSpec, childrenHeightSpec);
         }
-      } else if (holder.isTreeValid() && !holder.getRenderInfo().isSticky()) {
-        holder.acquireStateHandlerAndReleaseTree();
+      } else {
+        if (i >= rangeStart && i <= rangeEnd) {
+          if (!holder.isTreeValid()) {
+            holder.computeLayoutAsync(mComponentContext, childrenWidthSpec, childrenHeightSpec);
+          }
+        } else if (holder.isTreeValid() && !holder.getRenderInfo().isSticky()) {
+          holder.acquireStateHandlerAndReleaseTree();
+        }
       }
     }
   }
@@ -1274,6 +1329,8 @@ public class RecyclerBinder
 
     @Override
     public void onBindViewHolder(BaseViewHolder holder, int position) {
+      position = getNormalizedPosition(position);
+
       // We can ignore the synchronization here. We'll only add to this from the UiThread.
       // This read only happens on the UiThread as well and we are never writing this here.
       final ComponentTreeHolder componentTreeHolder = mComponentTreeHolders.get(position);
@@ -1318,7 +1375,8 @@ public class RecyclerBinder
 
     @Override
     public int getItemViewType(int position) {
-      final RenderInfo renderInfo = mComponentTreeHolders.get(position).getRenderInfo();
+      final RenderInfo renderInfo =
+          mComponentTreeHolders.get(getNormalizedPosition(position)).getRenderInfo();
       if (renderInfo.rendersComponent()) {
         // Special value for LithoViews
         return COMPONENT_VIEW_TYPE;
@@ -1344,7 +1402,10 @@ public class RecyclerBinder
     public int getItemCount() {
       // We can ignore the synchronization here. We'll only add to this from the UiThread.
       // This read only happens on the UiThread as well and we are never writing this here.
-      return mComponentTreeHolders.size();
+
+      // If the recycler is circular, we have to simulate having an infinite number of items in the
+      // adapter by returning Integer.MAX_VALUE.
+      return mIsCircular ? Integer.MAX_VALUE : mComponentTreeHolders.size();
     }
 
     @Override
@@ -1354,5 +1415,14 @@ public class RecyclerBinder
         lithoView.setComponentTree(null);
       }
     }
+  }
+
+  /**
+   * If the recycler is circular, returns the position of the {@link ComponentTreeHolder} that is
+   * used to render the item at given position. Otherwise, it returns the position passed as
+   * parameter, which is the same as the index of the {@link ComponentTreeHolder}.
+   */
+  private int getNormalizedPosition(int position) {
+    return mIsCircular ? position % mComponentTreeHolders.size() : position;
   }
 }

@@ -124,12 +124,14 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
     linearLayoutInfo = mLinearLayoutInfoFactory
         .createLinearLayoutInfo(c, mOrientation, mReverseLayout);
 
-    final RecyclerBinder recyclerBinder = new RecyclerBinder.Builder()
-        .rangeRatio((float) mRecyclerBinderConfiguration.getRangeRatio())
-        .layoutInfo(linearLayoutInfo)
-        .layoutHandlerFactory(mRecyclerBinderConfiguration.getLayoutHandlerFactory())
-        .canPrefetchDisplayLists(mRecyclerBinderConfiguration.canPrefetchDisplayLists())
-        .build(c);
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .rangeRatio((float) mRecyclerBinderConfiguration.getRangeRatio())
+            .layoutInfo(linearLayoutInfo)
+            .layoutHandlerFactory(mRecyclerBinderConfiguration.getLayoutHandlerFactory())
+            .canPrefetchDisplayLists(mRecyclerBinderConfiguration.canPrefetchDisplayLists())
+            .isCircular(mRecyclerBinderConfiguration.isCircular())
+            .build(c);
     return (T) new SectionBinderTarget(recyclerBinder);
   }
 
