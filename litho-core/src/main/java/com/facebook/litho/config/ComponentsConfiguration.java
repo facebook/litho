@@ -79,20 +79,6 @@ public class ComponentsConfiguration {
   public static boolean deepUnmountEnabled = true;
 
   /**
-   * Whether layout attributes should be stored in a separate object before copying them onto the
-   * {@link com.facebook.litho.InternalNode}. This is to give us an idea of whether moving layout
-   * attributes onto the {@link com.facebook.litho.Component} itself is performant.
-   */
-  public static boolean storeLayoutAttributesInSeparateObject = false;
-
-  /**
-   * Whether to use optimized layout attributes, which is a version of layout attributes that has
-   * the most common attributes hard-coded. Only use if storeLayoutAttributesInSeparateObject
-   * returns true.
-   */
-  public static boolean useOptimizedLayoutAttributes = false;
-
-  /**
    * Whether incremental mount should use the local visible bounds of the {@link
    * com.facebook.litho.LithoView}.
    */
