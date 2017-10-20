@@ -186,7 +186,7 @@ public final class AnimatedProperties {
     public void set(Object mountContent, float value) {
       if (mountContent instanceof ComponentHost) {
         final ComponentHost view = (ComponentHost) mountContent;
-        if (view instanceof LithoView) {
+        if (view instanceof LithoView && ((LithoView) view).isExpectingBoundsAnimation()) {
           ((LithoView) view).setAnimatedHeight((int) value);
         } else {
           final int top = view.getTop();
