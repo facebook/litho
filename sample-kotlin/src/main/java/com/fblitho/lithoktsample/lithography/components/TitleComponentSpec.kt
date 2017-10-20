@@ -12,34 +12,34 @@
 
 package com.fblitho.lithoktsample.lithography.components
 
+import android.graphics.Typeface.BOLD
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentLayout
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.annotations.Prop
+import com.facebook.litho.annotations.ResType.STRING
 import com.facebook.litho.widget.Text
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaPositionType
 
-import android.graphics.Typeface.BOLD
-import com.facebook.litho.annotations.ResType.STRING
-
 @LayoutSpec
 object TitleComponentSpec {
-    @OnCreateLayout
-    fun onCreateLayout(
-            c: ComponentContext,
-            @Prop(resType = STRING) title: String): ComponentLayout {
-        return Text.create(c)
-                .text(title)
-                .textStyle(BOLD)
-                .textSizeDip(24f)
-                .withLayout()
-                .backgroundColor(0xDDFFFFFF.toInt())
-                .positionType(YogaPositionType.ABSOLUTE)
-                .positionDip(YogaEdge.BOTTOM, 4f)
-                .positionDip(YogaEdge.LEFT, 4f)
-                .paddingDip(YogaEdge.HORIZONTAL, 6f)
-                .build()
-    }
+  @OnCreateLayout
+  fun onCreateLayout(
+      c: ComponentContext,
+      @Prop(resType = STRING) title: String): ComponentLayout {
+    return Text.create(c)
+        .text(title)
+        .textStyle(BOLD)
+        .textSizeDip(24f)
+        .withLayout()
+        .backgroundColor(0xDDFFFFFF.toInt())
+        .positionType(YogaPositionType.ABSOLUTE)
+        .positionDip(YogaEdge.BOTTOM, 4f)
+        .positionDip(YogaEdge.LEFT, 4f)
+        .paddingDip(YogaEdge.HORIZONTAL, 6f)
+        .build()
+  }
 }
+

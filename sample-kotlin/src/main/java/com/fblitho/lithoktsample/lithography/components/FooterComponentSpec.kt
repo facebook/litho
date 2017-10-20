@@ -12,33 +12,32 @@
 
 package com.fblitho.lithoktsample.lithography.components
 
+import android.graphics.Color.GRAY
+import android.graphics.Typeface.ITALIC
 import com.facebook.litho.Column
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentLayout
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.annotations.Prop
+import com.facebook.litho.annotations.ResType.STRING
 import com.facebook.litho.widget.Text
 import com.facebook.yoga.YogaEdge
 
-import android.graphics.Color.GRAY
-import android.graphics.Typeface.ITALIC
-import com.facebook.litho.annotations.ResType.STRING
-
 @LayoutSpec
 object FooterComponentSpec {
-    @OnCreateLayout
-    fun onCreateLayout(
-            c: ComponentContext,
-            @Prop(resType = STRING) text: String): ComponentLayout {
-        return Column.create(c)
-                .paddingDip(YogaEdge.ALL, 8f)
-                .child(
-                        Text.create(c)
-                                .text(text)
-                                .textSizeDip(14f)
-                                .textColor(GRAY)
-                                .textStyle(ITALIC))
-                .build()
-    }
+  @OnCreateLayout
+  fun onCreateLayout(
+      c: ComponentContext,
+      @Prop(resType = STRING) text: String): ComponentLayout {
+    return Column.create(c)
+        .paddingDip(YogaEdge.ALL, 8f)
+        .child(
+            Text.create(c)
+                .text(text)
+                .textSizeDip(14f)
+                .textColor(GRAY)
+                .textStyle(ITALIC))
+        .build()
+  }
 }

@@ -12,49 +12,39 @@
 
 package com.fblitho.lithoktsample.lithography.components
 
-import android.view.View
-
-import com.facebook.litho.ClickEvent
-import com.facebook.litho.ComponentContext
-import com.facebook.litho.ComponentLayout
-import com.facebook.litho.Row
-import com.facebook.litho.StateValue
-import com.facebook.litho.annotations.FromEvent
-import com.facebook.litho.annotations.LayoutSpec
-import com.facebook.litho.annotations.OnCreateLayout
-import com.facebook.litho.annotations.OnEvent
-import com.facebook.litho.annotations.OnUpdateState
-import com.facebook.litho.annotations.State
-
 import android.R.drawable.star_off
 import android.R.drawable.star_on
+import android.view.View
+import com.facebook.litho.*
+import com.facebook.litho.annotations.*
 
 @LayoutSpec
 object FavouriteButtonSpec {
 
-    @OnCreateLayout
-    fun onCreateLayout(
-            c: ComponentContext,
-            @State favourited: Boolean): ComponentLayout {
-        return Row.create(c)
-                .backgroundRes(if (favourited) star_on else star_off)
-                .widthDip(32f)
-                .heightDip(32f)
-                .clickHandler(FavouriteButton.onClick(c))
-                .build()
-    }
+  @OnCreateLayout
+  fun onCreateLayout(
+      c: ComponentContext,
+      @State favourited: Boolean): ComponentLayout {
+    return Row.create(c)
+        .backgroundRes(if (favourited) star_on else star_off)
+        .widthDip(32f)
+        .heightDip(32f)
+        .clickHandler(FavouriteButton.onClick(c))
+        .build()
+  }
 
-    @JvmStatic
-    @OnUpdateState
-    fun toggleFavourited(favourited: StateValue<Boolean>) {
-        favourited.set(!favourited.get())
-    }
+  @JvmStatic
+  @OnUpdateState
+  fun toggleFavourited(favourited: StateValue<Boolean>) {
+    favourited.set(!favourited.get())
+  }
 
-    @JvmStatic
-    @OnEvent(ClickEvent::class)
-    fun onClick(
-            c: ComponentContext,
-            @FromEvent view: View) {
-        FavouriteButton.toggleFavourited(c)
-    }
+  @JvmStatic
+  @OnEvent(ClickEvent::class)
+  fun onClick(
+      c: ComponentContext,
+      @FromEvent view: View) {
+    FavouriteButton.toggleFavourited(c)
+  }
 }
+

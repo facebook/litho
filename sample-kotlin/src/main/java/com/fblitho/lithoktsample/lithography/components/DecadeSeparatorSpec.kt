@@ -25,32 +25,32 @@ import com.fblitho.lithoktsample.lithography.data.Decade
 
 @LayoutSpec
 object DecadeSeparatorSpec {
-    @OnCreateLayout
-    fun onCreateLayout(
-            c: ComponentContext,
-            @Prop decade: Decade): ComponentLayout {
-        return Row.create(c)
-                .alignItems(YogaAlign.CENTER)
-                .paddingDip(YogaEdge.ALL, 16f)
-                .child(
-                        Row.create(c)
-                                .heightPx(1)
-                                .backgroundColor(0xFFAAAAAA.toInt())
-                                .flex(1f))
-                .child(
-                        Text.create(c)
-                                .text(decade.year.toString())
-                                .textSizeDip(14f)
-                                .textColor(0xFFAAAAAA.toInt())
-                                .withLayout()
-                                .marginDip(YogaEdge.HORIZONTAL, 10f)
-                                .flex(0f))
-                .child(
-                        Row.create(c)
-                                .heightPx(1)
-                                .backgroundColor(0xFFAAAAAA.toInt())
-                                .flex(1f))
-                .backgroundColor(0xFFFAFAFA.toInt())
-                .build()
-    }
+  @OnCreateLayout
+  fun onCreateLayout(
+      c: ComponentContext,
+      @Prop decade: Decade): ComponentLayout {
+    return Row.create(c)
+        .alignItems(YogaAlign.CENTER)
+        .paddingDip(YogaEdge.ALL, 16f)
+        .child(
+            Row.create(c)
+                .heightPx(1)
+                .backgroundColor(0xFFAAAAAA.toInt())
+                .flex(1f))
+        .child(
+            Text.create(c)
+                .text(decade.year.toString())
+                .textSizeDip(14f)
+                .textColor(0xFFAAAAAA.toInt())
+                .withLayout()
+                .marginDip(YogaEdge.HORIZONTAL, 10f)
+                .flex(0f))
+        .child(
+            Row.create(c)
+                .heightPx(1)
+                .backgroundColor(0xFFAAAAAA.toInt())
+                .flex(1f))
+        .backgroundColor(0xFFFAFAFA.toInt())
+        .build()
+  }
 }

@@ -29,38 +29,38 @@ import com.fblitho.lithoktsample.lithography.sections.ImagesSection
 
 @LayoutSpec
 object FeedItemComponentSpec {
-    private val recyclerConfiguration: ListRecyclerConfiguration<SectionBinderTarget> =
-            ListRecyclerConfiguration(
-                    LinearLayout.HORIZONTAL,
-                    false,
-                    ListRecyclerConfiguration.SNAP_TO_CENTER);
+  private val recyclerConfiguration: ListRecyclerConfiguration<SectionBinderTarget> =
+      ListRecyclerConfiguration(
+          LinearLayout.HORIZONTAL,
+          false,
+          ListRecyclerConfiguration.SNAP_TO_CENTER);
 
-    @OnCreateLayout
-    fun onCreateLayout(
-            c: ComponentContext,
-            @Prop artist: Artist): ComponentLayout {
+  @OnCreateLayout
+  fun onCreateLayout(
+      c: ComponentContext,
+      @Prop artist: Artist): ComponentLayout {
 
-        val imageComponent =
-                if (artist.images.size == 1) {
-                    SingleImageComponent.create(c)
-                            .image(artist.images[0])
-                            .imageAspectRatio(2f)
-                } else {
-                    RecyclerCollectionComponent.create(c)
-                            .recyclerConfiguration(recyclerConfiguration)
-                            .section(ImagesSection.create(SectionContext(c))
-                                    .images(artist.images)
-                                    .build())
-                            .aspectRatio(2f);
-                }
+    val imageComponent =
+        if (artist.images.size == 1) {
+          SingleImageComponent.create(c)
+              .image(artist.images[0])
+              .imageAspectRatio(2f)
+        } else {
+          RecyclerCollectionComponent.create(c)
+              .recyclerConfiguration(recyclerConfiguration)
+              .section(ImagesSection.create(SectionContext(c))
+                  .images(artist.images)
+                  .build())
+              .aspectRatio(2f);
+        }
 
-        return Column.create(c)
-                .child(
-                        Column.create(c)
-                                .child(imageComponent)
-                                .child(TitleComponent.create(c).title(artist.name))
-                                .child(ActionsComponent.create(c)))
-                .child(FooterComponent.create(c).text(artist.biography))
-                .build()
-    }
+    return Column.create(c)
+        .child(
+            Column.create(c)
+                .child(imageComponent)
+                .child(TitleComponent.create(c).title(artist.name))
+                .child(ActionsComponent.create(c)))
+        .child(FooterComponent.create(c).text(artist.biography))
+        .build()
+  }
 }

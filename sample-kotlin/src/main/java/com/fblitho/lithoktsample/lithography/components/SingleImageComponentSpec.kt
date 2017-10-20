@@ -23,20 +23,21 @@ import com.facebook.litho.fresco.FrescoImage
 
 @LayoutSpec
 object SingleImageComponentSpec {
-    @PropDefault
-    val imageAspectRatio = 1f
+  @PropDefault
+  val imageAspectRatio = 1f
 
-    @OnCreateLayout
-    fun onCreateLayout(
-            c: ComponentContext,
-            @Prop image: String,
-            @Prop(optional = true) imageAspectRatio: Float): ComponentLayout {
-        val controller = Fresco.newDraweeControllerBuilder()
-                .setUri(image)
-                .build()
-        return FrescoImage.create(c)
-                .controller(controller)
-                .imageAspectRatio(imageAspectRatio)
-                .buildWithLayout()
-    }
+  @OnCreateLayout
+  fun onCreateLayout(
+      c: ComponentContext,
+      @Prop image: String,
+      @Prop(optional = true) imageAspectRatio: Float): ComponentLayout {
+    val controller = Fresco.newDraweeControllerBuilder()
+        .setUri(image)
+        .build()
+    return FrescoImage.create(c)
+        .controller(controller)
+        .imageAspectRatio(imageAspectRatio)
+        .buildWithLayout()
+  }
 }
+

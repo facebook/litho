@@ -24,16 +24,16 @@ import com.facebook.yoga.YogaPositionType
 @LayoutSpec
 object ActionsComponentSpec {
 
-    @OnCreateLayout
-    fun onCreateLayout(
-            c: ComponentContext): ComponentLayout {
-        return Row.create(c)
-                .backgroundColor(0xDDFFFFFF.toInt())
-                .positionType(YogaPositionType.ABSOLUTE)
-                .positionDip(YogaEdge.RIGHT, 4f)
-                .positionDip(YogaEdge.TOP, 4f)
-                .paddingDip(YogaEdge.ALL, 2f)
-                .child(FavouriteButton.create(c))
-                .build()
-    }
+  @OnCreateLayout
+  fun onCreateLayout(
+      c: ComponentContext): ComponentLayout {
+    return Row.create(c)
+        .backgroundColor(0xDDFFFFFF.toInt())
+        .positionType(YogaPositionType.ABSOLUTE)
+        .positionDip(YogaEdge.RIGHT, 4f)
+        .positionDip(YogaEdge.TOP, 4f)
+        .paddingDip(YogaEdge.ALL, 2f)
+        .child(FavouriteButton.create(c))
+        .build()
+  }
 }
