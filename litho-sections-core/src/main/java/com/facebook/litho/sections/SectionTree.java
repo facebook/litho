@@ -114,7 +114,7 @@ public class SectionTree {
   private final BatchedTarget mTarget;
   private final boolean mAsyncStateUpdates;
   private final boolean mAsyncPropUpdates;
-  private final String mSectionTreeTag;
+  private final String mTag;
   private final Map<String, Range> mLastRanges = new HashMap<>();
   // Holds a Pair where the first item is a section's global starting index
   // and the second is the count.
@@ -209,11 +209,8 @@ public class SectionTree {
     mReleased = false;
     mAsyncStateUpdates = builder.mAsyncStateUpdates;
     mAsyncPropUpdates = builder.mAsyngPropUpdates;
-    mSectionTreeTag = builder.mSectionTreeTag;
-    mTarget = new BatchedTarget(
-        builder.mTarget,
-        mSectionComponentLogger,
-        mSectionTreeTag);
+    mTag = builder.mTag;
+    mTarget = new BatchedTarget(builder.mTarget, mSectionComponentLogger, mTag);
     mContext = SectionContext.withSectionTree(builder.mContext, this);
     mPendingChangeSets = new ArrayList<>();
     mPendingStateUpdates = new HashMap<>();
@@ -715,13 +712,9 @@ public class SectionTree {
     // Checking nextRoot is enough here since whenever we enqueue a new state update we also
     // re-assign nextRoot.
     while (nextRoot != null) {
-      final ChangeSetState changeSetState = calculateNewChangeSet(
-          mContext,
-          currentRoot,
-          nextRoot,
-          pendingStateUpdates,
-          mSectionComponentLogger,
-          mSectionTreeTag);
+      final ChangeSetState changeSetState =
+          calculateNewChangeSet(
+              mContext, currentRoot, nextRoot, pendingStateUpdates, mSectionComponentLogger, mTag);
 
       final boolean changeSetIsValid;
       Section oldRoot = null;
@@ -1150,7 +1143,7 @@ public class SectionTree {
   private static String getDebugInfo(SectionTree tree) {
     final StringBuilder sb = new StringBuilder();
     sb.append("tag: ");
-    sb.append(tree.mSectionTreeTag);
+    sb.append(tree.mTag);
 
     sb.append(", currentSection.size: ");
     sb.append(tree.mCurrentSection != null ? tree.mCurrentSection.getCount() : null);
@@ -1179,7 +1172,7 @@ public class SectionTree {
     private final Target mTarget;
     private boolean mAsyncStateUpdates;
     private boolean mAsyngPropUpdates;
-    private String mSectionTreeTag;
+    private String mTag;
     private Handler mChangeSetThreadHandler;
 
     private Builder(SectionContext componentContext, Target target) {
@@ -1219,12 +1212,12 @@ public class SectionTree {
 
     /**
      * If enabled, a tag will define the section tree being built
+     *
      * @param tag tag that labels the section tree
      * @return
      */
-
-    public Builder setSectionTreeTag(String tag) {
-      mSectionTreeTag = (tag == null) ? "" : tag;
+    public Builder tag(String tag) {
+      mTag = (tag == null) ? "" : tag;
       return this;
     }
 

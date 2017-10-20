@@ -271,7 +271,7 @@ public class RecyclerCollectionComponentSpec {
 
     final SectionTree sectionTreeInstance =
         SectionTree.create(sectionContext, targetBinder)
-            .setSectionTreeTag(sectionTreeTag)
+            .tag(sectionTreeTag)
             .asyncPropUpdates(asyncPropUpdates)
             .asyncStateUpdates(asyncStateUpdates)
             .build();
