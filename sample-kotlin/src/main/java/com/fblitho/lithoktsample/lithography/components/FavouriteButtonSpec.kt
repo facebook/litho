@@ -24,27 +24,19 @@ object FavouriteButtonSpec {
   @OnCreateLayout
   fun onCreateLayout(
       c: ComponentContext,
-      @State favourited: Boolean): ComponentLayout {
-    return Row.create(c)
-        .backgroundRes(if (favourited) star_on else star_off)
-        .widthDip(32f)
-        .heightDip(32f)
-        .clickHandler(FavouriteButton.onClick(c))
-        .build()
-  }
+      @State favourited: Boolean): ComponentLayout =
+      Row.create(c)
+          .backgroundRes(if (favourited) star_on else star_off)
+          .widthDip(32f)
+          .heightDip(32f)
+          .clickHandler(FavouriteButton.onClick(c))
+          .build()
 
   @JvmStatic
   @OnUpdateState
-  fun toggleFavourited(favourited: StateValue<Boolean>) {
-    favourited.set(!favourited.get())
-  }
+  fun toggleFavourited(favourited: StateValue<Boolean>) = favourited.set(!favourited.get())
 
   @JvmStatic
   @OnEvent(ClickEvent::class)
-  fun onClick(
-      c: ComponentContext,
-      @FromEvent view: View) {
-    FavouriteButton.toggleFavourited(c)
-  }
+  fun onClick(c: ComponentContext, @FromEvent view: View) = FavouriteButton.toggleFavourited(c)
 }
-

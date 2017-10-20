@@ -33,20 +33,20 @@ import com.fblitho.lithoktsample.lithography.components.SingleImageComponent
 @GroupSectionSpec
 object ImagesSectionSpec {
   @OnCreateChildren
-  fun onCreateChildren(c: SectionContext, @Prop images: List<String>): Children {
-    return Children.create()
-        .child(DataDiffSection.create<String>(c)
-            .data(images)
-            .renderEventHandler(ImagesSection.onRender(c)))
-        .build();
-  }
+  fun onCreateChildren(c: SectionContext, @Prop images: List<String>): Children =
+      Children.create()
+          .child(DataDiffSection.create<String>(c)
+              .data(images)
+              .renderEventHandler(ImagesSection.onRender(c)))
+          .build()
+
 
   @JvmStatic
   @OnEvent(RenderEvent::class)
   fun onRender(
-      c: SectionContext, @FromEvent model: String): RenderInfo {
-    return ComponentRenderInfo.create()
-        .component(SingleImageComponent.create(c).image(model).imageAspectRatio(2f).build())
-        .build();
-  }
+      c: SectionContext, @FromEvent model: String): RenderInfo =
+      ComponentRenderInfo.create()
+          .component(SingleImageComponent.create(c).image(model).imageAspectRatio(2f).build())
+          .build()
+
 }

@@ -38,7 +38,6 @@ class MainActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    viewModel.init()
     viewModel.model.observe(this, Observer { model -> setList(model!!) })
     setContentView(lithoView)
   }
@@ -52,16 +51,14 @@ class MainActivity : AppCompatActivity() {
     }
   }
 
-  private fun createRecyclerComponent(model: Model): Component<RecyclerCollectionComponent> {
-
-    return RecyclerCollectionComponent
-        .create(sectionContext)
-        .section(LithoFeedSection.create(sectionContext)
-            .decades(model.decades)
-            .fetcher(fetcher)
-            .loading(model.isLoading)
-            .build())
-        .disablePTR(true)
-        .build()
-  }
+  private fun createRecyclerComponent(model: Model): Component<RecyclerCollectionComponent> =
+      RecyclerCollectionComponent
+          .create(sectionContext)
+          .section(LithoFeedSection.create(sectionContext)
+              .decades(model.decades)
+              .fetcher(fetcher)
+              .loading(model.isLoading)
+              .build())
+          .disablePTR(true)
+          .build()
 }

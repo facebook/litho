@@ -29,15 +29,14 @@ object FooterComponentSpec {
   @OnCreateLayout
   fun onCreateLayout(
       c: ComponentContext,
-      @Prop(resType = STRING) text: String): ComponentLayout {
-    return Column.create(c)
-        .paddingDip(YogaEdge.ALL, 8f)
-        .child(
-            Text.create(c)
-                .text(text)
-                .textSizeDip(14f)
-                .textColor(GRAY)
-                .textStyle(ITALIC))
-        .build()
-  }
+      @Prop(resType = STRING) text: String): ComponentLayout =
+      Column.create(c)
+          .paddingDip(YogaEdge.ALL, 8f)
+          .child(
+              Text.create(c)
+                  .text(text)
+                  .textSizeDip(14f)
+                  .textColor(GRAY)
+                  .textStyle(ITALIC))
+          .build()
 }

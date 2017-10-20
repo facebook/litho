@@ -25,12 +25,11 @@ import com.facebook.yoga.YogaJustify
 object LoadingComponentSpec {
 
   @OnCreateLayout
-  fun onCreateLayout(c: ComponentContext): ComponentLayout {
-    return Row.create(c)
-        .justifyContent(YogaJustify.CENTER)
-        .child(Progress.create(c)
-            .color(Color.DKGRAY)
-            .widthDip(50f))
-        .build()
-  }
+  fun onCreateLayout(c: ComponentContext): ComponentLayout =
+      Row.create(c)
+          .justifyContent(YogaJustify.CENTER)
+          .child(Progress.create(c)
+              .color(Color.DKGRAY)
+              .widthDip(50f))
+          .build()
 }

@@ -29,15 +29,14 @@ object FeedItemCardSpec {
   @OnCreateLayout
   fun onCreateLayout(
       c: ComponentContext,
-      @Prop artist: Artist): ComponentLayout {
-    return Column.create(c)
-        .paddingDip(VERTICAL, 8f)
-        .paddingDip(HORIZONTAL, 16f)
-        .child(
-            Card.create(c)
-                .content(
-                    FeedItemComponent.create(c)
-                        .artist(artist)))
-        .build()
-  }
+      @Prop artist: Artist): ComponentLayout =
+      Column.create(c)
+          .paddingDip(VERTICAL, 8f)
+          .paddingDip(HORIZONTAL, 16f)
+          .child(
+              Card.create(c)
+                  .content(
+                      FeedItemComponent.create(c)
+                          .artist(artist)))
+          .build()
 }

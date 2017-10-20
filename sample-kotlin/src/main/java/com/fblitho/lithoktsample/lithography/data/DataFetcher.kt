@@ -17,8 +17,7 @@ package com.fblitho.lithoktsample.lithography.data
 import android.arch.lifecycle.MutableLiveData
 import android.os.AsyncTask
 
-class DataFetcher(
-    val model: MutableLiveData<Model>) : Fetcher {
+class DataFetcher(val model: MutableLiveData<Model>) : Fetcher {
 
   var fetching = -1
 

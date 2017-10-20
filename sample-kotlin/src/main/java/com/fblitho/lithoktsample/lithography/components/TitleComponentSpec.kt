@@ -28,18 +28,17 @@ object TitleComponentSpec {
   @OnCreateLayout
   fun onCreateLayout(
       c: ComponentContext,
-      @Prop(resType = STRING) title: String): ComponentLayout {
-    return Text.create(c)
-        .text(title)
-        .textStyle(BOLD)
-        .textSizeDip(24f)
-        .withLayout()
-        .backgroundColor(0xDDFFFFFF.toInt())
-        .positionType(YogaPositionType.ABSOLUTE)
-        .positionDip(YogaEdge.BOTTOM, 4f)
-        .positionDip(YogaEdge.LEFT, 4f)
-        .paddingDip(YogaEdge.HORIZONTAL, 6f)
-        .build()
-  }
+      @Prop(resType = STRING) title: String): ComponentLayout =
+      Text.create(c)
+          .text(title)
+          .textStyle(BOLD)
+          .textSizeDip(24f)
+          .withLayout()
+          .backgroundColor(0xDDFFFFFF.toInt())
+          .positionType(YogaPositionType.ABSOLUTE)
+          .positionDip(YogaEdge.BOTTOM, 4f)
+          .positionDip(YogaEdge.LEFT, 4f)
+          .paddingDip(YogaEdge.HORIZONTAL, 6f)
+          .build()
 }
 

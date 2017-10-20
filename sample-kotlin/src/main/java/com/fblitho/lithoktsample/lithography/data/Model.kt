@@ -12,5 +12,4 @@
 
 package com.fblitho.lithoktsample.lithography.data
 
-data class Model(val decades: List<Decade>, val isLoading: Boolean) {
-}
+data class Model(val decades: List<Decade>, val isLoading: Boolean)

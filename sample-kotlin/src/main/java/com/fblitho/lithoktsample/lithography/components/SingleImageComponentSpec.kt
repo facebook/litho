@@ -30,14 +30,14 @@ object SingleImageComponentSpec {
   fun onCreateLayout(
       c: ComponentContext,
       @Prop image: String,
-      @Prop(optional = true) imageAspectRatio: Float): ComponentLayout {
-    val controller = Fresco.newDraweeControllerBuilder()
-        .setUri(image)
-        .build()
-    return FrescoImage.create(c)
-        .controller(controller)
-        .imageAspectRatio(imageAspectRatio)
-        .buildWithLayout()
-  }
+      @Prop(optional = true) imageAspectRatio: Float): ComponentLayout =
+      Fresco.newDraweeControllerBuilder()
+          .setUri(image)
+          .build().let {
+        FrescoImage.create(c)
+            .controller(it)
+            .imageAspectRatio(imageAspectRatio)
+            .buildWithLayout()
+      }
 }
 

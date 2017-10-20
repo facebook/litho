@@ -34,39 +34,35 @@ import com.fblitho.lithoktsample.lithography.data.Decade
 object DecadeSectionSpec {
 
   @OnCreateChildren
-  fun onCreateChildren(c: SectionContext, @Prop decade: Decade): Children {
-    return Children.create()
-        .child(
-            SingleComponentSection.create(c)
-                .component(DecadeSeparator.create(c).decade(decade))
-                .sticky(true))
-        .child(
-            DataDiffSection.create<Artist>(c)
-                .data(decade.artists)
-                .renderEventHandler(
-                    DecadeSection.render(c))
-                .onCheckIsSameItemEventHandler(
-                    DecadeSection.isSameItem(c)))
-        .build()
-  }
+  fun onCreateChildren(c: SectionContext, @Prop decade: Decade): Children =
+      Children.create()
+          .child(
+              SingleComponentSection.create(c)
+                  .component(DecadeSeparator.create(c).decade(decade))
+                  .sticky(true))
+          .child(
+              DataDiffSection.create<Artist>(c)
+                  .data(decade.artists)
+                  .renderEventHandler(
+                      DecadeSection.render(c))
+                  .onCheckIsSameItemEventHandler(
+                      DecadeSection.isSameItem(c)))
+          .build()
+
 
   @JvmStatic
   @OnEvent(RenderEvent::class)
   fun render(
       c: SectionContext,
-      @FromEvent model: Artist): RenderInfo {
-    return ComponentRenderInfo.create()
-        .component(FeedItemCard.create(c).artist(model).build())
-        .build()
-  }
+      @FromEvent model: Artist): RenderInfo =
+      ComponentRenderInfo.create()
+          .component(FeedItemCard.create(c).artist(model).build())
+          .build()
 
   @JvmStatic
   @OnEvent(OnCheckIsSameItemEvent::class)
   fun isSameItem(
       c: SectionContext,
       @FromEvent previousItem: Artist,
-      @FromEvent nextItem: Artist): Boolean {
-
-    return previousItem.name == nextItem.name
-  }
+      @FromEvent nextItem: Artist): Boolean = previousItem.name == nextItem.name
 }
