@@ -101,4 +101,10 @@ public class ComponentsConfiguration {
    * to isTracing.
    */
   public static boolean isAlwaysTracingBacktestEnabled = true;
+
+  /**
+   * Whether to store the full list of Components used to create an {@link
+   * com.facebook.litho.InternalNode} when persisting the InternalNode tree.
+   */
+  public static boolean persistAllComponents = false;
 }
