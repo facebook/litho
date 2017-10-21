@@ -18,28 +18,30 @@ import android.arch.lifecycle.MutableLiveData
 import android.os.AsyncTask
 
 class DataFetcher(val model: MutableLiveData<Model>) : Fetcher {
-
   var fetching = -1
 
-  override fun fetchMoreData(lastFetchedDecade: Int) {
+  override fun invoke(lastFetchedDecade: Int) {
     if (fetching == lastFetchedDecade + 1) {
       return
     }
 
-    fetching = lastFetchedDecade + 1;
+    fetching = lastFetchedDecade + 1
 
     model.value = Model(model.value!!.decades, true)
     object : AsyncTask<Void, Void, List<Decade>>() {
       override fun doInBackground(vararg params: Void?): List<Decade> {
         //Let's simulate a network call here.
-        Thread.sleep(2000);
-        return DataCreator.createPageOfData(lastFetchedDecade + 1);
+        Thread.sleep(2000)
+        return DataCreator.createPageOfData(lastFetchedDecade + 1)
       }
 
       override fun onPostExecute(result: List<Decade>?) {
-        model.value = Model(model.value!!.decades + result!!, false)
+        result?.let {
+          val decades = model.value?.decades ?: emptyList()
+          model.value = Model(decades + it, false)
+        }
       }
 
-    }.execute();
+    }.execute()
   }
 }

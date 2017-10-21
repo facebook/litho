@@ -19,8 +19,9 @@ import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.widget.Text
-import com.facebook.yoga.YogaAlign
-import com.facebook.yoga.YogaEdge
+import com.facebook.yoga.YogaAlign.CENTER
+import com.facebook.yoga.YogaEdge.ALL
+import com.facebook.yoga.YogaEdge.HORIZONTAL
 import com.fblitho.lithoktsample.lithography.data.Decade
 
 @LayoutSpec
@@ -30,8 +31,8 @@ object DecadeSeparatorSpec {
       c: ComponentContext,
       @Prop decade: Decade): ComponentLayout =
       Row.create(c)
-          .alignItems(YogaAlign.CENTER)
-          .paddingDip(YogaEdge.ALL, 16f)
+          .alignItems(CENTER)
+          .paddingDip(ALL, 16f)
           .child(
               Row.create(c)
                   .heightPx(1)
@@ -42,8 +43,7 @@ object DecadeSeparatorSpec {
                   .text(decade.year.toString())
                   .textSizeDip(14f)
                   .textColor(0xFFAAAAAA.toInt())
-                  .withLayout()
-                  .marginDip(YogaEdge.HORIZONTAL, 10f)
+                  .marginDip(HORIZONTAL, 10f)
                   .flex(0f))
           .child(
               Row.create(c)

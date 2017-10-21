@@ -13,13 +13,30 @@
 package com.fblitho.lithoktsample.lithography.components
 
 import android.graphics.Color
-import com.facebook.litho.*
-import com.facebook.litho.annotations.*
+import com.facebook.litho.Border
+import com.facebook.litho.ClickEvent
+import com.facebook.litho.Column
+import com.facebook.litho.Component
+import com.facebook.litho.ComponentContext
+import com.facebook.litho.ComponentLayout
+import com.facebook.litho.Row
+import com.facebook.litho.StateValue
+import com.facebook.litho.annotations.LayoutSpec
+import com.facebook.litho.annotations.OnCreateInitialState
+import com.facebook.litho.annotations.OnCreateLayout
+import com.facebook.litho.annotations.OnEvent
+import com.facebook.litho.annotations.OnUpdateState
+import com.facebook.litho.annotations.Prop
+import com.facebook.litho.annotations.State
 import com.facebook.litho.widget.Image
 import com.facebook.litho.widget.Text
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaAlign.STRETCH
-import com.facebook.yoga.YogaEdge.*
+import com.facebook.yoga.YogaEdge.ALL
+import com.facebook.yoga.YogaEdge.BOTTOM
+import com.facebook.yoga.YogaEdge.END
+import com.facebook.yoga.YogaEdge.HORIZONTAL
+import com.facebook.yoga.YogaEdge.TOP
 import com.facebook.yoga.YogaJustify.CENTER
 
 /**
@@ -45,7 +62,6 @@ object StoryCardComponentSpec {
         .child(
             Text.create(c)
                 .text(content)
-                .withLayout()
                 .paddingDip(HORIZONTAL, CARD_INSET.toFloat())
                 .paddingDip(BOTTOM, CARD_INTERNAL_PADDING.toFloat()))
         .child(
@@ -59,7 +75,6 @@ object StoryCardComponentSpec {
                 .child(
                     Image.create(c)
                         .drawableRes(android.R.drawable.ic_menu_save)
-                        .withLayout()
                         .alignSelf(YogaAlign.CENTER)
                         .widthDip(20f)
                         .heightDip(20f)

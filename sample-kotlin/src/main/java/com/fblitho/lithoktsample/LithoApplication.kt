@@ -10,18 +10,17 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.fblitho.lithoktsample;
+package com.fblitho.lithoktsample
 
-import android.app.Application;
-import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.soloader.SoLoader;
+import android.app.Application
+import com.facebook.drawee.backends.pipeline.Fresco
+import com.facebook.soloader.SoLoader
 
-public class LithoApplication extends Application {
+class LithoApplication : Application() {
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        Fresco.initialize(this);
-        SoLoader.init(this, false);
-    }
+  override fun onCreate() {
+    super.onCreate()
+    Fresco.initialize(this)
+    SoLoader.init(this, false)
+  }
 }

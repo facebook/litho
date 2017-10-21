@@ -40,4 +40,3 @@ object SingleImageComponentSpec {
             .buildWithLayout()
       }
 }
-

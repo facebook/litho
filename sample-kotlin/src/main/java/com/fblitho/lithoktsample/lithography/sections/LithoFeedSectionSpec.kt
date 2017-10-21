@@ -51,7 +51,7 @@ object LithoFeedSectionSpec {
   @OnViewportChanged
   fun onViewportChanged(
       c: SectionContext,
-      firstVisile: Int,
+      firstVisible: Int,
       lastVisible: Int,
       totalCount: Int,
       fistFullyVisible: Int,
@@ -60,7 +60,7 @@ object LithoFeedSectionSpec {
       @Prop decades: List<Decade>) {
     val threshold = 2
     if (totalCount - lastVisible < threshold) {
-      fetcher.fetchMoreData(decades.last().year)
+      fetcher.invoke(decades.last().year)
     }
   }
 }

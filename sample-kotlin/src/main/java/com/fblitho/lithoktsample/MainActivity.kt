@@ -38,27 +38,30 @@ class MainActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    viewModel.model.observe(this, Observer { model -> setList(model!!) })
+    viewModel.model.observe(this, Observer { setList(it) })
     setContentView(lithoView)
   }
 
-  private fun setList(model: Model) {
+  private fun setList(model: Model?) {
 
-    if (lithoView.componentTree == null) {
-      lithoView.setComponent(createRecyclerComponent(model))
-    } else {
-      lithoView.setComponentAsync(createRecyclerComponent(model))
+    model?.let {
+      if (lithoView.componentTree == null) {
+        lithoView.setComponent(createRecyclerComponent(it))
+      } else {
+        lithoView.setComponentAsync(createRecyclerComponent(it))
+      }
     }
   }
 
   private fun createRecyclerComponent(model: Model): Component<RecyclerCollectionComponent> =
       RecyclerCollectionComponent
           .create(sectionContext)
-          .section(LithoFeedSection.create(sectionContext)
-              .decades(model.decades)
-              .fetcher(fetcher)
-              .loading(model.isLoading)
-              .build())
+          .section(
+              LithoFeedSection.create(sectionContext)
+                  .decades(model.decades)
+                  .fetcher(fetcher)
+                  .loading(model.isLoading)
+                  .build())
           .disablePTR(true)
           .build()
 }

@@ -15,8 +15,17 @@ package com.fblitho.lithoktsample.lithography.components
 import android.R.drawable.star_off
 import android.R.drawable.star_on
 import android.view.View
-import com.facebook.litho.*
-import com.facebook.litho.annotations.*
+import com.facebook.litho.ClickEvent
+import com.facebook.litho.ComponentContext
+import com.facebook.litho.ComponentLayout
+import com.facebook.litho.Row
+import com.facebook.litho.StateValue
+import com.facebook.litho.annotations.FromEvent
+import com.facebook.litho.annotations.LayoutSpec
+import com.facebook.litho.annotations.OnCreateLayout
+import com.facebook.litho.annotations.OnEvent
+import com.facebook.litho.annotations.OnUpdateState
+import com.facebook.litho.annotations.State
 
 @LayoutSpec
 object FavouriteButtonSpec {

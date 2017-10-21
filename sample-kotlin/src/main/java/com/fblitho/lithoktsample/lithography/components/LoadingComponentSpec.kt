@@ -19,7 +19,7 @@ import com.facebook.litho.Row
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.widget.Progress
-import com.facebook.yoga.YogaJustify
+import com.facebook.yoga.YogaJustify.CENTER
 
 @LayoutSpec
 object LoadingComponentSpec {
@@ -27,9 +27,10 @@ object LoadingComponentSpec {
   @OnCreateLayout
   fun onCreateLayout(c: ComponentContext): ComponentLayout =
       Row.create(c)
-          .justifyContent(YogaJustify.CENTER)
-          .child(Progress.create(c)
-              .color(Color.DKGRAY)
-              .widthDip(50f))
+          .justifyContent(CENTER)
+          .child(
+              Progress.create(c)
+                  .color(Color.DKGRAY)
+                  .widthDip(50f))
           .build()
 }

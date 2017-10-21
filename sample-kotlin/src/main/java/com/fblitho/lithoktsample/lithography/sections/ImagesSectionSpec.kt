@@ -27,9 +27,6 @@ import com.facebook.litho.widget.ComponentRenderInfo
 import com.facebook.litho.widget.RenderInfo
 import com.fblitho.lithoktsample.lithography.components.SingleImageComponent
 
-/**
- * Created by pasqualea on 10/13/17.
- */
 @GroupSectionSpec
 object ImagesSectionSpec {
   @OnCreateChildren

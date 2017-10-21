@@ -14,6 +14,4 @@
 
 package com.fblitho.lithoktsample.lithography.data
 
-interface Fetcher {
-  fun fetchMoreData(lastFetchedDecade: Int)
-}
+typealias Fetcher = (lastFetchedDecade : Int) -> Unit

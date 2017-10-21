@@ -22,7 +22,7 @@ import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.ResType.STRING
 import com.facebook.litho.widget.Text
-import com.facebook.yoga.YogaEdge
+import com.facebook.yoga.YogaEdge.ALL
 
 @LayoutSpec
 object FooterComponentSpec {
@@ -31,7 +31,7 @@ object FooterComponentSpec {
       c: ComponentContext,
       @Prop(resType = STRING) text: String): ComponentLayout =
       Column.create(c)
-          .paddingDip(YogaEdge.ALL, 8f)
+          .paddingDip(ALL, 8f)
           .child(
               Text.create(c)
                   .text(text)
