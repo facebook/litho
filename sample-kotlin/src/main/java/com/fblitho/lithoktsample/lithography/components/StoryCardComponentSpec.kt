@@ -49,8 +49,8 @@ import com.facebook.yoga.YogaJustify.CENTER
 @LayoutSpec
 object StoryCardComponentSpec {
 
-  internal val CARD_INSET = 12
-  internal val CARD_INTERNAL_PADDING = 7
+  private val CARD_INSET = 12f
+  private val CARD_INTERNAL_PADDING = 7f
 
   @JvmStatic
   @OnCreateLayout

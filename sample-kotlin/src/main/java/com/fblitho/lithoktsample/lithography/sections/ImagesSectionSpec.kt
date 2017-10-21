@@ -32,9 +32,10 @@ object ImagesSectionSpec {
   @OnCreateChildren
   fun onCreateChildren(c: SectionContext, @Prop images: List<String>): Children =
       Children.create()
-          .child(DataDiffSection.create<String>(c)
-              .data(images)
-              .renderEventHandler(ImagesSection.onRender(c)))
+          .child(
+              DataDiffSection.create<String>(c)
+                  .data(images)
+                  .renderEventHandler(ImagesSection.onRender(c)))
           .build()
 
 
