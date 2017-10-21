@@ -2,7 +2,7 @@
 
 ## Adding Litho to your Project
 
-We publish the LItho artifacts to Bintray's JCenter. To include Litho to your
+We publish the Litho artifacts to Bintray's JCenter. To include Litho to your
 Android project, make sure you include the reference to the repository in your `build.gradle` file:
 
 ```groovy
