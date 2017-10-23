@@ -9,6 +9,8 @@
 
 package com.facebook.litho.widget;
 
+import static com.facebook.litho.widget.ViewportInfo.State.DATA_CHANGES;
+import static com.facebook.litho.widget.ViewportInfo.State.SCROLLING;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -51,7 +53,7 @@ public class ViewportManagerTest {
     viewportManager.setDataChangedIsVisible(false);
     viewportManager.onViewportChanged();
 
-    verify(mViewportChangedListener).viewportChanged(0, 5, 1, 4, false);
+    verify(mViewportChangedListener).viewportChanged(0, 5, 1, 4, SCROLLING);
   }
 
   @Test
@@ -66,7 +68,7 @@ public class ViewportManagerTest {
     viewportManager.setDataChangedIsVisible(true);
     viewportManager.onViewportChanged();
 
-    verify(mViewportChangedListener).viewportChanged(1, 2, -1, -1, true);
+    verify(mViewportChangedListener).viewportChanged(1, 2, -1, -1, DATA_CHANGES);
   }
 
   @Test
@@ -80,7 +82,7 @@ public class ViewportManagerTest {
     viewportManager.setDataChangedIsVisible(true);
     viewportManager.onViewportChanged();
 
-    verify(mViewportChangedListener).viewportChanged(5, 20, 7, 18, true);
+    verify(mViewportChangedListener).viewportChanged(5, 20, 7, 18, DATA_CHANGES);
   }
 
   @Test
@@ -110,7 +112,7 @@ public class ViewportManagerTest {
     viewportManager.setDataChangedIsVisible(false);
     viewportManager.onViewportChanged();
 
-    verify(mViewportChangedListener).viewportChanged(5, 10, 7, 9, false);
+    verify(mViewportChangedListener).viewportChanged(5, 10, 7, 9, SCROLLING);
   }
 
   @Test
@@ -157,7 +159,7 @@ public class ViewportManagerTest {
     viewportManager.setDataChangedIsVisible(true);
     viewportManager.onViewportChanged();
 
-    verify(mViewportChangedListener).viewportChanged(5, 10, 7, 9, true);
+    verify(mViewportChangedListener).viewportChanged(5, 10, 7, 9, DATA_CHANGES);
   }
 
   @Test
@@ -173,7 +175,7 @@ public class ViewportManagerTest {
     viewportManager.setDataChangedIsVisible(false);
     viewportManager.onViewportChanged();
 
-    verify(mViewportChangedListener).viewportChanged(6, 7, -1, -1, false);
+    verify(mViewportChangedListener).viewportChanged(6, 7, -1, -1, SCROLLING);
   }
 
   @Test

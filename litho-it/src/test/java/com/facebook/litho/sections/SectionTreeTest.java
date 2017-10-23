@@ -255,7 +255,7 @@ public class SectionTreeTest {
 
     tree.setRoot(root);
 
-    tree.viewPortChanged(3,9, 3, 9);
+    tree.viewPortChangedFromScrolling(3, 9, 3, 9);
     assertThat(((TestSection) leaf1).firstVisibleIndex).isEqualTo(-1);
     assertThat(((TestSection) leaf1).lastVisibleIndex).isEqualTo(-1);
     assertThat(((TestSection) leaf1).firstFullyVisibleIndex).isEqualTo(-1);
@@ -291,14 +291,14 @@ public class SectionTreeTest {
     ((TestSectionCreator.TestSection) leaf1).firstFullyVisibleIndex = 0;
     ((TestSectionCreator.TestSection) leaf1).lastFullyVisibleIndex = 0;
 
-    tree.viewPortChanged(3,9, 3, 9);
+    tree.viewPortChangedFromScrolling(3, 9, 3, 9);
 
     assertThat(((TestSection) leaf1).firstVisibleIndex).isEqualTo(0);
     assertThat(((TestSection) leaf1).lastVisibleIndex).isEqualTo(0);
     assertThat(((TestSection) leaf1).firstFullyVisibleIndex).isEqualTo(0);
     assertThat(((TestSection) leaf1).lastFullyVisibleIndex).isEqualTo(0);
 
-    tree.viewPortChanged(6, 9, 7, 9);
+    tree.viewPortChangedFromScrolling(6, 9, 7, 9);
 
     assertThat(((TestSection) leaf4).firstVisibleIndex).isEqualTo(0);
     assertThat(((TestSection) leaf4).lastVisibleIndex).isEqualTo(3);

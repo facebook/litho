@@ -27,6 +27,7 @@ import com.facebook.litho.TreeProps;
 import com.facebook.litho.sections.config.SectionComponentsConfiguration;
 import com.facebook.litho.sections.logger.SectionComponentLogger;
 import com.facebook.litho.widget.RenderInfo;
+import com.facebook.litho.widget.ViewportInfo;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -401,32 +402,25 @@ public class SectionTree {
     mSectionPositionInfo.put(root.getGlobalKey(), Pair.create(prevChildrenCount, root.getCount()));
   }
 
-  public void viewPortChanged(
+  public void viewPortChangedFromScrolling(
       int firstVisibleIndex,
       int lastVisibleIndex,
       int firstFullyVisibleIndex,
-      int lastFullyVisibleIndex,
-      boolean dataInRangeIsChanged) {
-    final Section currentSection;
-    synchronized (this) {
-      currentSection = mCurrentSection;
-    }
-    if (currentSection != null) {
-      viewPortChangedRecursive(
-          currentSection,
-          firstVisibleIndex,
-          lastVisibleIndex,
-          firstFullyVisibleIndex,
-          lastFullyVisibleIndex,
-          dataInRangeIsChanged);
-    }
+      int lastFullyVisibleIndex) {
+    viewPortChanged(
+        firstVisibleIndex,
+        lastVisibleIndex,
+        firstFullyVisibleIndex,
+        lastFullyVisibleIndex,
+        ViewportInfo.State.SCROLLING);
   }
 
   public void viewPortChanged(
       int firstVisibleIndex,
       int lastVisibleIndex,
       int firstFullyVisibleIndex,
-      int lastFullyVisibleIndex) {
+      int lastFullyVisibleIndex,
+      @ViewportInfo.State int state) {
     final Section currentSection;
     synchronized (this) {
       currentSection = mCurrentSection;
@@ -438,7 +432,7 @@ public class SectionTree {
           lastVisibleIndex,
           firstFullyVisibleIndex,
           lastFullyVisibleIndex,
-          false);
+          state);
     }
   }
 
@@ -448,7 +442,7 @@ public class SectionTree {
       int lastVisibleIndex,
       int firstFullyVisibleIndex,
       int lastFullyVisibleIndex,
-      boolean dataInRangeIsChanged) {
+      @ViewportInfo.State int state) {
     Range currentRange = mLastRanges.get(section.getGlobalKey());
     final int totalItemsCount = section.getCount();
 
@@ -461,7 +455,7 @@ public class SectionTree {
         currentRange.lastFullyVisibleIndex == lastFullyVisibleIndex &&
         currentRange.totalItemsCount == totalItemsCount) {
 
-      if (!dataInRangeIsChanged) {
+      if (state != ViewportInfo.State.DATA_CHANGES) {
         return;
       }
     }
@@ -519,7 +513,7 @@ public class SectionTree {
           childLastVisibleIndex,
           childFullyFirstVisibleIndex,
           childFullyLastVisibleIndex,
-          dataInRangeIsChanged);
+          state);
     }
   }
 

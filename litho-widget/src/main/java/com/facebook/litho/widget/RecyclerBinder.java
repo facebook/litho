@@ -117,7 +117,7 @@ public class RecyclerBinder
             int lastVisibleIndex,
             int firstFullyVisibleIndex,
             int lastFullyVisibleIndex,
-            boolean dataInRangeIsChanged) {
+            int state) {
           onNewVisibleRange(firstVisibleIndex, lastVisibleIndex);
         }
       };

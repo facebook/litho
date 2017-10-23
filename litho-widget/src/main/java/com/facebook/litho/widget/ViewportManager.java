@@ -103,13 +103,16 @@ final class ViewportManager {
       return;
     }
 
+    final @ViewportInfo.State int state =
+        mIsDataChangedVisible ? ViewportInfo.State.DATA_CHANGES : ViewportInfo.State.SCROLLING;
+
     for (ViewportChanged viewportChangedListener : mViewportChangedListeners) {
       viewportChangedListener.viewportChanged(
           firstVisiblePosition,
           lastVisiblePosition,
           firstFullyVisibleItemPosition,
           lastFullyVisibleItemPosition,
-          mIsDataChangedVisible);
+          state);
     }
 
     resetDataChangedIsVisible();

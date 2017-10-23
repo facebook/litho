@@ -285,13 +285,13 @@ public class RecyclerCollectionComponentSpec {
               int lastVisibleIndex,
               int firstFullyVisibleIndex,
               int lastFullyVisibleIndex,
-              boolean dataInRangeIsChanged) {
+              int state) {
             sectionTreeInstance.viewPortChanged(
                 firstVisibleIndex,
                 lastVisibleIndex,
                 firstFullyVisibleIndex,
                 lastFullyVisibleIndex,
-                dataInRangeIsChanged);
+                state);
           }
         };
 

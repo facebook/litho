@@ -9,6 +9,8 @@
 
 package com.facebook.litho.widget;
 
+import android.support.annotation.IntDef;
+
 /**
  * An implementation of this interface will provide both the
  * {@link android.support.v7.widget.RecyclerView}'s current visible views position and
@@ -50,6 +52,12 @@ public interface ViewportInfo {
         int lastVisibleIndex,
         int firstFullyVisibleIndex,
         int lastFullyVisibleIndex,
-        boolean dataInRangeIsChanged);
+        @State int state);
+  }
+
+  @IntDef({State.SCROLLING, State.DATA_CHANGES})
+  @interface State {
+    int SCROLLING = 0;
+    int DATA_CHANGES = 1;
   }
 }
