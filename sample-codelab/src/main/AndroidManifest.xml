@@ -13,19 +13,22 @@
   -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.facebook.samples.lithocodelab" >
+          xmlns:tools="http://schemas.android.com/tools"
+          package="com.facebook.samples.lithocodelab" >
 
     <uses-sdk
         android:minSdkVersion="15"
-        android:targetSdkVersion="19"
-        />
+        android:targetSdkVersion="26"
+        tools:ignore="GradleOverrides"/>
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name="com.facebook.samples.lithocodelab.LithoLabApplication"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.Light.DarkActionBar" >
-        android:theme="@style/AppTheme" >
+        android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+        android:allowBackup="false"
+        android:icon="@android:mipmap/sym_def_app_icon"
+        tools:ignore="GoogleAppIndexingWarning">
         <activity android:label="LithoLab: Begin" android:name="com.facebook.samples.lithocodelab.LithoLabActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
