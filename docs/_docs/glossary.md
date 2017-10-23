@@ -31,3 +31,15 @@ A Litho Annotation added to a spec class that tells the framework "This componen
 ## @MountSpec
 A Litho Annotation added to a spec class that tells the framework "This component describes an Android View or Drawable to be drawn on screen". This is the escape hatch from Litho into traditional Android rendering. 
 
+## @GroupSectionSpec
+The equivalent of @LayoutSpec for Section Components
+
+## @DiffSectionSpec
+The equivalent of @MountSpec for Section Components. This annotation tells the
+framework "This component will produce a changeset for changing the items in a
+recycler view".
+
+## ChangeSet
+
+A list of insert / update / delete / move "commands" that describe how to update
+the underlying recycler view.
