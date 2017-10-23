@@ -20,8 +20,8 @@ import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.widget.Text;
 
 /**
-* A simple Component for learning some common {@literal @}Props on Text Components. Also a good way to learn
-  * the basics of {@literal @}Props and the builders they generate.
+ * A simple Component for learning some common {@literal @}Props on Text Components. Also a good way to learn
+ * the basics of {@literal @}Props and the builders they generate.
  */
 @LayoutSpec
 public class LearningTextWidgetComponentSpec {

@@ -14,8 +14,10 @@ package com.facebook.samples.lithocodelab;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import com.facebook.samples.lithocodelab.end.LithoLabApproximateEndActivity;
+
 /**
- * *************** START THE LAB HERE ***************
+ * <b>*************** START THE LAB HERE ***************</b>
  * <p>
  * <p>This is a simple "Hello, world." activity that renders using Views. The goal of the lab is to
  * build this into something that resembles {@link LithoLabApproximateEndActivity} using Litho.
